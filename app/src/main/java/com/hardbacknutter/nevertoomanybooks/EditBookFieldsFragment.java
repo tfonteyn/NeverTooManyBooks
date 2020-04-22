@@ -88,10 +88,22 @@ public class EditBookFieldsFragment
     private static final FieldValidator NON_BLANK_VALIDATOR = new NonBlankValidator();
     /** Handles cover replacement, rotation, etc. */
     private final CoverHandler[] mCoverHandler = new CoverHandler[2];
+
+    /** Dialog listener (strong reference). */
+    private final CheckListDialogFragment.CheckListResultsListener mCheckListResultsListener =
+            list -> {
+                final int fieldId = mFragmentVM.getCurrentDialogFieldId()[0];
+                final Field<List<Entity>, TextView> field =
+                        mFragmentVM.getFields().getField(fieldId);
+                mBookViewModel.getBook().putParcelableArrayList(field.getKey(), list);
+                field.getAccessor().setValue(list);
+                field.onChanged(true);
+            };
+
     /** manage the validation check next to the ISBN field. */
     private ISBN.ValidationTextWatcher mIsbnValidationTextWatcher;
+    /** Watch and clean the text entered in the ISBN field. */
     private ISBN.CleanupTextWatcher mIsbnCleanupTextWatcher;
-
     /**
      * Set to {@code true} limits to using ISBN-10/13.
      * Otherwise we also allow UPC/EAN codes.
@@ -135,14 +147,7 @@ public class EditBookFieldsFragment
         super.onAttachFragment(childFragment);
 
         if (CheckListDialogFragment.TAG.equals(childFragment.getTag())) {
-            //noinspection ConstantConditions
-            final int fieldId = childFragment.getArguments().getInt(BKEY_FIELD_ID);
-            ((CheckListDialogFragment) childFragment).setListener((list) -> {
-                Field<List<Entity>, TextView> field = mFragmentVM.getFields().getField(fieldId);
-                mBookViewModel.getBook().putParcelableArrayList(field.getKey(), list);
-                field.getAccessor().setValue(list);
-                field.onChanged(true);
-            });
+            ((CheckListDialogFragment) childFragment).setListener(mCheckListResultsListener);
         }
     }
 
@@ -237,7 +242,8 @@ public class EditBookFieldsFragment
         //noinspection ConstantConditions
         final boolean showAuthSeriesOnTabs = EditBookActivity.showAuthSeriesOnTabs(getContext());
 
-        // If we're showing Author/Series on pop-up fragments, we need to prepare them here.
+        // If we're showing Author/Series on pop-up fragments, we need to prepare them
+        // before populating the views.
         if (!showAuthSeriesOnTabs) {
             mBookViewModel.prepareAuthorsAndSeries(getContext());
         }
@@ -273,40 +279,41 @@ public class EditBookFieldsFragment
             mScannerModel.scan(this, RequestCode.SCAN_BARCODE);
         });
 
-        addBookshelfPicker(mFragmentVM.getFields().getField(R.id.bookshelves));
+        addBookshelfPicker();
 
         if (!showAuthSeriesOnTabs) {
-            setOnClickListener(R.id.author, v ->
-                    showEditListFragment(new EditBookAuthorsFragment(),
-                                         EditBookAuthorsFragment.TAG));
+            Field field;
 
-            setOnClickListener(R.id.series_title, v ->
-                    showEditListFragment(new EditBookSeriesFragment(),
-                                         EditBookSeriesFragment.TAG));
+            field = mFragmentVM.getFields().getField(R.id.author);
+            if (field.isUsed(getContext())) {
+                mVb.author.setOnClickListener(v -> showEditListFragment(
+                        new EditBookAuthorsFragment(), EditBookAuthorsFragment.TAG));
+            }
+
+            field = mFragmentVM.getFields().getField(R.id.series_title);
+            if (field.isUsed(getContext())) {
+                mVb.seriesTitle.setOnClickListener(v -> showEditListFragment(
+                        new EditBookSeriesFragment(), EditBookSeriesFragment.TAG));
+            }
         }
     }
 
-    private void addBookshelfPicker(@NonNull final Field field) {
+    private void addBookshelfPicker() {
         // only bother when it's in use
+        final Field field = mFragmentVM.getFields().getField(R.id.bookshelves);
         //noinspection ConstantConditions
         if (field.isUsed(getContext())) {
-            field.getAccessor().getView().setOnClickListener(v -> {
+            mVb.bookshelves.setOnClickListener(v -> {
+                mFragmentVM.setCurrentDialogFieldId(R.id.bookshelves);
                 final DialogFragment picker = CheckListDialogFragment
                         .newInstance(R.string.lbl_bookshelves_long,
                                      new ArrayList<>(mFragmentVM.getBookshelves()),
                                      new ArrayList<>(
                                              mBookViewModel.getBook().getParcelableArrayList(
                                                      Book.BKEY_BOOKSHELF_ARRAY)));
-                //noinspection ConstantConditions
-                picker.getArguments().putInt(BKEY_FIELD_ID, field.getId());
-                //URGENT: screen rotation
                 picker.show(getChildFragmentManager(), CheckListDialogFragment.TAG);
             });
         }
-
-        final Fragment f = getChildFragmentManager()
-                .findFragmentByTag(CheckListDialogFragment.TAG);
-        Log.w(TAG, "f=" + f);
     }
 
     /** Called by the CoverHandler when a context menu is selected. */

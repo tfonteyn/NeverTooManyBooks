@@ -218,19 +218,14 @@ public class Fields {
     }
 
     /**
-     * Prepare all fields.
-     * <ol>
-     *      <li>Find/update their View from the passed parent View</li>
-     *      <li>Disables the {@link AfterChangeListener}</li>
-     * </ol>
+     * Update the Views for all fields.
      *
      * @param parentView for the view of each field
      */
-    public void prepareViewsForPopulating(@NonNull final View parentView) {
+    public void setParentView(@NonNull final View parentView) {
         for (int f = 0; f < mAllFields.size(); f++) {
             Field field = mAllFields.valueAt(f);
             field.setParentView(parentView);
-            field.setAfterFieldChangeListener(null);
         }
     }
 

@@ -39,6 +39,7 @@ import android.view.View;
 import android.widget.ProgressBar;
 
 import androidx.annotation.CallSuper;
+import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
@@ -77,6 +78,15 @@ public abstract class BookBaseFragment
 
     /** The book. Must be in the Activity scope. */
     BookViewModel mBookViewModel;
+
+    /** Listener for all field changes. Must keep strong reference. */
+    private final Fields.AfterChangeListener mAfterChangeListener =
+            new Fields.AfterChangeListener() {
+                @Override
+                public void afterFieldChange(@IdRes final int fieldId) {
+                    mBookViewModel.setDirty(true);
+                }
+            };
 
     abstract Fields getFields();
 
@@ -133,14 +143,15 @@ public abstract class BookBaseFragment
      */
     final void populateViews() {
         //noinspection ConstantConditions
-        getFields().prepareViewsForPopulating(getView());
+        getFields().setParentView(getView());
+        getFields().setAfterChangeListener(null);
         // preserve the 'dirty' status.
         final boolean wasDirty = mBookViewModel.isDirty();
         // make it so!
         onPopulateViews(mBookViewModel.getBook());
         // restore the dirt-status and install the AfterChangeListener
         mBookViewModel.setDirty(wasDirty);
-        getFields().setAfterChangeListener(fieldId -> mBookViewModel.setDirty(true));
+        getFields().setAfterChangeListener(mAfterChangeListener);
 
         // Set the activity title depending on View or Edit mode.
         // This is a good place to do this, as we use data from the book for the title.

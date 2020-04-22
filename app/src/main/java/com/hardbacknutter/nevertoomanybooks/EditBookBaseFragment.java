@@ -45,16 +45,16 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.datepicker.MaterialDatePicker;
+import com.google.android.material.datepicker.MaterialPickerOnPositiveButtonClickListener;
 
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
-import java.util.TimeZone;
 
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataEditor;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
+import com.hardbacknutter.nevertoomanybooks.dialogs.picker.DatePickerResultsListener;
 import com.hardbacknutter.nevertoomanybooks.dialogs.picker.PartialDatePickerDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.fields.Field;
@@ -66,9 +66,6 @@ import com.hardbacknutter.nevertoomanybooks.viewmodels.EditBookFragmentViewModel
 
 /**
  * Base class for all fragments that appear in {@link EditBookFragment}.
- * <p>
- * URGENT: the MaterialDatePicker uses UTC. We're ignoring this...
- * URGENT: Studio 4.0 gives Java 8 time api access
  */
 public abstract class EditBookBaseFragment
         extends BookBaseFragment
@@ -76,10 +73,6 @@ public abstract class EditBookBaseFragment
 
     /** Log tag. */
     private static final String TAG = "EditBookBaseFragment";
-    /** Single field; or start field for a range. */
-    static final String BKEY_FIELD_ID = TAG + ":fieldId";
-    /** end field for a range. */
-    private static final String BKEY_FIELD_ID2 = TAG + ":fieldId2";
 
     /** Tag for MaterialDatePicker. */
     private static final String TAG_DATE_PICKER_SINGLE = TAG + ":datePickerSingle";
@@ -89,7 +82,31 @@ public abstract class EditBookBaseFragment
     /** The view model. */
     EditBookFragmentViewModel mFragmentVM;
 
-    /** Used by the base class. Call {@link #mFragmentVM} direct from this and subclasses. */
+    /** Dialog listener (strong reference). */
+    private final DatePickerResultsListener
+            mPartialDatePickerResultsListener = (year, month, day) -> {
+        final int fieldId = mFragmentVM.getCurrentDialogFieldId()[0];
+        String date = DateUtils.buildPartialDate(year, month, day);
+        onDateSet(fieldId, date);
+    };
+
+    /** Dialog listener (strong reference). */
+    private final MaterialPickerOnPositiveButtonClickListener<Long>
+            mDatePickerListener = selection -> {
+        final int fieldId = mFragmentVM.getCurrentDialogFieldId()[0];
+        onDateSet(fieldId, selection);
+    };
+
+    /** Dialog listener (strong reference). */
+    private final MaterialPickerOnPositiveButtonClickListener<Pair<Long, Long>>
+            mDateRangePickerListener = selection -> {
+        final int fieldIdStart = mFragmentVM.getCurrentDialogFieldId()[0];
+        onDateSet(fieldIdStart, selection.first);
+        final int fieldIdEnd = mFragmentVM.getCurrentDialogFieldId()[1];
+        onDateSet(fieldIdEnd, selection.second);
+    };
+
+    /** Used by the base class. Subclasses and this class should bypass this method. */
     @Override
     Fields getFields() {
         return mFragmentVM.getFields();
@@ -103,30 +120,18 @@ public abstract class EditBookBaseFragment
         super.onAttachFragment(childFragment);
 
         if (PartialDatePickerDialogFragment.TAG.equals(childFragment.getTag())) {
-            //noinspection ConstantConditions
-            final int fieldId = childFragment.getArguments().getInt(BKEY_FIELD_ID);
-            ((PartialDatePickerDialogFragment) childFragment).setListener((year, month, day) -> {
-                String date = DateUtils.buildPartialDate(year, month, day);
-                onDateSet(fieldId, date);
-            });
+            ((PartialDatePickerDialogFragment) childFragment)
+                    .setListener(mPartialDatePickerResultsListener);
 
         } else if (TAG_DATE_PICKER_SINGLE.equals(childFragment.getTag())) {
-            //noinspection ConstantConditions
-            final int fieldId = childFragment.getArguments().getInt(BKEY_FIELD_ID);
             //noinspection unchecked
-            ((MaterialDatePicker<Long>) childFragment).addOnPositiveButtonClickListener(
-                    selection -> onDateSet(fieldId, selection));
+            ((MaterialDatePicker<Long>) childFragment)
+                    .addOnPositiveButtonClickListener(mDatePickerListener);
 
         } else if (TAG_DATE_PICKER_RANGE.equals(childFragment.getTag())) {
-            //noinspection ConstantConditions
-            final int fieldIdStart = childFragment.getArguments().getInt(BKEY_FIELD_ID);
-            final int fieldIdEnd = childFragment.getArguments().getInt(BKEY_FIELD_ID2);
             //noinspection unchecked
             ((MaterialDatePicker<Pair<Long, Long>>) childFragment)
-                    .addOnPositiveButtonClickListener(selection -> {
-                        onDateSet(fieldIdStart, selection.first);
-                        onDateSet(fieldIdEnd, selection.second);
-                    });
+                    .addOnPositiveButtonClickListener(mDateRangePickerListener);
         }
     }
 
@@ -226,22 +231,6 @@ public abstract class EditBookBaseFragment
     }
 
     /**
-     * Syntax sugar to add an OnClickListener to a Field.
-     *
-     * @param fieldId  view to connect
-     * @param listener to use
-     */
-    void setOnClickListener(@IdRes final int fieldId,
-                            @Nullable final View.OnClickListener listener) {
-        final Field field = mFragmentVM.getFields().getField(fieldId);
-        // only bother when it's in use
-        //noinspection ConstantConditions
-        if (field.isUsed(getContext())) {
-            field.getAccessor().getView().setOnClickListener(listener);
-        }
-    }
-
-    /**
      * Setup an adapter for the AutoCompleteTextView, using the (optional) formatter.
      *
      * @param fieldId view to connect
@@ -269,23 +258,25 @@ public abstract class EditBookBaseFragment
      *
      * @param dialogTitleIdSpan  title of the dialog box if both start and end-dates are used.
      * @param dialogTitleIdStart title of the dialog box if the end-date is not in use
-     * @param fieldStart         to setup for the start-date
+     * @param fieldStartDate     to setup for the start-date
      * @param dialogTitleIdEnd   title of the dialog box if the start-date is not in use
-     * @param fieldEnd           to setup for the end-date
+     * @param fieldEndDate       to setup for the end-date
      * @param todayIfNone        if true, and if the field was empty, we'll default to today's date.
      */
     @SuppressWarnings("SameParameterValue")
     void addDateRangePicker(@StringRes final int dialogTitleIdSpan,
                             @StringRes final int dialogTitleIdStart,
-                            @NonNull final Field fieldStart,
+                            @NonNull final Field<String, TextView> fieldStartDate,
                             @StringRes final int dialogTitleIdEnd,
-                            @NonNull final Field fieldEnd,
+                            @NonNull final Field<String, TextView> fieldEndDate,
                             final boolean todayIfNone) {
         //noinspection ConstantConditions
-        if (fieldStart.isUsed(getContext()) && fieldEnd.isUsed(getContext())) {
+        if (fieldStartDate.isUsed(getContext()) && fieldEndDate.isUsed(getContext())) {
             final View.OnClickListener listener = v -> {
-                Long timeStart = parseTime(fieldStart, todayIfNone);
-                Long timeEnd = parseTime(fieldEnd, todayIfNone);
+                Long timeStart = DateUtils.parseTime(fieldStartDate.getAccessor().getValue(),
+                                                     todayIfNone);
+                Long timeEnd = DateUtils.parseTime(fieldEndDate.getAccessor().getValue(),
+                                                   todayIfNone);
                 // sanity check
                 if (timeStart != null && timeEnd != null && timeStart > timeEnd) {
                     Long tmp = timeStart;
@@ -298,20 +289,17 @@ public abstract class EditBookBaseFragment
                         .setTitleText(dialogTitleIdSpan)
                         .setSelection(new Pair<>(timeStart, timeEnd))
                         .build();
-                //noinspection ConstantConditions
-                picker.getArguments().putInt(BKEY_FIELD_ID, fieldStart.getId());
-                picker.getArguments().putInt(BKEY_FIELD_ID2, fieldEnd.getId());
-                //URGENT: screen rotation
+                mFragmentVM.setCurrentDialogFieldId(fieldStartDate.getId(), fieldEndDate.getId());
                 picker.show(getChildFragmentManager(), TAG_DATE_PICKER_RANGE);
             };
 
-            fieldStart.getAccessor().getView().setOnClickListener(listener);
-            fieldEnd.getAccessor().getView().setOnClickListener(listener);
+            fieldStartDate.getAccessor().getView().setOnClickListener(listener);
+            fieldEndDate.getAccessor().getView().setOnClickListener(listener);
 
-        } else if (fieldStart.isUsed(getContext())) {
-            addDatePicker(fieldStart, dialogTitleIdStart, todayIfNone);
-        } else if (fieldEnd.isUsed(getContext())) {
-            addDatePicker(fieldEnd, dialogTitleIdEnd, todayIfNone);
+        } else if (fieldStartDate.isUsed(getContext())) {
+            addDatePicker(fieldStartDate, dialogTitleIdStart, todayIfNone);
+        } else if (fieldEndDate.isUsed(getContext())) {
+            addDatePicker(fieldEndDate, dialogTitleIdEnd, todayIfNone);
         }
     }
 
@@ -322,20 +310,20 @@ public abstract class EditBookBaseFragment
      * @param dialogTitleId title of the dialog box.
      * @param todayIfNone   if true, and if the field was empty, we'll default to today's date.
      */
-    void addDatePicker(@NonNull final Field field,
+    void addDatePicker(@NonNull final Field<String, TextView> field,
                        @StringRes final int dialogTitleId,
                        final boolean todayIfNone) {
         //noinspection ConstantConditions
         if (field.isUsed(getContext())) {
             field.getAccessor().getView().setOnClickListener(v -> {
+                final Long selection = DateUtils.parseTime(field.getAccessor().getValue(),
+                                                           todayIfNone);
                 final MaterialDatePicker picker = MaterialDatePicker.Builder
                         .datePicker()
                         .setTitleText(dialogTitleId)
-                        .setSelection(parseTime(field, todayIfNone))
+                        .setSelection(selection)
                         .build();
-                //noinspection ConstantConditions
-                picker.getArguments().putInt(BKEY_FIELD_ID, field.getId());
-                //URGENT: screen rotation
+                mFragmentVM.setCurrentDialogFieldId(field.getId());
                 picker.show(getChildFragmentManager(), TAG_DATE_PICKER_SINGLE);
             });
         }
@@ -357,24 +345,9 @@ public abstract class EditBookBaseFragment
             field.getAccessor().getView().setOnClickListener(v -> {
                 DialogFragment picker = PartialDatePickerDialogFragment.newInstance(
                         dialogTitleId, field.getAccessor().getValue(), todayIfNone);
-                //noinspection ConstantConditions
-                picker.getArguments().putInt(BKEY_FIELD_ID, field.getId());
-                //URGENT: screen rotation
+                mFragmentVM.setCurrentDialogFieldId(field.getId());
                 picker.show(getChildFragmentManager(), PartialDatePickerDialogFragment.TAG);
             });
-        }
-    }
-
-    @Nullable
-    private Long parseTime(@NonNull final Field field,
-                           final boolean todayIfNone) {
-        final Date date = DateUtils.parseDate((String) field.getAccessor().getValue());
-        if (date != null) {
-            return date.getTime();
-        } else if (todayIfNone) {
-            return Calendar.getInstance(TimeZone.getTimeZone("UTC")).getTimeInMillis();
-        } else {
-            return null;
         }
     }
 
@@ -395,5 +368,9 @@ public abstract class EditBookBaseFragment
         Field<String, TextView> field = mFragmentVM.getFields().getField(fieldId);
         field.getAccessor().setValue(value);
         field.onChanged(true);
+
+        if (fieldId == R.id.read_end) {
+            mFragmentVM.getFields().getField(R.id.cbx_read).getAccessor().setValue(true);
+        }
     }
 }

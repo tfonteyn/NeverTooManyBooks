@@ -178,23 +178,9 @@ public class EditBookNotesFragment
     public void onResume() {
         // the super will trigger the population of all defined Fields and their Views.
         super.onResume();
-
         // With all Views populated, (re-)add the helpers
-        setOnClickListener(R.id.cbx_read, v -> {
-            // when user sets 'read',
-            // also set the read-end date to today (unless set before)
-            final Checkable cb = (Checkable) v;
-            if (cb.isChecked()) {
-                final Field<String, TextView> readEnd =
-                        mFragmentVM.getFields().getField(R.id.read_end);
-                if (readEnd.getAccessor().isEmpty()) {
-                    final String value = DateUtils.localSqlDateForToday();
-                    // Update, display and notify
-                    readEnd.getAccessor().setValue(value);
-                    readEnd.onChanged(true);
-                }
-            }
-        });
+
+        addReadCheckboxOnClickListener();
 
         addAutocomplete(R.id.price_paid_currency, mFragmentVM.getPricePaidCurrencyCodes());
         addAutocomplete(R.id.location, mFragmentVM.getLocations());
@@ -208,5 +194,31 @@ public class EditBookNotesFragment
                            R.string.lbl_read_end,
                            mFragmentVM.getFields().getField(R.id.read_end),
                            true);
+    }
+
+    /**
+     * Set the OnClickListener for the 'read' fields.
+     * <p>
+     * When user checks 'read', set the read-end date to today (unless set before)
+     */
+    private void addReadCheckboxOnClickListener() {
+        final Field readCbx = mFragmentVM.getFields().getField(R.id.cbx_read);
+        // only bother when it's in use
+        //noinspection ConstantConditions
+        if (readCbx.isUsed(getContext())) {
+            readCbx.getAccessor().getView().setOnClickListener(v -> {
+                final Checkable cb = (Checkable) v;
+                if (cb.isChecked()) {
+                    final Field<String, TextView> readEnd =
+                            mFragmentVM.getFields().getField(R.id.read_end);
+                    if (readEnd.getAccessor().isEmpty()) {
+                        final String value = DateUtils.localSqlDateForToday();
+                        // Update, display and notify
+                        readEnd.getAccessor().setValue(value);
+                        readEnd.onChanged(true);
+                    }
+                }
+            });
+        }
     }
 }

@@ -296,7 +296,6 @@ public class EditBookTocFragment
         // finally the TOC itself;  only put on display for the user to approve
         boolean hasOtherEditions = (mIsfdbEditions != null) && (mIsfdbEditions.size() > 1);
         ConfirmTocDialogFragment.newInstance(bookData, hasOtherEditions)
-                                //URGENT: screen rotation
                                 .show(getChildFragmentManager(), ConfirmTocDialogFragment.TAG);
     }
 
@@ -528,7 +527,6 @@ public class EditBookTocFragment
         mEditPosition = position;
 
         EditTocEntryDialogFragment.newInstance(tocEntry, mVb.cbxMultipleAuthors.isChecked())
-                                  //URGENT: screen rotation
                                   .show(getChildFragmentManager(), EditTocEntryDialogFragment.TAG);
 
     }

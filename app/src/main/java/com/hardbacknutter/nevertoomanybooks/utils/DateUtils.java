@@ -49,8 +49,8 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 
 /**
- * ENHANCE: Migrate to java.time.* ... which requires Android 8.0 (API 26)
- * or use this backport: https://github.com/JakeWharton/ThreeTenABP
+ * URGENT: the MaterialDatePicker uses UTC. We're ignoring this...
+ * URGENT: Migrate to java.time.* Studio 4.0 gives Java 8 time api access
  */
 public final class DateUtils {
 
@@ -124,33 +124,12 @@ public final class DateUtils {
     private static final SimpleDateFormat YEAR = new SimpleDateFormat("yyyy", Locale.ENGLISH);
 
     static {
-        TimeZone TZ_UTC = TimeZone.getTimeZone("UTC");
-        UTC_SQL_DATE_TIME_HH_MM_SS.setTimeZone(TZ_UTC);
-        UTC_SQL_DATE_YYYY_MM_DD.setTimeZone(TZ_UTC);
+        final TimeZone utc = TimeZone.getTimeZone("UTC");
+        UTC_SQL_DATE_TIME_HH_MM_SS.setTimeZone(utc);
+        UTC_SQL_DATE_YYYY_MM_DD.setTimeZone(utc);
     }
 
     private DateUtils() {
-    }
-
-    /**
-     * Create the parser list. These will be tried IN THE ORDER DEFINED HERE.
-     *
-     * @param locales the locales to use
-     */
-    public static void create(@NonNull final Locale... locales) {
-        // The numerical formats are top of the list.
-        // SQL based formats
-        // Text based formats
-        String[][] allFormats = {PARSE_FORMAT_NUMERICAL, PARSE_FORMAT_SQL, PARSE_FORMAT_TEXT};
-        create(PARSE_DATE_FORMATS, allFormats, locales);
-
-        // SQL based formats
-        String[][] sqlFormats = {PARSE_FORMAT_SQL};
-        create(PARSE_SQL_DATE_FORMATS, sqlFormats, Locale.ENGLISH);
-        TimeZone TZ_UTC = TimeZone.getTimeZone("UTC");
-        for (SimpleDateFormat sdf : PARSE_SQL_DATE_FORMATS) {
-            sdf.setTimeZone(TZ_UTC);
-        }
     }
 
     @VisibleForTesting
@@ -162,7 +141,31 @@ public final class DateUtils {
     }
 
     /**
-     * <strong>Create</strong> the parser list.
+     * Create the parser lists. These will be tried IN THE ORDER DEFINED HERE.
+     * <ol>
+     *     <li>numerical formats</li>
+     *     <li>SQL based</li>
+     *     <li>Text based</li>
+     * </ol>
+     *
+     * @param locales the locales to use
+     */
+    public static void create(@NonNull final Locale... locales) {
+
+        final String[][] allFormats = {PARSE_FORMAT_NUMERICAL, PARSE_FORMAT_SQL, PARSE_FORMAT_TEXT};
+        create(PARSE_DATE_FORMATS, allFormats, locales);
+
+        // SQL based formats with UTC/English
+        final String[][] sqlFormats = {PARSE_FORMAT_SQL};
+        create(PARSE_SQL_DATE_FORMATS, sqlFormats, Locale.ENGLISH);
+        final TimeZone utc = TimeZone.getTimeZone("UTC");
+        for (SimpleDateFormat sdf : PARSE_SQL_DATE_FORMATS) {
+            sdf.setTimeZone(utc);
+        }
+    }
+
+    /**
+     * <strong>Create</strong> the given parser list.
      * <p>
      * If English is not part of the passed list of Locales, it is automatically added.
      *
@@ -192,7 +195,7 @@ public final class DateUtils {
     }
 
     /**
-     * <strong>Add</strong> to the parser list.
+     * <strong>Add</strong> formats to the given parser list.
      *
      * @param group   collection to add to
      * @param formats list of formats to add
@@ -202,7 +205,7 @@ public final class DateUtils {
                                             @NonNull final String[][] formats,
                                             @NonNull final Locale... locales) {
         // track duplicates for each group separably
-        Collection<Locale> added = new HashSet<>();
+        final Collection<Locale> added = new HashSet<>();
         for (String[] groupFormats : formats) {
             added.clear();
             for (Locale locale : locales) {
@@ -225,7 +228,7 @@ public final class DateUtils {
      */
     @Nullable
     public static Date parseDate(@Nullable final String dateString) {
-        Date date = parseDate(PARSE_DATE_FORMATS, dateString);
+        final Date date = parseDate(PARSE_DATE_FORMATS, dateString);
         // set time to noon, to avoid any overflow due to timezone or DST.
         if (date != null) {
             date.setHours(12);
@@ -233,6 +236,27 @@ public final class DateUtils {
             date.setSeconds(0);
         }
         return date;
+    }
+
+    /**
+     * Attempt to parse a date string based on a range of possible formats.
+     *
+     * @param dateString  String to parse
+     * @param todayIfNone if {@code true}, and if the string was empty, default to today's date.
+     *
+     * @return the parsed time, or {@code null} on failure
+     */
+    @Nullable
+    public static Long parseTime(@Nullable final String dateString,
+                                 final boolean todayIfNone) {
+        final Date date = parseDate(dateString);
+        if (date != null) {
+            return date.getTime();
+        } else if (todayIfNone) {
+            return Calendar.getInstance(LocaleUtils.getSystemLocale()).getTimeInMillis();
+        } else {
+            return null;
+        }
     }
 
     /**
@@ -276,6 +300,7 @@ public final class DateUtils {
     /**
      * Attempt to parse a date string based on a range of possible formats.
      *
+     * @param formats    list of formats to try in order
      * @param dateString String to parse
      *
      * @return Resulting date if parsed, otherwise {@code null}
@@ -296,7 +321,7 @@ public final class DateUtils {
         }
 
         // First try to parse using strict rules
-        Date d = parseDate(formats, dateString, false);
+        final Date d = parseDate(formats, dateString, false);
         if (d != null) {
             return d;
         }
@@ -310,6 +335,7 @@ public final class DateUtils {
      * <p>
      * <strong>Note:</strong> the timestamp part is always set to 00:00:00
      *
+     * @param formats    list of formats to try in order
      * @param dateString String to parse
      * @param lenient    {@code true} if parsing should be lenient
      *
@@ -355,13 +381,13 @@ public final class DateUtils {
 
         } else if (dateString.length() == 7) {
             // input: YYYY-MM
-            int month = Integer.parseInt(dateString.substring(5));
+            final int month = Integer.parseInt(dateString.substring(5));
             // just swap: MMM YYYY
             return getMonthName(locale, month, true) + ' ' + dateString.substring(0, 4);
 
         } else {
             // Try to parse for length == 6 or > 7
-            Date date = parseDate(dateString);
+            final Date date = parseDate(dateString);
             if (date != null) {
                 return DateFormat.getDateInstance(DateFormat.MEDIUM, locale).format(date);
             }
@@ -379,6 +405,8 @@ public final class DateUtils {
      *
      * @param date   to format
      * @param locale to use
+     *
+     * @return formatted date string
      */
     @NonNull
     public static String toPrettyDateTime(@NonNull final Date date,
@@ -395,12 +423,14 @@ public final class DateUtils {
      */
     @NonNull
     public static String localSqlDateForToday() {
-        Calendar calendar = Calendar.getInstance(LocaleUtils.getSystemLocale());
+        final Calendar calendar = Calendar.getInstance(LocaleUtils.getSystemLocale());
         return LOCAL_SQL_DATE.format(calendar.getTime());
     }
 
     /**
      * Convert a Date to a System Locale based SQL datetime-string.
+     *
+     * @param date to format
      *
      * @return SQL datetime-string, for the System Locale.
      */
@@ -412,6 +442,8 @@ public final class DateUtils {
     /**
      * Convert a Date to a UTC based SQL datetime-string.
      *
+     * @param date to format
+     *
      * @return SQL datetime-string, for the UTC timezone.
      */
     @NonNull
@@ -420,16 +452,20 @@ public final class DateUtils {
     }
 
     /**
-     * @return today's SQL datetime-string, for the UTC timezone.
+     * Get today's SQL datetime-string, for the UTC timezone.
+     *
+     * @return SQL datetime-string, for the UTC timezone.
      */
     @NonNull
     public static String utcSqlDateTimeForToday() {
-        Calendar calendar = Calendar.getInstance(LocaleUtils.getSystemLocale());
+        final Calendar calendar = Calendar.getInstance(LocaleUtils.getSystemLocale());
         return UTC_SQL_DATE_TIME_HH_MM_SS.format(calendar.getTime());
     }
 
     /**
      * Convert a Date to a UTC based SQL date-string.
+     *
+     * @param date to format
      *
      * @return SQL date-string, for the UTC timezone.
      */
@@ -456,7 +492,7 @@ public final class DateUtils {
                                       @IntRange(from = 1, to = 12) final int month,
                                       final boolean shortName) {
 
-        String iso = locale.getISO3Language();
+        final String iso = locale.getISO3Language();
         String[] longNames = MONTH_LONG_NAMES.get(iso);
         String[] shortNames = MONTH_SHORT_NAMES.get(iso);
 

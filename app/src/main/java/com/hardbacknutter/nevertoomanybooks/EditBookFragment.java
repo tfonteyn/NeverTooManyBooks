@@ -121,6 +121,13 @@ public class EditBookFragment
         //noinspection ConstantConditions
         mBookViewModel.init(getContext(), getArguments(), true);
 
+        // create the list depending on user preferences
+        //URGENT: init tabs used to be in onResume
+        // this ensured the user could change settings, and the correct tabs would still show
+        // but broke screen rotation.
+        // Having it here: screen rot works but editing settings... tab list does not change.
+        initTabList();
+
         mViewPagerAdapter = new TabAdapter(this, mTabList);
         mViewPager.setAdapter(mViewPagerAdapter);
 
@@ -138,8 +145,6 @@ public class EditBookFragment
     public void onResume() {
         super.onResume();
 
-        // create the list depending on user preferences
-        initTabList();
         // refresh
         mViewPagerAdapter.notifyDataSetChanged();
 
@@ -382,13 +387,32 @@ public class EditBookFragment
 
         @Override
         public int getItemCount() {
+//            Log.d(TAG, "getItemCount|size=" + mTabs.size());
             return mTabs.size();
         }
+
+//        @Override
+//        public long getItemId(final int position) {
+//            Log.d(TAG, "getItemId"
+//                       + "|position=" + position
+//                       + "|itemId=" + super.getItemId(position));
+//            return super.getItemId(position);
+//        }
+//
+//        @Override
+//        public boolean containsItem(final long itemId) {
+//            Log.d(TAG, "containsItem"
+//                       + "|itemId=" + itemId
+//                       + "|" + super.containsItem(itemId));
+//            return super.containsItem(itemId);
+//        }
+
 
         @NonNull
         @Override
         public Fragment createFragment(final int position) {
             try {
+//                Log.d(TAG, "createFragment|position=" + position);
                 return (Fragment) mTabs.get(position).clazz.newInstance();
 
             } catch (@NonNull final IllegalAccessException
