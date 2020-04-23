@@ -513,7 +513,7 @@ public class BooksOnBookshelf
 
         // initialize but do not populate the list;  the latter is done in setBookShelfSpinner
         mBookshelfSpinnerAdapter = new ArrayAdapter<>(
-                this, android.R.layout.simple_spinner_item, mModel.getBookshelfSpinnerList());
+                this, R.layout.bookshelf_spinner, mModel.getBookshelfSpinnerList());
         mBookshelfSpinnerAdapter.setDropDownViewResource(R.layout.dropdown_menu_popup_item);
         mBookshelfSpinner.setAdapter(mBookshelfSpinnerAdapter);
 
