@@ -55,7 +55,6 @@ import java.util.Objects;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsAdminFragment;
-import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.settings.SettingsActivity;
 import com.hardbacknutter.nevertoomanybooks.utils.LanguageUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
@@ -405,34 +404,6 @@ public abstract class BaseActivity
         if (mDrawerLayout != null && mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
             mDrawerLayout.closeDrawer(GravityCompat.START);
         }
-    }
-
-    /**
-     * https://developer.android.com/guide/topics/search/search-dialog#InvokingTheSearchDialog
-     */
-    @Override
-    public boolean onSearchRequested() {
-        if (Prefs.isAdvancedSearch(this)) {
-            Intent searchIntent = new Intent(this, FTSSearchActivity.class);
-            if (onAdvancedSearchRequested(searchIntent)) {
-                startActivityForResult(searchIntent, RequestCode.ADVANCED_LOCAL_SEARCH);
-                return true;
-            } else {
-                return false;
-            }
-        } else {
-            // standard system call.
-            return super.onSearchRequested();
-        }
-    }
-
-    /**
-     * Override to set extra parameters on the passed intent.
-     *
-     * @return {@code true} if search can be launched, false if activity refuses (blocks)
-     */
-    protected boolean onAdvancedSearchRequested(@NonNull final Intent searchIntent) {
-        return true;
     }
 
     /**

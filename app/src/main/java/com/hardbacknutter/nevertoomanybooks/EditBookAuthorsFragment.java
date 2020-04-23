@@ -115,7 +115,7 @@ public class EditBookAuthorsFragment
         super.onActivityCreated(savedInstanceState);
 
         //noinspection ConstantConditions
-        if (!Prefs.showAuthSeriesOnTabs(getContext())) {
+        if (!Prefs.showEditBookTabAuthSeries(getContext())) {
             //noinspection ConstantConditions
             getActivity().findViewById(R.id.tab_panel).setVisibility(View.GONE);
         }

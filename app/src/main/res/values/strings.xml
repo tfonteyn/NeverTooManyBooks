@@ -1646,6 +1646,7 @@
     <string name="info_bitmask_preference">
         Select 0 or more options and tap “OK” to apply them, or tap “%1$s” to disregard all of them.
     </string>
+    <string name="more_ellipsis">More…</string>
 
 
 </resources>

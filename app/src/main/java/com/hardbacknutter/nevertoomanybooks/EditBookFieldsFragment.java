@@ -132,7 +132,7 @@ public class EditBookFieldsFragment
             mVb.coverImage1.setVisibility(View.GONE);
         }
 
-        if (Prefs.showAuthSeriesOnTabs(getContext())) {
+        if (Prefs.showEditBookTabAuthSeries(getContext())) {
             mVb.lblAuthor.setVisibility(View.GONE);
             mVb.lblSeries.setVisibility(View.GONE);
         }
@@ -170,7 +170,7 @@ public class EditBookFieldsFragment
         final Fields fields = mFragmentVM.getFields();
 
         //noinspection ConstantConditions
-        final boolean showAuthSeriesOnTabs = Prefs.showAuthSeriesOnTabs(getContext());
+        final boolean showAuthSeriesOnTabs = Prefs.showEditBookTabAuthSeries(getContext());
 
         // The buttons to bring up the fragment to edit Authors / Series.
         // Not shown if the user preferences are set to use an extra tab for this.
@@ -241,7 +241,7 @@ public class EditBookFieldsFragment
     @Override
     public void onResume() {
         //noinspection ConstantConditions
-        final boolean showAuthSeriesOnTabs = Prefs.showAuthSeriesOnTabs(getContext());
+        final boolean showAuthSeriesOnTabs = Prefs.showEditBookTabAuthSeries(getContext());
 
         // If we're showing Author/Series on pop-up fragments, we need to prepare them
         // before populating the views.

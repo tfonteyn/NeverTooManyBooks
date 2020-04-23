@@ -53,10 +53,9 @@ import com.hardbacknutter.nevertoomanybooks.settings.BasePreferenceFragment;
 public abstract class StyleBaseFragment
         extends BasePreferenceFragment {
 
-    /** Explicitly named to avoid any TAG override confusion. */
-    public static final String BKEY_TEMPLATE_ID = "StyleBaseFragment:templateId";
     /** Log tag. */
     private static final String TAG = "StyleBaseFragment";
+    public static final String BKEY_TEMPLATE_ID = TAG + ":templateId";
 
     /** Style we are editing. */
     BooklistStyle mStyle;

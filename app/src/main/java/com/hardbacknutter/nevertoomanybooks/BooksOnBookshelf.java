@@ -522,7 +522,7 @@ public class BooksOnBookshelf
         mFabMenuItems[1].setOnClickListener(v -> addByIsbn(false));
         mFabMenuItems[2].setOnClickListener(v -> addBySearch(BookSearchByTextFragment.TAG));
         mFabMenuItems[3].setOnClickListener(v -> addManually());
-        if (Prefs.showTabNativeId(this)) {
+        if (Prefs.showEditBookTabNativeId(this)) {
             mFabMenuItems[4].setOnClickListener(v -> addBySearch(BookSearchByNativeIdFragment.TAG));
         }
 
@@ -576,19 +576,6 @@ public class BooksOnBookshelf
         }
         // actioning on the criteria wil happen automatically at list building time.
         mModel.getSearchCriteria().setKeywords(query);
-    }
-
-    /**
-     * Add the previous search criteria to the search intent.
-     *
-     * @param searchIntent to add to
-     *
-     * @return {@code true} to kick off the intent
-     */
-    @Override
-    protected boolean onAdvancedSearchRequested(@NonNull final Intent searchIntent) {
-        mModel.getSearchCriteria().to(searchIntent);
-        return true;
     }
 
     /**

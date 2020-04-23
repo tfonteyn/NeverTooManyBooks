@@ -27,13 +27,18 @@
  */
 package com.hardbacknutter.nevertoomanybooks.settings;
 
+import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
@@ -44,10 +49,32 @@ import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceScreen;
 
-import java.util.Arrays;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.snackbar.Snackbar;
 
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.Objects;
+import java.util.regex.Pattern;
+
+import com.hardbacknutter.nevertoomanybooks.BaseActivity;
+import com.hardbacknutter.nevertoomanybooks.BuildConfig;
+import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.RequestCode;
+import com.hardbacknutter.nevertoomanybooks.booklist.RowStateDAO;
+import com.hardbacknutter.nevertoomanybooks.database.CoversDAO;
+import com.hardbacknutter.nevertoomanybooks.database.DBHelper;
+import com.hardbacknutter.nevertoomanybooks.database.tasks.Scheduler;
+import com.hardbacknutter.nevertoomanybooks.debug.DebugReport;
+import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
+import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
+import com.hardbacknutter.nevertoomanybooks.scanner.ScannerManager;
+import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
+import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.SoundManager;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.ResultDataModel;
 import com.hardbacknutter.nevertoomanybooks.widgets.BitmaskPreference;
 
@@ -60,14 +87,23 @@ public abstract class BasePreferenceFragment
         extends PreferenceFragmentCompat
         implements SharedPreferences.OnSharedPreferenceChangeListener {
 
+    /**
+     * The user modified the scanner in preferences (or not).
+     * <p>
+     * <br>type: {@code boolean}
+     * setResult
+     */
+    public static final String BKEY_SCANNER_MODIFIED = "scannerModified";
     /** Log tag. */
     private static final String TAG = "BasePreferenceFragment";
-    private static final String DIALOG_FRAGMENT_TAG = TAG + ":dialog";
-
-    private static final int REQ_BITMASK_DIALOG = 0;
-
     /** Allows auto-scrolling on opening the preference screen to the desired key. */
     public static final String BKEY_AUTO_SCROLL_TO_KEY = TAG + ":scrollTo";
+    private static final String DIALOG_FRAGMENT_TAG = TAG + ":dialog";
+    private static final int REQ_BITMASK_DIALOG = 0;
+    private static final int REQ_PICK_FILE_FOR_EXPORT_DATABASE = 1;
+    private static final Pattern SPACE_PATTERN = Pattern.compile(" ", Pattern.LITERAL);
+    private static final Pattern COLON_PATTERN = Pattern.compile(":", Pattern.LITERAL);
+
     protected ResultDataModel mResultDataModel;
     @Nullable
     private String mAutoScrollToKey;
@@ -80,6 +116,8 @@ public abstract class BasePreferenceFragment
         if (args != null) {
             mAutoScrollToKey = args.getString(BKEY_AUTO_SCROLL_TO_KEY);
         }
+
+        initListeners();
     }
 
     @Override
@@ -88,6 +126,175 @@ public abstract class BasePreferenceFragment
 
         //noinspection ConstantConditions
         mResultDataModel = new ViewModelProvider(getActivity()).get(ResultDataModel.class);
+    }
+
+    /**
+     * Hook up specific listeners/preferences.
+     */
+    @CallSuper
+    protected void initListeners() {
+        Preference preference;
+
+        // Purge image cache database table.
+        preference = findPreference(Prefs.PSK_PURGE_IMAGE_CACHE);
+        if (preference != null) {
+            preference.setOnPreferenceClickListener(p -> {
+                //noinspection ConstantConditions
+                new MaterialAlertDialogBuilder(getContext())
+                        .setIconAttribute(android.R.attr.alertDialogIcon)
+                        .setTitle(R.string.lbl_purge_image_cache)
+                        .setMessage(R.string.lbl_purge_image_cache)
+                        .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
+                        .setPositiveButton(android.R.string.ok, (d, w) ->
+                                CoversDAO.deleteAll(getContext()))
+                        .create()
+                        .show();
+                return true;
+            });
+        }
+
+        preference = findPreference(Prefs.PSK_SEARCH_SITE_ORDER);
+        if (preference != null) {
+            preference.setOnPreferenceClickListener(p -> {
+                Intent intent = new Intent(getContext(), SearchAdminActivity.class);
+                startActivityForResult(intent, RequestCode.PREFERRED_SEARCH_SITES);
+                return true;
+            });
+        }
+
+        // Purge BLNS database table.
+        preference = findPreference(Prefs.PSK_PURGE_BLNS);
+        if (preference != null) {
+            preference.setOnPreferenceClickListener(p -> {
+                //noinspection ConstantConditions
+                new MaterialAlertDialogBuilder(getContext())
+                        .setIconAttribute(android.R.attr.alertDialogIcon)
+                        .setTitle(R.string.lbl_purge_blns)
+                        .setMessage(R.string.info_purge_blns_all)
+                        .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
+                        .setPositiveButton(android.R.string.ok, (d, w) -> RowStateDAO.clearAll())
+                        .create()
+                        .show();
+                return true;
+            });
+        }
+
+        preference = findPreference(Prefs.PSK_TIP_RESET_ALL);
+        if (preference != null) {
+            preference.setOnPreferenceClickListener(p -> {
+                //noinspection ConstantConditions
+                TipManager.reset(getContext());
+                //noinspection ConstantConditions
+                Snackbar.make(getView(), R.string.tip_reset_done, Snackbar.LENGTH_LONG).show();
+                return true;
+            });
+        }
+
+        preference = findPreference(Prefs.PSK_REBUILD_FTS);
+        if (preference != null) {
+            preference.setOnPreferenceClickListener(p -> {
+                //noinspection ConstantConditions
+                new MaterialAlertDialogBuilder(getContext())
+                        .setIconAttribute(android.R.attr.alertDialogIcon)
+                        .setTitle(R.string.menu_rebuild_fts)
+                        .setMessage(R.string.confirm_rebuild_fts)
+                        .setNegativeButton(android.R.string.cancel, (d, w) -> {
+                            Scheduler.scheduleFtsRebuild(getContext(), false);
+                            p.setSummary(null);
+                        })
+                        .setPositiveButton(android.R.string.ok, (d, w) -> {
+                            Scheduler.scheduleFtsRebuild(getContext(), true);
+                            p.setSummary(R.string.txt_rebuild_scheduled);
+                        })
+                        .create()
+                        .show();
+                return true;
+            });
+        }
+
+        preference = findPreference(Prefs.PSK_REBUILD_INDEX);
+        if (preference != null) {
+            preference.setOnPreferenceClickListener(p -> {
+                //noinspection ConstantConditions
+                new MaterialAlertDialogBuilder(getContext())
+                        .setIconAttribute(android.R.attr.alertDialogIcon)
+                        .setTitle(R.string.menu_rebuild_index)
+                        .setMessage(R.string.confirm_rebuild_index)
+                        .setNegativeButton(android.R.string.cancel, (d, w) -> {
+                            Scheduler.scheduleIndexRebuild(getContext(), false);
+                            p.setSummary(null);
+                        })
+                        .setPositiveButton(android.R.string.ok, (d, w) -> {
+                            Scheduler.scheduleIndexRebuild(getContext(), true);
+                            p.setSummary(R.string.txt_rebuild_scheduled);
+                        })
+                        .create()
+                        .show();
+                return true;
+            });
+        }
+
+        preference = findPreference(Prefs.PSK_PURGE_FILES);
+        if (preference != null) {
+            preference.setOnPreferenceClickListener(p -> {
+                //noinspection ConstantConditions
+                long bytes = AppDir.purge(getContext(), false);
+                String msg = getString(R.string.txt_cleanup_files,
+                                       FileUtils.formatFileSize(getContext(), bytes),
+                                       getString(R.string.lbl_send_debug_info));
+
+                new MaterialAlertDialogBuilder(getContext())
+                        .setIcon(R.drawable.ic_warning)
+                        .setTitle(R.string.lbl_purge_files)
+                        .setMessage(msg)
+                        .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
+                        .setPositiveButton(android.R.string.ok, (d, w) ->
+                                AppDir.purge(getContext(), true))
+                        .create()
+                        .show();
+                return true;
+            });
+        }
+
+        preference = findPreference(Prefs.PSK_SEND_DEBUG_INFO);
+        if (preference != null) {
+            preference.setOnPreferenceClickListener(p -> {
+                //noinspection ConstantConditions
+                new MaterialAlertDialogBuilder(getContext())
+                        .setIcon(R.drawable.ic_warning)
+                        .setTitle(R.string.debug)
+                        .setMessage(R.string.debug_send_info_text)
+                        .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
+                        .setPositiveButton(android.R.string.ok, (d, w) -> {
+                            if (!DebugReport.sendDebugInfo(getContext())) {
+                                //noinspection ConstantConditions
+                                Snackbar.make(getView(), R.string.error_email_failed,
+                                              Snackbar.LENGTH_LONG).show();
+                            }
+                        })
+                        .create()
+                        .show();
+                return true;
+            });
+        }
+
+        preference = findPreference(Prefs.PSK_EXPORT_DATABASE);
+        if (preference != null) {
+            // Export database - Mainly meant for debug or external processing.
+            preference.setOnPreferenceClickListener(p -> {
+                String name = SPACE_PATTERN.matcher(DateUtils.localSqlDateForToday())
+                                           .replaceAll("-");
+                name = COLON_PATTERN.matcher(name).replaceAll("");
+
+                final Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT)
+                        .addCategory(Intent.CATEGORY_OPENABLE)
+                        .setType("*/*")
+                        .putExtra(Intent.EXTRA_TITLE,
+                                  getString(R.string.app_name) + '-' + name + ".ntmb.db");
+                startActivityForResult(intent, REQ_PICK_FILE_FOR_EXPORT_DATABASE);
+                return true;
+            });
+        }
     }
 
     @Override
@@ -105,6 +312,101 @@ public abstract class BasePreferenceFragment
         if (mAutoScrollToKey != null) {
             scrollToPreference(mAutoScrollToKey);
             mAutoScrollToKey = null;
+        }
+    }
+
+    @Override
+    @CallSuper
+    public void onSharedPreferenceChanged(@NonNull final SharedPreferences sharedPreferences,
+                                          @NonNull final String key) {
+        switch (key) {
+            case Prefs.pk_ui_locale:
+            case Prefs.pk_ui_theme:
+            case Prefs.pk_sort_title_reordered:
+            case Prefs.pk_show_title_reordered:
+                mResultDataModel.putResultData(BaseActivity.BKEY_RECREATE, true);
+                break;
+
+            case Prefs.pk_scanner_preferred:
+                //noinspection ConstantConditions
+                ScannerManager.installScanner(getActivity(), success -> {
+                    if (!success) {
+                        //noinspection ConstantConditions
+                        ScannerManager.setDefaultScanner(getContext());
+                    }
+                });
+                mResultDataModel.putResultData(BKEY_SCANNER_MODIFIED, true);
+                break;
+
+            case Prefs.pk_sounds_scan_found_barcode:
+                if (sharedPreferences.getBoolean(key, false)) {
+                    //noinspection ConstantConditions
+                    SoundManager.playFile(getContext(), R.raw.zxing_beep);
+                }
+                break;
+
+            case Prefs.pk_sounds_scan_isbn_valid:
+                if (sharedPreferences.getBoolean(key, false)) {
+                    //noinspection ConstantConditions
+                    SoundManager.playFile(getContext(), R.raw.beep_high);
+                }
+                break;
+
+            case Prefs.pk_sounds_scan_isbn_invalid:
+                if (sharedPreferences.getBoolean(key, false)) {
+                    //noinspection ConstantConditions
+                    SoundManager.playFile(getContext(), R.raw.beep_low);
+                }
+                break;
+
+            default:
+                break;
+        }
+
+        // Update the summary after a change.
+        updateSummary(key);
+    }
+
+    @Override
+    public void onActivityResult(final int requestCode,
+                                 final int resultCode,
+                                 @Nullable final Intent data) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
+            Logger.enterOnActivityResult(TAG, requestCode, resultCode, data);
+        }
+
+        switch (requestCode) {
+            case RequestCode.PREFERRED_SEARCH_SITES:
+                if (resultCode == Activity.RESULT_OK && data != null) {
+                    mResultDataModel.putResultData(data);
+                }
+                break;
+
+            case REQ_PICK_FILE_FOR_EXPORT_DATABASE:
+                if (resultCode == Activity.RESULT_OK) {
+                    Objects.requireNonNull(data, ErrorMsg.NULL_INTENT_DATA);
+                    final Uri uri = data.getData();
+                    if (uri != null) {
+                        @StringRes
+                        int msgId;
+                        try {
+                            final Context context = getContext();
+                            //noinspection ConstantConditions
+                            FileUtils.copy(context, DBHelper.getDatabasePath(context), uri);
+                            msgId = R.string.progress_end_backup_success;
+                        } catch (@NonNull final IOException e) {
+                            Logger.error(getContext(), TAG, e);
+                            msgId = R.string.error_backup_failed;
+                        }
+                        //noinspection ConstantConditions
+                        Snackbar.make(getView(), msgId, Snackbar.LENGTH_LONG).show();
+                    }
+                }
+                break;
+
+            default:
+                super.onActivityResult(requestCode, resultCode, data);
+                break;
         }
     }
 
@@ -211,17 +513,5 @@ public abstract class BasePreferenceFragment
         } else {
             return "";
         }
-    }
-
-    /**
-     * Update the summary after a change.
-     *
-     * <br><br>{@inheritDoc}
-     */
-    @CallSuper
-    @Override
-    public void onSharedPreferenceChanged(@NonNull final SharedPreferences sharedPreferences,
-                                          @NonNull final String key) {
-        updateSummary(key);
     }
 }

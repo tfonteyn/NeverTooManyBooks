@@ -126,6 +126,7 @@ public abstract class BookBaseFragment
         // Children NOT running in a ViewPager2 must override this in their onResume()
         // with a simple setHasOptionsMenu(true);
         // https://issuetracker.google.com/issues/144442240
+        // TEST: supposedly fixed in viewpager2:1.1.0-alpha01
         setHasOptionsMenu(isVisible());
 
         // load the book data into the views

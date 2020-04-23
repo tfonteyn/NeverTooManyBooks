@@ -81,18 +81,16 @@ public class StyleFragment
             thumbScale.setDependency(Prefs.pk_style_book_show_thumbnails);
         }
 
-        initListeners();
-
         if (savedInstanceState == null) {
             //noinspection ConstantConditions
             TipManager.display(getContext(), R.string.tip_booklist_style_properties, null);
         }
     }
 
-    /**
-     * Hook up specific listeners/preferences.
-     */
-    private void initListeners() {
+    @Override
+    protected void initListeners() {
+        super.initListeners();
+
         Preference preference;
 
         // the 'groups' in use.

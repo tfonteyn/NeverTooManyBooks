@@ -27,18 +27,11 @@
  */
 package com.hardbacknutter.nevertoomanybooks.settings;
 
-import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
-import androidx.preference.Preference;
 
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.RequestCode;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 
 /**
  * Used/defined in xml/preferences.xml
@@ -46,53 +39,10 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 public class WebSearchesPreferenceFragment
         extends BasePreferenceFragment {
 
-    /** Log tag. */
-    private static final String TAG = "WebSearchesPreferenceFr";
-
     @Override
-    public void onCreatePreferences(final Bundle savedInstanceState,
-                                    final String rootKey) {
+    public void onCreatePreferences(@Nullable final Bundle savedInstanceState,
+                                    @Nullable final String rootKey) {
 
         setPreferencesFromResource(R.xml.preferences_site_searches, rootKey);
-
-        initListeners();
-    }
-
-    /**
-     * Hook up specific listeners/preferences.
-     */
-    private void initListeners() {
-        Preference preference;
-
-        preference = findPreference(Prefs.PSK_SEARCH_SITE_ORDER);
-        if (preference != null) {
-            preference.setOnPreferenceClickListener(p -> {
-                Intent intent = new Intent(getContext(), SearchAdminActivity.class);
-                startActivityForResult(intent, RequestCode.PREFERRED_SEARCH_SITES);
-                return true;
-            });
-        }
-    }
-
-    @Override
-    public void onActivityResult(final int requestCode,
-                                 final int resultCode,
-                                 @Nullable final Intent data) {
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
-            Logger.enterOnActivityResult(TAG, requestCode, resultCode, data);
-        }
-
-        //noinspection SwitchStatementWithTooFewBranches
-        switch (requestCode) {
-            case RequestCode.PREFERRED_SEARCH_SITES:
-                if (resultCode == Activity.RESULT_OK && data != null) {
-                    mResultDataModel.putResultData(data);
-                }
-                break;
-
-            default:
-                super.onActivityResult(requestCode, resultCode, data);
-                break;
-        }
     }
 }

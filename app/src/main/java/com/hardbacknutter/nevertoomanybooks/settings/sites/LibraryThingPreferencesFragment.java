@@ -45,14 +45,14 @@ public class LibraryThingPreferencesFragment
                                     final String rootKey) {
 
         setPreferencesFromResource(R.xml.preferences_site_library_thing, rootKey);
-
-        initListeners();
     }
 
     /**
      * Hook up specific listeners/preferences.
      */
-    private void initListeners() {
+    protected void initListeners() {
+        super.initListeners();
+
         Preference preference;
 
         preference = findPreference(Prefs.PSK_CREDENTIALS);

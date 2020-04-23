@@ -51,7 +51,7 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
  * The lowercase pk_* preference key names are the ones that define USER settings.
  * See {@link com.hardbacknutter.nevertoomanybooks.settings}.
  * <p>
- * All keys *MUST* be kept in sync with "res/xml/preferences*.xml"
+ * All keys <strong>MUST</strong> be kept in sync with "res/xml/preferences*.xml"
  */
 public final class Prefs {
 
@@ -59,14 +59,16 @@ public final class Prefs {
     public static final int STARTUP_BACKUP_COUNTDOWN = 5;
     /** Triggers prompting for a backup when the countdown reaches 0; then gets reset. */
     public static final String PREF_STARTUP_BACKUP_COUNTDOWN = "startup.backupCountdown";
+    /**
+     * Style unique name. This is a stored in our preference file (with the same name)
+     * and is used for backup/restore purposes as the 'ID'.
+     */
+    public static final String PK_STYLE_UUID = "style.booklist.uuid";
 
-    /** Preference Key. */
+
+    /** User preference Key. */
     public static final String pk_ui_locale = "ui.locale";
     public static final String pk_ui_theme = "ui.theme";
-
-    public static final String pk_edit_book_tabs_native_id = "edit.book.tab.nativeId";
-    public static final String pk_edit_book_tabs_authSer = "edit.book.tab.authSer";
-
     public static final String pk_network_allow_metered = "network.allow.metered";
     public static final String pk_scanner_preferred = "scanner.preferred";
     public static final String pk_sounds_scan_isbn_valid = "sounds.scan.isbn.valid";
@@ -85,11 +87,7 @@ public final class Prefs {
     public static final String pk_sort_author_name_given_first = "sort.author.name.given_first";
     public static final String pk_show_author_name_given_first = "show.author.name.given_first";
     public static final String pk_booklist_rebuild_state = "booklist.rebuild.state";
-    /**
-     * Style unique name. This is a stored in our preference file (with the same name)
-     * and is used for backup/restore purposes as the 'ID'.
-     */
-    public static final String PK_STYLE_UUID = "style.booklist.uuid";
+
     /** Main style preferences. */
     public static final String pk_style_name = "style.booklist.name";
     public static final String pk_style_is_preferred = "style.booklist.preferred";
@@ -131,6 +129,8 @@ public final class Prefs {
     public static final String pk_style_filter_anthology = "style.booklist.filter.anthology";
     /** Booklist Filter - MultiSelectListPreference. */
     public static final String pk_style_filter_editions = "style.booklist.filter.editions";
+
+
     /** Style - PreferenceScreen/PreferenceCategory Key. */
     public static final String PSK_STYLE_AUTHOR = "psk_style_author";
     /** Style - PreferenceScreen/PreferenceCategory Key. */
@@ -159,16 +159,17 @@ public final class Prefs {
     static final String PSK_SEND_DEBUG_INFO = "psk_send_debug_info";
     /** Global - Export the database. */
     static final String PSK_EXPORT_DATABASE = "psk_export_database";
-
     /** Global - Purge action. */
     static final String PSK_PURGE_BLNS = "psk_purge_blns";
-    private static final String pk_search_form_advanced = "search.form.advanced";
+
+    private static final String pk_edit_book_tabs_native_id = "edit.book.tab.nativeId";
+    private static final String pk_edit_book_tabs_authSer = "edit.book.tab.authSer";
+
     /** Log tag. */
     private static final String TAG = "Prefs";
 
     private Prefs() {
     }
-
 
     /**
      * Copy all preferences from source to destination.
@@ -250,18 +251,13 @@ public final class Prefs {
         Log.d(TAG, "dumpPreferences|" + sb);
     }
 
-    public static boolean isAdvancedSearch(@NonNull final Context context) {
-        return PreferenceManager.getDefaultSharedPreferences(context)
-                                .getBoolean(Prefs.pk_search_form_advanced, false);
-    }
-
-    public static boolean showTabNativeId(@NonNull final Context context) {
+    public static boolean showEditBookTabNativeId(@NonNull final Context context) {
         return PreferenceManager
                 .getDefaultSharedPreferences(context)
                 .getBoolean(pk_edit_book_tabs_native_id, false);
     }
 
-    public static boolean showAuthSeriesOnTabs(@NonNull final Context context) {
+    public static boolean showEditBookTabAuthSeries(@NonNull final Context context) {
         return PreferenceManager
                 .getDefaultSharedPreferences(context)
                 .getBoolean(pk_edit_book_tabs_authSer, false);

@@ -40,6 +40,14 @@
 
         <SwitchPreference
             android:defaultValue="true"
+            android:icon="@drawable/ic_goodreads"
+            android:key="goodreads.showMenu"
+            android:summaryOff="@string/no"
+            android:summaryOn="@string/yes"
+            android:title="@string/pt_show_goodreads" />
+
+        <SwitchPreference
+            android:defaultValue="true"
             android:icon="@drawable/ic_cloud_download"
             android:key="goodreads.search.collect.genre"
             android:summaryOff="@string/no"

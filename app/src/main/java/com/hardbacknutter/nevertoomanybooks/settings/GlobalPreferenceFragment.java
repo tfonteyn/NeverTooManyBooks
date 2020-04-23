@@ -27,10 +27,8 @@
  */
 package com.hardbacknutter.nevertoomanybooks.settings;
 
-import android.content.SharedPreferences;
 import android.os.Bundle;
 
-import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.preference.Preference;
@@ -38,7 +36,6 @@ import androidx.preference.SwitchPreference;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
-import com.hardbacknutter.nevertoomanybooks.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.tasks.Scheduler;
 
@@ -69,8 +66,6 @@ public class GlobalPreferenceFragment
             mCurrentSortTitleReordered = savedInstanceState
                     .getBoolean(BKEY_CURRENT_SORT_TITLE_REORDERED, storedSortTitleReordered);
         }
-
-        initListeners();
     }
 
     @Override
@@ -79,10 +74,10 @@ public class GlobalPreferenceFragment
         outState.putBoolean(BKEY_CURRENT_SORT_TITLE_REORDERED, mCurrentSortTitleReordered);
     }
 
-    /**
-     * Hook up specific listeners/preferences.
-     */
-    private void initListeners() {
+    @Override
+    protected void initListeners() {
+        super.initListeners();
+
         Preference preference;
 
         preference = findPreference(Prefs.pk_sort_title_reordered);
@@ -110,24 +105,5 @@ public class GlobalPreferenceFragment
                 return false;
             });
         }
-    }
-
-    @Override
-    @CallSuper
-    public void onSharedPreferenceChanged(@NonNull final SharedPreferences sharedPreferences,
-                                          @NonNull final String key) {
-        switch (key) {
-            case Prefs.pk_ui_locale:
-            case Prefs.pk_ui_theme:
-            case Prefs.pk_sort_title_reordered:
-            case Prefs.pk_show_title_reordered:
-                mResultDataModel.putResultData(BaseActivity.BKEY_RECREATE, true);
-                break;
-
-            default:
-                break;
-        }
-
-        super.onSharedPreferenceChanged(sharedPreferences, key);
     }
 }

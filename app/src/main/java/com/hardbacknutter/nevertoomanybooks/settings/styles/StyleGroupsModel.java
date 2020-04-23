@@ -50,6 +50,7 @@ import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 public class StyleGroupsModel
         extends ViewModel {
 
+    /** Log tag. */
     private static final String TAG = "StyleGroupsModel";
 
     /** the rows. */

@@ -230,7 +230,7 @@ public class EditBookFragment
 
         // if we're NOT running in tabbed mode for authors/series, send them a save command.
         //noinspection ConstantConditions
-        if (!Prefs.showAuthSeriesOnTabs(getContext())) {
+        if (!Prefs.showEditBookTabAuthSeries(getContext())) {
             //noinspection ConstantConditions
             final FragmentManager fm = getActivity().getSupportFragmentManager();
             // Only resumed fragments (i.e. front/visible) can/will be asked to save their state.
@@ -328,11 +328,11 @@ public class EditBookFragment
             // Build the tab classes and title list arrays.
             mTabs.add(new TabInfo(EditBookFieldsFragment.class, R.string.tab_lbl_details));
 
-            if (Prefs.showAuthSeriesOnTabs(context)) {
+            if (Prefs.showEditBookTabAuthSeries(context)) {
                 mTabs.add(new TabInfo(EditBookAuthorsFragment.class,
                                       R.string.lbl_authors));
                 if (DBDefinitions.isUsed(prefs, DBDefinitions.KEY_SERIES_TITLE)
-                    && Prefs.showAuthSeriesOnTabs(context)) {
+                    && Prefs.showEditBookTabAuthSeries(context)) {
                     mTabs.add(new TabInfo(EditBookSeriesFragment.class,
                                           R.string.lbl_series_multiple));
                 }
@@ -345,7 +345,7 @@ public class EditBookFragment
                 mTabs.add(new TabInfo(EditBookTocFragment.class,
                                       R.string.tab_lbl_content));
             }
-            if (Prefs.showTabNativeId(context)) {
+            if (Prefs.showEditBookTabNativeId(context)) {
                 mTabs.add(new TabInfo(EditBookNativeIdFragment.class,
                                       R.string.tab_lbl_ext_id));
             }
