@@ -228,7 +228,7 @@ class CoverHandler {
         }
 
         // we only support alternative edition covers for the front cover.
-        menu.findItem(R.id.MENU_THUMB_ADD_ALT_EDITIONS).setEnabled(mCIdx == 0);
+        menu.findItem(R.id.MENU_THUMB_ADD_ALT_EDITIONS).setVisible(mCIdx == 0);
 
         new MenuPicker<>(mContext, title, menu, mCIdx, CoverHandler.this::onViewContextItemSelected)
                 .show();
