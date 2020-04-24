@@ -255,7 +255,7 @@ public class ScannerViewModel
                            + fragment.getString(R.string.txt_install_scanner_recommendation);
         //noinspection ConstantConditions
         new MaterialAlertDialogBuilder(fragment.getContext())
-                .setIconAttribute(android.R.attr.alertDialogIcon)
+                .setIcon(R.drawable.ic_error)
                 .setTitle(R.string.pg_barcode_scanner)
                 .setMessage(msg)
                 .setOnDismissListener(d -> {
@@ -282,7 +282,7 @@ public class ScannerViewModel
 
         //noinspection ConstantConditions
         new MaterialAlertDialogBuilder(fragment.getContext())
-                .setIconAttribute(android.R.attr.alertDialogIcon)
+                .setIcon(R.drawable.ic_error)
                 .setTitle(R.string.pg_barcode_scanner)
                 .setMessage(msg)
                 .setNeutralButton(R.string.lbl_settings, (d, w) -> {

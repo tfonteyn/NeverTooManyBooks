@@ -260,7 +260,7 @@ public class EditBookAuthorsFragment
                                          tmpData.getLabel(getContext()),
                                          allBooks);
         new MaterialAlertDialogBuilder(getContext())
-                .setIconAttribute(android.R.attr.alertDialogIcon)
+                .setIcon(R.drawable.ic_warning)
                 .setTitle(R.string.lbl_scope_of_change)
                 .setMessage(message)
                 .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
@@ -280,7 +280,7 @@ public class EditBookAuthorsFragment
                                                   "author=" + author,
                                                   "tmpAuthor=" + tmpData);
                         new MaterialAlertDialogBuilder(getContext())
-                                .setIconAttribute(android.R.attr.alertDialogIcon)
+                                .setIcon(R.drawable.ic_error)
                                 .setMessage(R.string.error_unexpected_error)
                                 .show();
                     }

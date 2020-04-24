@@ -127,7 +127,7 @@ public class StyleGroupsActivity
 
         if (mModel.getStyle().getGroupCount() == 0) {
             new MaterialAlertDialogBuilder(this)
-                    .setIconAttribute(android.R.attr.alertDialogIcon)
+                    .setIcon(R.drawable.ic_warning)
                     .setTitle(R.string.pg_style_groups)
                     .setMessage(R.string.warning_select_at_least_1_group)
                     // cancel button, or cancel dialog

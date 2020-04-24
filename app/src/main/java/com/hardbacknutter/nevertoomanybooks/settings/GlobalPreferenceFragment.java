@@ -86,7 +86,7 @@ public class GlobalPreferenceFragment
                 final SwitchPreference sp = (SwitchPreference) pref;
                 //noinspection ConstantConditions
                 new MaterialAlertDialogBuilder(getContext())
-                        .setIconAttribute(android.R.attr.alertDialogIcon)
+                        .setIcon(R.drawable.ic_warning)
                         .setMessage(R.string.confirm_rebuild_orderby_columns)
                         // this dialog is important. Make sure the user pays some attention
                         .setCancelable(false)

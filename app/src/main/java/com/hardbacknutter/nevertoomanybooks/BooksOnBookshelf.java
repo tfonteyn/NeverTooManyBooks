@@ -1838,8 +1838,9 @@ public class BooksOnBookshelf
 
         switch (message.status) {
             case Success: {
-                MaterialAlertDialogBuilder dialogBuilder =
+                final MaterialAlertDialogBuilder dialogBuilder =
                         new MaterialAlertDialogBuilder(this)
+                                .setIcon(R.drawable.ic_info)
                                 .setTitle(R.string.progress_end_backup_success)
                                 .setPositiveButton(R.string.done, (d, which) -> d.dismiss());
 
@@ -1866,6 +1867,7 @@ public class BooksOnBookshelf
             case Failed: {
                 String msg = message.result.createExceptionReport(this, message.exception);
                 new MaterialAlertDialogBuilder(this)
+                        .setIcon(R.drawable.ic_error)
                         .setTitle(R.string.error_backup_failed)
                         .setMessage(msg)
                         .setPositiveButton(android.R.string.ok, (d, w) -> d.dismiss())
@@ -1898,7 +1900,7 @@ public class BooksOnBookshelf
         } catch (@NonNull final NullPointerException e) {
             Logger.error(this, TAG, e);
             new MaterialAlertDialogBuilder(this)
-                    .setIconAttribute(android.R.attr.alertDialogIcon)
+                    .setIcon(R.drawable.ic_error)
                     .setMessage(R.string.error_email_failed)
                     .setPositiveButton(android.R.string.ok, (d, w) -> d.dismiss())
                     .create()
@@ -1932,7 +1934,7 @@ public class BooksOnBookshelf
         final ArchiveContainer container = helper.getContainer(this);
         if (!helper.isSupported(container)) {
             new MaterialAlertDialogBuilder(this)
-                    .setIconAttribute(android.R.attr.alertDialogIcon)
+                    .setIcon(R.drawable.ic_error)
                     .setMessage(R.string.error_cannot_import)
                     .setPositiveButton(android.R.string.ok, (d, w) -> d.dismiss())
                     .create()
@@ -1948,7 +1950,7 @@ public class BooksOnBookshelf
 
             // Verify - this can be a dangerous operation
             new MaterialAlertDialogBuilder(this)
-                    .setIconAttribute(android.R.attr.alertDialogIcon)
+                    .setIcon(R.drawable.ic_warning)
                     .setTitle(R.string.lbl_import_book_data)
                     .setMessage(R.string.warning_import_be_cautious)
                     .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
@@ -2003,6 +2005,7 @@ public class BooksOnBookshelf
             case Failed: {
                 String msg = message.result.createExceptionReport(this, message.exception);
                 new MaterialAlertDialogBuilder(this)
+                        .setIcon(R.drawable.ic_error)
                         .setTitle(R.string.error_import_failed)
                         .setMessage(msg)
                         .setPositiveButton(android.R.string.ok, (d, w) -> d.dismiss())
@@ -2025,6 +2028,7 @@ public class BooksOnBookshelf
                                   @NonNull final ImportResults results) {
 
         new MaterialAlertDialogBuilder(this)
+                .setIcon(R.drawable.ic_info)
                 .setTitle(titleId)
                 .setMessage(results.createReport(this))
                 .setPositiveButton(R.string.done, (d, w) -> {

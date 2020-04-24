@@ -272,7 +272,7 @@ public final class ScannerManager {
                      + context.getString(R.string.txt_install_scanner_recommendation);
 
         new MaterialAlertDialogBuilder(context)
-                .setIconAttribute(android.R.attr.alertDialogIcon)
+                .setIcon(R.drawable.ic_warning)
                 .setTitle(R.string.pg_barcode_scanner)
                 .setMessage(msg)
                 .setOnCancelListener(d -> resultListener.onResult(false))

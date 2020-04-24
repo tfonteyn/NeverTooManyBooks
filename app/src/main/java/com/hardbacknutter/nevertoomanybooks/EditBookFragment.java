@@ -256,7 +256,7 @@ public class EditBookFragment
         // Now validate the book data
         if (!book.validate(getContext())) {
             new MaterialAlertDialogBuilder(getContext())
-                    .setIconAttribute(android.R.attr.alertDialogIcon)
+                    .setIcon(R.drawable.ic_error)
                     .setTitle(R.string.vldt_failure)
                     .setMessage(book.getValidationExceptionMessage(getContext()))
                     .setPositiveButton(android.R.string.ok, (d, w) -> d.dismiss())
@@ -269,7 +269,7 @@ public class EditBookFragment
         if (mBookViewModel.bookExists()) {
             //noinspection ConstantConditions
             new MaterialAlertDialogBuilder(getContext())
-                    .setIconAttribute(android.R.attr.alertDialogIcon)
+                    .setIcon(R.drawable.ic_warning)
                     .setTitle(R.string.lbl_duplicate_book)
                     .setMessage(R.string.confirm_duplicate_book_message)
                     // this dialog is important. Make sure the user pays some attention

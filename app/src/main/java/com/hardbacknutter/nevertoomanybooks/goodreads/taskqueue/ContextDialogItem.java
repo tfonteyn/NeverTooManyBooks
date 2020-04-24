@@ -69,7 +69,7 @@ public class ContextDialogItem
             final ContextDialogItem[] itemArray = new ContextDialogItem[items.size()];
             items.toArray(itemArray);
             new MaterialAlertDialogBuilder(context)
-                    .setIconAttribute(android.R.attr.alertDialogIcon)
+                    .setIcon(R.drawable.ic_warning)
                     .setTitle(R.string.lbl_select_an_action)
                     .setItems(itemArray, (d, which) -> itemArray[which].mHandler.run())
                     .create()

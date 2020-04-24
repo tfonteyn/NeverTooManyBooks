@@ -373,7 +373,7 @@ public class BookSearchByIsbnFragment
         } else {
             //noinspection ConstantConditions
             new MaterialAlertDialogBuilder(getContext())
-                    .setIconAttribute(android.R.attr.alertDialogIcon)
+                    .setIcon(R.drawable.ic_warning)
                     .setTitle(R.string.lbl_duplicate_book)
                     .setMessage(R.string.confirm_duplicate_book_message)
                     // this dialog is important. Make sure the user pays some attention

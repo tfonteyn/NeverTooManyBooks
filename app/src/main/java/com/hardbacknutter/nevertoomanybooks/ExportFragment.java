@@ -242,6 +242,7 @@ public class ExportFragment
                 //noinspection ConstantConditions
                 MaterialAlertDialogBuilder dialogBuilder =
                         new MaterialAlertDialogBuilder(getContext())
+                                .setIcon(R.drawable.ic_info)
                                 .setTitle(R.string.progress_end_backup_success)
                                 .setPositiveButton(R.string.done, (d, which) -> {
                                     //noinspection ConstantConditions
@@ -279,6 +280,7 @@ public class ExportFragment
                 String msg = message.result.createExceptionReport(getContext(), message.exception);
                 //noinspection ConstantConditions
                 new MaterialAlertDialogBuilder(getContext())
+                        .setIcon(R.drawable.ic_error)
                         .setTitle(R.string.error_backup_failed)
                         .setMessage(msg)
                         .setPositiveButton(android.R.string.ok, (d, w) -> getActivity().finish())
@@ -315,7 +317,7 @@ public class ExportFragment
             Logger.error(getContext(), TAG, e);
             //noinspection ConstantConditions
             new MaterialAlertDialogBuilder(getContext())
-                    .setIconAttribute(android.R.attr.alertDialogIcon)
+                    .setIcon(R.drawable.ic_error)
                     .setMessage(R.string.error_email_failed)
                     .setPositiveButton(android.R.string.ok, (d, w) -> getActivity().finish())
                     .create()

@@ -82,6 +82,6 @@
 
     <item
         android:id="@+id/nav_about"
-        android:icon="@drawable/ic_info_outline"
+        android:icon="@drawable/ic_info"
         android:title="@string/lbl_about" />
 </menu>

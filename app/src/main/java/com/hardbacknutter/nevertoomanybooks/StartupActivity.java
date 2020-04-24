@@ -213,8 +213,8 @@ public class StartupActivity
         final String upgradeMessage = mModel.getUpgradeMessage(this);
         if (upgradeMessage != null) {
             new MaterialAlertDialogBuilder(this)
+                    .setIcon(R.drawable.ic_info)
                     .setTitle(R.string.lbl_about_upgrade)
-                    .setIcon(R.drawable.ic_info_outline)
                     .setMessage(Html.fromHtml(upgradeMessage))
                     .setPositiveButton(android.R.string.ok, (d, w) -> {
                         UpgradeMessageManager.setUpgradeAcknowledged(this);
@@ -235,7 +235,7 @@ public class StartupActivity
     private void backupRequired() {
         if (mModel.isProposeBackup()) {
             new MaterialAlertDialogBuilder(this)
-                    .setIcon(R.drawable.ic_help_outline)
+                    .setIcon(R.drawable.ic_warning)
                     .setTitle(R.string.app_name)
                     .setMessage(R.string.warning_backup_request)
                     .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())

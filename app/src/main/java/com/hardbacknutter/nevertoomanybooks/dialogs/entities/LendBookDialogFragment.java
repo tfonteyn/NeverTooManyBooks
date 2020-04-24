@@ -197,6 +197,7 @@ public class LendBookDialogFragment
 
         //noinspection ConstantConditions
         return new MaterialAlertDialogBuilder(getContext())
+                .setIcon(R.drawable.ic_edit)
                 .setView(mVb.getRoot())
                 .setTitle(mTitle)
                 .setNegativeButton(android.R.string.cancel, (d, w) -> dismiss())

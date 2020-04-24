@@ -84,7 +84,7 @@ public class TasksAdminActivity
         switch (item.getItemId()) {
             case R.id.MENU_RESET: {
                 new MaterialAlertDialogBuilder(this)
-                        .setIconAttribute(android.R.attr.alertDialogIcon)
+                        .setIcon(R.drawable.ic_warning)
                         .setMessage(R.string.gr_tq_btn_cleanup_old_tasks)
                         .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
                         .setPositiveButton(android.R.string.ok, (d, w) -> {

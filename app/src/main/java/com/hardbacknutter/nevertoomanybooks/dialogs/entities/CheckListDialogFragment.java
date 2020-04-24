@@ -134,6 +134,7 @@ public class CheckListDialogFragment
 
         //noinspection ConstantConditions
         return new MaterialAlertDialogBuilder(getContext())
+                .setIcon(R.drawable.ic_edit)
                 .setView(root)
                 .setTitle(getArguments().getInt(StandardDialogs.BKEY_DIALOG_TITLE,
                                                 R.string.action_edit))

@@ -302,7 +302,7 @@ public class UpdateFieldsFragment
         if (covers != null && covers.getUsage().equals(Overwrite)) {
             // check if the user really wants to overwrite all covers
             new MaterialAlertDialogBuilder(getContext())
-                    .setIconAttribute(android.R.attr.alertDialogIcon)
+                    .setIcon(R.drawable.ic_warning)
                     .setTitle(R.string.menu_update_fields)
                     .setMessage(R.string.confirm_overwrite_thumbnail)
                     .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())

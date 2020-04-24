@@ -240,7 +240,7 @@ public class EditBookSeriesFragment
                                          tmpData.getLabel(getContext()),
                                          allBooks);
         new MaterialAlertDialogBuilder(getContext())
-                .setIconAttribute(android.R.attr.alertDialogIcon)
+                .setIcon(R.drawable.ic_warning)
                 .setTitle(R.string.lbl_scope_of_change)
                 .setMessage(message)
                 .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
@@ -259,7 +259,7 @@ public class EditBookSeriesFragment
                                                   "series=" + series,
                                                   "tmpSeries=" + tmpData);
                         new MaterialAlertDialogBuilder(getContext())
-                                .setIconAttribute(android.R.attr.alertDialogIcon)
+                                .setIcon(R.drawable.ic_error)
                                 .setMessage(R.string.error_unexpected_error)
                                 .show();
                     }
@@ -396,6 +396,7 @@ public class EditBookSeriesFragment
 
             return new MaterialAlertDialogBuilder(getContext())
                     .setView(mVb.getRoot())
+                    .setIcon(R.drawable.ic_edit)
                     .setTitle(R.string.lbl_edit_series)
                     .setNegativeButton(android.R.string.cancel, (d, w) -> dismiss())
                     .setPositiveButton(R.string.action_save, (d, w) -> {

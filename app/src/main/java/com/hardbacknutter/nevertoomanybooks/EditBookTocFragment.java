@@ -638,7 +638,7 @@ public class EditBookTocFragment
             //noinspection ConstantConditions
             final AlertDialog dialog =
                     new MaterialAlertDialogBuilder(getContext())
-                            .setIconAttribute(android.R.attr.alertDialogIcon)
+                            .setIcon(R.drawable.ic_warning)
                             .setView(vb.getRoot())
                             .setNegativeButton(android.R.string.cancel, (d, which) -> dismiss())
                             .create();

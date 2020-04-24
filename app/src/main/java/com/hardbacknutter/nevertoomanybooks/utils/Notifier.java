@@ -35,6 +35,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 
+import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
 
@@ -58,7 +59,7 @@ public final class Notifier {
 
     /**
      * Create the Notification channels we need.
-     *
+     * <p>
      * This is called during startup.
      *
      * @param context Current context
@@ -121,6 +122,7 @@ public final class Notifier {
             }
         }
 
+        @DrawableRes
         int icon;
         switch (channelId) {
             case CHANNEL_ERROR:
@@ -128,7 +130,7 @@ public final class Notifier {
                 break;
             case CHANNEL_INFO:
             default:
-                icon = R.drawable.ic_info_outline;
+                icon = R.drawable.ic_info;
                 break;
         }
 

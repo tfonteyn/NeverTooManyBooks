@@ -141,7 +141,7 @@ public abstract class BasePreferenceFragment
             preference.setOnPreferenceClickListener(p -> {
                 //noinspection ConstantConditions
                 new MaterialAlertDialogBuilder(getContext())
-                        .setIconAttribute(android.R.attr.alertDialogIcon)
+                        .setIcon(R.drawable.ic_warning)
                         .setTitle(R.string.lbl_purge_image_cache)
                         .setMessage(R.string.lbl_purge_image_cache)
                         .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
@@ -168,7 +168,7 @@ public abstract class BasePreferenceFragment
             preference.setOnPreferenceClickListener(p -> {
                 //noinspection ConstantConditions
                 new MaterialAlertDialogBuilder(getContext())
-                        .setIconAttribute(android.R.attr.alertDialogIcon)
+                        .setIcon(R.drawable.ic_warning)
                         .setTitle(R.string.lbl_purge_blns)
                         .setMessage(R.string.info_purge_blns_all)
                         .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
@@ -195,7 +195,7 @@ public abstract class BasePreferenceFragment
             preference.setOnPreferenceClickListener(p -> {
                 //noinspection ConstantConditions
                 new MaterialAlertDialogBuilder(getContext())
-                        .setIconAttribute(android.R.attr.alertDialogIcon)
+                        .setIcon(R.drawable.ic_warning)
                         .setTitle(R.string.menu_rebuild_fts)
                         .setMessage(R.string.confirm_rebuild_fts)
                         .setNegativeButton(android.R.string.cancel, (d, w) -> {
@@ -217,7 +217,7 @@ public abstract class BasePreferenceFragment
             preference.setOnPreferenceClickListener(p -> {
                 //noinspection ConstantConditions
                 new MaterialAlertDialogBuilder(getContext())
-                        .setIconAttribute(android.R.attr.alertDialogIcon)
+                        .setIcon(R.drawable.ic_warning)
                         .setTitle(R.string.menu_rebuild_index)
                         .setMessage(R.string.confirm_rebuild_index)
                         .setNegativeButton(android.R.string.cancel, (d, w) -> {

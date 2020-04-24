@@ -215,7 +215,7 @@ public class ImportFragment
         if (!helper.isSupported(container)) {
             //noinspection ConstantConditions
             new MaterialAlertDialogBuilder(getContext())
-                    .setIconAttribute(android.R.attr.alertDialogIcon)
+                    .setIcon(R.drawable.ic_error)
                     .setMessage(R.string.error_cannot_import)
                     .setPositiveButton(android.R.string.ok, (d, w) -> getActivity().finish())
                     .create()
@@ -229,7 +229,7 @@ public class ImportFragment
             // Verify - this can be a dangerous operation
             //noinspection ConstantConditions
             new MaterialAlertDialogBuilder(getContext())
-                    .setIconAttribute(android.R.attr.alertDialogIcon)
+                    .setIcon(R.drawable.ic_warning)
                     .setTitle(R.string.lbl_import_book_data)
                     .setMessage(R.string.warning_import_be_cautious)
                     .setNegativeButton(android.R.string.cancel, (d, w) -> getActivity().finish())
@@ -289,6 +289,7 @@ public class ImportFragment
                 String msg = message.result.createExceptionReport(getContext(), message.exception);
                 //noinspection ConstantConditions
                 new MaterialAlertDialogBuilder(getContext())
+                        .setIcon(R.drawable.ic_error)
                         .setTitle(R.string.error_import_failed)
                         .setMessage(msg)
                         .setPositiveButton(android.R.string.ok, (d, w) -> getActivity().finish())
@@ -312,6 +313,7 @@ public class ImportFragment
 
         //noinspection ConstantConditions
         new MaterialAlertDialogBuilder(getContext())
+                .setIcon(R.drawable.ic_info)
                 .setTitle(titleId)
                 .setMessage(results.createReport(getContext()))
                 .setPositiveButton(R.string.done, (d, w) -> {
