@@ -29,22 +29,23 @@
 
 <resources>
 
-    <!-- ========================== -->
-    <!-- Day/Night - Night - theme. -->
-    <!-- ========================== -->
     <style name="AppTheme.DayNight" parent="Theme.MaterialComponents.DayNight.NoActionBar">
 
         <!-- =================== -->
         <!-- Theme Color palette -->
         <!-- =================== -->
-        <item name="colorPrimary">@color/customColorPrimaryMedium</item>
-        <item name="colorPrimaryVariant">@color/customColorPrimaryDark</item>
-        <item name="colorSecondary">@color/customColorSecondaryDark</item>
+        <item name="colorPrimary">@color/blue_grey_700</item>
+        <item name="colorPrimaryVariant">@color/blue_grey_500</item>
+        <item name="colorOnPrimary">@color/white</item>
 
-        <item name="colorOnPrimary">@color/customColorOnPrimary</item>
-        <item name="colorOnSecondary">@color/customColorOnSecondary</item>
+        <item name="colorSecondary">@color/cyan_700</item>
+        <!--        <item name="colorSecondaryVariant">@color/cyan_700</item>-->
+        <item name="colorOnSecondary">@color/white</item>
 
-        <!--        <item name="colorSurface">@color/customColorSurfaceDark</item>-->
+        <item name="colorSurface">#121212</item>
+        <item name="colorOnSurface">@color/white</item>
+
+        <item name="colorControlNormal">@color/white</item>
 
         <!--  ======================== -->
         <!-- Component theme overrides -->
@@ -54,14 +55,19 @@
         <!-- ==================== -->
         <!-- Application specific -->
         <!-- ==================== -->
-        <!-- gradient used in the Navigation side bar. -->
-        <item name="nav_bar_start_color">@color/customColorPrimaryDark</item>
-        <item name="nav_bar_center_color">@color/customColorPrimaryMedium</item>
-        <item name="nav_bar_end_color">@color/customColorPrimaryLight</item>
+        <item name="bob_fs_overlay_text_color">?attr/colorOnPrimary</item>
+        <item name="bob_fs_overlay_background_color">?attr/colorPrimary</item>
 
-        <item name="icon_tint">?attr/colorSecondary</item>
-        <item name="icon_tint_checked">@color/light_green_a700</item>
-        <item name="icon_tint_completed">@color/cyan_a700</item>
+        <item name="bob_list_header_background_color">@color/blue_grey_800</item>
+
+        <!-- gradient used in the Navigation side bar. -->
+        <item name="nav_bar_start_color">@color/blue_grey_800</item>
+        <item name="nav_bar_center_color">@color/blue_grey_500</item>
+        <item name="nav_bar_end_color">@color/blue_grey_400</item>
+
+        <item name="icon_tint">?attr/colorControlNormal</item>
+        <item name="icon_tint_checked">@color/green_300</item>
+        <item name="icon_tint_completed">@color/teal_300</item>
 
     </style>
 

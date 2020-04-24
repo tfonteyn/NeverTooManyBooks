@@ -63,7 +63,7 @@
         <item translatable="false">tr</item>
     </string-array>
 
-    <!-- ListPreference NEWTHINGS: APP THEME: edit the arrays if needed -->
+    <!-- ListPreference -->
     <string-array name="pe_ui_theme">
         <item>@string/pe_ui_theme_day_night</item>
         <item>@string/pe_ui_theme_dark</item>

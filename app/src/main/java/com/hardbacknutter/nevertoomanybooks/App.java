@@ -137,41 +137,17 @@ public class App
     private static final int THEME_DAY_NIGHT = 0;
     private static final int THEME_DARK = 1;
     private static final int THEME_LIGHT = 2;
-    /**
-     * NEWTHINGS: APP THEME: adding
-     * <ol>
-     *      <li>add it to themes.xml</li>
-     *      <li>add it to R.array.pv_ui_theme, the array order must match the APP_THEMES order</li>
-     *      <li>make sure the int list in R.array.pv_ui_theme matches the number of themes</li>
-     *      <li>The default must be set in res/xml/preferences.xml on the App.Theme element.</li>
-     *      <li>The default name must be set in the manifest application tag.</li>
-     * </ol>
-     * The preferences choice will be build according to the string-array list/order.
-     * <p>
-     * DEFAULT_THEME: the default to use.
-     */
-    @ThemeId
+    /** The default theme to use. */
+    @ThemeIndex
     private static final int DEFAULT_THEME = THEME_DAY_NIGHT;
-    /**
-     * As defined in res/themes.xml.
-     * <ul>
-     *      <li>MODE_NIGHT_AUTO_BATTERY (API < 27) / MODE_NIGHT_FOLLOW_SYSTEM (API 28+)</li>
-     *      <li>MODE_NIGHT_YES</li>
-     *      <li>MODE_NIGHT_NO</li>
-     * </ul>
-     */
-    private static final int[] APP_THEMES = {
-            R.style.AppTheme_DayNight,
-            R.style.AppTheme_Dark,
-            R.style.AppTheme_Light,
-            };
+
     /**
      * Give static methods access to our singleton.
      * <strong>Note:</strong> never store a context in a static, use the instance instead
      */
     private static App sInstance;
     /** Cache the User-specified theme currently in use. '-1' to force an update at App startup. */
-    @ThemeId
+    @ThemeIndex
     private static int sCurrentThemeId = THEME_INVALID;
 
     /** Singleton. */
@@ -247,14 +223,13 @@ public class App
      *
      * @param activity Current Activity to apply the theme to.
      *
-     * @return the applied theme id.
+     * @return the applied theme index.
      */
-    @ThemeId
+    @ThemeIndex
     public static int applyTheme(@NonNull final Activity activity) {
         // Always read from prefs.
         sCurrentThemeId = PIntString.getListPreference(activity, Prefs.pk_ui_theme, DEFAULT_THEME);
 
-        // Reminder: ***ALWAYS*** set the mode.
         switch (sCurrentThemeId) {
             case THEME_INVALID:
             case THEME_DAY_NIGHT:
@@ -277,9 +252,6 @@ public class App
                 break;
         }
 
-        // Reminder: ***ALWAYS*** set the theme.
-        activity.setTheme(APP_THEMES[sCurrentThemeId]);
-
         return sCurrentThemeId;
     }
 
@@ -292,7 +264,7 @@ public class App
      * @return {@code true} if the theme was changed
      */
     public static boolean isThemeChanged(@NonNull final Context context,
-                                         @ThemeId final int themeId) {
+                                         @ThemeIndex final int themeId) {
         // always reload from prefs.
         sCurrentThemeId = PIntString.getListPreference(context, Prefs.pk_ui_theme, DEFAULT_THEME);
         return themeId != sCurrentThemeId;
@@ -376,7 +348,7 @@ public class App
 
     @IntDef({THEME_INVALID, THEME_DAY_NIGHT, THEME_DARK, THEME_LIGHT})
     @Retention(RetentionPolicy.SOURCE)
-    @interface ThemeId {
+    @interface ThemeIndex {
 
     }
 }

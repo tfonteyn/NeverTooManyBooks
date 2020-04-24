@@ -51,6 +51,7 @@ import android.view.Gravity;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
+import androidx.annotation.AttrRes;
 import androidx.core.util.Consumer;
 
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -60,6 +61,9 @@ import com.hardbacknutter.nevertoomanybooks.R;
  * https://github.com/zhanghai/AndroidFastScroll</a>.
  */
 final class PopupStyles {
+
+    @AttrRes
+    private static final int TEXT_COLOR = R.attr.bob_fs_overlay_text_color;
 
     static final Consumer<TextView> DEFAULT = popupView -> {
         final Resources res = popupView.getResources();
@@ -79,8 +83,7 @@ final class PopupStyles {
         popupView.setGravity(Gravity.CENTER);
         popupView.setIncludeFontPadding(false);
         popupView.setSingleLine(false);
-        popupView.setTextColor(FastScroller.getColorInt(
-                context, android.R.attr.textColorPrimaryInverse));
+        popupView.setTextColor(FastScroller.getColorInt(context, TEXT_COLOR));
         popupView.setTextSize(TypedValue.COMPLEX_UNIT_PX,
                               res.getDimensionPixelSize(R.dimen.afs_popup_text_size));
     };
@@ -103,8 +106,7 @@ final class PopupStyles {
         popupView.setGravity(Gravity.CENTER);
         popupView.setIncludeFontPadding(false);
         popupView.setSingleLine(false);
-        popupView.setTextColor(FastScroller.getColorInt(
-                context, android.R.attr.textColorPrimaryInverse));
+        popupView.setTextColor(FastScroller.getColorInt(context, TEXT_COLOR));
         popupView.setTextSize(TypedValue.COMPLEX_UNIT_PX,
                               res.getDimensionPixelSize(R.dimen.afs_md2_popup_text_size));
     };
@@ -129,8 +131,7 @@ final class PopupStyles {
         popupView.setIncludeFontPadding(false);
         popupView.setSingleLine(false);
 
-        popupView.setTextColor(FastScroller.getColorInt(
-                context, android.R.attr.textColorPrimary));
+        popupView.setTextColor(FastScroller.getColorInt(context, TEXT_COLOR));
         popupView.setTextSize(TypedValue.COMPLEX_UNIT_PX,
                               res.getDimensionPixelSize(R.dimen.afs_popup_text_size));
     };

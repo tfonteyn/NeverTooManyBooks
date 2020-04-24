@@ -113,7 +113,7 @@ public abstract class BaseActivity
     /** Locale at {@link #onCreate} time. */
     protected String mInitialLocaleSpec;
     /** Theme at {@link #onCreate} time. */
-    @App.ThemeId
+    @App.ThemeIndex
     protected int mInitialThemeId;
 
     /** Optional - The side/navigation panel. */

@@ -29,31 +29,7 @@
 
 <resources>
 
-    <!--
-        Actual colors for theme attribute colors - needs tweaking... they are far from perfect...
-        Picked by setting primary and secondary colors
-        https://material.io/resources/color/#!/?view.left=0&view.right=0
-        Resulted in the given light/dark variants
-        Light = medium + #333333
-        Dark = medium - #303030
-    -->
-
-    <color name="customColorPrimaryLight">#a7c0cd</color>
-    <color name="customColorPrimaryMedium">@color/blue_grey_400</color>
-    <color name="customColorPrimaryDark">#4b636e</color>
-
-    <color name="customColorSecondaryLight">#718792</color>
-    <color name="customColorSecondaryMedium">@color/blue_grey_700</color>
-    <color name="customColorSecondaryDark">#1c313a</color>
-
-    <color name="customColorSurfaceLight">@color/grey_50</color>
-    <color name="customColorSurfaceDark">@color/grey_900</color>
-
-    <color name="customColorOnPrimary">@color/black</color>
-    <color name="customColorOnSecondary">@color/white</color>
-
-
-    <!-- The below colors are not themed. -->
+    <!-- These are not themed. -->
     <color name="CropHighlightView_focusPaint">@color/grey_600</color>
     <color name="CropHighlightView_noFocusPaint">@color/grey_600</color>
     <color name="CropHighlightView_outlinePaint_noFocus">@color/black</color>

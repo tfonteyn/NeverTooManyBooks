@@ -41,6 +41,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 
 /**
  * Fast scroll drag bar height too short when there are lots of items in the recyclerview.
@@ -51,10 +52,6 @@ import com.hardbacknutter.nevertoomanybooks.R;
  * stackoverflow</a>
  */
 public class FastScroller {
-
-    //    private static final OverlayStyle FS_OVERLAY = OverlayStyle.Classic;
-    private static final OverlayStyle FS_OVERLAY = OverlayStyle.MD2;
-//    private static final OverlayStyle FS_OVERLAY = OverlayStyle.MD1;
 
     /**
      * Constructor.
@@ -92,7 +89,7 @@ public class FastScroller {
         // it can still be null.
         final OverlayProvider overlay;
         int thumbWidth = verticalThumbDrawable.getIntrinsicWidth();
-        switch (FS_OVERLAY) {
+        switch (Prefs.getFastScrollerOverlayStyle()) {
             case Classic:
                 overlay = new ClassicOverlay(recyclerView, thumbWidth, PopupStyles.CLASSIC);
                 break;
@@ -102,8 +99,7 @@ public class FastScroller {
                 break;
             }
             case MD1: {
-                overlay = new FastScrollerOverlay(recyclerView, thumbWidth,
-                                                  PopupStyles.DEFAULT);
+                overlay = new FastScrollerOverlay(recyclerView, thumbWidth, PopupStyles.DEFAULT);
                 break;
             }
             default:
@@ -129,12 +125,6 @@ public class FastScroller {
         final TypedValue tv = new TypedValue();
         theme.resolveAttribute(attr, tv, true);
         return context.getResources().getColor(tv.resourceId, theme);
-    }
-
-    private enum OverlayStyle {
-        Classic,
-        MD2,
-        MD1
     }
 
     /**
@@ -165,5 +155,11 @@ public class FastScroller {
          */
         void showOverlay(boolean isDragging,
                          int thumbCenter);
+
+        enum OverlayStyle {
+            Classic,
+            MD2,
+            MD1
+        }
     }
 }

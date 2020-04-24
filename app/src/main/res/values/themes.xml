@@ -27,17 +27,59 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
+<!--
+These are the standard attributes that make up a complete theme.
+https://developer.android.com/reference/android/R.styleable.html#Theme
+
+Material styles etc.
+https://medium.com/androiddevelopers/migrating-to-material-components-for-android-ec6757795351
+
+Full color list:
+https://material.io/design/material-theming/implementing-your-theme.html#color
+-->
 <resources>
-    <!--
-    These are the standard attributes that make up a complete theme.
-    https://developer.android.com/reference/android/R.styleable.html#Theme
 
-    Material styles etc.
-    https://medium.com/androiddevelopers/migrating-to-material-components-for-android-ec6757795351
+    <style name="AppTheme.DayNight" parent="Theme.MaterialComponents.DayNight.NoActionBar">
 
-    Full color list:
-    https://material.io/design/material-theming/implementing-your-theme.html#color
-    -->
+        <!-- =================== -->
+        <!-- Theme Color palette -->
+        <!-- =================== -->
+        <item name="colorPrimary">@color/blue_grey_200</item>
+        <item name="colorPrimaryVariant">@color/blue_grey_400</item>
+        <item name="colorOnPrimary">@color/black</item>
+
+        <item name="colorSecondary">@color/cyan_200</item>
+        <!--        <item name="colorSecondaryVariant">@color/cyan_700</item>-->
+        <item name="colorOnSecondary">@color/black</item>
+
+        <item name="colorSurface">@color/grey_50</item>
+        <item name="colorOnSurface">@color/black</item>
+
+        <item name="colorControlNormal">@color/black</item>
+
+        <!--  ======================== -->
+        <!-- Component theme overrides -->
+        <!--  ======================== -->
+        <item name="snackbarTextViewStyle">@style/SnackbarText</item>
+
+        <!-- ==================== -->
+        <!-- Application specific -->
+        <!-- ==================== -->
+        <item name="bob_fs_overlay_text_color">?attr/colorOnPrimary</item>
+        <item name="bob_fs_overlay_background_color">?attr/colorPrimary</item>
+
+        <item name="bob_list_header_background_color">@color/blue_grey_50</item>
+
+        <!-- gradient used in the Navigation side bar. -->
+        <item name="nav_bar_start_color">@color/blue_grey_400</item>
+        <item name="nav_bar_center_color">@color/blue_grey_100</item>
+        <item name="nav_bar_end_color">@color/blue_grey_50</item>
+
+        <item name="icon_tint">?attr/colorControlNormal</item>
+        <item name="icon_tint_checked">@color/green_300</item>
+        <item name="icon_tint_completed">@color/teal_300</item>
+
+    </style>
 
     <!-- Specific Theme for full screen usage. -->
     <style name="AppTheme.FullScreen" parent="AppTheme.DayNight">
@@ -45,111 +87,4 @@
         <item name="android:windowContentOverlay">@null</item>
     </style>
 
-    <!-- ======================== -->
-    <!-- Day/Night - Day - theme. -->
-    <!-- ======================== -->
-    <style name="AppTheme.DayNight" parent="Theme.MaterialComponents.DayNight.NoActionBar">
-
-        <!-- =================== -->
-        <!-- Theme Color palette -->
-        <!-- =================== -->
-        <item name="colorPrimary">@color/customColorPrimaryLight</item>
-        <item name="colorPrimaryVariant">@color/customColorPrimaryMedium</item>
-        <item name="colorSecondary">@color/customColorSecondaryMedium</item>
-
-        <item name="colorOnPrimary">@color/customColorOnPrimary</item>
-        <item name="colorOnSecondary">@color/customColorOnSecondary</item>
-
-        <!--        <item name="colorSurface">@color/customColorSurfaceLight</item>-->
-
-        <!--  ======================== -->
-        <!-- Component theme overrides -->
-        <!--  ======================== -->
-        <item name="snackbarTextViewStyle">@style/SnackbarText</item>
-
-        <!-- ==================== -->
-        <!-- Application specific -->
-        <!-- ==================== -->
-        <!-- gradient used in the Navigation side bar. -->
-        <item name="nav_bar_start_color">@color/customColorPrimaryDark</item>
-        <item name="nav_bar_center_color">@color/customColorPrimaryMedium</item>
-        <item name="nav_bar_end_color">@color/customColorPrimaryLight</item>
-
-        <item name="icon_tint">?attr/colorSecondary</item>
-        <item name="icon_tint_checked">@color/green_a700</item>
-        <item name="icon_tint_completed">@color/cyan_a700</item>
-
-    </style>
-
-    <!-- ============ -->
-    <!-- Light theme. -->
-    <!-- ============ -->
-    <style name="AppTheme.Light" parent="Theme.MaterialComponents.Light.NoActionBar">
-
-        <!-- =================== -->
-        <!-- Theme Color palette -->
-        <!-- =================== -->
-        <item name="colorPrimary">@color/customColorPrimaryLight</item>
-        <item name="colorPrimaryVariant">@color/customColorPrimaryMedium</item>
-        <item name="colorSecondary">@color/customColorSecondaryMedium</item>
-
-        <item name="colorOnPrimary">@color/customColorOnPrimary</item>
-        <item name="colorOnSecondary">@color/customColorOnSecondary</item>
-
-        <!--        <item name="colorSurface">@color/customColorSurfaceLight</item>-->
-
-        <!--  ======================== -->
-        <!-- Component theme overrides -->
-        <!--  ======================== -->
-        <item name="snackbarTextViewStyle">@style/SnackbarText</item>
-
-        <!-- ==================== -->
-        <!-- Application specific -->
-        <!-- ==================== -->
-        <!-- gradient used in the Navigation side bar. -->
-        <item name="nav_bar_start_color">@color/customColorPrimaryDark</item>
-        <item name="nav_bar_center_color">@color/customColorPrimaryMedium</item>
-        <item name="nav_bar_end_color">@color/customColorPrimaryLight</item>
-
-        <item name="icon_tint">?attr/colorSecondary</item>
-        <item name="icon_tint_checked">@color/green_a700</item>
-        <item name="icon_tint_completed">@color/cyan_a700</item>
-
-    </style>
-
-    <!-- =========== -->
-    <!-- Dark theme. -->
-    <!-- =========== -->
-    <style name="AppTheme.Dark" parent="Theme.MaterialComponents.NoActionBar">
-
-        <!-- =================== -->
-        <!-- Theme Color palette -->
-        <!-- =================== -->
-        <item name="colorPrimary">@color/customColorPrimaryMedium</item>
-        <item name="colorPrimaryVariant">@color/customColorPrimaryDark</item>
-        <item name="colorSecondary">@color/customColorSecondaryDark</item>
-
-        <item name="colorOnPrimary">@color/customColorOnPrimary</item>
-        <item name="colorOnSecondary">@color/customColorOnSecondary</item>
-
-        <!--        <item name="colorSurface">@color/customColorSurfaceDark</item>-->
-
-        <!--  ======================== -->
-        <!-- Component theme overrides -->
-        <!--  ======================== -->
-        <item name="snackbarTextViewStyle">@style/SnackbarText</item>
-
-        <!-- ==================== -->
-        <!-- Application specific -->
-        <!-- ==================== -->
-        <!-- gradient used in the Navigation side bar. -->
-        <item name="nav_bar_start_color">@color/customColorPrimaryDark</item>
-        <item name="nav_bar_center_color">@color/customColorPrimaryMedium</item>
-        <item name="nav_bar_end_color">@color/customColorPrimaryLight</item>
-
-        <item name="icon_tint">?attr/colorSecondary</item>
-        <item name="icon_tint_checked">@color/light_green_a700</item>
-        <item name="icon_tint_completed">@color/cyan_a700</item>
-
-    </style>
 </resources>

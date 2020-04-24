@@ -29,6 +29,10 @@
 
 <resources>
 
+    <attr name="bob_fs_overlay_text_color" format="reference|color" />
+    <attr name="bob_fs_overlay_background_color" format="reference|color" />
+    <attr name="bob_list_header_background_color" format="reference|color" />
+
     <!-- gradient used in the Navigation side bar. -->
     <attr name="nav_bar_start_color" format="reference|color" />
     <attr name="nav_bar_center_color" format="reference|color" />

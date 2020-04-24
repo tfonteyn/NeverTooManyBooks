@@ -639,8 +639,9 @@
         <item name="tabTextColor">@color/tab_text_color_selector</item>
     </style>
 
-    <!-- the outer frame (e.g. 'root') for a Dialog -->
-    <style name="DialogFrame">
+    <!-- the root frame for a Dialog -->
+    <style name="DialogFrame" parent="Theme.MaterialComponents.Dialog">
+        <item name="android:background">?attr/colorBackgroundFloating</item>
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:padding">@dimen/border2</item>
