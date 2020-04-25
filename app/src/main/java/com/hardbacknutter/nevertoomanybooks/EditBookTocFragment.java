@@ -426,7 +426,7 @@ public class EditBookTocFragment
             .setIcon(R.drawable.ic_delete);
 
         final String title = item.getLabel(getContext());
-        new MenuPicker<>(getContext(), title, menu, position, this::onContextItemSelected)
+        new MenuPicker(getContext(), title, null, menu, position, this::onContextItemSelected)
                 .show();
     }
 
@@ -439,7 +439,7 @@ public class EditBookTocFragment
      * @return {@code true} if handled.
      */
     private boolean onContextItemSelected(@NonNull final MenuItem menuItem,
-                                          @NonNull final Integer position) {
+                                          final int position) {
         final TocEntry tocEntry = mList.get(position);
 
         switch (menuItem.getItemId()) {

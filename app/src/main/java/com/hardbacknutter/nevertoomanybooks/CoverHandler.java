@@ -230,7 +230,8 @@ class CoverHandler {
         // we only support alternative edition covers for the front cover.
         menu.findItem(R.id.MENU_THUMB_ADD_ALT_EDITIONS).setVisible(mCIdx == 0);
 
-        new MenuPicker<>(mContext, title, menu, mCIdx, CoverHandler.this::onViewContextItemSelected)
+        new MenuPicker(mContext, title, null, menu, mCIdx,
+                       this::onViewContextItemSelected)
                 .show();
     }
 
@@ -244,7 +245,7 @@ class CoverHandler {
      * @return {@code true} if handled here.
      */
     private boolean onViewContextItemSelected(@NonNull final MenuItem menuItem,
-                                              @NonNull final Integer position) {
+                                              final int position) {
 
         // prepare the fragment for results.
         // This is needed as for example when we start the camera, we can't tell afterwards

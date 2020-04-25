@@ -314,8 +314,8 @@ public class BooksOnBookshelf
                         final String title = mAdapter.getLevelText(position, level);
 
                         // bring up the context menu
-                        new MenuPicker<>(BooksOnBookshelf.this, title, menu, position,
-                                         BooksOnBookshelf.this::onContextItemSelected)
+                        new MenuPicker(BooksOnBookshelf.this, title, null, menu, position,
+                                       BooksOnBookshelf.this::onContextItemSelected)
                                 .show();
                     }
                     return true;
@@ -513,7 +513,7 @@ public class BooksOnBookshelf
 
         // initialize but do not populate the list;  the latter is done in setBookShelfSpinner
         mBookshelfSpinnerAdapter = new ArrayAdapter<>(
-                this, R.layout.bookshelf_spinner, mModel.getBookshelfSpinnerList());
+                this, R.layout.bookshelf_spinner_selected, mModel.getBookshelfSpinnerList());
         mBookshelfSpinnerAdapter.setDropDownViewResource(R.layout.dropdown_menu_popup_item);
         mBookshelfSpinner.setAdapter(mBookshelfSpinnerAdapter);
 
@@ -885,7 +885,7 @@ public class BooksOnBookshelf
      */
     @SuppressWarnings("UnusedReturnValue")
     private boolean onContextItemSelected(@NonNull final MenuItem menuItem,
-                                          @NonNull final Integer position) {
+                                          final int position) {
 
         final Cursor cursor = mModel.getListCursor();
         // Move the cursor, so we can read the data for this row.

@@ -268,7 +268,7 @@ public class PreferredStylesActivity
             .setIcon(R.drawable.ic_content_copy);
 
         String title = style.getLabel(this);
-        new MenuPicker<>(this, title, menu, position, this::onContextItemSelected)
+        new MenuPicker(this, title, null, menu, position, this::onContextItemSelected)
                 .show();
     }
 
@@ -281,7 +281,7 @@ public class PreferredStylesActivity
      * @return {@code true} if handled.
      */
     private boolean onContextItemSelected(@NonNull final MenuItem menuItem,
-                                          @NonNull final Integer position) {
+                                          final int position) {
 
         BooklistStyle style = mModel.getList().get(position);
 

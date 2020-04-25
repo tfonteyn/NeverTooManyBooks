@@ -48,34 +48,12 @@ import com.hardbacknutter.nevertoomanybooks.R;
 
 /**
  * Show context menu on a view.
- *
- * @param <T> type of the actual Object that is represented by a row in the selection list.
  */
-public class MenuPicker<T>
+public class MenuPicker
         extends ValuePicker {
 
     @NonNull
     private MenuItemListAdapter mAdapter;
-
-    /**
-     * Convenience Constructor.
-     * <p>
-     * The caller can create a menu calling {@link #createMenu(Context)},
-     * populate it and pass it here.
-     *
-     * @param context    Current context
-     * @param title      (optional) for the dialog/menu
-     * @param menu       the menu options to show
-     * @param userObject (optional) a reference free to set/use by the caller
-     * @param listener   callback handler with the MenuItem the user chooses + the position
-     */
-    public MenuPicker(@NonNull final Context context,
-                      @Nullable final CharSequence title,
-                      @NonNull final Menu menu,
-                      @Nullable final T userObject,
-                      @NonNull final ContextItemSelected<T> listener) {
-        this(context, title, null, menu, userObject, listener);
-    }
 
     /**
      * Full Constructor with actual strings.
@@ -83,19 +61,19 @@ public class MenuPicker<T>
      * The caller can create a menu calling {@link #createMenu(Context)},
      * populate it and pass it here.
      *
-     * @param context    Current context
-     * @param title      (optional) for the dialog/menu
-     * @param message    (optional) message to display above the menu
-     * @param menu       the menu options to show
-     * @param userObject (optional) a reference free to set/use by the caller
-     * @param listener   callback handler with the MenuItem the user chooses + the userObject
+     * @param context  Current context
+     * @param title    (optional) for the dialog/menu
+     * @param message  (optional) message to display above the menu
+     * @param menu     the menu options to show
+     * @param position of the item in a list where the context menu was initiated
+     * @param listener callback handler with the MenuItem the user chooses + the position
      */
-    private MenuPicker(@NonNull final Context context,
-                       @Nullable final CharSequence title,
-                       @Nullable final CharSequence message,
-                       @NonNull final Menu menu,
-                       @Nullable final T userObject,
-                       @NonNull final ContextItemSelected<T> listener) {
+    public MenuPicker(@NonNull final Context context,
+                      @Nullable final CharSequence title,
+                      @Nullable final CharSequence message,
+                      @NonNull final Menu menu,
+                      final int position,
+                      @NonNull final ContextItemSelected listener) {
         super(context, title, message, false);
 
         mAdapter = new MenuItemListAdapter(context, menu, menuItem -> {
@@ -104,7 +82,7 @@ public class MenuPicker<T>
                 mAdapter.setMenu(menuItem.getSubMenu());
             } else {
                 dismiss();
-                listener.onContextItemSelected(menuItem, userObject);
+                listener.onContextItemSelected(menuItem, position);
             }
         });
 
@@ -118,22 +96,19 @@ public class MenuPicker<T>
         return new PopupMenu(context, null).getMenu();
     }
 
-    public interface ContextItemSelected<T> {
+    public interface ContextItemSelected {
 
         /**
          * Callback handler.
          *
-         * <strong>Note:</strong> the userObject is normally the item position in the list,
-         * an int; but we might as well keep this flexible.
-         *
-         * @param menuItem   that was selected
-         * @param userObject that the caller passed in when creating the context menu
+         * @param menuItem that was selected
+         * @param position of the item in a list where the context menu was initiated
          *
          * @return {@code true} if handled.
          */
         @SuppressWarnings("UnusedReturnValue")
         boolean onContextItemSelected(@NonNull MenuItem menuItem,
-                                      @Nullable T userObject);
+                                      int position);
     }
 
     private static class MenuItemListAdapter

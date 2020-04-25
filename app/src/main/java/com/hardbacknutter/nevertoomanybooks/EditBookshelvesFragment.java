@@ -191,7 +191,7 @@ public class EditBookshelvesFragment
             .setIcon(R.drawable.ic_delete);
 
         final String title = bookshelf.getName();
-        new MenuPicker<>(getContext(), title, menu, position, this::onContextItemSelected)
+        new MenuPicker(getContext(), title, null, menu, position, this::onContextItemSelected)
                 .show();
     }
 
@@ -204,7 +204,7 @@ public class EditBookshelvesFragment
      * @return {@code true} if handled.
      */
     private boolean onContextItemSelected(@NonNull final MenuItem menuItem,
-                                          @NonNull final Integer position) {
+                                          final int position) {
 
         final Bookshelf bookshelf = mModel.getBookshelf(position);
 

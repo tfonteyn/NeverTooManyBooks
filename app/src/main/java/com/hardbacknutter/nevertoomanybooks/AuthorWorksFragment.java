@@ -231,7 +231,7 @@ public class AuthorWorksFragment
             .setIcon(R.drawable.ic_delete);
 
         final String title = item.getLabel(getContext());
-        new MenuPicker<>(getContext(), title, menu, position, this::onContextItemSelected)
+        new MenuPicker(getContext(), title, null, menu, position, this::onContextItemSelected)
                 .show();
     }
 
@@ -244,7 +244,7 @@ public class AuthorWorksFragment
      * @return {@code true} if handled.
      */
     private boolean onContextItemSelected(@NonNull final MenuItem menuItem,
-                                          @NonNull final Integer position) {
+                                          final int position) {
         final TocEntry item = mModel.getTocEntries().get(position);
 
         //noinspection SwitchStatementWithTooFewBranches
@@ -361,7 +361,7 @@ public class AuthorWorksFragment
             super();
             mInflater = LayoutInflater.from(context);
             mDrawableOn = context.getResources().getColorStateList(
-                    AttrUtils.getResId(context, R.attr.icon_tint),
+                    AttrUtils.getResId(context, R.attr.iconTint),
                     context.getTheme());
             mDrawableOff = context.getResources().getColorStateList(
                     android.R.color.transparent,
