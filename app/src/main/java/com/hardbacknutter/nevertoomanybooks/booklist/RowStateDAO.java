@@ -293,14 +293,8 @@ public class RowStateDAO {
                         + "\n"
 
                         // KEY_BL_NODE_EXPANDED
-                        + ",COALESCE(" + TBL_BOOK_LIST_NODE_STATE.dot(KEY_BL_NODE_KEY) + ",0)"
-//                        + ",CASE"
-//                        // If the row is not present (check on NODE_KEY!), collapse it.
-//                        + " WHEN " + TBL_BOOK_LIST_NODE_STATE.dot(KEY_BL_NODE_KEY) + " IS NULL"
-//                        + /* */ " THEN 0"
-//                        //  Otherwise use the stored state
-//                        + /* */ " ELSE " + TBL_BOOK_LIST_NODE_STATE.dot(KEY_BL_NODE_EXPANDED)
-//                        + " END"
+                        // If the row is not present, collapse it. Otherwise use stored state.
+                        + ",COALESCE(" + TBL_BOOK_LIST_NODE_STATE.dot(KEY_BL_NODE_EXPANDED) + ",0)"
                         // 'AS' for SQL readability/debug only
                         + " AS " + KEY_BL_NODE_EXPANDED
                         + "\n"
@@ -716,7 +710,7 @@ public class RowStateDAO {
      * If the resulting state of the node is:<br>
      * 'Expand': we set the children to the desired child state/visibility
      * (recurse up to the desired max child level)<br>
-     * 'Collapse': all children will be set to Collapse/hidden (recurse ALL child levels)
+     * 'Collapse': all children will be set to Collapse/hidden
      *
      * @param nodeRowId          of the node in the list
      * @param nodeLevel          the level of the node
