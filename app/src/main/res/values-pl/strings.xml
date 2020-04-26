@@ -658,4 +658,5 @@
     <string name="hint_empty_day">(Nie ustawiono dnia)</string>
     <string name="hint_empty_year">(Rok nieustawiony)</string>
     <string name="lbl_all_bookshelves">Wszystkie półki na książki</string>
+    <string name="more_ellipsis">Więcej…</string>
 </resources>

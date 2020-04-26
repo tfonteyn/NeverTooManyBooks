@@ -664,5 +664,6 @@
     <string name="hint_empty_day">(Día no establecido)</string>
     <string name="hint_empty_year">(Año no establecido)</string>
     <string name="lbl_all_bookshelves">Todas las bibliotecas</string>
+    <string name="more_ellipsis">Más…</string>
 
 </resources>

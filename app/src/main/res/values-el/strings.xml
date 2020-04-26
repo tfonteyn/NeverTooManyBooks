@@ -663,5 +663,6 @@
     <string name="hint_empty_day">(Ημέρα δεν έχει οριστεί)</string>
     <string name="hint_empty_year">(Το έτος δεν έχει οριστεί)</string>
     <string name="lbl_all_bookshelves">Όλα τα ράφια</string>
+    <string name="more_ellipsis">Περισσότερο…</string>
 
 </resources>

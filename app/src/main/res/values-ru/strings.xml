@@ -658,5 +658,6 @@
     <string name="hint_empty_day">(День не назначен)</string>
     <string name="hint_empty_year">(Год не указан)</string>
     <string name="lbl_all_bookshelves">Все книжные полки</string>
+    <string name="more_ellipsis">Больше…</string>
 
 </resources>

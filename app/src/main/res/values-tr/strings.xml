@@ -659,5 +659,6 @@
     <string name="hint_empty_day">(Gün ayarlanmadı)</string>
     <string name="hint_empty_year">(Yıl ayarlanmadı)</string>
     <string name="lbl_all_bookshelves">Tüm raflardan</string>
+    <string name="more_ellipsis">Daha…</string>
 
 </resources>

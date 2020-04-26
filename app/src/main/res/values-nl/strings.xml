@@ -666,5 +666,6 @@
     <string name="confirm_rebuild_index">De indexen worden opnieuw opgebouwd wanneer de app opnieuw wordt opgestart. Weet je zeker dat je door wilt gaan ?</string>
     <string name="error_site_has_problems">De website heeft problemen.</string>
     <string name="lbl_all_bookshelves">Alle boekenplanken</string>
+    <string name="more_ellipsis">Meer…</string>
 
 </resources>

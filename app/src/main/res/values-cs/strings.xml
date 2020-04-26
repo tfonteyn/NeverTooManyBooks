@@ -659,5 +659,6 @@
     <string name="hint_empty_day">(Den není nastaven)</string>
     <string name="hint_empty_year">(Rok není nastaven)</string>
     <string name="lbl_all_bookshelves">Všechny knihovny</string>
+    <string name="more_ellipsis">Více…</string>
 
 </resources>

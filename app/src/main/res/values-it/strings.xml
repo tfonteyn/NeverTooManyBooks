@@ -663,5 +663,6 @@
     <string name="hint_empty_day">(Giorno non impostato)</string>
     <string name="hint_empty_year">(Anno non impostato)</string>
     <string name="lbl_all_bookshelves">Tutte le biblioteche</string>
+    <string name="more_ellipsis">Di Più…</string>
 
 </resources>
