@@ -45,6 +45,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.TextView;
 
 import androidx.annotation.CallSuper;
@@ -72,6 +73,7 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.entities.LendBookDialogFragm
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
+import com.hardbacknutter.nevertoomanybooks.fields.Field;
 import com.hardbacknutter.nevertoomanybooks.fields.Fields;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsHandler;
 import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.RequestAuthTask;
@@ -109,7 +111,7 @@ public class BookDetailsFragment
     /** View Binding. */
     private FragmentBookDetailsBinding mVb;
 
-    /** Listen for changes. */
+    /** Listen for changes coming from child (dialog) fragments. */
     private final BookChangedListener mBookChangedListener = (bookId, fieldsChanged, data) -> {
         if (data != null) {
             if ((fieldsChanged & BookChangedListener.BOOK_LOANEE) != 0) {
@@ -567,9 +569,12 @@ public class BookDetailsFragment
             case R.id.MENU_BOOK_READ:
             case R.id.MENU_BOOK_UNREAD: {
                 // toggle 'read' status of the book
-                boolean value = mBookViewModel.toggleRead();
-                mFragmentVM.getFields()
-                           .getField(R.id.cbx_read).getAccessor().setValue(value);
+                final boolean value = mBookViewModel.toggleRead();
+                final Field<Boolean, CompoundButton> field =
+                        mFragmentVM.getFields().getField(R.id.cbx_read);
+                field.getAccessor().setValue(value);
+                //noinspection ConstantConditions
+                field.setVisibility(getView(), true, false);
                 return true;
             }
             case R.id.MENU_BOOK_LOAN_ADD: {
