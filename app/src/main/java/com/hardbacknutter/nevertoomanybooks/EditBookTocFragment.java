@@ -760,10 +760,10 @@ public class EditBookTocFragment
 
             // click -> edit
             holder.rowDetailsView.setOnClickListener(
-                    v -> editEntry(item, holder.getAdapterPosition()));
+                    v -> editEntry(item, holder.getBindingAdapterPosition()));
 
             holder.rowDetailsView.setOnLongClickListener(v -> {
-                onCreateContextMenu(holder.getAdapterPosition());
+                onCreateContextMenu(holder.getBindingAdapterPosition());
                 return true;
             });
         }

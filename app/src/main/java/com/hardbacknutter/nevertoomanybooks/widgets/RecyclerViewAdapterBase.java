@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -100,7 +100,7 @@ public abstract class RecyclerViewAdapterBase<Item, VHT extends RecyclerViewView
 
         if (holder.mDeleteButton != null) {
             holder.mDeleteButton.setOnClickListener(v -> {
-                int pos = holder.getAdapterPosition();
+                int pos = holder.getBindingAdapterPosition();
                 // 2019-09-25: yes, we CAN (and did) get a NO_POSITION value here. So check it!
                 if (pos == RecyclerView.NO_POSITION) {
                     // don't touch the item list, but update the screen.

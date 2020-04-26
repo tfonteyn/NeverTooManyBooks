@@ -430,12 +430,12 @@ public class PreferredStylesActivity
                 // update the previous, now unselected, row.
                 notifyItemChanged(mSelectedPosition);
                 // get/update the newly selected row.
-                mSelectedPosition = holder.getAdapterPosition();
+                mSelectedPosition = holder.getBindingAdapterPosition();
                 notifyItemChanged(mSelectedPosition);
             });
 
             holder.rowDetailsView.setOnLongClickListener(v -> {
-                onCreateContextMenu(holder.getAdapterPosition());
+                onCreateContextMenu(holder.getBindingAdapterPosition());
                 return true;
             });
         }
@@ -454,7 +454,7 @@ public class PreferredStylesActivity
          */
         private void setPreferred(@NonNull final Holder holder) {
             // current row/style
-            int position = holder.getAdapterPosition();
+            int position = holder.getBindingAdapterPosition();
             BooklistStyle style = getItem(position);
 
             // handle the 'preferred' state of the current row/style

@@ -430,7 +430,7 @@ public class AuthorWorksFragment
             holder.itemView.setOnClickListener(v -> gotoBook(tocEntry));
 
             holder.itemView.setOnLongClickListener(v -> {
-                onCreateContextMenu(holder.getAdapterPosition());
+                onCreateContextMenu(holder.getBindingAdapterPosition());
                 return true;
             });
         }

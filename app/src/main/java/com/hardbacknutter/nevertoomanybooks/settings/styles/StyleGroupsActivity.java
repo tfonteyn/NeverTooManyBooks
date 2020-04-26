@@ -198,7 +198,7 @@ public class StyleGroupsActivity
                 boolean newStatus = !groupWrapper.present;
                 groupWrapper.present = newStatus;
                 holder.mCheckableButton.setChecked(newStatus);
-                notifyItemChanged(holder.getAdapterPosition());
+                notifyItemChanged(holder.getBindingAdapterPosition());
             });
         }
     }

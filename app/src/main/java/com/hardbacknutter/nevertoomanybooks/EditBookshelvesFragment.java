@@ -314,13 +314,13 @@ public class EditBookshelvesFragment
                 // update the previous, now unselected, row.
                 notifyItemChanged(mSelectedPosition);
                 // get/update the newly selected row.
-                mSelectedPosition = holder.getAdapterPosition();
+                mSelectedPosition = holder.getBindingAdapterPosition();
                 mModel.setSelectedBookshelf(mSelectedPosition);
                 notifyItemChanged(mSelectedPosition);
             });
 
             holder.nameView.setOnLongClickListener(v -> {
-                onCreateContextMenu(holder.getAdapterPosition());
+                onCreateContextMenu(holder.getBindingAdapterPosition());
                 return true;
             });
         }
