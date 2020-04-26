@@ -297,15 +297,15 @@ public abstract class BaseActivity
 
     public void updateActionBar(final boolean isRoot) {
         mHomeIsRootMenu = isRoot;
-        final ActionBar bar = getSupportActionBar();
-        if (bar != null) {
+        final ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
             // default on all activities is to show the "up" (back) button
-            bar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setDisplayHomeAsUpEnabled(true);
 
             if (mHomeIsRootMenu) {
-                bar.setHomeAsUpIndicator(R.drawable.ic_menu);
+                actionBar.setHomeAsUpIndicator(R.drawable.ic_toolbar_home);
             } else {
-                bar.setHomeAsUpIndicator(null);
+                actionBar.setHomeAsUpIndicator(null);
             }
         }
     }

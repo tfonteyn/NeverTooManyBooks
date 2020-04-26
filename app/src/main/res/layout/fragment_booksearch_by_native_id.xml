@@ -48,7 +48,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            app:layout_constraintGuide_begin="@dimen/fieldGuidelineIndent"
+            app:layout_constraintGuide_begin="@dimen/indent_field_guideline"
             />
 
         <TextView
@@ -98,8 +98,8 @@
                 android:id="@+id/site_library_thing"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:visibility="gone"
                 android:text="@string/site_library_thing"
+                android:visibility="gone"
                 tools:visibility="visible"
                 />
 
@@ -122,8 +122,9 @@
             android:id="@+id/lbl_native_id"
             style="@style/Envelope.EditText"
             android:hint="@string/lbl_site_book_id"
+            android:padding="@dimen/border2"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/btn_search"
             app:layout_constraintTop_toBottomOf="@id/sites_group"
             >
 
@@ -149,8 +150,7 @@
             android:text="@android:string/search_go"
             app:icon="@drawable/ic_search"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBaseline_toBaselineOf="@id/lbl_native_id"
-            app:layout_constraintStart_toEndOf="@id/lbl_native_id"
+            app:layout_constraintTop_toBottomOf="@id/lbl_native_id"
             />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

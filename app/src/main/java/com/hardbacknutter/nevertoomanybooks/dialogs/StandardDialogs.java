@@ -60,6 +60,7 @@ public final class StandardDialogs {
      * <br>type: {@code int} (stringId)
      */
     public static final String BKEY_DIALOG_TITLE = TAG + ":title";
+    public static final String BKEY_DIALOG_MESSAGE = TAG + ":msg";
 
 
     private StandardDialogs() {

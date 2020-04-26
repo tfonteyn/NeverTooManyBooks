@@ -35,6 +35,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.widget.EditText;
 
@@ -105,7 +106,20 @@ public class SqliteShellFragment
 
         db = new DAO(TAG);
         syncDb = db.getSyncDb();
+
+        final WebSettings settings = outputView.getSettings();
+        settings.setTextZoom(50);
     }
+
+//    private void textSmaller() {
+//        final WebSettings settings = outputView.getSettings();
+//        settings.setTextZoom(settings.getTextZoom() - 10);
+//    }
+//
+//    private void textBigger() {
+//        final WebSettings settings = outputView.getSettings();
+//        settings.setTextZoom(settings.getTextZoom() + 10);
+//    }
 
     @Override
     public void onResume() {

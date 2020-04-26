@@ -26,10 +26,13 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
+<!-- This icon is used for the home(hamburger) menu and only displayed on the primary Toolbar.
+     Hence the tint is set to "?attr/colorOnPrimary"
+     -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="24dp"
     android:height="24dp"
-    android:tint="?attr/icon_tint"
+    android:tint="?attr/colorOnPrimary"
     android:viewportWidth="24.0"
     android:viewportHeight="24.0">
     <path

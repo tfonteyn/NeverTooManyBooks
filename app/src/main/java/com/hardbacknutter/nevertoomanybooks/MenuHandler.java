@@ -194,6 +194,8 @@ final class MenuHandler {
                             @NonNull final Menu menu) {
         MenuItem searchItem = menu.findItem(R.id.MENU_SEARCH);
         if (searchItem != null) {
+            // Reminder: we let the SearchView handle it's own icons.
+            // The hint text is defined in xml/searchable.xml
             SearchView searchView = (SearchView) searchItem.getActionView();
             SearchManager searchManager = (SearchManager)
                     activity.getSystemService(Context.SEARCH_SERVICE);

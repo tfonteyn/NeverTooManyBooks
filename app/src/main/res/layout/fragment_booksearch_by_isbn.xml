@@ -43,18 +43,16 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:layout_gravity="center_horizontal"
     android:maxWidth="@dimen/isbn_key_pad_width"
     android:maxHeight="@dimen/isbn_key_pad_height"
-    android:layout_gravity="center_horizontal"
     tools:context=".BookSearchActivity"
     >
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/lbl_isbn"
         style="@style/Envelope.EditText.Isbn"
-        android:paddingStart="@dimen/indent2"
         app:layout_constraintEnd_toStartOf="@id/isbn_del"
-        android:paddingEnd="@dimen/indent2"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         >
@@ -72,6 +70,7 @@
         android:id="@+id/isbn_del"
         style="@style/IsbnKeyPad.BackspaceButton"
         android:contentDescription="@string/action_delete"
+        android:layout_marginStart="@dimen/indent2"
         app:layout_constraintBottom_toBottomOf="@id/lbl_isbn"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/lbl_isbn"
@@ -190,10 +189,10 @@
         android:id="@+id/key_X"
         style="@style/IsbnKeyPad.NumberButton"
         android:text="X"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/key_0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/key_7"
-        app:layout_constraintBottom_toBottomOf="parent"
         tools:ignore="HardcodedText"
         />
 
@@ -201,10 +200,10 @@
         android:id="@+id/key_0"
         style="@style/IsbnKeyPad.NumberButton"
         android:text="0"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/btn_search"
         app:layout_constraintStart_toEndOf="@id/key_X"
         app:layout_constraintTop_toBottomOf="@id/key_8"
-        app:layout_constraintBottom_toBottomOf="parent"
         tools:ignore="HardcodedText"
         />
 
@@ -212,10 +211,10 @@
         android:id="@+id/btn_search"
         style="@style/IsbnKeyPad.SearchButton"
         android:text="@android:string/search_go"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/key_0"
         app:layout_constraintTop_toBottomOf="@id/key_9"
-        app:layout_constraintBottom_toBottomOf="parent"
         />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

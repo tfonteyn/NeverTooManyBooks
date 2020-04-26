@@ -247,7 +247,7 @@
             android:id="@+id/edition"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            app:chipSpacingVertical="@dimen/edVertChipSpacing"
+            app:chipSpacingVertical="@dimen/ed_ver_chip_spacing"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_edition"

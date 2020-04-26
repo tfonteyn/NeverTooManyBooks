@@ -49,7 +49,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            app:layout_constraintGuide_begin="@dimen/fieldGuidelineIndent"
+            app:layout_constraintGuide_begin="@dimen/indent_field_guideline"
             />
 
         <androidx.constraintlayout.widget.Group

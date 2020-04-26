@@ -79,7 +79,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 @AcraDialog(
         resText = R.string.acra_resDialogText,
         resTitle = R.string.app_name,
-        resTheme = R.style.AppTheme_DayNight,
+        resTheme = R.style.Theme_App,
         resIcon = R.drawable.ic_warning,
         resCommentPrompt = R.string.acra_resDialogCommentPrompt)
 @AcraCore(

@@ -763,7 +763,7 @@ public class BooksOnBookshelf
         switch (rowGroupId) {
             case BooklistGroup.BOOK: {
                 getMenuInflater().inflate(R.menu.book, menu);
-                getMenuInflater().inflate(R.menu.sm_open_on_site, menu);
+                getMenuInflater().inflate(R.menu.sm_view_on_site, menu);
                 getMenuInflater().inflate(R.menu.sm_search_on_amazon, menu);
 
                 final boolean isRead = rowData.getBoolean(DBDefinitions.KEY_READ);

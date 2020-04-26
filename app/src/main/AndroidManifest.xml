@@ -48,7 +48,7 @@
         android:icon="@drawable/ic_bookshelf3"
         android:label="@string/app_name"
         android:supportsRtl="false"
-        android:theme="@style/AppTheme.DayNight">
+        android:theme="@style/Theme.App">
 
         <!--
             The authorities value must match:
@@ -124,7 +124,7 @@
         <activity android:name=".AuthorWorksActivity" />
         <activity
             android:name=".cropper.CropImageActivity"
-            android:theme="@style/AppTheme.FullScreen" />
+            android:theme="@style/Theme.App.FullScreen" />
         <activity
             android:name=".FTSSearchActivity"
             android:windowSoftInputMode="stateAlwaysHidden|adjustResize" />

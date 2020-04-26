@@ -48,7 +48,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            app:layout_constraintGuide_begin="@dimen/fieldGuidelineIndent"
+            app:layout_constraintGuide_begin="@dimen/indent_field_guideline"
             />
 
         <TextView
@@ -165,7 +165,7 @@
         <TextView
             android:id="@+id/color"
             style="@style/Text.Small"
-            android:layout_marginStart="@dimen/inlineFieldStartMargin"
+            android:layout_marginStart="@dimen/inline_field_start_margin"
             app:layout_constraintStart_toEndOf="@id/format"
             app:layout_constraintTop_toBottomOf="@id/barrier_format"
             app:layout_goneMarginStart="0dp"
@@ -321,7 +321,7 @@
         <TextView
             android:id="@+id/price_listed"
             style="@style/Text.Small"
-            android:layout_marginStart="@dimen/inlineFieldStartMargin"
+            android:layout_marginStart="@dimen/inline_field_start_margin"
             app:layout_constraintStart_toEndOf="@id/date_published"
             app:layout_goneMarginStart="0dp"
             app:layout_constraintTop_toBottomOf="@id/publisher"
@@ -381,7 +381,7 @@
             android:id="@+id/edition"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            app:chipSpacingVertical="@dimen/roVertChipSpacing"
+            app:chipSpacingVertical="@dimen/ro_vert_chip_spacing"
             app:layout_constraintStart_toEndOf="@id/indent_fields"
             app:layout_constraintTop_toBottomOf="@id/first_publication"
             />
@@ -419,7 +419,7 @@
             android:id="@+id/bookshelves"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            app:chipSpacingVertical="@dimen/roVertChipSpacing"
+            app:chipSpacingVertical="@dimen/ro_vert_chip_spacing"
             app:layout_constraintStart_toEndOf="@id/indent_fields"
             app:layout_constraintTop_toBottomOf="@id/lbl_bookshelves"
             />

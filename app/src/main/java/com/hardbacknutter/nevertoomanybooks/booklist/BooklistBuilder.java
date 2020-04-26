@@ -734,6 +734,11 @@ public class BooklistBuilder
         mRowStateDAO.expandAllNodes(topLevel, expand);
     }
 
+    /** Wrapper for {@link RowStateDAO}. */
+    RowStateDAO.Node getNodeByNodeId(final long nodeRowId) {
+        return mRowStateDAO.getNodeByNodeId(nodeRowId);
+    }
+
     /**
      * Toggle (expand/collapse) the given node.
      *

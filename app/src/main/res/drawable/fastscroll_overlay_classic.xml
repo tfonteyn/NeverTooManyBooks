@@ -28,14 +28,14 @@
   -->
 
 <shape xmlns:android="http://schemas.android.com/apk/res/android">
-    <solid android:color="?attr/bob_fs_overlay_background_color" />
+    <solid android:color="?attr/bobFsOverlayBackgroundColor" />
     <stroke
         android:width="@dimen/border1"
         android:color="?attr/colorPrimary" />
     <corners android:radius="@dimen/border2" />
     <padding
-        android:bottom="@dimen/border3"
-        android:left="@dimen/border3"
-        android:right="@dimen/border3"
-        android:top="@dimen/border3" />
+        android:bottom="@dimen/border2"
+        android:left="@dimen/border2"
+        android:right="@dimen/border2"
+        android:top="@dimen/border2" />
 </shape>

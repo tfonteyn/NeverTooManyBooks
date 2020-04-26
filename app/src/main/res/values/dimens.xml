@@ -45,79 +45,6 @@
 <!-- based: 4WVGA (480 x 800; hdpi) - 240dpi -->
 <resources>
 
-    <!-- The ISBN keypad should not stretch beyond a reasonable width. -->
-    <dimen name="isbn_key_pad_width">320dp</dimen>
-    <!-- The ISBN keypad should not stretch beyond a reasonable height. -->
-    <dimen name="isbn_key_pad_height">240dp</dimen>
-
-    <!-- The ISBN keypad backspace button width: 2x icon width. -->
-    <dimen name="isbn_key_pad_backspace_button_width">48dp</dimen>
-    <!-- The ISBN keypad backspace button (no text): center the icon: 1/2 icon width -->
-    <dimen name="isbn_key_pad_backspace_button_icon_padding_left">12dp</dimen>
-
-    <!-- Spacing either for all around, or for bottom/top.
-    But NOT for start/end, for the latter use 'indent' -->
-    <dimen name="border0">2dp</dimen>
-    <dimen name="border1">4dp</dimen>
-    <dimen name="border2">8dp</dimen>
-    <dimen name="border3">16dp</dimen>
-
-    <!-- indent, usually start only, but can be used for end as well. -->
-    <dimen name="indent1">4dp</dimen>
-    <dimen name="indent2">8dp</dimen>
-    <dimen name="indent3">16dp</dimen>
-
-    <!-- indent a radio button as a sub-list (e.g. radio buttons under a checkbox). -->
-    <dimen name="indent_radio_button">16dp</dimen>
-
-    <!-- start margin applied to the 2nd, 3rd.. field on a line of fields. -->
-    <dimen name="inlineFieldStartMargin">16dp</dimen>
-
-    <!-- Guideline layout_constraintGuide_begin for indenting a group of fields. -->
-    <dimen name="fieldGuidelineIndent">8dp</dimen>
-
-    <!-- Around Spacing for read-only chips in a ChipGroup -->
-    <dimen name="roVertChipSpacing">2dp</dimen>
-    <!-- Vertical Spacing for edit-mode chips in a ChipGroup -->
-    <dimen name="edVertChipSpacing">8dp</dimen>
-
-    <!-- The base size for cover images. Get's multiplied with the image-scale preference. -->
-    <dimen name="cover_base_size">30dp</dimen>
-
-    <!-- indent an element so it matches up with the text of a standard size compound button. -->
-    <dimen name="indent_compound_button">32dp</dimen>
-
-    <!-- top margin for the top-level rows; also known as "fat_finger_spacer" -->
-    <dimen name="booklist_row_spacer">4dp</dimen>
-
-    <!-- indent multiplier for the levels in the booklist:
-        paddingIndent = (level-1) * booklist_level_indent -->
-    <dimen name="booklist_level_indent">8dp</dimen>
-
-    <!-- Default and full height of a standard EditView with default text size inside.
-         Used to make other elements the same height.
-         48dp is also == "?attr/minTouchTargetSize" -->
-    <dimen name="edit_text_height">48dp</dimen>
-
-    <!-- The width of an on-screen menu button.
-          Intended to be 'almost' as wide as a phone screen in portrait mode.
-          Should be overridden in bigger-screen dimen.xml files.
-    -->
-    <dimen name="largeMenuButton">320dp</dimen>
-
-    <!-- Import options dialog in landscape mode showing all options.-->
-    <dimen name="import_dialog_landscape_width">580dp</dimen>
-
-
-    <!-- indent an element so it matches up with the text part of a standard size text field
-    which has a drawable at the start/end. -->
-    <dimen name="icon_size">24dp</dimen>
-    <!-- the width for a Button displaying an icon (24dp) and no text. -->
-    <dimen name="icon_button_width">48dp</dimen>
-
-    <!-- elevation for a progress bar. -->
-    <dimen name="progress_z">10dp</dimen>
-
     <!-- Application icon size on the nav panel and startup splash-->
     <dimen name="app_icon">100dp</dimen>
     <!-- Navigation panel header. -->
@@ -125,6 +52,7 @@
     <dimen name="nav_header_vertical_padding">16dp</dimen>
     <dimen name="nav_header_vertical_spacing">8dp</dimen>
     <dimen name="nav_header_height">176dp</dimen>
+
 
     <!-- Spacing around the FAB. -->
     <dimen name="fab_margin">16dp</dimen>
@@ -142,8 +70,7 @@
     <dimen name="cfs_default_thickness">8dp</dimen>
     <dimen name="cfs_margin">0dp</dimen>
     <dimen name="cfs_minimum_range">50dp</dimen>
-
-    <!-- popup text for fast scroller -->
+    <!-- fast scroller popup text -->
     <dimen name="afs_popup_min_size">88dp</dimen>
     <dimen name="afs_popup_margin_end">16dp</dimen>
     <dimen name="afs_popup_text_size">18sp</dimen>
@@ -154,6 +81,86 @@
     <dimen name="afs_md2_popup_padding_end">29dp</dimen>
     <dimen name="afs_md2_popup_elevation">3dp</dimen>
     <dimen name="afs_md2_popup_text_size">18sp</dimen>
+
+
+    <!-- The ISBN keypad should not stretch beyond a reasonable width. -->
+    <dimen name="isbn_key_pad_width">320dp</dimen>
+    <!-- The ISBN keypad should not stretch beyond a reasonable height. -->
+    <dimen name="isbn_key_pad_height">240dp</dimen>
+    <!-- The ISBN keypad backspace button width: 2x icon width. -->
+    <dimen name="isbn_key_pad_backspace_button_width">48dp</dimen>
+    <!-- The ISBN keypad backspace button (no text): center the icon: 1/2 icon width -->
+    <dimen name="isbn_key_pad_backspace_button_icon_padding_left">12dp</dimen>
+
+
+    <!-- The content padding used for the CardView content displaying a Book. -->
+    <dimen name="bob_book_card_padding">2dp</dimen>
+    <!-- top margin for the top-level rows; also known as "fat_finger_spacer" -->
+    <dimen name="bob_row_spacer">4dp</dimen>
+    <!-- indent multiplier for the levels in the booklist:
+        paddingIndent = (level-1) * booklist_level_indent -->
+    <dimen name="bob_level_indent">8dp</dimen>
+
+
+    <!-- elevation for a progress bar. -->
+    <dimen name="progress_z">10dp</dimen>
+
+
+    <!-- Spacing either for all around, or for bottom/top. NOT for start/end, for the latter use 'indent' -->
+    <dimen name="border1">4dp</dimen>
+    <dimen name="border2">8dp</dimen>
+
+    <!-- indent, usually start only, but can be used for end as well. -->
+    <dimen name="indent1">4dp</dimen>
+    <dimen name="indent2">8dp</dimen>
+
+    <!-- indent a radio button as a sub-list; e.g. radio buttons under a checkbox. -->
+    <dimen name="indent_radio_button">16dp</dimen>
+
+    <!-- indent an element so it matches up with the text of a standard size compound button. -->
+    <dimen name="indent_compound_button">32dp</dimen>
+
+    <!-- Guideline layout_constraintGuide_begin for indenting a group of fields. -->
+    <dimen name="indent_field_guideline">8dp</dimen>
+
+
+    <!-- start margin applied to the 2nd, 3rd.. field on a line of fields. -->
+    <dimen name="inline_field_start_margin">16dp</dimen>
+
+    <!-- Margin applied around all TextInputLayout fields. -->
+    <dimen name="envelope_edit_text_margin">2dp</dimen>
+
+
+    <!-- Vertical Spacing for read-only chips in a ChipGroup -->
+    <dimen name="ro_vert_chip_spacing">2dp</dimen>
+    <!-- Vertical Spacing for edit-mode chips in a ChipGroup -->
+    <dimen name="ed_ver_chip_spacing">8dp</dimen>
+
+    <!-- The base size for cover images. Get's multiplied with the image-scale preference. -->
+    <dimen name="cover_base_size">30dp</dimen>
+
+
+    <!-- Default and full height of a standard EditView with default text size inside.
+         Used to make other elements the same height.
+         48dp is also == "?attr/minTouchTargetSize" -->
+    <dimen name="edit_text_height">48dp</dimen>
+
+    <!-- The width of an on-screen menu button.
+          Intended to be 'almost' as wide as a phone screen in portrait mode.
+          Should be overridden in bigger-screen dimen.xml files.
+    -->
+    <dimen name="large_menu_button">320dp</dimen>
+
+    <!-- Import options dialog in landscape mode showing all options.-->
+    <dimen name="import_dialog_landscape_width">580dp</dimen>
+
+    <!-- indent an element so it matches up with the text part of a standard size text field
+    which has a drawable at the start/end. -->
+    <dimen name="icon_size">24dp</dimen>
+    <!-- the width for a Button displaying an icon (24dp) and no text. -->
+    <dimen name="icon_button_width">48dp</dimen>
+
+
 
     <!-- tools only; used to mock reasonable sized images. -->
     <dimen name="tools_cover_small_height">60dp</dimen>

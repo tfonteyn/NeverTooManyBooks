@@ -32,6 +32,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.CursorIndexOutOfBoundsException;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.util.Log;
 import android.util.TypedValue;
@@ -58,6 +59,7 @@ import java.util.Locale;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
+import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
@@ -133,7 +135,7 @@ public class BooklistAdapter
         mStyle = style;
         mCursor = cursor;
         mRowData = new CursorRow(mCursor);
-        mLevelIndent = context.getResources().getDimensionPixelSize(R.dimen.booklist_level_indent);
+        mLevelIndent = context.getResources().getDimensionPixelSize(R.dimen.bob_level_indent);
 
         mFieldsInUse = new FieldsInUse(context, style);
 
@@ -1100,9 +1102,18 @@ public class BooklistAdapter
         @Override
         void onBindViewHolder(@NonNull final RowDataHolder rowData,
                               @NonNull final BooklistStyle style) {
-            // just a reminder the level value is part of the row data should we need it
-            // int level = rowData.getInt(DBDefinitions.KEY_BL_NODE_LEVEL);
             mTextView.setText(format(rowData.getString(mKey)));
+
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_NODE_STATE) {
+                long rowId = rowData.getLong(DBDefinitions.KEY_PK_ID);
+                final RowStateDAO.Node node = ((BooklistCursor) mAdapter.mCursor)
+                        .getBooklistBuilder().getNodeByNodeId(rowId);
+                if (node.isExpanded) {
+                    itemView.setBackgroundColor(Color.GREEN);
+                } else {
+                    itemView.setBackgroundColor(Color.TRANSPARENT);
+                }
+            }
         }
 
         /**

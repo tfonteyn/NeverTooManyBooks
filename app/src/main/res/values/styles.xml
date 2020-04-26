@@ -125,15 +125,6 @@
     <!-- Information (blurb) TextView fields -->
     <!-- *************************************************************************************** -->
 
-    <!-- header/title *inside* a RadioGroup element -->
-    <style name="RadioGroupHeader">
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_marginStart">@dimen/indent1</item>
-        <item name="android:layout_marginEnd">@dimen/indent2</item>
-        <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
-    </style>
-
     <!-- informational piece of text -->
     <style name="Blurb">
         <item name="android:layout_width">0dp</item>
@@ -165,18 +156,19 @@
     </style>
 
     <!-- parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense" -->
+    <!-- parent="Widget.MaterialComponents.TextInputLayout.FilledBox.Dense" -->
     <style name="Envelope.EditText"
         parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_margin">@dimen/border0</item>
+        <item name="android:layout_margin">@dimen/envelope_edit_text_margin</item>
         <item name="endIconMode">clear_text</item>
     </style>
 
     <style name="Envelope.EditText.Isbn">
         <item name="android:hint">@string/lbl_isbn</item>
         <item name="startIconDrawable">@drawable/ic_check</item>
-        <item name="startIconTint">?attr/icon_tint_checked</item>
+        <item name="startIconTint">?attr/iconTintChecked</item>
     </style>
 
     <style name="Envelope.EditText.SeriesNum">
@@ -184,11 +176,14 @@
     </style>
 
     <!-- parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu" -->
+    <!-- parent="Widget.MaterialComponents.TextInputLayout.FilledBox.Dense.ExposedDropdownMenu" -->
     <style name="Envelope.AutoCompleteTextView"
         parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_margin">@dimen/border0</item>
+        <item name="android:layout_margin">@dimen/envelope_edit_text_margin</item>
+        <!-- make the drop down arrow better visible. -->
+        <item name="endIconTint">?attr/colorOnSurface</item>
     </style>
 
     <!-- Base style for all EditText and AutoComplete; not to be used directly in layouts. -->
@@ -387,14 +382,6 @@
         <item name="android:background">?attr/listChoiceBackgroundIndicator</item>
     </style>
 
-    <!-- Used for a dedicated 'help' TextView associated with a Checkable option -->
-    <style name="OptionRow.Checkable.Blurb">
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:paddingStart">@dimen/indent_compound_button</item>
-        <item name="android:paddingEnd">0dp</item>
-        <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
-    </style>
-
     <!-- *************************************************************************************** -->
     <!-- Cover image  -->
     <!-- *************************************************************************************** -->
@@ -439,13 +426,13 @@
     <!-- Generic Indicator. -->
     <style name="Flag.Generic">
         <item name="android:button">@drawable/ic_selector_check</item>
-        <item name="android:buttonTint">?attr/icon_tint_checked</item>
+        <item name="android:buttonTint">?attr/iconTintChecked</item>
     </style>
 
     <!-- Indicator a book has been read. -->
     <style name="Flag.Read">
         <item name="android:button">@drawable/ic_selector_read</item>
-        <item name="android:buttonTint">?attr/icon_tint_checked</item>
+        <item name="android:buttonTint">?attr/iconTintChecked</item>
     </style>
 
     <!-- Indicator a book is a first edition. -->
@@ -515,26 +502,27 @@
         <item name="android:scaleY">0.2</item>
     </style>
 
-    <!-- level + book rows = The row itself. -->
+    <!-- The top container for a book in the booklist. -->
+    <style name="BooklistBook.BookContainer">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_margin">@dimen/border2</item>
+        <item name="contentPadding">@dimen/bob_book_card_padding</item>
+    </style>
+
+    <!-- The content container for a book in the booklist; direct child of the BookContainer. -->
     <style name="BooklistBook.Row">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_marginBottom">0dp</item>
     </style>
 
     <style name="BooklistBook.Row.Level1">
-        <item name="android:layout_marginTop">@dimen/booklist_row_spacer</item>
+        <item name="android:layout_marginTop">@dimen/bob_row_spacer</item>
     </style>
 
     <style name="BooklistBook.Row.Level2">
-        <!--        <item name="android:layout_marginTop">@dimen/border0</item>-->
     </style>
 
     <style name="BooklistBook.Row.Level3">
-        <!--<item name="android:layout_marginTop">@dimen/border0</item>-->
-    </style>
-
-    <style name="BooklistBook.Row.Book" tools:keep="@style/BooklistBook_Row_Book">
-        <item name="android:layout_marginTop">@dimen/border1</item>
     </style>
 
     <!-- Text element in a 'level' header row -->
@@ -562,7 +550,6 @@
     </style>
 
     <style name="BooklistBook.BookInfo.Title">
-        <!--        <item name="android:textIsSelectable">true</item>-->
         <item name="android:padding">@dimen/border1</item>
         <item name="android:textStyle">italic</item>
         <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
@@ -601,9 +588,14 @@
         <item name="android:textColor">?android:attr/textColorPrimaryNoDisable</item>
     </style>
 
-    <!-- Override for the default to allow 2 lines of text. -->
-    <style name="SnackbarText" parent="@style/Widget.MaterialComponents.Snackbar.TextView">
-        <item name="android:maxLines">2</item>
+    <!-- ImageButton -->
+    <style name="InfoButton">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginStart">@dimen/indent1</item>
+        <item name="android:padding">@dimen/border1</item>
+        <item name="android:background">@android:color/transparent</item>
+        <item name="android:src">@drawable/ic_info_outline</item>
     </style>
 
     <!-- Goodreads task/event error message. -->
@@ -617,39 +609,34 @@
         <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
     </style>
 
-    <style name="NavigationView">
+    <!-- Override for the default to allow 2 lines of text. -->
+    <style name="SnackbarText" parent="@style/Widget.MaterialComponents.Snackbar.TextView">
+        <item name="android:maxLines">2</item>
+    </style>
+
+    <style name="NavigationView" parent="Widget.MaterialComponents.NavigationView">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">match_parent</item>
         <item name="android:layout_gravity">start</item>
-        <item name="android:fitsSystemWindows">true</item>
         <item name="headerLayout">@layout/nav_header_main</item>
         <item name="menu">@menu/nav_view</item>
     </style>
 
-    <style name="Toolbar" parent="Widget.MaterialComponents.Toolbar">
+    <style name="Toolbar" parent="Widget.MaterialComponents.Toolbar.Primary">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:background">?attr/colorPrimary</item>
-        <item name="android:elevation">4dp</item>
+        <item name="layout_scrollFlags">scroll|enterAlways</item>
     </style>
 
-    <style name="TabBar" parent="Widget.MaterialComponents.TabLayout">
-        <item name="android:background">?attr/colorSurface</item>
-        <item name="tabIndicatorColor">?attr/colorPrimary</item>
-        <item name="tabTextColor">@color/tab_text_color_selector</item>
-    </style>
-
-    <!-- the root frame for a Dialog -->
-    <style name="DialogFrame" parent="Theme.MaterialComponents.Dialog">
-        <item name="android:background">?attr/colorBackgroundFloating</item>
+    <style name="TabBar" parent="Widget.MaterialComponents.TabLayout.Colored">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:padding">@dimen/border2</item>
+        <item name="tabMode">scrollable</item>
     </style>
 
     <!-- A button as wide as the screen. -->
     <style name="MenuButton" parent="Widget.MaterialComponents.Button">
-        <item name="android:layout_width">@dimen/largeMenuButton</item>
+        <item name="android:layout_width">@dimen/large_menu_button</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_margin">@dimen/border2</item>
     </style>
@@ -672,23 +659,11 @@
         <item name="iconGravity">end</item>
     </style>
 
-    <!-- An EditText where the user can enter a date manually (i.e. android system). -->
-    <style name="ManualDateEntry">
-        <item name="android:layout_width">wrap_content</item>
+    <style name="DialogFrame" parent="MaterialAlertDialog.MaterialComponents.Body.Text">
+        <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_marginStart">@dimen/indent_compound_button</item>
-        <item name="android:ems">10</item>
-        <item name="android:inputType">date</item>
-    </style>
-
-    <!-- ImageButton -->
-    <style name="InfoButton">
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_marginStart">@dimen/indent1</item>
-        <item name="android:padding">@dimen/border1</item>
-        <item name="android:background">@android:color/transparent</item>
-        <item name="android:src">@drawable/ic_info_outline</item>
+        <item name="android:paddingStart">?attr/dialogPreferredPadding</item>
+        <item name="android:paddingEnd">?attr/dialogPreferredPadding</item>
     </style>
 
     <!-- *************************************************************************************** -->

@@ -36,20 +36,22 @@ https://medium.com/androiddevelopers/migrating-to-material-components-for-androi
 
 Full color list:
 https://material.io/design/material-theming/implementing-your-theme.html#color
+
 -->
 <resources>
 
-    <style name="AppTheme.DayNight" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+    <style name="Theme.App" parent="Theme.MaterialComponents.DayNight.NoActionBar">
 
         <!-- =================== -->
         <!-- Theme Color palette -->
         <!-- =================== -->
-        <item name="colorPrimary">@color/blue_grey_200</item>
-        <item name="colorPrimaryVariant">@color/blue_grey_400</item>
+        <item name="colorPrimary">@color/blue_grey_100</item>
+        <item name="colorPrimaryVariant">@color/blue_grey_200</item>
+        <item name="colorPrimaryDark">@color/blue_grey_300</item>
         <item name="colorOnPrimary">@color/black</item>
 
         <item name="colorSecondary">@color/cyan_200</item>
-        <!--        <item name="colorSecondaryVariant">@color/cyan_700</item>-->
+        <item name="colorSecondaryVariant">@color/cyan_300</item>
         <item name="colorOnSecondary">@color/black</item>
 
         <item name="colorSurface">@color/grey_50</item>
@@ -60,31 +62,49 @@ https://material.io/design/material-theming/implementing-your-theme.html#color
         <!--  ======================== -->
         <!-- Component theme overrides -->
         <!--  ======================== -->
+        <item name="materialAlertDialogTheme">@style/ThemeOverlay.App.MaterialAlertDialog</item>
+
         <item name="snackbarTextViewStyle">@style/SnackbarText</item>
 
         <!-- ==================== -->
         <!-- Application specific -->
         <!-- ==================== -->
-        <item name="bob_fs_overlay_text_color">?attr/colorOnPrimary</item>
-        <item name="bob_fs_overlay_background_color">?attr/colorPrimary</item>
+        <item name="bobBookshelfSelectedTextColor">?attr/colorOnPrimary</item>
 
-        <item name="bob_list_header_background_color">@color/blue_grey_50</item>
+        <item name="bobListHeaderBackgroundColor">@color/blue_grey_50</item>
+
+        <item name="bobFsOverlayTextColor">?attr/colorOnPrimary</item>
+        <item name="bobFsOverlayBackgroundColor">?attr/colorPrimary</item>
 
         <!-- gradient used in the Navigation side bar. -->
-        <item name="nav_bar_start_color">@color/blue_grey_400</item>
-        <item name="nav_bar_center_color">@color/blue_grey_100</item>
-        <item name="nav_bar_end_color">@color/blue_grey_50</item>
+        <item name="navBarStartColor">@color/blue_grey_400</item>
+        <item name="navBarCenterColor">@color/blue_grey_100</item>
+        <item name="navBarEndColor">@color/blue_grey_50</item>
 
-        <item name="icon_tint">?attr/colorControlNormal</item>
-        <item name="icon_tint_checked">@color/green_300</item>
-        <item name="icon_tint_completed">@color/teal_300</item>
+        <!-- Do NOT set the global icon tint in light theme! -->
+        <item name="iconTint">@null</item>
+        <item name="iconTintChecked">@color/green_300</item>
+        <item name="iconTintCompleted">@color/teal_300</item>
 
     </style>
 
     <!-- Specific Theme for full screen usage. -->
-    <style name="AppTheme.FullScreen" parent="AppTheme.DayNight">
+    <style name="Theme.App.FullScreen">
         <item name="android:windowFullscreen">true</item>
         <item name="android:windowContentOverlay">@null</item>
+    </style>
+
+    <style name="ThemeOverlay.App.MaterialAlertDialog" parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog">
+        <!--        <item name="colorPrimary">@color/shrine_pink_100</item>-->
+        <!--        <item name="colorSecondary">@color/shrine_pink_100</item>-->
+        <!--        <item name="colorSurface">@color/shrine_pink_light</item>-->
+        <!--        <item name="colorOnSurface">@color/shrine_pink_900</item>-->
+
+        <!--        <item name="alertDialogStyle">@style/MaterialAlertDialog.App</item>-->
+        <!--        <item name="materialAlertDialogTitleTextStyle">@style/MaterialAlertDialog.App.Title.Text</item>-->
+
+        <!--        <item name="buttonBarPositiveButtonStyle">@style/Widget.App.Button</item>-->
+        <!--        <item name="buttonBarNeutralButtonStyle">@style/Widget.App.Button</item>-->
     </style>
 
 </resources>

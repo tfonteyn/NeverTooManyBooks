@@ -193,9 +193,9 @@ public class Field<T, V extends View> {
      * @param keepHidden  keep a field hidden if it's already hidden
      */
     @SuppressWarnings("StatementWithEmptyBody")
-    void setVisibility(@NonNull final View parent,
-                       final boolean hideIfEmpty,
-                       final boolean keepHidden) {
+    public void setVisibility(@NonNull final View parent,
+                              final boolean hideIfEmpty,
+                              final boolean keepHidden) {
 
         View view = mFieldViewAccessor.getView();
 

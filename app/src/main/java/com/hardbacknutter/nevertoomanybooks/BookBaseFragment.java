@@ -194,7 +194,7 @@ public abstract class BookBaseFragment
         }
 
         if (menu.findItem(R.id.SUBMENU_VIEW_BOOK_AT_SITE) == null) {
-            inflater.inflate(R.menu.sm_open_on_site, menu);
+            inflater.inflate(R.menu.sm_view_on_site, menu);
         }
         if (menu.findItem(R.id.SUBMENU_AMAZON_SEARCH) == null) {
             inflater.inflate(R.menu.sm_search_on_amazon, menu);
