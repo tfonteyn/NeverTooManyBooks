@@ -39,6 +39,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Date;
+import java.util.zip.CRC32;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -107,7 +108,16 @@ public class ZipArchiveWriter
             throws IOException {
         final ZipEntry entry = new ZipEntry(name);
         entry.setTime(file.lastModified());
-        entry.setMethod(compress ? ZipEntry.DEFLATED : ZipEntry.STORED);
+        if (compress) {
+            entry.setMethod(ZipEntry.DEFLATED);
+
+        } else {
+            entry.setMethod(ZipEntry.STORED);
+            entry.setSize(file.length());
+            entry.setCompressedSize(file.length());
+            CRC32 crc32 = FileUtils.getCrc32(file);
+            entry.setCrc(crc32.getValue());
+        }
         mOutputStream.putNextEntry(entry);
         try (InputStream is = new FileInputStream(file)) {
             FileUtils.copy(is, mOutputStream);
@@ -124,7 +134,16 @@ public class ZipArchiveWriter
 
         final ZipEntry entry = new ZipEntry(name);
         entry.setTime(new Date().getTime());
-        entry.setMethod(compress ? ZipEntry.DEFLATED : ZipEntry.STORED);
+        if (compress) {
+            entry.setMethod(ZipEntry.DEFLATED);
+        } else {
+            entry.setMethod(ZipEntry.STORED);
+            entry.setSize(bytes.length);
+            entry.setCompressedSize(bytes.length);
+            CRC32 crc32 = new CRC32();
+            crc32.update(bytes);
+            entry.setCrc(crc32.getValue());
+        }
         mOutputStream.putNextEntry(entry);
         try (InputStream is = new ByteArrayInputStream(bytes)) {
             FileUtils.copy(is, mOutputStream);

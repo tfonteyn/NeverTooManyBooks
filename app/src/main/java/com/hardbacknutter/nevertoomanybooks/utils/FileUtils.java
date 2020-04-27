@@ -31,6 +31,7 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
 import android.provider.OpenableColumns;
 import android.util.Log;
 
@@ -47,6 +48,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.channels.FileChannel;
+import java.util.zip.CRC32;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -71,8 +73,12 @@ public final class FileUtils {
 
     /** Log tag. */
     private static final String TAG = "FileUtils";
-    /** buffer size for file copy operations. */
-    private static final int FILE_COPY_BUFFER_SIZE = 65535;
+    /**
+     * Buffer size for file copy operations.
+     * 8192 is what Android 10 android.os.FileUtils.copy uses.
+     */
+    private static final int FILE_COPY_BUFFER_SIZE = 8192;
+
     /** Bytes to Mb: decimal as per <a href="https://en.wikipedia.org/wiki/File_size">IEC</a>. */
     private static final int TO_MEGABYTES = 1_000_000;
     /** Bytes to Kb: decimal as per <a href="https://en.wikipedia.org/wiki/File_size">IEC</a>. */
@@ -137,7 +143,7 @@ public final class FileUtils {
      *
      * @return File written to (the one passed in), or {@code null} if writing failed.
      *
-     * @throws IOException on failure
+     * @throws IOException              on failure
      * @throws ExternalStorageException if the Shared Storage media is not available
      */
     @Nullable
@@ -148,7 +154,7 @@ public final class FileUtils {
         if (is == null) {
             return null;
         }
-        File tmpFile = AppDir.Cache.getFile(context, "stream.jpg");
+        final File tmpFile = AppDir.Cache.getFile(context, "stream.jpg");
         try (OutputStream os = new FileOutputStream(tmpFile)) {
             copy(is, os);
             // rename to real output file
@@ -176,12 +182,12 @@ public final class FileUtils {
                             @NonNull final DocumentFile destDir)
             throws IOException {
 
-        DocumentFile destinationFile = destDir.createFile(mimeType, file.getName());
+        final DocumentFile destinationFile = destDir.createFile(mimeType, file.getName());
         if (destinationFile == null) {
             throw new IOException("destination file was NULL");
         }
 
-        Uri destinationUri = destinationFile.getUri();
+        final Uri destinationUri = destinationFile.getUri();
         try (InputStream is = new FileInputStream(file);
              OutputStream os = context.getContentResolver().openOutputStream(destinationUri)) {
             if (os == null) {
@@ -204,7 +210,7 @@ public final class FileUtils {
                             @NonNull final File source,
                             @NonNull final Uri destUri)
             throws IOException {
-        ContentResolver cr = context.getContentResolver();
+        final ContentResolver cr = context.getContentResolver();
 
         try (InputStream is = new FileInputStream(source);
              OutputStream os = cr.openOutputStream(destUri)) {
@@ -227,7 +233,7 @@ public final class FileUtils {
                                       @NonNull final File destination,
                                       final int copies) {
 
-        String parentDir = source.getParent();
+        final String parentDir = source.getParent();
         // remove the oldest copy
         File previous = new File(parentDir, destination + "." + copies);
         delete(previous);
@@ -276,12 +282,17 @@ public final class FileUtils {
     public static void copy(@NonNull final InputStream is,
                             @NonNull final OutputStream os)
             throws IOException {
-        byte[] buffer = new byte[FILE_COPY_BUFFER_SIZE];
-        int nRead;
-        while ((nRead = is.read(buffer)) > 0) {
-            os.write(buffer, 0, nRead);
+        if (Build.VERSION.SDK_INT >= 29) {
+            android.os.FileUtils.copy(is, os);
+
+        } else {
+            byte[] buffer = new byte[FILE_COPY_BUFFER_SIZE];
+            int nRead;
+            while ((nRead = is.read(buffer)) > 0) {
+                os.write(buffer, 0, nRead);
+            }
+            os.flush();
         }
-        os.flush();
     }
 
     /**
@@ -297,10 +308,10 @@ public final class FileUtils {
     private static void copy2(@NonNull final File source,
                               @NonNull final File destination)
             throws IOException {
-        FileInputStream is = new FileInputStream(source);
-        FileOutputStream os = new FileOutputStream(destination);
-        FileChannel inChannel = is.getChannel();
-        FileChannel outChannel = os.getChannel();
+        final FileInputStream is = new FileInputStream(source);
+        final FileOutputStream os = new FileOutputStream(destination);
+        final FileChannel inChannel = is.getChannel();
+        final FileChannel outChannel = os.getChannel();
 
         try {
             inChannel.transferTo(0, inChannel.size(), outChannel);
@@ -341,21 +352,21 @@ public final class FileUtils {
     public static Pair<String, Long> getUriInfo(@NonNull final Context context,
                                                 @NonNull final Uri uri) {
         if (ContentResolver.SCHEME_CONTENT.equals(uri.getScheme())) {
-            ContentResolver contentResolver = context.getContentResolver();
+            final ContentResolver contentResolver = context.getContentResolver();
             try (Cursor cursor = contentResolver.query(uri, null, null, null, null)) {
                 if (cursor != null && cursor.moveToFirst()) {
-                    String name = cursor.getString(cursor.getColumnIndex(
+                    final String name = cursor.getString(cursor.getColumnIndex(
                             OpenableColumns.DISPLAY_NAME));
-                    long size = cursor.getLong(cursor.getColumnIndex(OpenableColumns.SIZE));
+                    final long size = cursor.getLong(cursor.getColumnIndex(OpenableColumns.SIZE));
                     if (name != null && !name.isEmpty()) {
                         return new Pair<>(name, size);
                     }
                 }
             }
         } else if (ContentResolver.SCHEME_FILE.equals(uri.getScheme())) {
-            String path = uri.getPath();
+            final String path = uri.getPath();
             if (path != null) {
-                File file = new File(path);
+                final File file = new File(path);
                 if (file.exists()) {
                     return new Pair<>(file.getName(), file.length());
                 }
@@ -363,5 +374,27 @@ public final class FileUtils {
         }
 
         return null;
+    }
+
+    /**
+     * Calculate the CRC32 checksum for the given file.
+     *
+     * @param file to parse
+     *
+     * @return crc32
+     *
+     * @throws IOException on failure
+     */
+    public static CRC32 getCrc32(@NonNull final File file)
+            throws IOException {
+        final CRC32 crc32 = new CRC32();
+        final byte[] buffer = new byte[FILE_COPY_BUFFER_SIZE];
+        try (final InputStream is = new FileInputStream(file)) {
+            int nRead;
+            while ((nRead = is.read(buffer)) > 0) {
+                crc32.update(buffer, 0, nRead);
+            }
+        }
+        return crc32;
     }
 }
