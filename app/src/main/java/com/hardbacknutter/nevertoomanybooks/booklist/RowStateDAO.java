@@ -1088,11 +1088,11 @@ public class RowStateDAO {
 
 
     /**
-     * The state we want a node to become.
+     * The state we want a node to <strong>become</strong>.
      */
     public enum DesiredNodeState {
-        Expand,
-        Collapse,
+        Expanded,
+        Collapsed,
         Toggle
     }
 
@@ -1144,13 +1144,17 @@ public class RowStateDAO {
                    + ',' + table.dot(KEY_BL_NODE_VISIBLE);
         }
 
-        public void setExpanded(@NonNull final DesiredNodeState nodeState) {
-            // Decide what the new state for the node should be.
-            switch (nodeState) {
-                case Collapse:
+        /**
+         * Update the current state.
+         *
+         * @param desiredNodeState the new state for the node
+         */
+        public void setExpanded(@NonNull final DesiredNodeState desiredNodeState) {
+            switch (desiredNodeState) {
+                case Collapsed:
                     isExpanded = false;
                     break;
-                case Expand:
+                case Expanded:
                     isExpanded = true;
                     break;
 

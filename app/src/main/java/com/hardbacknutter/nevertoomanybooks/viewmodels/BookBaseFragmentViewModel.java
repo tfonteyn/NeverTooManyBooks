@@ -99,13 +99,21 @@ public abstract class BookBaseFragmentViewModel
         mCurrentCoverHandlerIndex = currentCoverHandlerIndex;
     }
 
-    /** Observable. */
+    /**
+     * Called when a task wants to display a user message.
+     *
+     * @return Observable: string to display
+     */
     @NonNull
     public MutableLiveData<String> onUserMessage() {
         return mUserMessage;
     }
 
-    /** Observable. */
+    /**
+     * Called when a task needs Goodreads access, and current has no access.
+     *
+     * @return Observable: {@code true} when access is needed
+     */
     @NonNull
     public MutableLiveData<Boolean> onNeedsGoodreads() {
         return mNeedsGoodreads;

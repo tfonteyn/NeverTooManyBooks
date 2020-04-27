@@ -30,6 +30,7 @@ package com.hardbacknutter.nevertoomanybooks.settings.sites;
 import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.annotation.Nullable;
 import androidx.preference.Preference;
 
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -41,8 +42,8 @@ public class LibraryThingPreferencesFragment
         extends BasePreferenceFragment {
 
     @Override
-    public void onCreatePreferences(final Bundle savedInstanceState,
-                                    final String rootKey) {
+    public void onCreatePreferences(@Nullable final Bundle savedInstanceState,
+                                    @Nullable final String rootKey) {
 
         setPreferencesFromResource(R.xml.preferences_site_library_thing, rootKey);
     }

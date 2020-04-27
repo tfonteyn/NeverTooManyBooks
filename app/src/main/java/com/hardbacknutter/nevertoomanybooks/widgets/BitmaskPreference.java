@@ -124,7 +124,7 @@ public class BitmaskPreference
     }
 
     @Override
-    public void setValues(final Set<String> values) {
+    public void setValues(@NonNull final Set<String> values) {
         if (isActive()) {
             getSharedPreferences().edit().putBoolean(getKey() + ACTIVE, true).apply();
             super.setValues(values);

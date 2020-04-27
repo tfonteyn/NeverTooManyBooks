@@ -315,7 +315,7 @@ public class UpdateFieldsModel
      *
      * @param context Current context
      */
-    public void resetPreferences(final Context context) {
+    public void resetPreferences(@NonNull final Context context) {
         for (FieldUsage fieldUsage : mFieldUsages.values()) {
             fieldUsage.reset();
         }

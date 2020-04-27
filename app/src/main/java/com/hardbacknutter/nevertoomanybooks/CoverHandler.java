@@ -655,6 +655,7 @@ class CoverHandler {
         }
 
         @Override
+        @NonNull
         protected Boolean doInBackground(final Void... voids) {
             Thread.currentThread().setName(TAG);
             final Context context = App.getTaskContext();
@@ -663,7 +664,7 @@ class CoverHandler {
         }
 
         @Override
-        protected void onPostExecute(final Boolean success) {
+        protected void onPostExecute(@NonNull final Boolean success) {
             if (mProgressBar.get() != null) {
                 mProgressBar.get().setVisibility(View.GONE);
             }

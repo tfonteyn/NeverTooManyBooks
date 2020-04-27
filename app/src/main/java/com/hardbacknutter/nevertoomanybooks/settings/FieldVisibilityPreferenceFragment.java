@@ -32,6 +32,7 @@ import android.os.Bundle;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.hardbacknutter.nevertoomanybooks.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -43,8 +44,8 @@ public class FieldVisibilityPreferenceFragment
         extends BasePreferenceFragment {
 
     @Override
-    public void onCreatePreferences(final Bundle savedInstanceState,
-                                    final String rootKey) {
+    public void onCreatePreferences(@Nullable final Bundle savedInstanceState,
+                                    @Nullable final String rootKey) {
 
         setPreferencesFromResource(R.xml.preferences_field_visibility, rootKey);
     }

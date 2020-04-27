@@ -69,6 +69,7 @@ public final class Prefs {
 
     /** User preference Key. */
     public static final String pk_ui_locale = "ui.locale";
+    /** Not the actual theme, but the day/night part only. */
     public static final String pk_ui_theme = "ui.theme";
     public static final String pk_network_allow_metered = "network.allow.metered";
     public static final String pk_scanner_preferred = "scanner.preferred";

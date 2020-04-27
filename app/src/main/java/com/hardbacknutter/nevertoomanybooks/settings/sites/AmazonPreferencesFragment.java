@@ -29,6 +29,8 @@ package com.hardbacknutter.nevertoomanybooks.settings.sites;
 
 import android.os.Bundle;
 
+import androidx.annotation.Nullable;
+
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.settings.BasePreferenceFragment;
 
@@ -36,8 +38,8 @@ public class AmazonPreferencesFragment
         extends BasePreferenceFragment {
 
     @Override
-    public void onCreatePreferences(final Bundle savedInstanceState,
-                                    final String rootKey) {
+    public void onCreatePreferences(@Nullable final Bundle savedInstanceState,
+                                    @Nullable final String rootKey) {
 
         setPreferencesFromResource(R.xml.preferences_site_amazon, rootKey);
     }

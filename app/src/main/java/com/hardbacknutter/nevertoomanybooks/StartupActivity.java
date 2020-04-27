@@ -256,7 +256,7 @@ public class StartupActivity
         final Intent main = new Intent(this, BooksOnBookshelf.class);
 
         if (mModel.isBackupRequired()) {
-            main.putExtra(BooksOnBookshelf.START_BACKUP, true);
+            main.putExtra(BooksOnBookshelf.BKEY_START_BACKUP, true);
         }
         startActivity(main);
 

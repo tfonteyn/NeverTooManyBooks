@@ -945,7 +945,7 @@ public class SearchCoordinator
      * @param context Current context
      * @param site    to read
      */
-    private void accumulateSiteData(final Context context,
+    private void accumulateSiteData(@NonNull final Context context,
                                     @NonNull final Site site) {
         Bundle siteData = mSearchResults.get(site.id);
         if (siteData == null || siteData.isEmpty()) {

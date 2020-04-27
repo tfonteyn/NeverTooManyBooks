@@ -336,9 +336,9 @@ public class BookViewModel
      *
      * @return {@code true} if the Series is only used by this book
      */
-    public boolean isSingleUsage(final Context context,
-                                 final Series series,
-                                 final Locale bookLocale) {
+    public boolean isSingleUsage(@NonNull final Context context,
+                                 @NonNull final Series series,
+                                 @NonNull final Locale bookLocale) {
         final long nrOfReferences = mDb.countBooksInSeries(context, series, bookLocale);
         return nrOfReferences <= (mBook.isNew() ? 0 : 1);
     }

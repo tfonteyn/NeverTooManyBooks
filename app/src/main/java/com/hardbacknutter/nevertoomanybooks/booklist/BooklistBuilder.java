@@ -206,9 +206,8 @@ public class BooklistBuilder
         mBookshelf = bookshelf;
         // The filter will only be added if the current style does not contain the Bookshelf group.
         if (!bookshelf.isAllBooks() && !mStyle.containsGroup(BooklistGroup.BOOKSHELF)) {
-            mFilters.add(
-                    (final Context context) -> '(' + TBL_BOOKSHELF.dot(KEY_PK_ID) + '=' + bookshelf
-                            .getId() + ')');
+            mFilters.add((context) -> '(' + TBL_BOOKSHELF.dot(KEY_PK_ID) + '=' + bookshelf.getId()
+                                      + ')');
         }
 
         // Get the database and create a statements collection
@@ -303,13 +302,12 @@ public class BooklistBuilder
      */
     public void setFilterOnLoanedToPerson(@Nullable final String filter) {
         if (filter != null && !filter.trim().isEmpty()) {
-            mFilters.add(
-                    (final Context context) -> "EXISTS(SELECT NULL FROM " + TBL_BOOK_LOANEE.ref()
-                                               + " WHERE "
-                                               + TBL_BOOK_LOANEE.dot(KEY_LOANEE)
-                                               + "=`" + DAO.encodeString(filter) + '`'
-                                               + " AND " + TBL_BOOK_LOANEE.fkMatch(TBL_BOOKS)
-                                               + ')');
+            mFilters.add((context) -> "EXISTS(SELECT NULL FROM " + TBL_BOOK_LOANEE.ref()
+                                      + " WHERE "
+                                      + TBL_BOOK_LOANEE.dot(KEY_LOANEE)
+                                      + "=`" + DAO.encodeString(filter) + '`'
+                                      + " AND " + TBL_BOOK_LOANEE.fkMatch(TBL_BOOKS)
+                                      + ')');
         }
     }
 
@@ -745,6 +743,8 @@ public class BooklistBuilder
      * @param nodeRowId          of the node in the list
      * @param desiredNodeState   the state to set the node to
      * @param relativeChildLevel up to and including this (relative to the node) child level;
+     *
+     * @return {@code true} if the new state is expanded; {@code false} if collapsed
      */
     public boolean toggleNode(final long nodeRowId,
                               final RowStateDAO.DesiredNodeState desiredNodeState,
@@ -1154,7 +1154,7 @@ public class BooklistBuilder
          *
          * @param context Current context
          */
-        private String buildWhere(final Context context) {
+        private String buildWhere(@NonNull final Context context) {
             StringBuilder where = new StringBuilder();
 
             for (Filter filter : mFilters) {
