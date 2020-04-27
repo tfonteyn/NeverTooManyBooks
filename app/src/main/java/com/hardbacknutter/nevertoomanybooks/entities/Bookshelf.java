@@ -35,6 +35,8 @@ import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.preference.PreferenceManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -44,7 +46,9 @@ import java.util.Objects;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.hardbacknutter.nevertoomanybooks.BooksOnBookshelf;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.booklist.BooklistAdapter;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyle;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
@@ -78,6 +82,7 @@ public class Bookshelf
     public static final int ALL_BOOKS = -1;
     /** The user preferred shelf as stored in preferences. */
     public static final int PREFERRED = -2;
+
     /**
      * Preference name - the bookshelf to load next time we startup.
      * Storing the name and not the id. If you export/import... the id will be different.
@@ -94,6 +99,24 @@ public class Bookshelf
      */
     @NonNull
     private String mStyleUuid;
+
+    /**
+     * Saved adapter row id of top row.
+     * See {@link BooksOnBookshelf}#displayList}
+     */
+    private long mTopRowId;
+
+    /**
+     * Saved adapter position of top row.
+     * See {@link BooksOnBookshelf}#displayList}
+     */
+    private int mTopItemPosition = RecyclerView.NO_POSITION;
+
+    /**
+     * Saved view offset of top row.
+     * See {@link BooksOnBookshelf}#displayList}
+     */
+    private int mTopViewOffset;
 
     /**
      * Constructor without ID.
@@ -135,6 +158,10 @@ public class Bookshelf
         mId = id;
         mName = rowData.getString(DBDefinitions.KEY_BOOKSHELF_NAME);
         mStyleUuid = rowData.getString(DBDefinitions.KEY_UUID);
+
+        mTopItemPosition = rowData.getInt(DBDefinitions.KEY_BOOKSHELF_BL_TOP_POS);
+        mTopViewOffset = rowData.getInt(DBDefinitions.KEY_BOOKSHELF_BL_TOP_OFFSET);
+        mTopRowId = rowData.getLong(DBDefinitions.KEY_BOOKSHELF_BL_TOP_ROW_ID);
     }
 
     /**
@@ -148,6 +175,10 @@ public class Bookshelf
         mName = in.readString();
         //noinspection ConstantConditions
         mStyleUuid = in.readString();
+
+        mTopItemPosition = in.readInt();
+        mTopViewOffset = in.readInt();
+        mTopRowId = in.readLong();
     }
 
     /**
@@ -252,7 +283,7 @@ public class Bookshelf
         style.setDefault(context);
 
         mStyleUuid = style.getUuid();
-        long styleId = getStyle(context, db).getId();
+        final long styleId = getStyle(context, db).getId();
         db.updateOrInsertBookshelf(context, this, styleId);
     }
 
@@ -272,6 +303,60 @@ public class Bookshelf
         // the previous uuid might have been overruled so we always refresh it
         mStyleUuid = style.getUuid();
         return style;
+    }
+
+    /**
+     * Get the stored position to use for re-displaying this bookshelf's booklist.
+     *
+     * @return value for {@link LinearLayoutManager#scrollToPosition(int)}
+     * or {@link LinearLayoutManager#scrollToPositionWithOffset(int, int)}
+     */
+    public int getTopItemPosition() {
+        return mTopItemPosition;
+    }
+
+    /**
+     * Get the stored position to use for re-displaying this bookshelf's booklist.
+     *
+     * @return value for {@link LinearLayoutManager#scrollToPositionWithOffset(int, int)}
+     */
+    public int getTopViewOffset() {
+        return mTopViewOffset;
+    }
+
+    /**
+     * The rowId is of temporary use and will likely be removed soon.
+     *
+     * @return the row id which was displayed on the top position.
+     */
+    public long getTopRowId() {
+        return mTopRowId;
+    }
+
+    /**
+     * Store the current position of the booklist displaying this bookshelf.
+     * <p>
+     * The rowId is of temporary use and will likely be removed soon.
+     *
+     * @param context       Current context
+     * @param db            Database Access
+     * @param position      Value of {@link LinearLayoutManager#findFirstVisibleItemPosition}
+     * @param topViewOffset Value of {@link RecyclerView#getChildAt(int)} #getTop()
+     * @param rowId         Value of {@link BooklistAdapter#getItemId(int)} for position
+     */
+    public void setTopListPosition(@NonNull final Context context,
+                                   @NonNull final DAO db,
+                                   final int position,
+                                   final int topViewOffset,
+                                   final long rowId) {
+        mTopItemPosition = position;
+        mTopViewOffset = topViewOffset;
+        mTopRowId = rowId;
+
+        // not strictly needed to refresh the style id, but we might as well take
+        // the opportunity to validate it.
+        final long styleId = getStyle(context, db).getId();
+        db.updateOrInsertBookshelf(context, this, styleId);
     }
 
     /**
@@ -297,6 +382,9 @@ public class Bookshelf
     public void copyFrom(@NonNull final Bookshelf source) {
         mName = source.mName;
         mStyleUuid = source.mStyleUuid;
+        mTopItemPosition = source.mTopItemPosition;
+        mTopViewOffset = source.mTopViewOffset;
+        mTopRowId = source.mTopRowId;
     }
 
     @SuppressWarnings("SameReturnValue")
@@ -311,16 +399,21 @@ public class Bookshelf
         dest.writeLong(mId);
         dest.writeString(mName);
         dest.writeString(mStyleUuid);
+
+        dest.writeInt(mTopItemPosition);
+        dest.writeInt(mTopViewOffset);
+        dest.writeLong(mTopRowId);
     }
 
     /**
      * Write the extra data to the JSON object.
+     * Positions are not saved.
      *
      * @param data which {@link #fromJson(JSONObject)} will read
      *
      * @throws JSONException on failure
      */
-    public void toJson(final JSONObject data)
+    public void toJson(@NonNull final JSONObject data)
             throws JSONException {
         if (!mStyleUuid.isEmpty()) {
             data.put(DBDefinitions.KEY_FK_STYLE, mStyleUuid);
@@ -379,7 +472,8 @@ public class Bookshelf
      * <p>
      * <li>it's the same Object</li>
      * <li>one or both of them are 'new' (e.g. id == 0) or have the same id<br>
-     * AND all other fields are equal</li>
+     * AND their names are equal</li>
+     * <li>Style and positions are ignored</li>
      * <p>
      * Compare is CASE SENSITIVE ! This allows correcting case mistakes even with identical id.
      */
@@ -405,6 +499,9 @@ public class Bookshelf
         return "Bookshelf{"
                + "mId=" + mId
                + ", mName=`" + mName + '`'
+               + ", mTopItemPosition=" + mTopItemPosition
+               + ", mTopViewOffset=" + mTopViewOffset
+               + ", mTopRowId=" + mTopRowId
                + ", mStyleUuid=" + mStyleUuid
                + '}';
     }

@@ -97,6 +97,9 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_AU
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_AUTHOR_GIVEN_NAMES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_AUTHOR_GIVEN_NAMES_OB;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_AUTHOR_IS_COMPLETE;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOKSHELF_BL_TOP_OFFSET;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOKSHELF_BL_TOP_POS;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOKSHELF_BL_TOP_ROW_ID;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOKSHELF_NAME;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOK_AUTHOR_POSITION;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOK_AUTHOR_TYPE_BITMASK;
@@ -2182,6 +2185,9 @@ public class DAO
         try (SynchronizedStatement stmt = sSyncedDb.compileStatement(SqlInsert.BOOKSHELF)) {
             stmt.bindString(1, bookshelf.getName());
             stmt.bindLong(2, styleId);
+            stmt.bindLong(3, bookshelf.getTopItemPosition());
+            stmt.bindLong(4, bookshelf.getTopViewOffset());
+            stmt.bindLong(5, bookshelf.getTopRowId());
             long iId = stmt.executeInsert();
             if (iId > 0) {
                 bookshelf.setId(iId);
@@ -2322,9 +2328,12 @@ public class DAO
      */
     public boolean updateBookshelf(@NonNull final Bookshelf bookshelf,
                                    final long styleId) {
-
         ContentValues cv = new ContentValues();
         cv.put(KEY_BOOKSHELF_NAME, bookshelf.getName());
+        cv.put(KEY_BOOKSHELF_BL_TOP_POS, bookshelf.getTopItemPosition());
+        cv.put(KEY_BOOKSHELF_BL_TOP_OFFSET, bookshelf.getTopViewOffset());
+        cv.put(KEY_BOOKSHELF_BL_TOP_ROW_ID, bookshelf.getTopRowId());
+
         cv.put(KEY_FK_STYLE, styleId);
 
         return 0 < sSyncedDb.update(TBL_BOOKSHELF.getName(), cv,
@@ -4214,6 +4223,9 @@ public class DAO
         private static final String BOOKSHELVES =
                 "SELECT " + TBL_BOOKSHELF.dot(KEY_PK_ID)
                 + ',' + TBL_BOOKSHELF.dot(KEY_BOOKSHELF_NAME)
+                + ',' + TBL_BOOKSHELF.dot(KEY_BOOKSHELF_BL_TOP_POS)
+                + ',' + TBL_BOOKSHELF.dot(KEY_BOOKSHELF_BL_TOP_OFFSET)
+                + ',' + TBL_BOOKSHELF.dot(KEY_BOOKSHELF_BL_TOP_ROW_ID)
                 + ',' + TBL_BOOKSHELF.dot(KEY_FK_STYLE)
                 + ',' + TBL_BOOKLIST_STYLES.dot(KEY_UUID)
                 + _FROM_ + TBL_BOOKSHELF.ref() + TBL_BOOKSHELF.join(TBL_BOOKLIST_STYLES);
@@ -4346,6 +4358,9 @@ public class DAO
                 "SELECT DISTINCT "
                 + TBL_BOOKSHELF.dot(KEY_PK_ID)
                 + ',' + TBL_BOOKSHELF.dot(KEY_BOOKSHELF_NAME)
+                + ',' + TBL_BOOKSHELF.dot(KEY_BOOKSHELF_BL_TOP_POS)
+                + ',' + TBL_BOOKSHELF.dot(KEY_BOOKSHELF_BL_TOP_OFFSET)
+                + ',' + TBL_BOOKSHELF.dot(KEY_BOOKSHELF_BL_TOP_ROW_ID)
                 + ',' + TBL_BOOKSHELF.dot(KEY_FK_STYLE)
                 + ',' + TBL_BOOKLIST_STYLES.dot(KEY_UUID)
 
@@ -4677,7 +4692,11 @@ public class DAO
                 "INSERT INTO " + TBL_BOOKSHELF.getName()
                 + '(' + KEY_BOOKSHELF_NAME
                 + ',' + KEY_FK_STYLE
-                + ") VALUES (?,?)";
+                + ',' + KEY_BOOKSHELF_BL_TOP_POS
+                + ',' + KEY_BOOKSHELF_BL_TOP_OFFSET
+                + ',' + KEY_BOOKSHELF_BL_TOP_ROW_ID
+
+                + ") VALUES (?,?,?,?,?)";
 
         static final String AUTHOR =
                 "INSERT INTO " + TBL_AUTHORS.getName()

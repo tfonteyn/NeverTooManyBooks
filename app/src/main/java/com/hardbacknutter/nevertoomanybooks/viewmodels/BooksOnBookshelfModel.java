@@ -44,7 +44,6 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 import androidx.preference.PreferenceManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
@@ -88,15 +87,6 @@ public class BooksOnBookshelfModel
     private static final String TAG = "BooksOnBookshelfModel";
     /** collapsed/expanded. */
     public static final String BKEY_LIST_STATE = TAG + ":list.state";
-
-    private static final String PREF_PREFIX = "booklist.";
-
-    /** Preference name - Saved adapter position of current top row. */
-    private static final String PREF_BOB_TOP_ITEM_POSITION = PREF_PREFIX + "top.row";
-    /** Preference name - Saved rowId of current top row. */
-    private static final String PREF_BOB_TOP_ROW_ID = PREF_PREFIX + "top.rowId";
-    /** Preference name - Saved position of last top row offset from view top. */
-    private static final String PREF_BOB_TOP_VIEW_OFFSET = PREF_PREFIX + "top.offset";
 
     /** The fixed list of domains we always need in {@link #buildBookList}. */
     private static final List<VirtualDomain> FIXED_DOMAIN_LIST = Arrays.asList(
@@ -182,16 +172,7 @@ public class BooksOnBookshelfModel
      * Used to call {@link GetBookListTask}. Reset afterwards.
      */
     private long mDesiredCentralBookId;
-    /**
-     * Saved adapter position of top row.
-     * See {@link LinearLayoutManager#scrollToPosition(int)}
-     */
-    private int mItemPosition = RecyclerView.NO_POSITION;
-    /**
-     * Saved view offset of top row.
-     * See {@link LinearLayoutManager#scrollToPositionWithOffset(int, int)}
-     */
-    private int mTopViewOffset;
+
     /** Used by onScroll to detect when the top row has actually changed. */
     private int mPreviousFirstVisibleItemPosition = RecyclerView.NO_POSITION;
     /** Preferred booklist state in next rebuild. */
@@ -244,7 +225,7 @@ public class BooksOnBookshelfModel
                     mShowProgressBar.setValue(false);
                 }
             };
-    private long mTopRowRowId;
+
 
     /**
      * Get the current preferred rebuild state for the list.
@@ -307,12 +288,7 @@ public class BooksOnBookshelfModel
                                                BooklistBuilder.PREF_REBUILD_SAVED_STATE);
         }
 
-        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        // Restore list position on bookshelf
-        mTopRowRowId = prefs.getLong(PREF_BOB_TOP_ROW_ID, 0);
-        mItemPosition = prefs.getInt(PREF_BOB_TOP_ITEM_POSITION, RecyclerView.NO_POSITION);
-        mTopViewOffset = prefs.getInt(PREF_BOB_TOP_VIEW_OFFSET, 0);
-        // and set the last/preferred bookshelf
+        // Set the last/preferred bookshelf
         mCurrentBookshelf =
                 Bookshelf.getBookshelf(context, mDb, Bookshelf.PREFERRED, Bookshelf.ALL_BOOKS);
     }
@@ -437,18 +413,6 @@ public class BooksOnBookshelfModel
         mRebuildState = getPreferredListRebuildState(context);
     }
 
-    public int getItemPosition() {
-        return mItemPosition;
-    }
-
-    public long getTopRowRowId() {
-        return mTopRowRowId;
-    }
-
-    public int getTopViewOffset() {
-        return mTopViewOffset;
-    }
-
     public int getPreviousFirstVisibleItemPosition() {
         return mPreviousFirstVisibleItemPosition;
     }
@@ -467,24 +431,16 @@ public class BooksOnBookshelfModel
      *
      * @param context       Current context
      * @param position      adapter list position; i.e. first visible position in the list
-     * @param rowId         the row id for that position
      * @param topViewOffset offset in pixels for the first visible position in the list
+     * @param rowId         the row id for that position
      */
     public void saveListPosition(@NonNull final Context context,
                                  final int position,
-                                 final long rowId,
-                                 final int topViewOffset) {
+                                 final int topViewOffset,
+                                 final long rowId) {
         if (mListHasBeenLoaded) {
-            mItemPosition = position;
-            mTopRowRowId = rowId;
-
-            mTopViewOffset = topViewOffset;
-
-            PreferenceManager.getDefaultSharedPreferences(context).edit()
-                             .putInt(PREF_BOB_TOP_ITEM_POSITION, mItemPosition)
-                             .putLong(PREF_BOB_TOP_ROW_ID, mTopRowRowId)
-                             .putInt(PREF_BOB_TOP_VIEW_OFFSET, mTopViewOffset)
-                             .apply();
+            Objects.requireNonNull(mCurrentBookshelf, ErrorMsg.NULL_CURRENT_BOOKSHELF);
+            mCurrentBookshelf.setTopListPosition(context, mDb, position, topViewOffset, rowId);
         }
     }
 
@@ -498,7 +454,7 @@ public class BooksOnBookshelfModel
 
         mShowProgressBar.setValue(true);
 
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         final BooklistStyle style = mCurrentBookshelf.getStyle(context, mDb);
 
         // get a new builder and add the required domains
@@ -775,19 +731,31 @@ public class BooksOnBookshelfModel
         return false;
     }
 
-    /** Observable. */
+    /**
+     * Called when a task wants to display a user message.
+     *
+     * @return Observable: string to display
+     */
     @NonNull
     public MutableLiveData<String> onUserMessage() {
         return mUserMessage;
     }
 
-    /** Observable. */
+    /**
+     * Called when a task needs Goodreads access, and current has no access.
+     *
+     * @return Observable: {@code true} when access is needed
+     */
     @NonNull
     public MutableLiveData<Boolean> onNeedsGoodreads() {
         return mNeedsGoodreads;
     }
 
-    /** Observable. */
+    /**
+     * Called when a task wants to display (or hide) a progressbar.
+     *
+     * @return Observable: {@code true} to display, {@code false} to hide
+     */
     @NonNull
     public MutableLiveData<Boolean> onShowProgressBar() {
         return mShowProgressBar;
@@ -847,6 +815,8 @@ public class BooksOnBookshelfModel
      * @param rowId              of the node in the list
      * @param desiredNodeState   the state to set the node to
      * @param relativeChildLevel up to and including this (relative to the node) child level;
+     *
+     * @return {@code true} if the new state is expanded; {@code false} if collapsed
      */
     public boolean toggleNode(final long rowId,
                               final RowStateDAO.DesiredNodeState desiredNodeState,
@@ -871,11 +841,6 @@ public class BooksOnBookshelfModel
                                final boolean expand) {
         Objects.requireNonNull(mCursor, ErrorMsg.NULL_CURSOR);
         mCursor.getBooklistBuilder().expandAllNodes(topLevel, expand);
-    }
-
-    public void saveAllNodes() {
-        Objects.requireNonNull(mCursor, ErrorMsg.NULL_CURSOR);
-        mCursor.getBooklistBuilder().saveAllNodes();
     }
 
     public void saveStyle(@NonNull final BooklistStyle style) {
@@ -1164,6 +1129,7 @@ public class BooksOnBookshelfModel
         /** Holds the input/output and output-only fields to be returned to the activity. */
         @NonNull
         private final BuilderResult mResultsHolder;
+        /** The row id we want the new list to display more-or-less in the center. */
         private final long mDesiredCentralBookId;
         @Nullable
         private final BooklistCursor mCurrentListCursor;

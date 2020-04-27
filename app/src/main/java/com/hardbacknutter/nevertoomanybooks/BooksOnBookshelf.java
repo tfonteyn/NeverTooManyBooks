@@ -159,7 +159,8 @@ public class BooksOnBookshelf
 
     /** Log tag. */
     private static final String TAG = "BooksOnBookshelf";
-    public static final String START_BACKUP = TAG + ":startBackup";
+    public static final String BKEY_START_BACKUP = TAG + ":startBackup";
+
     /**
      * List header.
      * Views for the current row level-text.
@@ -197,6 +198,8 @@ public class BooksOnBookshelf
                                     parent.getItemAtPosition(position);
 
                     if (selected != null) {
+                        saveListPosition();
+
                         // make the new shelf the current, and build the new list
                         mModel.setCurrentBookshelf(BooksOnBookshelf.this,
                                                    selected.getBookshelf());
@@ -532,7 +535,7 @@ public class BooksOnBookshelf
         handleStandardSearchIntent(getIntent());
 
         // auto-start a backup if required.
-        if (getIntent().getBooleanExtra(START_BACKUP, false)) {
+        if (getIntent().getBooleanExtra(BKEY_START_BACKUP, false)) {
             exportShowOptions();
 
         } else if (savedInstanceState == null) {
@@ -1145,7 +1148,7 @@ public class BooksOnBookshelf
 
             case R.id.MENU_LEVEL_EXPAND: {
                 final long rowId = rowData.getInt(DBDefinitions.KEY_BL_LIST_VIEW_ROW_ID);
-                toggleNode(position, rowId, RowStateDAO.DesiredNodeState.Expand,
+                toggleNode(position, rowId, RowStateDAO.DesiredNodeState.Expanded,
                            mModel.getCurrentStyle(this).getGroupCount());
                 return true;
             }
@@ -1348,7 +1351,6 @@ public class BooksOnBookshelf
         mListView.setAdapter(null);
         mAdapter = null;
 
-
         // Update the list of bookshelves + set the current bookshelf.
         // If the shelf was changed, it will have triggered a rebuild.
         // This also takes care of the initial build.
@@ -1404,20 +1406,20 @@ public class BooksOnBookshelf
     }
 
     private void addBySearch(@NonNull final String tag) {
-        Intent intent = new Intent(this, BookSearchActivity.class)
+        final Intent intent = new Intent(this, BookSearchActivity.class)
                 .putExtra(BaseActivity.BKEY_FRAGMENT_TAG, tag);
         startActivityForResult(intent, RequestCode.BOOK_SEARCH);
     }
 
     private void addByIsbn(final boolean scanMode) {
-        Intent intent = new Intent(this, BookSearchActivity.class)
+        final Intent intent = new Intent(this, BookSearchActivity.class)
                 .putExtra(BaseActivity.BKEY_FRAGMENT_TAG, BookSearchByIsbnFragment.TAG)
                 .putExtra(BookSearchByIsbnFragment.BKEY_SCAN_MODE, scanMode);
         startActivityForResult(intent, RequestCode.BOOK_SEARCH);
     }
 
     private void addManually() {
-        Intent intent = new Intent(this, EditBookActivity.class);
+        final Intent intent = new Intent(this, EditBookActivity.class);
         startActivityForResult(intent, RequestCode.BOOK_EDIT);
     }
 
@@ -1461,7 +1463,7 @@ public class BooksOnBookshelf
         final boolean isExpanded = mModel.toggleNode(rowId, desiredNodeState, relativeChildLevel);
 
         // make sure the cursor has valid rows for the new position.
-        Cursor cursor = mModel.getListCursor();
+        final Cursor cursor = mModel.getListCursor();
         if (cursor.requery()) {
             mAdapter.notifyDataSetChanged();
             if (isExpanded) {
@@ -1489,9 +1491,10 @@ public class BooksOnBookshelf
 
         // create and hookup the list adapter.
         initAdapter(mModel.getListCursor());
-
         final int count = mModel.getListCursor().getCount();
-        int position = mModel.getItemPosition();
+
+        final Bookshelf currentBookshelf = mModel.getCurrentBookshelf();
+        int position = currentBookshelf.getTopItemPosition();
 
         // Scroll to the saved position
         if (position >= count) {
@@ -1503,7 +1506,7 @@ public class BooksOnBookshelf
             final long actualRowId = mAdapter.getItemId(position);
 
             // but if they are not equal,
-            final long desiredRowId = mModel.getTopRowRowId();
+            final long desiredRowId = currentBookshelf.getTopRowId();
             if (actualRowId != desiredRowId) {
                 if (BuildConfig.DEBUG /* always */) {
                     Logger.warn(this, TAG, "position=" + position
@@ -1522,7 +1525,8 @@ public class BooksOnBookshelf
             if (position < 0) {
                 position = 0;
             }
-            mLayoutManager.scrollToPositionWithOffset(position, mModel.getTopViewOffset());
+            mLayoutManager.scrollToPositionWithOffset(position,
+                                                      currentBookshelf.getTopViewOffset());
         }
 
         // If a target position array is set, then queue a runnable to scroll to the target
@@ -1568,9 +1572,7 @@ public class BooksOnBookshelf
                 return;
             }
 
-            final long rowId = mAdapter.getItemId(position);
-
-            // This is just the number of pixels offset of the first visible row.
+            // The number of pixels offset for the first visible row.
             final int topViewOffset;
             final View topView = mListView.getChildAt(0);
             if (topView != null) {
@@ -1579,7 +1581,7 @@ public class BooksOnBookshelf
                 topViewOffset = 0;
             }
 
-            mModel.saveListPosition(this, position, rowId, topViewOffset);
+            mModel.saveListPosition(this, position, topViewOffset, mAdapter.getItemId(position));
         }
     }
 

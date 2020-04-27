@@ -39,6 +39,7 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.preference.PreferenceManager;
 
 import java.io.File;
 import java.io.IOException;
@@ -100,7 +101,7 @@ public final class DBHelper
         extends SQLiteOpenHelper {
 
     /** Current version. */
-    public static final int DATABASE_VERSION = 5;
+    public static final int DATABASE_VERSION = 6;
 
     /**
      * Prefix for the filename of a database backup before doing an upgrade.
@@ -666,10 +667,29 @@ public final class DBHelper
             syncedDb.execSQL("DROP TRIGGER IF EXISTS after_update_onbookshelf");
         }
         if (curVersion < newVersion && curVersion == 4) {
-            //noinspection UnusedAssignment
             curVersion = 5;
             // changed column names; just scrap the old data
             TBL_BOOK_LIST_NODE_STATE.recreate(syncedDb, true);
+        }
+        if (curVersion < newVersion && curVersion == 5) {
+            //noinspection UnusedAssignment
+            curVersion = 6;
+            TBL_BOOKSHELF.alterTableAddColumn(syncedDb, DBDefinitions.DOM_BOOKSHELF_BL_TOP_POS);
+            TBL_BOOKSHELF.alterTableAddColumn(syncedDb, DBDefinitions.DOM_BOOKSHELF_BL_TOP_OFFSET);
+            TBL_BOOKSHELF.alterTableAddColumn(syncedDb, DBDefinitions.DOM_BOOKSHELF_BL_TOP_ROW_ID);
+
+            final Context context = App.getAppContext();
+            PreferenceManager.getDefaultSharedPreferences(context)
+                             .edit()
+                             // just scrap the old data
+                             .remove("booklist.top.row")
+                             .remove("booklist.top.rowId")
+                             .remove("booklist.top.offset")
+                             // these are leftovers from earlier versions.
+                             .remove("fields.visibility.bookshelf")
+                             .remove("tmp.edit.book.tab.authSer")
+                             .remove("compat.booklist.mode")
+                             .apply();
         }
 
         // Rebuild all indices
