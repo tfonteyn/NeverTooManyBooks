@@ -45,6 +45,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import androidx.annotation.CallSuper;
+import androidx.annotation.IdRes;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -91,11 +92,11 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditPublisherDialog
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditSeriesDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.LendBookDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.picker.MenuPicker;
-import com.hardbacknutter.nevertoomanybooks.dialogs.simplestring.EditColorDialog;
-import com.hardbacknutter.nevertoomanybooks.dialogs.simplestring.EditFormatDialog;
-import com.hardbacknutter.nevertoomanybooks.dialogs.simplestring.EditGenreDialog;
-import com.hardbacknutter.nevertoomanybooks.dialogs.simplestring.EditLanguageDialog;
-import com.hardbacknutter.nevertoomanybooks.dialogs.simplestring.EditLocationDialog;
+import com.hardbacknutter.nevertoomanybooks.dialogs.simplestring.EditColorDialogFragment;
+import com.hardbacknutter.nevertoomanybooks.dialogs.simplestring.EditFormatDialogFragment;
+import com.hardbacknutter.nevertoomanybooks.dialogs.simplestring.EditGenreDialogFragment;
+import com.hardbacknutter.nevertoomanybooks.dialogs.simplestring.EditLanguageDialogFragment;
+import com.hardbacknutter.nevertoomanybooks.dialogs.simplestring.EditLocationDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
@@ -317,7 +318,7 @@ public class BooksOnBookshelf
                         final String title = mAdapter.getLevelText(position, level);
 
                         // bring up the context menu
-                        new MenuPicker(BooksOnBookshelf.this, title, null, menu, position,
+                        new MenuPicker(BooksOnBookshelf.this, title, menu, position,
                                        BooksOnBookshelf.this::onContextItemSelected)
                                 .show();
                     }
@@ -447,25 +448,16 @@ public class BooksOnBookshelf
         }
         super.onAttachFragment(fragment);
 
-        if (StylePickerDialogFragment.TAG.equals(fragment.getTag())) {
+        if (fragment instanceof BookChangedListenerOwner) {
+            ((BookChangedListenerOwner) fragment).setListener(mBookChangedListener);
+
+        } else if (fragment instanceof StylePickerDialogFragment) {
             ((StylePickerDialogFragment) fragment).setListener(mStyleChangedListener);
 
-        } else if (EditAuthorDialogFragment.TAG.equals(fragment.getTag())) {
-            ((EditAuthorDialogFragment) fragment).setListener(mBookChangedListener);
-
-        } else if (EditPublisherDialogFragment.TAG.equals(fragment.getTag())) {
-            ((EditPublisherDialogFragment) fragment).setListener(mBookChangedListener);
-
-        } else if (EditSeriesDialogFragment.TAG.equals(fragment.getTag())) {
-            ((EditSeriesDialogFragment) fragment).setListener(mBookChangedListener);
-
-        } else if (LendBookDialogFragment.TAG.equals(fragment.getTag())) {
-            ((LendBookDialogFragment) fragment).setListener(mBookChangedListener);
-
-        } else if (ExportHelperDialogFragment.TAG.equals(fragment.getTag())) {
+        } else if (fragment instanceof ExportHelperDialogFragment) {
             ((ExportHelperDialogFragment) fragment).setListener(mExportOptionsListener);
 
-        } else if (ImportHelperDialogFragment.TAG.equals(fragment.getTag())) {
+        } else if (fragment instanceof ImportHelperDialogFragment) {
             ((ImportHelperDialogFragment) fragment).setListener(mImportOptionsListener);
         }
     }
@@ -887,7 +879,7 @@ public class BooksOnBookshelf
      * @return {@code true} if handled.
      */
     @SuppressWarnings("UnusedReturnValue")
-    private boolean onContextItemSelected(@NonNull final MenuItem menuItem,
+    private boolean onContextItemSelected(@IdRes final int menuItem,
                                           final int position) {
 
         final Cursor cursor = mModel.getListCursor();
@@ -903,7 +895,7 @@ public class BooksOnBookshelf
 
         final long bookId = rowData.getLong(DBDefinitions.KEY_FK_BOOK);
 
-        switch (menuItem.getItemId()) {
+        switch (menuItem) {
             case R.id.MENU_BOOK_EDIT: {
                 final Intent intent = new Intent(this, EditBookActivity.class)
                         .putExtra(DBDefinitions.KEY_PK_ID, bookId);
@@ -941,11 +933,9 @@ public class BooksOnBookshelf
             /* ********************************************************************************** */
 
             case R.id.MENU_BOOK_LOAN_ADD: {
-                LendBookDialogFragment.newInstance(bookId,
-                                                   rowData.getLong(DBDefinitions.KEY_FK_AUTHOR),
-                                                   rowData.getString(DBDefinitions.KEY_TITLE))
-                                      .show(getSupportFragmentManager(),
-                                            LendBookDialogFragment.TAG);
+                LendBookDialogFragment
+                        .newInstance(bookId, rowData.getString(DBDefinitions.KEY_TITLE))
+                        .show(getSupportFragmentManager(), LendBookDialogFragment.TAG);
                 return true;
             }
             case R.id.MENU_BOOK_LOAN_DELETE: {
@@ -1028,9 +1018,9 @@ public class BooksOnBookshelf
                 final long seriesId = rowData.getLong(DBDefinitions.KEY_FK_SERIES);
                 final Series series = mModel.getDb().getSeries(seriesId);
                 if (series != null) {
-                    EditSeriesDialogFragment.newInstance(series)
-                                            .show(getSupportFragmentManager(),
-                                                  EditSeriesDialogFragment.TAG);
+                    EditSeriesDialogFragment
+                            .newInstance(series)
+                            .show(getSupportFragmentManager(), EditSeriesDialogFragment.TAG);
                 }
                 return true;
             }
@@ -1071,9 +1061,9 @@ public class BooksOnBookshelf
                 final long authorId = rowData.getLong(DBDefinitions.KEY_FK_AUTHOR);
                 final Author author = mModel.getDb().getAuthor(authorId);
                 if (author != null) {
-                    EditAuthorDialogFragment.newInstance(author)
-                                            .show(getSupportFragmentManager(),
-                                                  EditAuthorDialogFragment.TAG);
+                    EditAuthorDialogFragment
+                            .newInstance(author)
+                            .show(getSupportFragmentManager(), EditAuthorDialogFragment.TAG);
                 }
                 return true;
             }
@@ -1092,37 +1082,42 @@ public class BooksOnBookshelf
             case R.id.MENU_PUBLISHER_EDIT: {
                 final Publisher publisher = new Publisher(
                         rowData.getString(DBDefinitions.KEY_PUBLISHER));
-                EditPublisherDialogFragment.newInstance(publisher)
-                                           .show(getSupportFragmentManager(),
-                                                 EditPublisherDialogFragment.TAG);
+                EditPublisherDialogFragment
+                        .newInstance(publisher)
+                        .show(getSupportFragmentManager(), EditPublisherDialogFragment.TAG);
 
                 return true;
             }
             /* ********************************************************************************** */
 
             case R.id.MENU_FORMAT_EDIT: {
-                new EditFormatDialog(this, mModel.getDb(), mBookChangedListener)
-                        .edit(rowData.getString(DBDefinitions.KEY_FORMAT));
+                EditFormatDialogFragment
+                        .newInstance(rowData.getString(DBDefinitions.KEY_FORMAT))
+                        .show(getSupportFragmentManager(), EditFormatDialogFragment.TAG);
                 return true;
             }
             case R.id.MENU_COLOR_EDIT: {
-                new EditColorDialog(this, mModel.getDb(), mBookChangedListener)
-                        .edit(rowData.getString(DBDefinitions.KEY_COLOR));
+                EditColorDialogFragment
+                        .newInstance(rowData.getString(DBDefinitions.KEY_COLOR))
+                        .show(getSupportFragmentManager(), EditColorDialogFragment.TAG);
                 return true;
             }
             case R.id.MENU_GENRE_EDIT: {
-                new EditGenreDialog(this, mModel.getDb(), mBookChangedListener)
-                        .edit(rowData.getString(DBDefinitions.KEY_GENRE));
+                EditGenreDialogFragment
+                        .newInstance(rowData.getString(DBDefinitions.KEY_GENRE))
+                        .show(getSupportFragmentManager(), EditGenreDialogFragment.TAG);
                 return true;
             }
             case R.id.MENU_LANGUAGE_EDIT: {
-                new EditLanguageDialog(this, mModel.getDb(), mBookChangedListener)
-                        .edit(rowData.getString(DBDefinitions.KEY_LANGUAGE));
+                EditLanguageDialogFragment
+                        .newInstance(this, rowData.getString(DBDefinitions.KEY_LANGUAGE))
+                        .show(getSupportFragmentManager(), EditLanguageDialogFragment.TAG);
                 return true;
             }
             case R.id.MENU_LOCATION_EDIT: {
-                new EditLocationDialog(this, mModel.getDb(), mBookChangedListener)
-                        .edit(rowData.getString(DBDefinitions.KEY_LOCATION));
+                EditLocationDialogFragment
+                        .newInstance(rowData.getString(DBDefinitions.KEY_LOCATION))
+                        .show(getSupportFragmentManager(), EditLocationDialogFragment.TAG);
                 return true;
             }
 

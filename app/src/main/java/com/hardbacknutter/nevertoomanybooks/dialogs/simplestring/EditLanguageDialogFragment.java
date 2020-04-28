@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -27,16 +27,18 @@
  */
 package com.hardbacknutter.nevertoomanybooks.dialogs.simplestring;
 
+import android.app.Dialog;
 import android.content.Context;
+import android.os.Bundle;
 
-import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.DialogFragment;
 
 import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.BookChangedListener;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.utils.LanguageUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 
@@ -47,43 +49,52 @@ import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
  * However, if a language was misspelled, auto-translation will fail, and manual edit *will*
  * be needed.
  */
-public class EditLanguageDialog
-        extends EditStringBaseDialog {
+public class EditLanguageDialogFragment
+        extends EditStringBaseDialogFragment {
+
+    public static final String TAG = "EditLanguageDialogFrag";
 
     /**
      * Constructor.
      *
-     * @param context  Current context
-     * @param db       Database Access
-     * @param listener a BookChangedListener
+     * @param text to edit.
+     *
+     * @return instance
      */
-    public EditLanguageDialog(@NonNull final Context context,
-                              @NonNull final DAO db,
-                              @NonNull final BookChangedListener listener) {
-        super(context, db, listener);
-    }
-
-    @CallSuper
-    public void edit(@NonNull final String lang) {
+    public static DialogFragment newInstance(@NonNull final Context context,
+                                             @NonNull final String text) {
         String editLang;
-        if (lang.length() > 3) {
-            editLang = lang;
+        if (text.length() > 3) {
+            editLang = text;
         } else {
-            Locale locale = LocaleUtils.getLocale(getContext(), lang);
+            Locale locale = LocaleUtils.getLocale(context, text);
             if (locale == null) {
-                editLang = lang;
+                editLang = text;
             } else {
                 editLang = locale.getDisplayLanguage();
             }
         }
-        super.edit(editLang, R.layout.dialog_edit_language, R.string.lbl_language);
+
+        final DialogFragment frag = new EditLanguageDialogFragment();
+        final Bundle args = new Bundle(1);
+        args.putString(BKEY_TEXT, editLang);
+        frag.setArguments(args);
+        return frag;
+    }
+
+    @NonNull
+    @Override
+    public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
+        return createDialog(R.layout.dialog_edit_language,
+                            BookChangedListener.LANGUAGE, null);
     }
 
     @Override
-    protected void saveChanges(@NonNull final Context context,
-                               @NonNull final String from,
-                               @NonNull final String to) {
-        mDb.updateLanguage(from, LanguageUtils.getISO3FromDisplayName(context, to));
-        sendBookChangedMessage(BookChangedListener.LANGUAGE, null);
+    @Nullable
+    Bundle onSave() {
+        //noinspection ConstantConditions
+        mDb.updateLanguage(mOriginalText,
+                           LanguageUtils.getISO3FromDisplayName(getContext(), mCurrentText));
+        return null;
     }
 }

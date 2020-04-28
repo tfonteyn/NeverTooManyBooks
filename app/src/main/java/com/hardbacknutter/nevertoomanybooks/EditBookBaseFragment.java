@@ -119,7 +119,7 @@ public abstract class EditBookBaseFragment
         }
         super.onAttachFragment(childFragment);
 
-        if (PartialDatePickerDialogFragment.TAG.equals(childFragment.getTag())) {
+        if (childFragment instanceof PartialDatePickerDialogFragment) {
             ((PartialDatePickerDialogFragment) childFragment)
                     .setListener(mPartialDatePickerResultsListener);
 

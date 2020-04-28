@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -27,41 +27,49 @@
  */
 package com.hardbacknutter.nevertoomanybooks.dialogs.simplestring;
 
-import android.content.Context;
+import android.app.Dialog;
+import android.os.Bundle;
 
-import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.DialogFragment;
 
 import com.hardbacknutter.nevertoomanybooks.BookChangedListener;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.database.DAO;
 
-public class EditColorDialog
-        extends EditStringBaseDialog {
+public class EditLocationDialogFragment
+        extends EditStringBaseDialogFragment {
+
+    public static final String TAG = "EditLocationDialogFrag";
 
     /**
      * Constructor.
      *
-     * @param context  Current context
-     * @param db       Database Access
-     * @param listener a BookChangedListener
+     * @param text to edit.
+     *
+     * @return instance
      */
-    public EditColorDialog(@NonNull final Context context,
-                           @NonNull final DAO db,
-                           @NonNull final BookChangedListener listener) {
-        super(context, db, db.getFormats(), listener);
+    public static DialogFragment newInstance(@NonNull final String text) {
+        final DialogFragment frag = new EditLocationDialogFragment();
+        final Bundle args = new Bundle(1);
+        args.putString(BKEY_TEXT, text);
+        frag.setArguments(args);
+        return frag;
     }
 
-    @CallSuper
-    public void edit(@NonNull final String currentText) {
-        super.edit(currentText, R.layout.dialog_edit_color, R.string.lbl_color);
+    @NonNull
+    @Override
+    public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
+        //noinspection ConstantConditions
+        return createDialog(R.layout.dialog_edit_location,
+                            BookChangedListener.LOCATION, mDb.getLocations());
     }
 
     @Override
-    protected void saveChanges(@NonNull final Context context,
-                               @NonNull final String from,
-                               @NonNull final String to) {
-        mDb.updateColor(from, to);
-        sendBookChangedMessage(BookChangedListener.COLOR, null);
+    @Nullable
+    Bundle onSave() {
+        //noinspection ConstantConditions
+        mDb.updateLocation(mOriginalText, mCurrentText);
+        return null;
     }
 }

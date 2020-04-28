@@ -1080,7 +1080,7 @@ public class BooklistAdapter
 
         /*** Default resource id for the View to populate. */
         @IdRes
-        int mTextViewId = R.id.name;
+        static final int mTextViewId = R.id.name;
 
         /**
          * Constructor.

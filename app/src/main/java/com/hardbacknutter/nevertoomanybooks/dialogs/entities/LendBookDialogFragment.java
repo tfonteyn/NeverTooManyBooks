@@ -30,7 +30,6 @@ package com.hardbacknutter.nevertoomanybooks.dialogs.entities;
 import android.Manifest;
 import android.app.Dialog;
 import android.content.ContentResolver;
-import android.content.Context;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -52,6 +51,7 @@ import java.util.Collection;
 import java.util.Collections;
 
 import com.hardbacknutter.nevertoomanybooks.BookChangedListener;
+import com.hardbacknutter.nevertoomanybooks.BookChangedListenerOwner;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.RequestCode;
@@ -66,7 +66,8 @@ import com.hardbacknutter.nevertoomanybooks.widgets.DiacriticArrayAdapter;
  * Dialog to create a new loan, or edit an existing one.
  */
 public class LendBookDialogFragment
-        extends DialogFragment {
+        extends DialogFragment
+        implements BookChangedListenerOwner {
 
     /** Log tag. */
     public static final String TAG = "LendBookDialogFrag";
@@ -83,7 +84,6 @@ public class LendBookDialogFragment
     private DAO mDb;
 
     private long mBookId;
-    private String mAuthorName;
     private String mTitle;
 
     /**
@@ -110,18 +110,15 @@ public class LendBookDialogFragment
      * Constructor.
      *
      * @param bookId   to lend
-     * @param authorId informational display only
      * @param title    informational display only
      *
      * @return instance
      */
     public static DialogFragment newInstance(final long bookId,
-                                             final long authorId,
                                              @NonNull final String title) {
         final DialogFragment frag = new LendBookDialogFragment();
-        final Bundle args = new Bundle(3);
+        final Bundle args = new Bundle(2);
         args.putLong(DBDefinitions.KEY_PK_ID, bookId);
-        args.putLong(DBDefinitions.KEY_FK_AUTHOR, authorId);
         args.putString(DBDefinitions.KEY_TITLE, title);
         frag.setArguments(args);
         return frag;
@@ -130,17 +127,14 @@ public class LendBookDialogFragment
     /**
      * Constructor.
      *
-     * @param context Current context
      * @param book    to lend
      *
      * @return instance
      */
-    public static DialogFragment newInstance(@NonNull final Context context,
-                                             @NonNull final Book book) {
+    public static DialogFragment newInstance(@NonNull final Book book) {
         final DialogFragment frag = new LendBookDialogFragment();
-        final Bundle args = new Bundle(3);
+        final Bundle args = new Bundle(2);
         args.putLong(DBDefinitions.KEY_PK_ID, book.getId());
-        args.putString(DBDefinitions.KEY_AUTHOR_FORMATTED, book.getPrimaryAuthor(context));
         args.putString(DBDefinitions.KEY_TITLE, book.getString(DBDefinitions.KEY_TITLE));
         frag.setArguments(args);
         return frag;
@@ -152,23 +146,13 @@ public class LendBookDialogFragment
 
         mDb = new DAO(TAG);
 
-        Bundle args = requireArguments();
+        final Bundle args = requireArguments();
         mBookId = args.getLong(DBDefinitions.KEY_PK_ID);
         mTitle = args.getString(DBDefinitions.KEY_TITLE);
 
         if (savedInstanceState == null) {
-            // see if the string is there
-            mAuthorName = args.getString(DBDefinitions.KEY_AUTHOR_FORMATTED);
-            // if not, we must have the ID.
-            if (mAuthorName == null) {
-                //noinspection ConstantConditions
-                mAuthorName = mDb.getAuthor(args.getLong(DBDefinitions.KEY_FK_AUTHOR))
-                                 .getLabel(getContext());
-            }
             mCurrentLoanee = mDb.getLoaneeByBookId(mBookId);
-
         } else {
-            mAuthorName = savedInstanceState.getString(DBDefinitions.KEY_FK_AUTHOR);
             mCurrentLoanee = savedInstanceState.getString(DBDefinitions.KEY_LOANEE);
             mNewLoanee = savedInstanceState.getString(BKEY_NEW_LOANEE);
         }
@@ -182,7 +166,7 @@ public class LendBookDialogFragment
         final LayoutInflater inflater = getActivity().getLayoutInflater();
         mVb = DialogEditLoanBinding.inflate(inflater);
 
-        mVb.author.setText(getString(R.string.lbl_by_author_s, mAuthorName));
+        mVb.title.setText(mTitle);
 
         if (mNewLoanee != null && !mNewLoanee.isEmpty()) {
             mVb.loanedTo.setText(mNewLoanee);
@@ -197,13 +181,11 @@ public class LendBookDialogFragment
 
         //noinspection ConstantConditions
         return new MaterialAlertDialogBuilder(getContext())
-                .setIcon(R.drawable.ic_edit)
                 .setView(mVb.getRoot())
-                .setTitle(mTitle)
                 .setNegativeButton(android.R.string.cancel, (d, w) -> dismiss())
-                .setNeutralButton(R.string.btn_loan_returned, (d, w) -> sendResult(null))
+                .setNeutralButton(R.string.btn_loan_returned, (d, w) -> saveChanges(null))
                 .setPositiveButton(android.R.string.ok, (d, w) ->
-                        sendResult(mVb.loanedTo.getText().toString().trim()))
+                        saveChanges(mVb.loanedTo.getText().toString().trim()))
                 .create();
     }
 
@@ -213,17 +195,19 @@ public class LendBookDialogFragment
      * @param loanee the name entered in the dialog.
      *               If {@code null} or empty, the book is returned
      */
-    private void sendResult(@Nullable final String loanee) {
+    private void saveChanges(@Nullable final String loanee) {
+        mNewLoanee = loanee;
+
         dismiss();
 
         Bundle data = null;
-        if (loanee != null && !loanee.isEmpty()) {
+        if (mNewLoanee != null && !mNewLoanee.isEmpty()) {
             // lend book, reluctantly...
-            if (!loanee.equalsIgnoreCase(mCurrentLoanee)) {
-                mDb.lendBook(mBookId, loanee);
+            if (!mNewLoanee.equalsIgnoreCase(mCurrentLoanee)) {
+                mDb.lendBook(mBookId, mNewLoanee);
             }
             data = new Bundle();
-            data.putString(DBDefinitions.KEY_LOANEE, loanee);
+            data.putString(DBDefinitions.KEY_LOANEE, mNewLoanee);
 
         } else {
             // return the book
@@ -244,8 +228,6 @@ public class LendBookDialogFragment
     @Override
     public void onSaveInstanceState(@NonNull final Bundle outState) {
         super.onSaveInstanceState(outState);
-        // save the author name to avoid a potential database trip.
-        outState.putString(DBDefinitions.KEY_FK_AUTHOR, mAuthorName);
         outState.putString(DBDefinitions.KEY_LOANEE, mCurrentLoanee);
         outState.putString(BKEY_NEW_LOANEE, mNewLoanee);
     }
@@ -263,6 +245,7 @@ public class LendBookDialogFragment
      *
      * @param listener the object to send the result to.
      */
+    @Override
     public void setListener(@NonNull final BookChangedListener listener) {
         mListener = new WeakReference<>(listener);
     }

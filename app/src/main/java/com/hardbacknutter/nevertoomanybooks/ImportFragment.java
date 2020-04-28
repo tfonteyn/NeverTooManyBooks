@@ -106,7 +106,7 @@ public class ImportFragment
         }
         super.onAttachFragment(childFragment);
 
-        if (ImportHelperDialogFragment.TAG.equals(childFragment.getTag())) {
+        if (childFragment instanceof ImportHelperDialogFragment) {
             ((ImportHelperDialogFragment) childFragment).setListener(mImportOptionsListener);
         }
     }

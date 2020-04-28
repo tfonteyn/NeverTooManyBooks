@@ -245,7 +245,7 @@ public abstract class BookBaseFragment
 
             default: {
                 //noinspection ConstantConditions
-                if (MenuHandler.handleOpenOnWebsiteMenus(context, item, book)) {
+                if (MenuHandler.handleOpenOnWebsiteMenus(context, item.getItemId(), book)) {
                     return true;
                 }
                 return super.onOptionsItemSelected(item);

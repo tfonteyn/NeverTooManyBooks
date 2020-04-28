@@ -245,6 +245,7 @@ public class UpdateFieldsFragment
                 return true;
             }
             case R.id.MENU_RESET: {
+                //noinspection ConstantConditions
                 mUpdateFieldsModel.resetPreferences(getContext());
                 mFieldListView.removeAllViews();
                 populateFields();

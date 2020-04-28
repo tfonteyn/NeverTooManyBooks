@@ -46,6 +46,7 @@ public final class ErrorMsg {
     public static final String NULL_GALLERY_ADAPTER = "GalleryAdapter";
     public static final String NULL_INTENT_DATA = "Intent data";
     public static final String NULL_ISBN_STR = "IsbnStr";
+    public static final String NULL_MENU = "Menu";
     public static final String NULL_NATIVE_ID = "nativeId";
     public static final String NULL_NON_PERSISTED_VALUE = "NonPersistedValue";
     public static final String NULL_ROW_POS = "rowPos";
@@ -62,8 +63,8 @@ public final class ErrorMsg {
     public static final String ARGS_MISSING_ISBN = "ISBN";
     public static final String ARGS_MISSING_PUBLISHER = "Publisher";
     public static final String ARGS_MISSING_SERIES = "Series";
-    public static final String ARGS_MISSING_TOC_ENTRIES = "TocEntries";
     public static final String ARGS_MISSING_STYLE = "Style";
+    public static final String ARGS_MISSING_TOC_ENTRIES = "TocEntries";
 
     private ErrorMsg() {
     }

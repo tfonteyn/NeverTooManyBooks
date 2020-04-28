@@ -60,6 +60,12 @@ public final class StandardDialogs {
      * <br>type: {@code int} (stringId)
      */
     public static final String BKEY_DIALOG_TITLE = TAG + ":title";
+
+    /**
+     * The body message to be used by generic Dialogs.
+     * <p>
+     * <br>type: {@code String}
+     */
     public static final String BKEY_DIALOG_MESSAGE = TAG + ":msg";
 
 

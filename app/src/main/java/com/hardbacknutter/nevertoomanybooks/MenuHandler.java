@@ -38,6 +38,7 @@ import android.view.MenuItem;
 import android.view.SubMenu;
 import android.widget.SearchView;
 
+import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
@@ -128,9 +129,9 @@ final class MenuHandler {
     }
 
     static boolean handleOpenOnWebsiteMenus(@NonNull final Context context,
-                                            @NonNull final MenuItem menuItem,
+                                            @IdRes final int menuItem,
                                             @NonNull final RowDataHolder rowData) {
-        switch (menuItem.getItemId()) {
+        switch (menuItem) {
             case R.id.MENU_VIEW_BOOK_AT_AMAZON:
                 AmazonSearchEngine.openWebsite(
                         context, rowData.getString(DBDefinitions.KEY_ISBN));

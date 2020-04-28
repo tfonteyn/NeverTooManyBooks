@@ -28,7 +28,6 @@
 package com.hardbacknutter.nevertoomanybooks.dialogs.entities;
 
 import android.app.Dialog;
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -83,12 +82,14 @@ public class EditTocEntryDialogFragment
     /**
      * Constructor.
      *
+     * @param dialogTitle        to use
      * @param tocEntry           to edit.
      * @param hasMultipleAuthors Flag that will enable/disable the author edit field
      *
      * @return instance
      */
-    public static DialogFragment newInstance(@NonNull final TocEntry tocEntry,
+    public static DialogFragment newInstance(@NonNull final String dialogTitle,
+                                             @NonNull final TocEntry tocEntry,
                                              final boolean hasMultipleAuthors) {
         final DialogFragment frag = new EditTocEntryDialogFragment();
         final Bundle args = new Bundle(2);
@@ -113,11 +114,11 @@ public class EditTocEntryDialogFragment
 
         mDb = new DAO(TAG);
 
-        Bundle currentArgs = savedInstanceState != null ? savedInstanceState : requireArguments();
-        mTocEntry = currentArgs.getParcelable(BKEY_TOC_ENTRY);
+        final Bundle args = savedInstanceState != null ? savedInstanceState : requireArguments();
+        mTocEntry = args.getParcelable(BKEY_TOC_ENTRY);
         Objects.requireNonNull(mTocEntry, ErrorMsg.ARGS_MISSING_TOC_ENTRIES);
 
-        mHasMultipleAuthors = currentArgs.getBoolean(BKEY_HAS_MULTIPLE_AUTHORS, false);
+        mHasMultipleAuthors = args.getBoolean(BKEY_HAS_MULTIPLE_AUTHORS, false);
     }
 
     @NonNull
@@ -137,11 +138,23 @@ public class EditTocEntryDialogFragment
 
         //noinspection ConstantConditions
         return new MaterialAlertDialogBuilder(getContext())
-                .setIcon(R.drawable.ic_edit)
                 .setView(mVb.getRoot())
                 .setNegativeButton(android.R.string.cancel, (d, w) -> dismiss())
-                .setPositiveButton(android.R.string.ok, this::onConfirm)
+                .setPositiveButton(android.R.string.ok, (d1, which) -> saveChanges())
                 .create();
+    }
+
+    private void saveChanges() {
+        getFields();
+        if (mListener != null && mListener.get() != null) {
+            mListener.get().addOrUpdateEntry(mTocEntry, mHasMultipleAuthors);
+        } else {
+            if (BuildConfig.DEBUG /* always */) {
+                Log.w(TAG, "addOrUpdateEntry|" +
+                           (mListener == null ? ErrorMsg.LISTENER_WAS_NULL
+                                              : ErrorMsg.LISTENER_WAS_DEAD));
+            }
+        }
     }
 
     private void updateMultiAuthor(final boolean isChecked) {
@@ -159,9 +172,21 @@ public class EditTocEntryDialogFragment
             //noinspection ConstantConditions
             mVb.author.setText(mTocEntry.getAuthor().getLabel(getContext()));
             mVb.author.selectAll();
+            mVb.lblAuthor.setVisibility(View.VISIBLE);
             mVb.author.setVisibility(View.VISIBLE);
         } else {
+            mVb.lblAuthor.setVisibility(View.GONE);
             mVb.author.setVisibility(View.GONE);
+        }
+    }
+
+    private void getFields() {
+        //noinspection ConstantConditions
+        mTocEntry.setTitle(mVb.title.getText().toString().trim());
+        //noinspection ConstantConditions
+        mTocEntry.setFirstPublication(mVb.firstPublication.getText().toString().trim());
+        if (mHasMultipleAuthors) {
+            mTocEntry.setAuthor(Author.from(mVb.author.getText().toString().trim()));
         }
     }
 
@@ -184,30 +209,6 @@ public class EditTocEntryDialogFragment
             mDb.close();
         }
         super.onDestroy();
-    }
-
-    private void getFields() {
-        //noinspection ConstantConditions
-        mTocEntry.setTitle(mVb.title.getText().toString().trim());
-        //noinspection ConstantConditions
-        mTocEntry.setFirstPublication(mVb.firstPublication.getText().toString().trim());
-        if (mHasMultipleAuthors) {
-            mTocEntry.setAuthor(Author.from(mVb.author.getText().toString().trim()));
-        }
-    }
-
-    private void onConfirm(@SuppressWarnings("unused") @NonNull final DialogInterface d,
-                           @SuppressWarnings("unused") final int which) {
-        getFields();
-        if (mListener != null && mListener.get() != null) {
-            mListener.get().addOrUpdateEntry(mTocEntry, mHasMultipleAuthors);
-        } else {
-            if (BuildConfig.DEBUG /* always */) {
-                Log.w(TAG, "onConfirm|" +
-                           (mListener == null ? ErrorMsg.LISTENER_WAS_NULL
-                                              : ErrorMsg.LISTENER_WAS_DEAD));
-            }
-        }
     }
 
     public interface EditTocEntryResults {

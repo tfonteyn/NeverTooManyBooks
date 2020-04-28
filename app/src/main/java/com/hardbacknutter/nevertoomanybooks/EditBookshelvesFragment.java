@@ -39,6 +39,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -50,10 +51,13 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
+import java.util.ArrayList;
+
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentEditBookshelvesBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditBookshelfDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.picker.MenuPicker;
+import com.hardbacknutter.nevertoomanybooks.dialogs.picker.MenuPickerDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.EditBookshelvesModel;
 
@@ -102,7 +106,10 @@ public class EditBookshelvesFragment
         }
         super.onAttachFragment(childFragment);
 
-        if (EditBookshelfDialogFragment.TAG.equals(childFragment.getTag())) {
+        if (childFragment instanceof MenuPickerDialogFragment) {
+            ((MenuPickerDialogFragment) childFragment).setListener(this::onContextItemSelected);
+
+        } else if (childFragment instanceof EditBookshelfDialogFragment) {
             ((EditBookshelfDialogFragment) childFragment).setListener(mListener);
         }
     }
@@ -175,10 +182,14 @@ public class EditBookshelvesFragment
     }
 
     private void onCreateContextMenu(final int position) {
-
-        final Bookshelf bookshelf = mModel.getBookshelf(position);
+        if (MenuPicker.__COMPILE_TIME_USE_FRAGMENT) {
+            onCreateContextMenu2(position);
+            return;
+        }
 
         final Resources r = getResources();
+        final Bookshelf bookshelf = mModel.getBookshelf(position);
+
         //noinspection ConstantConditions
         final Menu menu = MenuPicker.createMenu(getContext());
         menu.add(Menu.NONE, R.id.MENU_EDIT,
@@ -191,8 +202,27 @@ public class EditBookshelvesFragment
             .setIcon(R.drawable.ic_delete);
 
         final String title = bookshelf.getName();
-        new MenuPicker(getContext(), title, null, menu, position, this::onContextItemSelected)
+        new MenuPicker(getContext(), title, menu, position, this::onContextItemSelected)
                 .show();
+    }
+
+    private void onCreateContextMenu2(final int position) {
+        final Resources r = getResources();
+        final Bookshelf bookshelf = mModel.getBookshelf(position);
+
+        final ArrayList<MenuPickerDialogFragment.Pick> menu = new ArrayList<>();
+        menu.add(new MenuPickerDialogFragment.Pick(R.id.MENU_EDIT,
+                                                   r.getInteger(R.integer.MENU_ORDER_EDIT),
+                                                   getString(R.string.action_edit_ellipsis),
+                                                   R.drawable.ic_edit));
+        menu.add(new MenuPickerDialogFragment.Pick(R.id.MENU_DELETE,
+                                                   r.getInteger(R.integer.MENU_ORDER_DELETE),
+                                                   getString(R.string.action_delete),
+                                                   R.drawable.ic_delete));
+
+        final String title = bookshelf.getName();
+        MenuPickerDialogFragment.newInstance(title, null, menu, position)
+                                .show(getChildFragmentManager(), MenuPickerDialogFragment.TAG);
     }
 
     /**
@@ -203,12 +233,12 @@ public class EditBookshelvesFragment
      *
      * @return {@code true} if handled.
      */
-    private boolean onContextItemSelected(@NonNull final MenuItem menuItem,
+    private boolean onContextItemSelected(@IdRes final int menuItem,
                                           final int position) {
 
         final Bookshelf bookshelf = mModel.getBookshelf(position);
 
-        switch (menuItem.getItemId()) {
+        switch (menuItem) {
             case R.id.MENU_EDIT:
                 editItem(bookshelf);
                 return true;
@@ -239,7 +269,6 @@ public class EditBookshelvesFragment
     private void editItem(@NonNull final Bookshelf bookshelf) {
         EditBookshelfDialogFragment
                 .newInstance(bookshelf)
-                //2020-04-20: screen rotation OK
                 .show(getChildFragmentManager(), EditBookshelfDialogFragment.TAG);
     }
 

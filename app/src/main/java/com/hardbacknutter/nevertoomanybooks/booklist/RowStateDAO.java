@@ -1105,9 +1105,8 @@ public class RowStateDAO {
         @NonNull
         final String key;
         final int level;
+        final boolean isVisible;
         boolean isExpanded;
-        boolean isVisible;
-
         /**
          * Will be calculated/set if the list changed.
          * {@code row.listPosition = RowStateDAO#getListPosition(row.rowId); }

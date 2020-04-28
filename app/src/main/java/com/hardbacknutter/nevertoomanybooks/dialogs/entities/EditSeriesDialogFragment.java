@@ -43,6 +43,7 @@ import java.lang.ref.WeakReference;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.BookChangedListener;
+import com.hardbacknutter.nevertoomanybooks.BookChangedListenerOwner;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
@@ -59,7 +60,8 @@ import com.hardbacknutter.nevertoomanybooks.widgets.DiacriticArrayAdapter;
  * Calling point is a List
  */
 public class EditSeriesDialogFragment
-        extends DialogFragment {
+        extends DialogFragment
+        implements BookChangedListenerOwner {
 
     /** Log tag. */
     public static final String TAG = "EditSeriesDialogFrag";
@@ -122,57 +124,57 @@ public class EditSeriesDialogFragment
         mVb = DialogEditSeriesBinding.inflate(inflater);
 
         //noinspection ConstantConditions
-        final DiacriticArrayAdapter<String> mAdapter = new DiacriticArrayAdapter<>(
+        final DiacriticArrayAdapter<String> adapter = new DiacriticArrayAdapter<>(
                 getContext(), R.layout.dropdown_menu_popup_item, mDb.getSeriesTitles());
 
         // the dialog fields != screen fields.
         mVb.seriesTitle.setText(mTitle);
-        mVb.seriesTitle.setAdapter(mAdapter);
+        mVb.seriesTitle.setAdapter(adapter);
 
         mVb.cbxIsComplete.setChecked(mIsComplete);
 
         return new MaterialAlertDialogBuilder(getContext())
-                .setIcon(R.drawable.ic_edit)
                 .setView(mVb.getRoot())
-                .setTitle(R.string.lbl_edit_series)
                 .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
-                .setPositiveButton(R.string.action_save, (d, w) -> {
-                    mTitle = mVb.seriesTitle.getText().toString().trim();
-                    if (mTitle.isEmpty()) {
-                        Snackbar.make(mVb.seriesTitle, R.string.warning_missing_name,
-                                      Snackbar.LENGTH_LONG).show();
-                        return;
-                    }
-                    mIsComplete = mVb.cbxIsComplete.isChecked();
-
-                    // anything actually changed ?
-                    if (mSeries.getTitle().equals(mTitle)
-                        && mSeries.isComplete() == mIsComplete) {
-                        return;
-                    }
-
-                    // this is a global update, so just set and update.
-                    mSeries.setTitle(mTitle);
-                    mSeries.setComplete(mIsComplete);
-                    // There is no book involved here, so use the users Locale instead
-                    // and store the changes
-                    mDb.updateOrInsertSeries(getContext(),
-                                             LocaleUtils.getUserLocale(getContext()), mSeries);
-
-                    // and spread the news of the changes.
-                    //  Bundle data = new Bundle();
-                    //  data.putLong(DBDefinitions.KEY_SERIES_TITLE, mSeries.getId());
-                    if (mListener != null && mListener.get() != null) {
-                        mListener.get().onBookChanged(0, BookChangedListener.SERIES, null);
-                    } else {
-                        if (BuildConfig.DEBUG /* always */) {
-                            Log.w(TAG, "onBookChanged|" +
-                                       (mListener == null ? ErrorMsg.LISTENER_WAS_NULL
-                                                          : ErrorMsg.LISTENER_WAS_DEAD));
-                        }
-                    }
-                })
+                .setPositiveButton(R.string.action_save, (d, w) -> saveChanges())
                 .create();
+    }
+
+    private void saveChanges() {
+        mTitle = mVb.seriesTitle.getText().toString().trim();
+        if (mTitle.isEmpty()) {
+            Snackbar.make(mVb.seriesTitle, R.string.warning_missing_name,
+                          Snackbar.LENGTH_LONG).show();
+            return;
+        }
+        mIsComplete = mVb.cbxIsComplete.isChecked();
+
+        // anything actually changed ?
+        if (mSeries.getTitle().equals(mTitle)
+            && mSeries.isComplete() == mIsComplete) {
+            return;
+        }
+
+        // this is a global update, so just set and update.
+        mSeries.setTitle(mTitle);
+        mSeries.setComplete(mIsComplete);
+        // There is no book involved here, so use the users Locale instead
+        // and store the changes
+        //noinspection ConstantConditions
+        mDb.updateOrInsertSeries(getContext(), LocaleUtils.getUserLocale(getContext()), mSeries);
+
+        // and spread the news of the changes.
+        //  Bundle data = new Bundle();
+        //  data.putLong(DBDefinitions.KEY_SERIES_TITLE, mSeries.getId());
+        if (mListener != null && mListener.get() != null) {
+            mListener.get().onBookChanged(0, BookChangedListener.SERIES, null);
+        } else {
+            if (BuildConfig.DEBUG /* always */) {
+                Log.w(TAG, "onBookChanged|" +
+                           (mListener == null ? ErrorMsg.LISTENER_WAS_NULL
+                                              : ErrorMsg.LISTENER_WAS_DEAD));
+            }
+        }
     }
 
     @Override
@@ -187,6 +189,7 @@ public class EditSeriesDialogFragment
      *
      * @param listener the object to send the result to.
      */
+    @Override
     public void setListener(@NonNull final BookChangedListener listener) {
         mListener = new WeakReference<>(listener);
     }

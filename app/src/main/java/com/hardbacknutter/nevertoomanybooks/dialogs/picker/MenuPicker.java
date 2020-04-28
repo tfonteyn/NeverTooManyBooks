@@ -36,10 +36,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.PopupMenu;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,45 +53,60 @@ import com.hardbacknutter.nevertoomanybooks.R;
 
 /**
  * Show context menu on a view.
+ * <p>
+ * Note this is <strong>NOT</strong> a DialogFrame and will not survive screen rotations.
+ * It's easy enough to transform it into one, but due to the need of parceling the arguments,
+ * it becomes impossible to use {@code getMenuInflater().inflate(R.menu.x, menu);}.
+ * Menu building can of course be handled fully in code but the trade-off can be huge.
  */
-public class MenuPicker
-        extends ValuePicker {
+public class MenuPicker {
+
+    /** If set, we'll use {@link MenuPickerDialogFragment} where implemented. */
+    public static final boolean __COMPILE_TIME_USE_FRAGMENT = false;
 
     @NonNull
-    private MenuItemListAdapter mAdapter;
+    private final AlertDialog mDialog;
+
+    /** Cached position of the item in the list this menu was invoked on. */
+    private final int mPosition;
+    /** Listener for the result. */
+    @NonNull
+    private final ContextItemSelected mListener;
 
     /**
-     * Full Constructor with actual strings.
+     * Constructor.
      * <p>
-     * The caller can create a menu calling {@link #createMenu(Context)},
+     * The caller should create a menu by calling {@link #createMenu(Context)},
      * populate it and pass it here.
      *
      * @param context  Current context
      * @param title    (optional) for the dialog/menu
-     * @param message  (optional) message to display above the menu
      * @param menu     the menu options to show
      * @param position of the item in a list where the context menu was initiated
      * @param listener callback handler with the MenuItem the user chooses + the position
      */
     public MenuPicker(@NonNull final Context context,
                       @Nullable final CharSequence title,
-                      @Nullable final CharSequence message,
                       @NonNull final Menu menu,
                       final int position,
                       @NonNull final ContextItemSelected listener) {
-        super(context, title, message, false);
 
-        mAdapter = new MenuItemListAdapter(context, menu, menuItem -> {
-            if (menuItem.hasSubMenu()) {
-                setTitle(menuItem.getTitle());
-                mAdapter.setMenu(menuItem.getSubMenu());
-            } else {
-                dismiss();
-                listener.onContextItemSelected(menuItem, position);
-            }
-        });
+        mPosition = position;
+        mListener = listener;
 
-        setAdapter(mAdapter, 0);
+        View root = LayoutInflater.from(context).inflate(R.layout.dialog_popupmenu, null);
+
+        // list of options
+        RecyclerView listView = root.findViewById(R.id.item_list);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context);
+        listView.setLayoutManager(linearLayoutManager);
+        MenuItemListAdapter adapter = new MenuItemListAdapter(context, menu);
+        listView.setAdapter(adapter);
+
+        mDialog = new MaterialAlertDialogBuilder(context)
+                .setView(root)
+                .setTitle(title)
+                .create();
     }
 
     public static Menu createMenu(@NonNull final Context context) {
@@ -96,22 +116,47 @@ public class MenuPicker
         return new PopupMenu(context, null).getMenu();
     }
 
+    public void show() {
+        mDialog.show();
+    }
+
     public interface ContextItemSelected {
 
         /**
          * Callback handler.
          *
-         * @param menuItem that was selected
-         * @param position of the item in a list where the context menu was initiated
+         * @param menuItemId that was selected
+         * @param position   of the item in a list where the context menu was initiated
          *
          * @return {@code true} if handled.
          */
         @SuppressWarnings("UnusedReturnValue")
-        boolean onContextItemSelected(@NonNull MenuItem menuItem,
+        boolean onContextItemSelected(@IdRes int menuItemId,
                                       int position);
     }
 
-    private static class MenuItemListAdapter
+    private static class Holder
+            extends RecyclerView.ViewHolder {
+
+        final int viewType;
+
+        @Nullable
+        final TextView textView;
+
+        Holder(final int viewType,
+               @NonNull final View itemView) {
+            super(itemView);
+            this.viewType = viewType;
+
+            if (viewType == MenuItemListAdapter.MENU_ITEM) {
+                textView = itemView.findViewById(R.id.menu_item);
+            } else {
+                textView = null;
+            }
+        }
+    }
+
+    private class MenuItemListAdapter
             extends RecyclerView.Adapter<Holder> {
 
         /** ViewType. */
@@ -125,22 +170,17 @@ public class MenuPicker
         private final List<MenuItem> mList = new ArrayList<>();
         @NonNull
         private final LayoutInflater mInflater;
-        @NonNull
-        private final PickListener<MenuItem> mListener;
 
         /**
          * Constructor.
          *
          * @param context  Current context
          * @param menu     Menu (list of items) to display
-         * @param listener Callback handler
          */
         MenuItemListAdapter(@NonNull final Context context,
-                            @NonNull final Menu menu,
-                            @NonNull final PickListener<MenuItem> listener) {
+                            @NonNull final Menu menu) {
 
             mInflater = LayoutInflater.from(context);
-            mListener = listener;
             setMenu(menu);
 
             //noinspection ConstantConditions
@@ -207,7 +247,15 @@ public class MenuPicker
 
                 holder.textView.setEnabled(item.isEnabled());
                 if (item.isEnabled()) {
-                    holder.textView.setOnClickListener(v -> mListener.onPicked(item));
+                    holder.textView.setOnClickListener(v -> {
+                        if (item.hasSubMenu()) {
+                            mDialog.setTitle(item.getTitle());
+                            setMenu(item.getSubMenu());
+                        } else {
+                            mDialog.dismiss();
+                            mListener.onContextItemSelected(item.getItemId(), mPosition);
+                        }
+                    });
                 }
             }
         }
@@ -215,27 +263,6 @@ public class MenuPicker
         @Override
         public int getItemCount() {
             return mList.size();
-        }
-    }
-
-    static class Holder
-            extends RecyclerView.ViewHolder {
-
-        final int viewType;
-
-        @Nullable
-        final TextView textView;
-
-        Holder(final int viewType,
-               @NonNull final View itemView) {
-            super(itemView);
-            this.viewType = viewType;
-
-            if (viewType == MenuItemListAdapter.MENU_ITEM) {
-                textView = itemView.findViewById(R.id.menu_item);
-            } else {
-                textView = null;
-            }
         }
     }
 }

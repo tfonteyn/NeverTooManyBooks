@@ -44,6 +44,7 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import androidx.annotation.IdRes;
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -85,7 +86,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
  * Handler for a displayed Cover ImageView element.
  * Offers context menus and all operations applicable on a Cover image.
  * The fragment using this must implement {@link HostingFragment} if it hosts more then 1
- * instance of this class. See {@link #onViewContextItemSelected}.
+ * instance of this class. See {@link #onContextItemSelected}.
  * It informs the fragment of the cover image index to use in its
  * {@link Fragment#onActivityResult(int, int, Intent)}
  *
@@ -217,7 +218,7 @@ class CoverHandler {
         Menu menu = MenuPicker.createMenu(mContext);
         new MenuInflater(mContext).inflate(R.menu.image, menu);
 
-        CharSequence title;
+        final CharSequence title;
         if (getCoverFile().exists()) {
             title = mContext.getString(R.string.lbl_cover_long);
         } else {
@@ -230,22 +231,21 @@ class CoverHandler {
         // we only support alternative edition covers for the front cover.
         menu.findItem(R.id.MENU_THUMB_ADD_ALT_EDITIONS).setVisible(mCIdx == 0);
 
-        new MenuPicker(mContext, title, null, menu, mCIdx,
-                       this::onViewContextItemSelected)
+        new MenuPicker(mContext, title, menu, mCIdx,
+                       this::onContextItemSelected)
                 .show();
     }
 
     /**
      * Using {@link MenuPicker} for context menus.
-     * Reminder: the 'menuItem' here *is* the 'item'.
      *
-     * @param menuItem that the user selected
+     * @param menuItem that was selected
      * @param position in the list (i.e. mCIdx)
      *
-     * @return {@code true} if handled here.
+     * @return {@code true} if handled.
      */
-    private boolean onViewContextItemSelected(@NonNull final MenuItem menuItem,
-                                              final int position) {
+    private boolean onContextItemSelected(@IdRes final int menuItem,
+                                          final int position) {
 
         // prepare the fragment for results.
         // This is needed as for example when we start the camera, we can't tell afterwards
@@ -254,7 +254,7 @@ class CoverHandler {
             ((HostingFragment) mFragment).setCurrentCoverIndex(mCIdx);
         }
 
-        switch (menuItem.getItemId()) {
+        switch (menuItem) {
             case R.id.MENU_DELETE: {
                 deleteCoverFile(mContext);
                 return true;

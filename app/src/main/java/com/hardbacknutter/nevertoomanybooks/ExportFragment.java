@@ -107,7 +107,7 @@ public class ExportFragment
         }
         super.onAttachFragment(childFragment);
 
-        if (ExportHelperDialogFragment.TAG.equals(childFragment.getTag())) {
+        if (childFragment instanceof ExportHelperDialogFragment) {
             ((ExportHelperDialogFragment) childFragment).setListener(mExportOptionsListener);
         }
     }

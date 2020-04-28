@@ -141,8 +141,8 @@ public class BookDetailsFragment
         }
         super.onAttachFragment(childFragment);
 
-        if (LendBookDialogFragment.TAG.equals(childFragment.getTag())) {
-            ((LendBookDialogFragment) childFragment).setListener(mBookChangedListener);
+        if (childFragment instanceof BookChangedListenerOwner) {
+            ((BookChangedListenerOwner) childFragment).setListener(mBookChangedListener);
         }
     }
 
@@ -578,9 +578,7 @@ public class BookDetailsFragment
                 return true;
             }
             case R.id.MENU_BOOK_LOAN_ADD: {
-                //noinspection ConstantConditions
-                LendBookDialogFragment.newInstance(getContext(), book)
-                                      // 2020-04-21; screen rotation OK
+                LendBookDialogFragment.newInstance(book)
                                       .show(getChildFragmentManager(), LendBookDialogFragment.TAG);
                 return true;
             }

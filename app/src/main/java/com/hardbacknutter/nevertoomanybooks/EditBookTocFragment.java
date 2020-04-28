@@ -42,6 +42,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.CallSuper;
+import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
@@ -68,6 +69,7 @@ import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditTocEntryDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.picker.MenuPicker;
+import com.hardbacknutter.nevertoomanybooks.dialogs.picker.MenuPickerDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
@@ -101,6 +103,9 @@ import com.hardbacknutter.nevertoomanybooks.widgets.ddsupport.StartDragListener;
  * This is still not obsolete as the standard search engines can only return a single book,
  * and hence a single TOC. The interaction here with ISFDB allows the user to reject the first
  * (book)TOC found, and get the next one (etc...).
+ *
+ * FIXME: code needs some cleanup: editing a row in a dialog versus editing by copying a
+ * row to the onscreen boxes
  */
 public class EditBookTocFragment
         extends EditBookBaseFragment {
@@ -204,10 +209,13 @@ public class EditBookTocFragment
         }
         super.onAttachFragment(childFragment);
 
-        if (ConfirmTocDialogFragment.TAG.equals(childFragment.getTag())) {
+        if (childFragment instanceof MenuPickerDialogFragment) {
+            ((MenuPickerDialogFragment) childFragment).setListener(this::onContextItemSelected);
+
+        } else if (childFragment instanceof ConfirmTocDialogFragment) {
             ((ConfirmTocDialogFragment) childFragment).setListener(mConfirmTocResultsListener);
 
-        } else if (EditTocEntryDialogFragment.TAG.equals(childFragment.getTag())) {
+        } else if (childFragment instanceof EditTocEntryDialogFragment) {
             ((EditTocEntryDialogFragment) childFragment).setListener(mEditTocEntryResultsListener);
         }
     }
@@ -411,9 +419,14 @@ public class EditBookTocFragment
     }
 
     private void onCreateContextMenu(final int position) {
-        final Resources r = getResources();
+        if (MenuPicker.__COMPILE_TIME_USE_FRAGMENT) {
+            onCreateContextMenu2(position);
+            return;
+        }
 
+        final Resources r = getResources();
         final TocEntry item = mList.get(position);
+
         //noinspection ConstantConditions
         final Menu menu = MenuPicker.createMenu(getContext());
         menu.add(Menu.NONE, R.id.MENU_EDIT,
@@ -426,8 +439,28 @@ public class EditBookTocFragment
             .setIcon(R.drawable.ic_delete);
 
         final String title = item.getLabel(getContext());
-        new MenuPicker(getContext(), title, null, menu, position, this::onContextItemSelected)
+        new MenuPicker(getContext(), title, menu, position, this::onContextItemSelected)
                 .show();
+    }
+
+    private void onCreateContextMenu2(final int position) {
+        final Resources r = getResources();
+        final TocEntry item = mList.get(position);
+
+        final ArrayList<MenuPickerDialogFragment.Pick> menu = new ArrayList<>();
+        menu.add(new MenuPickerDialogFragment.Pick(R.id.MENU_EDIT,
+                                                   r.getInteger(R.integer.MENU_ORDER_EDIT),
+                                                   getString(R.string.action_edit_ellipsis),
+                                                   R.drawable.ic_edit));
+        menu.add(new MenuPickerDialogFragment.Pick(R.id.MENU_DELETE,
+                                                   r.getInteger(R.integer.MENU_ORDER_DELETE),
+                                                   getString(R.string.action_delete),
+                                                   R.drawable.ic_delete));
+
+        //noinspection ConstantConditions
+        final String title = item.getLabel(getContext());
+        MenuPickerDialogFragment.newInstance(title, null, menu, position)
+                                .show(getChildFragmentManager(), MenuPickerDialogFragment.TAG);
     }
 
     /**
@@ -438,28 +471,47 @@ public class EditBookTocFragment
      *
      * @return {@code true} if handled.
      */
-    private boolean onContextItemSelected(@NonNull final MenuItem menuItem,
+    private boolean onContextItemSelected(@IdRes final int menuItem,
                                           final int position) {
         final TocEntry tocEntry = mList.get(position);
 
-        switch (menuItem.getItemId()) {
+        switch (menuItem) {
             case R.id.MENU_EDIT:
-                editEntry(tocEntry, position);
+                editEntry(position, tocEntry);
                 return true;
 
             case R.id.MENU_DELETE:
-                //noinspection ConstantConditions
-                StandardDialogs.deleteTocEntry(getContext(), tocEntry, () -> {
-                    if (mFragmentVM.getDb().deleteTocEntry(tocEntry.getId()) == 1) {
-                        mList.remove(tocEntry);
-                        mListAdapter.notifyItemRemoved(position);
-                    }
-                });
+                deleteEntry(position, tocEntry);
                 return true;
 
             default:
                 return false;
         }
+    }
+
+    /**
+     * Start the fragment dialog to edit an entry.
+     *
+     * @param position the item position which will be used to update the data after editing.
+     * @param tocEntry to edit
+     */
+    private void editEntry(@Nullable final Integer position,
+                           @NonNull final TocEntry tocEntry) {
+        mEditPosition = position;
+        EditTocEntryDialogFragment.newInstance(mBookViewModel.getBook().getTitle(),
+                                               tocEntry, mVb.cbxMultipleAuthors.isChecked())
+                                  .show(getChildFragmentManager(), EditTocEntryDialogFragment.TAG);
+    }
+
+    private void deleteEntry(final int position,
+                             @NonNull final TocEntry tocEntry) {
+        //noinspection ConstantConditions
+        StandardDialogs.deleteTocEntry(getContext(), tocEntry, () -> {
+            if (mFragmentVM.getDb().deleteTocEntry(tocEntry.getId()) == 1) {
+                mList.remove(tocEntry);
+                mListAdapter.notifyItemRemoved(position);
+            }
+        });
     }
 
     private void populateTocBits(@NonNull final Book book) {
@@ -506,6 +558,7 @@ public class EditBookTocFragment
                                                mVb.title.getText().toString().trim(),
                                                mVb.firstPublication.getText().toString().trim());
         mList.add(tocEntry);
+        mListAdapter.notifyDataSetChanged();
 
         if (mVb.cbxMultipleAuthors.isChecked()) {
             //noinspection ConstantConditions
@@ -516,20 +569,6 @@ public class EditBookTocFragment
         mVb.firstPublication.setText("");
     }
 
-    /**
-     * Start the fragment dialog to edit a Bookshelf.
-     *
-     * @param tocEntry to edit
-     * @param position the item position which will be used to update the data after editing.
-     */
-    private void editEntry(@NonNull final TocEntry tocEntry,
-                           @Nullable final Integer position) {
-        mEditPosition = position;
-
-        EditTocEntryDialogFragment.newInstance(tocEntry, mVb.cbxMultipleAuthors.isChecked())
-                                  .show(getChildFragmentManager(), EditTocEntryDialogFragment.TAG);
-
-    }
 
     private boolean isAddSeriesFromToc() {
         //noinspection ConstantConditions
@@ -760,12 +799,18 @@ public class EditBookTocFragment
 
             // click -> edit
             holder.rowDetailsView.setOnClickListener(
-                    v -> editEntry(item, holder.getBindingAdapterPosition()));
+                    v -> editEntry(holder.getBindingAdapterPosition(), item));
 
             holder.rowDetailsView.setOnLongClickListener(v -> {
                 onCreateContextMenu(holder.getBindingAdapterPosition());
                 return true;
             });
+        }
+
+        @Override
+        protected void onDelete(final int adapterPosition,
+                                @NonNull final TocEntry tocEntry) {
+            deleteEntry(adapterPosition, tocEntry);
         }
     }
 }

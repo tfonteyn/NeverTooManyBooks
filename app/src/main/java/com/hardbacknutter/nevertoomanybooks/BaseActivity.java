@@ -295,7 +295,7 @@ public abstract class BaseActivity
         }
     }
 
-    public void updateActionBar(final boolean isRoot) {
+    void updateActionBar(final boolean isRoot) {
         mHomeIsRootMenu = isRoot;
         final ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
@@ -411,7 +411,7 @@ public abstract class BaseActivity
      *
      * @return {@code true} if it's the real home (hamburger) menu
      */
-    public boolean homeIsRootMenu() {
+    private boolean homeIsRootMenu() {
         return isTaskRoot() && mHomeIsRootMenu;
     }
 

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -74,14 +74,14 @@ public interface BookChangedListener {
      * @param data        bundle with custom data, can be {@code null}
      */
     void onBookChanged(long bookId,
-                       @WhatChanged int whatChanged,
+                       @Flags int whatChanged,
                        @Nullable Bundle data);
 
     @IntDef(flag = true, value = {AUTHOR, SERIES,
                                   FORMAT, COLOR, GENRE, LANGUAGE, LOCATION, PUBLISHER,
                                   BOOK_READ, BOOK_LOANEE, BOOK_DELETED})
     @Retention(RetentionPolicy.SOURCE)
-    @interface WhatChanged {
+    @interface Flags {
 
     }
 }

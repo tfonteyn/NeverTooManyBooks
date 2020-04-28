@@ -100,15 +100,14 @@ public abstract class RecyclerViewAdapterBase<Item, VHT extends RecyclerViewView
 
         if (holder.mDeleteButton != null) {
             holder.mDeleteButton.setOnClickListener(v -> {
-                int pos = holder.getBindingAdapterPosition();
+                int adapterPosition = holder.getBindingAdapterPosition();
                 // 2019-09-25: yes, we CAN (and did) get a NO_POSITION value here. So check it!
-                if (pos == RecyclerView.NO_POSITION) {
+                if (adapterPosition == RecyclerView.NO_POSITION) {
                     // don't touch the item list, but update the screen.
                     notifyDataSetChanged();
                 } else {
                     // situation normal.
-                    mItems.remove(getItem(pos));
-                    notifyItemRemoved(pos);
+                    onDelete(adapterPosition, getItem(adapterPosition));
                 }
             });
         }
@@ -125,6 +124,12 @@ public abstract class RecyclerViewAdapterBase<Item, VHT extends RecyclerViewView
         }
     }
 
+    protected void onDelete(final int adapterPosition,
+                            @NonNull final Item item) {
+        mItems.remove(item);
+        notifyItemRemoved(adapterPosition);
+    }
+
     @Override
     public int getItemCount() {
         return mItems.size();
@@ -136,8 +141,7 @@ public abstract class RecyclerViewAdapterBase<Item, VHT extends RecyclerViewView
     }
 
     /**
-     * It's very important to call notifyItemMoved() so the Adapter is aware of the changes.
-     * It's also important to note that we're changing the position of the item every time the
+     * Note that we're changing the position of the item every time the
      * view is shifted to a new index, and not at the end of a “drop” event.
      *
      * @param fromPosition The start position of the moved item.
@@ -154,13 +158,12 @@ public abstract class RecyclerViewAdapterBase<Item, VHT extends RecyclerViewView
     }
 
     /**
-     * It's very important to call notifyItemRemoved() so the Adapter is aware of the changes.
+     * Swiping a row will by default call {@link #onDelete(int, Object)}.
      *
-     * @param position The position of the item removed.
+     * @param position The position of the item swiped.
      */
     @Override
     public void onItemSwiped(final int position) {
-        mItems.remove(position);
-        notifyItemRemoved(position);
+        onDelete(position, mItems.get(position));
     }
 }

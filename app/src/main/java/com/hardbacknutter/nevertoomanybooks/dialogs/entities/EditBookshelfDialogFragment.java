@@ -69,11 +69,11 @@ public class EditBookshelfDialogFragment
 
     /** Database Access. */
     private DAO mDb;
-
+    /** The Bookshelf we're editing. */
     private Bookshelf mBookshelf;
-
+    /** View Binding. */
     private EditText mNameView;
-
+    /** Current edit. */
     private String mName;
 
     @Nullable
@@ -123,21 +123,13 @@ public class EditBookshelfDialogFragment
 
         //noinspection ConstantConditions
         return new MaterialAlertDialogBuilder(getContext())
-                .setIcon(R.drawable.ic_edit)
                 .setView(root)
-                .setTitle(R.string.lbl_bookshelf)
                 .setNegativeButton(android.R.string.cancel, (d, w) -> dismiss())
-                .setPositiveButton(R.string.action_save, (d, w) -> doSave())
+                .setPositiveButton(R.string.action_save, (d, w) -> saveChanges())
                 .create();
     }
 
-    @Override
-    public void onSaveInstanceState(@NonNull final Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putString(DBDefinitions.KEY_BOOKSHELF_NAME, mName);
-    }
-
-    private void doSave() {
+    private void saveChanges() {
         mName = mNameView.getText().toString().trim();
         if (mName.isEmpty()) {
             Snackbar.make(mNameView, R.string.warning_missing_name, Snackbar.LENGTH_LONG).show();
@@ -182,27 +174,13 @@ public class EditBookshelfDialogFragment
                     mListener.get().onBookshelfChanged(mBookshelf.getId(), 0);
                 } else {
                     if (BuildConfig.DEBUG /* always */) {
-                        Log.w(TAG, "doSave|" +
+                        Log.w(TAG, "onBookshelfChanged|" +
                                    (mListener == null ? ErrorMsg.LISTENER_WAS_NULL
                                                       : ErrorMsg.LISTENER_WAS_DEAD));
                     }
                 }
             }
         }
-    }
-
-    @Override
-    public void onPause() {
-        mName = mNameView.getText().toString().trim();
-        super.onPause();
-    }
-
-    @Override
-    public void onDestroy() {
-        if (mDb != null) {
-            mDb.close();
-        }
-        super.onDestroy();
     }
 
     /**
@@ -236,6 +214,12 @@ public class EditBookshelfDialogFragment
                 .show();
     }
 
+    @Override
+    public void onSaveInstanceState(@NonNull final Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString(DBDefinitions.KEY_BOOKSHELF_NAME, mName);
+    }
+
     /**
      * Call this from {@link #onAttachFragment} in the parent.
      *
@@ -243,6 +227,20 @@ public class EditBookshelfDialogFragment
      */
     public void setListener(@NonNull final BookshelfChangedListener listener) {
         mListener = new WeakReference<>(listener);
+    }
+
+    @Override
+    public void onPause() {
+        mName = mNameView.getText().toString().trim();
+        super.onPause();
+    }
+
+    @Override
+    public void onDestroy() {
+        if (mDb != null) {
+            mDb.close();
+        }
+        super.onDestroy();
     }
 
     public interface BookshelfChangedListener {

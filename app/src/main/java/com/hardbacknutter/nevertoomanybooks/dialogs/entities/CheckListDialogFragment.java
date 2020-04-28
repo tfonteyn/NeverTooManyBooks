@@ -130,7 +130,7 @@ public class CheckListDialogFragment
     @Override
     public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
 
-        View root = createCheckBoxes();
+        final View root = createCheckBoxes();
 
         //noinspection ConstantConditions
         return new MaterialAlertDialogBuilder(getContext())
@@ -139,7 +139,7 @@ public class CheckListDialogFragment
                 .setTitle(getArguments().getInt(StandardDialogs.BKEY_DIALOG_TITLE,
                                                 R.string.action_edit))
                 .setNegativeButton(android.R.string.cancel, (d, which) -> dismiss())
-                .setPositiveButton(android.R.string.ok, (d, which) -> sendResults())
+                .setPositiveButton(android.R.string.ok, (d, which) -> saveChanges())
                 .create();
     }
 
@@ -196,13 +196,13 @@ public class CheckListDialogFragment
         return root;
     }
 
-    private void sendResults() {
+    private void saveChanges() {
         if (mListener != null && mListener.get() != null) {
             mListener.get().onCheckListEditorSave(mSelectedItems);
 
         } else {
             if (BuildConfig.DEBUG /* always */) {
-                Log.w(TAG, "sendResults|" +
+                Log.w(TAG, "onCheckListEditorSave|" +
                            (mListener == null ? ErrorMsg.LISTENER_WAS_NULL
                                               : ErrorMsg.LISTENER_WAS_DEAD));
             }

@@ -40,14 +40,17 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.CallSuper;
+import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -62,6 +65,7 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.dialogs.picker.MenuPicker;
+import com.hardbacknutter.nevertoomanybooks.dialogs.picker.MenuPickerDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.settings.SettingsActivity;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.PreferredStylesViewModel;
 import com.hardbacknutter.nevertoomanybooks.widgets.RecyclerViewAdapterBase;
@@ -102,6 +106,18 @@ public class PreferredStylesActivity
             mModel.saveMenuOrder(PreferredStylesActivity.this);
         }
     };
+
+    @Override
+    public void onAttachFragment(@NonNull final Fragment fragment) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.ATTACH_FRAGMENT) {
+            Log.d(getClass().getName(), "onAttachFragment: " + fragment.getTag());
+        }
+        super.onAttachFragment(fragment);
+
+        if (fragment instanceof MenuPickerDialogFragment) {
+            ((MenuPickerDialogFragment) fragment).setListener(this::onContextItemSelected);
+        }
+    }
 
     @Override
     protected void onSetContentView() {
@@ -245,11 +261,15 @@ public class PreferredStylesActivity
     }
 
     private void onCreateContextMenu(final int position) {
-        Resources r = getResources();
+        if (MenuPicker.__COMPILE_TIME_USE_FRAGMENT) {
+            onCreateContextMenu2(position);
+            return;
+        }
 
-        BooklistStyle style = mModel.getList().get(position);
+        final Resources r = getResources();
+        final BooklistStyle style = mModel.getList().get(position);
 
-        Menu menu = MenuPicker.createMenu(this);
+        final Menu menu = MenuPicker.createMenu(this);
 
         if (style.isUserDefined()) {
             menu.add(Menu.NONE, R.id.MENU_EDIT,
@@ -268,8 +288,35 @@ public class PreferredStylesActivity
             .setIcon(R.drawable.ic_content_copy);
 
         String title = style.getLabel(this);
-        new MenuPicker(this, title, null, menu, position, this::onContextItemSelected)
+        new MenuPicker(this, title, menu, position, this::onContextItemSelected)
                 .show();
+    }
+
+    private void onCreateContextMenu2(final int position) {
+        final Resources r = getResources();
+        final BooklistStyle style = mModel.getList().get(position);
+
+        final ArrayList<MenuPickerDialogFragment.Pick> menu = new ArrayList<>();
+
+        if (style.isUserDefined()) {
+            menu.add(new MenuPickerDialogFragment.Pick(R.id.MENU_EDIT,
+                                                       r.getInteger(R.integer.MENU_ORDER_EDIT),
+                                                       getString(R.string.action_edit_ellipsis),
+                                                       R.drawable.ic_edit));
+            menu.add(new MenuPickerDialogFragment.Pick(R.id.MENU_DELETE,
+                                                       r.getInteger(R.integer.MENU_ORDER_DELETE),
+                                                       getString(R.string.action_delete),
+                                                       R.drawable.ic_delete));
+        }
+
+        menu.add(new MenuPickerDialogFragment.Pick(R.id.MENU_DUPLICATE,
+                                                   r.getInteger(R.integer.MENU_ORDER_DUPLICATE),
+                                                   getString(R.string.action_duplicate),
+                                                   R.drawable.ic_content_copy));
+
+        final String title = style.getLabel(this);
+        MenuPickerDialogFragment.newInstance(title, null, menu, position)
+                                .show(getSupportFragmentManager(), MenuPickerDialogFragment.TAG);
     }
 
     /**
@@ -280,12 +327,12 @@ public class PreferredStylesActivity
      *
      * @return {@code true} if handled.
      */
-    private boolean onContextItemSelected(@NonNull final MenuItem menuItem,
+    private boolean onContextItemSelected(@IdRes final int menuItem,
                                           final int position) {
 
         BooklistStyle style = mModel.getList().get(position);
 
-        switch (menuItem.getItemId()) {
+        switch (menuItem) {
 
             case R.id.MENU_EDIT:
                 // dev sanity check

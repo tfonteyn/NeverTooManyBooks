@@ -32,6 +32,7 @@ import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -40,6 +41,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
@@ -57,6 +59,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.dialogs.picker.MenuPicker;
+import com.hardbacknutter.nevertoomanybooks.dialogs.picker.MenuPickerDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
@@ -94,6 +97,18 @@ public class AuthorWorksFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+    }
+
+    @Override
+    public void onAttachFragment(@NonNull final Fragment childFragment) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.ATTACH_FRAGMENT) {
+            Log.d(getClass().getName(), "onAttachFragment: " + childFragment.getTag());
+        }
+        super.onAttachFragment(childFragment);
+
+        if (childFragment instanceof MenuPickerDialogFragment) {
+            ((MenuPickerDialogFragment) childFragment).setListener(this::onContextItemSelected);
+        }
     }
 
     @Nullable
@@ -219,8 +234,12 @@ public class AuthorWorksFragment
     }
 
     private void onCreateContextMenu(final int position) {
-        final Resources r = getResources();
+        if (MenuPicker.__COMPILE_TIME_USE_FRAGMENT) {
+            onCreateContextMenu2(position);
+            return;
+        }
 
+        final Resources r = getResources();
         final TocEntry item = mModel.getTocEntries().get(position);
 
         //noinspection ConstantConditions
@@ -231,8 +250,24 @@ public class AuthorWorksFragment
             .setIcon(R.drawable.ic_delete);
 
         final String title = item.getLabel(getContext());
-        new MenuPicker(getContext(), title, null, menu, position, this::onContextItemSelected)
+        new MenuPicker(getContext(), title, menu, position, this::onContextItemSelected)
                 .show();
+    }
+
+    private void onCreateContextMenu2(final int position) {
+        final Resources r = getResources();
+        final TocEntry item = mModel.getTocEntries().get(position);
+
+        final ArrayList<MenuPickerDialogFragment.Pick> menu = new ArrayList<>();
+        menu.add(new MenuPickerDialogFragment.Pick(R.id.MENU_DELETE,
+                                                   r.getInteger(R.integer.MENU_ORDER_DELETE),
+                                                   getString(R.string.action_delete),
+                                                   R.drawable.ic_delete));
+
+        //noinspection ConstantConditions
+        final String title = item.getLabel(getContext());
+        MenuPickerDialogFragment.newInstance(title, null, menu, position)
+                                .show(getChildFragmentManager(), MenuPickerDialogFragment.TAG);
     }
 
     /**
@@ -243,12 +278,12 @@ public class AuthorWorksFragment
      *
      * @return {@code true} if handled.
      */
-    private boolean onContextItemSelected(@NonNull final MenuItem menuItem,
+    private boolean onContextItemSelected(@IdRes final int menuItem,
                                           final int position) {
         final TocEntry item = mModel.getTocEntries().get(position);
 
         //noinspection SwitchStatementWithTooFewBranches
-        switch (menuItem.getItemId()) {
+        switch (menuItem) {
             case R.id.MENU_DELETE:
                 switch (item.getType()) {
                     case Book:
@@ -271,7 +306,7 @@ public class AuthorWorksFragment
                 break;
 
             default:
-                throw new UnexpectedValueException(menuItem.getItemId());
+                return false;
         }
 
         return false;

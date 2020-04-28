@@ -218,8 +218,8 @@ public abstract class ArchiveWriterAbstractBase
      * @throws IOException on failure
      */
     @WorkerThread
-    public abstract void writeBooks(@NonNull Context context,
-                                    @NonNull ProgressListener progressListener)
+    protected abstract void writeBooks(@NonNull Context context,
+                                       @NonNull ProgressListener progressListener)
             throws IOException;
 
     /**

@@ -147,7 +147,7 @@ public class EditBookFieldsFragment
         }
         super.onAttachFragment(childFragment);
 
-        if (CheckListDialogFragment.TAG.equals(childFragment.getTag())) {
+        if (childFragment instanceof CheckListDialogFragment) {
             ((CheckListDialogFragment) childFragment).setListener(mCheckListResultsListener);
         }
     }

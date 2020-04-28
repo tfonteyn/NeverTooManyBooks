@@ -44,6 +44,7 @@ import java.lang.ref.WeakReference;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.BookChangedListener;
+import com.hardbacknutter.nevertoomanybooks.BookChangedListenerOwner;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
@@ -59,7 +60,8 @@ import com.hardbacknutter.nevertoomanybooks.widgets.DiacriticArrayAdapter;
  * Calling point is a List
  */
 public class EditAuthorDialogFragment
-        extends DialogFragment {
+        extends DialogFragment
+        implements BookChangedListenerOwner {
 
     /** Log tag. */
     public static final String TAG = "EditAuthorDialogFrag";
@@ -128,10 +130,10 @@ public class EditAuthorDialogFragment
         final Context context = getContext();
 
         //noinspection ConstantConditions
-        DiacriticArrayAdapter<String> mFamilyNameAdapter = new DiacriticArrayAdapter<>(
+        final DiacriticArrayAdapter<String> mFamilyNameAdapter = new DiacriticArrayAdapter<>(
                 context, R.layout.dropdown_menu_popup_item,
                 mDb.getAuthorNames(DBDefinitions.KEY_AUTHOR_FAMILY_NAME));
-        DiacriticArrayAdapter<String> mGivenNameAdapter = new DiacriticArrayAdapter<>(
+        final DiacriticArrayAdapter<String> mGivenNameAdapter = new DiacriticArrayAdapter<>(
                 context, R.layout.dropdown_menu_popup_item,
                 mDb.getAuthorNames(DBDefinitions.KEY_AUTHOR_GIVEN_NAMES));
 
@@ -145,50 +147,50 @@ public class EditAuthorDialogFragment
         mVb.cbxIsComplete.setChecked(mIsComplete);
 
         return new MaterialAlertDialogBuilder(context)
-                .setIcon(R.drawable.ic_edit)
                 .setView(mVb.getRoot())
-                .setTitle(R.string.lbl_edit_author)
                 .setNegativeButton(android.R.string.cancel, (d, w) -> dismiss())
-                .setPositiveButton(R.string.action_save, (d, w) -> {
-                    mFamilyName = mVb.familyName.getText().toString().trim();
-                    if (mFamilyName.isEmpty()) {
-                        Snackbar.make(mVb.familyName, R.string.warning_missing_name,
-                                      Snackbar.LENGTH_LONG).show();
-                        return;
-                    }
-
-                    mGivenNames = mVb.givenNames.getText().toString().trim();
-                    mIsComplete = mVb.cbxIsComplete.isChecked();
-
-                    // anything actually changed ?
-                    if (mAuthor.getFamilyName().equals(mFamilyName)
-                        && mAuthor.getGivenNames().equals(mGivenNames)
-                        && mAuthor.isComplete() == mIsComplete) {
-                        return;
-                    }
-
-                    // this is a global update, so just set and update.
-                    mAuthor.setName(mFamilyName, mGivenNames);
-                    mAuthor.setComplete(mIsComplete);
-                    // There is no book involved here, so use the users Locale instead
-                    // and store the changes
-                    mDb.updateOrInsertAuthor(context, mAuthor);
-
-                    // and spread the news of the changes.
-                    //  Bundle data = new Bundle();
-                    //  data.putLong(DBDefinitions.KEY_FK_AUTHOR, mAuthor.getId());
-                    if (mListener != null && mListener.get() != null) {
-                        mListener.get()
-                                 .onBookChanged(0, BookChangedListener.AUTHOR, null);
-                    } else {
-                        if (BuildConfig.DEBUG /* always */) {
-                            Log.w(TAG, "onBookChanged|" +
-                                       (mListener == null ? ErrorMsg.LISTENER_WAS_NULL
-                                                          : ErrorMsg.LISTENER_WAS_DEAD));
-                        }
-                    }
-                })
+                .setPositiveButton(R.string.action_save, (d, w) -> saveChanges())
                 .create();
+    }
+
+    private void saveChanges() {
+        mFamilyName = mVb.familyName.getText().toString().trim();
+        if (mFamilyName.isEmpty()) {
+            Snackbar.make(mVb.familyName, R.string.warning_missing_name,
+                          Snackbar.LENGTH_LONG).show();
+            return;
+        }
+
+        mGivenNames = mVb.givenNames.getText().toString().trim();
+        mIsComplete = mVb.cbxIsComplete.isChecked();
+
+        // anything actually changed ?
+        if (mAuthor.getFamilyName().equals(mFamilyName)
+            && mAuthor.getGivenNames().equals(mGivenNames)
+            && mAuthor.isComplete() == mIsComplete) {
+            return;
+        }
+
+        // this is a global update, so just set and update.
+        mAuthor.setName(mFamilyName, mGivenNames);
+        mAuthor.setComplete(mIsComplete);
+        // There is no book involved here, so use the users Locale instead
+        //noinspection ConstantConditions
+        mDb.updateOrInsertAuthor(getContext(), mAuthor);
+
+        // and spread the news of the changes.
+        //  Bundle data = new Bundle();
+        //  data.putLong(DBDefinitions.KEY_FK_AUTHOR, mAuthor.getId());
+        if (mListener != null && mListener.get() != null) {
+            mListener.get()
+                     .onBookChanged(0, BookChangedListener.AUTHOR, null);
+        } else {
+            if (BuildConfig.DEBUG /* always */) {
+                Log.w(TAG, "onBookChanged|" +
+                           (mListener == null ? ErrorMsg.LISTENER_WAS_NULL
+                                              : ErrorMsg.LISTENER_WAS_DEAD));
+            }
+        }
     }
 
     @Override
@@ -204,6 +206,7 @@ public class EditAuthorDialogFragment
      *
      * @param listener the object to send the result to.
      */
+    @Override
     public void setListener(@NonNull final BookChangedListener listener) {
         mListener = new WeakReference<>(listener);
     }
