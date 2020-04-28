@@ -165,6 +165,12 @@
         <item name="endIconMode">clear_text</item>
     </style>
 
+    <!-- a fixed width box for a 4-digit year. -->
+    <style name="Envelope.EditText.Year">
+        <item name="android:hint">@string/lbl_year</item>
+        <item name="android:layout_width">120dp</item>
+    </style>
+
     <style name="Envelope.EditText.Isbn">
         <item name="android:hint">@string/lbl_isbn</item>
         <item name="startIconDrawable">@drawable/ic_check</item>
@@ -228,6 +234,12 @@
     <style name="EditText.SeriesNumber">
         <item name="android:inputType">text</item>
         <item name="android:singleLine">true</item>
+    </style>
+
+    <style name="EditText.Year">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:inputType">number</item>
+        <item name="android:maxLength">4</item>
     </style>
 
     <!-- International three character currency code (uppercase) -->

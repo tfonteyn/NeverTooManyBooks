@@ -95,19 +95,14 @@
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/lbl_first_publication"
-        style="@style/Envelope.EditText"
-        android:layout_width="80dp"
-        android:hint="@string/lbl_year"
+        style="@style/Envelope.EditText.Year"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/lbl_title"
         >
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/first_publication"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:inputType="number"
-            android:maxLength="4"
+            style="@style/EditText.Year"
             tools:ignore="Autofill"
             />
 
