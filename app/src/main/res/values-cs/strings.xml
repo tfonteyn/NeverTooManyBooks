@@ -336,7 +336,7 @@
     <string name="lbl_table_of_content">Obsah</string>
     <string name="lbl_title">Titul</string>
     <string name="lbl_toc_anthology">Tato kniha je antologie</string>
-    <string name="lbl_toc_multiple_authors">Tato antologie má více autorů.</string>
+    <string name="lbl_toc_multiple_authors_long">Tato antologie má více autorů.</string>
     <string name="lbl_unread">Nepřečteno</string>
     <string name="lbl_update_day">Den aktualizace</string>
     <string name="lbl_update_month">Měsíc aktualizace</string>
@@ -660,5 +660,6 @@
     <string name="hint_empty_year">(Rok není nastaven)</string>
     <string name="lbl_all_bookshelves">Všechny knihovny</string>
     <string name="more_ellipsis">Více…</string>
+    <string name="lbl_toc_multiple_authors">Více autorů</string>
 
 </resources>

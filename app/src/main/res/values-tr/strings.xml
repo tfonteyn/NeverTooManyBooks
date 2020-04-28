@@ -336,7 +336,7 @@
     <string name="lbl_table_of_content">İçindekiler</string>
     <string name="lbl_title">Kitap adı</string>
     <string name="lbl_toc_anthology">Bu kitap bir antoloji</string>
-    <string name="lbl_toc_multiple_authors">Bu antolojinin çok sayıda yazarı vardır.</string>
+    <string name="lbl_toc_multiple_authors_long">Bu antolojinin çok sayıda yazarı vardır.</string>
     <string name="lbl_unread">Okunmamış</string>
     <string name="lbl_update_day">Günü güncelle</string>
     <string name="lbl_update_month">Ayı güncelle</string>
@@ -660,5 +660,6 @@
     <string name="hint_empty_year">(Yıl ayarlanmadı)</string>
     <string name="lbl_all_bookshelves">Tüm raflardan</string>
     <string name="more_ellipsis">Daha…</string>
+    <string name="lbl_toc_multiple_authors">Birden çok yazar</string>
 
 </resources>

@@ -342,7 +342,7 @@
     <string name="lbl_table_of_content">Inhouds tabel</string>
     <string name="lbl_title">Titel</string>
     <string name="lbl_toc_anthology">Dit boek is een bloemlezing</string>
-    <string name="lbl_toc_multiple_authors">Deze bloemlezing heeft meerdere auteurs</string>
+    <string name="lbl_toc_multiple_authors_long">Deze bloemlezing heeft meerdere auteurs</string>
     <string name="lbl_unread">Ongelezen</string>
     <string name="lbl_update_day">Dag update</string>
     <string name="lbl_update_month">Maand update</string>
@@ -667,5 +667,6 @@
     <string name="error_site_has_problems">De website heeft problemen.</string>
     <string name="lbl_all_bookshelves">Alle boekenplanken</string>
     <string name="more_ellipsis">Meer…</string>
+    <string name="lbl_toc_multiple_authors">Meerdere auteurs</string>
 
 </resources>

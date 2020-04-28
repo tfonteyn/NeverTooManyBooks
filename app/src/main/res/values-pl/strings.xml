@@ -335,7 +335,7 @@
     <string name="lbl_table_of_content">Spis treści</string>
     <string name="lbl_title">Tytuł</string>
     <string name="lbl_toc_anthology">Ta książka to antologia</string>
-    <string name="lbl_toc_multiple_authors">Ta antologia ma wielu autorów.</string>
+    <string name="lbl_toc_multiple_authors_long">Ta antologia ma wielu autorów.</string>
     <string name="lbl_unread">Nepřečtený</string>
     <string name="lbl_update_day">Dzień aktualizacji</string>
     <string name="lbl_update_month">Zaktualizuj miesiąc</string>
@@ -659,4 +659,5 @@
     <string name="hint_empty_year">(Rok nieustawiony)</string>
     <string name="lbl_all_bookshelves">Wszystkie półki na książki</string>
     <string name="more_ellipsis">Więcej…</string>
+    <string name="lbl_toc_multiple_authors">Wielu autorów</string>
 </resources>

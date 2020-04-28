@@ -341,7 +341,7 @@
     <string name="lbl_table_of_content">Table des matières</string>
     <string name="lbl_title">Titre</string>
     <string name="lbl_toc_anthology">Ce livre est une anthologie</string>
-    <string name="lbl_toc_multiple_authors">Cette anthologie a plusieurs auteurs.</string>
+    <string name="lbl_toc_multiple_authors_long">Cette anthologie a plusieurs auteurs.</string>
     <string name="lbl_unread">Non lu</string>
     <string name="lbl_update_day">Jour de mise à jour</string>
     <string name="lbl_update_month">Mois de mise à Jour</string>
@@ -668,5 +668,6 @@
     <string name="hint_empty_year">(Année non définie)</string>
     <string name="lbl_all_bookshelves">Toutes les bibliothèques</string>
     <string name="more_ellipsis">Plus…</string>
+    <string name="lbl_toc_multiple_authors">Plusieurs auteurs</string>
 
 </resources>

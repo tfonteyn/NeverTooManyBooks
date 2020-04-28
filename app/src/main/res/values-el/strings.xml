@@ -337,7 +337,7 @@
     <string name="lbl_table_of_content">πίνακας περιεχομένων</string>
     <string name="lbl_title">Τίτλος</string>
     <string name="lbl_toc_anthology">Αυτό το βιβλίο είναι μια Ανθολογία</string>
-    <string name="lbl_toc_multiple_authors">Αυτή η ανθολογία έχει πολλούς συγγραφείς.</string>
+    <string name="lbl_toc_multiple_authors_long">Αυτή η ανθολογία έχει πολλούς συγγραφείς.</string>
     <string name="lbl_unread">Μη αναγνωσμένα</string>
     <string name="lbl_update_day">Ημέρα ενημέρωσης</string>
     <string name="lbl_update_month">Μήνας ενημέρωσης</string>
@@ -664,5 +664,6 @@
     <string name="hint_empty_year">(Το έτος δεν έχει οριστεί)</string>
     <string name="lbl_all_bookshelves">Όλα τα ράφια</string>
     <string name="more_ellipsis">Περισσότερο…</string>
+    <string name="lbl_toc_multiple_authors">Πολλαπλοί συγγραφείς</string>
 
 </resources>
