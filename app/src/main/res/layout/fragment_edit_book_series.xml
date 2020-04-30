@@ -50,6 +50,7 @@
         <AutoCompleteTextView
             android:id="@+id/series_title"
             style="@style/titleTextEntryAutoComplete"
+            android:imeOptions="actionNext"
             android:layout_width="match_parent"
             tools:ignore="LabelFor"
             />
@@ -78,6 +79,7 @@
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/series_num"
             style="@style/EditText.SeriesNumber"
+            android:imeOptions="actionDone"
             android:layout_width="match_parent"
             tools:ignore="Autofill"
             />

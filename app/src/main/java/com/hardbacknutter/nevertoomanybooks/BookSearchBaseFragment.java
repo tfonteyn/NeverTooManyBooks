@@ -28,6 +28,7 @@
 package com.hardbacknutter.nevertoomanybooks;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
@@ -49,6 +50,7 @@ import com.google.android.material.snackbar.Snackbar;
 
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
+import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.searches.SiteList;
 import com.hardbacknutter.nevertoomanybooks.settings.SearchAdminActivity;
@@ -105,8 +107,8 @@ public abstract class BookSearchBaseFragment
         // Warn the user, but don't abort.
         if (!NetworkUtils.isNetworkAvailable(getContext())) {
             //noinspection ConstantConditions
-            Snackbar.make(getView(), R.string.error_network_no_connection, Snackbar.LENGTH_LONG)
-                    .show();
+            Snackbar.make(getView(), R.string.error_network_no_connection,
+                          Snackbar.LENGTH_LONG).show();
         }
     }
 
@@ -143,8 +145,6 @@ public abstract class BookSearchBaseFragment
                 return super.onOptionsItemSelected(item);
         }
     }
-
-    abstract void onSearchResults(@NonNull Bundle bookData);
 
     private void onSearchFinished(@NonNull final TaskListener.FinishMessage<Bundle> message) {
         if (mProgressDialog != null) {
@@ -215,16 +215,18 @@ public abstract class BookSearchBaseFragment
      * Clear the SearchCoordinator search criteria.
      * <p>
      * Override to clear the input fields for the former.
+     * Make sure to always call the super.
      */
     @CallSuper
-    void clearPreviousSearchCriteria() {
+    void onClearPreviousSearchCriteria() {
         mSearchCoordinator.clearSearchText();
     }
 
     /**
      * Start the actual search with the {@link SearchCoordinator} in the background.
      * <p>
-     * This is final; override {@link #onSearch()}.
+     * This is final; override {@link #onPreSearch()} and {@link #onSearch()} as needed.
+     * The results come in {@link #onSearchResults(Bundle)}.
      */
     final void startSearch() {
         // check if we have an active search, if so, quit silently.
@@ -232,11 +234,16 @@ public abstract class BookSearchBaseFragment
             return;
         }
 
+        // any implementation specific reasons not to start searching ?
+        if (!onPreSearch()) {
+            return;
+        }
+
         //noinspection ConstantConditions
         if (!NetworkUtils.isNetworkAvailable(getContext())) {
             //noinspection ConstantConditions
-            Snackbar.make(getView(), R.string.error_network_no_connection, Snackbar.LENGTH_LONG)
-                    .show();
+            Snackbar.make(getView(), R.string.error_network_no_connection,
+                          Snackbar.LENGTH_LONG).show();
             return;
         }
 
@@ -244,20 +251,43 @@ public abstract class BookSearchBaseFragment
         if (!onSearch()) {
             //TODO: not the best error message, but it will do for now.
             //noinspection ConstantConditions
-            Snackbar.make(getView(), R.string.error_search_failed_network, Snackbar.LENGTH_LONG)
-                    .show();
+            Snackbar.make(getView(), R.string.error_search_failed_network,
+                          Snackbar.LENGTH_LONG).show();
         }
     }
 
     /**
+     * Override to prevent or allow a search to start.
+     * The default implementation allows a search to start.
+     *
+     * @return {@code true} if a search is allowed
+     */
+    boolean onPreSearch() {
+        return true;
+    }
+
+    /**
      * Override to customize which search function is called.
+     * The default implementation starts the generic {@link SearchCoordinator#search(Context)}.
      *
      * @return {@code true} if a search was started
      */
-    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     boolean onSearch() {
         //noinspection ConstantConditions
         return mSearchCoordinator.search(getContext());
+    }
+
+    /**
+     * Process the search results.
+     * The default implementation starts the book-edit activity.
+     *
+     * @param bookData a Bundle with the results
+     */
+    void onSearchResults(@NonNull Bundle bookData) {
+        final Intent intent = new Intent(getContext(), EditBookActivity.class)
+                .putExtra(Book.BKEY_BOOK_DATA, bookData);
+        startActivityForResult(intent, RequestCode.BOOK_EDIT);
+        onClearPreviousSearchCriteria();
     }
 
     @Override

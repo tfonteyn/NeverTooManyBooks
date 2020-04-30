@@ -163,7 +163,7 @@ public class BookDetailsFragment
             mVb.cbxAnthology.setVisibility(View.GONE);
             mVb.lblToc.setVisibility(View.GONE);
             mVb.toc.setVisibility(View.GONE);
-            mVb.tocButton.setVisibility(View.GONE);
+            mVb.btnShowToc.setVisibility(View.GONE);
         }
 
         // Covers
@@ -197,10 +197,9 @@ public class BookDetailsFragment
             }
         });
 
+        // The FAB lives in the activity.
         //noinspection ConstantConditions
         final FloatingActionButton fabButton = getActivity().findViewById(R.id.fab);
-        fabButton.setImageResource(R.drawable.ic_edit);
-        fabButton.setVisibility(View.VISIBLE);
         fabButton.setOnClickListener(v -> startEditBook());
 
         // ENHANCE: should be replaced by a ViewPager2/FragmentStateAdapter
@@ -208,18 +207,18 @@ public class BookDetailsFragment
         mOnTouchListener = (v, event) -> mGestureDetector.onTouchEvent(event);
 
         // show/hide the TOC as the user flips the switch.
-        mVb.tocButton.setOnClickListener(v -> {
+        mVb.btnShowToc.setOnClickListener(v -> {
             // note that the button is explicitly (re)set.
             // If user clicks to fast it seems to get out of sync.
             if (mVb.toc.getVisibility() == View.VISIBLE) {
                 // force a scroll; a manual scroll is no longer possible after the TOC closes.
                 mVb.topScroller.fullScroll(View.FOCUS_UP);
                 mVb.toc.setVisibility(View.GONE);
-                mVb.tocButton.setChecked(false);
+                mVb.btnShowToc.setChecked(false);
 
             } else {
                 mVb.toc.setVisibility(View.VISIBLE);
-                mVb.tocButton.setChecked(true);
+                mVb.btnShowToc.setChecked(true);
             }
         });
 
@@ -419,7 +418,7 @@ public class BookDetailsFragment
         // Actual visibility is handled after building the list.
         mVb.toc.removeAllViews();
         mVb.toc.setVisibility(View.GONE);
-        mVb.tocButton.setChecked(false);
+        mVb.btnShowToc.setChecked(false);
 
         final ArrayList<TocEntry> tocList =
                 book.getParcelableArrayList(Book.BKEY_TOC_ENTRY_ARRAY);
@@ -463,11 +462,11 @@ public class BookDetailsFragment
             }
 
             mVb.lblToc.setVisibility(View.VISIBLE);
-            mVb.tocButton.setVisibility(View.VISIBLE);
+            mVb.btnShowToc.setVisibility(View.VISIBLE);
 
         } else {
             mVb.lblToc.setVisibility(View.GONE);
-            mVb.tocButton.setVisibility(View.GONE);
+            mVb.btnShowToc.setVisibility(View.GONE);
         }
     }
 
@@ -518,7 +517,7 @@ public class BookDetailsFragment
 
         //FIXME: swiping through the flattened booklist will not see
         // the duplicated book until we go back to BoB.
-        // Easiest solution would be to remove the dup. option from this screen...
+        // Temporary solution is removing the 'duplicate' option from this screen...
         menu.findItem(R.id.MENU_BOOK_DUPLICATE).setVisible(false);
 
         //noinspection ConstantConditions
@@ -593,9 +592,8 @@ public class BookDetailsFragment
                 return true;
             }
             case R.id.MENU_BOOK_SEND_TO_GOODREADS: {
-                //noinspection ConstantConditions
-                Snackbar.make(getView(), R.string.progress_msg_connecting, Snackbar.LENGTH_LONG)
-                        .show();
+                Snackbar.make(mVb.getRoot(), R.string.progress_msg_connecting,
+                              Snackbar.LENGTH_LONG).show();
                 //noinspection ConstantConditions
                 new SendOneBookTask(book.getId(), mFragmentVM
                         .getGoodreadsTaskListener(getContext()))

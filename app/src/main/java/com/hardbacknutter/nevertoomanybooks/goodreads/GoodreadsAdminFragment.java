@@ -44,6 +44,7 @@ import androidx.lifecycle.ViewModelProvider;
 import com.google.android.material.snackbar.Snackbar;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.databinding.FragmentGoodreadsAdminBinding;
 import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.ImportTask;
 import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.RequestAuthTask;
 import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.SendBooksTask;
@@ -66,12 +67,15 @@ public class GoodreadsAdminFragment
     /** ViewModel for task control. */
     private GoodreadsTaskModel mGoodreadsTaskModel;
 
+    private FragmentGoodreadsAdminBinding mVb;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull final LayoutInflater inflater,
                              @Nullable final ViewGroup container,
                              @Nullable final Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_goodreads_admin, container, false);
+        mVb = FragmentGoodreadsAdminBinding.inflate(inflater, container, false);
+        return mVb.getRoot();
     }
 
     @Override
@@ -93,29 +97,19 @@ public class GoodreadsAdminFragment
 //            }
 
             //noinspection ConstantConditions
-            String msg = GoodreadsHandler.handleResult(getContext(), message);
+            final String msg = GoodreadsHandler.handleResult(getContext(), message);
             if (msg != null) {
-                //noinspection ConstantConditions
-                Snackbar.make(getView(), msg, Snackbar.LENGTH_LONG).show();
+                Snackbar.make(mVb.getRoot(), msg, Snackbar.LENGTH_LONG).show();
             } else {
                 RequestAuthTask.prompt(getContext(), mGoodreadsTaskModel.getTaskListener());
             }
         });
 
-        View root = getView();
 
-        //noinspection ConstantConditions
-        root.findViewById(R.id.lbl_sync_with_goodreads)
-            .setOnClickListener(v -> onImport(true));
-
-        root.findViewById(R.id.lbl_import_all_from_goodreads)
-            .setOnClickListener(v1 -> onImport(false));
-
-        root.findViewById(R.id.lbl_send_updated_books_to_goodreads)
-            .setOnClickListener(v -> onSend(true));
-
-        root.findViewById(R.id.lbl_send_all_books_to_goodreads)
-            .setOnClickListener(v -> onSend(false));
+        mVb.lblSyncWithGoodreads.setOnClickListener(v -> onImport(true));
+        mVb.lblImportAllFromGoodreads.setOnClickListener(v1 -> onImport(false));
+        mVb.lblSendUpdatedBooksToGoodreads.setOnClickListener(v -> onSend(true));
+        mVb.lblSendAllBooksToGoodreads.setOnClickListener(v -> onSend(false));
     }
 
     @Override
@@ -135,7 +129,7 @@ public class GoodreadsAdminFragment
         switch (item.getItemId()) {
             case R.id.MENU_GOODREADS_TASKS: {
                 // Start the activity that shows the active GoodReads tasks
-                Intent intent = new Intent(getContext(), TasksAdminActivity.class);
+                final Intent intent = new Intent(getContext(), TasksAdminActivity.class);
                 startActivity(intent);
                 return true;
             }
@@ -146,10 +140,9 @@ public class GoodreadsAdminFragment
     }
 
     private void onImport(final boolean isSync) {
-        //noinspection ConstantConditions
-        Snackbar.make(getView(), R.string.progress_msg_connecting, Snackbar.LENGTH_LONG).show();
+        Snackbar.make(mVb.getRoot(), R.string.progress_msg_connecting, Snackbar.LENGTH_LONG).show();
 
-        TaskBase<Void, GrStatus> task =
+        final TaskBase<Void, GrStatus> task =
                 new ImportTask(isSync, mGoodreadsTaskModel.getTaskListener());
 
 //        mProgressDialog = ProgressDialogFragment
@@ -162,10 +155,9 @@ public class GoodreadsAdminFragment
     }
 
     private void onSend(final boolean updatesOnly) {
-        //noinspection ConstantConditions
-        Snackbar.make(getView(), R.string.progress_msg_connecting, Snackbar.LENGTH_LONG).show();
+        Snackbar.make(mVb.getRoot(), R.string.progress_msg_connecting, Snackbar.LENGTH_LONG).show();
 
-        TaskBase<Void, GrStatus> task =
+        final TaskBase<Void, GrStatus> task =
                 new SendBooksTask(updatesOnly, mGoodreadsTaskModel.getTaskListener());
         mGoodreadsTaskModel.setTask(task);
         task.execute();

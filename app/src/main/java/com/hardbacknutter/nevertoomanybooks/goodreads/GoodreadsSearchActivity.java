@@ -38,14 +38,12 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.constraintlayout.widget.Group;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.snackbar.Snackbar;
 
@@ -58,6 +56,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.databinding.ActivityGoodreadsSearchBinding;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.entities.RowDataHolder;
 import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.FetchWorksTask;
@@ -90,18 +89,11 @@ public class GoodreadsSearchActivity
 
     private final List<GoodreadsWork> mWorks = new ArrayList<>();
 
-    private TextView mIsbnView;
-    private TextView mAuthorView;
-    private TextView mTitleView;
-    /** Group to set visibility on author/title/isbn fields. */
-    private Group mDetailsGroup;
-
-    private TextView mSearchTextView;
-    /** The View for the resulting list of 'works'. */
-    private RecyclerView mListView;
     /** The ViewModel. */
     private GrSearchViewModel mModel;
     private WorksAdapter mWorksAdapter;
+
+    private ActivityGoodreadsSearchBinding mVb;
 
     /**
      * Convenience method to start this activity, or redirect to the register activity if
@@ -112,19 +104,20 @@ public class GoodreadsSearchActivity
      */
     public static void open(@NonNull final Context context,
                             final long bookId) {
-        GoodreadsAuth auth = new GoodreadsAuth(context);
+        final GoodreadsAuth auth = new GoodreadsAuth(context);
         if (!auth.hasCredentials(context)) {
             context.startActivity(new Intent(context, GoodreadsRegistrationActivity.class));
         }
 
-        Intent data = new Intent(context, GoodreadsSearchActivity.class)
+        final Intent data = new Intent(context, GoodreadsSearchActivity.class)
                 .putExtra(DBDefinitions.KEY_PK_ID, bookId);
         context.startActivity(data);
     }
 
     @Override
     protected void onSetContentView() {
-        setContentView(R.layout.activity_goodreads_search);
+        mVb = ActivityGoodreadsSearchBinding.inflate(getLayoutInflater());
+        setContentView(mVb.getRoot());
     }
 
     @Override
@@ -143,7 +136,7 @@ public class GoodreadsSearchActivity
             if (goodreadsWorks != null && !goodreadsWorks.isEmpty()) {
                 mWorks.addAll(goodreadsWorks);
             } else {
-                Snackbar.make(mListView, R.string.warning_no_matching_book_found,
+                Snackbar.make(mVb.resultList, R.string.warning_no_matching_book_found,
                               Snackbar.LENGTH_LONG).show();
             }
             mWorksAdapter.notifyDataSetChanged();
@@ -151,28 +144,21 @@ public class GoodreadsSearchActivity
 
         mModel.onBookNoLongerExists().observe(this, flag -> {
             if (flag) {
-                Snackbar.make(mSearchTextView, R.string.warning_book_no_longer_exists,
+                Snackbar.make(mVb.filterText, R.string.warning_book_no_longer_exists,
                               Snackbar.LENGTH_LONG).show();
             }
         });
 
-        mSearchTextView = findViewById(R.id.filter_text);
-        mIsbnView = findViewById(R.id.isbn);
-        mAuthorView = findViewById(R.id.author);
-        mTitleView = findViewById(R.id.title);
-        mDetailsGroup = findViewById(R.id.original_details);
-
         updateViews();
 
-        mListView = findViewById(R.id.resultList);
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
-        mListView.setLayoutManager(linearLayoutManager);
-        mListView.addItemDecoration(
+        final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
+        mVb.resultList.setLayoutManager(linearLayoutManager);
+        mVb.resultList.addItemDecoration(
                 new DividerItemDecoration(this, linearLayoutManager.getOrientation()));
         mWorksAdapter = new WorksAdapter(this, mWorks);
-        mListView.setAdapter(mWorksAdapter);
+        mVb.resultList.setAdapter(mWorksAdapter);
 
-        findViewById(R.id.btn_search).setOnClickListener(v -> doSearch());
+        mVb.btnSearch.setOnClickListener(v -> doSearch());
 
         if (savedInstanceState == null) {
             // On first start of the activity only: if we have a book, start a search
@@ -184,20 +170,21 @@ public class GoodreadsSearchActivity
 
     private void updateViews() {
         if (mModel.getBookId() > 0) {
-            mAuthorView.setText(mModel.getAuthorText());
-            mTitleView.setText(mModel.getTitleText());
-            mIsbnView.setText(mModel.getIsbnText());
-            mDetailsGroup.setVisibility(View.VISIBLE);
+            mVb.author.setText(mModel.getAuthorText());
+            mVb.title.setText(mModel.getTitleText());
+            mVb.isbn.setText(mModel.getIsbnText());
+            mVb.originalDetails.setVisibility(View.VISIBLE);
         } else {
-            mDetailsGroup.setVisibility(View.GONE);
+            mVb.originalDetails.setVisibility(View.GONE);
         }
 
-        mSearchTextView.setText(mModel.getSearchText());
+        mVb.filterText.setText(mModel.getSearchText());
     }
 
     @Override
     protected void onPause() {
-        mModel.setSearchText(mSearchTextView.getText().toString().trim());
+        //noinspection ConstantConditions
+        mModel.setSearchText(mVb.filterText.getText().toString().trim());
         super.onPause();
     }
 
@@ -212,8 +199,10 @@ public class GoodreadsSearchActivity
      * Start the search.
      */
     private void doSearch() {
-        Snackbar.make(mListView, R.string.progress_msg_connecting, Snackbar.LENGTH_LONG).show();
-        mModel.search(mSearchTextView.getText().toString().trim());
+        Snackbar.make(mVb.resultList, R.string.progress_msg_connecting,
+                      Snackbar.LENGTH_LONG).show();
+        //noinspection ConstantConditions
+        mModel.search(mVb.filterText.getText().toString().trim());
     }
 
     /**
@@ -223,7 +212,7 @@ public class GoodreadsSearchActivity
      */
     private void onWorkSelected(@NonNull final GoodreadsWork work) {
         String msg = "Not implemented: requires access to work.editions from Goodreads";
-        Snackbar.make(mListView, msg, Snackbar.LENGTH_LONG).show();
+        Snackbar.make(mVb.resultList, msg, Snackbar.LENGTH_LONG).show();
     }
 
     public static class GrSearchViewModel
@@ -288,7 +277,7 @@ public class GoodreadsSearchActivity
                     mSearchText = mAuthorText + ' ' + mTitleText + ' ' + mIsbnText + ' ';
                 }
             }
-            Bundle currentArgs = savedInstanceState != null ? savedInstanceState : args;
+            final Bundle currentArgs = savedInstanceState != null ? savedInstanceState : args;
             mSearchText = currentArgs
                     .getString(BooksOnBookshelfModel.SearchCriteria.BKEY_SEARCH_TEXT_KEYWORDS,
                                mSearchText);
@@ -382,7 +371,7 @@ public class GoodreadsSearchActivity
         public Holder onCreateViewHolder(@NonNull final ViewGroup parent,
                                          final int viewType) {
 
-            View view = getLayoutInflater()
+            final View view = getLayoutInflater()
                     .inflate(R.layout.row_goodreads_work_item, parent, false);
             return new Holder(view);
         }
@@ -392,7 +381,7 @@ public class GoodreadsSearchActivity
                                      final int position) {
             super.onBindViewHolder(holder, position);
 
-            GoodreadsWork item = getItem(position);
+            final GoodreadsWork item = getItem(position);
 
             holder.itemView.setOnClickListener(v -> onWorkSelected(item));
 

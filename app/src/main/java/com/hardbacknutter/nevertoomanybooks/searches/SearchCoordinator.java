@@ -56,6 +56,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -881,22 +882,16 @@ public class SearchCoordinator
             accumulateSiteData(context, site);
         }
 
-        //ENHANCE: for now, we need to compress the list of publishers into a single String.
+        //ENHANCE: for now, we concatenate the list of publishers into a single String.
         if (mBookData.containsKey(Book.BKEY_PUBLISHER_ARRAY)) {
             ArrayList<Publisher> publishers =
                     mBookData.getParcelableArrayList(Book.BKEY_PUBLISHER_ARRAY);
             if (publishers != null && !publishers.isEmpty()) {
-                StringBuilder sb = new StringBuilder();
-                boolean first = true;
-                for (Publisher publisher : publishers) {
-                    if (first) {
-                        first = false;
-                    } else {
-                        sb.append(" - ");
-                    }
-                    sb.append(publisher.getName());
-                }
-                mBookData.putString(DBDefinitions.KEY_PUBLISHER, sb.toString());
+                // remove duplicates
+                publishers = new ArrayList<>(new LinkedHashSet<>(publishers));
+                // and store as "pub1 - pub2 - ..."
+                mBookData.putString(DBDefinitions.KEY_PUBLISHER,
+                                    Csv.join(" - ", publishers, Publisher::getName));
             }
             mBookData.remove(Book.BKEY_PUBLISHER_ARRAY);
         }

@@ -160,7 +160,6 @@
             tools:visibility="visible"
             />
 
-        <!-- reminder: this is an ImageButton -->
         <com.hardbacknutter.nevertoomanybooks.widgets.MovableFloatingActionButton
             android:id="@+id/fab"
             style="@style/FAB"

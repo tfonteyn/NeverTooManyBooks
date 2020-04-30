@@ -48,6 +48,7 @@
             android:id="@+id/family_name"
             style="@style/personalNameTextEntry"
             android:layout_width="match_parent"
+            android:imeOptions="actionNext"
             tools:ignore="LabelFor"
             />
 
@@ -66,6 +67,7 @@
             android:id="@+id/given_names"
             style="@style/personalNameTextEntry"
             android:layout_width="match_parent"
+            android:imeOptions="actionDone"
             tools:ignore="LabelFor"
             />
 

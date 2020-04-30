@@ -57,6 +57,7 @@
             android:id="@+id/author"
             style="@style/personalNameTextEntry"
             android:layout_width="match_parent"
+            android:imeOptions="actionNext"
             tools:ignore="LabelFor"
             />
 
@@ -75,6 +76,7 @@
             android:id="@+id/title"
             style="@style/titleTextEntry"
             android:layout_width="match_parent"
+            android:imeOptions="actionNext"
             tools:ignore="Autofill"
             />
 
@@ -90,6 +92,7 @@
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/first_publication"
             style="@style/EditText.Year"
+            android:imeOptions="actionDone"
             tools:ignore="Autofill"
             />
 

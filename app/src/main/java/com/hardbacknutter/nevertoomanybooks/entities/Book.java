@@ -119,7 +119,7 @@ public class Book
     public static final String BKEY_SERIES_ARRAY = TAG + ":series_array";
 
     /**
-     * Bundle key for {@code ParcelableArrayList<Publisher>}. FIXME: NOT FULLY SUPPORTED YET.
+     * Bundle key for {@code ParcelableArrayList<Publisher>}.
      */
     public static final String BKEY_PUBLISHER_ARRAY = TAG + ":publisher_array";
 

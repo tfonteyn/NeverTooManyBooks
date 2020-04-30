@@ -69,6 +69,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PPref;
 import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PString;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.entities.Entity;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.Csv;
@@ -97,9 +98,6 @@ import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
 public class BooklistStyle
         implements Parcelable, Entity {
 
-    /** log tag. */
-    private static final String TAG = "BooklistStyle";
-
     /** {@link Parcelable}. */
     public static final Creator<BooklistStyle> CREATOR =
             new Creator<BooklistStyle>() {
@@ -113,7 +111,6 @@ public class BooklistStyle
                     return new BooklistStyle[size];
                 }
             };
-
     /** default style when none is set yet. */
     public static final int DEFAULT_STYLE_ID = Builtin.AUTHOR_THEN_SERIES_ID;
     /**
@@ -132,34 +129,6 @@ public class BooklistStyle
     /** the amount of details to show in the header. */
     public static final int HEADER_SHOW_FILTER = 1 << 4;
     public static final int[] HEADER_LEVELS = {HEADER_SHOW_LEVEL_1, HEADER_SHOW_LEVEL_2};
-
-    /**
-     * A BooklistStyle <strong>ID</strong>.
-     * <p>
-     * <br>type: {@code long}
-     */
-    public static final String BKEY_STYLE_ID = TAG + ":id";
-
-    /**
-     * A parcelled BooklistStyle.
-     * <p>
-     * <br>type: {@link BooklistStyle}
-     */
-    public static final String BKEY_STYLE = TAG + ":style";
-
-    /**
-     * Styles related data was modified (or not).
-     * This includes a Style being modified or deleted,
-     * or the order of the preferred styles modified,
-     * or the selected style changed,
-     * or ...
-     * ENHANCE: make this fine grained and reduce unneeded rebuilds
-     * <p>
-     * <br>type: {@code boolean}
-     * setResult
-     */
-    public static final String BKEY_STYLE_MODIFIED = TAG + ":modified";
-
     /**
      * Text Scaling.
      * NEVER change these values, they get stored in preferences.
@@ -178,7 +147,32 @@ public class BooklistStyle
     static final int FONT_SCALE_MEDIUM = 1;
     /** Text Scaling. */
     static final int FONT_SCALE_LARGE = 2;
-
+    /** log tag. */
+    private static final String TAG = "BooklistStyle";
+    /**
+     * A BooklistStyle <strong>ID</strong>.
+     * <p>
+     * <br>type: {@code long}
+     */
+    public static final String BKEY_STYLE_ID = TAG + ":id";
+    /**
+     * A parcelled BooklistStyle.
+     * <p>
+     * <br>type: {@link BooklistStyle}
+     */
+    public static final String BKEY_STYLE = TAG + ":style";
+    /**
+     * Styles related data was modified (or not).
+     * This includes a Style being modified or deleted,
+     * or the order of the preferred styles modified,
+     * or the selected style changed,
+     * or ...
+     * ENHANCE: make this fine grained and reduce unneeded rebuilds
+     * <p>
+     * <br>type: {@code boolean}
+     * setResult
+     */
+    public static final String BKEY_STYLE_MODIFIED = TAG + ":modified";
     /** the amount of details to show in the header. */
     private static final int HEADER_SHOW_ALL =
             HEADER_SHOW_BOOK_COUNT
@@ -196,14 +190,6 @@ public class BooklistStyle
      * Stored in global shared preferences as a CSV String of UUIDs.
      */
     private static final String PREF_BL_PREFERRED_STYLES = PREFS_PREFIX + "preferred.order";
-
-    /**
-     * Row id of database row from which this object comes.
-     * A '0' is for an as yet unsaved user-style.
-     * Always NEGATIVE (e.g. <0 ) for a build-in style
-     */
-    private long mId;
-
     /**
      * The uuid based SharedPreference name.
      * <p>
@@ -211,7 +197,12 @@ public class BooklistStyle
      */
     @NonNull
     private final String mUuid;
-
+    /**
+     * Row id of database row from which this object comes.
+     * A '0' is for an as yet unsaved user-style.
+     * Always NEGATIVE (e.g. <0 ) for a build-in style
+     */
+    private long mId;
     /**
      * Display name of this style.
      * Used for builtin styles.
@@ -570,7 +561,7 @@ public class BooklistStyle
     public BooklistStyle clone(@NonNull final Context context) {
         // sanity check
         if (mUuid.isEmpty()) {
-            throw new IllegalStateException("mUuid.isEmpty()");
+            throw new IllegalStateException(ErrorMsg.EMPTY_UUID);
         }
 
         //FIXME: revisit... this is to complicated/inefficient.
@@ -1086,11 +1077,15 @@ public class BooklistStyle
      *
      * @param id to get
      *
-     * @return group, or {@code null} if not present.
+     * @return group
      */
-    @Nullable
+    @NonNull
     BooklistGroup getGroupById(@BooklistGroup.Id final int id) {
-        return mStyleGroups.getGroupById(id);
+        final BooklistGroup group = mStyleGroups.getGroupById(id);
+        //URGENT: the group being null has been seen (2020-04-29), but not reproduced yet.
+        // The style definition xml was likely broken, so dump it before crashing.
+        Objects.requireNonNull(group, "Group was NULL: id=" + id + ", " + this.toString());
+        return group;
     }
 
     /**
@@ -1104,7 +1099,6 @@ public class BooklistStyle
     BooklistGroup getGroupByLevel(@IntRange(from = 1) final int level) {
         return mStyleGroups.getGroupByLevel(level);
     }
-
 
     /**
      * Used by built-in styles only. Set by user via preferences screen.
@@ -1217,7 +1211,7 @@ public class BooklistStyle
         }
         // sanity check
         if (mUuid.isEmpty()) {
-            throw new IllegalStateException("mUuid.isEmpty()");
+            throw new IllegalStateException(ErrorMsg.EMPTY_UUID);
         }
 
         // check if the style already exists.
@@ -1529,6 +1523,7 @@ public class BooklistStyle
          */
         @NonNull
         BooklistGroup getGroupByLevel(@IntRange(from = 1) final int level) {
+            // can throw IndexOutOfBoundsException only if we have a bug passing an illegal level.
             return (BooklistGroup) mGroups.values().toArray()[level - 1];
         }
 
@@ -1805,7 +1800,8 @@ public class BooklistStyle
         public static final int MAX_ID = -19;
 
         /**
-         * Note the hardcoded negative ID's. These number should never be changed as they will
+         * Note the hardcoded negative ID's.
+         * These id/uuid's should never be changed as they will
          * get stored in preferences and serialized. Take care not to add duplicates.
          */
         private static final int AUTHOR_THEN_SERIES_ID = -1;

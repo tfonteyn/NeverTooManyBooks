@@ -223,8 +223,8 @@ public class CoverBrowserDialogFragment
         }
 
         if (mAlternativeEditions.isEmpty()) {
-            Snackbar.make(mVb.statusMessage, R.string.warning_no_editions, Snackbar.LENGTH_LONG)
-                    .show();
+            Snackbar.make(mVb.statusMessage, R.string.warning_no_editions,
+                          Snackbar.LENGTH_LONG).show();
             dismiss();
             return;
         }
@@ -271,8 +271,8 @@ public class CoverBrowserDialogFragment
 
         // and if none left, dismiss.
         if (mGalleryAdapter.getItemCount() == 0) {
-            Snackbar.make(mVb.statusMessage, R.string.warning_cover_not_found, Snackbar.LENGTH_LONG)
-                    .show();
+            Snackbar.make(mVb.statusMessage, R.string.warning_cover_not_found,
+                          Snackbar.LENGTH_LONG).show();
             dismiss();
         }
     }
@@ -310,8 +310,8 @@ public class CoverBrowserDialogFragment
 
         // Reset the switcher and info the user.
         mVb.switcher.setVisibility(View.GONE);
-        Snackbar.make(mVb.switcher, R.string.warning_cover_not_found, Snackbar.LENGTH_LONG)
-                .show();
+        Snackbar.make(mVb.switcher, R.string.warning_cover_not_found,
+                      Snackbar.LENGTH_LONG).show();
         mVb.statusMessage.setText(R.string.txt_tap_on_thumb);
     }
 

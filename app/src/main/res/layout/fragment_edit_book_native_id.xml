@@ -55,6 +55,7 @@
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/site_goodreads"
                 style="@style/genericNumberEntry"
+                android:imeOptions="actionNext"
                 android:layout_width="match_parent"
                 tools:ignore="Autofill"
                 tools:text="123456"
@@ -74,6 +75,7 @@
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/site_isfdb"
                 style="@style/genericNumberEntry"
+                android:imeOptions="actionNext"
                 android:layout_width="match_parent"
                 tools:ignore="Autofill"
                 tools:text="123456"
@@ -93,6 +95,7 @@
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/site_library_thing"
                 style="@style/genericNumberEntry"
+                android:imeOptions="actionNext"
                 android:layout_width="match_parent"
                 tools:ignore="Autofill"
                 tools:text="123456"
@@ -113,6 +116,7 @@
                 android:id="@+id/site_open_library"
                 style="@style/genericTextEntry"
                 android:layout_width="match_parent"
+                android:imeOptions="actionNext"
                 tools:ignore="Autofill"
                 tools:text="abc123"
                 />
@@ -130,7 +134,8 @@
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/site_strip_info_be"
-                style="@style/genericTextEntry"
+                style="@style/genericNumberEntry"
+                android:imeOptions="actionDone"
                 android:layout_width="match_parent"
                 tools:ignore="Autofill"
                 tools:text="123456"

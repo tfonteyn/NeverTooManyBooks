@@ -434,8 +434,7 @@ public final class LanguageUtils {
                 // the system default
                 createLanguageMappingCache(prefs, LocaleUtils.getSystemLocale());
 
-                //NEWTHINGS: add new site specific ID:
-                // if a site uses a specific language, add it here
+                //NEWTHINGS: add new site specific ID: sites using a specific language
 
                 // Dutch
                 createLanguageMappingCache(prefs, StripInfoSearchEngine.SITE_LOCALE);

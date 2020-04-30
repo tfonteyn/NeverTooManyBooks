@@ -31,7 +31,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -95,8 +94,7 @@ public class LibraryThingRegistrationActivity
                                       .getString(LibraryThingSearchEngine.PREFS_DEV_KEY, "");
         mVb.devKey.setText(key);
 
-        mVb.fab.setImageResource(R.drawable.ic_save);
-        mVb.fab.setVisibility(View.VISIBLE);
+        // Saves first, then TESTS the key.
         mVb.fab.setOnClickListener(v -> {
             //noinspection ConstantConditions
             String devKey = mVb.devKey.getText().toString().trim();

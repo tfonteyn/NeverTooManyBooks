@@ -221,6 +221,11 @@ public final class AmazonSearchEngine
         return getBaseURL(context);
     }
 
+    @Override
+    public boolean hasStringId() {
+        return true;
+    }
+
     @StringRes
     @Override
     public int getNameResId() {

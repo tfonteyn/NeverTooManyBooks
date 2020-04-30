@@ -59,6 +59,7 @@
                 android:id="@+id/family_name"
                 style="@style/personalNameTextEntry"
                 android:layout_width="match_parent"
+                android:imeOptions="actionNext"
                 tools:ignore="LabelFor"
                 />
 
@@ -77,6 +78,7 @@
                 android:id="@+id/given_names"
                 style="@style/personalNameTextEntry"
                 android:layout_width="match_parent"
+                android:imeOptions="actionDone"
                 tools:ignore="LabelFor"
                 />
 
@@ -94,11 +96,11 @@
             android:id="@+id/author_type_group"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:constraint_referenced_ids="typeColumnDiv,use_author_type_button,cbx_author_type_artist,cbx_author_type_translator,cbx_author_type_contributor,cbx_author_type_editor,cbx_author_type_cover_colorist,cbx_author_type_intro,cbx_author_type_writer,cbx_author_type_colorist,cbx_author_type_cover_artist"
+            app:constraint_referenced_ids="typeColumnDiv,btn_use_author_type,cbx_author_type_artist,cbx_author_type_translator,cbx_author_type_contributor,cbx_author_type_editor,cbx_author_type_cover_colorist,cbx_author_type_intro,cbx_author_type_writer,cbx_author_type_colorist,cbx_author_type_cover_artist"
             />
 
         <com.google.android.material.switchmaterial.SwitchMaterial
-            android:id="@+id/use_author_type_button"
+            android:id="@+id/btn_use_author_type"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/lbl_author_type"
@@ -111,7 +113,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:barrierDirection="bottom"
-            app:constraint_referenced_ids="use_author_type_button"
+            app:constraint_referenced_ids="btn_use_author_type"
             />
 
         <androidx.constraintlayout.widget.Guideline

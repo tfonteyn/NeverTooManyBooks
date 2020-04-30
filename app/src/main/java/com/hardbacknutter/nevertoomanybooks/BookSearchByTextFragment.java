@@ -29,9 +29,12 @@ package com.hardbacknutter.nevertoomanybooks;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
+import android.widget.TextView;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
@@ -94,7 +97,23 @@ public class BookSearchByTextFragment
 
         //noinspection ConstantConditions
         final boolean usePublisher = SearchSites.usePublisher(getContext());
-        mVb.lblPublisher.setVisibility(usePublisher ? View.VISIBLE : View.GONE);
+        //TEST: do we need to set the ime options explicitly ?
+        if (usePublisher) {
+            mVb.lblPublisher.setVisibility(View.VISIBLE);
+
+            mVb.title.setImeOptions(EditorInfo.IME_ACTION_NEXT);
+            mVb.title.setOnEditorActionListener(null);
+
+            mVb.publisher.setImeOptions(EditorInfo.IME_ACTION_SEARCH);
+            mVb.publisher.setOnEditorActionListener(this::onEditorAction);
+
+        } else {
+            mVb.lblPublisher.setVisibility(View.GONE);
+
+            mVb.title.setImeOptions(EditorInfo.IME_ACTION_SEARCH);
+            mVb.title.setOnEditorActionListener(this::onEditorAction);
+        }
+        mVb.btnSearch.setOnClickListener(v -> startSearch());
 
         //noinspection ConstantConditions
         getActivity().setTitle(R.string.lbl_search_for_books);
@@ -102,47 +121,58 @@ public class BookSearchByTextFragment
         copyModel2View();
         populateAuthorList();
 
-        mVb.btnSearch.setOnClickListener(v -> {
-            copyView2Model();
-
-            final String authorSearchText = mSearchCoordinator.getAuthorSearchText();
-            final String titleSearchText = mSearchCoordinator.getTitleSearchText();
-
-            if (!authorSearchText.isEmpty()) {
-                // Always add the current search text to the list of recent searches.
-                if (mAuthorAdapter.getPosition(authorSearchText) < 0) {
-                    boolean found = false;
-                    for (String s : mRecentAuthorNames) {
-                        if (s.equalsIgnoreCase(authorSearchText)) {
-                            found = true;
-                            break;
-                        }
-                    }
-                    if (!found) {
-                        // Keep a list of names as typed to use when we recreate list
-                        mRecentAuthorNames.add(authorSearchText);
-                        // Add to adapter, in case search produces no results
-                        mAuthorAdapter.add(authorSearchText);
-                    }
-                }
-            }
-
-            //sanity check
-            if (authorSearchText.isEmpty() && titleSearchText.isEmpty()) {
-                //noinspection ConstantConditions
-                Snackbar.make(getView(), R.string.warning_requires_at_least_one_field,
-                              Snackbar.LENGTH_LONG).show();
-                return;
-            }
-
-            startSearch();
-        });
-
         if (savedInstanceState == null) {
             mSearchCoordinator.getSiteList().promptToRegister(getContext(), false, "search");
 
             TipManager.display(getContext(), R.string.tip_book_search_by_text, null);
         }
+    }
+
+    private boolean onEditorAction(@NonNull final TextView v,
+                                   final int actionId,
+                                   @Nullable final KeyEvent event) {
+        if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+            App.hideKeyboard(v);
+            startSearch();
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    boolean onPreSearch() {
+        copyView2Model();
+
+        final String authorSearchText = mSearchCoordinator.getAuthorSearchText();
+        final String titleSearchText = mSearchCoordinator.getTitleSearchText();
+
+        if (!authorSearchText.isEmpty()) {
+            // Always add the current search text to the list of recent searches.
+            if (mAuthorAdapter.getPosition(authorSearchText) < 0) {
+                boolean found = false;
+                for (String s : mRecentAuthorNames) {
+                    if (s.equalsIgnoreCase(authorSearchText)) {
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found) {
+                    // Keep a list of names as typed to use when we recreate list
+                    mRecentAuthorNames.add(authorSearchText);
+                    // Add to adapter, in case search produces no results
+                    mAuthorAdapter.add(authorSearchText);
+                }
+            }
+        }
+
+        //sanity check
+        if (authorSearchText.isEmpty() && titleSearchText.isEmpty()) {
+            Snackbar.make(mVb.getRoot(), R.string.warning_requires_at_least_one_field,
+                          Snackbar.LENGTH_LONG).show();
+            return false;
+        }
+
+        return true;
     }
 
     /**
@@ -186,7 +216,9 @@ public class BookSearchByTextFragment
 
     @Override
     void onSearchResults(@NonNull final Bundle bookData) {
-        // if any of the search fields are not present in the result,
+        // Don't check on any results... just accept them and create a new book.
+
+        // If any of the search fields are not present in the result,
         // we add them manually as the template for a new book.
 
         if (!bookData.containsKey(DBDefinitions.KEY_TITLE)) {
@@ -206,11 +238,8 @@ public class BookSearchByTextFragment
             bookData.putString(DBDefinitions.KEY_PUBLISHER,
                                mSearchCoordinator.getPublisherSearchText());
         }
-
-        final Intent intent = new Intent(getContext(), EditBookActivity.class)
-                .putExtra(Book.BKEY_BOOK_DATA, bookData);
-        startActivityForResult(intent, RequestCode.BOOK_EDIT);
-        clearPreviousSearchCriteria();
+        // edit book
+        super.onSearchResults(bookData);
     }
 
     @Override
@@ -220,8 +249,8 @@ public class BookSearchByTextFragment
     }
 
     @Override
-    void clearPreviousSearchCriteria() {
-        super.clearPreviousSearchCriteria();
+    void onClearPreviousSearchCriteria() {
+        super.onClearPreviousSearchCriteria();
         mVb.author.setText("");
         mVb.title.setText("");
         mVb.publisher.setText("");

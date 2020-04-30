@@ -258,7 +258,7 @@
             />
 
         <com.google.android.material.switchmaterial.SwitchMaterial
-            android:id="@+id/toc_button"
+            android:id="@+id/btn_show_toc"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/border1"

@@ -95,6 +95,7 @@
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/dev_key"
+                android:imeOptions="actionDone"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="text"
@@ -109,8 +110,7 @@
     <com.hardbacknutter.nevertoomanybooks.widgets.MovableFloatingActionButton
         android:id="@+id/fab"
         style="@style/FAB"
-        android:visibility="invisible"
-        tools:visibility="visible"
+        android:src="@drawable/ic_save"
         />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -59,6 +59,7 @@
                 android:id="@+id/author"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:imeOptions="actionDone"
                 android:inputType="textMultiLine"
                 tools:ignore="Autofill"
                 />
@@ -79,6 +80,7 @@
                 android:id="@+id/title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:imeOptions="actionDone"
                 android:inputType="textMultiLine"
                 tools:ignore="Autofill"
                 />
@@ -99,12 +101,12 @@
                 android:id="@+id/series_title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:imeOptions="actionDone"
                 android:inputType="textMultiLine"
                 tools:ignore="Autofill"
                 />
 
         </com.google.android.material.textfield.TextInputLayout>
-
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_keywords"
@@ -120,6 +122,7 @@
                 android:id="@+id/keywords"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:imeOptions="actionDone"
                 android:inputType="textMultiLine"
                 tools:ignore="Autofill"
                 />
@@ -128,33 +131,24 @@
 
         <TextView
             android:id="@+id/books_found"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginEnd="24dp"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:textIsSelectable="true"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/btn_search"
             app:layout_constraintTop_toBottomOf="@id/lbl_keywords"
             tools:text="# books found"
             />
 
-        <!--        <TextView-->
-        <!--            android:id="@+id/book_titles_found"-->
-        <!--            android:layout_width="0dp"-->
-        <!--            android:layout_height="wrap_content"-->
-        <!--            android:textAppearance="?android:attr/textAppearanceSmall"-->
-        <!--            android:textIsSelectable="true"-->
-        <!--            app:layout_constraintEnd_toEndOf="parent"-->
-        <!--            app:layout_constraintStart_toStartOf="parent"-->
-        <!--            app:layout_constraintTop_toBottomOf="@id/books_found"-->
-        <!--            />-->
-
+        <Button
+            android:id="@+id/btn_search"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/btn_show_all"
+            app:layout_constraintBaseline_toBaselineOf="@id/books_found"
+            app:layout_constraintEnd_toEndOf="parent"
+            />
     </androidx.constraintlayout.widget.ConstraintLayout>
-
-    <com.hardbacknutter.nevertoomanybooks.widgets.MovableFloatingActionButton
-        android:id="@+id/fab"
-        style="@style/FAB"
-        android:src="@drawable/ic_search"
-        />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

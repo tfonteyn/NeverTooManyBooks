@@ -40,6 +40,8 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 /**
  * Allow the user to drag the FAB button.
+ *
+ * Reminder: the super class is an {@code ImageButton}
  */
 public class MovableFloatingActionButton
         extends FloatingActionButton

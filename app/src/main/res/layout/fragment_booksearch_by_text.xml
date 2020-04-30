@@ -57,6 +57,7 @@
                 android:id="@+id/author"
                 style="@style/personalNameTextEntry"
                 android:layout_width="match_parent"
+                android:imeOptions="actionNext"
                 android:textAppearance="?android:attr/textAppearanceLarge"
                 tools:ignore="LabelFor"
                 />
@@ -72,10 +73,10 @@
             app:layout_constraintTop_toBottomOf="@id/lbl_author"
             >
 
-            <!-- no style used on purpose -->
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/title"
                 style="@style/titleTextEntry"
+                android:imeOptions="actionNext"
                 android:layout_width="match_parent"
                 android:textAppearance="?android:attr/textAppearanceLarge"
                 tools:ignore="Autofill"
@@ -96,10 +97,10 @@
             tools:visibility="visible"
             >
 
-            <!-- no style used on purpose -->
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/publisher"
                 style="@style/personalNameTextEntry"
+                android:imeOptions="actionSearch"
                 android:layout_width="match_parent"
                 android:textAppearance="?android:attr/textAppearanceLarge"
                 tools:ignore="Autofill"

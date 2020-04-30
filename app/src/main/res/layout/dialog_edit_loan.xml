@@ -68,6 +68,7 @@
             android:id="@+id/loaned_to"
             style="@style/personalNameTextEntry"
             android:layout_width="match_parent"
+            android:imeOptions="actionDone"
             tools:ignore="LabelFor"
             tools:text="Alvin"
             />

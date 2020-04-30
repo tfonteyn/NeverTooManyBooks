@@ -271,9 +271,8 @@ public class EditBookTocFragment
     private void onGetBookTaskFinished(@NonNull final TaskListener.FinishMessage<Bundle> message) {
         Bundle bookData = message.result;
         if (bookData == null) {
-            //noinspection ConstantConditions
-            Snackbar.make(getView(), R.string.warning_book_not_found, Snackbar.LENGTH_LONG)
-                    .show();
+            Snackbar.make(mVb.getRoot(), R.string.warning_book_not_found,
+                          Snackbar.LENGTH_LONG).show();
             return;
         }
 
@@ -382,8 +381,7 @@ public class EditBookTocFragment
             case R.id.MENU_POPULATE_TOC_FROM_ISFDB: {
                 long isfdbId = mBookViewModel.getBook().getLong(DBDefinitions.KEY_EID_ISFDB);
                 if (isfdbId != 0) {
-                    //noinspection ConstantConditions
-                    Snackbar.make(getView(), R.string.progress_msg_connecting,
+                    Snackbar.make(mVb.getRoot(), R.string.progress_msg_connecting,
                                   Snackbar.LENGTH_LONG).show();
                     final IsfdbGetBookTask task =
                             new IsfdbGetBookTask(isfdbId, isAddSeriesFromToc(),
@@ -396,8 +394,7 @@ public class EditBookTocFragment
                 if (mIsbn != null && !mIsbn.isEmpty()) {
                     final ISBN isbn = ISBN.createISBN(mIsbn);
                     if (isbn.isValid(true)) {
-                        //noinspection ConstantConditions
-                        Snackbar.make(getView(), R.string.progress_msg_connecting,
+                        Snackbar.make(mVb.getRoot(), R.string.progress_msg_connecting,
                                       Snackbar.LENGTH_LONG).show();
                         final IsfdbGetEditionsTask task =
                                 new IsfdbGetEditionsTask(isbn.asText(),
@@ -407,8 +404,7 @@ public class EditBookTocFragment
                         return true;
                     }
                 }
-                //noinspection ConstantConditions
-                Snackbar.make(getView(), R.string.warning_requires_isbn,
+                Snackbar.make(mVb.getRoot(), R.string.warning_requires_isbn,
                               Snackbar.LENGTH_LONG).show();
                 return false;
             }
@@ -578,8 +574,7 @@ public class EditBookTocFragment
 
     private void searchIsfdb() {
         if (mIsfdbEditions != null && !mIsfdbEditions.isEmpty()) {
-            //noinspection ConstantConditions
-            Snackbar.make(getView(), R.string.progress_msg_connecting,
+            Snackbar.make(mVb.getRoot(), R.string.progress_msg_connecting,
                           Snackbar.LENGTH_LONG).show();
             final IsfdbGetBookTask task =
                     new IsfdbGetBookTask(mIsfdbEditions, isAddSeriesFromToc(),
@@ -587,8 +582,8 @@ public class EditBookTocFragment
             mIsfdbGetBookTaskModel.setTask(task);
             task.execute();
         } else {
-            //noinspection ConstantConditions
-            Snackbar.make(getView(), R.string.warning_no_editions, Snackbar.LENGTH_LONG).show();
+            Snackbar.make(mVb.getRoot(), R.string.warning_no_editions,
+                          Snackbar.LENGTH_LONG).show();
         }
     }
 

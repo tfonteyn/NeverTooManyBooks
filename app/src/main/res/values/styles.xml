@@ -339,6 +339,15 @@
         <item name="android:background">?attr/selectableItemBackground</item>
     </style>
 
+    <!-- ImageButton - 'edit this row' -->
+    <style name="RowButton.Edit">
+        <item name="android:focusable">true</item>
+        <item name="android:focusableInTouchMode">false</item>
+        <item name="android:clickable">true</item>
+        <item name="android:src">@drawable/ic_edit</item>
+        <item name="android:background">?attr/selectableItemBackground</item>
+    </style>
+
     <!-- ImageView - handle to let the user drag & drop rows to re-order them -->
     <style name="RowButton.DragHandle">
         <item name="android:src">@drawable/ic_reorder</item>

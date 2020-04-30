@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2019 HardBackNutter
+  ~ @Copyright 2020 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -66,12 +66,11 @@
             >
 
             <LinearLayout
-                android:id="@+id/manage_fields_scrollview"
+                android:id="@+id/field_list"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_margin="@dimen/border1"
                 android:orientation="vertical"
-
                 >
                 <!-- fields are added here dynamically -->
             </LinearLayout>

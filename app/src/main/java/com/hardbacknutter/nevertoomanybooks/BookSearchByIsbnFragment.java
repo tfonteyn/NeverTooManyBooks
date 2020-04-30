@@ -52,7 +52,6 @@ import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentBooksearchByIsbnBinding;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
-import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.searches.SiteList;
 import com.hardbacknutter.nevertoomanybooks.settings.BarcodePreferenceFragment;
@@ -321,17 +320,15 @@ public class BookSearchByIsbnFragment
     }
 
     @Override
-    void clearPreviousSearchCriteria() {
-        super.clearPreviousSearchCriteria();
+    void onClearPreviousSearchCriteria() {
+        super.onClearPreviousSearchCriteria();
         mVb.isbn.setText("");
     }
 
     /**
-     * Search with ISBN.
-     * <p>
+     * Search with ISBN or, if allowed, with a generic code.
      *
-     * @param userEntry isbn text to search for.
-     *                  Must be 10 characters (or more) to even consider a search.
+     * @param userEntry text to search for.
      */
     private void prepareSearch(@NonNull final String userEntry) {
 
@@ -346,8 +343,7 @@ public class BookSearchByIsbnFragment
                 mScannerModel.onInvalidBeep(getContext());
             }
 
-            Snackbar.make(mVb.isbn,
-                          getString(R.string.warning_x_is_not_a_valid_code, userEntry),
+            Snackbar.make(mVb.isbn, getString(R.string.warning_x_is_not_a_valid_code, userEntry),
                           Snackbar.LENGTH_LONG).show();
 
             if (mScanMode) {
@@ -380,7 +376,7 @@ public class BookSearchByIsbnFragment
                     .setCancelable(false)
                     // User aborts this isbn
                     .setNegativeButton(android.R.string.cancel, (d, w) -> {
-                        clearPreviousSearchCriteria();
+                        onClearPreviousSearchCriteria();
                         if (mScanMode) {
                             Objects.requireNonNull(mScannerModel, ErrorMsg.NULL_SCANNER_MODEL);
                             mScanMode = mScannerModel.scan(this, RequestCode.SCAN_BARCODE);
@@ -402,19 +398,16 @@ public class BookSearchByIsbnFragment
     @Override
     void onSearchResults(@NonNull final Bundle bookData) {
         // A non-empty result will have a title, or at least 3 fields:
-        // The isbn field will always be present as we searched on one.
+        // The isbn field should be present as we searched on one.
         // The title field, *might* be there but *might* be empty.
         // So a valid result means we either need a title, or a third field.
         final String title = bookData.getString(DBDefinitions.KEY_TITLE);
-        if ((title != null && !title.isEmpty()) || bookData.size() > 2) {
-            final Intent intent = new Intent(getContext(), EditBookActivity.class)
-                    .putExtra(Book.BKEY_BOOK_DATA, bookData);
-            startActivityForResult(intent, RequestCode.BOOK_EDIT);
-            clearPreviousSearchCriteria();
-        } else {
+        if ((title == null || title.isEmpty()) && bookData.size() <= 2) {
             Snackbar.make(mVb.isbn, R.string.warning_no_matching_book_found,
                           Snackbar.LENGTH_LONG).show();
+            return;
         }
+        // edit book
+        super.onSearchResults(bookData);
     }
-
 }

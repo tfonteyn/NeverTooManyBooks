@@ -32,6 +32,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.widget.AutoCompleteTextView;
 
 import androidx.annotation.LayoutRes;
@@ -45,6 +46,7 @@ import com.google.android.material.snackbar.Snackbar;
 import java.lang.ref.WeakReference;
 import java.util.List;
 
+import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BookChangedListener;
 import com.hardbacknutter.nevertoomanybooks.BookChangedListenerOwner;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
@@ -106,6 +108,15 @@ public abstract class EditStringBaseDialogFragment
 
         mEditText = root.findViewById(R.id.name);
         mEditText.setText(mCurrentText);
+        // soft-keyboards 'done' button act as a shortcut to confirming/saving the changes
+        mEditText.setOnEditorActionListener((v, actionId, event) -> {
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                App.hideKeyboard(v);
+                saveChanges(changeFlags);
+                return true;
+            }
+            return false;
+        });
 
         if (objects != null) {
             //noinspection ConstantConditions
@@ -129,6 +140,8 @@ public abstract class EditStringBaseDialogFragment
             Snackbar.make(mEditText, R.string.warning_missing_name, Snackbar.LENGTH_LONG).show();
             return;
         }
+        dismiss();
+
         // if there are no differences, just bail out.
         if (mCurrentText.equals(mOriginalText)) {
             return;

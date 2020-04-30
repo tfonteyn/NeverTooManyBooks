@@ -46,10 +46,4 @@
         tools:listitem="@layout/row_edit_preferred_styles"
         />
 
-    <!--    <com.hardbacknutter.nevertoomanybooks.widgets.MovableFloatingActionButton -->
-    <!--        android:id="@+id/fab"-->
-    <!--        style="@style/FAB"-->
-    <!--        android:src="@drawable/ic_add"-->
-    <!--        />-->
-
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

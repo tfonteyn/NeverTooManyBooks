@@ -47,6 +47,7 @@
             android:id="@+id/name"
             style="@style/autoCompleteTextEntry"
             android:layout_width="match_parent"
+            android:imeOptions="actionDone"
             tools:ignore="LabelFor"
             />
 

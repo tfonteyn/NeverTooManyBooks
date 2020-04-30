@@ -331,20 +331,16 @@ public class BooklistAdapter
                 return new BookHolder(itemView, mUserLocale, mStyle, mFieldsInUse);
 
             case BooklistGroup.AUTHOR:
-                //noinspection ConstantConditions
                 return new CheckableStringHolder(this, itemView, mStyle.getGroupById(groupKeyId),
                                                  DBDefinitions.KEY_AUTHOR_IS_COMPLETE);
 
             case BooklistGroup.SERIES:
-                //noinspection ConstantConditions
                 return new SeriesHolder(this, itemView, mStyle.getGroupById(groupKeyId));
 
             case BooklistGroup.RATING:
-                //noinspection ConstantConditions
                 return new RatingHolder(itemView, mStyle.getGroupById(groupKeyId));
 
             default:
-                //noinspection ConstantConditions
                 return new GenericStringHolder(this, itemView, mStyle.getGroupById(groupKeyId));
         }
     }

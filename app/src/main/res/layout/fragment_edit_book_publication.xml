@@ -54,6 +54,7 @@
             <AutoCompleteTextView
                 android:id="@+id/format"
                 style="@style/bookFormatTextEntry"
+                android:imeOptions="actionNext"
                 android:layout_width="match_parent"
                 tools:ignore="LabelFor"
                 tools:text="Hardcover"
@@ -73,6 +74,7 @@
             <AutoCompleteTextView
                 android:id="@+id/color"
                 style="@style/bookColorTextEntry"
+                android:imeOptions="actionNext"
                 android:layout_width="match_parent"
                 tools:ignore="LabelFor"
                 tools:text="Black &amp; White"
@@ -84,6 +86,7 @@
             android:id="@+id/lbl_publisher"
             style="@style/Envelope.AutoCompleteTextView"
             android:hint="@string/lbl_publisher"
+            android:imeOptions="actionNext"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_color"
@@ -111,6 +114,7 @@
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/print_run"
                 style="@style/notesTextEntry"
+                android:imeOptions="actionNext"
                 android:layout_width="match_parent"
                 tools:ignore="Autofill"
                 tools:text="limited to 150 copies"
@@ -175,6 +179,7 @@
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/pages"
                 style="@style/genericTextEntry"
+                android:imeOptions="actionNext"
                 android:layout_width="match_parent"
                 tools:ignore="Autofill"
                 tools:text="999"
@@ -195,6 +200,7 @@
             <AutoCompleteTextView
                 android:id="@+id/price_listed_currency"
                 style="@style/EditText.Currency"
+                android:imeOptions="actionNext"
                 tools:ignore="LabelFor"
                 />
 
@@ -214,6 +220,7 @@
                 android:id="@+id/price_listed"
                 style="@style/genericTextEntry"
                 android:layout_width="match_parent"
+                android:imeOptions="actionDone"
                 tools:ignore="Autofill"
                 tools:text="14.99"
                 />

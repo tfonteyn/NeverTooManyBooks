@@ -516,13 +516,14 @@ public final class DBHelper
         body = " AFTER UPDATE OF " + KEY_ISBN + " ON " + TBL_BOOKS.getName() + " FOR EACH ROW\n"
                + " WHEN NEW." + KEY_ISBN + " <> OLD." + KEY_ISBN + '\n'
                + " BEGIN\n"
-               + "    UPDATE " + TBL_BOOKS.getName() + " SET "
-               //NEWTHINGS: add new site specific ID: add a reset value
+               + "  UPDATE " + TBL_BOOKS.getName() + " SET "
+               //NEWTHINGS: add new site specific ID: add a reset value (0 or '')
                + /* */ KEY_EID_GOODREADS_BOOK + "=0"
                + ',' + KEY_EID_ISFDB + "=0"
                + ',' + KEY_EID_LIBRARY_THING + "=0"
-               + ',' + KEY_EID_OPEN_LIBRARY + "=0"
                + ',' + KEY_EID_STRIP_INFO_BE + "=0"
+
+               + ',' + KEY_EID_OPEN_LIBRARY + "=''"
 
                + ',' + KEY_BOOK_GOODREADS_LAST_SYNC_DATE + "=''"
                + /* */ " WHERE " + KEY_PK_ID + "=NEW." + KEY_PK_ID + ";\n"

@@ -136,8 +136,6 @@ public class EditBookFragment
 
         // The FAB lives in the activity.
         final FloatingActionButton fabButton = getActivity().findViewById(R.id.fab);
-        fabButton.setImageResource(R.drawable.ic_save);
-        fabButton.setVisibility(View.VISIBLE);
         fabButton.setOnClickListener(v -> prepareSave(true));
     }
 
@@ -301,9 +299,8 @@ public class EditBookFragment
             getActivity().finish();
         } catch (@NonNull final DAO.DaoWriteException e) {
             Logger.error(getContext(), TAG, e);
-            //noinspection ConstantConditions
-            Snackbar.make(getView(), R.string.error_unexpected_error, Snackbar.LENGTH_LONG)
-                    .show();
+            Snackbar.make(mViewPager, R.string.error_unexpected_error,
+                          Snackbar.LENGTH_LONG).show();
         }
     }
 

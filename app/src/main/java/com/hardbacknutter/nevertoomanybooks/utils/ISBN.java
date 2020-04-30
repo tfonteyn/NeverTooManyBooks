@@ -186,7 +186,7 @@ public class ISBN {
         Type type = null;
 
         if (str != null && !str.isEmpty()) {
-            String cleanStr = WHITESPACE_PATTERN.matcher(str).replaceAll("");
+            final String cleanStr = WHITESPACE_PATTERN.matcher(str).replaceAll("");
             if (!cleanStr.isEmpty()) {
                 // Determine the digits and the type.
                 try {
@@ -195,7 +195,7 @@ public class ISBN {
 
                     if (type == Type.UPC_A) {
                         // is this UPC_A convertible to ISBN ?
-                        String isbnPrefix = UPC_2_ISBN_PREFIX.get(cleanStr.substring(0, 6));
+                        final String isbnPrefix = UPC_2_ISBN_PREFIX.get(cleanStr.substring(0, 6));
                         if (isbnPrefix != null) {
                             // yes, convert to ISBN-10
                             digits = toDigits(isbnPrefix + cleanStr.substring(12));
@@ -291,12 +291,12 @@ public class ISBN {
         }
 
         // Full check needed ...if either one is invalid, we consider them different
-        ISBN o1 = new ISBN(isbnStr1, strictIsbn);
+        final ISBN o1 = new ISBN(isbnStr1, strictIsbn);
         if (!o1.isValid(strictIsbn)) {
             return false;
         }
 
-        ISBN o2 = new ISBN(isbnStr2, strictIsbn);
+        final ISBN o2 = new ISBN(isbnStr2, strictIsbn);
         if (!o2.isValid(strictIsbn)) {
             return false;
         }
@@ -432,13 +432,12 @@ public class ISBN {
                 // must be ISBN13 *AND* compatible with converting to ISBN10
                 if (mType == Type.ISBN13 || !mAsText.startsWith("978")) {
                     // drop the first 3 digits, and copy the next 9.
-                    List<Integer> digits = new ArrayList<>();
+                    final List<Integer> digits = new ArrayList<>();
                     for (int i = 3; i < 12; i++) {
                         digits.add(mDigits.get(i));
                     }
                     // and add the new checksum
                     digits.add(calculateIsbn10Checksum(digits));
-
                     return concat(digits);
                 }
                 break;
@@ -633,7 +632,7 @@ public class ISBN {
         }
 
         // 4. Do a modulo 10 division on the sum.
-        int modulo = sum % 10;
+        final int modulo = sum % 10;
 
         if (modulo == 0) {
             // If it's a zero, then the check digit is zero.
@@ -674,7 +673,7 @@ public class ISBN {
         }
 
         // 4. Do a modulo 10 division on the sum.
-        int modulo = sum % 10;
+        final int modulo = sum % 10;
 
         if (modulo == 0) {
             // If it's a zero, then the check digit is zero.
@@ -693,7 +692,7 @@ public class ISBN {
      * @return the code as a string.
      */
     private String concat(@NonNull final Iterable<Integer> digits) {
-        StringBuilder sb = new StringBuilder();
+        final StringBuilder sb = new StringBuilder();
         for (int d : digits) {
             if (d == 10) {
                 sb.append('X');
@@ -740,7 +739,7 @@ public class ISBN {
         if (obj == null || getClass() != obj.getClass()) {
             return false;
         }
-        ISBN cmp = (ISBN) obj;
+        final ISBN cmp = (ISBN) obj;
 
         // If either is invalid, no match
         if (mType == Type.INVALID || cmp.isType(Type.INVALID)) {
@@ -806,7 +805,7 @@ public class ISBN {
             mEditText = editText;
 
             // handle text which is already present at this point
-            Editable editable = mEditText.getText();
+            final Editable editable = mEditText.getText();
             cleanup(editable, false);
         }
 
@@ -835,8 +834,8 @@ public class ISBN {
                              final boolean runTime) {
             if (editable != null && editable.length() > 0) {
                 boolean x = false;
-                String str = editable.toString().trim();
-                StringBuilder sb = new StringBuilder();
+                final String str = editable.toString().trim();
+                final StringBuilder sb = new StringBuilder();
                 for (char c : str.toCharArray()) {
                     if (c == 'x' || c == 'X') {
                         x = true;
@@ -890,14 +889,14 @@ public class ISBN {
             mStrictIsbn = strictIsbn;
 
             // handle text which is already present at this point
-            Editable editable = mEditText.getText();
+            final Editable editable = mEditText.getText();
             validate(editable);
         }
 
         public void setStrictIsbn(final boolean strictIsbn) {
             mStrictIsbn = strictIsbn;
             // handle text which is already present at this point
-            Editable editable = mEditText.getText();
+            final Editable editable = mEditText.getText();
             validate(editable);
         }
 
@@ -930,7 +929,7 @@ public class ISBN {
          */
         private void validate(@Nullable final Editable editable) {
             if (editable != null) {
-                String str = editable.toString().trim();
+                final String str = editable.toString().trim();
                 switch (str.length()) {
                     case 13: {
                         final ISBN isbn = new ISBN(str, mStrictIsbn);

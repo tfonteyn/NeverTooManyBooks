@@ -171,7 +171,7 @@ public class FTSSearchActivity
         mVb.keywords.addTextChangedListener(mTextWatcher);
 
         // When the show results buttons is tapped, go show the resulting booklist.
-        mVb.fab.setOnClickListener(v -> {
+        mVb.btnSearch.setOnClickListener(v -> {
             Intent data = new Intent()
                     // pass these for displaying to the user
                     .putExtra(BooksOnBookshelfModel.SearchCriteria.BKEY_SEARCH_TEXT_AUTHOR,

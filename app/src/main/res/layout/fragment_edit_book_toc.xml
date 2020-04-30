@@ -69,6 +69,7 @@
         <AutoCompleteTextView
             android:id="@+id/author"
             style="@style/personalNameTextEntry"
+            android:imeOptions="actionNext"
             android:layout_width="match_parent"
             tools:ignore="LabelFor"
             />
@@ -87,6 +88,7 @@
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/title"
             style="@style/titleTextEntry"
+            android:imeOptions="actionNext"
             android:layout_width="match_parent"
             tools:ignore="Autofill"
             />
@@ -102,6 +104,7 @@
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/first_publication"
+            android:imeOptions="actionDone"
             style="@style/EditText.Year"
             tools:ignore="Autofill"
             />

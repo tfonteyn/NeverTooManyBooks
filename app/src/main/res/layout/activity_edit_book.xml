@@ -58,8 +58,7 @@
     <com.hardbacknutter.nevertoomanybooks.widgets.MovableFloatingActionButton
         android:id="@+id/fab"
         style="@style/FAB"
-        android:visibility="invisible"
-        tools:visibility="visible"
+        android:src="@drawable/ic_save"
         />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

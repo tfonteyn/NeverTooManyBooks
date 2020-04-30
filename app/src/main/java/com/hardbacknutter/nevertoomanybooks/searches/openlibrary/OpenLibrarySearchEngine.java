@@ -293,6 +293,11 @@ public class OpenLibrarySearchEngine
         return true;
     }
 
+    @Override
+    public boolean hasStringId() {
+        return true;
+    }
+
     @StringRes
     @Override
     public int getNameResId() {

@@ -233,6 +233,18 @@ public interface SearchEngine {
                                 @NonNull String nativeId,
                                 @NonNull boolean[] fetchThumbnail)
                 throws CredentialsException, IOException, SearchException;
+
+
+        /**
+         * By default we assume the native id is {@code long}.
+         * Override this method, and return {@code true} if this engine uses
+         * {@code String} based identifiers.
+         *
+         * @return {code false} for numeric ids, {@code true} for string ids
+         */
+        default boolean hasStringId() {
+            return false;
+        }
     }
 
     /** Optional. */

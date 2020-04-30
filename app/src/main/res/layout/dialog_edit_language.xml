@@ -46,6 +46,7 @@
         <AutoCompleteTextView
             android:id="@+id/name"
             style="@style/languageTextEntry"
+            android:imeOptions="actionDone"
             android:layout_width="match_parent"
             tools:ignore="LabelFor"
             />

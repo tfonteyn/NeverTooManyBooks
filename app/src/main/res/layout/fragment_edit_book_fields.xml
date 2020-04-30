@@ -109,6 +109,7 @@
                 android:id="@+id/title"
                 style="@style/titleTextEntry"
                 android:layout_width="match_parent"
+                android:imeOptions="actionNext"
                 tools:ignore="Autofill"
                 tools:text="@sample/data.json/book/title"
                 />
@@ -126,6 +127,7 @@
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/isbn"
                 style="@style/EditText.Isbn"
+                android:imeOptions="actionNext"
                 android:layout_width="match_parent"
                 tools:ignore="Autofill"
                 tools:text="123456789X123"
@@ -159,6 +161,7 @@
                 android:id="@+id/language"
                 style="@style/languageTextEntry"
                 android:layout_width="match_parent"
+                android:imeOptions="actionNext"
                 tools:ignore="LabelFor"
                 tools:text="@sample/data.json/language/name"
                 />
@@ -215,6 +218,7 @@
             <AutoCompleteTextView
                 android:id="@+id/genre"
                 style="@style/autoCompleteTextEntry"
+                android:imeOptions="actionNext"
                 android:layout_width="match_parent"
                 tools:ignore="LabelFor"
                 tools:text="Fiction"
@@ -234,6 +238,7 @@
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/description"
                 style="@style/notesTextEntry"
+                android:imeOptions="actionDone"
                 android:layout_width="match_parent"
                 tools:ignore="Autofill"
                 tools:text="@tools:sample/lorem/random"

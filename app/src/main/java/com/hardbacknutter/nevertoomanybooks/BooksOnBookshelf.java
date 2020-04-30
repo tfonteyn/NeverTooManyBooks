@@ -951,8 +951,8 @@ public class BooksOnBookshelf
                 return true;
             }
             case R.id.MENU_BOOK_SEND_TO_GOODREADS: {
-                Snackbar.make(mListView, R.string.progress_msg_connecting, Snackbar.LENGTH_LONG)
-                        .show();
+                Snackbar.make(mListView, R.string.progress_msg_connecting,
+                              Snackbar.LENGTH_LONG).show();
                 new SendOneBookTask(bookId, mModel.getGoodreadsTaskListener(this))
                         .execute();
                 return true;

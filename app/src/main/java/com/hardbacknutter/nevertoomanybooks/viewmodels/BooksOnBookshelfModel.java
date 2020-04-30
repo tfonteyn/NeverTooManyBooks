@@ -120,7 +120,7 @@ public class BooksOnBookshelfModel
                     DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_BOOK_UUID)),
 
             // external site ID's
-            //NEWTHINGS: add new site specific ID: add
+            //NEWTHINGS: add new site specific ID: add VirtualDomain
             new VirtualDomain(
                     DBDefinitions.DOM_EID_ISFDB,
                     DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_EID_ISFDB)),

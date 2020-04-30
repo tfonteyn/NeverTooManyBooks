@@ -81,7 +81,6 @@ public abstract class OptionsDialogBase<T>
     protected void infoPopup(@NonNull final TextView textView,
                              @NonNull final View infoButton) {
 
-        //TODO: replace dialog with lightweight popup view.
         //noinspection ConstantConditions
         new MaterialAlertDialogBuilder(getContext())
                 .setTitle(textView.getText())

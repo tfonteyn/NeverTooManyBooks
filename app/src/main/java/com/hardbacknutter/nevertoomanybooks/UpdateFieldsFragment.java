@@ -53,6 +53,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.databinding.FragmentUpdateFromInternetBinding;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
@@ -82,13 +83,12 @@ public class UpdateFieldsFragment
     /** Log tag. */
     public static final String TAG = "UpdateFieldsFragment";
 
-    /** the ViewGroup where we'll add the list of fields. */
-    private ViewGroup mFieldListView;
-
     /** The extended SearchCoordinator. */
     private UpdateFieldsModel mUpdateFieldsModel;
     @Nullable
     private ProgressDialogFragment mProgressDialog;
+
+    private FragmentUpdateFromInternetBinding mVb;
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -101,10 +101,8 @@ public class UpdateFieldsFragment
     public View onCreateView(@NonNull final LayoutInflater inflater,
                              @Nullable final ViewGroup container,
                              @Nullable final Bundle savedInstanceState) {
-        final View view = inflater
-                .inflate(R.layout.fragment_update_from_internet, container, false);
-        mFieldListView = view.findViewById(R.id.manage_fields_scrollview);
-        return view;
+        mVb = FragmentUpdateFromInternetBinding.inflate(inflater, container, false);
+        return mVb.getRoot();
     }
 
     @Override
@@ -136,7 +134,7 @@ public class UpdateFieldsFragment
             activity.setTitle(R.string.lbl_select_fields);
         }
 
-        // FAB lives in Activity layout.
+        // The FAB lives in the activity.
         final FloatingActionButton fabButton = activity.findViewById(R.id.fab);
         fabButton.setImageResource(R.drawable.ic_cloud_download);
         fabButton.setVisibility(View.VISIBLE);
@@ -153,8 +151,7 @@ public class UpdateFieldsFragment
 
         // Warn the user, but don't abort.
         if (!NetworkUtils.isNetworkAvailable(getContext())) {
-            //noinspection ConstantConditions
-            Snackbar.make(getView(), R.string.error_network_no_connection,
+            Snackbar.make(mVb.getRoot(), R.string.error_network_no_connection,
                           Snackbar.LENGTH_LONG).show();
         }
     }
@@ -165,7 +162,7 @@ public class UpdateFieldsFragment
     private void populateFields() {
         for (FieldUsage usage : mUpdateFieldsModel.getFieldUsages()) {
             final View row = getLayoutInflater().inflate(R.layout.row_update_from_internet,
-                                                         mFieldListView, false);
+                                                         mVb.fieldList, false);
 
             final TextView fieldLabel = row.findViewById(R.id.field);
             //noinspection ConstantConditions
@@ -182,7 +179,7 @@ public class UpdateFieldsFragment
                 cb.setText(fieldUsage.getUsageLabel(getContext()));
             });
 
-            mFieldListView.addView(row);
+            mVb.fieldList.addView(row);
         }
     }
 
@@ -247,7 +244,7 @@ public class UpdateFieldsFragment
             case R.id.MENU_RESET: {
                 //noinspection ConstantConditions
                 mUpdateFieldsModel.resetPreferences(getContext());
-                mFieldListView.removeAllViews();
+                mVb.fieldList.removeAllViews();
                 populateFields();
                 return true;
             }
@@ -263,9 +260,9 @@ public class UpdateFieldsFragment
      * @return {@code true} if at least one field is selected
      */
     private boolean hasSelections() {
-        final int nChildren = mFieldListView.getChildCount();
+        final int nChildren = mVb.fieldList.getChildCount();
         for (int i = 0; i < nChildren; i++) {
-            final View view = mFieldListView.getChildAt(i);
+            final View view = mVb.fieldList.getChildAt(i);
             final CompoundButton cb = view.findViewById(R.id.cbx_usage);
             if (cb != null) {
                 final FieldUsage fieldUsage = (FieldUsage) cb.getTag(R.id.TAG_FIELD_USAGE);
@@ -284,16 +281,14 @@ public class UpdateFieldsFragment
     private void prepareUpdate() {
         // sanity check
         if (!hasSelections()) {
-            //noinspection ConstantConditions
-            Snackbar.make(getView(), R.string.warning_select_at_least_1_field,
+            Snackbar.make(mVb.fieldList, R.string.warning_select_at_least_1_field,
                           Snackbar.LENGTH_LONG).show();
             return;
         }
 
         //noinspection ConstantConditions
         if (!NetworkUtils.isNetworkAvailable(getContext())) {
-            //noinspection ConstantConditions
-            Snackbar.make(getView(), R.string.error_network_no_connection,
+            Snackbar.make(mVb.getRoot(), R.string.error_network_no_connection,
                           Snackbar.LENGTH_LONG).show();
             return;
         }
@@ -328,8 +323,7 @@ public class UpdateFieldsFragment
         mUpdateFieldsModel.writePreferences(getContext());
 
         if (!mUpdateFieldsModel.startSearch(getContext())) {
-            //noinspection ConstantConditions
-            Snackbar.make(getView(), R.string.warning_no_search_data_for_active_sites,
+            Snackbar.make(mVb.getRoot(), R.string.warning_no_search_data_for_active_sites,
                           Snackbar.LENGTH_LONG).show();
         }
     }
@@ -350,9 +344,8 @@ public class UpdateFieldsFragment
 
                 if (message.status == TaskListener.TaskStatus.Cancelled) {
                     // This message will likely not be seen as we'll finish after.
-                    //noinspection ConstantConditions
-                    Snackbar.make(getView(), R.string.progress_end_cancelled, Snackbar.LENGTH_LONG)
-                            .show();
+                    Snackbar.make(mVb.getRoot(), R.string.progress_end_cancelled,
+                                  Snackbar.LENGTH_LONG).show();
                 }
 
                 if (message.result != null) {

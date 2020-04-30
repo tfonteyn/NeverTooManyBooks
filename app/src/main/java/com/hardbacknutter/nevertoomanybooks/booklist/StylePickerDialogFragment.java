@@ -29,14 +29,11 @@ package com.hardbacknutter.nevertoomanybooks.booklist;
 
 import android.app.Activity;
 import android.app.Dialog;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.CompoundButton;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -50,7 +47,6 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.BaseActivity;
@@ -59,10 +55,10 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.RequestCode;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
-import com.hardbacknutter.nevertoomanybooks.entities.Entity;
 import com.hardbacknutter.nevertoomanybooks.settings.SettingsActivity;
 import com.hardbacknutter.nevertoomanybooks.settings.styles.StyleBaseFragment;
 import com.hardbacknutter.nevertoomanybooks.settings.styles.StyleFragment;
+import com.hardbacknutter.nevertoomanybooks.widgets.RadioGroupRecyclerAdapter;
 
 public class StylePickerDialogFragment
         extends DialogFragment {
@@ -74,8 +70,8 @@ public class StylePickerDialogFragment
     private final ArrayList<BooklistStyle> mBooklistStyles = new ArrayList<>();
     private boolean mShowAllStyles;
     private RadioGroupRecyclerAdapter<BooklistStyle> mAdapter;
-
     /** Currently selected style. */
+    @Nullable
     private BooklistStyle mCurrentStyle;
 
     @Nullable
@@ -92,7 +88,7 @@ public class StylePickerDialogFragment
     public static DialogFragment newInstance(@NonNull final BooklistStyle currentStyle,
                                              final boolean all) {
         final DialogFragment frag = new StylePickerDialogFragment();
-        Bundle args = new Bundle(2);
+        final Bundle args = new Bundle(2);
         args.putParcelable(BooklistStyle.BKEY_STYLE, currentStyle);
         args.putBoolean(BKEY_SHOW_ALL_STYLES, all);
         frag.setArguments(args);
@@ -112,7 +108,7 @@ public class StylePickerDialogFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Bundle args = requireArguments();
+        final Bundle args = requireArguments();
         mCurrentStyle = args.getParcelable(BooklistStyle.BKEY_STYLE);
         Objects.requireNonNull(mCurrentStyle, ErrorMsg.ARGS_MISSING_STYLE);
         mShowAllStyles = args.getBoolean(BKEY_SHOW_ALL_STYLES, false);
@@ -133,42 +129,74 @@ public class StylePickerDialogFragment
         final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         listView.setLayoutManager(linearLayoutManager);
         //noinspection ConstantConditions
-        mAdapter = new RadioGroupRecyclerAdapter<>(getContext(), mBooklistStyles,
-                                                   mCurrentStyle, this::onStyleSelected);
+        mAdapter = new RadioGroupRecyclerAdapter<>(getContext(),
+                                                   mBooklistStyles, mCurrentStyle,
+                                                   style -> mCurrentStyle = style);
         listView.setAdapter(mAdapter);
 
         return new MaterialAlertDialogBuilder(getContext())
                 .setTitle(R.string.lbl_select_style)
                 .setView(root)
-                // not enough space for a 3rd button
-                // .setNegativeButton(android.R.string.cancel, (d, w) -> dismiss())
-                .setNeutralButton(R.string.btn_customize, (d, w) -> customizeStyle(mCurrentStyle))
-                // see onResume for setting the listener.
-                .setPositiveButton(posBtnTxtId(), null)
+                // We set the OnClickListener in onResume.
+                // This allows reloading the list without having the dialog close
+                // on us after the user clicks a button.
+                .setNeutralButton(getMoreOrLessBtnTxtId(), null)
+                .setNegativeButton(R.string.action_edit, null)
+                .setPositiveButton(android.R.string.ok, null)
                 .create();
     }
 
-    private void customizeStyle(@NonNull final BooklistStyle currentStyle) {
+    /**
+     * Send the selected style back. Silently returns if there was nothing selected.
+     */
+    private void onStyleSelected() {
+        mCurrentStyle = mAdapter.getSelectedItem();
+        if (mCurrentStyle == null) {
+            return;
+        }
+        dismiss();
+
+        if (mListener != null && mListener.get() != null) {
+            mListener.get().onStyleChanged(mCurrentStyle);
+        } else {
+            if (BuildConfig.DEBUG /* always */) {
+                Log.w(TAG, "onStyleSelected|" +
+                           (mListener == null ? ErrorMsg.LISTENER_WAS_NULL
+                                              : ErrorMsg.LISTENER_WAS_DEAD));
+            }
+        }
+    }
+
+    /**
+     * Edit the selected style. Silently returns if there was nothing selected.
+     */
+    private void onEditStyle() {
+        mCurrentStyle = mAdapter.getSelectedItem();
+        if (mCurrentStyle == null) {
+            return;
+        }
+        dismiss();
+
         // use the activity so we get the results there.
-        Activity activity = getActivity();
-        Intent intent = new Intent(activity, SettingsActivity.class)
+        final Activity activity = getActivity();
+        final Intent intent = new Intent(activity, SettingsActivity.class)
                 .putExtra(BaseActivity.BKEY_FRAGMENT_TAG, StyleFragment.TAG);
 
-        if (currentStyle.isUserDefined()) {
-            intent.putExtra(BooklistStyle.BKEY_STYLE, currentStyle);
+        if (mCurrentStyle.isUserDefined()) {
+            intent.putExtra(BooklistStyle.BKEY_STYLE, mCurrentStyle);
         } else {
             // clone builtin style first
             //noinspection ConstantConditions
-            intent.putExtra(BooklistStyle.BKEY_STYLE, currentStyle.clone(getContext()));
+            intent.putExtra(BooklistStyle.BKEY_STYLE, mCurrentStyle.clone(getContext()));
         }
 
-        intent.putExtra(StyleBaseFragment.BKEY_TEMPLATE_ID, currentStyle.getId());
+        intent.putExtra(StyleBaseFragment.BKEY_TEMPLATE_ID, mCurrentStyle.getId());
         //noinspection ConstantConditions
         activity.startActivityForResult(intent, RequestCode.EDIT_STYLE);
     }
 
     @StringRes
-    private int posBtnTxtId() {
+    private int getMoreOrLessBtnTxtId() {
         return mShowAllStyles ? R.string.btn_show_less
                               : R.string.btn_show_more;
     }
@@ -185,167 +213,28 @@ public class StylePickerDialogFragment
         }
     }
 
-    /**
-     * Set the dialog OnClickListener. This allows reloading the list without
-     * having the dialog close on us after the user clicks a button.
-     */
     @Override
     public void onResume() {
         super.onResume();
         final AlertDialog dialog = (AlertDialog) getDialog();
         if (dialog != null) {
-            dialog.getButton(Dialog.BUTTON_POSITIVE)
+            dialog.getButton(Dialog.BUTTON_NEUTRAL)
                   .setOnClickListener(v -> {
                       mShowAllStyles = !mShowAllStyles;
-                      ((AlertDialog) getDialog()).getButton(Dialog.BUTTON_POSITIVE)
-                                                 .setText(posBtnTxtId());
+                      ((AlertDialog) getDialog()).getButton(Dialog.BUTTON_NEUTRAL)
+                                                 .setText(getMoreOrLessBtnTxtId());
                       loadStyles();
                       mAdapter.notifyDataSetChanged();
                   });
+            dialog.getButton(Dialog.BUTTON_NEGATIVE)
+                  .setOnClickListener(v -> onEditStyle());
+            dialog.getButton(Dialog.BUTTON_POSITIVE)
+                  .setOnClickListener(v -> onStyleSelected());
         }
-    }
-
-    /**
-     * Called when the user clicked a style. Send the result back to the listener.
-     *
-     * @param style the desired style
-     */
-    private void onStyleSelected(@NonNull final BooklistStyle style) {
-        if (mListener != null && mListener.get() != null) {
-            mListener.get().onStyleChanged(style);
-        } else {
-            if (BuildConfig.DEBUG /* always */) {
-                Log.w(TAG, "onStyleSelected|" +
-                           (mListener == null ? ErrorMsg.LISTENER_WAS_NULL
-                                              : ErrorMsg.LISTENER_WAS_DEAD));
-            }
-        }
-
-        dismiss();
     }
 
     public interface StyleChangedListener {
 
         void onStyleChanged(@NonNull BooklistStyle style);
-    }
-
-    /**
-     * Add a list of RadioButtons to a RecyclerView.
-     * <p>
-     * Handles that only one RadioButton is selected at any time.
-     *
-     * @param <T> type of the {@link Entity} represented by each RadioButton.
-     */
-    public static class RadioGroupRecyclerAdapter<T extends Entity>
-            extends RecyclerView.Adapter<RadioGroupRecyclerAdapter.Holder> {
-
-        @NonNull
-        private final LayoutInflater mInflater;
-        @NonNull
-        private final Context mContext;
-        @NonNull
-        private final List<T> mItems;
-        @Nullable
-        private final SelectionListener<T> mOnSelectionListener;
-        /** The (pre-)selected item. */
-        private T mSelectedItem;
-
-        /**
-         * Constructor.
-         *
-         * @param context      Current context
-         * @param items        List of items
-         * @param selectedItem (optional) the pre-selected item
-         * @param listener     (optional) to send a selection to
-         */
-        RadioGroupRecyclerAdapter(@NonNull final Context context,
-                                  @NonNull final List<T> items,
-                                  @Nullable final T selectedItem,
-                                  @Nullable final SelectionListener<T> listener) {
-
-            mContext = context;
-            mInflater = LayoutInflater.from(mContext);
-            mItems = items;
-            mSelectedItem = selectedItem;
-            mOnSelectionListener = listener;
-        }
-
-        @Override
-        @NonNull
-        public Holder onCreateViewHolder(@NonNull final ViewGroup parent,
-                                         final int viewType) {
-            View view = mInflater.inflate(R.layout.row_radiobutton, parent, false);
-            return new Holder(view);
-        }
-
-        @Override
-        public void onBindViewHolder(@NonNull final Holder holder,
-                                     final int position) {
-
-            T item = mItems.get(position);
-            holder.buttonView.setTag(R.id.TAG_ITEM, item);
-
-            holder.buttonView.setText(item.getLabel(mContext));
-            // only 'check' the pre-selected item.
-            holder.buttonView.setChecked(item.getId() == mSelectedItem.getId());
-            holder.buttonView.setOnClickListener(this::itemCheckChanged);
-        }
-
-        @Override
-        public int getItemCount() {
-            return mItems.size();
-        }
-
-        /**
-         * On selecting any view set the current position to mSelectedPosition and notify adapter.
-         */
-        private void itemCheckChanged(@NonNull final View v) {
-            //noinspection unchecked
-            mSelectedItem = (T) v.getTag(R.id.TAG_ITEM);
-            // this triggers a bind calls for the rows, which in turn set the checked status.
-            notifyDataSetChanged();
-            if (mOnSelectionListener != null) {
-                // use a post allowing the UI to update the radio buttons first (purely for visuals)
-                v.post(() -> mOnSelectionListener.onSelected(mSelectedItem));
-            }
-        }
-
-        /**
-         * @return the selected item.
-         */
-        @SuppressWarnings("unused")
-        @Nullable
-        public T getSelectedItem() {
-            if (mSelectedItem != null) {
-                return mSelectedItem;
-            }
-            return null;
-        }
-
-        /** Delete the selected position from the List. */
-        @SuppressWarnings("unused")
-        public void deleteSelectedPosition() {
-            if (mSelectedItem != null) {
-                mItems.remove(mSelectedItem);
-                mSelectedItem = null;
-                notifyDataSetChanged();
-            }
-        }
-
-        interface SelectionListener<T> {
-
-            void onSelected(T o);
-        }
-
-        static class Holder
-                extends RecyclerView.ViewHolder {
-
-            final CompoundButton buttonView;
-
-            Holder(@NonNull final View itemView) {
-                super(itemView);
-                buttonView = itemView.findViewById(R.id.button);
-            }
-        }
     }
 }

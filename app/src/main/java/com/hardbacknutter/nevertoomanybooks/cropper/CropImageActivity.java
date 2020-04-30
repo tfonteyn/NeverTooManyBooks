@@ -336,10 +336,9 @@ public class CropImageActivity
         }
 
         if (mBitmap != null) {
-            // Make UI fullscreen.
-            //getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+            // The FAB lives in the activity.
             // the FAB button saves the image, use 'back' to cancel.
-            FloatingActionButton fabButton = findViewById(R.id.fab);
+            final FloatingActionButton fabButton = findViewById(R.id.fab);
             fabButton.setOnClickListener(v -> onSaveClicked());
             startFaceDetection();
         } else {

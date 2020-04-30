@@ -47,13 +47,14 @@ import androidx.constraintlayout.widget.ConstraintLayout;
  * <p>
  * Usage:
  * <pre>{@code
- *   <android.support.constraint.ConstraintLayout
- *     ...
- *     <com.hardbacknutter.nevertoomanybooks.widgets.ConstraintRadioGroup
+ *       <com.hardbacknutter.nevertoomanybooks.widgets.ConstraintRadioGroup
+ *         android:id="@+id/rb_books_group"
  *         android:layout_width="wrap_content"
  *         android:layout_height="wrap_content"
- *         app:constraint_referenced_ids="radioButton1, radioButton2" />
- *   </android.support.constraint.ConstraintLayout>
+ *         android:visibility="gone"
+ *         app:constraint_referenced_ids="rb_books_all,rb_books_since_last_backup"
+ *         tools:ignore="MissingConstraints"
+ *         />
  * }</pre>
  * <p>
  */

@@ -454,7 +454,7 @@ public class EditBookAuthorsFragment
             mVb.authorTypeGroup.setVisibility(useAuthorType ? View.VISIBLE : View.GONE);
             if (useAuthorType) {
 
-                mVb.useAuthorTypeButton.setOnCheckedChangeListener(
+                mVb.btnUseAuthorType.setOnCheckedChangeListener(
                         (v, isChecked) -> setTypeEnabled(isChecked));
 
                 mTypeButtons.put(Author.TYPE_WRITER, mVb.cbxAuthorTypeWriter);
@@ -506,7 +506,7 @@ public class EditBookAuthorsFragment
                         tmpAuthor.setComplete(mIsComplete);
 
                         mType = getTypeFromViews();
-                        if (mVb.useAuthorTypeButton.isChecked()) {
+                        if (mVb.btnUseAuthorType.isChecked()) {
                             tmpAuthor.setType(mType);
                         } else {
                             tmpAuthor.setType(Author.TYPE_UNKNOWN);
@@ -561,7 +561,7 @@ public class EditBookAuthorsFragment
         private void setTypeEnabled(final boolean enable) {
             // don't bother changing the 'checked' status, we'll ignore them anyhow.
             // and this is more user friendly if they flip the switch more than once.
-            mVb.useAuthorTypeButton.setChecked(enable);
+            mVb.btnUseAuthorType.setChecked(enable);
             for (int i = 0; i < mTypeButtons.size(); i++) {
                 final CompoundButton typeBtn = mTypeButtons.valueAt(i);
                 typeBtn.setEnabled(enable);

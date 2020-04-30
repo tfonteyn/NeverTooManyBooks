@@ -128,6 +128,7 @@ public class EditBookshelvesFragment
         //noinspection ConstantConditions
         mAdapter = new BookshelfAdapter(getContext());
 
+        // The FAB lives in the activity.
         final FloatingActionButton fabButton = getActivity().findViewById(R.id.fab);
         fabButton.setImageResource(R.drawable.ic_add);
         fabButton.setVisibility(View.VISIBLE);
