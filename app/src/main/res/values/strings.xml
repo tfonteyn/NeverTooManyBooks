@@ -1628,7 +1628,7 @@
     <string name="X_lbl_select_fields_to_update">Select Fields to Update</string>
     <string name="X_anthology_titles">Anthology Titles</string>
     <string name="X_use_default_setting">Use default values</string>
-    <string name="X_menu_show_all">Show all</string>
+    <string name="btn_show_all">Show all</string>
     <string name="X_btn_confirm_update">Update</string>
     <string name="X_swap">Swap</string>
     <string name="X_lbl_is_signed">Has this book been signed?</string>

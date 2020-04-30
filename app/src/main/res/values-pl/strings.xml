@@ -39,7 +39,7 @@
     <string name="lbl_available">Dostępny</string>
     <string name="X_lbl_data_import_export">Kopia zapasowa i import</string>
     <string name="X_lbl_select_fields_to_update">Wybierz pola do aktualizacji</string>
-    <string name="X_menu_show_all">Pokaż wszystko</string>
+    <string name="btn_show_all">Pokaż wszystko</string>
     <string name="X_swap">Wymieniać</string>
     <string name="X_tip_booklist_global_properties">Możesz użyć tego ekranu, aby ustawić domyślną charakterystykę wszystkich stylów listy książek. Większość właściwości może być nadpisana przez poszczególne style, ale tutaj są zdefiniowane wartości domyślne. Możesz zmienić sposób wyświetlania list przy starcie i dostosować różne inne preferencje, które będą stosowane do wszystkich twoich stylów, jeśli to możliwe. Możesz także edytować menu stylów i same style.</string>
     <string name="X_use_default_setting">Zastosowanie domyślne</string>

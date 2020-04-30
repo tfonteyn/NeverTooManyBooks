@@ -39,7 +39,7 @@
     <string name="lbl_available">Uygun</string>
     <string name="X_lbl_data_import_export">Yedekleme ve İçe Aktarma</string>
     <string name="X_lbl_select_fields_to_update">Güncellenecek alanları seçin</string>
-    <string name="X_menu_show_all">Hepsini Göster</string>
+    <string name="btn_show_all">Hepsini Göster</string>
     <string name="X_swap">Değiştirmek</string>
     <string name="X_tip_booklist_global_properties">Tüm kitap listesi stillerinin varsayılan özelliklerini ayarlamak için bu ekranı kullanabilirsiniz. Çoğu özellik bireysel stiller tarafından geçersiz kılınabilir, ancak varsayılan değerler burada tanımlanır. Listelerin başlangıçta nasıl görüntüleneceğini değiştirebilir ve mümkün olduğunda tüm stillerinize uygulanacak çeşitli diğer tercihleri ayarlayabilirsiniz.</string>
     <string name="X_use_default_setting">Öntanımlı ayarları kullan</string>

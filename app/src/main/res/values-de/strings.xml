@@ -40,7 +40,7 @@
     <string name="lbl_available">Verfügbar</string>
     <string name="X_lbl_data_import_export">Sichern &amp; Importieren</string>
     <string name="X_lbl_select_fields_to_update">Felder für Aktualisierung auswählen</string>
-    <string name="X_menu_show_all">Zeige alles</string>
+    <string name="btn_show_all">Zeige alles</string>
     <string name="X_swap">Tauschen</string>
     <string name="X_tip_booklist_global_properties">In diesem Bildschirm können Sie die Standardeigenschaften aller Buchlistenstile festlegen. Die meisten Eigenschaften können von einzelnen Stilen überschrieben werden, aber die Standardwerte werden hier definiert. Sie können ändern, wie Listen beim Start angezeigt werden, und eine Reihe anderer Einstellungen vornehmen, die nach Möglichkeit auf alle Ihre Stile angewendet werden.</string>
     <string name="X_use_default_setting">Standardeinstellung verwenden</string>

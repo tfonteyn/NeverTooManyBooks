@@ -39,7 +39,7 @@
     <string name="lbl_available">Доступно</string>
     <string name="X_lbl_data_import_export">Резервное копирование и импорт</string>
     <string name="X_lbl_select_fields_to_update">Выберите поля для обновления</string>
-    <string name="X_menu_show_all">Показать все</string>
+    <string name="btn_show_all">Показать все</string>
     <string name="X_swap">обменивать</string>
     <string name="X_tip_booklist_global_properties">Вы можете использовать этот экран, чтобы установить характеристики по умолчанию для всех стилей списка книг. Большинство свойств могут быть переопределены отдельными стилями, но значения по умолчанию определены здесь. Вы можете изменить способ отображения списков при запуске и настроить множество других параметров, которые будут применяться ко всем вашим стилям, когда это возможно.</string>
     <string name="X_use_default_setting">Использовать настройки по умолчанию</string>

@@ -39,7 +39,7 @@
     <string name="lbl_available">Διαθέσιμο</string>
     <string name="X_lbl_data_import_export">Δημιουργία αντιγράφων ασφαλείας &amp; εισαγωγή</string>
     <string name="X_lbl_select_fields_to_update">Επιλεγξτε πεδία για ενημέρωση</string>
-    <string name="X_menu_show_all">Προβολή όλων</string>
+    <string name="btn_show_all">Προβολή όλων</string>
     <string name="X_swap">ανταλλάσσω</string>
     <string name="X_tip_booklist_global_properties">Μπορείτε να χρησιμοποιήσετε αυτήν την οθόνη για να ορίσετε τα προεπιλεγμένα χαρακτηριστικά όλων των μορφών λίστας βιβλίων. Οι περισσότερες ιδιότητες μπορούν να αντικατασταθούν από μεμονωμένα στυλ, αλλά οι προεπιλεγμένες τιμές ορίζονται εδώ. Μπορείτε να αλλάξετε τον τρόπο εμφάνισης των λιστών κατά την εκκίνηση και να προσαρμόσετε διάφορες άλλες προτιμήσεις που θα εφαρμοστούν σε όλα τα στυλ σας, όταν είναι δυνατόν.</string>
     <string name="X_use_default_setting">Χρήση προεπιλεγμένης ρύθμισης</string>
