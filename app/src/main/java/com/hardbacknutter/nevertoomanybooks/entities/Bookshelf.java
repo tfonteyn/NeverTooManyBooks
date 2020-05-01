@@ -382,9 +382,7 @@ public class Bookshelf
     public void copyFrom(@NonNull final Bookshelf source) {
         mName = source.mName;
         mStyleUuid = source.mStyleUuid;
-        mTopItemPosition = source.mTopItemPosition;
-        mTopViewOffset = source.mTopViewOffset;
-        mTopRowId = source.mTopRowId;
+        // don't copy the 'top' values.
     }
 
     @SuppressWarnings("SameReturnValue")
