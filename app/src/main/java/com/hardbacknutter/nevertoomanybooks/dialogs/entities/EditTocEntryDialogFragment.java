@@ -27,17 +27,17 @@
  */
 package com.hardbacknutter.nevertoomanybooks.dialogs.entities;
 
-import android.app.Dialog;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.lang.ref.WeakReference;
 import java.util.Objects;
@@ -48,6 +48,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookTocBinding;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
+import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.widgets.DiacriticArrayAdapter;
@@ -64,25 +65,34 @@ public class EditTocEntryDialogFragment
     private static final String BKEY_HAS_MULTIPLE_AUTHORS = TAG + ":hasMultipleAuthors";
     private static final String BKEY_TOC_ENTRY = TAG + ":tocEntry";
 
-    @Nullable
-    private WeakReference<EditTocEntryResults> mListener;
-
     /** Database Access. */
     private DAO mDb;
-
-    private boolean mHasMultipleAuthors;
-
+    /** Where to send the result. */
+    @Nullable
+    private WeakReference<EditTocEntryResults> mListener;
+    @Nullable
+    private String mDialogTitle;
+    /** View Binding. */
+    private DialogEditBookTocBinding mVb;
     private DiacriticArrayAdapter<String> mAuthorAdapter;
 
     /** The TocEntry we're editing. */
     private TocEntry mTocEntry;
-    /** View Binding. */
-    private DialogEditBookTocBinding mVb;
+
+    /** Current edit. */
+    private String mTitle;
+    /** Current edit. */
+    private String mFirstPublication;
+    /** Current edit. */
+    private String mAuthorName;
+
+    /** Helper to show/hide the author edit field. */
+    private boolean mHasMultipleAuthors;
 
     /**
      * Constructor.
      *
-     * @param dialogTitle        to use
+     * @param dialogTitle        the dialog title
      * @param tocEntry           to edit.
      * @param hasMultipleAuthors Flag that will enable/disable the author edit field
      *
@@ -92,69 +102,75 @@ public class EditTocEntryDialogFragment
                                              @NonNull final TocEntry tocEntry,
                                              final boolean hasMultipleAuthors) {
         final DialogFragment frag = new EditTocEntryDialogFragment();
-        final Bundle args = new Bundle(2);
+        final Bundle args = new Bundle(3);
+        args.putString(StandardDialogs.BKEY_DIALOG_TITLE, dialogTitle);
         args.putBoolean(BKEY_HAS_MULTIPLE_AUTHORS, hasMultipleAuthors);
         args.putParcelable(BKEY_TOC_ENTRY, tocEntry);
         frag.setArguments(args);
         return frag;
     }
 
-    /**
-     * Call this from {@link #onAttachFragment} in the parent.
-     *
-     * @param listener the object to send the result to.
-     */
-    public void setListener(@NonNull final EditTocEntryResults listener) {
-        mListener = new WeakReference<>(listener);
-    }
-
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setStyle(DialogFragment.STYLE_NO_FRAME, R.style.Theme_App_FullScreen);
 
         mDb = new DAO(TAG);
 
-        final Bundle args = savedInstanceState != null ? savedInstanceState : requireArguments();
+        final Bundle args = requireArguments();
+        mDialogTitle = args.getString(StandardDialogs.BKEY_DIALOG_TITLE,
+                                      getString(R.string.lbl_edit_toc_entry));
+
         mTocEntry = args.getParcelable(BKEY_TOC_ENTRY);
         Objects.requireNonNull(mTocEntry, ErrorMsg.ARGS_MISSING_TOC_ENTRIES);
 
-        mHasMultipleAuthors = args.getBoolean(BKEY_HAS_MULTIPLE_AUTHORS, false);
+        if (savedInstanceState == null) {
+            mTitle = mTocEntry.getTitle();
+            mFirstPublication = mTocEntry.getFirstPublication();
+            //noinspection ConstantConditions
+            mAuthorName = mTocEntry.getAuthor().getLabel(getContext());
+        } else {
+            mTitle = savedInstanceState.getString(DBDefinitions.KEY_TITLE);
+            mFirstPublication = savedInstanceState
+                    .getString(DBDefinitions.KEY_DATE_FIRST_PUBLICATION);
+            mAuthorName = savedInstanceState.getString(DBDefinitions.KEY_AUTHOR_FORMATTED);
+
+            mHasMultipleAuthors = args.getBoolean(BKEY_HAS_MULTIPLE_AUTHORS, false);
+        }
     }
 
-    @NonNull
+    @Nullable
     @Override
-    public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
-        // Reminder: *always* use the activity inflater here.
-        //noinspection ConstantConditions
-        final LayoutInflater inflater = getActivity().getLayoutInflater();
-        mVb = DialogEditBookTocBinding.inflate(inflater);
+    public View onCreateView(@NonNull final LayoutInflater inflater,
+                             @Nullable final ViewGroup container,
+                             @Nullable final Bundle savedInstanceState) {
+        mVb = DialogEditBookTocBinding.inflate(inflater, container, false);
+        return mVb.getRoot();
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        mVb.toolbar.setNavigationOnClickListener(v -> dismiss());
+        mVb.toolbar.setTitle(mDialogTitle);
+        mVb.toolbar.inflateMenu(R.menu.toolbar_save);
+        mVb.toolbar.setOnMenuItemClickListener(item -> {
+            if (item.getItemId() == R.id.action_save) {
+                if (saveChanges()) {
+                    dismiss();
+                }
+                return true;
+            }
+            return false;
+        });
+
+        mVb.title.setText(mTitle);
+        mVb.firstPublication.setText(mFirstPublication);
 
         updateMultiAuthor(mHasMultipleAuthors);
         mVb.cbxMultipleAuthors.setOnCheckedChangeListener(
                 (v, isChecked) -> updateMultiAuthor(isChecked));
-
-        mVb.title.setText(mTocEntry.getTitle());
-        mVb.firstPublication.setText(mTocEntry.getFirstPublication());
-
-        //noinspection ConstantConditions
-        return new MaterialAlertDialogBuilder(getContext())
-                .setView(mVb.getRoot())
-                .setNegativeButton(android.R.string.cancel, (d, w) -> dismiss())
-                .setPositiveButton(android.R.string.ok, (d1, which) -> saveChanges())
-                .create();
-    }
-
-    private void saveChanges() {
-        getFields();
-        if (mListener != null && mListener.get() != null) {
-            mListener.get().addOrUpdateEntry(mTocEntry, mHasMultipleAuthors);
-        } else {
-            if (BuildConfig.DEBUG /* always */) {
-                Log.w(TAG, "addOrUpdateEntry|" +
-                           (mListener == null ? ErrorMsg.LISTENER_WAS_NULL
-                                              : ErrorMsg.LISTENER_WAS_DEAD));
-            }
-        }
     }
 
     private void updateMultiAuthor(final boolean isChecked) {
@@ -169,8 +185,7 @@ public class EditTocEntryDialogFragment
                 mVb.author.setAdapter(mAuthorAdapter);
             }
 
-            //noinspection ConstantConditions
-            mVb.author.setText(mTocEntry.getAuthor().getLabel(getContext()));
+            mVb.author.setText(mAuthorName);
             mVb.author.selectAll();
             mVb.lblAuthor.setVisibility(View.VISIBLE);
             mVb.author.setVisibility(View.VISIBLE);
@@ -180,26 +195,72 @@ public class EditTocEntryDialogFragment
         }
     }
 
-    private void getFields() {
+    private boolean saveChanges() {
+        viewToModel();
+        if (mTitle.isEmpty()) {
+            Snackbar.make(mVb.title, R.string.warning_missing_name,
+                          Snackbar.LENGTH_LONG).show();
+            return false;
+        }
+
+        // anything actually changed ?
         //noinspection ConstantConditions
-        mTocEntry.setTitle(mVb.title.getText().toString().trim());
-        //noinspection ConstantConditions
-        mTocEntry.setFirstPublication(mVb.firstPublication.getText().toString().trim());
+        if (mTocEntry.getTitle().equals(mTitle)
+            && mTocEntry.getFirstPublication().equals(mFirstPublication)
+            && mTocEntry.getAuthor().getLabel(getContext()).equals(mAuthorName)) {
+            return true;
+        }
+
+        // we don't update here, but just send the new data back; TOCs are updated in bulk/book
+        mTocEntry.setTitle(mTitle);
+        mTocEntry.setFirstPublication(mFirstPublication);
         if (mHasMultipleAuthors) {
-            mTocEntry.setAuthor(Author.from(mVb.author.getText().toString().trim()));
+            mTocEntry.setAuthor(Author.from(mAuthorName));
+        }
+
+        if (mListener != null && mListener.get() != null) {
+            mListener.get().addOrUpdateEntry(mTocEntry, mHasMultipleAuthors);
+        } else {
+            if (BuildConfig.DEBUG /* always */) {
+                Log.w(TAG, "addOrUpdateEntry|" +
+                           (mListener == null ? ErrorMsg.LISTENER_WAS_NULL
+                                              : ErrorMsg.LISTENER_WAS_DEAD));
+            }
+        }
+        return true;
+    }
+
+    private void viewToModel() {
+        //noinspection ConstantConditions
+        mTitle = mVb.title.getText().toString().trim();
+        //noinspection ConstantConditions
+        mFirstPublication = mVb.firstPublication.getText().toString().trim();
+        if (mHasMultipleAuthors) {
+            mAuthorName = mVb.author.getText().toString().trim();
         }
     }
 
     @Override
     public void onSaveInstanceState(@NonNull final Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putParcelable(BKEY_TOC_ENTRY, mTocEntry);
+        outState.putString(DBDefinitions.KEY_TITLE, mTitle);
+        outState.putString(DBDefinitions.KEY_DATE_FIRST_PUBLICATION, mFirstPublication);
+        outState.putString(DBDefinitions.KEY_AUTHOR_FORMATTED, mAuthorName);
         outState.putBoolean(BKEY_HAS_MULTIPLE_AUTHORS, mHasMultipleAuthors);
+    }
+
+    /**
+     * Call this from {@link #onAttachFragment} in the parent.
+     *
+     * @param listener the object to send the result to.
+     */
+    public void setListener(@NonNull final EditTocEntryResults listener) {
+        mListener = new WeakReference<>(listener);
     }
 
     @Override
     public void onPause() {
-        getFields();
+        viewToModel();
         super.onPause();
     }
 
@@ -211,8 +272,17 @@ public class EditTocEntryDialogFragment
         super.onDestroy();
     }
 
+    /**
+     * Listener interface to receive notifications when dialog is confirmed.
+     */
     public interface EditTocEntryResults {
 
+        /**
+         * Reports the results after this dialog was confirmed.
+         *
+         * @param tocEntry           with new data
+         * @param hasMultipleAuthors {@code true} if the author is used
+         */
         void addOrUpdateEntry(@NonNull TocEntry tocEntry,
                               boolean hasMultipleAuthors);
     }

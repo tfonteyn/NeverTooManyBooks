@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2019 HardBackNutter
+  ~ @Copyright 2020 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -51,7 +51,7 @@
 
     <!-- Personal Notes, Description. -->
     <style name="notesTextEntry" parent="@style/EditText.Notes">
-        <item name="android:inputType">textLongMessage|textMultiLine|textCapSentences</item>
+        <item name="android:inputType">textLongMessage|textMultiLine|textCapSentences|textAutoCorrect</item>
     </style>
 
 

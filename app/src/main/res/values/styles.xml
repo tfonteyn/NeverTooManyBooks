@@ -263,14 +263,23 @@
         <item name="android:inputType">textCapCharacters|textNoSuggestions</item>
     </style>
 
-    <!-- An editable CheckBox. We basically want this to be the same height as EditText fields. -->
+    <!-- An editable CheckBox. We basically want this to be the same height as EditText fields.
+         48dp is the Default and full height of a standard EditView with default text size inside.
+         48dp is also == "?attr/minTouchTargetSize"; but that attr is private so we can't use it.
+     -->
     <style name="CheckboxEntry" parent="Widget.MaterialComponents.CompoundButton.CheckBox">
         <item name="android:layout_width">0dp</item>
-        <item name="android:layout_height">@dimen/edit_text_height</item>
+        <item name="android:layout_height">48dp</item>
         <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
     </style>
 
     <style name="CheckboxEntry.Small" parent="Widget.MaterialComponents.CompoundButton.CheckBox">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">36dp</item>
+        <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
+    </style>
+
+    <style name="CheckboxEntry.Tiny" parent="Widget.MaterialComponents.CompoundButton.CheckBox">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">24dp</item>
         <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>

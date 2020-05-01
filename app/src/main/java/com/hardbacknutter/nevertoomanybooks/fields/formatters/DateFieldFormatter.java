@@ -36,7 +36,7 @@ import androidx.annotation.Nullable;
 import java.util.Date;
 import java.util.Locale;
 
-import com.hardbacknutter.nevertoomanybooks.dialogs.picker.BaseDatePickerDialogFragment;
+import com.hardbacknutter.nevertoomanybooks.dialogs.date.BaseDatePickerDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.fields.accessors.EditTextAccessor;
 import com.hardbacknutter.nevertoomanybooks.fields.accessors.TextAccessor;
 import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;

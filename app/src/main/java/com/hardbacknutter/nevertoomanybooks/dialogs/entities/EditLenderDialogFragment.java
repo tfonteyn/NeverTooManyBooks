@@ -28,7 +28,6 @@
 package com.hardbacknutter.nevertoomanybooks.dialogs.entities;
 
 import android.Manifest;
-import android.app.Dialog;
 import android.content.ContentResolver;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -36,6 +35,8 @@ import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -43,12 +44,11 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.DialogFragment;
 
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedHashSet;
 
 import com.hardbacknutter.nevertoomanybooks.BookChangedListener;
 import com.hardbacknutter.nevertoomanybooks.BookChangedListenerOwner;
@@ -59,17 +59,18 @@ import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditLoanBinding;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
+import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.widgets.DiacriticArrayAdapter;
 
 /**
  * Dialog to create a new loan, or edit an existing one.
  */
-public class LendBookDialogFragment
+public class EditLenderDialogFragment
         extends DialogFragment
         implements BookChangedListenerOwner {
 
-    /** Log tag. */
+    /** Fragment/Log tag. */
     public static final String TAG = "LendBookDialogFrag";
 
     private static final String BKEY_NEW_LOANEE = TAG + ':' + DBDefinitions.KEY_LOANEE;
@@ -82,8 +83,17 @@ public class LendBookDialogFragment
 
     /** Database Access. */
     private DAO mDb;
+    /** Where to send the result. */
+    @Nullable
+    private WeakReference<BookChangedListener> mListener;
+    @Nullable
+    private String mDialogTitle;
+    /** View Binding. */
+    private DialogEditLoanBinding mVb;
 
+    /** The book we're lending. */
     private long mBookId;
+    /** Displayed for info. */
     private String mTitle;
 
     /**
@@ -92,31 +102,26 @@ public class LendBookDialogFragment
      * {@link DBDefinitions#KEY_LOANEE} in savedInstanceState.
      */
     @Nullable
-    private String mCurrentLoanee;
+    private String mOriginalLoanee;
 
     /**
      * The loanee being edited.
      * {@link #BKEY_NEW_LOANEE} in savedInstanceState.
      */
     @Nullable
-    private String mNewLoanee;
-
-    @Nullable
-    private WeakReference<BookChangedListener> mListener;
-    /** View Binding. */
-    private DialogEditLoanBinding mVb;
+    private String mLoanee;
 
     /**
      * Constructor.
      *
-     * @param bookId   to lend
-     * @param title    informational display only
+     * @param bookId to lend
+     * @param title  informational display only
      *
      * @return instance
      */
     public static DialogFragment newInstance(final long bookId,
                                              @NonNull final String title) {
-        final DialogFragment frag = new LendBookDialogFragment();
+        final DialogFragment frag = new EditLenderDialogFragment();
         final Bundle args = new Bundle(2);
         args.putLong(DBDefinitions.KEY_PK_ID, bookId);
         args.putString(DBDefinitions.KEY_TITLE, title);
@@ -127,12 +132,12 @@ public class LendBookDialogFragment
     /**
      * Constructor.
      *
-     * @param book    to lend
+     * @param book to lend
      *
      * @return instance
      */
     public static DialogFragment newInstance(@NonNull final Book book) {
-        final DialogFragment frag = new LendBookDialogFragment();
+        final DialogFragment frag = new EditLenderDialogFragment();
         final Bundle args = new Bundle(2);
         args.putLong(DBDefinitions.KEY_PK_ID, book.getId());
         args.putString(DBDefinitions.KEY_TITLE, book.getString(DBDefinitions.KEY_TITLE));
@@ -143,138 +148,74 @@ public class LendBookDialogFragment
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setStyle(DialogFragment.STYLE_NO_FRAME, R.style.Theme_App_FullScreen);
 
         mDb = new DAO(TAG);
 
         final Bundle args = requireArguments();
+        mDialogTitle = args.getString(StandardDialogs.BKEY_DIALOG_TITLE,
+                                      getString(R.string.lbl_lend_to));
+
         mBookId = args.getLong(DBDefinitions.KEY_PK_ID);
         mTitle = args.getString(DBDefinitions.KEY_TITLE);
 
         if (savedInstanceState == null) {
-            mCurrentLoanee = mDb.getLoaneeByBookId(mBookId);
+            mOriginalLoanee = mDb.getLoaneeByBookId(mBookId);
+            mLoanee = mOriginalLoanee;
         } else {
-            mCurrentLoanee = savedInstanceState.getString(DBDefinitions.KEY_LOANEE);
-            mNewLoanee = savedInstanceState.getString(BKEY_NEW_LOANEE);
+            mOriginalLoanee = savedInstanceState.getString(DBDefinitions.KEY_LOANEE);
+            mLoanee = savedInstanceState.getString(BKEY_NEW_LOANEE);
         }
     }
 
-    @NonNull
+    @Nullable
     @Override
-    public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
-        // Reminder: *always* use the activity inflater here.
-        //noinspection ConstantConditions
-        final LayoutInflater inflater = getActivity().getLayoutInflater();
-        mVb = DialogEditLoanBinding.inflate(inflater);
+    public View onCreateView(@NonNull final LayoutInflater inflater,
+                             @Nullable final ViewGroup container,
+                             @Nullable final Bundle savedInstanceState) {
+        mVb = DialogEditLoanBinding.inflate(inflater, container, false);
+        return mVb.getRoot();
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        mVb.toolbar.setNavigationOnClickListener(v -> dismiss());
+        mVb.toolbar.setTitle(mDialogTitle);
+        mVb.toolbar.inflateMenu(R.menu.toolbar_save);
+        mVb.toolbar.setOnMenuItemClickListener(item -> {
+            if (item.getItemId() == R.id.action_save) {
+                if (saveChanges()) {
+                    dismiss();
+                }
+                return true;
+            }
+            return false;
+        });
 
         mVb.title.setText(mTitle);
+        mVb.loanedTo.setText(mLoanee);
 
-        if (mNewLoanee != null && !mNewLoanee.isEmpty()) {
-            mVb.loanedTo.setText(mNewLoanee);
-        } else if (mCurrentLoanee != null) {
-            mVb.loanedTo.setText(mCurrentLoanee);
-        }
-
-        ArrayList<String> contacts = getPhoneContacts();
+        final ArrayList<String> contacts = getContacts();
         if (contacts != null) {
             initAdapter(contacts);
         }
-
-        //noinspection ConstantConditions
-        return new MaterialAlertDialogBuilder(getContext())
-                .setView(mVb.getRoot())
-                .setNegativeButton(android.R.string.cancel, (d, w) -> dismiss())
-                .setNeutralButton(R.string.btn_loan_returned, (d, w) -> saveChanges(null))
-                .setPositiveButton(android.R.string.ok, (d, w) ->
-                        saveChanges(mVb.loanedTo.getText().toString().trim()))
-                .create();
     }
 
     /**
-     * Lend/return the book, and update our caller.
+     * Get the device Contacts list.
      *
-     * @param loanee the name entered in the dialog.
-     *               If {@code null} or empty, the book is returned
-     */
-    private void saveChanges(@Nullable final String loanee) {
-        mNewLoanee = loanee;
-
-        dismiss();
-
-        Bundle data = null;
-        if (mNewLoanee != null && !mNewLoanee.isEmpty()) {
-            // lend book, reluctantly...
-            if (!mNewLoanee.equalsIgnoreCase(mCurrentLoanee)) {
-                mDb.lendBook(mBookId, mNewLoanee);
-            }
-            data = new Bundle();
-            data.putString(DBDefinitions.KEY_LOANEE, mNewLoanee);
-
-        } else {
-            // return the book
-            mDb.lendBook(mBookId, null);
-        }
-
-        if (mListener != null && mListener.get() != null) {
-            mListener.get().onBookChanged(mBookId, BookChangedListener.BOOK_LOANEE, data);
-        } else {
-            if (BuildConfig.DEBUG /* always */) {
-                Log.w(TAG, "onBookChanged|" +
-                           (mListener == null ? ErrorMsg.LISTENER_WAS_NULL
-                                              : ErrorMsg.LISTENER_WAS_DEAD));
-            }
-        }
-    }
-
-    @Override
-    public void onSaveInstanceState(@NonNull final Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putString(DBDefinitions.KEY_LOANEE, mCurrentLoanee);
-        outState.putString(BKEY_NEW_LOANEE, mNewLoanee);
-    }
-
-    @Override
-    public void onDestroy() {
-        if (mDb != null) {
-            mDb.close();
-        }
-        super.onDestroy();
-    }
-
-    /**
-     * Call this from {@link #onAttachFragment} in the parent.
-     *
-     * @param listener the object to send the result to.
-     */
-    @Override
-    public void setListener(@NonNull final BookChangedListener listener) {
-        mListener = new WeakReference<>(listener);
-    }
-
-    private void initAdapter(@NonNull final Collection<String> contacts) {
-
-        ArrayList<String> people = mDb.getLoanees();
-        people.addAll(contacts);
-        Collections.sort(people);
-
-        //noinspection ConstantConditions
-        DiacriticArrayAdapter<String> adapter = new DiacriticArrayAdapter<>(
-                getContext(), R.layout.dropdown_menu_popup_item, people);
-        mVb.loanedTo.setAdapter(adapter);
-    }
-
-    /**
-     * Auto complete list comes from your Contacts.
-     *
-     * @return list of names, can be {@code null}
+     * @return list of names, or {@code null} if we needed to ask for permissions
      */
     @Nullable
-    private ArrayList<String> getPhoneContacts() {
+    private ArrayList<String> getContacts() {
         //noinspection ConstantConditions
         if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.READ_CONTACTS)
             == PackageManager.PERMISSION_GRANTED) {
 
-            ArrayList<String> list = new ArrayList<>();
-            ContentResolver cr = getContext().getContentResolver();
+            final ArrayList<String> list = new ArrayList<>();
+            final ContentResolver cr = getContext().getContentResolver();
             try (Cursor contactsCursor = cr.query(ContactsContract.Contacts.CONTENT_URI, PROJECTION,
                                                   null, null, null)) {
                 if (contactsCursor != null) {
@@ -300,17 +241,85 @@ public class LendBookDialogFragment
                                            @NonNull final String[] permissions,
                                            @NonNull final int[] grantResults) {
         if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            ArrayList<String> contacts = getPhoneContacts();
+            final ArrayList<String> contacts = getContacts();
             if (contacts != null) {
-                // the autocomplete view will be updated.
                 initAdapter(contacts);
             }
         }
     }
 
+    private void initAdapter(@NonNull final Collection<String> contacts) {
+        // combine contacts with previously used lender names
+        ArrayList<String> people = mDb.getLoanees();
+        people.addAll(contacts);
+        // remove duplicates
+        people = new ArrayList<>(new LinkedHashSet<>(people));
+        Collections.sort(people);
+
+        //noinspection ConstantConditions
+        DiacriticArrayAdapter<String> adapter = new DiacriticArrayAdapter<>(
+                getContext(), R.layout.dropdown_menu_popup_item, people);
+        mVb.loanedTo.setAdapter(adapter);
+    }
+
+    private boolean saveChanges() {
+        mLoanee = mVb.loanedTo.getText().toString().trim();
+
+        final Bundle data;
+        if (!mLoanee.isEmpty()) {
+            // lend book, reluctantly...
+            if (!mLoanee.equalsIgnoreCase(mOriginalLoanee)) {
+                mDb.lendBook(mBookId, mLoanee);
+            }
+            data = new Bundle();
+            data.putString(DBDefinitions.KEY_LOANEE, mLoanee);
+
+        } else {
+            // return the book
+            mDb.lendBook(mBookId, null);
+            data = null;
+        }
+
+        if (mListener != null && mListener.get() != null) {
+            mListener.get().onBookChanged(mBookId, BookChangedListener.BOOK_LOANEE, data);
+        } else {
+            if (BuildConfig.DEBUG /* always */) {
+                Log.w(TAG, "onBookChanged|" +
+                           (mListener == null ? ErrorMsg.LISTENER_WAS_NULL
+                                              : ErrorMsg.LISTENER_WAS_DEAD));
+            }
+        }
+        return true;
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull final Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString(DBDefinitions.KEY_LOANEE, mOriginalLoanee);
+        outState.putString(BKEY_NEW_LOANEE, mLoanee);
+    }
+
+    /**
+     * Call this from {@link #onAttachFragment} in the parent.
+     *
+     * @param listener the object to send the result to.
+     */
+    @Override
+    public void setListener(@NonNull final BookChangedListener listener) {
+        mListener = new WeakReference<>(listener);
+    }
+
     @Override
     public void onPause() {
-        mNewLoanee = mVb.loanedTo.getText().toString().trim();
+        mLoanee = mVb.loanedTo.getText().toString().trim();
         super.onPause();
+    }
+
+    @Override
+    public void onDestroy() {
+        if (mDb != null) {
+            mDb.close();
+        }
+        super.onDestroy();
     }
 }

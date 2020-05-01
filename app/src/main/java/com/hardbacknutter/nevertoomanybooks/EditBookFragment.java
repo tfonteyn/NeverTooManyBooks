@@ -226,32 +226,31 @@ public class EditBookFragment
             }
         }
 
-        // if we're NOT running in tabbed mode for authors/series, send them a save command.
+        // authors/series, send them a save command.
         //noinspection ConstantConditions
-        if (!Prefs.showEditBookTabAuthSeries(getContext())) {
-            //noinspection ConstantConditions
-            final FragmentManager fm = getActivity().getSupportFragmentManager();
-            // Only resumed fragments (i.e. front/visible) can/will be asked to save their state.
-            final String[] fragmentTags = {EditBookAuthorsFragment.TAG, EditBookSeriesFragment.TAG};
-            for (String tag : fragmentTags) {
-                final Fragment frag = fm.findFragmentByTag(tag);
-                if (frag instanceof DataEditor && frag.isResumed()) {
-                    //noinspection unchecked
-                    final DataEditor<Book> dataEditor = (DataEditor<Book>) frag;
-                    dataEditor.onSaveFields(book);
-                    if (dataEditor.hasUnfinishedEdits() && checkUnfinishedEdits) {
-                        StandardDialogs.unsavedEdits(
-                                getContext(),
-                                () -> prepareSave(false),
-                                () -> ((EditBookActivity) getActivity())
-                                        .cleanupAndSetResults(mBookViewModel, true));
-                        return;
-                    }
+        final FragmentManager fm = getActivity().getSupportFragmentManager();
+        // Only resumed fragments (i.e. front/visible) can/will be asked to save their state.
+        final String[] fragmentTags = {EditBookAuthorsFragment.TAG, EditBookSeriesFragment.TAG};
+        for (String tag : fragmentTags) {
+            final Fragment frag = fm.findFragmentByTag(tag);
+            if (frag instanceof DataEditor && frag.isResumed()) {
+                //noinspection unchecked
+                final DataEditor<Book> dataEditor = (DataEditor<Book>) frag;
+                dataEditor.onSaveFields(book);
+                if (dataEditor.hasUnfinishedEdits() && checkUnfinishedEdits) {
+                    //noinspection ConstantConditions
+                    StandardDialogs.unsavedEdits(
+                            getContext(),
+                            () -> prepareSave(false),
+                            () -> ((EditBookActivity) getActivity())
+                                    .cleanupAndSetResults(mBookViewModel, true));
+                    return;
                 }
             }
         }
 
         // Now validate the book data
+        //noinspection ConstantConditions
         if (!book.validate(getContext())) {
             new MaterialAlertDialogBuilder(getContext())
                     .setIcon(R.drawable.ic_error)
@@ -265,7 +264,6 @@ public class EditBookFragment
 
         // Check if the book already exists
         if (mBookViewModel.bookExists()) {
-            //noinspection ConstantConditions
             new MaterialAlertDialogBuilder(getContext())
                     .setIcon(R.drawable.ic_warning)
                     .setTitle(R.string.lbl_duplicate_book)
@@ -324,16 +322,6 @@ public class EditBookFragment
 
             // Build the tab classes and title list arrays.
             mTabs.add(new TabInfo(EditBookFieldsFragment.class, R.string.tab_lbl_details));
-
-            if (Prefs.showEditBookTabAuthSeries(context)) {
-                mTabs.add(new TabInfo(EditBookAuthorsFragment.class,
-                                      R.string.lbl_authors));
-                if (DBDefinitions.isUsed(prefs, DBDefinitions.KEY_SERIES_TITLE)
-                    && Prefs.showEditBookTabAuthSeries(context)) {
-                    mTabs.add(new TabInfo(EditBookSeriesFragment.class,
-                                          R.string.lbl_series_multiple));
-                }
-            }
 
             mTabs.add(new TabInfo(EditBookPublicationFragment.class, R.string.tab_lbl_publication));
             mTabs.add(new TabInfo(EditBookNotesFragment.class, R.string.tab_lbl_notes));

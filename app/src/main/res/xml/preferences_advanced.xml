@@ -39,14 +39,6 @@
             android:summaryOn="@string/yes"
             android:title="@string/pt_allow_edit_native_id" />
 
-        <SwitchPreference
-            android:defaultValue="false"
-            android:icon="@drawable/ic_tab"
-            android:key="edit.book.tab.authSer"
-            android:summaryOff="@string/pt_edit_book_authors_series_popup"
-            android:summaryOn="@string/pt_edit_book_authors_series_tabs"
-            android:title="@string/pt_edit_book_authors_series" />
-
         <Preference
             android:icon="@drawable/ic_undo"
             android:key="psk_tip_reset_all"

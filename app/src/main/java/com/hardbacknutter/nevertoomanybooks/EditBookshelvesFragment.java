@@ -54,10 +54,10 @@ import com.google.android.material.snackbar.Snackbar;
 import java.util.ArrayList;
 
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentEditBookshelvesBinding;
+import com.hardbacknutter.nevertoomanybooks.dialogs.MenuPicker;
+import com.hardbacknutter.nevertoomanybooks.dialogs.MenuPickerDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditBookshelfDialogFragment;
-import com.hardbacknutter.nevertoomanybooks.dialogs.picker.MenuPicker;
-import com.hardbacknutter.nevertoomanybooks.dialogs.picker.MenuPickerDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.EditBookshelvesModel;
 

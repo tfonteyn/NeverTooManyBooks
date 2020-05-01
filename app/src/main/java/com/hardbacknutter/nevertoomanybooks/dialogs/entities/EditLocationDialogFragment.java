@@ -25,10 +25,12 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.dialogs.simplestring;
+package com.hardbacknutter.nevertoomanybooks.dialogs.entities;
 
-import android.app.Dialog;
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -37,10 +39,11 @@ import androidx.fragment.app.DialogFragment;
 import com.hardbacknutter.nevertoomanybooks.BookChangedListener;
 import com.hardbacknutter.nevertoomanybooks.R;
 
-public class EditGenreDialogFragment
+public class EditLocationDialogFragment
         extends EditStringBaseDialogFragment {
 
-    public static final String TAG = "EditGenreDialogFrag";
+    /** Fragment/Log tag. */
+    public static final String TAG = "EditLocationDialogFrag";
 
     /**
      * Constructor.
@@ -50,26 +53,33 @@ public class EditGenreDialogFragment
      * @return instance
      */
     public static DialogFragment newInstance(@NonNull final String text) {
-        final DialogFragment frag = new EditGenreDialogFragment();
+        final DialogFragment frag = new EditLocationDialogFragment();
         final Bundle args = new Bundle(1);
         args.putString(BKEY_TEXT, text);
         frag.setArguments(args);
         return frag;
     }
 
-    @NonNull
+    @Nullable
     @Override
-    public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
+    public View onCreateView(@NonNull final LayoutInflater inflater,
+                             @Nullable final ViewGroup container,
+                             @Nullable final Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.dialog_edit_location, container, false);
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
         //noinspection ConstantConditions
-        return createDialog(R.layout.dialog_edit_genre,
-                            BookChangedListener.GENRE, mDb.getGenres());
+        init(BookChangedListener.LOCATION, mDb.getLocations());
     }
 
     @Override
     @Nullable
     Bundle onSave() {
         //noinspection ConstantConditions
-        mDb.updateGenre(mOriginalText, mCurrentText);
+        mDb.updateLocation(mOriginalText, mCurrentText);
         return null;
     }
 }

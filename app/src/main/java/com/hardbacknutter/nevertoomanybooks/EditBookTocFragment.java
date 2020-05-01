@@ -66,10 +66,10 @@ import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogTocConfirmBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentEditBookTocBinding;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
+import com.hardbacknutter.nevertoomanybooks.dialogs.MenuPicker;
+import com.hardbacknutter.nevertoomanybooks.dialogs.MenuPickerDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditTocEntryDialogFragment;
-import com.hardbacknutter.nevertoomanybooks.dialogs.picker.MenuPicker;
-import com.hardbacknutter.nevertoomanybooks.dialogs.picker.MenuPickerDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
@@ -103,7 +103,7 @@ import com.hardbacknutter.nevertoomanybooks.widgets.ddsupport.StartDragListener;
  * This is still not obsolete as the standard search engines can only return a single book,
  * and hence a single TOC. The interaction here with ISFDB allows the user to reject the first
  * (book)TOC found, and get the next one (etc...).
- *
+ * <p>
  * FIXME: code needs some cleanup: editing a row in a dialog versus editing by copying a
  * row to the onscreen boxes
  */

@@ -27,13 +27,12 @@
  */
 package com.hardbacknutter.nevertoomanybooks.dialogs.entities;
 
-import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.EditText;
+import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -46,38 +45,40 @@ import java.lang.ref.WeakReference;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.EditBookshelvesActivity;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookshelfBinding;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
+import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 
 /**
  * Dialog to edit an existing or new bookshelf.
  * <p>
  * Calling point is a List.
- * <p>
- * Don't move this to the {@link EditBookshelvesActivity}.
- * The intention is to allow editing 'on the fly' wherever a bookshelf is used.
  */
 public class EditBookshelfDialogFragment
         extends DialogFragment {
 
-    /** Log tag. */
+    /** Fragment/Log tag. */
     public static final String TAG = "EditBookshelfDialogFrag";
 
     /** Database Access. */
     private DAO mDb;
-    /** The Bookshelf we're editing. */
-    private Bookshelf mBookshelf;
-    /** View Binding. */
-    private EditText mNameView;
-    /** Current edit. */
-    private String mName;
-
+    /** Where to send the result. */
     @Nullable
     private WeakReference<BookshelfChangedListener> mListener;
+    @Nullable
+    private String mDialogTitle;
+    /** View Binding. */
+    private DialogEditBookshelfBinding mVb;
+
+    /** The Bookshelf we're editing. */
+    private Bookshelf mBookshelf;
+
+    /** Current edit. */
+    private String mName;
 
     /**
      * Constructor.
@@ -97,10 +98,15 @@ public class EditBookshelfDialogFragment
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setStyle(DialogFragment.STYLE_NO_FRAME, R.style.Theme_App_FullScreen);
 
         mDb = new DAO(TAG);
 
-        mBookshelf = requireArguments().getParcelable(DBDefinitions.KEY_FK_BOOKSHELF);
+        final Bundle args = requireArguments();
+        mDialogTitle = args.getString(StandardDialogs.BKEY_DIALOG_TITLE,
+                                      getString(R.string.lbl_edit_bookshelf));
+
+        mBookshelf = args.getParcelable(DBDefinitions.KEY_FK_BOOKSHELF);
         Objects.requireNonNull(mBookshelf, ErrorMsg.ARGS_MISSING_BOOKSHELF);
 
         if (savedInstanceState == null) {
@@ -110,34 +116,45 @@ public class EditBookshelfDialogFragment
         }
     }
 
-    @NonNull
+    @Nullable
     @Override
-    public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
-        // Reminder: *always* use the activity inflater here.
-        //noinspection ConstantConditions
-        final LayoutInflater inflater = getActivity().getLayoutInflater();
-        final View root = inflater.inflate(R.layout.dialog_edit_bookshelf, null);
-
-        mNameView = root.findViewById(R.id.name);
-        mNameView.setText(mName);
-
-        //noinspection ConstantConditions
-        return new MaterialAlertDialogBuilder(getContext())
-                .setView(root)
-                .setNegativeButton(android.R.string.cancel, (d, w) -> dismiss())
-                .setPositiveButton(R.string.action_save, (d, w) -> saveChanges())
-                .create();
+    public View onCreateView(@NonNull final LayoutInflater inflater,
+                             @Nullable final ViewGroup container,
+                             @Nullable final Bundle savedInstanceState) {
+        mVb = DialogEditBookshelfBinding.inflate(inflater, container, false);
+        return mVb.getRoot();
     }
 
-    private void saveChanges() {
-        mName = mNameView.getText().toString().trim();
+    @Override
+    public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        mVb.toolbar.setNavigationOnClickListener(v -> dismiss());
+        mVb.toolbar.setTitle(mDialogTitle);
+        mVb.toolbar.inflateMenu(R.menu.toolbar_save);
+        mVb.toolbar.setOnMenuItemClickListener(item -> {
+            if (item.getItemId() == R.id.action_save) {
+                if (saveChanges()) {
+                    dismiss();
+                }
+                return true;
+            }
+            return false;
+        });
+
+        mVb.name.setText(mName);
+    }
+
+    private boolean saveChanges() {
+        mName = mVb.name.getText().toString().trim();
         if (mName.isEmpty()) {
-            Snackbar.make(mNameView, R.string.warning_missing_name, Snackbar.LENGTH_LONG).show();
-            return;
+            Snackbar.make(mVb.name, R.string.warning_missing_name,
+                          Snackbar.LENGTH_LONG).show();
+            return false;
         }
 
         // check if a shelf with this name already exists (null if not)
-        Bookshelf existingShelf = mDb.getBookshelfByName(mName);
+        final Bookshelf existingShelf = mDb.getBookshelfByName(mName);
 
         // are we adding a new Bookshelf but trying to use an existing name?
         if ((mBookshelf.getId() == 0) && (existingShelf != null)) {
@@ -146,27 +163,47 @@ public class EditBookshelfDialogFragment
             //noinspection ConstantConditions
             String msg = context.getString(R.string.warning_x_already_exists,
                                            context.getString(R.string.lbl_bookshelf));
-            Snackbar.make(mNameView, msg, Snackbar.LENGTH_LONG).show();
-            return;
+            Snackbar.make(mVb.name, msg, Snackbar.LENGTH_LONG).show();
+            return false;
         }
 
-        dismiss();
-
-        // check if there was something changed at all.
+        // anything actually changed ?
         if (mBookshelf.getName().equals(mName)) {
-            return;
+            return true;
         }
 
-        // At this point, we know changes were made.
         // Create a new Bookshelf as a holder for the changes.
         //noinspection ConstantConditions
         Bookshelf newBookshelf = new Bookshelf(mName, mBookshelf.getStyle(getContext(), mDb));
-        // yes, this is NOT efficient and plain dumb. But.. it will give flexibility later on.
-        // copy new values
         mBookshelf.copyFrom(newBookshelf);
 
         if (existingShelf != null) {
-            mergeShelves(mBookshelf, existingShelf);
+            // Merge the 2 shelves
+            new MaterialAlertDialogBuilder(getContext())
+                    .setIcon(R.drawable.ic_warning)
+                    .setTitle(R.string.lbl_edit_bookshelf)
+                    .setMessage(R.string.confirm_merge_bookshelves)
+                    .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
+                    .setPositiveButton(R.string.action_merge, (d, w) -> {
+                        // move all books
+                        int booksMoved = mDb.mergeBookshelves(mBookshelf.getId(),
+                                                              existingShelf.getId());
+                        if (mListener != null && mListener.get() != null) {
+                            mListener.get().onBookshelfChanged(existingShelf.getId(), booksMoved);
+                        } else {
+                            if (BuildConfig.DEBUG /* always */) {
+                                Log.w(TAG, "onBookshelfChanged(merge)|" +
+                                           (mListener == null ? ErrorMsg.LISTENER_WAS_NULL
+                                                              : ErrorMsg.LISTENER_WAS_DEAD));
+                            }
+                        }
+                        // close the DialogFrame
+                        dismiss();
+                    })
+                    .create()
+                    .show();
+            return false;
+
         } else {
             long styleId = mBookshelf.getStyle(getContext(), mDb).getId();
             if (mDb.updateOrInsertBookshelf(getContext(), mBookshelf, styleId)) {
@@ -174,44 +211,14 @@ public class EditBookshelfDialogFragment
                     mListener.get().onBookshelfChanged(mBookshelf.getId(), 0);
                 } else {
                     if (BuildConfig.DEBUG /* always */) {
-                        Log.w(TAG, "onBookshelfChanged|" +
+                        Log.w(TAG, "onBookshelfChanged(new)|" +
                                    (mListener == null ? ErrorMsg.LISTENER_WAS_NULL
                                                       : ErrorMsg.LISTENER_WAS_DEAD));
                     }
                 }
             }
+            return true;
         }
-    }
-
-    /**
-     * Bring up a dialog asking for the next action.
-     *
-     * @param source      bookshelf. Will be deleted afterwards.
-     * @param destination bookshelf that will receive all books from the source shelf
-     */
-    private void mergeShelves(@NonNull final Bookshelf source,
-                              @NonNull final Bookshelf destination) {
-        //noinspection ConstantConditions
-        new MaterialAlertDialogBuilder(getContext())
-                .setIcon(R.drawable.ic_edit)
-                .setTitle(R.string.lbl_edit_bookshelf)
-                .setMessage(R.string.confirm_merge_bookshelves)
-                .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
-                .setPositiveButton(R.string.action_merge, (d, w) -> {
-                    // move all books
-                    int booksMoved = mDb.mergeBookshelves(source.getId(), destination.getId());
-                    if (mListener != null && mListener.get() != null) {
-                        mListener.get().onBookshelfChanged(destination.getId(), booksMoved);
-                    } else {
-                        if (BuildConfig.DEBUG /* always */) {
-                            Log.w(TAG, "mergeShelves|" +
-                                       (mListener == null ? ErrorMsg.LISTENER_WAS_NULL
-                                                          : ErrorMsg.LISTENER_WAS_DEAD));
-                        }
-                    }
-                })
-                .create()
-                .show();
     }
 
     @Override
@@ -231,7 +238,7 @@ public class EditBookshelfDialogFragment
 
     @Override
     public void onPause() {
-        mName = mNameView.getText().toString().trim();
+        mName = mVb.name.getText().toString().trim();
         super.onPause();
     }
 
@@ -249,7 +256,7 @@ public class EditBookshelfDialogFragment
          * Called after the user confirms a change.
          *
          * @param bookshelfId the id of the updated shelf, or of the newly inserted shelf.
-         * @param booksMoved  if a merge took place, the amount of books moved (or 0).
+         * @param booksMoved  if a merge took place, the amount of books moved (otherwise 0).
          */
         void onBookshelfChanged(long bookshelfId,
                                 int booksMoved);

@@ -25,10 +25,12 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.dialogs.simplestring;
+package com.hardbacknutter.nevertoomanybooks.dialogs.entities;
 
-import android.app.Dialog;
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -40,6 +42,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 public class EditFormatDialogFragment
         extends EditStringBaseDialogFragment {
 
+    /** Fragment/Log tag. */
     public static final String TAG = "EditFormatDialogFrag";
 
     /**
@@ -57,12 +60,19 @@ public class EditFormatDialogFragment
         return frag;
     }
 
-    @NonNull
+    @Nullable
     @Override
-    public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
+    public View onCreateView(@NonNull final LayoutInflater inflater,
+                             @Nullable final ViewGroup container,
+                             @Nullable final Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.dialog_edit_format, container, false);
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
         //noinspection ConstantConditions
-        return createDialog(R.layout.dialog_edit_format,
-                            BookChangedListener.FORMAT, mDb.getFormats());
+        init(BookChangedListener.FORMAT, mDb.getFormats());
     }
 
     @Override

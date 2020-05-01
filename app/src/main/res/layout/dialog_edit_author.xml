@@ -27,66 +27,96 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<!-- Edit the Authors details. All edits are global for all books. -->
-<androidx.constraintlayout.widget.ConstraintLayout
+<androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    style="@style/DialogFrame"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
     >
 
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/lbl_family_name"
-        style="@style/Envelope.AutoCompleteTextView"
-        android:hint="@string/lbl_family_name"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:elevation="0dp"
         >
 
-        <AutoCompleteTextView
-            android:id="@+id/family_name"
-            style="@style/personalNameTextEntry"
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
             android:layout_width="match_parent"
-            android:imeOptions="actionNext"
-            tools:ignore="LabelFor"
+            android:layout_height="?attr/actionBarSize"
+            app:navigationIcon="@drawable/ic_close"
             />
 
-    </com.google.android.material.textfield.TextInputLayout>
+    </com.google.android.material.appbar.AppBarLayout>
 
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/lbl_given_names"
-        style="@style/Envelope.AutoCompleteTextView"
-        android:hint="@string/lbl_given_names"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/lbl_family_name"
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
         >
 
-        <AutoCompleteTextView
-            android:id="@+id/given_names"
-            style="@style/personalNameTextEntry"
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:imeOptions="actionDone"
-            tools:ignore="LabelFor"
-            />
+            android:layout_height="match_parent"
+            >
 
-    </com.google.android.material.textfield.TextInputLayout>
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/lbl_family_name"
+                style="@style/Envelope.AutoCompleteTextView"
+                android:hint="@string/lbl_family_name"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                >
 
-    <CheckBox
-        android:id="@+id/cbx_is_complete"
-        style="@style/CheckboxEntry"
-        android:text="@string/lbl_is_complete"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/lbl_given_names"
-        />
+                <AutoCompleteTextView
+                    android:id="@+id/family_name"
+                    style="@style/personalNameTextEntry"
+                    android:layout_width="match_parent"
+                    android:imeOptions="actionNext"
+                    tools:ignore="LabelFor"
+                    />
 
-    <TextView
-        android:id="@+id/blurb"
-        style="@style/Blurb.Small"
-        android:text="@string/warning_immediate_global_changes"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/cbx_is_complete"
-        />
-</androidx.constraintlayout.widget.ConstraintLayout>
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/lbl_given_names"
+                style="@style/Envelope.AutoCompleteTextView"
+                android:hint="@string/lbl_given_names"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/lbl_family_name"
+                >
+
+                <AutoCompleteTextView
+                    android:id="@+id/given_names"
+                    style="@style/personalNameTextEntry"
+                    android:layout_width="match_parent"
+                    android:imeOptions="actionDone"
+                    tools:ignore="LabelFor"
+                    />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <CheckBox
+                android:id="@+id/cbx_is_complete"
+                style="@style/CheckboxEntry"
+                android:paddingStart="@dimen/indent2"
+                android:paddingEnd="@dimen/indent2"
+                android:text="@string/lbl_is_complete"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/lbl_given_names"
+                />
+
+            <TextView
+                android:id="@+id/blurb"
+                style="@style/Blurb.Small"
+                android:text="@string/warning_immediate_global_changes"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/cbx_is_complete"
+                />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </FrameLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

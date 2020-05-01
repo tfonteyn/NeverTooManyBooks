@@ -25,22 +25,18 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.dialogs.simplestring;
+package com.hardbacknutter.nevertoomanybooks.dialogs.entities;
 
-import android.app.Dialog;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.AutoCompleteTextView;
 
-import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.DialogFragment;
 
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.lang.ref.WeakReference;
@@ -53,33 +49,47 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
+import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.widgets.DiacriticArrayAdapter;
 
 public abstract class EditStringBaseDialogFragment
         extends DialogFragment
         implements BookChangedListenerOwner {
 
+    /** Fragment/Log tag. */
     private static final String TAG = "EditStringBaseDialog";
+    /** Argument. */
     static final String BKEY_TEXT = TAG + ":text";
 
     /** Database Access. */
     @Nullable
     DAO mDb;
+    /** Current edit. */
     @Nullable
     String mCurrentText;
+    @Nullable
     String mOriginalText;
+    /** Where to send the result. */
     @Nullable
     private WeakReference<BookChangedListener> mListener;
     @Nullable
     private AutoCompleteTextView mEditText;
+    @Nullable
+    private String mDialogTitle;
+    private int mChangeFlags;
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setStyle(DialogFragment.STYLE_NO_FRAME, R.style.Theme_App_FullScreen);
 
         mDb = new DAO(TAG);
 
-        mOriginalText = requireArguments().getString(BKEY_TEXT, "");
+        final Bundle args = requireArguments();
+        mDialogTitle = args.getString(StandardDialogs.BKEY_DIALOG_TITLE,
+                                      getString(R.string.action_edit));
+
+        mOriginalText = args.getString(BKEY_TEXT, "");
 
         if (savedInstanceState == null) {
             mCurrentText = mOriginalText;
@@ -88,68 +98,75 @@ public abstract class EditStringBaseDialogFragment
         }
     }
 
-    /**
-     * Create the dialog.
-     *
-     * @param layoutId    root view id
-     * @param changeFlags what we are changing
-     * @param objects     (optional) list of strings for the auto-complete.
-     *
-     * @return instance
-     */
-    Dialog createDialog(@LayoutRes int layoutId,
-                        @BookChangedListener.Flags int changeFlags,
-                        @Nullable final List<String> objects) {
+    @Override
+    public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
 
-        // Reminder: *always* use the activity inflater here.
         //noinspection ConstantConditions
-        final LayoutInflater inflater = getActivity().getLayoutInflater();
-        final View root = inflater.inflate(layoutId, null);
-
-        mEditText = root.findViewById(R.id.name);
-        mEditText.setText(mCurrentText);
-        // soft-keyboards 'done' button act as a shortcut to confirming/saving the changes
-        mEditText.setOnEditorActionListener((v, actionId, event) -> {
-            if (actionId == EditorInfo.IME_ACTION_DONE) {
-                App.hideKeyboard(v);
-                saveChanges(changeFlags);
+        final Toolbar toolbar = getView().findViewById(R.id.toolbar);
+        toolbar.setNavigationOnClickListener(v -> dismiss());
+        toolbar.setTitle(mDialogTitle);
+        toolbar.inflateMenu(R.menu.toolbar_save);
+        toolbar.setOnMenuItemClickListener(item -> {
+            if (item.getItemId() == R.id.action_save) {
+                if (saveChanges()) {
+                    dismiss();
+                }
                 return true;
             }
             return false;
         });
 
+        mEditText = getView().findViewById(R.id.name);
+        mEditText.setText(mCurrentText);
+
+        // soft-keyboards 'done' button act as a shortcut to confirming/saving the changes
+        mEditText.setOnEditorActionListener((v, actionId, event) -> {
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                App.hideKeyboard(v);
+                saveChanges();
+                return true;
+            }
+            return false;
+        });
+    }
+
+    /**
+     * Init for the sub class.
+     *
+     * @param changeFlags what we are changing
+     * @param objects     (optional) list of strings for the auto-complete.
+     */
+    void init(@BookChangedListener.Flags int changeFlags,
+              @Nullable final List<String> objects) {
+        mChangeFlags = changeFlags;
+
         if (objects != null) {
             //noinspection ConstantConditions
             final DiacriticArrayAdapter<String> adapter = new DiacriticArrayAdapter<>(
                     getContext(), R.layout.dropdown_menu_popup_item, objects);
+            //noinspection ConstantConditions
             mEditText.setAdapter(adapter);
         }
-
-        //noinspection ConstantConditions
-        return new MaterialAlertDialogBuilder(getContext())
-                .setView(root)
-                .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
-                .setPositiveButton(R.string.action_save, (d, w) -> saveChanges(changeFlags))
-                .create();
     }
 
-    private void saveChanges(@BookChangedListener.Flags int changeFlags) {
+    private boolean saveChanges() {
         //noinspection ConstantConditions
         mCurrentText = mEditText.getText().toString().trim();
         if (mCurrentText.isEmpty()) {
-            Snackbar.make(mEditText, R.string.warning_missing_name, Snackbar.LENGTH_LONG).show();
-            return;
+            Snackbar.make(mEditText, R.string.warning_missing_name,
+                          Snackbar.LENGTH_LONG).show();
+            return false;
         }
-        dismiss();
 
-        // if there are no differences, just bail out.
+        // anything actually changed ?
         if (mCurrentText.equals(mOriginalText)) {
-            return;
+            return true;
         }
-        Bundle data = onSave();
 
+        final Bundle data = onSave();
         if (mListener != null && mListener.get() != null) {
-            mListener.get().onBookChanged(0, changeFlags, data);
+            mListener.get().onBookChanged(0, mChangeFlags, data);
         } else {
             if (BuildConfig.DEBUG /* always */) {
                 Log.w(TAG, "onBookChanged|" +
@@ -157,8 +174,16 @@ public abstract class EditStringBaseDialogFragment
                                               : ErrorMsg.LISTENER_WAS_DEAD));
             }
         }
+
+        return true;
     }
 
+    /**
+     * Save data.
+     *
+     * @return the bundle to pass back to
+     * {@link BookChangedListener#onBookChanged(long, int, Bundle)}
+     */
     @Nullable
     abstract Bundle onSave();
 

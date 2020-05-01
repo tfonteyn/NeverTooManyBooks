@@ -27,17 +27,17 @@
  */
 package com.hardbacknutter.nevertoomanybooks.dialogs.entities;
 
-import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.lang.ref.WeakReference;
@@ -51,6 +51,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditAuthorBinding;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
+import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.widgets.DiacriticArrayAdapter;
 
@@ -63,25 +64,28 @@ public class EditAuthorDialogFragment
         extends DialogFragment
         implements BookChangedListenerOwner {
 
-    /** Log tag. */
+    /** Fragment/Log tag. */
     public static final String TAG = "EditAuthorDialogFrag";
 
     /** Database Access. */
     private DAO mDb;
-
+    /** Where to send the result. */
     @Nullable
     private WeakReference<BookChangedListener> mListener;
+    @Nullable
+    private String mDialogTitle;
+    /** View Binding. */
+    private DialogEditAuthorBinding mVb;
 
     /** The Author we're editing. */
     private Author mAuthor;
+
     /** Current edit. */
     private String mFamilyName;
     /** Current edit. */
     private String mGivenNames;
     /** Current edit. */
     private boolean mIsComplete;
-    /** View Binding. */
-    private DialogEditAuthorBinding mVb;
 
     /**
      * Constructor.
@@ -101,10 +105,15 @@ public class EditAuthorDialogFragment
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setStyle(DialogFragment.STYLE_NO_FRAME, R.style.Theme_App_FullScreen);
 
         mDb = new DAO(TAG);
 
-        mAuthor = requireArguments().getParcelable(DBDefinitions.KEY_FK_AUTHOR);
+        final Bundle args = requireArguments();
+        mDialogTitle = args.getString(StandardDialogs.BKEY_DIALOG_TITLE,
+                                      getString(R.string.lbl_edit_author));
+
+        mAuthor = args.getParcelable(DBDefinitions.KEY_FK_AUTHOR);
         Objects.requireNonNull(mAuthor, ErrorMsg.ARGS_MISSING_AUTHOR);
 
         if (savedInstanceState == null) {
@@ -119,13 +128,31 @@ public class EditAuthorDialogFragment
         }
     }
 
-    @NonNull
+    @Nullable
     @Override
-    public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
-        // Reminder: *always* use the activity inflater here.
-        //noinspection ConstantConditions
-        final LayoutInflater inflater = getActivity().getLayoutInflater();
-        mVb = DialogEditAuthorBinding.inflate(inflater);
+    public View onCreateView(@NonNull final LayoutInflater inflater,
+                             @Nullable final ViewGroup container,
+                             @Nullable final Bundle savedInstanceState) {
+        mVb = DialogEditAuthorBinding.inflate(inflater, container, false);
+        return mVb.getRoot();
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        mVb.toolbar.setNavigationOnClickListener(v -> dismiss());
+        mVb.toolbar.setTitle(mDialogTitle);
+        mVb.toolbar.inflateMenu(R.menu.toolbar_save);
+        mVb.toolbar.setOnMenuItemClickListener(item -> {
+            if (item.getItemId() == R.id.action_save) {
+                if (saveChanges()) {
+                    dismiss();
+                }
+                return true;
+            }
+            return false;
+        });
 
         final Context context = getContext();
 
@@ -137,7 +164,6 @@ public class EditAuthorDialogFragment
                 context, R.layout.dropdown_menu_popup_item,
                 mDb.getAuthorNames(DBDefinitions.KEY_AUTHOR_GIVEN_NAMES));
 
-        // the dialog fields != screen fields.
         mVb.familyName.setText(mFamilyName);
         mVb.familyName.setAdapter(mFamilyNameAdapter);
 
@@ -145,30 +171,21 @@ public class EditAuthorDialogFragment
         mVb.givenNames.setAdapter(mGivenNameAdapter);
 
         mVb.cbxIsComplete.setChecked(mIsComplete);
-
-        return new MaterialAlertDialogBuilder(context)
-                .setView(mVb.getRoot())
-                .setNegativeButton(android.R.string.cancel, (d, w) -> dismiss())
-                .setPositiveButton(R.string.action_save, (d, w) -> saveChanges())
-                .create();
     }
 
-    private void saveChanges() {
-        mFamilyName = mVb.familyName.getText().toString().trim();
+    private boolean saveChanges() {
+        viewToModel();
         if (mFamilyName.isEmpty()) {
             Snackbar.make(mVb.familyName, R.string.warning_missing_name,
                           Snackbar.LENGTH_LONG).show();
-            return;
+            return false;
         }
-
-        mGivenNames = mVb.givenNames.getText().toString().trim();
-        mIsComplete = mVb.cbxIsComplete.isChecked();
 
         // anything actually changed ?
         if (mAuthor.getFamilyName().equals(mFamilyName)
             && mAuthor.getGivenNames().equals(mGivenNames)
             && mAuthor.isComplete() == mIsComplete) {
-            return;
+            return true;
         }
 
         // this is a global update, so just set and update.
@@ -178,12 +195,8 @@ public class EditAuthorDialogFragment
         //noinspection ConstantConditions
         mDb.updateOrInsertAuthor(getContext(), mAuthor);
 
-        // and spread the news of the changes.
-        //  Bundle data = new Bundle();
-        //  data.putLong(DBDefinitions.KEY_FK_AUTHOR, mAuthor.getId());
         if (mListener != null && mListener.get() != null) {
-            mListener.get()
-                     .onBookChanged(0, BookChangedListener.AUTHOR, null);
+            mListener.get().onBookChanged(0, BookChangedListener.AUTHOR, null);
         } else {
             if (BuildConfig.DEBUG /* always */) {
                 Log.w(TAG, "onBookChanged|" +
@@ -191,6 +204,13 @@ public class EditAuthorDialogFragment
                                               : ErrorMsg.LISTENER_WAS_DEAD));
             }
         }
+        return true;
+    }
+
+    private void viewToModel() {
+        mFamilyName = mVb.familyName.getText().toString().trim();
+        mGivenNames = mVb.givenNames.getText().toString().trim();
+        mIsComplete = mVb.cbxIsComplete.isChecked();
     }
 
     @Override
@@ -213,9 +233,7 @@ public class EditAuthorDialogFragment
 
     @Override
     public void onPause() {
-        mFamilyName = mVb.familyName.getText().toString().trim();
-        mGivenNames = mVb.givenNames.getText().toString().trim();
-        mIsComplete = mVb.cbxIsComplete.isChecked();
+        viewToModel();
         super.onPause();
     }
 

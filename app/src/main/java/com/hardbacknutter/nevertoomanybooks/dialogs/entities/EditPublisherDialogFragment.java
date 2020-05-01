@@ -27,18 +27,16 @@
  */
 package com.hardbacknutter.nevertoomanybooks.dialogs.entities;
 
-import android.app.Dialog;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.AutoCompleteTextView;
+import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.lang.ref.WeakReference;
@@ -50,7 +48,9 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditPublisherBinding;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
+import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.widgets.DiacriticArrayAdapter;
 
@@ -63,19 +63,22 @@ public class EditPublisherDialogFragment
         extends DialogFragment
         implements BookChangedListenerOwner {
 
-    /** Log tag. */
+    /** Fragment/Log tag. */
     public static final String TAG = "EditPublisherDialogFrag";
 
     /** Database Access. */
     private DAO mDb;
-
+    /** Where to send the result. */
     @Nullable
     private WeakReference<BookChangedListener> mListener;
-
-    private AutoCompleteTextView mNameView;
+    @Nullable
+    private String mDialogTitle;
+    /** View Binding. */
+    private DialogEditPublisherBinding mVb;
 
     /** The Publisher we're editing. */
     private Publisher mPublisher;
+
     /** Current edit. */
     private String mName;
 
@@ -97,10 +100,15 @@ public class EditPublisherDialogFragment
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setStyle(DialogFragment.STYLE_NO_FRAME, R.style.Theme_App_FullScreen);
 
         mDb = new DAO(TAG);
 
-        mPublisher = requireArguments().getParcelable(DBDefinitions.KEY_PUBLISHER);
+        final Bundle args = requireArguments();
+        mDialogTitle = args.getString(StandardDialogs.BKEY_DIALOG_TITLE,
+                                      getString(R.string.lbl_edit_publisher));
+
+        mPublisher = args.getParcelable(DBDefinitions.KEY_PUBLISHER);
         Objects.requireNonNull(mPublisher, ErrorMsg.ARGS_MISSING_PUBLISHER);
 
         if (savedInstanceState == null) {
@@ -110,45 +118,55 @@ public class EditPublisherDialogFragment
         }
     }
 
-    @NonNull
+    @Nullable
     @Override
-    public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
-        // Reminder: *always* use the activity inflater here.
-        //noinspection ConstantConditions
-        final LayoutInflater inflater = getActivity().getLayoutInflater();
-        final View root = inflater.inflate(R.layout.dialog_edit_publisher, null);
+    public View onCreateView(@NonNull final LayoutInflater inflater,
+                             @Nullable final ViewGroup container,
+                             @Nullable final Bundle savedInstanceState) {
+        mVb = DialogEditPublisherBinding.inflate(inflater, container, false);
+        return mVb.getRoot();
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        mVb.toolbar.setNavigationOnClickListener(v -> dismiss());
+        mVb.toolbar.setTitle(mDialogTitle);
+        mVb.toolbar.inflateMenu(R.menu.toolbar_save);
+        mVb.toolbar.setOnMenuItemClickListener(item -> {
+            if (item.getItemId() == R.id.action_save) {
+                if (saveChanges()) {
+                    dismiss();
+                }
+                return true;
+            }
+            return false;
+        });
 
         //noinspection ConstantConditions
         final DiacriticArrayAdapter<String> mAdapter = new DiacriticArrayAdapter<>(
                 getContext(), R.layout.dropdown_menu_popup_item, mDb.getPublisherNames());
 
-        mNameView = root.findViewById(R.id.name);
-        mNameView.setText(mName);
-        mNameView.setAdapter(mAdapter);
-
-        return new MaterialAlertDialogBuilder(getContext())
-                .setView(root)
-                .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
-                .setPositiveButton(R.string.action_save, (d, w) -> saveChanges())
-                .create();
+        mVb.name.setText(mName);
+        mVb.name.setAdapter(mAdapter);
     }
 
-    private void saveChanges() {
-        mName = mNameView.getText().toString().trim();
+    private boolean saveChanges() {
+        mName = mVb.name.getText().toString().trim();
         if (mName.isEmpty()) {
-            Snackbar.make(mNameView, R.string.warning_missing_name,
+            Snackbar.make(mVb.name, R.string.warning_missing_name,
                           Snackbar.LENGTH_LONG).show();
-            return;
+            return false;
         }
 
+        // anything actually changed ?
         if (mPublisher.getName().equals(mName)) {
-            return;
+            return true;
         }
+
         mDb.updatePublisher(mPublisher.getName(), mName);
 
-        // and spread the news of the changes.
-        //  Bundle data = new Bundle();
-        //  data.putString(DBDefinitions.KEY_PUBLISHER, mPublisher.getName());
         if (mListener != null && mListener.get() != null) {
             mListener.get().onBookChanged(0, BookChangedListener.PUBLISHER, null);
         } else {
@@ -158,6 +176,7 @@ public class EditPublisherDialogFragment
                                               : ErrorMsg.LISTENER_WAS_DEAD));
             }
         }
+        return true;
     }
 
     @Override
@@ -178,7 +197,7 @@ public class EditPublisherDialogFragment
 
     @Override
     public void onPause() {
-        mName = mNameView.getText().toString().trim();
+        mName = mVb.name.getText().toString().trim();
         super.onPause();
     }
 

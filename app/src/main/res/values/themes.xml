@@ -92,6 +92,7 @@ https://material.io/design/material-theming/implementing-your-theme.html#color
     <style name="Theme.App.FullScreen">
         <item name="android:windowFullscreen">true</item>
         <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowIsFloating">false</item>
     </style>
 
     <style name="ThemeOverlay.App.MaterialAlertDialog" parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog">

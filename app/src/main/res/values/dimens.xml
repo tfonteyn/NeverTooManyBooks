@@ -139,12 +139,6 @@
     <!-- The base size for cover images. Get's multiplied with the image-scale preference. -->
     <dimen name="cover_base_size">30dp</dimen>
 
-
-    <!-- Default and full height of a standard EditView with default text size inside.
-         Used to make other elements the same height.
-         48dp is also == "?attr/minTouchTargetSize" -->
-    <dimen name="edit_text_height">48dp</dimen>
-
     <!-- The width of an on-screen menu button.
           Intended to be 'almost' as wide as a phone screen in portrait mode.
           Should be overridden in bigger-screen dimen.xml files.

@@ -34,202 +34,230 @@
 
     Type: book
     -->
-<androidx.core.widget.NestedScrollView
+
+<androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    app:layout_behavior="@string/appbar_scrolling_view_behavior"
     >
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        style="@style/DialogFrame"
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:elevation="0dp"
         >
 
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/dividerBar1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            app:layout_constraintGuide_percent="0.25"
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            app:navigationIcon="@drawable/ic_close"
             />
 
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/dividerBar2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            app:layout_constraintGuide_percent="0.50"
-            />
+    </com.google.android.material.appbar.AppBarLayout>
 
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/dividerBar3"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            app:layout_constraintGuide_percent="0.75"
-            />
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        >
 
-        <androidx.constraintlayout.widget.Group
-            android:id="@+id/author_type_group"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:constraint_referenced_ids="dividerBar2,dividerBar3,btn_use_author_type,cbx_author_type_artist,cbx_author_type_inking,cbx_author_type_contributor,cbx_author_type_editor,cbx_author_type_cover_colorist,cbx_author_type_intro,cbx_author_type_writer,cbx_author_type_cover_artist,cbx_author_type_cover_inking,cbx_author_type_colorist"
-            />
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/lbl_family_name"
-            style="@style/Envelope.AutoCompleteTextView"
-            android:hint="@string/lbl_family_name"
-            app:layout_constraintEnd_toStartOf="@id/dividerBar1"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             >
 
-            <AutoCompleteTextView
-                android:id="@+id/family_name"
-                style="@style/personalNameTextEntry"
-                android:layout_width="match_parent"
-                tools:ignore="LabelFor"
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/indent_fields"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_begin="@dimen/indent_field_guideline"
                 />
 
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/lbl_given_names"
-            style="@style/Envelope.AutoCompleteTextView"
-            android:hint="@string/lbl_given_names"
-            app:layout_constraintEnd_toStartOf="@id/dividerBar1"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/lbl_family_name"
-            >
-
-            <AutoCompleteTextView
-                android:id="@+id/given_names"
-                style="@style/personalNameTextEntry"
-                android:layout_width="match_parent"
-                tools:ignore="LabelFor"
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/dividerBar1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.33"
                 />
 
-        </com.google.android.material.textfield.TextInputLayout>
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/dividerBar2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.66"
+                />
 
-        <CheckBox
-            android:id="@+id/cbx_is_complete"
-            style="@style/CheckboxEntry"
-            android:text="@string/lbl_is_complete"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/lbl_given_names"
-            />
+            <androidx.constraintlayout.widget.Group
+                android:id="@+id/author_type_group"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:constraint_referenced_ids="dividerBar2,btn_use_author_type,cbx_author_type_artist,cbx_author_type_inking,cbx_author_type_contributor,cbx_author_type_editor,cbx_author_type_cover_colorist,cbx_author_type_intro,cbx_author_type_writer,cbx_author_type_cover_artist,cbx_author_type_cover_inking,cbx_author_type_colorist"
+                />
 
-        <com.google.android.material.switchmaterial.SwitchMaterial
-            android:id="@+id/btn_use_author_type"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/lbl_author_type"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/cbx_is_complete"
-            />
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/lbl_family_name"
+                style="@style/Envelope.AutoCompleteTextView"
+                android:hint="@string/lbl_family_name"
+                app:layout_constraintEnd_toStartOf="@id/lbl_given_names"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                >
 
-        <CheckBox
-            android:id="@+id/cbx_author_type_writer"
-            style="@style/CheckboxEntry"
-            android:text="@string/lbl_author_type_writer"
-            app:layout_constraintEnd_toStartOf="@id/dividerBar2"
-            app:layout_constraintStart_toEndOf="@id/dividerBar1"
-            app:layout_constraintTop_toTopOf="parent"
-            />
+                <AutoCompleteTextView
+                    android:id="@+id/family_name"
+                    style="@style/personalNameTextEntry"
+                    android:layout_width="match_parent"
+                    android:imeOptions="actionNext"
+                    tools:ignore="LabelFor"
+                    />
 
-        <CheckBox
-            android:id="@+id/cbx_author_type_contributor"
-            style="@style/CheckboxEntry"
-            android:text="@string/lbl_author_type_contributor"
-            app:layout_constraintBottom_toBottomOf="@id/cbx_author_type_writer"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/dividerBar3"
-            app:layout_constraintStart_toStartOf="@id/dividerBar2"
-            />
+            </com.google.android.material.textfield.TextInputLayout>
 
-        <CheckBox
-            android:id="@+id/cbx_author_type_intro"
-            style="@style/CheckboxEntry"
-            android:text="@string/lbl_author_type_intro"
-            app:layout_constraintEnd_toEndOf="@id/dividerBar2"
-            app:layout_constraintStart_toStartOf="@id/dividerBar1"
-            app:layout_constraintTop_toBottomOf="@id/cbx_author_type_writer"
-            />
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/lbl_given_names"
+                style="@style/Envelope.AutoCompleteTextView"
+                android:hint="@string/lbl_given_names"
+                app:layout_constraintBaseline_toBaselineOf="@id/lbl_family_name"
+                app:layout_constraintEnd_toStartOf="@id/cbx_is_complete"
+                app:layout_constraintStart_toEndOf="@id/lbl_family_name"
+                >
 
-        <CheckBox
-            android:id="@+id/cbx_author_type_translator"
-            style="@style/CheckboxEntry"
-            android:text="@string/lbl_author_type_translator"
-            app:layout_constraintEnd_toEndOf="@id/dividerBar2"
-            app:layout_constraintStart_toStartOf="@id/dividerBar1"
-            app:layout_constraintTop_toBottomOf="@id/cbx_author_type_intro"
-            />
+                <AutoCompleteTextView
+                    android:id="@+id/given_names"
+                    style="@style/personalNameTextEntry"
+                    android:layout_width="match_parent"
+                    android:imeOptions="actionDone"
+                    tools:ignore="LabelFor"
+                    />
 
-        <CheckBox
-            android:id="@+id/cbx_author_type_editor"
-            style="@style/CheckboxEntry"
-            android:text="@string/lbl_author_type_editor"
-            app:layout_constraintEnd_toEndOf="@id/dividerBar2"
-            app:layout_constraintStart_toStartOf="@id/dividerBar1"
-            app:layout_constraintTop_toBottomOf="@id/cbx_author_type_translator"
-            />
+            </com.google.android.material.textfield.TextInputLayout>
 
-        <CheckBox
-            android:id="@+id/cbx_author_type_artist"
-            style="@style/CheckboxEntry"
-            android:text="@string/lbl_author_type_artist"
-            app:layout_constraintEnd_toStartOf="@id/dividerBar3"
-            app:layout_constraintStart_toEndOf="@id/dividerBar2"
-            app:layout_constraintTop_toBottomOf="@id/cbx_author_type_contributor"
-            />
+            <CheckBox
+                android:id="@+id/cbx_is_complete"
+                style="@style/CheckboxEntry"
+                android:paddingStart="@dimen/indent2"
+                android:paddingEnd="@dimen/indent2"
+                android:text="@string/lbl_is_complete"
+                app:layout_constraintBaseline_toBaselineOf="@id/lbl_family_name"
+                app:layout_constraintEnd_toEndOf="parent"
+                />
 
-        <CheckBox
-            android:id="@+id/cbx_author_type_inking"
-            style="@style/CheckboxEntry"
-            android:text="@string/lbl_author_type_inking"
-            app:layout_constraintEnd_toStartOf="@id/dividerBar3"
-            app:layout_constraintStart_toEndOf="@id/dividerBar2"
-            app:layout_constraintTop_toBottomOf="@id/cbx_author_type_artist"
-            />
+            <com.google.android.material.switchmaterial.SwitchMaterial
+                android:id="@+id/btn_use_author_type"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/lbl_author_type"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/lbl_family_name"
+                />
 
-        <CheckBox
-            android:id="@+id/cbx_author_type_colorist"
-            style="@style/CheckboxEntry"
-            android:text="@string/lbl_author_type_colorist"
-            app:layout_constraintEnd_toStartOf="@id/dividerBar3"
-            app:layout_constraintStart_toEndOf="@id/dividerBar2"
-            app:layout_constraintTop_toBottomOf="@id/cbx_author_type_inking"
-            />
+            <CheckBox
+                android:id="@+id/cbx_author_type_writer"
+                style="@style/CheckboxEntry"
+                android:text="@string/lbl_author_type_writer"
+                app:layout_constraintEnd_toStartOf="@id/dividerBar1"
+                app:layout_constraintStart_toEndOf="@id/indent_fields"
+                app:layout_constraintTop_toBottomOf="@id/btn_use_author_type"
+                />
 
-        <CheckBox
-            android:id="@+id/cbx_author_type_cover_artist"
-            style="@style/CheckboxEntry"
-            android:text="@string/lbl_author_type_cover_artist"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBottom_toBottomOf="@id/cbx_author_type_artist"
-            app:layout_constraintStart_toEndOf="@id/dividerBar3"
-            />
+            <CheckBox
+                android:id="@+id/cbx_author_type_contributor"
+                style="@style/CheckboxEntry"
+                android:text="@string/lbl_author_type_contributor"
+                app:layout_constraintBottom_toBottomOf="@id/cbx_author_type_writer"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/dividerBar2"
+                app:layout_constraintStart_toStartOf="@id/dividerBar1"
+                />
 
-        <CheckBox
-            android:id="@+id/cbx_author_type_cover_inking"
-            style="@style/CheckboxEntry"
-            android:text="@string/lbl_author_type_cover_inking"
-            app:layout_constraintBottom_toBottomOf="@id/cbx_author_type_inking"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/dividerBar3"
-            />
+            <CheckBox
+                android:id="@+id/cbx_author_type_intro"
+                style="@style/CheckboxEntry"
+                android:text="@string/lbl_author_type_intro"
+                app:layout_constraintEnd_toEndOf="@id/dividerBar1"
+                app:layout_constraintStart_toEndOf="@id/indent_fields"
+                app:layout_constraintTop_toBottomOf="@id/cbx_author_type_writer"
+                />
 
-        <CheckBox
-            android:id="@+id/cbx_author_type_cover_colorist"
-            style="@style/CheckboxEntry"
-            android:text="@string/lbl_author_type_cover_colorist"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBottom_toBottomOf="@id/cbx_author_type_colorist"
-            app:layout_constraintStart_toEndOf="@id/dividerBar3"
-            />
+            <CheckBox
+                android:id="@+id/cbx_author_type_translator"
+                style="@style/CheckboxEntry"
+                android:text="@string/lbl_author_type_translator"
+                app:layout_constraintEnd_toEndOf="@id/dividerBar1"
+                app:layout_constraintStart_toEndOf="@id/indent_fields"
+                app:layout_constraintTop_toBottomOf="@id/cbx_author_type_intro"
+                />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
-</androidx.core.widget.NestedScrollView>
+            <CheckBox
+                android:id="@+id/cbx_author_type_editor"
+                style="@style/CheckboxEntry"
+                android:text="@string/lbl_author_type_editor"
+                app:layout_constraintEnd_toEndOf="@id/dividerBar1"
+                app:layout_constraintStart_toEndOf="@id/indent_fields"
+                app:layout_constraintTop_toBottomOf="@id/cbx_author_type_translator"
+                />
+
+            <CheckBox
+                android:id="@+id/cbx_author_type_artist"
+                style="@style/CheckboxEntry"
+                android:text="@string/lbl_author_type_artist"
+                app:layout_constraintEnd_toStartOf="@id/dividerBar2"
+                app:layout_constraintStart_toEndOf="@id/dividerBar1"
+                app:layout_constraintTop_toBottomOf="@id/cbx_author_type_contributor"
+                />
+
+            <CheckBox
+                android:id="@+id/cbx_author_type_inking"
+                style="@style/CheckboxEntry"
+                android:text="@string/lbl_author_type_inking"
+                app:layout_constraintEnd_toStartOf="@id/dividerBar2"
+                app:layout_constraintStart_toEndOf="@id/dividerBar1"
+                app:layout_constraintTop_toBottomOf="@id/cbx_author_type_artist"
+                />
+
+            <CheckBox
+                android:id="@+id/cbx_author_type_colorist"
+                style="@style/CheckboxEntry"
+                android:text="@string/lbl_author_type_colorist"
+                app:layout_constraintEnd_toStartOf="@id/dividerBar2"
+                app:layout_constraintStart_toEndOf="@id/dividerBar1"
+                app:layout_constraintTop_toBottomOf="@id/cbx_author_type_inking"
+                />
+
+            <CheckBox
+                android:id="@+id/cbx_author_type_cover_artist"
+                style="@style/CheckboxEntry"
+                android:text="@string/lbl_author_type_cover_artist"
+                app:layout_constraintBottom_toBottomOf="@id/cbx_author_type_artist"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/dividerBar2"
+                />
+
+            <CheckBox
+                android:id="@+id/cbx_author_type_cover_inking"
+                style="@style/CheckboxEntry"
+                android:text="@string/lbl_author_type_cover_inking"
+                app:layout_constraintBottom_toBottomOf="@id/cbx_author_type_inking"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/dividerBar2"
+                />
+
+            <CheckBox
+                android:id="@+id/cbx_author_type_cover_colorist"
+                style="@style/CheckboxEntry"
+                android:text="@string/lbl_author_type_cover_colorist"
+                app:layout_constraintBottom_toBottomOf="@id/cbx_author_type_colorist"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/dividerBar2"
+                />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </FrameLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -27,9 +27,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks;
 
-import android.app.Dialog;
 import android.content.Context;
-import android.content.res.Configuration;
 import android.os.Bundle;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
@@ -57,12 +55,12 @@ import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookAuthorBind
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentEditBookAuthorsBinding;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
+import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.ItemWithFixableId;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.AuthorFormatter;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
-import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.widgets.DiacriticArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.widgets.RecyclerViewAdapterBase;
@@ -115,11 +113,9 @@ public class EditBookAuthorsFragment
         super.onActivityCreated(savedInstanceState);
 
         //noinspection ConstantConditions
-        if (!Prefs.showEditBookTabAuthSeries(getContext())) {
-            //noinspection ConstantConditions
-            getActivity().findViewById(R.id.tab_panel).setVisibility(View.GONE);
-        }
+        getActivity().findViewById(R.id.tab_panel).setVisibility(View.GONE);
 
+        //noinspection ConstantConditions
         final DiacriticArrayAdapter<String> nameAdapter = new DiacriticArrayAdapter<>(
                 getContext(), R.layout.dropdown_menu_popup_item,
                 mFragmentVM.getAuthorNames());
@@ -218,7 +214,6 @@ public class EditBookAuthorsFragment
         // name not changed ?
         if (author.getFamilyName().equals(tmpData.getFamilyName())
             && author.getGivenNames().equals(tmpData.getGivenNames())) {
-
             // copy the completion state, we don't have to warn/ask the user about it.
             author.setComplete(tmpData.isComplete());
 
@@ -239,9 +234,9 @@ public class EditBookAuthorsFragment
         // Check if it's used by any other books.
         //noinspection ConstantConditions
         if (mBookViewModel.isSingleUsage(getContext(), author)) {
-            // If it's not, we can simply modify the original and we're done here.
+            // If it's not, we can simply modify the old object and we're done here.
             // There is no need to consult the user.
-            // Copy the new data into the original Author object that the user was changing.
+            // Copy the new data into the original object that the user was changing.
             author.copyFrom(tmpData, true);
             //noinspection ConstantConditions
             ItemWithFixableId.pruneList(mList, getContext(), mFragmentVM.getDb(),
@@ -251,8 +246,7 @@ public class EditBookAuthorsFragment
             return;
         }
 
-        // At this point, we know the name of the Author was modified
-        // and the it's used in more than one place.
+        // At this point, we know the object was modified and it's used in more than one place.
         // We need to ask the user if they want to make the changes globally.
         final String allBooks = getString(R.string.bookshelf_all_books);
         final String message = getString(R.string.confirm_apply_author_changed,
@@ -288,7 +282,7 @@ public class EditBookAuthorsFragment
                 .setPositiveButton(R.string.btn_this_book, (d, w) -> {
                     // treat the new data as a new Author; save it so we have a valid id.
                     // Note that if the user abandons the entire book edit,
-                    // we will orphan this new author. That's ok, it will get
+                    // we will orphan this new Author. That's ok, it will get
                     // garbage collected from the database sooner or later.
                     mFragmentVM.getDb().updateOrInsertAuthor(getContext(), tmpData);
 
@@ -344,7 +338,7 @@ public class EditBookAuthorsFragment
     }
 
     /**
-     * Edit an Author from the list.
+     * Edit a single Author from the book's author list.
      * It could exist (i.e. have an id) or could be a previously added/new one (id==0).
      * <p>
      * Must be a public static class to be properly recreated from instance state.
@@ -352,14 +346,25 @@ public class EditBookAuthorsFragment
     public static class EditBookAuthorDialogFragment
             extends DialogFragment {
 
-        /** Log tag. */
+        /** Fragment/Log tag. */
         @SuppressWarnings("InnerClassFieldHidesOuterClassField")
         static final String TAG = "EditBookAuthorDialogFrag";
-        /** Key: type. */
+
+        /**
+         * We create a list of all the Type checkboxes for easy handling.
+         * The key is the Type.
+         */
         private final SparseArray<CompoundButton> mTypeButtons = new SparseArray<>();
 
+        /** Database Access. */
+        private DAO mDb;
+        @Nullable
+        private String mDialogTitle;
+        /** View Binding. */
+        private DialogEditBookAuthorBinding mVb;
         /** The Author we're editing. */
         private Author mAuthor;
+
         /** Current edit. */
         private String mFamilyName;
         /** Current edit. */
@@ -369,11 +374,6 @@ public class EditBookAuthorsFragment
         /** Current edit. */
         @Author.Type
         private int mType;
-
-        /** Database Access. */
-        private DAO mDb;
-        /** View Binding. */
-        private DialogEditBookAuthorBinding mVb;
 
         /**
          * Constructor.
@@ -393,9 +393,14 @@ public class EditBookAuthorsFragment
         @Override
         public void onCreate(@Nullable final Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
+            setStyle(DialogFragment.STYLE_NO_FRAME, R.style.Theme_App_FullScreen);
+
             mDb = new DAO(TAG);
 
             final Bundle args = requireArguments();
+            mDialogTitle = args.getString(StandardDialogs.BKEY_DIALOG_TITLE,
+                                          getString(R.string.lbl_edit_author));
+
             mAuthor = args.getParcelable(DBDefinitions.KEY_FK_AUTHOR);
             Objects.requireNonNull(mAuthor, ErrorMsg.ARGS_MISSING_AUTHOR);
 
@@ -407,30 +412,39 @@ public class EditBookAuthorsFragment
             } else {
                 mFamilyName = savedInstanceState.getString(DBDefinitions.KEY_AUTHOR_FAMILY_NAME);
                 mGivenNames = savedInstanceState.getString(DBDefinitions.KEY_AUTHOR_GIVEN_NAMES);
-                mIsComplete = savedInstanceState.getBoolean(DBDefinitions.KEY_AUTHOR_IS_COMPLETE,
-                                                            false);
+                mIsComplete = savedInstanceState
+                        .getBoolean(DBDefinitions.KEY_AUTHOR_IS_COMPLETE, false);
                 mType = savedInstanceState.getInt(DBDefinitions.KEY_BOOK_AUTHOR_TYPE_BITMASK);
             }
         }
 
+        @Nullable
         @Override
-        public void onDestroy() {
-            if (mDb != null) {
-                mDb.close();
-            }
-            super.onDestroy();
+        public View onCreateView(@NonNull final LayoutInflater inflater,
+                                 @Nullable final ViewGroup container,
+                                 @Nullable final Bundle savedInstanceState) {
+            mVb = DialogEditBookAuthorBinding.inflate(inflater, container, false);
+            return mVb.getRoot();
         }
 
-        @NonNull
         @Override
-        public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
+        public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
+            super.onActivityCreated(savedInstanceState);
 
             Objects.requireNonNull(getTargetFragment(), ErrorMsg.NO_TARGET_FRAGMENT_SET);
 
-            // Reminder: *always* use the activity inflater here.
-            //noinspection ConstantConditions
-            final LayoutInflater inflater = getActivity().getLayoutInflater();
-            mVb = DialogEditBookAuthorBinding.inflate(inflater);
+            mVb.toolbar.setNavigationOnClickListener(v -> dismiss());
+            mVb.toolbar.setTitle(mDialogTitle);
+            mVb.toolbar.inflateMenu(R.menu.toolbar_save);
+            mVb.toolbar.setOnMenuItemClickListener(item -> {
+                if (item.getItemId() == R.id.action_save) {
+                    if (saveChanges()) {
+                        dismiss();
+                    }
+                    return true;
+                }
+                return false;
+            });
 
             //noinspection ConstantConditions
             final DiacriticArrayAdapter<String> mFamilyNameAdapter = new DiacriticArrayAdapter<>(
@@ -440,7 +454,6 @@ public class EditBookAuthorsFragment
                     getContext(), R.layout.dropdown_menu_popup_item,
                     mDb.getAuthorNames(DBDefinitions.KEY_AUTHOR_GIVEN_NAMES));
 
-            // the dialog fields != screen fields.
             mVb.familyName.setText(mFamilyName);
             mVb.familyName.setAdapter(mFamilyNameAdapter);
 
@@ -453,7 +466,6 @@ public class EditBookAuthorsFragment
                     DBDefinitions.isUsed(getContext(), DBDefinitions.KEY_BOOK_AUTHOR_TYPE_BITMASK);
             mVb.authorTypeGroup.setVisibility(useAuthorType ? View.VISIBLE : View.GONE);
             if (useAuthorType) {
-
                 mVb.btnUseAuthorType.setOnCheckedChangeListener(
                         (v, isChecked) -> setTypeEnabled(isChecked));
 
@@ -474,83 +486,12 @@ public class EditBookAuthorsFragment
                 if (mType != Author.TYPE_UNKNOWN) {
                     setTypeEnabled(true);
                     for (int i = 0; i < mTypeButtons.size(); i++) {
-                        mTypeButtons.valueAt(i)
-                                    .setChecked((mType & mTypeButtons.keyAt(i)) != 0);
+                        mTypeButtons.valueAt(i).setChecked((mType & mTypeButtons.keyAt(i)) != 0);
                     }
                 } else {
                     setTypeEnabled(false);
                 }
             }
-
-            return new MaterialAlertDialogBuilder(getContext())
-                    .setIcon(R.drawable.ic_edit)
-                    .setView(mVb.getRoot())
-                    .setTitle(R.string.lbl_edit_author)
-                    .setNegativeButton(android.R.string.cancel, (d, w) -> dismiss())
-                    .setPositiveButton(R.string.action_save, (d, w) -> {
-                        // don't check on anything else here,
-                        // we're doing more extensive checks later on.
-                        mFamilyName = mVb.familyName.getText().toString().trim();
-                        if (mFamilyName.isEmpty()) {
-                            Snackbar.make(mVb.familyName, R.string.warning_missing_name,
-                                          Snackbar.LENGTH_LONG).show();
-                            return;
-                        }
-
-                        mGivenNames = mVb.givenNames.getText().toString().trim();
-
-                        // Create a new Author as a holder for all changes.
-                        final Author tmpAuthor = new Author(mFamilyName, mGivenNames);
-
-                        mIsComplete = mVb.cbxIsComplete.isChecked();
-                        tmpAuthor.setComplete(mIsComplete);
-
-                        mType = getTypeFromViews();
-                        if (mVb.btnUseAuthorType.isChecked()) {
-                            tmpAuthor.setType(mType);
-                        } else {
-                            tmpAuthor.setType(Author.TYPE_UNKNOWN);
-                        }
-
-                        ((EditBookAuthorsFragment) getTargetFragment())
-                                .processChanges(mAuthor, tmpAuthor);
-                    })
-                    .create();
-        }
-
-        @Override
-        public void onStart() {
-            super.onStart();
-
-            if (getResources().getConfiguration().orientation
-                == Configuration.ORIENTATION_LANDSCAPE) {
-                // force the dialog to be big enough
-                final Dialog dialog = getDialog();
-                if (dialog != null) {
-                    final int width = ViewGroup.LayoutParams.MATCH_PARENT;
-                    final int height = ViewGroup.LayoutParams.WRAP_CONTENT;
-                    //noinspection ConstantConditions
-                    dialog.getWindow().setLayout(width, height);
-                }
-            }
-        }
-
-        @Override
-        public void onSaveInstanceState(@NonNull final Bundle outState) {
-            super.onSaveInstanceState(outState);
-            outState.putString(DBDefinitions.KEY_AUTHOR_FAMILY_NAME, mFamilyName);
-            outState.putString(DBDefinitions.KEY_AUTHOR_GIVEN_NAMES, mGivenNames);
-            outState.putBoolean(DBDefinitions.KEY_AUTHOR_IS_COMPLETE, mIsComplete);
-            outState.putInt(DBDefinitions.KEY_BOOK_AUTHOR_TYPE_BITMASK, mType);
-        }
-
-        @Override
-        public void onPause() {
-            mFamilyName = mVb.familyName.getText().toString().trim();
-            mGivenNames = mVb.givenNames.getText().toString().trim();
-            mIsComplete = mVb.cbxIsComplete.isChecked();
-            mType = getTypeFromViews();
-            super.onPause();
         }
 
         /**
@@ -568,19 +509,63 @@ public class EditBookAuthorsFragment
             }
         }
 
-        /**
-         * Read all the type buttons, and construct the bitmask.
-         *
-         * @return author type bitmask.
-         */
-        private int getTypeFromViews() {
-            int authorType = Author.TYPE_UNKNOWN;
+        private boolean saveChanges() {
+            viewToModel();
+
+            // basic check only, we're doing more extensive checks later on.
+            if (mFamilyName.isEmpty()) {
+                Snackbar.make(mVb.familyName, R.string.warning_missing_name,
+                              Snackbar.LENGTH_LONG).show();
+                return false;
+            }
+
+            // Create a new Author as a holder for all changes.
+            final Author tmpAuthor = new Author(mFamilyName, mGivenNames);
+            tmpAuthor.setComplete(mIsComplete);
+            if (mVb.btnUseAuthorType.isChecked()) {
+                tmpAuthor.setType(mType);
+            } else {
+                tmpAuthor.setType(Author.TYPE_UNKNOWN);
+            }
+
+            //noinspection ConstantConditions
+            ((EditBookAuthorsFragment) getTargetFragment()).processChanges(mAuthor, tmpAuthor);
+            return true;
+        }
+
+        private void viewToModel() {
+            mFamilyName = mVb.familyName.getText().toString().trim();
+            mGivenNames = mVb.givenNames.getText().toString().trim();
+            mIsComplete = mVb.cbxIsComplete.isChecked();
+            mType = Author.TYPE_UNKNOWN;
             for (int i = 0; i < mTypeButtons.size(); i++) {
                 if (mTypeButtons.valueAt(i).isChecked()) {
-                    authorType |= mTypeButtons.keyAt(i);
+                    mType |= mTypeButtons.keyAt(i);
                 }
             }
-            return authorType;
+        }
+
+        @Override
+        public void onSaveInstanceState(@NonNull final Bundle outState) {
+            super.onSaveInstanceState(outState);
+            outState.putString(DBDefinitions.KEY_AUTHOR_FAMILY_NAME, mFamilyName);
+            outState.putString(DBDefinitions.KEY_AUTHOR_GIVEN_NAMES, mGivenNames);
+            outState.putBoolean(DBDefinitions.KEY_AUTHOR_IS_COMPLETE, mIsComplete);
+            outState.putInt(DBDefinitions.KEY_BOOK_AUTHOR_TYPE_BITMASK, mType);
+        }
+
+        @Override
+        public void onPause() {
+            viewToModel();
+            super.onPause();
+        }
+
+        @Override
+        public void onDestroy() {
+            if (mDb != null) {
+                mDb.close();
+            }
+            super.onDestroy();
         }
     }
 

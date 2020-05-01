@@ -85,18 +85,18 @@ import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
+import com.hardbacknutter.nevertoomanybooks.dialogs.MenuPicker;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditAuthorDialogFragment;
+import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditColorDialogFragment;
+import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditFormatDialogFragment;
+import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditGenreDialogFragment;
+import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditLanguageDialogFragment;
+import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditLenderDialogFragment;
+import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditLocationDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditPublisherDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditSeriesDialogFragment;
-import com.hardbacknutter.nevertoomanybooks.dialogs.entities.LendBookDialogFragment;
-import com.hardbacknutter.nevertoomanybooks.dialogs.picker.MenuPicker;
-import com.hardbacknutter.nevertoomanybooks.dialogs.simplestring.EditColorDialogFragment;
-import com.hardbacknutter.nevertoomanybooks.dialogs.simplestring.EditFormatDialogFragment;
-import com.hardbacknutter.nevertoomanybooks.dialogs.simplestring.EditGenreDialogFragment;
-import com.hardbacknutter.nevertoomanybooks.dialogs.simplestring.EditLanguageDialogFragment;
-import com.hardbacknutter.nevertoomanybooks.dialogs.simplestring.EditLocationDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
@@ -933,9 +933,9 @@ public class BooksOnBookshelf
             /* ********************************************************************************** */
 
             case R.id.MENU_BOOK_LOAN_ADD: {
-                LendBookDialogFragment
+                EditLenderDialogFragment
                         .newInstance(bookId, rowData.getString(DBDefinitions.KEY_TITLE))
-                        .show(getSupportFragmentManager(), LendBookDialogFragment.TAG);
+                        .show(getSupportFragmentManager(), EditLenderDialogFragment.TAG);
                 return true;
             }
             case R.id.MENU_BOOK_LOAN_DELETE: {

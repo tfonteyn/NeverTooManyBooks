@@ -70,7 +70,6 @@ import com.hardbacknutter.nevertoomanybooks.fields.formatters.LanguageFormatter;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.SeriesListFormatter;
 import com.hardbacknutter.nevertoomanybooks.fields.validators.FieldValidator;
 import com.hardbacknutter.nevertoomanybooks.fields.validators.NonBlankValidator;
-import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.ViewFocusOrder;
@@ -132,10 +131,7 @@ public class EditBookFieldsFragment
             mVb.coverImage1.setVisibility(View.GONE);
         }
 
-        if (Prefs.showEditBookTabAuthSeries(getContext())) {
-            mVb.lblAuthor.setVisibility(View.GONE);
-            mVb.lblSeries.setVisibility(View.GONE);
-        }
+        getContext();
 
         return mVb.getRoot();
     }
@@ -169,24 +165,17 @@ public class EditBookFieldsFragment
         super.onInitFields();
         final Fields fields = mFragmentVM.getFields();
 
-        //noinspection ConstantConditions
-        final boolean showAuthSeriesOnTabs = Prefs.showEditBookTabAuthSeries(getContext());
+        fields.add(R.id.author, new TextViewAccessor<>(
+                           new AuthorListFormatter(Author.Details.Short, true, false)),
+                   Book.BKEY_AUTHOR_ARRAY, DBDefinitions.KEY_FK_AUTHOR)
+              .setRelatedFields(R.id.lbl_author)
+              .setErrorViewId(R.id.lbl_author)
+              .setFieldValidator(NON_BLANK_VALIDATOR);
 
-        // The buttons to bring up the fragment to edit Authors / Series.
-        // Not shown if the user preferences are set to use an extra tab for this.
-        if (!showAuthSeriesOnTabs) {
-            fields.add(R.id.author, new TextViewAccessor<>(
-                               new AuthorListFormatter(Author.Details.Short, true, false)),
-                       Book.BKEY_AUTHOR_ARRAY, DBDefinitions.KEY_FK_AUTHOR)
-                  .setRelatedFields(R.id.lbl_author)
-                  .setErrorViewId(R.id.lbl_author)
-                  .setFieldValidator(NON_BLANK_VALIDATOR);
-
-            fields.add(R.id.series_title, new TextViewAccessor<>(
-                               new SeriesListFormatter(Series.Details.Short, true, false)),
-                       Book.BKEY_SERIES_ARRAY, DBDefinitions.KEY_SERIES_TITLE)
-                  .setRelatedFields(R.id.lbl_series);
-        }
+        fields.add(R.id.series_title, new TextViewAccessor<>(
+                           new SeriesListFormatter(Series.Details.Short, true, false)),
+                   Book.BKEY_SERIES_ARRAY, DBDefinitions.KEY_SERIES_TITLE)
+              .setRelatedFields(R.id.lbl_series);
 
         fields.add(R.id.title, new EditTextAccessor<>(), DBDefinitions.KEY_TITLE)
               .setErrorViewId(R.id.lbl_title)
@@ -241,26 +230,18 @@ public class EditBookFieldsFragment
     @Override
     public void onResume() {
         //noinspection ConstantConditions
-        final boolean showAuthSeriesOnTabs = Prefs.showEditBookTabAuthSeries(getContext());
-
-        // If we're showing Author/Series on pop-up fragments, we need to prepare them
-        // before populating the views.
-        if (!showAuthSeriesOnTabs) {
-            mBookViewModel.prepareAuthorsAndSeries(getContext());
-        }
+        mBookViewModel.prepareAuthorsAndSeries(getContext());
 
         // the super will trigger the population of all defined Fields and their Views.
         super.onResume();
 
-        if (!showAuthSeriesOnTabs) {
-            // Always validate author here. We do this for the following scenario:
-            // User opens book, and clicks on the author field.
-            // -> new fragment overlays, user empties the author list and clicks 'back'
-            // --> we need to flag up that the author list is empty.
-            // Note that this does mean we will flag up the author as empty when
-            // we get here when the user simply wants to add a book. Oh well...
-            mFragmentVM.getFields().getField(R.id.author).validate();
-        }
+        // Always validate author here. We do this for the following scenario:
+        // User opens book, and clicks on the author field.
+        // -> new fragment overlays, user empties the author list and clicks 'back'
+        // --> we need to flag up that the author list is empty.
+        // Note that this does mean we will flag up the author as empty when
+        // we get here when the user simply wants to add a book. Oh well...
+        mFragmentVM.getFields().getField(R.id.author).validate();
 
         // With all Views populated, (re-)add the helpers
         addAutocomplete(R.id.genre, mFragmentVM.getGenres());
@@ -288,7 +269,7 @@ public class EditBookFieldsFragment
             mVb.bookshelves.setOnClickListener(v -> {
                 mFragmentVM.setCurrentDialogFieldId(R.id.bookshelves);
                 final DialogFragment picker = CheckListDialogFragment
-                        .newInstance(R.string.lbl_bookshelves_long,
+                        .newInstance(getString(R.string.lbl_bookshelves_long),
                                      new ArrayList<>(mFragmentVM.getBookshelves()),
                                      new ArrayList<>(
                                              mBookViewModel.getBook().getParcelableArrayList(
@@ -297,18 +278,16 @@ public class EditBookFieldsFragment
             });
         }
 
-        if (!showAuthSeriesOnTabs) {
-            field = mFragmentVM.getFields().getField(R.id.author);
-            if (field.isUsed(getContext())) {
-                mVb.author.setOnClickListener(v -> showEditListFragment(
-                        new EditBookAuthorsFragment(), EditBookAuthorsFragment.TAG));
-            }
+        field = mFragmentVM.getFields().getField(R.id.author);
+        if (field.isUsed(getContext())) {
+            mVb.author.setOnClickListener(v -> showEditListFragment(
+                    new EditBookAuthorsFragment(), EditBookAuthorsFragment.TAG));
+        }
 
-            field = mFragmentVM.getFields().getField(R.id.series_title);
-            if (field.isUsed(getContext())) {
-                mVb.seriesTitle.setOnClickListener(v -> showEditListFragment(
-                        new EditBookSeriesFragment(), EditBookSeriesFragment.TAG));
-            }
+        field = mFragmentVM.getFields().getField(R.id.series_title);
+        if (field.isUsed(getContext())) {
+            mVb.seriesTitle.setOnClickListener(v -> showEditListFragment(
+                    new EditBookSeriesFragment(), EditBookSeriesFragment.TAG));
         }
     }
 

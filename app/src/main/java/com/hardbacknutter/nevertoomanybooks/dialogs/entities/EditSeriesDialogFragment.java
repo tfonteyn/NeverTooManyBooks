@@ -27,16 +27,16 @@
  */
 package com.hardbacknutter.nevertoomanybooks.dialogs.entities;
 
-import android.app.Dialog;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.lang.ref.WeakReference;
@@ -50,6 +50,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditSeriesBinding;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
+import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.widgets.DiacriticArrayAdapter;
@@ -63,23 +64,26 @@ public class EditSeriesDialogFragment
         extends DialogFragment
         implements BookChangedListenerOwner {
 
-    /** Log tag. */
+    /** Fragment/Log tag. */
     public static final String TAG = "EditSeriesDialogFrag";
 
     /** Database Access. */
     private DAO mDb;
-
+    /** Where to send the result. */
     @Nullable
     private WeakReference<BookChangedListener> mListener;
+    @Nullable
+    private String mDialogTitle;
+    /** View binding. */
+    private DialogEditSeriesBinding mVb;
 
     /** The Series we're editing. */
     private Series mSeries;
+
     /** Current edit. */
     private String mTitle;
     /** Current edit. */
     private boolean mIsComplete;
-    /** View binding. */
-    private DialogEditSeriesBinding mVb;
 
     /**
      * Constructor.
@@ -99,10 +103,15 @@ public class EditSeriesDialogFragment
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setStyle(DialogFragment.STYLE_NO_FRAME, R.style.Theme_App_FullScreen);
 
         mDb = new DAO(TAG);
 
-        mSeries = requireArguments().getParcelable(DBDefinitions.KEY_FK_SERIES);
+        final Bundle args = requireArguments();
+        mDialogTitle = args.getString(StandardDialogs.BKEY_DIALOG_TITLE,
+                                      getString(R.string.lbl_edit_series));
+
+        mSeries = args.getParcelable(DBDefinitions.KEY_FK_SERIES);
         Objects.requireNonNull(mSeries, ErrorMsg.ARGS_MISSING_SERIES);
 
         if (savedInstanceState == null) {
@@ -115,57 +124,64 @@ public class EditSeriesDialogFragment
         }
     }
 
-    @NonNull
+    @Nullable
     @Override
-    public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
-        // Reminder: *always* use the activity inflater here.
-        //noinspection ConstantConditions
-        final LayoutInflater inflater = getActivity().getLayoutInflater();
-        mVb = DialogEditSeriesBinding.inflate(inflater);
+    public View onCreateView(@NonNull final LayoutInflater inflater,
+                             @Nullable final ViewGroup container,
+                             @Nullable final Bundle savedInstanceState) {
+        mVb = DialogEditSeriesBinding.inflate(inflater, container, false);
+        return mVb.getRoot();
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        mVb.toolbar.setNavigationOnClickListener(v -> dismiss());
+        mVb.toolbar.setTitle(mDialogTitle);
+        mVb.toolbar.inflateMenu(R.menu.toolbar_save);
+        mVb.toolbar.setOnMenuItemClickListener(item -> {
+            if (item.getItemId() == R.id.action_save) {
+                if (saveChanges()) {
+                    dismiss();
+                }
+                return true;
+            }
+            return false;
+        });
 
         //noinspection ConstantConditions
         final DiacriticArrayAdapter<String> adapter = new DiacriticArrayAdapter<>(
                 getContext(), R.layout.dropdown_menu_popup_item, mDb.getSeriesTitles());
 
-        // the dialog fields != screen fields.
         mVb.seriesTitle.setText(mTitle);
         mVb.seriesTitle.setAdapter(adapter);
 
         mVb.cbxIsComplete.setChecked(mIsComplete);
-
-        return new MaterialAlertDialogBuilder(getContext())
-                .setView(mVb.getRoot())
-                .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
-                .setPositiveButton(R.string.action_save, (d, w) -> saveChanges())
-                .create();
     }
 
-    private void saveChanges() {
-        mTitle = mVb.seriesTitle.getText().toString().trim();
+    private boolean saveChanges() {
+        viewToModel();
         if (mTitle.isEmpty()) {
             Snackbar.make(mVb.seriesTitle, R.string.warning_missing_name,
                           Snackbar.LENGTH_LONG).show();
-            return;
+            return false;
         }
-        mIsComplete = mVb.cbxIsComplete.isChecked();
+
 
         // anything actually changed ?
         if (mSeries.getTitle().equals(mTitle)
             && mSeries.isComplete() == mIsComplete) {
-            return;
+            return true;
         }
 
         // this is a global update, so just set and update.
         mSeries.setTitle(mTitle);
         mSeries.setComplete(mIsComplete);
         // There is no book involved here, so use the users Locale instead
-        // and store the changes
         //noinspection ConstantConditions
         mDb.updateOrInsertSeries(getContext(), LocaleUtils.getUserLocale(getContext()), mSeries);
 
-        // and spread the news of the changes.
-        //  Bundle data = new Bundle();
-        //  data.putLong(DBDefinitions.KEY_SERIES_TITLE, mSeries.getId());
         if (mListener != null && mListener.get() != null) {
             mListener.get().onBookChanged(0, BookChangedListener.SERIES, null);
         } else {
@@ -175,6 +191,12 @@ public class EditSeriesDialogFragment
                                               : ErrorMsg.LISTENER_WAS_DEAD));
             }
         }
+        return true;
+    }
+
+    private void viewToModel() {
+        mTitle = mVb.seriesTitle.getText().toString().trim();
+        mIsComplete = mVb.cbxIsComplete.isChecked();
     }
 
     @Override
@@ -196,8 +218,7 @@ public class EditSeriesDialogFragment
 
     @Override
     public void onPause() {
-        mTitle = mVb.seriesTitle.getText().toString().trim();
-        mIsComplete = mVb.cbxIsComplete.isChecked();
+        viewToModel();
         super.onPause();
     }
 

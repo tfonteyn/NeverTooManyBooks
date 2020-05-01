@@ -27,7 +27,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks;
 
-import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -55,9 +54,9 @@ import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookSeriesBind
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentEditBookSeriesBinding;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
+import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
-import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.widgets.DiacriticArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.widgets.RecyclerViewAdapterBase;
 import com.hardbacknutter.nevertoomanybooks.widgets.RecyclerViewViewHolderBase;
@@ -104,11 +103,9 @@ public class EditBookSeriesFragment
         super.onActivityCreated(savedInstanceState);
 
         //noinspection ConstantConditions
-        if (!Prefs.showEditBookTabAuthSeries(getContext())) {
-            //noinspection ConstantConditions
-            getActivity().findViewById(R.id.tab_panel).setVisibility(View.GONE);
-        }
+        getActivity().findViewById(R.id.tab_panel).setVisibility(View.GONE);
 
+        //noinspection ConstantConditions
         final DiacriticArrayAdapter<String> nameAdapter = new DiacriticArrayAdapter<>(
                 getContext(), R.layout.dropdown_menu_popup_item,
                 mFragmentVM.getDb().getSeriesTitles());
@@ -223,7 +220,7 @@ public class EditBookSeriesFragment
         if (mBookViewModel.isSingleUsage(getContext(), series, bookLocale)) {
             // If it's not, we can simply modify the old object and we're done here.
             // There is no need to consult the user.
-            // Copy the new data into the original Series object that the user was changing.
+            // Copy the new data into the original object that the user was changing.
             series.copyFrom(tmpData, true);
             //noinspection ConstantConditions
             Series.pruneList(mList, getContext(), mFragmentVM.getDb(), bookLocale, false);
@@ -231,8 +228,7 @@ public class EditBookSeriesFragment
             return;
         }
 
-        // At this point, we know the name of the Series was modified
-        // and the it's used in more than one place.
+        // At this point, we know the object was modified and it's used in more than one place.
         // We need to ask the user if they want to make the changes globally.
         final String allBooks = getString(R.string.bookshelf_all_books);
         final String message = getString(R.string.confirm_apply_series_changed,
@@ -301,7 +297,7 @@ public class EditBookSeriesFragment
     }
 
     /**
-     * Edit a Series from the list.
+     * Edit a single Series from the book's series list.
      * It could exist (i.e. have an ID) or could be a previously added/new one (ID==0).
      * <p>
      * Must be a public static class to be properly recreated from instance state.
@@ -309,23 +305,26 @@ public class EditBookSeriesFragment
     public static class EditBookSeriesDialogFragment
             extends DialogFragment {
 
-        /** Log tag. */
+        /** Fragment/Log tag. */
         @SuppressWarnings("InnerClassFieldHidesOuterClassField")
         private static final String TAG = "EditBookSeriesDialogFragment";
 
+        /** Database Access. */
+        private DAO mDb;
+        @Nullable
+        private String mDialogTitle;
+        /** View Binding. */
+        private DialogEditBookSeriesBinding mVb;
+
         /** The Series we're editing. */
         private Series mSeries;
+
         /** Current edit. */
         private String mSeriesTitle;
         /** Current edit. */
         private boolean mSeriesIsComplete;
         /** Current edit. */
         private String mSeriesNumber;
-
-        /** Database Access. */
-        private DAO mDb;
-        /** View Binding. */
-        private DialogEditBookSeriesBinding mVb;
 
         /**
          * Constructor.
@@ -345,9 +344,14 @@ public class EditBookSeriesFragment
         @Override
         public void onCreate(@Nullable final Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
+            setStyle(DialogFragment.STYLE_NO_FRAME, R.style.Theme_App_FullScreen);
+
             mDb = new DAO(TAG);
 
             final Bundle args = requireArguments();
+            mDialogTitle = args.getString(StandardDialogs.BKEY_DIALOG_TITLE,
+                                          getString(R.string.lbl_edit_series));
+
             mSeries = args.getParcelable(DBDefinitions.KEY_FK_SERIES);
             Objects.requireNonNull(mSeries, ErrorMsg.ARGS_MISSING_SERIES);
 
@@ -363,66 +367,71 @@ public class EditBookSeriesFragment
             }
         }
 
+        @Nullable
         @Override
-        public void onDestroy() {
-            if (mDb != null) {
-                mDb.close();
-            }
-            super.onDestroy();
+        public View onCreateView(@NonNull final LayoutInflater inflater,
+                                 @Nullable final ViewGroup container,
+                                 @Nullable final Bundle savedInstanceState) {
+            mVb = DialogEditBookSeriesBinding.inflate(inflater, container, false);
+            return mVb.getRoot();
         }
 
-        @NonNull
         @Override
-        public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
+        public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
+            super.onActivityCreated(savedInstanceState);
 
             Objects.requireNonNull(getTargetFragment(), ErrorMsg.NO_TARGET_FRAGMENT_SET);
 
-            // Reminder: *always* use the activity inflater here.
-            //noinspection ConstantConditions
-            final LayoutInflater inflater = getActivity().getLayoutInflater();
-            mVb = DialogEditBookSeriesBinding.inflate(inflater);
+            mVb.toolbar.setNavigationOnClickListener(v -> dismiss());
+            mVb.toolbar.setTitle(mDialogTitle);
+            mVb.toolbar.inflateMenu(R.menu.toolbar_save);
+            mVb.toolbar.setOnMenuItemClickListener(item -> {
+                if (item.getItemId() == R.id.action_save) {
+                    if (saveChanges()) {
+                        dismiss();
+                    }
+                    return true;
+                }
+                return false;
+            });
 
             //noinspection ConstantConditions
             final DiacriticArrayAdapter<String> seriesNameAdapter = new DiacriticArrayAdapter<>(
                     getContext(), R.layout.dropdown_menu_popup_item, mDb.getSeriesTitles());
 
-            // the dialog fields != screen fields.
             mVb.seriesTitle.setText(mSeriesTitle);
             mVb.seriesTitle.setAdapter(seriesNameAdapter);
 
             mVb.cbxIsComplete.setChecked(mSeriesIsComplete);
 
             mVb.seriesNum.setText(mSeriesNumber);
+        }
 
-            return new MaterialAlertDialogBuilder(getContext())
-                    .setView(mVb.getRoot())
-                    .setIcon(R.drawable.ic_edit)
-                    .setTitle(R.string.lbl_edit_series)
-                    .setNegativeButton(android.R.string.cancel, (d, w) -> dismiss())
-                    .setPositiveButton(R.string.action_save, (d, w) -> {
-                        // don't check on anything else here,
-                        // we're doing more extensive checks later on.
-                        mSeriesTitle = mVb.seriesTitle.getText().toString().trim();
-                        if (mSeriesTitle.isEmpty()) {
-                            Snackbar.make(mVb.seriesTitle, R.string.warning_missing_name,
-                                          Snackbar.LENGTH_LONG).show();
-                            return;
-                        }
+        private boolean saveChanges() {
+            viewToModel();
 
-                        // Create a new Series as a holder for all changes.
-                        final Series tmpSeries = new Series(mSeriesTitle);
+            // basic check only, we're doing more extensive checks later on.
+            if (mSeriesTitle.isEmpty()) {
+                Snackbar.make(mVb.seriesTitle, R.string.warning_missing_name,
+                              Snackbar.LENGTH_LONG).show();
+                return false;
+            }
 
-                        mSeriesIsComplete = mVb.cbxIsComplete.isChecked();
-                        tmpSeries.setComplete(mSeriesIsComplete);
+            // Create a new Series as a holder for all changes.
+            final Series tmpSeries = new Series(mSeriesTitle);
+            tmpSeries.setComplete(mSeriesIsComplete);
+            tmpSeries.setNumber(mSeriesNumber);
 
-                        //noinspection ConstantConditions
-                        mSeriesNumber = mVb.seriesNum.getText().toString().trim();
-                        tmpSeries.setNumber(mSeriesNumber);
+            //noinspection ConstantConditions
+            ((EditBookSeriesFragment) getTargetFragment()).processChanges(mSeries, tmpSeries);
+            return true;
+        }
 
-                        ((EditBookSeriesFragment) getTargetFragment())
-                                .processChanges(mSeries, tmpSeries);
-                    })
-                    .create();
+        private void viewToModel() {
+            mSeriesTitle = mVb.seriesTitle.getText().toString().trim();
+            //noinspection ConstantConditions
+            mSeriesNumber = mVb.seriesNum.getText().toString().trim();
+            mSeriesIsComplete = mVb.cbxIsComplete.isChecked();
         }
 
         @Override
@@ -435,12 +444,16 @@ public class EditBookSeriesFragment
 
         @Override
         public void onPause() {
-            mSeriesTitle = mVb.seriesTitle.getText().toString().trim();
-            mSeriesIsComplete = mVb.cbxIsComplete.isChecked();
-            //noinspection ConstantConditions
-            mSeriesNumber = mVb.seriesNum.getText().toString().trim();
-
+            viewToModel();
             super.onPause();
+        }
+
+        @Override
+        public void onDestroy() {
+            if (mDb != null) {
+                mDb.close();
+            }
+            super.onDestroy();
         }
     }
 

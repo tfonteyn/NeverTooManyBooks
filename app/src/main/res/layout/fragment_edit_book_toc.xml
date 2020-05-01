@@ -38,7 +38,7 @@
 
     <CheckBox
         android:id="@+id/cbx_is_anthology"
-        style="@style/CheckboxEntry.Small"
+        style="@style/CheckboxEntry"
         android:layout_marginTop="@dimen/border2"
         android:text="@string/lbl_toc_anthology"
         app:layout_constraintEnd_toEndOf="parent"
@@ -49,7 +49,7 @@
 
     <CheckBox
         android:id="@+id/cbx_multiple_authors"
-        style="@style/CheckboxEntry.Small"
+        style="@style/CheckboxEntry"
         android:text="@string/lbl_toc_multiple_authors"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

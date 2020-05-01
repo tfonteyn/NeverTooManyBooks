@@ -25,7 +25,7 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.dialogs.picker;
+package com.hardbacknutter.nevertoomanybooks.dialogs.date;
 
 import androidx.annotation.Nullable;
 

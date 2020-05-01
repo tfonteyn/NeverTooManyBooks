@@ -26,76 +26,104 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
-
-<androidx.constraintlayout.widget.ConstraintLayout
+<androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    style="@style/DialogFrame"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
     >
 
-    <CheckBox
-        android:id="@+id/cbx_multiple_authors"
-        style="@style/CheckboxEntry.Small"
-        android:text="@string/lbl_toc_multiple_authors"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:checked="true"
-        />
-
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/lbl_author"
-        style="@style/Envelope.AutoCompleteTextView"
-        android:hint="@string/lbl_author"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/cbx_multiple_authors"
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:elevation="0dp"
         >
 
-        <AutoCompleteTextView
-            android:id="@+id/author"
-            style="@style/personalNameTextEntry"
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
             android:layout_width="match_parent"
-            android:imeOptions="actionNext"
-            tools:ignore="LabelFor"
+            android:layout_height="?attr/actionBarSize"
+            app:navigationIcon="@drawable/ic_close"
             />
 
-    </com.google.android.material.textfield.TextInputLayout>
+    </com.google.android.material.appbar.AppBarLayout>
 
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/lbl_title"
-        style="@style/Envelope.EditText"
-        android:hint="@string/lbl_title"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/lbl_author"
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
         >
 
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/title"
-            style="@style/titleTextEntry"
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:imeOptions="actionNext"
-            tools:ignore="Autofill"
-            />
+            android:layout_height="match_parent"
+            >
 
-    </com.google.android.material.textfield.TextInputLayout>
+            <CheckBox
+                android:id="@+id/cbx_multiple_authors"
+                style="@style/CheckboxEntry"
+                android:text="@string/lbl_toc_multiple_authors"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:checked="true"
+                />
 
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/lbl_first_publication"
-        style="@style/Envelope.EditText.Year"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/lbl_title"
-        >
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/lbl_author"
+                style="@style/Envelope.AutoCompleteTextView"
+                android:hint="@string/lbl_author"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/cbx_multiple_authors"
+                >
 
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/first_publication"
-            style="@style/EditText.Year"
-            android:imeOptions="actionDone"
-            tools:ignore="Autofill"
-            />
+                <AutoCompleteTextView
+                    android:id="@+id/author"
+                    style="@style/personalNameTextEntry"
+                    android:layout_width="match_parent"
+                    android:imeOptions="actionNext"
+                    tools:ignore="LabelFor"
+                    />
 
-    </com.google.android.material.textfield.TextInputLayout>
+            </com.google.android.material.textfield.TextInputLayout>
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/lbl_title"
+                style="@style/Envelope.EditText"
+                android:hint="@string/lbl_title"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/lbl_author"
+                >
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/title"
+                    style="@style/titleTextEntry"
+                    android:layout_width="match_parent"
+                    android:imeOptions="actionNext"
+                    tools:ignore="Autofill"
+                    />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/lbl_first_publication"
+                style="@style/Envelope.EditText.Year"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/lbl_title"
+                >
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/first_publication"
+                    style="@style/EditText.Year"
+                    android:imeOptions="actionDone"
+                    tools:ignore="Autofill"
+                    />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </FrameLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

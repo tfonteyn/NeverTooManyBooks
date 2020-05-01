@@ -27,29 +27,58 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<androidx.constraintlayout.widget.ConstraintLayout
+<androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    style="@style/DialogFrame"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
     >
 
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/lbl_bookshelf"
-        style="@style/Envelope.AutoCompleteTextView"
-        android:hint="@string/lbl_bookshelf"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:elevation="0dp"
         >
 
-        <AutoCompleteTextView
-            android:id="@+id/name"
-            style="@style/titleTextEntryAutoComplete"
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
             android:layout_width="match_parent"
-            android:imeOptions="actionDone"
-            tools:ignore="LabelFor"
+            android:layout_height="?attr/actionBarSize"
+            app:navigationIcon="@drawable/ic_close"
             />
 
-    </com.google.android.material.textfield.TextInputLayout>
-</androidx.constraintlayout.widget.ConstraintLayout>
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        >
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            >
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/lbl_bookshelf"
+                style="@style/Envelope.AutoCompleteTextView"
+                android:hint="@string/lbl_bookshelf"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                >
+
+                <AutoCompleteTextView
+                    android:id="@+id/name"
+                    style="@style/titleTextEntryAutoComplete"
+                    android:layout_width="match_parent"
+                    android:imeOptions="actionDone"
+                    tools:ignore="LabelFor"
+                    />
+
+            </com.google.android.material.textfield.TextInputLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </FrameLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

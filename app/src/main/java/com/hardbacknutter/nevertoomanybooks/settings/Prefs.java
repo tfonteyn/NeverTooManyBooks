@@ -165,7 +165,6 @@ public final class Prefs {
     static final String PSK_PURGE_BLNS = "psk_purge_blns";
 
     private static final String pk_edit_book_tabs_native_id = "edit.book.tab.nativeId";
-    private static final String pk_edit_book_tabs_authSer = "edit.book.tab.authSer";
 
     /** Log tag. */
     private static final String TAG = "Prefs";
@@ -257,12 +256,6 @@ public final class Prefs {
         return PreferenceManager
                 .getDefaultSharedPreferences(context)
                 .getBoolean(pk_edit_book_tabs_native_id, false);
-    }
-
-    public static boolean showEditBookTabAuthSeries(@NonNull final Context context) {
-        return PreferenceManager
-                .getDefaultSharedPreferences(context)
-                .getBoolean(pk_edit_book_tabs_authSer, false);
     }
 
     /** FIXME: Compile time set FastScroller overlay style... maybe make a real preference ? */

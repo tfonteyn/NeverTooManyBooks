@@ -69,7 +69,7 @@ import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
-import com.hardbacknutter.nevertoomanybooks.dialogs.entities.LendBookDialogFragment;
+import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditLenderDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
@@ -577,8 +577,9 @@ public class BookDetailsFragment
                 return true;
             }
             case R.id.MENU_BOOK_LOAN_ADD: {
-                LendBookDialogFragment.newInstance(book)
-                                      .show(getChildFragmentManager(), LendBookDialogFragment.TAG);
+                EditLenderDialogFragment.newInstance(book)
+                                        .show(getChildFragmentManager(),
+                                              EditLenderDialogFragment.TAG);
                 return true;
             }
             case R.id.MENU_BOOK_LOAN_DELETE: {

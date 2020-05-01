@@ -682,13 +682,12 @@ public final class DBHelper
             final Context context = App.getAppContext();
             PreferenceManager.getDefaultSharedPreferences(context)
                              .edit()
-                             // just scrap the old data
                              .remove("booklist.top.row")
                              .remove("booklist.top.rowId")
                              .remove("booklist.top.offset")
-                             // these are leftovers from earlier versions.
                              .remove("fields.visibility.bookshelf")
                              .remove("tmp.edit.book.tab.authSer")
+                             .remove("edit.book.tab.authSer")
                              .remove("compat.booklist.mode")
                              .apply();
         }
