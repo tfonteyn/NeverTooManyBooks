@@ -661,5 +661,7 @@
     <string name="lbl_all_bookshelves">Všechny knihovny</string>
     <string name="more_ellipsis">Více…</string>
     <string name="lbl_toc_multiple_authors">Více autorů</string>
+    <string name="lbl_edit_publisher">Upravit vydavatele</string>
+    <string name="lbl_edit_toc_entry">Upravit záznam</string>
 
 </resources>

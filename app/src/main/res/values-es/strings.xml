@@ -666,5 +666,7 @@
     <string name="lbl_all_bookshelves">Todas las bibliotecas</string>
     <string name="more_ellipsis">Más…</string>
     <string name="lbl_toc_multiple_authors">Múltiples autores</string>
+    <string name="lbl_edit_publisher">Editar editor</string>
+    <string name="lbl_edit_toc_entry">Editar entrada</string>
 
 </resources>

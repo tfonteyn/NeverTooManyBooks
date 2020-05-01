@@ -660,4 +660,6 @@
     <string name="lbl_all_bookshelves">Wszystkie półki na książki</string>
     <string name="more_ellipsis">Więcej…</string>
     <string name="lbl_toc_multiple_authors">Wielu autorów</string>
+    <string name="lbl_edit_publisher">Edytuj wydawcę</string>
+    <string name="lbl_edit_toc_entry">Edytuj wpis</string>
 </resources>

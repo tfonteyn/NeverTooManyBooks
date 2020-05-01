@@ -665,5 +665,7 @@
     <string name="lbl_all_bookshelves">Όλα τα ράφια</string>
     <string name="more_ellipsis">Περισσότερο…</string>
     <string name="lbl_toc_multiple_authors">Πολλαπλοί συγγραφείς</string>
+    <string name="lbl_edit_publisher">Επεξεργασία εκδότη</string>
+    <string name="lbl_edit_toc_entry">Επεξεργασία καταχώρησης</string>
 
 </resources>

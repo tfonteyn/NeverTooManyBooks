@@ -661,5 +661,7 @@
     <string name="lbl_all_bookshelves">Tüm raflardan</string>
     <string name="more_ellipsis">Daha…</string>
     <string name="lbl_toc_multiple_authors">Birden çok yazar</string>
+    <string name="lbl_edit_publisher">Yayıncıyı Düzenle</string>
+    <string name="lbl_edit_toc_entry">Girişi düzenleyin</string>
 
 </resources>

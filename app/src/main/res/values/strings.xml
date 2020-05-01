@@ -986,10 +986,16 @@
     <string name="lbl_edit_bookshelf">Edit Bookshelf</string>
     <!-- Dialog title. -->
     <string name="lbl_import_book_data">Import Books</string>
+
     <!-- Dialog title. -->
     <string name="lbl_edit_author">Edit Author</string>
     <!-- Dialog title. -->
     <string name="lbl_edit_series">Edit Series</string>
+    <!-- Dialog title. -->
+    <string name="lbl_edit_publisher">Edit Publisher</string>
+    <!-- Dialog title. -->
+    <string name="lbl_edit_toc_entry">Edit entry</string>
+
     <!-- Dialog title. -->
     <string name="lbl_details_have_changed">Details have changed</string>
 
@@ -1651,6 +1657,5 @@
     <string name="info_bitmask_preference">
         Select 0 or more options and tap “OK” to apply them, or tap “%1$s” to disregard all of them.
     </string>
-
 
 </resources>

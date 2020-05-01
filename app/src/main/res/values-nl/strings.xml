@@ -668,5 +668,7 @@
     <string name="lbl_all_bookshelves">Alle boekenplanken</string>
     <string name="more_ellipsis">Meer…</string>
     <string name="lbl_toc_multiple_authors">Meerdere auteurs</string>
+    <string name="lbl_edit_publisher">Uitgever bewerken</string>
+    <string name="lbl_edit_toc_entry">Inhouds titel bewerken</string>
 
 </resources>

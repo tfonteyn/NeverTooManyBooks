@@ -669,4 +669,6 @@
     <string name="lbl_all_bookshelves">Alle Bücherregale</string>
     <string name="more_ellipsis">Mehr…</string>
     <string name="lbl_toc_multiple_authors">Mehrere Autoren</string>
+    <string name="lbl_edit_publisher">Herausgeber bearbeiten</string>
+    <string name="lbl_edit_toc_entry">Eintrag bearbeiten</string>
 </resources>
