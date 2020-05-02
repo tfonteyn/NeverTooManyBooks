@@ -35,6 +35,8 @@ import androidx.annotation.Nullable;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
 import java.util.regex.Matcher;
 
@@ -48,7 +50,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.goodreads.AuthorTypeMapper;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsAuth;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsHandler;
-import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsShelf;
 import com.hardbacknutter.nevertoomanybooks.searches.goodreads.GoodreadsSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.LanguageUtils;
@@ -70,6 +71,13 @@ import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlResponseParser;
  */
 public abstract class ShowBookApiHandler
         extends ApiHandler {
+
+    /**
+     * Popular shelf names == genre names to skip. This list must be all lowercase.
+     * <p>
+     * Obviously far from complete. For a start non-english names should be added.
+     */
+    private static List<String> sGenreExclusions;
 
     // Current Series being processed
     // private int mCurrSeriesId = 0;
@@ -97,6 +105,7 @@ public abstract class ShowBookApiHandler
     };
     @NonNull
     private final String mEBookString;
+    private final Locale mLocale;
     /** Global data for the <b>current work</b> in search results. */
     private Bundle mBookData;
     private final XmlHandler mHandleText = elementContext -> {
@@ -183,16 +192,11 @@ public abstract class ShowBookApiHandler
     private final XmlHandler mHandlePopularShelf = elementContext -> {
         if (mGenre == null) {
             String name = elementContext.getAttributes().getValue(XmlTags.XML_NAME);
-            if (name != null
-                && !GoodreadsShelf.VIRTUAL_TO_READ.equals(name)
-                && !GoodreadsShelf.VIRTUAL_CURRENTLY_READING.equals(name)
-                && !GoodreadsShelf.VIRTUAL_READ.equals(name)
-            ) {
+            if (name != null && sGenreExclusions.contains(name.toLowerCase(Locale.ENGLISH))) {
                 mGenre = name;
             }
         }
     };
-
     /** Current author being processed. */
     @Nullable
     private String mCurrAuthorName;
@@ -200,9 +204,22 @@ public abstract class ShowBookApiHandler
             mCurrAuthorName = elementContext.getBody();
     @Nullable
     private String mCurrAuthorRole;
-    private final Locale mLocale;
     private final XmlHandler mHandleAuthorRole = elementContext ->
             mCurrAuthorRole = elementContext.getBody();
+    private final XmlHandler mHandleAuthorEnd = elementContext -> {
+        if (mCurrAuthorName != null && !mCurrAuthorName.isEmpty()) {
+            if (mAuthors == null) {
+                mAuthors = new ArrayList<>();
+            }
+            Author author = Author.from(mCurrAuthorName);
+            if (mCurrAuthorRole != null && !mCurrAuthorRole.isEmpty()) {
+                author.setType(AuthorTypeMapper.map(getLocale(), mCurrAuthorRole));
+            }
+            mAuthors.add(author);
+            mCurrAuthorName = null;
+            mCurrAuthorRole = null;
+        }
+    };
     /** Current Series being processed. */
     @Nullable
     private String mCurrSeriesName;
@@ -233,20 +250,6 @@ public abstract class ShowBookApiHandler
             // ignore
         }
     };
-    private final XmlHandler mHandleAuthorEnd = elementContext -> {
-        if (mCurrAuthorName != null && !mCurrAuthorName.isEmpty()) {
-            if (mAuthors == null) {
-                mAuthors = new ArrayList<>();
-            }
-            Author author = Author.from(mCurrAuthorName);
-            if (mCurrAuthorRole != null && !mCurrAuthorRole.isEmpty()) {
-                author.setType(AuthorTypeMapper.map(getLocale(), mCurrAuthorRole));
-            }
-            mAuthors.add(author);
-            mCurrAuthorName = null;
-            mCurrAuthorRole = null;
-        }
-    };
 
     /**
      * Constructor.
@@ -260,6 +263,11 @@ public abstract class ShowBookApiHandler
                        @NonNull final GoodreadsAuth grAuth)
             throws CredentialsException {
         super(grAuth);
+        if (sGenreExclusions == null) {
+            sGenreExclusions = Arrays.asList(
+                    context.getResources().getStringArray(R.array.goodreads_genre_exclusions));
+        }
+
         mGoodreadsAuth.hasValidCredentialsOrThrow(context);
 
         mEBookString = context.getString(R.string.book_format_ebook);
@@ -286,7 +294,7 @@ public abstract class ShowBookApiHandler
      * @return the Bundle of book data.
      *
      * @throws CredentialsException with GoodReads
-     * @throws Http404Exception    the requested item was not found
+     * @throws Http404Exception     the requested item was not found
      * @throws IOException          on other failures
      */
     @NonNull
@@ -645,6 +653,7 @@ public abstract class ShowBookApiHandler
      *  </GoodreadsResponse>
      * }
      * </pre>
+     *
      * @param context Current context
      */
     private void buildFilters(@NonNull final Context context) {

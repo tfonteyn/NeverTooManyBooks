@@ -102,6 +102,39 @@
     <string name="debug_sq_shell_run" translatable="false">Run</string>
     <string name="debug_sq_shell_list_tables" translatable="false">List tables</string>
 
+    <!-- Popular Goodreads shelf names == genre names to skip.
+         This list must be all lowercase.
+         Obviously far from complete. For a start non-english names should be added.
+    -->
+    <string-array name="goodreads_genre_exclusions">
+        <item>read</item>
+        <item>to-read</item>
+        <item>currently-reading</item>
+        <item>default</item>
+        <item>books</item>
+        <item>owned</item>
+        <item>books-i-own</item>
+        <item>my-library</item>
+        <item>owned-books</item>
+        <item>my-books</item>
+        <item>favorites</item>
+        <item>favourites</item>
+        <item>ebook</item>
+        <item>ebooks</item>
+        <item>e-books</item>
+        <item>kindle</item>
+        <item>calibre</item>
+        <item>audio</item>
+        <item>audiobook</item>
+        <item>audiobooks</item>
+        <item>general</item>
+        <item>library</item>
+        <item>to-buy</item>
+        <item>re-read</item>
+        <item>english</item>
+        <item>british</item>
+    </string-array>
+
     <!-- used for dev. as placeholder text. Can't seem to use "@tools:sample/lorem/random" here. -->
     <string-array name="tools_placeholder">
         <item>Placeholder 1</item>
