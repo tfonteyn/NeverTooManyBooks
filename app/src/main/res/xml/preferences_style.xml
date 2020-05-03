@@ -32,68 +32,62 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     >
-    <PreferenceCategory
-        android:title="@string/pg_general"
-        >
+    <EditTextPreference
+        android:icon="@drawable/ic_edit"
+        android:key="style.booklist.name"
+        android:selectAllOnFocus="true"
+        android:title="@string/lbl_name"
+        />
 
-        <EditTextPreference
-            android:icon="@drawable/ic_edit"
-            android:key="style.booklist.name"
-            android:selectAllOnFocus="true"
-            android:title="@string/lbl_name"
-            />
+    <Preference
+        android:icon="@drawable/ic_format_list_bulleted"
+        android:key="style.booklist.groups"
+        android:title="@string/pg_style_groups"
+        />
 
-        <Preference
-            android:icon="@drawable/ic_format_list_bulleted"
-            android:key="style.booklist.groups"
-            android:title="@string/pg_style_groups"
-            />
+    <Preference
+        android:fragment="com.hardbacknutter.nevertoomanybooks.settings.styles.StyleFiltersFragment"
+        android:icon="@drawable/ic_filter_list"
+        android:key="psk_style_filters"
+        android:title="@string/pg_filters"
+        />
 
-        <Preference
-            android:fragment="com.hardbacknutter.nevertoomanybooks.settings.styles.StyleFiltersFragment"
-            android:icon="@drawable/ic_filter_list"
-            android:key="psk_style_filters"
-            android:title="@string/pg_filters"
-            />
+    <Preference
+        android:fragment="com.hardbacknutter.nevertoomanybooks.settings.styles.StyleBookDetailsFragment"
+        android:icon="@drawable/ic_details"
+        android:key="psk_style_show_details"
+        android:title="@string/pg_bob_show_details"
+        />
 
-        <Preference
-            android:fragment="com.hardbacknutter.nevertoomanybooks.settings.styles.StyleBookDetailsFragment"
-            android:icon="@drawable/ic_details"
-            android:key="psk_style_show_details"
-            android:title="@string/pg_bob_show_details"
-            />
+    <MultiSelectListPreference
+        android:defaultValue="@array/empty_array"
+        android:entries="@array/pe_bob_header"
+        android:entryValues="@array/pv_bob_header"
+        android:icon="@drawable/ic_view_headline"
+        android:key="style.booklist.header"
+        android:title="@string/pt_bob_header"
+        />
 
-        <MultiSelectListPreference
-            android:defaultValue="@array/empty_array"
-            android:entries="@array/pe_bob_header"
-            android:entryValues="@array/pv_bob_header"
-            android:icon="@drawable/ic_view_headline"
-            android:key="style.booklist.header"
-            android:title="@string/pt_bob_header"
-            />
-
-        <!-- default BooklistStyle.FONT_SCALE_SMALL == 1 -->
-        <SeekBarPreference
-            android:defaultValue="1"
-            android:icon="@drawable/ic_format_size"
-            android:key="style.booklist.scale.font"
-            android:max="2"
-            android:title="@string/pt_bob_font_scale"
-            app:min="0"
-            />
-        <!-- ListPreference - booklist default expanded level.
-             Higher than 3 makes little sense, but setting 4 as maximum because 'why not'.
-         -->
-        <SeekBarPreference
-            android:defaultValue="1"
-            android:icon="@drawable/ic_format_indent_increase"
-            android:key="style.booklist.levels.default"
-            android:max="4"
-            android:title="@string/pt_bob_list_state_expansion_level"
-            app:min="1"
-            />
-
-    </PreferenceCategory>
+    <!-- default BooklistStyle.FONT_SCALE_SMALL == 1 -->
+    <SeekBarPreference
+        android:defaultValue="1"
+        android:icon="@drawable/ic_format_size"
+        android:key="style.booklist.scale.font"
+        android:max="2"
+        android:title="@string/pt_bob_font_scale"
+        app:min="0"
+        />
+    <!-- ListPreference - booklist default expanded level.
+         Higher than 3 makes little sense, but setting 4 as maximum because 'why not'.
+     -->
+    <SeekBarPreference
+        android:defaultValue="1"
+        android:icon="@drawable/ic_format_indent_increase"
+        android:key="style.booklist.levels.default"
+        android:max="4"
+        android:title="@string/pt_bob_list_state_expansion_level"
+        app:min="1"
+        />
 
     <!-- technically speaking, thumbnails fall under 'Extra Book Details'
         But this is more user-friendly. -->

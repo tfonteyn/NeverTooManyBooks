@@ -28,49 +28,51 @@
   -->
 
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-    <ListPreference
-        android:defaultValue="-1"
-        android:entries="@array/pe_bob_filter_read"
-        android:entryValues="@array/pv_bob_filter_values"
-        android:icon="@drawable/ic_filter_list"
-        android:key="style.booklist.filter.read"
-        android:title="@string/lbl_read"
-        />
+    <PreferenceCategory
+        android:title="@string/pg_filters">
+        <ListPreference
+            android:defaultValue="-1"
+            android:entries="@array/pe_bob_filter_read"
+            android:entryValues="@array/pv_bob_filter_values"
+            android:icon="@drawable/ic_filter_list"
+            android:key="style.booklist.filter.read"
+            android:title="@string/lbl_read"
+            />
 
-    <ListPreference
-        android:defaultValue="-1"
-        android:entries="@array/pe_bob_filter_signed"
-        android:entryValues="@array/pv_bob_filter_values"
-        android:icon="@drawable/ic_filter_list"
-        android:key="style.booklist.filter.signed"
-        android:title="@string/lbl_signed"
-        />
+        <ListPreference
+            android:defaultValue="-1"
+            android:entries="@array/pe_bob_filter_signed"
+            android:entryValues="@array/pv_bob_filter_values"
+            android:icon="@drawable/ic_filter_list"
+            android:key="style.booklist.filter.signed"
+            android:title="@string/lbl_signed"
+            />
 
-    <ListPreference
-        android:defaultValue="-1"
-        android:entries="@array/pe_bob_filter_anthology"
-        android:entryValues="@array/pv_bob_filter_values"
-        android:icon="@drawable/ic_filter_list"
-        android:key="style.booklist.filter.anthology"
-        android:title="@string/lbl_anthology"
-        />
+        <ListPreference
+            android:defaultValue="-1"
+            android:entries="@array/pe_bob_filter_anthology"
+            android:entryValues="@array/pv_bob_filter_values"
+            android:icon="@drawable/ic_filter_list"
+            android:key="style.booklist.filter.anthology"
+            android:title="@string/lbl_anthology"
+            />
 
-    <ListPreference
-        android:defaultValue="-1"
-        android:entries="@array/pe_bob_filter_loaned"
-        android:entryValues="@array/pv_bob_filter_values"
-        android:icon="@drawable/ic_filter_list"
-        android:key="style.booklist.filter.loaned"
-        android:title="@string/lbl_loaned"
-        />
+        <ListPreference
+            android:defaultValue="-1"
+            android:entries="@array/pe_bob_filter_loaned"
+            android:entryValues="@array/pv_bob_filter_values"
+            android:icon="@drawable/ic_filter_list"
+            android:key="style.booklist.filter.loaned"
+            android:title="@string/lbl_loaned"
+            />
 
-    <com.hardbacknutter.nevertoomanybooks.widgets.BitmaskPreference
-        android:defaultValue="@array/empty_array"
-        android:entries="@array/pe_bob_filter_edition"
-        android:entryValues="@array/pv_bob_filter_edition"
-        android:icon="@drawable/ic_filter_list"
-        android:key="style.booklist.filter.editions"
-        android:title="@string/lbl_edition"
-        />
-
+        <com.hardbacknutter.nevertoomanybooks.widgets.BitmaskPreference
+            android:defaultValue="@array/empty_array"
+            android:entries="@array/pe_bob_filter_edition"
+            android:entryValues="@array/pv_bob_filter_edition"
+            android:icon="@drawable/ic_filter_list"
+            android:key="style.booklist.filter.editions"
+            android:title="@string/lbl_edition"
+            />
+    </PreferenceCategory>
 </PreferenceScreen>
