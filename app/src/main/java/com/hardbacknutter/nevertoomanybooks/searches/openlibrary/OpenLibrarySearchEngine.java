@@ -149,7 +149,7 @@ public class OpenLibrarySearchEngine
      * param 1: key-name, param 2: key-value, param 3: L/M/S for the size.
      */
     private static final String BASE_COVER_URL
-            = "https://covers.openlibrary.com/b/%1$s/%2$s-%3$s.jpg?default=false";
+            = "https://covers.openlibrary.org/b/%1$s/%2$s-%3$s.jpg?default=false";
 
     /** file suffix for cover files. */
     private static final String FILENAME_SUFFIX = "_OL";
