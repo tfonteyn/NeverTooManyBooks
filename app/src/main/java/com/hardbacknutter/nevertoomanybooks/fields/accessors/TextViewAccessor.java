@@ -97,21 +97,23 @@ public class TextViewAccessor<T>
     public void setValue(@Nullable final T value) {
         mRawValue = value;
 
-        TextView view = getView();
-        if (mFormatter != null) {
-            try {
-                mFormatter.apply(mRawValue, view);
-                return;
+        final TextView view = getView();
+        if (view != null) {
+            if (mFormatter != null) {
+                try {
+                    mFormatter.apply(mRawValue, view);
+                    return;
 
-            } catch (@NonNull final ClassCastException e) {
-                // Due to the way a Book loads data from the database,
-                // it's possible that it gets the column type wrong.
-                // See {@link BookCursor} class docs.
-                Logger.error(view.getContext(), TAG, e, value);
+                } catch (@NonNull final ClassCastException e) {
+                    // Due to the way a Book loads data from the database,
+                    // it's possible that it gets the column type wrong.
+                    // See {@link BookCursor} class docs.
+                    Logger.error(view.getContext(), TAG, e, value);
+                }
             }
-        }
 
-        // No formatter, or ClassCastException.
-        view.setText(mRawValue != null ? String.valueOf(mRawValue) : "");
+            // No formatter, or ClassCastException.
+            view.setText(mRawValue != null ? String.valueOf(mRawValue) : "");
+        }
     }
 }

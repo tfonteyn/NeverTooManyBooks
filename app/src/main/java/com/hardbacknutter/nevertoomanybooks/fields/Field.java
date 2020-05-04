@@ -42,6 +42,7 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.BookBaseFragment;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
@@ -197,8 +198,8 @@ public class Field<T, V extends View> {
                               final boolean hideIfEmpty,
                               final boolean keepHidden) {
 
-        View view = mFieldViewAccessor.getView();
-
+        final View view = mFieldViewAccessor.getView();
+        Objects.requireNonNull(view);
         if ((view instanceof ImageView)
             || (view.getVisibility() == View.GONE && keepHidden)) {
             // 2. An ImageView always keeps its current visibility
@@ -225,8 +226,9 @@ public class Field<T, V extends View> {
      */
     public void setVisibility(@NonNull final View parent,
                               final int visibility) {
-
-        mFieldViewAccessor.getView().setVisibility(visibility);
+        final View view = mFieldViewAccessor.getView();
+        Objects.requireNonNull(view);
+        view.setVisibility(visibility);
         setRelatedFieldsVisibility(parent, visibility);
     }
 

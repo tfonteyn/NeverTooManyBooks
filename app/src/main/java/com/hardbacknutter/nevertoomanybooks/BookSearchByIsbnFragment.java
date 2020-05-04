@@ -119,7 +119,6 @@ public class BookSearchByIsbnFragment
 
         getActivity().setTitle(R.string.lbl_search_isbn);
 
-        // copyModel2View();
         mVb.isbn.setText(mSearchCoordinator.getIsbnSearchText());
 
         mVb.key0.setOnClickListener(v -> mVb.isbn.onKey('0'));

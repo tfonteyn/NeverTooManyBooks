@@ -34,12 +34,12 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.MutableLiveData;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
@@ -48,7 +48,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.ItemWithFixableId;
-import com.hardbacknutter.nevertoomanybooks.entities.SelectableEntity;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
@@ -88,6 +87,8 @@ public class BookViewModel
      */
     public static final String BKEY_BOOK_DELETED = TAG + ":deleted";
 
+    private final MutableLiveData<ArrayList<Author>> mAuthorList = new MutableLiveData<>();
+    private final MutableLiveData<ArrayList<Series>> mSeriesList = new MutableLiveData<>();
 
     /** key: fragmentTag. */
     private final Collection<String> mFragmentsWithUnfinishedEdits = new HashSet<>();
@@ -116,13 +117,11 @@ public class BookViewModel
      * <p>
      * Loads the book data upon first start.
      *
-     * @param context    Current context, will not get cached.
-     * @param args       {@link Intent#getExtras()} or {@link Fragment#getArguments()}
-     * @param isEditMode flag
+     * @param context Current context, will not get cached.
+     * @param args    {@link Intent#getExtras()} or {@link Fragment#getArguments()}
      */
     public void init(@NonNull final Context context,
-                     @Nullable final Bundle args,
-                     final boolean isEditMode) {
+                     @Nullable final Bundle args) {
         if (mDb == null) {
             mDb = new DAO(TAG);
 
@@ -152,12 +151,15 @@ public class BookViewModel
             if (mBook.isNew()) {
                 ensureBookshelf(context);
             }
-
-            if (isEditMode) {
-                // these are DATA validator (not field validators)
-                mBook.addValidators();
-            }
         }
+    }
+
+    /**
+     * Add the DATA validator (not field validators) validator to the book.
+     * This cannot be undone during an edit session.
+     */
+    public void enableValidators() {
+        mBook.addValidators();
     }
 
     /**
@@ -404,25 +406,6 @@ public class BookViewModel
         return mIsSaved;
     }
 
-    /**
-     * Gets a complete list of Bookshelves each reflecting the book being on that shelf or not.
-     *
-     * @return list with {@link SelectableEntity}
-     */
-    @NonNull
-    public ArrayList<SelectableEntity> getEditableBookshelvesList() {
-        final ArrayList<SelectableEntity> list = new ArrayList<>();
-        // get the list of all shelves the book is currently on.
-        final List<Bookshelf> currentShelves =
-                mBook.getParcelableArrayList(Book.BKEY_BOOKSHELF_ARRAY);
-        // Loop through all bookshelves in the database and build the list for this book
-        for (Bookshelf bookshelf : mDb.getBookshelves()) {
-            final boolean selected = currentShelves.contains(bookshelf);
-            list.add(new SelectableEntity(bookshelf, selected));
-        }
-        return list;
-    }
-
     public void refreshSeriesList(@NonNull final Context context) {
         mBook.refreshSeriesList(context, mDb);
     }
@@ -431,10 +414,8 @@ public class BookViewModel
         mBook.refreshAuthorList(context, mDb);
     }
 
-    public void prepareAuthorsAndSeries(@NonNull final Context context) {
-        // Prune any duplicates.
+    public void pruneAuthors(@NonNull final Context context) {
         pruneList(context, Book.BKEY_AUTHOR_ARRAY, LocaleUtils.getUserLocale(context));
-        pruneList(context, Book.BKEY_SERIES_ARRAY, mBook.getLocale(context));
 
         // No authors ? Fallback to a potential failed search result
         // which would contain whatever the user searched for.
@@ -451,6 +432,10 @@ public class BookViewModel
         }
     }
 
+    public void pruneSeries(@NonNull final Context context) {
+        pruneList(context, Book.BKEY_SERIES_ARRAY, mBook.getLocale(context));
+    }
+
     private void pruneList(@NonNull final Context context,
                            @NonNull final String key,
                            @NonNull final Locale locale) {
@@ -460,5 +445,25 @@ public class BookViewModel
             mBook.putParcelableArrayList(key, list);
             mIsDirty = true;
         }
+    }
+
+    public MutableLiveData<ArrayList<Author>> getAuthorList() {
+        return mAuthorList;
+    }
+
+    public void updateAuthors(final ArrayList<Author> list) {
+        mIsDirty = true;
+        mBook.putParcelableArrayList(Book.BKEY_AUTHOR_ARRAY, list);
+        mAuthorList.setValue(list);
+    }
+
+    public MutableLiveData<ArrayList<Series>> getSeriesList() {
+        return mSeriesList;
+    }
+
+    public void updateSeries(final ArrayList<Series> list) {
+        mIsDirty = true;
+        mBook.putParcelableArrayList(Book.BKEY_SERIES_ARRAY, list);
+        mSeriesList.setValue(list);
     }
 }

@@ -118,7 +118,7 @@ public class BookSearchByTextFragment
         //noinspection ConstantConditions
         getActivity().setTitle(R.string.lbl_search_for_books);
 
-        copyModel2View();
+        modelToView();
         populateAuthorList();
 
         if (savedInstanceState == null) {
@@ -141,7 +141,7 @@ public class BookSearchByTextFragment
 
     @Override
     boolean onPreSearch() {
-        copyView2Model();
+        viewToModel();
 
         final String authorSearchText = mSearchCoordinator.getAuthorSearchText();
         final String titleSearchText = mSearchCoordinator.getTitleSearchText();
@@ -245,7 +245,7 @@ public class BookSearchByTextFragment
     @Override
     public void onPause() {
         super.onPause();
-        copyView2Model();
+        viewToModel();
     }
 
     @Override
@@ -256,13 +256,13 @@ public class BookSearchByTextFragment
         mVb.publisher.setText("");
     }
 
-    private void copyModel2View() {
+    private void modelToView() {
         mVb.author.setText(mSearchCoordinator.getAuthorSearchText());
         mVb.title.setText(mSearchCoordinator.getTitleSearchText());
         mVb.publisher.setText(mSearchCoordinator.getPublisherSearchText());
     }
 
-    private void copyView2Model() {
+    private void viewToModel() {
         mSearchCoordinator.setAuthorSearchText(mVb.author.getText().toString().trim());
         //noinspection ConstantConditions
         mSearchCoordinator.setTitleSearchText(mVb.title.getText().toString().trim());

@@ -174,14 +174,14 @@ public class UpdateFieldsModel
 
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 
-        addListField(prefs, Book.BKEY_AUTHOR_ARRAY, R.string.lbl_author,
+        addListField(prefs, Book.BKEY_AUTHOR_ARRAY, R.string.lbl_authors,
                      DBDefinitions.KEY_FK_AUTHOR);
 
         addField(prefs, DBDefinitions.KEY_TITLE, R.string.lbl_title, CopyIfBlank);
         addField(prefs, DBDefinitions.KEY_ISBN, R.string.lbl_isbn, CopyIfBlank);
         addField(prefs, DBDefinitions.KEY_THUMBNAIL, R.string.lbl_cover, CopyIfBlank);
 
-        addListField(prefs, Book.BKEY_SERIES_ARRAY, R.string.lbl_series,
+        addListField(prefs, Book.BKEY_SERIES_ARRAY, R.string.lbl_series_multiple,
                      DBDefinitions.KEY_SERIES_TITLE);
 
         addListField(prefs, Book.BKEY_TOC_ENTRY_ARRAY, R.string.lbl_table_of_content,

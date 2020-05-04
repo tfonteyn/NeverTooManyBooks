@@ -27,11 +27,8 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<androidx.recyclerview.widget.RecyclerView
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/item_list"
-    style="@style/Dialog.Body.Floating"
-    tools:itemCount="10"
-    tools:listitem="@layout/row_simple_list_item"
-    />
+<resources>
+    <!-- On screens smaller then sw600 (a 7" tablet) we display all DialogFrame,
+     which might show the onscreen keyboard, FULLSCREEN. -->
+    <bool name="isLargeScreen">false</bool>
+</resources>

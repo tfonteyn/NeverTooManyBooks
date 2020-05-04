@@ -46,6 +46,7 @@ public class NonBlankValidator
     public void validate(@NonNull final Field<Object, View> field) {
         final FieldViewAccessor<Object, View> accessor = field.getAccessor();
         if (accessor.isEmpty()) {
+            //noinspection ConstantConditions
             accessor.setError(accessor.getView().getContext()
                                       .getString(R.string.vldt_non_blank_required));
         } else {

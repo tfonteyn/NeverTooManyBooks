@@ -106,7 +106,7 @@ public abstract class BookBaseFragment
         //noinspection ConstantConditions
         mBookViewModel = new ViewModelProvider(getActivity()).get(BookViewModel.class);
         //noinspection ConstantConditions
-        mBookViewModel.init(getContext(), getArguments(), false);
+        mBookViewModel.init(getContext(), getArguments());
 
         mProgressBar = getActivity().findViewById(R.id.progressBar);
     }

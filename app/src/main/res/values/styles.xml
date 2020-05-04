@@ -71,7 +71,7 @@
     </style>
 
     <!-- *************************************************************************************** -->
-    <!-- Generic TextView with user-data in 3 sizes -->
+    <!-- Read-only text -->
     <!-- *************************************************************************************** -->
 
     <!-- 'medium' detail text field; for example Series title, ... -->
@@ -122,7 +122,7 @@
     </style>
 
     <!-- *************************************************************************************** -->
-    <!-- Information (blurb) TextView fields -->
+    <!-- Information (blurb) Text fields -->
     <!-- *************************************************************************************** -->
 
     <!-- informational piece of text -->
@@ -140,7 +140,7 @@
     </style>
 
     <!-- *************************************************************************************** -->
-    <!-- EditText fields -->
+    <!-- Edit fields; An 'Envelope' is normally a TextInputLayout, but see 'Envelope.Button' -->
     <!-- *************************************************************************************** -->
 
     <!-- slight misnomer as this is not an Envelope, but this way the naming
@@ -277,22 +277,6 @@
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">36dp</item>
         <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
-    </style>
-
-    <style name="CheckboxEntry.Tiny" parent="Widget.MaterialComponents.CompoundButton.CheckBox">
-        <item name="android:layout_width">0dp</item>
-        <item name="android:layout_height">24dp</item>
-        <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
-    </style>
-
-    <!-- ImageButton - a text-picker button next to an edit field -->
-    <style name="DropDownMenu">
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">0dp</item>
-        <item name="android:padding">@dimen/border2</item>
-        <item name="android:background">?attr/selectableItemBackground</item>
-        <item name="android:focusable">true</item>
-        <item name="android:src">@drawable/ic_view_list</item>
     </style>
 
     <!-- *************************************************************************************** -->
@@ -602,6 +586,71 @@
     </style>
 
     <!-- *************************************************************************************** -->
+    <!-- Dialogs -->
+    <!-- *************************************************************************************** -->
+
+    <!-- FrameLayout for a DialogFragment based on a CoordinatorLayout/Toolbar/NestedScrollView.
+         FULLSCREEN dialog ONLY -->
+    <style name="Dialog.Frame.Fullscreen" parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="layout_behavior">@string/appbar_scrolling_view_behavior</item>
+        <item name="android:fillViewport">true</item>
+    </style>
+
+    <!-- FrameLayout for a DialogFragment based on a CoordinatorLayout/Toolbar/FrameLayout.
+         FLOATING and FULLSCREEN dialog -->
+    <style name="Dialog.Frame.FloatingAndFullscreen" parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="layout_behavior">@string/appbar_scrolling_view_behavior</item>
+        <!-- layout_marginBottom: compensates for the toolbar
+         when this dialog is used as a floating dialog as opposed to full-screen. -->
+        <item name="android:layout_marginBottom">?attr/actionBarSize</item>
+    </style>
+
+    <!-- Dialog body (content) for a DialogFragment based on a CoordinatorLayout/Toolbar/FrameLayout.
+         FLOATING and FULLSCREEN dialog -->
+    <style name="Dialog.Body.FloatingAndFullscreen" parent="MaterialAlertDialog.MaterialComponents.Body.Text">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:paddingStart">?attr/dialogPreferredPadding</item>
+        <item name="android:paddingEnd">?attr/dialogPreferredPadding</item>
+        <item name="android:paddingBottom">4dp</item>
+    </style>
+
+    <!-- Dialog body (content) for a plain AlertDialog/DialogFragment.
+         FLOATING dialog ONLY -->
+    <style name="Dialog.Body.Floating" parent="MaterialAlertDialog.MaterialComponents.Body.Text">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:paddingStart">?attr/dialogPreferredPadding</item>
+        <item name="android:paddingEnd">?attr/dialogPreferredPadding</item>
+    </style>
+
+    <!-- *************************************************************************************** -->
+    <!-- FAB buttons -->
+    <!-- *************************************************************************************** -->
+
+    <!-- generic FAB button. -->
+    <style name="FAB" parent="Widget.MaterialComponents.FloatingActionButton">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_gravity">bottom|end</item>
+        <item name="android:layout_margin">@dimen/fab_margin</item>
+    </style>
+
+    <!-- FAB buttons that appear as a menu above the actual FAB button. -->
+    <style name="FABMenu" parent="Widget.MaterialComponents.ExtendedFloatingActionButton">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_gravity">bottom|end</item>
+        <item name="android:visibility">invisible</item>
+        <item name="android:layout_margin">@dimen/fab_margin</item>
+        <item name="iconGravity">end</item>
+    </style>
+
+    <!-- *************************************************************************************** -->
     <!-- Single use / specialised styles -->
     <!-- *************************************************************************************** -->
 
@@ -652,9 +701,10 @@
         <item name="menu">@menu/nav_view</item>
     </style>
 
+    <!-- The Activity primary/top toolbar -->
     <style name="Toolbar" parent="Widget.MaterialComponents.Toolbar.Primary">
         <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_height">?attr/actionBarSize</item>
         <item name="layout_scrollFlags">scroll|enterAlways</item>
     </style>
 
@@ -671,30 +721,6 @@
         <item name="android:layout_margin">@dimen/border2</item>
     </style>
 
-    <!-- generic FAB button. -->
-    <style name="FAB" parent="Widget.MaterialComponents.FloatingActionButton">
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_gravity">bottom|end</item>
-        <item name="android:layout_margin">@dimen/fab_margin</item>
-    </style>
-
-    <!-- FAB buttons that appear as a menu above the actual FAB button. -->
-    <style name="FABMenu" parent="Widget.MaterialComponents.ExtendedFloatingActionButton">
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_gravity">bottom|end</item>
-        <item name="android:visibility">invisible</item>
-        <item name="android:layout_margin">@dimen/fab_margin</item>
-        <item name="iconGravity">end</item>
-    </style>
-
-    <style name="DialogFrame" parent="MaterialAlertDialog.MaterialComponents.Body.Text">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:paddingStart">?attr/dialogPreferredPadding</item>
-        <item name="android:paddingEnd">?attr/dialogPreferredPadding</item>
-    </style>
 
     <!-- *************************************************************************************** -->
 </resources>

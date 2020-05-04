@@ -27,11 +27,11 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<androidx.recyclerview.widget.RecyclerView
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/item_list"
-    style="@style/Dialog.Body.Floating"
-    tools:itemCount="10"
-    tools:listitem="@layout/row_simple_list_item"
-    />
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/action_add"
+        android:icon="@drawable/ic_add"
+        android:title="@string/action_add"
+        app:showAsAction="always" />
+</menu>

@@ -34,9 +34,7 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -59,7 +57,6 @@ import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditLoanBinding;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
-import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.widgets.DiacriticArrayAdapter;
 
@@ -67,7 +64,7 @@ import com.hardbacknutter.nevertoomanybooks.widgets.DiacriticArrayAdapter;
  * Dialog to create a new loan, or edit an existing one.
  */
 public class EditLenderDialogFragment
-        extends DialogFragment
+        extends BaseDialogFragment
         implements BookChangedListenerOwner {
 
     /** Fragment/Log tag. */
@@ -86,15 +83,13 @@ public class EditLenderDialogFragment
     /** Where to send the result. */
     @Nullable
     private WeakReference<BookChangedListener> mListener;
-    @Nullable
-    private String mDialogTitle;
     /** View Binding. */
     private DialogEditLoanBinding mVb;
 
     /** The book we're lending. */
     private long mBookId;
     /** Displayed for info. */
-    private String mTitle;
+    private String mBookTitle;
 
     /**
      * The person who currently has the book.
@@ -111,20 +106,24 @@ public class EditLenderDialogFragment
     @Nullable
     private String mLoanee;
 
+    public EditLenderDialogFragment() {
+        super(R.layout.dialog_edit_loan);
+    }
+
     /**
      * Constructor.
      *
-     * @param bookId to lend
-     * @param title  informational display only
+     * @param bookId    to lend
+     * @param bookTitle displayed for info only
      *
      * @return instance
      */
     public static DialogFragment newInstance(final long bookId,
-                                             @NonNull final String title) {
+                                             @NonNull final String bookTitle) {
         final DialogFragment frag = new EditLenderDialogFragment();
         final Bundle args = new Bundle(2);
         args.putLong(DBDefinitions.KEY_PK_ID, bookId);
-        args.putString(DBDefinitions.KEY_TITLE, title);
+        args.putString(DBDefinitions.KEY_TITLE, bookTitle);
         frag.setArguments(args);
         return frag;
     }
@@ -148,16 +147,12 @@ public class EditLenderDialogFragment
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setStyle(DialogFragment.STYLE_NO_FRAME, R.style.Theme_App_FullScreen);
 
         mDb = new DAO(TAG);
 
         final Bundle args = requireArguments();
-        mDialogTitle = args.getString(StandardDialogs.BKEY_DIALOG_TITLE,
-                                      getString(R.string.lbl_lend_to));
-
         mBookId = args.getLong(DBDefinitions.KEY_PK_ID);
-        mTitle = args.getString(DBDefinitions.KEY_TITLE);
+        mBookTitle = args.getString(DBDefinitions.KEY_TITLE);
 
         if (savedInstanceState == null) {
             mOriginalLoanee = mDb.getLoaneeByBookId(mBookId);
@@ -168,24 +163,17 @@ public class EditLenderDialogFragment
         }
     }
 
-    @Nullable
     @Override
-    public View onCreateView(@NonNull final LayoutInflater inflater,
-                             @Nullable final ViewGroup container,
-                             @Nullable final Bundle savedInstanceState) {
-        mVb = DialogEditLoanBinding.inflate(inflater, container, false);
-        return mVb.getRoot();
-    }
+    public void onViewCreated(@NonNull final View view,
+                              @Nullable final Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
-    @Override
-    public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
+        mVb = DialogEditLoanBinding.bind(view);
 
+        mVb.toolbar.setSubtitle(mBookTitle);
         mVb.toolbar.setNavigationOnClickListener(v -> dismiss());
-        mVb.toolbar.setTitle(mDialogTitle);
-        mVb.toolbar.inflateMenu(R.menu.toolbar_save);
         mVb.toolbar.setOnMenuItemClickListener(item -> {
-            if (item.getItemId() == R.id.action_save) {
+            if (item.getItemId() == R.id.MENU_SAVE) {
                 if (saveChanges()) {
                     dismiss();
                 }
@@ -194,7 +182,6 @@ public class EditLenderDialogFragment
             return false;
         });
 
-        mVb.title.setText(mTitle);
         mVb.loanedTo.setText(mLoanee);
 
         final ArrayList<String> contacts = getContacts();

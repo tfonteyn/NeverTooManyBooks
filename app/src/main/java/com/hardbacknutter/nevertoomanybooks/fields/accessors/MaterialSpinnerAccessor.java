@@ -98,18 +98,26 @@ public class MaterialSpinnerAccessor
     @Override
     @NonNull
     public Integer getValue() {
-        String current = getView().getText().toString();
-        return mAdapter.getPosition(current);
+        final AutoCompleteTextView view = getView();
+        if (view != null) {
+            String current = view.getText().toString();
+            return mAdapter.getPosition(current);
+        } else {
+            return mRawValue != null ? mRawValue : 0;
+        }
     }
 
     @Override
     public void setValue(@Nullable final Integer value) {
         mRawValue = value != null ? value : 0;
 
-        if (mRawValue >= 0 && mRawValue < mAdapter.getCount()) {
-            getView().setText(mAdapter.getItem(mRawValue), false);
-        } else {
-            getView().setText(mAdapter.getItem(0), false);
+        final AutoCompleteTextView view = getView();
+        if (view != null) {
+            if (mRawValue >= 0 && mRawValue < mAdapter.getCount()) {
+                view.setText(mAdapter.getItem(mRawValue), false);
+            } else {
+                view.setText(mAdapter.getItem(0), false);
+            }
         }
     }
 

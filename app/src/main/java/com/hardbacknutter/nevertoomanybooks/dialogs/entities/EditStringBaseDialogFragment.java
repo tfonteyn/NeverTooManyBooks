@@ -29,31 +29,30 @@ package com.hardbacknutter.nevertoomanybooks.dialogs.entities;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.AutoCompleteTextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 import androidx.appcompat.widget.Toolbar;
-import androidx.fragment.app.DialogFragment;
 
-import com.google.android.material.snackbar.Snackbar;
+import com.google.android.material.textfield.TextInputLayout;
 
 import java.lang.ref.WeakReference;
 import java.util.List;
 
-import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BookChangedListener;
 import com.hardbacknutter.nevertoomanybooks.BookChangedListenerOwner;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
-import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.widgets.DiacriticArrayAdapter;
 
 public abstract class EditStringBaseDialogFragment
-        extends DialogFragment
+        extends BaseDialogFragment
         implements BookChangedListenerOwner {
 
     /** Fragment/Log tag. */
@@ -61,34 +60,54 @@ public abstract class EditStringBaseDialogFragment
     /** Argument. */
     static final String BKEY_TEXT = TAG + ":text";
 
+    @StringRes
+    private final int mDialogTitleId;
+    @StringRes
+    private final int mLabelId;
+    @BookChangedListener.Flags
+    private final int mChangeFlags;
     /** Database Access. */
     @Nullable
     DAO mDb;
+    /** The text we're editing. */
+    @Nullable
+    String mOriginalText;
     /** Current edit. */
     @Nullable
     String mCurrentText;
-    @Nullable
-    String mOriginalText;
     /** Where to send the result. */
     @Nullable
     private WeakReference<BookChangedListener> mListener;
+
     @Nullable
-    private AutoCompleteTextView mEditText;
+    private TextInputLayout mNameTil;
     @Nullable
-    private String mDialogTitle;
-    private int mChangeFlags;
+    private AutoCompleteTextView mNameView;
+
+    /**
+     * Constructor.
+     *
+     * @param titleId     for the dialog (i.e. the toolbar)
+     * @param label       to use for the 'hint' of the input field
+     * @param changeFlags one of the {@link BookChangedListener.Flags} bits
+     */
+    EditStringBaseDialogFragment(@StringRes final int titleId,
+                                 @StringRes final int label,
+                                 @BookChangedListener.Flags final int changeFlags) {
+        super(R.layout.dialog_edit_string);
+
+        mDialogTitleId = titleId;
+        mLabelId = label;
+        mChangeFlags = changeFlags;
+    }
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setStyle(DialogFragment.STYLE_NO_FRAME, R.style.Theme_App_FullScreen);
 
         mDb = new DAO(TAG);
 
         final Bundle args = requireArguments();
-        mDialogTitle = args.getString(StandardDialogs.BKEY_DIALOG_TITLE,
-                                      getString(R.string.action_edit));
-
         mOriginalText = args.getString(BKEY_TEXT, "");
 
         if (savedInstanceState == null) {
@@ -99,16 +118,14 @@ public abstract class EditStringBaseDialogFragment
     }
 
     @Override
-    public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
+    public void onViewCreated(@NonNull final View view,
+                              @Nullable final Bundle savedInstanceState) {
 
-        //noinspection ConstantConditions
-        final Toolbar toolbar = getView().findViewById(R.id.toolbar);
+        final Toolbar toolbar = view.findViewById(R.id.toolbar);
+        toolbar.setTitle(mDialogTitleId);
         toolbar.setNavigationOnClickListener(v -> dismiss());
-        toolbar.setTitle(mDialogTitle);
-        toolbar.inflateMenu(R.menu.toolbar_save);
         toolbar.setOnMenuItemClickListener(item -> {
-            if (item.getItemId() == R.id.action_save) {
+            if (item.getItemId() == R.id.MENU_SAVE) {
                 if (saveChanges()) {
                     dismiss();
                 }
@@ -117,45 +134,47 @@ public abstract class EditStringBaseDialogFragment
             return false;
         });
 
-        mEditText = getView().findViewById(R.id.name);
-        mEditText.setText(mCurrentText);
+        mNameTil = view.findViewById(R.id.lbl_name);
+        mNameTil.setHint(getString(mLabelId));
+        mNameTil.setErrorEnabled(true);
+
+        mNameView = view.findViewById(R.id.name);
+        mNameView.setText(mCurrentText);
 
         // soft-keyboards 'done' button act as a shortcut to confirming/saving the changes
-        mEditText.setOnEditorActionListener((v, actionId, event) -> {
+        mNameView.setOnEditorActionListener((v, actionId, event) -> {
             if (actionId == EditorInfo.IME_ACTION_DONE) {
-                App.hideKeyboard(v);
-                saveChanges();
+                if (saveChanges()) {
+                    dismiss();
+                }
                 return true;
             }
             return false;
         });
-    }
 
-    /**
-     * Init for the sub class.
-     *
-     * @param changeFlags what we are changing
-     * @param objects     (optional) list of strings for the auto-complete.
-     */
-    void init(@BookChangedListener.Flags int changeFlags,
-              @Nullable final List<String> objects) {
-        mChangeFlags = changeFlags;
-
+        List<String> objects = getList();
         if (objects != null) {
             //noinspection ConstantConditions
             final DiacriticArrayAdapter<String> adapter = new DiacriticArrayAdapter<>(
                     getContext(), R.layout.dropdown_menu_popup_item, objects);
-            //noinspection ConstantConditions
-            mEditText.setAdapter(adapter);
+            mNameView.setAdapter(adapter);
         }
+    }
+
+    /**
+     * @return (optional) list of strings for the auto-complete.
+     */
+    @Nullable
+    protected List<String> getList() {
+        return null;
     }
 
     private boolean saveChanges() {
         //noinspection ConstantConditions
-        mCurrentText = mEditText.getText().toString().trim();
+        mCurrentText = mNameView.getText().toString().trim();
         if (mCurrentText.isEmpty()) {
-            Snackbar.make(mEditText, R.string.warning_missing_name,
-                          Snackbar.LENGTH_LONG).show();
+            //noinspection ConstantConditions
+            showError(mNameTil, R.string.vldt_non_blank_required);
             return false;
         }
 
@@ -206,7 +225,7 @@ public abstract class EditStringBaseDialogFragment
     @Override
     public void onPause() {
         //noinspection ConstantConditions
-        mCurrentText = mEditText.getText().toString().trim();
+        mCurrentText = mNameView.getText().toString().trim();
         super.onPause();
     }
 

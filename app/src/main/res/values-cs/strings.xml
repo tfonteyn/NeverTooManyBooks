@@ -32,15 +32,15 @@
 <!--suppress LongLine -->
 <resources>
     <string name="X_anthology_titles">Antologické tituly</string>
-    <string name="X_btn_confirm_update">Upravit</string>
+    <string name="X_action_update">Upravit</string>
     <string name="X_btn_do_not_show_again">Příště již nezobrazovat</string>
     <string name="X_error_file_must_contain_column">Soubor musí obsahovat sloupec jménem %1$s</string>
     <string name="X_export_info_success_archive_details">Soubor %3$s nazvaný „%2$s“ byl vytvořen v adresáři „%1$s“ a měli byste jej ručně zkopírovat jinam, aby byla data chráněna v případě poškození, ztráty nebo odcizení zařízení.</string>
     <string name="lbl_available">Dostupný</string>
     <string name="X_lbl_data_import_export">Zálohování a import</string>
     <string name="X_lbl_select_fields_to_update">Zvolit pole k aktualizaci</string>
-    <string name="btn_show_all">Ukázat vše</string>
-    <string name="X_swap">Vyměnit</string>
+    <string name="X_action_show_all">Ukázat vše</string>
+    <string name="X_action_swap">Vyměnit</string>
     <string name="X_tip_booklist_global_properties">Na této obrazovce můžete nastavit výchozí charakteristiky všech stylů seznamu knih. Většina vlastností může být potlačena jednotlivými styly, ale zde jsou definovány výchozí hodnoty. Můžete změnit způsob zobrazení seznamů při spuštění a upravit řadu dalších preferencí, které budou použity na všechny vaše styly, pokud to bude možné.</string>
     <string name="X_use_default_setting">Použít defaultní nastavení</string>
     <string name="X_warning_cover_corrupt">Obálka je poškozena</string>
@@ -62,7 +62,7 @@
     <string name="bookshelf_all_books">Všechny knihy</string>
     <string name="bookshelf_my_books">Moje knihy</string>
     <string name="action_add">Přidat</string>
-    <string name="action_exit">Přestat</string>
+    <string name="X_action_exit">Přestat</string>
     <string name="action_merge">Spojit</string>
     <string name="action_new">Nový</string>
     <string name="action_save">Uložit</string>
@@ -290,7 +290,7 @@
     <string name="X_lbl_is_signed">Byla tato kniha podepsána</string>
     <string name="lbl_keywords">Klíčová slova</string>
     <string name="lbl_language">Jazyk</string>
-    <string name="lbl_lend_to">Půjčit knihu:</string>
+    <string name="lbl_lend_book_to_colon">Půjčte tuto knihu:</string>
     <string name="lbl_lending">Půjčování</string>
     <string name="lbl_loaned">Půjčeno</string>
     <string name="lbl_loaned_to_name">Na úvěr na %1$s</string>
@@ -549,7 +549,7 @@
     <string name="tab_lbl_notes">Poznámky</string>
     <string name="tab_lbl_publication">Vydání</string>
     <string name="tip_authors_book_may_appear_more_than_once">Při zobrazení pod každým autorem se může stát, že jedna kniha se objeví v seznamu vícekrát - pokud však v takovém případě odstraníte kterýkoli z těchto záznamů, budou odstraněny všechny.</string>
-    <string name="tip_authors_works">Použité ikony:</string>
+    <string name="tip_authors_works">Použité ikony</string>
     <string name="tip_authors_works_book">Kniha.</string>
     <string name="tip_authors_works_multiple_books">Záznam je přítomen ve více knihách.</string>
     <string name="tip_autorotate_camera_images">Pokud se vždy nacházíte ve stejném směru, zkuste změnit předvolby aplikace tak, aby určovaly rotaci, která se použije automaticky.</string>
@@ -579,10 +579,10 @@
     <string name="lbl_delete_toc_entry">Smazat název</string>
     <string name="lbl_details_have_changed">Podrobnosti se změnily</string>
     <string name="lbl_duplicate_book">Duplicitní kniha</string>
-    <string name="lbl_edit_author">Upravit autory</string>
-    <string name="lbl_edit_bookshelf">Upravit knihovnu</string>
+    <string name="X_lbl_edit_author">Upravit autory</string>
+    <string name="X_lbl_edit_bookshelf">Upravit knihovnu</string>
     <string name="lbl_edit_bookshelves">Spravovat knihovny</string>
-    <string name="lbl_edit_series">Upravit série</string>
+    <string name="X_lbl_edit_series">Upravit série</string>
     <string name="lbl_edit_style">Upravit styl</string>
     <string name="lbl_export_options">Vyberte, co bude exportováno do archivu.</string>
     <string name="lbl_import_book_data">Importovat knihy</string>
@@ -661,7 +661,7 @@
     <string name="lbl_all_bookshelves">Všechny knihovny</string>
     <string name="more_ellipsis">Více…</string>
     <string name="lbl_toc_multiple_authors">Více autorů</string>
-    <string name="lbl_edit_publisher">Upravit vydavatele</string>
-    <string name="lbl_edit_toc_entry">Upravit záznam</string>
+    <string name="X_lbl_edit_publisher">Upravit vydavatele</string>
+    <string name="X_lbl_edit_toc_entry">Upravit záznam</string>
 
 </resources>

@@ -32,7 +32,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     >
 
     <com.google.android.material.appbar.AppBarLayout
@@ -45,51 +45,30 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
+            app:menu="@menu/toolbar_save"
             app:navigationIcon="@drawable/ic_close"
+            app:title="@string/lbl_lend_book_to_colon"
             />
 
     </com.google.android.material.appbar.AppBarLayout>
 
     <FrameLayout
-        android:id="@+id/frameLayout"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        android:id="@+id/body_frame"
+        style="@style/Dialog.Frame.FloatingAndFullscreen"
         >
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            style="@style/Dialog.Body.FloatingAndFullscreen"
             >
 
-            <TextView
-                android:id="@+id/lbl_title"
-                style="@style/Label.Field"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/lbl_title"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                />
-
-            <TextView
-                android:id="@+id/title"
-                style="@style/Text.BookTitle"
-                android:layout_marginStart="@dimen/indent2"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/lbl_title"
-                tools:ignore="SelectableText"
-                tools:text="@sample/data.json/book/title"
-                />
-
             <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/lbl_name"
+                android:id="@+id/lbl_loaned_to"
+                android:layout_width="match_parent"
                 style="@style/Envelope.AutoCompleteTextView"
                 android:hint="@string/lbl_name"
-                android:paddingTop="@dimen/border2"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/title"
+                app:layout_constraintTop_toTopOf="parent"
                 >
 
                 <AutoCompleteTextView

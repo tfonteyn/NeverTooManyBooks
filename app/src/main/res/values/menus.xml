@@ -170,6 +170,7 @@
 
     <!-- options menu -->
     <item name="MENU_RESET" type="id" />
+    <item name="MENU_SAVE" type="id" />
 
     <!-- Scanner pick list -->
     <item name="MENU_SCANNER_EMBEDDED_ZXING" type="id" />

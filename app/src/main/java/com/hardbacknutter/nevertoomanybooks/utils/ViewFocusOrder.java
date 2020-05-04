@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -35,6 +35,7 @@ import android.widget.TextView;
 
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 
@@ -201,9 +202,14 @@ public final class ViewFocusOrder {
      * Dump an entire view hierarchy to the output.
      */
     @SuppressWarnings({"unused", "WeakerAccess"})
-    static void debugDumpViewTree(final int depth,
-                                  @NonNull final View view) {
-        StringBuilder sb = new StringBuilder();
+    public static void debugDumpViewTree(@Nullable final View view,
+                                         final int depth) {
+        if (view == null) {
+            Log.d(TAG, "debugDumpViewTree|view==NULL");
+            return;
+        }
+
+        final StringBuilder sb = new StringBuilder();
         for (int i = 0; i < depth * 4; i++) {
             sb.append(' ');
         }
@@ -218,9 +224,9 @@ public final class ViewFocusOrder {
             Log.d(TAG, "debugDumpViewTree|" + sb);
         }
         if (view instanceof ViewGroup) {
-            ViewGroup g = (ViewGroup) view;
+            final ViewGroup g = (ViewGroup) view;
             for (int i = 0; i < g.getChildCount(); i++) {
-                debugDumpViewTree(depth + 1, g.getChildAt(i));
+                debugDumpViewTree(g.getChildAt(i), depth + 1);
             }
         }
     }

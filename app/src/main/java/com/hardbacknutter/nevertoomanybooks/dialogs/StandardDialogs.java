@@ -77,21 +77,21 @@ public final class StandardDialogs {
      * <p>
      * To show the Save and/or Exit button, you must provide a Runnable, even an empty one.
      *
-     * @param context Current context
-     * @param onSave  (optional) Runnable to execute if the user clicks the Save button.
-     * @param onExit  (optional) Runnable to execute if the user clicks the Exit button.
+     * @param context   Current context
+     * @param onSave    (optional) Runnable to execute if the user clicks the Save button.
+     * @param onDiscard (optional) Runnable to execute if the user clicks the Discard button.
      */
     public static void unsavedEdits(@NonNull final Context context,
                                     @Nullable final Runnable onSave,
-                                    @Nullable final Runnable onExit) {
+                                    @Nullable final Runnable onDiscard) {
         MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(context)
                 .setIcon(R.drawable.ic_warning)
                 .setTitle(R.string.lbl_details_have_changed)
                 .setMessage(R.string.confirm_unsaved_edits)
                 .setNeutralButton(R.string.btn_continue_edit, (d, w) -> d.dismiss());
 
-        if (onExit != null) {
-            builder.setNegativeButton(R.string.action_exit, (d, w) -> onExit.run());
+        if (onDiscard != null) {
+            builder.setNegativeButton(R.string.action_discard, (d, w) -> onDiscard.run());
         }
         if (onSave != null) {
             builder.setPositiveButton(R.string.action_save, (d, w) -> onSave.run());

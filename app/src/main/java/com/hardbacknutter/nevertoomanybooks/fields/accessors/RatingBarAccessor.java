@@ -65,14 +65,22 @@ public class RatingBarAccessor
     @NonNull
     @Override
     public Float getValue() {
-        return getView().getRating();
+        final RatingBar view = getView();
+        if (view != null) {
+            return view.getRating();
+        } else {
+            return mRawValue != null ? mRawValue : 0f;
+        }
     }
 
     @Override
     public void setValue(@Nullable final Float value) {
         mRawValue = value != null ? value : 0f;
 
-        getView().setRating(mRawValue);
+        final RatingBar view = getView();
+        if (view != null) {
+            view.setRating(mRawValue);
+        }
     }
 
     @Override

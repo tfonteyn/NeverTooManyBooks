@@ -55,6 +55,14 @@ public interface FieldViewAccessor<T, V extends View> {
     void setField(@NonNull Field<T, V> field);
 
     /**
+     * Get the previously set view.
+     *
+     * @return view
+     */
+    @Nullable
+    V getView();
+
+    /**
      * Hook up the view. Reminder: do <strong>NOT</strong> set the view in the constructor.
      * <strong>Implementation note</strong>: we don't provide a onCreateViewHolder()
      * method on purpose.
@@ -63,14 +71,6 @@ public interface FieldViewAccessor<T, V extends View> {
      * @param view to use
      */
     void setView(@NonNull V view);
-
-    /**
-     * Get the previously set view.
-     *
-     * @return view
-     */
-    @NonNull
-    V getView();
 
     /**
      * Set a view for displaying an error.
@@ -102,6 +102,9 @@ public interface FieldViewAccessor<T, V extends View> {
 
     /**
      * Get the value from the view associated with the Field and return it as an Object.
+     * <p>
+     * If the view is available, return the current value.
+     * Otherwise, return the raw value if applicable.
      *
      * @return the value
      */
@@ -113,6 +116,9 @@ public interface FieldViewAccessor<T, V extends View> {
      * <p>
      * If {@code null} is passed in, the implementation should set the widget to
      * its native default value. (e.g. string -> "", number -> 0, etc)
+     * <p>
+     * If the View is not available, the implementation should silently ignore this,
+     * <strong>but should still set the raw value if applicable.</strong>
      *
      * @param value to set.
      */

@@ -29,15 +29,11 @@ package com.hardbacknutter.nevertoomanybooks.dialogs.entities;
 
 import android.os.Bundle;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
-
-import com.google.android.material.snackbar.Snackbar;
 
 import java.lang.ref.WeakReference;
 import java.util.Objects;
@@ -50,7 +46,6 @@ import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditSeriesBinding;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
-import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.widgets.DiacriticArrayAdapter;
@@ -61,7 +56,7 @@ import com.hardbacknutter.nevertoomanybooks.widgets.DiacriticArrayAdapter;
  * Calling point is a List
  */
 public class EditSeriesDialogFragment
-        extends DialogFragment
+        extends BaseDialogFragment
         implements BookChangedListenerOwner {
 
     /** Fragment/Log tag. */
@@ -72,8 +67,6 @@ public class EditSeriesDialogFragment
     /** Where to send the result. */
     @Nullable
     private WeakReference<BookChangedListener> mListener;
-    @Nullable
-    private String mDialogTitle;
     /** View binding. */
     private DialogEditSeriesBinding mVb;
 
@@ -84,6 +77,10 @@ public class EditSeriesDialogFragment
     private String mTitle;
     /** Current edit. */
     private boolean mIsComplete;
+
+    public EditSeriesDialogFragment() {
+        super(R.layout.dialog_edit_series);
+    }
 
     /**
      * Constructor.
@@ -103,14 +100,10 @@ public class EditSeriesDialogFragment
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setStyle(DialogFragment.STYLE_NO_FRAME, R.style.Theme_App_FullScreen);
 
         mDb = new DAO(TAG);
 
         final Bundle args = requireArguments();
-        mDialogTitle = args.getString(StandardDialogs.BKEY_DIALOG_TITLE,
-                                      getString(R.string.lbl_edit_series));
-
         mSeries = args.getParcelable(DBDefinitions.KEY_FK_SERIES);
         Objects.requireNonNull(mSeries, ErrorMsg.ARGS_MISSING_SERIES);
 
@@ -124,24 +117,15 @@ public class EditSeriesDialogFragment
         }
     }
 
-    @Nullable
     @Override
-    public View onCreateView(@NonNull final LayoutInflater inflater,
-                             @Nullable final ViewGroup container,
-                             @Nullable final Bundle savedInstanceState) {
-        mVb = DialogEditSeriesBinding.inflate(inflater, container, false);
-        return mVb.getRoot();
-    }
-
-    @Override
-    public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
+    public void onViewCreated(@NonNull final View view,
+                              @Nullable final Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        mVb = DialogEditSeriesBinding.bind(view);
 
         mVb.toolbar.setNavigationOnClickListener(v -> dismiss());
-        mVb.toolbar.setTitle(mDialogTitle);
-        mVb.toolbar.inflateMenu(R.menu.toolbar_save);
         mVb.toolbar.setOnMenuItemClickListener(item -> {
-            if (item.getItemId() == R.id.action_save) {
+            if (item.getItemId() == R.id.MENU_SAVE) {
                 if (saveChanges()) {
                     dismiss();
                 }
@@ -163,11 +147,9 @@ public class EditSeriesDialogFragment
     private boolean saveChanges() {
         viewToModel();
         if (mTitle.isEmpty()) {
-            Snackbar.make(mVb.seriesTitle, R.string.warning_missing_name,
-                          Snackbar.LENGTH_LONG).show();
+            showError(mVb.lblSeriesTitle, R.string.vldt_non_blank_required);
             return false;
         }
-
 
         // anything actually changed ?
         if (mSeries.getTitle().equals(mTitle)

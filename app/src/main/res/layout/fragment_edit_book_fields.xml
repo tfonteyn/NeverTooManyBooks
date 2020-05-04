@@ -159,7 +159,7 @@
 
             <AutoCompleteTextView
                 android:id="@+id/language"
-                style="@style/languageTextEntry"
+                style="@style/autoCompleteTextEntry"
                 android:layout_width="match_parent"
                 android:imeOptions="actionNext"
                 tools:ignore="LabelFor"
@@ -207,7 +207,7 @@
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/lbl_genre"
+            android:id="@+id/lbl_name"
             style="@style/Envelope.AutoCompleteTextView"
             android:hint="@string/lbl_genre"
             app:layout_constraintEnd_toEndOf="parent"
@@ -232,7 +232,7 @@
             android:hint="@string/lbl_description"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/lbl_genre"
+            app:layout_constraintTop_toBottomOf="@id/lbl_name"
             >
 
             <com.google.android.material.textfield.TextInputEditText

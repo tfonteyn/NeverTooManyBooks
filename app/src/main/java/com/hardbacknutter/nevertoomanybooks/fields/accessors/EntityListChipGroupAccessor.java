@@ -123,16 +123,18 @@ public class EntityListChipGroupAccessor
     public void setValue(@Nullable final ArrayList<Entity> value) {
         mRawValue = value != null ? value : new ArrayList<>();
 
-        ChipGroup chipGroup = getView();
-        chipGroup.removeAllViews();
-        Context context = chipGroup.getContext();
+        final ChipGroup chipGroup = getView();
+        if (chipGroup != null) {
+            chipGroup.removeAllViews();
+            Context context = chipGroup.getContext();
 
-        // *all* values
-        for (Entity entity : mAll) {
-            boolean isSet = mRawValue.contains(entity);
-            // if editable, all values; if not editable only the set values.
-            if (isSet || mIsEditable) {
-                chipGroup.addView(createChip(context, entity, entity.getLabel(context), isSet));
+            // *all* values
+            for (Entity entity : mAll) {
+                boolean isSet = mRawValue.contains(entity);
+                // if editable, all values; if not editable only the set values.
+                if (isSet || mIsEditable) {
+                    chipGroup.addView(createChip(context, entity, entity.getLabel(context), isSet));
+                }
             }
         }
     }

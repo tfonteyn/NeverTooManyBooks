@@ -32,15 +32,15 @@
 <!--suppress LongLine -->
 <resources>
     <string name="X_anthology_titles">Τίτλοι Ανθολογιών</string>
-    <string name="X_btn_confirm_update">Ενημέρωση</string>
+    <string name="X_action_update">Ενημέρωση</string>
     <string name="X_btn_do_not_show_again">Μην εμφανιστείς ξανά</string>
     <string name="X_error_file_must_contain_column">Το αρχείο πρέπει να περιέχει στήλη με όνομα %1$s</string>
     <string name="X_export_info_success_archive_details">;Ένα αρχείο %3$s με το όνομα %2$s δημιουργήθηκε στον κατάλογο «%1$s».\n\nΜπορείτε το αντιγράψετε κάπου αλλού για να προστατέψετε τα δεδομένα σε περίπτωση που η συσκευή σας πάθει ζημιά, χαθεί, ή κλαπεί.</string>
     <string name="lbl_available">Διαθέσιμο</string>
     <string name="X_lbl_data_import_export">Δημιουργία αντιγράφων ασφαλείας &amp; εισαγωγή</string>
     <string name="X_lbl_select_fields_to_update">Επιλεγξτε πεδία για ενημέρωση</string>
-    <string name="btn_show_all">Προβολή όλων</string>
-    <string name="X_swap">ανταλλάσσω</string>
+    <string name="X_action_show_all">Προβολή όλων</string>
+    <string name="X_action_swap">ανταλλάσσω</string>
     <string name="X_tip_booklist_global_properties">Μπορείτε να χρησιμοποιήσετε αυτήν την οθόνη για να ορίσετε τα προεπιλεγμένα χαρακτηριστικά όλων των μορφών λίστας βιβλίων. Οι περισσότερες ιδιότητες μπορούν να αντικατασταθούν από μεμονωμένα στυλ, αλλά οι προεπιλεγμένες τιμές ορίζονται εδώ. Μπορείτε να αλλάξετε τον τρόπο εμφάνισης των λιστών κατά την εκκίνηση και να προσαρμόσετε διάφορες άλλες προτιμήσεις που θα εφαρμοστούν σε όλα τα στυλ σας, όταν είναι δυνατόν.</string>
     <string name="X_use_default_setting">Χρήση προεπιλεγμένης ρύθμισης</string>
     <string name="X_warning_cover_corrupt">Το εξώφυλλο είναι κατεστραμμένο</string>
@@ -63,7 +63,7 @@
     <string name="bookshelf_all_books">Όλα τα βιβλία.</string>
     <string name="bookshelf_my_books">Τα βιβλία μου</string>
     <string name="action_add">Προσθήκη</string>
-    <string name="action_exit">Έξοδος</string>
+    <string name="X_action_exit">Έξοδος</string>
     <string name="action_merge">Συγχώνευση</string>
     <string name="action_new">Νέος</string>
     <string name="action_save">Αποθήκευση</string>
@@ -291,7 +291,7 @@
     <string name="X_lbl_is_signed">Έιναι αυτό το βιβλίο υπογεγραμένο</string>
     <string name="lbl_keywords">Λέξεις κλειδιά</string>
     <string name="lbl_language">Γλώσσα</string>
-    <string name="lbl_lend_to">Δανεισμός βιβλίου στον/στην:</string>
+    <string name="lbl_lend_book_to_colon">Δανείστε αυτό το βιβλίο:</string>
     <string name="lbl_lending">Δανεισμός</string>
     <string name="lbl_loaned">Δανεισμένο</string>
     <string name="lbl_loaned_to_name">Δανεισμένο σε %1$s</string>
@@ -553,7 +553,7 @@
     <string name="tab_lbl_notes">Σημειώσεις</string>
     <string name="tab_lbl_publication">Δημοσίευση</string>
     <string name="tip_authors_book_may_appear_more_than_once">Αν εμφανίζεται για κάθε συγγραφέα, ένα βιβλίο μπορεί να εμφανίζεται πολλές φορές σε μια λίστα. Τότε, αν διαγραφεί ένα από αυτά, θα διαγραφούν όλα από τη λίστα.</string>
-    <string name="tip_authors_works">Χρησιμοποιούμενα εικονίδια:</string>
+    <string name="tip_authors_works">Χρησιμοποιούμενα εικονίδια</string>
     <string name="tip_authors_works_book">Βιβλίο.</string>
     <string name="tip_authors_works_multiple_books">Η είσοδος υπάρχει σε πολλά βιβλία.</string>
     <string name="tip_autorotate_camera_images">Αν παρατηρείτε ότι περιστρέφετε τις εικόνες από κάμερα πάντα στην ίδια κατεύθυνση, μπορείτε να αλλάξετε τις επιλογές ορίζοντας μια περιστροφή που να εφαρμόζεται αυτόματα.</string>
@@ -583,10 +583,10 @@
     <string name="lbl_delete_toc_entry">Διαγράψτε τον τίτλο</string>
     <string name="lbl_details_have_changed">Κάποιες λεπτομέρειες έχουν αλλάξει</string>
     <string name="lbl_duplicate_book">Διπλοεγγραφή Βιβλίου</string>
-    <string name="lbl_edit_author">Επεξεργασία Συγγραφέα</string>
-    <string name="lbl_edit_bookshelf">Επεξεργασία ραφιού</string>
+    <string name="X_lbl_edit_author">Επεξεργασία Συγγραφέα</string>
+    <string name="X_lbl_edit_bookshelf">Επεξεργασία ραφιού</string>
     <string name="lbl_edit_bookshelves">Διαχείρηση Ραφιών</string>
-    <string name="lbl_edit_series">Επεξεργασία Σειράς</string>
+    <string name="X_lbl_edit_series">Επεξεργασία Σειράς</string>
     <string name="lbl_edit_style">Επεξεργασία στυλ</string>
     <string name="lbl_export_options">Επιλέξτε τι θα εξαχθεί στο Αρχείο.</string>
     <string name="lbl_import_book_data">Εισαγωγή Βιβλιων</string>
@@ -665,7 +665,7 @@
     <string name="lbl_all_bookshelves">Όλα τα ράφια</string>
     <string name="more_ellipsis">Περισσότερο…</string>
     <string name="lbl_toc_multiple_authors">Πολλαπλοί συγγραφείς</string>
-    <string name="lbl_edit_publisher">Επεξεργασία εκδότη</string>
-    <string name="lbl_edit_toc_entry">Επεξεργασία καταχώρησης</string>
+    <string name="X_lbl_edit_publisher">Επεξεργασία εκδότη</string>
+    <string name="X_lbl_edit_toc_entry">Επεξεργασία καταχώρησης</string>
 
 </resources>

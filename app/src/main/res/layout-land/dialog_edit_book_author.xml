@@ -40,7 +40,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     >
 
     <com.google.android.material.appbar.AppBarLayout
@@ -53,20 +53,20 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
+            app:menu="@menu/toolbar_save"
             app:navigationIcon="@drawable/ic_close"
+            app:title="@string/lbl_author"
             />
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/body_frame"
+        style="@style/Dialog.Frame.FloatingAndFullscreen"
         >
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            style="@style/Dialog.Body.FloatingAndFullscreen"
             >
 
             <androidx.constraintlayout.widget.Guideline
@@ -259,5 +259,5 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-    </FrameLayout>
+    </androidx.core.widget.NestedScrollView>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -103,18 +103,25 @@ public class SpinnerAccessor
     @Override
     @NonNull
     public Integer getValue() {
-        return getView().getSelectedItemPosition();
+        final Spinner view = getView();
+        if (view != null) {
+            return view.getSelectedItemPosition();
+        } else {
+            return mRawValue != null ? mRawValue : 0;
+        }
     }
 
     @Override
     public void setValue(@Nullable final Integer value) {
         mRawValue = value != null ? value : 0;
 
-        Spinner spinner = getView();
-        if (mRawValue >= 0 && mRawValue < spinner.getCount()) {
-            spinner.setSelection(mRawValue);
-        } else {
-            spinner.setSelection(0);
+        final Spinner view = getView();
+        if (view != null) {
+            if (mRawValue >= 0 && mRawValue < view.getCount()) {
+                view.setSelection(mRawValue);
+            } else {
+                view.setSelection(0);
+            }
         }
     }
 

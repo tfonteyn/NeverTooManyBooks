@@ -31,15 +31,15 @@
 <!--suppress LongLine -->
 <resources>
     <string name="X_anthology_titles">Bloemlezing titels</string>
-    <string name="X_btn_confirm_update">Bijwerken</string>
+    <string name="X_action_update">Bijwerken</string>
     <string name="X_btn_do_not_show_again">Niet meer laten zien</string>
     <string name="X_error_file_must_contain_column">Import bestand moet een kolom met de naam „%1$s” bevatten.</string>
     <string name="X_export_info_success_archive_details">Een %3$s bestand met de naam %2$s is aangemaakt in de „%1$s” map.\n\nWe raden aan dit bestand naar een ander plek te kopiëren om de gegevens veilig te stellen in geval uw apparaat wordt gestolen, beschadigd of verloren raakt.</string>
     <string name="lbl_available">Beschikbaar</string>
     <string name="X_lbl_data_import_export">Back-up &amp; import</string>
     <string name="X_lbl_select_fields_to_update">Selecteer bij te werken velden</string>
-    <string name="btn_show_all">Toon alles</string>
-    <string name="X_swap">Wisselen</string>
+    <string name="X_action_show_all">Toon alles</string>
+    <string name="X_action_swap">Wisselen</string>
     <string name="X_tip_booklist_global_properties">Je kan dit scherm gebruiken om de standaardkenmerken van alle stijlen van de boekenlijst in te stellen. De meeste eigenschappen kunnen worden overschreven door afzonderlijke stijlen, maar de standaardwaarden worden hier gedefinieerd. Je kan de manier wijzigen waarop lijsten worden weergegeven bij het opstarten en een aantal andere voorkeuren aanpassen die indien mogelijk op al uw stijlen worden toegepast.</string>
     <string name="X_use_default_setting">Gebruik de standaard waarden</string>
     <string name="X_warning_cover_corrupt">Omslagafbeelding is niet geldig</string>
@@ -64,7 +64,7 @@
     <string name="bookshelf_all_books">Alle Boeken</string>
     <string name="bookshelf_my_books">Mijn Boeken</string>
     <string name="action_add">Toevoegen</string>
-    <string name="action_exit">Afsluiten</string>
+    <string name="X_action_exit">Afsluiten</string>
     <string name="action_merge">Samenvoegen</string>
     <string name="action_new">Nieuw</string>
     <string name="action_save">Opslaan</string>
@@ -296,8 +296,8 @@
     <string name="X_lbl_is_signed">Is dit boek gesigneerd?</string>
     <string name="lbl_keywords">Trefwoorden</string>
     <string name="lbl_language">Taal</string>
-    <string name="lbl_lend_to">Leen boek aan:</string>
-    <string name="lbl_lending">UItlenen</string>
+    <string name="lbl_lend_book_to_colon">Leen dit boek aan:</string>
+    <string name="lbl_lending">Uitlenen</string>
     <string name="lbl_loaned">Uitgeleend</string>
     <string name="lbl_loaned_to_name">Uitgeleend aan %1$s</string>
     <string name="lbl_local_search_advanced">Gedetaileerd</string>
@@ -558,7 +558,7 @@
     <string name="tab_lbl_notes">Notities</string>
     <string name="tab_lbl_publication">Uitgave</string>
     <string name="tip_authors_book_may_appear_more_than_once">Als boeken worden getoond met alle auteurs, kunnen ze meermalen voorkomen in de lijst. Het verwijderen van één van die boeken heeft tot gevolg dat alle exemplaren worden verwijderd uit de lijst.</string>
-    <string name="tip_authors_works">Gebruikte pictogrammen:</string>
+    <string name="tip_authors_works">Gebruikte pictogrammen</string>
     <string name="tip_authors_works_book">Boek.</string>
     <string name="tip_authors_works_multiple_books">Item is aanwezig in meerdere boeken.</string>
     <string name="tip_autorotate_camera_images">Als je altijd camera-opnames dezelfde kant opdraait kan je de applicatie-instellingen veranderen zodat dit automatisch gebeurt.</string>
@@ -588,10 +588,10 @@
     <string name="lbl_delete_toc_entry">Titel verwijderen</string>
     <string name="lbl_details_have_changed">De details zijn veranderd</string>
     <string name="lbl_duplicate_book">Dupliceer Boek</string>
-    <string name="lbl_edit_author">Auteur bewerken</string>
-    <string name="lbl_edit_bookshelf">Boekenplank bewerken</string>
+    <string name="X_lbl_edit_author">Auteur bewerken</string>
+    <string name="X_lbl_edit_bookshelf">Boekenplank bewerken</string>
     <string name="lbl_edit_bookshelves">Boekenplank beheren</string>
-    <string name="lbl_edit_series">>Reeks bewerken</string>
+    <string name="X_lbl_edit_series">>Reeks bewerken</string>
     <string name="lbl_edit_style">Stijl bewerken</string>
     <string name="lbl_export_options">Selecteer wat geëxporteerd zal worden naar het archief.</string>
     <string name="lbl_import_book_data">Boeken Importeren</string>
@@ -668,7 +668,7 @@
     <string name="lbl_all_bookshelves">Alle boekenplanken</string>
     <string name="more_ellipsis">Meer…</string>
     <string name="lbl_toc_multiple_authors">Meerdere auteurs</string>
-    <string name="lbl_edit_publisher">Uitgever bewerken</string>
-    <string name="lbl_edit_toc_entry">Inhouds titel bewerken</string>
+    <string name="X_lbl_edit_publisher">Uitgever bewerken</string>
+    <string name="X_lbl_edit_toc_entry">Inhouds titel bewerken</string>
 
 </resources>

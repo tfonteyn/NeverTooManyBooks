@@ -246,8 +246,9 @@ public abstract class EditBookBaseFragment
             //noinspection unchecked
             final Fields.FormattedDiacriticArrayAdapter adapter =
                     new Fields.FormattedDiacriticArrayAdapter(
-                            view.getContext(), list,
+                            getContext(), list,
                             (FieldFormatter<String>) field.getAccessor().getFormatter());
+            //noinspection ConstantConditions
             view.setAdapter(adapter);
         }
     }
@@ -293,7 +294,9 @@ public abstract class EditBookBaseFragment
                 picker.show(getChildFragmentManager(), TAG_DATE_PICKER_RANGE);
             };
 
+            //noinspection ConstantConditions
             fieldStartDate.getAccessor().getView().setOnClickListener(listener);
+            //noinspection ConstantConditions
             fieldEndDate.getAccessor().getView().setOnClickListener(listener);
 
         } else if (fieldStartDate.isUsed(getContext())) {
@@ -315,6 +318,7 @@ public abstract class EditBookBaseFragment
                        final boolean todayIfNone) {
         //noinspection ConstantConditions
         if (field.isUsed(getContext())) {
+            //noinspection ConstantConditions
             field.getAccessor().getView().setOnClickListener(v -> {
                 final Long selection = DateUtils.parseTime(field.getAccessor().getValue(),
                                                            todayIfNone);
@@ -342,6 +346,7 @@ public abstract class EditBookBaseFragment
                               final boolean todayIfNone) {
         //noinspection ConstantConditions
         if (field.isUsed(getContext())) {
+            //noinspection ConstantConditions
             field.getAccessor().getView().setOnClickListener(v -> {
                 DialogFragment picker = PartialDatePickerDialogFragment.newInstance(
                         dialogTitleId, field.getAccessor().getValue(), todayIfNone);

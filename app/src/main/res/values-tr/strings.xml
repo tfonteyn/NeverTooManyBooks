@@ -32,15 +32,15 @@
 <!--suppress LongLine -->
 <resources>
     <string name="X_anthology_titles">Seçmeler</string>
-    <string name="X_btn_confirm_update">Güncelle</string>
+    <string name="X_action_update">Güncelle</string>
     <string name="X_btn_do_not_show_again">Bir daha gösterme</string>
     <string name="X_error_file_must_contain_column">Dosya adı %1$s adında bir sütun içermeli</string>
     <string name="X_export_info_success_archive_details">%2$s adında bir %3$s dosyası SD kartınızın “%1$s” dizininde oluşturuldu.\n\nBu dosyayı el ile başka bir yere yedeklemeniz aygıtınızın hasar görmesi, kaybolması veya çalınması durumunda verilerinizin korunması için tavsiye edilir.</string>
     <string name="lbl_available">Uygun</string>
     <string name="X_lbl_data_import_export">Yedekleme ve İçe Aktarma</string>
     <string name="X_lbl_select_fields_to_update">Güncellenecek alanları seçin</string>
-    <string name="btn_show_all">Hepsini Göster</string>
-    <string name="X_swap">Değiştirmek</string>
+    <string name="X_action_show_all">Hepsini Göster</string>
+    <string name="X_action_swap">Değiştirmek</string>
     <string name="X_tip_booklist_global_properties">Tüm kitap listesi stillerinin varsayılan özelliklerini ayarlamak için bu ekranı kullanabilirsiniz. Çoğu özellik bireysel stiller tarafından geçersiz kılınabilir, ancak varsayılan değerler burada tanımlanır. Listelerin başlangıçta nasıl görüntüleneceğini değiştirebilir ve mümkün olduğunda tüm stillerinize uygulanacak çeşitli diğer tercihleri ayarlayabilirsiniz.</string>
     <string name="X_use_default_setting">Öntanımlı ayarları kullan</string>
     <string name="X_warning_cover_corrupt">Kapak hasarlı</string>
@@ -62,7 +62,7 @@
     <string name="bookshelf_all_books">Tüm kitaplar</string>
     <string name="bookshelf_my_books">Kitaplarım</string>
     <string name="action_add">Ekle</string>
-    <string name="action_exit">Çıkış</string>
+    <string name="X_action_exit">Çıkış</string>
     <string name="action_merge">Birleşmek</string>
     <string name="action_new">Yeni</string>
     <string name="action_save">Kaydet</string>
@@ -290,7 +290,7 @@
     <string name="X_lbl_is_signed">Bu kitap imzalı mı?</string>
     <string name="lbl_keywords">Anahtar kelimeler</string>
     <string name="lbl_language">Dil</string>
-    <string name="lbl_lend_to">Şuna ödünç ver:</string>
+    <string name="lbl_lend_book_to_colon">Şuna ödünç ver:</string>
     <string name="lbl_lending">Ödünç verilmiş</string>
     <string name="lbl_loaned">Ödünç verilen</string>
     <string name="lbl_loaned_to_name">%1$s kişisine ödünç verilmiş</string>
@@ -549,7 +549,7 @@
     <string name="tab_lbl_notes">Notlar</string>
     <string name="tab_lbl_publication">Yayınlama</string>
     <string name="tip_authors_book_may_appear_more_than_once">Eğer her yazar için gösteriliyorsa, tek bir kitap bir dizelgede birden fazla görünebilir. Böyle bir durumda bu kitaplardan birini silmek dizelgeden tüm girileri silecektir.</string>
-    <string name="tip_authors_works">Kullanılan simgeler:</string>
+    <string name="tip_authors_works">Kullanılan simgeler</string>
     <string name="tip_authors_works_book">Kitap.</string>
     <string name="tip_authors_works_multiple_books">Giriş birden fazla kitapta var.</string>
     <string name="tip_autorotate_camera_images">Eğer kendinizi sürekli kamera resimlerini aynı doğrultuda döndürüyor buluyorsanız uygulama ayarlarını sürekli bir yöne görselleri kendiliğinden döndürecek biçimde ayarlayabilirsiniz.</string>
@@ -579,10 +579,10 @@
     <string name="lbl_delete_toc_entry">Başlığı sil</string>
     <string name="lbl_details_have_changed">Ayrıntılar değiştirildi</string>
     <string name="lbl_duplicate_book">Kitabı kopyala</string>
-    <string name="lbl_edit_author">Yazarı düzenle</string>
-    <string name="lbl_edit_bookshelf">Kitaplığı düzenle</string>
+    <string name="X_lbl_edit_author">Yazarı düzenle</string>
+    <string name="X_lbl_edit_bookshelf">Kitaplığı düzenle</string>
     <string name="lbl_edit_bookshelves">Kitaplıkları yönet</string>
-    <string name="lbl_edit_series">Serileri düzenle</string>
+    <string name="X_lbl_edit_series">Serileri düzenle</string>
     <string name="lbl_edit_style">Biçemi düzenle</string>
     <string name="lbl_export_options">Arşive nelerin aktarılacağını seçin.</string>
     <string name="lbl_import_book_data">Kitapları içe aktar</string>
@@ -661,7 +661,7 @@
     <string name="lbl_all_bookshelves">Tüm raflardan</string>
     <string name="more_ellipsis">Daha…</string>
     <string name="lbl_toc_multiple_authors">Birden çok yazar</string>
-    <string name="lbl_edit_publisher">Yayıncıyı Düzenle</string>
-    <string name="lbl_edit_toc_entry">Girişi düzenleyin</string>
+    <string name="X_lbl_edit_publisher">Yayıncıyı Düzenle</string>
+    <string name="X_lbl_edit_toc_entry">Girişi düzenleyin</string>
 
 </resources>

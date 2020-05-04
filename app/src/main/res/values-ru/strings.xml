@@ -32,15 +32,15 @@
 <!--suppress LongLine -->
 <resources>
     <string name="X_anthology_titles">Названия антологий</string>
-    <string name="X_btn_confirm_update">Обновить</string>
+    <string name="X_action_update">Обновить</string>
     <string name="X_btn_do_not_show_again">Больше не показывать</string>
     <string name="X_error_file_must_contain_column">В файле должен быть столбец с названием %1$s</string>
     <string name="X_export_info_success_archive_details">Файл %3$s с именем %2$s был создан в папке «%1$s».\n\nВам следует вручную скопировать его, чтобы защитить данные в случае утери или повреждения телефона.</string>
     <string name="lbl_available">Доступно</string>
     <string name="X_lbl_data_import_export">Резервное копирование и импорт</string>
     <string name="X_lbl_select_fields_to_update">Выберите поля для обновления</string>
-    <string name="btn_show_all">Показать все</string>
-    <string name="X_swap">обменивать</string>
+    <string name="X_action_show_all">Показать все</string>
+    <string name="X_action_swap">обменивать</string>
     <string name="X_tip_booklist_global_properties">Вы можете использовать этот экран, чтобы установить характеристики по умолчанию для всех стилей списка книг. Большинство свойств могут быть переопределены отдельными стилями, но значения по умолчанию определены здесь. Вы можете изменить способ отображения списков при запуске и настроить множество других параметров, которые будут применяться ко всем вашим стилям, когда это возможно.</string>
     <string name="X_use_default_setting">Использовать настройки по умолчанию</string>
     <string name="X_warning_cover_corrupt">Обложка испорчена</string>
@@ -62,7 +62,7 @@
     <string name="bookshelf_all_books">Все книги</string>
     <string name="bookshelf_my_books">Мои книги</string>
     <string name="action_add">Добавить</string>
-    <string name="action_exit">Выход</string>
+    <string name="X_action_exit">Выход</string>
     <string name="action_merge">сливаться</string>
     <string name="action_new">новый</string>
     <string name="action_save">Сохранить</string>
@@ -289,7 +289,7 @@
     <string name="X_lbl_is_signed">Книга подписана?</string>
     <string name="lbl_keywords">Ключевые слова</string>
     <string name="lbl_language">Язык</string>
-    <string name="lbl_lend_to">Одолжить книгу:</string>
+    <string name="lbl_lend_book_to_colon">Одолжите эту книгу:</string>
     <string name="lbl_lending">кредитование</string>
     <string name="lbl_loaned">Одолжено</string>
     <string name="lbl_loaned_to_name">Дана вдолг: %1$s</string>
@@ -548,7 +548,7 @@
     <string name="tab_lbl_notes">заметки</string>
     <string name="tab_lbl_publication">публикация</string>
     <string name="tip_authors_book_may_appear_more_than_once">Если показывается по авторам, то одна и та же книга может появиться в списке многократно. В этом случае удаление одной из таких книг, удалит и все остальные из списка.</string>
-    <string name="tip_authors_works">Используемые значки:</string>
+    <string name="tip_authors_works">Используемые значки</string>
     <string name="tip_authors_works_book">Книга.</string>
     <string name="tip_authors_works_multiple_books">Запись присутствует в нескольких книгах.</string>
     <string name="tip_autorotate_camera_images">Если вы заметили, что всегда поворачиваете камеру в одном направлении, попробуйте установить в настройках опцию автоматического поворота.</string>
@@ -578,10 +578,10 @@
     <string name="lbl_delete_toc_entry">Удалить заголовок</string>
     <string name="lbl_details_have_changed">Детали были измененны</string>
     <string name="lbl_duplicate_book">Копия книги</string>
-    <string name="lbl_edit_author">Редактирование автора</string>
-    <string name="lbl_edit_bookshelf">редактирование книжной полки</string>
+    <string name="X_lbl_edit_author">Редактирование автора</string>
+    <string name="X_lbl_edit_bookshelf">редактирование книжной полки</string>
     <string name="lbl_edit_bookshelves">управление книжными полками</string>
-    <string name="lbl_edit_series">Редактирование серии</string>
+    <string name="X_lbl_edit_series">Редактирование серии</string>
     <string name="lbl_edit_style">Редактировать стиль</string>
     <string name="lbl_export_options">Выберите, что будет экспортировано в архив.</string>
     <string name="lbl_import_book_data">Импортировать книги</string>
@@ -660,7 +660,7 @@
     <string name="lbl_all_bookshelves">Все книжные полки</string>
     <string name="more_ellipsis">Больше…</string>
     <string name="lbl_toc_multiple_authors">Несколько авторов</string>
-    <string name="lbl_edit_publisher">Редактировать Издатель</string>
-    <string name="lbl_edit_toc_entry">Изменить запись</string>
+    <string name="X_lbl_edit_publisher">Редактировать Издатель</string>
+    <string name="X_lbl_edit_toc_entry">Изменить запись</string>
 
 </resources>

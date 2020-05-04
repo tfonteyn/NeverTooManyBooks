@@ -140,6 +140,7 @@ public class App
     /** The default theme to use. */
     @ThemeIndex
     private static final int DEFAULT_THEME = THEME_DAY_NIGHT;
+    public static final int ERROR_DELAY_MS = 2000;
 
     /**
      * Give static methods access to our singleton.
@@ -297,7 +298,6 @@ public class App
     /**
      * Hide the keyboard.
      */
-    @SuppressWarnings("unused")
     public static void hideKeyboard(@NonNull final View view) {
         final InputMethodManager imm = (InputMethodManager)
                 view.getContext().getSystemService(INPUT_METHOD_SERVICE);

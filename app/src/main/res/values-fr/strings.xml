@@ -33,15 +33,15 @@
 <!--suppress LongLine -->
 <resources>
     <string name="X_anthology_titles">Titres de l\'anthologie</string>
-    <string name="X_btn_confirm_update">Mettre à jour</string>
+    <string name="X_action_update">Mettre à jour</string>
     <string name="X_btn_do_not_show_again">Ne plus montrer</string>
     <string name="X_error_file_must_contain_column">Le fichier doit contenir une colonne nommée %1$s</string>
     <string name="X_export_info_success_archive_details">Le fichier %2$s (%3$s) a été créé dans le répertoire «%1$s».\n\nVous devriez le copier sur un autre média comme sauvegarde en cas de perte, vol ou destruction de votre équipement.</string>
     <string name="lbl_available">Disponible</string>
     <string name="X_lbl_data_import_export">Sauvegarde et importation</string>
     <string name="X_lbl_select_fields_to_update">Sélection des champs à mettre à jour</string>
-    <string name="btn_show_all">Montre tout</string>
-    <string name="X_swap">Échanger</string>
+    <string name="X_action_show_all">Montre tout</string>
+    <string name="X_action_swap">Échanger</string>
     <string name="X_tip_booklist_global_properties">Vous pouvez utiliser cet écran pour définir les caractéristiques par défaut de tous les styles de liste de livres. La plupart des propriétés peuvent être remplacées par des styles individuels, mais les valeurs par défaut sont définies ici. Vous pouvez modifier le mode d\'affichage des listes au démarrage et définir diverses autres préférences qui seront appliquées à tous vos styles dans la mesure du possible.</string>
     <string name="X_use_default_setting">Utiliser les réglages par défaut</string>
     <string name="X_warning_cover_corrupt">Couverture corrompue</string>
@@ -64,7 +64,7 @@
     <string name="bookshelf_all_books">Tous les livres</string>
     <string name="bookshelf_my_books">Mes livres</string>
     <string name="action_add">Ajouter</string>
-    <string name="action_exit">Quitter</string>
+    <string name="X_action_exit">Quitter</string>
     <string name="action_merge">Fusionner</string>
     <string name="action_new">Nouveau</string>
     <string name="action_save">Sauvegarder</string>
@@ -295,7 +295,7 @@
     <string name="X_lbl_is_signed">Ce livre est il dédicacé ?</string>
     <string name="lbl_keywords">Mots clés</string>
     <string name="lbl_language">Langue</string>
-    <string name="lbl_lend_to">Prêter le livre à :</string>
+    <string name="lbl_lend_book_to_colon">Prêtez ce livre à:</string>
     <string name="lbl_lending">Prêt</string>
     <string name="lbl_loaned">Prêté</string>
     <string name="lbl_loaned_to_name">En prêt chez %1$s</string>
@@ -557,7 +557,7 @@
     <string name="tab_lbl_notes">Notes</string>
     <string name="tab_lbl_publication">Édition</string>
     <string name="tip_authors_book_may_appear_more_than_once">S\'il est affiché pour chacun de ses auteurs, un livre peut apparaître plusieurs fois dans la liste. Dans ce cas, supprimer l\'un de ces livres supprimera toutes ses copies de la liste.</string>
-    <string name="tip_authors_works">Icônes utilisées:</string>
+    <string name="tip_authors_works">Icônes utilisées</string>
     <string name="tip_authors_works_book">Livre.</string>
     <string name="tip_authors_works_multiple_books">L\'entrée est présente dans plusieurs livres.</string>
     <string name="tip_autorotate_camera_images">Si vous devez systematiquement tourner vos photos dans le même sens, envisagez d\'autoriser la rotation automatique en changeant vos paramètres.</string>
@@ -587,10 +587,10 @@
     <string name="lbl_delete_toc_entry">Supprimer le titre</string>
     <string name="lbl_details_have_changed">Modification en cours</string>
     <string name="lbl_duplicate_book">Livre en double</string>
-    <string name="lbl_edit_author">Modifier l\'auteur</string>
-    <string name="lbl_edit_bookshelf">modifier la bibliothèque</string>
+    <string name="X_lbl_edit_author">Modifier l\'auteur</string>
+    <string name="X_lbl_edit_bookshelf">modifier la bibliothèque</string>
     <string name="lbl_edit_bookshelves">gérer les biblothèques</string>
-    <string name="lbl_edit_series">Modifier la série</string>
+    <string name="X_lbl_edit_series">Modifier la série</string>
     <string name="lbl_edit_style">Modifier le style</string>
     <string name="lbl_export_options">Selection de ce qui doit être enregistré dans la sauvegarde.</string>
     <string name="lbl_import_book_data">Importer les livres</string>
@@ -669,7 +669,7 @@
     <string name="lbl_all_bookshelves">Toutes les bibliothèques</string>
     <string name="more_ellipsis">Plus…</string>
     <string name="lbl_toc_multiple_authors">Plusieurs auteurs</string>
-    <string name="lbl_edit_publisher">Modifier l\'éditeur</string>
-    <string name="lbl_edit_toc_entry">Modifier l\'entrée</string>
+    <string name="X_lbl_edit_publisher">Modifier l\'éditeur</string>
+    <string name="X_lbl_edit_toc_entry">Modifier l\'entrée</string>
 
 </resources>

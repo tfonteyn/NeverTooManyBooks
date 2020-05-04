@@ -29,15 +29,11 @@ package com.hardbacknutter.nevertoomanybooks.dialogs.entities;
 
 import android.os.Bundle;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
-
-import com.google.android.material.snackbar.Snackbar;
 
 import java.lang.ref.WeakReference;
 import java.util.Objects;
@@ -50,7 +46,6 @@ import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditPublisherBinding;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
-import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.widgets.DiacriticArrayAdapter;
 
@@ -60,7 +55,7 @@ import com.hardbacknutter.nevertoomanybooks.widgets.DiacriticArrayAdapter;
  * Calling point is a List.
  */
 public class EditPublisherDialogFragment
-        extends DialogFragment
+        extends BaseDialogFragment
         implements BookChangedListenerOwner {
 
     /** Fragment/Log tag. */
@@ -71,8 +66,6 @@ public class EditPublisherDialogFragment
     /** Where to send the result. */
     @Nullable
     private WeakReference<BookChangedListener> mListener;
-    @Nullable
-    private String mDialogTitle;
     /** View Binding. */
     private DialogEditPublisherBinding mVb;
 
@@ -81,6 +74,10 @@ public class EditPublisherDialogFragment
 
     /** Current edit. */
     private String mName;
+
+    public EditPublisherDialogFragment() {
+        super(R.layout.dialog_edit_publisher);
+    }
 
     /**
      * Constructor.
@@ -100,13 +97,10 @@ public class EditPublisherDialogFragment
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setStyle(DialogFragment.STYLE_NO_FRAME, R.style.Theme_App_FullScreen);
 
         mDb = new DAO(TAG);
 
         final Bundle args = requireArguments();
-        mDialogTitle = args.getString(StandardDialogs.BKEY_DIALOG_TITLE,
-                                      getString(R.string.lbl_edit_publisher));
 
         mPublisher = args.getParcelable(DBDefinitions.KEY_PUBLISHER);
         Objects.requireNonNull(mPublisher, ErrorMsg.ARGS_MISSING_PUBLISHER);
@@ -118,24 +112,15 @@ public class EditPublisherDialogFragment
         }
     }
 
-    @Nullable
     @Override
-    public View onCreateView(@NonNull final LayoutInflater inflater,
-                             @Nullable final ViewGroup container,
-                             @Nullable final Bundle savedInstanceState) {
-        mVb = DialogEditPublisherBinding.inflate(inflater, container, false);
-        return mVb.getRoot();
-    }
-
-    @Override
-    public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
+    public void onViewCreated(@NonNull final View view,
+                              @Nullable final Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        mVb = DialogEditPublisherBinding.bind(view);
 
         mVb.toolbar.setNavigationOnClickListener(v -> dismiss());
-        mVb.toolbar.setTitle(mDialogTitle);
-        mVb.toolbar.inflateMenu(R.menu.toolbar_save);
         mVb.toolbar.setOnMenuItemClickListener(item -> {
-            if (item.getItemId() == R.id.action_save) {
+            if (item.getItemId() == R.id.MENU_SAVE) {
                 if (saveChanges()) {
                     dismiss();
                 }
@@ -145,18 +130,17 @@ public class EditPublisherDialogFragment
         });
 
         //noinspection ConstantConditions
-        final DiacriticArrayAdapter<String> mAdapter = new DiacriticArrayAdapter<>(
+        final DiacriticArrayAdapter<String> adapter = new DiacriticArrayAdapter<>(
                 getContext(), R.layout.dropdown_menu_popup_item, mDb.getPublisherNames());
 
         mVb.name.setText(mName);
-        mVb.name.setAdapter(mAdapter);
+        mVb.name.setAdapter(adapter);
     }
 
     private boolean saveChanges() {
         mName = mVb.name.getText().toString().trim();
         if (mName.isEmpty()) {
-            Snackbar.make(mVb.name, R.string.warning_missing_name,
-                          Snackbar.LENGTH_LONG).show();
+            showError(mVb.lblName, R.string.vldt_non_blank_required);
             return false;
         }
 

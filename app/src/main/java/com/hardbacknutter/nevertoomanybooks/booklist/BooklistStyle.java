@@ -1083,7 +1083,7 @@ public class BooklistStyle
     BooklistGroup getGroupById(@BooklistGroup.Id final int id) {
         final BooklistGroup group = mStyleGroups.getGroupById(id);
         //URGENT: the group being null has been seen (2020-04-29), but not reproduced yet.
-        // The style definition xml was likely broken, so dump it before crashing.
+        // The style definition xml was likely broken, so dump it for investigating.
         Objects.requireNonNull(group, "Group was NULL: id=" + id + ", " + this.toString());
         return group;
     }

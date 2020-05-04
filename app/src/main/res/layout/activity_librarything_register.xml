@@ -85,7 +85,7 @@
             />
 
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/lbl_series_num"
+            android:id="@+id/lbl_dev_key"
             style="@style/Envelope.EditText"
             android:hint="@string/hint_developer_key"
             app:layout_constraintEnd_toEndOf="parent"

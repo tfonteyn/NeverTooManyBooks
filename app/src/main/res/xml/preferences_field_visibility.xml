@@ -182,7 +182,7 @@
             android:key="fields.visibility.location"
             android:summaryOff="@string/no"
             android:summaryOn="@string/yes"
-            android:title="@string/lbl_location_long" />
+            android:title="@string/lbl_location" />
 
         <SwitchPreference
             android:defaultValue="true"

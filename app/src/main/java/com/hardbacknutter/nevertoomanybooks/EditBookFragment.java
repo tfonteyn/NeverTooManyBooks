@@ -41,7 +41,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.preference.PreferenceManager;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
@@ -122,7 +121,8 @@ public class EditBookFragment
         //noinspection ConstantConditions
         mBookViewModel = new ViewModelProvider(getActivity()).get(BookViewModel.class);
         //noinspection ConstantConditions
-        mBookViewModel.init(getContext(), getArguments(), true);
+        mBookViewModel.init(getContext(), getArguments());
+        mBookViewModel.enableValidators();
 
         // The tab bar lives in the activity layout inside the AppBarLayout!
         mTabLayout = getActivity().findViewById(R.id.tab_panel);
@@ -177,9 +177,10 @@ public class EditBookFragment
      * For now, there will only ever be a single (front/visible), but this code
      * should be able to cope with future layouts showing multiple fragments at once (flw)
      *
-     * @param checkUnfinishedEdits Initially {@code true}. Will be {@code true} when called
-     *                             when the user clicks on "save" when prompted there are
-     *                             unfinished edits.
+     * @param checkUnfinishedEdits Should be {@code true} for the initial call.
+     *                             If there are unfinished edits, and the user clicks on
+     *                             "save" when prompted, this method will get called again
+     *                             with {@code false}
      */
     private void prepareSave(final boolean checkUnfinishedEdits) {
         final Book book = mBookViewModel.getBook();
@@ -193,8 +194,8 @@ public class EditBookFragment
             // 1. Fragments which went through onPause (i.e. are NOT resumed)
             // These have saved their *confirmed* data to the book, but might have unfinished data
             // as indicated in EditBookBaseFragment.UnfinishedEdits
-            if (checkUnfinishedEdits && unfinishedEdits.contains(frag.getTag())
-                && !frag.isResumed()) {
+            if (!frag.isResumed()
+                && checkUnfinishedEdits && unfinishedEdits.contains(frag.getTag())) {
                 // bring it to the front; i.e. resume it; the user will see it below the dialog.
                 mViewPager.setCurrentItem(i);
                 //noinspection ConstantConditions
@@ -209,35 +210,12 @@ public class EditBookFragment
             // 2. Fragments currently in resumed state (i.e. visible/active)
             // We need to explicitly tell them to save their data, and manually check
             // for unfinished edits (basically mimic their onPause)
-            if (frag instanceof DataEditor && frag.isResumed()) {
+            if (frag.isResumed() && frag instanceof DataEditor) {
                 //noinspection unchecked
                 final DataEditor<Book> dataEditor = (DataEditor<Book>) frag;
                 dataEditor.onSaveFields(book);
                 if (dataEditor.hasUnfinishedEdits() && checkUnfinishedEdits) {
                     mViewPager.setCurrentItem(i);
-                    //noinspection ConstantConditions
-                    StandardDialogs.unsavedEdits(
-                            getContext(),
-                            () -> prepareSave(false),
-                            () -> ((EditBookActivity) getActivity())
-                                    .cleanupAndSetResults(mBookViewModel, true));
-                    return;
-                }
-            }
-        }
-
-        // authors/series, send them a save command.
-        //noinspection ConstantConditions
-        final FragmentManager fm = getActivity().getSupportFragmentManager();
-        // Only resumed fragments (i.e. front/visible) can/will be asked to save their state.
-        final String[] fragmentTags = {EditBookAuthorsFragment.TAG, EditBookSeriesFragment.TAG};
-        for (String tag : fragmentTags) {
-            final Fragment frag = fm.findFragmentByTag(tag);
-            if (frag instanceof DataEditor && frag.isResumed()) {
-                //noinspection unchecked
-                final DataEditor<Book> dataEditor = (DataEditor<Book>) frag;
-                dataEditor.onSaveFields(book);
-                if (dataEditor.hasUnfinishedEdits() && checkUnfinishedEdits) {
                     //noinspection ConstantConditions
                     StandardDialogs.unsavedEdits(
                             getContext(),
@@ -264,6 +242,7 @@ public class EditBookFragment
 
         // Check if the book already exists
         if (mBookViewModel.bookExists()) {
+            //noinspection ConstantConditions
             new MaterialAlertDialogBuilder(getContext())
                     .setIcon(R.drawable.ic_warning)
                     .setTitle(R.string.lbl_duplicate_book)

@@ -30,7 +30,9 @@ package com.hardbacknutter.nevertoomanybooks.utils;
 import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
+import android.util.DisplayMetrics;
 import android.util.TypedValue;
+import android.view.WindowManager;
 
 import androidx.annotation.AttrRes;
 import androidx.annotation.ColorInt;
@@ -100,5 +102,28 @@ public final class AttrUtils {
         ta.recycle();
 
         return textSize;
+    }
+
+    /**
+     * Get a dimension (absolute) int value for the given attribute.
+     *
+     * @param context Current context
+     * @param attr    attribute id to resolve
+     *
+     * @return size in integer pixels
+     */
+    public static int getDimen(@NonNull final Context context,
+                               @AttrRes final int attr) {
+
+        final Resources.Theme theme = context.getTheme();
+        final TypedValue tv = new TypedValue();
+        theme.resolveAttribute(attr, tv, true);
+
+        final DisplayMetrics metrics = new DisplayMetrics();
+        WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+        //noinspection ConstantConditions
+        wm.getDefaultDisplay().getMetrics(metrics);
+
+        return (int) tv.getDimension(metrics);
     }
 }

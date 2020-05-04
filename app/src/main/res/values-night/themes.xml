@@ -58,7 +58,6 @@
         <!-- ==================== -->
         <!-- Application specific -->
         <!-- ==================== -->
-        <item name="bobBookshelfSelectedTextColor">?attr/colorOnPrimary</item>
 
         <item name="bobListHeaderBackgroundColor">@color/blue_grey_800</item>
 

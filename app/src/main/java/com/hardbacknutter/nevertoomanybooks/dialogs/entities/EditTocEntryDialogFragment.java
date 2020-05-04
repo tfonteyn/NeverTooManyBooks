@@ -29,15 +29,11 @@ package com.hardbacknutter.nevertoomanybooks.dialogs.entities;
 
 import android.os.Bundle;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
-
-import com.google.android.material.snackbar.Snackbar;
 
 import java.lang.ref.WeakReference;
 import java.util.Objects;
@@ -48,7 +44,6 @@ import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookTocBinding;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
-import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.widgets.DiacriticArrayAdapter;
@@ -57,7 +52,7 @@ import com.hardbacknutter.nevertoomanybooks.widgets.DiacriticArrayAdapter;
  * Dialog to add a new TOCEntry, or edit an existing one.
  */
 public class EditTocEntryDialogFragment
-        extends DialogFragment {
+        extends BaseDialogFragment {
 
     /** Log tag. */
     public static final String TAG = "EditTocEntryDialogFrag";
@@ -71,7 +66,7 @@ public class EditTocEntryDialogFragment
     @Nullable
     private WeakReference<EditTocEntryResults> mListener;
     @Nullable
-    private String mDialogTitle;
+    private String mBookTitle;
     /** View Binding. */
     private DialogEditBookTocBinding mVb;
     private DiacriticArrayAdapter<String> mAuthorAdapter;
@@ -89,21 +84,25 @@ public class EditTocEntryDialogFragment
     /** Helper to show/hide the author edit field. */
     private boolean mHasMultipleAuthors;
 
+    public EditTocEntryDialogFragment() {
+        super(R.layout.dialog_edit_book_toc);
+    }
+
     /**
      * Constructor.
      *
-     * @param dialogTitle        the dialog title
+     * @param bookTitle          displayed for info only
      * @param tocEntry           to edit.
      * @param hasMultipleAuthors Flag that will enable/disable the author edit field
      *
      * @return instance
      */
-    public static DialogFragment newInstance(@NonNull final String dialogTitle,
+    public static DialogFragment newInstance(@NonNull final String bookTitle,
                                              @NonNull final TocEntry tocEntry,
                                              final boolean hasMultipleAuthors) {
         final DialogFragment frag = new EditTocEntryDialogFragment();
         final Bundle args = new Bundle(3);
-        args.putString(StandardDialogs.BKEY_DIALOG_TITLE, dialogTitle);
+        args.putString(DBDefinitions.KEY_TITLE, bookTitle);
         args.putBoolean(BKEY_HAS_MULTIPLE_AUTHORS, hasMultipleAuthors);
         args.putParcelable(BKEY_TOC_ENTRY, tocEntry);
         frag.setArguments(args);
@@ -113,13 +112,11 @@ public class EditTocEntryDialogFragment
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setStyle(DialogFragment.STYLE_NO_FRAME, R.style.Theme_App_FullScreen);
 
         mDb = new DAO(TAG);
 
         final Bundle args = requireArguments();
-        mDialogTitle = args.getString(StandardDialogs.BKEY_DIALOG_TITLE,
-                                      getString(R.string.lbl_edit_toc_entry));
+        mBookTitle = args.getString(DBDefinitions.KEY_TITLE);
 
         mTocEntry = args.getParcelable(BKEY_TOC_ENTRY);
         Objects.requireNonNull(mTocEntry, ErrorMsg.ARGS_MISSING_TOC_ENTRIES);
@@ -139,24 +136,17 @@ public class EditTocEntryDialogFragment
         }
     }
 
-    @Nullable
     @Override
-    public View onCreateView(@NonNull final LayoutInflater inflater,
-                             @Nullable final ViewGroup container,
-                             @Nullable final Bundle savedInstanceState) {
-        mVb = DialogEditBookTocBinding.inflate(inflater, container, false);
-        return mVb.getRoot();
-    }
+    public void onViewCreated(@NonNull final View view,
+                              @Nullable final Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
-    @Override
-    public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
+        mVb = DialogEditBookTocBinding.bind(view);
 
+        mVb.toolbar.setSubtitle(mBookTitle);
         mVb.toolbar.setNavigationOnClickListener(v -> dismiss());
-        mVb.toolbar.setTitle(mDialogTitle);
-        mVb.toolbar.inflateMenu(R.menu.toolbar_save);
         mVb.toolbar.setOnMenuItemClickListener(item -> {
-            if (item.getItemId() == R.id.action_save) {
+            if (item.getItemId() == R.id.MENU_SAVE) {
                 if (saveChanges()) {
                     dismiss();
                 }
@@ -198,8 +188,7 @@ public class EditTocEntryDialogFragment
     private boolean saveChanges() {
         viewToModel();
         if (mTitle.isEmpty()) {
-            Snackbar.make(mVb.title, R.string.warning_missing_name,
-                          Snackbar.LENGTH_LONG).show();
+            showError(mVb.lblTitle, R.string.vldt_non_blank_required);
             return false;
         }
 

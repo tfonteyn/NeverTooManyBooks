@@ -212,7 +212,7 @@ public class BookDetailsFragment
             // If user clicks to fast it seems to get out of sync.
             if (mVb.toc.getVisibility() == View.VISIBLE) {
                 // force a scroll; a manual scroll is no longer possible after the TOC closes.
-                mVb.topScroller.fullScroll(View.FOCUS_UP);
+                mVb.rootScroller.fullScroll(View.FOCUS_UP);
                 mVb.toc.setVisibility(View.GONE);
                 mVb.btnShowToc.setChecked(false);
 

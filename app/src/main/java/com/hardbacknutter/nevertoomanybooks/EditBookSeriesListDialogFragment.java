@@ -29,19 +29,19 @@ package com.hardbacknutter.nevertoomanybooks;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -51,12 +51,14 @@ import java.util.Objects;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookSeriesBinding;
-import com.hardbacknutter.nevertoomanybooks.databinding.FragmentEditBookSeriesBinding;
+import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookSeriesListBinding;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
+import com.hardbacknutter.nevertoomanybooks.dialogs.entities.BaseDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
+import com.hardbacknutter.nevertoomanybooks.viewmodels.BookViewModel;
 import com.hardbacknutter.nevertoomanybooks.widgets.DiacriticArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.widgets.RecyclerViewAdapterBase;
 import com.hardbacknutter.nevertoomanybooks.widgets.RecyclerViewViewHolderBase;
@@ -66,12 +68,23 @@ import com.hardbacknutter.nevertoomanybooks.widgets.ddsupport.StartDragListener;
 
 /**
  * Edit the list of Series of a Book.
+ *
+ * <strong>Warning:</strong> By exception this DialogFragment uses the parents ViewModel directly.
+ * This means that any observables in the ViewModel must be tested/used with care, as their
+ * destination view might not be available at the moment of an update being triggered.
+ *
  */
-public class EditBookSeriesFragment
-        extends EditBookBaseFragment {
+public class EditBookSeriesListDialogFragment
+        extends BaseDialogFragment {
 
-    /** Log tag. */
-    public static final String TAG = "EditBookSeriesFragment";
+    /** Fragment/Log tag. */
+    public static final String TAG = "EditBookSeriesListDialogFragment";
+    /** Database Access. */
+    private DAO mDb;
+
+    /** The book. Must be in the Activity scope. */
+    private BookViewModel mBookViewModel;
+
     /** If the list changes, the book is dirty. */
     private final SimpleAdapterDataObserver mAdapterDataObserver =
             new SimpleAdapterDataObserver() {
@@ -81,52 +94,86 @@ public class EditBookSeriesFragment
                 }
             };
     /** View Binding. */
-    private FragmentEditBookSeriesBinding mVb;
+    private DialogEditBookSeriesListBinding mVb;
     /** the rows. */
     private ArrayList<Series> mList;
     /** The adapter for the list itself. */
     private RecyclerViewAdapterBase mListAdapter;
     /** Drag and drop support for the list view. */
     private ItemTouchHelper mItemTouchHelper;
+    private LinearLayoutManager mLayoutManager;
 
-    @Nullable
-    @Override
-    public View onCreateView(@NonNull final LayoutInflater inflater,
-                             @Nullable final ViewGroup container,
-                             @Nullable final Bundle savedInstanceState) {
-        mVb = FragmentEditBookSeriesBinding.inflate(inflater, container, false);
-        return mVb.getRoot();
+    /**
+     * No-arg constructor.
+     * <p>
+     * Always force full screen as this dialog is to large/complicated.
+     */
+    public EditBookSeriesListDialogFragment() {
+        super(R.layout.dialog_edit_book_series_list, true);
+    }
+
+    /**
+     * Constructor.
+     *
+     * @return instance
+     */
+    public static DialogFragment newInstance() {
+        return new EditBookSeriesListDialogFragment();
     }
 
     @Override
-    public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
+    public void onCreate(@Nullable final Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        mDb = new DAO(TAG);
+    }
+
+    @Override
+    public void onViewCreated(@NonNull final View view,
+                              @Nullable final Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        mVb = DialogEditBookSeriesListBinding.bind(view);
 
         //noinspection ConstantConditions
-        getActivity().findViewById(R.id.tab_panel).setVisibility(View.GONE);
-
+        mBookViewModel = new ViewModelProvider(getActivity()).get(BookViewModel.class);
         //noinspection ConstantConditions
+        mBookViewModel.init(getContext(), getArguments());
+
+        mVb.toolbar.setSubtitle(mBookViewModel.getBook().getTitle());
+        mVb.toolbar.setNavigationOnClickListener(v -> {
+            if (saveChanges()) {
+                dismiss();
+            }
+        });
+        mVb.toolbar.setOnMenuItemClickListener(item -> {
+            if (item.getItemId() == R.id.action_add) {
+                onAdd();
+                return true;
+            }
+            return false;
+        });
+
         final DiacriticArrayAdapter<String> nameAdapter = new DiacriticArrayAdapter<>(
                 getContext(), R.layout.dropdown_menu_popup_item,
-                mFragmentVM.getDb().getSeriesTitles());
+                mDb.getSeriesTitles());
         mVb.seriesTitle.setAdapter(nameAdapter);
 
+        // soft-keyboards 'done' button act as a shortcut to add the series
+        mVb.seriesNum.setOnEditorActionListener((v, actionId, event) -> {
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                hideKeyboard(v);
+                onAdd();
+                return true;
+            }
+            return false;
+        });
         // set up the list view. The adapter is setup in onPopulateViews
-        final LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
-        mVb.seriesList.setLayoutManager(layoutManager);
+        mLayoutManager = new LinearLayoutManager(getContext());
+        mVb.seriesList.setLayoutManager(mLayoutManager);
         mVb.seriesList.setHasFixedSize(true);
 
-        // adding a new entry
-        mVb.btnAdd.setOnClickListener(v -> onAdd());
-    }
-
-    @Override
-    void onPopulateViews(@NonNull final Book book) {
-        super.onPopulateViews(book);
-
-        mList = book.getParcelableArrayList(Book.BKEY_SERIES_ARRAY);
-
-        //noinspection ConstantConditions
+        mList = mBookViewModel.getBook().getParcelableArrayList(Book.BKEY_SERIES_ARRAY);
         mListAdapter = new SeriesListAdapter(getContext(), mList,
                                              vh -> mItemTouchHelper.startDrag(vh));
         mVb.seriesList.setAdapter(mListAdapter);
@@ -138,26 +185,29 @@ public class EditBookSeriesFragment
         mItemTouchHelper.attachToRecyclerView(mVb.seriesList);
     }
 
-    @Override
-    public void onSaveFields(@NonNull final Book book) {
-        super.onSaveFields(book);
+    private boolean saveChanges() {
+        if (!mVb.seriesTitle.getText().toString().isEmpty()) {
+            //noinspection ConstantConditions
+            StandardDialogs.unsavedEdits(getContext(), null, () -> {
+                mVb.seriesTitle.setText("");
+                if (saveChanges()) {
+                    dismiss();
+                }
+            });
+            return false;
+        }
 
-        // The list is not a 'real' field. Hence the need to store it manually here.
-        // It requires no special validation.
-        book.putParcelableArrayList(Book.BKEY_SERIES_ARRAY, mList);
-    }
-
-    @Override
-    public boolean hasUnfinishedEdits() {
-        // We only check the title field; disregarding the series number field.
-        return !mVb.seriesTitle.getText().toString().isEmpty();
+        mBookViewModel.updateSeries(mList);
+        return true;
     }
 
     private void onAdd() {
+        // clear any previous error
+        mVb.lblSeries.setError(null);
+
         final String name = mVb.seriesTitle.getText().toString().trim();
         if (name.isEmpty()) {
-            Snackbar.make(mVb.seriesTitle, R.string.warning_missing_name,
-                          Snackbar.LENGTH_LONG).show();
+            mVb.lblSeries.setError(getString(R.string.vldt_non_blank_required));
             return;
         }
 
@@ -169,20 +219,19 @@ public class EditBookSeriesFragment
         newSeries.setNumber(mVb.seriesNum.getText().toString().trim());
 
         // see if it already exists
-        newSeries.fixId(getContext(), mFragmentVM.getDb(), bookLocale);
+        newSeries.fixId(getContext(), mDb, bookLocale);
         // and check it's not already in the list.
         if (mList.contains(newSeries)) {
-            Snackbar.make(mVb.seriesTitle, R.string.warning_series_already_in_list,
-                          Snackbar.LENGTH_LONG).show();
-            return;
+            mVb.lblSeries.setError(getString(R.string.warning_series_already_in_list));
+        } else {
+            mList.add(newSeries);
+            // clear the form for next entry and scroll to the new item
+            mVb.seriesTitle.setText("");
+            mVb.seriesNum.setText("");
+            mVb.seriesTitle.requestFocus();
+            mListAdapter.notifyItemInserted(mList.size() - 1);
+            mVb.seriesList.scrollToPosition(mListAdapter.getItemCount() - 1);
         }
-        // add the new one to the list. It is NOT saved at this point!
-        mList.add(newSeries);
-        mListAdapter.notifyDataSetChanged();
-
-        // and clear the form for next entry.
-        mVb.seriesTitle.setText("");
-        mVb.seriesNum.setText("");
     }
 
     /**
@@ -209,7 +258,7 @@ public class EditBookSeriesFragment
                 // so if the number is different, just update it
                 series.setNumber(tmpData.getNumber());
                 //noinspection ConstantConditions
-                Series.pruneList(mList, getContext(), mFragmentVM.getDb(), bookLocale, false);
+                Series.pruneList(mList, getContext(), mDb, bookLocale, false);
                 mListAdapter.notifyDataSetChanged();
             }
             return;
@@ -223,7 +272,7 @@ public class EditBookSeriesFragment
             // Copy the new data into the original object that the user was changing.
             series.copyFrom(tmpData, true);
             //noinspection ConstantConditions
-            Series.pruneList(mList, getContext(), mFragmentVM.getDb(), bookLocale, false);
+            Series.pruneList(mList, getContext(), mDb, bookLocale, false);
             mListAdapter.notifyDataSetChanged();
             return;
         }
@@ -244,9 +293,8 @@ public class EditBookSeriesFragment
                     // copy all new data
                     series.copyFrom(tmpData, true);
                     // This change is done in the database right NOW!
-                    if (mFragmentVM.getDb().updateSeries(getContext(), series, bookLocale)) {
-                        Series.pruneList(mList, getContext(), mFragmentVM.getDb(),
-                                         bookLocale, false);
+                    if (mDb.updateSeries(getContext(), series, bookLocale)) {
+                        Series.pruneList(mList, getContext(), mDb, bookLocale, false);
                         mBookViewModel.refreshSeriesList(getContext());
                         mListAdapter.notifyDataSetChanged();
 
@@ -265,20 +313,27 @@ public class EditBookSeriesFragment
                     // Note that if the user abandons the entire book edit,
                     // we will orphan this new Series. That's ok, it will get
                     // garbage collected from the database sooner or later.
-                    mFragmentVM.getDb().updateOrInsertSeries(getContext(),
-                                                             bookLocale, tmpData);
+                    mDb.updateOrInsertSeries(getContext(),
+                                             bookLocale, tmpData);
                     // unlink the old one (and unmodified), and link with the new one
                     // book/series positions will be fixed up when saving.
                     // Note that the old one *might* be orphaned at this time.
                     // Same remark as above.
                     mList.remove(series);
                     mList.add(tmpData);
-                    Series.pruneList(mList, getContext(), mFragmentVM.getDb(),
-                                     bookLocale, false);
+                    Series.pruneList(mList, getContext(), mDb, bookLocale, false);
                     mListAdapter.notifyDataSetChanged();
                 })
                 .create()
                 .show();
+    }
+
+    @Override
+    public void onDestroy() {
+        if (mDb != null) {
+            mDb.close();
+        }
+        super.onDestroy();
     }
 
     /**
@@ -303,16 +358,16 @@ public class EditBookSeriesFragment
      * Must be a public static class to be properly recreated from instance state.
      */
     public static class EditBookSeriesDialogFragment
-            extends DialogFragment {
+            extends BaseDialogFragment {
 
         /** Fragment/Log tag. */
         @SuppressWarnings("InnerClassFieldHidesOuterClassField")
-        private static final String TAG = "EditBookSeriesDialogFragment";
+        static final String TAG = "EditBookSeriesDialogFragment";
 
         /** Database Access. */
         private DAO mDb;
         @Nullable
-        private String mDialogTitle;
+        private String mBookTitle;
         /** View Binding. */
         private DialogEditBookSeriesBinding mVb;
 
@@ -326,16 +381,23 @@ public class EditBookSeriesFragment
         /** Current edit. */
         private String mSeriesNumber;
 
+        public EditBookSeriesDialogFragment() {
+            super(R.layout.dialog_edit_book_series);
+        }
+
         /**
          * Constructor.
          *
-         * @param series to edit
+         * @param bookTitle displayed for info only
+         * @param series    to edit
          *
          * @return instance
          */
-        static DialogFragment newInstance(@NonNull final Series series) {
+        static DialogFragment newInstance(@NonNull final String bookTitle,
+                                          @NonNull final Series series) {
             final DialogFragment frag = new EditBookSeriesDialogFragment();
-            final Bundle args = new Bundle(1);
+            final Bundle args = new Bundle(2);
+            args.putString(DBDefinitions.KEY_TITLE, bookTitle);
             args.putParcelable(DBDefinitions.KEY_FK_SERIES, series);
             frag.setArguments(args);
             return frag;
@@ -344,13 +406,11 @@ public class EditBookSeriesFragment
         @Override
         public void onCreate(@Nullable final Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
-            setStyle(DialogFragment.STYLE_NO_FRAME, R.style.Theme_App_FullScreen);
 
             mDb = new DAO(TAG);
 
             final Bundle args = requireArguments();
-            mDialogTitle = args.getString(StandardDialogs.BKEY_DIALOG_TITLE,
-                                          getString(R.string.lbl_edit_series));
+            mBookTitle = args.getString(DBDefinitions.KEY_TITLE);
 
             mSeries = args.getParcelable(DBDefinitions.KEY_FK_SERIES);
             Objects.requireNonNull(mSeries, ErrorMsg.ARGS_MISSING_SERIES);
@@ -367,26 +427,19 @@ public class EditBookSeriesFragment
             }
         }
 
-        @Nullable
         @Override
-        public View onCreateView(@NonNull final LayoutInflater inflater,
-                                 @Nullable final ViewGroup container,
-                                 @Nullable final Bundle savedInstanceState) {
-            mVb = DialogEditBookSeriesBinding.inflate(inflater, container, false);
-            return mVb.getRoot();
-        }
+        public void onViewCreated(@NonNull final View view,
+                                  @Nullable final Bundle savedInstanceState) {
+            super.onViewCreated(view, savedInstanceState);
 
-        @Override
-        public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
-            super.onActivityCreated(savedInstanceState);
+            mVb = DialogEditBookSeriesBinding.bind(view);
 
             Objects.requireNonNull(getTargetFragment(), ErrorMsg.NO_TARGET_FRAGMENT_SET);
 
+            mVb.toolbar.setSubtitle(mBookTitle);
             mVb.toolbar.setNavigationOnClickListener(v -> dismiss());
-            mVb.toolbar.setTitle(mDialogTitle);
-            mVb.toolbar.inflateMenu(R.menu.toolbar_save);
             mVb.toolbar.setOnMenuItemClickListener(item -> {
-                if (item.getItemId() == R.id.action_save) {
+                if (item.getItemId() == R.id.MENU_SAVE) {
                     if (saveChanges()) {
                         dismiss();
                     }
@@ -412,8 +465,7 @@ public class EditBookSeriesFragment
 
             // basic check only, we're doing more extensive checks later on.
             if (mSeriesTitle.isEmpty()) {
-                Snackbar.make(mVb.seriesTitle, R.string.warning_missing_name,
-                              Snackbar.LENGTH_LONG).show();
+                showError(mVb.lblSeriesTitle, R.string.vldt_non_blank_required);
                 return false;
             }
 
@@ -423,7 +475,8 @@ public class EditBookSeriesFragment
             tmpSeries.setNumber(mSeriesNumber);
 
             //noinspection ConstantConditions
-            ((EditBookSeriesFragment) getTargetFragment()).processChanges(mSeries, tmpSeries);
+            ((EditBookSeriesListDialogFragment) getTargetFragment())
+                    .processChanges(mSeries, tmpSeries);
             return true;
         }
 
@@ -492,8 +545,9 @@ public class EditBookSeriesFragment
 
             // click -> edit
             holder.rowDetailsView.setOnClickListener(v -> {
-                final DialogFragment frag = EditBookSeriesDialogFragment.newInstance(series);
-                frag.setTargetFragment(EditBookSeriesFragment.this, 0);
+                final DialogFragment frag = EditBookSeriesDialogFragment
+                        .newInstance(mBookViewModel.getBook().getTitle(), series);
+                frag.setTargetFragment(EditBookSeriesListDialogFragment.this, 0);
                 frag.show(getParentFragmentManager(), EditBookSeriesDialogFragment.TAG);
             });
         }

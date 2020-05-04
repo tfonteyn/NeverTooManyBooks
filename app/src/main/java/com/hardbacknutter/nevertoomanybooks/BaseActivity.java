@@ -30,6 +30,7 @@ package com.hardbacknutter.nevertoomanybooks;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -319,6 +320,10 @@ public abstract class BaseActivity
         super.onResume();
         if (BuildConfig.DEBUG) {
             Log.d(TAG, "onResume|sActivityRecreateStatus=" + sActivityRecreateStatus);
+
+            Configuration config = getResources().getConfiguration();
+            Log.d(TAG, "config.screenWidthDp=" + config.screenWidthDp
+                       + "|config.smallestScreenWidthDp=" + config.smallestScreenWidthDp);
         }
         maybeRecreate();
     }

@@ -29,10 +29,10 @@
 
 <resources>
 
-    <attr name="bobBookshelfSelectedTextColor" format="reference|color" />
-
+    <!-- The header on the BoB screen. Default was using the surfaceColor, we override here. -->
     <attr name="bobListHeaderBackgroundColor" format="reference|color" />
 
+    <!-- The fast-scroller overlay -->
     <attr name="bobFsOverlayTextColor" format="reference|color" />
     <attr name="bobFsOverlayBackgroundColor" format="reference|color" />
 

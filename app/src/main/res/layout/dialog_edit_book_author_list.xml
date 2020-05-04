@@ -32,7 +32,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     >
 
     <com.google.android.material.appbar.AppBarLayout
@@ -45,34 +45,34 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            app:navigationIcon="@drawable/ic_close"
+            app:menu="@menu/toolbar_add"
+            app:navigationIcon="?attr/homeAsUpIndicator"
+            app:title="@string/lbl_authors"
             />
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/body_frame"
+        style="@style/Dialog.Frame.Fullscreen"
         >
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            style="@style/Dialog.Body.FloatingAndFullscreen"
             >
 
             <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/lbl_color"
+                android:id="@+id/lbl_author"
                 style="@style/Envelope.AutoCompleteTextView"
-                android:hint="@string/lbl_color"
+                android:hint="@string/lbl_author"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 >
 
                 <AutoCompleteTextView
-                    android:id="@+id/name"
-                    style="@style/bookColorTextEntry"
+                    android:id="@+id/author"
+                    style="@style/personalNameTextEntry"
                     android:layout_width="match_parent"
                     android:imeOptions="actionDone"
                     tools:ignore="LabelFor"
@@ -80,14 +80,18 @@
 
             </com.google.android.material.textfield.TextInputLayout>
 
-            <TextView
-                android:id="@+id/blurb"
-                style="@style/Blurb.Small"
-                android:text="@string/warning_immediate_global_changes"
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/author_list"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_marginTop="@dimen/border2"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/lbl_color"
+                app:layout_constraintTop_toBottomOf="@id/lbl_author"
+                tools:listitem="@layout/row_edit_author_list"
                 />
+
         </androidx.constraintlayout.widget.ConstraintLayout>
-    </FrameLayout>
+    </androidx.core.widget.NestedScrollView>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

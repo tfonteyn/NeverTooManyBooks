@@ -38,7 +38,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     >
 
     <com.google.android.material.appbar.AppBarLayout
@@ -51,20 +51,20 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
+            app:menu="@menu/toolbar_save"
             app:navigationIcon="@drawable/ic_close"
+            app:title="@string/lbl_author"
             />
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/body_frame"
+        style="@style/Dialog.Frame.FloatingAndFullscreen"
         >
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            style="@style/Dialog.Body.FloatingAndFullscreen"
             >
 
             <com.google.android.material.textfield.TextInputLayout
@@ -170,8 +170,9 @@
                 style="@style/CheckboxEntry"
                 android:text="@string/lbl_author_type_intro"
                 app:layout_constraintEnd_toStartOf="@id/typeColumnDiv"
-                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintHorizontal_bias="1.0"
 
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/cbx_author_type_contributor"
                 />
 
@@ -248,5 +249,5 @@
                 />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
-    </FrameLayout>
+    </androidx.core.widget.NestedScrollView>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

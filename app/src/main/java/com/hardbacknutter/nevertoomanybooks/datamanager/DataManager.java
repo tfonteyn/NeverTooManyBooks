@@ -41,6 +41,7 @@ import androidx.annotation.VisibleForTesting;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
@@ -60,7 +61,6 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.RowDataHolder;
 import com.hardbacknutter.nevertoomanybooks.utils.Money;
 import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.UniqueMap;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.UnexpectedValueException;
 
 /**
@@ -88,10 +88,10 @@ public class DataManager
     /** Log tag. */
     private static final String TAG = "DataManager";
     /** DataValidators. */
-    private final Map<String, DataValidator> mValidatorsMap = new UniqueMap<>();
+    private final Map<String, DataValidator> mValidatorsMap = new HashMap<>();
     /** DataValidators. Same key as mValidatorsMap; value: @StringRes. */
     @SuppressWarnings("FieldNotUsedInToString")
-    private final Map<String, Integer> mValidatorErrorIdMap = new UniqueMap<>();
+    private final Map<String, Integer> mValidatorErrorIdMap = new HashMap<>();
 
     /** A list of cross-validators to apply if all fields pass simple validation. */
     private final Collection<DataCrossValidator> mCrossValidators = new ArrayList<>();
@@ -568,6 +568,8 @@ public class DataManager
 
     /**
      * Add a validator for the specified key.
+     *
+     * Accepts only one validator for a key. Setting a second one will override the first.
      *
      * @param key          Key for the data
      * @param validator    Validator

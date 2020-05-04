@@ -73,13 +73,22 @@ public class CompoundButtonAccessor
     @NonNull
     @Override
     public Boolean getValue() {
-        return getView().isChecked();
+        final CompoundButton view = getView();
+        if (view != null) {
+            return view.isChecked();
+        } else {
+            return mRawValue != null ? mRawValue : false;
+        }
     }
 
     @Override
     public void setValue(@Nullable final Boolean value) {
         mRawValue = value != null ? value : false;
-        getView().setChecked(mRawValue);
+
+        final CompoundButton view = getView();
+        if (view != null) {
+            view.setChecked(mRawValue);
+        }
     }
 
     @Override

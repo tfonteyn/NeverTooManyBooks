@@ -44,7 +44,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
 
 import java.util.ArrayList;
@@ -156,6 +155,18 @@ public class EditBookFieldsFragment
         //noinspection ConstantConditions
         mScannerModel = new ViewModelProvider(getActivity()).get(ScannerViewModel.class);
 
+        mBookViewModel.getAuthorList().observe(getViewLifecycleOwner(), authors -> {
+            final Field<List<Author>, TextView> field = getFields().getField(R.id.author);
+            field.getAccessor().setValue(authors);
+            field.validate();
+        });
+
+        mBookViewModel.getSeriesList().observe(getViewLifecycleOwner(), series -> {
+            final Field<List<Series>, TextView> field = getFields().getField(R.id.series_title);
+            field.getAccessor().setValue(series);
+            field.validate();
+        });
+
         //noinspection ConstantConditions
         ViewFocusOrder.fix(getView());
     }
@@ -194,7 +205,7 @@ public class EditBookFieldsFragment
               .setFieldValidator(NON_BLANK_VALIDATOR);
 
         fields.add(R.id.genre, new EditTextAccessor<>(), DBDefinitions.KEY_GENRE)
-              .setRelatedFields(R.id.lbl_genre);
+              .setRelatedFields(R.id.lbl_name);
 
         // Personal fields
 
@@ -230,7 +241,8 @@ public class EditBookFieldsFragment
     @Override
     public void onResume() {
         //noinspection ConstantConditions
-        mBookViewModel.prepareAuthorsAndSeries(getContext());
+        mBookViewModel.pruneAuthors(getContext());
+        mBookViewModel.pruneSeries(getContext());
 
         // the super will trigger the population of all defined Fields and their Views.
         super.onResume();
@@ -261,11 +273,22 @@ public class EditBookFieldsFragment
             mScannerModel.scan(this, RequestCode.SCAN_BARCODE);
         });
 
-        Field field;
+        //noinspection ConstantConditions
+        mVb.author.setOnClickListener(v -> EditBookAuthorListDialogFragment
+                // peer fragment. We share the book view model
+                .newInstance().show(getActivity().getSupportFragmentManager(),
+                                    EditBookAuthorListDialogFragment.TAG));
+
+        if (mFragmentVM.getFields().getField(R.id.series_title).isUsed(getContext())) {
+            //noinspection ConstantConditions
+            mVb.seriesTitle.setOnClickListener(v -> EditBookSeriesListDialogFragment
+                    // peer fragment. We share the book view model
+                    .newInstance().show(getActivity().getSupportFragmentManager(),
+                                        EditBookSeriesListDialogFragment.TAG));
+        }
 
         // Bookshelves editor (dialog)
-        field = mFragmentVM.getFields().getField(R.id.bookshelves);
-        if (field.isUsed(getContext())) {
+        if (mFragmentVM.getFields().getField(R.id.bookshelves).isUsed(getContext())) {
             mVb.bookshelves.setOnClickListener(v -> {
                 mFragmentVM.setCurrentDialogFieldId(R.id.bookshelves);
                 final DialogFragment picker = CheckListDialogFragment
@@ -274,20 +297,9 @@ public class EditBookFieldsFragment
                                      new ArrayList<>(
                                              mBookViewModel.getBook().getParcelableArrayList(
                                                      Book.BKEY_BOOKSHELF_ARRAY)));
+                // child fragment. We use a listener, see onAttachFragment
                 picker.show(getChildFragmentManager(), CheckListDialogFragment.TAG);
             });
-        }
-
-        field = mFragmentVM.getFields().getField(R.id.author);
-        if (field.isUsed(getContext())) {
-            mVb.author.setOnClickListener(v -> showEditListFragment(
-                    new EditBookAuthorsFragment(), EditBookAuthorsFragment.TAG));
-        }
-
-        field = mFragmentVM.getFields().getField(R.id.series_title);
-        if (field.isUsed(getContext())) {
-            mVb.seriesTitle.setOnClickListener(v -> showEditListFragment(
-                    new EditBookSeriesFragment(), EditBookSeriesFragment.TAG));
         }
     }
 
@@ -379,28 +391,5 @@ public class EditBookFieldsFragment
                 break;
             }
         }
-    }
-
-    /**
-     * Show the given fragment to edit the list of authors/series.
-     *
-     * @param frag the fragment to show
-     * @param tag  the tag to use for the fragment
-     */
-    private void showEditListFragment(@NonNull final Fragment frag,
-                                      @NonNull final String tag) {
-        // The original intent was to simply add the new fragment on the same level
-        // as the current one; using getParentFragment().getChildFragmentManager()
-        // but we got: IllegalStateException: ViewPager2 does not support direct child views
-        // So... we use the top-level fragment manager,
-        // and have EditBookFragment#prepareSave explicitly check.
-
-        //noinspection ConstantConditions
-        getActivity().getSupportFragmentManager()
-                     .beginTransaction()
-                     .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-                     .replace(R.id.main_fragment, frag, tag)
-                     .addToBackStack(tag)
-                     .commit();
     }
 }

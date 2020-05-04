@@ -262,6 +262,7 @@ public abstract class BookSearchBaseFragment
      *
      * @return {@code true} if a search is allowed
      */
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     boolean onPreSearch() {
         return true;
     }
@@ -272,6 +273,7 @@ public abstract class BookSearchBaseFragment
      *
      * @return {@code true} if a search was started
      */
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     boolean onSearch() {
         //noinspection ConstantConditions
         return mSearchCoordinator.search(getContext());

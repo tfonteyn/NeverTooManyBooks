@@ -30,20 +30,21 @@ package com.hardbacknutter.nevertoomanybooks;
 import android.content.Context;
 import android.os.Bundle;
 import android.util.SparseArray;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
 import android.widget.CompoundButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.DialogFragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,16 +53,19 @@ import java.util.Objects;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookAuthorBinding;
-import com.hardbacknutter.nevertoomanybooks.databinding.FragmentEditBookAuthorsBinding;
+import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookAuthorListBinding;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
+import com.hardbacknutter.nevertoomanybooks.dialogs.entities.BaseDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.ItemWithFixableId;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.AuthorFormatter;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
+import com.hardbacknutter.nevertoomanybooks.utils.AttrUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
+import com.hardbacknutter.nevertoomanybooks.viewmodels.BookViewModel;
 import com.hardbacknutter.nevertoomanybooks.widgets.DiacriticArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.widgets.RecyclerViewAdapterBase;
 import com.hardbacknutter.nevertoomanybooks.widgets.RecyclerViewViewHolderBase;
@@ -72,14 +76,22 @@ import com.hardbacknutter.nevertoomanybooks.widgets.ddsupport.StartDragListener;
 /**
  * Edit the list of Authors of a Book.
  * <p>
- * You can edit the type in the edit-author dialog, but you cannot yet set it when adding
- * an author to the list.
+ * <strong>Warning:</strong> By exception this DialogFragment uses the parents ViewModel directly.
+ * This means that any observables in the ViewModel must be tested/used with care, as their
+ * destination view might not be available at the moment of an update being triggered.
+ * <p>
+ * Maybe TODO: cannot set author type when creating but only when editing existing author.
  */
-public class EditBookAuthorsFragment
-        extends EditBookBaseFragment {
+public class EditBookAuthorListDialogFragment
+        extends BaseDialogFragment {
 
-    /** Log tag. */
-    public static final String TAG = "EditBookAuthorsFragment";
+    /** Fragment/Log tag. */
+    public static final String TAG = "EditBookAuthorListDialogFragment";
+    /** Database Access. */
+    private DAO mDb;
+
+    /** The book. Must be in the Activity scope. */
+    private BookViewModel mBookViewModel;
 
     /** If the list changes, the book is dirty. */
     private final SimpleAdapterDataObserver mAdapterDataObserver =
@@ -89,9 +101,8 @@ public class EditBookAuthorsFragment
                     mBookViewModel.setDirty(true);
                 }
             };
-
     /** View Binding. */
-    private FragmentEditBookAuthorsBinding mVb;
+    private DialogEditBookAuthorListBinding mVb;
     /** the rows. */
     private ArrayList<Author> mList;
     /** The adapter for the list itself. */
@@ -99,49 +110,82 @@ public class EditBookAuthorsFragment
     /** Drag and drop support for the list view. */
     private ItemTouchHelper mItemTouchHelper;
 
-    @Nullable
-    @Override
-    public View onCreateView(@NonNull final LayoutInflater inflater,
-                             @Nullable final ViewGroup container,
-                             @Nullable final Bundle savedInstanceState) {
-        mVb = FragmentEditBookAuthorsBinding.inflate(inflater, container, false);
-        return mVb.getRoot();
+    /**
+     * No-arg constructor.
+     * <p>
+     * Always force full screen as this dialog is to large/complicated.
+     */
+    public EditBookAuthorListDialogFragment() {
+        super(R.layout.dialog_edit_book_author_list, true);
+    }
+
+    /**
+     * Constructor.
+     *
+     * @return instance
+     */
+    public static DialogFragment newInstance() {
+        return new EditBookAuthorListDialogFragment();
     }
 
     @Override
-    public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
+    public void onCreate(@Nullable final Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setStyle(DialogFragment.STYLE_NO_FRAME, R.style.Theme_App_FullScreen);
+
+        mDb = new DAO(TAG);
+    }
+
+    @Override
+    public void onViewCreated(@NonNull final View view,
+                              @Nullable final Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        mVb = DialogEditBookAuthorListBinding.bind(view);
 
         //noinspection ConstantConditions
-        getActivity().findViewById(R.id.tab_panel).setVisibility(View.GONE);
-
+        mBookViewModel = new ViewModelProvider(getActivity()).get(BookViewModel.class);
         //noinspection ConstantConditions
+        mBookViewModel.init(getContext(), getArguments());
+
+        mVb.toolbar.setSubtitle(mBookViewModel.getBook().getTitle());
+        mVb.toolbar.setNavigationOnClickListener(v -> {
+            if (saveChanges()) {
+                dismiss();
+            }
+        });
+        mVb.toolbar.setOnMenuItemClickListener(item -> {
+            if (item.getItemId() == R.id.action_add) {
+                onAdd();
+                return true;
+            }
+            return false;
+        });
+
         final DiacriticArrayAdapter<String> nameAdapter = new DiacriticArrayAdapter<>(
                 getContext(), R.layout.dropdown_menu_popup_item,
-                mFragmentVM.getAuthorNames());
+                mDb.getAuthorNames(DBDefinitions.KEY_AUTHOR_FORMATTED));
         mVb.author.setAdapter(nameAdapter);
         mVb.author.setOnFocusChangeListener((v, hasFocus) -> {
             if (hasFocus) {
                 mVb.lblAuthor.setError(null);
             }
         });
+        // soft-keyboards 'done' button act as a shortcut to add the author
+        mVb.author.setOnEditorActionListener((v, actionId, event) -> {
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                hideKeyboard(v);
+                onAdd();
+                return true;
+            }
+            return false;
+        });
 
-        // set up the list view. The adapter is setup in onPopulateViews
         final LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         mVb.authorList.setLayoutManager(layoutManager);
         mVb.authorList.setHasFixedSize(true);
 
-        // adding a new entry
-        mVb.btnAdd.setOnClickListener(v -> onAdd());
-    }
-
-    @Override
-    void onPopulateViews(@NonNull final Book book) {
-        super.onPopulateViews(book);
-
-        mList = book.getParcelableArrayList(Book.BKEY_AUTHOR_ARRAY);
-
-        //noinspection ConstantConditions
+        mList = mBookViewModel.getBook().getParcelableArrayList(Book.BKEY_AUTHOR_ARRAY);
         mListAdapter = new AuthorListAdapter(getContext(), mList,
                                              vh -> mItemTouchHelper.startDrag(vh));
         mVb.authorList.setAdapter(mListAdapter);
@@ -153,30 +197,29 @@ public class EditBookAuthorsFragment
         mItemTouchHelper.attachToRecyclerView(mVb.authorList);
     }
 
-    @Override
-    public void onSaveFields(@NonNull final Book book) {
-        super.onSaveFields(book);
-
-        // The list is not a 'real' field. Hence the need to store it manually here.
-        book.putParcelableArrayList(Book.BKEY_AUTHOR_ARRAY, mList);
-        // A book should always have an Author.
-        if (mList.isEmpty()) {
-            mVb.lblAuthor.setError(getString(R.string.warning_requires_at_least_1_author));
-        } else {
-            mVb.lblAuthor.setError(null);
+    private boolean saveChanges() {
+        if (!mVb.author.getText().toString().isEmpty()) {
+            //noinspection ConstantConditions
+            StandardDialogs.unsavedEdits(getContext(), null, () -> {
+                mVb.author.setText("");
+                if (saveChanges()) {
+                    dismiss();
+                }
+            });
+            return false;
         }
-    }
 
-    @Override
-    public boolean hasUnfinishedEdits() {
-        return !mVb.author.getText().toString().isEmpty();
+        mBookViewModel.updateAuthors(mList);
+        return true;
     }
 
     private void onAdd() {
+        // clear any previous error
+        mVb.lblAuthor.setError(null);
+
         final String name = mVb.author.getText().toString().trim();
         if (name.isEmpty()) {
-            Snackbar.make(mVb.author, R.string.warning_missing_name,
-                          Snackbar.LENGTH_LONG).show();
+            mVb.lblAuthor.setError(getString(R.string.vldt_non_blank_required));
             return;
         }
 
@@ -184,20 +227,18 @@ public class EditBookAuthorsFragment
 
         // see if it already exists
         //noinspection ConstantConditions
-        newAuthor.fixId(getContext(), mFragmentVM.getDb(), LocaleUtils.getUserLocale(getContext()));
+        newAuthor.fixId(getContext(), mDb, LocaleUtils.getUserLocale(getContext()));
         // and check it's not already in the list.
         if (mList.contains(newAuthor)) {
-            Snackbar.make(mVb.author, R.string.warning_author_already_in_list,
-                          Snackbar.LENGTH_LONG).show();
-            return;
+            mVb.lblAuthor.setError(getString(R.string.warning_author_already_in_list));
+        } else {
+            mList.add(newAuthor);
+            // clear the form for next entry and scroll to the new item
+            mVb.author.setText("");
+            mVb.author.requestFocus();
+            mListAdapter.notifyItemInserted(mList.size() - 1);
+            mVb.authorList.scrollToPosition(mListAdapter.getItemCount() - 1);
         }
-        // add the new one to the list. It is NOT saved at this point!
-        mList.add(newAuthor);
-        mListAdapter.notifyDataSetChanged();
-        // clear any previous error
-        mVb.lblAuthor.setError(null);
-        // and clear the form for next entry.
-        mVb.author.setText("");
     }
 
     /**
@@ -221,11 +262,6 @@ public class EditBookAuthorsFragment
             if (author.getType() != tmpData.getType()) {
                 // so if the type is different, just update it
                 author.setType(tmpData.getType());
-                //noinspection ConstantConditions
-                ItemWithFixableId.pruneList(mList, getContext(), mFragmentVM.getDb(),
-                                            LocaleUtils.getUserLocale(getContext()),
-                                            false);
-                mListAdapter.notifyDataSetChanged();
             }
             return;
         }
@@ -238,11 +274,6 @@ public class EditBookAuthorsFragment
             // There is no need to consult the user.
             // Copy the new data into the original object that the user was changing.
             author.copyFrom(tmpData, true);
-            //noinspection ConstantConditions
-            ItemWithFixableId.pruneList(mList, getContext(), mFragmentVM.getDb(),
-                                        LocaleUtils.getUserLocale(getContext()),
-                                        false);
-            mListAdapter.notifyDataSetChanged();
             return;
         }
 
@@ -262,12 +293,8 @@ public class EditBookAuthorsFragment
                     // copy all new data
                     author.copyFrom(tmpData, true);
                     // This change is done in the database right NOW!
-                    if (mFragmentVM.getDb().updateAuthor(getContext(), author)) {
-                        ItemWithFixableId.pruneList(mList, getContext(), mFragmentVM.getDb(),
-                                                    LocaleUtils.getUserLocale(getContext()),
-                                                    false);
+                    if (mDb.updateAuthor(getContext(), author)) {
                         mBookViewModel.refreshAuthorList(getContext());
-                        mListAdapter.notifyDataSetChanged();
 
                     } else {
                         Logger.warnWithStackTrace(getContext(), TAG, "Could not update",
@@ -284,7 +311,7 @@ public class EditBookAuthorsFragment
                     // Note that if the user abandons the entire book edit,
                     // we will orphan this new Author. That's ok, it will get
                     // garbage collected from the database sooner or later.
-                    mFragmentVM.getDb().updateOrInsertAuthor(getContext(), tmpData);
+                    mDb.updateOrInsertAuthor(getContext(), tmpData);
 
                     // unlink the old one (and unmodified), and link with the new one
                     // book/author positions will be fixed up when saving.
@@ -292,9 +319,10 @@ public class EditBookAuthorsFragment
                     // Same remark as above.
                     mList.remove(author);
                     mList.add(tmpData);
-                    ItemWithFixableId.pruneList(mList, getContext(), mFragmentVM.getDb(),
+                    ItemWithFixableId.pruneList(mList, getContext(), mDb,
                                                 LocaleUtils.getUserLocale(getContext()),
                                                 false);
+                    mListAdapter.notifyDataSetChanged();
 
                     //URGENT: updated author(s): Book gets them, but TocEntries remain using old set
                     //
@@ -314,11 +342,17 @@ public class EditBookAuthorsFragment
                     // - just ASK the user with a "mod toc" or "no"
                     // - don't bother, assume this won't be needed very often and
                     //   have the user will do it manually
-
-                    mListAdapter.notifyDataSetChanged();
                 })
                 .create()
                 .show();
+    }
+
+    @Override
+    public void onDestroy() {
+        if (mDb != null) {
+            mDb.close();
+        }
+        super.onDestroy();
     }
 
     /**
@@ -343,8 +377,8 @@ public class EditBookAuthorsFragment
      * <p>
      * Must be a public static class to be properly recreated from instance state.
      */
-    public static class EditBookAuthorDialogFragment
-            extends DialogFragment {
+    public static class EditAuthorForBookDialogFragment
+            extends BaseDialogFragment {
 
         /** Fragment/Log tag. */
         @SuppressWarnings("InnerClassFieldHidesOuterClassField")
@@ -359,7 +393,7 @@ public class EditBookAuthorsFragment
         /** Database Access. */
         private DAO mDb;
         @Nullable
-        private String mDialogTitle;
+        private String mBookTitle;
         /** View Binding. */
         private DialogEditBookAuthorBinding mVb;
         /** The Author we're editing. */
@@ -376,15 +410,27 @@ public class EditBookAuthorsFragment
         private int mType;
 
         /**
+         * No-arg constructor.
+         * <p>
+         * Always force full screen as this dialog is to large/complicated.
+         */
+        public EditAuthorForBookDialogFragment() {
+            super(R.layout.dialog_edit_book_author);
+        }
+
+        /**
          * Constructor.
          *
-         * @param author to edit
+         * @param bookTitle displayed for info only
+         * @param author    to edit
          *
          * @return instance
          */
-        static DialogFragment newInstance(@NonNull final Author author) {
-            final DialogFragment frag = new EditBookAuthorDialogFragment();
-            final Bundle args = new Bundle(1);
+        static DialogFragment newInstance(@NonNull final String bookTitle,
+                                          @NonNull final Author author) {
+            final DialogFragment frag = new EditAuthorForBookDialogFragment();
+            final Bundle args = new Bundle(2);
+            args.putString(DBDefinitions.KEY_TITLE, bookTitle);
             args.putParcelable(DBDefinitions.KEY_FK_AUTHOR, author);
             frag.setArguments(args);
             return frag;
@@ -393,13 +439,11 @@ public class EditBookAuthorsFragment
         @Override
         public void onCreate(@Nullable final Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
-            setStyle(DialogFragment.STYLE_NO_FRAME, R.style.Theme_App_FullScreen);
 
             mDb = new DAO(TAG);
 
             final Bundle args = requireArguments();
-            mDialogTitle = args.getString(StandardDialogs.BKEY_DIALOG_TITLE,
-                                          getString(R.string.lbl_edit_author));
+            mBookTitle = args.getString(DBDefinitions.KEY_TITLE);
 
             mAuthor = args.getParcelable(DBDefinitions.KEY_FK_AUTHOR);
             Objects.requireNonNull(mAuthor, ErrorMsg.ARGS_MISSING_AUTHOR);
@@ -418,26 +462,19 @@ public class EditBookAuthorsFragment
             }
         }
 
-        @Nullable
         @Override
-        public View onCreateView(@NonNull final LayoutInflater inflater,
-                                 @Nullable final ViewGroup container,
-                                 @Nullable final Bundle savedInstanceState) {
-            mVb = DialogEditBookAuthorBinding.inflate(inflater, container, false);
-            return mVb.getRoot();
-        }
+        public void onViewCreated(@NonNull final View view,
+                                  @Nullable final Bundle savedInstanceState) {
+            super.onViewCreated(view, savedInstanceState);
 
-        @Override
-        public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
-            super.onActivityCreated(savedInstanceState);
+            mVb = DialogEditBookAuthorBinding.bind(view);
 
             Objects.requireNonNull(getTargetFragment(), ErrorMsg.NO_TARGET_FRAGMENT_SET);
 
+            mVb.toolbar.setSubtitle(mBookTitle);
             mVb.toolbar.setNavigationOnClickListener(v -> dismiss());
-            mVb.toolbar.setTitle(mDialogTitle);
-            mVb.toolbar.inflateMenu(R.menu.toolbar_save);
             mVb.toolbar.setOnMenuItemClickListener(item -> {
-                if (item.getItemId() == R.id.action_save) {
+                if (item.getItemId() == R.id.MENU_SAVE) {
                     if (saveChanges()) {
                         dismiss();
                     }
@@ -491,6 +528,35 @@ public class EditBookAuthorsFragment
                 } else {
                     setTypeEnabled(false);
                 }
+
+                /*
+                    This is a hack/workaround: the style used on the FrameLayout
+                    uses a workaround for an issue with the Toolbar.
+                    Here we need to workaround the former workaround depending on
+                    displaying the dialog in full-screen mode or not.
+
+                    android:layout_marginBottom:
+                        screen +sw600: ?attr/actionBarSize
+                        screen -sw600: 0dp
+                 */
+                final int marginBottom;
+                if (getResources().getBoolean(R.bool.isLargeScreen)) {
+                    marginBottom = AttrUtils.getDimen(getContext(), R.attr.actionBarSize);
+                } else {
+                    marginBottom = 0;
+                }
+
+                // guard against a unpredicted change in the xml.
+                //noinspection ConstantConditions
+                if (!(mVb.bodyFrame instanceof NestedScrollView)) {
+                    throw new IllegalStateException("mVb.bodyFrame instanceof NestedScrollView");
+                }
+
+                final ViewGroup.MarginLayoutParams marginParams =
+                        (ViewGroup.MarginLayoutParams) mVb.bodyFrame.getLayoutParams();
+                marginParams.bottomMargin = marginBottom;
+                mVb.bodyFrame.setLayoutParams(marginParams);
+                mVb.bodyFrame.setFillViewport(true);
             }
         }
 
@@ -514,8 +580,7 @@ public class EditBookAuthorsFragment
 
             // basic check only, we're doing more extensive checks later on.
             if (mFamilyName.isEmpty()) {
-                Snackbar.make(mVb.familyName, R.string.warning_missing_name,
-                              Snackbar.LENGTH_LONG).show();
+                showError(mVb.lblFamilyName, R.string.vldt_non_blank_required);
                 return false;
             }
 
@@ -529,7 +594,8 @@ public class EditBookAuthorsFragment
             }
 
             //noinspection ConstantConditions
-            ((EditBookAuthorsFragment) getTargetFragment()).processChanges(mAuthor, tmpAuthor);
+            ((EditBookAuthorListDialogFragment) getTargetFragment())
+                    .processChanges(mAuthor, tmpAuthor);
             return true;
         }
 
@@ -610,9 +676,10 @@ public class EditBookAuthorsFragment
 
             // click -> edit
             holder.rowDetailsView.setOnClickListener(v -> {
-                final DialogFragment frag = EditBookAuthorDialogFragment.newInstance(author);
-                frag.setTargetFragment(EditBookAuthorsFragment.this, 0);
-                frag.show(getParentFragmentManager(), EditBookAuthorDialogFragment.TAG);
+                final DialogFragment frag = EditAuthorForBookDialogFragment
+                        .newInstance(mBookViewModel.getBook().getTitle(), author);
+                frag.setTargetFragment(EditBookAuthorListDialogFragment.this, 0);
+                frag.show(getParentFragmentManager(), EditAuthorForBookDialogFragment.TAG);
             });
         }
     }

@@ -28,13 +28,12 @@
 package com.hardbacknutter.nevertoomanybooks.dialogs.entities;
 
 import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
+
+import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.BookChangedListener;
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -44,6 +43,10 @@ public class EditLocationDialogFragment
 
     /** Fragment/Log tag. */
     public static final String TAG = "EditLocationDialogFrag";
+
+    public EditLocationDialogFragment() {
+        super(R.string.lbl_location, R.string.lbl_location, BookChangedListener.LOCATION);
+    }
 
     /**
      * Constructor.
@@ -60,19 +63,11 @@ public class EditLocationDialogFragment
         return frag;
     }
 
-    @Nullable
+    @NonNull
     @Override
-    public View onCreateView(@NonNull final LayoutInflater inflater,
-                             @Nullable final ViewGroup container,
-                             @Nullable final Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.dialog_edit_location, container, false);
-    }
-
-    @Override
-    public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
+    protected List<String> getList() {
         //noinspection ConstantConditions
-        init(BookChangedListener.LOCATION, mDb.getLocations());
+        return mDb.getLocations();
     }
 
     @Override

@@ -68,17 +68,14 @@ public abstract class BaseDataAccessor<T, V extends View>
         mField = field;
     }
 
-    @NonNull
+    @Nullable
     @Override
     public V getView()
             throws NoViewException {
         if (mViewReference != null) {
-            V view = mViewReference.get();
-            if (view != null) {
-                return view;
-            }
+            return mViewReference.get();
         }
-        throw new NoViewException("field key=" + mField.getKey());
+        return null;
     }
 
     @Override

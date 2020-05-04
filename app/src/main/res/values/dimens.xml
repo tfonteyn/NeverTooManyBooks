@@ -28,6 +28,8 @@
 
 <!-- The layout and button sizes in dimens.xml were tested with:
 
+    Generic 7" tablet (600 x 1024) - 160dpi - sw600
+
     Pixel2 (1080 x 1920) - 420dpi - sw411dp
     port: w411dp h659dp
     land: w683dp h387dp
@@ -42,7 +44,7 @@
 
 -->
 
-<!-- based: 4WVGA (480 x 800; hdpi) - 240dpi -->
+<!-- base: 4WVGA (480 x 800; hdpi) - 240dpi -->
 <resources>
 
     <!-- Application icon size on the nav panel and startup splash-->

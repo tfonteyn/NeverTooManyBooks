@@ -581,7 +581,7 @@
     </string>
 
     <!-- tip title and explanations for the icons used. -->
-    <string name="tip_authors_works">Icons used:</string>
+    <string name="tip_authors_works">Icons used</string>
     <!-- shown next to the Book icon -->
     <string name="tip_authors_works_book">Book.</string>
     <!-- shown next to related icon. -->
@@ -973,48 +973,37 @@
     <!-- Dialog title. -->
     <string name="lbl_select_an_action">Select an action</string>
     <!-- Dialog title. -->
+    <string name="lbl_select_style">Select Style</string>
+    <!-- Dialog title. -->
+    <string name="lbl_duplicate_book">Duplicate Book</string>
+    <!-- Dialog title. -->
+    <string name="lbl_import_book_data">Import Books</string>
+    <!-- Dialog title. -->
+    <string name="lbl_details_have_changed">Details have changed</string>
+    <!-- Dialog title. -->
+    <string name="warning_search_failed">Searching for the book failed.</string>
+
+    <!-- Dialog title. -->
     <string name="lbl_delete_book">Delete Book</string>
     <!-- Dialog title. -->
     <string name="lbl_delete_series">Delete Series</string>
     <!-- Dialog title. -->
     <string name="lbl_delete_toc_entry">Delete entry</string>
-    <!-- Dialog title. -->
-    <string name="lbl_select_style">Select Style</string>
-    <!-- Dialog title. -->
-    <string name="lbl_duplicate_book">Duplicate Book</string>
-    <!-- Dialog title. -->
-    <string name="lbl_edit_bookshelf">Edit Bookshelf</string>
-    <!-- Dialog title. -->
-    <string name="lbl_import_book_data">Import Books</string>
 
-    <!-- Dialog title. -->
-    <string name="lbl_edit_author">Edit Author</string>
-    <!-- Dialog title. -->
-    <string name="lbl_edit_series">Edit Series</string>
-    <!-- Dialog title. -->
-    <string name="lbl_edit_publisher">Edit Publisher</string>
-    <!-- Dialog title. -->
-    <string name="lbl_edit_toc_entry">Edit entry</string>
-
-    <!-- Dialog title. -->
-    <string name="lbl_details_have_changed">Details have changed</string>
-
-    <!-- Progress Dialog title. -->
-    <string name="lbl_importing">Importing…</string>
     <!-- Dialog title - import quick-options. -->
     <string name="lbl_import">Import</string>
     <!-- Dialog title - import full-options. -->
     <string name="lbl_import_options">Select what will be imported.</string>
-
-    <!-- Progress Dialog title. -->
-    <string name="lbl_backing_up">Backing up…</string>
     <!-- Dialog title - export quick-options. -->
     <string name="lbl_backup">Backup</string>
     <!-- Dialog title - export full-options. -->
     <string name="lbl_export_options">Select what will be exported to the archive.</string>
 
-    <!-- Dialog title. -->
-    <string name="warning_search_failed">Searching for the book failed.</string>
+    <!-- Progress Dialog title. -->
+    <string name="lbl_importing">Importing…</string>
+    <!-- Progress Dialog title. -->
+    <string name="lbl_backing_up">Backing up…</string>
+
     <!-- Chooser title. -->
     <string name="lbl_send_mail">Send email…</string>
     <!-- Chooser title. -->
@@ -1136,8 +1125,7 @@
     <string name="action_edit_ellipsis">Edit…</string>
     <string name="action_delete">Delete</string>
     <string name="action_save">Save</string>
-    <!-- exit the edit activity despite unsaved edits -->
-    <string name="action_exit">Exit</string>
+    <string name="action_discard">Discard</string>
     <string name="action_help">Help</string>
     <!-- merging two bookshelves -->
     <string name="action_merge">Merge</string>
@@ -1511,7 +1499,7 @@
     <!-- Label used in the list of Field visibility preferences. -->
     <string name="lbl_lending">Lending</string>
     <!-- a header, with a text field below where the user can type in a name -->
-    <string name="lbl_lend_to">Lend book to:</string>
+    <string name="lbl_lend_book_to_colon">Lend this book to:</string>
     <!-- a one line label, with the name of the person appended -->
     <string name="lbl_loaned_to_name">On Loan to %1$s</string>
     <string name="lbl_loaned">On Loan</string>
@@ -1627,6 +1615,17 @@
         variety of other preferences that will be applied to all your styles when possible.
     </string>
 
+    <string name="X_lbl_edit_author">Edit Author</string>
+    <string name="X_lbl_edit_series">Edit Series</string>
+    <string name="X_lbl_edit_publisher">Edit Publisher</string>
+    <string name="X_lbl_edit_toc_entry">Edit entry</string>
+    <string name="X_lbl_edit_bookshelf">Edit Bookshelf</string>
+
+    <string name="X_action_exit">Exit</string>
+    <string name="X_action_show_all">Show all</string>
+    <string name="X_action_update">Update</string>
+    <string name="X_action_swap">Swap</string>
+
     <string name="X_error_file_must_contain_column">File must contain column named “%1$s”</string>
     <string name="X_warning_cover_corrupt">Cover is corrupt</string>
     <string name="X_warning_required_field_x">%1$s must not be blank</string>
@@ -1634,9 +1633,7 @@
     <string name="X_lbl_select_fields_to_update">Select Fields to Update</string>
     <string name="X_anthology_titles">Anthology Titles</string>
     <string name="X_use_default_setting">Use default values</string>
-    <string name="btn_show_all">Show all</string>
-    <string name="X_btn_confirm_update">Update</string>
-    <string name="X_swap">Swap</string>
+
     <string name="X_lbl_is_signed">Has this book been signed?</string>
     <string name="X_lbl_is_read">Have you read this book?</string>
     <string name="X_lbl_data_import_export">Backup &amp; Import</string>
@@ -1657,5 +1654,7 @@
     <string name="info_bitmask_preference">
         Select 0 or more options and tap “OK” to apply them, or tap “%1$s” to disregard all of them.
     </string>
+    <string name="lbl_table_of_content_entry">TOC Entry</string>
+    <string name="btn_show_list">Show list</string>
 
 </resources>

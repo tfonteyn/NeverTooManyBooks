@@ -109,21 +109,27 @@ public class EditTextAccessor<T>
     @Nullable
     @Override
     public T getValue() {
-        if (mFormatter != null) {
-            if (mFormatter instanceof EditFieldFormatter) {
-                // if supported, extract from the View
-                return ((EditFieldFormatter<T>) mFormatter).extract(getView());
+        final TextView view = getView();
+        if (view != null) {
+            if (mFormatter != null) {
+                if (mFormatter instanceof EditFieldFormatter) {
+                    // if supported, extract from the View
+                    return ((EditFieldFormatter<T>) mFormatter).extract(view);
+                } else {
+                    // otherwise use the locale variable
+                    return mRawValue;
+                }
             } else {
-                // otherwise use the locale variable
-                return mRawValue;
+                // Without a formatter, we MUST assume <T> to be a String,
+                // and SHOULD just get the value from the field as-is.
+                // This DOES mean that an original null value is returned as the empty String.
+                // If we get an Exception here then the developer made a boo-boo.
+                //noinspection unchecked
+                return (T) view.getText().toString().trim();
             }
+
         } else {
-            // Without a formatter, we MUST assume <T> to be a String,
-            // and SHOULD just get the value from the field as-is.
-            // This DOES mean that an original null value is returned as the empty String.
-            // If we get an Exception here then the developer made a boo-boo.
-            //noinspection unchecked
-            return (T) getView().getText().toString().trim();
+            return mRawValue;
         }
     }
 
@@ -131,41 +137,42 @@ public class EditTextAccessor<T>
     public void setValue(@Nullable final T value) {
         mRawValue = value;
 
-        TextView view = getView();
+        final TextView view = getView();
+        if (view != null) {
+            // We need to do this in two steps. First format the value as normal.
+            String text = null;
+            if (mFormatter != null) {
+                try {
+                    text = mFormatter.format(view.getContext(), mRawValue);
 
-        // We need to do this in two steps. First format the value as normal.
-        String text = null;
-        if (mFormatter != null) {
-            try {
-                text = mFormatter.format(view.getContext(), mRawValue);
-
-            } catch (@NonNull final ClassCastException e) {
-                // Due to the way a Book loads data from the database,
-                // it's possible that it gets the column type wrong.
-                // See {@link BookCursor} class docs.
-                Logger.error(view.getContext(), TAG, e, value);
+                } catch (@NonNull final ClassCastException e) {
+                    // Due to the way a Book loads data from the database,
+                    // it's possible that it gets the column type wrong.
+                    // See {@link BookCursor} class docs.
+                    Logger.error(view.getContext(), TAG, e, value);
+                }
             }
+
+            // No formatter, or ClassCastException.
+            if (text == null) {
+                text = mRawValue != null ? String.valueOf(mRawValue) : "";
+            }
+
+            // Second step set the view but ...
+
+            // Disable the ChangedTextWatcher.
+            view.removeTextChangedListener(this);
+
+            if (view instanceof AutoCompleteTextView) {
+                // prevent auto-completion to kick in / stop the dropdown from opening.
+                ((AutoCompleteTextView) view).setText(text, false);
+            } else {
+                view.setText(text);
+            }
+
+            // finally re-enable the watcher
+            view.addTextChangedListener(this);
         }
-
-        // No formatter, or ClassCastException.
-        if (text == null) {
-            text = mRawValue != null ? String.valueOf(mRawValue) : "";
-        }
-
-        // Second step set the view but ...
-
-        // Disable the ChangedTextWatcher.
-        view.removeTextChangedListener(this);
-
-        if (view instanceof AutoCompleteTextView) {
-            // prevent auto-completion to kick in / stop the dropdown from opening.
-            ((AutoCompleteTextView) view).setText(text, false);
-        } else {
-            view.setText(text);
-        }
-
-        // finally re-enable the watcher
-        view.addTextChangedListener(this);
     }
 
     @Override
@@ -204,16 +211,18 @@ public class EditTextAccessor<T>
                 && mFormatter != null
                 && mFormatter instanceof EditFieldFormatter) {
 
-                TextView textView = getView();
-                T value = ((EditFieldFormatter<T>) mFormatter).extract(textView);
-                String formatted = mFormatter.format(textView.getContext(), value);
+                // the view will never be null here.
+                final TextView view = getView();
+                //noinspection ConstantConditions
+                final T value = ((EditFieldFormatter<T>) mFormatter).extract(view);
+                final String formatted = mFormatter.format(view.getContext(), value);
 
                 // if the new text *can* be formatted and is different
                 if (!editable.toString().trim().equalsIgnoreCase(formatted)) {
-                    textView.removeTextChangedListener(this);
+                    view.removeTextChangedListener(this);
                     // replace the coded value with the formatted value.
                     editable.replace(0, editable.length(), formatted);
-                    textView.addTextChangedListener(this);
+                    view.addTextChangedListener(this);
                 }
             }
         }

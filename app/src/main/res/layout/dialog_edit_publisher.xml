@@ -32,7 +32,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     >
 
     <com.google.android.material.appbar.AppBarLayout
@@ -45,24 +45,24 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
+            app:menu="@menu/toolbar_save"
             app:navigationIcon="@drawable/ic_close"
+            app:title="@string/lbl_publisher"
             />
 
     </com.google.android.material.appbar.AppBarLayout>
 
     <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        android:id="@+id/body_frame"
+        style="@style/Dialog.Frame.FloatingAndFullscreen"
         >
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            style="@style/Dialog.Body.FloatingAndFullscreen"
             >
 
             <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/lbl_publisher"
+                android:id="@+id/lbl_name"
                 style="@style/Envelope.AutoCompleteTextView"
                 android:hint="@string/lbl_publisher"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -86,7 +86,7 @@
                 android:text="@string/warning_immediate_global_changes"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/lbl_publisher"
+                app:layout_constraintTop_toBottomOf="@id/lbl_name"
                 />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </FrameLayout>

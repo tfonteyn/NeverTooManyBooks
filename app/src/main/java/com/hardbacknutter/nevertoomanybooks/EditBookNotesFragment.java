@@ -202,10 +202,11 @@ public class EditBookNotesFragment
      * When user checks 'read', set the read-end date to today (unless set before)
      */
     private void addReadCheckboxOnClickListener() {
-        final Field readCbx = mFragmentVM.getFields().getField(R.id.cbx_read);
         // only bother when it's in use
+        final Field readCbx = mFragmentVM.getFields().getField(R.id.cbx_read);
         //noinspection ConstantConditions
         if (readCbx.isUsed(getContext())) {
+            //noinspection ConstantConditions
             readCbx.getAccessor().getView().setOnClickListener(v -> {
                 final Checkable cb = (Checkable) v;
                 if (cb.isChecked()) {

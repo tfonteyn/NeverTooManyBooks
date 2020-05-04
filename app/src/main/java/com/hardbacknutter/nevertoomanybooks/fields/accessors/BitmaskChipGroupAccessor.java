@@ -44,7 +44,7 @@ import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 
 /**
  * A {@link ChipGroup} where each {@link Chip} represents one bit in a bitmask.
- *
+ * <p>
  * A {@code null} value is always handled as {@code 0}.
  *
  * <pre>
@@ -112,16 +112,18 @@ public class BitmaskChipGroupAccessor
     public void setValue(@Nullable final Integer value) {
         mRawValue = value != null ? value : 0;
 
-        ChipGroup chipGroup = getView();
-        chipGroup.removeAllViews();
-        Context context = chipGroup.getContext();
+        final ChipGroup chipGroup = getView();
+        if (chipGroup != null) {
+            chipGroup.removeAllViews();
+            Context context = chipGroup.getContext();
 
-        // *all* values
-        for (Map.Entry<Integer, String> entry : mAll.entrySet()) {
-            boolean isSet = (entry.getKey() & mRawValue) != 0;
-            // if editable, all values; if not editable only the set values.
-            if (isSet || mIsEditable) {
-                chipGroup.addView(createChip(context, entry.getKey(), entry.getValue(), isSet));
+            // *all* values
+            for (Map.Entry<Integer, String> entry : mAll.entrySet()) {
+                boolean isSet = (entry.getKey() & mRawValue) != 0;
+                // if editable, all values; if not editable only the set values.
+                if (isSet || mIsEditable) {
+                    chipGroup.addView(createChip(context, entry.getKey(), entry.getValue(), isSet));
+                }
             }
         }
     }

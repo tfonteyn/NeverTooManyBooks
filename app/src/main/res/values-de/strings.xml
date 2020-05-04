@@ -33,15 +33,15 @@
 <resources>
 
     <string name="X_anthology_titles">Anthologie-Titel</string>
-    <string name="X_btn_confirm_update">Aktualisieren</string>
+    <string name="X_action_update">Aktualisieren</string>
     <string name="X_btn_do_not_show_again">Nicht mehr anzeigen</string>
     <string name="X_error_file_must_contain_column">Die Datei muss eine Spalte mit dem Namen %1$s enthalten</string>
     <string name="X_export_info_success_archive_details">Eine %3$s-Datei namens %2$s wurde im Verzeichnis „%1$s“ erzeugt.\n\nSie sollten diese Datei händisch an einen sicheren Ort kopieren, um Ihre Daten vor Beschädigung, Verlust oder Diebstahl zu schützen.</string>
     <string name="lbl_available">Verfügbar</string>
     <string name="X_lbl_data_import_export">Sichern &amp; Importieren</string>
     <string name="X_lbl_select_fields_to_update">Felder für Aktualisierung auswählen</string>
-    <string name="btn_show_all">Zeige alles</string>
-    <string name="X_swap">Tauschen</string>
+    <string name="X_action_show_all">Zeige alles</string>
+    <string name="X_action_swap">Tauschen</string>
     <string name="X_tip_booklist_global_properties">In diesem Bildschirm können Sie die Standardeigenschaften aller Buchlistenstile festlegen. Die meisten Eigenschaften können von einzelnen Stilen überschrieben werden, aber die Standardwerte werden hier definiert. Sie können ändern, wie Listen beim Start angezeigt werden, und eine Reihe anderer Einstellungen vornehmen, die nach Möglichkeit auf alle Ihre Stile angewendet werden.</string>
     <string name="X_use_default_setting">Standardeinstellung verwenden</string>
     <string name="X_warning_cover_corrupt">Das Cover ist unbrauchbar</string>
@@ -65,7 +65,7 @@
     <string name="bookshelf_all_books">Alle Bücher</string>
     <string name="bookshelf_my_books">Meine Bücher</string>
     <string name="action_add">Hinzufügen</string>
-    <string name="action_exit">Beenden</string>
+    <string name="X_action_exit">Beenden</string>
     <string name="action_merge">Vereinigen</string>
     <string name="action_new">Neu</string>
     <string name="action_save">Speichern</string>
@@ -295,7 +295,7 @@
     <string name="X_lbl_is_signed">Wurde dieses Buch signiert</string>
     <string name="lbl_keywords">Schlüsselwörter</string>
     <string name="lbl_language">Sprache</string>
-    <string name="lbl_lend_to">Verleihe Buch an:</string>
+    <string name="lbl_lend_book_to_colon">Verleihe dieses Buch an:</string>
     <string name="lbl_lending">Ausleihen</string>
     <string name="lbl_loaned">Verliehen</string>
     <string name="lbl_loaned_to_name">Leihgabe an %1$s</string>
@@ -557,7 +557,7 @@
     <string name="tab_lbl_notes">Notizen</string>
     <string name="tab_lbl_publication">Veröffentlichung</string>
     <string name="tip_authors_book_may_appear_more_than_once">Ein Buch kann mehrfach in einer Liste erscheinen, wenn es bei jedem Autor angezeigt wird. In diesem Fall führt das Löschen eines Buchs zum Löschen aller Vorkommen von der Liste.</string>
-    <string name="tip_authors_works">Verwendete Icons:</string>
+    <string name="tip_authors_works">Verwendete Icons</string>
     <string name="tip_authors_works_book">Buch.</string>
     <string name="tip_authors_works_multiple_books">Eintrag ist in mehreren Büchern vorhanden.</string>
     <string name="tip_autorotate_camera_images">Wenn Sie Bilder von der Kamera immer in dieselbe Richtung drehen müssen, versuchen Sie,die automatische Drehrichtung in den Einstellungen festzulegen.</string>
@@ -587,10 +587,10 @@
     <string name="lbl_delete_toc_entry">Titel löschen</string>
     <string name="lbl_details_have_changed">Details wurden geändert</string>
     <string name="lbl_duplicate_book">Buch vervielfältigen</string>
-    <string name="lbl_edit_author">Autor bearbeiten</string>
-    <string name="lbl_edit_bookshelf">Bücherregal bearbeiten</string>
+    <string name="X_lbl_edit_author">Autor bearbeiten</string>
+    <string name="X_lbl_edit_bookshelf">Bücherregal bearbeiten</string>
     <string name="lbl_edit_bookshelves">Bücherregale verwalten</string>
-    <string name="lbl_edit_series">Serie bearbeiten</string>
+    <string name="X_lbl_edit_series">Serie bearbeiten</string>
     <string name="lbl_edit_style">Bearbeite Stil</string>
     <string name="lbl_export_options">Wählen Sie, was in das Archiv exportiert wird.</string>
     <string name="lbl_import_book_data">Bücher importieren</string>
@@ -669,6 +669,6 @@
     <string name="lbl_all_bookshelves">Alle Bücherregale</string>
     <string name="more_ellipsis">Mehr…</string>
     <string name="lbl_toc_multiple_authors">Mehrere Autoren</string>
-    <string name="lbl_edit_publisher">Herausgeber bearbeiten</string>
-    <string name="lbl_edit_toc_entry">Eintrag bearbeiten</string>
+    <string name="X_lbl_edit_publisher">Herausgeber bearbeiten</string>
+    <string name="X_lbl_edit_toc_entry">Eintrag bearbeiten</string>
 </resources>

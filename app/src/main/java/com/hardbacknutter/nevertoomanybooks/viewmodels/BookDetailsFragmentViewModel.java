@@ -159,7 +159,7 @@ public class BookDetailsFragmentViewModel
               .setRelatedFields(R.id.lbl_description);
 
         fields.add(R.id.genre, new TextViewAccessor<>(), DBDefinitions.KEY_GENRE)
-              .setRelatedFields(R.id.lbl_genre);
+              .setRelatedFields(R.id.lbl_name);
 
         fields.add(R.id.language, new TextViewAccessor<>(languageFormatter),
                    DBDefinitions.KEY_LANGUAGE)

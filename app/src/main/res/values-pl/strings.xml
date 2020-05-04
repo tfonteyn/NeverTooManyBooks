@@ -32,15 +32,15 @@
 <!--suppress LongLine -->
 <resources>
     <string name="X_anthology_titles">Tytuły antologii</string>
-    <string name="X_btn_confirm_update">Aktualizuj</string>
+    <string name="X_action_update">Aktualizuj</string>
     <string name="X_btn_do_not_show_again">Nie pokazuj ponownie</string>
     <string name="X_error_file_must_contain_column">Plik musi zawierać pole %1$s</string>
     <string name="X_export_info_success_archive_details">Plik %3$s o nazwie „%2$s” został utworzony w katalogu „%1$s” i powinieneś ręcznie skopiować go gdzie indziej, aby chronić dane w przypadku uszkodzenia, utraty lub kradzieży.</string>
     <string name="lbl_available">Dostępny</string>
     <string name="X_lbl_data_import_export">Kopia zapasowa i import</string>
     <string name="X_lbl_select_fields_to_update">Wybierz pola do aktualizacji</string>
-    <string name="btn_show_all">Pokaż wszystko</string>
-    <string name="X_swap">Wymieniać</string>
+    <string name="X_action_show_all">Pokaż wszystko</string>
+    <string name="X_action_swap">Wymieniać</string>
     <string name="X_tip_booklist_global_properties">Możesz użyć tego ekranu, aby ustawić domyślną charakterystykę wszystkich stylów listy książek. Większość właściwości może być nadpisana przez poszczególne style, ale tutaj są zdefiniowane wartości domyślne. Możesz zmienić sposób wyświetlania list przy starcie i dostosować różne inne preferencje, które będą stosowane do wszystkich twoich stylów, jeśli to możliwe. Możesz także edytować menu stylów i same style.</string>
     <string name="X_use_default_setting">Zastosowanie domyślne</string>
     <string name="X_warning_cover_corrupt">Okładka jest uszkodzona</string>
@@ -62,7 +62,7 @@
     <string name="bookshelf_all_books">Wszystkie książki</string>
     <string name="bookshelf_my_books">Moje książki</string>
     <string name="action_add">Dodaj</string>
-    <string name="action_exit">Wyjście</string>
+    <string name="X_action_exit">Wyjście</string>
     <string name="action_merge">Łączyć</string>
     <string name="action_new">Nowy</string>
     <string name="action_save">Zapisz</string>
@@ -289,7 +289,7 @@
     <string name="X_lbl_is_signed">Czy książka jest podpisana</string>
     <string name="lbl_keywords">Słowa kluczowe</string>
     <string name="lbl_language">Język</string>
-    <string name="lbl_lend_to">Wypożycz książkę:</string>
+    <string name="lbl_lend_book_to_colon">Pożycz tę książkę:</string>
     <string name="lbl_lending">Pożyczanie</string>
     <string name="lbl_loaned">W wypożyczeniu</string>
     <string name="lbl_loaned_to_name">On Loan to %1$s</string>
@@ -548,7 +548,7 @@
     <string name="tab_lbl_notes">Notatki</string>
     <string name="tab_lbl_publication">Publikacja</string>
     <string name="tip_authors_book_may_appear_more_than_once">Jeśli jest wyświetlana dla każdego autora, pojedyncza książka może pojawić się więcej niż raz na liście. W takim przypadku usunięcie jednej z tych książek spowoduje usunięcie wszystkich instancji z listy.</string>
-    <string name="tip_authors_works">Użyte ikony:</string>
+    <string name="tip_authors_works">Użyte ikony</string>
     <string name="tip_authors_works_book">Książka.</string>
     <string name="tip_authors_works_multiple_books">Wpis jest obecny w wielu książkach.</string>
     <string name="tip_autorotate_camera_images">Jeśli zawsze obracasz obrazy z kamery w tym samym kierunku, spróbuj zmienić preferencje aplikacji, aby określić obrót, który ma zostać zastosowany automatycznie.</string>
@@ -578,10 +578,10 @@
     <string name="lbl_delete_toc_entry">Usuń tytuł</string>
     <string name="lbl_details_have_changed">Szczegóły uległy zmianie</string>
     <string name="lbl_duplicate_book">Duplikuj książkę</string>
-    <string name="lbl_edit_author">Edytuj autora</string>
-    <string name="lbl_edit_bookshelf">Edycja półek</string>
+    <string name="X_lbl_edit_author">Edytuj autora</string>
+    <string name="X_lbl_edit_bookshelf">Edycja półek</string>
     <string name="lbl_edit_bookshelves">Zarządzaj półkami</string>
-    <string name="lbl_edit_series">Edytuj serię</string>
+    <string name="X_lbl_edit_series">Edytuj serię</string>
     <string name="lbl_edit_style">Edytuj styl</string>
     <string name="lbl_export_options">Wybierz, co zostanie wyeksportowane do archiwum.</string>
     <string name="lbl_import_book_data">Importuj książki</string>
@@ -660,6 +660,6 @@
     <string name="lbl_all_bookshelves">Wszystkie półki na książki</string>
     <string name="more_ellipsis">Więcej…</string>
     <string name="lbl_toc_multiple_authors">Wielu autorów</string>
-    <string name="lbl_edit_publisher">Edytuj wydawcę</string>
-    <string name="lbl_edit_toc_entry">Edytuj wpis</string>
+    <string name="X_lbl_edit_publisher">Edytuj wydawcę</string>
+    <string name="X_lbl_edit_toc_entry">Edytuj wpis</string>
 </resources>

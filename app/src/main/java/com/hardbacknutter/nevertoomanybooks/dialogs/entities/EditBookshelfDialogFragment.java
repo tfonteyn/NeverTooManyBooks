@@ -30,16 +30,13 @@ package com.hardbacknutter.nevertoomanybooks.dialogs.entities;
 import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-import com.google.android.material.snackbar.Snackbar;
 
 import java.lang.ref.WeakReference;
 import java.util.Objects;
@@ -50,7 +47,6 @@ import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookshelfBinding;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
-import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 
 /**
@@ -59,7 +55,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
  * Calling point is a List.
  */
 public class EditBookshelfDialogFragment
-        extends DialogFragment {
+        extends BaseDialogFragment {
 
     /** Fragment/Log tag. */
     public static final String TAG = "EditBookshelfDialogFrag";
@@ -69,8 +65,6 @@ public class EditBookshelfDialogFragment
     /** Where to send the result. */
     @Nullable
     private WeakReference<BookshelfChangedListener> mListener;
-    @Nullable
-    private String mDialogTitle;
     /** View Binding. */
     private DialogEditBookshelfBinding mVb;
 
@@ -79,6 +73,10 @@ public class EditBookshelfDialogFragment
 
     /** Current edit. */
     private String mName;
+
+    public EditBookshelfDialogFragment() {
+        super(R.layout.dialog_edit_bookshelf);
+    }
 
     /**
      * Constructor.
@@ -98,14 +96,10 @@ public class EditBookshelfDialogFragment
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setStyle(DialogFragment.STYLE_NO_FRAME, R.style.Theme_App_FullScreen);
 
         mDb = new DAO(TAG);
 
         final Bundle args = requireArguments();
-        mDialogTitle = args.getString(StandardDialogs.BKEY_DIALOG_TITLE,
-                                      getString(R.string.lbl_edit_bookshelf));
-
         mBookshelf = args.getParcelable(DBDefinitions.KEY_FK_BOOKSHELF);
         Objects.requireNonNull(mBookshelf, ErrorMsg.ARGS_MISSING_BOOKSHELF);
 
@@ -116,24 +110,16 @@ public class EditBookshelfDialogFragment
         }
     }
 
-    @Nullable
     @Override
-    public View onCreateView(@NonNull final LayoutInflater inflater,
-                             @Nullable final ViewGroup container,
-                             @Nullable final Bundle savedInstanceState) {
-        mVb = DialogEditBookshelfBinding.inflate(inflater, container, false);
-        return mVb.getRoot();
-    }
+    public void onViewCreated(@NonNull final View view,
+                              @Nullable final Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
-    @Override
-    public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
+        mVb = DialogEditBookshelfBinding.bind(view);
 
         mVb.toolbar.setNavigationOnClickListener(v -> dismiss());
-        mVb.toolbar.setTitle(mDialogTitle);
-        mVb.toolbar.inflateMenu(R.menu.toolbar_save);
         mVb.toolbar.setOnMenuItemClickListener(item -> {
-            if (item.getItemId() == R.id.action_save) {
+            if (item.getItemId() == R.id.MENU_SAVE) {
                 if (saveChanges()) {
                     dismiss();
                 }
@@ -148,8 +134,7 @@ public class EditBookshelfDialogFragment
     private boolean saveChanges() {
         mName = mVb.name.getText().toString().trim();
         if (mName.isEmpty()) {
-            Snackbar.make(mVb.name, R.string.warning_missing_name,
-                          Snackbar.LENGTH_LONG).show();
+            showError(mVb.lblName, R.string.vldt_non_blank_required);
             return false;
         }
 
@@ -163,7 +148,7 @@ public class EditBookshelfDialogFragment
             //noinspection ConstantConditions
             String msg = context.getString(R.string.warning_x_already_exists,
                                            context.getString(R.string.lbl_bookshelf));
-            Snackbar.make(mVb.name, msg, Snackbar.LENGTH_LONG).show();
+            showError(mVb.lblName, msg);
             return false;
         }
 
@@ -181,7 +166,7 @@ public class EditBookshelfDialogFragment
             // Merge the 2 shelves
             new MaterialAlertDialogBuilder(getContext())
                     .setIcon(R.drawable.ic_warning)
-                    .setTitle(R.string.lbl_edit_bookshelf)
+                    .setTitle(mName)
                     .setMessage(R.string.confirm_merge_bookshelves)
                     .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
                     .setPositiveButton(R.string.action_merge, (d, w) -> {

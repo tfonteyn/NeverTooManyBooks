@@ -29,9 +29,6 @@ package com.hardbacknutter.nevertoomanybooks.dialogs.entities;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -57,10 +54,15 @@ public class EditLanguageDialogFragment
     /** Fragment/Log tag. */
     public static final String TAG = "EditLanguageDialogFrag";
 
+    public EditLanguageDialogFragment() {
+        super(R.string.lbl_language, R.string.lbl_language, BookChangedListener.LANGUAGE);
+    }
+
     /**
      * Constructor.
      *
-     * @param text to edit.
+     * @param context Current context
+     * @param text    to edit.
      *
      * @return instance
      */
@@ -83,20 +85,6 @@ public class EditLanguageDialogFragment
         args.putString(BKEY_TEXT, editLang);
         frag.setArguments(args);
         return frag;
-    }
-
-    @Nullable
-    @Override
-    public View onCreateView(@NonNull final LayoutInflater inflater,
-                             @Nullable final ViewGroup container,
-                             @Nullable final Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.dialog_edit_language, container, false);
-    }
-
-    @Override
-    public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        init(BookChangedListener.LANGUAGE, null);
     }
 
     @Override
