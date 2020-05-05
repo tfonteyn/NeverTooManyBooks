@@ -4248,6 +4248,7 @@ public class DAO
         private static final String AUTHORS_GIVEN_NAMES =
                 "SELECT DISTINCT " + KEY_AUTHOR_GIVEN_NAMES + ',' + KEY_AUTHOR_GIVEN_NAMES_OB
                 + _FROM_ + TBL_AUTHORS.getName()
+                + " WHERE " + KEY_AUTHOR_GIVEN_NAMES_OB + "<> ''"
                 + " ORDER BY " + KEY_AUTHOR_GIVEN_NAMES_OB + COLLATION;
 
         /** name only, for {@link AutoCompleteTextView}. */
@@ -4281,36 +4282,42 @@ public class DAO
         private static final String FORMATS =
                 "SELECT DISTINCT " + KEY_FORMAT
                 + _FROM_ + TBL_BOOKS.getName()
+                + " WHERE " + KEY_FORMAT + "<> ''"
                 + " ORDER BY " + KEY_FORMAT + COLLATION;
 
         /** name only, for {@link AutoCompleteTextView}. */
         private static final String COLORS =
                 "SELECT DISTINCT " + KEY_COLOR
                 + _FROM_ + TBL_BOOKS.getName()
+                + " WHERE " + KEY_COLOR + "<> ''"
                 + " ORDER BY " + KEY_COLOR + COLLATION;
 
         /** name only, for {@link AutoCompleteTextView}. */
         private static final String GENRES =
                 "SELECT DISTINCT " + KEY_GENRE
                 + _FROM_ + TBL_BOOKS.getName()
+                + " WHERE " + KEY_GENRE + "<> ''"
                 + " ORDER BY " + KEY_GENRE + COLLATION;
 
         /** name only, for {@link AutoCompleteTextView}. */
         private static final String LANGUAGES =
                 "SELECT DISTINCT " + KEY_LANGUAGE
                 + _FROM_ + TBL_BOOKS.getName()
+                + " WHERE " + KEY_LANGUAGE + "<> ''"
                 + " ORDER BY " + KEY_DATE_LAST_UPDATED + COLLATION;
 
         /** name only, for {@link AutoCompleteTextView}. */
         private static final String LOCATIONS =
                 "SELECT DISTINCT " + KEY_LOCATION
                 + _FROM_ + TBL_BOOKS.getName()
+                + " WHERE " + KEY_LOCATION + "<> ''"
                 + " ORDER BY " + KEY_LOCATION + COLLATION;
 
         /** name only, for {@link AutoCompleteTextView}. */
         private static final String PUBLISHERS =
                 "SELECT DISTINCT " + KEY_PUBLISHER
                 + _FROM_ + TBL_BOOKS.getName()
+                + " WHERE " + KEY_PUBLISHER + "<> ''"
                 + " ORDER BY " + KEY_PUBLISHER + COLLATION;
 
         /**
@@ -4343,6 +4350,7 @@ public class DAO
         private static final String LOANEE =
                 "SELECT DISTINCT " + KEY_LOANEE
                 + _FROM_ + TBL_BOOK_LOANEE.getName()
+                + " WHERE " + KEY_LOANEE + "<> ''"
                 + " ORDER BY " + KEY_LOANEE + COLLATION;
     }
 
