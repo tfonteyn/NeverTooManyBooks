@@ -44,7 +44,6 @@ import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceManager;
 import androidx.preference.PreferenceScreen;
 
-import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
@@ -207,7 +206,7 @@ public class SettingsActivity
         switch (key) {
             // Trigger a recreate of this activity, if this setting has changed.
             case Prefs.pk_ui_theme:
-                if (App.isThemeChanged(this, mInitialThemeId)) {
+                if (isNightModeChanged(this, mInitialThemeId)) {
                     setIsRecreating();
                     recreate();
                 }

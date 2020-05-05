@@ -37,7 +37,6 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
-import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
@@ -92,7 +91,7 @@ public interface ItemWithTitle {
             String words = LOCALE_PREFIX_MAP.get(locale);
             if (words == null) {
                 // the resources bundle in the language that the book (item) is written in.
-                Resources localeResources = App.getLocalizedResources(context, locale);
+                Resources localeResources = LocaleUtils.getLocalizedResources(context, locale);
                 words = localeResources.getString(R.string.pv_reformat_titles_prefixes);
                 LOCALE_PREFIX_MAP.put(locale, words);
             }

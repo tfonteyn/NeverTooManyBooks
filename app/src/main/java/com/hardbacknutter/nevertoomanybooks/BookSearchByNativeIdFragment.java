@@ -100,7 +100,7 @@ public class BookSearchByNativeIdFragment
         // soft-keyboards 'search' button act as a shortcut to start the search
         mVb.nativeId.setOnEditorActionListener((v, actionId, event) -> {
             if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-                App.hideKeyboard(v);
+                BaseActivity.hideKeyboard(v);
                 startSearch();
                 return true;
             }

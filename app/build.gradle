@@ -213,6 +213,9 @@ dependencies {
     testImplementation 'org.mockito:mockito-core:3.3.3'
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.2'
     testImplementation 'org.json:json:20190722'
+
+    // if enabling, uncomment the App.onCreate as well
+//    implementation 'com.facebook.stetho:stetho:1.5.1'
 }
 
 

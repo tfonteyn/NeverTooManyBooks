@@ -31,17 +31,22 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.IdRes;
+import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -51,11 +56,15 @@ import androidx.fragment.app.FragmentTransaction;
 
 import com.google.android.material.navigation.NavigationView;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.Objects;
 
+import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PIntString;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsAdminFragment;
+import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.settings.SettingsActivity;
 import com.hardbacknutter.nevertoomanybooks.utils.LanguageUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
@@ -104,6 +113,22 @@ public abstract class BaseActivity
     public static final String BKEY_RECREATE = TAG + ":recreate";
 
     /**
+     * We're not using the actual {@link AppCompatDelegate} mode constants
+     * due to 'day-night' depending on the OS version.
+     */
+    private static final int THEME_INVALID = -1;
+    private static final int THEME_DAY_NIGHT = 0;
+    private static final int THEME_LIGHT = 1;
+    private static final int THEME_DARK = 2;
+    /** The default theme to use. */
+    @ThemeId
+    private static final int DEFAULT_THEME = THEME_DAY_NIGHT;
+
+    /** Cache the User-specified theme currently in use. '-1' to force an update at App startup. */
+    @ThemeId
+    private static int sCurrentNightMode = THEME_INVALID;
+
+    /**
      * internal; Stage of Activity  doing/needing setIsRecreating() action.
      * See {@link #onResume()}.
      * <p>
@@ -114,7 +139,7 @@ public abstract class BaseActivity
     /** Locale at {@link #onCreate} time. */
     protected String mInitialLocaleSpec;
     /** Theme at {@link #onCreate} time. */
-    @App.ThemeIndex
+    @ThemeId
     protected int mInitialThemeId;
 
     /** Optional - The side/navigation panel. */
@@ -124,6 +149,80 @@ public abstract class BaseActivity
     @Nullable
     private NavigationView mNavigationView;
     private boolean mHomeIsRootMenu;
+
+    /**
+     * Apply the user's preferred NightMode.
+     * <p>
+     * The one and only place where this should get called is in {@code Activity.onCreate}
+     * <pre>
+     * {@code
+     *          public void onCreate(@Nullable final Bundle savedInstanceState) {
+     *              // apply the user-preferred Theme before super.onCreate is called.
+     *              applyNightMode(this);
+     *
+     *              super.onCreate(savedInstanceState);
+     *          }
+     * }
+     * </pre>
+     *
+     * @param context Current context
+     *
+     * @return the applied mode index.
+     */
+    @ThemeId
+    public static int applyNightMode(@NonNull final Context context) {
+        // Always read from prefs.
+        sCurrentNightMode = PIntString.getListPreference(context, Prefs.pk_ui_theme, DEFAULT_THEME);
+
+        final int dnMode;
+        switch (sCurrentNightMode) {
+            case THEME_INVALID:
+            case THEME_DAY_NIGHT:
+                if (Build.VERSION.SDK_INT >= 29) {
+                    dnMode = AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM;
+                } else {
+                    dnMode = AppCompatDelegate.MODE_NIGHT_AUTO_BATTERY;
+                }
+                break;
+
+            case THEME_DARK:
+                dnMode = AppCompatDelegate.MODE_NIGHT_YES;
+                break;
+
+            case THEME_LIGHT:
+            default:
+                dnMode = AppCompatDelegate.MODE_NIGHT_NO;
+                break;
+        }
+        AppCompatDelegate.setDefaultNightMode(dnMode);
+        return sCurrentNightMode;
+    }
+
+    /**
+     * Hide the keyboard.
+     */
+    public static void hideKeyboard(@NonNull final View view) {
+        final InputMethodManager imm = (InputMethodManager)
+                view.getContext().getSystemService(INPUT_METHOD_SERVICE);
+        if (imm != null) {
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        }
+    }
+
+    /**
+     * Test if the NightMode has changed.
+     *
+     * @param context Current context
+     * @param mode    to check
+     *
+     * @return {@code true} if the theme was changed
+     */
+    public boolean isNightModeChanged(@NonNull final Context context,
+                                      @ThemeId final int mode) {
+        // always reload from prefs.
+        sCurrentNightMode = PIntString.getListPreference(context, Prefs.pk_ui_theme, DEFAULT_THEME);
+        return mode != sCurrentNightMode;
+    }
 
     protected void setIsRecreating() {
         sActivityRecreateStatus = ActivityStatus.isRecreating;
@@ -157,7 +256,7 @@ public abstract class BaseActivity
         }
 
         if (sActivityRecreateStatus == ActivityStatus.NeedsRecreating
-            || App.isThemeChanged(this, mInitialThemeId) || localeChanged) {
+            || isNightModeChanged(this, mInitialThemeId) || localeChanged) {
             setIsRecreating();
             recreate();
 
@@ -199,7 +298,7 @@ public abstract class BaseActivity
     protected void onCreate(@Nullable final Bundle savedInstanceState) {
         // apply the user-preferred Theme before super.onCreate is called.
         // We preserve it, so we can check for changes in onResume.
-        mInitialThemeId = App.applyTheme(this);
+        mInitialThemeId = applyNightMode(this);
 
         super.onCreate(savedInstanceState);
         onSetContentView();
@@ -536,5 +635,11 @@ public abstract class BaseActivity
         NeedsRecreating,
         /** A {@link #recreate()} action has been triggered. */
         isRecreating
+    }
+
+    @IntDef({THEME_INVALID, THEME_DAY_NIGHT, THEME_DARK, THEME_LIGHT})
+    @Retention(RetentionPolicy.SOURCE)
+    @interface ThemeId {
+
     }
 }

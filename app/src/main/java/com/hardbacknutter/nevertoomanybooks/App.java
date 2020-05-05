@@ -27,25 +27,17 @@
  */
 package com.hardbacknutter.nevertoomanybooks;
 
-import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
-import android.content.res.Resources;
 import android.os.Build;
 import android.util.Log;
-import android.view.View;
-import android.view.inputmethod.InputMethodManager;
 
 import androidx.annotation.CallSuper;
-import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatDelegate;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 import java.util.Locale;
 
 import org.acra.ACRA;
@@ -56,11 +48,8 @@ import org.acra.annotation.AcraMailSender;
 import org.acra.annotation.AcraToast;
 import org.acra.file.Directory;
 
-import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PIntString;
 import com.hardbacknutter.nevertoomanybooks.debug.DebugReport;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
-import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
-import com.hardbacknutter.nevertoomanybooks.utils.LanguageUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 
 /**
@@ -130,26 +119,14 @@ import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 public class App
         extends Application {
 
+    public static final int ERROR_DELAY_MS = 2000;
     /** Log tag. */
     private static final String TAG = "App";
-    /** don't assume / allow the day-night theme to have a different integer ID. */
-    private static final int THEME_INVALID = -1;
-    private static final int THEME_DAY_NIGHT = 0;
-    private static final int THEME_DARK = 1;
-    private static final int THEME_LIGHT = 2;
-    /** The default theme to use. */
-    @ThemeIndex
-    private static final int DEFAULT_THEME = THEME_DAY_NIGHT;
-    public static final int ERROR_DELAY_MS = 2000;
-
     /**
      * Give static methods access to our singleton.
      * <strong>Note:</strong> never store a context in a static, use the instance instead
      */
     private static App sInstance;
-    /** Cache the User-specified theme currently in use. '-1' to force an update at App startup. */
-    @ThemeIndex
-    private static int sCurrentThemeId = THEME_INVALID;
 
     /** Singleton. */
     @SuppressWarnings("unused")
@@ -181,97 +158,6 @@ public class App
     }
 
     /**
-     * Load a Resources set for the specified Locale.
-     * This is an expensive lookup; we do not cache the Resources here,
-     * but it's advisable to cache the strings (map of Locale/String for example) being looked up.
-     *
-     * @param context       Current context
-     * @param desiredLocale the desired Locale, e.g. the Locale of a Book,Series,TOC,...
-     *
-     * @return the Resources
-     */
-    @NonNull
-    public static Resources getLocalizedResources(@NonNull final Context context,
-                                                  @NonNull final Locale desiredLocale) {
-        final Configuration current = context.getResources().getConfiguration();
-        final Configuration configuration = new Configuration(current);
-        final String lang = desiredLocale.getLanguage();
-        if (lang.length() == 2) {
-            configuration.setLocale(desiredLocale);
-        } else {
-            // any 3-char code might need to be converted to 2-char be able to find the resource.
-            configuration.setLocale(new Locale(LanguageUtils.getLocaleIsoFromISO3(context, lang)));
-        }
-
-        final Context localizedContext = context.createConfigurationContext(configuration);
-        return localizedContext.getResources();
-    }
-
-    /**
-     * Apply the user's preferred Theme.
-     * <p>
-     * The one and only place where this should get called is in {@code Activity.onCreate}
-     * <pre>
-     * {@code
-     *          public void onCreate(@Nullable final Bundle savedInstanceState) {
-     *              // apply the user-preferred Theme before super.onCreate is called.
-     *              App.applyTheme(this);
-     *
-     *              super.onCreate(savedInstanceState);
-     *          }
-     * }
-     * </pre>
-     *
-     * @param activity Current Activity to apply the theme to.
-     *
-     * @return the applied theme index.
-     */
-    @ThemeIndex
-    public static int applyTheme(@NonNull final Activity activity) {
-        // Always read from prefs.
-        sCurrentThemeId = PIntString.getListPreference(activity, Prefs.pk_ui_theme, DEFAULT_THEME);
-
-        switch (sCurrentThemeId) {
-            case THEME_INVALID:
-            case THEME_DAY_NIGHT:
-                if (Build.VERSION.SDK_INT >= 29) {
-                    AppCompatDelegate
-                            .setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
-                } else {
-                    AppCompatDelegate
-                            .setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_AUTO_BATTERY);
-                }
-                break;
-
-            case THEME_DARK:
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-                break;
-
-            case THEME_LIGHT:
-            default:
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-                break;
-        }
-
-        return sCurrentThemeId;
-    }
-
-    /**
-     * Test if the Theme has changed.
-     *
-     * @param context Current context
-     * @param themeId to check
-     *
-     * @return {@code true} if the theme was changed
-     */
-    public static boolean isThemeChanged(@NonNull final Context context,
-                                         @ThemeIndex final int themeId) {
-        // always reload from prefs.
-        sCurrentThemeId = PIntString.getListPreference(context, Prefs.pk_ui_theme, DEFAULT_THEME);
-        return themeId != sCurrentThemeId;
-    }
-
-    /**
      * Reads the application version from the manifest.
      *
      * @param context Current context
@@ -296,17 +182,6 @@ public class App
     }
 
     /**
-     * Hide the keyboard.
-     */
-    public static void hideKeyboard(@NonNull final View view) {
-        final InputMethodManager imm = (InputMethodManager)
-                view.getContext().getSystemService(INPUT_METHOD_SERVICE);
-        if (imm != null) {
-            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-        }
-    }
-
-    /**
      * Initialize ACRA for a given Application.
      *
      * <br><br>{@inheritDoc}
@@ -315,10 +190,15 @@ public class App
     @CallSuper
     protected void attachBaseContext(@NonNull final Context base) {
         super.attachBaseContext(base);
-
         ACRA.init(this);
         ACRA.getErrorReporter().putCustomData("Signed-By", DebugReport.signedBy(this));
     }
+
+//    @Override
+//    public void onCreate() {
+//        super.onCreate();
+//        Stetho.initializeWithDefaults(this);
+//    }
 
     /**
      * Ensure to re-apply the user-preferred Locale to the Application (this) object.
@@ -346,9 +226,4 @@ public class App
         }
     }
 
-    @IntDef({THEME_INVALID, THEME_DAY_NIGHT, THEME_DARK, THEME_LIGHT})
-    @Retention(RetentionPolicy.SOURCE)
-    @interface ThemeIndex {
-
-    }
 }

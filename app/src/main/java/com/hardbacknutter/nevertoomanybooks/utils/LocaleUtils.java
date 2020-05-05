@@ -479,6 +479,32 @@ public final class LocaleUtils {
         return locale;
     }
 
+    /**
+     * Load a Resources set for the specified Locale.
+     * This is an expensive lookup; we do not cache the Resources here,
+     * but it's advisable to cache the strings (map of Locale/String for example) being looked up.
+     *
+     * @param context       Current context
+     * @param desiredLocale the desired Locale, e.g. the Locale of a Book,Series,TOC,...
+     *
+     * @return the Resources
+     */
+    @NonNull
+    public static Resources getLocalizedResources(@NonNull final Context context,
+                                                  @NonNull final Locale desiredLocale) {
+        final Configuration current = context.getResources().getConfiguration();
+        final Configuration configuration = new Configuration(current);
+        final String lang = desiredLocale.getLanguage();
+        if (lang.length() == 2) {
+            configuration.setLocale(desiredLocale);
+        } else {
+            // any 3-char code might need to be converted to 2-char be able to find the resource.
+            configuration.setLocale(new Locale(LanguageUtils.getLocaleIsoFromISO3(context, lang)));
+        }
+
+        final Context localizedContext = context.createConfigurationContext(configuration);
+        return localizedContext.getResources();
+    }
 
     public interface OnLocaleChangedListener {
 

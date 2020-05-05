@@ -132,7 +132,7 @@ public class BookSearchByTextFragment
                                    final int actionId,
                                    @Nullable final KeyEvent event) {
         if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-            App.hideKeyboard(v);
+            BaseActivity.hideKeyboard(v);
             startSearch();
             return true;
         }

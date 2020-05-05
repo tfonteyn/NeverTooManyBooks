@@ -112,7 +112,7 @@ public class StartupActivity
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         // apply the user-preferred Theme before super.onCreate is called.
-        App.applyTheme(this);
+        BaseActivity.applyNightMode(this);
 
         super.onCreate(savedInstanceState);
 
