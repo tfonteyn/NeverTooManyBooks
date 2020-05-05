@@ -28,7 +28,7 @@
   -->
 
 <resources>
-    <!-- On screens smaller then sw600 (a 7" tablet) we display all DialogFrame,
+    <!-- On screens smaller than sw600 (a 7" tablet) we display all DialogFrame's,
      which might show the onscreen keyboard, FULLSCREEN. -->
     <bool name="isLargeScreen">false</bool>
 </resources>

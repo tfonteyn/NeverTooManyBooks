@@ -28,7 +28,7 @@
   -->
 
 <resources>
-    <!-- On screens smaller then sw600 (a 7" tablet) we display most DialogFrame,
+    <!-- On screens larger than sw600 (a 7" tablet) we display most DialogFrame's,
      which might show the onscreen keyboard, as a FLOATING dialog. -->
     <bool name="isLargeScreen">true</bool>
 </resources>
