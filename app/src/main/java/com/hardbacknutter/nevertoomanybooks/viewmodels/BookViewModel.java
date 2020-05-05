@@ -30,6 +30,7 @@ package com.hardbacknutter.nevertoomanybooks.viewmodels;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -42,6 +43,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Locale;
 
+import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -214,6 +216,9 @@ public class BookViewModel
      * @param isDirty set to {@code true} if our data was changed.
      */
     public void setDirty(final boolean isDirty) {
+        if (BuildConfig.DEBUG) {
+            Log.d(TAG, "setDirty|" + isDirty);
+        }
         mIsDirty = isDirty;
     }
 
@@ -452,7 +457,6 @@ public class BookViewModel
     }
 
     public void updateAuthors(final ArrayList<Author> list) {
-        mIsDirty = true;
         mBook.putParcelableArrayList(Book.BKEY_AUTHOR_ARRAY, list);
         mAuthorList.setValue(list);
     }
@@ -462,7 +466,6 @@ public class BookViewModel
     }
 
     public void updateSeries(final ArrayList<Series> list) {
-        mIsDirty = true;
         mBook.putParcelableArrayList(Book.BKEY_SERIES_ARRAY, list);
         mSeriesList.setValue(list);
     }

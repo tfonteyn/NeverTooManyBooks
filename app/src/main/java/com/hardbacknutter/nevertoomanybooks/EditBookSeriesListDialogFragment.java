@@ -72,13 +72,12 @@ import com.hardbacknutter.nevertoomanybooks.widgets.ddsupport.StartDragListener;
  * <strong>Warning:</strong> By exception this DialogFragment uses the parents ViewModel directly.
  * This means that any observables in the ViewModel must be tested/used with care, as their
  * destination view might not be available at the moment of an update being triggered.
- *
  */
 public class EditBookSeriesListDialogFragment
         extends BaseDialogFragment {
 
     /** Fragment/Log tag. */
-    public static final String TAG = "EditBookSeriesListDialogFragment";
+    public static final String TAG = "EditBookSeriesListDlg";
     /** Database Access. */
     private DAO mDb;
 
@@ -187,6 +186,7 @@ public class EditBookSeriesListDialogFragment
 
     private boolean saveChanges() {
         if (!mVb.seriesTitle.getText().toString().isEmpty()) {
+            // Discarding applies to the temp series edit box only. The list itself is still saved.
             //noinspection ConstantConditions
             StandardDialogs.unsavedEdits(getContext(), null, () -> {
                 mVb.seriesTitle.setText("");
@@ -240,7 +240,7 @@ public class EditBookSeriesListDialogFragment
      * @param series  the user was editing (with the original data)
      * @param tmpData the modifications the user made in a placeholder object.
      *                Non-modified data was copied here as well.
-     *                The id==0.
+     *                The id==0 will not be used/updated.
      */
     private void processChanges(@NonNull final Series series,
                                 @NonNull final Series tmpData) {

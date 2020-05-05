@@ -37,12 +37,14 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.google.android.material.snackbar.Snackbar;
+
+import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataEditor;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.settings.BarcodePreferenceFragment;
-import com.hardbacknutter.nevertoomanybooks.viewmodels.ActivityResultDataModel;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.BookViewModel;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.ScannerViewModel;
 
@@ -55,6 +57,8 @@ public class EditBookActivity
     /** Log tag. */
     private static final String TAG = "EditBookActivity";
 
+    private BookViewModel mBookViewModel;
+
     @Override
     protected void onSetContentView() {
         setContentView(R.layout.activity_edit_book);
@@ -63,6 +67,10 @@ public class EditBookActivity
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // don't call init here, we'll do that in EditBookFragment
+        // (another reason to eliminate EditBookFragment)
+        mBookViewModel = new ViewModelProvider(this).get(BookViewModel.class);
 
         setNavigationItemVisibility(R.id.nav_manage_bookshelves, true);
 
@@ -107,9 +115,8 @@ public class EditBookActivity
     @Override
     public void onBackPressed() {
 
-        final BookViewModel model = new ViewModelProvider(this).get(BookViewModel.class);
-
         final FragmentManager fm = getSupportFragmentManager();
+        //TODO: this might no longer be needed since we use DialogFragment for authors/series
         final int backStackEntryCount = fm.getBackStackEntryCount();
 
         // 1. Check for the current (i.e. in resumed state) fragment having unfinished edits
@@ -127,29 +134,49 @@ public class EditBookActivity
         }
 
         // 2. If we're at the top level, check if the book was changed.
-        if (backStackEntryCount == 0 && model.isDirty()) {
-            StandardDialogs.unsavedEdits(this, null,
-                                         () -> cleanupAndSetResults(model, true));
+        if (backStackEntryCount == 0 && mBookViewModel.isDirty()) {
+            StandardDialogs.unsavedEdits(this,
+                                         // do not provide 'save' here,
+                                         // we should/can call 'prepareSave'
+                                         // once EditBookFragment is eliminated
+                                         null,
+                                         this::setResultsAndFinish);
             return;
         }
 
         // Once here, we have no unfinished edits; and if we're on the top level,
         // the book data was saved (or never changed)
         if (backStackEntryCount == 0) {
-            cleanupAndSetResults(model, false);
+            setResultsAndFinish();
         }
 
         super.onBackPressed();
     }
 
-    void cleanupAndSetResults(@NonNull final ActivityResultDataModel model,
-                              final boolean doFinish) {
-        // we're really leaving, clean up
-        CoverHandler.deleteOrphanedCoverFiles(this);
-        // The result data will contain the re-position book id.
-        setResult(Activity.RESULT_OK, model.getResultData());
-        if (doFinish) {
-            finish();
+    /**
+     * Save the collected book details.
+     */
+    void saveBook() {
+        try {
+            mBookViewModel.saveBook(this);
+            setResultsAndFinish();
+
+        } catch (@NonNull final DAO.DaoWriteException e) {
+            Logger.error(this, TAG, e);
+            Snackbar.make(getWindow().getDecorView(), R.string.error_unexpected_error,
+                          Snackbar.LENGTH_LONG).show();
         }
+    }
+
+    void setResultsAndFinish() {
+        // The result data will contain the re-position book id.
+        setResult(Activity.RESULT_OK, mBookViewModel.getResultData());
+        finish();
+    }
+
+    @Override
+    protected void onDestroy() {
+        CoverHandler.deleteOrphanedCoverFiles(this);
+        super.onDestroy();
     }
 }

@@ -27,7 +27,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -48,7 +47,6 @@ import androidx.viewpager2.widget.ViewPager2;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
@@ -56,10 +54,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataEditor;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
@@ -202,8 +198,7 @@ public class EditBookFragment
                 StandardDialogs.unsavedEdits(
                         getContext(),
                         () -> prepareSave(false),
-                        () -> ((EditBookActivity) getActivity())
-                                .cleanupAndSetResults(mBookViewModel, true));
+                        () -> ((EditBookActivity) getActivity()).setResultsAndFinish());
                 return;
             }
 
@@ -220,8 +215,7 @@ public class EditBookFragment
                     StandardDialogs.unsavedEdits(
                             getContext(),
                             () -> prepareSave(false),
-                            () -> ((EditBookActivity) getActivity())
-                                    .cleanupAndSetResults(mBookViewModel, true));
+                            () -> ((EditBookActivity) getActivity()).setResultsAndFinish());
                     return;
                 }
             }
@@ -250,36 +244,23 @@ public class EditBookFragment
                     // this dialog is important. Make sure the user pays some attention
                     .setCancelable(false)
                     // User aborts this edit
-                    .setNegativeButton(android.R.string.cancel, (d, w) -> getActivity().finish())
+                    .setNegativeButton(android.R.string.cancel, (d, w) ->
+                            ((EditBookActivity) getActivity()).setResultsAndFinish())
                     // User wants to continue editing this book
-                    .setNeutralButton(R.string.action_edit, (d, w) -> d.dismiss())
+                    .setNeutralButton(R.string.btn_continue_edit, (d, w) -> d.dismiss())
                     // User wants to add regardless
-                    .setPositiveButton(R.string.action_add, (d, w) -> saveBook())
+                    .setPositiveButton(R.string.action_add, (d, w) ->
+                            ((EditBookActivity) getActivity()).saveBook())
                     .create()
                     .show();
             return;
         }
 
         // No special actions required...just do it.
-        saveBook();
+        //noinspection ConstantConditions
+        ((EditBookActivity) getActivity()).saveBook();
     }
 
-    /**
-     * Save the collected book details.
-     */
-    private void saveBook() {
-        try {
-            //noinspection ConstantConditions
-            mBookViewModel.saveBook(getContext());
-            //noinspection ConstantConditions
-            getActivity().setResult(Activity.RESULT_OK, mBookViewModel.getResultData());
-            getActivity().finish();
-        } catch (@NonNull final DAO.DaoWriteException e) {
-            Logger.error(getContext(), TAG, e);
-            Snackbar.make(mViewPager, R.string.error_unexpected_error,
-                          Snackbar.LENGTH_LONG).show();
-        }
-    }
 
     private static class TabAdapter
             extends FragmentStateAdapter {

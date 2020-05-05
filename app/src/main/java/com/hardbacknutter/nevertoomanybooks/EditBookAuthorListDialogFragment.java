@@ -86,7 +86,8 @@ public class EditBookAuthorListDialogFragment
         extends BaseDialogFragment {
 
     /** Fragment/Log tag. */
-    public static final String TAG = "EditBookAuthorListDialogFragment";
+    static final String TAG = "EditBookAuthorListDlg";
+
     /** Database Access. */
     private DAO mDb;
 
@@ -199,6 +200,7 @@ public class EditBookAuthorListDialogFragment
 
     private boolean saveChanges() {
         if (!mVb.author.getText().toString().isEmpty()) {
+            // Discarding applies to the temp author edit box only. The list itself is still saved.
             //noinspection ConstantConditions
             StandardDialogs.unsavedEdits(getContext(), null, () -> {
                 mVb.author.setText("");
@@ -247,7 +249,7 @@ public class EditBookAuthorListDialogFragment
      * @param author  the user was editing (with the original data)
      * @param tmpData the modifications the user made in a placeholder object.
      *                Non-modified data was copied here as well.
-     *                The id==0.
+     *                The id==0 will not be used/updated.
      */
     private void processChanges(@NonNull final Author author,
                                 @NonNull final Author tmpData) {
@@ -262,6 +264,7 @@ public class EditBookAuthorListDialogFragment
             if (author.getType() != tmpData.getType()) {
                 // so if the type is different, just update it
                 author.setType(tmpData.getType());
+                mListAdapter.notifyDataSetChanged();
             }
             return;
         }
@@ -274,6 +277,7 @@ public class EditBookAuthorListDialogFragment
             // There is no need to consult the user.
             // Copy the new data into the original object that the user was changing.
             author.copyFrom(tmpData, true);
+            mListAdapter.notifyDataSetChanged();
             return;
         }
 
@@ -295,6 +299,7 @@ public class EditBookAuthorListDialogFragment
                     // This change is done in the database right NOW!
                     if (mDb.updateAuthor(getContext(), author)) {
                         mBookViewModel.refreshAuthorList(getContext());
+                        mListAdapter.notifyDataSetChanged();
 
                     } else {
                         Logger.warnWithStackTrace(getContext(), TAG, "Could not update",
