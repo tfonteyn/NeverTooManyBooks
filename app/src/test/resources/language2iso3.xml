@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8' standalone='yes' ?><!--
-  ~ @Copyright 2019 HardBackNutter
+  ~ @Copyright 2020 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -28,9 +28,9 @@
 
 <!--suppress ALL -->
 <map>
-    <boolean name="eng"
+    <boolean name="___eng"
         value="true" />
-    <boolean name="nld"
+    <boolean name="___nld"
         value="true" />
     <string name="german">deu</string>
     <string name="soga">xog</string>

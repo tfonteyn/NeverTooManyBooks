@@ -108,6 +108,9 @@ public final class LanguageUtils {
                                                 @NonNull final String displayName) {
 
         String source = displayName.trim().toLowerCase(LocaleUtils.getUserLocale(context));
+        if (source.isEmpty()) {
+            return "";
+        }
         return getLanguageCache(context).getString(source, source);
     }
 
@@ -401,6 +404,8 @@ public final class LanguageUtils {
         /** Log tag. */
         @SuppressWarnings("InnerClassFieldHidesOuterClassField")
         private static final String TAG = "BuildLanguageMappings";
+        /** Prefix added to the iso code for the 'done' flag in the language cache. */
+        private static final String LANG_CREATED_PREFIX = "___";
 
         /**
          * Constructor.
@@ -427,6 +432,11 @@ public final class LanguageUtils {
             try {
 
                 final SharedPreferences prefs = getLanguageCache(context);
+
+                //FIXME: temp hack - remove me
+                if (prefs.contains("eng")) {
+                    prefs.edit().clear().apply();
+                }
 
                 // the one the user is using our app in (can be different from the system one)
                 createLanguageMappingCache(prefs, LocaleUtils.getUserLocale(context));
@@ -461,7 +471,7 @@ public final class LanguageUtils {
         private void createLanguageMappingCache(@NonNull final SharedPreferences prefs,
                                                 @NonNull final Locale locale) {
             // just return if already done for this Locale.
-            if (prefs.getBoolean(locale.getISO3Language(), false)) {
+            if (prefs.getBoolean(LANG_CREATED_PREFIX + locale.getISO3Language(), false)) {
                 return;
             }
             SharedPreferences.Editor ed = prefs.edit();
@@ -470,7 +480,7 @@ public final class LanguageUtils {
                              loc.getISO3Language());
             }
             // signal this Locale was done
-            ed.putBoolean(locale.getISO3Language(), true);
+            ed.putBoolean(LANG_CREATED_PREFIX + locale.getISO3Language(), true);
             ed.apply();
         }
     }
