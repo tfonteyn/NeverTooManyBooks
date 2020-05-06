@@ -56,12 +56,6 @@
     <item name="TAG_FIELD_USAGE" type="id" />
     <!-- END View tags -->
 
-    <!-- BEGIN predefined View ids. -->
-    <item name="PICKER_DAY" type="id" />
-    <item name="PICKER_MONTH" type="id" />
-    <item name="PICKER_YEAR" type="id" />
-    <!-- END predefined View ids -->
-
     <!-- BEGIN predefined AsyncTask IDs needed for TaskBase child classes. -->
     <item name="TASK_ID_GET_BOOKLIST" type="id" />
 

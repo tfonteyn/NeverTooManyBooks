@@ -29,12 +29,9 @@ package com.hardbacknutter.nevertoomanybooks.dialogs.date;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog;
-import android.content.Context;
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.text.format.DateFormat;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.NumberPicker;
@@ -46,6 +43,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.DialogFragment;
 
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.Calendar;
@@ -76,6 +74,42 @@ public class PartialDatePickerDialogFragment
     /** Displayed to user: unset day. */
     private static final String UNKNOWN_DAY = "--";
 
+    /** Used for reading month names + calculating number of days in a month. */
+    private Calendar mCalendarForCalculations;
+    private NumberPicker mDayPicker;
+    /** This listener is called after <strong>any change</strong> made to the pickers. */
+    @SuppressWarnings("FieldCanBeLocal")
+    private final NumberPicker.OnValueChangeListener mOnValueChangeListener =
+            (picker, oldVal, newVal) -> {
+                switch (picker.getId()) {
+                    case R.id.year:
+                        mYear = newVal;
+                        // only February can be different number of days
+                        if (mMonth != null && mMonth == 2) {
+                            updateDaysInMonth();
+                        }
+                        break;
+
+                    case R.id.month:
+                        mMonth = newVal;
+                        updateDaysInMonth();
+                        break;
+
+                    case R.id.day:
+                        mDay = newVal;
+                        break;
+
+                    default:
+                        if (BuildConfig.DEBUG /* always */) {
+                            Log.d(TAG, "id=" + picker.getId());
+                        }
+                        break;
+                }
+            };
+
+    @StringRes
+    private int mDialogTitleId;
+
     /**
      * Constructor.
      *
@@ -105,33 +139,86 @@ public class PartialDatePickerDialogFragment
         return frag;
     }
 
-    @NonNull
     @Override
-    public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
+    public void onCreate(@Nullable final Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        final Bundle args = getArguments();
+        if (args != null) {
+            mDialogTitleId = args.getInt(StandardDialogs.BKEY_DIALOG_TITLE);
+        }
 
         //noinspection ConstantConditions
-        Calendar calendar = Calendar.getInstance(LocaleUtils.getUserLocale(getContext()));
+        mCalendarForCalculations = Calendar.getInstance(LocaleUtils.getUserLocale(getContext()));
 
-        baseSetup(savedInstanceState);
+        final Calendar calendar = Calendar.getInstance(LocaleUtils.getUserLocale(getContext()));
 
+        setupDate(savedInstanceState);
         // can't have a null year. (but month/day can be null)
         // The user can/should use the "clear" button if they want no date at all.
         if (mYear == null) {
             mYear = calendar.get(Calendar.YEAR);
         }
-
-        return new PartialDatePickerDialog(getContext(), getArguments());
     }
 
-    /**
-     * Set the dialog OnClickListener. This allows us to validate the fields without
-     * having the dialog close on us after the user clicks a button.
-     */
+    @NonNull
+    @Override
+    public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
+        @SuppressLint("InflateParams")
+        final View root = getLayoutInflater().inflate(R.layout.dialog_partial_date_picker, null);
+
+        // Ensure components match current Locale order
+        reorderPickers(root);
+
+        final NumberPicker yearPicker = root.findViewById(R.id.year);
+        // we're optimistic...
+        yearPicker.setMinValue(0);
+        yearPicker.setMaxValue(2100);
+        yearPicker.setOnValueChangedListener(mOnValueChangeListener);
+
+        final NumberPicker monthPicker = root.findViewById(R.id.month);
+        // 0: 'not set' + 1..12 real months
+        monthPicker.setMinValue(0);
+        monthPicker.setMaxValue(12);
+        monthPicker.setDisplayedValues(getMonthAbbr());
+        monthPicker.setOnValueChangedListener(mOnValueChangeListener);
+
+        mDayPicker = root.findViewById(R.id.day);
+        // 0: 'not set'
+        mDayPicker.setMinValue(0);
+        // Make sure that the spinner can initially take any 'day' value. Otherwise,
+        // when a dialog is reconstructed after rotation, the 'day' field will not be
+        // restored by Android.
+        mDayPicker.setMaxValue(31);
+        mDayPicker.setFormatter(value -> value == 0 ? UNKNOWN_DAY : String.valueOf(value));
+        mDayPicker.setOnValueChangedListener(mOnValueChangeListener);
+
+        // set the initial date
+        final int currentYear = mCalendarForCalculations.get(Calendar.YEAR);
+        yearPicker.setValue(mYear != null ? mYear : currentYear);
+        monthPicker.setValue(mMonth != null ? mMonth : 0);
+        mDayPicker.setValue(mDay != null ? mDay : 0);
+        updateDaysInMonth();
+
+        //noinspection ConstantConditions
+        return new MaterialAlertDialogBuilder(getContext())
+                .setView(root)
+                .setTitle(mDialogTitleId != 0 ? mDialogTitleId : R.string.action_edit)
+                // no listeners. They must be set in the onResume of the fragment.
+                .setNegativeButton(android.R.string.cancel, null)
+                .setNeutralButton(R.string.action_clear, null)
+                .setPositiveButton(android.R.string.ok, null)
+                .create();
+    }
+
     @Override
     public void onResume() {
         super.onResume();
         final AlertDialog dialog = (AlertDialog) getDialog();
         if (dialog != null) {
+            // Set the dialog OnClickListener in onResume.
+            // This allows us to validate the fields without
+            // having the dialog close on us after the user clicks a button.
             dialog.getButton(Dialog.BUTTON_NEGATIVE).setOnClickListener(
                     v -> dismiss());
             dialog.getButton(Dialog.BUTTON_NEUTRAL).setOnClickListener(
@@ -157,207 +244,94 @@ public class PartialDatePickerDialogFragment
     }
 
     /**
-     * Custom dialog. Button OnClickListener's must be set in the fragment onResume method.
+     * Generate the month names (abbreviated). There are 13: first entry being 'unknown'.
      */
-    class PartialDatePickerDialog
-            extends AlertDialog {
+    private String[] getMonthAbbr() {
+        // Set the day to 1 to avoid wrapping.
+        mCalendarForCalculations.set(Calendar.DAY_OF_MONTH, 1);
+        String[] monthNames = new String[13];
+        monthNames[0] = UNKNOWN_MONTH;
+        for (int i = 1; i <= 12; i++) {
+            mCalendarForCalculations.set(Calendar.MONTH, i - 1);
+            monthNames[i] = String.format("%tb", mCalendarForCalculations);
+        }
+        return monthNames;
+    }
 
-        /** Used for reading month names + calculating number of days in a month. */
-        @NonNull
-        private final Calendar mCalendarForCalculations;
-        @NonNull
-        private final NumberPicker mDayPicker;
-        /** This listener is called after <strong>any change</strong> made to the pickers. */
-        @SuppressWarnings("FieldCanBeLocal")
-        private final NumberPicker.OnValueChangeListener mOnValueChangeListener =
-                (picker, oldVal, newVal) -> {
-                    switch (picker.getId()) {
-                        case R.id.PICKER_YEAR:
-                            mYear = newVal;
-                            // only February can be different number of days
-                            if (mMonth != null && mMonth == 2) {
-                                setDaysOfMonth();
-                            }
-                            break;
+    /**
+     * Depending on year/month selected, set the correct number of days.
+     */
+    private void updateDaysInMonth() {
+        // Save the current day in case the regen alters it
+        Integer daySave = mDay;
 
-                        case R.id.PICKER_MONTH:
-                            mMonth = newVal;
-                            setDaysOfMonth();
-                            break;
-
-                        case R.id.PICKER_DAY:
-                            mDay = newVal;
-                            break;
-
-                        default:
-                            if (BuildConfig.DEBUG /* always */) {
-                                Log.d(TAG, "id=" + picker.getId());
-                            }
-                            break;
-                    }
-                };
-
-        /**
-         * Constructor.
-         *
-         * <strong>Note:</strong> we explicitly pass in the inflater (independent from the
-         * context) so we are 100% sure we're using the same one as in {@link #onCreateDialog}.
-         * Call it paranoia.
-         *
-         * @param context Current context
-         * @param args    optional arguments
-         */
-        PartialDatePickerDialog(@NonNull final Context context,
-                                @Nullable final Bundle args) {
-            super(context);
-
-            mCalendarForCalculations = Calendar.getInstance(LocaleUtils.getUserLocale(context));
-            int currentYear = mCalendarForCalculations.get(Calendar.YEAR);
-
-            @SuppressLint("InflateParams")
-            View root = LayoutInflater.from(context)
-                                      .inflate(R.layout.dialog_partial_date_picker, null);
-
-            // Ensure components match current Locale order
-            reorderPickers(root);
-
-            // Set the view
-            setView(root);
-
-            NumberPicker yearPicker = root.findViewById(R.id.year);
-            yearPicker.setId(R.id.PICKER_YEAR);
-            yearPicker.setMinValue(0);
-            // we're optimistic...
-            yearPicker.setMaxValue(2100);
-            yearPicker.setOnValueChangedListener(mOnValueChangeListener);
-
-            // Generate the month names.
-            // Set the day to 1 to avoid wrapping.
-            mCalendarForCalculations.set(Calendar.DAY_OF_MONTH, 1);
-            // All month names (abbreviated). 13: first entry is 'unknown'
-            String[] monthNames = new String[13];
-            monthNames[0] = UNKNOWN_MONTH;
-            for (int i = 1; i <= 12; i++) {
-                mCalendarForCalculations.set(Calendar.MONTH, i - 1);
-                monthNames[i] = String.format("%tb", mCalendarForCalculations);
-            }
-            NumberPicker monthPicker = root.findViewById(R.id.month);
-            monthPicker.setId(R.id.PICKER_MONTH);
-            monthPicker.setMinValue(0);
-            // 12 months + the 'not set'
-            monthPicker.setMaxValue(12);
-            monthPicker.setDisplayedValues(monthNames);
-            monthPicker.setOnValueChangedListener(mOnValueChangeListener);
-
-            mDayPicker = root.findViewById(R.id.day);
-            mDayPicker.setId(R.id.PICKER_DAY);
-            mDayPicker.setMinValue(0);
-            // Make sure that the spinner can initially take any 'day' value. Otherwise,
-            // when a dialog is reconstructed after rotation, the 'day' field will not be
-            // restored by Android.
-            mDayPicker.setMaxValue(31);
-            mDayPicker.setFormatter(value -> value == 0 ? UNKNOWN_DAY : String.valueOf(value));
-            mDayPicker.setOnValueChangedListener(mOnValueChangeListener);
-
-            // initial date
-            yearPicker.setValue(mYear != null ? mYear : currentYear);
-            monthPicker.setValue(mMonth != null ? mMonth : 0);
-            mDayPicker.setValue(mDay != null ? mDay : 0);
-            setDaysOfMonth();
-
-            // no listeners. They must be set in the onResume of the fragment.
-            setButton(DialogInterface.BUTTON_NEGATIVE, getString(android.R.string.cancel),
-                      (DialogInterface.OnClickListener) null);
-            setButton(DialogInterface.BUTTON_NEUTRAL, getString(R.string.action_clear),
-                      (DialogInterface.OnClickListener) null);
-            setButton(DialogInterface.BUTTON_POSITIVE, getString(android.R.string.ok),
-                      (DialogInterface.OnClickListener) null);
-
-            if (args != null) {
-                @StringRes
-                int titleId = args.getInt(StandardDialogs.BKEY_DIALOG_TITLE, R.string.action_edit);
-                if (titleId != 0) {
-                    setTitle(titleId);
-                }
-            }
+        // Determine the total days if we have a valid month/year
+        int totalDays;
+        if (mYear != null && mMonth != null && mMonth > 0) {
+            mCalendarForCalculations.set(Calendar.YEAR, mYear);
+            mCalendarForCalculations.set(Calendar.MONTH, mMonth - 1);
+            totalDays = mCalendarForCalculations.getActualMaximum(Calendar.DAY_OF_MONTH);
+        } else {
+            // allow the user to start inputting with day first.
+            totalDays = 31;
         }
 
-        /**
-         * Depending on year/month selected, set the correct number of days.
-         */
-        private void setDaysOfMonth() {
-            // Save the current day in case the regen alters it
-            Integer daySave = mDay;
+        mDayPicker.setMaxValue(totalDays);
 
-            // Determine the total days if we have a valid month/year
-            int totalDays;
-            if (mYear != null && mMonth != null && mMonth > 0) {
-                mCalendarForCalculations.set(Calendar.YEAR, mYear);
-                mCalendarForCalculations.set(Calendar.MONTH, mMonth - 1);
-                totalDays = mCalendarForCalculations.getActualMaximum(Calendar.DAY_OF_MONTH);
-            } else {
-                // allow the user to start inputting with day first.
-                totalDays = 31;
+        // Ensure selected day is valid
+        if (daySave == null || daySave == 0) {
+            mDayPicker.setValue(0);
+        } else {
+            if (daySave > totalDays) {
+                daySave = totalDays;
             }
+            mDayPicker.setValue(daySave);
+        }
+    }
 
-            mDayPicker.setMaxValue(totalDays);
-
-            // Ensure selected day is valid
-            if (daySave == null || daySave == 0) {
-                mDayPicker.setValue(0);
-            } else {
-                if (daySave > totalDays) {
-                    daySave = totalDays;
-                }
-                mDayPicker.setValue(daySave);
-            }
+    /**
+     * Reorder the views in the dialog to suit the current Locale.
+     *
+     * @param root Root view
+     */
+    private void reorderPickers(@NonNull final View root) {
+        final char[] order;
+        try {
+            // This actually throws exception in some versions of Android, specifically when
+            // the Locale specific date format has the day name (EEE) in it. So we exit and
+            // just use our default order in these cases.
+            // See BC Issue #712.
+            order = DateFormat.getDateFormatOrder(getContext());
+        } catch (@NonNull final RuntimeException e) {
+            return;
         }
 
-        /**
-         * Reorder the views in the dialog to suit the current Locale.
-         *
-         * @param root Root view
-         */
-        private void reorderPickers(@NonNull final View root) {
-            char[] order;
-            try {
-                // This actually throws exception in some versions of Android, specifically when
-                // the Locale specific date format has the day name (EEE) in it. So we exit and
-                // just use our default order in these cases.
-                // See BC Issue #712.
-                order = DateFormat.getDateFormatOrder(getContext());
-            } catch (@NonNull final RuntimeException e) {
-                return;
-            }
-
-            // Default order is {year, month, day} so if that's the order then do nothing.
-            if ((order[0] == 'y') && (order[1] == 'M')) {
-                return;
-            }
-
-            // Remove the 3 pickers from their parent and add them back in the required order.
-            ViewGroup parent = root.findViewById(R.id.dateSelector);
-            // Get the three views
-            ConstraintLayout y = parent.findViewById(R.id.yearSelector);
-            ConstraintLayout m = parent.findViewById(R.id.monthSelector);
-            ConstraintLayout d = parent.findViewById(R.id.daySelector);
-            // Remove them
-            parent.removeAllViews();
-            // Re-add in the correct order.
-            for (char c : order) {
-                switch (c) {
-                    case 'd':
-                        parent.addView(d);
-                        break;
-                    case 'M':
-                        parent.addView(m);
-                        break;
-                    default:
-                        parent.addView(y);
-                        break;
-                }
-            }
+        // Default order is {year, month, day} so if that's the order then do nothing.
+        if ((order[0] == 'y') && (order[1] == 'M')) {
+            return;
         }
 
+        // Remove the 3 pickers from their parent and add them back in the required order.
+        final ViewGroup parent = root.findViewById(R.id.dateSelector);
+        // Get the three views
+        final ConstraintLayout y = parent.findViewById(R.id.yearSelector);
+        final ConstraintLayout m = parent.findViewById(R.id.monthSelector);
+        final ConstraintLayout d = parent.findViewById(R.id.daySelector);
+        // Remove them
+        parent.removeAllViews();
+        // Re-add in the correct order.
+        for (char c : order) {
+            switch (c) {
+                case 'd':
+                    parent.addView(d);
+                    break;
+                case 'M':
+                    parent.addView(m);
+                    break;
+                default:
+                    parent.addView(y);
+                    break;
+            }
+        }
     }
 }

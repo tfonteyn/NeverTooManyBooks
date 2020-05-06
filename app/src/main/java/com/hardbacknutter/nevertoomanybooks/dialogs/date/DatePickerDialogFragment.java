@@ -97,7 +97,7 @@ public class DatePickerDialogFragment
     @Override
     public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
 
-        baseSetup(savedInstanceState);
+        setupDate(savedInstanceState);
 
         //noinspection ConstantConditions
         Calendar calendar = Calendar.getInstance(LocaleUtils.getUserLocale(getContext()));

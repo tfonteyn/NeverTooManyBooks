@@ -51,21 +51,24 @@ public class BaseDatePickerDialogFragment
     /** or the date split into components, which can be partial. */
     @SuppressWarnings("WeakerAccess")
     static final String BKEY_YEAR = TAG + ":year";
-    /** range: 1..12. */
+    /** range: 0: 'not set' or 1..12. */
     @SuppressWarnings("WeakerAccess")
     static final String BKEY_MONTH = TAG + ":month";
+    /** range: 0: 'not set' or 1..31. */
     @SuppressWarnings("WeakerAccess")
     static final String BKEY_DAY = TAG + ":day";
 
     /** Currently displayed; {@code null} if empty/invalid. */
     @Nullable
     Integer mYear;
+
     /**
      * Currently displayed; {@code null} or {@code 0} if invalid/empty.
      * <strong>IMPORTANT:</strong> 1..12 based. (the jdk internals expect 0..11).
      */
     @Nullable
     Integer mMonth;
+
     /** Currently displayed; {@code null} if empty/invalid. */
     @Nullable
     Integer mDay;
@@ -79,12 +82,12 @@ public class BaseDatePickerDialogFragment
      *
      * @param savedInstanceState from #onCreateDialog
      */
-    void baseSetup(@Nullable final Bundle savedInstanceState) {
+    void setupDate(@Nullable final Bundle savedInstanceState) {
 
-        Bundle args = savedInstanceState != null ? savedInstanceState : requireArguments();
+        final Bundle args = savedInstanceState != null ? savedInstanceState : requireArguments();
         if (args.containsKey(BKEY_DATE)) {
             // BKEY_DATE is only present in the original args
-            setDate(args.getString(BKEY_DATE));
+            parseDate(args.getString(BKEY_DATE));
         } else {
             // These are only present in the savedInstanceState
             mYear = args.getInt(BKEY_YEAR);
@@ -109,17 +112,18 @@ public class BaseDatePickerDialogFragment
     }
 
     /**
-     * Private helper, NOT a public accessor.
-     * <ul>Allows partial dates:
+     * Parse the input SQL date string into the individual components.
+     *
+     * <ul>Allowed formats:
      *      <li>yyyy-mm-dd time</li>
      *      <li>yyyy-mm-dd</li>
      *      <li>yyyy-mm</li>
-     *       <li>yyyy</li>
+     *      <li>yyyy</li>
      * </ul>
      *
      * @param dateString SQL formatted (partial) date, can be {@code null}.
      */
-    private void setDate(@Nullable final String dateString) {
+    private void parseDate(@Nullable final String dateString) {
         if (dateString == null || dateString.isEmpty()) {
             mYear = null;
             mMonth = null;
@@ -131,8 +135,8 @@ public class BaseDatePickerDialogFragment
         Integer mm = null;
         Integer dd = null;
         try {
-            String[] dateAndTime = dateString.split(" ");
-            String[] date = dateAndTime[0].split("-");
+            final String[] dateAndTime = dateString.split(" ");
+            final String[] date = dateAndTime[0].split("-");
             yyyy = Integer.parseInt(date[0]);
             if (date.length > 1) {
                 mm = Integer.parseInt(date[1]);
