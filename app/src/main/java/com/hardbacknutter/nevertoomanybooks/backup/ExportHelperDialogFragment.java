@@ -29,7 +29,6 @@ package com.hardbacknutter.nevertoomanybooks.backup;
 
 import android.app.Dialog;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -76,10 +75,7 @@ public class ExportHelperDialogFragment
 
         mModel = new ViewModelProvider(this).get(ExportHelperViewModel.class);
 
-        // Reminder: *always* use the activity inflater here.
-        //noinspection ConstantConditions
-        final LayoutInflater inflater = getActivity().getLayoutInflater();
-        mVb = DialogExportOptionsBinding.inflate(inflater);
+        mVb = DialogExportOptionsBinding.inflate(getLayoutInflater());
 
         setupOptions();
 
@@ -96,7 +92,7 @@ public class ExportHelperDialogFragment
     @Override
     public void onStart() {
         super.onStart();
-        fixDialogWidth();
+        fixDialogWidth(R.dimen.export_dialog_landscape_width);
     }
 
     /**

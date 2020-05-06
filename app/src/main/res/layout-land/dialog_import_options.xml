@@ -26,107 +26,113 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<androidx.constraintlayout.widget.ConstraintLayout
+<androidx.core.widget.NestedScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     style="@style/Dialog.Body.Floating"
     >
 
-    <com.hardbacknutter.nevertoomanybooks.widgets.ConstraintRadioGroup
-        android:id="@+id/rb_books_group"
-        android:layout_width="wrap_content"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:visibility="gone"
-        app:constraint_referenced_ids="rb_books_all,rb_books_sync"
-        tools:ignore="MissingConstraints"
-        />
+        >
 
-    <!-- control visibility of checkboxes. -->
-    <androidx.constraintlayout.widget.Group
-        android:id="@+id/cbx_group"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:constraint_referenced_ids="cbx_books,cbx_covers,cbx_prefs_and_styles"
-        />
+        <com.hardbacknutter.nevertoomanybooks.widgets.ConstraintRadioGroup
+            android:id="@+id/rb_books_group"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:constraint_referenced_ids="rb_books_all,rb_books_sync"
+            tools:ignore="MissingConstraints"
+            />
 
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.6"
-        />
+        <!-- control visibility of checkboxes. -->
+        <androidx.constraintlayout.widget.Group
+            android:id="@+id/cbx_group"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:constraint_referenced_ids="cbx_books,cbx_covers,cbx_prefs_and_styles"
+            />
 
-    <CheckBox
-        android:id="@+id/cbx_books"
-        style="@style/OptionRow.Checkable"
-        android:layout_width="0dp"
-        android:checked="true"
-        android:text="@string/lbl_books"
-        app:layout_constraintEnd_toStartOf="@id/guideline"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        />
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.6"
+            />
 
-    <RadioButton
-        android:id="@+id/rb_books_all"
-        style="@style/OptionRow.Checkable"
-        android:layout_width="0dp"
-        android:layout_marginStart="@dimen/indent_radio_button"
-        android:checked="true"
-        android:text="@string/bookshelf_all_books"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/cbx_books"
-        />
+        <CheckBox
+            android:id="@+id/cbx_books"
+            style="@style/OptionRow.Checkable"
+            android:layout_width="0dp"
+            android:checked="true"
+            android:text="@string/lbl_books"
+            app:layout_constraintEnd_toStartOf="@id/guideline"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            />
 
-    <ImageButton
-        android:id="@+id/info_btn_rb_books_all"
-        style="@style/InfoButton"
-        android:contentDescription="@string/txt_import_option_all_books"
-        app:layout_constraintStart_toEndOf="@id/rb_books_all"
-        app:layout_constraintTop_toTopOf="@id/rb_books_all"
-        />
+        <RadioButton
+            android:id="@+id/rb_books_all"
+            style="@style/OptionRow.Checkable"
+            android:layout_width="0dp"
+            android:layout_marginStart="@dimen/indent_radio_button"
+            android:checked="true"
+            android:text="@string/bookshelf_all_books"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/cbx_books"
+            />
 
-    <RadioButton
-        android:id="@+id/rb_books_sync"
-        style="@style/OptionRow.Checkable"
-        android:layout_width="0dp"
-        android:layout_marginStart="@dimen/indent_radio_button"
-        android:text="@string/lbl_import_option_new_and_changed_books"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/rb_books_all"
-        />
+        <ImageButton
+            android:id="@+id/info_btn_rb_books_all"
+            style="@style/InfoButton"
+            android:contentDescription="@string/txt_import_option_all_books"
+            app:layout_constraintStart_toEndOf="@id/rb_books_all"
+            app:layout_constraintTop_toTopOf="@id/rb_books_all"
+            />
 
-    <ImageButton
-        android:id="@+id/info_btn_rb_books_sync"
-        style="@style/InfoButton"
-        android:contentDescription="@string/txt_import_option_new_and_changed_books"
-        app:layout_constraintStart_toEndOf="@id/rb_books_sync"
-        app:layout_constraintTop_toTopOf="@id/rb_books_sync"
-        />
+        <RadioButton
+            android:id="@+id/rb_books_sync"
+            style="@style/OptionRow.Checkable"
+            android:layout_width="0dp"
+            android:layout_marginStart="@dimen/indent_radio_button"
+            android:text="@string/lbl_import_option_new_and_changed_books"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/rb_books_all"
+            />
 
-    <CheckBox
-        android:id="@+id/cbx_covers"
-        style="@style/OptionRow.Checkable"
-        android:layout_width="0dp"
-        android:checked="true"
-        android:text="@string/lbl_covers_long"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/guideline"
-        app:layout_constraintTop_toTopOf="parent"
-        />
+        <ImageButton
+            android:id="@+id/info_btn_rb_books_sync"
+            style="@style/InfoButton"
+            android:contentDescription="@string/txt_import_option_new_and_changed_books"
+            app:layout_constraintStart_toEndOf="@id/rb_books_sync"
+            app:layout_constraintTop_toTopOf="@id/rb_books_sync"
+            />
 
-    <CheckBox
-        android:id="@+id/cbx_prefs_and_styles"
-        style="@style/OptionRow.Checkable"
-        android:layout_width="0dp"
-        android:checked="true"
-        android:text="@string/lbl_settings"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/guideline"
-        app:layout_constraintTop_toBottomOf="@id/cbx_covers"
-        />
+        <CheckBox
+            android:id="@+id/cbx_covers"
+            style="@style/OptionRow.Checkable"
+            android:layout_width="0dp"
+            android:checked="true"
+            android:text="@string/lbl_covers_long"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/guideline"
+            app:layout_constraintTop_toTopOf="parent"
+            />
+
+        <CheckBox
+            android:id="@+id/cbx_prefs_and_styles"
+            style="@style/OptionRow.Checkable"
+            android:layout_width="0dp"
+            android:checked="true"
+            android:text="@string/lbl_settings"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/guideline"
+            app:layout_constraintTop_toBottomOf="@id/cbx_covers"
+            />
 
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.core.widget.NestedScrollView>

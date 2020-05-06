@@ -30,7 +30,6 @@ package com.hardbacknutter.nevertoomanybooks.backup;
 import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.View;
 
 import androidx.annotation.NonNull;
@@ -89,10 +88,7 @@ public class ImportHelperDialogFragment
         //noinspection ConstantConditions
         mModel.init(getContext(), requireArguments());
 
-        // Reminder: *always* use the activity inflater here.
-        //noinspection ConstantConditions
-        final LayoutInflater inflater = getActivity().getLayoutInflater();
-        mVb = DialogImportOptionsBinding.inflate(inflater);
+        mVb = DialogImportOptionsBinding.inflate(getLayoutInflater());
 
         mIsCsvBooks = mModel.isCsvContainer(getContext());
         setupOptions();
@@ -111,7 +107,7 @@ public class ImportHelperDialogFragment
         super.onStart();
         // do NOT adjust the dialog if we're doing CSV... it's big enough
         if (!mIsCsvBooks) {
-            fixDialogWidth();
+            fixDialogWidth(R.dimen.import_dialog_landscape_width);
         }
     }
 

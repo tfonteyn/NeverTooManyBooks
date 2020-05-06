@@ -34,6 +34,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import androidx.annotation.DimenRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
@@ -43,7 +44,6 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import java.lang.ref.WeakReference;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 
 public abstract class OptionsDialogBase<T>
@@ -55,14 +55,12 @@ public abstract class OptionsDialogBase<T>
     @Nullable
     private WeakReference<OptionsListener<T>> mListener;
 
-    protected void fixDialogWidth() {
+    protected void fixDialogWidth(@DimenRes final int dimenId) {
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
             // force the dialog to be big enough
             Dialog dialog = getDialog();
             if (dialog != null) {
-//                int width = ViewGroup.LayoutParams.MATCH_PARENT;
-                int width = getResources()
-                        .getDimensionPixelSize(R.dimen.import_dialog_landscape_width);
+                int width = getResources().getDimensionPixelSize(dimenId);
                 int height = ViewGroup.LayoutParams.WRAP_CONTENT;
                 //noinspection ConstantConditions
                 dialog.getWindow().setLayout(width, height);
