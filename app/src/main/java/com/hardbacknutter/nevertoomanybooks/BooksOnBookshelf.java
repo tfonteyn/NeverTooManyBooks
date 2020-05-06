@@ -518,7 +518,10 @@ public class BooksOnBookshelf
         mFabMenuItems[2].setOnClickListener(v -> addBySearch(BookSearchByTextFragment.TAG));
         mFabMenuItems[3].setOnClickListener(v -> addManually());
         if (Prefs.showEditBookTabNativeId(this)) {
+            mFabMenuItems[4].setEnabled(true);
             mFabMenuItems[4].setOnClickListener(v -> addBySearch(BookSearchByNativeIdFragment.TAG));
+        } else {
+            mFabMenuItems[4].setEnabled(false);
         }
 
         // Popup the search widget when the user starts to type.
@@ -612,10 +615,10 @@ public class BooksOnBookshelf
         //TODO: use resource qualifiers instead.
         final boolean smallScreen = getResources().getConfiguration().screenHeightDp < 400;
 
-        for (int i = 0; i < mFabMenuItems.length; i++) {
-            final ExtendedFloatingActionButton fab = mFabMenuItems[i];
+        int i = 0;
+        for (ExtendedFloatingActionButton fab : mFabMenuItems) {
             // allow for null items
-            if (fab != null) {
+            if (fab != null && fab.isEnabled()) {
                 if (show) {
                     fab.show();
                     if (!smallScreen) {
@@ -632,6 +635,7 @@ public class BooksOnBookshelf
                     fab.animate().translationY(0);
                     fab.hide();
                 }
+                i++;
             }
         }
     }
@@ -1559,6 +1563,10 @@ public class BooksOnBookshelf
 
     /**
      * Save current position information.
+     * <p>
+     * TODO: https://guides.codepath.com/android/Handling-Configuration-Changes#recyclerview
+     * but we'd still need to do some manual stuff to keep the position in between
+     * app restarts.
      */
     private void saveListPosition() {
         if (!isDestroyed()) {
