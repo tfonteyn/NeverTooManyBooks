@@ -134,10 +134,7 @@ public abstract class BaseDialogFragment
         if (mFullscreen) {
             dialog = super.onCreateDialog(savedInstanceState);
         } else {
-            // Reminder: *always* use the activity inflater here.
-            //noinspection ConstantConditions
-            final LayoutInflater inflater = getActivity().getLayoutInflater();
-            mDialogView = inflater.inflate(mLayoutId, null);
+            mDialogView = getLayoutInflater().inflate(mLayoutId, null);
             onViewCreated(mDialogView, savedInstanceState);
             //noinspection ConstantConditions
             dialog = new MaterialAlertDialogBuilder(getContext())
@@ -165,7 +162,6 @@ public abstract class BaseDialogFragment
         showError(til, getString(errorId));
     }
 
-    @SuppressWarnings("WeakerAccess")
     protected void showError(@NonNull final TextInputLayout til,
                              @NonNull final CharSequence error) {
         til.setError(error);

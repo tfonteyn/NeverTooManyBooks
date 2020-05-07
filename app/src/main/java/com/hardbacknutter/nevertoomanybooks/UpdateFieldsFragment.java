@@ -94,6 +94,10 @@ public class UpdateFieldsFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+
+        mUpdateFieldsModel = new ViewModelProvider(this).get(UpdateFieldsModel.class);
+        //noinspection ConstantConditions
+        mUpdateFieldsModel.init(getContext(), getArguments());
     }
 
     @Nullable
@@ -106,14 +110,12 @@ public class UpdateFieldsFragment
     }
 
     @Override
-    public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
+    public void onViewCreated(@NonNull final View view,
+                              @Nullable final Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
         final Activity activity = getActivity();
 
-        mUpdateFieldsModel = new ViewModelProvider(this).get(UpdateFieldsModel.class);
-        //noinspection ConstantConditions
-        mUpdateFieldsModel.init(getContext(), getArguments());
         mUpdateFieldsModel.onSearchCoordinatorProgressMessage()
                           .observe(getViewLifecycleOwner(), this::onTaskProgress);
 
@@ -143,6 +145,7 @@ public class UpdateFieldsFragment
         populateFields();
 
         if (savedInstanceState == null) {
+            //noinspection ConstantConditions
             mUpdateFieldsModel.getSiteList()
                               .promptToRegister(getContext(), false, "update_from_internet");
 
@@ -150,6 +153,7 @@ public class UpdateFieldsFragment
         }
 
         // Warn the user, but don't abort.
+        //noinspection ConstantConditions
         if (!NetworkUtils.isNetworkAvailable(getContext())) {
             Snackbar.make(mVb.getRoot(), R.string.error_network_no_connection,
                           Snackbar.LENGTH_LONG).show();

@@ -50,6 +50,7 @@ import com.hardbacknutter.nevertoomanybooks.backup.base.InvalidArchiveException;
 import com.hardbacknutter.nevertoomanybooks.backup.base.Options;
 import com.hardbacknutter.nevertoomanybooks.backup.base.OptionsDialogBase;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogImportOptionsBinding;
+import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 
 public class ImportHelperDialogFragment
         extends OptionsDialogBase<ImportManager> {
@@ -148,9 +149,9 @@ public class ImportHelperDialogFragment
             final boolean allBooks = (helper.getOptions()
                                       & ImportManager.IMPORT_ONLY_NEW_OR_UPDATED) == 0;
             mVb.rbBooksAll.setChecked(allBooks);
-            mVb.infoBtnRbBooksAll.setOnClickListener(v -> infoPopup(mVb.rbBooksAll, v));
+            mVb.infoBtnRbBooksAll.setOnClickListener(StandardDialogs::infoPopup);
             mVb.rbBooksSync.setChecked(!allBooks);
-            mVb.infoBtnRbBooksSync.setOnClickListener(v -> infoPopup(mVb.rbBooksSync, v));
+            mVb.infoBtnRbBooksSync.setOnClickListener(StandardDialogs::infoPopup);
 
             mVb.rbBooksGroup.setOnCheckedChangeListener(
                     // We only have two buttons and one option, so just check the pertinent one.

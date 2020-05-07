@@ -36,7 +36,6 @@ import android.graphics.drawable.BitmapDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageSwitcher;
@@ -144,10 +143,7 @@ public class CoverBrowserDialogFragment
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
-        // Reminder: *always* use the activity inflater here.
-        //noinspection ConstantConditions
-        final LayoutInflater inflater = getActivity().getLayoutInflater();
-        mVb = DialogCoverBrowserBinding.inflate(inflater);
+        mVb = DialogCoverBrowserBinding.inflate(getLayoutInflater());
 
         // The gallery displays a list of images, one for each edition.
         final LinearLayoutManager galleryLayoutManager = new LinearLayoutManager(getContext());

@@ -27,9 +27,16 @@
  */
 package com.hardbacknutter.nevertoomanybooks.dialogs;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.PopupWindow;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -66,8 +73,8 @@ public final class StandardDialogs {
      * <p>
      * <br>type: {@code String}
      */
+    @SuppressWarnings("WeakerAccess")
     public static final String BKEY_DIALOG_MESSAGE = TAG + ":msg";
-
 
     private StandardDialogs() {
     }
@@ -253,5 +260,50 @@ public final class StandardDialogs {
                 .setPositiveButton(android.R.string.ok, (d, w) -> onConfirm.run())
                 .create()
                 .show();
+    }
+
+    public static void showError(@NonNull final Context context,
+                                 @StringRes final int msgId) {
+        new MaterialAlertDialogBuilder(context)
+                .setIcon(R.drawable.ic_error)
+                .setMessage(msgId)
+                .setPositiveButton(android.R.string.ok, (d, w) -> d.dismiss())
+                .create()
+                .show();
+    }
+
+    /**
+     * Show a popup info text.
+     *
+     * @param infoView the View from which we'll take the content-description as text to display
+     *                 and anchor the popup to.
+     */
+    public static void infoPopup(@NonNull final View infoView) {
+        infoPopup(infoView, infoView.getContentDescription());
+    }
+
+    /**
+     * Show a popup info text. A tap outside of the popup will make it go away again.
+     *
+     * @param anchorView for the popup window
+     * @param text       to display
+     */
+    @SuppressWarnings("WeakerAccess")
+    public static void infoPopup(@NonNull final View anchorView,
+                                 @NonNull final CharSequence text) {
+        final Context context = anchorView.getContext();
+        @SuppressLint("InflateParams")
+        final View root = LayoutInflater.from(context).inflate(R.layout.popup_info, null);
+        final TextView infoView = root.findViewById(R.id.info);
+        infoView.setText(text);
+
+        final PopupWindow popup = new PopupWindow(context);
+        popup.setContentView(root);
+        // make the rounded corners transparent
+        popup.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        popup.setOutsideTouchable(true);
+        popup.setFocusable(true);
+        // finally show it
+        popup.showAsDropDown(anchorView);
     }
 }

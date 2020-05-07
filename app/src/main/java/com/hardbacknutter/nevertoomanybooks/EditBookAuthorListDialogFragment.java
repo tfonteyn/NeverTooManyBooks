@@ -305,10 +305,7 @@ public class EditBookAuthorListDialogFragment
                         Logger.warnWithStackTrace(getContext(), TAG, "Could not update",
                                                   "author=" + author,
                                                   "tmpAuthor=" + tmpData);
-                        new MaterialAlertDialogBuilder(getContext())
-                                .setIcon(R.drawable.ic_error)
-                                .setMessage(R.string.error_unexpected_error)
-                                .show();
+                        StandardDialogs.showError(getContext(), R.string.error_unexpected_error);
                     }
                 })
                 .setPositiveButton(R.string.btn_this_book, (d, w) -> {

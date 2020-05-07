@@ -118,11 +118,6 @@ public abstract class BasePreferenceFragment
         }
 
         initListeners();
-    }
-
-    @Override
-    public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
 
         //noinspection ConstantConditions
         mResultDataModel = new ViewModelProvider(getActivity()).get(ResultDataModel.class);

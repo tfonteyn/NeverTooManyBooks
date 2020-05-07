@@ -67,7 +67,7 @@
     <string name="action_new">Nový</string>
     <string name="action_save">Uložit</string>
     <string name="btn_continue_edit">Pokračovat v úpravách</string>
-    <string name="btn_customize">Přizpůsobit…</string>
+    <string name="X_btn_customize">Přizpůsobit…</string>
     <string name="btn_delete_credentials">Odebrat pověření</string>
     <string name="btn_disable_message">Zakázat zprávu</string>
     <string name="btn_email">e-mailem</string>
@@ -75,8 +75,8 @@
     <string name="btn_options">Možnosti</string>
     <string name="btn_reset">Reset</string>
     <string name="btn_scan_barcode">Naskenujte čárový kód</string>
-    <string name="btn_show_less">Zobrazit méně…</string>
-    <string name="btn_show_more">Zobrazit vše…</string>
+    <string name="btn_less">Zobrazit méně…</string>
+    <string name="btn_more">Zobrazit vše…</string>
     <string name="btn_tell_me_more">Dozvědět se více</string>
     <string name="btn_this_book">Tato kniha</string>
     <string name="bytes">%.0fB</string>
@@ -659,9 +659,12 @@
     <string name="hint_empty_day">(Den není nastaven)</string>
     <string name="hint_empty_year">(Rok není nastaven)</string>
     <string name="lbl_all_bookshelves">Všechny knihovny</string>
-    <string name="more_ellipsis">Více…</string>
+    <string name="btn_more_ellipsis">Více…</string>
     <string name="lbl_toc_multiple_authors">Více autorů</string>
     <string name="X_lbl_edit_publisher">Upravit vydavatele</string>
     <string name="X_lbl_edit_toc_entry">Upravit záznam</string>
+    <string name="action_discard">Zahodit</string>
+    <string name="btn_show_list">Zobrazit seznam</string>
+    <string name="btn_less_ellipsis">Méně…</string>
 
 </resources>

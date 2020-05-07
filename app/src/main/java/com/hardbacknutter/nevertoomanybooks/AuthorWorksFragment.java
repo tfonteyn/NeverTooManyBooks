@@ -97,6 +97,11 @@ public class AuthorWorksFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+
+        //noinspection ConstantConditions
+        mModel = new ViewModelProvider(getActivity()).get(AuthorWorksModel.class);
+        //noinspection ConstantConditions
+        mModel.init(getContext(), requireArguments());
     }
 
     @Override
@@ -120,15 +125,11 @@ public class AuthorWorksFragment
     }
 
     @Override
-    public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
+    public void onViewCreated(@NonNull final View view,
+                              @Nullable final Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
         final Context context = getContext();
-
-        //noinspection ConstantConditions
-        mModel = new ViewModelProvider(getActivity()).get(AuthorWorksModel.class);
-        //noinspection ConstantConditions
-        mModel.init(context, requireArguments());
 
         updateScreenTitle();
 
@@ -137,6 +138,7 @@ public class AuthorWorksFragment
         listView.setHasFixedSize(true);
         final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context);
         listView.setLayoutManager(linearLayoutManager);
+        //noinspection ConstantConditions
         listView.addItemDecoration(
                 new DividerItemDecoration(context, linearLayoutManager.getOrientation()));
 

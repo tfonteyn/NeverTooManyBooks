@@ -32,7 +32,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -55,13 +54,12 @@ public class EditBookNativeIdFragment
         return inflater.inflate(R.layout.fragment_edit_book_native_id, container, false);
     }
 
-    @CallSuper
     @Override
-    public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
+    public void onViewCreated(@NonNull final View view,
+                              @Nullable final Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
-        //noinspection ConstantConditions
-        ViewFocusOrder.fix(getView());
+        ViewFocusOrder.fix(view);
     }
 
     @Override

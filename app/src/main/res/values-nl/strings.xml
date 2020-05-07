@@ -69,7 +69,7 @@
     <string name="action_new">Nieuw</string>
     <string name="action_save">Opslaan</string>
     <string name="btn_continue_edit">Doorgaan met bewerken</string>
-    <string name="btn_customize">Aanpassen…</string>
+    <string name="X_btn_customize">Aanpassen…</string>
     <string name="btn_delete_credentials">Verwijder inloggegevens</string>
     <string name="btn_disable_message">Bericht uitschakelen</string>
     <string name="btn_email">e-mail</string>
@@ -77,8 +77,8 @@
     <string name="btn_options">Opties</string>
     <string name="btn_reset">Herstellen</string>
     <string name="btn_scan_barcode">Scan barcode</string>
-    <string name="btn_show_less">Toon minder…</string>
-    <string name="btn_show_more">Toon meer…</string>
+    <string name="btn_less">Toon minder…</string>
+    <string name="btn_more">Toon meer…</string>
     <string name="btn_tell_me_more">Vertel me meer</string>
     <string name="btn_this_book">Dit boek</string>
     <string name="bytes">%.0fB</string>
@@ -666,9 +666,12 @@
     <string name="confirm_rebuild_index">De indexen worden opnieuw opgebouwd wanneer de app opnieuw wordt opgestart. Weet je zeker dat je door wilt gaan ?</string>
     <string name="error_site_has_problems">De website heeft problemen.</string>
     <string name="lbl_all_bookshelves">Alle boekenplanken</string>
-    <string name="more_ellipsis">Meer…</string>
+    <string name="btn_more_ellipsis">Meer…</string>
     <string name="lbl_toc_multiple_authors">Meerdere auteurs</string>
     <string name="X_lbl_edit_publisher">Uitgever bewerken</string>
     <string name="X_lbl_edit_toc_entry">Inhouds titel bewerken</string>
+    <string name="action_discard">Weggooien</string>
+    <string name="btn_show_list">Lijst weergeven</string>
+    <string name="btn_less_ellipsis">Minder…</string>
 
 </resources>

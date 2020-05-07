@@ -147,6 +147,15 @@ public class BookDetailsFragment
     }
 
     @Override
+    public void onCreate(@Nullable final Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        mFragmentVM = new ViewModelProvider(this).get(BookDetailsFragmentViewModel.class);
+        //noinspection ConstantConditions
+        mFragmentVM.init(getContext(), getArguments(), mBookViewModel.getBook());
+    }
+
+    @Override
     @Nullable
     public View onCreateView(@NonNull final LayoutInflater inflater,
                              @Nullable final ViewGroup container,
@@ -181,18 +190,15 @@ public class BookDetailsFragment
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
-    @CallSuper
-    public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
+    public void onViewCreated(@NonNull final View view,
+                              @Nullable final Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
-        mFragmentVM = new ViewModelProvider(this)
-                .get(BookDetailsFragmentViewModel.class);
-        //noinspection ConstantConditions
-        mFragmentVM.init(getContext(), getArguments(), mBookViewModel.getBook());
         mFragmentVM.onUserMessage().observe(getViewLifecycleOwner(), this::showUserMessage);
         mFragmentVM.onNeedsGoodreads().observe(getViewLifecycleOwner(), needs -> {
             if (needs != null && needs) {
                 final Context context = getContext();
+                //noinspection ConstantConditions
                 RequestAuthTask.prompt(context, mFragmentVM.getGoodreadsTaskListener(context));
             }
         });
@@ -221,11 +227,6 @@ public class BookDetailsFragment
                 mVb.btnShowToc.setChecked(true);
             }
         });
-
-        if (savedInstanceState == null) {
-            //noinspection ConstantConditions
-            TipManager.display(getContext(), R.string.tip_view_only_help, null);
-        }
     }
 
     @CallSuper
@@ -238,6 +239,9 @@ public class BookDetailsFragment
 
         //noinspection ConstantConditions
         ((BookDetailsActivity) getActivity()).registerOnTouchListener(mOnTouchListener);
+
+        //noinspection ConstantConditions
+        TipManager.display(getContext(), R.string.tip_view_only_help, null);
     }
 
     @Override

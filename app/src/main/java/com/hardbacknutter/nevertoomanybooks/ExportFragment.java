@@ -92,12 +92,32 @@ public class ExportFragment
     @Nullable
     private ProgressDialogFragment mProgressDialog;
 
+    @Override
+    public void onCreate(@Nullable final Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        //noinspection ConstantConditions
+        mResultDataModel = new ViewModelProvider(getActivity()).get(ResultDataModel.class);
+
+        mExportModel = new ViewModelProvider(this).get(ExportTaskModel.class);
+    }
+
     @Nullable
     @Override
     public View onCreateView(@NonNull final LayoutInflater inflater,
                              @Nullable final ViewGroup container,
                              @Nullable final Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_import_export, container, false);
+    }
+
+    @Override
+    public void onViewCreated(@NonNull final View view,
+                              @Nullable final Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        mExportModel.onTaskProgress().observe(getViewLifecycleOwner(), this::onTaskProgress);
+        mExportModel.onTaskFinished().observe(getViewLifecycleOwner(), this::onExportFinished);
+        exportShowOptions();
     }
 
     @Override
@@ -110,20 +130,6 @@ public class ExportFragment
         if (childFragment instanceof ExportHelperDialogFragment) {
             ((ExportHelperDialogFragment) childFragment).setListener(mExportOptionsListener);
         }
-    }
-
-    @Override
-    public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-
-        //noinspection ConstantConditions
-        mResultDataModel = new ViewModelProvider(getActivity()).get(ResultDataModel.class);
-
-        mExportModel = new ViewModelProvider(this).get(ExportTaskModel.class);
-        mExportModel.onTaskProgress().observe(getViewLifecycleOwner(), this::onTaskProgress);
-        mExportModel.onTaskFinished().observe(getViewLifecycleOwner(), this::onExportFinished);
-
-        exportShowOptions();
     }
 
     @Override

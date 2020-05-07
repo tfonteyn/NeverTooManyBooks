@@ -85,21 +85,6 @@ public class EditBookshelvesFragment
     private FragmentEditBookshelvesBinding mVb;
 
     @Override
-    public void onCreate(@Nullable final Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true);
-    }
-
-    @Override
-    @Nullable
-    public View onCreateView(@NonNull final LayoutInflater inflater,
-                             @Nullable final ViewGroup container,
-                             @Nullable final Bundle savedInstanceState) {
-        mVb = FragmentEditBookshelvesBinding.inflate(inflater, container, false);
-        return mVb.getRoot();
-    }
-
-    @Override
     public void onAttachFragment(@NonNull final Fragment childFragment) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.ATTACH_FRAGMENT) {
             Log.d(getClass().getName(), "onAttachFragment: " + childFragment.getTag());
@@ -115,15 +100,33 @@ public class EditBookshelvesFragment
     }
 
     @Override
-    public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
+    public void onCreate(@Nullable final Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
 
         //noinspection ConstantConditions
         mModel = new ViewModelProvider(getActivity()).get(EditBookshelvesModel.class);
         mModel.init(getArguments());
+    }
+
+    @Override
+    @Nullable
+    public View onCreateView(@NonNull final LayoutInflater inflater,
+                             @Nullable final ViewGroup container,
+                             @Nullable final Bundle savedInstanceState) {
+        mVb = FragmentEditBookshelvesBinding.inflate(inflater, container, false);
+        return mVb.getRoot();
+    }
+
+    @Override
+    public void onViewCreated(@NonNull final View view,
+                              @Nullable final Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
         mModel.getSelectedPosition().observe(getViewLifecycleOwner(), position ->
                 mAdapter.setSelectedPosition(position));
 
+        //noinspection ConstantConditions
         getActivity().setTitle(R.string.lbl_edit_bookshelves);
         //noinspection ConstantConditions
         mAdapter = new BookshelfAdapter(getContext());

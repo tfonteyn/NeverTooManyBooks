@@ -32,11 +32,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.Parcelable;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
@@ -47,6 +49,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.android.material.textfield.TextInputLayout;
 
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
@@ -78,6 +81,34 @@ public abstract class BookSearchBaseFragment
         super.onCreate(savedInstanceState);
 
         mDb = new DAO(TAG);
+
+        // Activity scope!
+        //noinspection ConstantConditions
+        mSearchCoordinator = new ViewModelProvider(getActivity()).get(SearchCoordinator.class);
+        //noinspection ConstantConditions
+        mSearchCoordinator.init(getContext(), requireArguments());
+    }
+
+    @Override
+    public void onViewCreated(@NonNull final View view,
+                              @Nullable final Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        mSearchCoordinator.onSearchCoordinatorProgressMessage()
+                          .observe(getViewLifecycleOwner(), this::onSearchProgress);
+        mSearchCoordinator.onSearchCoordinatorFinishedMessage()
+                          .observe(getViewLifecycleOwner(), this::onSearchFinished);
+
+        //noinspection ConstantConditions
+        mResultDataModel = new ViewModelProvider(getActivity()).get(ResultDataModel.class);
+
+        // Warn the user, but don't abort.
+        //noinspection ConstantConditions
+        if (!NetworkUtils.isNetworkAvailable(getContext())) {
+            //noinspection ConstantConditions
+            Snackbar.make(getView(), R.string.error_network_no_connection,
+                          Snackbar.LENGTH_LONG).show();
+        }
     }
 
     @Override
@@ -86,30 +117,6 @@ public abstract class BookSearchBaseFragment
             mDb.close();
         }
         super.onDestroy();
-    }
-
-    @Override
-    public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-
-        // Activity scope!
-        //noinspection ConstantConditions
-        mSearchCoordinator = new ViewModelProvider(getActivity()).get(SearchCoordinator.class);
-        //noinspection ConstantConditions
-        mSearchCoordinator.init(getContext(), requireArguments());
-        mSearchCoordinator.onSearchCoordinatorProgressMessage()
-                          .observe(getViewLifecycleOwner(), this::onSearchProgress);
-        mSearchCoordinator.onSearchCoordinatorFinishedMessage()
-                          .observe(getViewLifecycleOwner(), this::onSearchFinished);
-
-        mResultDataModel = new ViewModelProvider(getActivity()).get(ResultDataModel.class);
-
-        // Warn the user, but don't abort.
-        if (!NetworkUtils.isNetworkAvailable(getContext())) {
-            //noinspection ConstantConditions
-            Snackbar.make(getView(), R.string.error_network_no_connection,
-                          Snackbar.LENGTH_LONG).show();
-        }
     }
 
     @Override
@@ -290,6 +297,12 @@ public abstract class BookSearchBaseFragment
                 .putExtra(Book.BKEY_BOOK_DATA, bookData);
         startActivityForResult(intent, RequestCode.BOOK_EDIT);
         onClearPreviousSearchCriteria();
+    }
+
+    protected void showError(@NonNull final TextInputLayout til,
+                             @NonNull final CharSequence error) {
+        til.setError(error);
+        new Handler().postDelayed(() -> til.setError(null), App.ERROR_DELAY_MS);
     }
 
     @Override

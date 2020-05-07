@@ -147,13 +147,18 @@ public class EditBookFieldsFragment
         }
     }
 
-    @CallSuper
     @Override
-    public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
+    public void onCreate(@Nullable final Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
         //noinspection ConstantConditions
         mScannerModel = new ViewModelProvider(getActivity()).get(ScannerViewModel.class);
+    }
+
+    @Override
+    public void onViewCreated(@NonNull final View view,
+                              @Nullable final Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
         mBookViewModel.getAuthorList().observe(getViewLifecycleOwner(), authors -> {
             final Field<List<Author>, TextView> field = getFields().getField(R.id.author);
@@ -167,8 +172,7 @@ public class EditBookFieldsFragment
             field.validate();
         });
 
-        //noinspection ConstantConditions
-        ViewFocusOrder.fix(getView());
+        ViewFocusOrder.fix(view);
     }
 
     @Override

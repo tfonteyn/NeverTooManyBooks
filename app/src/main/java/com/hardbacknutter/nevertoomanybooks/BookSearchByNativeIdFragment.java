@@ -75,8 +75,9 @@ public class BookSearchByNativeIdFragment
     }
 
     @Override
-    public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
+    public void onViewCreated(@NonNull final View view,
+                              @Nullable final Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
         //noinspection ConstantConditions
         getActivity().setTitle(R.string.fab_add_book_by_native_id);
@@ -114,8 +115,7 @@ public class BookSearchByNativeIdFragment
         //noinspection ConstantConditions
         if (mVb.nativeId.getText().toString().trim().isEmpty()
             || mVb.sitesGroup.getCheckedRadioButtonId() == View.NO_ID) {
-            Snackbar.make(mVb.nativeId, R.string.warning_requires_site_and_id,
-                          Snackbar.LENGTH_LONG).show();
+            showError(mVb.lblNativeId, getString(R.string.warning_requires_site_and_id));
             return false;
         }
         return true;

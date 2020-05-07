@@ -84,7 +84,7 @@
             android:fragment="com.hardbacknutter.nevertoomanybooks.settings.WebSearchesPreferenceFragment"
             android:icon="@drawable/ic_search"
             android:key="psk_web_searches"
-            android:title="@string/more_ellipsis"
+            android:title="@string/btn_more_ellipsis"
             />
 
     </PreferenceCategory>

@@ -67,7 +67,7 @@
     <string name="action_new">Yeni</string>
     <string name="action_save">Kaydet</string>
     <string name="btn_continue_edit">Düzenlemeyi sürdür</string>
-    <string name="btn_customize">Kişiselleştir…</string>
+    <string name="X_btn_customize">Kişiselleştir…</string>
     <string name="btn_delete_credentials">Kimlik Bilgilerini Kaldır</string>
     <string name="btn_disable_message">İletiyi kapat</string>
     <string name="btn_email">E-posta</string>
@@ -75,8 +75,8 @@
     <string name="btn_options">Seçenekler</string>
     <string name="btn_reset">Sıfırla</string>
     <string name="btn_scan_barcode">Barkod tara</string>
-    <string name="btn_show_less">Daha az göster…</string>
-    <string name="btn_show_more">Daha fazla göster…</string>
+    <string name="btn_less">Daha az göster…</string>
+    <string name="btn_more">Daha fazla göster…</string>
     <string name="btn_tell_me_more">Bilgi ver</string>
     <string name="btn_this_book">Bu kitap</string>
     <string name="bytes">%.0fB</string>
@@ -659,9 +659,12 @@
     <string name="hint_empty_day">(Gün ayarlanmadı)</string>
     <string name="hint_empty_year">(Yıl ayarlanmadı)</string>
     <string name="lbl_all_bookshelves">Tüm raflardan</string>
-    <string name="more_ellipsis">Daha…</string>
+    <string name="btn_more_ellipsis">Daha…</string>
     <string name="lbl_toc_multiple_authors">Birden çok yazar</string>
     <string name="X_lbl_edit_publisher">Yayıncıyı Düzenle</string>
     <string name="X_lbl_edit_toc_entry">Girişi düzenleyin</string>
+    <string name="action_discard">Sil</string>
+    <string name="btn_show_list">Gösteri listesi</string>
+    <string name="btn_less_ellipsis">Az…</string>
 
 </resources>

@@ -92,8 +92,9 @@ public class BookSearchByTextFragment
     }
 
     @Override
-    public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
+    public void onViewCreated(@NonNull final View view,
+                              @Nullable final Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
         //noinspection ConstantConditions
         final boolean usePublisher = SearchSites.usePublisher(getContext());

@@ -136,8 +136,8 @@ public abstract class EditBookBaseFragment
     }
 
     @Override
-    public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
+    public void onCreate(@Nullable final Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
         String tag = getTag();
         Objects.requireNonNull(tag, ErrorMsg.NULL_FRAGMENT_TAG);
@@ -147,6 +147,13 @@ public abstract class EditBookBaseFragment
                 .get(tag, EditBookFragmentViewModel.class);
 
         mFragmentVM.init(getArguments());
+    }
+
+    @Override
+    public void onViewCreated(@NonNull final View view,
+                              @Nullable final Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
         mFragmentVM.onUserMessage().observe(getViewLifecycleOwner(), this::showUserMessage);
         mFragmentVM.onNeedsGoodreads().observe(getViewLifecycleOwner(), needs -> {
             if (needs != null && needs) {
@@ -159,6 +166,7 @@ public abstract class EditBookBaseFragment
 
         // We hide the tab bar when editing Authors/Series on pop-up screens.
         // Make sure to set it visible here.
+        //noinspection ConstantConditions
         final View tabBarLayout = getActivity().findViewById(R.id.tab_panel);
         if (tabBarLayout != null) {
             tabBarLayout.setVisibility(View.VISIBLE);

@@ -34,7 +34,6 @@ import android.view.ViewGroup;
 import android.widget.Checkable;
 import android.widget.TextView;
 
-import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -102,12 +101,11 @@ public class EditBookNotesFragment
     }
 
     @Override
-    @CallSuper
-    public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
+    public void onViewCreated(@NonNull final View view,
+                              @Nullable final Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
-        //noinspection ConstantConditions
-        ViewFocusOrder.fix(getView());
+        ViewFocusOrder.fix(view);
     }
 
     @Override

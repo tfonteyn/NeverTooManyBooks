@@ -33,6 +33,7 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -55,6 +56,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.google.android.material.navigation.NavigationView;
+import com.google.android.material.textfield.TextInputLayout;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -207,6 +209,12 @@ public abstract class BaseActivity
         if (imm != null) {
             imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
         }
+    }
+
+    protected void showError(@NonNull final TextInputLayout til,
+                             @NonNull final CharSequence error) {
+        til.setError(error);
+        new Handler().postDelayed(() -> til.setError(null), App.ERROR_DELAY_MS);
     }
 
     /**

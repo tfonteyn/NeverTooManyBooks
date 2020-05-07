@@ -99,15 +99,22 @@ public abstract class BookBaseFragment
     }
 
     @Override
-    @CallSuper
-    public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
+    public void onCreate(@Nullable final Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
         //noinspection ConstantConditions
         mBookViewModel = new ViewModelProvider(getActivity()).get(BookViewModel.class);
         //noinspection ConstantConditions
         mBookViewModel.init(getContext(), getArguments());
+    }
 
+    @Override
+    @CallSuper
+    public void onViewCreated(@NonNull final View view,
+                              @Nullable final Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        //noinspection ConstantConditions
         mProgressBar = getActivity().findViewById(R.id.progressBar);
     }
 

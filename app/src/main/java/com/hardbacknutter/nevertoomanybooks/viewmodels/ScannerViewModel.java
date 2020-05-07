@@ -71,7 +71,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.SoundManager;
  * {@code
  *      private ScannerViewModel mScannerModel;
  *      ...
- *      public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
+ *      public void onCreate(@Nullable final Bundle savedInstanceState) {
  *          mScannerModel = new ViewModelProvider(getActivity()).get(ScannerViewModel.class);
  *      }
  *      ...

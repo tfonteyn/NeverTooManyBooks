@@ -221,6 +221,14 @@ public class EditBookTocFragment
     }
 
     @Override
+    public void onCreate(@Nullable final Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        mIsfdbEditionsTaskModel = new ViewModelProvider(this).get(IsfdbEditionsTaskModel.class);
+        mIsfdbGetBookTaskModel = new ViewModelProvider(this).get(IsfdbGetBookTaskModel.class);
+    }
+
+    @Override
     @Nullable
     public View onCreateView(@NonNull final LayoutInflater inflater,
                              @Nullable final ViewGroup container,
@@ -230,14 +238,12 @@ public class EditBookTocFragment
     }
 
     @Override
-    @CallSuper
-    public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
+    public void onViewCreated(@NonNull final View view,
+                              @Nullable final Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
-        mIsfdbEditionsTaskModel = new ViewModelProvider(this).get(IsfdbEditionsTaskModel.class);
         mIsfdbEditionsTaskModel.onTaskFinished().observe(getViewLifecycleOwner(),
                                                          this::onGetEditionsTaskFinished);
-        mIsfdbGetBookTaskModel = new ViewModelProvider(this).get(IsfdbGetBookTaskModel.class);
         mIsfdbGetBookTaskModel.onTaskFinished().observe(getViewLifecycleOwner(),
                                                         this::onGetBookTaskFinished);
 
@@ -649,11 +655,7 @@ public class EditBookTocFragment
         @NonNull
         @Override
         public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
-            // Reminder: *always* use the activity inflater here.
-            //noinspection ConstantConditions
-            final LayoutInflater inflater = getActivity().getLayoutInflater();
-            // custom payout, as we want the text to be smaller.
-            final DialogTocConfirmBinding vb = DialogTocConfirmBinding.inflate(inflater);
+            final DialogTocConfirmBinding vb = DialogTocConfirmBinding.inflate(getLayoutInflater());
 
             final boolean hasToc = mTocEntries != null && !mTocEntries.isEmpty();
             if (hasToc) {
@@ -804,8 +806,8 @@ public class EditBookTocFragment
 
         @Override
         protected void onDelete(final int adapterPosition,
-                                @NonNull final TocEntry tocEntry) {
-            deleteEntry(adapterPosition, tocEntry);
+                                @NonNull final TocEntry item) {
+            deleteEntry(adapterPosition, item);
         }
     }
 }

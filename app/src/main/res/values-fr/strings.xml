@@ -69,7 +69,7 @@
     <string name="action_new">Nouveau</string>
     <string name="action_save">Sauvegarder</string>
     <string name="btn_continue_edit">Continuer la modification</string>
-    <string name="btn_customize">Personnaliser…</string>
+    <string name="X_btn_customize">Personnaliser…</string>
     <string name="btn_delete_credentials">Suppr. les données de connexion</string>
     <string name="btn_disable_message">Désactiver ce message</string>
     <string name="btn_email">email</string>
@@ -77,8 +77,8 @@
     <string name="btn_options">Options</string>
     <string name="btn_reset">Réactiver</string>
     <string name="btn_scan_barcode">Scan code à barres</string>
-    <string name="btn_show_less">Montrer moins…</string>
-    <string name="btn_show_more">Montrer plus…</string>
+    <string name="btn_less">Montrer moins…</string>
+    <string name="btn_more">Montrer plus…</string>
     <string name="btn_tell_me_more">En savoir plus</string>
     <string name="btn_this_book">Ce livre</string>
     <string name="bytes">%.0f octets</string>
@@ -667,9 +667,12 @@
     <string name="hint_empty_day">(Jour non défini)</string>
     <string name="hint_empty_year">(Année non définie)</string>
     <string name="lbl_all_bookshelves">Toutes les bibliothèques</string>
-    <string name="more_ellipsis">Plus…</string>
+    <string name="btn_more_ellipsis">Plus…</string>
     <string name="lbl_toc_multiple_authors">Plusieurs auteurs</string>
     <string name="X_lbl_edit_publisher">Modifier l\'éditeur</string>
     <string name="X_lbl_edit_toc_entry">Modifier l\'entrée</string>
+    <string name="action_discard">Jeter</string>
+    <string name="btn_show_list">Afficher la liste</string>
+    <string name="btn_less_ellipsis">Moins…</string>
 
 </resources>

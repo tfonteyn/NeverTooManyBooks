@@ -95,6 +95,13 @@ public class BookSearchByIsbnFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+
+        final Bundle args = savedInstanceState != null ? savedInstanceState : getArguments();
+        if (args != null) {
+            mScanMode = args.getBoolean(BKEY_SCAN_MODE, false);
+        }
+        //noinspection ConstantConditions
+        mScannerModel = new ViewModelProvider(getActivity()).get(ScannerViewModel.class);
     }
 
     @Override
@@ -107,16 +114,11 @@ public class BookSearchByIsbnFragment
     }
 
     @Override
-    public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
+    public void onViewCreated(@NonNull final View view,
+                              @Nullable final Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
-        final Bundle args = savedInstanceState != null ? savedInstanceState : getArguments();
-        if (args != null) {
-            mScanMode = args.getBoolean(BKEY_SCAN_MODE, false);
-        }
         //noinspection ConstantConditions
-        mScannerModel = new ViewModelProvider(getActivity()).get(ScannerViewModel.class);
-
         getActivity().setTitle(R.string.lbl_search_isbn);
 
         mVb.isbn.setText(mSearchCoordinator.getIsbnSearchText());
@@ -152,6 +154,7 @@ public class BookSearchByIsbnFragment
         mVb.btnSearch.setOnClickListener(v -> prepareSearch(mVb.isbn.getText().toString().trim()));
 
         // auto-start scanner first time.
+        //noinspection ConstantConditions
         if (mScanMode && mScannerModel.isFirstStart()) {
             mScanMode = mScannerModel.scan(this, RequestCode.SCAN_BARCODE);
         }
@@ -342,8 +345,7 @@ public class BookSearchByIsbnFragment
                 mScannerModel.onInvalidBeep(getContext());
             }
 
-            Snackbar.make(mVb.isbn, getString(R.string.warning_x_is_not_a_valid_code, userEntry),
-                          Snackbar.LENGTH_LONG).show();
+            showError(mVb.lblIsbn, getString(R.string.warning_x_is_not_a_valid_code, userEntry));
 
             if (mScanMode) {
                 Objects.requireNonNull(mScannerModel, ErrorMsg.NULL_SCANNER_MODEL);

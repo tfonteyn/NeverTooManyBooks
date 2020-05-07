@@ -69,6 +69,15 @@ public class GoodreadsAdminFragment
 
     private FragmentGoodreadsAdminBinding mVb;
 
+    @Override
+    public void onCreate(@Nullable final Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        setHasOptionsMenu(true);
+
+        mGoodreadsTaskModel = new ViewModelProvider(this).get(GoodreadsTaskModel.class);
+    }
+
     @Nullable
     @Override
     public View onCreateView(@NonNull final LayoutInflater inflater,
@@ -79,12 +88,10 @@ public class GoodreadsAdminFragment
     }
 
     @Override
-    public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
+    public void onViewCreated(@NonNull final View view,
+                              @Nullable final Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
-        setHasOptionsMenu(true);
-
-        mGoodreadsTaskModel = new ViewModelProvider(this).get(GoodreadsTaskModel.class);
 //        mGoodreadsTaskModel.onTaskProgress().observe(getViewLifecycleOwner(), message -> {
 //            if (mProgressDialog == null) {
 //                mProgressDialog = getOrCreateProgressDialog();

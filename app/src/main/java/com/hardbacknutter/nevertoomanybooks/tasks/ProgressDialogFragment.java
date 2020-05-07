@@ -30,7 +30,6 @@ package com.hardbacknutter.nevertoomanybooks.tasks;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ProgressBar;
@@ -132,10 +131,7 @@ public class ProgressDialogFragment
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
-        // Reminder: *always* use the activity inflater here.
-        //noinspection ConstantConditions
-        final LayoutInflater inflater = getActivity().getLayoutInflater();
-        final View root = inflater.inflate(R.layout.dialog_task_progress, null);
+        final View root = getLayoutInflater().inflate(R.layout.dialog_task_progress, null);
 
         mMessageView = root.findViewById(R.id.progressMessage);
         mProgressBar = root.findViewById(R.id.progressBar);

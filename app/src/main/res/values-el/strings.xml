@@ -68,7 +68,7 @@
     <string name="action_new">Νέος</string>
     <string name="action_save">Αποθήκευση</string>
     <string name="btn_continue_edit">Συνέχεια Επεξεργασίας</string>
-    <string name="btn_customize">Προσαρμογή…</string>
+    <string name="X_btn_customize">Προσαρμογή…</string>
     <string name="btn_delete_credentials">Κατάργηση διαπιστευτηρίων</string>
     <string name="btn_disable_message">Απενεργοποίηση μηνυμάτων</string>
     <string name="btn_email">e-mail</string>
@@ -76,8 +76,8 @@
     <string name="btn_options">Επιλογές</string>
     <string name="btn_reset">Επαναφορά</string>
     <string name="btn_scan_barcode">Σάρωση γραμμωτού κώδικα</string>
-    <string name="btn_show_less">Εμφάνιση λιγότερων…</string>
-    <string name="btn_show_more">Εμφάνιση περισσότερων…</string>
+    <string name="btn_less">Εμφάνιση λιγότερων…</string>
+    <string name="btn_more">Εμφάνιση περισσότερων…</string>
     <string name="btn_tell_me_more">Πες μου περισσότερα</string>
     <string name="btn_this_book">Αυτό το βιβλίο</string>
     <string name="bytes">%.0fB</string>
@@ -663,9 +663,12 @@
     <string name="hint_empty_day">(Ημέρα δεν έχει οριστεί)</string>
     <string name="hint_empty_year">(Το έτος δεν έχει οριστεί)</string>
     <string name="lbl_all_bookshelves">Όλα τα ράφια</string>
-    <string name="more_ellipsis">Περισσότερο…</string>
+    <string name="btn_more_ellipsis">Περισσότερο…</string>
     <string name="lbl_toc_multiple_authors">Πολλαπλοί συγγραφείς</string>
     <string name="X_lbl_edit_publisher">Επεξεργασία εκδότη</string>
     <string name="X_lbl_edit_toc_entry">Επεξεργασία καταχώρησης</string>
+    <string name="action_discard">Απορρίπτω</string>
+    <string name="btn_show_list">Εμφάνιση λίστας</string>
+    <string name="btn_less_ellipsis">Πιο λιγο…</string>
 
 </resources>

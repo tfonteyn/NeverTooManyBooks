@@ -67,7 +67,7 @@
     <string name="action_new">новый</string>
     <string name="action_save">Сохранить</string>
     <string name="btn_continue_edit">Продолжить редактирование</string>
-    <string name="btn_customize">Настроить…</string>
+    <string name="X_btn_customize">Настроить…</string>
     <string name="btn_delete_credentials">Удалить учетные данные</string>
     <string name="btn_disable_message">Отключить сообщение</string>
     <string name="btn_email">е-мейл</string>
@@ -75,8 +75,8 @@
     <string name="btn_options">опции</string>
     <string name="btn_reset">Сброс</string>
     <string name="btn_scan_barcode">Сканирование штрих-кода</string>
-    <string name="btn_show_less">Показать меньше…</string>
-    <string name="btn_show_more">Показать больше…</string>
+    <string name="btn_less">Показать меньше…</string>
+    <string name="btn_more">Показать больше…</string>
     <string name="btn_tell_me_more">Расскажите мне ещё</string>
     <string name="btn_this_book">Эта книга</string>
     <string name="bytes">%.0f байт</string>
@@ -658,9 +658,12 @@
     <string name="hint_empty_day">(День не назначен)</string>
     <string name="hint_empty_year">(Год не указан)</string>
     <string name="lbl_all_bookshelves">Все книжные полки</string>
-    <string name="more_ellipsis">Больше…</string>
+    <string name="btn_more_ellipsis">Больше…</string>
     <string name="lbl_toc_multiple_authors">Несколько авторов</string>
     <string name="X_lbl_edit_publisher">Редактировать Издатель</string>
     <string name="X_lbl_edit_toc_entry">Изменить запись</string>
+    <string name="action_discard">Выбросьте</string>
+    <string name="btn_show_list">Показать список</string>
+    <string name="btn_less_ellipsis">Меньше…</string>
 
 </resources>

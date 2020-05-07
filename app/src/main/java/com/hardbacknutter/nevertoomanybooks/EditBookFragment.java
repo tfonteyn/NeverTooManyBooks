@@ -35,7 +35,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
@@ -108,9 +107,9 @@ public class EditBookFragment
     }
 
     @Override
-    @CallSuper
-    public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
+    public void onCreate(@Nullable final Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
         if (savedInstanceState != null) {
             mCurrentTab = savedInstanceState.getInt(BKEY_TAB);
         }
@@ -119,8 +118,15 @@ public class EditBookFragment
         //noinspection ConstantConditions
         mBookViewModel.init(getContext(), getArguments());
         mBookViewModel.enableValidators();
+    }
+
+    @Override
+    public void onViewCreated(@NonNull final View view,
+                              @Nullable final Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
         // The tab bar lives in the activity layout inside the AppBarLayout!
+        //noinspection ConstantConditions
         mTabLayout = getActivity().findViewById(R.id.tab_panel);
 
         mViewPagerAdapter = new TabAdapter(this);

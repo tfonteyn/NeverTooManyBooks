@@ -91,12 +91,31 @@ public class ImportFragment
                 }
             };
 
+    @Override
+    public void onCreate(@Nullable final Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        //noinspection ConstantConditions
+        mResultDataModel = new ViewModelProvider(getActivity()).get(ResultDataModel.class);
+        mImportModel = new ViewModelProvider(this).get(ImportTaskModel.class);
+    }
+
     @Nullable
     @Override
     public View onCreateView(@NonNull final LayoutInflater inflater,
                              @Nullable final ViewGroup container,
                              @Nullable final Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_import_export, container, false);
+    }
+
+    @Override
+    public void onViewCreated(@NonNull final View view,
+                              @Nullable final Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        mImportModel.onTaskProgress().observe(getViewLifecycleOwner(), this::onTaskProgress);
+        mImportModel.onTaskFinished().observe(getViewLifecycleOwner(), this::onImportFinished);
+        importPickUri();
     }
 
     @Override
@@ -109,20 +128,6 @@ public class ImportFragment
         if (childFragment instanceof ImportHelperDialogFragment) {
             ((ImportHelperDialogFragment) childFragment).setListener(mImportOptionsListener);
         }
-    }
-
-    @Override
-    public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-
-        //noinspection ConstantConditions
-        mResultDataModel = new ViewModelProvider(getActivity()).get(ResultDataModel.class);
-
-        mImportModel = new ViewModelProvider(this).get(ImportTaskModel.class);
-        mImportModel.onTaskProgress().observe(getViewLifecycleOwner(), this::onTaskProgress);
-        mImportModel.onTaskFinished().observe(getViewLifecycleOwner(), this::onImportFinished);
-        importPickUri();
-
     }
 
     @Override

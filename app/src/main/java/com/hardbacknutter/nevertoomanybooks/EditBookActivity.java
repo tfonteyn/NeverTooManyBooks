@@ -37,8 +37,6 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.google.android.material.snackbar.Snackbar;
-
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataEditor;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
@@ -163,8 +161,7 @@ public class EditBookActivity
 
         } catch (@NonNull final DAO.DaoWriteException e) {
             Logger.error(this, TAG, e);
-            Snackbar.make(getWindow().getDecorView(), R.string.error_unexpected_error,
-                          Snackbar.LENGTH_LONG).show();
+            StandardDialogs.showError(this, R.string.error_unexpected_error);
         }
     }
 

@@ -30,16 +30,12 @@ package com.hardbacknutter.nevertoomanybooks.backup.base;
 import android.app.Dialog;
 import android.content.res.Configuration;
 import android.util.Log;
-import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import androidx.annotation.DimenRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
-
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import java.lang.ref.WeakReference;
 
@@ -66,26 +62,6 @@ public abstract class OptionsDialogBase<T>
                 dialog.getWindow().setLayout(width, height);
             }
         }
-    }
-
-    /**
-     * Show a popup info text.
-     *
-     * @param textView   the view from which we'll take the text;
-     *                   Used for a title
-     * @param infoButton the View from which we'll take the content-description;
-     *                   Used for the message.
-     */
-    protected void infoPopup(@NonNull final TextView textView,
-                             @NonNull final View infoButton) {
-
-        //noinspection ConstantConditions
-        new MaterialAlertDialogBuilder(getContext())
-                .setTitle(textView.getText())
-                .setMessage(infoButton.getContentDescription())
-                .setPositiveButton(android.R.string.ok, (d, w) -> d.dismiss())
-                .create()
-                .show();
     }
 
     public void setListener(@NonNull final OptionsListener<T> listener) {

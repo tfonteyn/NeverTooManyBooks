@@ -31,7 +31,6 @@ import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
@@ -122,11 +121,8 @@ public class CheckListDialogFragment
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
-        // Reminder: *always* use the activity inflater here.
-        //noinspection ConstantConditions
-        final LayoutInflater inflater = getActivity().getLayoutInflater();
         @SuppressLint("InflateParams")
-        final View root = inflater.inflate(R.layout.dialog_edit_checklist, null);
+        final View root = getLayoutInflater().inflate(R.layout.dialog_edit_checklist, null);
         final ViewGroup itemListView = root.findViewById(R.id.item_list);
         // Takes the list of items and create a list of checkboxes in the display.
         for (Entity item : mAllItems) {

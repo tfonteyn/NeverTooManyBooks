@@ -100,7 +100,6 @@ public class EditBookSeriesListDialogFragment
     private RecyclerViewAdapterBase mListAdapter;
     /** Drag and drop support for the list view. */
     private ItemTouchHelper mItemTouchHelper;
-    private LinearLayoutManager mLayoutManager;
 
     /**
      * No-arg constructor.
@@ -168,8 +167,8 @@ public class EditBookSeriesListDialogFragment
             return false;
         });
         // set up the list view. The adapter is setup in onPopulateViews
-        mLayoutManager = new LinearLayoutManager(getContext());
-        mVb.seriesList.setLayoutManager(mLayoutManager);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
+        mVb.seriesList.setLayoutManager(layoutManager);
         mVb.seriesList.setHasFixedSize(true);
 
         mList = mBookViewModel.getBook().getParcelableArrayList(Book.BKEY_SERIES_ARRAY);
@@ -302,10 +301,7 @@ public class EditBookSeriesListDialogFragment
                         Logger.warnWithStackTrace(getContext(), TAG, "Could not update",
                                                   "series=" + series,
                                                   "tmpSeries=" + tmpData);
-                        new MaterialAlertDialogBuilder(getContext())
-                                .setIcon(R.drawable.ic_error)
-                                .setMessage(R.string.error_unexpected_error)
-                                .show();
+                        StandardDialogs.showError(getContext(), R.string.error_unexpected_error);
                     }
                 })
                 .setPositiveButton(R.string.btn_this_book, (d, w) -> {

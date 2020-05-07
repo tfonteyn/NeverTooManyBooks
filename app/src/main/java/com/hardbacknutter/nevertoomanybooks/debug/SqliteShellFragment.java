@@ -72,11 +72,11 @@ public class SqliteShellFragment
             + "SELECT 'T' AS T, tbl_name FROM sqlite_temp_master WHERE type='table'"
             + " ORDER BY tbl_name";
 
-    private EditText inputView;
-    private WebView outputView;
+    private EditText mInputView;
+    private WebView mOutputView;
 
-    private DAO db;
-    private SynchronizedDb syncDb;
+    private DAO mDb;
+    private SynchronizedDb mSyncDb;
 
     private boolean mAllowUpdates;
 
@@ -88,6 +88,9 @@ public class SqliteShellFragment
         if (args != null) {
             mAllowUpdates = args.getBoolean(BKEY_ALLOW_UPDATES);
         }
+
+        mDb = new DAO(TAG);
+        mSyncDb = mDb.getSyncDb();
     }
 
     @Override
@@ -95,19 +98,17 @@ public class SqliteShellFragment
                              @Nullable final ViewGroup container,
                              @Nullable final Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_sqlite_shell, container, false);
-        inputView = view.findViewById(R.id.input);
-        outputView = view.findViewById(R.id.output);
+        mInputView = view.findViewById(R.id.input);
+        mOutputView = view.findViewById(R.id.output);
         return view;
     }
 
     @Override
-    public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
+    public void onViewCreated(@NonNull final View view,
+                              @Nullable final Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
-        db = new DAO(TAG);
-        syncDb = db.getSyncDb();
-
-        final WebSettings settings = outputView.getSettings();
+        final WebSettings settings = mOutputView.getSettings();
         settings.setTextZoom(50);
     }
 
@@ -129,8 +130,8 @@ public class SqliteShellFragment
 
     @Override
     public void onDestroy() {
-        if (db != null) {
-            db.close();
+        if (mDb != null) {
+            mDb.close();
         }
         super.onDestroy();
     }
@@ -154,7 +155,7 @@ public class SqliteShellFragment
     public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
         switch (item.getItemId()) {
             case R.id.MENU_DEBUG_SQ_SHELL_RUN: {
-                executeSql(inputView.getText().toString().trim());
+                executeSql(mInputView.getText().toString().trim());
                 return true;
             }
             case R.id.MENU_DEBUG_SQ_SHELL_LIST_TABLES: {
@@ -176,18 +177,18 @@ public class SqliteShellFragment
                 getActivity().setTitle("");
 
                 if (mAllowUpdates) {
-                    try (SynchronizedStatement stmt = syncDb.compileStatement(sql)) {
+                    try (SynchronizedStatement stmt = mSyncDb.compileStatement(sql)) {
                         int rowsAffected = stmt.executeUpdateDelete();
                         String result = STR_ROWS_AFFECTED + rowsAffected;
-                        outputView.loadDataWithBaseURL(null, result,
-                                                       TEXT_HTML, UTF_8, null);
+                        mOutputView.loadDataWithBaseURL(null, result,
+                                                        TEXT_HTML, UTF_8, null);
                     }
                 } else {
-                    outputView.loadDataWithBaseURL(null, STR_UPDATES_NOT_ALLOWED,
-                                                   TEXT_HTML, UTF_8, null);
+                    mOutputView.loadDataWithBaseURL(null, STR_UPDATES_NOT_ALLOWED,
+                                                    TEXT_HTML, UTF_8, null);
                 }
             } else {
-                try (Cursor cursor = syncDb.rawQuery(sql, null)) {
+                try (Cursor cursor = mSyncDb.rawQuery(sql, null)) {
                     String title = STR_LAST_COUNT + cursor.getCount();
                     //noinspection ConstantConditions
                     getActivity().setTitle(title);
@@ -211,15 +212,15 @@ public class SqliteShellFragment
                     }
                     sb.append("</table>");
 
-                    outputView.loadDataWithBaseURL(null, sb.toString(),
-                                                   TEXT_HTML, UTF_8, null);
+                    mOutputView.loadDataWithBaseURL(null, sb.toString(),
+                                                    TEXT_HTML, UTF_8, null);
                 }
             }
         } catch (@NonNull final Exception e) {
             //noinspection ConstantConditions
             getActivity().setTitle("");
-            outputView.loadDataWithBaseURL(null, e.getLocalizedMessage(),
-                                           TEXT_HTML, UTF_8, null);
+            mOutputView.loadDataWithBaseURL(null, e.getLocalizedMessage(),
+                                            TEXT_HTML, UTF_8, null);
         }
     }
 }

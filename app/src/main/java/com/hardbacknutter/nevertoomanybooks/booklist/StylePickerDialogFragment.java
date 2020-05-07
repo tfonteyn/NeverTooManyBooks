@@ -32,7 +32,6 @@ import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
 
 import androidx.annotation.NonNull;
@@ -119,10 +118,7 @@ public class StylePickerDialogFragment
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
-        // Reminder: *always* use the activity inflater here.
-        //noinspection ConstantConditions
-        final LayoutInflater inflater = getActivity().getLayoutInflater();
-        final View root = inflater.inflate(R.layout.dialog_styles_menu, null);
+        final View root = getLayoutInflater().inflate(R.layout.dialog_styles_menu, null);
 
         final RecyclerView listView = root.findViewById(R.id.styles);
         listView.setHasFixedSize(true);
@@ -197,8 +193,8 @@ public class StylePickerDialogFragment
 
     @StringRes
     private int getMoreOrLessBtnTxtId() {
-        return mShowAllStyles ? R.string.btn_show_less
-                              : R.string.btn_show_more;
+        return mShowAllStyles ? R.string.btn_less_ellipsis
+                              : R.string.btn_more_ellipsis;
     }
 
     /**

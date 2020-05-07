@@ -38,7 +38,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -86,6 +85,12 @@ public class SearchOrderFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+
+        mOurType = requireArguments().getParcelable(SearchAdminModel.BKEY_LIST_TYPE);
+        Objects.requireNonNull(mOurType);
+
+        //noinspection ConstantConditions
+        mModel = new ViewModelProvider(getActivity()).get(SearchAdminModel.class);
     }
 
     @Override
@@ -99,15 +104,9 @@ public class SearchOrderFragment
     }
 
     @Override
-    @CallSuper
-    public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-
-        mOurType = requireArguments().getParcelable(SearchAdminModel.BKEY_LIST_TYPE);
-        Objects.requireNonNull(mOurType);
-
-        //noinspection ConstantConditions
-        mModel = new ViewModelProvider(getActivity()).get(SearchAdminModel.class);
+    public void onViewCreated(@NonNull final View view,
+                              @Nullable final Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         mListView.setLayoutManager(linearLayoutManager);
@@ -117,6 +116,7 @@ public class SearchOrderFragment
         mListView.setHasFixedSize(true);
 
         // Get all sites; enabled AND disabled.
+        //noinspection ConstantConditions
         List<Site> list = mModel.getList(getContext(), mOurType).getSites(false);
         mListAdapter = new SearchSiteListAdapter(getContext(), mOurType, list,
                                                  vh -> mItemTouchHelper.startDrag(vh));

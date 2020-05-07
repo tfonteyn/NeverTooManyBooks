@@ -30,6 +30,7 @@ package com.hardbacknutter.nevertoomanybooks.settings.styles;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
@@ -156,10 +157,10 @@ public abstract class StyleBaseFragment
 //        setPreferencesFromResource(getLayoutId(), rootKey);
 //    }
 
+
     @Override
-    @CallSuper
-    public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
+    public void onCreate(@Nullable final Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
         // always pass the non-global style back; whether existing or new.
         // so even if the user makes no changes, we still send it back!
@@ -172,8 +173,15 @@ public abstract class StyleBaseFragment
         if (mTemplateId != 0) {
             mResultDataModel.putResultData(BKEY_TEMPLATE_ID, mTemplateId);
         }
+
         // and the actual/current id.
         //mResultDataModel.putResultData(UniqueId.BKEY_STYLE_ID, mStyle.getId());
+    }
+
+    @Override
+    public void onViewCreated(@NonNull final View view,
+                              @Nullable final Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
         //noinspection ConstantConditions
         ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
