@@ -57,8 +57,8 @@
 
         <CheckBox
             android:id="@+id/cbx_books"
-            style="@style/OptionRow.Checkable"
             android:layout_width="0dp"
+            android:layout_height="wrap_content"
             android:checked="true"
             android:text="@string/lbl_books"
             app:layout_constraintEnd_toStartOf="@id/guideline"
@@ -68,8 +68,8 @@
 
         <RadioButton
             android:id="@+id/rb_books_all"
-            style="@style/OptionRow.Checkable"
             android:layout_width="0dp"
+            android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/indent_radio_button"
             android:checked="true"
             android:text="@string/bookshelf_all_books"
@@ -80,8 +80,8 @@
 
         <RadioButton
             android:id="@+id/rb_books_since_last_backup"
-            style="@style/OptionRow.Checkable"
             android:layout_width="0dp"
+            android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/indent_radio_button"
             android:text="@string/lbl_export_option_books_since_last_full_backup"
             app:layout_constraintEnd_toStartOf="@id/guideline"
@@ -91,8 +91,8 @@
 
         <CheckBox
             android:id="@+id/cbx_covers"
-            style="@style/OptionRow.Checkable"
             android:layout_width="0dp"
+            android:layout_height="wrap_content"
             android:checked="true"
             android:text="@string/lbl_covers_long"
             app:layout_constraintEnd_toEndOf="parent"
@@ -102,8 +102,8 @@
 
         <CheckBox
             android:id="@+id/cbx_prefs_and_styles"
-            style="@style/OptionRow.Checkable"
             android:layout_width="0dp"
+            android:layout_height="wrap_content"
             android:checked="true"
             android:text="@string/lbl_settings"
             app:layout_constraintEnd_toEndOf="parent"

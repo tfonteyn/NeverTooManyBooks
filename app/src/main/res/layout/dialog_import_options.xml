@@ -58,7 +58,8 @@
 
         <CheckBox
             android:id="@+id/cbx_books"
-            style="@style/OptionRow.Checkable"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
             android:checked="true"
             android:text="@string/lbl_books"
             app:layout_constraintEnd_toEndOf="parent"
@@ -68,8 +69,8 @@
 
         <RadioButton
             android:id="@+id/rb_books_all"
-            style="@style/OptionRow.Checkable"
             android:layout_width="0dp"
+            android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/indent_radio_button"
             android:checked="true"
             android:text="@string/bookshelf_all_books"
@@ -81,14 +82,16 @@
             android:id="@+id/info_btn_rb_books_all"
             style="@style/InfoButton"
             android:contentDescription="@string/txt_import_option_all_books"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0"
             app:layout_constraintStart_toEndOf="@id/rb_books_all"
             app:layout_constraintTop_toTopOf="@id/rb_books_all"
             />
 
         <RadioButton
             android:id="@+id/rb_books_sync"
-            style="@style/OptionRow.Checkable"
             android:layout_width="0dp"
+            android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/indent_radio_button"
             android:text="@string/lbl_import_option_new_and_changed_books"
             app:layout_constraintStart_toStartOf="parent"
@@ -99,13 +102,16 @@
             android:id="@+id/info_btn_rb_books_sync"
             style="@style/InfoButton"
             android:contentDescription="@string/txt_import_option_new_and_changed_books"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0"
             app:layout_constraintStart_toEndOf="@id/rb_books_sync"
             app:layout_constraintTop_toTopOf="@id/rb_books_sync"
             />
 
         <CheckBox
             android:id="@+id/cbx_covers"
-            style="@style/OptionRow.Checkable"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
             android:checked="true"
             android:text="@string/lbl_covers_long"
             app:layout_constraintEnd_toEndOf="parent"
@@ -115,14 +121,14 @@
 
         <CheckBox
             android:id="@+id/cbx_prefs_and_styles"
-            style="@style/OptionRow.Checkable"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
             android:checked="true"
             android:text="@string/lbl_settings"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/cbx_covers"
             />
-
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.core.widget.NestedScrollView>

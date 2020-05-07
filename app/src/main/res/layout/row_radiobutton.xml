@@ -31,6 +31,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/btn_option"
-    style="@style/OptionRow.Checkable"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
     tools:text="@sample/data.json/styles/name"
     />

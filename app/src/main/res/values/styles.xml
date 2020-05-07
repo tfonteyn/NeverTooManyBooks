@@ -332,15 +332,6 @@
         <item name="android:background">?attr/selectableItemBackground</item>
     </style>
 
-    <!-- ImageButton - 'edit this row' -->
-    <style name="RowButton.Edit">
-        <item name="android:focusable">true</item>
-        <item name="android:focusableInTouchMode">false</item>
-        <item name="android:clickable">true</item>
-        <item name="android:src">@drawable/ic_edit</item>
-        <item name="android:background">?attr/selectableItemBackground</item>
-    </style>
-
     <!-- ImageView - handle to let the user drag & drop rows to re-order them -->
     <style name="RowButton.DragHandle">
         <item name="android:src">@drawable/ic_reorder</item>
@@ -372,28 +363,6 @@
     <style name="RowTextLine.Secondary">
         <item name="android:textAppearance">?attr/textAppearanceListItemSecondary</item>
         <item name="android:layout_marginStart">@dimen/indent2</item>
-    </style>
-
-    <!-- *************************************************************************************** -->
-    <!-- row, button and blurb for 'options' in a an option list (e.g. on a dialog) -->
-    <!-- *************************************************************************************** -->
-
-    <!-- Clickable row in a list. -->
-    <style name="OptionRow">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">wrap_content</item>
-    </style>
-
-    <!-- a row that can be 'selected' -->
-    <style name="OptionRow.Selectable">
-        <item name="android:background">@drawable/color_selector_row_highlight</item>
-    </style>
-
-    <!-- Option in the list shown as a Checkable (RadioButton, Checkbox ...).
-         Flashes when clicked.  -->
-    <style name="OptionRow.Checkable">
-        <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
-        <item name="android:background">?attr/listChoiceBackgroundIndicator</item>
     </style>
 
     <!-- *************************************************************************************** -->

@@ -54,7 +54,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Entity;
  *          xmlns:android="http://schemas.android.com/apk/res/android"
  *          xmlns:tools="http://schemas.android.com/tools"
  *          android:id="@+id/btn_radio"
- *          style="@style/OptionRow.Checkable"
  *          tools:text="@sample/data.json/styles/name"
  *     />
  *     }

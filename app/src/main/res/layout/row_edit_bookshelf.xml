@@ -30,7 +30,7 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    style="@style/OptionRow.Selectable"
+    android:background="@drawable/color_selector_row_highlight"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     >

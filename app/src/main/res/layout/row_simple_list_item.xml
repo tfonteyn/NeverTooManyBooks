@@ -30,8 +30,9 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    style="@style/OptionRow"
     android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
     >
 
     <!-- what the user sees, with an optional drawable at the 'start' added from code -->
