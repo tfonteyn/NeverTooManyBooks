@@ -318,20 +318,29 @@ public class BooksOnBookshelfModel
         mBookshelfNameList.clear();
         mBookshelfNameList.add(new BookshelfSpinnerEntry(
                 Bookshelf.getBookshelf(context, mDb, Bookshelf.ALL_BOOKS, Bookshelf.ALL_BOOKS)));
-        // default to 'All Books'
-        int currentPos = 0;
+
+        int selectedPosition = 0;
+
+        // position of the default shelf
+        int defaultPosition = 0;
+
         // start at 1, as position 0 is 'All Books'
-        int position = 1;
+        int count = 1;
 
         for (Bookshelf bookshelf : mDb.getBookshelves()) {
-            if (bookshelf.getId() == getCurrentBookshelf().getId()) {
-                currentPos = position;
+            if (bookshelf.getId() == Bookshelf.DEFAULT) {
+                defaultPosition = count;
             }
-            position++;
+
+            if (bookshelf.getId() == getCurrentBookshelf().getId()) {
+                selectedPosition = count;
+            }
+
             mBookshelfNameList.add(new BookshelfSpinnerEntry(bookshelf));
+            count++;
         }
 
-        return currentPos;
+        return selectedPosition != 0 ? selectedPosition : defaultPosition;
     }
 
     /**
