@@ -33,6 +33,7 @@ import androidx.annotation.NonNull;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
@@ -41,13 +42,9 @@ import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
  * 'Meta' Validator to evaluate a list of validators; any one being {@code true} is OK.
  */
 public class OrValidator
-        extends ArrayList<DataValidator>
         implements DataValidator {
 
-    /** Log tag. */
-    private static final String TAG = "OrValidator";
-
-    private static final long serialVersionUID = -1917008033194867105L;
+    private final Collection<DataValidator> mList = new ArrayList<>();
 
     /**
      * Constructor.
@@ -55,7 +52,7 @@ public class OrValidator
      * @param validators list of validators
      */
     public OrValidator(@NonNull final DataValidator... validators) {
-        addAll(Arrays.asList(validators));
+        mList.addAll(Arrays.asList(validators));
     }
 
     @Override
@@ -65,7 +62,7 @@ public class OrValidator
                          final int errorLabelId)
             throws ValidatorException {
         ValidatorException lastException = null;
-        for (DataValidator validator : this) {
+        for (DataValidator validator : mList) {
             try {
                 validator.validate(context, dataManager, key, errorLabelId);
                 // as soon as one is reporting 'ok' by NOT throwing an exception, we're done.

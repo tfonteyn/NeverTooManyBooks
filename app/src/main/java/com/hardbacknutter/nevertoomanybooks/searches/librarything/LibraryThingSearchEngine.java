@@ -224,7 +224,7 @@ public class LibraryThingSearchEngine
     @WorkerThread
     @NonNull
     @Override
-    public List<String> getAlternativeEditions(@NonNull final Context appContext,
+    public List<String> getAlternativeEditions(@NonNull final Context context,
                                                @NonNull final String isbn) {
 
         SAXParserFactory factory = SAXParserFactory.newInstance();
@@ -235,7 +235,7 @@ public class LibraryThingSearchEngine
 
         // Get it
         String url = String.format(EDITIONS_URL, isbn);
-        try (TerminatorConnection con = TerminatorConnection.open(appContext, url)) {
+        try (TerminatorConnection con = TerminatorConnection.open(context, url)) {
             SAXParser parser = factory.newSAXParser();
             parser.parse(con.getInputStream(), handler);
         } catch (@NonNull final ParserConfigurationException | SAXException | IOException e) {
@@ -376,8 +376,8 @@ public class LibraryThingSearchEngine
     }
 
     @Override
-    public boolean isAvailable(@NonNull final Context appContext) {
-        return hasKey(appContext);
+    public boolean isAvailable(@NonNull final Context context) {
+        return hasKey(context);
     }
 
     @NonNull

@@ -107,20 +107,20 @@ public abstract class PCollectionBase<E, T extends Collection<E>>
     }
 
     @Override
-    public void set(@Nullable final T values) {
+    public void set(@Nullable final T value) {
         if (mIsPersistent) {
             SharedPreferences.Editor ed = getPrefs(App.getAppContext()).edit();
-            if (values == null) {
+            if (value == null) {
                 ed.remove(getKey());
             } else {
-                ed.putString(getKey(), TextUtils.join(DELIM, values));
+                ed.putString(getKey(), TextUtils.join(DELIM, value));
             }
             ed.apply();
         } else {
             Objects.requireNonNull(mNonPersistedValue, ErrorMsg.NULL_NON_PERSISTED_VALUE);
             mNonPersistedValue.clear();
-            if (values != null) {
-                mNonPersistedValue.addAll(values);
+            if (value != null) {
+                mNonPersistedValue.addAll(value);
             }
         }
     }

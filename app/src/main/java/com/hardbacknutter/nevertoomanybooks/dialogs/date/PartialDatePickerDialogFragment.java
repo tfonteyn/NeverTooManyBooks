@@ -78,7 +78,6 @@ public class PartialDatePickerDialogFragment
     private Calendar mCalendarForCalculations;
     private NumberPicker mDayPicker;
     /** This listener is called after <strong>any change</strong> made to the pickers. */
-    @SuppressWarnings("FieldCanBeLocal")
     private final NumberPicker.OnValueChangeListener mOnValueChangeListener =
             (picker, oldVal, newVal) -> {
                 switch (picker.getId()) {
@@ -225,15 +224,11 @@ public class PartialDatePickerDialogFragment
                     v -> send(null, null, null));
             dialog.getButton(Dialog.BUTTON_POSITIVE).setOnClickListener(v -> {
                 if (mDay != null && mDay > 0 && (mMonth == null || mMonth == 0)) {
-                    //noinspection ConstantConditions
-                    Snackbar.make(getDialog().getWindow().getDecorView(),
-                                  R.string.warning_if_day_set_month_and_year_must_be,
+                    Snackbar.make(v, R.string.warning_if_day_set_month_and_year_must_be,
                                   Snackbar.LENGTH_LONG).show();
 
                 } else if (mMonth != null && mMonth > 0 && mYear == null) {
-                    //noinspection ConstantConditions
-                    Snackbar.make(getDialog().getWindow().getDecorView(),
-                                  R.string.warning_if_month_set_year_must_be,
+                    Snackbar.make(v, R.string.warning_if_month_set_year_must_be,
                                   Snackbar.LENGTH_LONG).show();
 
                 } else {

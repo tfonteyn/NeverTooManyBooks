@@ -55,8 +55,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
  * Class to store table name and a list of domain definitions.
  */
 @SuppressWarnings("FieldNotUsedInToString")
-public class TableDefinition
-        implements Cloneable {
+public class TableDefinition {
 
     /** Check if a table exists; either in permanent or temporary storage. */
     private static final String TABLE_EXISTS_SQL =

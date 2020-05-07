@@ -73,7 +73,7 @@ public final class DEBUG_SWITCHES {
     public static final boolean BOB_PSEUDO_CURSOR = false;
 
     /** enable timers for performance measurements. */
-    public static final boolean TIMERS = true;
+    public static final boolean TIMERS = false;
 
     /** Log all attaching fragments. Goal is to detect leaking fragments. */
     public static final boolean ATTACH_FRAGMENT = false;

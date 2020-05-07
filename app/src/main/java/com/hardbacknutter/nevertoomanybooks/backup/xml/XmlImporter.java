@@ -862,9 +862,9 @@ public class XmlImporter
 
         @Override
         public void putStringSet(@NonNull final String key,
-                                 @NonNull final Iterable<String> values) {
+                                 @NonNull final Iterable<String> value) {
             Set<String> valueSet = new HashSet<>();
-            for (String s : values) {
+            for (String s : value) {
                 valueSet.add(s);
             }
             mEditor.putStringSet(key, valueSet);
@@ -872,8 +872,8 @@ public class XmlImporter
 
         @Override
         public void putStringList(@NonNull final String key,
-                                  @NonNull final Iterable<String> values) {
-            mEditor.putString(key, TextUtils.join(",", values));
+                                  @NonNull final Iterable<String> value) {
+            mEditor.putString(key, TextUtils.join(",", value));
         }
     }
 

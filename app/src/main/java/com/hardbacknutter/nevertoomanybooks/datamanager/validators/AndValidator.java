@@ -33,6 +33,7 @@ import androidx.annotation.NonNull;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 
@@ -40,10 +41,9 @@ import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
  * 'Meta' Validator to evaluate a list of validators; all validators must be true.
  */
 public class AndValidator
-        extends ArrayList<DataValidator>
         implements DataValidator {
 
-    private static final long serialVersionUID = -8002105679237033069L;
+    private final Collection<DataValidator> mList = new ArrayList<>();
 
     /**
      * Constructor.
@@ -51,7 +51,7 @@ public class AndValidator
      * @param validators list of validators
      */
     public AndValidator(@NonNull final DataValidator... validators) {
-        addAll(Arrays.asList(validators));
+        mList.addAll(Arrays.asList(validators));
     }
 
     @Override
@@ -61,7 +61,7 @@ public class AndValidator
                          final int errorLabelId)
             throws ValidatorException {
 
-        for (DataValidator validator : this) {
+        for (DataValidator validator : mList) {
             validator.validate(context, dataManager, key, errorLabelId);
         }
     }

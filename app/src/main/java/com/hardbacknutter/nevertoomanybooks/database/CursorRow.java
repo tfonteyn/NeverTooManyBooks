@@ -68,16 +68,16 @@ public class CursorRow
     }
 
     /**
-     * @param domainName the domain to get
+     * @param key the domain to get
      *
      * @return {@code true} if this cursor contains the specified domain.
      */
-    public boolean contains(@NonNull final String domainName) {
-        return mCursor.getColumnIndex(domainName) > -1;
+    public boolean contains(@NonNull final String key) {
+        return mCursor.getColumnIndex(key) > -1;
     }
 
     /**
-     * @param domainName the name of the domain to get
+     * @param key the name of the domain to get
      *
      * @return the string value of the column.
      * A {@code null} value will be returned as an empty String.
@@ -85,12 +85,12 @@ public class CursorRow
      * @throws ColumnNotPresentException if the column was not present.
      */
     @NonNull
-    public String getString(@NonNull final String domainName)
+    public String getString(@NonNull final String key)
             throws ColumnNotPresentException {
 
-        int col = mCursor.getColumnIndex(domainName);
+        int col = mCursor.getColumnIndex(key);
         if (col == -1) {
-            throw new ColumnNotPresentException(domainName);
+            throw new ColumnNotPresentException(key);
         }
         if (mCursor.isNull(col)) {
             return "";
@@ -99,30 +99,30 @@ public class CursorRow
     }
 
     /**
-     * @param domainName to get
+     * @param key to get
      *
      * @return the boolean value of the column ({@code null} comes back as false).
      *
      * @throws ColumnNotPresentException if the column was not present.
      */
-    public boolean getBoolean(@NonNull final String domainName)
+    public boolean getBoolean(@NonNull final String key)
             throws ColumnNotPresentException {
-        return getInt(domainName) == 1;
+        return getInt(key) == 1;
     }
 
     /**
-     * @param domainName to get
+     * @param key to get
      *
      * @return the int value of the column ({@code null} comes back as 0)
      *
      * @throws ColumnNotPresentException if the column was not present.
      */
-    public int getInt(@NonNull final String domainName)
+    public int getInt(@NonNull final String key)
             throws ColumnNotPresentException {
 
-        int col = mCursor.getColumnIndex(domainName);
+        int col = mCursor.getColumnIndex(key);
         if (col == -1) {
-            throw new ColumnNotPresentException(domainName);
+            throw new ColumnNotPresentException(key);
         }
         // if (mCursor.isNull(col)) {
         //     return null; // 0
@@ -131,18 +131,18 @@ public class CursorRow
     }
 
     /**
-     * @param domainName to get
+     * @param key to get
      *
      * @return the long value of the column ({@code null} comes back as 0)
      *
      * @throws ColumnNotPresentException if the column was not present.
      */
-    public long getLong(@NonNull final String domainName)
+    public long getLong(@NonNull final String key)
             throws ColumnNotPresentException {
 
-        int col = mCursor.getColumnIndex(domainName);
+        int col = mCursor.getColumnIndex(key);
         if (col == -1) {
-            throw new ColumnNotPresentException(domainName);
+            throw new ColumnNotPresentException(key);
         }
         // if (mCursor.isNull(col)) {
         //     return null; // 0
@@ -151,18 +151,18 @@ public class CursorRow
     }
 
     /**
-     * @param domainName to get
+     * @param key to get
      *
      * @return the double value of the column ({@code null} comes back as 0)
      *
      * @throws ColumnNotPresentException if the column was not present.
      */
-    public double getDouble(@NonNull final String domainName)
+    public double getDouble(@NonNull final String key)
             throws ColumnNotPresentException {
 
-        int col = mCursor.getColumnIndex(domainName);
+        int col = mCursor.getColumnIndex(key);
         if (col == -1) {
-            throw new ColumnNotPresentException(domainName);
+            throw new ColumnNotPresentException(key);
         }
         // if (mCursor.isNull(col)) {
         //     return null; // 0

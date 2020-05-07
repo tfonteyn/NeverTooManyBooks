@@ -159,10 +159,7 @@ public class MenuPickerDialogFragment
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
-        // Reminder: *always* use the activity inflater here.
-        //noinspection ConstantConditions
-        final LayoutInflater inflater = getActivity().getLayoutInflater();
-        final View root = inflater.inflate(R.layout.dialog_popupmenu, null);
+        final View root = getLayoutInflater().inflate(R.layout.dialog_popupmenu, null);
 
         // list of options
         final RecyclerView listView = root.findViewById(R.id.item_list);
@@ -346,6 +343,19 @@ public class MenuPickerDialogFragment
         @Override
         public int compareTo(final Pick o) {
             return Integer.compare(mOrder, o.mOrder);
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (!(o instanceof Pick)) {
+                return false;
+            }
+            return ((Pick) o).mItemId == mItemId;
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(mItemId);
         }
     }
 

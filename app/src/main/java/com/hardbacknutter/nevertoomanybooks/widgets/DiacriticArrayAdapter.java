@@ -64,6 +64,7 @@ import java.util.regex.Pattern;
  *
  * @param <T> type of objects in the list
  */
+@SuppressWarnings("ReturnOfInnerClass")
 public class DiacriticArrayAdapter<T>
         extends BaseAdapter
         implements Filterable, ThemedSpinnerAdapter {

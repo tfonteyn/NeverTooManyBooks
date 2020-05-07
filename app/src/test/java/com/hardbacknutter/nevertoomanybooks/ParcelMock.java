@@ -58,6 +58,7 @@ public class ParcelMock {
             return null;
         }).when(parcel).writeValue(any());
 
+        //noinspection ZeroLengthArrayAllocation
         when(parcel.marshall()).thenReturn(new byte[0]);
 
         doAnswer(invocation -> {

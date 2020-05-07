@@ -238,6 +238,7 @@ public final class Prefs {
             map = PreferenceManager.getDefaultSharedPreferences(context).getAll();
         }
         List<String> keyList = new ArrayList<>(map.keySet());
+        //noinspection ZeroLengthArrayAllocation
         String[] keys = keyList.toArray(new String[]{});
         Arrays.sort(keys);
 

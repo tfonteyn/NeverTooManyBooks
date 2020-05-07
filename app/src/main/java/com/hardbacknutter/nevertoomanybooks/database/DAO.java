@@ -703,6 +703,7 @@ public class DAO
         sql += " ORDER BY " + KEY_TITLE_OB + COLLATION;
 
         ArrayList<TocEntry> list = new ArrayList<>();
+        //noinspection ZeroLengthArrayAllocation
         try (Cursor cursor = sSyncedDb.rawQuery(sql, paramList.toArray(new String[0]))) {
             final RowDataHolder rowData = new CursorRow(cursor);
             while (cursor.moveToNext()) {

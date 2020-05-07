@@ -519,14 +519,14 @@ public interface SearchEngine {
          *
          * <strong>Note:</strong> all exceptions will be ignored.
          *
-         * @param appContext Application context
-         * @param isbn       to search for, <strong>must</strong> be valid.
+         * @param context Application context
+         * @param isbn    to search for, <strong>must</strong> be valid.
          *
          * @return a list of isbn's of alternative editions of our original isbn, can be empty.
          */
         @WorkerThread
         @NonNull
-        List<String> getAlternativeEditions(@NonNull Context appContext,
+        List<String> getAlternativeEditions(@NonNull Context context,
                                             @NonNull String isbn);
     }
 
