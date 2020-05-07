@@ -302,7 +302,7 @@ public abstract class BookSearchBaseFragment
     protected void showError(@NonNull final TextInputLayout til,
                              @NonNull final CharSequence error) {
         til.setError(error);
-        new Handler().postDelayed(() -> til.setError(null), App.ERROR_DELAY_MS);
+        new Handler().postDelayed(() -> til.setError(null), BaseActivity.ERROR_DELAY_MS);
     }
 
     @Override

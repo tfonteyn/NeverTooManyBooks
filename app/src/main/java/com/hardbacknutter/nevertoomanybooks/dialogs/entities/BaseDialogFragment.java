@@ -47,7 +47,7 @@ import androidx.fragment.app.DialogFragment;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.textfield.TextInputLayout;
 
-import com.hardbacknutter.nevertoomanybooks.App;
+import com.hardbacknutter.nevertoomanybooks.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.R;
 
 /**
@@ -165,7 +165,7 @@ public abstract class BaseDialogFragment
     protected void showError(@NonNull final TextInputLayout til,
                              @NonNull final CharSequence error) {
         til.setError(error);
-        new Handler().postDelayed(() -> til.setError(null), App.ERROR_DELAY_MS);
+        new Handler().postDelayed(() -> til.setError(null), BaseActivity.ERROR_DELAY_MS);
     }
 
     /**

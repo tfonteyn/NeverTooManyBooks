@@ -119,7 +119,6 @@ import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 public class App
         extends Application {
 
-    public static final int ERROR_DELAY_MS = 2000;
     /** Log tag. */
     private static final String TAG = "App";
     /**

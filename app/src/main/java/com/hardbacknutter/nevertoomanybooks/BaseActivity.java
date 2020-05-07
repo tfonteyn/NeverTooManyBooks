@@ -96,6 +96,9 @@ import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 public abstract class BaseActivity
         extends AppCompatActivity {
 
+    /** Used by {@link #showError} Snackbar.LENGTH_LONG is 2750 ms. */
+    public static final int ERROR_DELAY_MS = 3000;
+
     /** Log tag. */
     private static final String TAG = "BaseActivity";
 
@@ -214,7 +217,7 @@ public abstract class BaseActivity
     protected void showError(@NonNull final TextInputLayout til,
                              @NonNull final CharSequence error) {
         til.setError(error);
-        new Handler().postDelayed(() -> til.setError(null), App.ERROR_DELAY_MS);
+        new Handler().postDelayed(() -> til.setError(null), ERROR_DELAY_MS);
     }
 
     /**
