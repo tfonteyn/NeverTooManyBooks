@@ -35,6 +35,7 @@ import android.os.Bundle;
 import android.os.Parcelable;
 import android.util.SparseArray;
 
+import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
@@ -578,8 +579,8 @@ public class UpdateFieldsModel
 
     private void processSearchResultsCoverImage(@NonNull final Context context,
                                                 @NonNull final Bundle bookData,
-                                                final FieldUsage usage,
-                                                final int cIdx) {
+                                                @NonNull final FieldUsage usage,
+                                                @IntRange(from = 0) final int cIdx) {
         final String uuid = mCurrentBookData.getString(DBDefinitions.KEY_BOOK_UUID);
         Objects.requireNonNull(uuid, ErrorMsg.NULL_UUID);
         boolean copyThumb = false;
@@ -727,9 +728,9 @@ public class UpdateFieldsModel
 
     private void filterCoverImage(@NonNull final Context context,
                                   @NonNull final Bundle bookData,
-                                  final Map<String, FieldUsage> fieldUsages,
-                                  final FieldUsage usage,
-                                  final int cIdx) {
+                                  @NonNull final Map<String, FieldUsage> fieldUsages,
+                                  @NonNull final FieldUsage usage,
+                                  @IntRange(from = 0) final int cIdx) {
         // - If it's a thumbnail, then see if it's missing or empty.
         final String uuid = bookData.getString(DBDefinitions.KEY_BOOK_UUID);
         Objects.requireNonNull(uuid, ErrorMsg.NULL_UUID);

@@ -46,6 +46,7 @@ import android.widget.TextView;
 
 import androidx.annotation.IdRes;
 import androidx.annotation.IntDef;
+import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
@@ -123,6 +124,7 @@ class CoverHandler {
     @NonNull
     private final ImageView mCoverView;
     /** Index of the image we're handling. */
+    @IntRange(from = 0)
     private final int mCIdx;
     /** Context from the fragment, cached as used frequently. */
     @NonNull
@@ -159,7 +161,7 @@ class CoverHandler {
                  @Nullable final ProgressBar progressBar,
                  @NonNull final Book book,
                  @NonNull final TextView isbnView,
-                 final int cIdx,
+                 @IntRange(from = 0) final int cIdx,
                  @NonNull final ImageView coverView,
                  final int scale) {
 
@@ -309,7 +311,7 @@ class CoverHandler {
     }
 
     /**
-     * Handles results from Camera, Image Gallery, Cropping.
+     * Handles results from Camera, Picture Gallery and editing (incl. internal cropper).
      *
      * @return {@code true} when handled, {@code false} if unknown requestCode
      */
@@ -317,13 +319,6 @@ class CoverHandler {
                                     final int resultCode,
                                     @Nullable final Intent data) {
         switch (requestCode) {
-            case RequestCode.ACTION_COVER_BROWSER: {
-                if (resultCode == Activity.RESULT_OK) {
-                    Objects.requireNonNull(data, ErrorMsg.NULL_INTENT_DATA);
-                    processCoverBrowserResult(data);
-                }
-                return true;
-            }
             case RequestCode.ACTION_GET_CONTENT: {
                 if (resultCode == Activity.RESULT_OK) {
                     Objects.requireNonNull(data, ErrorMsg.NULL_INTENT_DATA);
@@ -479,8 +474,7 @@ class CoverHandler {
             if (isbn.isValid(true)) {
                 final DialogFragment frag = CoverBrowserDialogFragment
                         .newInstance(isbn.asText(), mCIdx);
-                frag.setTargetFragment(mFragment, RequestCode.ACTION_COVER_BROWSER);
-                frag.show(mFragment.getParentFragmentManager(), CoverBrowserDialogFragment.TAG);
+                frag.show(mFragment.getChildFragmentManager(), CoverBrowserDialogFragment.TAG);
                 return;
             }
         }
@@ -492,9 +486,10 @@ class CoverHandler {
     /**
      * When the user clicks the switcher in the {@link CoverBrowserDialogFragment},
      * we take that image and stuff it into the view.
+     *
+     * @param fileSpec the selected image
      */
-    private void processCoverBrowserResult(@NonNull final Intent data) {
-        final String fileSpec = data.getStringExtra(Book.BKEY_FILE_SPEC[mCIdx]);
+    void onFileSpecResult(@Nullable final String fileSpec) {
         if (fileSpec != null && !fileSpec.isEmpty()) {
             final File source = new File(fileSpec);
             final File destination = getCoverFile();
@@ -618,7 +613,7 @@ class CoverHandler {
 
     public interface HostingFragment {
 
-        void setCurrentCoverIndex(int cIdx);
+        void setCurrentCoverIndex(@IntRange(from = 0) int cIdx);
     }
 
     private static class RotateTask

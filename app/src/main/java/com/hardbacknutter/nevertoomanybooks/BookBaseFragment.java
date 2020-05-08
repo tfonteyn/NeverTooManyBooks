@@ -79,6 +79,9 @@ public abstract class BookBaseFragment
     /** The book. Must be in the Activity scope. */
     BookViewModel mBookViewModel;
 
+    /** Handles cover replacement, rotation, etc. */
+    final CoverHandler[] mCoverHandler = new CoverHandler[2];
+
     /** Listener for all field changes. Must keep strong reference. */
     private final Fields.AfterChangeListener mAfterChangeListener =
             new Fields.AfterChangeListener() {
@@ -87,6 +90,10 @@ public abstract class BookBaseFragment
                     mBookViewModel.setDirty(true);
                 }
             };
+
+    /** Forwarding listener; send the selected image to the correct handler. */
+    private final CoverBrowserDialogFragment.OnFileSpecResult mOnFileSpecResult =
+            (cIdx, fileSpec) -> mCoverHandler[cIdx].onFileSpecResult(fileSpec);
 
     abstract Fields getFields();
 
@@ -118,6 +125,17 @@ public abstract class BookBaseFragment
         mProgressBar = getActivity().findViewById(R.id.progressBar);
     }
 
+    @Override
+    public void onAttachFragment(@NonNull final Fragment childFragment) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.ATTACH_FRAGMENT) {
+            Log.d(getClass().getName(), "onAttachFragment: " + childFragment.getTag());
+        }
+        super.onAttachFragment(childFragment);
+
+        if (childFragment instanceof CoverBrowserDialogFragment) {
+            ((CoverBrowserDialogFragment) childFragment).setListener(mOnFileSpecResult);
+        }
+    }
     /**
      * Hook up the Views, and populate them with the book data.
      *

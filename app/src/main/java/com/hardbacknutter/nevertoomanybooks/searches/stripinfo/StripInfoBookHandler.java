@@ -31,6 +31,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 
+import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -501,7 +502,7 @@ class StripInfoBookHandler
     }
 
     private void fetchCoverFromElement(@NonNull final String elementQuery,
-                                       final int cIdx,
+                                       @IntRange(from = 0) final int cIdx,
                                        @NonNull final Bundle bookData) {
         Element coverElement = mDoc.selectFirst(elementQuery);
         if (coverElement != null) {
@@ -540,7 +541,7 @@ class StripInfoBookHandler
      */
     private void fetchCover(@NonNull final String url,
                             @NonNull final Bundle /* in/out */ bookData,
-                            final int cIdx) {
+                            @IntRange(from = 0) final int cIdx) {
 
         // do not use the isbn we searched for, use the one we found even if empty!
         String name = bookData.getString(DBDefinitions.KEY_ISBN, "")

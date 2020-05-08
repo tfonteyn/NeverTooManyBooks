@@ -32,6 +32,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 
+import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
@@ -257,7 +258,7 @@ public class OpenLibrarySearchEngine
     @WorkerThread
     public String getCoverImage(@NonNull final Context context,
                                 @NonNull final String isbn,
-                                final int cIdx,
+                                @IntRange(from = 0) final int cIdx,
                                 @Nullable final ImageSize size) {
         String sizeParam;
         if (size == null) {

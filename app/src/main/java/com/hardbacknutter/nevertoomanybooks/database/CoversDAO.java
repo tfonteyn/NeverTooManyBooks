@@ -40,6 +40,7 @@ import android.util.Log;
 
 import androidx.annotation.AnyThread;
 import androidx.annotation.CallSuper;
+import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
@@ -225,7 +226,7 @@ public final class CoversDAO
      */
     @NonNull
     private static String constructCacheId(@NonNull final String uuid,
-                                           final int cIdx,
+                                           @IntRange(from = 0) final int cIdx,
                                            final int maxWidth,
                                            final int maxHeight) {
         return uuid + '.' + cIdx + '.' + maxWidth + 'x' + maxHeight;
@@ -246,7 +247,7 @@ public final class CoversDAO
     @AnyThread
     public static Bitmap getImage(@NonNull final Context context,
                                   @NonNull final String uuid,
-                                  final int cIdx,
+                                  @IntRange(from = 0) final int cIdx,
                                   final int maxWidth,
                                   final int maxHeight) {
         // safely initialise if needed
@@ -399,7 +400,7 @@ public final class CoversDAO
      */
     @WorkerThread
     private void saveFile(@NonNull final String uuid,
-                          final int cIdx,
+                          @IntRange(from = 0) final int cIdx,
                           @NonNull final Bitmap bitmap,
                           final int maxWidth,
                           final int maxHeight) {
@@ -542,7 +543,7 @@ public final class CoversDAO
          */
         @UiThread
         public ImageCacheWriterTask(@NonNull final String uuid,
-                                    final int cIdx,
+                                    @IntRange(from = 0) final int cIdx,
                                     final int maxWidth,
                                     final int maxHeight,
                                     @NonNull final Bitmap source) {

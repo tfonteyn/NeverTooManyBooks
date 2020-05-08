@@ -40,6 +40,7 @@ import android.widget.ImageView;
 import androidx.annotation.AnyThread;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.IntDef;
+import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
@@ -244,7 +245,7 @@ public final class ImageUtils {
     @UiThread
     public static boolean setImageView(@NonNull final ImageView imageView,
                                        @NonNull final String uuid,
-                                       final int cIdx,
+                                       @IntRange(from = 0) final int cIdx,
                                        final int maxWidth,
                                        final int maxHeight) {
 
@@ -749,6 +750,28 @@ public final class ImageUtils {
          *
          * @param imageView      to populate
          * @param file           to load, must be valid
+         * @param scale          id
+         * @param allowUpscaling use the maximum h/w also as the minimum; thereby forcing upscaling.
+         */
+        public ImageLoader(@NonNull final ImageView imageView,
+                           @NonNull final File file,
+                           @ImageUtils.Scale final int scale,
+                           final boolean allowUpscaling) {
+            // see onPostExecute
+            imageView.setTag(R.id.TAG_THUMBNAIL_TASK, this);
+            mImageView = new WeakReference<>(imageView);
+            mFile = file;
+            final int maxSize = ImageUtils.getMaxImageSize(imageView.getContext(), scale);
+            mMaxWidth = maxSize;
+            mMaxHeight = maxSize;
+            mAllowUpscaling = allowUpscaling;
+        }
+
+        /**
+         * Constructor.
+         *
+         * @param imageView      to populate
+         * @param file           to load, must be valid
          * @param maxWidth       Maximum desired width of the image
          * @param maxHeight      Maximum desired height of the image
          * @param allowUpscaling use the maximum h/w also as the minimum; thereby forcing upscaling.
@@ -760,7 +783,6 @@ public final class ImageUtils {
                            final boolean allowUpscaling) {
             // see onPostExecute
             imageView.setTag(R.id.TAG_THUMBNAIL_TASK, this);
-
             mImageView = new WeakReference<>(imageView);
             mFile = file;
             mMaxWidth = maxWidth;
@@ -829,7 +851,7 @@ public final class ImageUtils {
          */
         CacheLoader(@NonNull final ImageView imageView,
                     final String uuid,
-                    final int cIdx,
+                    @IntRange(from = 0) final int cIdx,
                     @NonNull final File file,
                     final int maxWidth,
                     final int maxHeight) {

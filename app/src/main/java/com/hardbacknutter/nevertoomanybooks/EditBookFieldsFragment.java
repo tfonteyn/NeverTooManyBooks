@@ -40,6 +40,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.CallSuper;
+import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
@@ -85,8 +86,6 @@ public class EditBookFieldsFragment
     private static final String TAG = "EditBookFieldsFragment";
     /** re-usable validator. */
     private static final FieldValidator NON_BLANK_VALIDATOR = new NonBlankValidator();
-    /** Handles cover replacement, rotation, etc. */
-    private final CoverHandler[] mCoverHandler = new CoverHandler[2];
 
     /** Dialog listener (strong reference). */
     private final CheckListDialogFragment.CheckListResultsListener mCheckListResultsListener =
@@ -118,6 +117,14 @@ public class EditBookFieldsFragment
     private FragmentEditBookFieldsBinding mVb;
 
     @Override
+    public void onCreate(@Nullable final Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        //noinspection ConstantConditions
+        mScannerModel = new ViewModelProvider(getActivity()).get(ScannerViewModel.class);
+    }
+
+    @Override
     @Nullable
     public View onCreateView(@NonNull final LayoutInflater inflater,
                              @Nullable final ViewGroup container,
@@ -130,29 +137,7 @@ public class EditBookFieldsFragment
             mVb.coverImage1.setVisibility(View.GONE);
         }
 
-        getContext();
-
         return mVb.getRoot();
-    }
-
-    @Override
-    public void onAttachFragment(@NonNull final Fragment childFragment) {
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.ATTACH_FRAGMENT) {
-            Log.d(getClass().getName(), "onAttachFragment: " + childFragment.getTag());
-        }
-        super.onAttachFragment(childFragment);
-
-        if (childFragment instanceof CheckListDialogFragment) {
-            ((CheckListDialogFragment) childFragment).setListener(mCheckListResultsListener);
-        }
-    }
-
-    @Override
-    public void onCreate(@Nullable final Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        //noinspection ConstantConditions
-        mScannerModel = new ViewModelProvider(getActivity()).get(ScannerViewModel.class);
     }
 
     @Override
@@ -173,6 +158,83 @@ public class EditBookFieldsFragment
         });
 
         ViewFocusOrder.fix(view);
+    }
+
+    @Override
+    public void onResume() {
+        //noinspection ConstantConditions
+        mBookViewModel.pruneAuthors(getContext());
+        mBookViewModel.pruneSeries(getContext());
+
+        // the super will trigger the population of all defined Fields and their Views.
+        super.onResume();
+
+        // Always validate author here. We do this for the following scenario:
+        // User opens book, and clicks on the author field.
+        // -> new fragment overlays, user empties the author list and clicks 'back'
+        // --> we need to flag up that the author list is empty.
+        // Note that this does mean we will flag up the author as empty when
+        // we get here when the user simply wants to add a book. Oh well...
+        mFragmentVM.getFields().getField(R.id.author).validate();
+
+        // With all Views populated, (re-)add the helpers
+        addAutocomplete(R.id.genre, mFragmentVM.getGenres());
+        addAutocomplete(R.id.language, mFragmentVM.getLanguagesCodes());
+
+        mIsbnValidationTextWatcher = new ISBN.ValidationTextWatcher(mVb.lblIsbn, mVb.isbn,
+                                                                    mStrictIsbn);
+        mVb.isbn.addTextChangedListener(mIsbnValidationTextWatcher);
+
+        mIsbnCleanupTextWatcher = new ISBN.CleanupTextWatcher(mVb.isbn);
+        if (mStrictIsbn) {
+            mVb.isbn.addTextChangedListener(mIsbnCleanupTextWatcher);
+        }
+
+        mVb.btnScan.setOnClickListener(v -> {
+            Objects.requireNonNull(mScannerModel, ErrorMsg.NULL_SCANNER_MODEL);
+            mScannerModel.scan(this, RequestCode.SCAN_BARCODE);
+        });
+
+        //noinspection ConstantConditions
+        mVb.author.setOnClickListener(v -> EditBookAuthorListDialogFragment
+                // peer fragment. We share the book view model
+                .newInstance().show(getActivity().getSupportFragmentManager(),
+                                    EditBookAuthorListDialogFragment.TAG));
+
+        if (mFragmentVM.getFields().getField(R.id.series_title).isUsed(getContext())) {
+            //noinspection ConstantConditions
+            mVb.seriesTitle.setOnClickListener(v -> EditBookSeriesListDialogFragment
+                    // peer fragment. We share the book view model
+                    .newInstance().show(getActivity().getSupportFragmentManager(),
+                                        EditBookSeriesListDialogFragment.TAG));
+        }
+
+        // Bookshelves editor (dialog)
+        if (mFragmentVM.getFields().getField(R.id.bookshelves).isUsed(getContext())) {
+            mVb.bookshelves.setOnClickListener(v -> {
+                mFragmentVM.setCurrentDialogFieldId(R.id.bookshelves);
+                final DialogFragment picker = CheckListDialogFragment
+                        .newInstance(getString(R.string.lbl_bookshelves_long),
+                                     new ArrayList<>(mFragmentVM.getBookshelves()),
+                                     new ArrayList<>(
+                                             mBookViewModel.getBook().getParcelableArrayList(
+                                                     Book.BKEY_BOOKSHELF_ARRAY)));
+                // child fragment. We use a listener, see onAttachFragment
+                picker.show(getChildFragmentManager(), CheckListDialogFragment.TAG);
+            });
+        }
+    }
+
+    @Override
+    public void onAttachFragment(@NonNull final Fragment childFragment) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.ATTACH_FRAGMENT) {
+            Log.d(getClass().getName(), "onAttachFragment: " + childFragment.getTag());
+        }
+        super.onAttachFragment(childFragment);
+
+        if (childFragment instanceof CheckListDialogFragment) {
+            ((CheckListDialogFragment) childFragment).setListener(mCheckListResultsListener);
+        }
     }
 
     @Override
@@ -242,74 +304,9 @@ public class EditBookFieldsFragment
         mFragmentVM.getFields().resetVisibility(getView(), false, false);
     }
 
-    @Override
-    public void onResume() {
-        //noinspection ConstantConditions
-        mBookViewModel.pruneAuthors(getContext());
-        mBookViewModel.pruneSeries(getContext());
-
-        // the super will trigger the population of all defined Fields and their Views.
-        super.onResume();
-
-        // Always validate author here. We do this for the following scenario:
-        // User opens book, and clicks on the author field.
-        // -> new fragment overlays, user empties the author list and clicks 'back'
-        // --> we need to flag up that the author list is empty.
-        // Note that this does mean we will flag up the author as empty when
-        // we get here when the user simply wants to add a book. Oh well...
-        mFragmentVM.getFields().getField(R.id.author).validate();
-
-        // With all Views populated, (re-)add the helpers
-        addAutocomplete(R.id.genre, mFragmentVM.getGenres());
-        addAutocomplete(R.id.language, mFragmentVM.getLanguagesCodes());
-
-        mIsbnValidationTextWatcher = new ISBN.ValidationTextWatcher(mVb.lblIsbn, mVb.isbn,
-                                                                    mStrictIsbn);
-        mVb.isbn.addTextChangedListener(mIsbnValidationTextWatcher);
-
-        mIsbnCleanupTextWatcher = new ISBN.CleanupTextWatcher(mVb.isbn);
-        if (mStrictIsbn) {
-            mVb.isbn.addTextChangedListener(mIsbnCleanupTextWatcher);
-        }
-
-        mVb.btnScan.setOnClickListener(v -> {
-            Objects.requireNonNull(mScannerModel, ErrorMsg.NULL_SCANNER_MODEL);
-            mScannerModel.scan(this, RequestCode.SCAN_BARCODE);
-        });
-
-        //noinspection ConstantConditions
-        mVb.author.setOnClickListener(v -> EditBookAuthorListDialogFragment
-                // peer fragment. We share the book view model
-                .newInstance().show(getActivity().getSupportFragmentManager(),
-                                    EditBookAuthorListDialogFragment.TAG));
-
-        if (mFragmentVM.getFields().getField(R.id.series_title).isUsed(getContext())) {
-            //noinspection ConstantConditions
-            mVb.seriesTitle.setOnClickListener(v -> EditBookSeriesListDialogFragment
-                    // peer fragment. We share the book view model
-                    .newInstance().show(getActivity().getSupportFragmentManager(),
-                                        EditBookSeriesListDialogFragment.TAG));
-        }
-
-        // Bookshelves editor (dialog)
-        if (mFragmentVM.getFields().getField(R.id.bookshelves).isUsed(getContext())) {
-            mVb.bookshelves.setOnClickListener(v -> {
-                mFragmentVM.setCurrentDialogFieldId(R.id.bookshelves);
-                final DialogFragment picker = CheckListDialogFragment
-                        .newInstance(getString(R.string.lbl_bookshelves_long),
-                                     new ArrayList<>(mFragmentVM.getBookshelves()),
-                                     new ArrayList<>(
-                                             mBookViewModel.getBook().getParcelableArrayList(
-                                                     Book.BKEY_BOOKSHELF_ARRAY)));
-                // child fragment. We use a listener, see onAttachFragment
-                picker.show(getChildFragmentManager(), CheckListDialogFragment.TAG);
-            });
-        }
-    }
-
     /** Called by the CoverHandler when a context menu is selected. */
     @Override
-    public void setCurrentCoverIndex(final int cIdx) {
+    public void setCurrentCoverIndex(@IntRange(from = 0) final int cIdx) {
         mFragmentVM.setCurrentCoverHandlerIndex(cIdx);
     }
 
@@ -380,13 +377,10 @@ public class EditBookFieldsFragment
             }
 
             default: {
-                final int cIdx = mFragmentVM.getCurrentCoverHandlerIndex();
                 // handle any cover image request codes
+                final int cIdx = mFragmentVM.getAndClearCurrentCoverHandlerIndex();
                 if (cIdx >= -1) {
-                    final boolean handled = mCoverHandler[cIdx]
-                            .onActivityResult(requestCode, resultCode, data);
-                    mFragmentVM.setCurrentCoverHandlerIndex(-1);
-                    if (handled) {
+                    if (mCoverHandler[cIdx].onActivityResult(requestCode, resultCode, data)) {
                         break;
                     }
                 }

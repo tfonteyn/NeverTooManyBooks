@@ -50,6 +50,7 @@ import android.widget.TextView;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.IdRes;
+import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -96,21 +97,14 @@ public class BookDetailsFragment
     /** Log tag. */
     public static final String TAG = "BookDetailsFragment";
 
-    /** Handles cover replacement, rotation, etc. */
-    private final CoverHandler[] mCoverHandler = new CoverHandler[2];
-
     /** Registered with the Activity to deliver us gestures. */
     private View.OnTouchListener mOnTouchListener;
-
     /** Handle next/previous paging in the flattened booklist; called by mOnTouchListener. */
     private GestureDetector mGestureDetector;
-
     /** View model. */
     private BookDetailsFragmentViewModel mFragmentVM;
-
     /** View Binding. */
     private FragmentBookDetailsBinding mVb;
-
     /** Listen for changes coming from child (dialog) fragments. */
     private final BookChangedListener mBookChangedListener = (bookId, fieldsChanged, data) -> {
         if (data != null) {
@@ -132,18 +126,6 @@ public class BookDetailsFragment
     @Override
     Fields getFields() {
         return mFragmentVM.getFields();
-    }
-
-    @Override
-    public void onAttachFragment(@NonNull final Fragment childFragment) {
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.ATTACH_FRAGMENT) {
-            Log.d(getClass().getName(), "onAttachFragment: " + childFragment.getTag());
-        }
-        super.onAttachFragment(childFragment);
-
-        if (childFragment instanceof BookChangedListenerOwner) {
-            ((BookChangedListenerOwner) childFragment).setListener(mBookChangedListener);
-        }
     }
 
     @Override
@@ -227,6 +209,11 @@ public class BookDetailsFragment
                 mVb.btnShowToc.setChecked(true);
             }
         });
+
+        if (savedInstanceState == null) {
+            //noinspection ConstantConditions
+            TipManager.display(getContext(), R.string.tip_view_only_help, null);
+        }
     }
 
     @CallSuper
@@ -239,9 +226,18 @@ public class BookDetailsFragment
 
         //noinspection ConstantConditions
         ((BookDetailsActivity) getActivity()).registerOnTouchListener(mOnTouchListener);
+    }
 
-        //noinspection ConstantConditions
-        TipManager.display(getContext(), R.string.tip_view_only_help, null);
+    @Override
+    public void onAttachFragment(@NonNull final Fragment childFragment) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.ATTACH_FRAGMENT) {
+            Log.d(getClass().getName(), "onAttachFragment: " + childFragment.getTag());
+        }
+        super.onAttachFragment(childFragment);
+
+        if (childFragment instanceof BookChangedListenerOwner) {
+            ((BookChangedListenerOwner) childFragment).setListener(mBookChangedListener);
+        }
     }
 
     @Override
@@ -294,13 +290,10 @@ public class BookDetailsFragment
                 break;
 
             default: {
-                int cIdx = mFragmentVM.getCurrentCoverHandlerIndex();
                 // handle any cover image request codes
+                final int cIdx = mFragmentVM.getAndClearCurrentCoverHandlerIndex();
                 if (cIdx >= 0) {
-                    boolean handled = mCoverHandler[cIdx]
-                            .onActivityResult(requestCode, resultCode, data);
-                    mFragmentVM.setCurrentCoverHandlerIndex(-1);
-                    if (handled) {
+                    if (mCoverHandler[cIdx].onActivityResult(requestCode, resultCode, data)) {
                         break;
                     }
                 }
@@ -313,7 +306,7 @@ public class BookDetailsFragment
 
     /** Called by the CoverHandler when a context menu is selected. */
     @Override
-    public void setCurrentCoverIndex(final int cIdx) {
+    public void setCurrentCoverIndex(@IntRange(from = 0) final int cIdx) {
         mFragmentVM.setCurrentCoverHandlerIndex(cIdx);
     }
 
@@ -483,12 +476,12 @@ public class BookDetailsFragment
      */
     private void setSectionLabelVisibility(@IdRes final int sectionLabelId,
                                            @IdRes final int... fieldIds) {
-        View parent = getView();
+        final View parent = getView();
         //noinspection ConstantConditions
         final View fieldView = parent.findViewById(sectionLabelId);
         if (fieldView != null) {
             for (int fieldId : fieldIds) {
-                View view = parent.findViewById(fieldId);
+                final View view = parent.findViewById(fieldId);
                 if (view != null && view.getVisibility() != View.GONE) {
                     // at least one field was visible
                     fieldView.setVisibility(View.VISIBLE);

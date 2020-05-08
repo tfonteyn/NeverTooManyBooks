@@ -32,6 +32,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 
+import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
@@ -195,7 +196,7 @@ public class GoodreadsSearchEngine
     @WorkerThread
     public String getCoverImage(@NonNull final Context context,
                                 @NonNull final String isbn,
-                                final int cIdx,
+                                @IntRange(from = 0) final int cIdx,
                                 @Nullable final ImageSize size) {
         if (!mGoodreadsAuth.hasValidCredentials(context)) {
             return null;

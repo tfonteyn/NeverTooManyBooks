@@ -33,6 +33,7 @@ import android.os.Bundle;
 import android.util.Log;
 
 import androidx.annotation.AnyThread;
+import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
@@ -389,7 +390,7 @@ public interface SearchEngine {
         @WorkerThread
         default String getCoverImage(@NonNull final Context context,
                                      @NonNull final String isbn,
-                                     final int cIdx,
+                                     @IntRange(from = 0) final int cIdx,
                                      @Nullable final ImageSize size) {
             return getCoverImageFallback(context, isbn, cIdx);
         }
@@ -408,7 +409,7 @@ public interface SearchEngine {
         @WorkerThread
         default void getCoverImage(@NonNull final Context appContext,
                                    @NonNull final String isbn,
-                                   final int cIdx,
+                                   @IntRange(from = 0) final int cIdx,
                                    @NonNull final Bundle bookData) {
 
             String fileSpec = getCoverImage(appContext, isbn, cIdx, ImageSize.Large);
@@ -453,7 +454,7 @@ public interface SearchEngine {
         @WorkerThread
         default String getCoverImageFallback(@NonNull final Context appContext,
                                              @NonNull final String isbnStr,
-                                             final int cIdx) {
+                                             @IntRange(from = 0) final int cIdx) {
 
             boolean[] fetchThumbnail = new boolean[2];
             fetchThumbnail[cIdx] = true;

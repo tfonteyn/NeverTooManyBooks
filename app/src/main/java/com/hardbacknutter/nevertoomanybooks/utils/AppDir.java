@@ -32,6 +32,7 @@ import android.os.Environment;
 import android.os.StatFs;
 import android.provider.MediaStore;
 
+import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
@@ -182,7 +183,7 @@ public enum AppDir {
     @NonNull
     public static File getCoverFile(@NonNull final Context context,
                                     @NonNull final String uuid,
-                                    final int cIdx)
+                                    @IntRange(from = 0) final int cIdx)
             throws ExternalStorageException {
         final File coverDir = Covers.get(context);
 

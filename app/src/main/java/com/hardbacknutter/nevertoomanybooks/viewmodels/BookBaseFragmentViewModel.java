@@ -31,6 +31,7 @@ import android.content.Context;
 import android.os.Bundle;
 
 import androidx.annotation.CallSuper;
+import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.MutableLiveData;
@@ -61,6 +62,7 @@ public abstract class BookBaseFragmentViewModel
     /** Database Access. */
     protected DAO mDb;
     /** Track on which cover view the context menu was used. */
+    @IntRange(from = -1)
     private int mCurrentCoverHandlerIndex = -1;
 
     /** Lazy init, always use {@link #getGoodreadsTaskListener(Context)}. */
@@ -91,12 +93,27 @@ public abstract class BookBaseFragmentViewModel
         return mFields;
     }
 
-    public int getCurrentCoverHandlerIndex() {
-        return mCurrentCoverHandlerIndex;
+    /**
+     * Retrieve the previously set cover handler index.
+     * This is destructive: the value will be reset to -1 immediately.
+     *
+     * @return the index; will be {@code -1} if none was set.
+     */
+    @IntRange(from = -1)
+    public int getAndClearCurrentCoverHandlerIndex() {
+        int current = mCurrentCoverHandlerIndex;
+        mCurrentCoverHandlerIndex = -1;
+        return current;
     }
 
-    public void setCurrentCoverHandlerIndex(final int currentCoverHandlerIndex) {
-        mCurrentCoverHandlerIndex = currentCoverHandlerIndex;
+    /**
+     * Set the current cover handler index.
+     * Call this before starting the camera and similar actions.
+     *
+     * @param index to preserve
+     */
+    public void setCurrentCoverHandlerIndex(@IntRange(from = 0) final int index) {
+        mCurrentCoverHandlerIndex = index;
     }
 
     /**

@@ -78,8 +78,6 @@ public final class RequestCode {
     public static final int IMPORT_PICK_URI = 2_502;
 
 
-    /** ask the CoverBrowserFragment to get an alternative edition cover. */
-    public static final int ACTION_COVER_BROWSER = 3_001;
     /** use internal routines for cropping images. */
     public static final int CROP_IMAGE = 3_002;
     /** start an intent for an external application to do the cropping. */

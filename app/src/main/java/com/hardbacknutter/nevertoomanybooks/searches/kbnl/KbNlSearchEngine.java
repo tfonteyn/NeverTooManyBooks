@@ -30,6 +30,7 @@ package com.hardbacknutter.nevertoomanybooks.searches.kbnl;
 import android.content.Context;
 import android.os.Bundle;
 
+import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
@@ -156,7 +157,7 @@ public class KbNlSearchEngine
     @Override
     public String getCoverImage(@NonNull final Context context,
                                 @NonNull final String isbn,
-                                final int cIdx,
+                                @IntRange(from = 0) final int cIdx,
                                 @Nullable final ImageSize size) {
         String sizeSuffix;
         if (size == null) {
