@@ -99,7 +99,6 @@ public abstract class BasePreferenceFragment
     /** Allows auto-scrolling on opening the preference screen to the desired key. */
     public static final String BKEY_AUTO_SCROLL_TO_KEY = TAG + ":scrollTo";
     private static final String DIALOG_FRAGMENT_TAG = TAG + ":dialog";
-    private static final int REQ_BITMASK_DIALOG = 0;
     private static final int REQ_PICK_FILE_FOR_EXPORT_DATABASE = 1;
     private static final Pattern SPACE_PATTERN = Pattern.compile(" ", Pattern.LITERAL);
     private static final Pattern COLON_PATTERN = Pattern.compile(":", Pattern.LITERAL);
@@ -421,7 +420,6 @@ public abstract class BasePreferenceFragment
             }
             final DialogFragment frag = BitmaskPreference.BitmaskPreferenceDialogFragment
                     .newInstance((BitmaskPreference) preference);
-            frag.setTargetFragment(this, REQ_BITMASK_DIALOG);
             frag.show(fm, DIALOG_FRAGMENT_TAG);
             return;
         }
