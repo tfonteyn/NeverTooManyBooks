@@ -73,7 +73,7 @@ public class BaseDatePickerDialogFragment
     @Nullable
     Integer mDay;
 
-    /** Listener for the result. */
+    /** Where to send the result. */
     @Nullable
     private WeakReference<DatePickerResultsListener> mListener;
 

@@ -48,6 +48,7 @@ public abstract class OptionsDialogBase<T>
     /** Log tag. */
     private static final String TAG = "OptionsDialogBase";
 
+    /** Where to send the result. */
     @Nullable
     private WeakReference<OptionsListener<T>> mListener;
 

@@ -71,6 +71,7 @@ public final class ConstraintRadioGroup
     /** Stop the individual button listeners from infinite recursion. */
     private boolean mProtectFromCheckedChange;
     /** The currently checked radio button id. */
+    @IdRes
     private int mCheckedId = View.NO_ID;
     /** individual button listener. */
     @NonNull
@@ -195,7 +196,7 @@ public final class ConstraintRadioGroup
         }
     }
 
-    private void setCheckedStateForView(final int viewId,
+    private void setCheckedStateForView(@IdRes final int viewId,
                                         final boolean checked) {
         RadioButton radioButton = mRadioButtons.get(viewId);
         if (radioButton != null) {

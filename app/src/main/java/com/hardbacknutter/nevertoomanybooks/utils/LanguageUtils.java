@@ -31,6 +31,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
 
+import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
@@ -414,7 +415,7 @@ public final class LanguageUtils {
          * @param taskListener for sending progress and finish messages to.
          */
         @UiThread
-        public BuildLanguageMappingsTask(final int taskId,
+        public BuildLanguageMappingsTask(@IdRes final int taskId,
                                          @NonNull final TaskListener<Boolean> taskListener) {
             super(taskId, taskListener);
         }

@@ -30,7 +30,6 @@ package com.hardbacknutter.nevertoomanybooks;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -89,24 +88,6 @@ public class EditBookFragment
     private int mCurrentTab;
 
     @Override
-    @Nullable
-    public View onCreateView(@NonNull final LayoutInflater inflater,
-                             @Nullable final ViewGroup container,
-                             @Nullable final Bundle savedInstanceState) {
-        final View view = inflater.inflate(R.layout.fragment_edit_book, container, false);
-        mViewPager = view.findViewById(R.id.tab_fragment);
-        return view;
-    }
-
-    @Override
-    public void onAttachFragment(@NonNull final Fragment childFragment) {
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.ATTACH_FRAGMENT) {
-            Log.d(getClass().getName(), "onAttachFragment: " + childFragment.getTag());
-        }
-        super.onAttachFragment(childFragment);
-    }
-
-    @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
@@ -118,6 +99,16 @@ public class EditBookFragment
         //noinspection ConstantConditions
         mBookViewModel.init(getContext(), getArguments());
         mBookViewModel.enableValidators();
+    }
+
+    @Override
+    @Nullable
+    public View onCreateView(@NonNull final LayoutInflater inflater,
+                             @Nullable final ViewGroup container,
+                             @Nullable final Bundle savedInstanceState) {
+        final View view = inflater.inflate(R.layout.fragment_edit_book, container, false);
+        mViewPager = view.findViewById(R.id.tab_fragment);
+        return view;
     }
 
     @Override
@@ -144,7 +135,6 @@ public class EditBookFragment
     @Override
     public void onResume() {
         super.onResume();
-
         // sanity check
         if (mCurrentTab >= mViewPagerAdapter.getItemCount()) {
             mCurrentTab = 0;
@@ -266,7 +256,6 @@ public class EditBookFragment
         //noinspection ConstantConditions
         ((EditBookActivity) getActivity()).saveBook();
     }
-
 
     private static class TabAdapter
             extends FragmentStateAdapter {

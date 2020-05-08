@@ -80,7 +80,7 @@ public class MenuPickerDialogFragment
 
     /** Cached position of the item in the list this menu was invoked on. */
     private int mPosition;
-    /** Listener for the result. */
+    /** Where to send the result. */
     @Nullable
     private WeakReference<MenuPicker.ContextItemSelected> mListener;
 

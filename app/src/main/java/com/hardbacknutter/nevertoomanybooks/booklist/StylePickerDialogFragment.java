@@ -73,6 +73,7 @@ public class StylePickerDialogFragment
     @Nullable
     private BooklistStyle mCurrentStyle;
 
+    /** Where to send the result. */
     @Nullable
     private WeakReference<StyleChangedListener> mListener;
 
@@ -142,6 +143,26 @@ public class StylePickerDialogFragment
                 .create();
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        final AlertDialog dialog = (AlertDialog) getDialog();
+        if (dialog != null) {
+            dialog.getButton(Dialog.BUTTON_NEUTRAL)
+                  .setOnClickListener(v -> {
+                      mShowAllStyles = !mShowAllStyles;
+                      ((AlertDialog) getDialog()).getButton(Dialog.BUTTON_NEUTRAL)
+                                                 .setText(getMoreOrLessBtnTxtId());
+                      loadStyles();
+                      mAdapter.notifyDataSetChanged();
+                  });
+            dialog.getButton(Dialog.BUTTON_NEGATIVE)
+                  .setOnClickListener(v -> onEditStyle());
+            dialog.getButton(Dialog.BUTTON_POSITIVE)
+                  .setOnClickListener(v -> onStyleSelected());
+        }
+    }
+
     /**
      * Send the selected style back. Silently returns if there was nothing selected.
      */
@@ -206,26 +227,6 @@ public class StylePickerDialogFragment
             //noinspection ConstantConditions
             mBooklistStyles.addAll(BooklistStyle.Helper.getStyles(getContext(), db,
                                                                   mShowAllStyles).values());
-        }
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        final AlertDialog dialog = (AlertDialog) getDialog();
-        if (dialog != null) {
-            dialog.getButton(Dialog.BUTTON_NEUTRAL)
-                  .setOnClickListener(v -> {
-                      mShowAllStyles = !mShowAllStyles;
-                      ((AlertDialog) getDialog()).getButton(Dialog.BUTTON_NEUTRAL)
-                                                 .setText(getMoreOrLessBtnTxtId());
-                      loadStyles();
-                      mAdapter.notifyDataSetChanged();
-                  });
-            dialog.getButton(Dialog.BUTTON_NEGATIVE)
-                  .setOnClickListener(v -> onEditStyle());
-            dialog.getButton(Dialog.BUTTON_POSITIVE)
-                  .setOnClickListener(v -> onStyleSelected());
         }
     }
 

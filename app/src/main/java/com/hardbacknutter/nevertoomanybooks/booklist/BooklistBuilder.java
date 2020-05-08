@@ -33,6 +33,7 @@ import android.util.Log;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.IntDef;
+import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -727,7 +728,7 @@ public class BooklistBuilder
     }
 
     /** Wrapper for {@link RowStateDAO}. */
-    public void expandAllNodes(final int topLevel,
+    public void expandAllNodes(@IntRange(from = 1) final int topLevel,
                                final boolean expand) {
         mRowStateDAO.expandAllNodes(topLevel, expand);
     }

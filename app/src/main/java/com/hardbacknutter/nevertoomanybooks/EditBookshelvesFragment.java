@@ -85,21 +85,6 @@ public class EditBookshelvesFragment
     private FragmentEditBookshelvesBinding mVb;
 
     @Override
-    public void onAttachFragment(@NonNull final Fragment childFragment) {
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.ATTACH_FRAGMENT) {
-            Log.d(getClass().getName(), "onAttachFragment: " + childFragment.getTag());
-        }
-        super.onAttachFragment(childFragment);
-
-        if (childFragment instanceof MenuPickerDialogFragment) {
-            ((MenuPickerDialogFragment) childFragment).setListener(this::onContextItemSelected);
-
-        } else if (childFragment instanceof EditBookshelfDialogFragment) {
-            ((EditBookshelfDialogFragment) childFragment).setListener(mListener);
-        }
-    }
-
-    @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
@@ -144,6 +129,21 @@ public class EditBookshelvesFragment
                 new DividerItemDecoration(getContext(), linearLayoutManager.getOrientation()));
         mVb.bookshelfList.setHasFixedSize(true);
         mVb.bookshelfList.setAdapter(mAdapter);
+    }
+
+    @Override
+    public void onAttachFragment(@NonNull final Fragment childFragment) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.ATTACH_FRAGMENT) {
+            Log.d(getClass().getName(), "onAttachFragment: " + childFragment.getTag());
+        }
+        super.onAttachFragment(childFragment);
+
+        if (childFragment instanceof MenuPickerDialogFragment) {
+            ((MenuPickerDialogFragment) childFragment).setListener(this::onContextItemSelected);
+
+        } else if (childFragment instanceof EditBookshelfDialogFragment) {
+            ((EditBookshelfDialogFragment) childFragment).setListener(mListener);
+        }
     }
 
     @Override

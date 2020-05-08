@@ -30,6 +30,7 @@ package com.hardbacknutter.nevertoomanybooks.database.tasks;
 import android.content.Context;
 import android.util.Log;
 
+import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
@@ -66,7 +67,7 @@ public class RebuildIndexesTask
      * @param taskListener for sending progress and finish messages to.
      */
     @UiThread
-    public RebuildIndexesTask(final int taskId,
+    public RebuildIndexesTask(@IdRes final int taskId,
                               @NonNull final DAO db,
                               @NonNull final TaskListener<Boolean> taskListener) {
         super(taskId, taskListener);

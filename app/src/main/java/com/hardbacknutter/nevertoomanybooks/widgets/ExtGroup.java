@@ -32,6 +32,7 @@ import android.util.AttributeSet;
 import android.util.SparseArray;
 import android.view.View;
 
+import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -85,7 +86,7 @@ public class ExtGroup
     }
 
     @Override
-    public void setTag(final int key,
+    public void setTag(@IdRes final int key,
                        @Nullable final Object tag) {
         if (mKeyedTags == null) {
             mKeyedTags = new SparseArray<>(2);

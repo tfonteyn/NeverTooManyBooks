@@ -113,29 +113,6 @@ public abstract class EditBookBaseFragment
     }
 
     @Override
-    public void onAttachFragment(@NonNull final Fragment childFragment) {
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.ATTACH_FRAGMENT) {
-            Log.d(getClass().getName(), "onAttachFragment: " + childFragment.getTag());
-        }
-        super.onAttachFragment(childFragment);
-
-        if (childFragment instanceof PartialDatePickerDialogFragment) {
-            ((PartialDatePickerDialogFragment) childFragment)
-                    .setListener(mPartialDatePickerResultsListener);
-
-        } else if (TAG_DATE_PICKER_SINGLE.equals(childFragment.getTag())) {
-            //noinspection unchecked
-            ((MaterialDatePicker<Long>) childFragment)
-                    .addOnPositiveButtonClickListener(mDatePickerListener);
-
-        } else if (TAG_DATE_PICKER_RANGE.equals(childFragment.getTag())) {
-            //noinspection unchecked
-            ((MaterialDatePicker<Pair<Long, Long>>) childFragment)
-                    .addOnPositiveButtonClickListener(mDateRangePickerListener);
-        }
-    }
-
-    @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
@@ -173,18 +150,6 @@ public abstract class EditBookBaseFragment
         }
     }
 
-    /**
-     * Init all Fields, and add them the {@link #getFields()} collection.
-     * <p>
-     * Note that Views are <strong>NOT AVAILABLE</strong>.
-     * <p>
-     * Book data is available from {@link #mBookViewModel} but {@link #onResume()} is
-     * were the fields/Views are normally loaded with that data.
-     */
-    @CallSuper
-    void onInitFields() {
-    }
-
     @Override
     public void onResume() {
 
@@ -200,6 +165,41 @@ public abstract class EditBookBaseFragment
 
         // hook up the Views, and populate them with the book data
         super.onResume();
+    }
+
+    @Override
+    public void onAttachFragment(@NonNull final Fragment childFragment) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.ATTACH_FRAGMENT) {
+            Log.d(getClass().getName(), "onAttachFragment: " + childFragment.getTag());
+        }
+        super.onAttachFragment(childFragment);
+
+        if (childFragment instanceof PartialDatePickerDialogFragment) {
+            ((PartialDatePickerDialogFragment) childFragment)
+                    .setListener(mPartialDatePickerResultsListener);
+
+        } else if (TAG_DATE_PICKER_SINGLE.equals(childFragment.getTag())) {
+            //noinspection unchecked
+            ((MaterialDatePicker<Long>) childFragment)
+                    .addOnPositiveButtonClickListener(mDatePickerListener);
+
+        } else if (TAG_DATE_PICKER_RANGE.equals(childFragment.getTag())) {
+            //noinspection unchecked
+            ((MaterialDatePicker<Pair<Long, Long>>) childFragment)
+                    .addOnPositiveButtonClickListener(mDateRangePickerListener);
+        }
+    }
+
+    /**
+     * Init all Fields, and add them the {@link #getFields()} collection.
+     * <p>
+     * Note that Views are <strong>NOT AVAILABLE</strong>.
+     * <p>
+     * Book data is available from {@link #mBookViewModel} but {@link #onResume()} is
+     * were the fields/Views are normally loaded with that data.
+     */
+    @CallSuper
+    void onInitFields() {
     }
 
     /**

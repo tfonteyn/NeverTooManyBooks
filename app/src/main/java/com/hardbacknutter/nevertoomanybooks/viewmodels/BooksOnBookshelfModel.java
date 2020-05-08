@@ -36,6 +36,7 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import androidx.annotation.AnyThread;
+import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
@@ -846,7 +847,7 @@ public class BooksOnBookshelfModel
         return mCursor.getBooklistBuilder().createFlattenedBooklist();
     }
 
-    public void expandAllNodes(final int topLevel,
+    public void expandAllNodes(@IntRange(from = 1) final int topLevel,
                                final boolean expand) {
         Objects.requireNonNull(mCursor, ErrorMsg.NULL_CURSOR);
         mCursor.getBooklistBuilder().expandAllNodes(topLevel, expand);

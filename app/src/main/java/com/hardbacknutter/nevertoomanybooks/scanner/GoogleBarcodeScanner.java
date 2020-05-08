@@ -178,7 +178,7 @@ public class GoogleBarcodeScanner
         /** Log tag. */
         private static final String TAG = "PreloadGoogleScanner";
 
-        public PreloadGoogleScanner(final int taskId,
+        public PreloadGoogleScanner(@IdRes final int taskId,
                                     @NonNull final TaskListener<Boolean> taskListener) {
             super(taskId, taskListener);
         }

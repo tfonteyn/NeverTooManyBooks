@@ -29,6 +29,7 @@ package com.hardbacknutter.nevertoomanybooks.tasks;
 
 import android.os.AsyncTask;
 
+import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -71,6 +72,7 @@ public interface TaskListener<Result> {
      */
     class FinishMessage<Result> {
 
+        @IdRes
         public final int taskId;
         public final Result result;
 
@@ -88,7 +90,7 @@ public interface TaskListener<Result> {
          *                  Nullable/NonNull is up to the implementation.
          * @param exception if the task finished with an exception, or {@code null}.
          */
-        public FinishMessage(final int taskId,
+        public FinishMessage(@IdRes final int taskId,
                              @NonNull final TaskStatus status,
                              final Result result,
                              @Nullable final Exception exception) {
@@ -115,6 +117,7 @@ public interface TaskListener<Result> {
      */
     class ProgressMessage {
 
+        @IdRes
         public final int taskId;
 
         /** No-op if {@code null} otherwise change mode to the requested one. */
@@ -137,7 +140,7 @@ public interface TaskListener<Result> {
         @Nullable
         public final String text;
 
-        public ProgressMessage(final int taskId,
+        public ProgressMessage(@IdRes final int taskId,
                                @Nullable final Boolean indeterminate,
                                final int maxPosition,
                                final int position,
@@ -150,7 +153,7 @@ public interface TaskListener<Result> {
             this.position = position;
         }
 
-        public ProgressMessage(final int taskId,
+        public ProgressMessage(@IdRes final int taskId,
                                @Nullable final String text) {
             this.taskId = taskId;
             this.text = text;

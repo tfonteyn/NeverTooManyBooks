@@ -42,6 +42,7 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 import androidx.fragment.app.DialogFragment;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -158,7 +159,7 @@ public abstract class BaseDialogFragment
     }
 
     protected void showError(@NonNull final TextInputLayout til,
-                             @SuppressWarnings("SameParameterValue") final int errorId) {
+                             @SuppressWarnings("SameParameterValue") @StringRes final int errorId) {
         showError(til, getString(errorId));
     }
 

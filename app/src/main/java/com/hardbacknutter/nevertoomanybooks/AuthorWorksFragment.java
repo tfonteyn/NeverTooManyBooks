@@ -133,8 +133,7 @@ public class AuthorWorksFragment
 
         updateScreenTitle();
 
-        //noinspection ConstantConditions
-        final RecyclerView listView = getView().findViewById(R.id.author_works);
+        final RecyclerView listView = view.findViewById(R.id.author_works);
         listView.setHasFixedSize(true);
         final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context);
         listView.setLayoutManager(linearLayoutManager);

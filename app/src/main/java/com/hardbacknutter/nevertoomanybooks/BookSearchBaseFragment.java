@@ -105,8 +105,7 @@ public abstract class BookSearchBaseFragment
         // Warn the user, but don't abort.
         //noinspection ConstantConditions
         if (!NetworkUtils.isNetworkAvailable(getContext())) {
-            //noinspection ConstantConditions
-            Snackbar.make(getView(), R.string.error_network_no_connection,
+            Snackbar.make(view, R.string.error_network_no_connection,
                           Snackbar.LENGTH_LONG).show();
         }
     }

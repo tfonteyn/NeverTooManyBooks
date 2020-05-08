@@ -100,7 +100,6 @@ public class EditBookNativeIdFragment
         mFragmentVM.getFields().resetVisibility(getView(), false, true);
     }
 
-
 //    /**
 //     * Show all sites, or only the enabled sites.
 //     *

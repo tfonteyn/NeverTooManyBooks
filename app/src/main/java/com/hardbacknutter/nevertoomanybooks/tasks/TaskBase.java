@@ -31,6 +31,7 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 import androidx.annotation.CallSuper;
+import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
@@ -57,6 +58,7 @@ public abstract class TaskBase<Params, Result>
     private static final String TAG = "TaskBase";
 
     /** id set at construction time, passed back in all messages. */
+    @IdRes
     private final int mTaskId;
 
     /** A listener that will forward incoming messages to {@link AsyncTask#publishProgress}. */
@@ -119,7 +121,7 @@ public abstract class TaskBase<Params, Result>
      * @param taskId       a task identifier, will be returned in the task listener.
      * @param taskListener for sending progress and finish messages to.
      */
-    protected TaskBase(final int taskId,
+    protected TaskBase(@IdRes final int taskId,
                        @NonNull final TaskListener<Result> taskListener) {
         mTaskId = taskId;
         mTaskListener = new WeakReference<>(taskListener);
@@ -130,6 +132,7 @@ public abstract class TaskBase<Params, Result>
      *
      * @return task ID
      */
+    @IdRes
     public int getTaskId() {
         return mTaskId;
     }

@@ -68,6 +68,24 @@ public class EditBookPublicationFragment
     }
 
     @Override
+    public void onResume() {
+        // the super will trigger the population of all defined Fields and their Views.
+        super.onResume();
+
+        // With all Views populated, (re-)add the helpers
+        addAutocomplete(R.id.format, mFragmentVM.getFormats());
+        addAutocomplete(R.id.color, mFragmentVM.getColors());
+        addAutocomplete(R.id.publisher, mFragmentVM.getPublishers());
+        addAutocomplete(R.id.price_listed_currency, mFragmentVM.getListPriceCurrencyCodes());
+
+        addPartialDatePicker(mFragmentVM.getFields().getField(R.id.date_published),
+                             R.string.lbl_date_published, false);
+
+        addPartialDatePicker(mFragmentVM.getFields().getField(R.id.first_publication),
+                             R.string.lbl_first_publication, false);
+    }
+
+    @Override
     protected void onInitFields() {
         super.onInitFields();
         final Fields fields = mFragmentVM.getFields();
@@ -111,23 +129,5 @@ public class EditBookPublicationFragment
         // hide unwanted fields
         //noinspection ConstantConditions
         mFragmentVM.getFields().resetVisibility(getView(), false, false);
-    }
-
-    @Override
-    public void onResume() {
-        // the super will trigger the population of all defined Fields and their Views.
-        super.onResume();
-
-        // With all Views populated, (re-)add the helpers
-        addAutocomplete(R.id.format, mFragmentVM.getFormats());
-        addAutocomplete(R.id.color, mFragmentVM.getColors());
-        addAutocomplete(R.id.publisher, mFragmentVM.getPublishers());
-        addAutocomplete(R.id.price_listed_currency, mFragmentVM.getListPriceCurrencyCodes());
-
-        addPartialDatePicker(mFragmentVM.getFields().getField(R.id.date_published),
-                             R.string.lbl_date_published, false);
-
-        addPartialDatePicker(mFragmentVM.getFields().getField(R.id.first_publication),
-                             R.string.lbl_first_publication, false);
     }
 }

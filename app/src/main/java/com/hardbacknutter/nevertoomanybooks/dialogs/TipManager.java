@@ -36,6 +36,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
 
+import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
@@ -258,6 +259,7 @@ public final class TipManager {
         private final String mDefaultKey;
 
         /** Layout for this Tip. */
+        @LayoutRes
         private int mLayoutId;
 
         /** Indicates that this tip was displayed already in this instance of the app. */
@@ -280,7 +282,7 @@ public final class TipManager {
          *
          * @param layoutId to use
          */
-        Tip setLayoutId(@SuppressWarnings("SameParameterValue") final int layoutId) {
+        Tip setLayoutId(@SuppressWarnings("SameParameterValue") @LayoutRes final int layoutId) {
             mLayoutId = layoutId;
             return this;
         }

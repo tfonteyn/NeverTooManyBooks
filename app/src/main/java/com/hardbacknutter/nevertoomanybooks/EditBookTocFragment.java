@@ -203,24 +203,6 @@ public class EditBookTocFragment
             };
 
     @Override
-    public void onAttachFragment(@NonNull final Fragment childFragment) {
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.ATTACH_FRAGMENT) {
-            Log.d(getClass().getName(), "onAttachFragment: " + childFragment.getTag());
-        }
-        super.onAttachFragment(childFragment);
-
-        if (childFragment instanceof MenuPickerDialogFragment) {
-            ((MenuPickerDialogFragment) childFragment).setListener(this::onContextItemSelected);
-
-        } else if (childFragment instanceof ConfirmTocDialogFragment) {
-            ((ConfirmTocDialogFragment) childFragment).setListener(mConfirmTocResultsListener);
-
-        } else if (childFragment instanceof EditTocEntryDialogFragment) {
-            ((EditTocEntryDialogFragment) childFragment).setListener(mEditTocEntryResultsListener);
-        }
-    }
-
-    @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
@@ -260,8 +242,25 @@ public class EditBookTocFragment
         // adding a new entry
         mVb.btnAdd.setOnClickListener(v -> onAdd());
 
-        //noinspection ConstantConditions
-        ViewFocusOrder.fix(getView());
+        ViewFocusOrder.fix(view);
+    }
+
+    @Override
+    public void onAttachFragment(@NonNull final Fragment childFragment) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.ATTACH_FRAGMENT) {
+            Log.d(getClass().getName(), "onAttachFragment: " + childFragment.getTag());
+        }
+        super.onAttachFragment(childFragment);
+
+        if (childFragment instanceof MenuPickerDialogFragment) {
+            ((MenuPickerDialogFragment) childFragment).setListener(this::onContextItemSelected);
+
+        } else if (childFragment instanceof ConfirmTocDialogFragment) {
+            ((ConfirmTocDialogFragment) childFragment).setListener(mConfirmTocResultsListener);
+
+        } else if (childFragment instanceof EditTocEntryDialogFragment) {
+            ((EditTocEntryDialogFragment) childFragment).setListener(mEditTocEntryResultsListener);
+        }
     }
 
     /**
@@ -613,6 +612,7 @@ public class EditBookTocFragment
         private long mTocBitMask;
         private ArrayList<TocEntry> mTocEntries;
 
+        /** Where to send the result. */
         @Nullable
         private WeakReference<ConfirmTocResults> mListener;
 

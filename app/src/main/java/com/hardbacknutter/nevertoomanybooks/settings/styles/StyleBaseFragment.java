@@ -67,6 +67,26 @@ public abstract class StyleBaseFragment
     protected abstract int getLayoutId();
 
     @Override
+    public void onCreate(@Nullable final Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        // always pass the non-global style back; whether existing or new.
+        // so even if the user makes no changes, we still send it back!
+        // If the user does make changes, we'll overwrite it in onSharedPreferenceChanged
+        if (!mStyle.isGlobal()) {
+            mResultDataModel.putResultData(BooklistStyle.BKEY_STYLE, mStyle);
+        }
+
+        // always pass the template id back if we had one.
+        if (mTemplateId != 0) {
+            mResultDataModel.putResultData(BKEY_TEMPLATE_ID, mTemplateId);
+        }
+
+        // and the actual/current id.
+        //mResultDataModel.putResultData(UniqueId.BKEY_STYLE_ID, mStyle.getId());
+    }
+
+    @Override
     @CallSuper
     public void onCreatePreferences(@Nullable final Bundle savedInstanceState,
                                     @Nullable final String rootKey) {
@@ -156,27 +176,6 @@ public abstract class StyleBaseFragment
 //        mStyle = new BooklistStyle();
 //        setPreferencesFromResource(getLayoutId(), rootKey);
 //    }
-
-
-    @Override
-    public void onCreate(@Nullable final Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        // always pass the non-global style back; whether existing or new.
-        // so even if the user makes no changes, we still send it back!
-        // If the user does make changes, we'll overwrite it in onSharedPreferenceChanged
-        if (!mStyle.isGlobal()) {
-            mResultDataModel.putResultData(BooklistStyle.BKEY_STYLE, mStyle);
-        }
-
-        // always pass the template id back if we had one.
-        if (mTemplateId != 0) {
-            mResultDataModel.putResultData(BKEY_TEMPLATE_ID, mTemplateId);
-        }
-
-        // and the actual/current id.
-        //mResultDataModel.putResultData(UniqueId.BKEY_STYLE_ID, mStyle.getId());
-    }
 
     @Override
     public void onViewCreated(@NonNull final View view,

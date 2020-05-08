@@ -108,18 +108,6 @@ public class PreferredStylesActivity
     };
 
     @Override
-    public void onAttachFragment(@NonNull final Fragment fragment) {
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.ATTACH_FRAGMENT) {
-            Log.d(getClass().getName(), "onAttachFragment: " + fragment.getTag());
-        }
-        super.onAttachFragment(fragment);
-
-        if (fragment instanceof MenuPickerDialogFragment) {
-            ((MenuPickerDialogFragment) fragment).setListener(this::onContextItemSelected);
-        }
-    }
-
-    @Override
     protected void onSetContentView() {
         setContentView(R.layout.activity_edit_preferred_styles);
     }
@@ -155,6 +143,18 @@ public class PreferredStylesActivity
 
         if (savedInstanceState == null) {
             TipManager.display(this, R.string.tip_booklist_styles_editor, null);
+        }
+    }
+
+    @Override
+    public void onAttachFragment(@NonNull final Fragment fragment) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.ATTACH_FRAGMENT) {
+            Log.d(getClass().getName(), "onAttachFragment: " + fragment.getTag());
+        }
+        super.onAttachFragment(fragment);
+
+        if (fragment instanceof MenuPickerDialogFragment) {
+            ((MenuPickerDialogFragment) fragment).setListener(this::onContextItemSelected);
         }
     }
 

@@ -1755,7 +1755,7 @@ public class BooksOnBookshelf
     }
 
     @NonNull
-    private ProgressDialogFragment getOrCreateProgressDialog(final int taskId) {
+    private ProgressDialogFragment getOrCreateProgressDialog(@IdRes final int taskId) {
         FragmentManager fm = getSupportFragmentManager();
 
         // get dialog after a fragment restart

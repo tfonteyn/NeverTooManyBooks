@@ -234,7 +234,7 @@ public class GoodreadsSearchActivity
 
         /** Observable. */
         @NonNull
-        public MutableLiveData<List<GoodreadsWork>> onWorksRetrieved() {
+        MutableLiveData<List<GoodreadsWork>> onWorksRetrieved() {
             return mWorks;
         }
 
