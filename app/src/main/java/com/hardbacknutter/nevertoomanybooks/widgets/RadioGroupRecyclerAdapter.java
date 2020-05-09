@@ -161,6 +161,9 @@ public class RadioGroupRecyclerAdapter<T extends Entity>
         void onSelected(T o);
     }
 
+    /**
+     * Holder pattern for {@link RadioGroupRecyclerAdapter}.
+     */
     static class Holder
             extends RecyclerView.ViewHolder {
 

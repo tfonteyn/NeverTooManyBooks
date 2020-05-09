@@ -30,12 +30,12 @@
 <shape xmlns:android="http://schemas.android.com/apk/res/android">
     <solid android:color="?attr/bobFsOverlayBackgroundColor" />
     <stroke
-        android:width="@dimen/border1"
+        android:width="4dp"
         android:color="?attr/colorPrimary" />
-    <corners android:radius="@dimen/border2" />
+    <corners android:radius="8dp" />
     <padding
-        android:bottom="@dimen/border2"
-        android:left="@dimen/border2"
-        android:right="@dimen/border2"
-        android:top="@dimen/border2" />
+        android:bottom="8dp"
+        android:left="8dp"
+        android:right="8dp"
+        android:top="8dp" />
 </shape>

@@ -347,7 +347,9 @@ public class CoverBrowserDialogFragment
                               @NonNull String fileSpec);
     }
 
-    /** Stores and recycles views as they are scrolled off screen. */
+    /**
+     * Holder pattern for {@link GalleryAdapter}.
+     */
     private static class Holder
             extends RecyclerView.ViewHolder {
 

@@ -47,7 +47,6 @@ import com.hardbacknutter.nevertoomanybooks.widgets.ddsupport.ItemTouchHelperVie
 /**
  * Holder pattern for each row in a RecyclerView.
  * <ul>Extends the original with support for:
- *      <li>typed encapsulated item</li>
  *      <li>a 'delete' button</li>
  *      <li>a 'checkable' button</li>
  *      <li>{@link ItemTouchHelperViewHolder}</li>
@@ -96,8 +95,7 @@ public class RecyclerViewViewHolderBase
         mCheckableButton = itemView.findViewById(R.id.ROW_CHECKABLE_BTN);
         mDragHandleView = itemView.findViewById(R.id.ROW_GRABBER_ICON);
 
-        mItemDraggedBackgroundColor = getColorInt(itemView.getContext(),
-                                                  android.R.attr.colorPrimary);
+        mItemDraggedBackgroundColor = getColorInt(itemView.getContext(), R.attr.colorPrimary);
     }
 
     /**

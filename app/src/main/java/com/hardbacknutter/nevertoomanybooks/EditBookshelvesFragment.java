@@ -277,7 +277,7 @@ public class EditBookshelvesFragment
     }
 
     /**
-     * Holder pattern for each row.
+     * Holder pattern for {@link BookshelfAdapter}.
      */
     public static class Holder
             extends RecyclerView.ViewHolder {

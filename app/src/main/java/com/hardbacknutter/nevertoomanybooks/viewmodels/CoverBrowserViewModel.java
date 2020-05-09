@@ -123,7 +123,7 @@ public class CoverBrowserViewModel
     @Nullable
     private String mSelectedFileSpec;
     /** Handles downloading, checking and cleanup of files. */
-    private CoverBrowserViewModel.FileManager mFileManager;
+    private FileManager mFileManager;
 
     /**
      * Pseudo constructor.
@@ -218,7 +218,7 @@ public class CoverBrowserViewModel
      *
      * @param fileInfo of the selected image
      */
-    public void fetchSelectedImage(@NonNull final CoverBrowserViewModel.FileInfo fileInfo) {
+    public void fetchSelectedImage(@NonNull final FileInfo fileInfo) {
         final GetSwitcherImageTask task = new GetSwitcherImageTask(fileInfo, mCIdx, mFileManager,
                                                                    mImageTaskListener);
         synchronized (mAllTasks) {
