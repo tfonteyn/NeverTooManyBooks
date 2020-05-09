@@ -72,7 +72,7 @@ public class SearchAdminActivity
         mModel = new ViewModelProvider(this).get(SearchAdminModel.class);
         mModel.init(getIntent().getExtras());
 
-        mViewPager = findViewById(R.id.tab_fragment);
+        mViewPager = findViewById(R.id.pager);
         TabLayout tabBarLayout = findViewById(R.id.tab_panel);
 
         if (mModel.getType() == null) {

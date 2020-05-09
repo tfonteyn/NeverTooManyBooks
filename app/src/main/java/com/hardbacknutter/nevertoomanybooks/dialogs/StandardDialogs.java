@@ -95,7 +95,9 @@ public final class StandardDialogs {
                 .setIcon(R.drawable.ic_warning)
                 .setTitle(R.string.lbl_details_have_changed)
                 .setMessage(R.string.confirm_unsaved_edits)
-                .setNeutralButton(R.string.btn_continue_edit, (d, w) -> d.dismiss());
+                // this dialog is important. Make sure the user pays some attention
+                .setCancelable(false)
+                .setNeutralButton(R.string.action_edit, (d, w) -> d.dismiss());
 
         if (onDiscard != null) {
             builder.setNegativeButton(R.string.action_discard, (d, w) -> onDiscard.run());
