@@ -82,7 +82,6 @@ import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 import com.hardbacknutter.nevertoomanybooks.utils.Csv;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.ViewFocusOrder;
-import com.hardbacknutter.nevertoomanybooks.viewmodels.UpdateFieldsModel;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.tasks.IsfdbEditionsTaskModel;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.tasks.IsfdbGetBookTaskModel;
 import com.hardbacknutter.nevertoomanybooks.widgets.DiacriticArrayAdapter;
@@ -93,11 +92,7 @@ import com.hardbacknutter.nevertoomanybooks.widgets.ddsupport.SimpleItemTouchHel
 import com.hardbacknutter.nevertoomanybooks.widgets.ddsupport.StartDragListener;
 
 /**
- * This class is called by {@link EditBookFragment} and displays the Content Tab.
- * <p>
- * Doesn't use {@link UpdateFieldsModel}
- * <p>
- * The ISFDB direct interaction should however be seen as temporary as this class should not
+ * The ISFDB direct interaction should be seen as temporary as this class should not
  * have to know about any specific search web site.
  * <p>
  * This is still not obsolete as the standard search engines can only return a single book,

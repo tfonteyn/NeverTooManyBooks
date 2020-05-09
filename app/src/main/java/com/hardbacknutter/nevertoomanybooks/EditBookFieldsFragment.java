@@ -75,9 +75,6 @@ import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.ViewFocusOrder;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.ScannerViewModel;
 
-/**
- * This class is called by {@link EditBookFragment} and displays the main Books fields Tab.
- */
 public class EditBookFieldsFragment
         extends EditBookBaseFragment
         implements CoverHandler.HostingFragment {

@@ -54,9 +54,6 @@ import com.hardbacknutter.nevertoomanybooks.fields.validators.FieldValidator;
 import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.ViewFocusOrder;
 
-/**
- * This class is called by {@link EditBookFragment} and displays the Notes Tab.
- */
 public class EditBookNotesFragment
         extends EditBookBaseFragment {
 

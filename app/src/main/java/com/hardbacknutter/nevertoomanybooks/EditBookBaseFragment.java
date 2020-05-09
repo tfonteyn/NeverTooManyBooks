@@ -64,9 +64,6 @@ import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.RequestAuthTask;
 import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.EditBookFragmentViewModel;
 
-/**
- * Base class for all fragments that appear in {@link EditBookFragment}.
- */
 public abstract class EditBookBaseFragment
         extends BookBaseFragment
         implements DataEditor<Book> {

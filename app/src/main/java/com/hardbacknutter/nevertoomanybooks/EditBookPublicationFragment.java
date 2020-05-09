@@ -45,9 +45,6 @@ import com.hardbacknutter.nevertoomanybooks.fields.formatters.DateFieldFormatter
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.DoubleNumberFormatter;
 import com.hardbacknutter.nevertoomanybooks.utils.ViewFocusOrder;
 
-/**
- * This class is called by {@link EditBookFragment} and displays the publication fields Tab.
- */
 public class EditBookPublicationFragment
         extends EditBookBaseFragment {
 
