@@ -31,14 +31,10 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
-import android.widget.AutoCompleteTextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
-import androidx.appcompat.widget.Toolbar;
-
-import com.google.android.material.textfield.TextInputLayout;
 
 import java.lang.ref.WeakReference;
 import java.util.List;
@@ -48,6 +44,7 @@ import com.hardbacknutter.nevertoomanybooks.BookChangedListenerOwner;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
+import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditStringBinding;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.widgets.DiacriticArrayAdapter;
 
@@ -79,13 +76,10 @@ public abstract class EditStringBaseDialogFragment
     @Nullable
     private WeakReference<BookChangedListener> mListener;
 
-    @Nullable
-    private TextInputLayout mNameTil;
-    @Nullable
-    private AutoCompleteTextView mNameView;
+    private DialogEditStringBinding mVb;
 
     /**
-     * Constructor.
+     * Constructor; only used by the child class no-args constructor.
      *
      * @param titleId     for the dialog (i.e. the toolbar)
      * @param label       to use for the 'hint' of the input field
@@ -120,11 +114,12 @@ public abstract class EditStringBaseDialogFragment
     @Override
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        mVb = DialogEditStringBinding.bind(view);
 
-        final Toolbar toolbar = view.findViewById(R.id.toolbar);
-        toolbar.setTitle(mDialogTitleId);
-        toolbar.setNavigationOnClickListener(v -> dismiss());
-        toolbar.setOnMenuItemClickListener(item -> {
+        mVb.toolbar.setTitle(mDialogTitleId);
+        mVb.toolbar.setNavigationOnClickListener(v -> dismiss());
+        mVb.toolbar.setOnMenuItemClickListener(item -> {
             if (item.getItemId() == R.id.MENU_SAVE) {
                 if (saveChanges()) {
                     dismiss();
@@ -134,15 +129,13 @@ public abstract class EditStringBaseDialogFragment
             return false;
         });
 
-        mNameTil = view.findViewById(R.id.lbl_name);
-        mNameTil.setHint(getString(mLabelId));
-        mNameTil.setErrorEnabled(true);
+        mVb.lblEditString.setHint(getString(mLabelId));
+        mVb.lblEditString.setErrorEnabled(true);
 
-        mNameView = view.findViewById(R.id.name);
-        mNameView.setText(mCurrentText);
+        mVb.editString.setText(mCurrentText);
 
         // soft-keyboards 'done' button act as a shortcut to confirming/saving the changes
-        mNameView.setOnEditorActionListener((v, actionId, event) -> {
+        mVb.editString.setOnEditorActionListener((v, actionId, event) -> {
             if (actionId == EditorInfo.IME_ACTION_DONE) {
                 if (saveChanges()) {
                     dismiss();
@@ -157,7 +150,7 @@ public abstract class EditStringBaseDialogFragment
             //noinspection ConstantConditions
             final DiacriticArrayAdapter<String> adapter = new DiacriticArrayAdapter<>(
                     getContext(), R.layout.dropdown_menu_popup_item, objects);
-            mNameView.setAdapter(adapter);
+            mVb.editString.setAdapter(adapter);
         }
     }
 
@@ -170,11 +163,9 @@ public abstract class EditStringBaseDialogFragment
     }
 
     private boolean saveChanges() {
-        //noinspection ConstantConditions
-        mCurrentText = mNameView.getText().toString().trim();
+        mCurrentText = mVb.editString.getText().toString().trim();
         if (mCurrentText.isEmpty()) {
-            //noinspection ConstantConditions
-            showError(mNameTil, R.string.vldt_non_blank_required);
+            showError(mVb.lblEditString, R.string.vldt_non_blank_required);
             return false;
         }
 
@@ -224,8 +215,7 @@ public abstract class EditStringBaseDialogFragment
 
     @Override
     public void onPause() {
-        //noinspection ConstantConditions
-        mCurrentText = mNameView.getText().toString().trim();
+        mCurrentText = mVb.editString.getText().toString().trim();
         super.onPause();
     }
 

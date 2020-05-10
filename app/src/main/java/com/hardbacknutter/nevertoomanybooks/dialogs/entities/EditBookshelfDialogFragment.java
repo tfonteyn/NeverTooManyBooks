@@ -128,13 +128,13 @@ public class EditBookshelfDialogFragment
             return false;
         });
 
-        mVb.name.setText(mName);
+        mVb.bookshelf.setText(mName);
     }
 
     private boolean saveChanges() {
-        mName = mVb.name.getText().toString().trim();
+        mName = mVb.bookshelf.getText().toString().trim();
         if (mName.isEmpty()) {
-            showError(mVb.lblName, R.string.vldt_non_blank_required);
+            showError(mVb.lblBookshelf, R.string.vldt_non_blank_required);
             return false;
         }
 
@@ -148,7 +148,7 @@ public class EditBookshelfDialogFragment
             //noinspection ConstantConditions
             String msg = context.getString(R.string.warning_x_already_exists,
                                            context.getString(R.string.lbl_bookshelf));
-            showError(mVb.lblName, msg);
+            showError(mVb.lblBookshelf, msg);
             return false;
         }
 
@@ -223,7 +223,7 @@ public class EditBookshelfDialogFragment
 
     @Override
     public void onPause() {
-        mName = mVb.name.getText().toString().trim();
+        mName = mVb.bookshelf.getText().toString().trim();
         super.onPause();
     }
 

@@ -261,7 +261,7 @@ public class EditBookFieldsFragment
               .setFieldValidator(NON_BLANK_VALIDATOR);
 
         fields.add(R.id.genre, new EditTextAccessor<>(), DBDefinitions.KEY_GENRE)
-              .setRelatedFields(R.id.lbl_name);
+              .setRelatedFields(R.id.lbl_genre);
 
         // Personal fields
 

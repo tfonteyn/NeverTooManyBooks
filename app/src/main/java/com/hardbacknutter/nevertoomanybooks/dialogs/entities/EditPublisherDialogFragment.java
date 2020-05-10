@@ -133,14 +133,14 @@ public class EditPublisherDialogFragment
         final DiacriticArrayAdapter<String> adapter = new DiacriticArrayAdapter<>(
                 getContext(), R.layout.dropdown_menu_popup_item, mDb.getPublisherNames());
 
-        mVb.name.setText(mName);
-        mVb.name.setAdapter(adapter);
+        mVb.publisher.setText(mName);
+        mVb.publisher.setAdapter(adapter);
     }
 
     private boolean saveChanges() {
-        mName = mVb.name.getText().toString().trim();
+        mName = mVb.publisher.getText().toString().trim();
         if (mName.isEmpty()) {
-            showError(mVb.lblName, R.string.vldt_non_blank_required);
+            showError(mVb.lblPublisher, R.string.vldt_non_blank_required);
             return false;
         }
 
@@ -181,7 +181,7 @@ public class EditPublisherDialogFragment
 
     @Override
     public void onPause() {
-        mName = mVb.name.getText().toString().trim();
+        mName = mVb.publisher.getText().toString().trim();
         super.onPause();
     }
 

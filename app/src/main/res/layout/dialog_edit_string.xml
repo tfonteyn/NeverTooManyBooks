@@ -61,7 +61,7 @@
             >
 
             <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/lbl_name"
+                android:id="@+id/lbl_edit_string"
                 style="@style/Envelope.AutoCompleteTextView"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -69,7 +69,7 @@
                 >
 
                 <AutoCompleteTextView
-                    android:id="@+id/name"
+                    android:id="@+id/edit_string"
                     style="@style/autoCompleteTextEntry"
                     android:layout_width="match_parent"
                     android:imeOptions="actionDone"
@@ -84,7 +84,7 @@
                 android:text="@string/warning_immediate_global_changes"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/lbl_name"
+                app:layout_constraintTop_toBottomOf="@id/lbl_edit_string"
                 />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </FrameLayout>

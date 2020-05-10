@@ -102,7 +102,7 @@ public class EditBookPublicationFragment
               .setRelatedFields(R.id.lbl_color);
 
         fields.add(R.id.publisher, new EditTextAccessor<>(), DBDefinitions.KEY_PUBLISHER)
-              .setRelatedFields(R.id.lbl_name);
+              .setRelatedFields(R.id.lbl_publisher);
 
         fields.add(R.id.print_run, new EditTextAccessor<>(), DBDefinitions.KEY_PRINT_RUN)
               .setRelatedFields(R.id.lbl_print_run);

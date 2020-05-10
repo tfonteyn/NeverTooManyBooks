@@ -122,7 +122,6 @@ public class StylePickerDialogFragment
         final View root = getLayoutInflater().inflate(R.layout.dialog_styles_menu, null);
 
         final RecyclerView listView = root.findViewById(R.id.styles);
-        listView.setHasFixedSize(true);
         final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         listView.setLayoutManager(linearLayoutManager);
         //noinspection ConstantConditions
