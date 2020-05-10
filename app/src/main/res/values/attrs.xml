@@ -48,4 +48,10 @@
     <!-- Color for a boolean status icon; true: this color; false: transparent. -->
     <attr name="iconTintCompleted" format="reference|color" />
 
+    <declare-styleable name="ExtGroup">
+        <attr name="applyVisibility" format="boolean" />
+        <attr name="applyOnClick" format="boolean" />
+        <attr name="applyTags" format="boolean" />
+    </declare-styleable>
+
 </resources>

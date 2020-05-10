@@ -60,9 +60,8 @@
 
         <com.hardbacknutter.nevertoomanybooks.widgets.ConstraintRadioGroup
             android:id="@+id/sites_group"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:visibility="gone"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
             app:constraint_referenced_ids="site_amazon,site_goodreads,site_isfdb,site_library_thing,site_open_library,site_strip_info_be"
             tools:ignore="MissingConstraints"
             />

@@ -62,12 +62,12 @@
             app:layout_constraintGuide_begin="@dimen/indent_field_guideline"
             />
 
-        <androidx.constraintlayout.widget.Group
+        <com.hardbacknutter.nevertoomanybooks.widgets.ExtGroup
             android:id="@+id/original_details"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:visibility="visible"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
             app:constraint_referenced_ids="lbl_author,author,lbl_title,title,lbl_isbn,isbn"
+            tools:ignore="MissingConstraints"
             />
 
         <TextView

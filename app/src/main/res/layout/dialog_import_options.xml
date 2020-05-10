@@ -41,19 +41,18 @@
 
         <com.hardbacknutter.nevertoomanybooks.widgets.ConstraintRadioGroup
             android:id="@+id/rb_books_group"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:visibility="gone"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
             app:constraint_referenced_ids="rb_books_all,rb_books_sync"
             tools:ignore="MissingConstraints"
             />
 
-        <!-- control visibility of checkboxes. -->
-        <androidx.constraintlayout.widget.Group
+        <com.hardbacknutter.nevertoomanybooks.widgets.ExtGroup
             android:id="@+id/cbx_group"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
             app:constraint_referenced_ids="cbx_books,cbx_covers,cbx_prefs_and_styles"
+            tools:ignore="MissingConstraints"
             />
 
         <CheckBox

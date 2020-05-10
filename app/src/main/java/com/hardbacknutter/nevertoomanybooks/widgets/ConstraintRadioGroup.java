@@ -31,7 +31,6 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.util.SparseArray;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.CompoundButton;
 import android.widget.RadioButton;
 
@@ -49,9 +48,8 @@ import androidx.constraintlayout.widget.ConstraintLayout;
  * <pre>{@code
  *       <com.hardbacknutter.nevertoomanybooks.widgets.ConstraintRadioGroup
  *         android:id="@+id/rb_books_group"
- *         android:layout_width="wrap_content"
- *         android:layout_height="wrap_content"
- *         android:visibility="gone"
+ *         android:layout_width="0dp"
+ *         android:layout_height="0dp"
  *         app:constraint_referenced_ids="rb_books_all,rb_books_since_last_backup"
  *         tools:ignore="MissingConstraints"
  *         />
@@ -142,10 +140,9 @@ public final class ConstraintRadioGroup
 
     @Override
     public void updatePostLayout(@NonNull final ConstraintLayout container) {
-        ViewGroup.LayoutParams params = getLayoutParams();
-        params.width = 0;
-        params.height = 0;
-        super.updatePostLayout(container);
+        ConstraintLayout.LayoutParams params = (ConstraintLayout.LayoutParams) getLayoutParams();
+        params.getConstraintWidget().setWidth(0);
+        params.getConstraintWidget().setHeight(0);
     }
 
     @Override
