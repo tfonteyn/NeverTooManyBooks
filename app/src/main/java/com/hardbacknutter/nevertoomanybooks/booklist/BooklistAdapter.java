@@ -730,6 +730,7 @@ public class BooklistAdapter
          * This is also the view where we will add tags with rowId etc,
          * as it is this View that will be passed to the onClick handlers.
          */
+        @NonNull
         View onClickTargetView;
 
         /**

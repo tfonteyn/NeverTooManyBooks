@@ -57,6 +57,7 @@ import com.hardbacknutter.nevertoomanybooks.fields.validators.FieldValidator;
  * extraction of data in a view.
  *
  * @param <T> type of Field value.
+ * @param <V> type of View for this field
  */
 public class Field<T, V extends View> {
 
@@ -157,7 +158,7 @@ public class Field<T, V extends View> {
                 mFieldViewAccessor.setErrorView(parent.findViewById(mErrorViewId));
             }
             if (mTextInputLayoutId != 0) {
-                TextInputLayout til = parent.findViewById(mTextInputLayoutId);
+                final TextInputLayout til = parent.findViewById(mTextInputLayoutId);
                 til.setEndIconOnClickListener(v -> getAccessor().setValue((T) null));
             }
         } else {
@@ -189,29 +190,32 @@ public class Field<T, V extends View> {
     /**
      * <strong>Conditionally</strong> set the visibility for the field and its related fields.
      *
-     * @param parent      parent view; used to find the <strong>related fields only</strong>
-     * @param hideIfEmpty hide the field if it's empty
-     * @param keepHidden  keep a field hidden if it's already hidden
+     * @param parent                 parent view for all fields in this collection.
+     * @param hideEmptyFields        hide empty field:
+     *                               Use {@code true} when displaying;
+     *                               and {@code false} when editing.
+     * @param keepHiddenFieldsHidden keep a field hidden if it's already hidden
+     *                               (even when it has content)
      */
     @SuppressWarnings("StatementWithEmptyBody")
     public void setVisibility(@NonNull final View parent,
-                              final boolean hideIfEmpty,
-                              final boolean keepHidden) {
+                              final boolean hideEmptyFields,
+                              final boolean keepHiddenFieldsHidden) {
 
         final View view = mFieldViewAccessor.getView();
         Objects.requireNonNull(view);
-        if ((view instanceof ImageView)
-            || (view.getVisibility() == View.GONE && keepHidden)) {
-            // 2. An ImageView always keeps its current visibility
-            // 3. When 'keepHidden' is set, hidden fields stay hidden.
-            // do nothing.
 
-        } else if (mFieldViewAccessor.isEmpty() && hideIfEmpty) {
-            // 4. When 'hideIfEmpty' is set, empty fields are hidden.
+        if ((view instanceof ImageView)
+            || (view.getVisibility() == View.GONE && keepHiddenFieldsHidden)) {
+            // An ImageView always keeps its current visibility
+            // When 'keepHiddenFieldsHidden' is set, hidden fields stay hidden.
+
+        } else if (mFieldViewAccessor.isEmpty() && hideEmptyFields) {
+            // When 'hideEmptyFields' is set, empty fields are hidden.
             view.setVisibility(View.GONE);
 
         } else if (isUsed(view.getContext())) {
-            // 5. anything else (in use) should be visible if it's not yet.
+            // Anything else (in use) should be visible if it's not yet.
             view.setVisibility(View.VISIBLE);
         }
 
@@ -241,7 +245,7 @@ public class Field<T, V extends View> {
     private void setRelatedFieldsVisibility(@NonNull final View parent,
                                             final int visibility) {
         for (int fieldId : mRelatedFields) {
-            View view = parent.findViewById(fieldId);
+            final View view = parent.findViewById(fieldId);
             if (view != null) {
                 view.setVisibility(visibility);
             }
@@ -359,5 +363,4 @@ public class Field<T, V extends View> {
                + ", mValidator=" + mValidator
                + '}';
     }
-
 }

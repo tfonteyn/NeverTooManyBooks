@@ -563,7 +563,6 @@ public class DAO
      *
      * @return the number of rows affected
      */
-    @SuppressWarnings("UnusedReturnValue")
     public int deleteTocEntry(final long id) {
         SynchronizedStatement stmt = mSqlStatementManager.get(STMT_DELETE_TOC_ENTRY);
         if (stmt == null) {

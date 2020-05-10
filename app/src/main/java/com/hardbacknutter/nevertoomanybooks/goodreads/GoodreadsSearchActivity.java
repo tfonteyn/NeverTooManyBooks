@@ -44,6 +44,7 @@ import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.snackbar.Snackbar;
 
@@ -64,8 +65,6 @@ import com.hardbacknutter.nevertoomanybooks.searches.goodreads.GoodreadsRegistra
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.BooksOnBookshelfModel;
-import com.hardbacknutter.nevertoomanybooks.widgets.RecyclerViewAdapterBase;
-import com.hardbacknutter.nevertoomanybooks.widgets.RecyclerViewViewHolderBase;
 
 /**
  * ENHANCE: the actual search/display are now implemented. But this activity is still disabled,
@@ -323,7 +322,7 @@ public class GoodreadsSearchActivity
      * Holder pattern for search results.
      */
     private static class Holder
-            extends RecyclerViewViewHolderBase {
+            extends RecyclerView.ViewHolder {
 
         @NonNull
         final ImageView coverView;
@@ -349,9 +348,11 @@ public class GoodreadsSearchActivity
      * allows for background image retrieval.
      */
     private class WorksAdapter
-            extends RecyclerViewAdapterBase<GoodreadsWork, Holder> {
+            extends RecyclerView.Adapter<Holder> {
 
         private final int mMaxSize;
+
+        private final List<GoodreadsWork> mItems;
 
         /**
          * Constructor.
@@ -361,8 +362,7 @@ public class GoodreadsSearchActivity
          */
         WorksAdapter(@NonNull final Context context,
                      @NonNull final List<GoodreadsWork> items) {
-            super(context, items, null);
-
+            mItems = items;
             mMaxSize = ImageUtils.getMaxImageSize(context, ImageUtils.SCALE_MEDIUM);
         }
 
@@ -379,9 +379,8 @@ public class GoodreadsSearchActivity
         @Override
         public void onBindViewHolder(@NonNull final Holder holder,
                                      final int position) {
-            super.onBindViewHolder(holder, position);
 
-            final GoodreadsWork item = getItem(position);
+            final GoodreadsWork item = mItems.get(position);
 
             holder.itemView.setOnClickListener(v -> onWorkSelected(item));
 
@@ -391,6 +390,11 @@ public class GoodreadsSearchActivity
             // Update the views based on the work
             holder.authorView.setText(item.authorName);
             holder.titleView.setText(item.title);
+        }
+
+        @Override
+        public int getItemCount() {
+            return mItems.size();
         }
     }
 }

@@ -523,10 +523,6 @@ class CoverHandler {
                 Snackbar.make(mCoverView, msg, Snackbar.LENGTH_LONG).show();
             }
         } else {
-            /* Deal with the case where the chooser returns a {@code null} intent.
-             * This seems to happen when the filename is not properly understood
-             * by the chooser (e.g. an apostrophe in the file name confuses
-             * ES File Explorer in the current version as of 23-Sep-2012. */
             Snackbar.make(mCoverView, R.string.warning_cover_copy_failed,
                           Snackbar.LENGTH_LONG).show();
         }

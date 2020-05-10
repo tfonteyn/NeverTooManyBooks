@@ -73,7 +73,7 @@ public class SearchAdminActivity
         mModel.init(getIntent().getExtras());
 
         mViewPager = findViewById(R.id.pager);
-        TabLayout tabBarLayout = findViewById(R.id.tab_panel);
+        final TabLayout tabBarLayout = findViewById(R.id.tab_panel);
 
         if (mModel.getType() == null) {
             setTitle(R.string.lbl_websites);
@@ -97,7 +97,7 @@ public class SearchAdminActivity
 
     @Override
     public void onBackPressed() {
-        boolean hasSites;
+        final boolean hasSites;
         if (mModel.getType() == null) {
             hasSites = mModel.persist(this);
 
@@ -146,9 +146,9 @@ public class SearchAdminActivity
         @NonNull
         @Override
         public Fragment createFragment(final int position) {
-            Bundle args = new Bundle(1);
+            final Bundle args = new Bundle(1);
             args.putParcelable(SearchAdminModel.BKEY_LIST_TYPE, toType(position));
-            Fragment fragment = new SearchOrderFragment();
+            final Fragment fragment = new SearchOrderFragment();
             fragment.setArguments(args);
             return fragment;
         }

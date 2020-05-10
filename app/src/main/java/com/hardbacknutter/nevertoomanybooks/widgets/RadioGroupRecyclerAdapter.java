@@ -167,6 +167,7 @@ public class RadioGroupRecyclerAdapter<T extends Entity>
     static class Holder
             extends RecyclerView.ViewHolder {
 
+        @NonNull
         final CompoundButton buttonView;
 
         Holder(@NonNull final View itemView) {

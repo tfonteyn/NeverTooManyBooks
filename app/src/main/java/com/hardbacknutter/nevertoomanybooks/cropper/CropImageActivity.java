@@ -84,6 +84,8 @@ import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 
 /**
  * The activity can crop specific region of interest from an image.
+ *
+ * Must be configured in the manifest to use a fullscreen theme.
  */
 public class CropImageActivity
         extends CropMonitoredActivity {
@@ -281,16 +283,8 @@ public class CropImageActivity
         setContentView(R.layout.activity_cropimage);
     }
 
-    /**
-     * <strong>Note:</strong> setting
-     * Window.FEATURE_NO_TITLE + WindowManager.LayoutParams.FLAG_FULLSCREEN
-     * is now done in the manifest using a theme on this activity.
-     */
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
-        // Do this first to avoid 'must be first errors'
-        //requestWindowFeature(Window.FEATURE_NO_TITLE);
-
         super.onCreate(savedInstanceState);
 
         mImageView = findViewById(R.id.coverImage0);

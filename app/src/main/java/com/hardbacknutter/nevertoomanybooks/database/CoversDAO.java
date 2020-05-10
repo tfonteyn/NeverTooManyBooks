@@ -192,22 +192,24 @@ public final class CoversDAO
      * @return instance
      */
     private static CoversDAO getInstance(@NonNull final Context context) {
-        if (sCoversDAO == null) {
-            sCoversDAO = new CoversDAO();
-        }
-        // check each time, as it might have failed last time but might work now.
-        if (sSyncedDb == null) {
-            sCoversDAO.open(context);
-            if (sSyncedDb != null) {
-                sCoversDAO.mStatementManager = new SqlStatementManager(sSyncedDb, TAG);
+        synchronized (CoversDAO.class) {
+            if (sCoversDAO == null) {
+                sCoversDAO = new CoversDAO();
             }
-        }
+            // check each time, as it might have failed last time but might work now.
+            if (sSyncedDb == null) {
+                sCoversDAO.open(context);
+                if (sSyncedDb != null) {
+                    sCoversDAO.mStatementManager = new SqlStatementManager(sSyncedDb, TAG);
+                }
+            }
 
-        int noi = INSTANCE_COUNTER.incrementAndGet();
-        if (BuildConfig.DEBUG /* always */) {
-            Log.d(TAG, "getInstance|instances in use=" + noi);
+            int noi = INSTANCE_COUNTER.incrementAndGet();
+            if (BuildConfig.DEBUG /* always */) {
+                Log.d(TAG, "getInstance|instances in use=" + noi);
+            }
+            return sCoversDAO;
         }
-        return sCoversDAO;
     }
 
     /**
@@ -470,10 +472,12 @@ public final class CoversDAO
          * @return the instance
          */
         static CoversDbHelper getInstance(@NonNull final Context context) {
-            if (sCoversDbHelper == null) {
-                sCoversDbHelper = new CoversDbHelper(context);
+            synchronized (CoversDbHelper.class) {
+                if (sCoversDbHelper == null) {
+                    sCoversDbHelper = new CoversDbHelper(context);
+                }
+                return sCoversDbHelper;
             }
-            return sCoversDbHelper;
         }
 
         public static File getDatabasePath(@NonNull final Context context) {

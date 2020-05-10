@@ -155,10 +155,12 @@ public final class DBHelper
                                        @NonNull final SQLiteDatabase.CursorFactory factory,
                                        @SuppressWarnings("SameParameterValue")
                                        @NonNull final Synchronizer synchronizer) {
-        if (sInstance == null) {
-            sInstance = new DBHelper(context, factory, synchronizer);
+        synchronized (DBHelper.class) {
+            if (sInstance == null) {
+                sInstance = new DBHelper(context, factory, synchronizer);
+            }
+            return sInstance;
         }
-        return sInstance;
     }
 
     /**

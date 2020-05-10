@@ -128,15 +128,15 @@ public class MenuPickerDialogFragment
         ArrayList<Pick> subPickList;
 
         for (int i = 0; i < menu.size(); i++) {
-            MenuItem item = menu.getItem(i);
-            SubMenu itemSubMenu = item.getSubMenu();
+            final MenuItem item = menu.getItem(i);
+            final SubMenu itemSubMenu = item.getSubMenu();
             if (itemSubMenu != null) {
                 subPickList = convert(itemSubMenu);
             } else {
                 subPickList = null;
             }
-            int id = item.getItemId();
-            Pick pick = new Pick(id,
+            final int id = item.getItemId();
+            final Pick pick = new Pick(id,
                                  item.getOrder(),
                                  item.getTitle().toString(),
                                  0,
@@ -173,7 +173,7 @@ public class MenuPickerDialogFragment
                 .setView(root)
                 .create();
 
-        Bundle args = requireArguments();
+        final Bundle args = requireArguments();
         mPosition = args.getInt(BKEY_POSITION);
 
         // optional title
@@ -193,9 +193,8 @@ public class MenuPickerDialogFragment
         }
 
         //noinspection ConstantConditions
-        MenuItemListAdapter adapter = new MenuItemListAdapter(getContext(),
-                                                              args.getParcelableArrayList(
-                                                                      BKEY_MENU));
+        final MenuItemListAdapter adapter =
+                new MenuItemListAdapter(getContext(), args.getParcelableArrayList(BKEY_MENU));
 
         listView.setAdapter(adapter);
 
@@ -365,15 +364,12 @@ public class MenuPickerDialogFragment
     private static class Holder
             extends RecyclerView.ViewHolder {
 
-        final int viewType;
-
         @Nullable
         final TextView textView;
 
         Holder(@NonNull final View itemView,
                final int viewType) {
             super(itemView);
-            this.viewType = viewType;
 
             if (viewType == MenuItemListAdapter.MENU_ITEM) {
                 textView = itemView.findViewById(R.id.menu_item);
@@ -437,7 +433,7 @@ public class MenuPickerDialogFragment
         @Override
         public Holder onCreateViewHolder(@NonNull final ViewGroup parent,
                                          final int viewType) {
-            View root;
+            final View root;
             if (viewType == MENU_ITEM) {
                 root = mInflater.inflate(R.layout.row_simple_list_item, parent, false);
             } else {
@@ -459,9 +455,8 @@ public class MenuPickerDialogFragment
         public void onBindViewHolder(@NonNull final Holder holder,
                                      final int position) {
 
-            if (holder.viewType == MENU_ITEM) {
-                Pick item = mList.get(position);
-                //noinspection ConstantConditions
+            if (holder.textView != null) {
+                final Pick item = mList.get(position);
                 holder.textView.setText(item.getTitle());
 
                 // add a little arrow to indicate sub-menus.

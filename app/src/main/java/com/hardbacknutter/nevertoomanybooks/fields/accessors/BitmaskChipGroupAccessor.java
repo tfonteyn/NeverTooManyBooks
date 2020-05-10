@@ -81,9 +81,9 @@ public class BitmaskChipGroupAccessor
         mIsEditable = isEditable;
 
         if (mIsEditable) {
-            mFilterChipListener = v -> {
-                Integer current = (Integer) v.getTag();
-                if (((Checkable) v).isChecked()) {
+            mFilterChipListener = view -> {
+                Integer current = (Integer) view.getTag();
+                if (((Checkable) view).isChecked()) {
                     // add
                     mRawValue |= current;
                 } else {

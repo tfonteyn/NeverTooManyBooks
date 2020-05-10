@@ -750,28 +750,6 @@ public final class ImageUtils {
          *
          * @param imageView      to populate
          * @param file           to load, must be valid
-         * @param scale          id
-         * @param allowUpscaling use the maximum h/w also as the minimum; thereby forcing upscaling.
-         */
-        public ImageLoader(@NonNull final ImageView imageView,
-                           @NonNull final File file,
-                           @ImageUtils.Scale final int scale,
-                           final boolean allowUpscaling) {
-            // see onPostExecute
-            imageView.setTag(R.id.TAG_THUMBNAIL_TASK, this);
-            mImageView = new WeakReference<>(imageView);
-            mFile = file;
-            final int maxSize = ImageUtils.getMaxImageSize(imageView.getContext(), scale);
-            mMaxWidth = maxSize;
-            mMaxHeight = maxSize;
-            mAllowUpscaling = allowUpscaling;
-        }
-
-        /**
-         * Constructor.
-         *
-         * @param imageView      to populate
-         * @param file           to load, must be valid
          * @param maxWidth       Maximum desired width of the image
          * @param maxHeight      Maximum desired height of the image
          * @param allowUpscaling use the maximum h/w also as the minimum; thereby forcing upscaling.
@@ -812,7 +790,7 @@ public final class ImageUtils {
                 && this.equals(imageView.getTag(R.id.TAG_THUMBNAIL_TASK))) {
                 imageView.setTag(R.id.TAG_THUMBNAIL_TASK, null);
                 if (bitmap != null) {
-                    // upscaling, if applicable, was done in the background task.
+                    // upscaling, if applicable, was already done in the background task.
                     setImageView(imageView, bitmap, mMaxWidth, mMaxHeight, false);
                 } else {
                     setPlaceholder(imageView, R.drawable.ic_broken_image, 0, mMaxHeight);
@@ -823,6 +801,7 @@ public final class ImageUtils {
 
     /**
      * Load a Bitmap from a file, and populate the view.
+     * When done, start a new task to send the image to the image database cache.
      */
     private static class CacheLoader
             extends AsyncTask<Void, Void, Bitmap> {
@@ -883,9 +862,10 @@ public final class ImageUtils {
                 && this.equals(imageView.getTag(R.id.TAG_THUMBNAIL_TASK))) {
                 imageView.setTag(R.id.TAG_THUMBNAIL_TASK, null);
                 if (bitmap != null) {
-                    // display it, upscaling, if applicable, was done in the background task.
+                    // upscaling, if applicable, was already done in the background task.
                     setImageView(imageView, bitmap, mMaxWidth, mMaxHeight, false);
-                    // and start another task to send it to the cache
+
+                    // Start another task to send it to the cache
                     new CoversDAO.ImageCacheWriterTask(mUuid, mCIdx, mMaxWidth, mMaxHeight, bitmap)
                             .execute();
                 } else {

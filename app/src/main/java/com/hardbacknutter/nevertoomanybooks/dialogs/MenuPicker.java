@@ -138,15 +138,12 @@ public class MenuPicker {
     private static class Holder
             extends RecyclerView.ViewHolder {
 
-        final int viewType;
-
         @Nullable
         final TextView textView;
 
         Holder(final int viewType,
                @NonNull final View itemView) {
             super(itemView);
-            this.viewType = viewType;
 
             if (viewType == MenuItemListAdapter.MENU_ITEM) {
                 textView = itemView.findViewById(R.id.menu_item);
@@ -231,9 +228,8 @@ public class MenuPicker {
         public void onBindViewHolder(@NonNull final Holder holder,
                                      final int position) {
 
-            if (holder.viewType == MENU_ITEM) {
+            if (holder.textView != null) {
                 MenuItem item = mList.get(position);
-                //noinspection ConstantConditions
                 holder.textView.setText(item.getTitle());
 
                 // add a little arrow to indicate sub-menus.

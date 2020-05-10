@@ -92,9 +92,9 @@ public class EntityListChipGroupAccessor
         mIsEditable = isEditable;
 
         if (mIsEditable) {
-            mFilterChipListener = v -> {
-                Entity current = (Entity) v.getTag();
-                if (((Checkable) v).isChecked()) {
+            mFilterChipListener = view -> {
+                Entity current = (Entity) view.getTag();
+                if (((Checkable) view).isChecked()) {
                     //noinspection ConstantConditions
                     mRawValue.add(current);
                 } else {
@@ -130,7 +130,7 @@ public class EntityListChipGroupAccessor
 
             // *all* values
             for (Entity entity : mAll) {
-                boolean isSet = mRawValue.contains(entity);
+                final boolean isSet = mRawValue.contains(entity);
                 // if editable, all values; if not editable only the set values.
                 if (isSet || mIsEditable) {
                     chipGroup.addView(createChip(context, entity, entity.getLabel(context), isSet));
@@ -148,7 +148,7 @@ public class EntityListChipGroupAccessor
                             @NonNull final Object tag,
                             @NonNull final CharSequence label,
                             final boolean initialState) {
-        Chip chip;
+        final Chip chip;
         if (mIsEditable) {
             chip = new Chip(context, null, R.style.Widget_MaterialComponents_Chip_Filter);
         } else {

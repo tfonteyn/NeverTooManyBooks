@@ -99,6 +99,10 @@ public class Fields {
     /** the list with all fields. */
     private final SparseArray<Field> mAllFields = new SparseArray<>();
 
+    public int size() {
+        return mAllFields.size();
+    }
+
     public boolean isEmpty() {
         return mAllFields.size() == 0;
     }
@@ -107,6 +111,7 @@ public class Fields {
      * Add a Field.
      *
      * @param <T>      type of Field value.
+     * @param <V>      type of View for this field.
      * @param id       for the field/view
      * @param accessor to use
      * @param key      Key used to access a {@link DataManager}
@@ -124,6 +129,7 @@ public class Fields {
      * Add an Array based Field.
      *
      * @param <T>       type of Field value.
+     * @param <V>       type of View for this field.
      * @param id        for the field/view
      * @param accessor  to use
      * @param key       Key used to access a {@link DataManager}
@@ -144,7 +150,7 @@ public class Fields {
             }
         }
 
-        Field<T, V> field = new Field<>(id, accessor, key, entityKey);
+        final Field<T, V> field = new Field<>(id, accessor, key, entityKey);
         mAllFields.put(id, field);
         return field;
     }
@@ -152,8 +158,9 @@ public class Fields {
     /**
      * Return the Field associated with the passed ID.
      *
-     * @param id  Field/View ID
      * @param <T> type of Field value.
+     * @param <V> type of View for this field.
+     * @param id  Field/View ID
      *
      * @return Associated Field.
      *
@@ -163,7 +170,7 @@ public class Fields {
     public <T, V extends View> Field<T, V> getField(@IdRes final int id)
             throws IllegalArgumentException {
         //noinspection unchecked
-        Field<T, V> field = (Field<T, V>) mAllFields.get(id);
+        final Field<T, V> field = (Field<T, V>) mAllFields.get(id);
         if (field != null) {
             return field;
         }
@@ -178,7 +185,7 @@ public class Fields {
      */
     public void setAll(@NonNull final DataManager dataManager) {
         for (int f = 0; f < mAllFields.size(); f++) {
-            Field field = mAllFields.valueAt(f);
+            final Field field = mAllFields.valueAt(f);
             if (field.isAutoPopulated()) {
                 // do NOT call onChanged, as this is the initial load
                 field.getAccessor().setValue(dataManager);
@@ -193,7 +200,7 @@ public class Fields {
      */
     public void getAll(@NonNull final DataManager dataManager) {
         for (int f = 0; f < mAllFields.size(); f++) {
-            Field field = mAllFields.valueAt(f);
+            final Field field = mAllFields.valueAt(f);
             if (field.isAutoPopulated()) {
                 field.getAccessor().getValue(dataManager);
                 field.validate();
@@ -202,18 +209,20 @@ public class Fields {
     }
 
     /**
-     * Reset all field visibility based on user preferences.
+     * Set field visibility based on their content and user preferences.
      *
-     * @param parent      parent view for all fields.
-     * @param hideIfEmpty hide the field if it's empty
-     *                    set to {@code true} when displaying; {@code false} when editing.
-     * @param keepHidden  keep a field hidden if it's already hidden
+     * @param parent                 parent view for all fields in this collection.
+     * @param hideEmptyFields        hide empty field:
+     *                               Use {@code true} when displaying;
+     *                               and {@code false} when editing.
+     * @param keepHiddenFieldsHidden keep a field hidden if it's already hidden
+     *                               (even when it has content)
      */
-    public void resetVisibility(@NonNull final View parent,
-                                final boolean hideIfEmpty,
-                                final boolean keepHidden) {
+    public void setVisibility(@NonNull final View parent,
+                              final boolean hideEmptyFields,
+                              final boolean keepHiddenFieldsHidden) {
         for (int f = 0; f < mAllFields.size(); f++) {
-            mAllFields.valueAt(f).setVisibility(parent, hideIfEmpty, keepHidden);
+            mAllFields.valueAt(f).setVisibility(parent, hideEmptyFields, keepHiddenFieldsHidden);
         }
     }
 
@@ -224,7 +233,7 @@ public class Fields {
      */
     public void setParentView(@NonNull final View parentView) {
         for (int f = 0; f < mAllFields.size(); f++) {
-            Field field = mAllFields.valueAt(f);
+            final Field field = mAllFields.valueAt(f);
             field.setParentView(parentView);
         }
     }
