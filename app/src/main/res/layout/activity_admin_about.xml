@@ -106,54 +106,55 @@
             app:layout_constraintGuide_begin="@dimen/indent_field_guideline"
             />
 
+        <com.hardbacknutter.nevertoomanybooks.widgets.ExtGroup
+            android:id="@+id/debug_group"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:visibility="gone"
+            app:constraint_referenced_ids="debug_section_lbl,debug_sq_shell,debug_prefs,debug_dump_temp_tables"
+            tools:visibility="visible"
+            />
+
         <TextView
-            android:id="@id/SUBMENU_DEBUG"
+            android:id="@+id/debug_section_lbl"
             style="@style/Label.Header.Small"
             android:paddingTop="16dp"
             android:text="@string/debug"
-            android:visibility="gone"
             app:layout_constraintStart_toEndOf="@id/indents"
             app:layout_constraintTop_toBottomOf="@id/sepBar"
-            tools:visibility="visible"
             />
 
         <Button
-            android:id="@id/MENU_DEBUG_SQ_SHELL"
+            android:id="@+id/debug_sq_shell"
             style="@style/MenuButton"
             android:layout_width="0dp"
             android:text="@string/debug_sq_shell"
-            android:visibility="gone"
             app:icon="@drawable/ic_keyboard"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="@id/SUBMENU_DEBUG"
-            app:layout_constraintTop_toBottomOf="@id/SUBMENU_DEBUG"
-            tools:visibility="visible"
+            app:layout_constraintStart_toStartOf="@id/debug_section_lbl"
+            app:layout_constraintTop_toBottomOf="@id/debug_section_lbl"
             />
 
         <Button
-            android:id="@id/MENU_DEBUG_PREFS"
+            android:id="@+id/debug_prefs"
             style="@style/MenuButton"
             android:layout_width="0dp"
             android:text="@string/debug_dump_prefs"
-            android:visibility="gone"
             app:icon="@drawable/ic_details"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="@id/SUBMENU_DEBUG"
-            app:layout_constraintTop_toBottomOf="@id/MENU_DEBUG_SQ_SHELL"
-            tools:visibility="visible"
+            app:layout_constraintStart_toStartOf="@id/debug_section_lbl"
+            app:layout_constraintTop_toBottomOf="@id/debug_sq_shell"
             />
 
         <Button
-            android:id="@id/MENU_DEBUG_DUMP_TEMP_TABLES"
+            android:id="@+id/debug_dump_temp_tables"
             style="@style/MenuButton"
             android:layout_width="0dp"
             android:text="@string/debug_dump_temp_tables"
-            android:visibility="gone"
             app:icon="@drawable/ic_details"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="@id/SUBMENU_DEBUG"
-            app:layout_constraintTop_toBottomOf="@id/MENU_DEBUG_PREFS"
-            tools:visibility="visible"
+            app:layout_constraintStart_toStartOf="@id/debug_section_lbl"
+            app:layout_constraintTop_toBottomOf="@id/debug_prefs"
             />
 
         <TextView
@@ -162,7 +163,7 @@
             android:paddingTop="@dimen/border2"
             android:text="@string/lbl_about_contact"
             app:layout_constraintStart_toEndOf="@id/indents"
-            app:layout_constraintTop_toBottomOf="@id/MENU_DEBUG_DUMP_TEMP_TABLES"
+            app:layout_constraintTop_toBottomOf="@id/debug_dump_temp_tables"
             />
 
         <TextView

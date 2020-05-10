@@ -31,10 +31,10 @@ import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.method.LinkMovementMethod;
 import android.view.View;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -42,6 +42,7 @@ import androidx.annotation.StringRes;
 
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBHelper;
+import com.hardbacknutter.nevertoomanybooks.databinding.ActivityAdminAboutBinding;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.debug.SqliteShellActivity;
 import com.hardbacknutter.nevertoomanybooks.debug.SqliteShellFragment;
@@ -64,41 +65,16 @@ public class About
 
     /** Log tag. */
     private static final String TAG = "AboutActivity";
-    private static final int[] DEBUG_MENUS = {
-            R.id.MENU_DEBUG_SQ_SHELL,
-            R.id.MENU_DEBUG_PREFS,
-            R.id.MENU_DEBUG_DUMP_TEMP_TABLES,
-            };
+
+    private ActivityAdminAboutBinding mVb;
 
     private int mDebugClicks;
     private boolean mSqLiteAllowUpdates;
 
-    private final View.OnClickListener mOnClickListener = v -> {
-        switch (v.getId()) {
-            case R.id.MENU_DEBUG_PREFS:
-                Prefs.dumpPreferences(this, null);
-                break;
-
-            case R.id.MENU_DEBUG_DUMP_TEMP_TABLES:
-                try (DAO db = new DAO(TAG)) {
-                    DBHelper.dumpTempTableNames(db.getSyncDb());
-                }
-                break;
-
-            case R.id.MENU_DEBUG_SQ_SHELL:
-                Intent intent = new Intent(this, SqliteShellActivity.class)
-                        .putExtra(SqliteShellFragment.BKEY_ALLOW_UPDATES, mSqLiteAllowUpdates);
-                startActivity(intent);
-                break;
-
-            default:
-                break;
-        }
-    };
-
     @Override
     protected void onSetContentView() {
-        setContentView(R.layout.activity_admin_about);
+        mVb = ActivityAdminAboutBinding.inflate(getLayoutInflater());
+        setContentView(mVb.getRoot());
     }
 
     @Override
@@ -106,32 +82,48 @@ public class About
         super.onCreate(savedInstanceState);
         setTitle(R.string.app_name);
 
-        // Version Number
-        TextView view = findViewById(R.id.version);
         try {
-            PackageInfo info = getPackageManager().getPackageInfo(getPackageName(), 0);
-            view.setText(info.versionName);
+            final PackageInfo info = getPackageManager().getPackageInfo(getPackageName(), 0);
+
+            final long versionCode;
+            if (Build.VERSION.SDK_INT >= 28) {
+                versionCode = info.getLongVersionCode();
+            } else {
+                versionCode = info.versionCode;
+            }
+            String version = info.versionName
+                             + " (" + versionCode + '/' + DBHelper.DATABASE_VERSION + ')';
+
+            mVb.version.setText(version);
         } catch (@NonNull final PackageManager.NameNotFoundException ignore) {
             // ignore
         }
 
-        view = findViewById(R.id.sourcecode6);
-        view.setText(LinkifyUtils.fromHtml(
+        mVb.sourcecode6.setText(LinkifyUtils.fromHtml(
                 getString(R.string.url_sourcecode, getString(R.string.lbl_about_sourcecode))));
-        view.setMovementMethod(LinkMovementMethod.getInstance());
+        mVb.sourcecode6.setMovementMethod(LinkMovementMethod.getInstance());
 
-        findViewById(R.id.icon).setOnClickListener(v -> {
+        mVb.icon.setOnClickListener(v -> {
             mDebugClicks++;
-            if (mDebugClicks == DEBUG_CLICKS) {
-                findViewById(R.id.SUBMENU_DEBUG).setVisibility(View.VISIBLE);
-                for (int id : DEBUG_MENUS) {
-                    View debugMenuView = findViewById(id);
-                    debugMenuView.setVisibility(View.VISIBLE);
-                    debugMenuView.setOnClickListener(mOnClickListener);
-                }
+            if (mDebugClicks >= DEBUG_CLICKS) {
+                mVb.debugGroup.setVisibility(View.VISIBLE);
             }
-            if (mDebugClicks == DEBUG_CLICKS_ALLOW_UPD) {
+            if (mDebugClicks >= DEBUG_CLICKS_ALLOW_UPD) {
                 mSqLiteAllowUpdates = true;
+            }
+        });
+
+        mVb.debugSqShell.setOnClickListener(v -> {
+            Intent intent = new Intent(this, SqliteShellActivity.class)
+                    .putExtra(SqliteShellFragment.BKEY_ALLOW_UPDATES, mSqLiteAllowUpdates);
+            startActivity(intent);
+        });
+
+        mVb.debugPrefs.setOnClickListener(v -> Prefs.dumpPreferences(this, null));
+
+        mVb.debugDumpTempTables.setOnClickListener(v -> {
+            try (DAO db = new DAO(TAG)) {
+                DBHelper.dumpTempTableNames(db.getSyncDb());
             }
         });
 
