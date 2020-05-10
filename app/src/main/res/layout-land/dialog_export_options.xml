@@ -40,9 +40,8 @@
 
         <com.hardbacknutter.nevertoomanybooks.widgets.ConstraintRadioGroup
             android:id="@+id/rb_books_group"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:visibility="gone"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
             app:constraint_referenced_ids="rb_books_all,rb_books_since_last_backup"
             tools:ignore="MissingConstraints"
             />
@@ -114,7 +113,7 @@
         <TextView
             android:id="@+id/lbl_format"
             style="@style/Label.Header.Small"
-            android:text="@string/lbl_format"
+            android:text="@string/lbl_archive_type"
             app:layout_constraintStart_toEndOf="@id/guideline"
             app:layout_constraintTop_toBottomOf="@id/cbx_prefs_and_styles"
             />

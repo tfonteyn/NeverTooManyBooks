@@ -666,5 +666,6 @@
     <string name="action_discard">Zahodit</string>
     <string name="btn_show_list">Zobrazit seznam</string>
     <string name="btn_less_ellipsis">Méně…</string>
+    <string name="lbl_archive_type">Formát</string>
 
 </resources>

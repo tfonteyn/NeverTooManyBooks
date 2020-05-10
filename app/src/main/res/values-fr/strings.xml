@@ -674,5 +674,6 @@
     <string name="action_discard">Jeter</string>
     <string name="btn_show_list">Afficher la liste</string>
     <string name="btn_less_ellipsis">Moins…</string>
+    <string name="lbl_archive_type">Format</string>
 
 </resources>

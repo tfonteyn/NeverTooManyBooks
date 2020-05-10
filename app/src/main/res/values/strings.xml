@@ -1538,6 +1538,9 @@
     <string name="lbl_publication_year">Publication Year</string>
     <string name="lbl_publication_month">Publication Month</string>
 
+    <!-- Label for the spinner where the user selects the format of the export file/archive. -->
+    <string name="lbl_archive_type">Format</string>
+
     <!-- Text in a spinner dropdown. Must be fairly short. -->
     <string name="lbl_archive_type_backup">Backup (%1$s)</string>
     <!-- Explanatory note for 'lbl_archive_type_xml' -->

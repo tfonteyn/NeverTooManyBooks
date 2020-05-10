@@ -673,5 +673,6 @@
     <string name="action_discard">Weggooien</string>
     <string name="btn_show_list">Lijst weergeven</string>
     <string name="btn_less_ellipsis">Minder…</string>
+    <string name="lbl_archive_type">Formaat</string>
 
 </resources>

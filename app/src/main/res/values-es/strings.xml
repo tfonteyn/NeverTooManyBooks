@@ -671,5 +671,6 @@
     <string name="action_discard">Descarte</string>
     <string name="btn_show_list">Mostrar lista</string>
     <string name="btn_less_ellipsis">Menos…</string>
+    <string name="lbl_archive_type">Formato</string>
 
 </resources>

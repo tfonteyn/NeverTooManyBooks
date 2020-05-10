@@ -670,5 +670,6 @@
     <string name="action_discard">Απορρίπτω</string>
     <string name="btn_show_list">Εμφάνιση λίστας</string>
     <string name="btn_less_ellipsis">Πιο λιγο…</string>
+    <string name="lbl_archive_type">Μορφή</string>
 
 </resources>

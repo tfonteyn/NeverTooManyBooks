@@ -666,5 +666,6 @@
     <string name="action_discard">Sil</string>
     <string name="btn_show_list">Gösteri listesi</string>
     <string name="btn_less_ellipsis">Az…</string>
+    <string name="lbl_archive_type">Biçim</string>
 
 </resources>

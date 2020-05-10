@@ -665,5 +665,6 @@
     <string name="action_discard">Выбросьте</string>
     <string name="btn_show_list">Показать список</string>
     <string name="btn_less_ellipsis">Меньше…</string>
+    <string name="lbl_archive_type">Формат</string>
 
 </resources>
