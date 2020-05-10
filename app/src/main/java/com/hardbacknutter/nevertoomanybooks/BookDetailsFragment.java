@@ -634,10 +634,15 @@ public class BookDetailsFragment
         private static final float SENSITIVITY = 100;
 
         @Override
-        public boolean onFling(@NonNull final MotionEvent e1,
-                               @NonNull final MotionEvent e2,
+        public boolean onFling(@Nullable final MotionEvent e1,
+                               @Nullable final MotionEvent e2,
                                final float velocityX,
                                final float velocityY) {
+            // 2020-05-10: had a crash where e1 (or e2?) was null.
+            // This was during a split screen / dual window operation.
+            if (e1 == null || e2 == null) {
+                return false;
+            }
 
             // make sure we're not getting a false-positive due to the user
             // swiping to open the navigation drawer.
