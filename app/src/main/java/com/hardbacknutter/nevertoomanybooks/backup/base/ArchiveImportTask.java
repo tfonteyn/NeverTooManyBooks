@@ -48,7 +48,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
  * Output: the updated {@link ImportManager} with the {@link ImportResults }.
  */
 public class ArchiveImportTask
-        extends TaskBase<Void, ImportManager> {
+        extends TaskBase<ImportManager> {
 
     /** Log tag. */
     private static final String TAG = "ArchiveImportTask";

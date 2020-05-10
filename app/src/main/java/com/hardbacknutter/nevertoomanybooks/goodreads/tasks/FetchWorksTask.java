@@ -47,7 +47,7 @@ import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 
 public class FetchWorksTask
-        extends TaskBase<Void, List<GoodreadsWork>> {
+        extends TaskBase<List<GoodreadsWork>> {
 
     private static final String TAG = "FetchWorksTask";
 

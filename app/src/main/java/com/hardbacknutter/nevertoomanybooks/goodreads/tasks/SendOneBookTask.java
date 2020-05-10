@@ -59,7 +59,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsExceptio
  * {@link SendBooksLegacyTask}. The core of the task is (should be) identical.
  */
 public class SendOneBookTask
-        extends TaskBase<Void, GrStatus> {
+        extends TaskBase<GrStatus> {
 
     /** Log tag. */
     private static final String TAG = "GR.SendOneBook";

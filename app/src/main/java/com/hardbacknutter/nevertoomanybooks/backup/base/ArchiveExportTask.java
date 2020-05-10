@@ -48,7 +48,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
  * Output: the updated {@link ExportManager} with the {@link ExportResults}.
  */
 public class ArchiveExportTask
-        extends TaskBase<Void, ExportManager> {
+        extends TaskBase<ExportManager> {
 
     /** Log tag. */
     private static final String TAG = "ArchiveExportTask";

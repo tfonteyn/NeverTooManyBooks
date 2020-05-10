@@ -50,7 +50,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsExceptio
  * Searches a single {@link SearchEngine}.
  */
 public class SearchTask
-        extends TaskBase<SearchTask.By, Bundle> {
+        extends TaskBase<Bundle> {
 
     /** Log tag. */
     private static final String TAG = "SearchTask";
@@ -65,19 +65,22 @@ public class SearchTask
     @Nullable
     private boolean[] mFetchThumbnail;
 
-    /** search criteria. */
+    /** What criteria to search by. */
+    private SearchTask.By mBy;
+
+    /** Search criteria. Usage depends on {@link #mBy}. */
     @Nullable
     private String mNativeId;
-    /** search criteria. */
+    /** Search criteria. Usage depends on {@link #mBy}. */
     @Nullable
     private String mIsbnStr;
-    /** search criteria. */
+    /** Search criteria. Usage depends on {@link #mBy}. */
     @Nullable
     private String mAuthor;
-    /** search criteria. */
+    /** Search criteria. Usage depends on {@link #mBy}. */
     @Nullable
     private String mTitle;
-    /** search criteria. */
+    /** Search criteria. Usage depends on {@link #mBy}. */
     @Nullable
     private String mPublisher;
 
@@ -104,6 +107,10 @@ public class SearchTask
 
         String name = mSearchEngine.getName(context);
         mProgressTitle = context.getString(R.string.progress_msg_searching_site, name);
+    }
+
+    void setSearchBy(@NonNull final By by) {
+        mBy = by;
     }
 
     /**
@@ -165,8 +172,14 @@ public class SearchTask
     }
 
     @Override
+    protected void onPreExecute() {
+        // sanity check
+        Objects.requireNonNull(mBy);
+    }
+
+    @Override
     @Nullable
-    protected Bundle doInBackground(@NonNull final SearchTask.By... by) {
+    protected Bundle doInBackground(@NonNull final Void... aVoid) {
         final Context context = LocaleUtils.applyLocale(App.getTaskContext());
         Thread.currentThread().setName(TAG + ' ' + mSearchEngine.getName(context));
 
@@ -185,7 +198,7 @@ public class SearchTask
 
             Bundle bookData;
 
-            switch (by[0]) {
+            switch (mBy) {
                 case NativeId:
                     Objects.requireNonNull(mNativeId, ErrorMsg.NULL_NATIVE_ID);
                     bookData = ((SearchEngine.ByNativeId) mSearchEngine)
@@ -214,7 +227,7 @@ public class SearchTask
                     // we should never get here...
                     String name = mSearchEngine.getName(context);
                     throw new IllegalStateException("SearchEngine " + name
-                                                    + " does not implement By=" + by[0]);
+                                                    + " does not implement By=" + mBy);
             }
 
             if (!bookData.isEmpty()) {

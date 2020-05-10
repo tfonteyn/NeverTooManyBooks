@@ -43,15 +43,14 @@ import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener.TaskStatus;
 
 /**
- * The base for a task with our standard setup.
- * <br>
- * <br>The Progress parameter is always {@link TaskListener.ProgressMessage}.
+ * The base for a task with an exposed {@link ProgressListener}.
+ * <p>
+ * The Progress parameter is always {@link TaskListener.ProgressMessage}, and Params always Void.
  *
- * @param <Params> the type of the parameters sent to the task upon execution.
  * @param <Result> the type of the result of the background computation.
  */
-public abstract class TaskBase<Params, Result>
-        extends AsyncTask<Params, TaskListener.ProgressMessage, Result>
+public abstract class TaskBase<Result>
+        extends AsyncTask<Void, TaskListener.ProgressMessage, Result>
         implements ProgressDialogFragment.Cancellable {
 
     /** Log tag. */

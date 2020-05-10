@@ -50,7 +50,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
  * Run 'PRAGMA optimize' on our databases.
  */
 public class OptimizeDbTask
-        extends TaskBase<Void, Boolean> {
+        extends TaskBase<Boolean> {
 
     /** Log tag. */
     private static final String TAG = "OptimizeDbTask";

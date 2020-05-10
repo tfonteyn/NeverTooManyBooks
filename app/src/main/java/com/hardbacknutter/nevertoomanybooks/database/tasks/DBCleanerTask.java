@@ -52,7 +52,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
  * Data cleaning. Done on each startup.
  */
 public class DBCleanerTask
-        extends TaskBase<Void, Boolean> {
+        extends TaskBase<Boolean> {
 
     private static final String TAG = "DBCleanerTask";
 

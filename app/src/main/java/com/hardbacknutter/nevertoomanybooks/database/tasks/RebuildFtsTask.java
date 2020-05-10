@@ -50,7 +50,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
  * Rebuild FTS. Can take several seconds.
  */
 public class RebuildFtsTask
-        extends TaskBase<Void, Boolean> {
+        extends TaskBase<Boolean> {
 
     private static final String TAG = "RebuildFtsTask";
 

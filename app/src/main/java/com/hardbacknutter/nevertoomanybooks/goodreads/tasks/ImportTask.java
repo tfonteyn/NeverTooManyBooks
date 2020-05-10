@@ -51,7 +51,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.NetworkUtils;
  * If successful, an actual GoodReads task {@link TQTask} is kicked of to do the real work.
  */
 public class ImportTask
-        extends TaskBase<Void, GrStatus> {
+        extends TaskBase<GrStatus> {
 
     /** Log tag. */
     private static final String TAG = "GR.ImportTask";

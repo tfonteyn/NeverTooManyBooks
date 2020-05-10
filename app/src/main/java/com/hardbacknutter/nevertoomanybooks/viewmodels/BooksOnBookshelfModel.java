@@ -1131,7 +1131,7 @@ public class BooksOnBookshelfModel
      * Background task to build and retrieve the list of books based on current settings.
      */
     private static class GetBookListTask
-            extends TaskBase<Void, BuilderResult> {
+            extends TaskBase<BuilderResult> {
 
         /** the builder. */
         @NonNull

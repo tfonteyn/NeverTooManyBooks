@@ -115,7 +115,7 @@ public class LibraryThingRegistrationActivity
      * Request a known valid ISBN from LT to see if the user key is valid.
      */
     private static class ValidateKey
-            extends TaskBase<Void, Integer> {
+            extends TaskBase<Integer> {
 
         /** Log tag. */
         private static final String TAG = "LT.ValidateKey";

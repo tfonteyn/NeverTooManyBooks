@@ -782,16 +782,15 @@ public class SearchCoordinator
 
         SearchTask task = new SearchTask(context, site.id, searchEngine, mSearchTaskListener);
         task.setFetchThumbnail(mFetchThumbnail);
-        SearchTask.By how;
 
         if (nativeId != null && !nativeId.isEmpty()
             && (searchEngine instanceof SearchEngine.ByNativeId)) {
-            how = SearchTask.By.NativeId;
+            task.setSearchBy(SearchTask.By.NativeId);
             task.setNativeId(nativeId);
 
         } else if (mIsbn.isValid(true)
                    && (searchEngine instanceof SearchEngine.ByIsbn)) {
-            how = SearchTask.By.ISBN;
+            task.setSearchBy(SearchTask.By.ISBN);
             if (((SearchEngine.ByIsbn) searchEngine).isPreferIsbn10(context)
                 && mIsbn.isIsbn10Compat()) {
                 task.setIsbn(mIsbn.asText(ISBN.Type.ISBN10));
@@ -801,11 +800,11 @@ public class SearchCoordinator
 
         } else if (mIsbn.isValid(false)
                    && (searchEngine instanceof SearchEngine.ByBarcode)) {
-            how = SearchTask.By.Barcode;
+            task.setSearchBy(SearchTask.By.Barcode);
             task.setIsbn(mIsbn.asText());
 
         } else if (searchEngine instanceof SearchEngine.ByText) {
-            how = SearchTask.By.Text;
+            task.setSearchBy(SearchTask.By.Text);
             task.setIsbn(mIsbn.asText());
             task.setAuthor(mAuthorSearchText);
             task.setTitle(mTitleSearchText);
@@ -826,7 +825,7 @@ public class SearchCoordinator
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
             Log.d(TAG, "startSearch|site=" + site);
         }
-        task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, how);
+        task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, (Void) null);
         return true;
     }
 

@@ -50,7 +50,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
  * Rebuild all indexes. Can take several seconds.
  */
 public class RebuildIndexesTask
-        extends TaskBase<Void, Boolean> {
+        extends TaskBase<Boolean> {
 
     /** Log tag. */
     private static final String TAG = "RebuildIndexesTask";

@@ -400,7 +400,7 @@ public final class LanguageUtils {
      * Only build once per Locale.
      */
     public static class BuildLanguageMappingsTask
-            extends TaskBase<Void, Boolean> {
+            extends TaskBase<Boolean> {
 
         /** Log tag. */
         @SuppressWarnings("InnerClassFieldHidesOuterClassField")

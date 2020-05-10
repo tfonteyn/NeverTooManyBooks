@@ -540,7 +540,7 @@ public class CoverBrowserViewModel
      * Fetch a thumbnail and stick it into the gallery.
      */
     static class GetGalleryImageTask
-            extends TaskBase<Void, FileInfo> {
+            extends TaskBase<FileInfo> {
 
         @SuppressWarnings("InnerClassFieldHidesOuterClassField")
         private static final String TAG = "GetGalleryImageTask";
@@ -606,7 +606,7 @@ public class CoverBrowserViewModel
      * Fetch a full-size image and stick it into the ImageSwitcher.
      */
     static class GetSwitcherImageTask
-            extends TaskBase<Void, FileInfo> {
+            extends TaskBase<FileInfo> {
 
         @SuppressWarnings("InnerClassFieldHidesOuterClassField")
         private static final String TAG = "GetSwitcherImageTask";

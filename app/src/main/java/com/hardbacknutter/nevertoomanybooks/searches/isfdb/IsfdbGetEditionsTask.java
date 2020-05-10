@@ -45,7 +45,7 @@ import com.hardbacknutter.nevertoomanybooks.tasks.TaskBase;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 
 public class IsfdbGetEditionsTask
-        extends TaskBase<Void, ArrayList<Edition>> {
+        extends TaskBase<ArrayList<Edition>> {
 
     /** Log tag. */
     private static final String TAG = "IsfdbGetEditionsTask";

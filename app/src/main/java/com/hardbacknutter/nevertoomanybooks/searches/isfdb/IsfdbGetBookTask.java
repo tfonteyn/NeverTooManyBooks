@@ -51,7 +51,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
  * Hard coded not to fetch any images.
  */
 public class IsfdbGetBookTask
-        extends TaskBase<Void, Bundle> {
+        extends TaskBase<Bundle> {
 
     /** Log tag. */
     private static final String TAG = "IsfdbGetBookTask";

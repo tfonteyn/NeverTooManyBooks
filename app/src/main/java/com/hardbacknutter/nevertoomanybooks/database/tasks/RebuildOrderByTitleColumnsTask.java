@@ -51,7 +51,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
  * Rebuild all OrderBy columns. Can take several seconds.
  */
 public class RebuildOrderByTitleColumnsTask
-        extends TaskBase<Void, Boolean> {
+        extends TaskBase<Boolean> {
 
     /** Log tag. */
     private static final String TAG = "RebuildOrderByTitle";

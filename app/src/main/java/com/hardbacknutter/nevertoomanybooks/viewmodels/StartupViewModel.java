@@ -310,7 +310,7 @@ public class StartupViewModel
         }
     }
 
-    private void startTask(@NonNull final TaskBase<Void, Boolean> task,
+    private void startTask(@NonNull final TaskBase<Boolean> task,
                            final boolean inParallel) {
         synchronized (mAllTasks) {
             mAllTasks.add(task.getTaskId());

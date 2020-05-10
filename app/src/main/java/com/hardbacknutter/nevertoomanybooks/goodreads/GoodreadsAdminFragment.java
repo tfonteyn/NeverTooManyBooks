@@ -149,7 +149,7 @@ public class GoodreadsAdminFragment
     private void onImport(final boolean isSync) {
         Snackbar.make(mVb.getRoot(), R.string.progress_msg_connecting, Snackbar.LENGTH_LONG).show();
 
-        final TaskBase<Void, GrStatus> task =
+        final TaskBase<GrStatus> task =
                 new ImportTask(isSync, mGoodreadsTaskModel.getTaskListener());
 
 //        mProgressDialog = ProgressDialogFragment
@@ -164,7 +164,7 @@ public class GoodreadsAdminFragment
     private void onSend(final boolean updatesOnly) {
         Snackbar.make(mVb.getRoot(), R.string.progress_msg_connecting, Snackbar.LENGTH_LONG).show();
 
-        final TaskBase<Void, GrStatus> task =
+        final TaskBase<GrStatus> task =
                 new SendBooksTask(updatesOnly, mGoodreadsTaskModel.getTaskListener());
         mGoodreadsTaskModel.setTask(task);
         task.execute();

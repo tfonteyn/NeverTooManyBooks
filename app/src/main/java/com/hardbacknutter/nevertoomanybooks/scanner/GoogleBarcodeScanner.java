@@ -173,7 +173,7 @@ public class GoogleBarcodeScanner
      * Request download for engine barcode
      */
     public static class PreloadGoogleScanner
-            extends TaskBase<Void, Boolean> {
+            extends TaskBase<Boolean> {
 
         /** Log tag. */
         private static final String TAG = "PreloadGoogleScanner";

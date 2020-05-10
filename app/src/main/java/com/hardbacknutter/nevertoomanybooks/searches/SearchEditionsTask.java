@@ -49,7 +49,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
  * Fetch alternative edition isbn's.
  */
 public class SearchEditionsTask
-        extends TaskBase<Void, ArrayList<String>> {
+        extends TaskBase<ArrayList<String>> {
 
     /** Log tag. */
     private static final String TAG = "SearchEditionsTask";

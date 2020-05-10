@@ -52,7 +52,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.NetworkUtils;
  * Before we can access Goodreads, we must authorize our application to do so.
  */
 public class RequestAuthTask
-        extends TaskBase<Void, GrStatus> {
+        extends TaskBase<GrStatus> {
 
     /** Log tag. */
     private static final String TAG = "GR.RequestAuthTask";
