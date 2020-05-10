@@ -41,10 +41,17 @@ import com.hardbacknutter.nevertoomanybooks.fields.Fields;
 import com.hardbacknutter.nevertoomanybooks.fields.accessors.EditTextAccessor;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.LongNumberFormatter;
-import com.hardbacknutter.nevertoomanybooks.utils.ViewFocusOrder;
 
 public class EditBookNativeIdFragment
         extends EditBookBaseFragment {
+
+    private static final String TAG = "EditBookNativeIdFrag";
+
+    @NonNull
+    @Override
+    Fields getFields() {
+        return mFragmentVM.getFields(TAG);
+    }
 
     @Override
     @Nullable
@@ -55,17 +62,8 @@ public class EditBookNativeIdFragment
     }
 
     @Override
-    public void onViewCreated(@NonNull final View view,
-                              @Nullable final Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
-        ViewFocusOrder.fix(view);
-    }
-
-    @Override
-    protected void onInitFields() {
-        super.onInitFields();
-        final Fields fields = mFragmentVM.getFields();
+    protected void onInitFields(@NonNull final Fields fields) {
+        super.onInitFields(fields);
 
         // These FieldFormatter's can be shared between multiple fields.
         final FieldFormatter<Number> longNumberFormatter = new LongNumberFormatter();
@@ -92,12 +90,15 @@ public class EditBookNativeIdFragment
     }
 
     @Override
-    void onPopulateViews(@NonNull final Book book) {
-        super.onPopulateViews(book);
+    void onPopulateViews(@NonNull final Fields fields,
+                         @NonNull final Book book) {
+        super.onPopulateViews(fields, book);
 
         // hide unwanted fields
+        // Force hidden fields to stay hidden; this will allow us to temporarily remove
+        // some sites without removing the data.
         //noinspection ConstantConditions
-        mFragmentVM.getFields().resetVisibility(getView(), false, true);
+        fields.setVisibility(getView(), false, true);
     }
 
 //    /**

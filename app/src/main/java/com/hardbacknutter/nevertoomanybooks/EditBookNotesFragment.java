@@ -52,42 +52,24 @@ import com.hardbacknutter.nevertoomanybooks.fields.formatters.DateFieldFormatter
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.DoubleNumberFormatter;
 import com.hardbacknutter.nevertoomanybooks.fields.validators.FieldValidator;
 import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.ViewFocusOrder;
 
 public class EditBookNotesFragment
         extends EditBookBaseFragment {
+
+    private static final String TAG = "EditBookNotesFragment";
 
     /**
      * The cross validator for read-start and read-end date fields.
      * The error is always shown on the 'end' field.
      */
-    private final FieldValidator<String, TextView> mReadStartEndValidator = field -> {
-        // we ignore the passed field, so we can use this validator for both fields.
-        Field<String, TextView> startField = mFragmentVM.getFields().getField(R.id.read_start);
-        Field<String, TextView> endField = mFragmentVM.getFields().getField(R.id.read_end);
+    private final FieldValidator<String, TextView> mReadStartEndValidator =
+            this::validateReadStartAndEndFields;
 
-        String start = startField.getAccessor().getValue();
-        if (start == null || start.isEmpty()) {
-            startField.getAccessor().setError(null);
-            endField.getAccessor().setError(null);
-            return;
-        }
-
-        String end = endField.getAccessor().getValue();
-        if (end == null || end.isEmpty()) {
-            startField.getAccessor().setError(null);
-            endField.getAccessor().setError(null);
-            return;
-        }
-
-        if (start.compareToIgnoreCase(end) > 0) {
-            endField.getAccessor().setError(getString(R.string.vldt_read_start_after_end));
-
-        } else {
-            startField.getAccessor().setError(null);
-            endField.getAccessor().setError(null);
-        }
-    };
+    @NonNull
+    @Override
+    Fields getFields() {
+        return mFragmentVM.getFields(TAG);
+    }
 
     @Override
     @Nullable
@@ -98,39 +80,27 @@ public class EditBookNotesFragment
     }
 
     @Override
-    public void onViewCreated(@NonNull final View view,
-                              @Nullable final Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
-        ViewFocusOrder.fix(view);
-    }
-
-    @Override
     public void onResume() {
-        // the super will trigger the population of all defined Fields and their Views.
+        // hook up the Views, and calls {@link #onPopulateViews}
         super.onResume();
-        // With all Views populated, (re-)add the helpers
+        // With all Views populated, (re-)add the helpers which rely on fields having valid views
 
         addReadCheckboxOnClickListener();
 
         addAutocomplete(R.id.price_paid_currency, mFragmentVM.getPricePaidCurrencyCodes());
         addAutocomplete(R.id.location, mFragmentVM.getLocations());
 
-        addDatePicker(mFragmentVM.getFields().getField(R.id.date_acquired),
-                      R.string.lbl_date_acquired, true);
+        addDatePicker(getField(R.id.date_acquired), R.string.lbl_date_acquired, true);
 
         addDateRangePicker(R.string.lbl_read,
-                           R.string.lbl_read_start,
-                           mFragmentVM.getFields().getField(R.id.read_start),
-                           R.string.lbl_read_end,
-                           mFragmentVM.getFields().getField(R.id.read_end),
+                           R.string.lbl_read_start, getField(R.id.read_start),
+                           R.string.lbl_read_end, getField(R.id.read_end),
                            true);
     }
 
     @Override
-    protected void onInitFields() {
-        super.onInitFields();
-        final Fields fields = mFragmentVM.getFields();
+    protected void onInitFields(@NonNull final Fields fields) {
+        super.onInitFields(fields);
 
         fields.add(R.id.cbx_read, new CompoundButtonAccessor(), DBDefinitions.KEY_READ);
         fields.add(R.id.cbx_signed, new CompoundButtonAccessor(), DBDefinitions.KEY_SIGNED);
@@ -183,12 +153,13 @@ public class EditBookNotesFragment
     }
 
     @Override
-    void onPopulateViews(@NonNull final Book book) {
-        super.onPopulateViews(book);
+    void onPopulateViews(@NonNull final Fields fields,
+                         @NonNull final Book book) {
+        super.onPopulateViews(fields, book);
 
         // hide unwanted fields
         //noinspection ConstantConditions
-        mFragmentVM.getFields().resetVisibility(getView(), false, false);
+        fields.setVisibility(getView(), false, false);
     }
 
     /**
@@ -198,15 +169,14 @@ public class EditBookNotesFragment
      */
     private void addReadCheckboxOnClickListener() {
         // only bother when it's in use
-        final Field readCbx = mFragmentVM.getFields().getField(R.id.cbx_read);
+        final Field readCbx = getField(R.id.cbx_read);
         //noinspection ConstantConditions
         if (readCbx.isUsed(getContext())) {
             //noinspection ConstantConditions
             readCbx.getAccessor().getView().setOnClickListener(v -> {
                 final Checkable cb = (Checkable) v;
                 if (cb.isChecked()) {
-                    final Field<String, TextView> readEnd =
-                            mFragmentVM.getFields().getField(R.id.read_end);
+                    final Field<String, TextView> readEnd = getField(R.id.read_end);
                     if (readEnd.getAccessor().isEmpty()) {
                         final String value = DateUtils.localSqlDateForToday();
                         // Update, display and notify
@@ -215,6 +185,34 @@ public class EditBookNotesFragment
                     }
                 }
             });
+        }
+    }
+
+    private void validateReadStartAndEndFields(@NonNull final Field<String, TextView> field) {
+        // we ignore the passed field, so we can use this validator for both fields.
+        final Field<String, TextView> startField = getField(R.id.read_start);
+        final Field<String, TextView> endField = getField(R.id.read_end);
+
+        final String start = startField.getAccessor().getValue();
+        if (start == null || start.isEmpty()) {
+            startField.getAccessor().setError(null);
+            endField.getAccessor().setError(null);
+            return;
+        }
+
+        final String end = endField.getAccessor().getValue();
+        if (end == null || end.isEmpty()) {
+            startField.getAccessor().setError(null);
+            endField.getAccessor().setError(null);
+            return;
+        }
+
+        if (start.compareToIgnoreCase(end) > 0) {
+            endField.getAccessor().setError(getString(R.string.vldt_read_start_after_end));
+
+        } else {
+            startField.getAccessor().setError(null);
+            endField.getAccessor().setError(null);
         }
     }
 }

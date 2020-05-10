@@ -28,7 +28,7 @@
 package com.hardbacknutter.nevertoomanybooks.viewmodels;
 
 import android.content.Context;
-import android.os.Bundle;
+import android.util.Log;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.IntRange;
@@ -37,7 +37,10 @@ import androidx.annotation.Nullable;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.hardbacknutter.nevertoomanybooks.BookBaseFragment;
+import java.util.HashMap;
+import java.util.Map;
+
+import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.fields.Fields;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsHandler;
@@ -46,10 +49,14 @@ import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 
 /**
  * Used by the set of fragments that allow viewing and editing a Book.
+ * <ul>
+ *     <li>Hold the field lists</li>
+ *     <li>Keep track of the currently in-action CoverHandler</li>
+ *     <li>Holds a GoodreadsTaskListener with exposed observers for its messages</li>
+ * </ul>
  */
 public abstract class BookBaseFragmentViewModel
-        extends ViewModel
-        implements BookBaseFragment.FieldsViewModel {
+        extends ViewModel {
 
     /** Log tag. */
     private static final String TAG = "BookBaseFragmentVM";
@@ -57,10 +64,12 @@ public abstract class BookBaseFragmentViewModel
     private final MutableLiveData<String> mUserMessage = new MutableLiveData<>();
     private final MutableLiveData<Boolean> mNeedsGoodreads = new MutableLiveData<>();
 
-    /** The fields collection handled in this model. */
-    private final Fields mFields = new Fields();
+    /** The fields collection handled in this model. They key is the fragment tag. */
+    private final Map<String, Fields> mFieldsMap = new HashMap<>();
     /** Database Access. */
     protected DAO mDb;
+    /** Prevent needless re-init of fields after a fragment was recreated (screen rotation etc.) */
+    private boolean mFieldsAreInitialised;
     /** Track on which cover view the context menu was used. */
     @IntRange(from = -1)
     private int mCurrentCoverHandlerIndex = -1;
@@ -76,21 +85,41 @@ public abstract class BookBaseFragmentViewModel
         }
     }
 
+    /**
+     * Pseudo constructor.
+     */
     @CallSuper
-    public void init(@Nullable final Bundle args) {
+    public void init() {
         if (mDb == null) {
             mDb = new DAO(TAG);
         }
     }
 
     @NonNull
-    public DAO getDb() {
-        return mDb;
+    public Fields getFields(@Nullable final String key) {
+        Fields fields;
+        synchronized (mFieldsMap) {
+            fields = mFieldsMap.get(key);
+            if (fields == null) {
+                fields = new Fields();
+                mFieldsMap.put(key, fields);
+            }
+        }
+
+        if (BuildConfig.DEBUG) {
+            for (Map.Entry<String, Fields> entry : mFieldsMap.entrySet()) {
+                Log.d(TAG, "getFields|" + entry.getKey() + "|size=" + entry.getValue().size());
+            }
+        }
+        return fields;
     }
 
-    @NonNull
-    public Fields getFields() {
-        return mFields;
+    public boolean shouldInitFields() {
+        return !mFieldsAreInitialised;
+    }
+
+    public void setFieldsAreInitialised() {
+        mFieldsAreInitialised = true;
     }
 
     /**
@@ -163,5 +192,4 @@ public abstract class BookBaseFragmentViewModel
         }
         return mGoodreadsTaskListener;
     }
-
 }

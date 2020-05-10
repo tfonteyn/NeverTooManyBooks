@@ -43,10 +43,17 @@ import com.hardbacknutter.nevertoomanybooks.fields.accessors.EditTextAccessor;
 import com.hardbacknutter.nevertoomanybooks.fields.accessors.TextViewAccessor;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.DateFieldFormatter;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.DoubleNumberFormatter;
-import com.hardbacknutter.nevertoomanybooks.utils.ViewFocusOrder;
 
 public class EditBookPublicationFragment
         extends EditBookBaseFragment {
+
+    private static final String TAG = "EditBookPublicationFrag";
+
+    @NonNull
+    @Override
+    Fields getFields() {
+        return mFragmentVM.getFields(TAG);
+    }
 
     @Override
     @Nullable
@@ -59,33 +66,31 @@ public class EditBookPublicationFragment
     @Override
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
+        // setup common stuff and calls onInitFields()
         super.onViewCreated(view, savedInstanceState);
-
-        ViewFocusOrder.fix(view);
     }
 
     @Override
     public void onResume() {
-        // the super will trigger the population of all defined Fields and their Views.
+        // hook up the Views, and calls {@link #onPopulateViews}
         super.onResume();
+        // With all Views populated, (re-)add the helpers which rely on fields having valid views
 
-        // With all Views populated, (re-)add the helpers
         addAutocomplete(R.id.format, mFragmentVM.getFormats());
         addAutocomplete(R.id.color, mFragmentVM.getColors());
         addAutocomplete(R.id.publisher, mFragmentVM.getPublishers());
         addAutocomplete(R.id.price_listed_currency, mFragmentVM.getListPriceCurrencyCodes());
 
-        addPartialDatePicker(mFragmentVM.getFields().getField(R.id.date_published),
+        addPartialDatePicker(getField(R.id.date_published),
                              R.string.lbl_date_published, false);
 
-        addPartialDatePicker(mFragmentVM.getFields().getField(R.id.first_publication),
+        addPartialDatePicker(getField(R.id.first_publication),
                              R.string.lbl_first_publication, false);
     }
 
     @Override
-    protected void onInitFields() {
-        super.onInitFields();
-        final Fields fields = mFragmentVM.getFields();
+    protected void onInitFields(@NonNull final Fields fields) {
+        super.onInitFields(fields);
 
         fields.add(R.id.pages, new EditTextAccessor<>(), DBDefinitions.KEY_PAGES)
               .setRelatedFields(R.id.lbl_pages);
@@ -120,11 +125,12 @@ public class EditBookPublicationFragment
     }
 
     @Override
-    void onPopulateViews(@NonNull final Book book) {
-        super.onPopulateViews(book);
+    void onPopulateViews(@NonNull final Fields fields,
+                         @NonNull final Book book) {
+        super.onPopulateViews(fields, book);
 
         // hide unwanted fields
         //noinspection ConstantConditions
-        mFragmentVM.getFields().resetVisibility(getView(), false, false);
+        fields.setVisibility(getView(), false, false);
     }
 }

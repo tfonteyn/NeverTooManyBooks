@@ -103,24 +103,37 @@ public abstract class EditBookBaseFragment
         onDateSet(fieldIdEnd, selection.second);
     };
 
-    /** Used by the base class. Subclasses and this class should bypass this method. */
-    @Override
-    Fields getFields() {
-        return mFragmentVM.getFields();
+    /**
+     * Convenience wrapper.
+     * <p>
+     * Return the Field associated with the passed ID.
+     *
+     * @param <T> type of Field value.
+     * @param <V> type of View for this field.
+     * @param id  Field/View ID
+     *
+     * @return Associated Field.
+     *
+     * @throws IllegalArgumentException if the field does not exist.
+     */
+    @NonNull
+    <T, V extends View> Field<T, V> getField(@IdRes final int id)
+            throws IllegalArgumentException {
+        return getFields().getField(id);
     }
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        String tag = getTag();
-        Objects.requireNonNull(tag, ErrorMsg.NULL_FRAGMENT_TAG);
+        final String fragmentTag = getTag();
+        Objects.requireNonNull(fragmentTag, ErrorMsg.NULL_FRAGMENT_TAG);
 
         //noinspection ConstantConditions
         mFragmentVM = new ViewModelProvider(getActivity())
-                .get(tag, EditBookFragmentViewModel.class);
+                .get(fragmentTag, EditBookFragmentViewModel.class);
 
-        mFragmentVM.init(getArguments());
+        mFragmentVM.init();
     }
 
     @Override
@@ -136,15 +149,24 @@ public abstract class EditBookBaseFragment
                 RequestAuthTask.prompt(context, mFragmentVM.getGoodreadsTaskListener(context));
             }
         });
-        onInitFields();
 
-        // We hide the tab bar when editing Authors/Series on pop-up screens.
-        // Make sure to set it visible here.
-        //noinspection ConstantConditions
-        final View tabBarLayout = getActivity().findViewById(R.id.tab_panel);
-        if (tabBarLayout != null) {
-            tabBarLayout.setVisibility(View.VISIBLE);
+        if (mFragmentVM.shouldInitFields()) {
+            onInitFields(getFields());
+            mFragmentVM.setFieldsAreInitialised();
         }
+    }
+
+    /**
+     * Init all Fields, and add them the fields collection.
+     * <p>
+     * Note that Field views are <strong>NOT AVAILABLE</strong>.
+     * <p>
+     * The fields will be populated in {@link #onPopulateViews}
+     *
+     * @param fields the local fields collection to add your fields to
+     */
+    @CallSuper
+    void onInitFields(@NonNull final Fields fields) {
     }
 
     @Override
@@ -160,7 +182,7 @@ public abstract class EditBookBaseFragment
             mBookViewModel.addFieldsFromBundle(getContext(), getArguments());
         }
 
-        // hook up the Views, and populate them with the book data
+        // hook up the Views, and calls {@link #onPopulateViews}
         super.onResume();
     }
 
@@ -188,18 +210,6 @@ public abstract class EditBookBaseFragment
     }
 
     /**
-     * Init all Fields, and add them the {@link #getFields()} collection.
-     * <p>
-     * Note that Views are <strong>NOT AVAILABLE</strong>.
-     * <p>
-     * Book data is available from {@link #mBookViewModel} but {@link #onResume()} is
-     * were the fields/Views are normally loaded with that data.
-     */
-    @CallSuper
-    void onInitFields() {
-    }
-
-    /**
      * Trigger the Fragment to save its Fields to the Book.
      * <p>
      * This is always done, even when the user 'cancel's the edit.
@@ -214,6 +224,7 @@ public abstract class EditBookBaseFragment
         // Avoid saving a 2nd time after the user has initiated saving.
         if (!mBookViewModel.isSaved()) {
             onSaveFields(mBookViewModel.getBook());
+
             //noinspection ConstantConditions
             mBookViewModel.setUnfinishedEdits(getTag(), hasUnfinishedEdits());
         }
@@ -232,7 +243,7 @@ public abstract class EditBookBaseFragment
     @CallSuper
     @Override
     public void onSaveFields(@NonNull final Book book) {
-        mFragmentVM.getFields().getAll(book);
+        getFields().getAll(book);
     }
 
     /**
@@ -243,7 +254,7 @@ public abstract class EditBookBaseFragment
      */
     void addAutocomplete(@IdRes final int fieldId,
                          @NonNull final List<String> list) {
-        final Field field = mFragmentVM.getFields().getField(fieldId);
+        final Field field = getField(fieldId);
         // only bother when it's in use and we have a list
         //noinspection ConstantConditions
         if (field.isUsed(getContext()) && !list.isEmpty()) {
@@ -361,7 +372,6 @@ public abstract class EditBookBaseFragment
         }
     }
 
-
     private void onDateSet(@IdRes final int fieldId,
                            @Nullable final Long selection) {
         String value;
@@ -375,12 +385,12 @@ public abstract class EditBookBaseFragment
 
     private void onDateSet(@IdRes final int fieldId,
                            @NonNull final String value) {
-        Field<String, TextView> field = mFragmentVM.getFields().getField(fieldId);
+        Field<String, TextView> field = getField(fieldId);
         field.getAccessor().setValue(value);
         field.onChanged(true);
 
         if (fieldId == R.id.read_end) {
-            mFragmentVM.getFields().getField(R.id.cbx_read).getAccessor().setValue(true);
+            getField(R.id.cbx_read).getAccessor().setValue(true);
         }
     }
 }

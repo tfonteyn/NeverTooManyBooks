@@ -123,9 +123,10 @@ public class BookDetailsFragment
         }
     };
 
+    @NonNull
     @Override
     Fields getFields() {
-        return mFragmentVM.getFields();
+        return mFragmentVM.getFields(null);
     }
 
     @Override
@@ -219,8 +220,9 @@ public class BookDetailsFragment
     @CallSuper
     @Override
     public void onResume() {
-        // The parent will kick of the process that triggers {@link #onPopulateViews}.
+        // hook up the Views, and calls {@link #onPopulateViews}
         super.onResume();
+
         // No ViewPager2 involved, override the parent (see google bug comment there)
         setHasOptionsMenu(true);
 
@@ -315,17 +317,17 @@ public class BookDetailsFragment
      *
      * <br><br>{@inheritDoc}
      *
+     * @param fields
      * @param book to load
      */
     @Override
-    protected void onPopulateViews(@NonNull final Book book) {
-        // do all the defined Field's
-        super.onPopulateViews(book);
+    protected void onPopulateViews(@NonNull final Fields fields,
+                                   @NonNull final Book book) {
+        super.onPopulateViews(fields, book);
 
         //noinspection ConstantConditions
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
 
-        // handle special fields
         if (DBDefinitions.isUsed(prefs, DBDefinitions.KEY_LOANEE)) {
             populateLoanedToField(mBookViewModel.getLoanee());
         }
@@ -347,7 +349,7 @@ public class BookDetailsFragment
 
         // hide unwanted and empty fields
         //noinspection ConstantConditions
-        mFragmentVM.getFields().resetVisibility(getView(), true, false);
+        fields.setVisibility(getView(), true, false);
 
         // Hide the Publication section label if none of the publishing fields are shown.
         setSectionLabelVisibility(R.id.lbl_publication_section,
@@ -503,7 +505,7 @@ public class BookDetailsFragment
 
     @Override
     public void onPrepareOptionsMenu(@NonNull final Menu menu) {
-        Book book = mBookViewModel.getBook();
+        final Book book = mBookViewModel.getBook();
 
         final boolean isSaved = !book.isNew();
         final boolean isRead = book.getBoolean(DBDefinitions.KEY_READ);
@@ -534,7 +536,6 @@ public class BookDetailsFragment
     @Override
     @CallSuper
     public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
-
         final Book book = mBookViewModel.getBook();
 
         switch (item.getItemId()) {
@@ -566,8 +567,7 @@ public class BookDetailsFragment
             case R.id.MENU_BOOK_UNREAD: {
                 // toggle 'read' status of the book
                 final boolean value = mBookViewModel.toggleRead();
-                final Field<Boolean, CompoundButton> field =
-                        mFragmentVM.getFields().getField(R.id.cbx_read);
+                final Field<Boolean, CompoundButton> field = getFields().getField(R.id.cbx_read);
                 field.getAccessor().setValue(value);
                 //noinspection ConstantConditions
                 field.setVisibility(getView(), true, false);
@@ -648,12 +648,12 @@ public class BookDetailsFragment
 
             if ((e1.getX() - e2.getX()) > SENSITIVITY) {
                 if (mFragmentVM.move(mBookViewModel.getBook(), true)) {
-                    populateViews();
+                    populateViews(getFields());
                     return true;
                 }
             } else if ((e2.getX() - e1.getX()) > SENSITIVITY) {
                 if (mFragmentVM.move(mBookViewModel.getBook(), false)) {
-                    populateViews();
+                    populateViews(getFields());
                     return true;
                 }
             }

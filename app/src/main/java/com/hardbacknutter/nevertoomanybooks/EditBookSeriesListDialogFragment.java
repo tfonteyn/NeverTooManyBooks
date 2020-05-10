@@ -167,7 +167,7 @@ public class EditBookSeriesListDialogFragment
             return false;
         });
         // set up the list view. The adapter is setup in onPopulateViews
-        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
+        final LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         mVb.seriesList.setLayoutManager(layoutManager);
         mVb.seriesList.setHasFixedSize(true);
 

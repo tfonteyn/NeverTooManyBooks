@@ -59,6 +59,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.fields.Fields;
 import com.hardbacknutter.nevertoomanybooks.searches.amazon.AmazonSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.utils.PermissionsHelper;
+import com.hardbacknutter.nevertoomanybooks.utils.ViewFocusOrder;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.BookViewModel;
 
 /**
@@ -72,16 +73,15 @@ public abstract class BookBaseFragment
 
     /** Log tag. */
     private static final String TAG = "BookBaseFragment";
-
-    /** simple indeterminate progress spinner to show while doing lengthy work. */
-    ProgressBar mProgressBar;
-
-    /** The book. Must be in the Activity scope. */
-    BookViewModel mBookViewModel;
-
     /** Handles cover replacement, rotation, etc. */
     final CoverHandler[] mCoverHandler = new CoverHandler[2];
-
+    /** Forwarding listener; send the selected image to the correct handler. */
+    private final CoverBrowserDialogFragment.OnFileSpecResult mOnFileSpecResult =
+            (cIdx, fileSpec) -> mCoverHandler[cIdx].onFileSpecResult(fileSpec);
+    /** simple indeterminate progress spinner to show while doing lengthy work. */
+    ProgressBar mProgressBar;
+    /** The book. Must be in the Activity scope. */
+    BookViewModel mBookViewModel;
     /** Listener for all field changes. Must keep strong reference. */
     private final Fields.AfterChangeListener mAfterChangeListener =
             new Fields.AfterChangeListener() {
@@ -91,10 +91,7 @@ public abstract class BookBaseFragment
                 }
             };
 
-    /** Forwarding listener; send the selected image to the correct handler. */
-    private final CoverBrowserDialogFragment.OnFileSpecResult mOnFileSpecResult =
-            (cIdx, fileSpec) -> mCoverHandler[cIdx].onFileSpecResult(fileSpec);
-
+    @NonNull
     abstract Fields getFields();
 
     @Override
@@ -136,6 +133,7 @@ public abstract class BookBaseFragment
             ((CoverBrowserDialogFragment) childFragment).setListener(mOnFileSpecResult);
         }
     }
+
     /**
      * Hook up the Views, and populate them with the book data.
      *
@@ -155,7 +153,7 @@ public abstract class BookBaseFragment
         setHasOptionsMenu(isVisible());
 
         // load the book data into the views
-        populateViews();
+        populateViews(getFields());
     }
 
     /**
@@ -166,25 +164,29 @@ public abstract class BookBaseFragment
      * but can explicitly be called after {@link Book#reload}.
      * <p>
      * This is final; Inheritors should implement {@link #onPopulateViews}.
+     *
+     * @param fields current field collection
      */
-    final void populateViews() {
+    final void populateViews(@NonNull final Fields fields) {
+        final Book book = mBookViewModel.getBook();
         //noinspection ConstantConditions
-        getFields().setParentView(getView());
-        getFields().setAfterChangeListener(null);
+        fields.setParentView(getView());
+        fields.setAfterChangeListener(null);
         // preserve the 'dirty' status.
         final boolean wasDirty = mBookViewModel.isDirty();
         // make it so!
-        onPopulateViews(mBookViewModel.getBook());
+        onPopulateViews(fields, book);
         // restore the dirt-status and install the AfterChangeListener
         mBookViewModel.setDirty(wasDirty);
-        getFields().setAfterChangeListener(mAfterChangeListener);
+        fields.setAfterChangeListener(mAfterChangeListener);
 
-        // Set the activity title depending on View or Edit mode.
-        // This is a good place to do this, as we use data from the book for the title.
+        // All views should now have proper visibility set, so fix their focus order.
+        ViewFocusOrder.fix(getView());
+
+        // Set the activity title
         //noinspection ConstantConditions
         final ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
         if (actionBar != null) {
-            Book book = mBookViewModel.getBook();
             if (book.isNew()) {
                 // EDIT NEW book
                 actionBar.setTitle(R.string.lbl_add_book);
@@ -202,10 +204,16 @@ public abstract class BookBaseFragment
      * This is where you should populate all the fields with the values coming from the book.
      * The base class (this one) manages all the actual fields, but 'special' fields can/should
      * be handled in overrides, calling super as the first step.
+     * <p>
+     * Do not call this method directly, instead call {@link #populateViews(Fields)}.
+     *
+     * @param fields current field collection
+     * @param book   loaded book
      */
     @CallSuper
-    void onPopulateViews(@NonNull final Book book) {
-        getFields().setAll(book);
+    void onPopulateViews(@NonNull final Fields fields,
+                         @NonNull final Book book) {
+        fields.setAll(book);
     }
 
     @Override
@@ -321,11 +329,5 @@ public abstract class BookBaseFragment
                 super.onActivityResult(requestCode, resultCode, data);
                 break;
         }
-    }
-
-    public interface FieldsViewModel {
-
-        @NonNull
-        Fields getFields();
     }
 }

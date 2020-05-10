@@ -44,7 +44,6 @@ import androidx.viewpager2.adapter.FragmentStateAdapter;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
 import java.util.ArrayList;
@@ -70,9 +69,10 @@ public class EditBookActivity
 
     /** Log tag. */
     private static final String TAG = "EditBookActivity";
-
+    /** Currently displayed tab. */
     private static final String BKEY_TAB = TAG + ":tab";
 
+    /** Host for the tabbed fragments. */
     private ViewPager2 mViewPager;
     private TabAdapter mViewPagerAdapter;
 
@@ -103,8 +103,7 @@ public class EditBookActivity
         mViewPager = findViewById(R.id.pager);
         mViewPager.setAdapter(mViewPagerAdapter);
 
-        TabLayout tabLayout = findViewById(R.id.tab_panel);
-        new TabLayoutMediator(tabLayout, mViewPager, (tab, position) ->
+        new TabLayoutMediator(findViewById(R.id.tab_panel), mViewPager, (tab, position) ->
                 tab.setText(getString(mViewPagerAdapter.getTabTitle(position))))
                 .attach();
 
@@ -213,35 +212,34 @@ public class EditBookActivity
     }
 
     /**
-     * Called when the user clicks 'save'.
-     * <p>
-     * Validates the data.<br>
-     * Checks if the book already exists (isbn search) when the user is creating a book;
-     * if so we prompt to confirm.
+     * Prepare data for saving.
      *
-     * <strong>Dev. note:</strong> we explicitly check for isResumed() fragments.
-     * For now, there will only ever be a single (front/visible), but this code
-     * should be able to cope with future layouts showing multiple fragments at once (flw)
+     * <ol>
+     *     <li>Check all fragments for having properly saved their data</li>
+     *     <li>Validate the data</li>
+     *     <li>Check if the book already exists</li>
+     *     <li>If all is fine, calls {@link #saveBook()}</li>
+     * </ol>
      *
      * @param checkUnfinishedEdits Should be {@code true} for the initial call.
      *                             If there are unfinished edits, and the user clicks on
-     *                             "save" when prompted, this method will get called again
+     *                             "save" when prompted, this method will call itself
      *                             with {@code false}
      */
     private void prepareSave(final boolean checkUnfinishedEdits) {
         final Book book = mBookViewModel.getBook();
         final Collection<String> unfinishedEdits = mBookViewModel.getUnfinishedEdits();
 
-        // The ViewPager2 fragments are created as children.
         final List<Fragment> fragments = getSupportFragmentManager().getFragments();
         for (int i = 0; i < fragments.size(); i++) {
             final Fragment frag = fragments.get(i);
 
             // 1. Fragments which went through onPause (i.e. are NOT resumed)
-            // These have saved their *confirmed* data to the book, but might have unfinished data
-            // as indicated in EditBookBaseFragment.UnfinishedEdits
+            // have saved their *confirmed* data, but might have unfinished edits
+            // as previously logged in mBookViewModel.getUnfinishedEdits()
             if (!frag.isResumed()
-                && checkUnfinishedEdits && unfinishedEdits.contains(frag.getTag())) {
+                && checkUnfinishedEdits
+                && unfinishedEdits.contains(frag.getTag())) {
                 // bring it to the front; i.e. resume it; the user will see it below the dialog.
                 mViewPager.setCurrentItem(i);
                 StandardDialogs.unsavedEdits(this,
@@ -250,14 +248,17 @@ public class EditBookActivity
                 return;
             }
 
-            // 2. Fragments currently in resumed state (i.e. visible/active)
-            // We need to explicitly tell them to save their data, and manually check
-            // for unfinished edits (basically mimic their onPause)
+            // 2. Fragments in resumed state (i.e. NOT gone through onPause)
+            // must be explicitly told to save their data, and we must manually
+            // check them for unfinished edits.
+            // Note that for now, there will only ever be a single (front/visible), but this code
+            // should be able to cope with future layouts showing multiple fragments at once (flw)
             if (frag.isResumed() && frag instanceof DataEditor) {
                 //noinspection unchecked
                 final DataEditor<Book> dataEditor = (DataEditor<Book>) frag;
                 dataEditor.onSaveFields(book);
-                if (dataEditor.hasUnfinishedEdits() && checkUnfinishedEdits) {
+                if (checkUnfinishedEdits
+                    && dataEditor.hasUnfinishedEdits()) {
                     mViewPager.setCurrentItem(i);
                     StandardDialogs.unsavedEdits(this,
                                                  () -> prepareSave(false),
@@ -296,7 +297,7 @@ public class EditBookActivity
             return;
         }
 
-        // No special actions required...just do it.
+        // All ready, go for it!
         saveBook();
     }
 

@@ -74,6 +74,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
+import com.hardbacknutter.nevertoomanybooks.fields.Fields;
 import com.hardbacknutter.nevertoomanybooks.searches.isfdb.Edition;
 import com.hardbacknutter.nevertoomanybooks.searches.isfdb.IsfdbGetBookTask;
 import com.hardbacknutter.nevertoomanybooks.searches.isfdb.IsfdbGetEditionsTask;
@@ -81,7 +82,6 @@ import com.hardbacknutter.nevertoomanybooks.searches.isfdb.IsfdbSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 import com.hardbacknutter.nevertoomanybooks.utils.Csv;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
-import com.hardbacknutter.nevertoomanybooks.utils.ViewFocusOrder;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.tasks.IsfdbEditionsTaskModel;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.tasks.IsfdbGetBookTaskModel;
 import com.hardbacknutter.nevertoomanybooks.widgets.DiacriticArrayAdapter;
@@ -104,6 +104,8 @@ import com.hardbacknutter.nevertoomanybooks.widgets.ddsupport.StartDragListener;
  */
 public class EditBookTocFragment
         extends EditBookBaseFragment {
+
+    private static final String TAG = "EditBookTocFragment";
 
     /** If the list changes, the book is dirty. */
     private final SimpleAdapterDataObserver mAdapterDataObserver =
@@ -153,7 +155,7 @@ public class EditBookTocFragment
                 public void commitIsfdbData(@Book.TocBits final long tocBitMask,
                                             @NonNull final List<TocEntry> tocEntries) {
                     if (tocBitMask != 0) {
-                        Book book = mBookViewModel.getBook();
+                        final Book book = mBookViewModel.getBook();
                         book.putLong(DBDefinitions.KEY_TOC_BITMASK, tocBitMask);
                         populateTocBits(book);
                     }
@@ -190,12 +192,18 @@ public class EditBookTocFragment
                         mList.add(tocEntry);
                     } else {
                         // find and update
-                        TocEntry original = mList.get(mEditPosition);
+                        final TocEntry original = mList.get(mEditPosition);
                         original.copyFrom(tocEntry);
                     }
                     mListAdapter.notifyDataSetChanged();
                 }
             };
+
+    @NonNull
+    @Override
+    Fields getFields() {
+        return mFragmentVM.getFields(TAG);
+    }
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -217,6 +225,7 @@ public class EditBookTocFragment
     @Override
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
+        // setup common stuff and calls onInitFields()
         super.onViewCreated(view, savedInstanceState);
 
         mIsfdbEditionsTaskModel.onTaskFinished().observe(getViewLifecycleOwner(),
@@ -236,8 +245,6 @@ public class EditBookTocFragment
                 (v, isChecked) -> updateMultiAuthor(isChecked));
         // adding a new entry
         mVb.btnAdd.setOnClickListener(v -> onAdd());
-
-        ViewFocusOrder.fix(view);
     }
 
     @Override
@@ -269,19 +276,19 @@ public class EditBookTocFragment
     }
 
     private void onGetBookTaskFinished(@NonNull final TaskListener.FinishMessage<Bundle> message) {
-        Bundle bookData = message.result;
+        final Bundle bookData = message.result;
         if (bookData == null) {
             Snackbar.make(mVb.getRoot(), R.string.warning_book_not_found,
                           Snackbar.LENGTH_LONG).show();
             return;
         }
 
-        Book book = mBookViewModel.getBook();
+        final Book book = mBookViewModel.getBook();
 
         // update the book with Series information that was gathered from the TOC
-        List<Series> series = bookData.getParcelableArrayList(Book.BKEY_SERIES_ARRAY);
+        final List<Series> series = bookData.getParcelableArrayList(Book.BKEY_SERIES_ARRAY);
         if (series != null && !series.isEmpty()) {
-            ArrayList<Series> inBook = book.getParcelableArrayList(Book.BKEY_SERIES_ARRAY);
+            final ArrayList<Series> inBook = book.getParcelableArrayList(Book.BKEY_SERIES_ARRAY);
             // add, weeding out duplicates
             for (Series s : series) {
                 if (!inBook.contains(s)) {
@@ -301,14 +308,15 @@ public class EditBookTocFragment
         }
 
         // finally the TOC itself;  only put on display for the user to approve
-        boolean hasOtherEditions = (mIsfdbEditions != null) && (mIsfdbEditions.size() > 1);
+        final boolean hasOtherEditions = (mIsfdbEditions != null) && (mIsfdbEditions.size() > 1);
         ConfirmTocDialogFragment.newInstance(bookData, hasOtherEditions)
                                 .show(getChildFragmentManager(), ConfirmTocDialogFragment.TAG);
     }
 
     @Override
-    void onPopulateViews(@NonNull final Book book) {
-        super.onPopulateViews(book);
+    void onPopulateViews(@NonNull final Fields fields,
+                         @NonNull final Book book) {
+        super.onPopulateViews(fields, book);
 
         // used to call Search sites to populate the TOC
         mIsbn = book.getString(DBDefinitions.KEY_ISBN);
@@ -331,7 +339,7 @@ public class EditBookTocFragment
         mListAdapter.registerAdapterDataObserver(mAdapterDataObserver);
         mVb.tocList.setAdapter(mListAdapter);
 
-        SimpleItemTouchHelperCallback sitHelperCallback =
+        final SimpleItemTouchHelperCallback sitHelperCallback =
                 new SimpleItemTouchHelperCallback(mListAdapter);
         mItemTouchHelper = new ItemTouchHelper(sitHelperCallback);
         mItemTouchHelper.attachToRecyclerView(mVb.tocList);
@@ -340,7 +348,7 @@ public class EditBookTocFragment
 
         // hide unwanted fields
         //noinspection ConstantConditions
-        mFragmentVM.getFields().resetVisibility(getView(), false, false);
+        fields.setVisibility(getView(), false, false);
     }
 
     @Override
@@ -379,7 +387,7 @@ public class EditBookTocFragment
         //noinspection SwitchStatementWithTooFewBranches
         switch (item.getItemId()) {
             case R.id.MENU_POPULATE_TOC_FROM_ISFDB: {
-                long isfdbId = mBookViewModel.getBook().getLong(DBDefinitions.KEY_EID_ISFDB);
+                final long isfdbId = mBookViewModel.getBook().getLong(DBDefinitions.KEY_EID_ISFDB);
                 if (isfdbId != 0) {
                     Snackbar.make(mVb.getRoot(), R.string.progress_msg_connecting,
                                   Snackbar.LENGTH_LONG).show();
@@ -503,7 +511,7 @@ public class EditBookTocFragment
                              @NonNull final TocEntry tocEntry) {
         //noinspection ConstantConditions
         StandardDialogs.deleteTocEntry(getContext(), tocEntry, () -> {
-            if (mFragmentVM.getDb().deleteTocEntry(tocEntry.getId()) == 1) {
+            if (mFragmentVM.deleteTocEntry(tocEntry.getId()) == 1) {
                 mList.remove(tocEntry);
                 mListAdapter.notifyItemRemoved(position);
             }
@@ -565,7 +573,6 @@ public class EditBookTocFragment
         mVb.firstPublication.setText("");
     }
 
-
     private boolean isAddSeriesFromToc() {
         //noinspection ConstantConditions
         return PreferenceManager.getDefaultSharedPreferences(getContext())
@@ -598,6 +605,7 @@ public class EditBookTocFragment
             extends DialogFragment {
 
         /** Log tag. */
+        @SuppressWarnings("InnerClassFieldHidesOuterClassField")
         private static final String TAG = "ConfirmTocDialogFrag";
 
         private static final String BKEY_HAS_OTHER_EDITIONS = TAG + ":hasOtherEditions";

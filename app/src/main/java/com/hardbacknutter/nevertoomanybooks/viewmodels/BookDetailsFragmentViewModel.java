@@ -92,41 +92,51 @@ public class BookDetailsFragmentViewModel
     public void init(@NonNull final Context context,
                      @Nullable final Bundle args,
                      @NonNull final Book book) {
-        super.init(args);
+        super.init();
 
         if (args != null) {
-            // got list ?
-            final String navTableName = args.getString(BKEY_NAV_TABLE);
-            if (navTableName != null && !navTableName.isEmpty()) {
-                // ok, we have a list, get the rowId we need to be on.
-                final long rowId = args.getLong(BKEY_NAV_ROW_ID, 0);
-                if (rowId > 0) {
-                    mFlattenedBooklist = new FlattenedBooklist(mDb, navTableName);
-                    // move to book.
-                    if (!mFlattenedBooklist.moveTo(rowId)
-                        // Paranoia: is it the book we wanted ?
-                        || mFlattenedBooklist.getBookId() != book.getId()) {
-                        // Should never happen... flw
-                        mFlattenedBooklist.closeAndDrop();
-                        mFlattenedBooklist = null;
-                    }
-                }
-            }
+            initFlattenedBooklist(args, book);
         }
 
-        if (getFields().isEmpty()) {
-            onInitFields(context);
+        if (shouldInitFields()) {
+            onInitFields(context, getFields(null));
+            setFieldsAreInitialised();
+        }
+    }
+
+    private void initFlattenedBooklist(@NonNull final Bundle args,
+                                       @NonNull final Book book) {
+        // got list ?
+        final String navTableName = args.getString(BKEY_NAV_TABLE);
+        if (navTableName != null && !navTableName.isEmpty()) {
+            // ok, we have a list, get the rowId we need to be on.
+            final long rowId = args.getLong(BKEY_NAV_ROW_ID, 0);
+            if (rowId > 0) {
+                mFlattenedBooklist = new FlattenedBooklist(mDb, navTableName);
+                // move to book.
+                if (!mFlattenedBooklist.moveTo(rowId)
+                    // Paranoia: is it the book we wanted ?
+                    || mFlattenedBooklist.getBookId() != book.getId()) {
+                    // Should never happen... flw
+                    mFlattenedBooklist.closeAndDrop();
+                    mFlattenedBooklist = null;
+                }
+            }
         }
     }
 
     /**
-     * Define all Fields, giving them an ID, a type and an optional formatter.
-     * Fields get setup with the domains they will display.
+     * Init all Fields, and add them the fields collection.
+     * <p>
+     * Note that Field views are <strong>NOT AVAILABLE</strong>.
+     * <p>
+     * The fields will be populated in #onPopulateViews
      *
      * @param context Current context, will not get cached.
+     * @param fields  the local fields collection to add your fields to
      */
-    private void onInitFields(@NonNull final Context context) {
-        final Fields fields = getFields();
+    private void onInitFields(@NonNull final Context context,
+                              @NonNull final Fields fields) {
 
         final Locale userLocale = LocaleUtils.getUserLocale(context);
 

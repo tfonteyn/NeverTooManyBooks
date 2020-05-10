@@ -197,4 +197,15 @@ public class EditBookFragmentViewModel
         }
         return mPricePaidCurrencies;
     }
+
+    /**
+     * Delete an individual TocEntry.
+     *
+     * @param id to delete.
+     *
+     * @return the number of rows affected
+     */
+    public int deleteTocEntry(final long id) {
+        return mDb.deleteTocEntry(id);
+    }
 }

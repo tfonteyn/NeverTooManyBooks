@@ -72,7 +72,6 @@ import com.hardbacknutter.nevertoomanybooks.fields.validators.FieldValidator;
 import com.hardbacknutter.nevertoomanybooks.fields.validators.NonBlankValidator;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.ViewFocusOrder;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.ScannerViewModel;
 
 public class EditBookFieldsFragment
@@ -88,8 +87,7 @@ public class EditBookFieldsFragment
     private final CheckListDialogFragment.CheckListResultsListener mCheckListResultsListener =
             list -> {
                 final int fieldId = mFragmentVM.getCurrentDialogFieldId()[0];
-                final Field<List<Entity>, TextView> field =
-                        mFragmentVM.getFields().getField(fieldId);
+                final Field<List<Entity>, TextView> field = getField(fieldId);
                 mBookViewModel.getBook().putParcelableArrayList(field.getKey(), list);
                 field.getAccessor().setValue(list);
                 field.onChanged(true);
@@ -107,11 +105,17 @@ public class EditBookFieldsFragment
      * TODO: perhaps make this a preference?
      */
     private boolean mStrictIsbn;
-    /** The scanner. */
+    /** The scanner. Must be in the Activity scope. */
     @Nullable
     private ScannerViewModel mScannerModel;
     /** View Binding. */
     private FragmentEditBookFieldsBinding mVb;
+
+    @NonNull
+    @Override
+    Fields getFields() {
+        return mFragmentVM.getFields(TAG);
+    }
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -127,6 +131,14 @@ public class EditBookFieldsFragment
                              @Nullable final ViewGroup container,
                              @Nullable final Bundle savedInstanceState) {
         mVb = FragmentEditBookFieldsBinding.inflate(inflater, container, false);
+        return mVb.getRoot();
+    }
+
+    @Override
+    public void onViewCreated(@NonNull final View view,
+                              @Nullable final Bundle savedInstanceState) {
+        // setup common stuff and calls onInitFields()
+        super.onViewCreated(view, savedInstanceState);
 
         //noinspection ConstantConditions
         if (!DBDefinitions.isUsed(getContext(), DBDefinitions.KEY_THUMBNAIL)) {
@@ -134,58 +146,17 @@ public class EditBookFieldsFragment
             mVb.coverImage1.setVisibility(View.GONE);
         }
 
-        return mVb.getRoot();
-    }
-
-    @Override
-    public void onViewCreated(@NonNull final View view,
-                              @Nullable final Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
         mBookViewModel.getAuthorList().observe(getViewLifecycleOwner(), authors -> {
-            final Field<List<Author>, TextView> field = getFields().getField(R.id.author);
+            final Field<List<Author>, TextView> field = getField(R.id.author);
             field.getAccessor().setValue(authors);
             field.validate();
         });
 
         mBookViewModel.getSeriesList().observe(getViewLifecycleOwner(), series -> {
-            final Field<List<Series>, TextView> field = getFields().getField(R.id.series_title);
+            final Field<List<Series>, TextView> field = getField(R.id.series_title);
             field.getAccessor().setValue(series);
             field.validate();
         });
-
-        ViewFocusOrder.fix(view);
-    }
-
-    @Override
-    public void onResume() {
-        //noinspection ConstantConditions
-        mBookViewModel.pruneAuthors(getContext());
-        mBookViewModel.pruneSeries(getContext());
-
-        // the super will trigger the population of all defined Fields and their Views.
-        super.onResume();
-
-        // Always validate author here. We do this for the following scenario:
-        // User opens book, and clicks on the author field.
-        // -> new fragment overlays, user empties the author list and clicks 'back'
-        // --> we need to flag up that the author list is empty.
-        // Note that this does mean we will flag up the author as empty when
-        // we get here when the user simply wants to add a book. Oh well...
-        mFragmentVM.getFields().getField(R.id.author).validate();
-
-        // With all Views populated, (re-)add the helpers
-        addAutocomplete(R.id.genre, mFragmentVM.getGenres());
-        addAutocomplete(R.id.language, mFragmentVM.getLanguagesCodes());
-
-        mIsbnValidationTextWatcher = new ISBN.ValidationTextWatcher(mVb.lblIsbn, mVb.isbn,
-                                                                    mStrictIsbn);
-        mVb.isbn.addTextChangedListener(mIsbnValidationTextWatcher);
-
-        mIsbnCleanupTextWatcher = new ISBN.CleanupTextWatcher(mVb.isbn);
-        if (mStrictIsbn) {
-            mVb.isbn.addTextChangedListener(mIsbnCleanupTextWatcher);
-        }
 
         mVb.btnScan.setOnClickListener(v -> {
             Objects.requireNonNull(mScannerModel, ErrorMsg.NULL_SCANNER_MODEL);
@@ -198,7 +169,7 @@ public class EditBookFieldsFragment
                 .newInstance().show(getActivity().getSupportFragmentManager(),
                                     EditBookAuthorListDialogFragment.TAG));
 
-        if (mFragmentVM.getFields().getField(R.id.series_title).isUsed(getContext())) {
+        if (getField(R.id.series_title).isUsed(getContext())) {
             //noinspection ConstantConditions
             mVb.seriesTitle.setOnClickListener(v -> EditBookSeriesListDialogFragment
                     // peer fragment. We share the book view model
@@ -207,7 +178,7 @@ public class EditBookFieldsFragment
         }
 
         // Bookshelves editor (dialog)
-        if (mFragmentVM.getFields().getField(R.id.bookshelves).isUsed(getContext())) {
+        if (getField(R.id.bookshelves).isUsed(getContext())) {
             mVb.bookshelves.setOnClickListener(v -> {
                 mFragmentVM.setCurrentDialogFieldId(R.id.bookshelves);
                 final DialogFragment picker = CheckListDialogFragment
@@ -220,6 +191,29 @@ public class EditBookFieldsFragment
                 picker.show(getChildFragmentManager(), CheckListDialogFragment.TAG);
             });
         }
+
+        mIsbnValidationTextWatcher = new ISBN.ValidationTextWatcher(mVb.lblIsbn, mVb.isbn,
+                                                                    mStrictIsbn);
+        mVb.isbn.addTextChangedListener(mIsbnValidationTextWatcher);
+
+        mIsbnCleanupTextWatcher = new ISBN.CleanupTextWatcher(mVb.isbn);
+        if (mStrictIsbn) {
+            mVb.isbn.addTextChangedListener(mIsbnCleanupTextWatcher);
+        }
+    }
+
+    @Override
+    public void onResume() {
+        //noinspection ConstantConditions
+        mBookViewModel.pruneAuthors(getContext());
+        mBookViewModel.pruneSeries(getContext());
+
+        // hook up the Views, and calls {@link #onPopulateViews}
+        super.onResume();
+        // With all Views populated, (re-)add the helpers which rely on fields having valid views
+
+        addAutocomplete(R.id.genre, mFragmentVM.getGenres());
+        addAutocomplete(R.id.language, mFragmentVM.getLanguagesCodes());
     }
 
     @Override
@@ -235,9 +229,8 @@ public class EditBookFieldsFragment
     }
 
     @Override
-    protected void onInitFields() {
-        super.onInitFields();
-        final Fields fields = mFragmentVM.getFields();
+    protected void onInitFields(@NonNull final Fields fields) {
+        super.onInitFields(fields);
 
         fields.add(R.id.author, new TextViewAccessor<>(
                            new AuthorListFormatter(Author.Details.Short, true, false)),
@@ -280,10 +273,10 @@ public class EditBookFieldsFragment
     }
 
     @Override
-    void onPopulateViews(@NonNull final Book book) {
-        super.onPopulateViews(book);
+    void onPopulateViews(@NonNull final Fields fields,
+                         @NonNull final Book book) {
+        super.onPopulateViews(fields, book);
 
-        // handle special fields
         //noinspection ConstantConditions
         if (DBDefinitions.isUsed(getContext(), DBDefinitions.KEY_THUMBNAIL)) {
             // Hook up the indexed cover image.
@@ -298,7 +291,7 @@ public class EditBookFieldsFragment
 
         // hide unwanted fields
         //noinspection ConstantConditions
-        mFragmentVM.getFields().resetVisibility(getView(), false, false);
+        fields.setVisibility(getView(), false, false);
     }
 
     /** Called by the CoverHandler when a context menu is selected. */
