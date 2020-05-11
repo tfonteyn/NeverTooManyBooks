@@ -148,6 +148,7 @@ class AmazonHtmlHandler
             throws SocketTimeoutException {
 
         if (loadPage(mLocalizedAppContext, path) == null) {
+            // null result, abort
             return bookData;
         }
 
@@ -329,13 +330,13 @@ class AmazonHtmlHandler
 
         // optional fetch of the cover.
         if (fetchThumbnail[0]) {
-            Element coverElement = mDoc.selectFirst("img#imgBlkFront");
+            final Element coverElement = mDoc.selectFirst("img#imgBlkFront");
 
             String imageUrl;
             try {
                 // data-a-dynamic-image = {"https://...":[327,499],"https://...":[227,346]}
-                String tmp = coverElement.attr("data-a-dynamic-image");
-                JSONObject json = new JSONObject(tmp);
+                final String tmp = coverElement.attr("data-a-dynamic-image");
+                final JSONObject json = new JSONObject(tmp);
                 // just grab the first key
                 imageUrl = json.keys().next();
 
@@ -349,14 +350,10 @@ class AmazonHtmlHandler
                 imageUrl = srcUrl;
             }
 
-            String name = bookData.getString(DBDefinitions.KEY_ISBN, "");
-            if (name.isEmpty()) {
-                // just use something...
-                name = String.valueOf(System.currentTimeMillis());
-            }
-            name += FILENAME_SUFFIX;
             // Fetch the actual image
-            String fileSpec = ImageUtils.saveImage(mLocalizedAppContext, imageUrl, name, null);
+            final String tmpName = createTempCoverFileName(bookData);
+            final String fileSpec = ImageUtils.saveImage(mLocalizedAppContext,
+                                                         imageUrl, tmpName, null);
             if (fileSpec != null) {
                 ArrayList<String> imageList =
                         bookData.getStringArrayList(Book.BKEY_FILE_SPEC_ARRAY[0]);
@@ -368,5 +365,15 @@ class AmazonHtmlHandler
             }
         }
         return bookData;
+    }
+
+    @NonNull
+    private String createTempCoverFileName(@NonNull final Bundle bookData) {
+        String name = bookData.getString(DBDefinitions.KEY_ISBN, "");
+        if (name.isEmpty()) {
+            // just use something...
+            name = String.valueOf(System.currentTimeMillis());
+        }
+        return name + FILENAME_SUFFIX;
     }
 }

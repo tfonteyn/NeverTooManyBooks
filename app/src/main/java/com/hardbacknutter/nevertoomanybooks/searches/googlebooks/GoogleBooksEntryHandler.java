@@ -323,13 +323,10 @@ class GoogleBooksEntryHandler
                 // This url comes back as http, and we must use https... so replace it.
                 String coverUrl = HTTP_PATTERN.matcher(attributes.getValue("", "href"))
                                               .replaceAll(Matcher.quoteReplacement("https:"));
-                String name = mBookData.getString(DBDefinitions.KEY_ISBN, "");
-                if (name.isEmpty()) {
-                    // just use something...
-                    name = String.valueOf(System.currentTimeMillis());
-                }
-                name += FILENAME_SUFFIX;
-                String fileSpec = ImageUtils.saveImage(App.getAppContext(), coverUrl, name, null);
+
+                final String tmpName = createTempCoverFileName(mBookData);
+                final String fileSpec = ImageUtils.saveImage(App.getAppContext(),
+                                                             coverUrl, tmpName, null);
                 if (fileSpec != null) {
                     ArrayList<String> imageList =
                             mBookData.getStringArrayList(Book.BKEY_FILE_SPEC_ARRAY[0]);
@@ -357,10 +354,10 @@ class GoogleBooksEntryHandler
 
             if (mInSuggestedRetailPriceTag) {
                 try {
-                    double amount = Double.parseDouble(attributes.getValue("", "amount"));
+                    final double amount = Double.parseDouble(attributes.getValue("", "amount"));
                     mBookData.putDouble(DBDefinitions.KEY_PRICE_LISTED, amount);
 
-                    String currencyCode = attributes.getValue("", "currencyCode");
+                    final String currencyCode = attributes.getValue("", "currencyCode");
                     mBookData.putString(DBDefinitions.KEY_PRICE_LISTED_CURRENCY, currencyCode);
                 } catch (@NonNull final NumberFormatException ignore) {
                     // ignore
@@ -372,6 +369,16 @@ class GoogleBooksEntryHandler
                 mInRetailPriceTag = false;
             }
         }
+    }
+
+    @NonNull
+    private String createTempCoverFileName(@NonNull final Bundle bookData) {
+        String name = bookData.getString(DBDefinitions.KEY_ISBN, "");
+        if (name.isEmpty()) {
+            // just use something...
+            name = String.valueOf(System.currentTimeMillis());
+        }
+        return name + FILENAME_SUFFIX;
     }
 
     /**

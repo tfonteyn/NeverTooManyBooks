@@ -200,6 +200,7 @@ class StripInfoBookHandler
 
         String path = StripInfoSearchEngine.BASE_URL + String.format(BOOK_SEARCH_URL, isbn);
         if (loadPage(mLocalizedContext, path) == null) {
+            // null result, abort
             return bookData;
         }
 
@@ -231,6 +232,7 @@ class StripInfoBookHandler
 
         String path = StripInfoSearchEngine.BASE_URL + String.format(BOOK_BY_NATIVE_ID, nativeId);
         if (loadPage(mLocalizedContext, path) == null) {
+            // null result, abort
             return bookData;
         }
 
@@ -257,6 +259,7 @@ class StripInfoBookHandler
             throws SocketTimeoutException {
 
         if (loadPage(mLocalizedContext, path) == null) {
+            // null result, abort
             return bookData;
         }
 
@@ -543,18 +546,15 @@ class StripInfoBookHandler
                             @NonNull final Bundle /* in/out */ bookData,
                             @IntRange(from = 0) final int cIdx) {
 
-        // do not use the isbn we searched for, use the one we found even if empty!
-        String name = bookData.getString(DBDefinitions.KEY_ISBN, "")
-                      + FILENAME_SUFFIX + cIdx;
-        // download
-        String fileSpec = ImageUtils.saveImage(mLocalizedContext, url, name, null);
+        final String tmpName = createTempCoverFileName(bookData) + '_' + cIdx;
+        final String fileSpec = ImageUtils.saveImage(mLocalizedContext, url, tmpName, null);
 
         if (fileSpec != null) {
             // Some back covers will return the "no cover available" image regardless.
             // Sadly, we need to check explicitly after the download.
             // But we need to check on "mature content" as well anyhow.
-            File file = new File(fileSpec);
-            long fileLen = file.length();
+            final File file = new File(fileSpec);
+            final long fileLen = file.length();
             if (fileLen == NO_COVER_FILE_LEN
                 || fileLen == MATURE_FILE_LEN) {
                 byte[] digest = md5(file);
@@ -566,7 +566,7 @@ class StripInfoBookHandler
                 }
             }
 
-            String key = Book.BKEY_FILE_SPEC_ARRAY[cIdx];
+            final String key = Book.BKEY_FILE_SPEC_ARRAY[cIdx];
             ArrayList<String> imageList = bookData.getStringArrayList(key);
             if (imageList == null) {
                 imageList = new ArrayList<>();
@@ -576,6 +576,15 @@ class StripInfoBookHandler
         }
     }
 
+    @NonNull
+    private String createTempCoverFileName(@NonNull final Bundle bookData) {
+        String name = bookData.getString(DBDefinitions.KEY_ISBN, "");
+        if (name.isEmpty()) {
+            // just use something...
+            name = String.valueOf(System.currentTimeMillis());
+        }
+        return name + FILENAME_SUFFIX;
+    }
     /**
      * Calculate the MD5 sum.
      *

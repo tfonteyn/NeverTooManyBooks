@@ -442,10 +442,10 @@ public abstract class ShowBookApiHandler
 
         // and if we do have an image, save it using the Goodreads book id as base name.
         if (coverUrl != null) {
-            String name = mBookData.getLong(DBDefinitions.KEY_EID_GOODREADS_BOOK)
-                          + GoodreadsSearchEngine.FILENAME_SUFFIX;
-            String fileSpec = ImageUtils.saveImage(appContext, coverUrl, name,
-                                                   GoodreadsSearchEngine.THROTTLER);
+            final String tmpName = mBookData.getLong(DBDefinitions.KEY_EID_GOODREADS_BOOK)
+                                   + GoodreadsSearchEngine.FILENAME_SUFFIX;
+            final String fileSpec = ImageUtils.saveImage(appContext, coverUrl, tmpName,
+                                                         GoodreadsSearchEngine.THROTTLER);
             if (fileSpec != null) {
                 ArrayList<String> list =
                         mBookData.getStringArrayList(Book.BKEY_FILE_SPEC_ARRAY[0]);

@@ -101,7 +101,7 @@ class IsfdbEditionsHandler
         String url = IsfdbSearchEngine.getBaseURL(context) + String.format(EDITIONS_URL, isbn);
 
         if (loadPage(context, url) == null) {
-            // failed to load, return an empty list.
+            // null result, abort
             return mEditions;
         }
 
@@ -126,7 +126,7 @@ class IsfdbEditionsHandler
             throws SocketTimeoutException {
 
         if (loadPage(context, url) == null) {
-            // failed to load, return an empty list.
+            // null result, abort
             return mEditions;
         }
 
