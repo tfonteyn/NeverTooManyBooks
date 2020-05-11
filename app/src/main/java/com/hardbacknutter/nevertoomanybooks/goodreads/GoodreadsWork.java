@@ -42,6 +42,7 @@ import java.lang.ref.WeakReference;
 
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.searches.goodreads.GoodreadsSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
 
 /**
@@ -219,7 +220,7 @@ public class GoodreadsWork {
             Thread.currentThread().setName(TAG);
             final Context context = App.getTaskContext();
 
-            return ImageUtils.getBytes(context, mUrl);
+            return ImageUtils.getBytes(context, mUrl, GoodreadsSearchEngine.THROTTLER);
         }
 
         /**

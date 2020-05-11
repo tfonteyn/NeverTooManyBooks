@@ -280,7 +280,7 @@ public class OpenLibrarySearchEngine
         // ignore cIdx, site has only one image.
         String url = String.format(BASE_COVER_URL, "isbn", isbn, sizeParam);
         String name = isbn + FILENAME_SUFFIX + "_" + sizeParam;
-        return ImageUtils.saveImage(context, url, name);
+        return ImageUtils.saveImage(context, url, name, null);
     }
 
     @NonNull
@@ -591,7 +591,7 @@ public class OpenLibrarySearchEngine
                 // we assume that the download will work if there is a url.
                 if (!coverUrl.isEmpty()) {
                     String name = isbn + FILENAME_SUFFIX + "_" + sizeParam;
-                    String fileSpec = ImageUtils.saveImage(context, coverUrl, name);
+                    String fileSpec = ImageUtils.saveImage(context, coverUrl, name, null);
                     if (fileSpec != null) {
                         ArrayList<String> imageList =
                                 bookData.getStringArrayList(Book.BKEY_FILE_SPEC_ARRAY[0]);

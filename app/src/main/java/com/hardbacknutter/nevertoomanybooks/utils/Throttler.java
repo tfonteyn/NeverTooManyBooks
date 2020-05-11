@@ -87,9 +87,9 @@ public class Throttler {
      * another two seconds etc.
      */
     public void waitUntilRequestAllowed() {
-        long now = System.currentTimeMillis();
         long wait;
         synchronized (this) {
+            long now = System.currentTimeMillis();
             wait = mDelayInMillis - (now - mLastRequestTime);
             // mLastRequestTime must be updated while synchronized. As soon as this
             // block is left, another block may perform another update.

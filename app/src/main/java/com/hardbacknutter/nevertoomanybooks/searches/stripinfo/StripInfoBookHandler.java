@@ -547,7 +547,7 @@ class StripInfoBookHandler
         String name = bookData.getString(DBDefinitions.KEY_ISBN, "")
                       + FILENAME_SUFFIX + cIdx;
         // download
-        String fileSpec = ImageUtils.saveImage(mLocalizedContext, url, name);
+        String fileSpec = ImageUtils.saveImage(mLocalizedContext, url, name, null);
 
         if (fileSpec != null) {
             // Some back covers will return the "no cover available" image regardless.

@@ -180,7 +180,7 @@ public class KbNlSearchEngine
         // ignore cIdx, site has only one image.
         String url = String.format(BASE_URL_COVERS, isbn, sizeSuffix);
         String name = isbn + FILENAME_SUFFIX + "_" + sizeSuffix;
-        return ImageUtils.saveImage(context, url, name);
+        return ImageUtils.saveImage(context, url, name, null);
     }
 
     @Override

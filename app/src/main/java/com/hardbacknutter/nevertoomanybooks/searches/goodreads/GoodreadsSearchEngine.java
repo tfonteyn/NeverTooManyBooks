@@ -52,6 +52,7 @@ import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsHandler;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsWork;
 import com.hardbacknutter.nevertoomanybooks.goodreads.api.Http404Exception;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
+import com.hardbacknutter.nevertoomanybooks.utils.Throttler;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 
 /**
@@ -66,6 +67,9 @@ public class GoodreadsSearchEngine
 
     /** file suffix for cover files. */
     public static final String FILENAME_SUFFIX = "_GR";
+    /** Can only send requests at a throttled speed. */
+    @NonNull
+    public static final Throttler THROTTLER = new Throttler();
 
     @NonNull
     private final GoodreadsHandler mApiHandler;

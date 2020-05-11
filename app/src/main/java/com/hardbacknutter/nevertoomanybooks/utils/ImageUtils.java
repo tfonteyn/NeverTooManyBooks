@@ -130,8 +130,6 @@ public final class ImageUtils {
     private static final int BUFFER_SIZE = 65535;
     /** network: if at first we don't succeed... */
     private static final int NR_OF_TRIES = 2;
-    /** network: milliseconds to wait between retries. */
-    private static final int RETRY_AFTER_MS = 500;
     private static final String DATA_IMAGE_JPEG_BASE_64 = "data:image/jpeg;base64,";
 
     private ImageUtils() {
@@ -469,9 +467,10 @@ public final class ImageUtils {
     /**
      * Given a URL, get an image and save to a file. Called/run in a background task.
      *
-     * @param context Application context
-     * @param url     Image file URL
-     * @param name    for the file.
+     * @param context   Application context
+     * @param url       Image file URL
+     * @param name      for the file.
+     * @param throttler (optional) {@link Throttler} to use
      *
      * @return Downloaded fileSpec, or {@code null} on failure
      */
@@ -479,7 +478,8 @@ public final class ImageUtils {
     @WorkerThread
     public static String saveImage(@NonNull final Context context,
                                    @NonNull final String url,
-                                   @NonNull final String name) {
+                                   @NonNull final String name,
+                                   @Nullable final Throttler throttler) {
 
         File file = AppDir.Cache.getFile(context, name + ".jpg");
 
@@ -498,28 +498,13 @@ public final class ImageUtils {
                 }
             }
         } else {
-            // If the site drops connection, we retry once.
-            int retry = NR_OF_TRIES;
-            while (retry > 0) {
-                try (TerminatorConnection con = TerminatorConnection.open(context, url)) {
-                    file = FileUtils.copyInputStream(context, con.getInputStream(), file);
-                    return file != null ? file.getAbsolutePath() : null;
+            try (TerminatorConnection con =
+                         TerminatorConnection.open(context, url, NR_OF_TRIES, throttler)) {
+                file = FileUtils.copyInputStream(context, con.getInputStream(), file);
+                return file != null ? file.getAbsolutePath() : null;
 
-                } catch (@NonNull final IOException e) {
-                    retry--;
-
-                    if (BuildConfig.DEBUG /* always */) {
-                        Log.d(TAG, "saveImage"
-                                   + "|url=\"" + url + '\"'
-                                   + "|will retry=" + (retry > 0)
-                                   + "|e=" + e.getLocalizedMessage());
-                    }
-                    try {
-                        Thread.sleep(RETRY_AFTER_MS);
-                    } catch (@NonNull final InterruptedException ignore) {
-                        // ignore
-                    }
-                }
+            } catch (@NonNull final IOException ignore) {
+                // ignore
             }
         }
         return null;
@@ -528,48 +513,34 @@ public final class ImageUtils {
     /**
      * Given a URL, get an image and return as a byte array. Called/run in a background task.
      *
-     * @param context Application context
-     * @param url     Image file URL
+     * @param context   Application context
+     * @param url       Image file URL
+     * @param throttler (optional) {@link Throttler} to use
      *
      * @return Downloaded {@code byte[]} or {@code null} upon failure
      */
     @Nullable
     @WorkerThread
     public static byte[] getBytes(@NonNull final Context context,
-                                  @NonNull final String url) {
+                                  @NonNull final String url,
+                                  @Nullable final Throttler throttler) {
 
-        // If the site drops connection, we retry once.
-        int retry = NR_OF_TRIES;
-
-        while (retry > 0) {
-            try (TerminatorConnection con = TerminatorConnection.open(context, url);
-                 ByteArrayOutputStream out = new ByteArrayOutputStream()) {
-                // Save the output to a byte output stream
-                byte[] buffer = new byte[BUFFER_SIZE];
-                int len;
-                InputStream is = con.getInputStream();
-                if (is == null) {
-                    return null;
-                }
-                while ((len = is.read(buffer)) >= 0) {
-                    out.write(buffer, 0, len);
-                }
-                return out.toByteArray();
-            } catch (@NonNull final IOException e) {
-                retry--;
-
-                if (BuildConfig.DEBUG /* always */) {
-                    Log.d(TAG, "getBytes"
-                               + "|e=" + e.getLocalizedMessage()
-                               + "|will retry=" + (retry > 0)
-                               + "|url=\"" + url + '\"');
-                }
-                try {
-                    Thread.sleep(RETRY_AFTER_MS);
-                } catch (@NonNull final InterruptedException ignore) {
-                    // ignore
-                }
+        try (TerminatorConnection con =
+                     TerminatorConnection.open(context, url, NR_OF_TRIES, throttler);
+             ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+            // Save the output to a byte output stream
+            byte[] buffer = new byte[BUFFER_SIZE];
+            int len;
+            InputStream is = con.getInputStream();
+            if (is == null) {
+                return null;
             }
+            while ((len = is.read(buffer)) >= 0) {
+                out.write(buffer, 0, len);
+            }
+            return out.toByteArray();
+        } catch (@NonNull final IOException ignore) {
+            // ignore
         }
         return null;
     }

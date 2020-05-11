@@ -244,6 +244,7 @@ public abstract class JsoupBase {
 
             } catch (@NonNull final EOFException | SSLProtocolException e) {
                 // EOFException: happens often with ISFDB...
+                // This is after a successful connection was made.
                 // Google search says it's a server issue.
                 // Not so sure that Google search is correct thought but what do I know...
                 //
@@ -264,7 +265,7 @@ public abstract class JsoupBase {
                 Logger.warn(context, TAG, "loadPage"
                                           + "|e=" + e.getLocalizedMessage()
                                           + "|url=\"" + url + '\"');
-                // retry once.
+                // retry once. TODO: unify this with TerminatorConnection retries
                 if (mRetry) {
                     mRetry = false;
                     mDoc = null;

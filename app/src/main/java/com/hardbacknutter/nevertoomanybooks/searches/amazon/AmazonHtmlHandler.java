@@ -356,7 +356,7 @@ class AmazonHtmlHandler
             }
             name += FILENAME_SUFFIX;
             // Fetch the actual image
-            String fileSpec = ImageUtils.saveImage(mLocalizedAppContext, imageUrl, name);
+            String fileSpec = ImageUtils.saveImage(mLocalizedAppContext, imageUrl, name, null);
             if (fileSpec != null) {
                 ArrayList<String> imageList =
                         bookData.getStringArrayList(Book.BKEY_FILE_SPEC_ARRAY[0]);

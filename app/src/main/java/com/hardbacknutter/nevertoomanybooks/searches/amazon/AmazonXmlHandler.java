@@ -407,7 +407,7 @@ class AmazonXmlHandler
         if (mFetchThumbnail[0] && !mCoverUrl.isEmpty()) {
             String name = mBookData.getString(DBDefinitions.KEY_EID_ASIN, "");
             name += FILENAME_SUFFIX;
-            String fileSpec = ImageUtils.saveImage(mLocalizedAppContext, mCoverUrl, name);
+            String fileSpec = ImageUtils.saveImage(mLocalizedAppContext, mCoverUrl, name, null);
             if (fileSpec != null) {
                 ArrayList<String> imageList =
                         mBookData.getStringArrayList(Book.BKEY_FILE_SPEC_ARRAY[0]);

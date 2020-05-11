@@ -55,6 +55,7 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsAuth;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
+import com.hardbacknutter.nevertoomanybooks.searches.goodreads.GoodreadsSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlFilter;
 
@@ -227,7 +228,7 @@ abstract class ApiHandlerNative {
             throws CredentialsException, Http404Exception, IOException {
 
         // Make sure we follow Goodreads ToS (no more than 1 request/second).
-        GoodreadsAuth.THROTTLER.waitUntilRequestAllowed();
+        GoodreadsSearchEngine.THROTTLER.waitUntilRequestAllowed();
 
         request.setConnectTimeout(CONNECT_TIMEOUT);
         request.setReadTimeout(READ_TIMEOUT);
@@ -317,7 +318,7 @@ abstract class ApiHandlerNative {
         }
 
         // Make sure we follow Goodreads ToS (no more than 1 request/second).
-        GoodreadsAuth.THROTTLER.waitUntilRequestAllowed();
+        GoodreadsSearchEngine.THROTTLER.waitUntilRequestAllowed();
 
         request.setConnectTimeout(CONNECT_TIMEOUT);
         request.setReadTimeout(READ_TIMEOUT);

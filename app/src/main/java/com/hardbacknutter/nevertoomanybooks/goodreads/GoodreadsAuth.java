@@ -59,17 +59,13 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.goodreads.api.AuthUserApiHandler;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
-import com.hardbacknutter.nevertoomanybooks.utils.Throttler;
+import com.hardbacknutter.nevertoomanybooks.searches.goodreads.GoodreadsSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 
 /**
  * Handles all authentication for Goodreads access.
  */
 public class GoodreadsAuth {
-
-    /** Can only send requests at a throttled speed. */
-    @NonNull
-    public static final Throttler THROTTLER = new Throttler();
 
     private static final String BASE_URL = "https://www.goodreads.com";
     /** Log tag. */
@@ -446,7 +442,7 @@ public class GoodreadsAuth {
         mConsumer.setTokenWithSecret(requestToken, requestSecret);
 
         // Make sure we follow Goodreads ToS (no more than 1 request/second).
-        THROTTLER.waitUntilRequestAllowed();
+        GoodreadsSearchEngine.THROTTLER.waitUntilRequestAllowed();
 
         // Get the access token
         try {

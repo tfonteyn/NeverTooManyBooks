@@ -48,6 +48,7 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.utils.NetworkUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.Throttler;
 
 /**
  * Wrapping a HttpURLConnection and BufferedInputStream with timeout close() support.
@@ -152,11 +153,21 @@ public final class TerminatorConnection
         mCon.setReadTimeout(readTimeoutMs);
     }
 
+    @WorkerThread
+    @NonNull
+    public static TerminatorConnection open(@NonNull final Context context,
+                                            @NonNull final String urlStr)
+            throws IOException {
+        return open(context, urlStr, NR_OF_TRIES, null);
+    }
+
     /**
      * Convenience function. Get an open TerminatorConnection from a URL.
      *
-     * @param context Application context
-     * @param urlStr  URL to retrieve
+     * @param context   Application context
+     * @param urlStr    URL to retrieve
+     * @param retries   If the site drops connection, we retry 'retries' times
+     * @param throttler (optional) to use
      *
      * @return the open connection
      *
@@ -165,11 +176,13 @@ public final class TerminatorConnection
     @WorkerThread
     @NonNull
     public static TerminatorConnection open(@NonNull final Context context,
-                                            @NonNull final String urlStr)
+                                            @NonNull final String urlStr,
+                                            final int retries,
+                                            @Nullable final Throttler throttler)
             throws IOException {
         try {
             TerminatorConnection tCon = new TerminatorConnection(context, urlStr);
-            tCon.open();
+            tCon.open(retries, throttler);
             return tCon;
 
         } catch (@NonNull final IOException e) {
@@ -190,17 +203,35 @@ public final class TerminatorConnection
         return inputStream;
     }
 
+    public void open()
+            throws IOException {
+        open(NR_OF_TRIES, null);
+    }
+
     /**
      * Perform the actual opening of the connection, initiate the InputStream
      * and setup the killer-thread.
      *
+     * The optional {@link Throttler} will be used before the first connect
+     * and before each retry.
+     * If no Throttler is set, then the first request is send immediately, and retries
+     * use a fixed {@link #RETRY_AFTER_MS} delay.
+     *
+     * @param retries   If the site drops connection, we retry 'retries' times
+     * @param throttler (optional) to use
+     *
      * @throws IOException on failure
      */
-    public void open()
+    public void open(final int retries,
+                     @Nullable final Throttler throttler)
             throws IOException {
 
+        if (throttler != null) {
+            throttler.waitUntilRequestAllowed();
+        }
+
         // If the site drops connection, we retry.
-        int retry = NR_OF_TRIES;
+        int retry = retries;
 
         while (retry > 0) {
             try {
@@ -232,9 +263,9 @@ public final class TerminatorConnection
 
                 if (BuildConfig.DEBUG /* always */) {
                     Log.d(TAG, "open"
-                               + "|e=" + e.getLocalizedMessage()
                                + "|retry=" + retry
-                               + "|url=`" + mCon.getURL() + '`');
+                               + "|url=`" + mCon.getURL() + '`'
+                               + "|e=" + e);
                 }
 
                 retry--;
@@ -244,9 +275,13 @@ public final class TerminatorConnection
                 }
             }
 
-            try {
-                Thread.sleep(RETRY_AFTER_MS);
-            } catch (@NonNull final InterruptedException ignored) {
+            if (throttler != null) {
+                throttler.waitUntilRequestAllowed();
+            } else {
+                try {
+                    Thread.sleep(RETRY_AFTER_MS);
+                } catch (@NonNull final InterruptedException ignored) {
+                }
             }
         }
     }

@@ -863,7 +863,7 @@ class IsfdbBookHandler
             name = bookData.getString(DBDefinitions.KEY_EID_ISFDB, "");
         }
         name += FILENAME_SUFFIX;
-        String fileSpec = ImageUtils.saveImage(appContext, coverUrl, name);
+        String fileSpec = ImageUtils.saveImage(appContext, coverUrl, name, null);
 
         if (fileSpec != null) {
             ArrayList<String> imageList =

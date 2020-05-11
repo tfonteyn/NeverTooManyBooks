@@ -126,7 +126,7 @@ public class LibraryThingSearchEngine
             "https://covers.librarything.com/devkey/%1$s/%2$s/isbn/%3$s";
 
     /** Can only send requests at a throttled speed. */
-    private static final Throttler THROTTLER = new Throttler();
+    public static final Throttler THROTTLER = new Throttler();
     private static final Pattern DEV_KEY_PATTERN = Pattern.compile("[\\r\\t\\n\\s]*");
 
     /**
@@ -370,10 +370,11 @@ public class LibraryThingSearchEngine
 
         // Make sure we follow LibraryThing ToS (no more than 1 request/second).
         THROTTLER.waitUntilRequestAllowed();
+
         // ignore cIdx, site has only one image.
         String url = String.format(COVER_BY_ISBN_URL, getDevKey(context), sizeParam, isbn);
         String name = isbn + FILENAME_SUFFIX + "_" + sizeParam;
-        return ImageUtils.saveImage(context, url, name);
+        return ImageUtils.saveImage(context, url, name, THROTTLER);
     }
 
     @Override

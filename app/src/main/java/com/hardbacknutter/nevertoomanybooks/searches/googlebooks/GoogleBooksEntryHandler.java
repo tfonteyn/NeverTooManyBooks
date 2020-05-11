@@ -329,7 +329,7 @@ class GoogleBooksEntryHandler
                     name = String.valueOf(System.currentTimeMillis());
                 }
                 name += FILENAME_SUFFIX;
-                String fileSpec = ImageUtils.saveImage(App.getAppContext(), coverUrl, name);
+                String fileSpec = ImageUtils.saveImage(App.getAppContext(), coverUrl, name, null);
                 if (fileSpec != null) {
                     ArrayList<String> imageList =
                             mBookData.getStringArrayList(Book.BKEY_FILE_SPEC_ARRAY[0]);
