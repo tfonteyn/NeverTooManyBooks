@@ -104,7 +104,7 @@ public class LibraryThingSearchEngine
     /** Preferences prefix. */
     private static final String PREF_PREFIX = "librarything.";
     /** Preference that contains the dev key for the user. Type: {@code String}. */
-    public static final String PREFS_DEV_KEY = PREF_PREFIX + "dev_key";
+    static final String PREFS_DEV_KEY = PREF_PREFIX + "dev_key";
     /** Preference that controls display of alert about LibraryThing. */
     private static final String PREFS_HIDE_ALERT = PREF_PREFIX + "hide_alert.";
     /** file suffix for cover files. */
@@ -126,7 +126,7 @@ public class LibraryThingSearchEngine
             "https://covers.librarything.com/devkey/%1$s/%2$s/isbn/%3$s";
 
     /** Can only send requests at a throttled speed. */
-    public static final Throttler THROTTLER = new Throttler();
+    private static final Throttler THROTTLER = new Throttler();
     private static final Pattern DEV_KEY_PATTERN = Pattern.compile("[\\r\\t\\n\\s]*");
 
     /**
@@ -264,28 +264,6 @@ public class LibraryThingSearchEngine
      */
     @NonNull
     @Override
-    public Bundle searchByIsbn(@NonNull final Context context,
-                               @NonNull final String validIsbn,
-                               @NonNull final boolean[] fetchThumbnail)
-            throws IOException, SearchException {
-
-        String url = String.format(BOOK_URL, getDevKey(context), "isbn", validIsbn);
-        Bundle bookData = fetchBook(context, url, new Bundle());
-
-        if (fetchThumbnail[0]) {
-            getCoverImage(context, validIsbn, 0, bookData);
-        }
-
-        return bookData;
-    }
-
-    /**
-     * Dev-key needed for this call.
-     *
-     * <br><br>{@inheritDoc}
-     */
-    @NonNull
-    @Override
     public Bundle searchByNativeId(@NonNull final Context context,
                                    @NonNull final String nativeId,
                                    @NonNull final boolean[] fetchThumbnail)
@@ -298,8 +276,30 @@ public class LibraryThingSearchEngine
         if (fetchThumbnail[0]) {
             String isbn = bookData.getString(DBDefinitions.KEY_ISBN);
             if (isbn != null && !isbn.isEmpty()) {
-                getCoverImage(context, isbn, 0, bookData);
+                CoverByIsbn.getCoverImage(context, this, isbn, 0, bookData);
             }
+        }
+
+        return bookData;
+    }
+
+    /**
+     * Dev-key needed for this call.
+     *
+     * <br><br>{@inheritDoc}
+     */
+    @NonNull
+    @Override
+    public Bundle searchByIsbn(@NonNull final Context context,
+                               @NonNull final String validIsbn,
+                               @NonNull final boolean[] fetchThumbnail)
+            throws IOException, SearchException {
+
+        String url = String.format(BOOK_URL, getDevKey(context), "isbn", validIsbn);
+        Bundle bookData = fetchBook(context, url, new Bundle());
+
+        if (fetchThumbnail[0]) {
+            CoverByIsbn.getCoverImage(context, this, validIsbn, 0, bookData);
         }
 
         return bookData;
@@ -346,10 +346,10 @@ public class LibraryThingSearchEngine
     @Nullable
     @WorkerThread
     @Override
-    public String getCoverImage(@NonNull final Context context,
-                                @NonNull final String isbn,
-                                @IntRange(from = 0) final int cIdx,
-                                @Nullable final ImageSize size) {
+    public String searchCoverImageByIsbn(@NonNull final Context context,
+                                         @NonNull final String validIsbn,
+                                         @IntRange(from = 0) final int cIdx,
+                                         @Nullable final ImageSize size) {
         String sizeParam;
         if (size == null) {
             sizeParam = "large";
@@ -368,13 +368,11 @@ public class LibraryThingSearchEngine
             }
         }
 
+        final String url = String.format(COVER_BY_ISBN_URL,
+                                         getDevKey(context), sizeParam, validIsbn);
+        final String tmpName = validIsbn + FILENAME_SUFFIX + "_" + sizeParam;
         // Make sure we follow LibraryThing ToS (no more than 1 request/second).
-        THROTTLER.waitUntilRequestAllowed();
-
-        // ignore cIdx, site has only one image.
-        String url = String.format(COVER_BY_ISBN_URL, getDevKey(context), sizeParam, isbn);
-        String name = isbn + FILENAME_SUFFIX + "_" + sizeParam;
-        return ImageUtils.saveImage(context, url, name, THROTTLER);
+        return ImageUtils.saveImage(context, url, tmpName, THROTTLER);
     }
 
     @Override

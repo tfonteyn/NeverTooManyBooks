@@ -330,7 +330,7 @@ public interface SearchEngine {
         /**
          * Called by the {@link SearchCoordinator#search}.
          * <p>
-         * The code might or might not be valid.
+         * The code parameter might or might not be valid.
          * Checking the arguments <strong>MUST</strong> be done inside the implementation,
          * as they generally will depend on what the engine can do with them.
          *
@@ -365,40 +365,94 @@ public interface SearchEngine {
             extends SearchEngine {
 
         /**
-         * A site can support a single (default) or multiple sizes.
+         * Helper method.
+         * Get the resolved file path for the first cover file found (for the given index).
          *
-         * @return {@code true} if multiple sizes are supported.
+         * @param bookData to read from
+         * @param cIdx     0..n image index
+         *
+         * @return resolved path, or {@code null} if none found
          */
-        @AnyThread
-        default boolean supportsMultipleSizes() {
-            return false;
+        @Nullable
+        static String getFirstCoverFileFoundPath(@NonNull final Bundle bookData,
+                                                 @IntRange(from = 0) final int cIdx) {
+            ArrayList<String> imageList =
+                    bookData.getStringArrayList(Book.BKEY_FILE_SPEC_ARRAY[cIdx]);
+            if (imageList != null && !imageList.isEmpty()) {
+                File downloadedFile = new File(imageList.get(0));
+                // let the system resolve any path variations
+                File destination = new File(downloadedFile.getAbsolutePath());
+                FileUtils.rename(downloadedFile, destination);
+                return destination.getAbsolutePath();
+            }
+            return null;
         }
 
         /**
-         * Get a cover image of the specified size.
+         * Helper method.
+         * There is normally no need to call this method directly, except when you
+         * override {@link #searchCoverImageByIsbn(Context, String, int, ImageSize)}.
          * <br><br>
-         * <strong>Override</strong> this method if the site support a specific/faster api.
+         * Do NOT use if the site either does not support returning images during search.
+         * <br><br>
+         * A search for the book is done, with the 'fetchThumbnail' flag set to true.
+         * Any {@link IOException} or {@link CredentialsException} thrown are ignored and
+         * {@code null} returned.
          *
          * @param context Application context
-         * @param isbn    to search for, <strong>must</strong> be valid.
+         * @param isbnStr to search for, <strong>must</strong> be valid.
          * @param cIdx    0..n image index
-         * @param size    of image to get.
          *
          * @return fileSpec, or {@code null} when none found (or any other failure)
          */
         @Nullable
         @WorkerThread
-        default String getCoverImage(@NonNull final Context context,
-                                     @NonNull final String isbn,
-                                     @IntRange(from = 0) final int cIdx,
-                                     @Nullable final ImageSize size) {
-            return getCoverImageFallback(context, isbn, cIdx);
+        static String getCoverImageFallback(@NonNull final Context context,
+                                            @NonNull final SearchEngine engine,
+                                            @NonNull final String isbnStr,
+                                            @IntRange(from = 0) final int cIdx) {
+
+            boolean[] fetchThumbnail = new boolean[2];
+            fetchThumbnail[cIdx] = true;
+
+            try {
+                final Bundle bookData;
+                // If we have a valid ISBN, and the engine supports it, search.
+                if (ISBN.isValidIsbn(isbnStr) && engine instanceof SearchEngine.ByIsbn) {
+                    bookData = ((SearchEngine.ByIsbn) engine)
+                            .searchByIsbn(context, isbnStr, fetchThumbnail);
+
+                    // If we have a generic barcode, ...
+                } else if (ISBN.isValid(isbnStr) && engine instanceof SearchEngine.ByBarcode) {
+                    bookData = ((SearchEngine.ByBarcode) engine)
+                            .searchByBarcode(context, isbnStr, fetchThumbnail);
+
+                    // otherwise we pass a non-empty (but invalid) code on regardless.
+                    // if the engine supports text mode.
+                } else if (!isbnStr.isEmpty() && engine instanceof SearchEngine.ByText) {
+                    bookData = ((SearchEngine.ByText) engine)
+                            .search(context, isbnStr, "", "", "", fetchThumbnail);
+
+                } else {
+                    // don't throw here; this is a fallback method allowed to fail.
+                    return null;
+                }
+
+                return getFirstCoverFileFoundPath(bookData, cIdx);
+
+            } catch (@NonNull final CredentialsException | IOException | SearchException e) {
+                if (BuildConfig.DEBUG /* always */) {
+                    Log.d(TAG, "", e);
+                }
+            }
+
+            return null;
         }
 
         /**
-         * <strong>DO NOT OVERRIDE</strong>
-         * <br><br>
-         * Get a cover image. Will try in order of large, medium, small depending on the site
+         * Helper method. A wrapper around
+         * {@link #searchCoverImageByIsbn(Context, String, int, ImageSize)}.
+         * Will try in order of large, medium, small depending on the site
          * supporting multiple sizes.
          *
          * @param appContext Application context
@@ -407,17 +461,21 @@ public interface SearchEngine {
          * @param bookData   Bundle to populate
          */
         @WorkerThread
-        default void getCoverImage(@NonNull final Context appContext,
-                                   @NonNull final String isbn,
-                                   @IntRange(from = 0) final int cIdx,
-                                   @NonNull final Bundle bookData) {
+        static void getCoverImage(@NonNull final Context appContext,
+                                  @NonNull final SearchEngine.CoverByIsbn engine,
+                                  @NonNull final String isbn,
+                                  @IntRange(from = 0) final int cIdx,
+                                  @NonNull final Bundle bookData) {
 
-            String fileSpec = getCoverImage(appContext, isbn, cIdx, ImageSize.Large);
-            if (supportsMultipleSizes()) {
+            String fileSpec = engine
+                    .searchCoverImageByIsbn(appContext, isbn, cIdx, ImageSize.Large);
+            if (engine.supportsMultipleSizes()) {
                 if (fileSpec == null) {
-                    fileSpec = getCoverImage(appContext, isbn, cIdx, ImageSize.Medium);
+                    fileSpec = engine
+                            .searchCoverImageByIsbn(appContext, isbn, cIdx, ImageSize.Medium);
                     if (fileSpec == null) {
-                        fileSpec = getCoverImage(appContext, isbn, cIdx, ImageSize.Small);
+                        fileSpec = engine
+                                .searchCoverImageByIsbn(appContext, isbn, cIdx, ImageSize.Small);
                     }
                 }
             }
@@ -433,74 +491,32 @@ public interface SearchEngine {
         }
 
         /**
-         * <strong>DO NOT OVERRIDE</strong>
+         * Get a single cover image of the specified size.
          * <br><br>
-         * There is normally no need to call this method directly, except when you
-         * override {@link #getCoverImage(Context, String, int, ImageSize)}.
-         * <br><br>
-         * Do NOT use if the site either does not support returning images during search.
-         * <br><br>
-         * A search for the book is done, with the 'fetchThumbnail' flag set to true.
-         * Any {@link IOException} or {@link CredentialsException} thrown are ignored and
-         * {@code null} returned.
+         * <strong>Override</strong> this method if the site support a specific/faster api.
          *
-         * @param appContext Application context
-         * @param isbnStr    to search for, <strong>must</strong> be valid.
-         * @param cIdx       0..n image index
+         * @param context   Application context
+         * @param validIsbn to search for, <strong>must</strong> be valid.
+         * @param cIdx      0..n image index
+         * @param size      of image to get.
          *
          * @return fileSpec, or {@code null} when none found (or any other failure)
          */
         @Nullable
         @WorkerThread
-        default String getCoverImageFallback(@NonNull final Context appContext,
-                                             @NonNull final String isbnStr,
-                                             @IntRange(from = 0) final int cIdx) {
+        String searchCoverImageByIsbn(@NonNull final Context context,
+                                      @NonNull final String validIsbn,
+                                      @IntRange(from = 0) final int cIdx,
+                                      @Nullable final ImageSize size);
 
-            boolean[] fetchThumbnail = new boolean[2];
-            fetchThumbnail[cIdx] = true;
-
-            try {
-                Bundle bookData;
-                // If we have a valid ISBN, and the engine supports it, search.
-                if (ISBN.isValidIsbn(isbnStr) && this instanceof SearchEngine.ByIsbn) {
-                    bookData = ((SearchEngine.ByIsbn) this)
-                            .searchByIsbn(appContext, isbnStr, fetchThumbnail);
-
-                    // If we have a generic barcode, ...
-                } else if (ISBN.isValid(isbnStr) && this instanceof SearchEngine.ByBarcode) {
-                    bookData = ((SearchEngine.ByBarcode) this)
-                            .searchByBarcode(appContext, isbnStr, fetchThumbnail);
-
-                    // otherwise we pass a non-empty (but invalid) code on regardless.
-                    // if the engine supports text mode.
-                } else if (!isbnStr.isEmpty() && this instanceof SearchEngine.ByText) {
-                    bookData = ((SearchEngine.ByText) this)
-                            .search(appContext, isbnStr, "", "", "", fetchThumbnail);
-
-                } else {
-                    // don't throw here; this is a fallback method allowed to fail.
-                    return null;
-                }
-
-                ArrayList<String> imageList =
-                        bookData.getStringArrayList(Book.BKEY_FILE_SPEC_ARRAY[cIdx]);
-                if (imageList != null && !imageList.isEmpty()) {
-                    // This is from a single site, no need to get the 'best'.
-                    // Just use the first one found.
-                    File downloadedFile = new File(imageList.get(0));
-                    // let the system resolve any path variations
-                    File destination = new File(downloadedFile.getAbsolutePath());
-                    FileUtils.rename(downloadedFile, destination);
-                    return destination.getAbsolutePath();
-                }
-
-            } catch (@NonNull final CredentialsException | IOException | SearchException e) {
-                if (BuildConfig.DEBUG /* always */) {
-                    Log.d(TAG, "", e);
-                }
-            }
-
-            return null;
+        /**
+         * A site can support a single (default) or multiple sizes.
+         *
+         * @return {@code true} if multiple sizes are supported.
+         */
+        @AnyThread
+        default boolean supportsMultipleSizes() {
+            return false;
         }
 
         /**

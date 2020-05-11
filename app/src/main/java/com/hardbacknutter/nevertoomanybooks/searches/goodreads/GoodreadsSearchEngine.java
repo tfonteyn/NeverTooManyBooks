@@ -57,6 +57,10 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsExceptio
 
 /**
  * <a href="https://www.goodreads.com">https://www.goodreads.com</a>
+ *
+ * Uses {@link SearchEngine.CoverByIsbn#getCoverImageFallback} because the API
+ * has no specific cover access methods, but the site has very good covers making the overhead
+ * worth it.
  */
 public class GoodreadsSearchEngine
         implements SearchEngine,
@@ -198,14 +202,14 @@ public class GoodreadsSearchEngine
     @Nullable
     @Override
     @WorkerThread
-    public String getCoverImage(@NonNull final Context context,
-                                @NonNull final String isbn,
-                                @IntRange(from = 0) final int cIdx,
-                                @Nullable final ImageSize size) {
+    public String searchCoverImageByIsbn(@NonNull final Context context,
+                                         @NonNull final String validIsbn,
+                                         @IntRange(from = 0) final int cIdx,
+                                         @Nullable final ImageSize size) {
         if (!mGoodreadsAuth.hasValidCredentials(context)) {
             return null;
         }
-        return getCoverImageFallback(context, isbn, cIdx);
+        return CoverByIsbn.getCoverImageFallback(context, this, validIsbn, cIdx);
     }
 
     @Override

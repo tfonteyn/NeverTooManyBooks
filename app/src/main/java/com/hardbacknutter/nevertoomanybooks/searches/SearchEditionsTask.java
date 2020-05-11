@@ -33,7 +33,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
 
-import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 
@@ -47,9 +48,11 @@ import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 
 /**
  * Fetch alternative edition isbn's.
+ * <p>
+ * The sites are contacted one by one, in the order as set in user preferences.
  */
 public class SearchEditionsTask
-        extends TaskBase<ArrayList<String>> {
+        extends TaskBase<Collection<String>> {
 
     /** Log tag. */
     private static final String TAG = "SearchEditionsTask";
@@ -65,7 +68,7 @@ public class SearchEditionsTask
      */
     @UiThread
     public SearchEditionsTask(@NonNull final String isbnStr,
-                              @NonNull final TaskListener<ArrayList<String>> taskListener) {
+                              @NonNull final TaskListener<Collection<String>> taskListener) {
         super(R.id.TASK_ID_SEARCH_EDITIONS, taskListener);
 
         // sanity check
@@ -81,14 +84,15 @@ public class SearchEditionsTask
     @Override
     @NonNull
     @WorkerThread
-    protected ArrayList<String> doInBackground(final Void... params) {
+    protected Collection<String> doInBackground(final Void... params) {
         Thread.currentThread().setName(TAG + mIsbn);
         final Context context = App.getTaskContext();
 
         final Locale locale = LocaleUtils.getUserLocale(context);
-        final ArrayList<String> editions = new ArrayList<>();
+        // keep the order, but eliminate duplicates.
+        final Collection<String> editions = new LinkedHashSet<>();
         final List<Site> sites = SiteList.getList(context, locale, SiteList.Type.AltEditions)
-                                   .getSites(true);
+                                         .getSites(true);
         for (Site site : sites) {
             try {
                 final SearchEngine searchEngine = site.getSearchEngine();

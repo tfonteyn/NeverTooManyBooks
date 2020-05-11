@@ -229,6 +229,7 @@ public final class SearchSites {
         // but this gives more control (e.g. language and other defaults).
         switch (type) {
             case Data: {
+                //ALL sites
                 list.add(Site.createSite(AMAZON, type, false));
                 list.add(Site.createSite(GOODREADS, type, true));
                 list.add(Site.createSite(GOOGLE_BOOKS, type, true));
@@ -240,28 +241,32 @@ public final class SearchSites {
                 // Dutch.
                 list.add(Site.createSite(KB_NL, type,
                                          isLang(systemLocale, userLocale, NLD)));
+
                 // Disabled by default as data from this site is not very complete.
                 list.add(Site.createSite(OPEN_LIBRARY, type, false));
                 break;
             }
             case Covers: {
-                /*
-                 * Default search order for dedicated cover lookup.
-                 * These are only used by the {@link CoverBrowserViewModel}.
-                 */
+                // Sites that implement {@link SearchEngine.CoverByIsbn}.
+                // These are only used by the {@link CoverBrowserViewModel}.
+
                 list.add(Site.createSite(ISFDB, type, true));
-                list.add(Site.createSite(STRIP_INFO_BE, type,
-                                         isLang(systemLocale, userLocale, NLD)));
-                list.add(Site.createSite(GOOGLE_BOOKS, type, true));
+                //list.add(Site.createSite(STRIP_INFO_BE, type,
+                //                         isLang(systemLocale, userLocale, NLD)));
+                //list.add(Site.createSite(GOOGLE_BOOKS, type, true));
                 list.add(Site.createSite(GOODREADS, type, true));
-                list.add(Site.createSite(AMAZON, type, false));
+                //list.add(Site.createSite(AMAZON, type, false));
                 list.add(Site.createSite(KB_NL, type, isLang(systemLocale, userLocale, NLD)));
+
+                // Disabled by default as this site lacks many covers.
                 list.add(Site.createSite(LIBRARY_THING, type, false));
+                // Disabled by default as this site lacks many covers.
                 list.add(Site.createSite(OPEN_LIBRARY, type, false));
                 break;
             }
 
             case AltEditions: {
+                // Sites that implement {@link SearchEngine.AlternativeEditions}.
                 list.add(Site.createSite(LIBRARY_THING, type, true));
                 list.add(Site.createSite(ISFDB, type, true));
                 break;

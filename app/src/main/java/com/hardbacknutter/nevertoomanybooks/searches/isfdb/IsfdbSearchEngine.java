@@ -60,6 +60,7 @@ public class IsfdbSearchEngine
                    SearchEngine.ByText,
                    SearchEngine.ByIsbn,
                    SearchEngine.ByNativeId,
+                   SearchEngine.CoverByIsbn,
                    SearchEngine.AlternativeEditions {
 
     /**
@@ -223,6 +224,27 @@ public class IsfdbSearchEngine
                     .fetch(context, editions, isAddSeriesFromToc(context),
                            fetchThumbnail, new Bundle());
         }
+    }
+
+    @Nullable
+    @Override
+    public String searchCoverImageByIsbn(@NonNull final Context context,
+                                         @NonNull final String validIsbn,
+                                         final int cIdx,
+                                         @Nullable final ImageSize size) {
+        try {
+            List<Edition> editions = new IsfdbEditionsHandler().fetch(context, validIsbn);
+            if (editions.isEmpty()) {
+                return null;
+            } else {
+                final Bundle bookData =
+                        new IsfdbBookHandler().fetchCover(context, editions, new Bundle());
+                return CoverByIsbn.getFirstCoverFileFoundPath(bookData, cIdx);
+            }
+        } catch (@NonNull final IOException ignore) {
+            // ignored
+        }
+        return null;
     }
 
     private boolean isAddSeriesFromToc(@NonNull final Context context) {

@@ -239,6 +239,7 @@ class IsfdbBookHandler
         mPath = path;
 
         if (loadPage(context, mPath) == null) {
+            // null result, abort
             return bookData;
         }
 
@@ -269,7 +270,7 @@ class IsfdbBookHandler
 
         mEditions = editions;
 
-        Edition edition = editions.get(0);
+        final Edition edition = editions.get(0);
         mPath = IsfdbSearchEngine.getBaseURL(context) + String.format(BOOK_URL, edition.isfdbId);
 
         // check if we already got the book
@@ -278,11 +279,50 @@ class IsfdbBookHandler
         } else {
             // nop, go get it.
             if (loadPage(context, mPath) == null) {
+                // null result, abort
                 return bookData;
             }
         }
 
         return parseDoc(context, addSeriesFromToc, fetchThumbnail, bookData);
+    }
+
+    /**
+     * Fetch a cover.
+     *
+     * @param context  Current context
+     * @param editions List of ISFDB Editions with native book ID
+     * @param bookData Bundle to save results in (passed in to allow mocking)
+     *
+     * @return Bundle with book data
+     *
+     * @throws SocketTimeoutException if the connection times out
+     */
+    @NonNull
+    @WorkerThread
+    Bundle fetchCover(@NonNull final Context context,
+                      @Size(min = 1) @NonNull final List<Edition> editions,
+                      @NonNull final Bundle bookData)
+            throws SocketTimeoutException {
+        mEditions = editions;
+
+        final Edition edition = editions.get(0);
+        mPath = IsfdbSearchEngine.getBaseURL(context) + String.format(BOOK_URL, edition.isfdbId);
+
+        // check if we already got the book
+        if (edition.doc != null) {
+            mDoc = edition.doc;
+        } else {
+            // nop, go get it.
+            if (loadPage(context, mPath) == null) {
+                // null result, abort
+                return bookData;
+            }
+        }
+
+        parseDocForCover(context, bookData);
+
+        return bookData;
     }
 
     /**
@@ -461,7 +501,7 @@ class IsfdbBookHandler
                     @NonNull final Bundle bookData)
             throws SocketTimeoutException {
 
-        Elements allContentBoxes = mDoc.select(CSS_Q_DIV_CONTENTBOX);
+        final Elements allContentBoxes = mDoc.select(CSS_Q_DIV_CONTENTBOX);
         // sanity check
         if (allContentBoxes == null) {
             if (BuildConfig.DEBUG /* always */) {
@@ -470,9 +510,9 @@ class IsfdbBookHandler
             return bookData;
         }
 
-        Element contentBox = allContentBoxes.first();
-        Element ul = contentBox.selectFirst("ul");
-        Elements lis = ul.children();
+        final Element contentBox = allContentBoxes.first();
+        final Element ul = contentBox.selectFirst("ul");
+        final Elements lis = ul.children();
 
         String tmpString;
 
@@ -637,7 +677,7 @@ class IsfdbBookHandler
         }
 
         // publication record.
-        Elements recordIDDiv = contentBox.select("span.recordID");
+        final Elements recordIDDiv = contentBox.select("span.recordID");
         if (recordIDDiv != null) {
             tmpString = recordIDDiv.first().ownText();
             tmpString = digits(tmpString, false);
@@ -653,7 +693,7 @@ class IsfdbBookHandler
 
         //ENHANCE: it would make much more sense to get the notes from the URL_TITLE_CGI page.
         // and if there are none, then fall back to the notes on this page.
-        Elements notesDiv = contentBox.select("div.notes");
+        final Elements notesDiv = contentBox.select("div.notes");
         if (notesDiv != null) {
             tmpString = notesDiv.html();
             // it should always have this at the start, but paranoia...
@@ -670,7 +710,7 @@ class IsfdbBookHandler
         bookData.putString(DBDefinitions.KEY_LANGUAGE, "eng");
 
         // the table of content
-        ArrayList<TocEntry> tocEntries = getTocList(context, bookData, addSeriesFromToc);
+        final ArrayList<TocEntry> tocEntries = getTocList(context, bookData, addSeriesFromToc);
         if (!tocEntries.isEmpty()) {
             bookData.putParcelableArrayList(Book.BKEY_TOC_ENTRY_ARRAY, tocEntries);
         }
@@ -713,28 +753,39 @@ class IsfdbBookHandler
 
         // optional fetch of the cover.
         if (fetchThumbnail[0]) {
-            /* First "ContentBox" contains all basic details.
-             * <pre>
-             *   {@code
-             *     <div class="ContentBox">
-             *       <table>
-             *       <tr class="scan">
-             *         <td>
-             *           <a href="http://www.isfdb.org/wiki/images/e/e6/THDSFPRKPT1991.jpg">
-             *           <img src="http://www.isfdb.org/wiki/images/e/e6/THDSFPRKPT1991.jpg"
-             *              alt="picture" class="scan"></a>
-             *         </td>
-             *         ...
-             *     }
-             * </pre>
-             */
-            Element img = mDoc.selectFirst(CSS_Q_DIV_CONTENTBOX).selectFirst("img");
-            if (img != null) {
-                fetchCover(context, img.attr("src"), bookData);
-            }
+            parseDocForCover(context, bookData);
         }
 
         return bookData;
+    }
+
+    /**
+     * Parses the downloaded {@link #mDoc} for the cover and fetches it when present.
+     *
+     * @param context  Current context
+     * @param bookData Bundle to save results in (passed in to allow mocking)
+     */
+    private void parseDocForCover(@NonNull final Context context,
+                                  @NonNull final Bundle bookData) {
+        /* First "ContentBox" contains all basic details.
+         * <pre>
+         *   {@code
+         *     <div class="ContentBox">
+         *       <table>
+         *       <tr class="scan">
+         *         <td>
+         *           <a href="http://www.isfdb.org/wiki/images/e/e6/THDSFPRKPT1991.jpg">
+         *           <img src="http://www.isfdb.org/wiki/images/e/e6/THDSFPRKPT1991.jpg"
+         *              alt="picture" class="scan"></a>
+         *         </td>
+         *         ...
+         *     }
+         * </pre>
+         */
+        final Element img = mDoc.selectFirst(CSS_Q_DIV_CONTENTBOX).selectFirst("img");
+        if (img != null) {
+            fetchCover(context, img.attr("src"), bookData);
+        }
     }
 
     /**
@@ -849,7 +900,7 @@ class IsfdbBookHandler
     }
 
     /**
-     * Fetch the cover from the url. Uses the ISBN (if any) from the bookData bundle.
+     * Fetch the cover from the url.
      *
      * @param appContext Application context
      * @param coverUrl   fully qualified url
@@ -858,12 +909,8 @@ class IsfdbBookHandler
     private void fetchCover(@NonNull final Context appContext,
                             @NonNull final String coverUrl,
                             @NonNull final Bundle /* in/out */ bookData) {
-        String name = bookData.getString(DBDefinitions.KEY_ISBN, "");
-        if (name.isEmpty()) {
-            name = bookData.getString(DBDefinitions.KEY_EID_ISFDB, "");
-        }
-        name += FILENAME_SUFFIX;
-        String fileSpec = ImageUtils.saveImage(appContext, coverUrl, name, null);
+        final String tmpName = createTempCoverFileName(bookData);
+        final String fileSpec = ImageUtils.saveImage(appContext, coverUrl, tmpName, null);
 
         if (fileSpec != null) {
             ArrayList<String> imageList =
@@ -874,7 +921,19 @@ class IsfdbBookHandler
             imageList.add(fileSpec);
             bookData.putStringArrayList(Book.BKEY_FILE_SPEC_ARRAY[0], imageList);
         }
+    }
 
+    @NonNull
+    private String createTempCoverFileName(@NonNull final Bundle bookData) {
+        String name = bookData.getString(DBDefinitions.KEY_ISBN, "");
+        if (name.isEmpty()) {
+            name = bookData.getString(DBDefinitions.KEY_EID_ISFDB, "");
+        }
+        if (name.isEmpty()) {
+            // just use something...
+            name = String.valueOf(System.currentTimeMillis());
+        }
+        return name + FILENAME_SUFFIX;
     }
 
     /**
@@ -917,6 +976,7 @@ class IsfdbBookHandler
         final ArrayList<TocEntry> results = new ArrayList<>();
 
         if (loadPage(context, mPath) == null) {
+            // null result, abort
             return results;
         }
 

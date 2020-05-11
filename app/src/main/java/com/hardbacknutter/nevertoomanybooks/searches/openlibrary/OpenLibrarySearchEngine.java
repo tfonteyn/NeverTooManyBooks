@@ -256,10 +256,10 @@ public class OpenLibrarySearchEngine
     @Nullable
     @Override
     @WorkerThread
-    public String getCoverImage(@NonNull final Context context,
-                                @NonNull final String isbn,
-                                @IntRange(from = 0) final int cIdx,
-                                @Nullable final ImageSize size) {
+    public String searchCoverImageByIsbn(@NonNull final Context context,
+                                         @NonNull final String validIsbn,
+                                         @IntRange(from = 0) final int cIdx,
+                                         @Nullable final ImageSize size) {
         String sizeParam;
         if (size == null) {
             sizeParam = "L";
@@ -277,10 +277,10 @@ public class OpenLibrarySearchEngine
                     break;
             }
         }
-        // ignore cIdx, site has only one image.
-        String url = String.format(BASE_COVER_URL, "isbn", isbn, sizeParam);
-        String name = isbn + FILENAME_SUFFIX + "_" + sizeParam;
-        return ImageUtils.saveImage(context, url, name, null);
+
+        final String url = String.format(BASE_COVER_URL, "isbn", validIsbn, sizeParam);
+        final String tmpName = validIsbn + FILENAME_SUFFIX + "_" + sizeParam;
+        return ImageUtils.saveImage(context, url, tmpName, null);
     }
 
     @NonNull

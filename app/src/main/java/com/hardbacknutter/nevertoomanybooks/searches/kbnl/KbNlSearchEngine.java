@@ -141,7 +141,7 @@ public class KbNlSearchEngine
 
         Bundle bookData = handler.getResult();
         if (fetchThumbnail[0]) {
-            getCoverImage(context, validIsbn, 0, bookData);
+            CoverByIsbn.getCoverImage(context, this, validIsbn, 0, bookData);
         }
         return bookData;
     }
@@ -155,10 +155,10 @@ public class KbNlSearchEngine
      */
     @Nullable
     @Override
-    public String getCoverImage(@NonNull final Context context,
-                                @NonNull final String isbn,
-                                @IntRange(from = 0) final int cIdx,
-                                @Nullable final ImageSize size) {
+    public String searchCoverImageByIsbn(@NonNull final Context context,
+                                         @NonNull final String validIsbn,
+                                         @IntRange(from = 0) final int cIdx,
+                                         @Nullable final ImageSize size) {
         String sizeSuffix;
         if (size == null) {
             sizeSuffix = "large";
@@ -177,10 +177,9 @@ public class KbNlSearchEngine
             }
         }
 
-        // ignore cIdx, site has only one image.
-        String url = String.format(BASE_URL_COVERS, isbn, sizeSuffix);
-        String name = isbn + FILENAME_SUFFIX + "_" + sizeSuffix;
-        return ImageUtils.saveImage(context, url, name, null);
+        final String url = String.format(BASE_URL_COVERS, validIsbn, sizeSuffix);
+        final String tmpName = validIsbn + FILENAME_SUFFIX + "_" + sizeSuffix;
+        return ImageUtils.saveImage(context, url, tmpName, null);
     }
 
     @Override
