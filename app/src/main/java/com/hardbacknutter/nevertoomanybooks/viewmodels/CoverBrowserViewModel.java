@@ -47,7 +47,7 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import java.io.File;
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Locale;
@@ -85,12 +85,12 @@ public class CoverBrowserViewModel
     private final SparseArray<AsyncTask> mAllTasks = new SparseArray<>();
 
     /** List of all alternative editions/isbn for the given ISBN. */
-    private final MutableLiveData<ArrayList<String>> mEditions = new MutableLiveData<>();
+    private final MutableLiveData<Collection<String>> mEditions = new MutableLiveData<>();
 
     private final MutableLiveData<FileInfo> mGalleryImage = new MutableLiveData<>();
 
     private final MutableLiveData<FileInfo> mSwitcherImage = new MutableLiveData<>();
-    private final TaskListener<ArrayList<String>> mEditionTaskListener = message -> {
+    private final TaskListener<Collection<String>> mEditionTaskListener = message -> {
         synchronized (mAllTasks) {
             mAllTasks.remove(message.taskId);
         }
@@ -119,9 +119,14 @@ public class CoverBrowserViewModel
     private String mBaseIsbn;
     /** Index of the image we're handling. */
     private int mCIdx;
-    /** Absolute file path of the selected image. */
+
+    /**
+     * The selected (i.e. displayed in the switcher) file.
+     * This is the absolute/resolved path for the file
+     */
     @Nullable
-    private String mSelectedFileSpec;
+    private String mSelectedFilePath;
+
     /** Handles downloading, checking and cleanup of files. */
     private FileManager mFileManager;
 
@@ -185,7 +190,7 @@ public class CoverBrowserViewModel
      * @return list of ISBN numbers for alternative editions.
      */
     @NonNull
-    public MutableLiveData<ArrayList<String>> onEditionsLoaded() {
+    public MutableLiveData<Collection<String>> onEditionsLoaded() {
         return mEditions;
     }
 
@@ -236,12 +241,12 @@ public class CoverBrowserViewModel
     }
 
     @Nullable
-    public String getSelectedFileSpec() {
-        return mSelectedFileSpec;
+    public String getSelectedFilePath() {
+        return mSelectedFilePath;
     }
 
-    public void setSelectedFileSpec(@Nullable final String selectedFileSpec) {
-        mSelectedFileSpec = selectedFileSpec;
+    public void setSelectedFilePath(@NonNull final String filePath) {
+        mSelectedFilePath = filePath;
     }
 
     /** wrapper for {@link FileManager#getFileInfo}. */
@@ -425,10 +430,9 @@ public class CoverBrowserViewModel
             @SearchSites.Id
             int currentSearchSites = mSiteList.getEnabledSites();
 
-            // we need to use the size as the outer loop (and not inside of getCoverImage itself).
-            // the idea is to check all sites for the same size first.
-            // if none respond with that size, try the next size inline.
-            // The other way around we might get a site/small-size instead of otherSite/better-size.
+            // We need to use the size as the outer loop.
+            // The idea is to check all sites for the same size first.
+            // If none respond with that size, try the next size inline.
             for (SearchEngine.CoverByIsbn.ImageSize size : imageSizes) {
                 final String key = isbn + '_' + size;
                 FileInfo fileInfo = mFiles.get(key);
@@ -436,10 +440,11 @@ public class CoverBrowserViewModel
                 // Do we already have a file and is it good ?
                 if ((fileInfo != null) && isGood(context, fileInfo.fileSpec)) {
 
-                    if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVER_BROWSER) {
-                        Log.d(TAG, "download|FILESYSTEM|fileInfo=" + fileInfo);
+                    if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVER_BROWSER_DOWNLOADS) {
+                        Log.d(TAG, "download|PRESENT"
+                                   + "|fileInfo=" + fileInfo);
                     }
-                    // use it
+                    // abort search and use the file we already have
                     return fileInfo;
 
                 } else {
@@ -452,29 +457,41 @@ public class CoverBrowserViewModel
                     if ((currentSearchSites & site.id) != 0) {
                         SearchEngine engine = site.getSearchEngine();
 
-                        final boolean isAvailable = engine instanceof SearchEngine.CoverByIsbn
-                                                    && engine.isAvailable(context);
-                        if (isAvailable) {
+                        if (engine instanceof SearchEngine.CoverByIsbn
+                            && engine.isAvailable(context)) {
+                            if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVER_BROWSER_DOWNLOADS) {
+                                Log.d(TAG, "download|TRYING"
+                                           + "|isbn=" + isbn
+                                           + "|size=" + size
+                                           + "|engine=" + engine.getName(context)
+                                     );
+                            }
+
                             @Nullable
                             final String fileSpec = ((SearchEngine.CoverByIsbn) engine)
-                                    .getCoverImage(context, isbn, cIdx, size);
+                                    .searchCoverImageByIsbn(context, isbn, cIdx, size);
+
                             if (isGood(context, fileSpec)) {
                                 fileInfo = new FileInfo(isbn, size, fileSpec);
                                 mFiles.put(key, fileInfo);
 
-                                if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVER_BROWSER) {
-                                    Log.d(TAG, "download|FOUND|fileInfo=" + fileInfo);
+                                if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVER_BROWSER_DOWNLOADS) {
+                                    Log.d(TAG, "download|SUCCESS"
+                                               + "|isbn=" + isbn
+                                               + "|size=" + size
+                                               + "|engine=" + engine.getName(context)
+                                               + "|fileSpec=" + fileSpec);
                                 }
-
-                            } else if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVER_BROWSER) {
-                                Log.d(TAG, "download|MISSING"
-                                           + "|engine=" + engine.getName(context)
-                                           + "|isbn=" + isbn
-                                           + "|size=" + size);
-                            }
-
-                            if (fileInfo != null) {
+                                // abort search, we got an image
                                 return fileInfo;
+
+                            } else if (BuildConfig.DEBUG
+                                       && DEBUG_SWITCHES.COVER_BROWSER_DOWNLOADS) {
+                                Log.d(TAG, "download|NO GOOD"
+                                           + "|isbn=" + isbn
+                                           + "|size=" + size
+                                           + "|engine=" + engine.getName(context)
+                                     );
                             }
 
                             // if the site we just searched only supports one image,
@@ -488,18 +505,25 @@ public class CoverBrowserViewModel
                             currentSearchSites &= ~site.id;
                         }
                     }
+                    // loop for next site
                 }
 
-                // give up
+                // give up for this size; remove (if any) bad file
                 mFiles.remove(key);
             }
-            // we failed, but we still need to return a valid FileInfo to prevent
-            // repeating the process and failing again... etc...
+
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVER_BROWSER_DOWNLOADS) {
+                Log.d(TAG, "download|FAILED "
+                           + "|isbn=" + isbn);
+            }
+
+            // Failed to find any size on all sites.
             return new FileInfo(isbn);
         }
 
         /**
-         * Get the requested FileInfo, if available, otherwise return {@code null}.
+         * Get the requested FileInfo.
+         * The fileSpec member will be {@code null} if there is no available file.
          *
          * @param isbn  to search
          * @param sizes required sizes in order to look for. First found is used.
@@ -515,8 +539,7 @@ public class CoverBrowserViewModel
                     return fileInfo;
                 }
             }
-            // we failed, but we still need to return a valid FileInfo to prevent
-            // repeating the process and failing again... etc...
+            // Failed to find.
             return new FileInfo(isbn);
         }
 
@@ -539,7 +562,7 @@ public class CoverBrowserViewModel
     /**
      * Fetch a thumbnail and stick it into the gallery.
      */
-    static class GetGalleryImageTask
+    private static class GetGalleryImageTask
             extends TaskBase<FileInfo> {
 
         @SuppressWarnings("InnerClassFieldHidesOuterClassField")
@@ -605,7 +628,7 @@ public class CoverBrowserViewModel
     /**
      * Fetch a full-size image and stick it into the ImageSwitcher.
      */
-    static class GetSwitcherImageTask
+    private static class GetSwitcherImageTask
             extends TaskBase<FileInfo> {
 
         @SuppressWarnings("InnerClassFieldHidesOuterClassField")
