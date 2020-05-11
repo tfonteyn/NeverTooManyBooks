@@ -28,7 +28,6 @@
 package com.hardbacknutter.nevertoomanybooks.viewmodels;
 
 import android.content.Context;
-import android.util.Log;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.IntRange;
@@ -40,7 +39,6 @@ import androidx.lifecycle.ViewModel;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.fields.Fields;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsHandler;
@@ -103,12 +101,6 @@ public abstract class BookBaseFragmentViewModel
             if (fields == null) {
                 fields = new Fields();
                 mFieldsMap.put(key, fields);
-            }
-        }
-
-        if (BuildConfig.DEBUG) {
-            for (Map.Entry<String, Fields> entry : mFieldsMap.entrySet()) {
-                Log.d(TAG, "getFields|" + entry.getKey() + "|size=" + entry.getValue().size());
             }
         }
         return fields;
