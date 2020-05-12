@@ -570,7 +570,7 @@ public final class CoversDAO
 
         @Override
         @WorkerThread
-        protected Void doInBackground(final Void... params) {
+        protected Void doInBackground(@Nullable final Void... voids) {
             Thread.currentThread().setName(TAG);
             final Context context = App.getTaskContext();
 

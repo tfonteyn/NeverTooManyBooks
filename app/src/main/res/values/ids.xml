@@ -64,11 +64,8 @@
 
     <item name="TASK_ID_UPDATE_FIELDS" type="id" />
 
-    <item name="TASK_ID_GALLERY_IMAGE" type="id" />
-    <item name="TASK_ID_SWITCHER_IMAGE" type="id" />
-
-    <item name="TASK_ID_SEARCH_EDITIONS" type="id" />
-
+    <!-- Specific ISFDB task used in the 'edit book TOC' fragment. -->
+    <item name="TASK_ID_ISFDB_EDITIONS" type="id" />
     <!-- Specific ISFDB task used in the 'edit book TOC' fragment. -->
     <item name="TASK_ID_ISFDB_GET_BOOK" type="id" />
 

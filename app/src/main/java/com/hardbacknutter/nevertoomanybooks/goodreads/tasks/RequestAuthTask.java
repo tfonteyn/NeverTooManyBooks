@@ -31,6 +31,7 @@ import android.content.Context;
 import android.content.Intent;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
 
@@ -93,7 +94,7 @@ public class RequestAuthTask
     @Override
     @NonNull
     @WorkerThread
-    protected GrStatus doInBackground(final Void... params) {
+    protected GrStatus doInBackground(@Nullable final Void... voids) {
         Thread.currentThread().setName(TAG);
         final Context context = App.getTaskContext();
 

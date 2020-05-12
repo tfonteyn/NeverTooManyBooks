@@ -30,6 +30,7 @@ package com.hardbacknutter.nevertoomanybooks.goodreads.tasks;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 
 import com.hardbacknutter.nevertoomanybooks.App;
@@ -73,7 +74,7 @@ public class ImportTask
     @Override
     @NonNull
     @WorkerThread
-    protected GrStatus doInBackground(final Void... params) {
+    protected GrStatus doInBackground(@Nullable final Void... voids) {
         Thread.currentThread().setName(TAG);
         final Context context = App.getTaskContext();
 

@@ -60,7 +60,7 @@ public class AuthorizationResultCheckTask
     private Exception mException;
 
     @Override
-    protected Boolean doInBackground(final Void... params) {
+    protected Boolean doInBackground(@Nullable final Void... voids) {
         Thread.currentThread().setName(TAG);
         final Context context = App.getTaskContext();
 

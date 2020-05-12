@@ -178,13 +178,13 @@ public class GoogleBarcodeScanner
         /** Log tag. */
         private static final String TAG = "PreloadGoogleScanner";
 
-        public PreloadGoogleScanner(@IdRes final int taskId,
+        public PreloadGoogleScanner(final int taskId,
                                     @NonNull final TaskListener<Boolean> taskListener) {
             super(taskId, taskListener);
         }
 
         @Override
-        protected Boolean doInBackground(final Void... voids) {
+        protected Boolean doInBackground(@Nullable final Void... voids) {
             Thread.currentThread().setName(TAG);
             final Context context = App.getTaskContext();
 

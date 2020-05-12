@@ -117,7 +117,7 @@ public class GoodreadsWork {
         synchronized (this) {
             if (mImageBytes == null) {
                 // Image not retrieved yet, so clear any existing image
-                ImageUtils.setPlaceholder(imageView, R.drawable.ic_image, 0, maxHeight);
+                ImageUtils.setPlaceholder(imageView, R.drawable.ic_image, 0);
                 // Save the view so we know where the image is going to be displayed
                 mImageView = new WeakReference<>(imageView);
                 // run task to get the image. Use parallel executor.
@@ -132,10 +132,9 @@ public class GoodreadsWork {
                     Bitmap bitmap = BitmapFactory.decodeByteArray(mImageBytes, 0,
                                                                   mImageBytes.length,
                                                                   new BitmapFactory.Options());
-                    ImageUtils.setImageView(imageView, bitmap, maxWidth, maxHeight, true);
+                    ImageUtils.setImageView(imageView, bitmap, maxWidth, maxHeight);
                 } else {
-                    ImageUtils.setPlaceholder(imageView, R.drawable.ic_broken_image, 0,
-                                              maxHeight);
+                    ImageUtils.setPlaceholder(imageView, R.drawable.ic_broken_image, 0);
                 }
 
                 // Clear the work in the View, in case some other job was running
@@ -172,10 +171,9 @@ public class GoodreadsWork {
                         Bitmap bitmap = BitmapFactory.decodeByteArray(mImageBytes, 0,
                                                                       mImageBytes.length,
                                                                       new BitmapFactory.Options());
-                        ImageUtils.setImageView(imageView, bitmap, mMaxWidth, mMaxHeight, true);
+                        ImageUtils.setImageView(imageView, bitmap, mMaxWidth, mMaxHeight);
                     } else {
-                        ImageUtils.setPlaceholder(imageView, R.drawable.ic_broken_image, 0,
-                                                  mMaxHeight);
+                        ImageUtils.setPlaceholder(imageView, R.drawable.ic_broken_image, 0);
                     }
                 }
             }
@@ -216,7 +214,7 @@ public class GoodreadsWork {
          */
         @Override
         @WorkerThread
-        protected byte[] doInBackground(final Void... params) {
+        protected byte[] doInBackground(@Nullable final Void... voids) {
             Thread.currentThread().setName(TAG);
             final Context context = App.getTaskContext();
 

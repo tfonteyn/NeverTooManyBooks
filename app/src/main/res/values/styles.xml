@@ -369,23 +369,13 @@
     <!-- Cover image  -->
     <!-- *************************************************************************************** -->
 
-    <!-- Cover image;
-        layout_width/layout_height is set from code to wrap/wrap for real images,
-        and to a calculation for placeholders.
-        The maximum width/height of the view is also done from code.
-         -->
+    <!-- Cover image. All settings are defaults only and will be adjusted in code. -->
     <style name="CoverImage">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:padding">4dp</item>
-        <item name="android:scaleType">centerInside</item>
+        <item name="android:scaleType">fitXY</item>
         <item name="android:adjustViewBounds">true</item>
-    </style>
-
-    <!-- full screen zoomed -->
-    <style name="CoverImage.Zoomed">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">match_parent</item>
     </style>
 
     <!-- *************************************************************************************** -->

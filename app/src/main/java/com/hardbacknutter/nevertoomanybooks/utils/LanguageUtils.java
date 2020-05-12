@@ -31,7 +31,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
 
-import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
@@ -415,13 +414,13 @@ public final class LanguageUtils {
          * @param taskListener for sending progress and finish messages to.
          */
         @UiThread
-        public BuildLanguageMappingsTask(@IdRes final int taskId,
+        public BuildLanguageMappingsTask(final int taskId,
                                          @NonNull final TaskListener<Boolean> taskListener) {
             super(taskId, taskListener);
         }
 
         @Override
-        protected Boolean doInBackground(final Void... params) {
+        protected Boolean doInBackground(@Nullable final Void... voids) {
             Thread.currentThread().setName(TAG);
             final Context context = LocaleUtils.applyLocale(App.getTaskContext());
 

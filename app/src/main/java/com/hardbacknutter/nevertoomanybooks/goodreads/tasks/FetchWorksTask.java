@@ -67,7 +67,7 @@ public class FetchWorksTask
 
     @Override
     @Nullable
-    protected List<GoodreadsWork> doInBackground(final Void... voids) {
+    protected List<GoodreadsWork> doInBackground(@Nullable final Void... voids) {
         Thread.currentThread().setName(TAG);
         final Context context = App.getTaskContext();
 

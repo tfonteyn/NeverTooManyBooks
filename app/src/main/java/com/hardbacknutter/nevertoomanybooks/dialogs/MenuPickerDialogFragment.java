@@ -97,7 +97,7 @@ public class MenuPickerDialogFragment
                                              @NonNull final ArrayList<Pick> pickList,
                                              final int position) {
         final DialogFragment frag = new MenuPickerDialogFragment();
-        final Bundle args = new Bundle();
+        final Bundle args = new Bundle(4);
         args.putString(StandardDialogs.BKEY_DIALOG_TITLE, title);
         args.putString(StandardDialogs.BKEY_DIALOG_MESSAGE, headerMessage);
         args.putParcelableArrayList(BKEY_MENU, pickList);

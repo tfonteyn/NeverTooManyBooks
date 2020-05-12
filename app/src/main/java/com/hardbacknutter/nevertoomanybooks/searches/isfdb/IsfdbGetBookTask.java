@@ -104,7 +104,7 @@ public class IsfdbGetBookTask
     @Override
     @Nullable
     @WorkerThread
-    protected Bundle doInBackground(final Void... params) {
+    protected Bundle doInBackground(@Nullable final Void... voids) {
         Thread.currentThread().setName(TAG);
         final Context context = LocaleUtils.applyLocale(App.getTaskContext());
 

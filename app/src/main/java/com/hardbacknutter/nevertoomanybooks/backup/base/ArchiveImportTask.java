@@ -30,6 +30,7 @@ package com.hardbacknutter.nevertoomanybooks.backup.base;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
 
@@ -74,7 +75,7 @@ public class ArchiveImportTask
     @Override
     @NonNull
     @WorkerThread
-    protected ImportManager doInBackground(final Void... params) {
+    protected ImportManager doInBackground(@Nullable final Void... voids) {
         Thread.currentThread().setName(TAG);
         final Context context = LocaleUtils.applyLocale(App.getTaskContext());
 

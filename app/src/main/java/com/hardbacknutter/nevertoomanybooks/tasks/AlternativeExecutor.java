@@ -31,7 +31,6 @@ import android.os.AsyncTask;
 
 import androidx.annotation.NonNull;
 
-import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Executor;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadFactory;
@@ -54,31 +53,22 @@ import com.hardbacknutter.nevertoomanybooks.CoverBrowserDialogFragment;
  */
 public final class AlternativeExecutor {
 
-    /**
-     * An {@link Executor} that can be used to execute tasks in parallel.
-     */
-    public static final Executor THREAD_POOL_EXECUTOR;
-
-    /** Same as original. */
-    private static final ThreadFactory THREAD_FACTORY = new ThreadFactory() {
-        private final AtomicInteger mCount = new AtomicInteger(1);
-
-        public Thread newThread(@NonNull final Runnable r) {
-            return new Thread(r, "AlternativeTask #" + mCount.getAndIncrement());
-        }
-    };
-
-    /** Only 16 instead of 128. */
-    private static final BlockingQueue<Runnable> POOL_WORK_QUEUE =
-            new LinkedBlockingQueue<>(16);
-
-    static {
+    public static Executor create(@NonNull final String threadName,
+                                  final int poolWorkQueue) {
         // core pool size set to 1, instead of 2..4 (cpu dependent)
-        ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(
+        final ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(
                 1, Runtime.getRuntime().availableProcessors(),
-                30, TimeUnit.SECONDS, POOL_WORK_QUEUE, THREAD_FACTORY);
+                30, TimeUnit.SECONDS,
+                new LinkedBlockingQueue<>(poolWorkQueue),
+                new ThreadFactory() {
+                    private final AtomicInteger mCount = new AtomicInteger(1);
+
+                    public Thread newThread(@NonNull final Runnable r) {
+                        return new Thread(r, threadName + '#' + mCount.getAndIncrement());
+                    }
+                });
         threadPoolExecutor.allowCoreThreadTimeOut(true);
-        THREAD_POOL_EXECUTOR = threadPoolExecutor;
+        return threadPoolExecutor;
     }
 
     private AlternativeExecutor() {

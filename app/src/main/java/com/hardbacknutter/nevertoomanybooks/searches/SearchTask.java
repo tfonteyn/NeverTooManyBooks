@@ -179,7 +179,7 @@ public class SearchTask
 
     @Override
     @Nullable
-    protected Bundle doInBackground(@NonNull final Void... aVoid) {
+    protected Bundle doInBackground(@Nullable final Void... voids) {
         final Context context = LocaleUtils.applyLocale(App.getTaskContext());
         Thread.currentThread().setName(TAG + ' ' + mSearchEngine.getName(context));
 

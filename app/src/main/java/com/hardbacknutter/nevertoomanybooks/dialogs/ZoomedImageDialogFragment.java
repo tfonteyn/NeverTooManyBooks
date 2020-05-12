@@ -34,7 +34,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
 import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
@@ -82,8 +81,8 @@ public class ZoomedImageDialogFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Bundle args = requireArguments();
-        String fileSpec = args.getString(BKEY_IMAGE_PATH);
+        final Bundle args = requireArguments();
+        final String fileSpec = args.getString(BKEY_IMAGE_PATH);
         Objects.requireNonNull(fileSpec, ErrorMsg.ARGS_MISSING_IMAGE_PATH);
         mImageFile = new File(fileSpec);
     }
@@ -92,7 +91,7 @@ public class ZoomedImageDialogFragment
     public View onCreateView(@NonNull final LayoutInflater inflater,
                              @Nullable final ViewGroup container,
                              @Nullable final Bundle savedInstanceState) {
-        View root = inflater.inflate(R.layout.dialog_zoomed_image, container);
+        final View root = inflater.inflate(R.layout.dialog_zoomed_image, container);
         mImageView = root.findViewById(R.id.coverImage0);
         mImageView.setOnClickListener(v -> dismiss());
         return root;
@@ -102,54 +101,35 @@ public class ZoomedImageDialogFragment
     public void onResume() {
         super.onResume();
 
-        // It's quite possible there are better ways of doing the below.
-        // The intention is:
-        // - make the image as big as possible as compared to screen size/orientation.
-        // - have the dialog window wrap around the image.
-        // - assume 10% of the screen used for Dialog padding
-
-        //noinspection ConstantConditions
-        final Window window = getDialog().getWindow();
         //noinspection ConstantConditions
         final Resources resources = getContext().getResources();
         final Configuration configuration = resources.getConfiguration();
-
-        // not ideal, but it works: use 90% of the available space for our image.
         final float density = resources.getDisplayMetrics().density;
-        int w = (int) (configuration.screenWidthDp * density * 0.9f);
-        int h = (int) (configuration.screenHeightDp * density * 0.9f);
-        int dx;
-        int dy;
-        switch (configuration.orientation) {
-            case Configuration.ORIENTATION_PORTRAIT:
-                dx = w;
-                dy = h;
-                //noinspection ConstantConditions
-                window.setLayout(ViewGroup.LayoutParams.MATCH_PARENT,
-                                 ViewGroup.LayoutParams.WRAP_CONTENT);
-                break;
 
-            case Configuration.ORIENTATION_LANDSCAPE:
-                dx = h;
-                dy = w;
-                //noinspection ConstantConditions
-                window.setLayout(ViewGroup.LayoutParams.WRAP_CONTENT,
-                                 ViewGroup.LayoutParams.MATCH_PARENT);
-                break;
+        final int width;
+        final int height;
 
-            default:
-                // according to the Configuration class docs, there *might* be other values.
-                // x/y as for portrait, but window layout on the safe side.
-                dx = w;
-                dy = h;
-                //noinspection ConstantConditions
-                window.setLayout(ViewGroup.LayoutParams.WRAP_CONTENT,
-                                 ViewGroup.LayoutParams.WRAP_CONTENT);
-                break;
+        if (resources.getBoolean(R.bool.isLargeScreen)) {
+            // Pixel2: w411dp h659dp
+            if (configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
+                width = (int) (420 * density);
+                height = (int) (660 * density);
+            } else {
+                width = (int) (660 * density);
+                height = (int) (420 * density);
+            }
+
+        } else {
+            // Use 95% of the available space for our image.
+            width = (int) (configuration.screenWidthDp * density * 0.9f);
+            height = (int) (configuration.screenHeightDp * density * 0.9f);
         }
+        //noinspection ConstantConditions
+        getDialog().getWindow().setLayout(ViewGroup.LayoutParams.WRAP_CONTENT,
+                                          ViewGroup.LayoutParams.WRAP_CONTENT);
 
         // load and resize as needed.
-        new ImageUtils.ImageLoader(mImageView, mImageFile, dx, dy, true)
+        new ImageUtils.ImageLoader(mImageView, mImageFile, width, height, null)
                 .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 }

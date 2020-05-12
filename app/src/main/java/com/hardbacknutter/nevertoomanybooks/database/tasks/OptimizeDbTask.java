@@ -30,7 +30,6 @@ package com.hardbacknutter.nevertoomanybooks.database.tasks;
 import android.content.Context;
 import android.util.Log;
 
-import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
@@ -70,7 +69,7 @@ public class OptimizeDbTask
      * @param taskListener for sending progress and finish messages to.
      */
     @UiThread
-    public OptimizeDbTask(@IdRes final int taskId,
+    public OptimizeDbTask(final int taskId,
                           @NonNull final DAO db,
                           final boolean doCoversDb,
                           @NonNull final TaskListener<Boolean> taskListener) {
@@ -80,7 +79,7 @@ public class OptimizeDbTask
     }
 
     @Override
-    protected Boolean doInBackground(@Nullable final Void... params) {
+    protected Boolean doInBackground(@Nullable final Void... voids) {
         Thread.currentThread().setName(TAG);
         final Context context = LocaleUtils.applyLocale(App.getTaskContext());
 

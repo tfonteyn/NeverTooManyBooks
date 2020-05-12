@@ -47,6 +47,7 @@ import com.hardbacknutter.nevertoomanybooks.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.databinding.ActivityLibrarythingRegisterBinding;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
+import com.hardbacknutter.nevertoomanybooks.searches.ImageSize;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskBase;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
@@ -133,14 +134,14 @@ public class LibraryThingRegistrationActivity
         @Override
         @NonNull
         @WorkerThread
-        protected Integer doInBackground(final Void... params) {
+        protected Integer doInBackground(@Nullable final Void... voids) {
             Thread.currentThread().setName(TAG);
             final Context context = App.getTaskContext();
 
             try {
                 final SearchEngine.CoverByIsbn ltm = new LibraryThingSearchEngine();
                 final String fileSpec = ltm.searchCoverImageByIsbn(context, "0451451783", 0,
-                                                                   SearchEngine.CoverByIsbn.ImageSize.Small);
+                                                                   ImageSize.Small);
                 if (fileSpec != null) {
                     final File file = new File(fileSpec);
                     final long fileLen = file.length();

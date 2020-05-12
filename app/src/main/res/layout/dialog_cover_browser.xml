@@ -44,7 +44,8 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:itemCount="5"
+        tools:itemCount="3"
+        tools:listitem="@layout/row_cover_browser_gallery"
         />
 
     <TextView
@@ -59,17 +60,19 @@
         tools:text="@tools:sample/lorem"
         />
 
-    <ImageSwitcher
-        android:id="@+id/switcher"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:padding="?attr/dialogPreferredPadding"
-        android:visibility="gone"
+    <ImageView
+        android:id="@+id/preview"
+        style="@style/CoverImage"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="?attr/dialogPreferredPadding"
+        android:visibility="invisible"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/statusMessage"
-        tools:layout_height="340dp"
-        tools:layout_width="222dp"
+        tools:ignore="ContentDescription"
+        tools:layout_height="@dimen/tools_cover_1x_large_height"
+        tools:layout_width="@dimen/tools_cover_1x_large_width"
+        tools:src="@sample/covers"
         tools:visibility="visible"
         />
 

@@ -360,7 +360,12 @@ public interface SearchEngine {
                 throws CredentialsException, IOException, SearchException;
     }
 
-    /** Optional. */
+    /**
+     * Optional.
+     * <p>
+     * ENHANCE: CoverByIsbn Return a struct with file name AND size.
+     * ENHANCE: if a site only supports 1 image size, it should be assumed to be Large.
+     */
     interface CoverByIsbn
             extends SearchEngine {
 
@@ -519,13 +524,6 @@ public interface SearchEngine {
             return false;
         }
 
-        /**
-         * Sizes of thumbnails.
-         * These are open to interpretation (or not used at all) by individual {@link SearchEngine}.
-         */
-        enum ImageSize {
-            Large, Medium, Small
-        }
     }
 
     /** Optional. */

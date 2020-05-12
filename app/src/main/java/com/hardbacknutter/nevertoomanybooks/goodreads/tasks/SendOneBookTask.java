@@ -31,6 +31,7 @@ import android.content.Context;
 import android.database.Cursor;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 
 import java.io.IOException;
@@ -82,7 +83,7 @@ public class SendOneBookTask
     @Override
     @NonNull
     @WorkerThread
-    protected GrStatus doInBackground(final Void... params) {
+    protected GrStatus doInBackground(@Nullable final Void... voids) {
         Thread.currentThread().setName(TAG + mBookId);
         final Context context = LocaleUtils.applyLocale(App.getTaskContext());
 

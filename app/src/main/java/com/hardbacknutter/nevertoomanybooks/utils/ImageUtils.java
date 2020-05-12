@@ -163,23 +163,52 @@ public final class ImageUtils {
 
     /**
      * Set a placeholder drawable in the view.
+     * The view will be resized as a portrait image with 'maxSize' as the height.
      *
      * @param imageView  The ImageView to load with the placeholder
      * @param drawable   drawable to use
      * @param background drawable to use for a placeholder background (0 for none)
-     * @param maxHeight  Maximum height of the image
+     * @param maxSize    Maximum height of the image
      */
     @UiThread
     public static void setPlaceholder(@NonNull final ImageView imageView,
                                       @DrawableRes final int drawable,
                                       @DrawableRes final int background,
-                                      final int maxHeight) {
-        ViewGroup.LayoutParams lp = imageView.getLayoutParams();
-        lp.height = maxHeight;
-        lp.width = (int) (maxHeight * 0.75f);
+                                      final int maxSize) {
+        final ViewGroup.LayoutParams lp = imageView.getLayoutParams();
+        lp.height = maxSize;
+        lp.width = (int) (maxSize * 0.75f);
         imageView.setLayoutParams(lp);
 
+        //imageView.setAdjustViewBounds(true);
+        imageView.setScaleType(ImageView.ScaleType.CENTER);
         imageView.setImageResource(drawable);
+
+        if (background != 0) {
+            imageView.setBackgroundResource(background);
+        }
+    }
+
+    /**
+     * Set a placeholder drawable in the view. Resize the view to wrap around the placeholder.
+     *
+     * @param imageView  The ImageView to load with the placeholder
+     * @param drawable   drawable to use
+     * @param background drawable to use for a placeholder background (0 for none)
+     */
+    @UiThread
+    public static void setPlaceholder(@NonNull final ImageView imageView,
+                                      @DrawableRes final int drawable,
+                                      @DrawableRes final int background) {
+        final ViewGroup.LayoutParams lp = imageView.getLayoutParams();
+        lp.height = ViewGroup.LayoutParams.WRAP_CONTENT;
+        lp.width = ViewGroup.LayoutParams.WRAP_CONTENT;
+        imageView.setLayoutParams(lp);
+
+        //imageView.setAdjustViewBounds(true);
+        imageView.setScaleType(ImageView.ScaleType.CENTER);
+        imageView.setImageResource(drawable);
+
         if (background != 0) {
             imageView.setBackgroundResource(background);
         }
@@ -188,42 +217,42 @@ public final class ImageUtils {
     /**
      * Load the image bitmap into the destination view.
      *
-     * @param imageView      The ImageView to load with the bitmap or an appropriate icon
-     * @param source         The Bitmap of the image
-     * @param maxWidth       Maximum width of the image
-     * @param maxHeight      Maximum height of the image
-     * @param allowUpscaling use the maximum h/w also as the minimum; thereby forcing upscaling.
+     * @param imageView The ImageView to load with the bitmap or an appropriate icon
+     * @param source    The Bitmap of the image
+     * @param maxWidth  Maximum width of the image
+     * @param maxHeight Maximum height of the image
      */
     @UiThread
     public static void setImageView(@NonNull final ImageView imageView,
                                     @NonNull final Bitmap source,
                                     final int maxWidth,
-                                    final int maxHeight,
-                                    final boolean allowUpscaling) {
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMAGE_UTILS) {
+                                    final int maxHeight) {
+//        if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMAGE_UTILS) {
             Log.d(TAG, "setImageView"
                        + "|maxWidth=" + maxWidth
                        + "|maxHeight=" + maxHeight
-                       + "|allowUpscaling=" + allowUpscaling
                        + "|bm.width=" + source.getWidth()
                        + "|bm.height=" + source.getHeight());
-        }
+//        }
 
-        ViewGroup.LayoutParams lp = imageView.getLayoutParams();
-        lp.height = ViewGroup.LayoutParams.WRAP_CONTENT;
-        lp.width = ViewGroup.LayoutParams.WRAP_CONTENT;
+        final ViewGroup.LayoutParams lp = imageView.getLayoutParams();
+        if (source.getWidth() < source.getHeight()) {
+            // portrait
+            lp.height = maxHeight;
+            lp.width = ViewGroup.LayoutParams.WRAP_CONTENT;
+        } else {
+            // landscape
+            lp.height = ViewGroup.LayoutParams.WRAP_CONTENT;
+            lp.width = maxWidth;
+        }
         imageView.setLayoutParams(lp);
 
-        imageView.setMaxWidth(maxWidth);
-        imageView.setMaxHeight(maxHeight);
+        imageView.setAdjustViewBounds(true);
+        imageView.setScaleType(ImageView.ScaleType.FIT_XY);
+        imageView.setImageBitmap(source);
 
-        Bitmap bitmap = source;
-        // upscale only when required and allowed; otherwise let Android decide.
-        if (source.getHeight() < maxHeight && allowUpscaling) {
-            bitmap = createScaledBitmap(source, maxWidth, maxHeight);
-        }
-
-        imageView.setImageBitmap(bitmap);
+//        imageView.setScaleType(ImageView.ScaleType.CENTER);
+//        imageView.setImageBitmap(createScaledBitmap(source, maxWidth, maxHeight));
     }
 
     /**
@@ -253,7 +282,7 @@ public final class ImageUtils {
         if (imagesAreCached(context) && !CoversDAO.ImageCacheWriterTask.hasActiveTasks()) {
             Bitmap bitmap = CoversDAO.getImage(context, uuid, cIdx, maxWidth, maxHeight);
             if (bitmap != null) {
-                setImageView(imageView, bitmap, maxWidth, maxHeight, true);
+                setImageView(imageView, bitmap, maxWidth, maxHeight);
                 return true;
             }
         }
@@ -276,7 +305,7 @@ public final class ImageUtils {
 
         } else {
             // Cache not used, we know the file is valid, go get it.
-            new ImageLoader(imageView, file, maxWidth, maxHeight, true)
+            new ImageLoader(imageView, file, maxWidth, maxHeight, null)
                     .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
             return true;
         }
@@ -351,11 +380,10 @@ public final class ImageUtils {
 
     /**
      * Get the image from the file specification.
+     * This method produces a truly scaled bitmap to fit within the bounds passed in.
      * <p>
      * <strong>Note:</strong> forceScaleBitmap is an expensive operation.
      * Make sure you really need it.
-     * This method is slower than {@link #createScaledBitmap} but produces a truly scaled
-     * bitmap to fit withing the bounds passed in.
      *
      * @param fileSpec  the file specification (NOT the uuid!)
      * @param maxWidth  Maximum desired width of the image
@@ -714,42 +742,35 @@ public final class ImageUtils {
         private final File mFile;
         private final int mMaxWidth;
         private final int mMaxHeight;
-        private final boolean mAllowUpscaling;
-
+        @Nullable
+        private final Runnable mOnSuccess;
         /**
          * Constructor.
-         *
-         * @param imageView      to populate
-         * @param file           to load, must be valid
-         * @param maxWidth       Maximum desired width of the image
-         * @param maxHeight      Maximum desired height of the image
-         * @param allowUpscaling use the maximum h/w also as the minimum; thereby forcing upscaling.
+         *  @param imageView to populate
+         * @param file      to load, must be valid
+         * @param maxWidth  Maximum desired width of the image
+         * @param maxHeight Maximum desired height of the image
          */
         public ImageLoader(@NonNull final ImageView imageView,
                            @NonNull final File file,
                            final int maxWidth,
                            final int maxHeight,
-                           final boolean allowUpscaling) {
+                           @Nullable final Runnable onSuccess) {
             // see onPostExecute
             imageView.setTag(R.id.TAG_THUMBNAIL_TASK, this);
             mImageView = new WeakReference<>(imageView);
             mFile = file;
             mMaxWidth = maxWidth;
             mMaxHeight = maxHeight;
-            mAllowUpscaling = allowUpscaling;
+            mOnSuccess = onSuccess;
         }
 
         @Override
         @Nullable
-        protected Bitmap doInBackground(final Void... voids) {
+        protected Bitmap doInBackground(@Nullable final Void... voids) {
             Thread.currentThread().setName(TAG);
 
-            Bitmap bitmap = BitmapFactory.decodeFile(mFile.getAbsolutePath());
-            // upscale when required and allowed
-            if (bitmap != null && bitmap.getHeight() < mMaxHeight && mAllowUpscaling) {
-                bitmap = createScaledBitmap(bitmap, mMaxWidth, mMaxHeight);
-            }
-            return bitmap;
+            return BitmapFactory.decodeFile(mFile.getAbsolutePath());
         }
 
         @Override
@@ -761,8 +782,10 @@ public final class ImageUtils {
                 && this.equals(imageView.getTag(R.id.TAG_THUMBNAIL_TASK))) {
                 imageView.setTag(R.id.TAG_THUMBNAIL_TASK, null);
                 if (bitmap != null) {
-                    // upscaling, if applicable, was already done in the background task.
-                    setImageView(imageView, bitmap, mMaxWidth, mMaxHeight, false);
+                    setImageView(imageView, bitmap, mMaxWidth, mMaxHeight);
+                    if (mOnSuccess != null) {
+                        mOnSuccess.run();
+                    }
                 } else {
                     setPlaceholder(imageView, R.drawable.ic_broken_image, 0, mMaxHeight);
                 }
@@ -818,7 +841,7 @@ public final class ImageUtils {
 
         @Override
         @Nullable
-        protected Bitmap doInBackground(final Void... voids) {
+        protected Bitmap doInBackground(@Nullable final Void... voids) {
             Thread.currentThread().setName(TAG);
 
             return forceScaleBitmap(mFile.getAbsolutePath(), mMaxWidth, mMaxHeight, true);
@@ -834,7 +857,7 @@ public final class ImageUtils {
                 imageView.setTag(R.id.TAG_THUMBNAIL_TASK, null);
                 if (bitmap != null) {
                     // upscaling, if applicable, was already done in the background task.
-                    setImageView(imageView, bitmap, mMaxWidth, mMaxHeight, false);
+                    setImageView(imageView, bitmap, mMaxWidth, mMaxHeight);
 
                     // Start another task to send it to the cache
                     new CoversDAO.ImageCacheWriterTask(mUuid, mCIdx, mMaxWidth, mMaxHeight, bitmap)

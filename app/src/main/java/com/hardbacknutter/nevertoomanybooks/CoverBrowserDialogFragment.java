@@ -29,14 +29,10 @@ package com.hardbacknutter.nevertoomanybooks;
 
 import android.app.Dialog;
 import android.content.DialogInterface;
-import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageSwitcher;
 import android.widget.ImageView;
 
 import androidx.annotation.IntRange;
@@ -61,9 +57,9 @@ import java.util.concurrent.RejectedExecutionException;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogCoverBrowserBinding;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
-import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
+import com.hardbacknutter.nevertoomanybooks.searches.ImageFileInfo;
+import com.hardbacknutter.nevertoomanybooks.searches.ImageSize;
 import com.hardbacknutter.nevertoomanybooks.searches.SiteList;
-import com.hardbacknutter.nevertoomanybooks.tasks.AlternativeExecutor;
 import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.CoverBrowserViewModel;
 
@@ -71,11 +67,8 @@ import com.hardbacknutter.nevertoomanybooks.viewmodels.CoverBrowserViewModel;
  * Displays and manages a cover image browser in a dialog, allowing the user to select
  * an image from a list to use as the (new) book cover image.
  * <p>
- * Fetches gallery images in parallel using {@link AsyncTask#THREAD_POOL_EXECUTOR}.
- * Displays gallery images serially using {@link AsyncTask#SERIAL_EXECUTOR}.
- * <p>
- * Fetches switcher image using {@link AlternativeExecutor#THREAD_POOL_EXECUTOR}.
- * Displays switcher image on the UI thread.
+ * Displays gallery images using {@link CoverBrowserViewModel#getPriorityExecutor()}.
+ * Displays preview image on the UI thread.
  *
  * <p>
  * ENHANCE: allow configuring search-sites on the fly
@@ -89,6 +82,9 @@ public class CoverBrowserDialogFragment
 
     /** Log tag. */
     public static final String TAG = "CoverBrowserFragment";
+
+    private static final int SCALE_PREVIEW = ImageUtils.SCALE_LARGE;
+    private static final int SCALE_GALLERY = ImageUtils.SCALE_SMALL;
 
     /** List of ISBN numbers for alternative editions. The base list for the gallery adapter. */
     @NonNull
@@ -134,7 +130,7 @@ public class CoverBrowserDialogFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mGalleryAdapter = new GalleryAdapter(ImageUtils.SCALE_MEDIUM);
+        mGalleryAdapter = new GalleryAdapter(SCALE_GALLERY);
 
         mModel = new ViewModelProvider(this).get(CoverBrowserViewModel.class);
         //noinspection ConstantConditions
@@ -142,8 +138,8 @@ public class CoverBrowserDialogFragment
 
         mModel.onEditionsLoaded().observe(this, this::showGallery);
         mModel.onGalleryImage().observe(this, this::setGalleryImage);
-        mModel.onGalleryImageSelected().observe(this, fileInfo ->
-                setSwitcherImage(fileInfo.getFile()));
+        mModel.onSelectedImage().observe(this, imageFileInfo ->
+                setSelectedImage(imageFileInfo.getFile()));
     }
 
     @NonNull
@@ -160,26 +156,10 @@ public class CoverBrowserDialogFragment
                 new DividerItemDecoration(getContext(), galleryLayoutManager.getOrientation()));
         mVb.gallery.setAdapter(mGalleryAdapter);
 
-//        final SnapHelper snapHelper = new LinearSnapHelper();
-//        snapHelper.attachToRecyclerView(mVb.gallery);
-
-        // setup the switcher.
-        mVb.switcher.setFactory(() -> {
-            ImageView imageView = new ImageView(getContext());
-            imageView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
-            imageView.setAdjustViewBounds(true);
-            imageView.setLayoutParams(
-                    new ImageSwitcher.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
-                                                   ViewGroup.LayoutParams.WRAP_CONTENT));
-
-            // placeholder image
-            imageView.setImageResource(R.drawable.ic_image);
-            return imageView;
-        });
-        // When the switcher image is clicked, send the fileSpec back to the caller and terminate.
-        mVb.switcher.setOnClickListener(v -> {
+        // When the preview image is clicked, send the fileSpec back to the caller and terminate.
+        mVb.preview.setOnClickListener(v -> {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVER_BROWSER) {
-                Log.d(TAG, "switcher.onClick|filePath=" + mModel.getSelectedFilePath());
+                Log.d(TAG, "preview.onClick|filePath=" + mModel.getSelectedFilePath());
             }
             if (mModel.getSelectedFilePath() != null) {
                 if (mListener != null && mListener.get() != null) {
@@ -197,7 +177,6 @@ public class CoverBrowserDialogFragment
             dismiss();
         });
 
-        //noinspection ConstantConditions
         return new MaterialAlertDialogBuilder(getContext())
                 .setView(mVb.getRoot())
                 .create();
@@ -252,22 +231,22 @@ public class CoverBrowserDialogFragment
      * <p>
      * TODO: pass the data via a MutableLiveData object and use a local FIFO queue.
      *
-     * @param fileInfo the file we got, if any
+     * @param imageFileInfo the file we got, if any
      */
-    private void setGalleryImage(@NonNull final CoverBrowserViewModel.FileInfo fileInfo) {
+    private void setGalleryImage(@NonNull final ImageFileInfo imageFileInfo) {
 
         Objects.requireNonNull(mGalleryAdapter, ErrorMsg.NULL_GALLERY_ADAPTER);
 
-        final int editionIndex = mEditions.indexOf(fileInfo.isbn);
+        final int editionIndex = mEditions.indexOf(imageFileInfo.isbn);
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVER_BROWSER) {
             Log.d(TAG, "setGalleryImage"
-                       + "|fileInfo=" + fileInfo
+                       + "|imageFileInfo=" + imageFileInfo
                        + "|editionIndex=" + editionIndex);
         }
 
         if (editionIndex >= 0) {
-            final File tmpFile = fileInfo.getFile();
+            final File tmpFile = imageFileInfo.getFile();
             if (tmpFile != null && tmpFile.exists()) {
                 tmpFile.deleteOnExit();
                 // Tell the adapter to refresh the entry.
@@ -290,56 +269,52 @@ public class CoverBrowserDialogFragment
     }
 
     /**
-     * Display the given file in the switcher View. Starts a task if needed.
+     * Display the given file in the preview View. Starts a task if needed.
      *
-     * @param fileInfo to use
+     * @param imageFileInfo to use
      */
-    private void setSwitcherImage(@NonNull final CoverBrowserViewModel.FileInfo fileInfo) {
-        final File file = fileInfo.getFile();
+    private void setSelectedImage(@NonNull final ImageFileInfo imageFileInfo) {
+        final File file = imageFileInfo.getFile();
         // sanity check
         if (file != null) {
-            if (SearchEngine.CoverByIsbn.ImageSize.Large.equals(fileInfo.size)) {
+            if (ImageSize.Large.equals(imageFileInfo.size)) {
                 // we already have a valid large image, so just display it
-                setSwitcherImage(file);
+                setSelectedImage(file);
 
             } else {
-                // start a task to fetch a larger image
-                mVb.switcher.setImageResource(R.drawable.ic_image);
-                mVb.switcher.setVisibility(View.VISIBLE);
+                mVb.preview.setVisibility(View.INVISIBLE);
                 mVb.statusMessage.setText(R.string.progress_msg_loading);
-                mModel.fetchSelectedImage(fileInfo);
+                // start a task to fetch a larger image
+                mModel.fetchSelectedImage(imageFileInfo);
             }
         }
     }
 
     /**
-     * Display the given file in the switcher View.
+     * Display the given file in the preview View.
      *
      * @param file to display
      */
-    private void setSwitcherImage(@Nullable final File file) {
+    private void setSelectedImage(@Nullable final File file) {
+        // Reset the preview
+        mModel.setSelectedFilePath(null);
+        mVb.preview.setVisibility(View.INVISIBLE);
+
         if (file != null && file.length() > ImageUtils.MIN_IMAGE_FILE_SIZE) {
-            // yes, on the UI thread... bad
             //noinspection ConstantConditions
-            @Nullable
-            final Bitmap bm = ImageUtils.createScaledBitmap(getContext(), file,
-                                                            ImageUtils.SCALE_X_LARGE);
-            if (bm != null) {
-                // store the PATH. It will be send back to the caller.
+            final int maxSize = ImageUtils.getMaxImageSize(getContext(), SCALE_PREVIEW);
+            new ImageUtils.ImageLoader(mVb.preview, file, maxSize, maxSize, () -> {
                 mModel.setSelectedFilePath(file.getAbsolutePath());
-
-                mVb.switcher.setImageDrawable(new BitmapDrawable(getResources(), bm));
-                mVb.switcher.setVisibility(View.VISIBLE);
+                mVb.preview.setVisibility(View.VISIBLE);
                 mVb.statusMessage.setText(R.string.txt_tap_on_image_to_select);
-                return;
-            }
-        }
+            })
+                    .executeOnExecutor(mModel.getPriorityExecutor());
 
-        // Reset the switcher and tell user.
-        mVb.switcher.setVisibility(View.GONE);
-        Snackbar.make(mVb.switcher, R.string.warning_cover_not_found,
-                      Snackbar.LENGTH_LONG).show();
-        mVb.statusMessage.setText(R.string.txt_tap_on_thumb);
+        } else {
+            Snackbar.make(mVb.preview, R.string.warning_cover_not_found,
+                          Snackbar.LENGTH_LONG).show();
+            mVb.statusMessage.setText(R.string.txt_tap_on_thumb);
+        }
     }
 
     /**
@@ -398,11 +373,11 @@ public class CoverBrowserDialogFragment
         @NonNull
         public Holder onCreateViewHolder(@NonNull final ViewGroup parent,
                                          final int viewType) {
-
-            final ImageView imageView = new ImageView(parent.getContext());
-            // Deliberately keep sizes fixed (square) to prevent gallery constantly changing size.
-            imageView.setLayoutParams(new ViewGroup.LayoutParams(mWidth, mHeight));
-            return new Holder(imageView);
+            final ImageView view = (ImageView) getLayoutInflater()
+                    .inflate(R.layout.row_cover_browser_gallery, parent, false);
+            view.getLayoutParams().width = mWidth;
+            view.getLayoutParams().height = mHeight;
+            return new Holder(view);
         }
 
         @Override
@@ -412,25 +387,22 @@ public class CoverBrowserDialogFragment
             final String isbn = mEditions.get(position);
 
             // Get the image file based on the isbn; try the sizes in order as specified here.
-            final CoverBrowserViewModel.FileInfo fileInfo =
-                    mModel.getFileInfo(isbn,
-                                       SearchEngine.CoverByIsbn.ImageSize.Small,
-                                       SearchEngine.CoverByIsbn.ImageSize.Medium,
-                                       SearchEngine.CoverByIsbn.ImageSize.Large);
+            final ImageFileInfo imageFileInfo =
+                    mModel.getFileInfo(isbn, ImageSize.smallFirst);
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVER_BROWSER) {
-                Log.d(TAG, "onBindViewHolder|fileInfo=" + fileInfo);
+                Log.d(TAG, "onBindViewHolder|imageFileInfo=" + imageFileInfo);
             }
 
-            final File file = fileInfo.getFile();
+            final File file = imageFileInfo.getFile();
             if (file != null && file.length() > ImageUtils.MIN_IMAGE_FILE_SIZE) {
                 // we have a file, load it into the view.
-                new ImageUtils.ImageLoader(holder.imageView, file, mWidth, mHeight, true)
-                        .execute();
+                new ImageUtils.ImageLoader(holder.imageView, file, mWidth, mHeight, null)
+                        .executeOnExecutor(mModel.getPriorityExecutor());
 
             } else {
                 // No valid file available; use a placeholder.
-                holder.imageView.setImageResource(R.drawable.ic_image);
+                ImageUtils.setPlaceholder(holder.imageView, R.drawable.ic_image, 0, mHeight);
                 if (!mDismissing) {
                     try {
                         // and queue a request for it.
@@ -447,7 +419,7 @@ public class CoverBrowserDialogFragment
                 }
             }
 
-            holder.imageView.setOnClickListener(v -> setSwitcherImage(fileInfo));
+            holder.imageView.setOnClickListener(v -> setSelectedImage(imageFileInfo));
         }
 
         @Override

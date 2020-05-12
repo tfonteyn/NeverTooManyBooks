@@ -181,8 +181,8 @@ public class SettingsActivity
         }
 
         // and set it to start with the new root key (screen)
-        Bundle callerArgs = caller.getArguments();
-        Bundle args = new Bundle();
+        final Bundle callerArgs = caller.getArguments();
+        final Bundle args = new Bundle();
         args.putString(PreferenceFragmentCompat.ARG_PREFERENCE_ROOT, pref.getKey());
         if (callerArgs != null) {
             args.putAll(callerArgs);

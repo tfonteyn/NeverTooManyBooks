@@ -389,7 +389,7 @@ class CoverHandler {
         final long fileLen = file == null ? 0 : file.length();
 
         if (fileLen > ImageUtils.MIN_IMAGE_FILE_SIZE) {
-            new ImageUtils.ImageLoader(mCoverView, file, mMaxWidth, mMaxHeight, true)
+            new ImageUtils.ImageLoader(mCoverView, file, mMaxWidth, mMaxHeight, null)
                     .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
             mCoverView.setBackground(null);
             mBook.putString(Book.BKEY_FILE_SPEC[mCIdx], file.getAbsolutePath());
@@ -397,11 +397,9 @@ class CoverHandler {
         }
 
         if (fileLen == 0) {
-            mCoverView.setImageResource(R.drawable.ic_add_a_photo);
-            mCoverView.setBackgroundResource(R.drawable.outline);
+            ImageUtils.setPlaceholder(mCoverView, R.drawable.ic_add_a_photo, R.drawable.outline);
         } else {
-            mCoverView.setImageResource(R.drawable.ic_broken_image);
-            mCoverView.setBackgroundResource(R.drawable.outline);
+            ImageUtils.setPlaceholder(mCoverView, R.drawable.ic_broken_image, R.drawable.outline);
         }
         mBook.remove(Book.BKEY_FILE_SPEC[mCIdx]);
     }
@@ -441,9 +439,7 @@ class CoverHandler {
         if (!uuid.isEmpty()) {
             CoversDAO.delete(context, uuid);
         }
-        // replace the old image with a placeholder.
-        mCoverView.setImageResource(R.drawable.ic_add_a_photo);
-        mCoverView.setBackgroundResource(R.drawable.outline);
+        ImageUtils.setPlaceholder(mCoverView, R.drawable.ic_add_a_photo, R.drawable.outline);
     }
 
     private void startCamera(@NonNull final Context context) {
@@ -647,7 +643,7 @@ class CoverHandler {
 
         @Override
         @NonNull
-        protected Boolean doInBackground(final Void... voids) {
+        protected Boolean doInBackground(@Nullable final Void... voids) {
             Thread.currentThread().setName(TAG);
             final Context context = App.getTaskContext();
 

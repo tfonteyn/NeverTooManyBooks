@@ -1171,7 +1171,7 @@ public class BooksOnBookshelfModel
         @Override
         @NonNull
         @WorkerThread
-        protected BuilderResult doInBackground(final Void... params) {
+        protected BuilderResult doInBackground(@Nullable final Void... voids) {
             Thread.currentThread().setName(TAG);
             final Context context = App.getTaskContext();
 

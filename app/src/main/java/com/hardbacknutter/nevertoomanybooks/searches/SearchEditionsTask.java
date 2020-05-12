@@ -30,6 +30,7 @@ package com.hardbacknutter.nevertoomanybooks.searches;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
 
@@ -40,7 +41,6 @@ import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskBase;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
@@ -67,9 +67,10 @@ public class SearchEditionsTask
      * @param taskListener to send results to
      */
     @UiThread
-    public SearchEditionsTask(@NonNull final String isbnStr,
+    public SearchEditionsTask(final int taskId,
+                              @NonNull final String isbnStr,
                               @NonNull final TaskListener<Collection<String>> taskListener) {
-        super(R.id.TASK_ID_SEARCH_EDITIONS, taskListener);
+        super(taskId, taskListener);
 
         // sanity check
         if (BuildConfig.DEBUG /* always */) {
@@ -84,7 +85,7 @@ public class SearchEditionsTask
     @Override
     @NonNull
     @WorkerThread
-    protected Collection<String> doInBackground(final Void... params) {
+    protected Collection<String> doInBackground(@Nullable final Void... voids) {
         Thread.currentThread().setName(TAG + mIsbn);
         final Context context = App.getTaskContext();
 

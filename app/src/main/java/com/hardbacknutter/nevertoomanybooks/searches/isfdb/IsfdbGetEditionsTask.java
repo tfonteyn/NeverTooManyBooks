@@ -64,14 +64,14 @@ public class IsfdbGetEditionsTask
     public IsfdbGetEditionsTask(@NonNull final String isbn,
                                 @NonNull final TaskListener<ArrayList<Edition>> taskListener) {
 
-        super(R.id.TASK_ID_SEARCH_EDITIONS, taskListener);
+        super(R.id.TASK_ID_ISFDB_EDITIONS, taskListener);
         mIsbn = isbn;
     }
 
     @Override
     @Nullable
     @WorkerThread
-    protected ArrayList<Edition> doInBackground(final Void... params) {
+    protected ArrayList<Edition> doInBackground(@Nullable final Void... voids) {
         Thread.currentThread().setName(TAG + mIsbn);
         final Context context = App.getTaskContext();
 
