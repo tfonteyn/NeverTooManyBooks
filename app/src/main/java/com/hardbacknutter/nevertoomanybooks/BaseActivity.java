@@ -428,12 +428,13 @@ public abstract class BaseActivity
     @CallSuper
     protected void onResume() {
         super.onResume();
-        if (BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG /* always */) {
             Log.d(TAG, "onResume|sActivityRecreateStatus=" + sActivityRecreateStatus);
-
-            Configuration config = getResources().getConfiguration();
-            Log.d(TAG, "config.screenWidthDp=" + config.screenWidthDp
-                       + "|config.smallestScreenWidthDp=" + config.smallestScreenWidthDp);
+            Configuration configuration = getResources().getConfiguration();
+            Log.d(TAG,
+                  "config.smallestScreenWidthDp=" + configuration.smallestScreenWidthDp
+                  + "|config.screenWidthDp=" + configuration.screenWidthDp
+                  + "|config.screenHeightDp=" + configuration.screenHeightDp);
         }
         maybeRecreate();
     }

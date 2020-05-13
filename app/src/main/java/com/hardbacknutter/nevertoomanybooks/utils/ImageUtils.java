@@ -28,6 +28,7 @@
 package com.hardbacknutter.nevertoomanybooks.utils;
 
 import android.content.Context;
+import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
@@ -177,10 +178,10 @@ public final class ImageUtils {
                                       final int maxSize) {
         final ViewGroup.LayoutParams lp = imageView.getLayoutParams();
         lp.height = maxSize;
-        lp.width = (int) (maxSize * 0.75f);
+        // 0.6 is based on a standard paperback 17.5cm x 10.6cm
+        lp.width = (int) (maxSize * 0.6f);
         imageView.setLayoutParams(lp);
 
-        //imageView.setAdjustViewBounds(true);
         imageView.setScaleType(ImageView.ScaleType.CENTER);
         imageView.setImageResource(drawable);
 
@@ -205,7 +206,6 @@ public final class ImageUtils {
         lp.width = ViewGroup.LayoutParams.WRAP_CONTENT;
         imageView.setLayoutParams(lp);
 
-        //imageView.setAdjustViewBounds(true);
         imageView.setScaleType(ImageView.ScaleType.CENTER);
         imageView.setImageResource(drawable);
 
@@ -218,41 +218,40 @@ public final class ImageUtils {
      * Load the image bitmap into the destination view.
      *
      * @param imageView The ImageView to load with the bitmap or an appropriate icon
-     * @param source    The Bitmap of the image
+     * @param bitmap    The Bitmap of the image
      * @param maxWidth  Maximum width of the image
      * @param maxHeight Maximum height of the image
      */
     @UiThread
     public static void setImageView(@NonNull final ImageView imageView,
-                                    @NonNull final Bitmap source,
+                                    @NonNull final Bitmap bitmap,
                                     final int maxWidth,
                                     final int maxHeight) {
-//        if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMAGE_UTILS) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMAGE_UTILS) {
             Log.d(TAG, "setImageView"
                        + "|maxWidth=" + maxWidth
                        + "|maxHeight=" + maxHeight
-                       + "|bm.width=" + source.getWidth()
-                       + "|bm.height=" + source.getHeight());
-//        }
+                       + "|bm.width=" + bitmap.getWidth()
+                       + "|bm.height=" + bitmap.getHeight());
+        }
+
+        final Configuration configuration = imageView.getResources().getConfiguration();
 
         final ViewGroup.LayoutParams lp = imageView.getLayoutParams();
-        if (source.getWidth() < source.getHeight()) {
-            // portrait
+        if (configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
+            lp.width = maxWidth;
+            lp.height = ViewGroup.LayoutParams.WRAP_CONTENT;
+        } else {
             lp.height = maxHeight;
             lp.width = ViewGroup.LayoutParams.WRAP_CONTENT;
-        } else {
-            // landscape
-            lp.height = ViewGroup.LayoutParams.WRAP_CONTENT;
-            lp.width = maxWidth;
         }
         imageView.setLayoutParams(lp);
 
+        // padding MUST be 0dp to allow scaling ratio to work properly
+        imageView.setPadding(0, 0, 0, 0);
         imageView.setAdjustViewBounds(true);
         imageView.setScaleType(ImageView.ScaleType.FIT_XY);
-        imageView.setImageBitmap(source);
-
-//        imageView.setScaleType(ImageView.ScaleType.CENTER);
-//        imageView.setImageBitmap(createScaledBitmap(source, maxWidth, maxHeight));
+        imageView.setImageBitmap(bitmap);
     }
 
     /**
@@ -276,11 +275,11 @@ public final class ImageUtils {
                                        final int maxWidth,
                                        final int maxHeight) {
 
-        Context context = imageView.getContext();
+        final Context context = imageView.getContext();
 
         // 1. If caching is used, and we don't have cache building happening, check it.
         if (imagesAreCached(context) && !CoversDAO.ImageCacheWriterTask.hasActiveTasks()) {
-            Bitmap bitmap = CoversDAO.getImage(context, uuid, cIdx, maxWidth, maxHeight);
+            final Bitmap bitmap = CoversDAO.getImage(context, uuid, cIdx, maxWidth, maxHeight);
             if (bitmap != null) {
                 setImageView(imageView, bitmap, maxWidth, maxHeight);
                 return true;
@@ -312,73 +311,6 @@ public final class ImageUtils {
     }
 
     /**
-     * Convenience method for {@link #createScaledBitmap(Bitmap, int, int)}.
-     *
-     * @param context Current context
-     * @param file    The file of the image
-     * @param scale   user preferred scale factor
-     *
-     * @return the bitmap, or {@code null} if the file failed to decode.
-     */
-    @Nullable
-    @AnyThread
-    public static Bitmap createScaledBitmap(@NonNull final Context context,
-                                            @NonNull final File file,
-                                            @Scale final int scale) {
-        @Nullable
-        Bitmap bm = BitmapFactory.decodeFile(file.getPath());
-        if (bm == null) {
-            return null;
-        }
-        int maxSize = getMaxImageSize(context, scale);
-        return createScaledBitmap(bm, maxSize, maxSize);
-    }
-
-    /**
-     * Custom version of {@link Bitmap#createScaledBitmap}.
-     * <p>
-     * The ratio correction was taken from the original BC code, see {@link #forceScaleBitmap},
-     * but the file-decode scaling logic removed.
-     * <p>
-     * Creates a new bitmap, scaled from an existing bitmap, when possible. If the
-     * specified width and height are the same as the current width and height of
-     * the source bitmap, the source bitmap is returned and no new bitmap is
-     * created.
-     *
-     * @param source    The source bitmap.
-     * @param dstWidth  The new bitmap's desired width.
-     * @param dstHeight The new bitmap's desired height.
-     *
-     * @return The new scaled bitmap or the source bitmap if no scaling was done.
-     *
-     * @throws IllegalArgumentException if width is <= 0, or height is <= 0
-     */
-    @NonNull
-    @AnyThread
-    private static Bitmap createScaledBitmap(@NonNull final Bitmap source,
-                                             final int dstWidth,
-                                             final int dstHeight) {
-        Matrix matrix = new Matrix();
-        int width = source.getWidth();
-        int height = source.getHeight();
-        if (width != dstWidth || height != dstHeight) {
-            float sx = (float) dstWidth / width;
-            float sy = (float) dstHeight / height;
-            // Next line from original method: using this still causes distortion,
-            // matrix.setScale(sx, sy);
-            // instead work out the ratio so that it fits exactly
-            float ratio = Math.min(sx, sy);
-            matrix.setScale(ratio, ratio);
-        }
-        Bitmap scaledBitmap = Bitmap.createBitmap(source, 0, 0, width, height, matrix, true);
-        if (!source.equals(scaledBitmap)) {
-            // clean up the old one right now to save memory.
-            source.recycle();
-        }
-        return scaledBitmap;
-    }
-
-    /**
      * Get the image from the file specification.
      * This method produces a truly scaled bitmap to fit within the bounds passed in.
      * <p>
@@ -392,13 +324,13 @@ public final class ImageUtils {
      *
      * @return The bitmap, or {@code null} on failure
      */
-    @SuppressWarnings("WeakerAccess")
     @Nullable
     @AnyThread
-    public static Bitmap forceScaleBitmap(@NonNull final String fileSpec,
-                                          final int maxWidth,
-                                          final int maxHeight,
-                                          final boolean exact) {
+    private static Bitmap forceScaleBitmap(@NonNull final String fileSpec,
+                                           final int maxWidth,
+                                           final int maxHeight,
+                                           @SuppressWarnings("SameParameterValue")
+                                           final boolean exact) {
 
         // Read the file to get the bitmap size
         BitmapFactory.Options opt = new BitmapFactory.Options();
@@ -444,7 +376,7 @@ public final class ImageUtils {
         }
 
         @Nullable
-        Bitmap bm;
+        final Bitmap bm;
         try {
             if (exact) {
                 // Create one bigger than needed and SCALE it;
@@ -455,12 +387,12 @@ public final class ImageUtils {
                 }
 
                 @Nullable
-                Bitmap tmpBm = BitmapFactory.decodeFile(fileSpec, opt);
+                final Bitmap tmpBm = BitmapFactory.decodeFile(fileSpec, opt);
                 if (tmpBm == null) {
                     return null;
                 }
 
-                Matrix matrix = new Matrix();
+                final Matrix matrix = new Matrix();
                 // Fix ratio based on new sample size and SCALE it.
                 ratio = ratio / (1.0f / opt.inSampleSize);
                 matrix.postScale(ratio, ratio);
@@ -744,9 +676,11 @@ public final class ImageUtils {
         private final int mMaxHeight;
         @Nullable
         private final Runnable mOnSuccess;
+
         /**
          * Constructor.
-         *  @param imageView to populate
+         *
+         * @param imageView to populate
          * @param file      to load, must be valid
          * @param maxWidth  Maximum desired width of the image
          * @param maxHeight Maximum desired height of the image

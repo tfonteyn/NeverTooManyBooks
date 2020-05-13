@@ -159,8 +159,11 @@
     <dimen name="icon_button_width">48dp</dimen>
 
 
-
-    <!-- tools only; used to mock reasonable sized images. -->
+    <!-- tools only; used to mock reasonable sized images.
+        SCALE_FACTOR = {0, 1, 2, 3, 5, 8, 12}; * 30dp
+    -->
+    <dimen name="tools_cover_x_small_height">30dp</dimen>
+    <dimen name="tools_cover_x_small_width">22dp</dimen>
     <dimen name="tools_cover_small_height">60dp</dimen>
     <dimen name="tools_cover_small_width">44dp</dimen>
     <dimen name="tools_cover_medium_height">90dp</dimen>

@@ -95,6 +95,8 @@ public final class DEBUG_SWITCHES {
 
     /** {@link CoverBrowserDialogFragment}. */
     public static final boolean COVER_BROWSER = false;
+    public static final boolean COVER_BROWSER_DOWNLOADS = false;
+
     /** {@link com.hardbacknutter.nevertoomanybooks.utils.ImageUtils}. */
     public static final boolean IMAGE_UTILS = false;
     /** all things XML related. */
