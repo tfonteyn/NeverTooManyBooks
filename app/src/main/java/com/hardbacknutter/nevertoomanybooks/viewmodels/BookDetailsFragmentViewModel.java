@@ -94,7 +94,7 @@ public class BookDetailsFragmentViewModel
                      @NonNull final Book book) {
         super.init();
 
-        if (args != null) {
+        if (mFlattenedBooklist == null && args != null) {
             initFlattenedBooklist(args, book);
         }
 
