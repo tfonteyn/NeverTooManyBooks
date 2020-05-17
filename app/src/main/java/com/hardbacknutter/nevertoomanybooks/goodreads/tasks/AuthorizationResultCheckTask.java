@@ -98,7 +98,7 @@ public class AuthorizationResultCheckTask
                 msg = context.getString(R.string.error_site_authorization_failed,
                                         context.getString(R.string.site_goodreads)) + ' '
                       + context.getString(R.string.error_if_the_problem_persists,
-                                          context.getString(R.string.lbl_send_debug_info));
+                                          context.getString(R.string.lbl_send_debug));
             } else {
                 msg = context.getString(R.string.error_site_authentication_failed,
                                         context.getString(R.string.site_goodreads));

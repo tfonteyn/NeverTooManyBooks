@@ -54,6 +54,7 @@ import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.covers.ImageScale;
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
@@ -63,7 +64,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.RowDataHolder;
 import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.FetchWorksTask;
 import com.hardbacknutter.nevertoomanybooks.searches.goodreads.GoodreadsRegistrationActivity;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
-import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.BooksOnBookshelfModel;
 
 /**
@@ -363,7 +363,7 @@ public class GoodreadsSearchActivity
         WorksAdapter(@NonNull final Context context,
                      @NonNull final List<GoodreadsWork> items) {
             mItems = items;
-            mMaxSize = ImageUtils.getMaxImageSize(context, ImageUtils.SCALE_MEDIUM);
+            mMaxSize = ImageScale.getSize(context, ImageScale.SCALE_MEDIUM);
         }
 
         @NonNull

@@ -45,14 +45,13 @@ import java.io.File;
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.covers.ImageSize;
+import com.hardbacknutter.nevertoomanybooks.covers.ImageUtils;
 import com.hardbacknutter.nevertoomanybooks.databinding.ActivityLibrarythingRegisterBinding;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
-import com.hardbacknutter.nevertoomanybooks.searches.ImageSize;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskBase;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
-import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
 
 /**
  * Contains details about LibraryThing links and how to register for a developer key.
@@ -143,16 +142,13 @@ public class LibraryThingRegistrationActivity
                 final String fileSpec = ltm.searchCoverImageByIsbn(context, "0451451783", 0,
                                                                    ImageSize.Small);
                 if (fileSpec != null) {
-                    final File file = new File(fileSpec);
-                    final long fileLen = file.length();
-                    FileUtils.delete(file);
-
-                    if (fileLen > ImageUtils.MIN_IMAGE_FILE_SIZE) {
+                    if (ImageUtils.isFileGood(new File(fileSpec))) {
                         return R.string.lt_key_is_correct;
                     } else {
                         return R.string.lt_key_is_incorrect;
                     }
                 }
+
                 if (isCancelled()) {
                     // return value not used as onPostExecute is not called
                     return R.string.progress_end_cancelled;

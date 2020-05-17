@@ -52,6 +52,8 @@ import com.google.android.material.snackbar.Snackbar;
 import java.util.ArrayList;
 import java.util.Objects;
 
+import com.hardbacknutter.nevertoomanybooks.covers.CoverBrowserDialogFragment;
+import com.hardbacknutter.nevertoomanybooks.covers.CoverHandler;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
@@ -73,11 +75,14 @@ public abstract class BookBaseFragment
 
     /** Log tag. */
     private static final String TAG = "BookBaseFragment";
+
     /** Handles cover replacement, rotation, etc. */
     final CoverHandler[] mCoverHandler = new CoverHandler[2];
+
     /** Forwarding listener; send the selected image to the correct handler. */
-    private final CoverBrowserDialogFragment.OnFileSpecResult mOnFileSpecResult =
-            (cIdx, fileSpec) -> mCoverHandler[cIdx].onFileSpecResult(fileSpec);
+    private final CoverBrowserDialogFragment.OnFileSelected mOnFileSelected =
+            (cIdx, fileSpec) -> mCoverHandler[cIdx].onFileSelected(fileSpec);
+
     /** simple indeterminate progress spinner to show while doing lengthy work. */
     ProgressBar mProgressBar;
     /** The book. Must be in the Activity scope. */
@@ -130,7 +135,7 @@ public abstract class BookBaseFragment
         super.onAttachFragment(childFragment);
 
         if (childFragment instanceof CoverBrowserDialogFragment) {
-            ((CoverBrowserDialogFragment) childFragment).setListener(mOnFileSpecResult);
+            ((CoverBrowserDialogFragment) childFragment).setListener(mOnFileSelected);
         }
     }
 

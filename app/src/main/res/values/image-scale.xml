@@ -27,10 +27,20 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<resources>
-    <!--
-        - DialogFrame's which might show the onscreen keyboard, are FULLSCREEN.
-        - displaying a zoomed cover is FULLSCREEN
+<!-- item values from ImageScale.java
+
+    Actual sizes are calculated by multiplying the scale with R.dimen.cover_base_size.
+    The latter is varied by screen size.
     -->
-    <bool name="isLargeScreen">false</bool>
+<resources>
+    <!-- displayed front cover at the top, back cover below. -->
+    <integer-array name="covers_details">
+        <item>4</item>
+        <item>2</item>
+    </integer-array>
+    <!-- displayed side by side. -->
+    <integer-array name="covers_edit">
+        <item>3</item>
+        <item>3</item>
+    </integer-array>
 </resources>

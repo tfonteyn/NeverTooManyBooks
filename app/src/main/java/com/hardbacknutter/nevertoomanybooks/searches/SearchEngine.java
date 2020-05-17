@@ -49,7 +49,8 @@ import java.util.Locale;
 import java.util.regex.Matcher;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.CoverBrowserDialogFragment;
+import com.hardbacknutter.nevertoomanybooks.covers.CoverBrowserDialogFragment;
+import com.hardbacknutter.nevertoomanybooks.covers.ImageSize;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;

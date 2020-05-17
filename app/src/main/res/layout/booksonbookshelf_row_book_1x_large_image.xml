@@ -94,7 +94,6 @@
         <ImageView
             android:id="@+id/coverImage0"
             style="@style/CoverImage"
-            android:layout_width="0dp"
             android:contentDescription="@string/lbl_cover"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/title"

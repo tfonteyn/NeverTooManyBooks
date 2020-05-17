@@ -48,10 +48,10 @@ import javax.xml.parsers.SAXParserFactory;
 import org.xml.sax.SAXException;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.searches.ImageSize;
+import com.hardbacknutter.nevertoomanybooks.covers.ImageSize;
+import com.hardbacknutter.nevertoomanybooks.covers.ImageUtils;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.tasks.TerminatorConnection;
-import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
 
 /**
  * <a href="https://www.kb.nl/">Koninklijke Bibliotheek (KB), Nederland.</a>

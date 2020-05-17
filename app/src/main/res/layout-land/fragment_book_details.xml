@@ -82,7 +82,7 @@
         <TextView
             android:id="@+id/title"
             style="@style/Text.Large.BookTitle"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/barrier_covers"
             app:layout_constraintStart_toEndOf="@id/cbx_read"
             app:layout_constraintTop_toBottomOf="@id/loaned_to"
             tools:ignore="SelectableText"
@@ -104,8 +104,8 @@
             android:id="@+id/coverImage0"
             style="@style/CoverImage"
             android:contentDescription="@string/lbl_cover"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/title"
+            app:layout_constraintEnd_toStartOf="@id/coverImage1"
+            app:layout_constraintTop_toBottomOf="@id/loaned_to"
             tools:layout_height="@dimen/tools_cover_large_height"
             tools:layout_width="@dimen/tools_cover_large_width"
             tools:src="@sample/covers"
@@ -116,7 +116,7 @@
             style="@style/CoverImage"
             android:contentDescription="@string/lbl_cover"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/coverImage0"
+            app:layout_constraintTop_toBottomOf="@id/loaned_to"
             tools:background="@drawable/outline_rounded"
             tools:layout_height="@dimen/tools_cover_small_height"
             tools:layout_width="@dimen/tools_cover_small_width"
@@ -184,7 +184,6 @@
         <TextView
             android:id="@+id/date_published"
             style="@style/Text.Small"
-            app:layout_constraintEnd_toStartOf="@id/barrier_covers"
             app:layout_constraintStart_toEndOf="@id/indent_fields"
             app:layout_constraintTop_toBottomOf="@id/publisher"
             tools:ignore="SelectableText"
@@ -196,19 +195,26 @@
             style="@style/Text.Small"
             android:layout_marginStart="@dimen/inline_field_start_margin"
             app:layout_constraintEnd_toStartOf="@id/barrier_covers"
-            app:layout_constraintStart_toEndOf="@id/indent_fields"
-            app:layout_constraintTop_toBottomOf="@id/date_published"
+            app:layout_constraintStart_toEndOf="@id/date_published"
+            app:layout_constraintTop_toBottomOf="@id/publisher"
             app:layout_goneMarginStart="0dp"
             tools:ignore="SelectableText"
             tools:text="$45"
             />
 
+        <androidx.constraintlayout.widget.Barrier
+            android:id="@+id/barrier_format"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:barrierDirection="bottom"
+            app:constraint_referenced_ids="isbn,rating,author,publisher,date_published,price_listed"
+            />
+
         <TextView
             android:id="@+id/format"
             style="@style/Text.Small"
-            app:layout_constraintEnd_toStartOf="@id/barrier_covers"
             app:layout_constraintStart_toEndOf="@id/indent_fields"
-            app:layout_constraintTop_toBottomOf="@id/price_listed"
+            app:layout_constraintTop_toBottomOf="@id/barrier_format"
             tools:ignore="SelectableText"
             tools:text="@string/book_format_hardcover"
             />
@@ -216,11 +222,21 @@
         <TextView
             android:id="@+id/color"
             style="@style/Text.Small"
+            android:layout_marginStart="@dimen/inline_field_start_margin"
             app:layout_constraintEnd_toStartOf="@id/barrier_covers"
-            app:layout_constraintStart_toEndOf="@id/indent_fields"
-            app:layout_constraintTop_toBottomOf="@id/format"
+            app:layout_constraintStart_toEndOf="@id/format"
+            app:layout_constraintTop_toBottomOf="@id/barrier_format"
+            app:layout_goneMarginStart="0dp"
             tools:ignore="SelectableText"
             tools:text="color"
+            />
+
+        <androidx.constraintlayout.widget.Barrier
+            android:id="@+id/barrier_language"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:barrierDirection="bottom"
+            app:constraint_referenced_ids="format,color,barrier_format"
             />
 
         <TextView
@@ -228,7 +244,7 @@
             style="@style/Text.Small"
             app:layout_constraintEnd_toStartOf="@id/barrier_covers"
             app:layout_constraintStart_toEndOf="@id/indent_fields"
-            app:layout_constraintTop_toBottomOf="@id/color"
+            app:layout_constraintTop_toBottomOf="@id/barrier_language"
             tools:ignore="SelectableText"
             tools:text="@sample/data.json/language/name"
             />
@@ -267,7 +283,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:barrierDirection="bottom"
-            app:constraint_referenced_ids="coverImage0,print_run,pages,language,color,format,price_listed,date_published,publisher"
+            app:constraint_referenced_ids="coverImage0,print_run,pages,language,barrier_language"
             />
 
         <TextView
@@ -411,7 +427,7 @@
         <!-- note that the views used to set constraints are the data views.
           The labels are baseline'd to them.
           This is due to font size of the labels being smaller than the data.
-          i.o.w.: the data fields form the vertical chain.
+          iow: the data fields form the vertical chain.
          -->
 
         <TextView

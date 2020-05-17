@@ -34,7 +34,7 @@
     android:id="@+id/list_header"
     android:layout_width="0dp"
     android:layout_height="wrap_content"
-    android:background="?attr/bobListHeaderBackgroundColor"
+    android:background="?attr/bobHeaderBackgroundColor"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     app:layout_constraintEnd_toEndOf="parent"
     app:layout_constraintStart_toStartOf="parent"

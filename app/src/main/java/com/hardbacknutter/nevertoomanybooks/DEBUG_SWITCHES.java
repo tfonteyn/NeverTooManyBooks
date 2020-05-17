@@ -30,6 +30,8 @@ package com.hardbacknutter.nevertoomanybooks;
 import android.app.Activity;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistCursor;
+import com.hardbacknutter.nevertoomanybooks.covers.CoverBrowserDialogFragment;
+import com.hardbacknutter.nevertoomanybooks.covers.ImageUtils;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.BooksOnBookshelfModel;
@@ -97,7 +99,7 @@ public final class DEBUG_SWITCHES {
     public static final boolean COVER_BROWSER = false;
     public static final boolean COVER_BROWSER_DOWNLOADS = false;
 
-    /** {@link com.hardbacknutter.nevertoomanybooks.utils.ImageUtils}. */
+    /** {@link ImageUtils}. */
     public static final boolean IMAGE_UTILS = false;
     /** all things XML related. */
     public static final boolean XML = false;

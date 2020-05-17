@@ -38,7 +38,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import com.hardbacknutter.nevertoomanybooks.CoverBrowserDialogFragment;
+import com.hardbacknutter.nevertoomanybooks.covers.CoverBrowserDialogFragment;
 
 /**
  * A copy of {@link AsyncTask#THREAD_POOL_EXECUTOR} with lower configuration numbers.

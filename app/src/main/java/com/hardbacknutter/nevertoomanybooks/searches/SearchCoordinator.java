@@ -65,6 +65,7 @@ import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.covers.ImageUtils;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
@@ -73,7 +74,6 @@ import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 import com.hardbacknutter.nevertoomanybooks.utils.Csv;
 import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
-import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.NetworkUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
@@ -905,7 +905,7 @@ public class SearchCoordinator
             ArrayList<String> imageList = mBookData
                     .getStringArrayList(Book.BKEY_FILE_SPEC_ARRAY[cIdx]);
             if (imageList != null && !imageList.isEmpty()) {
-                String coverName = ImageUtils.cleanupImages(imageList);
+                String coverName = ImageUtils.getBestImage(imageList);
                 if (coverName != null) {
                     mBookData.putString(Book.BKEY_FILE_SPEC[cIdx], coverName);
                 }
@@ -1150,7 +1150,8 @@ public class SearchCoordinator
                         eMsg = message.exception.getLocalizedMessage();
                     } else {
                         // when not in debug, instead ask for feedback
-                        eMsg = context.getString(R.string.error_if_the_problem_persists);
+                        eMsg = context.getString(R.string.error_if_the_problem_persists,
+                                                 context.getString(R.string.lbl_send_debug));
                     }
 
                     if (eMsg != null) {

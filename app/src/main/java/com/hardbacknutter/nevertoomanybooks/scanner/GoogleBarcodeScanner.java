@@ -30,6 +30,7 @@ package com.hardbacknutter.nevertoomanybooks.scanner;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.util.SparseArray;
 
 import androidx.annotation.IdRes;
@@ -42,6 +43,9 @@ import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.vision.Frame;
 import com.google.android.gms.vision.barcode.Barcode;
 import com.google.android.gms.vision.barcode.BarcodeDetector;
+
+import java.io.File;
+import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -109,8 +113,6 @@ public class GoogleBarcodeScanner
 
         if (mCameraHelper == null) {
             mCameraHelper = new CameraHelper();
-            // preview pictures might work... but will be very dependent on the camera quality
-            mCameraHelper.setUseFullSize(true);
         }
         mCameraHelper.startCamera(fragment, requestCode);
         return true;
@@ -120,10 +122,13 @@ public class GoogleBarcodeScanner
     @Override
     public String getBarcode(@NonNull final Context context,
                              @Nullable final Intent data) {
-        //noinspection ConstantConditions
-        Bitmap bm = mCameraHelper.getBitmap(context, data);
-        if (bm != null) {
-            return decode(bm);
+        Objects.requireNonNull(mCameraHelper);
+        final File file = mCameraHelper.getFile(context);
+        if (file != null) {
+            final Bitmap bm = BitmapFactory.decodeFile(file.getAbsolutePath());
+            if (bm != null) {
+                return decode(bm);
+            }
         }
         return null;
     }

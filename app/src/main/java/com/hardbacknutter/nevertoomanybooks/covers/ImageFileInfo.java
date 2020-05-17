@@ -25,7 +25,7 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.searches;
+package com.hardbacknutter.nevertoomanybooks.covers;
 
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -64,7 +64,7 @@ public class ImageFileInfo
     /**
      * Constructor. No file.
      */
-    public ImageFileInfo(@NonNull final String isbn) {
+    ImageFileInfo(@NonNull final String isbn) {
         this.isbn = isbn;
         this.fileSpec = null;
         this.size = null;
@@ -73,8 +73,8 @@ public class ImageFileInfo
     /**
      * Constructor. File is considered 'Large'.
      */
-    public ImageFileInfo(@NonNull final String isbn,
-                         @NonNull final String fileSpec) {
+    ImageFileInfo(@NonNull final String isbn,
+                  @Nullable final String fileSpec) {
         this.isbn = isbn;
         this.fileSpec = fileSpec;
         this.size = ImageSize.Large;
@@ -83,9 +83,9 @@ public class ImageFileInfo
     /**
      * Constructor.
      */
-    public ImageFileInfo(@NonNull final String isbn,
-                         @NonNull final String fileSpec,
-                         @NonNull final ImageSize size) {
+    ImageFileInfo(@NonNull final String isbn,
+                  @Nullable final String fileSpec,
+                  @Nullable final ImageSize size) {
         this.isbn = isbn;
         this.fileSpec = fileSpec;
         this.size = size;

@@ -27,8 +27,11 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
+<!-- On screens larger than sw600 (a 7" tablet) -->
 <resources>
-    <!-- On screens larger than sw600 (a 7" tablet) we display most DialogFrame's,
-     which might show the onscreen keyboard, as a FLOATING dialog. -->
+    <!--
+    - DialogFrame's which might show the onscreen keyboard, are FLOATING dialogs.
+    - displaying a zoomed cover is limited to (roughly) 5" to prevent overly scaled up images.
+-->
     <bool name="isLargeScreen">true</bool>
 </resources>

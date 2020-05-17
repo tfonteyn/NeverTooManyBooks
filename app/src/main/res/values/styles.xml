@@ -90,7 +90,7 @@
     <!-- Description and personal notes. -->
     <style name="Text.Notes">
         <item name="android:textIsSelectable">true</item>
-        <item name="android:background">@drawable/outline</item>
+        <item name="android:background">@drawable/outline_rounded</item>
     </style>
 
     <!-- 'minor' detail text field; for example format, isbn,... -->
@@ -375,7 +375,8 @@
         <item name="android:layout_height">wrap_content</item>
         <!-- padding MUST be 0dp to allow scaling ratio to work properly. -->
         <item name="android:padding">0dp</item>
-        <item name="android:scaleType">center</item>
+        <item name="android:layout_margin">4dp</item>
+        <item name="android:scaleType">fitCenter</item>
         <item name="android:adjustViewBounds">true</item>
     </style>
 
@@ -476,11 +477,12 @@
         <item name="android:scaleY">0.2</item>
     </style>
 
-    <!-- The top container for a book in the booklist. -->
+    <!-- The top container (MaterialCardView) for a book in the booklist. -->
     <style name="BooklistBook.BookContainer">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_margin">@dimen/border2</item>
         <item name="contentPadding">@dimen/bob_book_card_padding</item>
+        <item name="cardBackgroundColor">?attr/bobBookCardBackgroundColor</item>
     </style>
 
     <!-- The content container for a book in the booklist; direct child of the BookContainer. -->

@@ -51,6 +51,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import com.hardbacknutter.nevertoomanybooks.covers.CoverHandler;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentEditBookFieldsBinding;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
@@ -71,7 +72,6 @@ import com.hardbacknutter.nevertoomanybooks.fields.formatters.SeriesListFormatte
 import com.hardbacknutter.nevertoomanybooks.fields.validators.FieldValidator;
 import com.hardbacknutter.nevertoomanybooks.fields.validators.NonBlankValidator;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
-import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.ScannerViewModel;
 
 public class EditBookFieldsFragment
@@ -279,14 +279,15 @@ public class EditBookFieldsFragment
 
         //noinspection ConstantConditions
         if (DBDefinitions.isUsed(getContext(), DBDefinitions.KEY_THUMBNAIL)) {
-            // Hook up the indexed cover image.
+            final int[] scale = getResources().getIntArray(R.array.covers_edit);
+
             mCoverHandler[0] = new CoverHandler(this, mProgressBar,
                                                 book, mVb.isbn, 0, mVb.coverImage0,
-                                                ImageUtils.SCALE_MEDIUM);
+                                                scale[0]);
 
             mCoverHandler[1] = new CoverHandler(this, mProgressBar,
                                                 book, mVb.isbn, 1, mVb.coverImage1,
-                                                ImageUtils.SCALE_MEDIUM);
+                                                scale[1]);
         }
 
         // hide unwanted fields
@@ -369,9 +370,23 @@ public class EditBookFieldsFragment
             default: {
                 // handle any cover image request codes
                 final int cIdx = mFragmentVM.getAndClearCurrentCoverHandlerIndex();
-                if (cIdx >= -1) {
-                    if (mCoverHandler[cIdx].onActivityResult(requestCode, resultCode, data)) {
-                        break;
+                if (cIdx >= 0 && cIdx < mCoverHandler.length) {
+                    if (mCoverHandler[cIdx] != null) {
+                        if (mCoverHandler[cIdx].onActivityResult(requestCode, resultCode, data)) {
+                            break;
+                        }
+                    } else {
+                        // 2020-05-14: Can't explain it yet, but seen this to be null
+                        // in the emulator:
+                        // start device and app in normal portrait mode.
+                        // turn the device twice CW, i.e. the screen should be upside down.
+                        // The emulator will be upside down, but the app will be sideways.
+                        // Take picture... get here and see NULL mCoverHandler[cIdx].
+
+                        //noinspection ConstantConditions
+                        Logger.warnWithStackTrace(getContext(), TAG,
+                                                  "onActivityResult"
+                                                  + "|mCoverHandler was NULL for cIdx=" + cIdx);
                     }
                 }
 

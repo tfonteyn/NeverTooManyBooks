@@ -51,15 +51,19 @@
         <!--  ======================== -->
         <!-- Component theme overrides -->
         <!--  ======================== -->
-        <!--        <item name="materialAlertDialogTheme">@style/ThemeOverlay.App.MaterialAlertDialog</item>-->
+
+        <!-- <item name="materialAlertDialogTheme">@style/ThemeOverlay.App.MaterialAlertDialog</item>-->
 
         <item name="snackbarTextViewStyle">@style/SnackbarText</item>
+
 
         <!-- ==================== -->
         <!-- Application specific -->
         <!-- ==================== -->
 
-        <item name="bobListHeaderBackgroundColor">@color/blue_grey_800</item>
+        <item name="bobHeaderBackgroundColor">@color/blue_grey_800</item>
+        <!-- same as colorSurface -->
+        <item name="bobBookCardBackgroundColor">#121212</item>
 
         <item name="bobFsOverlayTextColor">?attr/colorOnPrimary</item>
         <item name="bobFsOverlayBackgroundColor">?attr/colorPrimary</item>

@@ -48,6 +48,7 @@ import com.hardbacknutter.nevertoomanybooks.backup.base.Options;
 import com.hardbacknutter.nevertoomanybooks.backup.csv.CsvArchiveReader;
 import com.hardbacknutter.nevertoomanybooks.backup.tar.TarArchiveReader;
 import com.hardbacknutter.nevertoomanybooks.backup.zip.ZipArchiveReader;
+import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.FormattedMessageException;
 
 public class ImportManager
@@ -290,9 +291,7 @@ public class ImportManager
         } else if (e instanceof IOException) {
             //ENHANCE: if (message.exception.getCause() instanceof ErrnoException) {
             //           int errno = ((ErrnoException) message.exception.getCause()).errno;
-            msg = context.getString(R.string.error_storage_not_readable) + "\n\n"
-                  + context.getString(R.string.error_if_the_problem_persists,
-                                      context.getString(R.string.lbl_send_debug_info));
+            msg = StandardDialogs.createBadError(context, R.string.error_storage_not_readable);
 
         } else if (e instanceof FormattedMessageException) {
             msg = ((FormattedMessageException) e).getLocalizedMessage(context);

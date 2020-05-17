@@ -48,7 +48,7 @@
             android:contentDescription="@string/lbl_cover"
             android:focusable="true"
             app:layout_constraintEnd_toStartOf="@id/coverImage1"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintStart_toEndOf="@id/coversBarrier"
             app:layout_constraintTop_toTopOf="parent"
             tools:layout_height="@dimen/tools_cover_medium_height"
             tools:layout_width="@dimen/tools_cover_medium_width"
@@ -63,17 +63,17 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/coverImage0"
             app:layout_constraintTop_toTopOf="parent"
+            tools:background="@drawable/outline_rounded"
             tools:layout_height="@dimen/tools_cover_medium_height"
             tools:layout_width="@dimen/tools_cover_medium_width"
             tools:src="@drawable/ic_image"
-            tools:background="@drawable/outline_rounded"
             />
 
         <androidx.constraintlayout.widget.Barrier
             android:id="@+id/coversBarrier"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:barrierDirection="bottom"
+            app:barrierDirection="start"
             app:constraint_referenced_ids="coverImage0,coverImage1"
             />
 
@@ -82,9 +82,9 @@
             style="@style/Envelope.EditText"
             android:hint="@string/lbl_author"
             app:endIconMode="none"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintEnd_toEndOf="@id/coversBarrier"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/coversBarrier"
+            app:layout_constraintTop_toTopOf="parent"
             >
 
             <com.google.android.material.textfield.TextInputEditText
@@ -100,7 +100,7 @@
             android:id="@+id/lbl_title"
             style="@style/Envelope.EditText"
             android:hint="@string/lbl_title"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintEnd_toEndOf="@id/coversBarrier"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_author"
             >
@@ -127,8 +127,8 @@
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/isbn"
                 style="@style/EditText.Isbn"
-                android:imeOptions="actionNext"
                 android:layout_width="match_parent"
+                android:imeOptions="actionNext"
                 tools:ignore="Autofill"
                 tools:text="123456789X123"
                 />
@@ -143,7 +143,7 @@
             android:enabled="true"
             app:icon="@drawable/ic_barcode"
             app:layout_constraintBottom_toBottomOf="@id/lbl_isbn"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintEnd_toEndOf="@id/coversBarrier"
             app:layout_constraintStart_toEndOf="@id/lbl_isbn"
             app:layout_constraintTop_toTopOf="@id/lbl_isbn"
             />
@@ -152,7 +152,7 @@
             android:id="@+id/lbl_language"
             style="@style/Envelope.AutoCompleteTextView"
             android:hint="@string/lbl_language"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintEnd_toEndOf="@id/coversBarrier"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_isbn"
             >
@@ -218,8 +218,8 @@
             <AutoCompleteTextView
                 android:id="@+id/genre"
                 style="@style/autoCompleteTextEntry"
-                android:imeOptions="actionNext"
                 android:layout_width="match_parent"
+                android:imeOptions="actionNext"
                 tools:ignore="LabelFor"
                 tools:text="Fiction"
                 />
@@ -238,8 +238,8 @@
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/description"
                 style="@style/notesTextEntry"
-                android:imeOptions="actionDone"
                 android:layout_width="match_parent"
+                android:imeOptions="actionDone"
                 tools:ignore="Autofill"
                 tools:text="@tools:sample/lorem/random"
                 />

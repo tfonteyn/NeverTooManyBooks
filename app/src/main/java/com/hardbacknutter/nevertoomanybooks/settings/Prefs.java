@@ -208,7 +208,7 @@ public final class Prefs {
                 //noinspection unchecked
                 ed.putStringSet(entry.getKey(), (Set<String>) entry.getValue());
             } else {
-                Logger.warnWithStackTrace(context, TAG,
+                Logger.warnWithStackTrace(context, TAG, "Unknown type",
                                           entry.getValue().getClass().getCanonicalName());
             }
         }
@@ -265,4 +265,5 @@ public final class Prefs {
         return FastScroller.OverlayProvider.OverlayStyle.MD1;
 //        return FastScroller.OverlayProvider.OverlayStyle.MD2;
     }
+
 }

@@ -61,6 +61,8 @@ import java.util.Objects;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.covers.ImageScale;
+import com.hardbacknutter.nevertoomanybooks.covers.ImageUtils;
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
@@ -71,7 +73,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.ItemWithTitle;
 import com.hardbacknutter.nevertoomanybooks.entities.RowDataHolder;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.LanguageUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
@@ -369,23 +370,23 @@ public class BooklistAdapter
 
         switch (groupKeyId) {
             case BooklistGroup.BOOK: {
-                @ImageUtils.Scale
+                @ImageScale.Scale
                 final int scale = mStyle.getThumbnailScale(context);
                 switch (scale) {
-                    case ImageUtils.SCALE_2X_LARGE:
+                    case ImageScale.SCALE_2X_LARGE:
                         layoutId = R.layout.booksonbookshelf_row_book_2x_large_image;
                         break;
 
-                    case ImageUtils.SCALE_X_LARGE:
+                    case ImageScale.SCALE_X_LARGE:
                         layoutId = R.layout.booksonbookshelf_row_book_1x_large_image;
                         break;
 
 
-                    case ImageUtils.SCALE_LARGE:
-                    case ImageUtils.SCALE_MEDIUM:
-                    case ImageUtils.SCALE_SMALL:
-                    case ImageUtils.SCALE_X_SMALL:
-                    case ImageUtils.SCALE_NOT_DISPLAYED:
+                    case ImageScale.SCALE_LARGE:
+                    case ImageScale.SCALE_MEDIUM:
+                    case ImageScale.SCALE_SMALL:
+                    case ImageScale.SCALE_X_SMALL:
+                    case ImageScale.SCALE_NOT_DISPLAYED:
                     default:
                         layoutId = R.layout.booksonbookshelf_row_book;
                         break;
@@ -850,7 +851,7 @@ public class BooklistAdapter
             mPublisherView = itemView.findViewById(R.id.publisher);
 
             // We use a square space for the image so both portrait/landscape images work out.
-            mMaxCoverSize = ImageUtils.getMaxImageSize(context, style.getThumbnailScale(context));
+            mMaxCoverSize = ImageScale.getSize(context, style.getThumbnailScale(context));
             mCoverView = itemView.findViewById(R.id.coverImage0);
             if (!mInUse.cover) {
                 // shown by default, so hide it if not in use.
@@ -912,8 +913,9 @@ public class BooklistAdapter
                 final String uuid = rowData.getString(DBDefinitions.KEY_BOOK_UUID);
                 // store the uuid for use in the OnClickListener
                 mCoverView.setTag(R.id.TAG_ITEM, uuid);
-                final boolean isSet = ImageUtils.setImageView(mCoverView, uuid, 0,
-                                                              mMaxCoverSize, mMaxCoverSize);
+                final boolean isSet = ImageUtils.setImageView(mCoverView, mMaxCoverSize,
+                                                              mMaxCoverSize, uuid, 0
+                                                             );
                 if (isSet) {
                     // We do not go overkill here by adding a CoverHandler
                     // but only provide zooming by clicking on the image

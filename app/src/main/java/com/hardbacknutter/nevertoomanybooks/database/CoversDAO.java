@@ -394,18 +394,18 @@ public final class CoversDAO
      * This will either insert or update a row in the database.
      * Failures are ignored; this is just a cache.
      *
-     * @param uuid      UUID of the book
-     * @param cIdx      0..n image index
-     * @param bitmap    to save
-     * @param maxWidth  used to construct the cacheId
-     * @param maxHeight used to construct the cacheId
+     * @param uuid   UUID of the book
+     * @param cIdx   0..n image index
+     * @param bitmap to save
+     * @param width  used to construct the cacheId
+     * @param height used to construct the cacheId
      */
     @WorkerThread
     private void saveFile(@NonNull final String uuid,
                           @IntRange(from = 0) final int cIdx,
                           @NonNull final Bitmap bitmap,
-                          final int maxWidth,
-                          final int maxHeight) {
+                          final int width,
+                          final int height) {
         if (sSyncedDb == null) {
             return;
         }
@@ -426,7 +426,7 @@ public final class CoversDAO
 
         byte[] image = out.toByteArray();
 
-        String cacheId = constructCacheId(uuid, cIdx, maxWidth, maxHeight);
+        String cacheId = constructCacheId(uuid, cIdx, width, height);
         ContentValues cv = new ContentValues();
         cv.put(CKEY_CACHE_ID, cacheId);
         cv.put(CKEY_IMAGE, image);
@@ -534,8 +534,8 @@ public final class CoversDAO
         @NonNull
         private final String mUuid;
         private final int mIndex;
-        private final int mMaxWidth;
-        private final int mMaxHeight;
+        private final int mWidth;
+        private final int mHeight;
 
         /**
          * Create a task that will compress the passed bitmap and write it to the database,
@@ -548,13 +548,13 @@ public final class CoversDAO
         @UiThread
         public ImageCacheWriterTask(@NonNull final String uuid,
                                     @IntRange(from = 0) final int cIdx,
-                                    final int maxWidth,
-                                    final int maxHeight,
+                                    final int width,
+                                    final int height,
                                     @NonNull final Bitmap source) {
             mUuid = uuid;
             mIndex = cIdx;
-            mMaxWidth = maxWidth;
-            mMaxHeight = maxHeight;
+            mWidth = width;
+            mHeight = height;
             mBitmap = source;
         }
 
@@ -577,7 +577,7 @@ public final class CoversDAO
             RUNNING_TASKS.incrementAndGet();
 
             try (CoversDAO coversDBAdapter = getInstance(context)) {
-                coversDBAdapter.saveFile(mUuid, mIndex, mBitmap, mMaxWidth, mMaxHeight);
+                coversDBAdapter.saveFile(mUuid, mIndex, mBitmap, mWidth, mHeight);
             }
 
             RUNNING_TASKS.decrementAndGet();

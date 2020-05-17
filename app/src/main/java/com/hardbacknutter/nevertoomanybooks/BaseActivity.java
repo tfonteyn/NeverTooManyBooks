@@ -340,7 +340,7 @@ public abstract class BaseActivity
      */
     protected void addFragment(@IdRes final int containerViewId,
                                @NonNull final Class fragmentClass,
-                               @Nullable final String fragmentTag) {
+                               @NonNull final String fragmentTag) {
         loadFragment(containerViewId, fragmentClass, fragmentTag, true);
     }
 
@@ -356,12 +356,14 @@ public abstract class BaseActivity
      */
     protected void replaceFragment(@IdRes final int containerViewId,
                                    @NonNull final Class fragmentClass,
-                                   @Nullable final String fragmentTag) {
+                                   @NonNull final String fragmentTag) {
         loadFragment(containerViewId, fragmentClass, fragmentTag, false);
     }
 
     /**
      * Manually load a fragment into the given container.
+     * If the fragment is already present, this method does nothing.
+     *
      * <p>
      * Not added to the BackStack.
      * <strong>The activity extras bundle will be set as arguments.</strong>
@@ -370,19 +372,13 @@ public abstract class BaseActivity
      *
      * @param containerViewId to receive the fragment
      * @param fragmentClass   the fragment; must be loadable with the current class loader.
-     * @param fragmentTag     tag for the fragment
+     * @param tag             tag for the fragment
      * @param isAdd           whether to use add or replace
      */
     private void loadFragment(@IdRes final int containerViewId,
                               @NonNull final Class fragmentClass,
-                              @Nullable final String fragmentTag,
+                              @NonNull final String tag,
                               final boolean isAdd) {
-        String tag;
-        if (fragmentTag == null) {
-            tag = fragmentClass.getName();
-        } else {
-            tag = fragmentTag;
-        }
 
         final FragmentManager fm = getSupportFragmentManager();
         if (fm.findFragmentByTag(tag) == null) {

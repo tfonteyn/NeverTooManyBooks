@@ -306,22 +306,23 @@ public abstract class ArchiveReaderAbstract
             Date coverDate = cover.getDateModified();
 
             // see if we have this file already
-            final File currentCover = AppDir.Covers.getFile(context, cover.getName());
-            final boolean exists = currentCover.exists();
+            File file = AppDir.Covers.getFile(context, cover.getName());
+            final boolean exists = file.exists();
             if ((mHelper.getOptions() & ImportManager.IMPORT_ONLY_NEW_OR_UPDATED) != 0) {
                 if (exists) {
-                    final Date currFileDate = new Date(currentCover.lastModified());
+                    final Date currFileDate = new Date(file.lastModified());
                     if (currFileDate.compareTo(coverDate) >= 0) {
                         return false;
                     }
                 }
             }
 
-            final File destFile = AppDir.Covers.getFile(context, cover.getName());
-            FileUtils.copyInputStream(context, cover.getInputStream(), destFile);
-            if (destFile.exists()) {
+            file = FileUtils.copyInputStream(context, cover.getInputStream(),
+                                             AppDir.Covers.getFile(context, cover.getName()));
+
+            if (file != null && file.exists()) {
                 //noinspection ResultOfMethodCallIgnored
-                destFile.setLastModified(cover.getDateModified().getTime());
+                file.setLastModified(cover.getDateModified().getTime());
             }
 
             if (exists) {

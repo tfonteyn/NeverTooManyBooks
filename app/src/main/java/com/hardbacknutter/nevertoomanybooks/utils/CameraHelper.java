@@ -31,11 +31,10 @@ import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.provider.MediaStore;
 
+import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
@@ -43,14 +42,8 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.RequestCode;
-import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 
 public class CameraHelper {
 
@@ -63,21 +56,9 @@ public class CameraHelper {
      * We just make sure an orphaned file is deleted before taking a new picture.
      * But as it's in the cache directory, Android can clean it when it wants.
      */
-    private static final String CAMERA_FILENAME = TAG + ".jpg";
-    /** System intent extras key. Do not change. */
-    private static final String BKEY_DATA = "data";
-    /** we don't actually compress, the preview file is presumably already small. */
-    private static final int QUALITY = 100;
+    private static final String TEMP_FILENAME = TAG + ".jpg";
 
-    /** rotation angle to apply after a picture was taken. */
-    private int mRotationAngle;
-    /** by default, we tell the camera to give us full-size pictures. */
-    private boolean mUseFullSize = true;
     /** Needed while checking permissions. */
-    @SuppressWarnings("FieldNotUsedInToString")
-    private Fragment mFragment;
-    /** Needed while checking permissions. */
-    @SuppressWarnings("FieldNotUsedInToString")
     private int mRequestCode;
 
     /**
@@ -88,24 +69,11 @@ public class CameraHelper {
      * @return the default camera file.
      */
     public static File getCameraFile(@NonNull final Context context) {
-        return AppDir.Cache.getFile(context, CAMERA_FILENAME);
+        return AppDir.Cache.getFile(context, TEMP_FILENAME);
     }
 
     public static void deleteCameraFile(@NonNull final Context context) {
-        FileUtils.delete(AppDir.Cache.getFile(context, CAMERA_FILENAME));
-    }
-
-    /**
-     * Apply a rotation after acquiring a picture.
-     *
-     * @param rotationAngle to apply
-     */
-    public void setRotationAngle(final int rotationAngle) {
-        mRotationAngle = rotationAngle;
-    }
-
-    public void setUseFullSize(final boolean useFullSize) {
-        mUseFullSize = useFullSize;
+        FileUtils.delete(AppDir.Cache.getFile(context, TEMP_FILENAME));
     }
 
     /**
@@ -116,23 +84,19 @@ public class CameraHelper {
      */
     public void startCamera(@NonNull final Fragment fragment,
                             final int requestCode) {
-        mFragment = fragment;
         mRequestCode = requestCode;
 
-        Context context = fragment.getContext();
+        final Context context = fragment.getContext();
 
-        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        if (mUseFullSize) {
-            //noinspection ConstantConditions
-            File file = AppDir.Cache.getFile(context, CAMERA_FILENAME);
-            // delete any orphaned file.
-            FileUtils.delete(file);
-
-            Uri uri = GenericFileProvider.getUriForFile(context, file);
-            intent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
-        }
-
+        final Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         //noinspection ConstantConditions
+        final File file = AppDir.Cache.getFile(context, TEMP_FILENAME);
+        // delete any orphaned file.
+        FileUtils.delete(file);
+
+        final Uri uri = GenericFileProvider.getUriForFile(context, file);
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
+
         if (ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA)
             == PackageManager.PERMISSION_GRANTED) {
             // GO!
@@ -142,7 +106,7 @@ public class CameraHelper {
             ((PermissionsHelper.RequestHandler) fragment).addPermissionCallback(
                     RequestCode.ANDROID_PERMISSIONS, (perms, grantResults) -> {
                         if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                            startCamera(mFragment, mRequestCode);
+                            startCamera(fragment, mRequestCode);
                         }
                     });
             //noinspection ConstantConditions
@@ -153,72 +117,18 @@ public class CameraHelper {
     }
 
     /**
-     * Get the bitmap with optional rotation.
+     * Get the file.
      *
      * @param context Current context
-     * @param data    intent to read from, or {@code null}
-     *                if you <strong>know there will be a full-sized file</strong>
-     *
-     * @return bitmap or {@code null}
-     */
-    @Nullable
-    public Bitmap getBitmap(@NonNull final Context context,
-                            @Nullable final Intent data) {
-        Bitmap bm;
-        if (mUseFullSize) {
-            String fileSpec = AppDir.Cache.getFile(context, CAMERA_FILENAME).getAbsolutePath();
-            bm = BitmapFactory.decodeFile(fileSpec);
-        } else {
-            Objects.requireNonNull(data, ErrorMsg.NULL_INTENT_DATA);
-            bm = data.getParcelableExtra(BKEY_DATA);
-        }
-
-        if (bm != null && mRotationAngle != 0) {
-            bm = ImageUtils.rotate(bm, mRotationAngle);
-        }
-        return bm;
-    }
-
-    /**
-     * Get the file with optional rotation.
-     *
-     * @param context Current context
-     * @param data    intent to read from, or {@code null}
-     *                if you <strong>know there will be a full-sized file</strong>
      *
      * @return file or {@code null}
      */
     @Nullable
-    public File getFile(@NonNull final Context context,
-                        @Nullable final Intent data) {
-
-        File file;
-        if (mUseFullSize) {
-            file = AppDir.Cache.getFile(context, CAMERA_FILENAME);
-            if (file.exists()) {
-                if (mRotationAngle != 0) {
-                    ImageUtils.rotate(context, file, mRotationAngle);
-                }
-                return file;
-            }
-
-        } else {
-            Objects.requireNonNull(data, ErrorMsg.NULL_INTENT_DATA);
-            Bitmap bm = data.getParcelableExtra(BKEY_DATA);
-            if (bm != null) {
-                if (mRotationAngle != 0) {
-                    bm = ImageUtils.rotate(bm, mRotationAngle);
-                }
-
-                file = AppDir.Cache.getFile(context, CAMERA_FILENAME);
-                try (OutputStream os = new FileOutputStream(file.getAbsoluteFile())) {
-                    bm.compress(Bitmap.CompressFormat.PNG, QUALITY, os);
-                    return file;
-
-                } catch (@SuppressWarnings("OverlyBroadCatchBlock") @NonNull final IOException e) {
-                    Logger.error(context, TAG, e);
-                }
-            }
+    @AnyThread
+    public File getFile(@NonNull final Context context) {
+        final File file = AppDir.Cache.getFile(context, TEMP_FILENAME);
+        if (file.exists()) {
+            return file;
         }
         return null;
     }
@@ -227,8 +137,7 @@ public class CameraHelper {
     @NonNull
     public String toString() {
         return "CameraHelper{"
-               + "mRotationAngle=" + mRotationAngle
-               + ", mUseFullSize=" + mUseFullSize
+               + ", mRequestCode=" + mRequestCode
                + '}';
     }
 }

@@ -38,12 +38,16 @@ import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.lang.ref.WeakReference;
 
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.covers.ImageUtils;
 import com.hardbacknutter.nevertoomanybooks.searches.goodreads.GoodreadsSearchEngine;
-import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
+import com.hardbacknutter.nevertoomanybooks.tasks.TerminatorConnection;
 
 /**
  * Class to store the 'work' data returned via a Goodreads search.
@@ -76,28 +80,62 @@ import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
  */
 public class GoodreadsWork {
 
+    /** {@link ByteArrayOutputStream} use. */
+    private static final int BUFFER_SIZE = 65535;
+    /** network: if at first we don't succeed... */
+    private static final int NR_OF_TRIES = 2;
     public Long grBookId;
     public Long workId;
-
     public String title;
     public Long authorId;
     public String authorName;
     public String authorRole;
-
     public Long pubDay;
     public Long pubMonth;
     public Long pubYear;
-
     public Double rating;
-
     public String imageUrl;
     public String smallImageUrl;
-
     @Nullable
     private byte[] mImageBytes;
     private WeakReference<ImageView> mImageView;
     private int mMaxWidth;
     private int mMaxHeight;
+
+    /**
+     * Given a URL, get an image and return as a byte array. Called/run in a background task.
+     *
+     * @param context Application context
+     * @param url     Image file URL
+     *
+     * @return Downloaded {@code byte[]} or {@code null} upon failure
+     */
+    @Nullable
+    @WorkerThread
+    private static byte[] getBytes(@NonNull final Context context,
+                                   @NonNull final String url) {
+
+        try (TerminatorConnection con =
+                     TerminatorConnection.open(context, url, NR_OF_TRIES,
+                                               GoodreadsSearchEngine.THROTTLER);
+             final ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+
+            // Save the output to a byte output stream
+            final byte[] buffer = new byte[BUFFER_SIZE];
+            int len;
+            final InputStream is = con.getInputStream();
+            if (is == null) {
+                return null;
+            }
+            while ((len = is.read(buffer)) >= 0) {
+                out.write(buffer, 0, len);
+            }
+            return out.toByteArray();
+        } catch (@NonNull final IOException ignore) {
+            // ignore
+        }
+        return null;
+    }
 
     /**
      * If the cover image has already been retrieved, put it in the passed view.
@@ -132,7 +170,7 @@ public class GoodreadsWork {
                     Bitmap bitmap = BitmapFactory.decodeByteArray(mImageBytes, 0,
                                                                   mImageBytes.length,
                                                                   new BitmapFactory.Options());
-                    ImageUtils.setImageView(imageView, bitmap, maxWidth, maxHeight);
+                    ImageUtils.setImageView(imageView, maxWidth, maxHeight, bitmap, 0);
                 } else {
                     ImageUtils.setPlaceholder(imageView, R.drawable.ic_broken_image, 0);
                 }
@@ -171,7 +209,7 @@ public class GoodreadsWork {
                         Bitmap bitmap = BitmapFactory.decodeByteArray(mImageBytes, 0,
                                                                       mImageBytes.length,
                                                                       new BitmapFactory.Options());
-                        ImageUtils.setImageView(imageView, bitmap, mMaxWidth, mMaxHeight);
+                        ImageUtils.setImageView(imageView, mMaxWidth, mMaxHeight, bitmap, 0);
                     } else {
                         ImageUtils.setPlaceholder(imageView, R.drawable.ic_broken_image, 0);
                     }
@@ -218,7 +256,7 @@ public class GoodreadsWork {
             Thread.currentThread().setName(TAG);
             final Context context = App.getTaskContext();
 
-            return ImageUtils.getBytes(context, mUrl, GoodreadsSearchEngine.THROTTLER);
+            return getBytes(context, mUrl);
         }
 
         /**

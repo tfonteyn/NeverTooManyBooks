@@ -64,6 +64,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import com.hardbacknutter.nevertoomanybooks.covers.CoverHandler;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentBookDetailsBinding;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
@@ -79,7 +80,6 @@ import com.hardbacknutter.nevertoomanybooks.fields.Fields;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsHandler;
 import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.RequestAuthTask;
 import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.SendOneBookTask;
-import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.BookDetailsFragmentViewModel;
 
 /**
@@ -285,7 +285,7 @@ public class BookDetailsFragment
                     }
                     // onResume will display the new book
                     mBookViewModel.reload();
-                    //FIXME: swiping through the flattened booklist will not see
+                    //TODO: swiping through the flattened booklist will not see
                     // the duplicated book until we go back to BoB.
                     // Easiest solution would be to remove the dup. option from this screen...
                 }
@@ -294,9 +294,23 @@ public class BookDetailsFragment
             default: {
                 // handle any cover image request codes
                 final int cIdx = mFragmentVM.getAndClearCurrentCoverHandlerIndex();
-                if (cIdx >= 0) {
-                    if (mCoverHandler[cIdx].onActivityResult(requestCode, resultCode, data)) {
-                        break;
+                if (cIdx >= 0 && cIdx < mCoverHandler.length) {
+                    if (mCoverHandler[cIdx] != null) {
+                        if (mCoverHandler[cIdx].onActivityResult(requestCode, resultCode, data)) {
+                            break;
+                        }
+                    } else {
+                        // 2020-05-14: Can't explain it yet, but seen this to be null
+                        // in the emulator:
+                        // start device and app in normal portrait mode.
+                        // turn the device twice CW, i.e. the screen should be upside down.
+                        // The emulator will be upside down, but the app will be sideways.
+                        // Take picture... get here and see NULL mCoverHandler[cIdx].
+
+                        //noinspection ConstantConditions
+                        Logger.warnWithStackTrace(getContext(), TAG,
+                                                  "onActivityResult"
+                                                  + "|mCoverHandler was NULL for cIdx=" + cIdx);
                     }
                 }
 
@@ -318,7 +332,7 @@ public class BookDetailsFragment
      * <br><br>{@inheritDoc}
      *
      * @param fields
-     * @param book to load
+     * @param book   to load
      */
     @Override
     protected void onPopulateViews(@NonNull final Fields fields,
@@ -337,27 +351,21 @@ public class BookDetailsFragment
         }
 
         if (DBDefinitions.isUsed(prefs, DBDefinitions.KEY_THUMBNAIL)) {
-            // Hook up the indexed cover image.
+            final int[] scale = getResources().getIntArray(R.array.covers_details);
+
             mCoverHandler[0] = new CoverHandler(this, mProgressBar,
                                                 book, mVb.isbn, 0, mVb.coverImage0,
-                                                ImageUtils.SCALE_LARGE);
+                                                scale[0]);
 
             mCoverHandler[1] = new CoverHandler(this, mProgressBar,
                                                 book, mVb.isbn, 1, mVb.coverImage1,
-                                                ImageUtils.SCALE_SMALL);
+                                                scale[1]);
         }
 
         // hide unwanted and empty fields
         //noinspection ConstantConditions
         fields.setVisibility(getView(), true, false);
 
-        // Hide the Publication section label if none of the publishing fields are shown.
-        setSectionLabelVisibility(R.id.lbl_publication_section,
-                                  R.id.publisher,
-                                  R.id.date_published,
-                                  R.id.price_listed,
-                                  R.id.first_publication,
-                                  R.id.edition);
         // Hide the "Personal notes" label if none of the notes fields are shown.
         setSectionLabelVisibility(R.id.lbl_notes,
                                   R.id.notes,
@@ -514,7 +522,7 @@ public class BookDetailsFragment
         menu.findItem(R.id.MENU_BOOK_READ).setVisible(isSaved && !isRead);
         menu.findItem(R.id.MENU_BOOK_UNREAD).setVisible(isSaved && isRead);
 
-        //FIXME: swiping through the flattened booklist will not see
+        //TODO: swiping through the flattened booklist will not see
         // the duplicated book until we go back to BoB.
         // Temporary solution is removing the 'duplicate' option from this screen...
         menu.findItem(R.id.MENU_BOOK_DUPLICATE).setVisible(false);

@@ -84,8 +84,6 @@
         <ImageView
             android:id="@+id/coverImage0"
             style="@style/CoverImage"
-            android:layout_marginStart="@dimen/indent2"
-            android:layout_marginTop="@dimen/border1"
             android:contentDescription="@string/lbl_cover"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/title"

@@ -1508,9 +1508,9 @@ public class BooksOnBookshelf
             final long desiredRowId = currentBookshelf.getTopRowId();
             if (actualRowId != desiredRowId) {
                 if (BuildConfig.DEBUG /* always */) {
-                    Logger.warn(this, TAG, "position=" + position
-                                           + "|desiredRowId=" + desiredRowId
-                                           + "|actualRowId=" + actualRowId);
+                    Log.d(TAG, "position=" + position
+                               + "|desiredRowId=" + desiredRowId
+                               + "|actualRowId=" + actualRowId);
                 }
 //                // TODO: the intention is to TRY to FIND the correct position obviously;
 //                //  --/++ are placeholders and do not work

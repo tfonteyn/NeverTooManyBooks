@@ -278,7 +278,9 @@ public abstract class JsoupBase {
                 throw e;
 
             } catch (@NonNull final FileNotFoundException e) {
-                Logger.warn(context, TAG, "loadPage|" + url);
+                if (BuildConfig.DEBUG /* always */) {
+                    Logger.w(TAG, "loadPage|" + url);
+                }
 
             } catch (@NonNull final IOException e) {
                 Logger.error(context, TAG, e, url);

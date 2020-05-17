@@ -781,10 +781,10 @@ public class Book
                             remove(key);
 
                             if (BuildConfig.DEBUG /* always */) {
-                                Logger.warn(context, TAG, "preprocessExternalIds"
-                                                          + "|NumberFormatException"
-                                                          + "|name=" + key
-                                                          + "|value=`" + o + '`');
+                                Logger.d(TAG, "preprocessExternalIds"
+                                              + "|NumberFormatException"
+                                              + "|name=" + key
+                                              + "|value=`" + o + '`');
                             }
                         }
                         break;
@@ -806,7 +806,9 @@ public class Book
                         break;
                     }
                     default:
-                        Logger.warnWithStackTrace(context, TAG, "type=" + domain.getType());
+                        if (BuildConfig.DEBUG /* always */) {
+                            Log.d(TAG, "type=" + domain.getType());
+                        }
                         break;
                 }
             }

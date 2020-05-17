@@ -45,7 +45,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 /**
- * FIXME: pretend fixing the id - how to return the actual id of the current author/series?
+ * TODO: pretend fixing the id - how to return the actual id of the current author/series?
  * <p>
  * isUniqueById().
  * - 'true' for Author, Bookshelf, TocEntry

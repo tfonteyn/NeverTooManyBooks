@@ -25,11 +25,13 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.searches;
+package com.hardbacknutter.nevertoomanybooks.covers;
+
+import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
 
 /**
- * Sizes of thumbnails.
- * These are open to interpretation (or not used at all) by individual {@link SearchEngine}.
+ * Sizes of images downloaded by {@link SearchEngine} implementations.
+ * These are open to interpretation (or not used at all) by individual sites.
  */
 public enum ImageSize {
     Large,

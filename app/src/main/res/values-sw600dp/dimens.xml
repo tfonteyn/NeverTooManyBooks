@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <!--
   ~ @Copyright 2020 HardBackNutter
   ~ @License GNU General Public License
@@ -27,15 +27,6 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<shape xmlns:android="http://schemas.android.com/apk/res/android">
-    <stroke
-        android:width="1dp"
-        android:color="?attr/colorControlNormal" />
-    <corners
-        android:radius="4dp" />
-    <padding
-        android:bottom="@dimen/border1"
-        android:left="@dimen/border1"
-        android:right="@dimen/border1"
-        android:top="@dimen/border1" />
-</shape>
+<resources>
+    <dimen name="cover_base_size">70dp</dimen>
+</resources>

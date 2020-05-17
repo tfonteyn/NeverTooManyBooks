@@ -235,7 +235,7 @@ public abstract class BasePreferenceFragment
                 long bytes = AppDir.purge(getContext(), false);
                 String msg = getString(R.string.txt_cleanup_files,
                                        FileUtils.formatFileSize(getContext(), bytes),
-                                       getString(R.string.lbl_send_debug_info));
+                                       getString(R.string.lbl_send_debug));
 
                 new MaterialAlertDialogBuilder(getContext())
                         .setIcon(R.drawable.ic_warning)

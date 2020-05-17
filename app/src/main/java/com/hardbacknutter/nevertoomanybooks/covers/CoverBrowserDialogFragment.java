@@ -25,7 +25,7 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks;
+package com.hardbacknutter.nevertoomanybooks.covers;
 
 import android.app.Dialog;
 import android.content.DialogInterface;
@@ -54,14 +54,13 @@ import java.util.Collection;
 import java.util.Objects;
 import java.util.concurrent.RejectedExecutionException;
 
+import com.hardbacknutter.nevertoomanybooks.BuildConfig;
+import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
+import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogCoverBrowserBinding;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
-import com.hardbacknutter.nevertoomanybooks.searches.ImageFileInfo;
-import com.hardbacknutter.nevertoomanybooks.searches.ImageSize;
 import com.hardbacknutter.nevertoomanybooks.searches.SiteList;
-import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
-import com.hardbacknutter.nevertoomanybooks.viewmodels.CoverBrowserViewModel;
 
 /**
  * Displays and manages a cover image browser in a dialog, allowing the user to select
@@ -83,8 +82,8 @@ public class CoverBrowserDialogFragment
     /** Log tag. */
     public static final String TAG = "CoverBrowserFragment";
 
-    private static final int SCALE_PREVIEW = ImageUtils.SCALE_LARGE;
-    private static final int SCALE_GALLERY = ImageUtils.SCALE_SMALL;
+    private static final int SCALE_PREVIEW = ImageScale.SCALE_LARGE;
+    private static final int SCALE_GALLERY = ImageScale.SCALE_SMALL;
 
     /** List of ISBN numbers for alternative editions. The base list for the gallery adapter. */
     @NonNull
@@ -92,8 +91,8 @@ public class CoverBrowserDialogFragment
     /** The adapter for the horizontal scrolling covers list. */
     @Nullable
     private GalleryAdapter mGalleryAdapter;
-    /** Indicates dismiss() has been requested. */
-    private boolean mDismissing;
+    /** Indicates cancel has been requested. */
+    private boolean mIsCancelled;
 
     /** The ViewModel. */
     private CoverBrowserViewModel mModel;
@@ -102,7 +101,7 @@ public class CoverBrowserDialogFragment
     private DialogCoverBrowserBinding mVb;
     /** Where to send the result. */
     @Nullable
-    private WeakReference<OnFileSpecResult> mListener;
+    private WeakReference<OnFileSelected> mListener;
 
     /**
      * Constructor.
@@ -163,8 +162,8 @@ public class CoverBrowserDialogFragment
             }
             if (mModel.getSelectedFilePath() != null) {
                 if (mListener != null && mListener.get() != null) {
-                    mListener.get().onFileSpecResult(mModel.getImageIndex(),
-                                                     mModel.getSelectedFilePath());
+                    mListener.get().onFileSelected(mModel.getImageIndex(),
+                                                   mModel.getSelectedFilePath());
                 } else {
                     if (BuildConfig.DEBUG /* always */) {
                         Log.w(TAG, "onFileSpecResult|"
@@ -185,7 +184,7 @@ public class CoverBrowserDialogFragment
     @Override
     public void onCancel(@NonNull final DialogInterface dialog) {
         // prevent new tasks being started.
-        mDismissing = true;
+        mIsCancelled = true;
         super.onCancel(dialog);
     }
 
@@ -300,10 +299,10 @@ public class CoverBrowserDialogFragment
         mModel.setSelectedFilePath(null);
         mVb.preview.setVisibility(View.INVISIBLE);
 
-        if (file != null && file.length() > ImageUtils.MIN_IMAGE_FILE_SIZE) {
+        if (ImageUtils.isFileGood(file)) {
             //noinspection ConstantConditions
-            final int maxSize = ImageUtils.getMaxImageSize(getContext(), SCALE_PREVIEW);
-            new ImageUtils.ImageLoader(mVb.preview, file, maxSize, maxSize, () -> {
+            final int maxSize = ImageScale.getSize(getContext(), SCALE_PREVIEW);
+            new ImageLoader(mVb.preview, file, maxSize, maxSize, () -> {
                 mModel.setSelectedFilePath(file.getAbsolutePath());
                 mVb.preview.setVisibility(View.VISIBLE);
                 mVb.statusMessage.setText(R.string.txt_tap_on_image_to_select);
@@ -322,14 +321,14 @@ public class CoverBrowserDialogFragment
      *
      * @param listener the object to send the result to.
      */
-    public void setListener(@NonNull final OnFileSpecResult listener) {
+    public void setListener(@NonNull final OnFileSelected listener) {
         mListener = new WeakReference<>(listener);
     }
 
-    public interface OnFileSpecResult {
+    public interface OnFileSelected {
 
-        void onFileSpecResult(@IntRange(from = 0) int cIdx,
-                              @NonNull String fileSpec);
+        void onFileSelected(@IntRange(from = 0) int cIdx,
+                            @NonNull String fileSpec);
     }
 
     /**
@@ -362,9 +361,9 @@ public class CoverBrowserDialogFragment
          * @param scale id
          */
         @SuppressWarnings("SameParameterValue")
-        GalleryAdapter(@ImageUtils.Scale final int scale) {
+        GalleryAdapter(@ImageScale.Scale final int scale) {
             //noinspection ConstantConditions
-            final int maxSize = ImageUtils.getMaxImageSize(getContext(), scale);
+            final int maxSize = ImageScale.getSize(getContext(), scale);
             mHeight = maxSize;
             mWidth = maxSize;
         }
@@ -383,6 +382,9 @@ public class CoverBrowserDialogFragment
         @Override
         public void onBindViewHolder(@NonNull final Holder holder,
                                      final int position) {
+            if (mIsCancelled) {
+                return;
+            }
 
             final String isbn = mEditions.get(position);
 
@@ -395,26 +397,24 @@ public class CoverBrowserDialogFragment
             }
 
             final File file = imageFileInfo.getFile();
-            if (file != null && file.length() > ImageUtils.MIN_IMAGE_FILE_SIZE) {
+            if (ImageUtils.isFileGood(file)) {
                 // we have a file, load it into the view.
-                new ImageUtils.ImageLoader(holder.imageView, file, mWidth, mHeight, null)
+                new ImageLoader(holder.imageView, file, mWidth, mHeight, null)
                         .executeOnExecutor(mModel.getPriorityExecutor());
 
             } else {
                 // No valid file available; use a placeholder.
                 ImageUtils.setPlaceholder(holder.imageView, R.drawable.ic_image, 0, mHeight);
-                if (!mDismissing) {
-                    try {
-                        // and queue a request for it.
-                        mModel.fetchGalleryImage(isbn);
+                try {
+                    // and queue a request for it.
+                    mModel.fetchGalleryImage(isbn);
 
-                    } catch (@NonNull final RejectedExecutionException e) {
-                        // some books have a LOT of editions... Dr. Asimov
-                        if (BuildConfig.DEBUG /* always */) {
-                            Log.d(TAG, "onBindViewHolder"
-                                       + "|isbn=" + isbn
-                                       + "Exception msg=" + e.getMessage());
-                        }
+                } catch (@NonNull final RejectedExecutionException e) {
+                    // some books have a LOT of editions... Dr. Asimov
+                    if (BuildConfig.DEBUG /* always */) {
+                        Log.d(TAG, "onBindViewHolder"
+                                   + "|isbn=" + isbn
+                                   + "Exception msg=" + e.getMessage());
                     }
                 }
             }

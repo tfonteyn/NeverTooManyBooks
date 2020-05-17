@@ -165,8 +165,7 @@ public class BookDetailsFragmentViewModel
               .setRelatedFields(R.id.lbl_isbn);
 
         fields.add(R.id.description, new TextViewAccessor<>(htmlFormatter),
-                   DBDefinitions.KEY_DESCRIPTION)
-              .setRelatedFields(R.id.lbl_description);
+                   DBDefinitions.KEY_DESCRIPTION);
 
         fields.add(R.id.genre, new TextViewAccessor<>(), DBDefinitions.KEY_GENRE)
               .setRelatedFields(R.id.lbl_genre);

@@ -357,6 +357,7 @@ public final class Logger {
         }
     }
 
+    /** JUnit aware wrapper for {@link Log#d}. */
     public static void d(@NonNull final String tag,
                          @NonNull final String msg) {
         if (BuildConfig.DEBUG /* always */) {
@@ -368,6 +369,7 @@ public final class Logger {
         }
     }
 
+    /** JUnit aware wrapper for {@link Log#d}. */
     public static void d(@NonNull final String tag,
                          @NonNull final String msg,
                          @Nullable final Throwable e) {
@@ -381,6 +383,7 @@ public final class Logger {
         }
     }
 
+    /** JUnit aware wrapper for {@link Log#e}. */
     public static void e(@NonNull final String tag,
                          @NonNull final String msg,
                          @Nullable final Throwable e) {
@@ -394,6 +397,7 @@ public final class Logger {
         }
     }
 
+    /** JUnit aware wrapper for {@link Log#w}. */
     public static void w(@NonNull final String tag,
                          @NonNull final String msg) {
         if (BuildConfig.DEBUG /* always */) {
@@ -405,6 +409,7 @@ public final class Logger {
         }
     }
 
+    /** JUnit aware wrapper for {@link Log#w}. */
     public static void w(@NonNull final String tag,
                          @NonNull final String msg,
                          @Nullable final Throwable e) {

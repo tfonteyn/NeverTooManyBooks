@@ -67,13 +67,13 @@ import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PIntList;
 import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PInteger;
 import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PPref;
 import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PString;
+import com.hardbacknutter.nevertoomanybooks.covers.ImageScale;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.entities.Entity;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.Csv;
-import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
 
 /**
  * Represents a specific style of booklist (e.g. Authors/Series).
@@ -564,7 +564,7 @@ public class BooklistStyle
             throw new IllegalStateException(ErrorMsg.EMPTY_UUID);
         }
 
-        //FIXME: revisit... this is to complicated/inefficient.
+        //TODO: revisit... this is to complicated/inefficient.
         Parcel parcel = Parcel.obtain();
         writeToParcel(parcel, 0);
         byte[] bytes = parcel.marshall();
@@ -603,7 +603,7 @@ public class BooklistStyle
                                   isUserDefined, FONT_SCALE_MEDIUM);
 
         mThumbnailScale = new PInteger(Prefs.pk_style_scale_thumbnail, mUuid,
-                                       isUserDefined, ImageUtils.SCALE_MEDIUM);
+                                       isUserDefined, ImageScale.SCALE_MEDIUM);
 
 
         mShowAuthorByGivenNameFirst = new PBoolean(Prefs.pk_show_author_name_given_first, mUuid,
@@ -986,13 +986,13 @@ public class BooklistStyle
      *
      * @return scale id
      */
-    @ImageUtils.Scale
+    @ImageScale.Scale
     public int getThumbnailScale(@NonNull final Context context) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         if (isBookDetailUsed(context, prefs, DBDefinitions.KEY_THUMBNAIL)) {
             return mThumbnailScale.getValue(context);
         }
-        return ImageUtils.SCALE_NOT_DISPLAYED;
+        return ImageScale.SCALE_NOT_DISPLAYED;
     }
 
     /**

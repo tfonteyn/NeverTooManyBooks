@@ -55,6 +55,7 @@ import com.hardbacknutter.nevertoomanybooks.backup.xml.XmlArchiveWriter;
 import com.hardbacknutter.nevertoomanybooks.backup.zip.ZipArchiveWriter;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
+import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
@@ -395,9 +396,7 @@ public class ExportManager
 
             // generic IOException message
             if (msg == null) {
-                msg = context.getString(R.string.error_storage_not_writable) + "\n\n"
-                      + context.getString(R.string.error_if_the_problem_persists,
-                                          context.getString(R.string.lbl_send_debug_info));
+                msg = StandardDialogs.createBadError(context, R.string.error_storage_not_writable);
             }
         } else if (e instanceof FormattedMessageException) {
             msg = ((FormattedMessageException) e).getLocalizedMessage(context);

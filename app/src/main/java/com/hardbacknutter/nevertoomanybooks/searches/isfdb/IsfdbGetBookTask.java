@@ -42,7 +42,6 @@ import java.util.List;
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskBase;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
@@ -126,7 +125,9 @@ public class IsfdbGetBookTask
             }
 
         } catch (@NonNull final SocketTimeoutException e) {
-            Logger.warn(context, TAG, "doInBackground|" + e.getLocalizedMessage());
+            if (BuildConfig.DEBUG /* always */) {
+                Log.d(TAG, "doInBackground|" + e.getLocalizedMessage());
+            }
         }
 
         return null;

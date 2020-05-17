@@ -48,8 +48,8 @@ import java.util.Objects;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.covers.ImageLoader;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
-import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
 
 /**
  * Wrapper for the zoomed image dialog.
@@ -168,7 +168,7 @@ public class ZoomedImageDialogFragment
         getDialog().getWindow().setBackgroundDrawableResource(android.R.color.transparent);
 
         // load and resize as needed.
-        new ImageUtils.ImageLoader(mImageView, mImageFile, maxWidth, maxHeight, null)
+        new ImageLoader(mImageView, mImageFile, maxWidth, maxHeight, null)
                 .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 }

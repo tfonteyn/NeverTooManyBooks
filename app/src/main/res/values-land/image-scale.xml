@@ -28,9 +28,14 @@
   -->
 
 <resources>
-    <!--
-        - DialogFrame's which might show the onscreen keyboard, are FULLSCREEN.
-        - displaying a zoomed cover is FULLSCREEN
-    -->
-    <bool name="isLargeScreen">false</bool>
+    <!-- displayed side by side. -->
+    <integer-array name="covers_details">
+        <item>4</item>
+        <item>3</item>
+    </integer-array>
+    <!-- displayed side by side. -->
+    <integer-array name="covers_edit">
+        <item>2</item>
+        <item>2</item>
+    </integer-array>
 </resources>
