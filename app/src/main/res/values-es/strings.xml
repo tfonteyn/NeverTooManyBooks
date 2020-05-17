@@ -325,7 +325,7 @@
     <string name="lbl_search_filtered_on_x">Filtrado: %1$s</string>
     <string name="lbl_select_fields">Seleccione campos</string>
     <string name="lbl_select_website">Selecciona un sitio web:</string>
-    <string name="lbl_send_debug_info">Enviar información de depuración</string>
+    <string name="lbl_send_debug">Enviar información de depuración</string>
     <string name="lbl_series">Serie</string>
     <string name="lbl_series_multiple">Serie</string>
     <string name="lbl_series_num">#</string>
@@ -618,8 +618,8 @@
     <string name="warning_backup_request">¿Desea realizar una copia de la base de datos a la tarjeta SD?</string>
     <string name="warning_book_no_longer_exists">El libro especificado no existe</string>
     <string name="warning_book_not_found">No se ha encontrado el libro especificado</string>
-    <string name="warning_cannot_delete_1st_bs">La biblioteca predefinida no se puede eliminar</string>
-    <string name="warning_cover_copy_failed">No se pudo copiar la imagen</string>
+    <string name="warning_cannot_delete_1st_bs">La biblioteca predefinida no se puede eliminar.</string>
+    <string name="warning_cover_copy_failed">No se pudo copiar la imagen.</string>
     <string name="warning_cover_not_found">Imagen no encontrada</string>
     <string name="warning_enable_at_least_1_website">Habilite al menos un sitio web para cada categoría.</string>
     <string name="warning_if_day_set_month_and_year_must_be">Si se especifica un día, deben especificarse también el mes y el año.</string>
@@ -672,5 +672,6 @@
     <string name="btn_show_list">Mostrar lista</string>
     <string name="btn_less_ellipsis">Menos…</string>
     <string name="lbl_archive_type">Formato</string>
+    <string name="menu_cover_rotate_automatic">Automática</string>
 
 </resources>

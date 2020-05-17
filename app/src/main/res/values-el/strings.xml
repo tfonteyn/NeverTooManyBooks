@@ -324,7 +324,7 @@
     <string name="lbl_search_filtered_on_x">Φιλτραρισμένο: %1$s</string>
     <string name="lbl_select_fields">Επιλεγξτε πεδία</string>
     <string name="lbl_select_website">Επιλέξτε έναν ιστότοπο:</string>
-    <string name="lbl_send_debug_info">Αποστολή πληροφοριών εντοπισμού σφαλμάτων</string>
+    <string name="lbl_send_debug">Αποστολή πληροφοριών εντοπισμού σφαλμάτων</string>
     <string name="lbl_series">Σειρές</string>
     <string name="lbl_series_multiple">Σειρά</string>
     <string name="lbl_series_num">#</string>
@@ -618,7 +618,7 @@
     <string name="warning_book_no_longer_exists">Το συγκεκριμένο βιβλίο δεν υπάρχει πλέον.</string>
     <string name="warning_book_not_found">Δεν μπόρεσε να βρεθεί το συγκεκριμένο βιβλίο</string>
     <string name="warning_cannot_delete_1st_bs">Δεν μπορεί να διαγραφεί το 1ο ράφι.</string>
-    <string name="warning_cover_copy_failed">Δεν ήταν δυνατή η αντιγραφή εικόνας</string>
+    <string name="warning_cover_copy_failed">Δεν ήταν δυνατή η αντιγραφή εικόνας.</string>
     <string name="warning_cover_not_found">Εικόνα δεν βρέθηκε</string>
     <string name="warning_enable_at_least_1_website">Ενεργοποιήστε τουλάχιστον έναν ιστότοπο για κάθε κατηγορία.</string>
     <string name="warning_if_day_set_month_and_year_must_be">Αν προσδιοριστεί ημέρα, τότε πρέπει να προσδιοριστεί επίσης μήνας και έτος.</string>
@@ -671,5 +671,6 @@
     <string name="btn_show_list">Εμφάνιση λίστας</string>
     <string name="btn_less_ellipsis">Πιο λιγο…</string>
     <string name="lbl_archive_type">Μορφή</string>
+    <string name="menu_cover_rotate_automatic">Αυτόματο</string>
 
 </resources>

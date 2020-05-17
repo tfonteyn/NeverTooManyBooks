@@ -323,7 +323,7 @@
     <string name="lbl_search_filtered_on_x">Süzülmüş: %1$s</string>
     <string name="lbl_select_fields">Alanları seçin</string>
     <string name="lbl_select_website">Bir web sitesi seçin:</string>
-    <string name="lbl_send_debug_info">Hata Ayıklama Bilgilerini Gönder</string>
+    <string name="lbl_send_debug">Hata Ayıklama Bilgilerini Gönder</string>
     <string name="lbl_series">Dizi</string>
     <string name="lbl_series_multiple">Dizi</string>
     <string name="lbl_series_num">#</string>
@@ -613,8 +613,8 @@
     <string name="warning_backup_request">Veritabanınızı SD karta yedeklemek ister misiniz?</string>
     <string name="warning_book_no_longer_exists">Belirtilen kitap artık yok</string>
     <string name="warning_book_not_found">Belirtilen kitap bulunamıyor</string>
-    <string name="warning_cannot_delete_1st_bs">Birinci kitaplık silinemiyor</string>
-    <string name="warning_cover_copy_failed">Resim eşlemlenemedi</string>
+    <string name="warning_cannot_delete_1st_bs">Birinci kitaplık silinemiyor.</string>
+    <string name="warning_cover_copy_failed">Resim eşlemlenemedi.</string>
     <string name="warning_cover_not_found">Görsel bulunamadı</string>
     <string name="warning_enable_at_least_1_website">Her kategori için en az bir web sitesini etkinleştirin.</string>
     <string name="warning_if_day_set_month_and_year_must_be">Eğer gün belirtmiş iseniz hem ay hem yıl bölümlerini de doldurmalısınız.</string>
@@ -667,5 +667,6 @@
     <string name="btn_show_list">Gösteri listesi</string>
     <string name="btn_less_ellipsis">Az…</string>
     <string name="lbl_archive_type">Biçim</string>
+    <string name="menu_cover_rotate_automatic">Otomatik</string>
 
 </resources>

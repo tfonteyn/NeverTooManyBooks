@@ -328,7 +328,7 @@
     <string name="lbl_search_filtered_on_x">Gefiltert: %1$s</string>
     <string name="lbl_select_fields">Felder auswählen</string>
     <string name="lbl_select_website">Wählen Sie eine Website aus:</string>
-    <string name="lbl_send_debug_info">Debug-Informationen senden</string>
+    <string name="lbl_send_debug">Debug-Informationen senden</string>
     <string name="lbl_series">Serie</string>
     <string name="lbl_series_multiple">Serie</string>
     <string name="lbl_series_num">#</string>
@@ -621,8 +621,8 @@
     <string name="warning_backup_request">Möchten Sie ihre Datenbank auf SD-Karte sichern?</string>
     <string name="warning_book_no_longer_exists">Das gewünschte Buch existiert nicht mehr</string>
     <string name="warning_book_not_found">Das angegebene Buch wurde nicht gefunden</string>
-    <string name="warning_cannot_delete_1st_bs">Das erste Bücherregal kann nicht gelöscht werden</string>
-    <string name="warning_cover_copy_failed">Konnte Bild nicht kopieren</string>
+    <string name="warning_cannot_delete_1st_bs">Das erste Bücherregal kann nicht gelöscht werden.</string>
+    <string name="warning_cover_copy_failed">Konnte Bild nicht kopieren.</string>
     <string name="warning_cover_not_found">Bild nicht gefunden</string>
     <string name="warning_enable_at_least_1_website">Aktivieren Sie mindestens eine Website für jede Kategorie.</string>
     <string name="warning_if_day_set_month_and_year_must_be">Wenn der Tag angegeben wird, muss auch Monat und Jahr angegeben werden.</string>
@@ -675,4 +675,5 @@
     <string name="btn_show_list">Liste anzeigen</string>
     <string name="btn_less_ellipsis">Weniger…</string>
     <string name="lbl_archive_type">Format</string>
+    <string name="menu_cover_rotate_automatic">Automatisch</string>
 </resources>

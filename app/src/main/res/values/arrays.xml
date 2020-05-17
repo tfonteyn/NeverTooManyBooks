@@ -107,7 +107,7 @@
 
     <!-- ListPreference - Degrees by which to rotate camera images automatically -->
     <string-array name="pe_thumbnails_rotate_auto">
-        <item>@string/no</item>
+        <item>@string/menu_cover_rotate_automatic</item>
         <item>@string/menu_cover_rotate_cw</item>
         <item>@string/menu_cover_rotate_ccw</item>
         <item>@string/menu_cover_rotate_180</item>

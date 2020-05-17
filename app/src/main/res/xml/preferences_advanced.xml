@@ -81,7 +81,7 @@
         <Preference
             android:icon="@drawable/ic_send"
             android:key="psk_send_debug_info"
-            android:title="@string/lbl_send_debug_info"
+            android:title="@string/lbl_send_debug"
             />
 
         <Preference

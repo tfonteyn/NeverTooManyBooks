@@ -223,7 +223,7 @@
     <string name="warning_requires_date">Please add a valid date.</string>
     <string name="warning_requires_site_and_id">Select a site and enter an id.</string>
 
-    <string name="warning_cannot_delete_1st_bs">Cannot Delete the 1st Bookshelf</string>
+    <string name="warning_cannot_delete_1st_bs">Cannot Delete the 1st Bookshelf.</string>
     <string name="warning_missing_name">Name can not be blank</string>
     <string name="warning_author_already_in_list">Author is already in the list</string>
     <string name="warning_series_already_in_list">Series is already in the list</string>
@@ -231,7 +231,8 @@
     <string name="warning_no_isbn_stored_for_book">No ISBN stored for book</string>
     <string name="warning_x_is_not_a_valid_code">“%1$s” is not a valid code</string>
     <string name="warning_cover_not_found">Cover Not Found</string>
-    <string name="warning_cover_copy_failed">Could not copy cover</string>
+    <!-- must end with a dot. -->
+    <string name="warning_cover_copy_failed">Could not copy cover.</string>
     <string name="warning_no_editions">No additional edition information available</string>
     <string name="warning_if_day_set_month_and_year_must_be">
         If a day is specified, then both month and year must be specified.
@@ -1072,6 +1073,8 @@
     <!-- Context menu for a cover image submenu title -->
     <string name="menu_cover_rotate">Rotate…</string>
     <!-- Cover image context menu option -->
+    <string name="menu_cover_rotate_automatic">Automatic</string>
+    <!-- Cover image context menu option -->
     <string name="menu_cover_rotate_cw">Clockwise</string>
     <!-- Cover image context menu option -->
     <string name="menu_cover_rotate_ccw">Anti-Clockwise</string>
@@ -1573,7 +1576,7 @@
     <string name="lbl_advanced_options">Advanced</string>
 
     <!-- Admin advanced - collect debug information and prepare an email to the developers -->
-    <string name="lbl_send_debug_info">Send Debug Information</string>
+    <string name="lbl_send_debug">Send Debug Information</string>
     <!-- Admin advanced - cleanup log, temp files -->
     <string name="lbl_purge_files">Cleanup Files</string>
     <!-- Admin advanced - clear the cached images -->
