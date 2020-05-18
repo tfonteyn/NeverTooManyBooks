@@ -48,10 +48,9 @@ import java.util.TimeZone;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 
-/**
- * URGENT: the MaterialDatePicker uses UTC. We're ignoring this...
- * URGENT: Migrate to java.time.* Studio 4.0 gives Java 8 time api access
- */
+
+//URGENT: the MaterialDatePicker uses UTC. We're ignoring this...
+// Migrate to java.time.* Studio 4.0 gives Java 8 time api access
 public final class DateUtils {
 
     /** Log tag. */

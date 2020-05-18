@@ -45,7 +45,7 @@ import java.io.File;
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.covers.ImageSize;
+import com.hardbacknutter.nevertoomanybooks.covers.ImageFileInfo;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageUtils;
 import com.hardbacknutter.nevertoomanybooks.databinding.ActivityLibrarythingRegisterBinding;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
@@ -140,7 +140,7 @@ public class LibraryThingRegistrationActivity
             try {
                 final SearchEngine.CoverByIsbn ltm = new LibraryThingSearchEngine();
                 final String fileSpec = ltm.searchCoverImageByIsbn(context, "0451451783", 0,
-                                                                   ImageSize.Small);
+                                                                   ImageFileInfo.Size.Small);
                 if (fileSpec != null) {
                     if (ImageUtils.isFileGood(new File(fileSpec))) {
                         return R.string.lt_key_is_correct;

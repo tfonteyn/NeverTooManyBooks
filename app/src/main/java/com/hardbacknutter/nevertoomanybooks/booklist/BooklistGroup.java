@@ -789,7 +789,7 @@ public class BooklistGroup
 
             mPrimaryType = new PBitmask(Prefs.pk_style_group_author_primary_type,
                                         mUuid, mIsUserDefinedStyle,
-                                        Author.TYPE_UNKNOWN);
+                                        Author.TYPE_UNKNOWN, Author.TYPE_BITMASK_ALL);
         }
 
         @NonNull

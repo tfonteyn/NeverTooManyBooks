@@ -47,7 +47,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:shape="rectangle"
     android:autoMirrored="true"
-    android:tint="?attr/bobFsOverlayBackgroundColor">
+    android:tint="?attr/appFsOverlayBackgroundColor">
 
     <corners
         android:bottomLeftRadius="44dp"

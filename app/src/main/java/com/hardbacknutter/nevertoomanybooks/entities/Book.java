@@ -694,7 +694,7 @@ public class Book
 
         // make sure we only store valid bits
         if (contains(DBDefinitions.KEY_EDITION_BITMASK)) {
-            int editions = getInt(DBDefinitions.KEY_EDITION_BITMASK) & Edition.BITMASK;
+            int editions = getInt(DBDefinitions.KEY_EDITION_BITMASK) & Edition.BITMASK_ALL;
             putInt(DBDefinitions.KEY_EDITION_BITMASK, editions);
         }
 
@@ -911,12 +911,12 @@ public class Book
         /** It's a bookclub edition. */
         private static final int BOOK_CLUB = 1 << 7;
         /** Bitmask for all editions. */
-        private static final int BITMASK = FIRST
-                                           | FIRST_IMPRESSION
-                                           | LIMITED
-                                           | SLIPCASE
-                                           | SIGNED
-                                           | BOOK_CLUB;
+        public static final int BITMASK_ALL = FIRST
+                                              | FIRST_IMPRESSION
+                                              | LIMITED
+                                              | SLIPCASE
+                                              | SIGNED
+                                              | BOOK_CLUB;
 
         /** mapping the edition bit to a resource string for displaying. Ordered. */
         private static final Map<Integer, Integer> ALL = new LinkedHashMap<>();

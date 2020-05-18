@@ -77,16 +77,16 @@ public class FileManager {
      *
      * @param siteList site list
      */
-    public FileManager(@NonNull final SiteList siteList) {
+    FileManager(@NonNull final SiteList siteList) {
         mSiteList = siteList;
     }
 
     /**
-     * Search for a file according to preference of ImageSize and Site..
+     * Search for a file according to preference of {@link ImageFileInfo.Size} and {@link Site}.
      * <p>
      * First checks the cache. If we already have a good image, abort the search and use it.
      * <p>
-     * We loop on ImageSize first, and then for each ImageSize we loop again on Site.<br>
+     * We loop on {@link ImageFileInfo.Size} first, and for each, loop again on {@link Site}.
      * The for() loop will break/return <strong>as soon as a cover file is found.</strong>
      * The first Site which has an image is accepted.
      * <p>
@@ -94,7 +94,7 @@ public class FileManager {
      * @param context    Current context
      * @param isbn       to search for, <strong>must</strong> be valid.
      * @param cIdx       0..n image index
-     * @param imageSizes a list of images sizes in order of preference
+     * @param sizes a list of images sizes in order of preference
      *
      * @return a {@link ImageFileInfo} object with or without a valid fileSpec.
      */
@@ -103,7 +103,7 @@ public class FileManager {
     public ImageFileInfo search(@NonNull final Context context,
                                 @NonNull final String isbn,
                                 @IntRange(from = 0) final int cIdx,
-                                @NonNull final ImageSize... imageSizes) {
+                                @NonNull final ImageFileInfo.Size... sizes) {
 
         // we will disable sites on the fly for the *current* search without modifying the list.
         @SearchSites.Id
@@ -112,7 +112,7 @@ public class FileManager {
         // We need to use the size as the outer loop.
         // The idea is to check all sites for the same size first.
         // If none respond with that size, try the next size inline.
-        for (ImageSize size : imageSizes) {
+        for (ImageFileInfo.Size size : sizes) {
             final String key = isbn + '_' + size;
             ImageFileInfo imageFileInfo = mFiles.get(key);
 
@@ -210,9 +210,9 @@ public class FileManager {
      * @return the ImageFileInfo
      */
     @NonNull
-    public ImageFileInfo getFileInfo(@NonNull final String isbn,
-                                     @NonNull final ImageSize... sizes) {
-        for (ImageSize size : sizes) {
+    ImageFileInfo getFileInfo(@NonNull final String isbn,
+                              @NonNull final ImageFileInfo.Size... sizes) {
+        for (ImageFileInfo.Size size : sizes) {
             final ImageFileInfo imageFileInfo = mFiles.get(isbn + '_' + size);
             if (imageFileInfo != null
                 && imageFileInfo.fileSpec != null
@@ -253,7 +253,7 @@ public class FileManager {
         /** Image index we're handling. */
         private final int mCIdx;
         @NonNull
-        private final ImageSize[] mSizes;
+        private final ImageFileInfo.Size[] mSizes;
 
         /**
          * Constructor.
@@ -266,12 +266,12 @@ public class FileManager {
          *                     Stops at first one found.
          */
         @UiThread
-        public FetchImageTask(final int taskId,
-                              @NonNull final String isbn,
-                              @IntRange(from = 0) final int cIdx,
-                              @NonNull final FileManager fileManager,
-                              @NonNull final TaskListener<ImageFileInfo> taskListener,
-                              @NonNull final ImageSize... sizes) {
+        FetchImageTask(final int taskId,
+                       @NonNull final String isbn,
+                       @IntRange(from = 0) final int cIdx,
+                       @NonNull final FileManager fileManager,
+                       @NonNull final TaskListener<ImageFileInfo> taskListener,
+                       @NonNull final ImageFileInfo.Size... sizes) {
             super(taskId, taskListener);
             mCIdx = cIdx;
             mSizes = sizes;

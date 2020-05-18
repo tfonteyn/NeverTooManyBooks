@@ -46,7 +46,7 @@ import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.covers.ImageSize;
+import com.hardbacknutter.nevertoomanybooks.covers.ImageFileInfo;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsAuth;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsHandler;
@@ -206,7 +206,7 @@ public class GoodreadsSearchEngine
     public String searchCoverImageByIsbn(@NonNull final Context context,
                                          @NonNull final String validIsbn,
                                          @IntRange(from = 0) final int cIdx,
-                                         @Nullable final ImageSize size) {
+                                         @Nullable final ImageFileInfo.Size size) {
         if (!mGoodreadsAuth.hasValidCredentials(context)) {
             return null;
         }

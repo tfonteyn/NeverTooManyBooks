@@ -71,6 +71,7 @@ import com.hardbacknutter.nevertoomanybooks.covers.ImageScale;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
+import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Entity;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.Csv;
@@ -119,16 +120,9 @@ public class BooklistStyle
      */
     public static final int HEADER_SHOW_BOOK_COUNT = 1;
     /** the amount of details to show in the header. */
-    @SuppressWarnings("WeakerAccess")
-    public static final int HEADER_SHOW_LEVEL_1 = 1 << 1;
-    /** the amount of details to show in the header. */
-    @SuppressWarnings("WeakerAccess")
-    public static final int HEADER_SHOW_LEVEL_2 = 1 << 2;
-    /** the amount of details to show in the header. */
     public static final int HEADER_SHOW_STYLE_NAME = 1 << 3;
     /** the amount of details to show in the header. */
     public static final int HEADER_SHOW_FILTER = 1 << 4;
-    public static final int[] HEADER_LEVELS = {HEADER_SHOW_LEVEL_1, HEADER_SHOW_LEVEL_2};
     /**
      * Text Scaling.
      * NEVER change these values, they get stored in preferences.
@@ -174,9 +168,8 @@ public class BooklistStyle
      */
     public static final String BKEY_STYLE_MODIFIED = TAG + ":modified";
     /** the amount of details to show in the header. */
-    private static final int HEADER_SHOW_ALL =
+    private static final int HEADER_BITMASK_ALL =
             HEADER_SHOW_BOOK_COUNT
-            | HEADER_SHOW_LEVEL_1 | HEADER_SHOW_LEVEL_2
             | HEADER_SHOW_STYLE_NAME
             | HEADER_SHOW_FILTER;
 
@@ -597,7 +590,7 @@ public class BooklistStyle
                                               isUserDefined, 1);
 
         mShowHeaderInfo = new PBitmask(Prefs.pk_style_header, mUuid,
-                                       isUserDefined, HEADER_SHOW_ALL);
+                                       isUserDefined, HEADER_BITMASK_ALL, HEADER_BITMASK_ALL);
 
         mFontScale = new PInteger(Prefs.pk_style_scale_font, mUuid,
                                   isUserDefined, FONT_SCALE_MEDIUM);
@@ -686,6 +679,7 @@ public class BooklistStyle
                      new BitmaskFilter(R.string.lbl_edition,
                                        Prefs.pk_style_filter_editions,
                                        mUuid, isUserDefined,
+                                       0, Book.Edition.BITMASK_ALL,
                                        DBDefinitions.TBL_BOOKS,
                                        DBDefinitions.KEY_EDITION_BITMASK));
     }
@@ -1318,7 +1312,6 @@ public class BooklistStyle
                + '}';
     }
 
-
     /**
      * Check if the given book-detail field is in use.
      *
@@ -1446,7 +1439,6 @@ public class BooklistStyle
     }
 
     @IntDef(flag = true, value = {HEADER_SHOW_BOOK_COUNT,
-                                  HEADER_SHOW_LEVEL_1, HEADER_SHOW_LEVEL_2,
                                   HEADER_SHOW_STYLE_NAME,
                                   HEADER_SHOW_FILTER})
     @Retention(RetentionPolicy.SOURCE)

@@ -317,12 +317,7 @@
 
         <com.google.android.material.switchmaterial.SwitchMaterial
             android:id="@+id/btn_show_toc"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/border1"
-            android:buttonTint="@android:color/transparent"
-            android:contentDescription="@string/lbl_table_of_content"
-            android:visibility="gone"
+            style="@style/TocSwitch"
             app:layout_constraintBaseline_toBaselineOf="@id/lbl_toc"
             app:layout_constraintStart_toEndOf="@id/lbl_toc"
             app:layout_constraintTop_toBottomOf="@id/series_title"
@@ -354,7 +349,9 @@
             app:chipSpacingVertical="@dimen/ro_vert_chip_spacing"
             app:layout_constraintStart_toEndOf="@id/indent_fields"
             app:layout_constraintTop_toBottomOf="@id/toc"
-            />
+            >
+            <!-- chips will be added here dynamically -->
+        </com.google.android.material.chip.ChipGroup>
 
         <TextView
             android:id="@+id/lbl_genre"
@@ -388,7 +385,9 @@
             app:chipSpacingVertical="@dimen/ro_vert_chip_spacing"
             app:layout_constraintStart_toEndOf="@id/indent_fields"
             app:layout_constraintTop_toBottomOf="@id/lbl_bookshelves"
-            />
+            >
+            <!-- chips will be added here dynamically -->
+        </com.google.android.material.chip.ChipGroup>
 
         <TextView
             android:id="@+id/lbl_notes"

@@ -53,7 +53,7 @@ import org.xml.sax.SAXException;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.covers.ImageSize;
+import com.hardbacknutter.nevertoomanybooks.covers.ImageFileInfo;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageUtils;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
@@ -350,7 +350,7 @@ public class LibraryThingSearchEngine
     public String searchCoverImageByIsbn(@NonNull final Context context,
                                          @NonNull final String validIsbn,
                                          @IntRange(from = 0) final int cIdx,
-                                         @Nullable final ImageSize size) {
+                                         @Nullable final ImageFileInfo.Size size) {
         String sizeParam;
         if (size == null) {
             sizeParam = "large";

@@ -49,6 +49,10 @@ public class PBitmask
         extends PPrefBase<Integer>
         implements PInt {
 
+    /** Valid bits. */
+    @SuppressWarnings("FieldNotUsedInToString")
+    private final int mMask;
+
     /**
      * Constructor. Uses the global setting as the default value,
      * or the passed default if there is no global default.
@@ -57,12 +61,15 @@ public class PBitmask
      * @param uuid         UUID of the style
      * @param isPersistent {@code true} to persist the value, {@code false} for in-memory only.
      * @param defValue     in memory default
+     * @param mask         valid values bitmask
      */
     public PBitmask(@NonNull final String key,
                     @NonNull final String uuid,
                     final boolean isPersistent,
-                    @NonNull final Integer defValue) {
+                    @NonNull final Integer defValue,
+                    final int mask) {
         super(key, uuid, isPersistent, defValue);
+        mMask = mask;
     }
 
     @NonNull
@@ -72,7 +79,7 @@ public class PBitmask
         if (value == null || value.isEmpty()) {
             return mDefaultValue;
         }
-        return BitUtils.from(value);
+        return BitUtils.from(value) & mMask;
     }
 
     /**
@@ -81,7 +88,7 @@ public class PBitmask
     @Override
     public void set(@NonNull final SharedPreferences.Editor ed,
                     @NonNull final Integer value) {
-        ed.putStringSet(getKey(), BitUtils.toStringSet(value));
+        ed.putStringSet(getKey(), BitUtils.toStringSet(value & mMask));
     }
 
     /**
@@ -95,7 +102,7 @@ public class PBitmask
         if (mIsPersistent) {
             Set<String> value = getPrefs(context).getStringSet(getKey(), null);
             if (value != null) {
-                return BitUtils.from(value);
+                return BitUtils.from(value) & mMask;
             }
             return getGlobalValue(context);
         } else {

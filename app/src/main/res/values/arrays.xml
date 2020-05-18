@@ -217,16 +217,12 @@
         <item>@string/pv_bob_header_style_name</item>
         <item>@string/pv_bob_header_filters</item>
         <item>@string/pv_bob_header_nr_of_books</item>
-        <item>@string/pv_bob_header_level_1</item>
-        <item>@string/pv_bob_header_level_2</item>
     </string-array>
     <!-- multi-select: use bitmask values: 1,2,4,8,...-->
     <string-array name="pv_bob_header">
         <item>8</item>
         <item>16</item>
         <item>1</item>
-        <item>2</item>
-        <item>4</item>
     </string-array>
 
     <!-- SeekBarPreference - Summary text - Scale text. -->

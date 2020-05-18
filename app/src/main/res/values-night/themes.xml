@@ -61,22 +61,20 @@
         <!-- Application specific -->
         <!-- ==================== -->
 
-        <item name="bobHeaderBackgroundColor">@color/blue_grey_800</item>
-        <!-- same as colorSurface -->
-        <item name="bobBookCardBackgroundColor">#121212</item>
+        <item name="appHeaderBackgroundColor">@color/blue_grey_800</item>
+        <item name="appBookCardBackgroundColor">?attr/colorSurface</item>
 
-        <item name="bobFsOverlayTextColor">?attr/colorOnPrimary</item>
-        <item name="bobFsOverlayBackgroundColor">?attr/colorPrimary</item>
+        <item name="appFsOverlayTextColor">?attr/colorOnPrimary</item>
+        <item name="appFsOverlayBackgroundColor">?attr/colorPrimary</item>
 
         <!-- gradient used in the Navigation side bar. -->
-        <item name="navBarStartColor">@color/blue_grey_800</item>
-        <item name="navBarCenterColor">@color/blue_grey_500</item>
-        <item name="navBarEndColor">@color/blue_grey_400</item>
+        <item name="appNavBarStartColor">@color/blue_grey_800</item>
+        <item name="appNavBarCenterColor">@color/blue_grey_500</item>
+        <item name="appNavBarEndColor">@color/blue_grey_400</item>
 
-        <!-- Global icon tint MUST be set in dark theme! -->
-        <item name="iconTint">@color/white</item>
-        <item name="iconTintChecked">@color/green_300</item>
-        <item name="iconTintCompleted">@color/teal_300</item>
+        <item name="appIconTint">?attr/colorControlNormal</item>
+        <item name="appIconTintChecked">@color/green_300</item>
+        <item name="appIconTintCompleted">@color/teal_300</item>
 
     </style>
 

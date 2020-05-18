@@ -656,11 +656,11 @@ public class Series
                             @Nullable final DAO db,
                             @NonNull final Locale bookLocale) {
 
-        //TODO: need a reliable way to cache the Locale here. See also {@link #pruneList}
+        //TODO: need a reliable way to cache the Locale here. i.e. store the language of a series.
+        // See also {@link #pruneList}
         // were we use batch mode. Also: a french book belonging to a dutch series...
         // the series title OB is wrong. For now this is partially mitigated by making
         // entering the book language mandatory.
-        //URGENT: *store* the language of a series.
         if (db != null) {
             String lang = db.getSeriesLanguage(mId);
             if (!lang.isEmpty()) {

@@ -35,6 +35,8 @@ import androidx.annotation.Nullable;
 
 import java.io.File;
 
+import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
+
 /**
  * Value class containing info about a cover file.
  */
@@ -57,7 +59,7 @@ public class ImageFileInfo
     @NonNull
     public final String isbn;
     @Nullable
-    public final ImageSize size;
+    public final Size size;
     @Nullable
     public final String fileSpec;
 
@@ -77,7 +79,7 @@ public class ImageFileInfo
                   @Nullable final String fileSpec) {
         this.isbn = isbn;
         this.fileSpec = fileSpec;
-        this.size = ImageSize.Large;
+        this.size = Size.Large;
     }
 
     /**
@@ -85,7 +87,7 @@ public class ImageFileInfo
      */
     ImageFileInfo(@NonNull final String isbn,
                   @Nullable final String fileSpec,
-                  @Nullable final ImageSize size) {
+                  @Nullable final Size size) {
         this.isbn = isbn;
         this.fileSpec = fileSpec;
         this.size = size;
@@ -102,7 +104,7 @@ public class ImageFileInfo
         fileSpec = in.readString();
         int sizeOrdinal = in.readInt();
         if (sizeOrdinal >= 0) {
-            size = ImageSize.values()[sizeOrdinal];
+            size = Size.values()[sizeOrdinal];
         } else {
             size = null;
         }
@@ -137,5 +139,18 @@ public class ImageFileInfo
                + ", size=" + size
                + ", fileSpec=`" + fileSpec + '`'
                + '}';
+    }
+
+    /**
+     * Sizes of images downloaded by {@link SearchEngine} implementations.
+     * These are open to interpretation (or not used at all) by individual sites.
+     */
+    public enum Size {
+        Large,
+        Medium,
+        Small;
+
+        public static final Size[] smallFirst = {Small, Medium, Large};
+        public static final Size[] largeFirst = {Large, Medium, Small};
     }
 }

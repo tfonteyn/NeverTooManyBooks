@@ -54,7 +54,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.covers.ImageSize;
+import com.hardbacknutter.nevertoomanybooks.covers.ImageFileInfo;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageUtils;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -260,7 +260,7 @@ public class OpenLibrarySearchEngine
     public String searchCoverImageByIsbn(@NonNull final Context context,
                                          @NonNull final String validIsbn,
                                          @IntRange(from = 0) final int cIdx,
-                                         @Nullable final ImageSize size) {
+                                         @Nullable final ImageFileInfo.Size size) {
         String sizeParam;
         if (size == null) {
             sizeParam = "L";

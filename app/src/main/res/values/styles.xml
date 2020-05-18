@@ -174,7 +174,7 @@
     <style name="Envelope.EditText.Isbn">
         <item name="android:hint">@string/lbl_isbn</item>
         <item name="startIconDrawable">@drawable/ic_check</item>
-        <item name="startIconTint">?attr/iconTintChecked</item>
+        <item name="startIconTint">?attr/appIconTintChecked</item>
     </style>
 
     <style name="Envelope.EditText.SeriesNum">
@@ -401,13 +401,13 @@
     <!-- Generic Indicator. -->
     <style name="Flag.Generic">
         <item name="android:button">@drawable/ic_selector_check</item>
-        <item name="android:buttonTint">?attr/iconTintChecked</item>
+        <item name="android:buttonTint">?attr/appIconTintChecked</item>
     </style>
 
     <!-- Indicator a book has been read. -->
     <style name="Flag.Read">
         <item name="android:button">@drawable/ic_selector_read</item>
-        <item name="android:buttonTint">?attr/iconTintChecked</item>
+        <item name="android:buttonTint">?attr/appIconTintChecked</item>
     </style>
 
     <!-- Indicator a book is a first edition. -->
@@ -482,7 +482,7 @@
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_margin">@dimen/border2</item>
         <item name="contentPadding">@dimen/bob_book_card_padding</item>
-        <item name="cardBackgroundColor">?attr/bobBookCardBackgroundColor</item>
+        <item name="cardBackgroundColor">?attr/appBookCardBackgroundColor</item>
     </style>
 
     <!-- The content container for a book in the booklist; direct child of the BookContainer. -->
@@ -681,6 +681,16 @@
         <item name="android:layout_width">@dimen/large_menu_button</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_margin">@dimen/border2</item>
+    </style>
+
+    <!-- The switch on the book details screen to show/hide the TOC. -->
+    <style name="TocSwitch">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">@dimen/border1</item>
+        <item name="android:buttonTint">@android:color/transparent</item>
+        <item name="android:contentDescription">@string/lbl_table_of_content</item>
+        <item name="android:visibility">gone</item>
     </style>
 
 

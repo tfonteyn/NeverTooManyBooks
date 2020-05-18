@@ -182,7 +182,7 @@ public class CoverBrowserViewModel
 
     /** wrapper for {@link FileManager#getFileInfo}. */
     public ImageFileInfo getFileInfo(@NonNull final String isbn,
-                                     @NonNull final ImageSize... sizes) {
+                                     @NonNull final ImageFileInfo.Size... sizes) {
         return mFileManager.getFileInfo(isbn, sizes);
     }
 
@@ -225,7 +225,7 @@ public class CoverBrowserViewModel
         final FileManager.FetchImageTask task =
                 new FileManager.FetchImageTask(mTaskIdCounter.getAndIncrement(), isbn, mCIdx,
                                                mFileManager, mGalleryImageTaskListener,
-                                               ImageSize.smallFirst);
+                                               ImageFileInfo.Size.smallFirst);
         synchronized (mAllTasks) {
             mAllTasks.put(task.getTaskId(), task);
         }
@@ -257,7 +257,7 @@ public class CoverBrowserViewModel
                                                             mCIdx,
                                                             mFileManager,
                                                             mSelectedImageTaskListener,
-                                                            ImageSize.largeFirst);
+                                                            ImageFileInfo.Size.largeFirst);
         synchronized (mAllTasks) {
             mAllTasks.put(mSelectedImageTask.getTaskId(), mSelectedImageTask);
         }

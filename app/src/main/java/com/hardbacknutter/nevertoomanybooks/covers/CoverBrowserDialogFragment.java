@@ -276,7 +276,7 @@ public class CoverBrowserDialogFragment
         final File file = imageFileInfo.getFile();
         // sanity check
         if (file != null) {
-            if (ImageSize.Large.equals(imageFileInfo.size)) {
+            if (ImageFileInfo.Size.Large.equals(imageFileInfo.size)) {
                 // we already have a valid large image, so just display it
                 setSelectedImage(file);
 
@@ -390,7 +390,7 @@ public class CoverBrowserDialogFragment
 
             // Get the image file based on the isbn; try the sizes in order as specified here.
             final ImageFileInfo imageFileInfo =
-                    mModel.getFileInfo(isbn, ImageSize.smallFirst);
+                    mModel.getFileInfo(isbn, ImageFileInfo.Size.smallFirst);
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVER_BROWSER) {
                 Log.d(TAG, "onBindViewHolder|imageFileInfo=" + imageFileInfo);

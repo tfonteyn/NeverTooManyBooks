@@ -150,7 +150,7 @@ import com.hardbacknutter.nevertoomanybooks.widgets.fastscroller.FastScroller;
  *     rebuild and suppresses the 'back' action</li>
  * </ol>
  * <p>
- * URGENT: turn the list + list header components into a proper fragment.
+ * ENHANCE: turn the list + list header components into a proper fragment.
  * That will allow us to have a central FragmentContainer, where we can swap in
  * other fragments without leaving the activity. e.g. import/export/... etc...
  * Something for version 1.1 presumably.
@@ -162,12 +162,6 @@ public class BooksOnBookshelf
     private static final String TAG = "BooksOnBookshelf";
     public static final String BKEY_START_BACKUP = TAG + ":startBackup";
 
-    /**
-     * List header.
-     * Views for the current row level-text.
-     * These are shown in the header of the list (just below the bookshelf spinner) while scrolling.
-     */
-    private final TextView[] mHeaderRowLevelTextView = new TextView[2];
     /** simple indeterminate progress spinner to show while getting the list of books. */
     private ProgressBar mProgressBar;
     /** List header. */
@@ -361,24 +355,6 @@ public class BooksOnBookshelf
             };
     /** The dropdown button to select a Bookshelf. */
     private Spinner mBookshelfSpinner;
-    /** Whether to show level-header - this depends on the current style. */
-    private boolean mShowLevelHeaders;
-    /** Define a scroller to update header detail when the top row changes. */
-    private final RecyclerView.OnScrollListener mUpdateHeaderScrollListener =
-            new RecyclerView.OnScrollListener() {
-                public void onScrolled(@NonNull final RecyclerView recyclerView,
-                                       final int dx,
-                                       final int dy) {
-                    // Need to check isDestroyed() because BooklistCursor misbehaves when
-                    // activity terminates and closes cursor
-                    if (mModel.getPreviousFirstVisibleItemPosition()
-                        != mLayoutManager.findFirstVisibleItemPosition()
-                        && !isDestroyed()
-                        && mShowLevelHeaders) {
-                        setHeaderLevelText();
-                    }
-                }
-            };
     /** The normal FAB button; opens or closes the FAB menu. */
     private FloatingActionButton mFabButton;
     /** Array with the submenu FAB buttons. Element 0 shows at the bottom. */
@@ -424,8 +400,6 @@ public class BooksOnBookshelf
         mHeaderStyleNameView = findViewById(R.id.style_name);
         mHeaderFilterTextView = findViewById(R.id.filter_text);
         mHeaderBookCountView = findViewById(R.id.book_count);
-        mHeaderRowLevelTextView[0] = findViewById(R.id.level_1_text);
-        mHeaderRowLevelTextView[1] = findViewById(R.id.level_2_text);
         mListView = findViewById(android.R.id.list);
 
         mProgressBar = findViewById(R.id.progressBar);
@@ -501,7 +475,6 @@ public class BooksOnBookshelf
         // initialize but do not populate the list; the latter is done in onResume
         mLayoutManager = new LinearLayoutManager(this);
         mListView.setLayoutManager(mLayoutManager);
-        mListView.addOnScrollListener(mUpdateHeaderScrollListener);
         mListView.addOnScrollListener(mUpdateFABVisibility);
         mListView.addItemDecoration(new TopLevelItemDecoration(this));
         FastScroller.init(mListView);
@@ -1538,11 +1511,7 @@ public class BooksOnBookshelf
         }
 
         // Prepare the list header fields.
-        mShowLevelHeaders = setHeaders();
-        // Set the initial details to the current first visible row (if any).
-        if (count > 0 && mShowLevelHeaders) {
-            setHeaderLevelText();
-        }
+        setHeaders();
 
         // If we have search criteria enabled (i.e. we're filtering the current list)
         // then we should display the 'up' indicator. See #onBackPressed.
@@ -1682,10 +1651,8 @@ public class BooksOnBookshelf
 
     /**
      * Prepare visibility for the header lines and set the fixed header fields.
-     *
-     * @return {@code true} if level-texts are used.
      */
-    private boolean setHeaders() {
+    private void setHeaders() {
 
         // remove the default title to make space for the bookshelf spinner.
         setTitle("");
@@ -1702,49 +1669,6 @@ public class BooksOnBookshelf
         text = mModel.getHeaderBookCount(this);
         mHeaderBookCountView.setText(text);
         mHeaderBookCountView.setVisibility(text != null ? View.VISIBLE : View.GONE);
-
-        final BooklistStyle style = mModel.getCurrentStyle(this);
-
-        boolean atLeastOne = false;
-
-        // for each level, set the visibility of the views.
-        for (int i = 0; i < mHeaderRowLevelTextView.length; i++) {
-            if (i < style.getGroupCount()
-                && style.showHeader(this, BooklistStyle.HEADER_LEVELS[i])) {
-                // the actual text will be filled in as/when the user scrolls
-                mHeaderRowLevelTextView[i].setText("");
-                mHeaderRowLevelTextView[i].setVisibility(View.VISIBLE);
-                atLeastOne = true;
-            } else {
-                mHeaderRowLevelTextView[i].setVisibility(View.GONE);
-            }
-        }
-
-        return atLeastOne;
-    }
-
-    /**
-     * Update the list header to match the current top item.
-     */
-    private void setHeaderLevelText() {
-        final int position = mLayoutManager.findFirstVisibleItemPosition();
-        if (position == RecyclerView.NO_POSITION) {
-            return;
-        }
-
-        mModel.setPreviousFirstVisibleItemPosition(position);
-        // use visibility which was set in {@link #initHeaders}
-        if (mHeaderRowLevelTextView[0].getVisibility() == View.VISIBLE
-            || mHeaderRowLevelTextView[1].getVisibility() == View.VISIBLE) {
-            final String[] lines = mAdapter.getPopupText(position);
-            if (lines != null) {
-                for (int i = 0; i < lines.length; i++) {
-                    if (mHeaderRowLevelTextView[i].getVisibility() == View.VISIBLE) {
-                        mHeaderRowLevelTextView[i].setText(lines[i]);
-                    }
-                }
-            }
-        }
     }
 
     private void onTaskProgress(@NonNull final TaskListener.ProgressMessage message) {

@@ -397,7 +397,7 @@ public class AuthorWorksFragment
             super();
             mInflater = LayoutInflater.from(context);
             mDrawableOn = context.getResources().getColorStateList(
-                    AttrUtils.getResId(context, R.attr.iconTint),
+                    AttrUtils.getResId(context, R.attr.appIconTint),
                     context.getTheme());
             mDrawableOff = context.getResources().getColorStateList(
                     android.R.color.transparent,

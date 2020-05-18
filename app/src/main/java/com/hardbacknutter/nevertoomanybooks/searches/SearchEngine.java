@@ -50,7 +50,7 @@ import java.util.regex.Matcher;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverBrowserDialogFragment;
-import com.hardbacknutter.nevertoomanybooks.covers.ImageSize;
+import com.hardbacknutter.nevertoomanybooks.covers.ImageFileInfo;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
@@ -397,7 +397,7 @@ public interface SearchEngine {
         /**
          * Helper method.
          * There is normally no need to call this method directly, except when you
-         * override {@link #searchCoverImageByIsbn(Context, String, int, ImageSize)}.
+         * override {@link #searchCoverImageByIsbn(Context, String, int, ImageFileInfo.Size)}.
          * <br><br>
          * Do NOT use if the site either does not support returning images during search.
          * <br><br>
@@ -457,7 +457,7 @@ public interface SearchEngine {
 
         /**
          * Helper method. A wrapper around
-         * {@link #searchCoverImageByIsbn(Context, String, int, ImageSize)}.
+         * {@link #searchCoverImageByIsbn(Context, String, int, ImageFileInfo.Size)}.
          * Will try in order of large, medium, small depending on the site
          * supporting multiple sizes.
          *
@@ -474,14 +474,16 @@ public interface SearchEngine {
                                   @NonNull final Bundle bookData) {
 
             String fileSpec = engine
-                    .searchCoverImageByIsbn(appContext, isbn, cIdx, ImageSize.Large);
+                    .searchCoverImageByIsbn(appContext, isbn, cIdx, ImageFileInfo.Size.Large);
             if (engine.supportsMultipleSizes()) {
                 if (fileSpec == null) {
                     fileSpec = engine
-                            .searchCoverImageByIsbn(appContext, isbn, cIdx, ImageSize.Medium);
+                            .searchCoverImageByIsbn(appContext, isbn, cIdx,
+                                                    ImageFileInfo.Size.Medium);
                     if (fileSpec == null) {
                         fileSpec = engine
-                                .searchCoverImageByIsbn(appContext, isbn, cIdx, ImageSize.Small);
+                                .searchCoverImageByIsbn(appContext, isbn, cIdx,
+                                                        ImageFileInfo.Size.Small);
                     }
                 }
             }
@@ -513,7 +515,7 @@ public interface SearchEngine {
         String searchCoverImageByIsbn(@NonNull final Context context,
                                       @NonNull final String validIsbn,
                                       @IntRange(from = 0) final int cIdx,
-                                      @Nullable final ImageSize size);
+                                      @Nullable final ImageFileInfo.Size size);
 
         /**
          * A site can support a single (default) or multiple sizes.

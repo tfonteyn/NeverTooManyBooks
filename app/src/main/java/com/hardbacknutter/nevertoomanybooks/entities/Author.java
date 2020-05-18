@@ -149,7 +149,7 @@ public class Author
     /** Maps the type-bit to a string resource for the type-label. */
     private static final Map<Integer, Integer> TYPES = new LinkedHashMap<>();
     /** All valid bits for the type. */
-    private static final int TYPE_MASK =
+    public static final int TYPE_BITMASK_ALL =
             TYPE_UNKNOWN
             | TYPE_WRITER
             | TYPE_TRANSLATOR | TYPE_INTRODUCTION | TYPE_EDITOR | TYPE_CONTRIBUTOR
@@ -413,7 +413,7 @@ public class Author
      * @param type to set
      */
     public void setType(@Type final int type) {
-        mType = type & TYPE_MASK;
+        mType = type & TYPE_BITMASK_ALL;
     }
 
     /**
@@ -435,7 +435,7 @@ public class Author
      * @param type to add
      */
     public void addType(@Type final int type) {
-        mType |= type & TYPE_MASK;
+        mType |= type & TYPE_BITMASK_ALL;
     }
 
     @Override

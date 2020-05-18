@@ -27,30 +27,35 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
+<!-- Some of these actually have the same value in light and dark themes,
+     and could be refactored out... (e.g. the fast scroller)
+     but leaving these for now so we can change them at will.
+-->
 <resources>
 
     <!-- The header on the BoB screen.
          Default was using the surfaceColor, we override here. -->
-    <attr name="bobHeaderBackgroundColor" format="reference|color" />
+    <attr name="appHeaderBackgroundColor" format="reference|color" />
     <!-- The card view for a book on the BoB screen.
          Default was using the surfaceColor, we override here. -->
-    <attr name="bobBookCardBackgroundColor" format="reference|color" />
+    <attr name="appBookCardBackgroundColor" format="reference|color" />
 
     <!-- The fast-scroller overlay -->
-    <attr name="bobFsOverlayTextColor" format="reference|color" />
-    <attr name="bobFsOverlayBackgroundColor" format="reference|color" />
+    <attr name="appFsOverlayTextColor" format="reference|color" />
+    <attr name="appFsOverlayBackgroundColor" format="reference|color" />
 
     <!-- gradient used in the Navigation side bar. -->
-    <attr name="navBarStartColor" format="reference|color" />
-    <attr name="navBarCenterColor" format="reference|color" />
-    <attr name="navBarEndColor" format="reference|color" />
+    <attr name="appNavBarStartColor" format="reference|color" />
+    <attr name="appNavBarCenterColor" format="reference|color" />
+    <attr name="appNavBarEndColor" format="reference|color" />
 
-    <!-- Global abstraction for an icon tint. See the drawable/ic_* files. -->
-    <attr name="iconTint" format="reference|color" />
+    <!-- Global abstraction for an icon tint. See the drawable/ic_* files.
+        Note that "iconTint" exists as an attr on a MaterialButton which would clash with ours. -->
+    <attr name="appIconTint" format="reference|color" />
     <!-- Color for a boolean status icon; true: this color; false: transparent. -->
-    <attr name="iconTintChecked" format="reference|color" />
+    <attr name="appIconTintChecked" format="reference|color" />
     <!-- Color for a boolean status icon; true: this color; false: transparent. -->
-    <attr name="iconTintCompleted" format="reference|color" />
+    <attr name="appIconTintCompleted" format="reference|color" />
 
     <declare-styleable name="ExtGroup">
         <attr name="applyVisibility" format="boolean" />

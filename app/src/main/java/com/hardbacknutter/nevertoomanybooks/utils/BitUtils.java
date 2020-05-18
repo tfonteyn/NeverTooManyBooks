@@ -47,8 +47,11 @@ public final class BitUtils {
 
     private static final String BITMASK = "bitmask=";
 
+    private BitUtils() {
+    }
+
     /**
-     * Convert a set where each element represents one bit to a bitmask.
+     * Convert a set where each <strong>String</strong> element represents one bit to a bitmask.
      *
      * @param set the set
      *
@@ -79,9 +82,6 @@ public final class BitUtils {
             tmp |= value;
         }
         return tmp;
-    }
-
-    private BitUtils() {
     }
 
     /**
@@ -170,7 +170,6 @@ public final class BitUtils {
         }
         return list;
     }
-
 
     /**
      * Convert a bitmask.

@@ -63,17 +63,21 @@ public class BitmaskFilter
      * @param uuid         UUID of the style
      * @param isPersistent {@code true} to have the value persisted.
      *                     {@code false} for in-memory only.
+     * @param defValue     in memory default
+     * @param mask         valid values bitmask
      * @param table        to use by the expression
-     * @param domainKey       to use by the expression
+     * @param domainKey    to use by the expression
      */
     public BitmaskFilter(@StringRes final int labelId,
                          @NonNull final String key,
                          @NonNull final String uuid,
                          final boolean isPersistent,
+                         final Integer defValue,
+                         final Integer mask,
                          @SuppressWarnings("SameParameterValue")
                          @NonNull final TableDefinition table,
                          @NonNull final String domainKey) {
-        super(key, uuid, isPersistent, 0);
+        super(key, uuid, isPersistent, defValue, mask);
         mLabelId = labelId;
         mTable = table;
         mDomainKey = domainKey;

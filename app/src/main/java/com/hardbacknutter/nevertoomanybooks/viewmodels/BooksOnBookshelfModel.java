@@ -45,7 +45,6 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 import androidx.preference.PreferenceManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -174,8 +173,6 @@ public class BooksOnBookshelfModel
      */
     private long mDesiredCentralBookId;
 
-    /** Used by onScroll to detect when the top row has actually changed. */
-    private int mPreviousFirstVisibleItemPosition = RecyclerView.NO_POSITION;
     /** Preferred booklist state in next rebuild. */
     @BooklistBuilder.ListRebuildMode
     private int mRebuildState;
@@ -421,14 +418,6 @@ public class BooksOnBookshelfModel
         // Set the rebuild state like this is the first time in, which it sort of is,
         // given we are changing style.
         mRebuildState = getPreferredListRebuildState(context);
-    }
-
-    public int getPreviousFirstVisibleItemPosition() {
-        return mPreviousFirstVisibleItemPosition;
-    }
-
-    public void setPreviousFirstVisibleItemPosition(final int adapterPosition) {
-        mPreviousFirstVisibleItemPosition = adapterPosition;
     }
 
     public void setRebuildState(final int rebuildState) {

@@ -48,7 +48,7 @@ import javax.xml.parsers.SAXParserFactory;
 import org.xml.sax.SAXException;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.covers.ImageSize;
+import com.hardbacknutter.nevertoomanybooks.covers.ImageFileInfo;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageUtils;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.tasks.TerminatorConnection;
@@ -159,7 +159,7 @@ public class KbNlSearchEngine
     public String searchCoverImageByIsbn(@NonNull final Context context,
                                          @NonNull final String validIsbn,
                                          @IntRange(from = 0) final int cIdx,
-                                         @Nullable final ImageSize size) {
+                                         @Nullable final ImageFileInfo.Size size) {
         String sizeSuffix;
         if (size == null) {
             sizeSuffix = "large";

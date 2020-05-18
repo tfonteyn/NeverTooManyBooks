@@ -270,7 +270,11 @@ public abstract class EditBookBaseFragment
     }
 
     /**
-     * Setup a date picker for selecting a partial date.
+     * Setup a date picker for selecting a (full) date range.
+     * <p>
+     * Clicking on the start-date field will allow the user to set just the start-date.
+     * Clicking on the end-date will prompt to select both the start and end dates.
+     * <p>
      * If only one field is used, this method diverts to {@link #addDatePicker}.
      *
      * @param dialogTitleIdSpan  title of the dialog box if both start and end-dates are used.
@@ -289,7 +293,13 @@ public abstract class EditBookBaseFragment
                             final boolean todayIfNone) {
         //noinspection ConstantConditions
         if (fieldStartDate.isUsed(getContext()) && fieldEndDate.isUsed(getContext())) {
-            final View.OnClickListener listener = v -> {
+
+            // single date picker for the start-date
+            addDatePicker(fieldStartDate, dialogTitleIdStart, true);
+
+            // date-span for the end-date
+            //noinspection ConstantConditions
+            fieldEndDate.getAccessor().getView().setOnClickListener(v -> {
                 Long timeStart = DateUtils.parseTime(fieldStartDate.getAccessor().getValue(),
                                                      todayIfNone);
                 Long timeEnd = DateUtils.parseTime(fieldEndDate.getAccessor().getValue(),
@@ -308,12 +318,7 @@ public abstract class EditBookBaseFragment
                         .build();
                 mFragmentVM.setCurrentDialogFieldId(fieldStartDate.getId(), fieldEndDate.getId());
                 picker.show(getChildFragmentManager(), TAG_DATE_PICKER_RANGE);
-            };
-
-            //noinspection ConstantConditions
-            fieldStartDate.getAccessor().getView().setOnClickListener(listener);
-            //noinspection ConstantConditions
-            fieldEndDate.getAccessor().getView().setOnClickListener(listener);
+            });
 
         } else if (fieldStartDate.isUsed(getContext())) {
             addDatePicker(fieldStartDate, dialogTitleIdStart, todayIfNone);

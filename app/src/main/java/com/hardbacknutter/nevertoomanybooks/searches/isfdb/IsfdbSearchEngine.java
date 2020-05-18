@@ -47,7 +47,7 @@ import java.util.List;
 import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.covers.ImageSize;
+import com.hardbacknutter.nevertoomanybooks.covers.ImageFileInfo;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
 
 /**
@@ -232,7 +232,7 @@ public class IsfdbSearchEngine
     public String searchCoverImageByIsbn(@NonNull final Context context,
                                          @NonNull final String validIsbn,
                                          final int cIdx,
-                                         @Nullable final ImageSize size) {
+                                         @Nullable final ImageFileInfo.Size size) {
         try {
             List<Edition> editions = new IsfdbEditionsHandler().fetch(context, validIsbn);
             if (editions.isEmpty()) {

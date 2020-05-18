@@ -47,6 +47,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
+import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsSearchActivity;
 import com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.BindableItemViewHolder;
 import com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.ContextDialogItem;
 import com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.Event;
@@ -166,14 +167,14 @@ public class GrSendBookEvent
         }));
 
         // ENHANCE: Reinstate Goodreads search when Goodreads work.editions is available
-//            // SEARCH GOODREADS
-//            menuItems.add(new ContextDialogItem(
-//                    context.getString(R.string.progress_msg_searching_site,
-//                                      context.getString(R.string.site_goodreads)), () -> {
-//                Intent intent = new Intent(context, GoodreadsSearchActivity.class)
-//                        .putExtra(DBDefinitions.KEY_PK_ID, getId());
-//                context.startActivity(intent);
-//            }));
+        // SEARCH GOODREADS
+        menuItems.add(new ContextDialogItem(
+                context.getString(R.string.progress_msg_searching_site,
+                                  context.getString(R.string.site_goodreads)), () -> {
+            Intent intent = new Intent(context, GoodreadsSearchActivity.class)
+                    .putExtra(DBDefinitions.KEY_PK_ID, getId());
+            context.startActivity(intent);
+        }));
 
         // DELETE EVENT
         menuItems.add(new ContextDialogItem(
