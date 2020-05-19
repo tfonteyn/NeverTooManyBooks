@@ -25,31 +25,46 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.covers;
+package com.hardbacknutter.nevertoomanybooks.viewmodels;
 
-import androidx.annotation.NonNull;
-import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.ViewModel;
-
-import com.hardbacknutter.nevertoomanybooks.viewmodels.LiveDataEvent;
+import androidx.annotation.Nullable;
 
 /**
- * Acts as a listener handover between a {@link TransFormTask} and
- * the intended destination.
+ * Used as a wrapper for data that is exposed via a LiveData that represents an event.
+ * <p>
+ * See <a href="https://medium.com/androiddevelopers/livedata-with-snackbar-navigation-and-other-events-the-singleliveevent-case-ac2622673150">
+ * this Medium post</a>
+ * <p>
+ * Modified from the article: the client must call {@link #needsHandling()},
+ * and we passing {@code null} as data is valid.
  */
-public class TransFormTaskViewModel
-        extends ViewModel
-        implements TransFormTask.OnAfterTransformListener {
+public class LiveDataEvent<T> {
 
-    private final MutableLiveData<LiveDataEvent<TransFormTask.TransformedData>>
-            mData = new MutableLiveData<>();
+    @Nullable
+    private final T mData;
+    private boolean mHasBeenHandled;
 
-    MutableLiveData<LiveDataEvent<TransFormTask.TransformedData>> getTransformedData() {
-        return mData;
+    public LiveDataEvent(@Nullable final T data) {
+        mData = data;
     }
 
-    @Override
-    public void onAfterTransform(@NonNull final TransFormTask.TransformedData data) {
-        mData.setValue(new LiveDataEvent<>(data));
+    /**
+     * Check if the data needs handling, or should be ignored.
+     *
+     * @return flag
+     */
+    public boolean needsHandling() {
+        return !mHasBeenHandled;
+    }
+
+    /**
+     * Return the encapsulated data.
+     *
+     * @return data
+     */
+    @Nullable
+    public T getData() {
+        mHasBeenHandled = true;
+        return mData;
     }
 }

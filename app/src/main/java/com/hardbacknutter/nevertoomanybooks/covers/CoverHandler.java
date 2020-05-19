@@ -143,8 +143,6 @@ public class CoverHandler {
     @Nullable
     private CameraHelper mCameraHelper;
 
-    private int mLastTransformationId;
-
     /**
      * Constructor.
      *
@@ -198,17 +196,13 @@ public class CoverHandler {
 
         mModel = new ViewModelProvider(fragment).get(String.valueOf(cIdx),
                                                      TransFormTaskViewModel.class);
-        mModel.getOnAfterTransformValues().observe(mFragment.getViewLifecycleOwner(), value -> {
-            if (BuildConfig.DEBUG) {
-                Log.d(TAG, "mLastId=" + mLastTransformationId
-                           + "|id=" + value.id
-                           + "|bitmap=" + value.bitmap
-                           + "|file=" + (value.file != null ? value.file.getAbsolutePath() : "null")
-                     );
-            }
-            if (value.id > mLastTransformationId) {
-                mLastTransformationId = value.id;
-                onAfterTransform(value.bitmap, value.file, value.returnCode);
+        mModel.getTransformedData().observe(mFragment.getViewLifecycleOwner(), event -> {
+            if (event.needsHandling()) {
+                // unwrap the event/data here to keep the receiving method unaware.
+                final TransFormTask.TransformedData data = event.getData();
+                if (data != null) {
+                    onAfterTransform(data.bitmap, data.file, data.returnCode);
+                }
             }
         });
 
@@ -423,7 +417,7 @@ public class CoverHandler {
     }
 
     /**
-     * Called when the user clicks the large preview in the {@link CoverBrowserDialogFragment},
+     * Called when the user clicks the large preview in the {@link CoverBrowserDialogFragment}.
      *
      * @param fileSpec the selected image
      */
@@ -468,6 +462,8 @@ public class CoverHandler {
 
     /**
      * Put the cover image on screen, <strong>and update the book</strong> with the file name.
+     *
+     * @param file to use
      */
     private void setImage(@Nullable final File file) {
         if (ImageUtils.isFileGood(file)) {
@@ -490,8 +486,7 @@ public class CoverHandler {
     private void clearImage(@Nullable final File file) {
         mBook.remove(Book.BKEY_FILE_SPEC[mCIdx]);
 
-        final long fileLen = file == null ? 0 : file.length();
-        if (fileLen == 0) {
+        if (file == null || file.length() == 0) {
             ImageUtils.setPlaceholder(mCoverView, R.drawable.ic_add_a_photo,
                                       R.drawable.outline_rounded);
         } else {
@@ -549,6 +544,8 @@ public class CoverHandler {
 
     /**
      * Get the File object for the cover of the book we are editing.
+     *
+     * @return the file
      */
     @NonNull
     private File getCoverFile() {
@@ -588,6 +585,8 @@ public class CoverHandler {
 
     /**
      * Crop the image using our internal code in {@link CropImageActivity}.
+     *
+     * @param srcFile to use
      */
     private void cropCoverFile(@NonNull final File srcFile) {
         final File dstFile = AppDir.Cache.getFile(mContext, TEMP_COVER_FILENAME);
@@ -610,6 +609,8 @@ public class CoverHandler {
 
     /**
      * Edit the image using an external application.
+     *
+     * @param srcFile to use
      */
     private void editCoverFile(@NonNull final File srcFile) {
         final File dstFile = AppDir.Cache.getFile(mContext, TEMP_COVER_FILENAME);

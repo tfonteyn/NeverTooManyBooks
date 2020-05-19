@@ -58,7 +58,7 @@ public class CoverBrowserViewModel
 
     /** Log tag. */
     private static final String TAG = "CoverBrowserViewModel";
-    public static final String BKEY_FILE_INDEX = TAG + ":cIdx";
+    static final String BKEY_FILE_INDEX = TAG + ":cIdx";
 
     private final AtomicInteger mTaskIdCounter = new AtomicInteger();
 
@@ -163,26 +163,26 @@ public class CoverBrowserViewModel
     }
 
     @NonNull
-    public Executor getPriorityExecutor() {
+    Executor getPriorityExecutor() {
         return mPriorityExecutor;
     }
 
-    public int getImageIndex() {
+    int getImageIndex() {
         return mCIdx;
     }
 
     @Nullable
-    public String getSelectedFilePath() {
+    String getSelectedFilePath() {
         return mSelectedFilePath;
     }
 
-    public void setSelectedFilePath(@Nullable final String filePath) {
+    void setSelectedFilePath(@Nullable final String filePath) {
         mSelectedFilePath = filePath;
     }
 
     /** wrapper for {@link FileManager#getFileInfo}. */
-    public ImageFileInfo getFileInfo(@NonNull final String isbn,
-                                     @NonNull final ImageFileInfo.Size... sizes) {
+    ImageFileInfo getFileInfo(@NonNull final String isbn,
+                              @NonNull final ImageFileInfo.Size... sizes) {
         return mFileManager.getFileInfo(isbn, sizes);
     }
 
@@ -190,7 +190,7 @@ public class CoverBrowserViewModel
     /**
      * Start a search for alternative editions of the book (using the isbn).
      */
-    public void fetchEditions() {
+    void fetchEditions() {
         if (mEditionsTask != null) {
             mEditionsTask.cancel(true);
             synchronized (mAllTasks) {
@@ -211,7 +211,7 @@ public class CoverBrowserViewModel
      * @return list of ISBN numbers for alternative editions.
      */
     @NonNull
-    public MutableLiveData<Collection<String>> onEditionsLoaded() {
+    MutableLiveData<Collection<String>> onEditionsLoaded() {
         return mEditions;
     }
 
@@ -221,11 +221,11 @@ public class CoverBrowserViewModel
      *
      * @param isbn to search for, <strong>must</strong> be valid.
      */
-    public void fetchGalleryImage(@NonNull final String isbn) {
+    void fetchGalleryImage(@NonNull final String isbn) {
         final FileManager.FetchImageTask task =
                 new FileManager.FetchImageTask(mTaskIdCounter.getAndIncrement(), isbn, mCIdx,
                                                mFileManager, mGalleryImageTaskListener,
-                                               ImageFileInfo.Size.smallFirst);
+                                               ImageFileInfo.Size.SMALL_FIRST);
         synchronized (mAllTasks) {
             mAllTasks.put(task.getTaskId(), task);
         }
@@ -235,7 +235,7 @@ public class CoverBrowserViewModel
 
     /** Observable. */
     @NonNull
-    public MutableLiveData<ImageFileInfo> onGalleryImage() {
+    MutableLiveData<ImageFileInfo> onGalleryImage() {
         return mGalleryImage;
     }
 
@@ -245,7 +245,7 @@ public class CoverBrowserViewModel
      *
      * @param imageFileInfo of the selected image
      */
-    public void fetchSelectedImage(@NonNull final ImageFileInfo imageFileInfo) {
+    void fetchSelectedImage(@NonNull final ImageFileInfo imageFileInfo) {
         if (mSelectedImageTask != null) {
             mSelectedImageTask.cancel(true);
             synchronized (mAllTasks) {
@@ -257,7 +257,7 @@ public class CoverBrowserViewModel
                                                             mCIdx,
                                                             mFileManager,
                                                             mSelectedImageTaskListener,
-                                                            ImageFileInfo.Size.largeFirst);
+                                                            ImageFileInfo.Size.LARGE_FIRST);
         synchronized (mAllTasks) {
             mAllTasks.put(mSelectedImageTask.getTaskId(), mSelectedImageTask);
         }
@@ -266,7 +266,7 @@ public class CoverBrowserViewModel
 
     /** Observable. */
     @NonNull
-    public MutableLiveData<ImageFileInfo> onSelectedImage() {
+    MutableLiveData<ImageFileInfo> onSelectedImage() {
         return mSelectedImage;
     }
 }

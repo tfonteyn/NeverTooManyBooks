@@ -262,15 +262,13 @@ public class SearchCoordinator
 
     /** Observable. */
     @NonNull
-    public MutableLiveData<TaskListener.ProgressMessage>
-    onSearchCoordinatorProgressMessage() {
+    public MutableLiveData<TaskListener.ProgressMessage> onProgress() {
         return mSearchCoordinatorProgressMessage;
     }
 
     /** Observable. */
     @NonNull
-    public MutableLiveData<TaskListener.FinishMessage<Bundle>>
-    onSearchCoordinatorFinishedMessage() {
+    public MutableLiveData<TaskListener.FinishMessage<Bundle>> onOneBookDone() {
         return mSearchCoordinatorFinishedMessage;
     }
 

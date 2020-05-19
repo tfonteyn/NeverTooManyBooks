@@ -332,8 +332,8 @@ public class CropImageActivity
         if (mBitmap != null) {
             // The FAB lives in the activity.
             // the FAB button saves the image, use 'back' to cancel.
-            final FloatingActionButton fabButton = findViewById(R.id.fab);
-            fabButton.setOnClickListener(v -> onSaveClicked());
+            final FloatingActionButton fab = findViewById(R.id.fab);
+            fab.setOnClickListener(v -> onSaveClicked());
             startFaceDetection();
         } else {
             finish();

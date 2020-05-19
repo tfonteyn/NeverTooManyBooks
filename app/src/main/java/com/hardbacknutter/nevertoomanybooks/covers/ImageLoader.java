@@ -45,6 +45,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 public class ImageLoader
         extends AsyncTask<Void, Void, Bitmap> {
 
+    /** Log tag. */
     private static final String TAG = "ImageLoader";
     final int mMaxWidth;
     final int mMaxHeight;

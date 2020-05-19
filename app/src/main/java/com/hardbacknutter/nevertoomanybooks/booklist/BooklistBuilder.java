@@ -207,8 +207,8 @@ public class BooklistBuilder
         mBookshelf = bookshelf;
         // The filter will only be added if the current style does not contain the Bookshelf group.
         if (!bookshelf.isAllBooks() && !mStyle.containsGroup(BooklistGroup.BOOKSHELF)) {
-            mFilters.add((context) -> '(' + TBL_BOOKSHELF.dot(KEY_PK_ID) + '=' + bookshelf.getId()
-                                      + ')');
+            mFilters.add(context -> '(' + TBL_BOOKSHELF.dot(KEY_PK_ID) + '=' + bookshelf.getId()
+                                    + ')');
         }
 
         // Get the database and create a statements collection
@@ -303,12 +303,12 @@ public class BooklistBuilder
      */
     public void setFilterOnLoanedToPerson(@Nullable final String filter) {
         if (filter != null && !filter.trim().isEmpty()) {
-            mFilters.add((context) -> "EXISTS(SELECT NULL FROM " + TBL_BOOK_LOANEE.ref()
-                                      + " WHERE "
-                                      + TBL_BOOK_LOANEE.dot(KEY_LOANEE)
-                                      + "=`" + DAO.encodeString(filter) + '`'
-                                      + " AND " + TBL_BOOK_LOANEE.fkMatch(TBL_BOOKS)
-                                      + ')');
+            mFilters.add(context -> "EXISTS(SELECT NULL FROM " + TBL_BOOK_LOANEE.ref()
+                                    + " WHERE "
+                                    + TBL_BOOK_LOANEE.dot(KEY_LOANEE)
+                                    + "=`" + DAO.encodeString(filter) + '`'
+                                    + " AND " + TBL_BOOK_LOANEE.fkMatch(TBL_BOOKS)
+                                    + ')');
         }
     }
 
@@ -720,11 +720,6 @@ public class BooklistBuilder
      */
     int countVisibleRows() {
         return mRowStateDAO.countVisibleRows();
-    }
-
-    /** Wrapper for {@link RowStateDAO}. */
-    public void saveAllNodes() {
-        mRowStateDAO.saveAllNodes();
     }
 
     /** Wrapper for {@link RowStateDAO}. */
@@ -1208,7 +1203,6 @@ public class BooklistBuilder
 
             final int len = orderBy.length();
             return orderBy.delete(len - 1, len).toString();
-//            return orderBy.append(KEY_BL_NODE_LEVEL).toString();
         }
 
         /**
@@ -1226,7 +1220,6 @@ public class BooklistBuilder
             }
             final int len = indexCols.length();
             return indexCols.delete(len - 1, len).toString();
-//            return indexCols.append(KEY_BL_NODE_LEVEL).toString();
         }
     }
 }

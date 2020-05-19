@@ -636,7 +636,7 @@ public class RowStateDAO {
      *
      * <strong>Note:</strong> always use the current bookshelf/style
      */
-    void saveAllNodes() {
+    private void saveAllNodes() {
         Synchronizer.SyncLock txLock = null;
         try {
             if (!mSyncedDb.inTransaction()) {

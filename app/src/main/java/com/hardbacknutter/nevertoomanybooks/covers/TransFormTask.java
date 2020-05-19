@@ -45,7 +45,6 @@ import androidx.exifinterface.media.ExifInterface;
 import java.io.File;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
@@ -69,7 +68,7 @@ public class TransFormTask
     private boolean mScale;
     private int mExplicitAngle;
     private int mSurfaceRotation;
-    private int mReturnCode = 0;
+    private int mReturnCode;
 
     /**
      * Constructor.
@@ -317,7 +316,7 @@ public class TransFormTask
 
         if (mListener.get() != null) {
             mListener.get().onAfterTransform(
-                    new OnAfterTransformValues(bitmap, mFile, mReturnCode));
+                    new TransformedData(bitmap, mFile, mReturnCode));
         } else {
             if (BuildConfig.DEBUG /* always */) {
                 Log.w(TAG, "onAfterTransform|" + ErrorMsg.LISTENER_WAS_DEAD);
@@ -330,27 +329,18 @@ public class TransFormTask
         /**
          * Called after a transformation operation.
          *
-         * @param values to return
+         * @param data to return
          */
-        void onAfterTransform(@NonNull OnAfterTransformValues values);
+        void onAfterTransform(@NonNull TransformedData data);
     }
 
-    public static class OnAfterTransformValues {
-
-        private static final AtomicInteger sId = new AtomicInteger();
-        /**
-         * Unique id, needed to stop MutableLiveData sending the results twice.
-         * Note that {@link com.hardbacknutter.nevertoomanybooks.viewmodels.SingleLiveEvent}
-         * in it's current form (2020-05-14) is not a solution as it will not allow to
-         * have observe called twice.
-         */
-        public final int id;
+    public static class TransformedData {
 
         @Nullable
         public final Bitmap bitmap;
         @Nullable
         public final File file;
-        public final int returnCode;
+        final int returnCode;
 
         /**
          * @param bitmap     resulting bitmap; or {@code null} on failure
@@ -358,10 +348,9 @@ public class TransFormTask
          *                   If the bitmap is {@code null}, the file value MUST BE IGNORED.
          * @param returnCode as set in {@link #setReturnCode(int)}; or {@code 0} if not set.
          */
-        OnAfterTransformValues(@Nullable final Bitmap bitmap,
-                               @Nullable final File file,
-                               final int returnCode) {
-            id = sId.incrementAndGet();
+        TransformedData(@Nullable final Bitmap bitmap,
+                        @Nullable final File file,
+                        final int returnCode) {
             this.bitmap = bitmap;
             this.file = file;
             this.returnCode = returnCode;

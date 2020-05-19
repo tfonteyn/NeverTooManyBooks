@@ -392,11 +392,8 @@ public class BooklistAdapter
                         break;
                 }
 
-                // "out-dent" books. Looks better.
+                // Don't indent books
                 indent = 0;
-//                if (indent > 0) {
-//                    --indent;
-//                }
                 break;
             }
             case BooklistGroup.RATING: {

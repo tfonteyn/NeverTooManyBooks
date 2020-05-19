@@ -94,9 +94,9 @@ public abstract class BookSearchBaseFragment
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        mSearchCoordinator.onSearchCoordinatorProgressMessage()
+        mSearchCoordinator.onProgress()
                           .observe(getViewLifecycleOwner(), this::onSearchProgress);
-        mSearchCoordinator.onSearchCoordinatorFinishedMessage()
+        mSearchCoordinator.onOneBookDone()
                           .observe(getViewLifecycleOwner(), this::onSearchFinished);
 
         //noinspection ConstantConditions

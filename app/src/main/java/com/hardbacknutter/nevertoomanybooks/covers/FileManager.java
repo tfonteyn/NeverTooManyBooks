@@ -91,10 +91,10 @@ public class FileManager {
      * The first Site which has an image is accepted.
      * <p>
      *
-     * @param context    Current context
-     * @param isbn       to search for, <strong>must</strong> be valid.
-     * @param cIdx       0..n image index
-     * @param sizes a list of images sizes in order of preference
+     * @param context Current context
+     * @param isbn    to search for, <strong>must</strong> be valid.
+     * @param cIdx    0..n image index
+     * @param sizes   a list of images sizes in order of preference
      *
      * @return a {@link ImageFileInfo} object with or without a valid fileSpec.
      */
@@ -242,7 +242,7 @@ public class FileManager {
     /**
      * Fetch a image from the file manager.
      */
-    public static class FetchImageTask
+    static class FetchImageTask
             extends TaskBase<ImageFileInfo> {
 
         @NonNull
@@ -258,7 +258,8 @@ public class FileManager {
         /**
          * Constructor.
          *
-         * @param isbn         to search for, <strong>must</strong> be valid.
+         * @param taskId       a task identifier, will be returned in the task listener.
+         * @param validIsbn    to search for, <strong>must</strong> be valid.
          * @param cIdx         0..n image index
          * @param fileManager  for downloads
          * @param taskListener to send results to
@@ -267,7 +268,7 @@ public class FileManager {
          */
         @UiThread
         FetchImageTask(final int taskId,
-                       @NonNull final String isbn,
+                       @NonNull final String validIsbn,
                        @IntRange(from = 0) final int cIdx,
                        @NonNull final FileManager fileManager,
                        @NonNull final TaskListener<ImageFileInfo> taskListener,
@@ -278,12 +279,12 @@ public class FileManager {
 
             // sanity check
             if (BuildConfig.DEBUG /* always */) {
-                if (!ISBN.isValidIsbn(isbn)) {
+                if (!ISBN.isValidIsbn(validIsbn)) {
                     throw new IllegalStateException(ErrorMsg.ISBN_MUST_BE_VALID);
                 }
             }
 
-            mIsbn = isbn;
+            mIsbn = validIsbn;
             mFileManager = fileManager;
         }
 

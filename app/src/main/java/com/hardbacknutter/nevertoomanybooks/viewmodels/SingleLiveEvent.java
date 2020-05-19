@@ -65,6 +65,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
  *
  * <a href="https://github.com/android/architecture-samples/tree/dev-todo-mvvm-live">
  * https://github.com/android/architecture-samples/tree/dev-todo-mvvm-live</a>
+ *
+ * See {@link LiveDataEvent} for an alternative.
  */
 public class SingleLiveEvent<T>
         extends MutableLiveData<T> {

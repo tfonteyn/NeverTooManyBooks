@@ -158,7 +158,7 @@ public class XmlExporter
             }
         }
 
-        Locale locale = LocaleUtils.getUserLocale(context);
+        final Locale locale = LocaleUtils.getUserLocale(context);
         mUnknownString = context.getString(R.string.unknown).toUpperCase(locale);
 
         mOptions = options;
@@ -183,12 +183,12 @@ public class XmlExporter
             throws IOException {
 
         // suffix for progress messages.
-        String xml = " (xml)";
+        final String xml = " (xml)";
 
         // ignore non-supported options
-        boolean writeBooks = (mOptions & Options.BOOKS) != 0;
-        boolean writePrefs = (mOptions & Options.PREFS) != 0;
-        boolean writeStyles = (mOptions & Options.STYLES) != 0;
+        final boolean writeBooks = (mOptions & Options.BOOKS) != 0;
+        final boolean writePrefs = (mOptions & Options.PREFS) != 0;
+        final boolean writeStyles = (mOptions & Options.STYLES) != 0;
 
         // Write styles and prefs first.
 
@@ -246,8 +246,8 @@ public class XmlExporter
     private void writeStyles(@NonNull final Context context,
                              @NonNull final Writer writer)
             throws IOException {
-        Collection<BooklistStyle> styles =
-                BooklistStyle.Helper.getUserStyles(context, mDb).values();
+        final Collection<BooklistStyle> styles =
+                BooklistStyle.StyleDAO.getStyles(context, mDb).values();
         if (!styles.isEmpty()) {
             toXml(writer, new StylesWriter(context, styles));
         }
@@ -267,8 +267,8 @@ public class XmlExporter
                               @NonNull final Writer writer,
                               @NonNull final ProgressListener progressListener)
             throws IOException {
-        Collection<BooklistStyle> styles =
-                BooklistStyle.Helper.getUserStyles(context, mDb).values();
+        final Collection<BooklistStyle> styles =
+                BooklistStyle.StyleDAO.getStyles(context, mDb).values();
         if (styles.isEmpty()) {
             return;
         }
@@ -330,12 +330,12 @@ public class XmlExporter
                                   @NonNull final Writer writer)
             throws IOException {
 
-        Map<String, ?> all = PreferenceManager.getDefaultSharedPreferences(context).getAll();
+        final Map<String, ?> all = PreferenceManager.getDefaultSharedPreferences(context).getAll();
 
         // remove the acra settings
-        Iterator<String> it = all.keySet().iterator();
+        final Iterator<String> it = all.keySet().iterator();
         while (it.hasNext()) {
-            String key = it.next();
+            final String key = it.next();
             if (key.startsWith("acra")) {
                 it.remove();
             }
@@ -607,7 +607,7 @@ public class XmlExporter
             throws IOException {
 
         // the list root does not get a version number,  individual elements do.
-        String listRoot = accessor.getRootTag();
+        final String listRoot = accessor.getRootTag();
         writer.write('<');
         writer.write(listRoot);
         writer.write(XmlUtils.versionAttr(accessor.getRootTagVersionAttribute()));
@@ -617,8 +617,8 @@ public class XmlExporter
         // loop through all elements
         while (accessor.hasMoreElements()) {
             // start with an element, optionally add an id and/or name attribute
-            long idAttr = accessor.getElementTagIdAttribute();
-            String nameAttr = accessor.getElementTagNameAttribute();
+            final long idAttr = accessor.getElementTagIdAttribute();
+            final String nameAttr = accessor.getElementTagNameAttribute();
             writer.write('<');
             writer.write(accessor.getElementTag());
             if (idAttr != 0) {
@@ -781,7 +781,7 @@ public class XmlExporter
 
         @Override
         public boolean hasMoreElements() {
-            boolean hasMore = mHasMore;
+            final boolean hasMore = mHasMore;
             mHasMore = false;
             return hasMore;
         }
@@ -853,7 +853,7 @@ public class XmlExporter
 
         @Override
         public boolean hasMoreElements() {
-            boolean hasMore = mHasMore;
+            final boolean hasMore = mHasMore;
             mHasMore = false;
             return hasMore;
         }

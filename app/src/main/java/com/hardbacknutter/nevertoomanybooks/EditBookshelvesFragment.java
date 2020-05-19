@@ -117,10 +117,10 @@ public class EditBookshelvesFragment
         mAdapter = new BookshelfAdapter(getContext());
 
         // The FAB lives in the activity.
-        final FloatingActionButton fabButton = getActivity().findViewById(R.id.fab);
-        fabButton.setImageResource(R.drawable.ic_add);
-        fabButton.setVisibility(View.VISIBLE);
-        fabButton.setOnClickListener(v -> editItem(mModel.createNewBookshelf(getContext())));
+        final FloatingActionButton fab = getActivity().findViewById(R.id.fab);
+        fab.setImageResource(R.drawable.ic_add);
+        fab.setVisibility(View.VISIBLE);
+        fab.setOnClickListener(v -> editItem(mModel.createNewBookshelf(getContext())));
 
         final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         mVb.bookshelfList.setLayoutManager(linearLayoutManager);

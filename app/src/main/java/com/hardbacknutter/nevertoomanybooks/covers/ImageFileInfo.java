@@ -150,7 +150,7 @@ public class ImageFileInfo
         Medium,
         Small;
 
-        public static final Size[] smallFirst = {Small, Medium, Large};
-        public static final Size[] largeFirst = {Large, Medium, Small};
+        public static final Size[] SMALL_FIRST = {Small, Medium, Large};
+        public static final Size[] LARGE_FIRST = {Large, Medium, Small};
     }
 }

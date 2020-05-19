@@ -52,12 +52,10 @@ import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 
-import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.CoversDAO;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.tasks.TerminatorConnection;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
@@ -97,10 +95,11 @@ public final class ImageUtils {
      * @param maxHeight  Maximum height of the ImageView
      */
     @UiThread
-    public static void setPlaceholder(@NonNull final ImageView imageView,
-                                      @DrawableRes final int drawable,
-                                      @DrawableRes final int background,
-                                      final int maxHeight) {
+    static void setPlaceholder(@NonNull final ImageView imageView,
+                               @DrawableRes final int drawable,
+                               @SuppressWarnings("SameParameterValue")
+                               @DrawableRes final int background,
+                               final int maxHeight) {
         final ViewGroup.LayoutParams lp = imageView.getLayoutParams();
         lp.height = maxHeight;
         lp.width = (int) (maxHeight * 0.6f);
@@ -259,27 +258,19 @@ public final class ImageUtils {
             return false;
         }
 
-        // full test by reading the image sizes
-        boolean ok;
-        try {
-            // Read the image files to get file size
-            final BitmapFactory.Options opt = new BitmapFactory.Options();
-            opt.inJustDecodeBounds = true;
-            BitmapFactory.decodeFile(srcFile.getAbsolutePath(), opt);
-            // If it's too small, it's no good
-            ok = opt.outHeight >= MIN_VALID_IMAGE_SIDE
-                 && opt.outWidth >= MIN_VALID_IMAGE_SIDE;
-        } catch (@NonNull final RuntimeException e) {
-            // Failed to decode; probably not an image
-            ok = false;
-            Logger.error(App.getAppContext(), TAG, e, "Unable to decode file");
-        }
+        // Read the image files to get file size
+        final BitmapFactory.Options opt = new BitmapFactory.Options();
+        opt.inJustDecodeBounds = true;
+        BitmapFactory.decodeFile(srcFile.getAbsolutePath(), opt);
+        // minimal size required
+        final boolean isGood = opt.outHeight >= MIN_VALID_IMAGE_SIDE
+                               && opt.outWidth >= MIN_VALID_IMAGE_SIDE;
 
         // cleanup bad files.
-        if (!ok) {
+        if (!isGood) {
             FileUtils.delete(srcFile);
         }
-        return ok;
+        return isGood;
     }
 
     /**
@@ -404,10 +395,10 @@ public final class ImageUtils {
         }
 
         // disabled... we assume a picture from a website is already a good size.
-//        final Bitmap bitmap = scaleAndRotate(file, MAX_IMAGE_WIDTH_PX, MAX_IMAGE_HEIGHT_PX, 0);
-//        if (bitmap == null || !saveBitmap(bitmap, file)) {
-//            return null;
-//        }
+        // final Bitmap bitmap = scaleAndRotate(file, MAX_IMAGE_WIDTH_PX, MAX_IMAGE_HEIGHT_PX, 0);
+        // if (bitmap == null || !saveBitmap(bitmap, file)) {
+        //     return null;
+        // }
         return file != null ? file.getAbsolutePath() : null;
     }
 

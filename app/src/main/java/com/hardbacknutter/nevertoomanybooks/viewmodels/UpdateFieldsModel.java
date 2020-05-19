@@ -123,7 +123,7 @@ public class UpdateFieldsModel
 
     /** Observable. */
     @NonNull
-    public MutableLiveData<TaskListener.FinishMessage<Bundle>> getAllUpdatesFinishedMessage() {
+    public MutableLiveData<TaskListener.FinishMessage<Bundle>> onAllDone() {
         return mTaskFinishedMessage;
     }
 

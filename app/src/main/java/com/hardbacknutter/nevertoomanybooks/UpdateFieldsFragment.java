@@ -116,14 +116,13 @@ public class UpdateFieldsFragment
 
         final Activity activity = getActivity();
 
-        mUpdateFieldsModel.onSearchCoordinatorProgressMessage()
+        mUpdateFieldsModel.onProgress()
                           .observe(getViewLifecycleOwner(), this::onTaskProgress);
-
         // INDIVIDUAL searches; i.e. for each book.
-        mUpdateFieldsModel.onSearchCoordinatorFinishedMessage()
+        mUpdateFieldsModel.onOneBookDone()
                           .observe(getViewLifecycleOwner(), this::onTaskFinished);
         // The update task itself; i.e. the end result.
-        mUpdateFieldsModel.getAllUpdatesFinishedMessage()
+        mUpdateFieldsModel.onAllDone()
                           .observe(getViewLifecycleOwner(), this::onTaskFinished);
 
         // optional activity title
@@ -137,10 +136,10 @@ public class UpdateFieldsFragment
         }
 
         // The FAB lives in the activity.
-        final FloatingActionButton fabButton = activity.findViewById(R.id.fab);
-        fabButton.setImageResource(R.drawable.ic_cloud_download);
-        fabButton.setVisibility(View.VISIBLE);
-        fabButton.setOnClickListener(v -> prepareUpdate());
+        final FloatingActionButton fab = activity.findViewById(R.id.fab);
+        fab.setImageResource(R.drawable.ic_cloud_download);
+        fab.setVisibility(View.VISIBLE);
+        fab.setOnClickListener(v -> prepareUpdate());
 
         populateFields();
 

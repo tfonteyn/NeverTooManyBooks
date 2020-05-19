@@ -188,8 +188,8 @@ public class BookDetailsFragment
 
         // The FAB lives in the activity.
         //noinspection ConstantConditions
-        final FloatingActionButton fabButton = getActivity().findViewById(R.id.fab);
-        fabButton.setOnClickListener(v -> startEditBook());
+        final FloatingActionButton fab = getActivity().findViewById(R.id.fab);
+        fab.setOnClickListener(v -> startEditBook());
 
         // ENHANCE: should be replaced by a ViewPager2/FragmentStateAdapter
         mGestureDetector = new GestureDetector(getContext(), new FlingHandler());
