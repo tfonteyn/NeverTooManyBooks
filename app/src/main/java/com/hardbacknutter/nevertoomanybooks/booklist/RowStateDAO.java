@@ -32,11 +32,14 @@ import android.database.Cursor;
 import android.util.Log;
 
 import androidx.annotation.CallSuper;
+import androidx.annotation.IntDef;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.core.util.Pair;
 
 import java.io.Closeable;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
@@ -1086,20 +1089,17 @@ public class RowStateDAO {
         super.finalize();
     }
 
-
-    /**
-     * The state we want a node to <strong>become</strong>.
-     */
-    public enum DesiredNodeState {
-        Expanded,
-        Collapsed,
-        Toggle
-    }
-
     /**
      * A value class containing details of a single row as used in the list-view.
      */
     public static class Node {
+
+        /** The state we want a node to <strong>become</strong>. */
+        public static final int NEXT_STATE_TOGGLE = 0;
+        /** The state we want a node to <strong>become</strong>. */
+        public static final int NEXT_STATE_EXPANDED = 1;
+        /** The state we want a node to <strong>become</strong>. */
+        static final int NEXT_STATE_COLLAPSED = 2;
 
         final long rowId;
         @NonNull
@@ -1146,18 +1146,18 @@ public class RowStateDAO {
         /**
          * Update the current state.
          *
-         * @param desiredNodeState the new state for the node
+         * @param nextState the state to set the node to
          */
-        public void setExpanded(@NonNull final DesiredNodeState desiredNodeState) {
-            switch (desiredNodeState) {
-                case Collapsed:
+        void setNextState(@NodeNextState final int nextState) {
+            switch (nextState) {
+                case Node.NEXT_STATE_COLLAPSED:
                     isExpanded = false;
                     break;
-                case Expanded:
+                case Node.NEXT_STATE_EXPANDED:
                     isExpanded = true;
                     break;
 
-                case Toggle:
+                case Node.NEXT_STATE_TOGGLE:
                 default:
                     isExpanded = !isExpanded;
                     break;
@@ -1184,6 +1184,12 @@ public class RowStateDAO {
                    + ", isVisible=" + isVisible
                    + ", mListPosition=" + mListPosition
                    + '}';
+        }
+
+        @IntDef({NEXT_STATE_EXPANDED, NEXT_STATE_COLLAPSED, NEXT_STATE_TOGGLE})
+        @Retention(RetentionPolicy.SOURCE)
+        public @interface NodeNextState {
+
         }
     }
 }

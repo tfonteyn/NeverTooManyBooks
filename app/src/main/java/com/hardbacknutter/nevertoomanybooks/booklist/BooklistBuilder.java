@@ -737,16 +737,16 @@ public class BooklistBuilder
      * Toggle (expand/collapse) the given node.
      *
      * @param nodeRowId          of the node in the list
-     * @param desiredNodeState   the state to set the node to
+     * @param nextState          the state to set the node to
      * @param relativeChildLevel up to and including this (relative to the node) child level;
      *
      * @return {@code true} if the new state is expanded; {@code false} if collapsed
      */
     public boolean toggleNode(final long nodeRowId,
-                              final RowStateDAO.DesiredNodeState desiredNodeState,
+                              @RowStateDAO.Node.NodeNextState final int nextState,
                               final int relativeChildLevel) {
         RowStateDAO.Node node = mRowStateDAO.getNodeByNodeId(nodeRowId);
-        node.setExpanded(desiredNodeState);
+        node.setNextState(nextState);
         mRowStateDAO.setNode(node.rowId, node.level, node.isExpanded, relativeChildLevel);
         return node.isExpanded;
     }

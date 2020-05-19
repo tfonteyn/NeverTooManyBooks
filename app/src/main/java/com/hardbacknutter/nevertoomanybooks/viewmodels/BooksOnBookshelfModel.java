@@ -819,16 +819,16 @@ public class BooksOnBookshelfModel
      * Set the desired state on the given node.
      *
      * @param rowId              of the node in the list
-     * @param desiredNodeState   the state to set the node to
+     * @param nextState          the state to set the node to
      * @param relativeChildLevel up to and including this (relative to the node) child level;
      *
      * @return {@code true} if the new state is expanded; {@code false} if collapsed
      */
     public boolean toggleNode(final long rowId,
-                              final RowStateDAO.DesiredNodeState desiredNodeState,
+                              @RowStateDAO.Node.NodeNextState final int nextState,
                               final int relativeChildLevel) {
         Objects.requireNonNull(mCursor, ErrorMsg.NULL_CURSOR);
-        return mCursor.getBooklistBuilder().toggleNode(rowId, desiredNodeState, relativeChildLevel);
+        return mCursor.getBooklistBuilder().toggleNode(rowId, nextState, relativeChildLevel);
     }
 
     @NonNull

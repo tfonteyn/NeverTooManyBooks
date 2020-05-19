@@ -283,7 +283,7 @@ public class BooksOnBookshelf
                     } else {
                         // it's a level, expand/collapse.
                         final long rowId = rowData.getInt(DBDefinitions.KEY_BL_LIST_VIEW_ROW_ID);
-                        toggleNode(position, rowId, RowStateDAO.DesiredNodeState.Toggle, 1);
+                        toggleNode(position, rowId, RowStateDAO.Node.NEXT_STATE_TOGGLE, 1);
                     }
                 }
 
@@ -1116,7 +1116,7 @@ public class BooksOnBookshelf
 
             case R.id.MENU_LEVEL_EXPAND: {
                 final long rowId = rowData.getInt(DBDefinitions.KEY_BL_LIST_VIEW_ROW_ID);
-                toggleNode(position, rowId, RowStateDAO.DesiredNodeState.Expanded,
+                toggleNode(position, rowId, RowStateDAO.Node.NEXT_STATE_EXPANDED,
                            mModel.getCurrentStyle(this).getGroupCount());
                 return true;
             }
@@ -1415,16 +1415,16 @@ public class BooksOnBookshelf
      *
      * @param position           of the row in the list view
      * @param rowId              of the node in the list
-     * @param desiredNodeState   the state to set the node to
+     * @param nextState          the state to set the node to
      * @param relativeChildLevel up to and including this (relative to the node) child level;
      */
     public void toggleNode(final int position,
                            final long rowId,
-                           final RowStateDAO.DesiredNodeState desiredNodeState,
+                           @RowStateDAO.Node.NodeNextState final int nextState,
                            final int relativeChildLevel) {
 
         // update the row DAO table
-        final boolean isExpanded = mModel.toggleNode(rowId, desiredNodeState, relativeChildLevel);
+        final boolean isExpanded = mModel.toggleNode(rowId, nextState, relativeChildLevel);
 
         // make sure the cursor has valid rows for the new position.
         final Cursor cursor = mModel.getListCursor();
