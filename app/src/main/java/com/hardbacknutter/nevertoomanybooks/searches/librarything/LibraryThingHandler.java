@@ -30,8 +30,11 @@ package com.hardbacknutter.nevertoomanybooks.searches.librarything;
 import android.os.Bundle;
 
 import androidx.annotation.CallSuper;
+import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -421,6 +424,20 @@ class LibraryThingHandler
     private static final String XML_FIELD_58_ORIG_LANG = "originallanguage";
 
     /**
+     * Field types we are interested in.
+     */
+    private static final int FT_NONE = 0;
+    private static final int FT_OTHER = 1;
+    private static final int FT_TITLE = 2;
+    private static final int FT_SERIES = 3;
+    private static final int FT_PUB_SERIES = 4;
+    private static final int FT_DESCRIPTION = 5;
+    private static final int FT_ORIGINAL_PUB_DATE = 6;
+    private static final int FT_ORIGINAL_LANGUAGE = 7;
+    private static final int FT_ORIGINAL_TITLE = 8;
+    private static final int FT_ALT_TITLE = 9;
+
+    /**
      * Extracting the year from field "originalpublicationdate".
      * {@code
      * A short story collection:
@@ -436,17 +453,21 @@ class LibraryThingHandler
     /** Bundle to save results in. */
     @NonNull
     private final Bundle mBookData;
+
     /** accumulate all authors for this book. */
     @NonNull
     private final ArrayList<Author> mAuthors = new ArrayList<>();
+
     /** accumulate all series for this book. */
     @NonNull
     private final ArrayList<Series> mSeries = new ArrayList<>();
+
     /** XML content. */
     private final StringBuilder mBuilder = new StringBuilder();
+
     /** Current Field we're in. We need this because the actual data is always in a 'fact' tag. */
-    @NonNull
-    private FieldTypes mFieldType = FieldTypes.Other;
+    @FieldType
+    private int mFieldType = FT_OTHER;
 
     /**
      * Constructor.
@@ -467,7 +488,7 @@ class LibraryThingHandler
     private static void addIfNotPresent(@NonNull final Bundle bundle,
                                         @NonNull final String key,
                                         @NonNull final String value) {
-        String test = bundle.getString(key);
+        final String test = bundle.getString(key);
         if (test == null || test.isEmpty()) {
             String v = value.trim();
             if (v.startsWith("![CDATA[")) {
@@ -523,35 +544,35 @@ class LibraryThingHandler
         if (localName.equalsIgnoreCase(XML_FIELD)) {
             // FIELD's are the main things we want. Once we are in a field we wait for an XML_FACT;
             // these are read in the endElement() method.
-            String fieldName = attributes.getValue("", XML_ATTR_NAME);
+            final String fieldName = attributes.getValue("", XML_ATTR_NAME);
             if (fieldName != null) {
                 if (fieldName.equalsIgnoreCase(XML_FIELD_21_CANONICAL_TITLE)) {
-                    mFieldType = FieldTypes.Title;
+                    mFieldType = FT_TITLE;
                 } else if (fieldName.equalsIgnoreCase(XML_FIELD_41_ORIG_TITLE)) {
-                    mFieldType = FieldTypes.OriginalTitle;
+                    mFieldType = FT_ORIGINAL_TITLE;
                 } else if (fieldName.equalsIgnoreCase(XML_FIELD_42_ALT_TITLES)) {
-                    mFieldType = FieldTypes.AltTitle;
+                    mFieldType = FT_ALT_TITLE;
 
                 } else if (fieldName.equalsIgnoreCase(XML_FIELD_23_SERIES)) {
-                    mFieldType = FieldTypes.Series;
+                    mFieldType = FT_SERIES;
                 } else if (fieldName.equalsIgnoreCase(XML_FIELD_40_PUB_SERIES)) {
-                    mFieldType = FieldTypes.PubSeries;
+                    mFieldType = FT_PUB_SERIES;
 
                 } else if (fieldName.equalsIgnoreCase(XML_FIELD_14_DESCRIPTION)) {
-                    mFieldType = FieldTypes.Description;
+                    mFieldType = FT_DESCRIPTION;
                 } else if (fieldName.equalsIgnoreCase(XML_FIELD_16_ORIG_PUB_DATE)) {
-                    mFieldType = FieldTypes.OriginalPubDate;
+                    mFieldType = FT_ORIGINAL_PUB_DATE;
                 } else if (fieldName.equalsIgnoreCase(XML_FIELD_58_ORIG_LANG)) {
-                    mFieldType = FieldTypes.OriginalLanguage;
+                    mFieldType = FT_ORIGINAL_LANGUAGE;
                 }
             }
         } else if (localName.equalsIgnoreCase(XML_ITEM)) {
             // <item id="1745230" type="work">
-            String type = attributes.getValue("", XML_ATTR_TYPE);
+            final String type = attributes.getValue("", XML_ATTR_TYPE);
             // leave hardcoded, it's a value for the attribute.
             if ("work".equalsIgnoreCase(type)) {
                 try {
-                    long id = Long.parseLong(attributes.getValue("", XML_ATTR_ID));
+                    final long id = Long.parseLong(attributes.getValue("", XML_ATTR_ID));
                     mBookData.putLong(DBDefinitions.KEY_EID_LIBRARY_THING, id);
                 } catch (@NonNull final NumberFormatException ignore) {
                     // ignore
@@ -559,7 +580,7 @@ class LibraryThingHandler
             }
 //          } else if (localName.equalsIgnoreCase(XML_RESPONSE)){
 //              // Not really much to do; we *could* look for the <err> element, then report it.
-//              String stat = attributes.get("", "stat");
+//              final String stat = attributes.get("", "stat");
         }
     }
 
@@ -575,7 +596,7 @@ class LibraryThingHandler
 
         if (localName.equalsIgnoreCase(XML_FIELD)) {
             // end of Field reached, reset the current field
-            mFieldType = FieldTypes.None;
+            mFieldType = FT_NONE;
 
         } else if (localName.equalsIgnoreCase(XML_AUTHOR)) {
             mAuthors.add(Author.from(mBuilder.toString()));
@@ -585,27 +606,27 @@ class LibraryThingHandler
 
         } else if (localName.equalsIgnoreCase(XML_FACT)) {
             switch (mFieldType) {
-                case Title:
+                case FT_TITLE:
                     addIfNotPresent(mBookData, DBDefinitions.KEY_TITLE, mBuilder.toString());
                     break;
 
-                case Series:
+                case FT_SERIES:
                     mSeries.add(Series.from(mBuilder.toString()));
                     break;
 
-                case PubSeries:
+                case FT_PUB_SERIES:
                     // don't do this. The site does not differentiate between "this"
                     // edition of the book and all others.
 //                    mSeries.add(Series.from(mBuilder.toString()));
                     break;
 
-                case Description:
+                case FT_DESCRIPTION:
                     addIfNotPresent(mBookData, DBDefinitions.KEY_DESCRIPTION, mBuilder.toString());
                     break;
 
-                case OriginalPubDate:
+                case FT_ORIGINAL_PUB_DATE:
                     if (!mBookData.containsKey(DBDefinitions.KEY_DATE_FIRST_PUBLICATION)) {
-                        Matcher matcher = YEAR_PATTERN.matcher(mBuilder.toString());
+                        final Matcher matcher = YEAR_PATTERN.matcher(mBuilder.toString());
                         if (matcher.find()) {
                             mBookData.putString(DBDefinitions.KEY_DATE_FIRST_PUBLICATION,
                                                 matcher.group(1));
@@ -613,14 +634,15 @@ class LibraryThingHandler
                     }
                     break;
 
-                case OriginalLanguage:
-                case OriginalTitle:
-                case AltTitle:
-                    //ENHANCE OriginalLanguage, OriginalTitle, AltTitle
+                case FT_ORIGINAL_LANGUAGE:
+                case FT_ORIGINAL_TITLE:
+                case FT_ALT_TITLE:
+                    //ENHANCE FT_ORIGINAL_LANGUAGE, FT_ORIGINAL_TITLE, FT_ALT_TITLE
                     break;
 
-                case Other:
-                case None:
+                case FT_OTHER:
+                case FT_NONE:
+                default:
                     break;
             }
         }
@@ -639,14 +661,11 @@ class LibraryThingHandler
         mBuilder.append(ch, start, length);
     }
 
-    /**
-     * Field types we are interested in.
-     */
-    private enum FieldTypes {
-        None, Other,
-        Title, Series, PubSeries,
-        Description,
-        OriginalPubDate, OriginalLanguage, OriginalTitle,
-        AltTitle,
+    @IntDef({FT_NONE, FT_OTHER, FT_TITLE, FT_SERIES,
+             FT_PUB_SERIES, FT_DESCRIPTION, FT_ORIGINAL_PUB_DATE,
+             FT_ORIGINAL_LANGUAGE, FT_ORIGINAL_TITLE, FT_ALT_TITLE})
+    @Retention(RetentionPolicy.SOURCE)
+    private @interface FieldType {
+
     }
 }
