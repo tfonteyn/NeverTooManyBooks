@@ -366,6 +366,15 @@ public class BookDetailsFragment
         //noinspection ConstantConditions
         fields.setVisibility(getView(), true, false);
 
+        // Hide the Publication section label if none of the publishing fields are shown.
+        setSectionLabelVisibility(R.id.lbl_publication,
+                                  R.id.publisher,
+                                  R.id.date_published,
+                                  R.id.price_listed,
+                                  R.id.format,
+                                  R.id.color,
+                                  R.id.language,
+                                  R.id.pages);
         // Hide the "Personal notes" label if none of the notes fields are shown.
         setSectionLabelVisibility(R.id.lbl_notes,
                                   R.id.notes,

@@ -135,40 +135,47 @@
 
         <TextView
             android:id="@+id/lbl_first_publication"
-            style="@style/Label.Field.Inline"
+            style="@style/Label.Field"
+            android:layout_marginTop="@dimen/border1"
             android:text="@string/lbl_first_publication"
-            app:layout_constraintBaseline_toBaselineOf="@id/first_publication"
-            app:layout_constraintStart_toEndOf="@id/indent_fields"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/author"
             />
 
         <TextView
             android:id="@+id/first_publication"
             style="@style/Text.Small"
-            android:layout_marginTop="@dimen/border1"
             app:layout_constraintEnd_toStartOf="@id/barrier_covers"
-            app:layout_constraintStart_toEndOf="@id/lbl_first_publication"
-            app:layout_constraintTop_toBottomOf="@id/author"
+            app:layout_constraintStart_toEndOf="@id/indent_fields"
+            app:layout_constraintTop_toBottomOf="@id/lbl_first_publication"
             tools:ignore="SelectableText"
             tools:text="1938"
             />
 
         <TextView
             android:id="@+id/lbl_isbn"
-            style="@style/Label.Field.Inline"
-            android:layout_marginTop="@dimen/border1"
+            style="@style/Label.Field"
             android:text="@string/lbl_isbn"
-            app:layout_constraintBaseline_toBaselineOf="@id/isbn"
-            app:layout_constraintStart_toEndOf="@id/indent_fields"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/first_publication"
             />
 
         <TextView
             android:id="@+id/isbn"
             style="@style/Text.Small"
             app:layout_constraintEnd_toStartOf="@id/barrier_covers"
-            app:layout_constraintStart_toEndOf="@id/lbl_isbn"
-            app:layout_constraintTop_toBottomOf="@id/first_publication"
+            app:layout_constraintStart_toEndOf="@id/indent_fields"
+            app:layout_constraintTop_toBottomOf="@id/lbl_isbn"
             tools:ignore="SelectableText"
             tools:text="97834579862"
+            />
+
+        <TextView
+            android:id="@+id/lbl_publication"
+            style="@style/Label.Field"
+            android:text="@string/lbl_publication"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/isbn"
             />
 
         <TextView
@@ -176,7 +183,7 @@
             style="@style/Text.Small"
             app:layout_constraintEnd_toStartOf="@id/barrier_covers"
             app:layout_constraintStart_toEndOf="@id/indent_fields"
-            app:layout_constraintTop_toBottomOf="@id/isbn"
+            app:layout_constraintTop_toBottomOf="@id/lbl_publication"
             tools:ignore="SelectableText"
             tools:text="@sample/data.json/publisher/name"
             />
@@ -261,10 +268,10 @@
 
         <TextView
             android:id="@+id/lbl_print_run"
-            style="@style/Label.Field.Inline"
+            style="@style/Label.Field"
             android:text="@string/lbl_print_run"
-            app:layout_constraintBaseline_toBaselineOf="@id/print_run"
-            app:layout_constraintStart_toEndOf="@id/indent_fields"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/pages"
             />
 
         <TextView
@@ -272,8 +279,8 @@
             style="@style/Text.Small"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintEnd_toStartOf="@id/barrier_covers"
-            app:layout_constraintStart_toEndOf="@id/lbl_print_run"
-            app:layout_constraintTop_toBottomOf="@id/pages"
+            app:layout_constraintStart_toEndOf="@id/indent_fields"
+            app:layout_constraintTop_toBottomOf="@id/lbl_print_run"
             tools:ignore="SelectableText"
             tools:text="limited to 150 copies"
             />
