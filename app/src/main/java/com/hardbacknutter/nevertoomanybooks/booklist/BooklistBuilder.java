@@ -346,7 +346,7 @@ public class BooklistBuilder
         // add the basic book domains
 
         // Always sort by level first; no expression, as this does not represent a value.
-        helper.addDomain(new VirtualDomain(DOM_BL_NODE_LEVEL, null, VirtualDomain.Sorted.Asc),
+        helper.addDomain(new VirtualDomain(DOM_BL_NODE_LEVEL, null, VirtualDomain.SORT_ASC),
                          false);
         // The level expression; for a book this is always 1 below the #groups obviously
         helper.addDomain(new VirtualDomain(DOM_BL_NODE_LEVEL,

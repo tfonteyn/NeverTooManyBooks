@@ -30,8 +30,12 @@ package com.hardbacknutter.nevertoomanybooks.database.definitions;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
 /**
  * A data class representing a domain + the sql column expression and optional sorting flag.
@@ -51,28 +55,47 @@ public class VirtualDomain
             return new VirtualDomain[size];
         }
     };
+
+    public static final int SORT_UNSORTED = 0;
+    public static final int SORT_ASC = 1;
+    public static final int SORT_DESC = 2;
+
     /** Domain. */
     @NonNull
     private final Domain mDomain;
     /** Expression to use to fetch the domain value. */
     @Nullable
     private final String mExpression;
-    @NonNull
-    private final Sorted mSorted;
+    @Sorting
+    private final int mSorted;
 
+    /**
+     * Constructor.
+     * By default unsorted.
+     *
+     * @param domain     underlying domain
+     * @param expression to use for fetching the data
+     */
     public VirtualDomain(@NonNull final Domain domain,
                          @NonNull final String expression) {
-        this.mDomain = domain;
-        this.mExpression = expression;
-        mSorted = Sorted.No;
+        mDomain = domain;
+        mExpression = expression;
+        mSorted = SORT_UNSORTED;
     }
 
+    /**
+     * Constructor.
+     *
+     * @param domain     underlying domain
+     * @param expression to use for fetching the data
+     * @param sorted     flag
+     */
     public VirtualDomain(@NonNull final Domain domain,
                          @Nullable final String expression,
-                         @NonNull final Sorted sorted) {
-        this.mDomain = domain;
-        this.mExpression = expression;
-        this.mSorted = sorted;
+                         @Sorting final int sorted) {
+        mDomain = domain;
+        mExpression = expression;
+        mSorted = sorted;
     }
 
     /**
@@ -84,7 +107,7 @@ public class VirtualDomain
         //noinspection ConstantConditions
         mDomain = in.readParcelable(Domain.class.getClassLoader());
         mExpression = in.readString();
-        mSorted = Sorted.values()[in.readInt()];
+        mSorted = in.readInt();
     }
 
     @Override
@@ -92,7 +115,7 @@ public class VirtualDomain
                               final int flags) {
         dest.writeParcelable(mDomain, flags);
         dest.writeString(mExpression);
-        dest.writeInt(mSorted.ordinal());
+        dest.writeInt(mSorted);
     }
 
     @Override
@@ -100,10 +123,20 @@ public class VirtualDomain
         return 0;
     }
 
+    /**
+     * Check if this domain is sorted (asc/desc) or unsorted.
+     *
+     * @return {@code true} for sorted
+     */
     public boolean isSorted() {
-        return mSorted != Sorted.No;
+        return mSorted != SORT_UNSORTED;
     }
 
+    /**
+     * Get the underlying domain.
+     *
+     * @return Domain
+     */
     @NonNull
     public Domain getDomain() {
         return mDomain;
@@ -114,20 +147,28 @@ public class VirtualDomain
         return mExpression;
     }
 
-    /** wrapper for better code readability. */
+    /**
+     * Get the name of this domain.
+     *
+     * @return name
+     */
+    @NonNull
     public String getName() {
         return mDomain.getName();
     }
 
+    @NonNull
     public String getSortedExpression() {
-        if (mSorted == Sorted.Desc) {
+        if (mSorted == SORT_DESC) {
             return " DESC";
         } else {
             return "";
         }
     }
 
-    public enum Sorted {
-        No, Asc, Desc
+    @IntDef({SORT_UNSORTED, SORT_ASC, SORT_DESC})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface Sorting {
+
     }
 }

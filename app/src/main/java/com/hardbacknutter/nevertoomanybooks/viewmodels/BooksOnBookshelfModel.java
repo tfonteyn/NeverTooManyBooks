@@ -97,7 +97,7 @@ public class BooksOnBookshelfModel
             new VirtualDomain(
                     DBDefinitions.DOM_TITLE_OB,
                     DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_TITLE_OB),
-                    VirtualDomain.Sorted.Asc),
+                    VirtualDomain.SORT_ASC),
 
             // the book language is needed for reordering titles
             new VirtualDomain(
