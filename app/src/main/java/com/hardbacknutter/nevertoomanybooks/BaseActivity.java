@@ -125,28 +125,33 @@ public abstract class BaseActivity
     private static final int THEME_DAY_NIGHT = 0;
     private static final int THEME_LIGHT = 1;
     private static final int THEME_DARK = 2;
+
     /** The default theme to use. */
     @ThemeId
     private static final int DEFAULT_THEME = THEME_DAY_NIGHT;
-
+    /** Situation normal. */
+    private static final int ACTIVITY_STATUS_RUNNING = 0;
+    /** Activity is in need of recreating. */
+    private static final int ACTIVITY_STATUS_NEEDS_RECREATING = 1;
+    /** A {@link #recreate()} action has been triggered. */
+    private static final int ACTIVITY_STATUS_IS_RECREATING = 2;
     /** Cache the User-specified theme currently in use. '-1' to force an update at App startup. */
     @ThemeId
     private static int sCurrentNightMode = THEME_INVALID;
-
     /**
      * internal; Stage of Activity  doing/needing setIsRecreating() action.
      * See {@link #onResume()}.
      * <p>
      * Note this is a static!
      */
-    private static ActivityStatus sActivityRecreateStatus;
+    @ActivityStatus
+    private static int sActivityRecreateStatus;
 
     /** Locale at {@link #onCreate} time. */
     protected String mInitialLocaleSpec;
     /** Theme at {@link #onCreate} time. */
     @ThemeId
     protected int mInitialThemeId;
-
     /** Optional - The side/navigation panel. */
     @Nullable
     private DrawerLayout mDrawerLayout;
@@ -161,12 +166,12 @@ public abstract class BaseActivity
      * The one and only place where this should get called is in {@code Activity.onCreate}
      * <pre>
      * {@code
-     *          public void onCreate(@Nullable final Bundle savedInstanceState) {
-     *              // apply the user-preferred Theme before super.onCreate is called.
-     *              applyNightMode(this);
+     *    public void onCreate(@Nullable final Bundle savedInstanceState) {
+     *        // apply the user-preferred Theme before super.onCreate is called.
+     *        applyNightMode(this);
      *
-     *              super.onCreate(savedInstanceState);
-     *          }
+     *        super.onCreate(savedInstanceState);
+     *    }
      * }
      * </pre>
      *
@@ -236,11 +241,11 @@ public abstract class BaseActivity
     }
 
     protected void setIsRecreating() {
-        sActivityRecreateStatus = ActivityStatus.isRecreating;
+        sActivityRecreateStatus = ACTIVITY_STATUS_IS_RECREATING;
     }
 
     boolean isRecreating() {
-        final boolean isRecreating = sActivityRecreateStatus == ActivityStatus.isRecreating;
+        final boolean isRecreating = sActivityRecreateStatus == ACTIVITY_STATUS_IS_RECREATING;
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.RECREATE_ACTIVITY) {
             Log.d(TAG, "EXIT"
@@ -251,7 +256,7 @@ public abstract class BaseActivity
     }
 
     private void setNeedsRecreating() {
-        sActivityRecreateStatus = ActivityStatus.NeedsRecreating;
+        sActivityRecreateStatus = ACTIVITY_STATUS_NEEDS_RECREATING;
     }
 
     /**
@@ -266,7 +271,7 @@ public abstract class BaseActivity
             LocaleUtils.onLocaleChanged();
         }
 
-        if (sActivityRecreateStatus == ActivityStatus.NeedsRecreating
+        if (sActivityRecreateStatus == ACTIVITY_STATUS_NEEDS_RECREATING
             || isNightModeChanged(this, mInitialThemeId) || localeChanged) {
             setIsRecreating();
             recreate();
@@ -279,7 +284,7 @@ public abstract class BaseActivity
 
         } else {
             // this is the second time we got here, so we have been re-created.
-            sActivityRecreateStatus = ActivityStatus.Running;
+            sActivityRecreateStatus = ACTIVITY_STATUS_RUNNING;
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.RECREATE_ACTIVITY) {
                 Log.d(TAG, "EXIT|BaseActivity.maybeRecreate|Resuming");
             }
@@ -426,7 +431,7 @@ public abstract class BaseActivity
         super.onResume();
         if (BuildConfig.DEBUG /* always */) {
             Log.d(TAG, "onResume|sActivityRecreateStatus=" + sActivityRecreateStatus);
-            Configuration configuration = getResources().getConfiguration();
+            final Configuration configuration = getResources().getConfiguration();
             Log.d(TAG,
                   "config.smallestScreenWidthDp=" + configuration.smallestScreenWidthDp
                   + "|config.screenWidthDp=" + configuration.screenWidthDp
@@ -467,34 +472,34 @@ public abstract class BaseActivity
 
         switch (item.getItemId()) {
             case R.id.nav_advanced_search: {
-                Intent searchIntent = new Intent(this, FTSSearchActivity.class);
+                final Intent searchIntent = new Intent(this, FTSSearchActivity.class);
                 startActivityForResult(searchIntent, RequestCode.ADVANCED_LOCAL_SEARCH);
                 return true;
             }
             case R.id.nav_manage_bookshelves: {
-                Intent intent = new Intent(this, EditBookshelvesActivity.class);
+                final Intent intent = new Intent(this, EditBookshelvesActivity.class);
                 startActivityForResult(intent, RequestCode.NAV_PANEL_EDIT_BOOKSHELVES);
                 return true;
             }
-//            case R.id.nav_manage_list_styles: {
-//                // not reachable right now as we don't show the menu option unless
-//                // we're on the main BooksOnBookshelf activity.
-//                // Enabling it elsewhere means we'd need to get a DAO to pass in.
-//                Intent intent = new Intent(this, PreferredStylesActivity.class)
-//                        .putExtra(UniqueId.BKEY_STYLE_ID,
-//                                  BooklistStyle.getDefaultStyle(this, mDb));
-//                startActivityForResult(intent, UniqueId.REQ_NAV_PANEL_EDIT_STYLES);
-//                return true;
-//            }
+            // case R.id.nav_manage_list_styles: {
+            //     // not reachable right now as we don't show the menu option unless
+            //     // we're on the main BooksOnBookshelf activity.
+            //     // Enabling it elsewhere means we'd need to get a DAO to pass in.
+            //     final Intent intent = new Intent(this, PreferredStylesActivity.class)
+            //         .putExtra(UniqueId.BKEY_STYLE_ID,
+            //                   BooklistStyle.getDefaultStyle(this, mDb));
+            //     startActivityForResult(intent, UniqueId.REQ_NAV_PANEL_EDIT_STYLES);
+            //     return true;
+            // }
 
             case R.id.nav_goodreads: {
-                Intent intent = new Intent(this, AdminActivity.class)
+                final Intent intent = new Intent(this, AdminActivity.class)
                         .putExtra(BKEY_FRAGMENT_TAG, GoodreadsAdminFragment.TAG);
                 startActivityForResult(intent, RequestCode.NAV_PANEL_GOODREADS);
                 return true;
             }
             case R.id.nav_settings: {
-                Intent intent = new Intent(this, SettingsActivity.class);
+                final Intent intent = new Intent(this, SettingsActivity.class);
                 startActivityForResult(intent, RequestCode.NAV_PANEL_SETTINGS);
                 return true;
             }
@@ -636,13 +641,12 @@ public abstract class BaseActivity
         }
     }
 
-    private enum ActivityStatus {
-        /** Situation normal. */
-        Running,
-        /** Activity is in need of recreating. */
-        NeedsRecreating,
-        /** A {@link #recreate()} action has been triggered. */
-        isRecreating
+    @IntDef({ACTIVITY_STATUS_RUNNING,
+             ACTIVITY_STATUS_NEEDS_RECREATING,
+             ACTIVITY_STATUS_IS_RECREATING})
+    @Retention(RetentionPolicy.SOURCE)
+    @interface ActivityStatus {
+
     }
 
     @IntDef({THEME_INVALID, THEME_DAY_NIGHT, THEME_DARK, THEME_LIGHT})
