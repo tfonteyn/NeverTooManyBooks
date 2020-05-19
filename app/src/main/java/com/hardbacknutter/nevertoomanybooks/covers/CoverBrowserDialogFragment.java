@@ -82,15 +82,17 @@ public class CoverBrowserDialogFragment
     /** Log tag. */
     public static final String TAG = "CoverBrowserFragment";
 
-    private static final int SCALE_PREVIEW = ImageScale.SCALE_LARGE;
-    private static final int SCALE_GALLERY = ImageScale.SCALE_SMALL;
-
     /** List of ISBN numbers for alternative editions. The base list for the gallery adapter. */
     @NonNull
     private final ArrayList<String> mEditions = new ArrayList<>();
+
     /** The adapter for the horizontal scrolling covers list. */
     @Nullable
     private GalleryAdapter mGalleryAdapter;
+
+    /** The max height (and width) to be used for the preview image. */
+    private int mPreviewMaxSize;
+
     /** Indicates cancel has been requested. */
     private boolean mIsCancelled;
 
@@ -99,6 +101,7 @@ public class CoverBrowserDialogFragment
 
     /** View Binding. */
     private DialogCoverBrowserBinding mVb;
+
     /** Where to send the result. */
     @Nullable
     private WeakReference<OnFileSelected> mListener;
@@ -129,10 +132,14 @@ public class CoverBrowserDialogFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mGalleryAdapter = new GalleryAdapter(SCALE_GALLERY);
+        final int scalePreview = getResources().getInteger(R.integer.covers_browser_preview);
+        //noinspection ConstantConditions
+        mPreviewMaxSize = ImageScale.getSize(getContext(), scalePreview);
+
+        final int scaleGallery = getResources().getInteger(R.integer.covers_browser_gallery);
+        mGalleryAdapter = new GalleryAdapter(scaleGallery);
 
         mModel = new ViewModelProvider(this).get(CoverBrowserViewModel.class);
-        //noinspection ConstantConditions
         mModel.init(getContext(), requireArguments());
 
         mModel.onEditionsLoaded().observe(this, this::showGallery);
@@ -300,9 +307,7 @@ public class CoverBrowserDialogFragment
         mVb.preview.setVisibility(View.INVISIBLE);
 
         if (ImageUtils.isFileGood(file)) {
-            //noinspection ConstantConditions
-            final int maxSize = ImageScale.getSize(getContext(), SCALE_PREVIEW);
-            new ImageLoader(mVb.preview, file, maxSize, maxSize, () -> {
+            new ImageLoader(mVb.preview, file, mPreviewMaxSize, mPreviewMaxSize, () -> {
                 mModel.setSelectedFilePath(file.getAbsolutePath());
                 mVb.preview.setVisibility(View.VISIBLE);
                 mVb.statusMessage.setText(R.string.txt_tap_on_image_to_select);
@@ -390,7 +395,7 @@ public class CoverBrowserDialogFragment
 
             // Get the image file based on the isbn; try the sizes in order as specified here.
             final ImageFileInfo imageFileInfo =
-                    mModel.getFileInfo(isbn, ImageFileInfo.Size.smallFirst);
+                    mModel.getFileInfo(isbn, ImageFileInfo.Size.SMALL_FIRST);
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVER_BROWSER) {
                 Log.d(TAG, "onBindViewHolder|imageFileInfo=" + imageFileInfo);

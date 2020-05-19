@@ -43,4 +43,7 @@
         <item>3</item>
         <item>3</item>
     </integer-array>
+
+    <integer name="covers_browser_gallery">2</integer>
+    <integer name="covers_browser_preview">4</integer>
 </resources>
