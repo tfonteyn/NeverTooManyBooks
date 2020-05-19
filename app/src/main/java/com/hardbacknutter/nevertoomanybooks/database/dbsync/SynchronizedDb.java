@@ -159,7 +159,7 @@ public class SynchronizedDb {
         do {
             Synchronizer.SyncLock exclusiveLock = mSynchronizer.getExclusiveLock();
             try {
-                SQLiteDatabase db = sqLiteOpenHelper.getWritableDatabase();
+                final SQLiteDatabase db = sqLiteOpenHelper.getWritableDatabase();
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_SYNC) {
                     Log.d(TAG, "openWithRetries"
                                + "|path=" + db.getPath()
@@ -194,12 +194,12 @@ public class SynchronizedDb {
      * DEBUG only.
      */
     private void debugDumpInfo(@NonNull final SQLiteDatabase db) {
-        String[] sql = {"select sqlite_version() AS sqlite_version",
-                        "PRAGMA encoding",
-                        "PRAGMA collation_list",
-                        "PRAGMA foreign_keys",
-                        "PRAGMA recursive_triggers",
-                        };
+        final String[] sql = {"select sqlite_version() AS sqlite_version",
+                              "PRAGMA encoding",
+                              "PRAGMA collation_list",
+                              "PRAGMA foreign_keys",
+                              "PRAGMA recursive_triggers",
+                              };
         for (String s : sql) {
             try (Cursor cursor = db.rawQuery(s, null)) {
                 if (cursor.moveToNext()) {
@@ -220,7 +220,7 @@ public class SynchronizedDb {
                        @NonNull final ContentValues cv) {
         Synchronizer.SyncLock txLock = null;
         if (mTxLock != null) {
-            if (mTxLock.getType() != Synchronizer.LockType.exclusive) {
+            if (mTxLock.getType() != Synchronizer.LOCK_EXCLUSIVE) {
                 throw new TransactionException(ERROR_UPDATE_INSIDE_SHARED_TX);
             }
         } else {
@@ -230,7 +230,7 @@ public class SynchronizedDb {
         // reminder: insert does not throw exceptions for the actual insert.
         // but it can throw other exceptions.
         try {
-            long id = mSqlDb.insert(table, nullColumnHack, cv);
+            final long id = mSqlDb.insert(table, nullColumnHack, cv);
             if (id == -1) {
                 Logger.warnWithStackTrace(App.getAppContext(), TAG,
                                           "Insert failed"
@@ -259,7 +259,7 @@ public class SynchronizedDb {
                       @Nullable final String[] whereArgs) {
         Synchronizer.SyncLock txLock = null;
         if (mTxLock != null) {
-            if (mTxLock.getType() != Synchronizer.LockType.exclusive) {
+            if (mTxLock.getType() != Synchronizer.LOCK_EXCLUSIVE) {
                 throw new TransactionException(ERROR_UPDATE_INSIDE_SHARED_TX);
             }
         } else {
@@ -302,7 +302,7 @@ public class SynchronizedDb {
                       @Nullable final String[] whereArgs) {
         Synchronizer.SyncLock txLock = null;
         if (mTxLock != null) {
-            if (mTxLock.getType() != Synchronizer.LockType.exclusive) {
+            if (mTxLock.getType() != Synchronizer.LOCK_EXCLUSIVE) {
                 throw new TransactionException(ERROR_UPDATE_INSIDE_SHARED_TX);
             }
         } else {
@@ -391,7 +391,7 @@ public class SynchronizedDb {
         }
 
         if (mTxLock != null) {
-            if (mTxLock.getType() != Synchronizer.LockType.exclusive) {
+            if (mTxLock.getType() != Synchronizer.LOCK_EXCLUSIVE) {
                 throw new TransactionException(ERROR_UPDATE_INSIDE_SHARED_TX);
             }
             mSqlDb.execSQL(sql);
@@ -412,7 +412,7 @@ public class SynchronizedDb {
     public SynchronizedStatement compileStatement(@NonNull final String sql) {
         Synchronizer.SyncLock txLock = null;
         if (mTxLock != null) {
-            if (mTxLock.getType() != Synchronizer.LockType.exclusive) {
+            if (mTxLock.getType() != Synchronizer.LOCK_EXCLUSIVE) {
                 throw new TransactionException("Compile inside shared TX");
             }
         } else {
@@ -480,7 +480,7 @@ public class SynchronizedDb {
      */
     @NonNull
     public Synchronizer.SyncLock beginTransaction(final boolean isUpdate) {
-        Synchronizer.SyncLock txLock;
+        final Synchronizer.SyncLock txLock;
         if (isUpdate) {
             txLock = mSynchronizer.getExclusiveLock();
         } else {

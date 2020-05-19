@@ -29,9 +29,12 @@ package com.hardbacknutter.nevertoomanybooks.database.dbsync;
 
 import android.util.Log;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -62,11 +65,13 @@ import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
  */
 public class Synchronizer {
 
+    static final int LOCK_SHARED = 1;
+    static final int LOCK_EXCLUSIVE = 2;
+
     /** Log tag. */
     private static final String TAG = "Synchronizer";
     /** divider to convert nanoseconds to milliseconds. */
     private static final int NANO_TO_MILLIS = 1_000_000;
-
     /** Main lock for synchronization. */
     private final ReentrantLock mLock = new ReentrantLock();
     /** Condition fired when a reader releases a lock. */
@@ -96,7 +101,7 @@ public class Synchronizer {
     }
 
     /**
-     * Add a new SharedLock to the collection and return it.
+     * Add a new {@link SharedLock} to the collection and return it.
      *
      * @return lock
      */
@@ -143,7 +148,7 @@ public class Synchronizer {
     }
 
     /**
-     * Release a shared lock. If no more locks in thread, remove from list.
+     * Release a {@link SharedLock}. If no more locks in thread, remove from list.
      */
     private void releaseSharedLock() {
         final Thread thread = Thread.currentThread();
@@ -191,7 +196,7 @@ public class Synchronizer {
     }
 
     /**
-     * Return when exclusive access is available.
+     * Return the {@link ExclusiveLock} when exclusive access is available.
      * <ol>
      *      <li>take a lock on the collection</li>
      *      <li>see if there are any other locks</li>
@@ -265,7 +270,7 @@ public class Synchronizer {
     }
 
     /**
-     * Release the lock previously taken.
+     * Release the {@link ExclusiveLock} previously taken.
      */
     private void releaseExclusiveLock() {
         final Thread thread = Thread.currentThread();
@@ -287,10 +292,10 @@ public class Synchronizer {
         }
     }
 
-    /** Enum of lock types supported. */
-    public enum LockType {
-        shared,
-        exclusive
+    @IntDef({LOCK_SHARED, LOCK_EXCLUSIVE})
+    @Retention(RetentionPolicy.SOURCE)
+    @interface LockType {
+
     }
 
     /**
@@ -300,8 +305,8 @@ public class Synchronizer {
 
         void unlock();
 
-        @NonNull
-        LockType getType();
+        @LockType
+        int getType();
     }
 
     static class LockException
@@ -331,10 +336,10 @@ public class Synchronizer {
         }
 
         @SuppressWarnings("SameReturnValue")
-        @NonNull
         @Override
-        public LockType getType() {
-            return LockType.shared;
+        @LockType
+        public int getType() {
+            return LOCK_SHARED;
         }
     }
 
@@ -350,10 +355,10 @@ public class Synchronizer {
         }
 
         @SuppressWarnings("SameReturnValue")
-        @NonNull
         @Override
-        public LockType getType() {
-            return LockType.exclusive;
+        @LockType
+        public int getType() {
+            return LOCK_EXCLUSIVE;
         }
     }
 }
