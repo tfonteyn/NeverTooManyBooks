@@ -90,14 +90,16 @@ public class BooksOnBookshelfModel
 
     /** The fixed list of domains we always need in {@link #buildBookList}. */
     private static final List<VirtualDomain> FIXED_DOMAIN_LIST = Arrays.asList(
-            // Title for displaying
+            // Title for displaying; do NOT sort on it
             new VirtualDomain(
                     DBDefinitions.DOM_TITLE,
                     DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_TITLE)),
             // Title for sorting
             new VirtualDomain(
                     DBDefinitions.DOM_TITLE_OB,
-                    DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_TITLE_OB)),
+                    DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_TITLE_OB),
+                    VirtualDomain.Sorted.Asc),
+
             // the book language is needed for reordering titles
             new VirtualDomain(
                     DBDefinitions.DOM_BOOK_LANGUAGE,
