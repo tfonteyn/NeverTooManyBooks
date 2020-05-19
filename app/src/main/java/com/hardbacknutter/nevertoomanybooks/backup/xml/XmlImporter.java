@@ -969,11 +969,11 @@ public class XmlImporter
             }
             // add to the menu of preferred styles if needed.
             if (mStyle.isPreferred(mContext)) {
-                BooklistStyle.Helper.addPreferredStyle(mContext, mStyle);
+                BooklistStyle.MenuOrder.addPreferredStyle(mContext, mStyle);
             }
 
             // the prefs are written on the fly, but we still need the db entry saved.
-            mStyle.save(mDb);
+            BooklistStyle.StyleDAO.updateOrInsert(mDb, mStyle);
 
             mStylesRead++;
         }

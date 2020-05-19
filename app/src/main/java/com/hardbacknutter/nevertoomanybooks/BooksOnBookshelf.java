@@ -249,13 +249,11 @@ public class BooksOnBookshelf
             new BooklistAdapter.OnRowClickedListener() {
 
                 /**
-                 * User clicked on a row.
+                 * User clicked a row.
                  * <ul>
                  *      <li>Book: open the details screen.</li>
                  *      <li>Not a book: expand/collapse the section as appropriate.</li>
                  * </ul>
-                 *
-                 * <br><br>{@inheritDoc}
                  */
                 @Override
                 public void onItemClick(final int position) {
@@ -291,8 +289,6 @@ public class BooksOnBookshelf
 
                 /**
                  * User long-clicked on a row. Bring up a context menu as appropriate.
-                 *
-                 * <br><br>{@inheritDoc}
                  */
                 @Override
                 public boolean onItemLongClick(final int position) {
@@ -356,7 +352,7 @@ public class BooksOnBookshelf
     /** The dropdown button to select a Bookshelf. */
     private Spinner mBookshelfSpinner;
     /** The normal FAB button; opens or closes the FAB menu. */
-    private FloatingActionButton mFabButton;
+    private FloatingActionButton mFab;
     /** Array with the submenu FAB buttons. Element 0 shows at the bottom. */
     private ExtendedFloatingActionButton[] mFabMenuItems;
     /** Overlay enabled while the FAB menu is shown to intercept clicks and close the FAB menu. */
@@ -370,9 +366,9 @@ public class BooksOnBookshelf
                 public void onScrolled(@NonNull final RecyclerView recyclerView,
                                        final int dx,
                                        final int dy) {
-                    if (dy > 0 || dy < 0 && mFabButton.isShown()) {
+                    if (dy > 0 || dy < 0 && mFab.isShown()) {
                         hideFABMenu();
-                        mFabButton.hide();
+                        mFab.hide();
                     }
                 }
 
@@ -384,7 +380,7 @@ public class BooksOnBookshelf
                     if (newState == RecyclerView.SCROLL_STATE_IDLE
                         || newState == RecyclerView.SCROLL_STATE_SETTLING) {
                         showFABMenu(false);
-                        mFabButton.show();
+                        mFab.show();
                     }
                     super.onScrollStateChanged(recyclerView, newState);
                 }
@@ -404,7 +400,7 @@ public class BooksOnBookshelf
 
         mProgressBar = findViewById(R.id.progressBar);
 
-        mFabButton = findViewById(R.id.fab);
+        mFab = findViewById(R.id.fab);
         mFabOverlay = findViewById(R.id.fabOverlay);
         // Make SURE that the array length fits the options list below.
         mFabMenuItems = new ExtendedFloatingActionButton[5];
@@ -485,7 +481,7 @@ public class BooksOnBookshelf
         mBookshelfSpinnerAdapter.setDropDownViewResource(R.layout.dropdown_menu_popup_item);
         mBookshelfSpinner.setAdapter(mBookshelfSpinnerAdapter);
 
-        mFabButton.setOnClickListener(v -> showFABMenu(!mFabMenuItems[0].isShown()));
+        mFab.setOnClickListener(v -> showFABMenu(!mFabMenuItems[0].isShown()));
         mFabMenuItems[0].setOnClickListener(v -> addByIsbn(true));
         mFabMenuItems[1].setOnClickListener(v -> addByIsbn(false));
         mFabMenuItems[2].setOnClickListener(v -> addBySearch(BookSearchByTextFragment.TAG));
@@ -565,13 +561,13 @@ public class BooksOnBookshelf
      */
     private void showFABMenu(final boolean show) {
         if (show) {
-            mFabButton.setImageResource(R.drawable.ic_close);
+            mFab.setImageResource(R.drawable.ic_close);
             // mFabOverlay overlaps the whole screen and intercepts clicks.
             // This does not include the ToolBar.
             mFabOverlay.setVisibility(View.VISIBLE);
             mFabOverlay.setOnClickListener(v -> hideFABMenu());
         } else {
-            mFabButton.setImageResource(R.drawable.ic_add);
+            mFab.setImageResource(R.drawable.ic_add);
             mFabOverlay.setVisibility(View.GONE);
             mFabOverlay.setOnClickListener(null);
         }
@@ -1212,10 +1208,6 @@ public class BooksOnBookshelf
                     @Nullable
                     final BooklistStyle style = data.getParcelableExtra(BooklistStyle.BKEY_STYLE);
                     if (style != null) {
-                        // always save a new style to the database
-                        if (style.getId() == 0) {
-                            mModel.saveStyle(style);
-                        }
                         // save the new bookshelf/style combination
                         mModel.getCurrentBookshelf().setAsPreferred(this);
                         mModel.setCurrentStyle(this, style);
@@ -1241,7 +1233,7 @@ public class BooksOnBookshelf
                         if (options != 0) {
                             if ((options & Options.STYLES) != 0) {
                                 // Force a refresh of the list of all user styles.
-                                BooklistStyle.Helper.clear();
+                                BooklistStyle.StyleDAO.clear();
                             }
                             if ((options & Options.PREFS) != 0) {
                                 // Refresh the preferred bookshelf. This also refreshes its style.
@@ -1964,7 +1956,7 @@ public class BooksOnBookshelf
                     if (options != 0) {
                         if ((options & Options.STYLES) != 0) {
                             // Force a refresh of the list of all user styles.
-                            BooklistStyle.Helper.clear();
+                            BooklistStyle.StyleDAO.clear();
                         }
                         if ((options & Options.PREFS) != 0) {
                             // Refresh the preferred bookshelf. This also refreshes its style.

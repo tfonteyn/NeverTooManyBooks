@@ -300,6 +300,9 @@ public class Bookshelf
                                   @NonNull final DAO db) {
 
         BooklistStyle style = BooklistStyle.getStyle(context, db, mStyleUuid);
+        if (style == null) {
+            style = BooklistStyle.getDefault(context, db);
+        }
         // the previous uuid might have been overruled so we always refresh it
         mStyleUuid = style.getUuid();
         return style;
@@ -367,8 +370,8 @@ public class Bookshelf
      */
     public void validateStyle(@NonNull final Context context,
                               @NonNull final DAO db) {
-        String uuid = mStyleUuid;
-        BooklistStyle style = getStyle(context, db);
+        final String uuid = mStyleUuid;
+        final BooklistStyle style = getStyle(context, db);
         if (!uuid.equals(style.getUuid())) {
             db.updateBookshelf(this, style.getId());
         }
@@ -483,7 +486,7 @@ public class Bookshelf
         if (obj == null || getClass() != obj.getClass()) {
             return false;
         }
-        Bookshelf that = (Bookshelf) obj;
+        final Bookshelf that = (Bookshelf) obj;
         // if both 'exist' but have different ID's -> different.
         if (mId != 0 && that.mId != 0 && mId != that.mId) {
             return false;

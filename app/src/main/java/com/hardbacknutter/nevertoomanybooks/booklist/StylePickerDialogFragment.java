@@ -224,8 +224,8 @@ public class StylePickerDialogFragment
         try (DAO db = new DAO(TAG)) {
             mBooklistStyles.clear();
             //noinspection ConstantConditions
-            mBooklistStyles.addAll(BooklistStyle.Helper.getStyles(getContext(), db,
-                                                                  mShowAllStyles).values());
+            mBooklistStyles.addAll(BooklistStyle.getStyles(getContext(), db,
+                                                           mShowAllStyles).values());
         }
     }
 

@@ -192,15 +192,10 @@ public class PreferredStylesActivity
 
                     if (data.getBooleanExtra(BooklistStyle.BKEY_STYLE_MODIFIED, false)) {
                         if (style != null) {
-                            // save a new style to the database first
-                            if (style.getId() == 0) {
-                                mModel.saveStyle(style);
-                            }
                             // original style we cloned/edited
                             final long templateId =
                                     data.getLongExtra(StyleBaseFragment.BKEY_TEMPLATE_ID, 0);
 
-                            // and update the list
                             final int position = mModel.handleStyleChange(this, style, templateId);
                             mListAdapter.setSelectedPosition(position);
                         }
@@ -211,7 +206,7 @@ public class PreferredStylesActivity
                     } else {
                         // the style was not modified, discard it if this was a new style
                         if (style != null && style.getId() == 0) {
-                            style.discard(this);
+                            BooklistStyle.StyleDAO.discard(this, style);
                         }
                     }
                 }

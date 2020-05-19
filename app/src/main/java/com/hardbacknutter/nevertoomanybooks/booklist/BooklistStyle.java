@@ -451,7 +451,7 @@ public class BooklistStyle
     }
 
     /**
-     * Get the global default style, or if that fails, the builtin default style..
+     * Get the default style.
      *
      * @param context Current context
      * @param db      Database Access
@@ -463,22 +463,17 @@ public class BooklistStyle
                                            @NonNull final DAO db) {
 
         // read the global user default, or if not present the hardcoded default.
-        String uuid = PreferenceManager.getDefaultSharedPreferences(context)
-                                       .getString(PREF_BL_STYLE_CURRENT_DEFAULT,
+        final String uuid = PreferenceManager.getDefaultSharedPreferences(context)
+                                             .getString(PREF_BL_STYLE_CURRENT_DEFAULT,
                                                   Builtin.DEFAULT_STYLE_UUID);
-        // Builtin ?
-        BooklistStyle style = Builtin.getByUuid(context, uuid);
+
+        // any existing user or builtin style ?
+        final BooklistStyle style = getStyle(context, db, uuid);
         if (style != null) {
             return style;
         }
 
-        // User defined ?
-        style = Helper.getStyles(context, db, true).get(uuid);
-        if (style != null) {
-            return style;
-        }
-
-        // give up
+        // Return the builtin default if the uuid in prefs was invalid.
         return Builtin.getDefault(context);
     }
 
@@ -487,25 +482,22 @@ public class BooklistStyle
      *
      * @param context Current context
      * @param db      Database Access
-     * @param uuid    UUID of the style
+     * @param uuid    UUID of the style to get.
      *
-     * @return the style, <strong>or the default style if not found</strong>
+     * @return the style, or {@code null} if not found
      */
-    @NonNull
+    @Nullable
     public static BooklistStyle getStyle(@NonNull final Context context,
                                          @NonNull final DAO db,
                                          @NonNull final String uuid) {
-        BooklistStyle style = Helper.getUserStyles(context, db).get(uuid);
+        // Check Builtin first
+        final BooklistStyle style = Builtin.getStyle(context, uuid);
         if (style != null) {
             return style;
         }
 
-        style = Builtin.getStyles(context).get(uuid);
-        if (style != null) {
-            return style;
-        }
-
-        return getDefault(context, db);
+        // User defined ? or null if not found
+        return StyleDAO.getStyle(context, db, uuid);
     }
 
     /**
@@ -513,9 +505,9 @@ public class BooklistStyle
      *
      * @param context Current context
      * @param db      Database Access
-     * @param id      of the style to get.
+     * @param id      ID of the style to get.
      *
-     * @return style, <strong>or {@code null} if not found</strong>
+     * @return the style, or {@code null} if not found
      */
     @SuppressWarnings("unused")
     @Nullable
@@ -523,24 +515,54 @@ public class BooklistStyle
                                          @NonNull final DAO db,
                                          final long id) {
         if (id == 0) {
-            return null;
+            throw new IllegalArgumentException(ErrorMsg.ARGS_MISSING_STYLE + "|id=0");
         }
 
-        for (BooklistStyle style : Helper.getUserStyles(context, db).values()) {
-            if (style.getId() == id) {
-                return style;
+        // User defined ?
+        final BooklistStyle style = StyleDAO.getStyle(context, db, id);
+        if (style != null) {
+            return style;
+        }
+
+        // Builtin ? or null if not found
+        return Builtin.getStyle(context, id);
+    }
+
+    /**
+     * Get an ordered Map with all the styles (user/builtin).
+     * The preferred styles are at the front of the list.
+     *
+     * @param context Current context
+     * @param db      Database Access
+     * @param all     if {@code true} then also return the non-preferred styles
+     *
+     * @return ordered list
+     */
+    @NonNull
+    public static Map<String, BooklistStyle> getStyles(@NonNull final Context context,
+                                                       @NonNull final DAO db,
+                                                       final boolean all) {
+        // Create a NEW list! i.e. the style objects are shared (as they should)
+        // but do not modify the original list.
+        final Map<String, BooklistStyle> allStyles = new LinkedHashMap<>();
+        // add the user defined styles
+        allStyles.putAll(StyleDAO.getStyles(context, db));
+        // and builtin styles
+        allStyles.putAll(Builtin.getStyles(context));
+
+        // filter, so this list only has the preferred ones.
+        final Map<String, BooklistStyle> styles =
+                MenuOrder.filterPreferredStyles(context, allStyles);
+
+        // but if we want all, add the missing styles to the end of the list
+        if (all && !styles.equals(allStyles)) {
+            for (BooklistStyle style : allStyles.values()) {
+                if (!styles.containsKey(style.getUuid())) {
+                    styles.put(style.getUuid(), style);
+                }
             }
         }
-
-        // check builtin.
-        for (BooklistStyle style : Builtin.getStyles(context).values()) {
-            if (style.getId() == id) {
-                return style;
-            }
-        }
-
-        // not found...
-        return null;
+        return styles;
     }
 
     /**
@@ -1191,75 +1213,6 @@ public class BooklistStyle
         return labels;
     }
 
-    /**
-     * Save the style to the database. This is now limited to the UUID.
-     * All actual settings reside in a dedicated SharedPreference file.
-     * <p>
-     * if an insert fails, the style retains id==0.
-     *
-     * @param db Database Access
-     */
-    public void save(@NonNull final DAO db) {
-        if (!isUserDefined()) {
-            throw new IllegalStateException("Builtin Style cannot be saved to database");
-        }
-        // sanity check
-        if (mUuid.isEmpty()) {
-            throw new IllegalStateException(ErrorMsg.EMPTY_UUID);
-        }
-
-        // check if the style already exists.
-        long existingId = db.getStyleIdByUuid(mUuid);
-        if (existingId == 0) {
-            if (db.insertStyle(this) > 0) {
-                Helper.S_USER_STYLES.put(getUuid(), this);
-            }
-        } else {
-            // force-update the id.
-            mId = existingId;
-        }
-    }
-
-    /**
-     * Delete this style.
-     *
-     * @param context Current context
-     * @param db      Database Access
-     */
-    public void delete(@NonNull final Context context,
-                       @NonNull final DAO db) {
-
-        // cannot delete a builtin or a 'new' style(id==0)
-        if (mId == 0 || !isUserDefined()) {
-            throw new IllegalArgumentException("Builtin Style cannot be deleted");
-        }
-        // sanity check, cannot delete the global style settings.
-        if (mUuid.isEmpty()) {
-            throw new IllegalStateException("Global Style cannot be deleted");
-        }
-
-        Helper.S_USER_STYLES.remove(mUuid);
-        db.deleteStyle(mId);
-
-        if (Build.VERSION.SDK_INT >= 24) {
-            context.deleteSharedPreferences(mUuid);
-        } else {
-            context.getSharedPreferences(mUuid, Context.MODE_PRIVATE).edit().clear().apply();
-        }
-    }
-
-    public void discard(@NonNull final Context context) {
-        // can ONLY discard a new style
-        if (mId != 0) {
-            throw new IllegalArgumentException("can only discard a new style");
-        }
-        if (Build.VERSION.SDK_INT >= 24) {
-            context.deleteSharedPreferences(mUuid);
-        } else {
-            context.getSharedPreferences(mUuid, Context.MODE_PRIVATE).edit().clear().apply();
-        }
-    }
-
     @Override
     public int hashCode() {
         return Objects.hash(mUuid);
@@ -1434,10 +1387,6 @@ public class BooklistStyle
         return level;
     }
 
-    public void updateHelper() {
-        Helper.S_USER_STYLES.put(mUuid, this);
-    }
-
     @IntDef(flag = true, value = {HEADER_SHOW_BOOK_COUNT,
                                   HEADER_SHOW_STYLE_NAME,
                                   HEADER_SHOW_FILTER})
@@ -1594,7 +1543,10 @@ public class BooklistStyle
         }
     }
 
-    public static final class Helper {
+    /**
+     * Encapsulates database access and internal in-memory cache list.
+     */
+    public static final class StyleDAO {
 
         /**
          * We keep a cache of User styles in memory as it's to costly to keep
@@ -1606,11 +1558,101 @@ public class BooklistStyle
          */
         private static final Map<String, BooklistStyle> S_USER_STYLES = new LinkedHashMap<>();
 
-        private Helper() {
+        private StyleDAO() {
         }
 
         public static void clear() {
             S_USER_STYLES.clear();
+        }
+
+        /**
+         * Save the given style to the database / cached list.
+         * <p>
+         * if an insert fails, the style retains id==0.
+         *
+         * @param db    Database Access
+         * @param style to save
+         */
+        public static void updateOrInsert(@NonNull final DAO db,
+                                          @NonNull final BooklistStyle style) {
+
+            if (!style.isUserDefined()) {
+                throw new IllegalArgumentException("Builtin Style cannot be saved to database");
+            }
+
+            // sanity check
+            if (style.getUuid().isEmpty()) {
+                throw new IllegalArgumentException(ErrorMsg.EMPTY_UUID);
+            }
+
+            // check if the style already exists.
+            long existingId = db.getStyleIdByUuid(style.getUuid());
+            if (existingId == 0) {
+                if (db.insertStyle(style) > 0) {
+                    S_USER_STYLES.put(style.getUuid(), style);
+                }
+            } else {
+                style.mId = existingId;
+                S_USER_STYLES.put(style.getUuid(), style);
+            }
+        }
+
+        /**
+         * Update the given style.
+         *
+         * @param style to update
+         */
+        public static void update(@NonNull final BooklistStyle style) {
+            if (style.getId() == 0 || !style.isUserDefined()) {
+                throw new IllegalArgumentException("Only an existing user Style can be updated");
+            }
+            // Note there is no database access needed here
+            S_USER_STYLES.put(style.getUuid(), style);
+        }
+
+        /**
+         * Delete the given style from the database / cached list.
+         *
+         * @param context Current context
+         * @param db      Database Access
+         * @param style   to delete
+         */
+        public static void delete(@NonNull final Context context,
+                                  @NonNull final DAO db,
+                                  @NonNull final BooklistStyle style) {
+
+            // cannot delete a builtin or a 'new' style(id==0)
+            if (style.getId() == 0 || !style.isUserDefined()) {
+                throw new IllegalArgumentException("Builtin Style cannot be deleted");
+            }
+            // sanity check, cannot delete the global style settings.
+            if (style.getUuid().isEmpty()) {
+                throw new IllegalArgumentException("Global Style cannot be deleted");
+            }
+
+            S_USER_STYLES.remove(style.getUuid());
+            db.deleteStyle(style.getId());
+
+            if (Build.VERSION.SDK_INT >= 24) {
+                context.deleteSharedPreferences(style.getUuid());
+            } else {
+                context.getSharedPreferences(style.getUuid(), Context.MODE_PRIVATE)
+                       .edit().clear().apply();
+            }
+        }
+
+        public static void discard(@NonNull final Context context,
+                                   @NonNull final BooklistStyle style) {
+            // can ONLY discard a new style
+            if (style.getId() != 0) {
+                throw new IllegalArgumentException("can only discard a new style");
+            }
+            if (Build.VERSION.SDK_INT >= 24) {
+                context.deleteSharedPreferences(style.getUuid());
+            } else {
+                context.getSharedPreferences(style.getUuid(), Context.MODE_PRIVATE)
+                       .edit().clear().apply();
+            }
         }
 
         /**
@@ -1619,50 +1661,108 @@ public class BooklistStyle
          * @param context Current context
          * @param db      Database Access
          *
-         * @return ordered map of BooklistStyle
-         */
-        @NonNull
-        public static Map<String, BooklistStyle> getUserStyles(@NonNull final Context context,
-                                                               @NonNull final DAO db) {
-            if (S_USER_STYLES.isEmpty()) {
-                S_USER_STYLES.putAll(db.getUserStyles(context));
-            }
-            return S_USER_STYLES;
-        }
-
-        /**
-         * Get an ordered Map with all the styles.
-         * The preferred styles are at the front of the list.
-         *
-         * @param context Current context
-         * @param db      Database Access
-         * @param all     if {@code true} then also return the non-preferred styles
-         *
-         * @return ordered list
+         * @return an ordered unmodifiableMap of BooklistStyle
          */
         @NonNull
         public static Map<String, BooklistStyle> getStyles(@NonNull final Context context,
-                                                           @NonNull final DAO db,
-                                                           final boolean all) {
-            // Get all styles: user
-            Map<String, BooklistStyle> allStyles = getUserStyles(context, db);
-            // Get all styles: builtin
-            allStyles.putAll(Builtin.getStyles(context));
+                                                           @NonNull final DAO db) {
+            if (S_USER_STYLES.isEmpty()) {
+                S_USER_STYLES.putAll(db.getUserStyles(context));
+            }
+            return Collections.unmodifiableMap(S_USER_STYLES);
+        }
 
-            // filter, so the list only shows the preferred ones.
-            Map<String, BooklistStyle> styles = filterPreferredStyles(context, allStyles);
+        @Nullable
+        static BooklistStyle getStyle(@NonNull final Context context,
+                                      @NonNull final DAO db,
+                                      @NonNull final String uuid) {
+            return getStyles(context, db).get(uuid);
+        }
 
-            // but if we want all, add the missing styles to the end of the list
-            if (all) {
-                if (!styles.equals(allStyles)) {
-                    for (BooklistStyle style : allStyles.values()) {
-                        if (!styles.containsKey(style.getUuid())) {
-                            styles.put(style.getUuid(), style);
-                        }
+        @Nullable
+        static BooklistStyle getStyle(@NonNull final Context context,
+                                      @NonNull final DAO db,
+                                      final long id) {
+            for (BooklistStyle style : getStyles(context, db).values()) {
+                if (style.getId() == id) {
+                    return style;
+                }
+            }
+            return null;
+        }
+    }
+
+    /** Artificial grouping of all the menu-order methods for cleaner code. */
+    public static final class MenuOrder {
+
+        /**
+         * Get the UUIDs of the preferred styles from user preferences.
+         *
+         * @param context Current context
+         *
+         * @return set of UUIDs
+         */
+        @NonNull
+        private static Set<String> get(@NonNull final Context context) {
+            Set<String> uuidSet = new LinkedHashSet<>();
+            String itemsStr = PreferenceManager.getDefaultSharedPreferences(context)
+                                               .getString(PREF_BL_PREFERRED_STYLES, null);
+
+            if (itemsStr != null && !itemsStr.isEmpty()) {
+                String[] entries = itemsStr.split(",");
+                for (String entry : entries) {
+                    if (entry != null && !entry.isEmpty()) {
+                        uuidSet.add(entry);
                     }
                 }
             }
-            return styles;
+            return uuidSet;
+        }
+
+        /**
+         * Internal single-point of writing the preferred styles menu order.
+         *
+         * @param context Current context
+         * @param uuidSet a set of style UUIDs
+         */
+        private static void set(@NonNull final Context context,
+                                @NonNull final Iterable<String> uuidSet) {
+            PreferenceManager.getDefaultSharedPreferences(context)
+                             .edit()
+                             .putString(PREF_BL_PREFERRED_STYLES, TextUtils.join(",", uuidSet))
+                             .apply();
+        }
+
+        /**
+         * Save the preferred style menu list.
+         * <p>
+         * This list contains the ID's for user-defined *AND* system-styles.
+         *
+         * @param context Current context
+         * @param styles  full list of preferred styles to save 'in order'
+         */
+        public static void save(@NonNull final Context context,
+                                @NonNull final Iterable<BooklistStyle> styles) {
+            Collection<String> list = new LinkedHashSet<>();
+            for (BooklistStyle style : styles) {
+                if (style.isPreferred(context)) {
+                    list.add(style.getUuid());
+                }
+            }
+            set(context, list);
+        }
+
+        /**
+         * Add a style (its uuid) to the menu list of preferred styles.
+         *
+         * @param context Current context
+         * @param style   to add.
+         */
+        public static void addPreferredStyle(@NonNull final Context context,
+                                             @NonNull final BooklistStyle style) {
+            Set<String> list = get(context);
+            list.add(style.getUuid());
+            set(context, list);
         }
 
         /**
@@ -1675,14 +1775,14 @@ public class BooklistStyle
          * @return ordered list.
          */
         @NonNull
-        private static Map<String, BooklistStyle> filterPreferredStyles(
+        static Map<String, BooklistStyle> filterPreferredStyles(
                 @NonNull final Context context,
                 @NonNull final Map<String, BooklistStyle> allStyles) {
 
             Map<String, BooklistStyle> resultingStyles = new LinkedHashMap<>();
 
             // first check the saved and ordered list
-            for (String uuid : getMenuOrder(context)) {
+            for (String uuid : get(context)) {
                 BooklistStyle style = allStyles.get(uuid);
                 if (style != null) {
                     // catch mismatches in any imported bad-data.
@@ -1706,76 +1806,6 @@ public class BooklistStyle
                 // If none found, return what we were given.
                 return allStyles;
             }
-        }
-
-        /**
-         * Get the UUIDs of the preferred styles from user preferences.
-         *
-         * @param context Current context
-         *
-         * @return set of UUIDs
-         */
-        @NonNull
-        private static Set<String> getMenuOrder(@NonNull final Context context) {
-            Set<String> uuidSet = new LinkedHashSet<>();
-            String itemsStr = PreferenceManager.getDefaultSharedPreferences(context)
-                                               .getString(PREF_BL_PREFERRED_STYLES, null);
-
-            if (itemsStr != null && !itemsStr.isEmpty()) {
-                String[] entries = itemsStr.split(",");
-                for (String entry : entries) {
-                    if (entry != null && !entry.isEmpty()) {
-                        uuidSet.add(entry);
-                    }
-                }
-            }
-            return uuidSet;
-        }
-
-        /**
-         * Internal single-point of writing the preferred styles menu order.
-         *
-         * @param context Current context
-         * @param uuidSet a set of style UUIDs
-         */
-        private static void setMenuOrder(@NonNull final Context context,
-                                         @NonNull final Iterable<String> uuidSet) {
-            PreferenceManager.getDefaultSharedPreferences(context)
-                             .edit()
-                             .putString(PREF_BL_PREFERRED_STYLES, TextUtils.join(",", uuidSet))
-                             .apply();
-        }
-
-        /**
-         * Add a style (its uuid) to the menu list of preferred styles.
-         *
-         * @param context Current context
-         * @param style   to add.
-         */
-        public static void addPreferredStyle(@NonNull final Context context,
-                                             @NonNull final BooklistStyle style) {
-            Set<String> list = getMenuOrder(context);
-            list.add(style.getUuid());
-            setMenuOrder(context, list);
-        }
-
-        /**
-         * Save the preferred style menu list.
-         * <p>
-         * This list contains the ID's for user-defined *AND* system-styles.
-         *
-         * @param context Current context
-         * @param styles  full list of preferred styles to save 'in order'
-         */
-        public static void saveMenuOrder(@NonNull final Context context,
-                                         @NonNull final Iterable<BooklistStyle> styles) {
-            Collection<String> list = new LinkedHashSet<>();
-            for (BooklistStyle style : styles) {
-                if (style.isPreferred(context)) {
-                    list.add(style.getUuid());
-                }
-            }
-            setMenuOrder(context, list);
         }
     }
 
@@ -1899,11 +1929,11 @@ public class BooklistStyle
         }
 
         /**
-         * Static method to get all builtin styles.
+         * Get all builtin styles.
          *
          * @param context Current context
          *
-         * @return a collection of all builtin styles.
+         * @return an ordered unmodifiableMap of all builtin styles.
          */
         @SuppressWarnings("SameReturnValue")
         @NonNull
@@ -1912,7 +1942,7 @@ public class BooklistStyle
             if (S_BUILTIN_STYLES.isEmpty()) {
                 create(context);
             }
-            return S_BUILTIN_STYLES;
+            return Collections.unmodifiableMap(S_BUILTIN_STYLES);
         }
 
         @NonNull
@@ -1937,9 +1967,20 @@ public class BooklistStyle
         }
 
         @Nullable
-        static BooklistStyle getByUuid(@NonNull final Context context,
-                                       @NonNull final String uuid) {
+        static BooklistStyle getStyle(@NonNull final Context context,
+                                      @NonNull final String uuid) {
             return getStyles(context).get(uuid);
+        }
+
+        @Nullable
+        static BooklistStyle getStyle(@NonNull final Context context,
+                                      final long id) {
+            for (BooklistStyle style : getStyles(context).values()) {
+                if (style.getId() == id) {
+                    return style;
+                }
+            }
+            return null;
         }
 
         private static void create(@NonNull final Context context) {

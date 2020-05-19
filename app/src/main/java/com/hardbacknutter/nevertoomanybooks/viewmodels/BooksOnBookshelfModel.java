@@ -398,6 +398,12 @@ public class BooksOnBookshelfModel
     public void setCurrentStyle(@NonNull final Context context,
                                 @NonNull final BooklistStyle style) {
         Objects.requireNonNull(mCurrentBookshelf, ErrorMsg.NULL_CURRENT_BOOKSHELF);
+
+        // always save a new style to the database
+        if (style.getId() == 0) {
+            BooklistStyle.StyleDAO.updateOrInsert(mDb, style);
+        }
+
         mCurrentBookshelf.setStyle(context, mDb, style);
     }
 
@@ -840,10 +846,6 @@ public class BooksOnBookshelfModel
                                final boolean expand) {
         Objects.requireNonNull(mCursor, ErrorMsg.NULL_CURSOR);
         mCursor.getBooklistBuilder().expandAllNodes(topLevel, expand);
-    }
-
-    public void saveStyle(@NonNull final BooklistStyle style) {
-        style.save(mDb);
     }
 
     @Nullable

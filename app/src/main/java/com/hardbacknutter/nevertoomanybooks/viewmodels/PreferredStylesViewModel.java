@@ -76,7 +76,7 @@ public class PreferredStylesViewModel
                      @NonNull final Bundle args) {
         if (mDb == null) {
             mDb = new DAO(TAG);
-            mList = new ArrayList<>(BooklistStyle.Helper.getStyles(context, mDb, true).values());
+            mList = new ArrayList<>(BooklistStyle.getStyles(context, mDb, true).values());
 
             mInitialStyleId = args.getLong(BooklistStyle.BKEY_STYLE_ID, 0);
             if (mInitialStyleId == 0) {
@@ -134,11 +134,20 @@ public class PreferredStylesViewModel
                                  final long templateId) {
         mIsDirty = true;
 
+        // Always save a new style to the database first!
+        if (style.getId() == 0) {
+            BooklistStyle.StyleDAO.updateOrInsert(mDb, style);
+        } else {
+            // update the style in the list of user styles.
+            BooklistStyle.StyleDAO.update(style);
+        }
+
         // based on the uuid, find the style in the list.
-        // Don't use 'indexOf' though, as the incoming style object was parcelled along the way.
+        // Don't use 'indexOf' (use id instead), as the incoming style object
+        // was parcelled along the way, which *might* have changed it.
         int editedRow = -1;
         for (int i = 0; i < mList.size(); i++) {
-            if (mList.get(i).equals(style)) {
+            if (mList.get(i).getId() == style.getId()) {
                 editedRow = i;
                 break;
             }
@@ -177,14 +186,11 @@ public class PreferredStylesViewModel
             }
         }
 
-        // Force a refresh of the list of user styles.
-        style.updateHelper();
-
         // check if the style was cloned from a builtin style.
         if (templateId < 0) {
             // We're assuming the user wanted to 'replace' the builtin style,
             // so remove the builtin style from the preferred styles.
-            BooklistStyle templateStyle = getBooklistStyle(templateId);
+            final BooklistStyle templateStyle = getBooklistStyle(templateId);
             if (templateStyle != null) {
                 templateStyle.setPreferred(false);
             }
@@ -193,21 +199,16 @@ public class PreferredStylesViewModel
         return editedRow;
     }
 
-    public void saveStyle(@NonNull final BooklistStyle style) {
-        mIsDirty = true;
-        style.save(mDb);
-    }
-
     public void deleteStyle(@NonNull final Context context,
                             @NonNull final BooklistStyle style) {
         mIsDirty = true;
-        style.delete(context, mDb);
+        BooklistStyle.StyleDAO.delete(context, mDb, style);
         mList.remove(style);
     }
 
     public void saveMenuOrder(@NonNull final Context context) {
         mIsDirty = true;
-        BooklistStyle.Helper.saveMenuOrder(context, mList);
+        BooklistStyle.MenuOrder.save(context, mList);
     }
 
     public void purgeBLNS(final long id) {
