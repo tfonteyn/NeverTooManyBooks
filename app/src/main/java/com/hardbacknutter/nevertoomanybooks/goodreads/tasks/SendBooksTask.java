@@ -52,7 +52,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.NetworkUtils;
  * If successful, an actual GoodReads task {@link TQTask} is kicked of to do the actual work.
  */
 public class SendBooksTask
-        extends TaskBase<GrStatus> {
+        extends TaskBase<Integer> {
 
     /** Log tag. */
     private static final String TAG = "GR.SendBooksTask";
@@ -66,7 +66,7 @@ public class SendBooksTask
      * @param taskListener for sending progress and finish messages to.
      */
     public SendBooksTask(final boolean updatesOnly,
-                         @NonNull final TaskListener<GrStatus> taskListener) {
+                         @NonNull final TaskListener<Integer> taskListener) {
         super(R.id.TASK_ID_GR_SEND_BOOKS, taskListener);
         mUpdatesOnly = updatesOnly;
     }
@@ -74,43 +74,44 @@ public class SendBooksTask
     @Override
     @NonNull
     @WorkerThread
-    protected GrStatus doInBackground(@Nullable final Void... voids) {
+    @GrStatus.Status
+    protected Integer doInBackground(@Nullable final Void... voids) {
         Thread.currentThread().setName(TAG);
         final Context context = App.getTaskContext();
 
         try {
             if (!NetworkUtils.isNetworkAvailable(context)) {
-                return GrStatus.NoInternet;
+                return GrStatus.NO_INTERNET;
             }
 
             // Check that no other sync-related jobs are queued
             final GoodreadsAuth grAuth = new GoodreadsAuth(context);
             if (QueueManager.getQueueManager().hasActiveTasks(TQTask.CAT_EXPORT_ALL)) {
-                return GrStatus.ExportTaskAlreadyQueued;
+                return GrStatus.EXPORT_TASK_ALREADY_QUEUED;
             }
             if (QueueManager.getQueueManager().hasActiveTasks(TQTask.CAT_IMPORT_ALL)) {
-                return GrStatus.ImportTaskAlreadyQueued;
+                return GrStatus.IMPORT_TASK_ALREADY_QUEUED;
             }
 
             // Make sure Goodreads is authorized for this app
             if (!grAuth.hasValidCredentials(context)) {
-                return GrStatus.CredentialsMissing;
+                return GrStatus.CREDENTIALS_MISSING;
             }
 
             if (isCancelled()) {
-                return GrStatus.Cancelled;
+                return GrStatus.CANCELLED;
             }
 
             QueueManager.getQueueManager().enqueueTask(
                     new SendBooksLegacyTask(context.getString(R.string.gr_title_send_book),
                                             mUpdatesOnly),
                     QueueManager.Q_MAIN);
-            return GrStatus.TaskQueuedWithSuccess;
+            return GrStatus.TASK_QUEUED_WITH_SUCCESS;
 
         } catch (@NonNull final RuntimeException e) {
             Logger.error(context, TAG, e);
             mException = e;
-            return GrStatus.UnexpectedError;
+            return GrStatus.UNEXPECTED_ERROR;
         }
     }
 }

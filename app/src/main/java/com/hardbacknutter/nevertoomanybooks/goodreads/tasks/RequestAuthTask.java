@@ -53,7 +53,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.NetworkUtils;
  * Before we can access Goodreads, we must authorize our application to do so.
  */
 public class RequestAuthTask
-        extends TaskBase<GrStatus> {
+        extends TaskBase<Integer> {
 
     /** Log tag. */
     private static final String TAG = "GR.RequestAuthTask";
@@ -64,7 +64,7 @@ public class RequestAuthTask
      * @param taskListener for sending progress and finish messages to.
      */
     @UiThread
-    public RequestAuthTask(@NonNull final TaskListener<GrStatus> taskListener) {
+    public RequestAuthTask(@NonNull final TaskListener<Integer> taskListener) {
         super(R.id.TASK_ID_GR_REQUEST_AUTH, taskListener);
     }
 
@@ -75,7 +75,7 @@ public class RequestAuthTask
      * @param taskListener for RequestAuthTask to send progress and finish messages to.
      */
     public static void prompt(@NonNull final Context context,
-                              @NonNull final TaskListener<GrStatus> taskListener) {
+                              @NonNull final TaskListener<Integer> taskListener) {
         new MaterialAlertDialogBuilder(context)
                 .setIcon(R.drawable.ic_security)
                 .setTitle(R.string.info_authorized_needed)
@@ -94,17 +94,18 @@ public class RequestAuthTask
     @Override
     @NonNull
     @WorkerThread
-    protected GrStatus doInBackground(@Nullable final Void... voids) {
+    @GrStatus.Status
+    protected Integer doInBackground(@Nullable final Void... voids) {
         Thread.currentThread().setName(TAG);
         final Context context = App.getTaskContext();
 
         if (!NetworkUtils.isNetworkAvailable(context)) {
-            return GrStatus.NoInternet;
+            return GrStatus.NO_INTERNET;
         }
 
         final GoodreadsAuth grAuth = new GoodreadsAuth(context);
         if (grAuth.hasValidCredentials(context)) {
-            return GrStatus.AuthorizationAlreadyGranted;
+            return GrStatus.AUTHORIZATION_ALREADY_GRANTED;
         }
 
         try {
@@ -114,16 +115,16 @@ public class RequestAuthTask
         } catch (@NonNull final IOException e) {
             mException = e;
             Logger.error(context, TAG, e);
-            return GrStatus.IOError;
+            return GrStatus.IO_ERROR;
 
         } catch (@NonNull final GoodreadsAuth.AuthorizationException e) {
             mException = e;
-            return GrStatus.AuthorizationFailed;
+            return GrStatus.AUTHORIZATION_FAILED;
         }
 
         if (isCancelled()) {
-            return GrStatus.Cancelled;
+            return GrStatus.CANCELLED;
         }
-        return GrStatus.AuthorizationSuccessful;
+        return GrStatus.AUTHORIZATION_SUCCESSFUL;
     }
 }

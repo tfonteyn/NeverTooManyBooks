@@ -42,7 +42,6 @@ import java.util.Map;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.fields.Fields;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsHandler;
-import com.hardbacknutter.nevertoomanybooks.goodreads.GrStatus;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 
 /**
@@ -73,7 +72,7 @@ public abstract class BookBaseFragmentViewModel
     private int mCurrentCoverHandlerIndex = -1;
 
     /** Lazy init, always use {@link #getGoodreadsTaskListener(Context)}. */
-    private TaskListener<GrStatus> mGoodreadsTaskListener;
+    private TaskListener<Integer> mGoodreadsTaskListener;
 
     @Override
     @CallSuper
@@ -158,12 +157,12 @@ public abstract class BookBaseFragmentViewModel
     }
 
     @NonNull
-    public TaskListener<GrStatus> getGoodreadsTaskListener(@NonNull final Context context) {
+    public TaskListener<Integer> getGoodreadsTaskListener(@NonNull final Context context) {
         if (mGoodreadsTaskListener == null) {
-            mGoodreadsTaskListener = new TaskListener<GrStatus>() {
+            mGoodreadsTaskListener = new TaskListener<Integer>() {
 
                 @Override
-                public void onFinished(@NonNull final FinishMessage<GrStatus> message) {
+                public void onFinished(@NonNull final FinishMessage<Integer> message) {
                     String msg = GoodreadsHandler.handleResult(context, message);
                     if (msg != null) {
                         // success, failure, cancelled

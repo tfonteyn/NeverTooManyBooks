@@ -60,7 +60,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsExceptio
  * {@link SendBooksLegacyTask}. The core of the task is (should be) identical.
  */
 public class SendOneBookTask
-        extends TaskBase<GrStatus> {
+        extends TaskBase<Integer> {
 
     /** Log tag. */
     private static final String TAG = "GR.SendOneBook";
@@ -75,7 +75,7 @@ public class SendOneBookTask
      * @param taskListener for sending progress and finish messages to.
      */
     public SendOneBookTask(final long bookId,
-                           @NonNull final TaskListener<GrStatus> taskListener) {
+                           @NonNull final TaskListener<Integer> taskListener) {
         super(R.id.TASK_ID_GR_SEND_ONE_BOOK, taskListener);
         mBookId = bookId;
     }
@@ -83,57 +83,59 @@ public class SendOneBookTask
     @Override
     @NonNull
     @WorkerThread
-    protected GrStatus doInBackground(@Nullable final Void... voids) {
+    @GrStatus.Status
+    protected Integer doInBackground(@Nullable final Void... voids) {
         Thread.currentThread().setName(TAG + mBookId);
         final Context context = LocaleUtils.applyLocale(App.getTaskContext());
 
-        GrStatus result;
+        @GrStatus.Status
+        int status;
         try {
             if (!NetworkUtils.isNetworkAvailable(context)) {
-                return GrStatus.NoInternet;
+                return GrStatus.NO_INTERNET;
             }
             final GoodreadsAuth grAuth = new GoodreadsAuth(context);
             final GoodreadsHandler apiHandler = new GoodreadsHandler(grAuth);
             if (!grAuth.hasValidCredentials(context)) {
-                return GrStatus.CredentialsMissing;
+                return GrStatus.CREDENTIALS_MISSING;
             }
 
             try (DAO db = new DAO(TAG);
                  Cursor cursor = db.fetchBookForExportToGoodreads(mBookId)) {
                 if (cursor.moveToFirst()) {
                     if (isCancelled()) {
-                        return GrStatus.Cancelled;
+                        return GrStatus.CANCELLED;
                     }
                     publishProgress(new TaskListener.ProgressMessage(
                             getTaskId(), context.getString(R.string.progress_msg_sending)));
 
                     final RowDataHolder rowData = new CursorRow(cursor);
-                    result = apiHandler.sendOneBook(context, db, rowData);
-                    if (result == GrStatus.Completed) {
+                    status = apiHandler.sendOneBook(context, db, rowData);
+                    if (status == GrStatus.COMPLETED) {
                         // Record the update
                         db.setGoodreadsSyncDate(mBookId);
                     }
-                    return result;
+                    return status;
                 }
             }
         } catch (@NonNull final CredentialsException e) {
             mException = e;
             Logger.error(context, TAG, e);
-            return GrStatus.CredentialsError;
+            return GrStatus.CREDENTIALS_ERROR;
         } catch (@NonNull final Http404Exception e) {
             mException = e;
             Logger.error(context, TAG, e, e.getUrl());
-            return GrStatus.BookNotFound;
+            return GrStatus.BOOK_NOT_FOUND;
         } catch (@NonNull final IOException e) {
             mException = e;
             Logger.error(context, TAG, e);
-            return GrStatus.IOError;
+            return GrStatus.IO_ERROR;
         } catch (@NonNull final RuntimeException e) {
             mException = e;
             Logger.error(context, TAG, e);
-            return GrStatus.UnexpectedError;
+            return GrStatus.UNEXPECTED_ERROR;
         }
 
-        return GrStatus.UnexpectedError;
+        return GrStatus.UNEXPECTED_ERROR;
     }
 }

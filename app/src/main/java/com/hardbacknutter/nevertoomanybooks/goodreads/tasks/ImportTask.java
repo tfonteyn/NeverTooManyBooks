@@ -52,7 +52,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.NetworkUtils;
  * If successful, an actual GoodReads task {@link TQTask} is kicked of to do the real work.
  */
 public class ImportTask
-        extends TaskBase<GrStatus> {
+        extends TaskBase<Integer> {
 
     /** Log tag. */
     private static final String TAG = "GR.ImportTask";
@@ -66,7 +66,7 @@ public class ImportTask
      * @param taskListener for sending progress and finish messages to.
      */
     public ImportTask(final boolean isSync,
-                      @NonNull final TaskListener<GrStatus> taskListener) {
+                      @NonNull final TaskListener<Integer> taskListener) {
         super(R.id.TASK_ID_GR_IMPORT, taskListener);
         mIsSync = isSync;
     }
@@ -74,31 +74,32 @@ public class ImportTask
     @Override
     @NonNull
     @WorkerThread
-    protected GrStatus doInBackground(@Nullable final Void... voids) {
+    @GrStatus.Status
+    protected Integer doInBackground(@Nullable final Void... voids) {
         Thread.currentThread().setName(TAG);
         final Context context = App.getTaskContext();
 
         try {
             if (!NetworkUtils.isNetworkAvailable(context)) {
-                return GrStatus.NoInternet;
+                return GrStatus.NO_INTERNET;
             }
 
             // Check that no other sync-related jobs are queued
             if (QueueManager.getQueueManager().hasActiveTasks(TQTask.CAT_IMPORT_ALL)) {
-                return GrStatus.ImportTaskAlreadyQueued;
+                return GrStatus.IMPORT_TASK_ALREADY_QUEUED;
             }
             if (QueueManager.getQueueManager().hasActiveTasks(TQTask.CAT_EXPORT_ALL)) {
-                return GrStatus.ExportTaskAlreadyQueued;
+                return GrStatus.EXPORT_TASK_ALREADY_QUEUED;
             }
 
             // Make sure Goodreads is authorized for this app
             final GoodreadsAuth grAuth = new GoodreadsAuth(context);
             if (!grAuth.hasValidCredentials(context)) {
-                return GrStatus.CredentialsMissing;
+                return GrStatus.CREDENTIALS_MISSING;
             }
 
             if (isCancelled()) {
-                return GrStatus.Cancelled;
+                return GrStatus.CANCELLED;
             }
 
             QueueManager.getQueueManager().enqueueTask(
@@ -106,12 +107,12 @@ public class ImportTask
                                          context.getString(R.string.gr_title_sync_with_goodreads),
                                          mIsSync),
                     QueueManager.Q_MAIN);
-            return GrStatus.TaskQueuedWithSuccess;
+            return GrStatus.TASK_QUEUED_WITH_SUCCESS;
 
         } catch (@NonNull final RuntimeException e) {
             Logger.error(context, TAG, e);
             mException = e;
-            return GrStatus.UnexpectedError;
+            return GrStatus.UNEXPECTED_ERROR;
         }
     }
 }

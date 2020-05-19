@@ -42,7 +42,6 @@ import com.hardbacknutter.nevertoomanybooks.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsAuth;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsHandler;
-import com.hardbacknutter.nevertoomanybooks.goodreads.GrStatus;
 import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.RequestAuthTask;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 
@@ -55,9 +54,9 @@ public class GoodreadsRegistrationActivity
 
     private View mAuthButton;
 
-    private final TaskListener<GrStatus> mTaskListener = new TaskListener<GrStatus>() {
+    private final TaskListener<Integer> mTaskListener = new TaskListener<Integer>() {
         @Override
-        public void onFinished(@NonNull final FinishMessage<GrStatus> message) {
+        public void onFinished(@NonNull final FinishMessage<Integer> message) {
 
             String msg = GoodreadsHandler.handleResult(GoodreadsRegistrationActivity.this,
                                                        message);

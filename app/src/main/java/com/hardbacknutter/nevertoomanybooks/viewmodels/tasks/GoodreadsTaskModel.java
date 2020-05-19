@@ -27,11 +27,10 @@
  */
 package com.hardbacknutter.nevertoomanybooks.viewmodels.tasks;
 
-import com.hardbacknutter.nevertoomanybooks.goodreads.GrStatus;
-
 /**
  * See parent class doc.
  */
 public class GoodreadsTaskModel
-        extends TaskBaseModel<GrStatus> {
+        extends TaskBaseModel<Integer> {
+
 }

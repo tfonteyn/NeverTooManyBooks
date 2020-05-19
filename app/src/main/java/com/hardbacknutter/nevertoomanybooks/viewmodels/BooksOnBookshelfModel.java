@@ -75,7 +75,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.RowDataHolder;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsHandler;
-import com.hardbacknutter.nevertoomanybooks.goodreads.GrStatus;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskBase;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
@@ -158,7 +157,7 @@ public class BooksOnBookshelfModel
     /** Database Access. */
     private DAO mDb;
     /** Lazy init, always use {@link #getGoodreadsTaskListener(Context)}. */
-    private TaskListener<GrStatus> mGoodreadsTaskListener;
+    private TaskListener<Integer> mGoodreadsTaskListener;
     /**
      * Flag (potentially) set in {@link BooksOnBookshelf} #onActivityResult.
      * Indicates if list rebuild is needed in {@link BooksOnBookshelf}#onResume.
@@ -769,12 +768,12 @@ public class BooksOnBookshelfModel
     }
 
     @NonNull
-    public TaskListener<GrStatus> getGoodreadsTaskListener(@NonNull final Context context) {
+    public TaskListener<Integer> getGoodreadsTaskListener(@NonNull final Context context) {
         if (mGoodreadsTaskListener == null) {
-            mGoodreadsTaskListener = new TaskListener<GrStatus>() {
+            mGoodreadsTaskListener = new TaskListener<Integer>() {
 
                 @Override
-                public void onFinished(@NonNull final FinishMessage<GrStatus> message) {
+                public void onFinished(@NonNull final FinishMessage<Integer> message) {
                     String msg = GoodreadsHandler.handleResult(context, message);
                     if (msg != null) {
                         // success, failure, cancelled

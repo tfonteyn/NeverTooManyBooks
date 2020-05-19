@@ -29,102 +29,125 @@ package com.hardbacknutter.nevertoomanybooks.goodreads;
 
 import android.content.Context;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 
-public enum GrStatus {
+public final class GrStatus {
+
     /** The no-error code. */
-    Completed,
+    public static final int COMPLETED = 0;
 
-    AuthorizationNeeded,
-    AuthorizationAlreadyGranted,
-    AuthorizationSuccessful,
-    AuthorizationFailed,
+    /** Not a clue what happened. */
+    public static final int UNEXPECTED_ERROR = 1;
 
-    CredentialsMissing,
-    CredentialsError,
+    public static final int AUTHORIZATION_NEEDED = 2;
+    public static final int AUTHORIZATION_ALREADY_GRANTED = 3;
+    public static final int AUTHORIZATION_SUCCESSFUL = 4;
+    public static final int AUTHORIZATION_FAILED = 5;
 
-    TaskQueuedWithSuccess,
-    ImportTaskAlreadyQueued,
-    ExportTaskAlreadyQueued,
+    public static final int CREDENTIALS_MISSING = 6;
+    public static final int CREDENTIALS_ERROR = 7;
+
+    public static final int TASK_QUEUED_WITH_SUCCESS = 8;
+    public static final int IMPORT_TASK_ALREADY_QUEUED = 9;
+    public static final int EXPORT_TASK_ALREADY_QUEUED = 10;
 
     /** The book has no ISBN! We can only lookup books with an ISBN. */
-    NoIsbn,
+    public static final int NO_ISBN = 11;
     /** A specific action to get a book failed to find it. */
-    BookNotFound,
+    public static final int BOOK_NOT_FOUND = 12;
 
     /** A generic action to find 'something' failed. */
-    NotFound,
+    public static final int NOT_FOUND = 13;
 
     /** The user cancelled the action. */
-    Cancelled,
+    public static final int CANCELLED = 14;
     /** There is no connectivity. */
-    NoInternet,
+    public static final int NO_INTERNET = 15;
     /** There is connectivity but something went wrong. */
-    IOError,
-    /** Not a clue. */
-    UnexpectedError;
+    public static final int IO_ERROR = 16;
+
+    private GrStatus() {
+    }
 
     @NonNull
-    public String getString(@NonNull final Context context) {
-        switch (this) {
-            case Completed:
+    public static String getString(@NonNull final Context context,
+                                   @Status final int errorCode) {
+        // We could have created an array or map... but we have a couple of special cases,
+        // so just leaving this as a switch.
+        switch (errorCode) {
+            case COMPLETED:
                 return context.getString(R.string.gr_tq_completed);
 
-
-            case AuthorizationNeeded:
+            case AUTHORIZATION_NEEDED:
                 return context.getString(R.string.gr_authorization_needed);
-            case AuthorizationAlreadyGranted:
+            case AUTHORIZATION_ALREADY_GRANTED:
                 return context.getString(R.string.gr_authorization_already_granted);
-            case AuthorizationSuccessful:
+            case AUTHORIZATION_SUCCESSFUL:
                 return context.getString(R.string.info_site_authorization_successful,
                                          context.getString(R.string.site_goodreads));
-            case AuthorizationFailed:
+            case AUTHORIZATION_FAILED:
                 return context.getString(R.string.error_site_authorization_failed,
                                          context.getString(R.string.site_goodreads));
 
             // the internal logic for CredentialsMissing and CredentialsError
             // is different, but we can use the same message for displaying
             // as the two appear identical to the user
-            case CredentialsMissing:
-            case CredentialsError:
+            case CREDENTIALS_MISSING:
+            case CREDENTIALS_ERROR:
                 return context.getString(R.string.error_site_authentication_failed,
                                          context.getString(R.string.site_goodreads));
 
-            case TaskQueuedWithSuccess:
+            case TASK_QUEUED_WITH_SUCCESS:
                 return context.getString(R.string.gr_tq_task_has_been_queued);
 
-            case ImportTaskAlreadyQueued:
+            case IMPORT_TASK_ALREADY_QUEUED:
                 return context.getString(R.string.gr_tq_import_task_is_already_queued);
 
-            case ExportTaskAlreadyQueued:
+            case EXPORT_TASK_ALREADY_QUEUED:
                 return context.getString(R.string.gr_tq_export_task_is_already_queued);
 
 
-            case NoIsbn:
+            case NO_ISBN:
                 return context.getString(R.string.warning_no_isbn_stored_for_book);
 
-            case BookNotFound:
+            case BOOK_NOT_FOUND:
                 return context.getString(R.string.warning_no_matching_book_found);
 
-            case Cancelled:
+            // This could do with a more informative message...
+            case NOT_FOUND:
+                return context.getString(R.string.gr_tq_failed);
+
+            case CANCELLED:
                 return context.getString(R.string.progress_end_cancelled);
 
-            case NoInternet:
+            case NO_INTERNET:
                 return context.getString(R.string.error_network_no_connection);
 
-            case IOError:
+            case IO_ERROR:
                 return context.getString(R.string.error_site_access_failed,
                                          context.getString(R.string.site_goodreads));
 
-            // This could do with a more informative message...
-            case NotFound:
-                return context.getString(R.string.gr_tq_failed);
-
-            case UnexpectedError:
+            case UNEXPECTED_ERROR:
             default:
                 return context.getString(R.string.error_unexpected_error);
         }
+    }
+
+    @IntDef({COMPLETED, UNEXPECTED_ERROR,
+             AUTHORIZATION_NEEDED, AUTHORIZATION_ALREADY_GRANTED,
+             AUTHORIZATION_SUCCESSFUL, AUTHORIZATION_FAILED,
+             CREDENTIALS_MISSING, CREDENTIALS_ERROR,
+             TASK_QUEUED_WITH_SUCCESS, IMPORT_TASK_ALREADY_QUEUED, EXPORT_TASK_ALREADY_QUEUED,
+             NO_ISBN, BOOK_NOT_FOUND, NOT_FOUND,
+             CANCELLED, NO_INTERNET, IO_ERROR})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface Status {
+
     }
 }

@@ -60,8 +60,8 @@ public abstract class TQTask
 
     private static final long serialVersionUID = 3129519336104843325L;
 
-    @Nullable
-    private GrStatus mLastExtStatus;
+    @GrStatus.Status
+    private int mLastExtStatus;
 
     /**
      * Constructor.
@@ -72,7 +72,7 @@ public abstract class TQTask
         super(description);
     }
 
-    protected void setLastExtStatus(@Nullable final GrStatus status) {
+    protected void setLastExtStatus(@GrStatus.Status final int status) {
         mLastExtStatus = status;
     }
 
@@ -94,11 +94,11 @@ public abstract class TQTask
                                  @NonNull final TasksCursor row,
                                  @NonNull final DAO db) {
 
-        Context context = holder.itemView.getContext();
-        Locale userLocale = LocaleUtils.getUserLocale(context);
+        final Context context = holder.itemView.getContext();
+        final Locale userLocale = LocaleUtils.getUserLocale(context);
 
         holder.descriptionView.setText(getDescription(context));
-        String statusCode = row.getStatusCode().toUpperCase(Locale.ENGLISH);
+        final String statusCode = row.getStatusCode().toUpperCase(Locale.ENGLISH);
         String statusText;
         switch (statusCode) {
             case COMPLETED:
@@ -115,8 +115,8 @@ public abstract class TQTask
 
             case QUEUED:
                 statusText = context.getString(R.string.gr_tq_queued);
-                String date = DateUtils.toPrettyDateTime(row.getRetryDate(), userLocale);
-                String info = context.getString(R.string.gr_tq_retry_x_of_y_next_at_z,
+                final String date = DateUtils.toPrettyDateTime(row.getRetryDate(), userLocale);
+                final String info = context.getString(R.string.gr_tq_retry_x_of_y_next_at_z,
                                                 getRetries(), getRetryLimit(), date);
                 holder.retryInfoView.setText(info);
                 holder.retryInfoView.setVisibility(View.VISIBLE);
@@ -136,12 +136,12 @@ public abstract class TQTask
         @Nullable
         Exception e = getLastException();
         // take a copy!
-        @Nullable
-        GrStatus extStatus = mLastExtStatus;
+        @GrStatus.Status
+        int extStatus = mLastExtStatus;
 
-        if (extStatus != null && extStatus != GrStatus.Completed) {
+        if (extStatus != GrStatus.COMPLETED) {
             String msg;
-            if (extStatus == GrStatus.UnexpectedError && e != null) {
+            if (extStatus == GrStatus.UNEXPECTED_ERROR && e != null) {
                 // UnexpectedError... display the exception
                 msg = e.getLocalizedMessage();
                 if (msg == null) {
@@ -149,7 +149,7 @@ public abstract class TQTask
                 }
             } else {
                 // display a formatted clean status message
-                msg = extStatus.getString(context);
+                msg = GrStatus.getString(context, extStatus);
             }
 
             msg = context.getString(R.string.gr_tq_last_error_e, msg);
@@ -160,8 +160,8 @@ public abstract class TQTask
             holder.errorView.setVisibility(View.GONE);
         }
 
-        String date = DateUtils.toPrettyDateTime(row.getQueuedDate(), userLocale);
-        String info = context.getString(R.string.gr_tq_generic_task_info, getId(), date);
+        final String date = DateUtils.toPrettyDateTime(row.getQueuedDate(), userLocale);
+        final String info = context.getString(R.string.gr_tq_generic_task_info, getId(), date);
         holder.jobInfoView.setText(info);
     }
 

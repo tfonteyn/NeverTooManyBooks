@@ -130,52 +130,53 @@ public abstract class SendBooksLegacyTaskBase
                         @NonNull final DAO db,
                         @NonNull final RowDataHolder rowData) {
 
-        GrStatus result;
+        @GrStatus.Status
+        int status;
         try {
-            result = apiHandler.sendOneBook(context, db, rowData);
+            status = apiHandler.sendOneBook(context, db, rowData);
 
         } catch (@NonNull final CredentialsException e) {
             setLastException(e);
-            result = GrStatus.CredentialsError;
+            status = GrStatus.CREDENTIALS_ERROR;
 
         } catch (@NonNull final Http404Exception e) {
             setLastException(e);
-            result = GrStatus.BookNotFound;
+            status = GrStatus.BOOK_NOT_FOUND;
 
         } catch (@NonNull final IOException e) {
             setLastException(e);
-            result = GrStatus.IOError;
+            status = GrStatus.IO_ERROR;
 
         } catch (@NonNull final RuntimeException e) {
             setLastException(e);
-            result = GrStatus.UnexpectedError;
+            status = GrStatus.UNEXPECTED_ERROR;
         }
 
         long bookId = rowData.getLong(DBDefinitions.KEY_PK_ID);
 
         // update the current status, so it can be displayed to the user continuously.
-        setLastExtStatus(result);
+        setLastExtStatus(status);
 
-        switch (result) {
-            case Completed:
+        switch (status) {
+            case GrStatus.COMPLETED:
                 // Record the change
                 db.setGoodreadsSyncDate(bookId);
                 mSent++;
                 return true;
 
-            case NoIsbn:
+            case GrStatus.NO_ISBN:
                 storeEvent(new GrNoIsbnEvent(context, bookId));
                 mNoIsbn++;
                 // not a success, but don't try again until the user acts on the stored event
                 return true;
 
-            case BookNotFound:
+            case GrStatus.BOOK_NOT_FOUND:
                 storeEvent(new GrNoMatchEvent(context, bookId));
                 mNotFound++;
                 // not a success, but don't try again until the user acts on the stored event
                 return true;
 
-            case IOError:
+            case GrStatus.IO_ERROR:
                 // wait 5 minutes on network errors.
                 if (getRetryDelay() > FIVE_MINUTES) {
                     setRetryDelay(FIVE_MINUTES);
@@ -183,19 +184,19 @@ public abstract class SendBooksLegacyTaskBase
                 queueManager.updateTask(this);
                 return false;
 
-            case AuthorizationAlreadyGranted:
-            case AuthorizationSuccessful:
-            case AuthorizationFailed:
-            case AuthorizationNeeded:
-            case CredentialsMissing:
-            case CredentialsError:
-            case TaskQueuedWithSuccess:
-            case ImportTaskAlreadyQueued:
-            case ExportTaskAlreadyQueued:
-            case Cancelled:
-            case NoInternet:
-            case UnexpectedError:
-            case NotFound:
+            case GrStatus.AUTHORIZATION_ALREADY_GRANTED:
+            case GrStatus.AUTHORIZATION_SUCCESSFUL:
+            case GrStatus.AUTHORIZATION_FAILED:
+            case GrStatus.AUTHORIZATION_NEEDED:
+            case GrStatus.CREDENTIALS_MISSING:
+            case GrStatus.CREDENTIALS_ERROR:
+            case GrStatus.TASK_QUEUED_WITH_SUCCESS:
+            case GrStatus.IMPORT_TASK_ALREADY_QUEUED:
+            case GrStatus.EXPORT_TASK_ALREADY_QUEUED:
+            case GrStatus.CANCELLED:
+            case GrStatus.NO_INTERNET:
+            case GrStatus.UNEXPECTED_ERROR:
+            case GrStatus.NOT_FOUND:
             default:
                 queueManager.updateTask(this);
                 return false;
