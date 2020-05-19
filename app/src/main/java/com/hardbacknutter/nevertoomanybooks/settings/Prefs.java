@@ -260,10 +260,11 @@ public final class Prefs {
     }
 
     /** FIXME: Compile time set FastScroller overlay style... maybe make a real preference ? */
-    public static FastScroller.OverlayProvider.OverlayStyle getFastScrollerOverlayStyle() {
-//        return FastScroller.OverlayProvider.OverlayStyle.Classic;
-        return FastScroller.OverlayProvider.OverlayStyle.MD1;
-//        return FastScroller.OverlayProvider.OverlayStyle.MD2;
+    @FastScroller.OverlayProvider.Style
+    public static int getFastScrollerOverlayStyle() {
+//        return FastScroller.OverlayProvider.STYLE_CLASSIC;
+        return FastScroller.OverlayProvider.STYLE_MD1;
+//        return FastScroller.OverlayProvider.STYLE_MD2;
     }
 
 }

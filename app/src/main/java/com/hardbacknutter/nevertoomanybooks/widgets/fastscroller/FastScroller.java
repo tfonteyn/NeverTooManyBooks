@@ -35,10 +35,14 @@ import android.util.TypedValue;
 
 import androidx.annotation.AttrRes;
 import androidx.annotation.ColorInt;
+import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
@@ -90,21 +94,21 @@ public class FastScroller {
         final OverlayProvider overlay;
         int thumbWidth = verticalThumbDrawable.getIntrinsicWidth();
         switch (Prefs.getFastScrollerOverlayStyle()) {
-            case Classic:
+            case OverlayProvider.STYLE_CLASSIC: {
                 overlay = new ClassicOverlay(recyclerView, thumbWidth, PopupStyles.CLASSIC);
                 break;
-
-            case MD2: {
-                overlay = new FastScrollerOverlay(recyclerView, thumbWidth, PopupStyles.MD2);
-                break;
             }
-            case MD1: {
+            case OverlayProvider.STYLE_MD1: {
                 overlay = new FastScrollerOverlay(recyclerView, thumbWidth, PopupStyles.DEFAULT);
                 break;
             }
-            default:
-                overlay = null;
+            case OverlayProvider.STYLE_MD2: {
+                overlay = new FastScrollerOverlay(recyclerView, thumbWidth, PopupStyles.MD2);
                 break;
+            }
+
+            default:
+                throw new IllegalArgumentException();
         }
 
         fastScroller.setOverlayProvider(overlay);
@@ -147,6 +151,13 @@ public class FastScroller {
 
     public interface OverlayProvider {
 
+        /** Classic BC. */
+        int STYLE_CLASSIC = 0;
+        /** Material Design. */
+        int STYLE_MD1 = 1;
+        /** Material Design 2. */
+        int STYLE_MD2 = 2;
+
         /**
          * Called to draw the overlay.
          *
@@ -156,10 +167,10 @@ public class FastScroller {
         void showOverlay(boolean isDragging,
                          int thumbCenter);
 
-        enum OverlayStyle {
-            Classic,
-            MD2,
-            MD1
+        @IntDef({STYLE_CLASSIC, STYLE_MD1, STYLE_MD2})
+        @Retention(RetentionPolicy.SOURCE)
+        @interface Style {
+
         }
     }
 }
