@@ -1932,7 +1932,7 @@ public class DAO
                                       new Author(rowData.getLong(KEY_FK_AUTHOR), rowData),
                                       rowData.getString(KEY_TITLE),
                                       rowData.getString(KEY_DATE_FIRST_PUBLICATION),
-                                      TocEntry.Type.TYPE_BOOK,
+                                      TocEntry.TYPE_BOOK,
                                       rowData.getInt(KEY_BOOK_COUNT)));
             }
         }
@@ -4475,7 +4475,7 @@ public class DAO
          * We need KEY_TITLE_OB as it will be used to ORDER BY
          */
         private static final String TOC_ENTRIES_BY_AUTHOR_ID =
-                "SELECT " + "'" + TocEntry.Type.TYPE_TOC + "' AS " + KEY_TOC_TYPE
+                "SELECT " + "'" + TocEntry.TYPE_TOC + "' AS " + KEY_TOC_TYPE
                 + ',' + TBL_TOC_ENTRIES.dot(KEY_PK_ID)
                 + ',' + TBL_TOC_ENTRIES.dot(KEY_TITLE)
                 + ',' + TBL_TOC_ENTRIES.dot(KEY_TITLE_OB)
@@ -4491,7 +4491,7 @@ public class DAO
          * We need KEY_TITLE_OB as it will be used to ORDER BY
          */
         private static final String BOOK_TITLES_BY_AUTHOR_ID =
-                "SELECT " + "'" + TocEntry.Type.TYPE_BOOK + "' AS " + KEY_TOC_TYPE
+                "SELECT " + "'" + TocEntry.TYPE_BOOK + "' AS " + KEY_TOC_TYPE
                 + ',' + TBL_BOOKS.dot(KEY_PK_ID)
                 + ',' + TBL_BOOKS.dot(KEY_TITLE)
                 + ',' + TBL_BOOKS.dot(KEY_TITLE_OB)

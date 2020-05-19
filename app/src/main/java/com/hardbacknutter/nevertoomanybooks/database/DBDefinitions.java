@@ -522,11 +522,11 @@ public final class DBDefinitions {
      * ====================================================================================== */
     /**
      * Column alias.
-     * <p>
-     * The type of a TOC entry. See {@link TocEntry.Type}
-     * <p>
-     * DOM_TOC_TYPE =
-     * new Domain.Builder(KEY_TOC_TYPE, ColumnInfo.TYPE_TEXT).build();
+     * <ul>The type of a TOC entry.
+     *     <li>{@link TocEntry#TYPE_TOC}</li>
+     *     <li>{@link TocEntry#TYPE_BOOK}</li>
+     * </ul>
+     * DOM_TOC_TYPE = new Domain.Builder(KEY_TOC_TYPE, ColumnInfo.TYPE_TEXT).build();
      */
     public static final String KEY_TOC_TYPE = "type";
     /**

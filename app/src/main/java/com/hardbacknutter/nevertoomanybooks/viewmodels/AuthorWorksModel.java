@@ -143,13 +143,13 @@ public class AuthorWorksModel
     public void delTocEntry(@NonNull final Context context,
                             @NonNull final TocEntry item) {
         switch (item.getType()) {
-            case Toc:
+            case TocEntry.TYPE_TOC:
                 if (mDb.deleteTocEntry(item.getId()) == 1) {
                     mTocEntries.remove(item);
                 }
                 break;
 
-            case Book:
+            case TocEntry.TYPE_BOOK:
                 if (mDb.deleteBook(context, item.getId()) == 1) {
                     mTocEntries.remove(item);
                     putResultData(BookViewModel.BKEY_BOOK_DELETED, true);

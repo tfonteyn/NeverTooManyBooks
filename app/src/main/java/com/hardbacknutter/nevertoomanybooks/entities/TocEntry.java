@@ -41,7 +41,6 @@ import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.UnexpectedValueException;
 
 /**
  * Class to represent a single title within an TOC(Anthology).
@@ -75,6 +74,11 @@ public class TocEntry
                 }
             };
 
+    /** As used by the DAO. */
+    public static final char TYPE_TOC = 'T';
+    /** As used by the DAO. */
+    public static final char TYPE_BOOK = 'B';
+
     private long mId;
     @NonNull
     private Author mAuthor;
@@ -83,7 +87,7 @@ public class TocEntry
     @NonNull
     private String mFirstPublicationDate;
     /** in-memory use only. Type of entry. */
-    private Type mType;
+    private char mType;
     /** in-memory use only. Number of books this TocEntry appears in. */
     private int mBookCount;
 
@@ -100,7 +104,7 @@ public class TocEntry
         mAuthor = author;
         mTitle = title.trim();
         mFirstPublicationDate = publicationDate != null ? publicationDate : "";
-        mType = Type.Toc;
+        mType = TYPE_TOC;
         mBookCount = 1;
     }
 
@@ -111,7 +115,7 @@ public class TocEntry
      * @param author          Author of title
      * @param title           Title
      * @param publicationDate year of first publication
-     * @param type            {@link Type#TYPE_TOC} or {@link Type#TYPE_BOOK}
+     * @param type            {@link TocEntry#TYPE_TOC} or {@link TocEntry#TYPE_BOOK}
      * @param bookCount       number of books this TocEntry appears in
      */
     public TocEntry(final long id,
@@ -124,7 +128,7 @@ public class TocEntry
         mAuthor = author;
         mTitle = title.trim();
         mFirstPublicationDate = publicationDate != null ? publicationDate : "";
-        mType = Type.get(type);
+        mType = type;
         mBookCount = bookCount;
     }
 
@@ -142,7 +146,7 @@ public class TocEntry
         //noinspection ConstantConditions
         mFirstPublicationDate = in.readString();
 
-        mType = Type.get((char) in.readInt());
+        mType = (char) in.readInt();
         mBookCount = in.readInt();
     }
 
@@ -172,8 +176,7 @@ public class TocEntry
      *
      * @return type
      */
-    @NonNull
-    public Type getType() {
+    public char getType() {
         return mType;
     }
 
@@ -212,7 +215,7 @@ public class TocEntry
         dest.writeParcelable(mAuthor, flags);
         dest.writeString(mTitle);
         dest.writeString(mFirstPublicationDate);
-        dest.writeInt(mType.getChar());
+        dest.writeInt(mType);
         dest.writeInt(mBookCount);
     }
 
@@ -320,10 +323,10 @@ public class TocEntry
     /**
      * Equality: <strong>id, Author(id) and Title</strong>.
      * <p>
-     *      <li>it's the same Object</li>
-     *      <li>one or both of them are 'new' (e.g. id == 0) or have the same id<br>
-     *          AND all other fields are equal</li>
-     *      <li>if both are 'new' check if title/author are equal</li>
+     * <li>it's the same Object</li>
+     * <li>one or both of them are 'new' (e.g. id == 0) or have the same id<br>
+     * AND all other fields are equal</li>
+     * <li>if both are 'new' check if title/author are equal</li>
      * <p>
      * Compare is CASE SENSITIVE ! This allows correcting case mistakes even with identical id.
      */
@@ -357,42 +360,4 @@ public class TocEntry
                + ", mBookCount=`" + mBookCount + '`'
                + '}';
     }
-
-    /**
-     * Translator for the database character char value to the enum values and back.
-     * <p>
-     * A TocEntry can be a real entry, or it can be a book posing as a pseudo entry.
-     */
-    public enum Type {
-        Toc, Book;
-
-        /** As used by the DAO. */
-        public static final char TYPE_TOC = 'T';
-        /** As used by the DAO. */
-        public static final char TYPE_BOOK = 'B';
-
-        /** Constructor. */
-        public static Type get(final char c) {
-            switch (c) {
-                case TYPE_TOC:
-                    return Toc;
-                case TYPE_BOOK:
-                    return Book;
-                default:
-                    throw new UnexpectedValueException(c);
-            }
-        }
-
-        public char getChar() {
-            switch (this) {
-                case Toc:
-                    return TYPE_TOC;
-                case Book:
-                    return TYPE_BOOK;
-                default:
-                    throw new UnexpectedValueException(this);
-            }
-        }
-    }
-
 }

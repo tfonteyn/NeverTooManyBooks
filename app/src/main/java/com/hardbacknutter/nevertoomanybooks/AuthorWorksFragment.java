@@ -287,30 +287,31 @@ public class AuthorWorksFragment
         switch (menuItem) {
             case R.id.MENU_DELETE:
                 switch (item.getType()) {
-                    case Book:
+                    case TocEntry.TYPE_BOOK: {
                         //noinspection ConstantConditions
                         StandardDialogs.deleteBook(getContext(), item.getLabel(getContext()),
                                                    item.getAuthors(), () -> {
                                     mModel.delTocEntry(getContext(), item);
                                     mAdapter.notifyItemRemoved(position);
                                 });
-                        return true;
-
-                    case Toc:
+                        break;
+                    }
+                    case TocEntry.TYPE_TOC: {
                         //noinspection ConstantConditions
                         StandardDialogs.deleteTocEntry(getContext(), item, () -> {
                             mModel.delTocEntry(getContext(), item);
                             mAdapter.notifyItemRemoved(position);
                         });
-                        return true;
+                        break;
+                    }
+                    default:
+                        throw new UnexpectedValueException(item.getType());
                 }
-                break;
+                return true;
 
             default:
                 return false;
         }
-
-        return false;
     }
 
     /**
@@ -320,14 +321,14 @@ public class AuthorWorksFragment
      */
     private void gotoBook(@NonNull final TocEntry item) {
         switch (item.getType()) {
-            case Book: {
+            case TocEntry.TYPE_BOOK: {
                 // open new activity to show the book, 'back' will return to this one.
                 Intent intent = new Intent(getContext(), BookDetailsActivity.class)
                         .putExtra(DBDefinitions.KEY_PK_ID, item.getId());
                 startActivity(intent);
                 break;
             }
-            case Toc: {
+            case TocEntry.TYPE_TOC: {
                 final ArrayList<Long> bookIdList = mModel.getBookIds(item);
                 if (bookIdList.size() == 1) {
                     // open new activity to show the book, 'back' will return to this one.
@@ -351,6 +352,9 @@ public class AuthorWorksFragment
                     break;
                 }
             }
+
+            default:
+                break;
         }
     }
 
@@ -408,13 +412,13 @@ public class AuthorWorksFragment
         @Override
         public Holder onCreateViewHolder(@NonNull final ViewGroup parent,
                                          final int viewType) {
-            final TocEntry.Type type = TocEntry.Type.get((char) viewType);
+            final char type = (char) viewType;
             final View itemView;
             switch (type) {
-                case Toc:
+                case TocEntry.TYPE_TOC:
                     itemView = mInflater.inflate(R.layout.row_toc_entry, parent, false);
                     break;
-                case Book:
+                case TocEntry.TYPE_BOOK:
                     itemView = mInflater.inflate(R.layout.row_toc_entry_book, parent, false);
                     break;
                 default:
@@ -454,7 +458,7 @@ public class AuthorWorksFragment
                 }
             }
 
-            if (tocEntry.getType().equals(TocEntry.Type.Toc)) {
+            if (tocEntry.getType() == TocEntry.TYPE_TOC) {
                 if (tocEntry.getBookCount() > 1) {
                     holder.titleView.setCompoundDrawableTintList(mDrawableOn);
                 } else {
@@ -473,7 +477,7 @@ public class AuthorWorksFragment
 
         @Override
         public int getItemViewType(final int position) {
-            return mModel.getTocEntries().get(position).getType().getChar();
+            return mModel.getTocEntries().get(position).getType();
         }
 
         @Override
