@@ -209,7 +209,7 @@ public final class AmazonSearchEngine
 
         ISBN tmp = new ISBN(validIsbn);
         if (tmp.isIsbn10Compat()) {
-            return searchByNativeId(context, tmp.asText(ISBN.Type.ISBN10), fetchThumbnail);
+            return searchByNativeId(context, tmp.asText(ISBN.TYPE_ISBN10), fetchThumbnail);
         } else {
             return searchByNativeId(context, validIsbn, fetchThumbnail);
         }

@@ -791,7 +791,7 @@ public class SearchCoordinator
             task.setSearchBy(SearchTask.By.ISBN);
             if (((SearchEngine.ByIsbn) searchEngine).isPreferIsbn10(context)
                 && mIsbn.isIsbn10Compat()) {
-                task.setIsbn(mIsbn.asText(ISBN.Type.ISBN10));
+                task.setIsbn(mIsbn.asText(ISBN.TYPE_ISBN10));
             } else {
                 task.setIsbn(mIsbn.asText());
             }

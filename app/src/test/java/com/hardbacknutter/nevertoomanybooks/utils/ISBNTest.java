@@ -143,15 +143,15 @@ class ISBNTest {
             ISBN isbn0 = ISBN.createISBN(isbnPair[0]);
             ISBN isbn1 = ISBN.createISBN(isbnPair[1]);
 
-            assertTrue(isbn0.isType(ISBN.Type.ISBN10));
-            assertFalse(isbn1.isType(ISBN.Type.ISBN10));
+            assertTrue(isbn0.isType(ISBN.TYPE_ISBN10));
+            assertFalse(isbn1.isType(ISBN.TYPE_ISBN10));
         }
         for (String[] isbnPair : createInvalidIsbnList()) {
             ISBN isbn0 = ISBN.createISBN(isbnPair[0]);
             ISBN isbn1 = ISBN.createISBN(isbnPair[1]);
 
-            assertFalse(isbn0.isType(ISBN.Type.ISBN10));
-            assertFalse(isbn1.isType(ISBN.Type.ISBN10));
+            assertFalse(isbn0.isType(ISBN.TYPE_ISBN10));
+            assertFalse(isbn1.isType(ISBN.TYPE_ISBN10));
         }
     }
 
@@ -161,15 +161,15 @@ class ISBNTest {
             ISBN isbn0 = ISBN.createISBN(isbnPair[0]);
             ISBN isbn1 = ISBN.createISBN(isbnPair[1]);
 
-            assertFalse(isbn0.isType(ISBN.Type.ISBN13));
-            assertTrue(isbn1.isType(ISBN.Type.ISBN13));
+            assertFalse(isbn0.isType(ISBN.TYPE_ISBN13));
+            assertTrue(isbn1.isType(ISBN.TYPE_ISBN13));
         }
         for (String[] isbnPair : createInvalidIsbnList()) {
             ISBN isbn0 = ISBN.createISBN(isbnPair[0]);
             ISBN isbn1 = ISBN.createISBN(isbnPair[1]);
 
-            assertFalse(isbn0.isType(ISBN.Type.ISBN13));
-            assertFalse(isbn1.isType(ISBN.Type.ISBN13));
+            assertFalse(isbn0.isType(ISBN.TYPE_ISBN13));
+            assertFalse(isbn1.isType(ISBN.TYPE_ISBN13));
         }
     }
 
@@ -180,8 +180,8 @@ class ISBNTest {
             ISBN isbn13 = ISBN.createISBN(isbnPair[1]);
 
             try {
-                assertEquals(isbn10.asText(ISBN.Type.ISBN13), isbn13.asText(ISBN.Type.ISBN13));
-                assertEquals(isbn10.asText(ISBN.Type.ISBN10), isbn13.asText(ISBN.Type.ISBN10));
+                assertEquals(isbn10.asText(ISBN.TYPE_ISBN13), isbn13.asText(ISBN.TYPE_ISBN13));
+                assertEquals(isbn10.asText(ISBN.TYPE_ISBN10), isbn13.asText(ISBN.TYPE_ISBN10));
             } catch (@NonNull final NumberFormatException e) {
                 fail(e);
             }
@@ -250,7 +250,7 @@ class ISBNTest {
         for (String[] upcPair : createIsbnUpcList()) {
             ISBN isbn = ISBN.create(upcPair[0]);
             assertNotNull(isbn);
-            assertTrue(isbn.isType(ISBN.Type.ISBN10));
+            assertTrue(isbn.isType(ISBN.TYPE_ISBN10));
             assertTrue(isbn.isValid(false));
             assertEquals(upcPair[1], isbn.asText());
         }
@@ -261,7 +261,7 @@ class ISBNTest {
         for (String[] upcPair : createUpcAList()) {
             ISBN upc = ISBN.create(upcPair[0]);
             assertNotNull(upc);
-            assertTrue(upc.isType(ISBN.Type.UPC_A));
+            assertTrue(upc.isType(ISBN.TYPE_UPC_A));
             assertTrue(upc.isValid(false));
             assertEquals(upcPair[1], upc.asText());
         }
@@ -272,7 +272,7 @@ class ISBNTest {
         for (String[] eanPair : createEanList()) {
             ISBN ean = ISBN.create(eanPair[0]);
             assertNotNull(ean);
-            assertTrue(ean.isType(ISBN.Type.EAN13));
+            assertTrue(ean.isType(ISBN.TYPE_EAN13));
             assertTrue(ean.isValid(false));
             assertEquals(eanPair[1], ean.asText());
         }

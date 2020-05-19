@@ -1480,8 +1480,8 @@ public class DAO
             synchronized (stmt) {
                 // the asText for ISBN10/ISBN13 is always uppercase
                 // and their values in the database are also always uppercase.
-                stmt.bindString(1, isbn.asText(ISBN.Type.ISBN10));
-                stmt.bindString(2, isbn.asText(ISBN.Type.ISBN13));
+                stmt.bindString(1, isbn.asText(ISBN.TYPE_ISBN10));
+                stmt.bindString(2, isbn.asText(ISBN.TYPE_ISBN13));
                 return stmt.simpleQueryForLongOrZero();
             }
 
