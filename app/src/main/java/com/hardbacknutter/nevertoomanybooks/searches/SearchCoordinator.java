@@ -783,12 +783,12 @@ public class SearchCoordinator
 
         if (nativeId != null && !nativeId.isEmpty()
             && (searchEngine instanceof SearchEngine.ByNativeId)) {
-            task.setSearchBy(SearchTask.By.NativeId);
+            task.setSearchBy(SearchTask.BY_NATIVE_ID);
             task.setNativeId(nativeId);
 
         } else if (mIsbn.isValid(true)
                    && (searchEngine instanceof SearchEngine.ByIsbn)) {
-            task.setSearchBy(SearchTask.By.ISBN);
+            task.setSearchBy(SearchTask.BY_ISBN);
             if (((SearchEngine.ByIsbn) searchEngine).isPreferIsbn10(context)
                 && mIsbn.isIsbn10Compat()) {
                 task.setIsbn(mIsbn.asText(ISBN.TYPE_ISBN10));
@@ -798,11 +798,11 @@ public class SearchCoordinator
 
         } else if (mIsbn.isValid(false)
                    && (searchEngine instanceof SearchEngine.ByBarcode)) {
-            task.setSearchBy(SearchTask.By.Barcode);
+            task.setSearchBy(SearchTask.BY_BARCODE);
             task.setIsbn(mIsbn.asText());
 
         } else if (searchEngine instanceof SearchEngine.ByText) {
-            task.setSearchBy(SearchTask.By.Text);
+            task.setSearchBy(SearchTask.BY_TEXT);
             task.setIsbn(mIsbn.asText());
             task.setAuthor(mAuthorSearchText);
             task.setTitle(mTitleSearchText);

@@ -30,10 +30,13 @@ package com.hardbacknutter.nevertoomanybooks.searches;
 import android.content.Context;
 import android.os.Bundle;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.io.IOException;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.App;
@@ -52,6 +55,11 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsExceptio
 public class SearchTask
         extends TaskBase<Bundle> {
 
+    static final int BY_NATIVE_ID = 0;
+    static final int BY_ISBN = 1;
+    static final int BY_BARCODE = 2;
+    static final int BY_TEXT = 3;
+
     /** Log tag. */
     private static final String TAG = "SearchTask";
 
@@ -60,14 +68,12 @@ public class SearchTask
 
     @NonNull
     private final SearchEngine mSearchEngine;
-
     /** whether to fetch thumbnails. */
     @Nullable
     private boolean[] mFetchThumbnail;
-
     /** What criteria to search by. */
-    private SearchTask.By mBy;
-
+    @By
+    private int mBy;
     /** Search criteria. Usage depends on {@link #mBy}. */
     @Nullable
     private String mNativeId;
@@ -109,7 +115,7 @@ public class SearchTask
         mProgressTitle = context.getString(R.string.progress_msg_searching_site, name);
     }
 
-    void setSearchBy(@NonNull final By by) {
+    void setSearchBy(@By final int by) {
         mBy = by;
     }
 
@@ -199,25 +205,25 @@ public class SearchTask
             Bundle bookData;
 
             switch (mBy) {
-                case NativeId:
+                case BY_NATIVE_ID:
                     Objects.requireNonNull(mNativeId, ErrorMsg.NULL_NATIVE_ID);
                     bookData = ((SearchEngine.ByNativeId) mSearchEngine)
                             .searchByNativeId(context, mNativeId, mFetchThumbnail);
                     break;
 
-                case ISBN:
+                case BY_ISBN:
                     Objects.requireNonNull(mIsbnStr, ErrorMsg.NULL_ISBN_STR);
                     bookData = ((SearchEngine.ByIsbn) mSearchEngine)
                             .searchByIsbn(context, mIsbnStr, mFetchThumbnail);
                     break;
 
-                case Barcode:
+                case BY_BARCODE:
                     Objects.requireNonNull(mIsbnStr, ErrorMsg.NULL_ISBN_STR);
                     bookData = ((SearchEngine.ByBarcode) mSearchEngine)
                             .searchByBarcode(context, mIsbnStr, mFetchThumbnail);
                     break;
 
-                case Text:
+                case BY_TEXT:
                     bookData = ((SearchEngine.ByText) mSearchEngine)
                             .search(context, mIsbnStr, mAuthor, mTitle, mPublisher,
                                     mFetchThumbnail);
@@ -244,7 +250,9 @@ public class SearchTask
         }
     }
 
-    public enum By {
-        NativeId, ISBN, Barcode, Text
+    @IntDef({BY_NATIVE_ID, BY_ISBN, BY_BARCODE, BY_TEXT})
+    @Retention(RetentionPolicy.SOURCE)
+    @interface By {
+
     }
 }
