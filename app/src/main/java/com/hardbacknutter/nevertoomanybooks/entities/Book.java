@@ -42,7 +42,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -465,28 +464,6 @@ public class Book
     }
 
     /**
-     * Get the Authors. If there is more then one, we get the first Author + an ellipsis.
-     *
-     * @param context Current context
-     *
-     * @return a formatted string for author list.
-     */
-    @NonNull
-    public String getAuthorTextShort(@NonNull final Context context) {
-        List<Author> list = getParcelableArrayList(BKEY_AUTHOR_ARRAY);
-        // could/should? use AuthorListFormatter
-        if (list.isEmpty()) {
-            return "";
-        } else {
-            String text = list.get(0).getLabel(context);
-            if (list.size() > 1) {
-                return context.getString(R.string.and_others, text);
-            }
-            return text;
-        }
-    }
-
-    /**
      * Update author details from DB.
      *
      * @param context Current context
@@ -705,7 +682,7 @@ public class Book
                         DBDefinitions.KEY_PRICE_PAID_CURRENCY);
 
         // make sure there are only valid external id's present
-        preprocessExternalIds(context, isNew);
+        preprocessExternalIds(isNew);
 
         // lastly, cleanup null and blank fields as needed.
         preprocessNullsAndBlanks(isNew);
@@ -751,12 +728,10 @@ public class Book
      * <p>
      * Further processing should be done in {@link #preprocessNullsAndBlanks(boolean)}.
      *
-     * @param context Current context
      * @param isNew   {@code true} if the book is new
      */
     @VisibleForTesting
-    void preprocessExternalIds(@NonNull final Context context,
-                               final boolean isNew) {
+    void preprocessExternalIds(final boolean isNew) {
         for (Domain domain : DBDefinitions.NATIVE_ID_DOMAINS) {
             String key = domain.getName();
             if (contains(key)) {

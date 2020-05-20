@@ -181,7 +181,7 @@ class BookTest
         // blank string for a long field -> should be removed
         book.put(KEY_EID_LIBRARY_THING, "");
 
-        book.preprocessExternalIds(mContext, true);
+        book.preprocessExternalIds(true);
         dump(book);
 
         assertEquals(2, book.getLong(KEY_EID_ISFDB));
@@ -212,7 +212,7 @@ class BookTest
         // blank string for a long field -> replace with null
         book.put(KEY_EID_LIBRARY_THING, "");
 
-        book.preprocessExternalIds(mContext, false);
+        book.preprocessExternalIds(false);
 
         assertEquals(2, book.getLong(KEY_EID_ISFDB));
         assertEquals("test", book.getString(KEY_EID_OPEN_LIBRARY));

@@ -65,7 +65,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.StringList;
  * <strong>Note:</strong> "type" is a column of {@link DBDefinitions#TBL_BOOK_AUTHOR}
  * So this class does not strictly represent an Author, but a "BookAuthor"
  * When the type is disregarded, it is a real Author representation.
- *
+ * <p>
  * ENHANCE: add a column 'real-name-id' with the id of another author entry
  * i.e one entry typed 'pseudonym' with the 'real-name-id' column pointing to the real name entry.
  */
@@ -146,8 +146,6 @@ public class Author
 
     /** String encoding use: separator between family name and given-names. */
     public static final char NAME_SEPARATOR = ',';
-    /** Maps the type-bit to a string resource for the type-label. */
-    private static final Map<Integer, Integer> TYPES = new LinkedHashMap<>();
     /** All valid bits for the type. */
     public static final int TYPE_BITMASK_ALL =
             TYPE_UNKNOWN
@@ -155,6 +153,8 @@ public class Author
             | TYPE_TRANSLATOR | TYPE_INTRODUCTION | TYPE_EDITOR | TYPE_CONTRIBUTOR
             | TYPE_COVER_ARTIST | TYPE_COVER_INKING | TYPE_COVER_COLORIST
             | TYPE_ARTIST | TYPE_INKING | TYPE_COLORIST;
+    /** Maps the type-bit to a string resource for the type-label. */
+    private static final Map<Integer, Integer> TYPES = new LinkedHashMap<>();
     /**
      * ENHANCE: author middle name; needs internationalisation ?
      * <p>
@@ -382,6 +382,29 @@ public class Author
     private static boolean isShowGivenNameFirst(@NonNull final Context context) {
         return PreferenceManager.getDefaultSharedPreferences(context)
                                 .getBoolean(Prefs.pk_show_author_name_given_first, false);
+    }
+
+    /**
+     * Get the Authors. If there is more then one, we get the first Author + an ellipsis.
+     *
+     * @param context Current context
+     *
+     * @return a formatted string for author list.
+     */
+    @NonNull
+    public static String getCondensedNames(@NonNull final Context context,
+                                           @NonNull final List<Author> authors) {
+        // could/should? use AuthorListFormatter
+        if (authors.isEmpty()) {
+            return "";
+        } else {
+            String text = authors.get(0).getLabel(context);
+            if (authors.size() > 1) {
+                return context.getString(R.string.and_others, text);
+            }
+            return text;
+        }
+
     }
 
     /**
@@ -647,10 +670,10 @@ public class Author
     /**
      * Equality: <strong>id, family and given-names</strong>.
      * <p>
-     *      <li>it's the same Object</li>
-     *      <li>one or both of them are 'new' (e.g. id == 0) or have the same ID<br>
-     *          AND family/given-names are equal</li>
-     *      <li>if both are 'new' check if family/given-names are equal</li>
+     * <li>it's the same Object</li>
+     * <li>one or both of them are 'new' (e.g. id == 0) or have the same ID<br>
+     * AND family/given-names are equal</li>
+     * <li>if both are 'new' check if family/given-names are equal</li>
      * <p>
      * <strong>Compare is CASE SENSITIVE</strong>:
      * This allows correcting case mistakes even with identical ID.<br>

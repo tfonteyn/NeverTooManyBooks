@@ -105,7 +105,7 @@ public class GrSendBookEvent
     @NonNull
     public BookEventViewHolder onCreateViewHolder(@NonNull final LayoutInflater layoutInflater,
                                                   @NonNull final ViewGroup parent) {
-        View itemView = layoutInflater.inflate(R.layout.row_event_info, parent, false);
+        final View itemView = layoutInflater.inflate(R.layout.row_event_info, parent, false);
         return new BookEventViewHolder(itemView);
     }
 
@@ -114,37 +114,34 @@ public class GrSendBookEvent
                                  @NonNull final EventsCursor row,
                                  @NonNull final DAO db) {
 
-        Context context = holder.itemView.getContext();
-        Locale userLocale = LocaleUtils.getUserLocale(context);
-
-        ArrayList<Author> authors = db.getAuthorsByBookId(mBookId);
-        String authorName;
-        if (!authors.isEmpty()) {
-            authorName = authors.get(0).getLabel(context);
-            if (authors.size() > 1) {
-                authorName = context.getString(R.string.and_others, authorName);
-            }
-        } else {
-            authorName = context.getString(R.string.unknown).toUpperCase(userLocale);
-        }
+        final Context context = holder.itemView.getContext();
+        final Locale userLocale = LocaleUtils.getUserLocale(context);
 
         String title = db.getBookTitle(mBookId);
         if (title == null) {
             title = context.getString(R.string.warning_book_no_longer_exists);
         }
 
+        final ArrayList<Author> authors = db.getAuthorsByBookId(mBookId);
+        final String authorName;
+        if (!authors.isEmpty()) {
+            authorName = Author.getCondensedNames(context, authors);
+        } else {
+            authorName = context.getString(R.string.unknown).toUpperCase(userLocale);
+        }
+
         holder.titleView.setText(title);
         holder.authorView.setText(context.getString(R.string.lbl_by_author_s, authorName));
         holder.errorView.setText(getDescription(context));
 
-        String date = DateUtils.toPrettyDateTime(row.getEventDate(), userLocale);
+        final String date = DateUtils.toPrettyDateTime(row.getEventDate(), userLocale);
         holder.dateView.setText(context.getString(R.string.gr_tq_occurred_at, date));
 
         holder.checkedButton.setChecked(row.isSelected());
         holder.checkedButton.setOnCheckedChangeListener(
                 (v, isChecked) -> row.setSelected(getId(), isChecked));
 
-        String isbn = db.getBookIsbn(mBookId);
+        final String isbn = db.getBookIsbn(mBookId);
         if (isbn != null && !isbn.isEmpty()) {
             holder.retryButton.setVisibility(View.VISIBLE);
             holder.retryButton.setOnClickListener(v -> retry(v.getContext()));
@@ -161,10 +158,10 @@ public class GrSendBookEvent
         // EDIT BOOK
         menuItems
                 .add(new ContextDialogItem(context.getString(R.string.action_edit_ellipsis), () -> {
-            Intent intent = new Intent(context, EditBookActivity.class)
-                    .putExtra(DBDefinitions.KEY_PK_ID, mBookId);
-            context.startActivity(intent);
-        }));
+                    Intent intent = new Intent(context, EditBookActivity.class)
+                            .putExtra(DBDefinitions.KEY_PK_ID, mBookId);
+                    context.startActivity(intent);
+                }));
 
         // ENHANCE: Reinstate Goodreads search when Goodreads work.editions is available
         // SEARCH GOODREADS

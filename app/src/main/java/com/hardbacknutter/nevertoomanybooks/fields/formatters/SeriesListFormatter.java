@@ -77,13 +77,14 @@ public class SeriesListFormatter
                     return Csv.join("; ", rawValue, true, null,
                                     element -> element.getLabel(context));
                 } else {
-                    return Csv.htmlList(context, rawValue, series -> series.getLabel(context));
+                    return Csv.htmlList(context, rawValue, element -> element.getLabel(context));
                 }
 
             case Short:
                 if (rawValue.size() > 1) {
-                    return context.getString(R.string.and_others,
-                                             rawValue.get(0).getLabel(context));
+                    return context.getString(R.string.and_others_plus,
+                                             rawValue.get(0).getLabel(context),
+                                             rawValue.size() - 1);
                 } else {
                     return rawValue.get(0).getLabel(context);
                 }

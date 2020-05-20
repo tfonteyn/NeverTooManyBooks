@@ -672,5 +672,6 @@
     <string name="btn_less_ellipsis">Πιο λιγο…</string>
     <string name="lbl_archive_type">Μορφή</string>
     <string name="menu_cover_rotate_automatic">Αυτόματο</string>
+    <string name="and_others_plus"><![CDATA[%1$s … <small>[+%2$d]</small>]]></string>
 
 </resources>

@@ -57,12 +57,15 @@ import com.hardbacknutter.nevertoomanybooks.covers.CoverHandler;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
+import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.fields.Fields;
 import com.hardbacknutter.nevertoomanybooks.searches.amazon.AmazonSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.utils.PermissionsHelper;
 import com.hardbacknutter.nevertoomanybooks.utils.ViewFocusOrder;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.BookViewModel;
+
+import static com.hardbacknutter.nevertoomanybooks.entities.Book.BKEY_AUTHOR_ARRAY;
 
 /**
  * Base class for {@link BookDetailsFragment} and {@link EditBookBaseFragment}.
@@ -200,7 +203,8 @@ public abstract class BookBaseFragment
                 // VIEW or EDIT existing book
                 actionBar.setTitle(book.getString(DBDefinitions.KEY_TITLE));
                 //noinspection ConstantConditions
-                actionBar.setSubtitle(book.getAuthorTextShort(getContext()));
+                actionBar.setSubtitle(Author.getCondensedNames(
+                        getContext(), book.getParcelableArrayList(BKEY_AUTHOR_ARRAY)));
             }
         }
     }

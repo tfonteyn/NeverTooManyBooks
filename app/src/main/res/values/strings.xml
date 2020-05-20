@@ -64,7 +64,9 @@
          e.g. a list of Series: "Foundation …" indicates a book belongs to the
          "Foundation" Series, but is also present in others.
     -->
-    <string name="and_others">%s …</string>
+    <string name="and_others">%1$s …</string>
+    <!-- same as "and_others" but with the number of items added. -->
+    <string name="and_others_plus"><![CDATA[%1$s … <small>[+%2$d]</small>]]></string>
 
     <!-- Should internal formatting of price/currency fail, then this fallback format is used.
 
