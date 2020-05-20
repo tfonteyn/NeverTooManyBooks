@@ -110,7 +110,16 @@
             tools:layout_width="@dimen/tools_cover_large_width"
             tools:src="@sample/covers"
             />
+        <!--
+        Copy either of these 3 lines to coverImage0 to see how portrait/landscape images look
+                    tools:layout_height="@dimen/tools_cover_large_height"
+                    tools:layout_width="@dimen/tools_cover_large_width"
+                    tools:src="@sample/covers"
 
+                    tools:layout_height="@dimen/tools_cover_large_width"
+                    tools:layout_width="@dimen/tools_cover_large_height"
+                    tools:src="@sample/landscape"
+        -->
         <ImageView
             android:id="@+id/coverImage1"
             style="@style/CoverImage"
