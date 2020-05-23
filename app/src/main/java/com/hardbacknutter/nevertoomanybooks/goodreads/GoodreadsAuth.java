@@ -39,7 +39,6 @@ import androidx.annotation.WorkerThread;
 import androidx.preference.PreferenceManager;
 
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.net.HttpURLConnection;
 import java.util.Map;
 
@@ -154,10 +153,9 @@ public class GoodreadsAuth {
      */
     public GoodreadsAuth(@NonNull final Context context) {
 
-        String[] keys = getKeys(context);
-
         // Native
-        mConsumer = new DefaultOAuthConsumer(keys[0], keys[1]);
+        mConsumer = new DefaultOAuthConsumer(BuildConfig.GOODREADS_PUBLIC_KEY,
+                                             BuildConfig.GOODREADS_PRIVATE_KEY);
         mProvider = new DefaultOAuthProvider(REQUEST_TOKEN_ENDPOINT_URL,
                                              ACCESS_TOKEN_ENDPOINT_URL,
                                              AUTHORIZATION_WEBSITE_URL);
@@ -192,41 +190,6 @@ public class GoodreadsAuth {
     }
 
     /**
-     * Read the key/secret pair.
-     *
-     * @return array, [0]==key, [1]==secret
-     */
-    private String[] getKeys(@NonNull final Context context) {
-        String[] keys = new String[2];
-        ClassLoader classLoader = getClass().getClassLoader();
-        if (classLoader != null) {
-            try {
-                Class c = classLoader
-                        .loadClass("com.hardbacknutter.nevertoomanybooks.goodreads.GAK");
-
-                //noinspection unchecked
-                keys[0] = (String) c.getDeclaredMethod("d", (Class<?>[]) null)
-                                    .invoke(null, (Object[]) null);
-                //noinspection unchecked
-                keys[1] = (String) c.getDeclaredMethod("s", (Class<?>[]) null)
-                                    .invoke(null, (Object[]) null);
-            } catch (@NonNull final ClassNotFoundException
-                    | NoSuchMethodException
-                    | IllegalAccessException
-                    | InvocationTargetException e) {
-                Logger.error(context, TAG, e, "no keys");
-            }
-        }
-        // if any of the above failed.
-        if (keys[0] == null || keys[1] == null) {
-            // empty string will trigger hasCredentials sanity check whilst not crashing elsewhere
-            keys[0] = "";
-            keys[1] = "";
-        }
-        return keys;
-    }
-
-    /**
      * Get the stored token values from prefs.
      * This is token availability only, we don't check if they are valid here.
      * <p>
@@ -242,7 +205,7 @@ public class GoodreadsAuth {
     public boolean hasCredentials(@NonNull final Context context)
             throws IllegalStateException {
 
-        // sanity check; see #getKeys
+        // sanity check; see gradle.build
         if (mConsumer.getConsumerKey().isEmpty() || mConsumer.getConsumerSecret().isEmpty()) {
             // This should only happen if the developer forgot to add the Goodreads keys... (me)
             Logger.warn(context, TAG, "hasCredentials|" + DEV_KEY_NOT_AVAILABLE);
