@@ -70,7 +70,7 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BL
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BL_NODE_LEVEL;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_FK_BOOK;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_PK_ID;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BL_LIST_VIEW_ROW_ID;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BL_LIST_VIEW_NODE_ROW_ID;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BL_NODE_GROUP;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BL_NODE_KEY;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BL_NODE_LEVEL;
@@ -572,10 +572,10 @@ public class BooklistBuilder
 
     /** Wrapper for {@link RowStateDAO#getOffsetCursor}. */
     @NonNull
-    Cursor getOffsetCursor(final int position,
+    Cursor getOffsetCursor(final int offset,
                            @SuppressWarnings("SameParameterValue") final int pageSize) {
 
-        return mRowStateDAO.getOffsetCursor(mListTable, position, pageSize);
+        return mRowStateDAO.getOffsetCursor(mListTable, offset, pageSize);
     }
 
     /**
@@ -588,53 +588,9 @@ public class BooklistBuilder
         return new BooklistCursor(this);
     }
 
-    /**
-     * Try to sync the previously selected book ID.
-     *
-     * @param bookId the book to find
-     *
-     * @return the target rows, or {@code null} if none.
-     */
     @Nullable
-    public ArrayList<RowStateDAO.Node> getTargetRows(final long bookId) {
-        // no input, no output...
-        if (bookId == 0) {
-            return null;
-        }
-
-        // get all positions of the book
-        ArrayList<RowStateDAO.Node> bookNodes = mRowStateDAO.getNodesForBookId(mListTable, bookId);
-
-        if (bookNodes.isEmpty()) {
-            return null;
-        }
-
-        // First, get the ones that are currently visible...
-        ArrayList<RowStateDAO.Node> visibleNodes = new ArrayList<>();
-        for (RowStateDAO.Node node : bookNodes) {
-            if (node.isVisible) {
-                visibleNodes.add(node);
-            }
-        }
-
-        // If we have any visible rows, only consider those for the new position
-        if (!visibleNodes.isEmpty()) {
-            return visibleNodes;
-
-        } else {
-            // Make them all visible
-            for (RowStateDAO.Node node : bookNodes) {
-                if (!node.isVisible && node.rowId >= 0) {
-                    mRowStateDAO.ensureNodeIsVisible(node);
-                }
-            }
-            // Recalculate all positions
-            for (RowStateDAO.Node node : bookNodes) {
-                node.setListPosition(mRowStateDAO.getListPosition(node));
-            }
-
-            return bookNodes;
-        }
+    public ArrayList<RowStateDAO.Node> getBookNodes(final long bookId) {
+        return mRowStateDAO.getBookNodes(mListTable, bookId);
     }
 
     /**
@@ -664,6 +620,12 @@ public class BooklistBuilder
         }
     }
 
+    @Nullable
+    public RowStateDAO.Node getNextBookWithoutCover(@NonNull final Context context,
+                                                    final long rowId) {
+        return mRowStateDAO.getNextBookWithoutCover(context, mListTable, rowId);
+    }
+
     /**
      * Get the list of column names that will be in the list for cursor implementations.
      *
@@ -679,7 +641,7 @@ public class BooklistBuilder
             names[i] = domains.get(i).getName();
         }
 
-        names[domains.size()] = KEY_BL_LIST_VIEW_ROW_ID;
+        names[domains.size()] = KEY_BL_LIST_VIEW_NODE_ROW_ID;
         return names;
     }
 
@@ -729,26 +691,28 @@ public class BooklistBuilder
     }
 
     /** Wrapper for {@link RowStateDAO}. */
-    RowStateDAO.Node getNodeByNodeId(final long nodeRowId) {
-        return mRowStateDAO.getNodeByNodeId(nodeRowId);
+    @NonNull
+    RowStateDAO.Node getNodeByNodeId(final int rowId) {
+        return mRowStateDAO.getNodeByNodeId(rowId);
     }
 
     /**
      * Toggle (expand/collapse) the given node.
      *
-     * @param nodeRowId          of the node in the list
+     * @param nodeRowId            list-view row id of the node in the list
      * @param nextState          the state to set the node to
      * @param relativeChildLevel up to and including this (relative to the node) child level;
      *
-     * @return {@code true} if the new state is expanded; {@code false} if collapsed
+     * @return the node
      */
-    public boolean toggleNode(final long nodeRowId,
-                              @RowStateDAO.Node.NodeNextState final int nextState,
-                              final int relativeChildLevel) {
-        RowStateDAO.Node node = mRowStateDAO.getNodeByNodeId(nodeRowId);
+    @NonNull
+    public RowStateDAO.Node toggleNode(final long nodeRowId,
+                                       @RowStateDAO.Node.NodeNextState final int nextState,
+                                       final int relativeChildLevel) {
+        final RowStateDAO.Node node = mRowStateDAO.getNodeByNodeId(nodeRowId);
         node.setNextState(nextState);
         mRowStateDAO.setNode(node.rowId, node.level, node.isExpanded, relativeChildLevel);
-        return node.isExpanded;
+        return node;
     }
 
     /**

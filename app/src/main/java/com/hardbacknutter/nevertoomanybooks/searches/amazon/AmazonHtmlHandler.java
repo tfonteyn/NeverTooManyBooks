@@ -97,35 +97,32 @@ class AmazonHtmlHandler
 
     @NonNull
     private final Context mLocalizedAppContext;
-    @NonNull
-    private final SearchEngine mSearchEngine;
 
     /**
      * Constructor.
-     * @param localizedAppContext Localised application context
+     *
      * @param searchEngine        the SearchEngine
+     * @param localizedAppContext Localised application context
      */
-    AmazonHtmlHandler(@NonNull final Context localizedAppContext,
-                      @NonNull final SearchEngine searchEngine) {
-        super();
+    AmazonHtmlHandler(@NonNull final SearchEngine searchEngine,
+                      @NonNull final Context localizedAppContext) {
+        super(searchEngine);
         mLocalizedAppContext = localizedAppContext;
-        mSearchEngine = searchEngine;
     }
 
     /**
      * Constructor used for testing.
      *
-     * @param localizedAppContext Localised application context
      * @param searchEngine        the SearchEngine
-     * @param doc the JSoup Document.
+     * @param localizedAppContext Localised application context
+     * @param doc                 the JSoup Document.
      */
     @VisibleForTesting
-    AmazonHtmlHandler(@NonNull final Context localizedAppContext,
-                      @NonNull final SearchEngine searchEngine,
+    AmazonHtmlHandler(@NonNull final SearchEngine searchEngine,
+                      @NonNull final Context localizedAppContext,
                       @NonNull final Document doc) {
-        super(doc);
-        mLocalizedAppContext = localizedAppContext;
-        mSearchEngine = searchEngine;
+        this(searchEngine, localizedAppContext);
+        mDoc = doc;
     }
 
     @NonNull
@@ -152,6 +149,10 @@ class AmazonHtmlHandler
             return bookData;
         }
 
+        if (mSearchEngine.isCancelled()) {
+            return bookData;
+        }
+
         return parseDoc(fetchThumbnail, bookData);
     }
 
@@ -165,9 +166,10 @@ class AmazonHtmlHandler
         // will return null.
         // When run in JUnit, this call is NOT needed.
         // Whats different? -> the Java JDK!
-        Element dummy = mDoc.selectFirst("div#booksTitle");
+        //noinspection unused
+        final Element dummy = mDoc.selectFirst("div#booksTitle");
 
-        Element titleElement = mDoc.selectFirst("span#productTitle");
+        final Element titleElement = mDoc.selectFirst("span#productTitle");
         if (titleElement == null) {
             if (BuildConfig.DEBUG /* always */) {
                 Logger.d(TAG, "no title?");
@@ -175,10 +177,10 @@ class AmazonHtmlHandler
             return bookData;
         }
 
-        String title = titleElement.text().trim();
+        final String title = titleElement.text().trim();
         bookData.putString(DBDefinitions.KEY_TITLE, title);
 
-        Element price = mDoc.selectFirst("span.offer-price");
+        final Element price = mDoc.selectFirst("span.offer-price");
         if (price != null) {
             Money money = new Money(mSearchEngine.getLocale(mLocalizedAppContext), price.text());
             if (money.getCurrency() != null) {
@@ -189,7 +191,7 @@ class AmazonHtmlHandler
             }
         }
 
-        Elements authorSpans = mDoc.select("div#bylineInfo > span.author");
+        final Elements authorSpans = mDoc.select("div#bylineInfo > span.author");
         for (Element span : authorSpans) {
             // If an author has a popup dialog linked, then it has an id with contributorNameID
             Element a = span.selectFirst("a.contributorNameID");
@@ -200,9 +202,9 @@ class AmazonHtmlHandler
             if (a != null) {
                 String href = a.attr("href");
                 if (href != null && href.contains("byline")) {
-                    Author author = Author.from(a.text());
+                    final Author author = Author.from(a.text());
 
-                    Element typeElement = span.selectFirst("span.contribution");
+                    final Element typeElement = span.selectFirst("span.contribution");
                     if (typeElement != null) {
                         String data = typeElement.text();
                         Matcher matcher = AUTHOR_TYPE_PATTERN.matcher(data);
@@ -236,7 +238,11 @@ class AmazonHtmlHandler
             }
         }
 
-        Elements lis = mDoc
+        if (mSearchEngine.isCancelled()) {
+            return bookData;
+        }
+
+        final Elements lis = mDoc
                 .select("div#detail_bullets_id > table > tbody > tr > td > div > ul > li");
         for (Element li : lis) {
             String label = li.child(0).text().trim();
@@ -328,6 +334,10 @@ class AmazonHtmlHandler
             bookData.putParcelableArrayList(Book.BKEY_SERIES_ARRAY, mSeries);
         }
 
+        if (mSearchEngine.isCancelled()) {
+            return bookData;
+        }
+
         // optional fetch of the cover.
         if (fetchThumbnail[0]) {
             final Element coverElement = mDoc.selectFirst("img#imgBlkFront");
@@ -353,7 +363,9 @@ class AmazonHtmlHandler
             // Fetch the actual image
             final String tmpName = createTempCoverFileName(bookData);
             final String fileSpec = ImageUtils.saveImage(mLocalizedAppContext,
-                                                         imageUrl, tmpName, null);
+                                                         imageUrl, tmpName,
+                                                         mSearchEngine.getConnectTimeoutMs(),
+                                                         null);
             if (fileSpec != null) {
                 ArrayList<String> imageList =
                         bookData.getStringArrayList(Book.BKEY_FILE_SPEC_ARRAY[0]);

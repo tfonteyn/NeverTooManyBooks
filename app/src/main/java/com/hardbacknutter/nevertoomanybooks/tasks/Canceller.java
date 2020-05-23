@@ -25,19 +25,21 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.utils.exceptions;
+package com.hardbacknutter.nevertoomanybooks.tasks;
 
-import androidx.annotation.Nullable;
+import com.hardbacknutter.nevertoomanybooks.searches.SearchCoordinator;
 
 /**
- * Usually used in switch() default: sections.
+ * A minimalistic interface for a Task (or similar, e.g. {@link SearchCoordinator})
+ * which can be passed to another class.
+ * <p>
+ * The latter can then check if it should quit (if the caller was cancelled,
+ * or e.g. upon an error, tell the caller it wants to cancel.
  */
-public class UnexpectedValueException
-        extends IllegalArgumentException {
+public interface Canceller {
 
-    private static final long serialVersionUID = -3264236171012098029L;
+    @SuppressWarnings("SameReturnValue")
+    boolean cancel(boolean mayInterruptIfRunning);
 
-    public UnexpectedValueException(@Nullable final Object value) {
-        super("Unexpected value: " + value);
-    }
+    boolean isCancelled();
 }

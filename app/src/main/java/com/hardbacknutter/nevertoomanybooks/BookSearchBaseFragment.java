@@ -206,7 +206,7 @@ public abstract class BookSearchBaseFragment
         }
 
         // hook the task up.
-        dialog.setCancellable(mSearchCoordinator);
+        dialog.setCanceller(mSearchCoordinator);
 
         return dialog;
     }

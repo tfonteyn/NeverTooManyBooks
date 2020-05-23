@@ -36,6 +36,7 @@ import java.util.Locale;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import com.hardbacknutter.nevertoomanybooks.CommonSetup;
@@ -43,6 +44,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
+import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -53,12 +55,21 @@ import static org.junit.jupiter.api.Assertions.fail;
 class AmazonHtmlHandlerTest
         extends CommonSetup {
 
+    private SearchEngine mSearchEngine;
+
+    @BeforeEach
+    public void setUp() {
+        super.setUp();
+        mSearchEngine = new AmazonSearchEngine();
+        mSearchEngine.setCaller(new DummyCaller());
+    }
+
     @Test
     void parse01() {
         setLocale(Locale.UK);
 
-        String locationHeader = "https://www.amazon.co.uk/gp/product/0575090677";
-        String filename = "/amazon/0575090677.html";
+        final String locationHeader = "https://www.amazon.co.uk/gp/product/0575090677";
+        final String filename = "/amazon/0575090677.html";
 
         Document doc = null;
         try (InputStream is = this.getClass().getResourceAsStream(filename)) {
@@ -70,9 +81,9 @@ class AmazonHtmlHandlerTest
         assertNotNull(doc);
         assertTrue(doc.hasText());
 
-        AmazonHtmlHandler handler = new AmazonHtmlHandler(mContext, new AmazonSearchEngine(), doc);
+        final AmazonHtmlHandler handler = new AmazonHtmlHandler(mSearchEngine, mContext, doc);
         // we've set the doc, so no internet download will be done.
-        boolean[] fetchThumbnail = {false, false};
+        final boolean[] fetchThumbnail = {false, false};
         mRawData = handler.parseDoc(fetchThumbnail, mRawData);
 
         assertFalse(mRawData.isEmpty());
@@ -88,14 +99,14 @@ class AmazonHtmlHandlerTest
         assertEquals(14.49d, mRawData.getDouble(DBDefinitions.KEY_PRICE_LISTED));
         assertEquals("GBP", mRawData.getString(DBDefinitions.KEY_PRICE_LISTED_CURRENCY));
 
-        ArrayList<Publisher> allPublishers = mRawData
+        final ArrayList<Publisher> allPublishers = mRawData
                 .getParcelableArrayList(Book.BKEY_PUBLISHER_ARRAY);
         assertNotNull(allPublishers);
         assertEquals(1, allPublishers.size());
 
         assertEquals("Gollancz", allPublishers.get(0).getName());
 
-        ArrayList<Author> authors = mRawData.getParcelableArrayList(Book.BKEY_AUTHOR_ARRAY);
+        final ArrayList<Author> authors = mRawData.getParcelableArrayList(Book.BKEY_AUTHOR_ARRAY);
         assertNotNull(authors);
         assertEquals(1, authors.size());
         assertEquals("Reynolds", authors.get(0).getFamilyName());
@@ -106,8 +117,8 @@ class AmazonHtmlHandlerTest
     @Test
     void parse02() {
         setLocale(Locale.UK);
-        String locationHeader = "https://www.amazon.co.uk/gp/product/1473210208";
-        String filename = "/amazon/1473210208.html";
+        final String locationHeader = "https://www.amazon.co.uk/gp/product/1473210208";
+        final String filename = "/amazon/1473210208.html";
 
         Document doc = null;
         try (InputStream is = this.getClass().getResourceAsStream(filename)) {
@@ -119,9 +130,10 @@ class AmazonHtmlHandlerTest
         assertNotNull(doc);
         assertTrue(doc.hasText());
 
-        AmazonHtmlHandler handler = new AmazonHtmlHandler(mContext, new AmazonSearchEngine(), doc);
+        final AmazonHtmlHandler handler = new AmazonHtmlHandler(mSearchEngine, mContext, doc);
+
         // we've set the doc, so no internet download will be done.
-        boolean[] fetchThumbnail = {false, false};
+        final boolean[] fetchThumbnail = {false, false};
         mRawData = handler.parseDoc(fetchThumbnail, mRawData);
 
         assertFalse(mRawData.isEmpty());
@@ -137,13 +149,13 @@ class AmazonHtmlHandlerTest
         assertEquals(5.84d, mRawData.getDouble(DBDefinitions.KEY_PRICE_LISTED));
         assertEquals("GBP", mRawData.getString(DBDefinitions.KEY_PRICE_LISTED_CURRENCY));
 
-        ArrayList<Publisher> allPublishers = mRawData
+        final ArrayList<Publisher> allPublishers = mRawData
                 .getParcelableArrayList(Book.BKEY_PUBLISHER_ARRAY);
         assertNotNull(allPublishers);
         assertEquals(1, allPublishers.size());
         assertEquals("Gollancz", allPublishers.get(0).getName());
 
-        ArrayList<Author> authors = mRawData.getParcelableArrayList(Book.BKEY_AUTHOR_ARRAY);
+        final ArrayList<Author> authors = mRawData.getParcelableArrayList(Book.BKEY_AUTHOR_ARRAY);
         assertNotNull(authors);
         assertEquals(2, authors.size());
         assertEquals("Reynolds", authors.get(0).getFamilyName());

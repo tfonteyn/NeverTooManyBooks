@@ -157,7 +157,7 @@ public class GoodreadsAdminFragment
 //        mProgressDialog.show(getChildFragmentManager(), ProgressDialogFragment.TAG);
 
         mGoodreadsTaskModel.setTask(task);
-//        mProgressDialog.setCancellable(task);
+//        mProgressDialog.setCanceller(task);
         task.execute();
     }
 
@@ -186,7 +186,7 @@ public class GoodreadsAdminFragment
 //        }
 //
 //        // hook the task up.
-//        dialog.setCancellable(mGoodreadsTaskModel.getTask());
+//        dialog.setCanceller(mGoodreadsTaskModel.getTask());
 //        return dialog;
 //    }
 }

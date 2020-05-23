@@ -70,8 +70,6 @@ abstract class ApiHandlerNative {
     /** Log tag. */
     private static final String TAG = "ApiHandlerNative";
 
-    /** initial connection time to websites timeout. */
-    private static final int CONNECT_TIMEOUT = 10_000;
     /** timeout for requests to website. */
     private static final int READ_TIMEOUT = 10_000;
 
@@ -120,18 +118,18 @@ abstract class ApiHandlerNative {
 
         String fullUrl = url;
         if (parameterMap != null) {
-            Uri.Builder builder = new Uri.Builder();
+            final Uri.Builder builder = new Uri.Builder();
             for (Map.Entry<String, String> entry : parameterMap.entrySet()) {
                 builder.appendQueryParameter(entry.getKey(), entry.getValue());
             }
-            String query = builder.build().getEncodedQuery();
+            final String query = builder.build().getEncodedQuery();
             if (query != null) {
                 // add or append query string.
                 fullUrl += (url.indexOf('?') < 0 ? '?' : '&') + query;
             }
         }
 
-        HttpURLConnection request = (HttpURLConnection) new URL(fullUrl).openConnection();
+        final HttpURLConnection request = (HttpURLConnection) new URL(fullUrl).openConnection();
 
         if (requiresSignature) {
             mGoodreadsAuth.signGetRequest(request);
@@ -162,7 +160,7 @@ abstract class ApiHandlerNative {
             Log.d(TAG, "executePost|url=\"" + url + '\"');
         }
 
-        HttpURLConnection request = (HttpURLConnection) new URL(url).openConnection();
+        final HttpURLConnection request = (HttpURLConnection) new URL(url).openConnection();
         request.setRequestMethod("POST");
         request.setDoOutput(true);
 
@@ -173,11 +171,11 @@ abstract class ApiHandlerNative {
         // Now the actual POST payload
         if (parameterMap != null) {
             // encode using JDK
-            Uri.Builder builder = new Uri.Builder();
+            final Uri.Builder builder = new Uri.Builder();
             for (Map.Entry<String, String> entry : parameterMap.entrySet()) {
                 builder.appendQueryParameter(entry.getKey(), entry.getValue());
             }
-            String query = builder.build().getEncodedQuery();
+            final String query = builder.build().getEncodedQuery();
 
 //            // encode using signpost. Leaving this code as a reference for now.
 //            StringBuilder sb = new StringBuilder();
@@ -230,11 +228,11 @@ abstract class ApiHandlerNative {
         // Make sure we follow Goodreads ToS (no more than 1 request/second).
         GoodreadsSearchEngine.THROTTLER.waitUntilRequestAllowed();
 
-        request.setConnectTimeout(CONNECT_TIMEOUT);
+        request.setConnectTimeout(GoodreadsSearchEngine.CONNECT_TIMEOUT_MS);
         request.setReadTimeout(READ_TIMEOUT);
         request.connect();
 
-        int code = request.getResponseCode();
+        final int code = request.getResponseCode();
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.GOODREADS) {
             Log.d(TAG, "execute"
                        + "\nrequest: " + request.getURL()
@@ -278,8 +276,8 @@ abstract class ApiHandlerNative {
             throws IOException {
 
         try (InputStream is = request.getInputStream()) {
-            SAXParserFactory factory = SAXParserFactory.newInstance();
-            SAXParser parser = factory.newSAXParser();
+            final SAXParserFactory factory = SAXParserFactory.newInstance();
+            final SAXParser parser = factory.newSAXParser();
             parser.parse(is, requestHandler);
 
         } catch (@NonNull final ParserConfigurationException | SAXException e) {
@@ -311,7 +309,7 @@ abstract class ApiHandlerNative {
             Log.d(TAG, "executeRawGet|url=\"" + url + '\"');
         }
 
-        HttpURLConnection request = (HttpURLConnection) new URL(url).openConnection();
+        final HttpURLConnection request = (HttpURLConnection) new URL(url).openConnection();
 
         if (requiresSignature) {
             mGoodreadsAuth.signGetRequest(request);
@@ -320,7 +318,7 @@ abstract class ApiHandlerNative {
         // Make sure we follow Goodreads ToS (no more than 1 request/second).
         GoodreadsSearchEngine.THROTTLER.waitUntilRequestAllowed();
 
-        request.setConnectTimeout(CONNECT_TIMEOUT);
+        request.setConnectTimeout(GoodreadsSearchEngine.CONNECT_TIMEOUT_MS);
         request.setReadTimeout(READ_TIMEOUT);
         request.connect();
 
@@ -333,7 +331,7 @@ abstract class ApiHandlerNative {
         switch (code) {
             case HttpURLConnection.HTTP_OK:
             case HttpURLConnection.HTTP_CREATED:
-                String content = getContent(request);
+                final String content = getContent(request);
                 request.disconnect();
                 return content;
 
@@ -365,11 +363,11 @@ abstract class ApiHandlerNative {
      */
     private String getContent(@NonNull final HttpURLConnection request)
             throws IOException {
-        StringBuilder html = new StringBuilder();
-        InputStream is = request.getInputStream();
+        final StringBuilder html = new StringBuilder();
+        final InputStream is = request.getInputStream();
         if (is != null) {
             while (true) {
-                int i = is.read();
+                final int i = is.read();
                 if (i == -1) {
                     break;
                 }

@@ -49,8 +49,8 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 
 /**
- * Progress support for a {@link Cancellable}. There can only be one Cancellable at a time.
- * When the user cancels the dialog, we will cancel the Cancellable.
+ * Progress support for a {@link Canceller}. There can only be one Canceller at a time.
+ * When the user cancels the dialog, we will cancel the Canceller.
  */
 public class ProgressDialogFragment
         extends DialogFragment {
@@ -64,9 +64,9 @@ public class ProgressDialogFragment
 
     private static final String BKEY_PREVENT_SLEEP = TAG + ":preventSleep";
 
-    /** the current Cancellable. */
+    /** the current Canceller. */
     @Nullable
-    private Cancellable mCancellable;
+    private Canceller mCanceller;
 
     /** Type of ProgressBar. */
     private boolean mIsIndeterminate;
@@ -206,18 +206,18 @@ public class ProgressDialogFragment
     }
 
     /**
-     * Optionally link this object with a Cancellable.
+     * Optionally link this object with a Canceller.
      *
-     * @param cancellable that will be cancelled when this dialog is cancelled.
+     * @param canceller that will be cancelled when this dialog is cancelled (really?)
      */
-    public void setCancellable(@Nullable final Cancellable cancellable) {
-        mCancellable = cancellable;
+    public void setCanceller(@Nullable final Canceller canceller) {
+        mCanceller = canceller;
     }
 
     @Override
     public void onCancel(@NonNull final DialogInterface dialog) {
-        if (mCancellable != null) {
-            mCancellable.cancel(false);
+        if (mCanceller != null) {
+            mCanceller.cancel(false);
         }
     }
 
@@ -302,12 +302,5 @@ public class ProgressDialogFragment
         outState.putInt(BKEY_MAX, mMax);
         outState.putString(BKEY_CURRENT_MESSAGE, mMessage);
         outState.putInt(BKEY_CURRENT_VALUE, mCurrent);
-    }
-
-    /** TODO: come up with a better name. */
-    public interface Cancellable {
-
-        @SuppressWarnings("SameReturnValue")
-        boolean cancel(boolean mayInterruptIfRunning);
     }
 }

@@ -73,9 +73,9 @@ public interface BookChangedListener {
      * @param whatChanged a bitmask build from the flags
      * @param data        bundle with custom data, can be {@code null}
      */
-    void onBookChanged(long bookId,
-                       @Flags int whatChanged,
-                       @Nullable Bundle data);
+    void onChange(long bookId,
+                  @Flags int whatChanged,
+                  @Nullable Bundle data);
 
     @IntDef(flag = true, value = {AUTHOR, SERIES,
                                   FORMAT, COLOR, GENRE, LANGUAGE, LOCATION, PUBLISHER,

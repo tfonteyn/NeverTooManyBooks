@@ -1101,7 +1101,7 @@ public class BooklistAdapter
             mTextView.setText(format(rowData.getString(mKey)));
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_NODE_STATE) {
-                long rowId = rowData.getLong(DBDefinitions.KEY_PK_ID);
+                int rowId = rowData.getInt(DBDefinitions.KEY_PK_ID);
                 final RowStateDAO.Node node = ((BooklistCursor) mAdapter.mCursor)
                         .getBooklistBuilder().getNodeByNodeId(rowId);
                 if (node.isExpanded) {

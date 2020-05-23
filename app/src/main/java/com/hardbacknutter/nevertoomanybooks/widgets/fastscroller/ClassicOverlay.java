@@ -28,10 +28,8 @@
 package com.hardbacknutter.nevertoomanybooks.widgets.fastscroller;
 
 import android.view.View;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.core.util.Consumer;
 import androidx.recyclerview.widget.RecyclerView;
 
 /**
@@ -45,12 +43,10 @@ public class ClassicOverlay
      *
      * @param view       to hook up
      * @param thumbWidth the width of the thumb/drag-handle
-     * @param popupStyle for the TextView
      */
     ClassicOverlay(@NonNull final RecyclerView view,
-                   final int thumbWidth,
-                   @NonNull final Consumer<TextView> popupStyle) {
-        super(view, thumbWidth, popupStyle);
+                   final int thumbWidth) {
+        super(view, thumbWidth, PopupStyles.CLASSIC);
     }
 
     @Override

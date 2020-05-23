@@ -48,12 +48,13 @@ import org.xml.sax.SAXException;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
+import com.hardbacknutter.nevertoomanybooks.tasks.Canceller;
 import com.hardbacknutter.nevertoomanybooks.tasks.TerminatorConnection;
 import com.hardbacknutter.nevertoomanybooks.utils.xml.SearchHandler;
 
 /**
  * FIXME: migrate to new googlebooks API or drop Google altogether?
- *
+ * <p>
  * The url's and xml formats used here are deprecated (but still works fine)
  * https://developers.google.com/gdata/docs/directory
  * https://developers.google.com/gdata/docs/2.0/reference
@@ -65,7 +66,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.xml.SearchHandler;
  * <a href="https://developers.google.com/books/terms.html">T&C</a>
  * You may not charge users any fee for the use of your application,...
  * => so it seems if this SearchEngine is included, the entire app has to be free.
- *
+ * <p>
  * example:
  * https://stackoverflow.com/questions/7908954/google-books-api-searching-by-isbn
  */
@@ -81,6 +82,19 @@ public final class GoogleBooksSearchEngine
 
     private static final Pattern SPACE_PATTERN = Pattern.compile(" ", Pattern.LITERAL);
 
+    @Nullable
+    private Canceller mCaller;
+
+    @Override
+    public void setCaller(@Nullable final Canceller caller) {
+        mCaller = caller;
+    }
+
+    @Override
+    public boolean isCancelled() {
+        return mCaller == null || mCaller.isCancelled();
+    }
+
     @NonNull
     @Override
     public Locale getLocale(@NonNull final Context context) {
@@ -94,7 +108,7 @@ public final class GoogleBooksSearchEngine
                                @NonNull final boolean[] fetchThumbnail)
             throws IOException {
         // %3A  :
-        String url = BASE_URL + "/books/feeds/volumes?q=ISBN%3A" + validIsbn;
+        final String url = BASE_URL + "/books/feeds/volumes?q=ISBN%3A" + validIsbn;
         return fetchBook(context, url, fetchThumbnail, new Bundle());
     }
 
@@ -113,10 +127,10 @@ public final class GoogleBooksSearchEngine
         // %3A  :
         if (author != null && !author.isEmpty()
             && title != null && !title.isEmpty()) {
-            String url = BASE_URL + "/books/feeds/volumes?q="
-                         + "intitle%3A" + encodeSpaces(title)
-                         + "%2B"
-                         + "inauthor%3A" + encodeSpaces(author);
+            final String url = BASE_URL + "/books/feeds/volumes?q="
+                               + "intitle%3A" + encodeSpaces(title)
+                               + "%2B"
+                               + "inauthor%3A" + encodeSpaces(author);
             return fetchBook(context, url, fetchThumbnail, new Bundle());
 
         } else {
@@ -132,28 +146,34 @@ public final class GoogleBooksSearchEngine
 
         SAXParserFactory factory = SAXParserFactory.newInstance();
 
-        String oneBookUrl;
         try {
-            SAXParser parser = factory.newSAXParser();
+            final SAXParser parser = factory.newSAXParser();
 
             // get the booklist, can return multiple books ('entry' elements)
-            GoogleBooksHandler handler = new GoogleBooksHandler();
-            try (TerminatorConnection con = TerminatorConnection.open(appContext, url)) {
-                parser.parse(con.getInputStream(), handler);
+            final GoogleBooksHandler booksHandler = new GoogleBooksHandler();
+            try (TerminatorConnection con = TerminatorConnection.open(appContext, url,
+                                                                      getConnectTimeoutMs())) {
+                parser.parse(con.getInputStream(), booksHandler);
             }
-            List<String> urlList = handler.getResult();
+            final List<String> urlList = booksHandler.getResult();
+
+            if (isCancelled()) {
+                return bookData;
+            }
 
             // The entry handler takes care of an individual book ('entry')
-            SearchHandler entryHandler = new GoogleBooksEntryHandler(fetchThumbnail, bookData);
+            final SearchHandler handler =
+                    new GoogleBooksEntryHandler(this, fetchThumbnail, bookData);
             if (!urlList.isEmpty()) {
                 // only using the first one found, maybe future enhancement?
-                oneBookUrl = urlList.get(0);
+                String oneBookUrl = urlList.get(0);
 
-                try (TerminatorConnection con = TerminatorConnection.open(appContext, oneBookUrl)) {
-                    parser.parse(con.getInputStream(), entryHandler);
+                try (TerminatorConnection con = TerminatorConnection.open(appContext, oneBookUrl,
+                                                                          getConnectTimeoutMs())) {
+                    parser.parse(con.getInputStream(), handler);
                 }
             }
-            return entryHandler.getResult();
+            return handler.getResult();
 
         } catch (@NonNull final ParserConfigurationException | SAXException e) {
             // wrap parser exceptions in an IOException

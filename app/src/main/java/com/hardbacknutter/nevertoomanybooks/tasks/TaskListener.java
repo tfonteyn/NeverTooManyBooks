@@ -53,6 +53,20 @@ public interface TaskListener<Result> {
     void onFinished(@NonNull FinishMessage<Result> message);
 
     /**
+     * Called when a task was cancelled.
+     */
+    default void onCancelled(@NonNull final FinishMessage<Result> message) {
+        onFinished(message);
+    }
+
+//    /**
+//     * Called when a task failed.
+//     */
+//    default void onFailed(@NonNull final FinishMessage<Result> message) {
+//        onFinished(message);
+//    }
+
+    /**
      * Progress messages.
      */
     default void onProgress(@NonNull final ProgressMessage message) {

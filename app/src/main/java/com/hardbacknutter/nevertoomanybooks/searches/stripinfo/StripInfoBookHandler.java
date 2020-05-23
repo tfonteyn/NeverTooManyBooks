@@ -142,40 +142,28 @@ class StripInfoBookHandler
     /**
      * Constructor.
      *
-     * @param localizedAppContext Localised application context
      * @param searchEngine        the SearchEngine
+     * @param localizedAppContext Localised application context
      */
-    StripInfoBookHandler(@NonNull final Context localizedAppContext,
-                         @NonNull final SearchEngine searchEngine) {
-        super();
-        initSite(searchEngine);
+    StripInfoBookHandler(@NonNull final SearchEngine searchEngine,
+                         @NonNull final Context localizedAppContext) {
+        super(searchEngine);
+        setReadTimeout(READ_TIMEOUT);
         mLocalizedContext = localizedAppContext;
     }
 
     /**
      * Constructor for mocking.
-     *
+     *  @param searchEngine        the SearchEngine
      * @param localizedAppContext Localised application context
-     * @param searchEngine        the SearchEngine
      * @param doc                 the pre-loaded Jsoup document.
      */
     @VisibleForTesting
-    StripInfoBookHandler(@NonNull final Context localizedAppContext,
-                         @NonNull final SearchEngine searchEngine,
+    StripInfoBookHandler(@NonNull final SearchEngine searchEngine,
+                         @NonNull final Context localizedAppContext,
                          @NonNull final Document doc) {
-        super(doc);
-        initSite(searchEngine);
-        mLocalizedContext = localizedAppContext;
-    }
-
-    /**
-     * Set some site specific parameters.
-     *
-     * @param searchEngine the SearchEngine
-     */
-    private void initSite(@NonNull final SearchEngine searchEngine) {
-        setConnectTimeout(searchEngine.getConnectTimeoutMs());
-        setReadTimeout(READ_TIMEOUT);
+        this(searchEngine, localizedAppContext);
+        mDoc = doc;
     }
 
     /**
@@ -198,9 +186,13 @@ class StripInfoBookHandler
         // keep for reference
         mIsbn = isbn;
 
-        String path = StripInfoSearchEngine.BASE_URL + String.format(BOOK_SEARCH_URL, isbn);
+        final String path = StripInfoSearchEngine.BASE_URL + String.format(BOOK_SEARCH_URL, isbn);
         if (loadPage(mLocalizedContext, path) == null) {
             // null result, abort
+            return bookData;
+        }
+
+        if (mSearchEngine.isCancelled()) {
             return bookData;
         }
 
@@ -230,9 +222,14 @@ class StripInfoBookHandler
                            @NonNull final Bundle bookData)
             throws SocketTimeoutException {
 
-        String path = StripInfoSearchEngine.BASE_URL + String.format(BOOK_BY_NATIVE_ID, nativeId);
+        final String path = StripInfoSearchEngine.BASE_URL
+                            + String.format(BOOK_BY_NATIVE_ID, nativeId);
         if (loadPage(mLocalizedContext, path) == null) {
             // null result, abort
+            return bookData;
+        }
+
+        if (mSearchEngine.isCancelled()) {
             return bookData;
         }
 
@@ -263,6 +260,10 @@ class StripInfoBookHandler
             return bookData;
         }
 
+        if (mSearchEngine.isCancelled()) {
+            return bookData;
+        }
+
         if (mDoc.title().startsWith(MULTI_RESULT_PAGE_TITLE)) {
             // prevent looping.
             return bookData;
@@ -288,25 +289,30 @@ class StripInfoBookHandler
         // extracted from the title section.
         String primarySeriesBookNr = null;
 
-        Elements rows = mDoc.select("div.row");
+        final Elements rows = mDoc.select("div.row");
         for (Element row : rows) {
+
+            if (mSearchEngine.isCancelled()) {
+                return bookData;
+            }
+
             // this code is not 100% foolproof yet, so surround with try/catch.
             try {
                 // use the title header to determine we are in a book row.
-                Element titleHeader = row.selectFirst("h2.title");
+                final Element titleHeader = row.selectFirst("h2.title");
                 if (titleHeader != null) {
                     primarySeriesBookNr = titleHeader.textNodes().get(0).text().trim();
 
-                    Element titleUrlElement = titleHeader.selectFirst(A_HREF_STRIP);
+                    final Element titleUrlElement = titleHeader.selectFirst(A_HREF_STRIP);
                     bookData.putString(DBDefinitions.KEY_TITLE, cleanText(titleUrlElement.text()));
                     // extract the site native id from the url
                     processSiteNativeId(titleUrlElement, bookData);
 
-                    Elements tds = row.select("td");
+                    final Elements tds = row.select("td");
                     int i = 0;
                     while (i < tds.size()) {
-                        Element td = tds.get(i);
-                        String label = td.text();
+                        final Element td = tds.get(i);
+                        final String label = td.text();
 
                         switch (label) {
                             case "Scenario":
@@ -417,19 +423,19 @@ class StripInfoBookHandler
         }
 
         // process the description
-        Element item = mDoc.selectFirst("div.item");
+        final Element item = mDoc.selectFirst("div.item");
         if (item != null) {
             processDescription(item, bookData);
         }
 
         if (primarySeriesTitle != null && !primarySeriesTitle.isEmpty()) {
-            Series series = Series.from3(primarySeriesTitle);
+            final Series series = Series.from3(primarySeriesTitle);
             series.setNumber(primarySeriesBookNr);
             // add to the top as this is the primary series.
             mSeries.add(0, series);
         }
 
-        ArrayList<TocEntry> toc = processAnthology();
+        final ArrayList<TocEntry> toc = processAnthology();
         if (toc != null && !toc.isEmpty()) {
             bookData.putParcelableArrayList(Book.BKEY_TOC_ENTRY_ARRAY, toc);
             bookData.putLong(DBDefinitions.KEY_TOC_BITMASK, Book.TOC_MULTIPLE_WORKS);
@@ -445,9 +451,17 @@ class StripInfoBookHandler
             bookData.putParcelableArrayList(Book.BKEY_PUBLISHER_ARRAY, mPublishers);
         }
 
+        if (mSearchEngine.isCancelled()) {
+            return bookData;
+        }
+
         if (fetchThumbnail[0]) {
             // front cover
             fetchCoverFromElement("a.stripThumb", 0, bookData);
+        }
+
+        if (mSearchEngine.isCancelled()) {
+            return bookData;
         }
 
         if (fetchThumbnail.length > 1 && fetchThumbnail[1]) {
@@ -472,7 +486,7 @@ class StripInfoBookHandler
                             @NonNull final boolean[] fetchThumbnail)
             throws SocketTimeoutException {
 
-        Elements sections = mDoc.select("section.c6");
+        final Elements sections = mDoc.select("section.c6");
         if (sections != null) {
             for (Element section : sections) {
                 // A series:
@@ -481,9 +495,9 @@ class StripInfoBookHandler
                 // The book:
                 // <a href="https://stripinfo.be/reeks/strip/1652
                 //      _Het_narrenschip_2_Pluvior_627">Pluvior 627</a>
-                Element url = section.selectFirst(A_HREF_STRIP);
+                final Element url = section.selectFirst(A_HREF_STRIP);
                 if (url != null) {
-                    String href = url.attr("href");
+                    final String href = url.attr("href");
                     mDoc = null;
                     return fetchByPath(href, bookData, fetchThumbnail);
                 }
@@ -507,9 +521,9 @@ class StripInfoBookHandler
     private void fetchCoverFromElement(@NonNull final String elementQuery,
                                        @IntRange(from = 0) final int cIdx,
                                        @NonNull final Bundle bookData) {
-        Element coverElement = mDoc.selectFirst(elementQuery);
+        final Element coverElement = mDoc.selectFirst(elementQuery);
         if (coverElement != null) {
-            String coverUrl = coverElement.attr("data-ajax-url");
+            final String coverUrl = coverElement.attr("data-ajax-url");
             // if the site has no image: https://www.stripinfo.be/image.php?i=0
             // if the cover is an 18+ image: https://www.stripinfo.be/images/mature.png
             if (coverUrl != null && !coverUrl.isEmpty()
@@ -547,7 +561,8 @@ class StripInfoBookHandler
                             @IntRange(from = 0) final int cIdx) {
 
         final String tmpName = createTempCoverFileName(bookData) + '_' + cIdx;
-        final String fileSpec = ImageUtils.saveImage(mLocalizedContext, url, tmpName, null);
+        final String fileSpec = ImageUtils.saveImage(mLocalizedContext, url, tmpName,
+                                                     mSearchEngine.getConnectTimeoutMs(), null);
 
         if (fileSpec != null) {
             // Some back covers will return the "no cover available" image regardless.
@@ -585,6 +600,7 @@ class StripInfoBookHandler
         }
         return name + FILENAME_SUFFIX;
     }
+
     /**
      * Calculate the MD5 sum.
      *
@@ -596,7 +612,7 @@ class StripInfoBookHandler
     private byte[] md5(@NonNull final File file) {
         byte[] digest = null;
         try {
-            MessageDigest md = MessageDigest.getInstance("MD5");
+            final MessageDigest md = MessageDigest.getInstance("MD5");
             try (InputStream is = new FileInputStream(file)) {
                 try (DigestInputStream dis = new DigestInputStream(is, md)) {
                     // read and discard. The images are small enough to always read in one go.
@@ -620,14 +636,13 @@ class StripInfoBookHandler
      */
     private void processSiteNativeId(@NonNull final Element titleUrlElement,
                                      @NonNull final Bundle bookData) {
-
         try {
-            String titleUrl = titleUrlElement.attr("href");
+            final String titleUrl = titleUrlElement.attr("href");
             // https://www.stripinfo.be/reeks/strip/336348
             // _Hauteville_House_14_De_37ste_parallel
-            String idString = titleUrl.substring(titleUrl.lastIndexOf('/') + 1)
-                                      .split("_")[0];
-            long bookId = Long.parseLong(idString);
+            final String idString = titleUrl.substring(titleUrl.lastIndexOf('/') + 1)
+                                            .split("_")[0];
+            final long bookId = Long.parseLong(idString);
             if (bookId > 0) {
                 bookData.putLong(DBDefinitions.KEY_EID_STRIP_INFO_BE, bookId);
             }
@@ -643,7 +658,7 @@ class StripInfoBookHandler
      */
     @Nullable
     private String extractPrimarySeriesTitle() {
-        Element seriesElement = mDoc.selectFirst("h1.c12");
+        final Element seriesElement = mDoc.selectFirst("h1.c12");
         // Two possibilities:
         // <h1 class="c12">
         // <a href="https://www.stripinfo.be/reeks/index/831_Capricornus">
@@ -658,11 +673,11 @@ class StripInfoBookHandler
         // </a>
         // </h1>
         if (seriesElement != null) {
-            Element img = seriesElement.selectFirst("img");
+            final Element img = seriesElement.selectFirst("img");
             if (img != null) {
                 return img.attr("alt");
             } else {
-                Element a = seriesElement.selectFirst("a");
+                final Element a = seriesElement.selectFirst("a");
                 if (a != null) {
                     return a.text();
                 }
@@ -691,17 +706,17 @@ class StripInfoBookHandler
      */
     @Nullable
     private ArrayList<TocEntry> processAnthology() {
-        Elements sections = mDoc.select("div.c12");
+        final Elements sections = mDoc.select("div.c12");
         if (sections != null) {
             for (Element section : sections) {
-                Element divs = section.selectFirst("div");
+                final Element divs = section.selectFirst("div");
                 if (divs != null) {
-                    Elements sectionChildren = divs.children();
+                    final Elements sectionChildren = divs.children();
                     if (!sectionChildren.isEmpty()) {
-                        Element sectionContent = sectionChildren.get(0);
+                        final Element sectionContent = sectionChildren.get(0);
                         // the section header we're hoping to find.
                         // <h4>Dit is een bundeling. De inhoud komt uit volgende strips:</h4>
-                        Node header = sectionContent.selectFirst("h4");
+                        final Node header = sectionContent.selectFirst("h4");
                         if (header != null && header.toString().contains("bundeling")) {
                             // the div's inside Element 'row' should now contain the TOC.
                             ArrayList<TocEntry> tocEntries = new ArrayList<>();
@@ -709,9 +724,9 @@ class StripInfoBookHandler
                                 String number = null;
                                 String title = null;
 
-                                Element a = entry.selectFirst(A_HREF_STRIP);
+                                final Element a = entry.selectFirst(A_HREF_STRIP);
                                 if (a != null) {
-                                    Node nrNode = a.previousSibling();
+                                    final Node nrNode = a.previousSibling();
                                     if (nrNode != null) {
                                         number = nrNode.toString().trim();
                                     }
@@ -727,7 +742,7 @@ class StripInfoBookHandler
                                 }
 
                                 if (title != null && !title.isEmpty()) {
-                                    Author author;
+                                    final Author author;
                                     if (!mAuthors.isEmpty()) {
                                         author = mAuthors.get(0);
                                     } else {

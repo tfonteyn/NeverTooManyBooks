@@ -61,6 +61,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
+import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.Money;
 
@@ -169,8 +170,8 @@ class IsfdbBookHandler
     /**
      * Constructor.
      */
-    IsfdbBookHandler() {
-        super();
+    IsfdbBookHandler(@NonNull final SearchEngine searchEngine) {
+        super(searchEngine);
     }
 
     /**
@@ -179,8 +180,10 @@ class IsfdbBookHandler
      * @param doc the JSoup Document.
      */
     @VisibleForTesting
-    IsfdbBookHandler(@NonNull final Document doc) {
-        super(doc);
+    IsfdbBookHandler(@NonNull final SearchEngine searchEngine,
+                     @NonNull final Document doc) {
+        this(searchEngine);
+        mDoc = doc;
     }
 
     @Nullable
@@ -243,6 +246,10 @@ class IsfdbBookHandler
             return bookData;
         }
 
+        if (mSearchEngine.isCancelled()) {
+            return bookData;
+        }
+
         return parseDoc(context, addSeriesFromToc, fetchThumbnail, bookData);
     }
 
@@ -284,6 +291,10 @@ class IsfdbBookHandler
             }
         }
 
+        if (mSearchEngine.isCancelled()) {
+            return bookData;
+        }
+
         return parseDoc(context, addSeriesFromToc, fetchThumbnail, bookData);
     }
 
@@ -318,6 +329,10 @@ class IsfdbBookHandler
                 // null result, abort
                 return bookData;
             }
+        }
+
+        if (mSearchEngine.isCancelled()) {
+            return bookData;
         }
 
         parseDocForCover(context, bookData);
@@ -520,11 +535,16 @@ class IsfdbBookHandler
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.ISFDB) {
                 Log.d(TAG, "fetch|" + li.toString());
             }
+
+            if (mSearchEngine.isCancelled()) {
+                return bookData;
+            }
+
             try {
                 String fieldName = null;
 
                 // We want the first 'bold' child Element of the li; e.g. "<b>Publisher:</b>"
-                Element fieldLabelElement = li.selectFirst("b");
+                final Element fieldLabelElement = li.selectFirst("b");
                 if (fieldLabelElement != null) {
                     fieldName = fieldLabelElement.text();
                 }
@@ -543,10 +563,10 @@ class IsfdbBookHandler
 
                 } else if ("Author:".equalsIgnoreCase(fieldName)
                            || "Authors:".equalsIgnoreCase(fieldName)) {
-                    Elements as = li.select("a");
+                    final Elements as = li.select("a");
                     if (as != null) {
                         for (Element a : as) {
-                            Author author = Author.from(a.text());
+                            final Author author = Author.from(a.text());
                             // author.setIsfDbId(stripNumber(a.attr("href"), '?'));
                             mAuthors.add(author);
                         }
@@ -558,7 +578,7 @@ class IsfdbBookHandler
                     // e.g. "1975-04-00" or "1974-00-00" Cut that part off.
                     tmpString = UNKNOWN_M_D_PATTERN.matcher(tmpString).replaceAll("");
                     // and we're paranoid...
-                    Date d = DateUtils.parseDate(tmpString);
+                    final Date d = DateUtils.parseDate(tmpString);
                     if (d != null) {
                         // Note that partial dates, e.g. "1987", "1978-03"
                         // will get 'completed' to "1987-01-01", "1978-03-01"
@@ -583,20 +603,20 @@ class IsfdbBookHandler
                     }
 
                 } else if ("Publisher:".equalsIgnoreCase(fieldName)) {
-                    Elements as = li.select("a");
+                    final Elements as = li.select("a");
                     if (as != null) {
                         for (Element a : as) {
-                            Publisher publisher = Publisher.from(a.text());
+                            final Publisher publisher = Publisher.from(a.text());
                             // publisher.setIsfDbId(stripNumber(a.attr("href"), '?'));
                             mPublishers.add(publisher);
                         }
                     }
 
                 } else if ("Pub. Series:".equalsIgnoreCase(fieldName)) {
-                    Elements as = li.select("a");
+                    final Elements as = li.select("a");
                     if (as != null) {
                         for (Element a : as) {
-                            Series series = Series.from(a.text());
+                            final Series series = Series.from(a.text());
                             // series.setIsfDbId(stripNumber(a.attr("href"), '?'));
                             mSeries.add(series);
                         }
@@ -608,7 +628,7 @@ class IsfdbBookHandler
 
                 } else if ("Price:".equalsIgnoreCase(fieldName)) {
                     tmpString = fieldLabelElement.nextSibling().toString().trim();
-                    Money money = new Money(IsfdbSearchEngine.SITE_LOCALE, tmpString);
+                    final Money money = new Money(IsfdbSearchEngine.SITE_LOCALE, tmpString);
                     if (money.getCurrency() != null) {
                         bookData.putDouble(DBDefinitions.KEY_PRICE_LISTED, money.doubleValue());
                         bookData.putString(DBDefinitions.KEY_PRICE_LISTED_CURRENCY,
@@ -632,21 +652,21 @@ class IsfdbBookHandler
                     // <li><b>Type:</b> COLLECTION
                     tmpString = fieldLabelElement.nextSibling().toString().trim();
                     bookData.putString(BookField.BOOK_TYPE, tmpString);
-                    Integer type = TYPE_MAP.get(tmpString);
+                    final Integer type = TYPE_MAP.get(tmpString);
                     if (type != null) {
                         bookData.putLong(DBDefinitions.KEY_TOC_BITMASK, type);
                     }
 
                 } else if ("Cover:".equalsIgnoreCase(fieldName)) {
-                    Elements as = li.select("a");
+                    final Elements as = li.select("a");
                     if (as != null) {
                         //TODO: if there are multiple art/artists... will this barf ?
                         // bookData.putString(BookField.BOOK_COVER_ART_TXT, as.text());
 
                         if (as.size() > 1) {
                             // Cover artist
-                            Element a = as.get(1);
-                            Author author = Author.from(a.text());
+                            final Element a = as.get(1);
+                            final Author author = Author.from(a.text());
                             author.setType(Author.TYPE_COVER_ARTIST);
                             // author.setIsfDbId(stripNumber(a.attr("href"),'?'));
                             mAuthors.add(author);
@@ -658,10 +678,10 @@ class IsfdbBookHandler
                     handleExternalIdElements(li.select("ul li"), bookData);
 
                 } else if ("Editors:".equalsIgnoreCase(fieldName)) {
-                    Elements as = li.select("a");
+                    final Elements as = li.select("a");
                     if (as != null) {
                         for (Element a : as) {
-                            Author author = Author.from(a.text());
+                            final Author author = Author.from(a.text());
                             author.setType(Author.TYPE_EDITOR);
                             // author.setIsfDbId(stripNumber(a.attr("href"), '?'));
                             mAuthors.add(author);
@@ -683,7 +703,7 @@ class IsfdbBookHandler
             tmpString = digits(tmpString, false);
             if (!tmpString.isEmpty()) {
                 try {
-                    long record = Long.parseLong(tmpString);
+                    final long record = Long.parseLong(tmpString);
                     bookData.putLong(DBDefinitions.KEY_EID_ISFDB, record);
                 } catch (@NonNull final NumberFormatException ignore) {
                     // ignore
@@ -749,6 +769,10 @@ class IsfdbBookHandler
             if (mFirstPublication != null) {
                 bookData.putString(DBDefinitions.KEY_DATE_FIRST_PUBLICATION, mFirstPublication);
             } // else take the book pub date? ... but that might be wrong....
+        }
+
+        if (mSearchEngine.isCancelled()) {
+            return bookData;
         }
 
         // optional fetch of the cover.
@@ -822,9 +846,9 @@ class IsfdbBookHandler
      */
     private void handleExternalIdElements(@NonNull final Iterable<Element> elements,
                                           @NonNull final Bundle bookData) {
-        Collection<String> externalIdUrls = new ArrayList<>();
+        final Collection<String> externalIdUrls = new ArrayList<>();
         for (Element extIdLi : elements) {
-            Element extIdLink = extIdLi.select("a").first();
+            final Element extIdLink = extIdLi.select("a").first();
             externalIdUrls.add(extIdLink.attr("href"));
         }
         if (!externalIdUrls.isEmpty()) {
@@ -840,7 +864,7 @@ class IsfdbBookHandler
                         if (end == -1) {
                             end = url.length();
                         }
-                        String asin = url.substring(start + 1, end);
+                        final String asin = url.substring(start + 1, end);
                         bookData.putString(DBDefinitions.KEY_EID_ASIN, asin);
                     }
                 } else if (url.contains("lccn.loc.gov")) {
@@ -887,9 +911,9 @@ class IsfdbBookHandler
         if (s == null || s.isEmpty()) {
             return "";
         }
-        StringBuilder sb = new StringBuilder();
+        final StringBuilder sb = new StringBuilder();
         for (int i = 0; i < s.length(); i++) {
-            char c = s.charAt(i);
+            final char c = s.charAt(i);
             // allows an X anywhere instead of just at the end; doesn't really matter.
             if (Character.isDigit(c) || (isIsbn && Character.toUpperCase(c) == 'X')) {
                 sb.append(c);
@@ -910,7 +934,8 @@ class IsfdbBookHandler
                             @NonNull final String coverUrl,
                             @NonNull final Bundle /* in/out */ bookData) {
         final String tmpName = createTempCoverFileName(bookData);
-        final String fileSpec = ImageUtils.saveImage(appContext, coverUrl, tmpName, null);
+        final String fileSpec = ImageUtils.saveImage(appContext, coverUrl, tmpName,
+                                                     mSearchEngine.getConnectTimeoutMs(), null);
 
         if (fileSpec != null) {
             ArrayList<String> imageList =
@@ -981,8 +1006,8 @@ class IsfdbBookHandler
         }
 
         // <div class="ContentBox"> but there are two, so get last one
-        Element contentBox = mDoc.select(CSS_Q_DIV_CONTENTBOX).last();
-        Elements lis = contentBox.select("li");
+        final Element contentBox = mDoc.select(CSS_Q_DIV_CONTENTBOX).last();
+        final Elements lis = contentBox.select("li");
         for (Element li : lis) {
 
             /* LI entries, possibilities:
@@ -1057,13 +1082,13 @@ class IsfdbBookHandler
             For now, we will get two entries in the TOC, same title but different author.
             TODO: avoid duplicate TOC entries when there are two lines.
              */
-            String liAsString = li.toString();
+            final String liAsString = li.toString();
             String title = null;
             Author author = null;
-            Elements aas = li.select("a");
+            final Elements aas = li.select("a");
             // find the first occurrence of each
             for (Element a : aas) {
-                String href = a.attr("href");
+                final String href = a.attr("href");
 
                 if (title == null && href.contains(IsfdbSearchEngine.URL_TITLE_CGI)) {
                     title = cleanUpName(a.text());
@@ -1073,13 +1098,13 @@ class IsfdbBookHandler
                     author = Author.from(cleanUpName(a.text()));
 
                 } else if (addSeriesFromToc && href.contains(IsfdbSearchEngine.URL_PE_CGI)) {
-                    Series series = Series.from(a.text());
+                    final Series series = Series.from(a.text());
 
                     //  • 4] • (1987) • novel by
                     String nr = a.nextSibling().toString();
-                    int dotIdx = nr.indexOf('•');
+                    final int dotIdx = nr.indexOf('•');
                     if (dotIdx != -1) {
-                        int closeBrIdx = nr.indexOf(']');
+                        final int closeBrIdx = nr.indexOf(']');
                         if (closeBrIdx > dotIdx) {
                             nr = nr.substring(dotIdx + 1, closeBrIdx).trim();
                             if (!nr.isEmpty()) {
@@ -1108,8 +1133,8 @@ class IsfdbBookHandler
             }
 
             // scan for first occurrence of "• (1234)"
-            Matcher matcher = YEAR_PATTERN.matcher(liAsString);
-            String year = matcher.find() ? matcher.group(2) : "";
+            final Matcher matcher = YEAR_PATTERN.matcher(liAsString);
+            final String year = matcher.find() ? matcher.group(2) : "";
             // see if we can use it as the first publication year for the book.
             // i.e. if this entry has the same title as the book title
             if ((mFirstPublication == null || mFirstPublication.isEmpty())
@@ -1117,7 +1142,7 @@ class IsfdbBookHandler
                 mFirstPublication = digits(year, false);
             }
 
-            TocEntry tocEntry = new TocEntry(author, title, year);
+            final TocEntry tocEntry = new TocEntry(author, title, year);
             results.add(tocEntry);
         }
 

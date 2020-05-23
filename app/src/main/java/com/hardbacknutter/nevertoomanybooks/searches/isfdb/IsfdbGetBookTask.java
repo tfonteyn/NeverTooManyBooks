@@ -42,6 +42,7 @@ import java.util.List;
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskBase;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
@@ -106,15 +107,16 @@ public class IsfdbGetBookTask
     protected Bundle doInBackground(@Nullable final Void... voids) {
         Thread.currentThread().setName(TAG);
         final Context context = LocaleUtils.applyLocale(App.getTaskContext());
-
+        final SearchEngine searchEngine = new IsfdbSearchEngine();
+        searchEngine.setCaller(this);
         try {
             final boolean[] thumbs = {false, false};
             if (mEditions != null) {
-                return new IsfdbBookHandler()
+                return new IsfdbBookHandler(searchEngine)
                         .fetch(context, mEditions, mAddSeriesFromToc, thumbs, new Bundle());
 
             } else if (mIsfdbId != 0) {
-                return new IsfdbBookHandler()
+                return new IsfdbBookHandler(searchEngine)
                         .fetchByNativeId(context, String.valueOf(mIsfdbId),
                                          mAddSeriesFromToc, thumbs, new Bundle());
 

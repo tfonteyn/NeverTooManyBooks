@@ -515,7 +515,7 @@ public final class DBDefinitions {
      * new Domain.Builder(KEY_BL_LIST_VIEW_ROW_ID, ColumnInfo.TYPE_INTEGER)
      * .notNull().build();
      */
-    public static final String KEY_BL_LIST_VIEW_ROW_ID = "lv_row_id";
+    public static final String KEY_BL_LIST_VIEW_NODE_ROW_ID = "lv_node_row_id";
 
     /* ======================================================================================
      *  Keys used as column alias names / Bundle keys.

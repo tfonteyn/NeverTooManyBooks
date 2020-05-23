@@ -28,14 +28,12 @@
 package com.hardbacknutter.nevertoomanybooks.searches.isfdb;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.VisibleForTesting;
 
 import java.util.regex.Pattern;
 
-import org.jsoup.nodes.Document;
-
 import com.hardbacknutter.nevertoomanybooks.EditBookTocFragment;
 import com.hardbacknutter.nevertoomanybooks.searches.JsoupBase;
+import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
 
 abstract class AbstractBase
         extends JsoupBase {
@@ -60,36 +58,15 @@ abstract class AbstractBase
     /** a CR is replaced with a space. */
     private static final Pattern CR_PATTERN = Pattern.compile("\n", Pattern.LITERAL);
 
-    /** connect-timeout. Default is 5_000. */
-    private static final int CONNECT_TIMEOUT = 30_000;
     /** read-timeout. Default is 10_000. */
     private static final int READ_TIMEOUT = 60_000;
-
 
     /**
      * Constructor.
      */
-    AbstractBase() {
-        super();
-        initSite();
-    }
+    AbstractBase(@NonNull final SearchEngine searchEngine) {
+        super(searchEngine);
 
-    /**
-     * Constructor for mocking.
-     *
-     * @param doc the pre-loaded Jsoup document.
-     */
-    @VisibleForTesting
-    AbstractBase(@NonNull final Document doc) {
-        super(doc);
-        initSite();
-    }
-
-    /**
-     * Set some site specific parameters.
-     */
-    private void initSite() {
-        setConnectTimeout(CONNECT_TIMEOUT);
         setReadTimeout(READ_TIMEOUT);
         setCharSetName(IsfdbSearchEngine.CHARSET_DECODE_PAGE);
     }

@@ -85,7 +85,7 @@ public class ShowBookByIsbnApiHandler
                       @NonNull final Bundle bookData)
             throws CredentialsException, Http404Exception, IOException {
 
-        String url = String.format(URL, validIsbn, mGoodreadsAuth.getDevKey());
+        final String url = String.format(URL, validIsbn, mGoodreadsAuth.getDevKey());
         return getBookData(context, url, fetchThumbnail, bookData);
     }
 }

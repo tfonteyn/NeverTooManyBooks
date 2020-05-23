@@ -164,6 +164,96 @@ public class BooksOnBookshelf
 
     /** simple indeterminate progress spinner to show while getting the list of books. */
     private ProgressBar mProgressBar;
+    /** Listener for clicks on the list. */
+    private final BooklistAdapter.OnRowClickedListener mOnRowClickedListener =
+            new BooklistAdapter.OnRowClickedListener() {
+
+                /**
+                 * User clicked a row.
+                 * <ul>
+                 *      <li>Book: open the details screen.</li>
+                 *      <li>Not a book: expand/collapse the section as appropriate.</li>
+                 * </ul>
+                 */
+                @Override
+                public void onItemClick(final int position) {
+                    final Cursor cursor = mModel.getListCursor();
+                    // Move the cursor, so we can read the data for this row.
+                    // Paranoia: if the user can click it, then this move should be fine.
+                    if (!cursor.moveToPosition(position)) {
+                        return;
+                    }
+                    final RowDataHolder rowData = new CursorRow(cursor);
+
+                    // If it's a book, open the details screen.
+                    if (rowData.getInt(DBDefinitions.KEY_BL_NODE_GROUP) == BooklistGroup.BOOK) {
+                        final long rowId = rowData.getLong(DBDefinitions.KEY_PK_ID);
+                        final long bookId = rowData.getLong(DBDefinitions.KEY_FK_BOOK);
+                        // Note we (re)create the flat table *every time* the user click a book.
+                        // This guarantees an exact match in rowId'
+                        // (which turns out tricky if we cache the table)
+                        // ENHANCE: re-implement flat table caching
+                        final String navTableName = mModel.createFlattenedBooklist();
+                        final Intent intent = new Intent(BooksOnBookshelf.this,
+                                                         BookDetailsActivity.class)
+                                .putExtra(DBDefinitions.KEY_PK_ID, bookId)
+                                .putExtra(BookDetailsFragmentViewModel.BKEY_NAV_TABLE, navTableName)
+                                .putExtra(BookDetailsFragmentViewModel.BKEY_NAV_ROW_ID, rowId);
+                        startActivityForResult(intent, RequestCode.BOOK_VIEW);
+
+                    } else {
+                        // it's a level, expand/collapse.
+                        final int nodeRowId =
+                                rowData.getInt(DBDefinitions.KEY_BL_LIST_VIEW_NODE_ROW_ID);
+                        final RowStateDAO.Node node = mModel.toggleNode(
+                                nodeRowId, RowStateDAO.Node.NEXT_STATE_TOGGLE, 1);
+                        refreshNodePosition(node);
+                    }
+                }
+
+                /**
+                 * User long-clicked on a row. Bring up a context menu as appropriate.
+                 */
+                @Override
+                public boolean onItemLongClick(final int position) {
+                    final Cursor cursor = mModel.getListCursor();
+                    // Move the cursor, so we can read the data for this row.
+                    // Paranoia: if the user can click it, then this move should be fine.
+                    if (!cursor.moveToPosition(position)) {
+                        return false;
+                    }
+                    final RowDataHolder rowData = new CursorRow(cursor);
+
+                    // build the menu for this row
+                    final Menu menu = MenuPicker.createMenu(BooksOnBookshelf.this);
+                    if (onCreateContextMenu(menu, rowData)) {
+                        // we have a menu to show, set the title according to the level.
+                        final int level = rowData.getInt(DBDefinitions.KEY_BL_NODE_LEVEL);
+                        final String title = mAdapter.getLevelText(position, level);
+
+                        // bring up the context menu
+                        new MenuPicker(BooksOnBookshelf.this, title, menu, position,
+                                       BooksOnBookshelf.this::onContextItemSelected)
+                                .show();
+                    }
+                    return true;
+                }
+            };
+    //    private BooksonbookshelfBinding mVb;
+    private final OptionsDialogBase.OptionsListener<ImportManager> mImportOptionsListener =
+            new OptionsDialogBase.OptionsListener<ImportManager>() {
+                @Override
+                public void onOptionsSet(@NonNull final ImportManager options) {
+                    mImportModel.startArchiveImportTask(options);
+                }
+            };
+    /** The dropdown button to select a Bookshelf. */
+    private Spinner mBookshelfSpinner;
+    /** The normal FAB button; opens or closes the FAB menu. */
+    private FloatingActionButton mFab;
+    /** Array with the submenu FAB buttons. Element 0 shows at the bottom. */
+    private ExtendedFloatingActionButton[] mFabMenuItems;
+
     /** List header. */
     private TextView mHeaderStyleNameView;
     /** List header. */
@@ -179,6 +269,7 @@ public class BooksOnBookshelf
     private ArrayAdapter<BooksOnBookshelfModel.BookshelfSpinnerEntry> mBookshelfSpinnerAdapter;
     /** The ViewModel. */
     private BooksOnBookshelfModel mModel;
+
     /** Listener for the Bookshelf Spinner. */
     private final OnItemSelectedListener mOnBookshelfSelectionChanged =
             new OnItemSelectedListener() {
@@ -244,77 +335,8 @@ public class BooksOnBookshelf
 //            }
 //        }
     };
-    /** Listener for clicks on the list. */
-    private final BooklistAdapter.OnRowClickedListener mOnRowClickedListener =
-            new BooklistAdapter.OnRowClickedListener() {
-
-                /**
-                 * User clicked a row.
-                 * <ul>
-                 *      <li>Book: open the details screen.</li>
-                 *      <li>Not a book: expand/collapse the section as appropriate.</li>
-                 * </ul>
-                 */
-                @Override
-                public void onItemClick(final int position) {
-                    final Cursor cursor = mModel.getListCursor();
-                    // Move the cursor, so we can read the data for this row.
-                    // Paranoia: if the user can click it, then this move should be fine.
-                    if (!cursor.moveToPosition(position)) {
-                        return;
-                    }
-                    final RowDataHolder rowData = new CursorRow(cursor);
-
-                    // If it's a book, open the details screen.
-                    if (rowData.getInt(DBDefinitions.KEY_BL_NODE_GROUP) == BooklistGroup.BOOK) {
-                        final long rowId = rowData.getLong(DBDefinitions.KEY_PK_ID);
-                        final long bookId = rowData.getLong(DBDefinitions.KEY_FK_BOOK);
-                        // Note we (re)create the flat table *every time* the user click a book.
-                        // This guarantees an exact match in rowId'
-                        // (which turns out tricky if we cache the table - ENHANCE: re-implement caching)
-                        final String navTableName = mModel.createFlattenedBooklist();
-                        final Intent intent = new Intent(BooksOnBookshelf.this,
-                                                         BookDetailsActivity.class)
-                                .putExtra(DBDefinitions.KEY_PK_ID, bookId)
-                                .putExtra(BookDetailsFragmentViewModel.BKEY_NAV_TABLE, navTableName)
-                                .putExtra(BookDetailsFragmentViewModel.BKEY_NAV_ROW_ID, rowId);
-                        startActivityForResult(intent, RequestCode.BOOK_VIEW);
-
-                    } else {
-                        // it's a level, expand/collapse.
-                        final long rowId = rowData.getInt(DBDefinitions.KEY_BL_LIST_VIEW_ROW_ID);
-                        toggleNode(position, rowId, RowStateDAO.Node.NEXT_STATE_TOGGLE, 1);
-                    }
-                }
-
-                /**
-                 * User long-clicked on a row. Bring up a context menu as appropriate.
-                 */
-                @Override
-                public boolean onItemLongClick(final int position) {
-                    final Cursor cursor = mModel.getListCursor();
-                    // Move the cursor, so we can read the data for this row.
-                    // Paranoia: if the user can click it, then this move should be fine.
-                    if (!cursor.moveToPosition(position)) {
-                        return false;
-                    }
-                    final RowDataHolder rowData = new CursorRow(cursor);
-
-                    // build the menu for this row
-                    final Menu menu = MenuPicker.createMenu(BooksOnBookshelf.this);
-                    if (onCreateContextMenu(menu, rowData)) {
-                        // we have a menu to show, set the title according to the level.
-                        final int level = rowData.getInt(DBDefinitions.KEY_BL_NODE_LEVEL);
-                        final String title = mAdapter.getLevelText(position, level);
-
-                        // bring up the context menu
-                        new MenuPicker(BooksOnBookshelf.this, title, menu, position,
-                                       BooksOnBookshelf.this::onContextItemSelected)
-                                .show();
-                    }
-                    return true;
-                }
-            };
+    /** Overlay enabled while the FAB menu is shown to intercept clicks and close the FAB menu. */
+    private View mFabOverlay;
     /**
      * Apply the style that a user has selected.
      * Called from {@link StylePickerDialogFragment}.
@@ -342,23 +364,6 @@ public class BooksOnBookshelf
             this::exportPickUri;
     /** Import. */
     private ImportTaskModel mImportModel;
-    private final OptionsDialogBase.OptionsListener<ImportManager> mImportOptionsListener =
-            new OptionsDialogBase.OptionsListener<ImportManager>() {
-                @Override
-                public void onOptionsSet(@NonNull final ImportManager options) {
-                    mImportModel.startArchiveImportTask(options);
-                }
-            };
-    /** The dropdown button to select a Bookshelf. */
-    private Spinner mBookshelfSpinner;
-    /** The normal FAB button; opens or closes the FAB menu. */
-    private FloatingActionButton mFab;
-    /** Array with the submenu FAB buttons. Element 0 shows at the bottom. */
-    private ExtendedFloatingActionButton[] mFabMenuItems;
-    /** Overlay enabled while the FAB menu is shown to intercept clicks and close the FAB menu. */
-    private View mFabOverlay;
-
-//    private BooksonbookshelfBinding mVb;
     /** Define a scroller to show, or collapse/hide the FAB. */
     private final RecyclerView.OnScrollListener mUpdateFABVisibility =
             new RecyclerView.OnScrollListener() {
@@ -829,14 +834,19 @@ public class BooksOnBookshelf
             }
         }
 
+        int menuOrder = getResources().getInteger(R.integer.MENU_NEXT_MISSING_COVER);
+        if (menu.size() > 0) {
+            menu.add(Menu.NONE, R.id.MENU_DIVIDER, menuOrder++, "")
+                .setEnabled(false);
+        }
+        menu.add(Menu.NONE, R.id.MENU_NEXT_MISSING_COVER, menuOrder++,
+                 R.string.lbl_next_book_without_cover)
+            .setIcon(R.drawable.ic_broken_image);
+
         // if it's a level, add the expand option
         if (rowData.getInt(DBDefinitions.KEY_BL_NODE_GROUP) != BooklistGroup.BOOK) {
-            int menuOrder = getResources().getInteger(R.integer.MENU_ORDER_LEVEL_TOGGLE);
-            if (menu.size() > 0) {
-                menu.add(Menu.NONE, R.id.MENU_DIVIDER, menuOrder++, "")
-                    .setEnabled(false);
-            }
-            menu.add(Menu.NONE, R.id.MENU_LEVEL_EXPAND, menuOrder, R.string.lbl_level_expand)
+            //noinspection UnusedAssignment
+            menu.add(Menu.NONE, R.id.MENU_LEVEL_EXPAND, menuOrder++, R.string.lbl_level_expand)
                 .setIcon(R.drawable.ic_unfold_more);
         }
 
@@ -866,39 +876,39 @@ public class BooksOnBookshelf
 
         final RowDataHolder rowData = new CursorRow(cursor);
 
-        final long bookId = rowData.getLong(DBDefinitions.KEY_FK_BOOK);
-
         switch (menuItem) {
             case R.id.MENU_BOOK_EDIT: {
+                final long bookId = rowData.getLong(DBDefinitions.KEY_FK_BOOK);
                 final Intent intent = new Intent(this, EditBookActivity.class)
                         .putExtra(DBDefinitions.KEY_PK_ID, bookId);
                 startActivityForResult(intent, RequestCode.BOOK_EDIT);
                 return true;
             }
             case R.id.MENU_BOOK_DELETE: {
+                final long bookId = rowData.getLong(DBDefinitions.KEY_FK_BOOK);
                 final String title = rowData.getString(DBDefinitions.KEY_TITLE);
                 final List<Author> authors = mModel.getDb().getAuthorsByBookId(bookId);
                 StandardDialogs.deleteBook(this, title, authors, () -> {
                     mModel.getDb().deleteBook(this, bookId);
-                    mBookChangedListener
-                            .onBookChanged(bookId, BookChangedListener.BOOK_DELETED, null);
+                    mBookChangedListener.onChange(bookId, BookChangedListener.BOOK_DELETED, null);
                 });
                 return true;
             }
             case R.id.MENU_BOOK_DUPLICATE: {
-                final Book book = new Book(bookId, mModel.getDb());
-                final Intent dupIntent = new Intent(this, EditBookActivity.class)
+                final Book book = mModel.getBook(rowData.getLong(DBDefinitions.KEY_FK_BOOK));
+                final Intent intent = new Intent(this, EditBookActivity.class)
                         .putExtra(Book.BKEY_BOOK_DATA, book.duplicate());
-                startActivityForResult(dupIntent, RequestCode.BOOK_DUPLICATE);
+                startActivityForResult(intent, RequestCode.BOOK_DUPLICATE);
                 return true;
             }
 
             case R.id.MENU_BOOK_READ:
             case R.id.MENU_BOOK_UNREAD: {
                 // toggle the read status
-                if (mModel.getDb()
-                          .setBookRead(bookId, !rowData.getBoolean(DBDefinitions.KEY_READ))) {
-                    mBookChangedListener.onBookChanged(bookId, BookChangedListener.BOOK_READ, null);
+                final boolean status = !rowData.getBoolean(DBDefinitions.KEY_READ);
+                final long bookId = rowData.getLong(DBDefinitions.KEY_FK_BOOK);
+                if (mModel.getDb().setBookRead(bookId, status)) {
+                    mBookChangedListener.onChange(bookId, BookChangedListener.BOOK_READ, null);
                 }
                 return true;
             }
@@ -906,26 +916,29 @@ public class BooksOnBookshelf
             /* ********************************************************************************** */
 
             case R.id.MENU_BOOK_LOAN_ADD: {
+                final long bookId = rowData.getLong(DBDefinitions.KEY_FK_BOOK);
                 EditLenderDialogFragment
                         .newInstance(bookId, rowData.getString(DBDefinitions.KEY_TITLE))
                         .show(getSupportFragmentManager(), EditLenderDialogFragment.TAG);
                 return true;
             }
             case R.id.MENU_BOOK_LOAN_DELETE: {
+                final long bookId = rowData.getLong(DBDefinitions.KEY_FK_BOOK);
                 mModel.getDb().lendBook(bookId, null);
-                mBookChangedListener.onBookChanged(bookId, BookChangedListener.BOOK_LOANEE, null);
+                mBookChangedListener.onChange(bookId, BookChangedListener.BOOK_LOANEE, null);
                 return true;
             }
             /* ********************************************************************************** */
 
             case R.id.MENU_SHARE: {
-                final Book book = new Book(bookId, mModel.getDb());
+                final Book book = mModel.getBook(rowData.getLong(DBDefinitions.KEY_FK_BOOK));
                 startActivity(book.getShareBookIntent(this));
                 return true;
             }
             case R.id.MENU_BOOK_SEND_TO_GOODREADS: {
                 Snackbar.make(mListView, R.string.progress_msg_connecting,
                               Snackbar.LENGTH_LONG).show();
+                final long bookId = rowData.getLong(DBDefinitions.KEY_FK_BOOK);
                 new SendOneBookTask(bookId, mModel.getGoodreadsTaskListener(this))
                         .execute();
                 return true;
@@ -939,34 +952,38 @@ public class BooksOnBookshelf
                 final Intent intent = new Intent(this, BookSearchActivity.class)
                         .putExtra(BaseActivity.BKEY_FRAGMENT_TAG, UpdateFieldsFragment.TAG);
 
-                ArrayList<Long> bookIdList;
                 switch (rowData.getInt(DBDefinitions.KEY_BL_NODE_GROUP)) {
 
                     case BooklistGroup.BOOK: {
-                        bookIdList = new ArrayList<>();
-                        bookIdList.add(bookId);
+                        final ArrayList<Long> bookIdList = new ArrayList<>();
+                        bookIdList.add(rowData.getLong(DBDefinitions.KEY_FK_BOOK));
                         intent.putExtra(StandardDialogs.BKEY_DIALOG_TITLE,
-                                        rowData.getString(DBDefinitions.KEY_TITLE));
+                                        rowData.getString(DBDefinitions.KEY_TITLE))
+                              .putExtra(Book.BKEY_BOOK_ID_ARRAY,
+                                        bookIdList);
                         break;
                     }
                     case BooklistGroup.AUTHOR: {
-                        bookIdList = mModel.getDb().getBookIdsByAuthor(
-                                rowData.getLong(DBDefinitions.KEY_FK_AUTHOR));
+                        final long authorId = rowData.getLong(DBDefinitions.KEY_FK_AUTHOR);
                         intent.putExtra(StandardDialogs.BKEY_DIALOG_TITLE,
-                                        rowData.getString(DBDefinitions.KEY_AUTHOR_FORMATTED));
+                                        rowData.getString(DBDefinitions.KEY_AUTHOR_FORMATTED))
+                              .putExtra(Book.BKEY_BOOK_ID_ARRAY,
+                                        mModel.getDb().getBookIdsByAuthor(authorId));
                         break;
                     }
                     case BooklistGroup.SERIES: {
-                        bookIdList = mModel.getDb().getBookIdsBySeries(
-                                rowData.getLong(DBDefinitions.KEY_FK_SERIES));
+                        final long seriesId = rowData.getLong(DBDefinitions.KEY_FK_SERIES);
                         intent.putExtra(StandardDialogs.BKEY_DIALOG_TITLE,
-                                        rowData.getString(DBDefinitions.KEY_SERIES_TITLE));
+                                        rowData.getString(DBDefinitions.KEY_SERIES_TITLE))
+                              .putExtra(Book.BKEY_BOOK_ID_ARRAY,
+                                        mModel.getDb().getBookIdsBySeries(seriesId));
                         break;
                     }
                     case BooklistGroup.PUBLISHER: {
                         String publisher = rowData.getString(DBDefinitions.KEY_PUBLISHER);
-                        bookIdList = mModel.getDb().getBookIdsByPublisher(publisher);
-                        intent.putExtra(StandardDialogs.BKEY_DIALOG_TITLE, publisher);
+                        intent.putExtra(StandardDialogs.BKEY_DIALOG_TITLE, publisher)
+                              .putExtra(Book.BKEY_BOOK_ID_ARRAY,
+                                        mModel.getDb().getBookIdsByPublisher(publisher));
                         break;
                     }
                     default: {
@@ -980,7 +997,6 @@ public class BooksOnBookshelf
                     }
                 }
 
-                intent.putExtra(Book.BKEY_BOOK_ID_ARRAY, bookIdList);
                 startActivityForResult(intent, RequestCode.UPDATE_FIELDS_FROM_INTERNET);
                 return true;
             }
@@ -989,7 +1005,7 @@ public class BooksOnBookshelf
 
             case R.id.MENU_SERIES_EDIT: {
                 final long seriesId = rowData.getLong(DBDefinitions.KEY_FK_SERIES);
-                final Series series = mModel.getDb().getSeries(seriesId);
+                final Series series = mModel.getSeries(seriesId);
                 if (series != null) {
                     EditSeriesDialogFragment
                             .newInstance(series)
@@ -1003,17 +1019,17 @@ public class BooksOnBookshelf
                 // toggle the complete status
                 final boolean status = !rowData.getBoolean(DBDefinitions.KEY_SERIES_IS_COMPLETE);
                 if (mModel.getDb().setSeriesComplete(seriesId, status)) {
-                    mBookChangedListener.onBookChanged(0, BookChangedListener.SERIES, null);
+                    mBookChangedListener.onChange(0, BookChangedListener.SERIES, null);
                 }
                 return true;
             }
             case R.id.MENU_SERIES_DELETE: {
                 final Series series =
-                        mModel.getDb().getSeries(rowData.getLong(DBDefinitions.KEY_FK_SERIES));
+                        mModel.getSeries(rowData.getLong(DBDefinitions.KEY_FK_SERIES));
                 if (series != null) {
                     StandardDialogs.deleteSeries(this, series, () -> {
                         mModel.getDb().deleteSeries(this, series.getId());
-                        mBookChangedListener.onBookChanged(0, BookChangedListener.SERIES, null);
+                        mBookChangedListener.onChange(0, BookChangedListener.SERIES, null);
                     });
                 }
                 return true;
@@ -1032,7 +1048,7 @@ public class BooksOnBookshelf
 
             case R.id.MENU_AUTHOR_EDIT: {
                 final long authorId = rowData.getLong(DBDefinitions.KEY_FK_AUTHOR);
-                final Author author = mModel.getDb().getAuthor(authorId);
+                final Author author = mModel.getAuthor(authorId);
                 if (author != null) {
                     EditAuthorDialogFragment
                             .newInstance(author)
@@ -1046,7 +1062,7 @@ public class BooksOnBookshelf
                 // toggle the complete status
                 final boolean status = !rowData.getBoolean(DBDefinitions.KEY_AUTHOR_IS_COMPLETE);
                 if (mModel.getDb().setAuthorComplete(authorId, status)) {
-                    mBookChangedListener.onBookChanged(0, BookChangedListener.AUTHOR, null);
+                    mBookChangedListener.onChange(0, BookChangedListener.AUTHOR, null);
                 }
                 return true;
             }
@@ -1115,11 +1131,24 @@ public class BooksOnBookshelf
             }
 
             case R.id.MENU_LEVEL_EXPAND: {
-                final long rowId = rowData.getInt(DBDefinitions.KEY_BL_LIST_VIEW_ROW_ID);
-                toggleNode(position, rowId, RowStateDAO.Node.NEXT_STATE_EXPANDED,
-                           mModel.getCurrentStyle(this).getGroupCount());
+                final long nodeRowId = rowData.getLong(DBDefinitions.KEY_BL_LIST_VIEW_NODE_ROW_ID);
+                final int relativeChildLevel = mModel.getCurrentStyle(this).getGroupCount();
+                final RowStateDAO.Node node = mModel.toggleNode(
+                        nodeRowId, RowStateDAO.Node.NEXT_STATE_EXPANDED, relativeChildLevel);
+                refreshNodePosition(node);
                 return true;
             }
+
+            case R.id.MENU_NEXT_MISSING_COVER: {
+                final long nodeRowId = rowData.getLong(DBDefinitions.KEY_BL_LIST_VIEW_NODE_ROW_ID);
+                final RowStateDAO.Node node = mModel.getNextBookWithoutCover(this, nodeRowId);
+                if (node != null) {
+                    scrollTo(node);
+                    refreshNodePosition(node);
+                }
+                return true;
+            }
+
             default:
                 return MenuHandler.handleOpenOnWebsiteMenus(this, menuItem, rowData);
         }
@@ -1352,7 +1381,7 @@ public class BooksOnBookshelf
                 Log.d(TAG, "onResume|reusing existing list");
             }
             mModel.createNewListCursor();
-            displayList(mModel.getTargetRows());
+            displayList(mModel.getTargetNodes());
         }
     }
 
@@ -1388,70 +1417,11 @@ public class BooksOnBookshelf
     }
 
     /**
-     * Expand/Collapse the current position in the list.
-     *
-     * @param topLevel the desired top-level which must be kept visible
-     * @param expand   desired state
-     */
-    private void expandAllNodes(@IntRange(from = 1) final int topLevel,
-                                final boolean expand) {
-        // It is possible that the list will be empty, if so, ignore
-        if (mLayoutManager.findFirstCompletelyVisibleItemPosition() != RecyclerView.NO_POSITION) {
-            // save current position in case anything goes wrong during expanding
-            saveListPosition();
-            // set new states
-            mModel.expandAllNodes(topLevel, expand);
-            // Save the new top row position.
-            saveListPosition();
-            // Finally pass in a new cursor and display the list.
-            mModel.createNewListCursor();
-            displayList(null);
-        }
-    }
-
-    /**
-     * Set the desired state on the given node.
-     * Called when the user taps on a level-row, or from the row context menu.
-     *
-     * @param position           of the row in the list view
-     * @param rowId              of the node in the list
-     * @param nextState          the state to set the node to
-     * @param relativeChildLevel up to and including this (relative to the node) child level;
-     */
-    public void toggleNode(final int position,
-                           final long rowId,
-                           @RowStateDAO.Node.NodeNextState final int nextState,
-                           final int relativeChildLevel) {
-
-        // update the row DAO table
-        final boolean isExpanded = mModel.toggleNode(rowId, nextState, relativeChildLevel);
-
-        // make sure the cursor has valid rows for the new position.
-        final Cursor cursor = mModel.getListCursor();
-        if (cursor.requery()) {
-            mAdapter.notifyDataSetChanged();
-            if (isExpanded) {
-                // if the user expanded the line at the bottom of the screen,
-                final int lastPos = mLayoutManager.findLastCompletelyVisibleItemPosition();
-                if ((position + 1 == lastPos) || (position == lastPos)) {
-                    // then we move the list a minimum of 2 positions upwards
-                    // to make the expanded rows visible. Using 3 for comfort.
-                    mListView.scrollToPosition(position + 3);
-                }
-            }
-        } else {
-            if (BuildConfig.DEBUG /* always */) {
-                throw new IllegalStateException("requery() failed");
-            }
-        }
-    }
-
-    /**
      * Display the current cursor in the ListView.
      *
-     * @param targetRows (optional) change the position to targetRows.
+     * @param targetNodes (optional) change the position to the 'best' of these nodes.
      */
-    private void displayList(@Nullable final List<RowStateDAO.Node> targetRows) {
+    private void displayList(@Nullable final List<RowStateDAO.Node> targetNodes) {
 
         // create and hookup the list adapter.
         initAdapter(mModel.getListCursor());
@@ -1494,8 +1464,8 @@ public class BooksOnBookshelf
         }
 
         // If a target position array is set, then queue a runnable to scroll to the target
-        if (targetRows != null) {
-            mListView.post(() -> scrollToTarget(targetRows));
+        if (targetNodes != null) {
+            mListView.post(() -> scrollTo(targetNodes));
 
         } else {
             // we're at the final position, save it.
@@ -1550,14 +1520,68 @@ public class BooksOnBookshelf
     }
 
     /**
+     * Expand/Collapse the current position in the list.
+     *
+     * @param topLevel the desired top-level which must be kept visible
+     * @param expand   desired state
+     */
+    private void expandAllNodes(@IntRange(from = 1) final int topLevel,
+                                final boolean expand) {
+        // It is possible that the list will be empty, if so, ignore
+        if (mLayoutManager.findFirstCompletelyVisibleItemPosition() != RecyclerView.NO_POSITION) {
+            // save current position in case anything goes wrong during expanding
+            saveListPosition();
+            // set new states
+            mModel.expandAllNodes(topLevel, expand);
+            // Save the new top row position.
+            saveListPosition();
+            // Finally pass in a new cursor and display the list.
+            mModel.createNewListCursor();
+            displayList(null);
+        }
+    }
+
+    /**
+     * Refresh the cursor/adapter as needed to make the node visible to the user.
+     *
+     * @param node to put into view.
+     */
+    public void refreshNodePosition(@NonNull final RowStateDAO.Node node) {
+        // make sure the cursor has valid rows for the new position.
+        final Cursor cursor = mModel.getListCursor();
+        if (cursor.requery()) {
+            mAdapter.notifyDataSetChanged();
+            if (node.isExpanded) {
+                int position = node.getListPosition();
+                // if the user expanded the line at the bottom of the screen,
+                final int lastPos = mLayoutManager.findLastCompletelyVisibleItemPosition();
+                if ((position + 1 == lastPos) || (position == lastPos)) {
+                    // then we move the list a minimum of 2 positions upwards
+                    // to make the expanded rows visible. Using 3 for comfort.
+                    mLayoutManager.scrollToPosition(position + 3);
+                }
+            }
+        } else {
+            if (BuildConfig.DEBUG /* always */) {
+                throw new IllegalStateException("requery() failed");
+            }
+        }
+    }
+
+    /**
      * Set the position once we know how many items appear in a typical
      * view and we can tell if it is already in the view.
      * <p>
      * called from {@link #displayList}
      *
-     * @param targetRows list of rows of which we want one to be visible to the user.
+     * @param targetNodes list of rows of which we want one to be visible to the user.
      */
-    private void scrollToTarget(@NonNull final List<RowStateDAO.Node> targetRows) {
+    private void scrollTo(@NonNull final List<RowStateDAO.Node> targetNodes) {
+        // sanity check
+        if (targetNodes.isEmpty()) {
+            return;
+        }
+
         final int firstVisibleItemPosition = mLayoutManager.findFirstVisibleItemPosition();
         if (firstVisibleItemPosition == RecyclerView.NO_POSITION) {
             // empty list
@@ -1565,46 +1589,57 @@ public class BooksOnBookshelf
         }
 
         final int lastVisibleItemPosition = mLayoutManager.findLastVisibleItemPosition();
-        final int centre = (lastVisibleItemPosition + firstVisibleItemPosition) / 2;
+        final int middle = (lastVisibleItemPosition + firstVisibleItemPosition) / 2;
 
         // Get the first 'target' and make it 'best candidate'
-        int best = targetRows.get(0).getListPosition();
-        // distance from currently visible centre row
-        int dist = Math.abs(best - centre);
+        RowStateDAO.Node best = targetNodes.get(0);
+        // distance from currently visible middle row
+        int dist = Math.abs(best.getListPosition() - middle);
 
         // Loop all other rows, looking for a nearer one
-        for (int i = 1; i < targetRows.size(); i++) {
-            int ri = targetRows.get(i).getListPosition();
-            int newDist = Math.abs(ri - centre);
+        for (int i = 1; i < targetNodes.size(); i++) {
+            final RowStateDAO.Node node = targetNodes.get(i);
+            final int newDist = Math.abs(node.getListPosition() - middle);
             if (newDist < dist) {
                 dist = newDist;
-                best = ri;
+                best = node;
             }
-        }
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_NODE_STATE) {
-            Log.d(TAG, "scrollToTarget"
-                       + "|targetRows=" + targetRows
-                       + "|best=" + best);
         }
 
         // If the 'best' row is not in view, or at the edge, scroll it into view.
-        if (best <= firstVisibleItemPosition) {
-            mLayoutManager.scrollToPosition(best - 1);
-        } else if (best >= lastVisibleItemPosition) {
-            mLayoutManager.scrollToPosition(best + 1);
+        scrollTo(best);
+    }
+
+    /**
+     * Scroll the given node into view.
+     *
+     * @param node to scroll to
+     */
+    private void scrollTo(@NonNull final RowStateDAO.Node node) {
+        final int firstVisibleItemPosition = mLayoutManager.findFirstVisibleItemPosition();
+        if (firstVisibleItemPosition == RecyclerView.NO_POSITION) {
+            // empty list
+            return;
+        }
+
+        final int pos = node.getListPosition();
+        // We always scroll 1 more then needed for comfort.
+        if (pos <= firstVisibleItemPosition) {
+            mLayoutManager.scrollToPosition(pos - 1);
+        } else if (pos >= mLayoutManager.findLastVisibleItemPosition()) {
+            mLayoutManager.scrollToPosition(pos + 1);
         }
         saveListPosition();
 
-//            // Without this call some positioning may be off by one row.
-//            final int newPos = best;
-//            mListView.post(() -> {
-//                mListView.smoothScrollToPosition(newPos);
-//                // not entirely sure this is needed
-//                mModel.saveAllNodes();
-//                // but this is
-//                saveListPosition();
-//            });
-//        }
+        //   // Without this call some positioning may be off by one row.
+        //   final int newPos = pos;
+        //   mListView.post(() -> {
+        //     mListView.smoothScrollToPosition(newPos);
+        //     // not entirely sure this is needed
+        //     mModel.saveAllNodes();
+        //     // but this is
+        //     saveListPosition();
+        //   });
     }
 
     /**
@@ -1700,11 +1735,11 @@ public class BooksOnBookshelf
         // hook the task up.
         switch (taskId) {
             case R.id.TASK_ID_EXPORT:
-                dialog.setCancellable(mExportModel.getTask());
+                dialog.setCanceller(mExportModel.getTask());
                 break;
 
             case R.id.TASK_ID_IMPORT:
-                dialog.setCancellable(mImportModel.getTask());
+                dialog.setCanceller(mImportModel.getTask());
                 break;
 
             default:

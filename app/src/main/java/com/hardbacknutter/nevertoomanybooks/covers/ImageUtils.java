@@ -227,10 +227,10 @@ public final class ImageUtils {
 
         // Once we get here, we know the file is valid
         if (useCaching) {
-            // If caching is used,
-            // 1. Get the image from the file system and display it.
+            // 1. Gets the image from the file system and display it.
             // 2. Start a subsequent task to send it to the cache.
-            new ImageLoaderWithCaching(imageView, file, maxWidth, maxHeight, null, uuid, cIdx)
+            // This 2nd task uses the serial executor.
+            new ImageLoaderWithCacheWrite(imageView, file, maxWidth, maxHeight, null, uuid, cIdx)
                     .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
             return true;
 
@@ -359,6 +359,7 @@ public final class ImageUtils {
      * @param context   Application context
      * @param url       Image file URL
      * @param name      for the file.
+     * @param connectTimeout in milliseconds
      * @param throttler (optional) {@link Throttler} to use
      *
      * @return Downloaded fileSpec, or {@code null} on failure
@@ -368,6 +369,7 @@ public final class ImageUtils {
     public static String saveImage(@NonNull final Context context,
                                    @NonNull final String url,
                                    @NonNull final String name,
+                                   final int connectTimeout,
                                    @Nullable final Throttler throttler) {
 
         File file = AppDir.Cache.getFile(context, name + ".jpg");
@@ -381,7 +383,8 @@ public final class ImageUtils {
                 }
             } else {
                 try (TerminatorConnection con =
-                             TerminatorConnection.open(context, url, NR_OF_TRIES, throttler)) {
+                             TerminatorConnection.open(context, url, connectTimeout,
+                                                       NR_OF_TRIES, throttler)) {
                     file = FileUtils.copyInputStream(context, con.getInputStream(), file);
                 }
             }

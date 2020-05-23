@@ -55,6 +55,9 @@ public final class NetworkUtils {
 
     private static final Pattern SLASH_PATTERN = Pattern.compile("//");
 
+    /** Timeout for {@link #ping(Context, String)}. */
+    private static final int PING_TIMEOUT_MS = 5_000;
+
     private NetworkUtils() {
     }
 
@@ -78,22 +81,22 @@ public final class NetworkUtils {
             }
         }
 
-        ConnectivityManager connMgr =
+        final ConnectivityManager connMgr =
                 (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         if (connMgr != null) {
-            Network network = connMgr.getActiveNetwork();
+            final Network network = connMgr.getActiveNetwork();
             if (network != null) {
-                NetworkCapabilities nc = connMgr.getNetworkCapabilities(network);
+                final NetworkCapabilities nc = connMgr.getNetworkCapabilities(network);
                 if (nc != null) {
                     // we need internet access.
-                    boolean hasInternet =
+                    final boolean hasInternet =
                             nc.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET);
                     // and we need internet access actually working!
-                    boolean isValidated =
+                    final boolean isValidated =
                             nc.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED);
 
                     if (BuildConfig.DEBUG && DEBUG_SWITCHES.NETWORK) {
-                        boolean notMetered =
+                        final boolean notMetered =
                                 nc.hasCapability(NetworkCapabilities.NET_CAPABILITY_NOT_METERED);
 
                         Log.d(TAG, "getNetworkConnectivity"
@@ -125,16 +128,14 @@ public final class NetworkUtils {
      * Any path after the hostname will be ignored.
      * If a port is specified.. it's ignored. Only ports 80/443 are used.
      *
-     * @param appContext  Application context
-     * @param urlStr      url to check
-     * @param timeoutInMs socket connect timeout in milliseconds
+     * @param appContext Application context
+     * @param urlStr     url to check
      *
      * @throws IOException if we cannot reach the site, or if the network itself is unavailable
      */
     @WorkerThread
-    public static void poke(@NonNull final Context appContext,
-                            @NonNull final String urlStr,
-                            final int timeoutInMs)
+    public static void ping(@NonNull final Context appContext,
+                            @NonNull final String urlStr)
             throws IOException {
 
         if (!isNetworkAvailable(appContext)) {
@@ -142,12 +143,12 @@ public final class NetworkUtils {
         }
 
         //noinspection StringToUpperCaseOrToLowerCaseWithoutLocale
-        String url = urlStr.toLowerCase();
-        int port = url.startsWith("https://") ? 443 : 80;
-        String host = SLASH_PATTERN.split(url)[1].split("/")[0];
+        final String url = urlStr.toLowerCase();
+        final int port = url.startsWith("https://") ? 443 : 80;
+        final String host = SLASH_PATTERN.split(url)[1].split("/")[0];
 
-        Socket sock = new Socket();
-        sock.connect(new InetSocketAddress(host, port), timeoutInMs);
+        final Socket sock = new Socket();
+        sock.connect(new InetSocketAddress(host, port), PING_TIMEOUT_MS);
         sock.close();
     }
 }

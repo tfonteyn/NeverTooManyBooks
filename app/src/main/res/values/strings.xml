@@ -1665,5 +1665,6 @@
     </string>
     <string name="lbl_table_of_content_entry">TOC Entry</string>
     <string name="btn_show_list">Show list</string>
+    <string name="lbl_next_book_without_cover">Jump to next book without cover</string>
 
 </resources>

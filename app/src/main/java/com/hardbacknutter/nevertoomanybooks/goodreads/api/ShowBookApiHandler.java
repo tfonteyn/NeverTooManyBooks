@@ -307,14 +307,14 @@ public abstract class ShowBookApiHandler
         mBookData = bookData;
         mShelves = null;
 
-        DefaultHandler handler = new XmlResponseParser(mRootFilter);
+        final DefaultHandler handler = new XmlResponseParser(mRootFilter);
         executeGet(url, null, true, handler);
 
         // When we get here, the data has been collected but needs processing into standard form.
 
         // Use ISBN13 by preference
         if (mBookData.containsKey(ShowBookFieldName.ISBN13)) {
-            String s = mBookData.getString(ShowBookFieldName.ISBN13);
+            final String s = mBookData.getString(ShowBookFieldName.ISBN13);
             if (s != null && s.length() == 13) {
                 mBookData.putString(DBDefinitions.KEY_ISBN, s);
             }
@@ -370,17 +370,17 @@ public abstract class ShowBookApiHandler
         // Cleanup the title by removing Series name, if present
         // Example: "<title>The Anome (Durdane, #1)</title>"
         if (mBookData.containsKey(DBDefinitions.KEY_TITLE)) {
-            String fullTitle = mBookData.getString(DBDefinitions.KEY_TITLE);
+            final String fullTitle = mBookData.getString(DBDefinitions.KEY_TITLE);
             if (fullTitle != null && !fullTitle.isEmpty()) {
-                Matcher matcher = Series.TEXT1_BR_TEXT2_BR_PATTERN.matcher(fullTitle);
+                final Matcher matcher = Series.TEXT1_BR_TEXT2_BR_PATTERN.matcher(fullTitle);
                 if (matcher.find()) {
-                    String bookTitle = matcher.group(1);
-                    String seriesTitleWithNumber = matcher.group(2);
+                    final String bookTitle = matcher.group(1);
+                    final String seriesTitleWithNumber = matcher.group(2);
                     if (seriesTitleWithNumber != null && !seriesTitleWithNumber.isEmpty()) {
                         if (mSeries == null) {
                             mSeries = new ArrayList<>();
                         }
-                        Series newSeries = Series.from(seriesTitleWithNumber);
+                        final Series newSeries = Series.from(seriesTitleWithNumber);
                         mSeries.add(newSeries);
                         // It's tempting to replace KEY_TITLE with ORIG_TITLE, but that does
                         // bad things to translations (it uses the original language)
@@ -445,6 +445,7 @@ public abstract class ShowBookApiHandler
             final String tmpName = mBookData.getLong(DBDefinitions.KEY_EID_GOODREADS_BOOK)
                                    + GoodreadsSearchEngine.FILENAME_SUFFIX;
             final String fileSpec = ImageUtils.saveImage(appContext, coverUrl, tmpName,
+                                                         GoodreadsSearchEngine.CONNECT_TIMEOUT_MS,
                                                          GoodreadsSearchEngine.THROTTLER);
             if (fileSpec != null) {
                 ArrayList<String> list =

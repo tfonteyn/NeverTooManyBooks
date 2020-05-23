@@ -69,7 +69,7 @@ import com.hardbacknutter.nevertoomanybooks.covers.ImageUtils;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
-import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDialogFragment;
+import com.hardbacknutter.nevertoomanybooks.tasks.Canceller;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 import com.hardbacknutter.nevertoomanybooks.utils.Csv;
 import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
@@ -92,7 +92,7 @@ import com.hardbacknutter.nevertoomanybooks.viewmodels.SingleLiveEvent;
  */
 public class SearchCoordinator
         extends ViewModel
-        implements ProgressDialogFragment.Cancellable {
+        implements Canceller {
 
     /** Log tag. */
     private static final String TAG = "SearchCoordinator";
@@ -348,6 +348,11 @@ public class SearchCoordinator
             }
         }
         return true;
+    }
+
+    @Override
+    public boolean isCancelled() {
+        return mIsCancelled;
     }
 
     /**
@@ -947,10 +952,13 @@ public class SearchCoordinator
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
             Log.d(TAG, "accumulateSiteData|site=" + site.getName());
         }
+
+        final Locale locale = site.getSearchEngine().getLocale(context);
+
         for (String key : siteData.keySet()) {
             if (DBDefinitions.KEY_DATE_PUBLISHED.equals(key)
                 || DBDefinitions.KEY_DATE_FIRST_PUBLICATION.equals(key)) {
-                accumulateDates(site.getLocale(context), key, siteData);
+                accumulateDates(locale, key, siteData);
 
             } else if (Book.BKEY_AUTHOR_ARRAY.equals(key)
                        || Book.BKEY_SERIES_ARRAY.equals(key)

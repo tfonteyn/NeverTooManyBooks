@@ -38,7 +38,6 @@ import androidx.annotation.VisibleForTesting;
 import androidx.preference.PreferenceManager;
 
 import java.io.IOException;
-import java.net.HttpURLConnection;
 import java.util.Locale;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -51,6 +50,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageFileInfo;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageUtils;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
+import com.hardbacknutter.nevertoomanybooks.tasks.Canceller;
 import com.hardbacknutter.nevertoomanybooks.tasks.TerminatorConnection;
 
 /**
@@ -100,10 +100,24 @@ public class KbNlSearchEngine
 //    private static final String AUTHOR_URL = getBaseURL(context)
 //    + "/DB=1/SET=1/TTL=1/REL?PPN=%1$s";
 
+
+    @Nullable
+    private Canceller mCaller;
+
     @NonNull
     public static String getBaseURL(@NonNull final Context context) {
         return PreferenceManager.getDefaultSharedPreferences(context)
                                 .getString(PREFS_HOST_URL, "http://opc4.kb.nl");
+    }
+
+    @Override
+    public void setCaller(@Nullable final Canceller caller) {
+        mCaller = caller;
+    }
+
+    @Override
+    public boolean isCancelled() {
+        return mCaller == null || mCaller.isCancelled();
     }
 
     @NonNull
@@ -119,21 +133,20 @@ public class KbNlSearchEngine
                                @NonNull final boolean[] fetchThumbnail)
             throws IOException {
 
-        String url = getBaseURL(context) + String.format(BOOK_URL, validIsbn);
+        final String url = getBaseURL(context) + String.format(BOOK_URL, validIsbn);
 
-        SAXParserFactory factory = SAXParserFactory.newInstance();
+        final SAXParserFactory factory = SAXParserFactory.newInstance();
         KbNlBookHandler handler = new KbNlBookHandler(new Bundle());
 
-        try (TerminatorConnection terminatorConnection =
-                     new TerminatorConnection(context, url)) {
-            HttpURLConnection con = terminatorConnection.getHttpURLConnection();
-
+        try (TerminatorConnection con = new TerminatorConnection(
+                context, url, getConnectTimeoutMs())) {
             // needed so we get the XML instead of the rendered page
             con.setInstanceFollowRedirects(false);
-            terminatorConnection.open();
+            // GO!
+            con.open();
 
-            SAXParser parser = factory.newSAXParser();
-            parser.parse(terminatorConnection.getInputStream(), handler);
+            final SAXParser parser = factory.newSAXParser();
+            parser.parse(con.getInputStream(), handler);
 
             // wrap parser exceptions in an IOException
         } catch (@NonNull final ParserConfigurationException | SAXException e) {
@@ -141,6 +154,11 @@ public class KbNlSearchEngine
         }
 
         Bundle bookData = handler.getResult();
+
+        if (isCancelled()) {
+            return bookData;
+        }
+
         if (fetchThumbnail[0]) {
             CoverByIsbn.getCoverImage(context, this, validIsbn, 0, bookData);
         }
@@ -180,7 +198,7 @@ public class KbNlSearchEngine
 
         final String url = String.format(BASE_URL_COVERS, validIsbn, sizeSuffix);
         final String tmpName = validIsbn + FILENAME_SUFFIX + "_" + sizeSuffix;
-        return ImageUtils.saveImage(context, url, tmpName, null);
+        return ImageUtils.saveImage(context, url, tmpName, getConnectTimeoutMs(), null);
     }
 
     @Override

@@ -42,7 +42,7 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import com.hardbacknutter.nevertoomanybooks.R;
 
 /**
- * Replacement for androidx.constraintlayout.widget.Group.
+ * Replacement for {@link androidx.constraintlayout.widget.Group}.
  * <p>
  * The original only provides support for visibility and is broken in different ways
  * depending on the version.

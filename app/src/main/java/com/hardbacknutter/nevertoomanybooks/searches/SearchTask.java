@@ -110,6 +110,7 @@ public class SearchTask
                @NonNull final TaskListener<Bundle> taskListener) {
         super(taskId, taskListener);
         mSearchEngine = searchEngine;
+        mSearchEngine.setCaller(this);
 
         String name = mSearchEngine.getName(context);
         mProgressTitle = context.getString(R.string.progress_msg_searching_site, name);
@@ -192,18 +193,15 @@ public class SearchTask
         publishProgress(new TaskListener.ProgressMessage(getTaskId(), mProgressTitle));
 
         try {
-            // can we reach the site ?
-            NetworkUtils.poke(context,
-                              mSearchEngine.getUrl(context),
-                              mSearchEngine.getConnectTimeoutMs());
+            // can we reach the site at all ?
+            NetworkUtils.ping(context, mSearchEngine.getUrl(context));
 
             // sanity check, see #setFetchThumbnail
             if (mFetchThumbnail == null) {
                 mFetchThumbnail = new boolean[2];
             }
 
-            Bundle bookData;
-
+            final Bundle bookData;
             switch (mBy) {
                 case BY_NATIVE_ID:
                     Objects.requireNonNull(mNativeId, ErrorMsg.NULL_NATIVE_ID);

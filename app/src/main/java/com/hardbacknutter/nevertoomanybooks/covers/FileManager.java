@@ -49,6 +49,7 @@ import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.searches.Site;
 import com.hardbacknutter.nevertoomanybooks.searches.SiteList;
+import com.hardbacknutter.nevertoomanybooks.tasks.Canceller;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskBase;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
@@ -100,7 +101,8 @@ public class FileManager {
      */
     @NonNull
     @WorkerThread
-    public ImageFileInfo search(@NonNull final Context context,
+    public ImageFileInfo search(@NonNull final Canceller caller,
+                                @NonNull final Context context,
                                 @NonNull final String isbn,
                                 @IntRange(from = 0) final int cIdx,
                                 @NonNull final ImageFileInfo.Size... sizes) {
@@ -113,6 +115,10 @@ public class FileManager {
         // The idea is to check all sites for the same size first.
         // If none respond with that size, try the next size inline.
         for (ImageFileInfo.Size size : sizes) {
+            if (caller.isCancelled()) {
+                return new ImageFileInfo(isbn);
+            }
+
             final String key = isbn + '_' + size;
             ImageFileInfo imageFileInfo = mFiles.get(key);
 
@@ -134,21 +140,26 @@ public class FileManager {
             for (Site site : mSiteList.getSites(true)) {
                 // Should we search this site ?
                 if ((currentSearchSites & site.id) != 0) {
-                    SearchEngine engine = site.getSearchEngine();
 
-                    if (engine instanceof SearchEngine.CoverByIsbn
-                        && engine.isAvailable(context)) {
+                    if (caller.isCancelled()) {
+                        return new ImageFileInfo(isbn);
+                    }
+
+                    final SearchEngine searchEngine = site.getSearchEngine(caller);
+                    if (searchEngine instanceof SearchEngine.CoverByIsbn
+                        && searchEngine.isAvailable(context)) {
                         if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVER_BROWSER_DOWNLOADS) {
                             Log.d(TAG, "download|TRYING"
                                        + "|isbn=" + isbn
                                        + "|size=" + size
-                                       + "|engine=" + engine.getName(context)
+                                       + "|engine=" + searchEngine.getName(context)
                                  );
                         }
 
                         @Nullable
-                        final String fileSpec = ((SearchEngine.CoverByIsbn) engine)
+                        final String fileSpec = ((SearchEngine.CoverByIsbn) searchEngine)
                                 .searchCoverImageByIsbn(context, isbn, cIdx, size);
+
                         imageFileInfo = new ImageFileInfo(isbn, fileSpec, size);
 
                         if (ImageUtils.isFileGood(imageFileInfo.getFile())) {
@@ -158,7 +169,7 @@ public class FileManager {
                                 Log.d(TAG, "download|SUCCESS"
                                            + "|isbn=" + isbn
                                            + "|size=" + size
-                                           + "|engine=" + engine.getName(context)
+                                           + "|engine=" + searchEngine.getName(context)
                                            + "|fileSpec=" + fileSpec);
                             }
                             // abort search, we got an image
@@ -169,13 +180,13 @@ public class FileManager {
                             Log.d(TAG, "download|NO GOOD"
                                        + "|isbn=" + isbn
                                        + "|size=" + size
-                                       + "|engine=" + engine.getName(context)
+                                       + "|engine=" + searchEngine.getName(context)
                                  );
                         }
 
                         // if the site we just searched only supports one image,
                         // disable it for THIS search
-                        if (!((SearchEngine.CoverByIsbn) engine).supportsMultipleSizes()) {
+                        if (!((SearchEngine.CoverByIsbn) searchEngine).supportsMultipleSizes()) {
                             currentSearchSites &= ~site.id;
                         }
                     } else {
@@ -187,8 +198,9 @@ public class FileManager {
                 // loop for next site
             }
 
-            // give up for this size; remove (if any) bad file
+            // remove (if any) bad file
             mFiles.remove(key);
+            // loop for next size
         }
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVER_BROWSER_DOWNLOADS) {
@@ -296,7 +308,7 @@ public class FileManager {
             final Context context = App.getTaskContext();
 
             try {
-                return mFileManager.search(context, mIsbn, mCIdx, mSizes);
+                return mFileManager.search(this, context, mIsbn, mCIdx, mSizes);
 
             } catch (@SuppressWarnings("OverlyBroadCatchBlock") @NonNull final Exception ignore) {
                 // tad annoying... java.io.InterruptedIOException: thread interrupted

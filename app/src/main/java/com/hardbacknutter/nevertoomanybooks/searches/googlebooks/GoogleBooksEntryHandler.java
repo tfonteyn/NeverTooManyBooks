@@ -49,6 +49,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
+import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.xml.SearchHandler;
 
@@ -251,16 +252,22 @@ class GoogleBooksEntryHandler
     private boolean mInSuggestedRetailPriceTag;
     private boolean mInRetailPriceTag;
 
+    @NonNull
+    private final SearchEngine mSearchEngine;
+
     /**
      * Constructor.
      *
+     * @param searchEngine to use
      * @param fetchThumbnail Set to {@code true} if we want to get thumbnails
      * @param bookData       Bundle to save results in (passed in to allow mocking)
      */
-    GoogleBooksEntryHandler(@NonNull final boolean[] fetchThumbnail,
+    GoogleBooksEntryHandler(@NonNull final SearchEngine searchEngine,
+                            @NonNull final boolean[] fetchThumbnail,
                             @NonNull final Bundle bookData) {
-        mBookData = bookData;
+        mSearchEngine = searchEngine;
         mFetchThumbnail = fetchThumbnail;
+        mBookData = bookData;
         mLocale = LocaleUtils.getSystemLocale();
     }
 
@@ -326,7 +333,9 @@ class GoogleBooksEntryHandler
 
                 final String tmpName = createTempCoverFileName(mBookData);
                 final String fileSpec = ImageUtils.saveImage(App.getAppContext(),
-                                                             coverUrl, tmpName, null);
+                                                             coverUrl, tmpName,
+                                                             mSearchEngine.getConnectTimeoutMs(),
+                                                             null);
                 if (fileSpec != null) {
                     ArrayList<String> imageList =
                             mBookData.getStringArrayList(Book.BKEY_FILE_SPEC_ARRAY[0]);

@@ -132,7 +132,7 @@ public class GoodreadsSearchActivity
 
         mModel.onWorksRetrieved().observe(this, goodreadsWorks -> {
             mWorks.clear();
-            if (goodreadsWorks != null && !goodreadsWorks.isEmpty()) {
+            if (!goodreadsWorks.isEmpty()) {
                 mWorks.addAll(goodreadsWorks);
             } else {
                 Snackbar.make(mVb.resultList, R.string.warning_no_matching_book_found,
@@ -219,8 +219,12 @@ public class GoodreadsSearchActivity
 
         private final MutableLiveData<List<GoodreadsWork>> mWorks = new MutableLiveData<>();
         private final MutableLiveData<Boolean> mBookNoLongerExists = new MutableLiveData<>();
-        private final TaskListener<List<GoodreadsWork>> mTaskListener = message ->
+
+        private final TaskListener<List<GoodreadsWork>> mTaskListener = message -> {
+            if (message.status == TaskListener.TaskStatus.Success && message.result != null) {
                 mWorks.setValue(message.result);
+            }
+        };
 
         /** Database Access. */
         private DAO mDb;

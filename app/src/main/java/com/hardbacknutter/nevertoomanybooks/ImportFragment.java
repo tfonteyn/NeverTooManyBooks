@@ -187,7 +187,7 @@ public class ImportFragment
         }
 
         // hook the task up.
-        dialog.setCancellable(mImportModel.getTask());
+        dialog.setCanceller(mImportModel.getTask());
 
         return dialog;
     }

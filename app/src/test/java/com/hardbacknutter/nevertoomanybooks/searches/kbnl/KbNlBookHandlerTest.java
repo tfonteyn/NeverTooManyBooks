@@ -67,7 +67,7 @@ class KbNlBookHandlerTest
     public void setUp() {
         super.setUp();
 
-        SAXParserFactory factory = SAXParserFactory.newInstance();
+        final SAXParserFactory factory = SAXParserFactory.newInstance();
         mHandler = new KbNlBookHandler(mRawData);
         try {
             mParser = factory.newSAXParser();
@@ -93,7 +93,7 @@ class KbNlBookHandlerTest
         assertEquals("48", mRawData.getString(DBDefinitions.KEY_PAGES));
         assertEquals("nld", mRawData.getString(DBDefinitions.KEY_LANGUAGE));
 
-        ArrayList<Publisher> allPublishers = mRawData
+        final ArrayList<Publisher> allPublishers = mRawData
                 .getParcelableArrayList(Book.BKEY_PUBLISHER_ARRAY);
         assertNotNull(allPublishers);
         assertEquals(1, allPublishers.size());
@@ -101,7 +101,7 @@ class KbNlBookHandlerTest
         assertEquals("Dark Dragon Books", allPublishers.get(0).getName());
 
 
-        List<Author> authors = mRawData.getParcelableArrayList(Book.BKEY_AUTHOR_ARRAY);
+        final List<Author> authors = mRawData.getParcelableArrayList(Book.BKEY_AUTHOR_ARRAY);
         assertNotNull(authors);
         assertFalse(authors.isEmpty());
         Author expectedAuthor;
@@ -114,7 +114,7 @@ class KbNlBookHandlerTest
         expectedAuthor = Author.from("Mariella Manfré");
         assertEquals(expectedAuthor, authors.get(3));
 
-        List<Series> series = mRawData.getParcelableArrayList(Book.BKEY_SERIES_ARRAY);
+        final List<Series> series = mRawData.getParcelableArrayList(Book.BKEY_SERIES_ARRAY);
         assertNotNull(series);
         assertFalse(series.isEmpty());
         Series expectedSeries;
@@ -141,14 +141,14 @@ class KbNlBookHandlerTest
         assertEquals("156", mRawData.getString(DBDefinitions.KEY_PAGES));
         assertEquals("nld", mRawData.getString(DBDefinitions.KEY_LANGUAGE));
 
-        ArrayList<Publisher> allPublishers = mRawData
+        final ArrayList<Publisher> allPublishers = mRawData
                 .getParcelableArrayList(Book.BKEY_PUBLISHER_ARRAY);
         assertNotNull(allPublishers);
         assertEquals(1, allPublishers.size());
 
         assertEquals("Bruna", allPublishers.get(0).getName());
 
-        List<Author> authors = mRawData.getParcelableArrayList(Book.BKEY_AUTHOR_ARRAY);
+        final List<Author> authors = mRawData.getParcelableArrayList(Book.BKEY_AUTHOR_ARRAY);
         assertNotNull(authors);
         assertFalse(authors.isEmpty());
         Author expectedAuthor;
@@ -157,7 +157,7 @@ class KbNlBookHandlerTest
         expectedAuthor = Author.from("Jack Kröner");
         assertEquals(expectedAuthor, authors.get(1));
 
-        List<Series> series = mRawData.getParcelableArrayList(Book.BKEY_SERIES_ARRAY);
+        final List<Series> series = mRawData.getParcelableArrayList(Book.BKEY_SERIES_ARRAY);
         assertNotNull(series);
         assertFalse(series.isEmpty());
         Series expectedSeries;

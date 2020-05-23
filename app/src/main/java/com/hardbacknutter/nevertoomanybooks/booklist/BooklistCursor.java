@@ -255,30 +255,23 @@ public class BooklistCursor
     /**
      * Handle a position change. Manage cursor based on new position.
      *
-     * @return {@code true} if the move was successful
+     * {@inheritDoc}
      */
     @Override
     public boolean onMove(final int oldPosition,
                           final int newPosition) {
-        if (newPosition < 0 || newPosition >= getCount()) {
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_PSEUDO_CURSOR) {
-                Log.d(TAG, "ENTER|onMove|illegal position"
-                           + "|newPosition=" + newPosition
-                           + "|getCount()=" + getCount());
-            }
-            return false;
-        }
+        // Note that the super class will already have checked the newPosition.
 
         // Get the id we use for the cursor at the new position
         Integer cursorId = newPosition / PAGE_SIZE;
-        // Determine the actual start position
-        int cursorStartPos = cursorId * PAGE_SIZE;
+        // Determine the actual start position offset
+        int offset = cursorId * PAGE_SIZE;
 
         // Synchronize cursor adjustments!
         synchronized (this) {
             if (mCursors.get(cursorId) == null) {
                 // Create a new cursor
-                mCursors.put(cursorId, mBooklistBuilder.getOffsetCursor(cursorStartPos, PAGE_SIZE));
+                mCursors.put(cursorId, mBooklistBuilder.getOffsetCursor(offset, PAGE_SIZE));
 
                 // Add this cursor id to the 'top' of the MRU list.
                 mMruListPos = (mMruListPos + 1) % MRU_LIST_SIZE;
@@ -362,7 +355,7 @@ public class BooklistCursor
                                                   + "|mActiveCursor is NULL");
 
             // and finally set its position correctly
-            return mActiveCursor.moveToPosition(newPosition - cursorStartPos);
+            return mActiveCursor.moveToPosition(newPosition - offset);
         }
     }
 

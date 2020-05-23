@@ -31,6 +31,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.util.SparseArray;
 
 import androidx.annotation.NonNull;
@@ -45,6 +46,7 @@ import java.util.Objects;
 import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEditionsTask;
@@ -60,41 +62,29 @@ public class CoverBrowserViewModel
     private static final String TAG = "CoverBrowserViewModel";
     static final String BKEY_FILE_INDEX = TAG + ":cIdx";
 
-    private final AtomicInteger mTaskIdCounter = new AtomicInteger();
+    /** List of all alternative editions/isbn for the given ISBN. */
+    private final MutableLiveData<Collection<String>> mEditions = new MutableLiveData<>();
+    /** GalleryImage. */
+    private final MutableLiveData<ImageFileInfo> mGalleryImage = new MutableLiveData<>();
+    /** SelectedImage. */
+    private final MutableLiveData<ImageFileInfo> mSelectedImage = new MutableLiveData<>();
 
+    /** Unique identifier generator for all tasks. */
+    private final AtomicInteger mTaskIdCounter = new AtomicInteger();
+    /** Executor for getting the preview image, and for displaying images. */
+    private final Executor mPriorityExecutor = AlternativeExecutor.create("preview", 32);
     /** Holder for all active tasks, so we can cancel them if needed. */
     private final SparseArray<AsyncTask> mAllTasks = new SparseArray<>();
 
-    /** Executor for getting the preview image, and for displaying images. */
-    private final Executor mPriorityExecutor = AlternativeExecutor.create("preview", 32);
-
-    /** List of all alternative editions/isbn for the given ISBN. */
-    private final MutableLiveData<Collection<String>> mEditions = new MutableLiveData<>();
-
-    /** GalleryImage. */
-    private final MutableLiveData<ImageFileInfo> mGalleryImage = new MutableLiveData<>();
     /** GalleryImage. */
     private final TaskListener<ImageFileInfo> mGalleryImageTaskListener = message -> {
         synchronized (mAllTasks) {
             mAllTasks.remove(message.taskId);
         }
-        mGalleryImage.setValue(message.result);
+        if (message.status == TaskListener.TaskStatus.Success && message.result != null) {
+            mGalleryImage.setValue(message.result);
+        }
     };
-    /** SelectedImage. */
-    private final MutableLiveData<ImageFileInfo> mSelectedImage = new MutableLiveData<>();
-    /** ISBN of book to fetch other editions of. */
-    private String mBaseIsbn;
-    /** Index of the image we're handling. */
-    private int mCIdx;
-    /**
-     * The selected (i.e. displayed in the preview) file.
-     * This is the absolute/resolved path for the file
-     */
-    @Nullable
-    private String mSelectedFilePath;
-    /** Handles downloading, checking and cleanup of files. */
-    private FileManager mFileManager;
-
     /** Editions. */
     @Nullable
     private SearchEditionsTask mEditionsTask;
@@ -104,7 +94,9 @@ public class CoverBrowserViewModel
             mAllTasks.remove(message.taskId);
             mEditionsTask = null;
         }
-        mEditions.setValue(message.result);
+        if (message.status == TaskListener.TaskStatus.Success && message.result != null) {
+            mEditions.setValue(message.result);
+        }
     };
     /** SelectedImage. */
     @Nullable
@@ -115,8 +107,25 @@ public class CoverBrowserViewModel
             mAllTasks.remove(message.taskId);
             mSelectedImageTask = null;
         }
-        mSelectedImage.setValue(message.result);
+        if (message.status == TaskListener.TaskStatus.Success && message.result != null) {
+            mSelectedImage.setValue(message.result);
+        }
     };
+
+
+    /**
+     * The selected (i.e. displayed in the preview) file.
+     * This is the absolute/resolved path for the file
+     */
+    @Nullable
+    private String mSelectedFilePath;
+    /** Handles downloading, checking and cleanup of files. */
+    private FileManager mFileManager;
+
+    /** ISBN of book to fetch other editions of. */
+    private String mBaseIsbn;
+    /** Index of the image we're handling. */
+    private int mCIdx;
 
     /**
      * Pseudo constructor.
@@ -142,6 +151,9 @@ public class CoverBrowserViewModel
 
     @Override
     protected void onCleared() {
+        if (BuildConfig.DEBUG) {
+            Log.d(TAG, "onCleared");
+        }
         cancelAllTasks();
 
         if (mFileManager != null) {
@@ -152,10 +164,10 @@ public class CoverBrowserViewModel
     /**
      * Cancel all active tasks.
      */
-    private void cancelAllTasks() {
+    void cancelAllTasks() {
         synchronized (mAllTasks) {
             for (int i = 0; i < mAllTasks.size(); i++) {
-                AsyncTask task = mAllTasks.valueAt(i);
+                final AsyncTask task = mAllTasks.valueAt(i);
                 task.cancel(true);
             }
             mAllTasks.clear();
@@ -215,7 +227,6 @@ public class CoverBrowserViewModel
         return mEditions;
     }
 
-
     /**
      * Start a task to fetch a Gallery image.
      *
@@ -238,7 +249,6 @@ public class CoverBrowserViewModel
     MutableLiveData<ImageFileInfo> onGalleryImage() {
         return mGalleryImage;
     }
-
 
     /**
      * Start a task to get the preview image; i.e. the full size image.

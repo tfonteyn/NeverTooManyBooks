@@ -36,6 +36,7 @@ import java.util.Locale;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import com.hardbacknutter.nevertoomanybooks.CommonSetup;
@@ -53,21 +54,29 @@ import static org.junit.jupiter.api.Assertions.fail;
 class OpenLibrarySearchEngineTest
         extends CommonSetup {
 
+    private OpenLibrarySearchEngine mSearchEngine;
+
+    @BeforeEach
+    public void setUp() {
+        super.setUp();
+        mSearchEngine = new OpenLibrarySearchEngine();
+        mSearchEngine.setCaller(new DummyCaller());
+    }
+
     @Test
     void parse() {
         setLocale(Locale.UK);
 
         // https://openlibrary.org/api/books?jscmd=data&format=json&bibkeys=ISBN:9780980200447
 
-        String filename = "/openlibrary/9780980200447.json";
+        final String filename = "/openlibrary/9780980200447.json";
 
-        OpenLibrarySearchEngine m = new OpenLibrarySearchEngine();
         try (InputStream is = this.getClass().getResourceAsStream(filename)) {
             assertNotNull(is);
-            String response = m.readResponseStream(is);
-            JSONObject json = new JSONObject(response);
-            boolean[] fetchThumbnail = {false, false};
-            mRawData = m.handleResponse(mContext, json, fetchThumbnail, mRawData);
+            final String response = mSearchEngine.readResponseStream(is);
+            final JSONObject json = new JSONObject(response);
+            final boolean[] fetchThumbnail = {false, false};
+            mRawData = mSearchEngine.handleResponse(mContext, json, fetchThumbnail, mRawData);
 
         } catch (@NonNull final IOException | JSONException e) {
             fail(e);
@@ -91,21 +100,21 @@ class OpenLibrarySearchEngineTest
         assertEquals("March 2009", mRawData.getString(DBDefinitions.KEY_DATE_PUBLISHED));
 
 
-        ArrayList<Publisher> allPublishers = mRawData
+        final ArrayList<Publisher> allPublishers = mRawData
                 .getParcelableArrayList(Book.BKEY_PUBLISHER_ARRAY);
         assertNotNull(allPublishers);
         assertEquals(1, allPublishers.size());
 
         assertEquals("Litwin Books", allPublishers.get(0).getName());
 
-        ArrayList<Author> authors = mRawData.getParcelableArrayList(Book.BKEY_AUTHOR_ARRAY);
+        final ArrayList<Author> authors = mRawData.getParcelableArrayList(Book.BKEY_AUTHOR_ARRAY);
         assertNotNull(authors);
         assertEquals(1, authors.size());
         assertEquals("Miedema", authors.get(0).getFamilyName());
         assertEquals("John", authors.get(0).getGivenNames());
         assertEquals(Author.TYPE_UNKNOWN, authors.get(0).getType());
 
-        ArrayList<TocEntry> tocs = mRawData.getParcelableArrayList(Book.BKEY_TOC_ENTRY_ARRAY);
+        final ArrayList<TocEntry> tocs = mRawData.getParcelableArrayList(Book.BKEY_TOC_ENTRY_ARRAY);
         assertNotNull(tocs);
         assertEquals(5, tocs.size());
 
@@ -118,6 +127,5 @@ class OpenLibrarySearchEngineTest
         assertEquals("Miedema", tocs.get(0).getAuthor().getFamilyName());
         assertEquals("John", tocs.get(0).getAuthor().getGivenNames());
         assertEquals(Author.TYPE_UNKNOWN, authors.get(0).getType());
-
     }
 }

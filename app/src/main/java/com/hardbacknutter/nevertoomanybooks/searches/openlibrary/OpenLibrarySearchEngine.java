@@ -62,6 +62,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
+import com.hardbacknutter.nevertoomanybooks.tasks.Canceller;
 import com.hardbacknutter.nevertoomanybooks.tasks.TerminatorConnection;
 import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
 
@@ -158,6 +159,9 @@ public class OpenLibrarySearchEngine
     /** The search keys in the json object we support: ISBN, native id. */
     private static final String SUPPORTED_KEYS = "ISBN,OLID";
 
+    @Nullable
+    private Canceller mCaller;
+
     /**
      * View a Book on the web site.
      *
@@ -166,8 +170,18 @@ public class OpenLibrarySearchEngine
      */
     public static void openWebsite(@NonNull final Context context,
                                    @NonNull final String bookId) {
-        String url = BASE_URL + "/books/" + bookId;
+        final String url = BASE_URL + "/books/" + bookId;
         context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+    }
+
+    @Override
+    public void setCaller(@Nullable final Canceller caller) {
+        mCaller = caller;
+    }
+
+    @Override
+    public boolean isCancelled() {
+        return mCaller == null || mCaller.isCancelled();
     }
 
     @NonNull
@@ -183,7 +197,7 @@ public class OpenLibrarySearchEngine
                                    @NonNull final boolean[] fetchThumbnail)
             throws IOException {
 
-        String url = String.format(BASE_BOOK_URL, "OLID", nativeId);
+        final String url = String.format(BASE_BOOK_URL, "OLID", nativeId);
         return fetchBook(context, url, fetchThumbnail, new Bundle());
     }
 
@@ -199,23 +213,29 @@ public class OpenLibrarySearchEngine
                                @NonNull final boolean[] fetchThumbnail)
             throws IOException {
 
-        String url = String.format(BASE_BOOK_URL, "ISBN", validIsbn);
+        final String url = String.format(BASE_BOOK_URL, "ISBN", validIsbn);
         return fetchBook(context, url, fetchThumbnail, new Bundle());
     }
 
+    @NonNull
     private Bundle fetchBook(@NonNull final Context context,
                              @NonNull final String url,
                              @NonNull final boolean[] fetchThumbnail,
                              @NonNull final Bundle bookData)
             throws IOException {
         // get and store the result into a string.
-        String response;
-        try (TerminatorConnection con = TerminatorConnection.open(context, url);
+        final String response;
+        try (TerminatorConnection con = TerminatorConnection.open(context, url,
+                                                                  getConnectTimeoutMs());
              InputStream is = con.getInputStream()) {
             if (is == null) {
                 throw new IOException("no InputStream");
             }
             response = readResponseStream(is);
+        }
+
+        if (isCancelled()) {
+            return new Bundle();
         }
 
         // json-ify and handle.
@@ -229,12 +249,13 @@ public class OpenLibrarySearchEngine
     }
 
     @VisibleForTesting
+    @NonNull
     String readResponseStream(@NonNull final InputStream is)
             throws IOException {
-        StringBuilder response = new StringBuilder();
+        final StringBuilder response = new StringBuilder();
         // Don't close this stream!
-        InputStreamReader isr = new InputStreamReader(is, StandardCharsets.UTF_8);
-        BufferedReader reader = new BufferedReader(isr);
+        final InputStreamReader isr = new InputStreamReader(is, StandardCharsets.UTF_8);
+        final BufferedReader reader = new BufferedReader(isr);
         String line;
 
         while ((line = reader.readLine()) != null) {
@@ -261,7 +282,7 @@ public class OpenLibrarySearchEngine
                                          @NonNull final String validIsbn,
                                          @IntRange(from = 0) final int cIdx,
                                          @Nullable final ImageFileInfo.Size size) {
-        String sizeParam;
+        final String sizeParam;
         if (size == null) {
             sizeParam = "L";
         } else {
@@ -281,7 +302,7 @@ public class OpenLibrarySearchEngine
 
         final String url = String.format(BASE_COVER_URL, "isbn", validIsbn, sizeParam);
         final String tmpName = validIsbn + FILENAME_SUFFIX + "_" + sizeParam;
-        return ImageUtils.saveImage(context, url, tmpName, null);
+        return ImageUtils.saveImage(context, url, tmpName, getConnectTimeoutMs(), null);
     }
 
     @NonNull
@@ -444,11 +465,11 @@ public class OpenLibrarySearchEngine
                           @NonNull final Bundle bookData)
             throws JSONException {
 
-        Iterator<String> it = jsonObject.keys();
+        final Iterator<String> it = jsonObject.keys();
         // we only handle the first result for now.
         if (it.hasNext()) {
-            String topLevelKey = it.next();
-            String[] data = topLevelKey.split(":");
+            final String topLevelKey = it.next();
+            final String[] data = topLevelKey.split(":");
             if (data.length == 2 && SUPPORTED_KEYS.contains(data[0])) {
                 return handleBook(context,
                                   data[1],
@@ -492,12 +513,12 @@ public class OpenLibrarySearchEngine
             bookData.putString(DBDefinitions.KEY_TITLE, s);
         }
 
-        ArrayList<Author> authors = new ArrayList<>();
+        final ArrayList<Author> authors = new ArrayList<>();
         a = result.optJSONArray("authors");
         if (a != null && a.length() > 0) {
             for (int ai = 0; ai < a.length(); ai++) {
                 o = a.optJSONObject(ai);
-                String name = o.optString("name");
+                final String name = o.optString("name");
                 if (!name.isEmpty()) {
                     authors.add(Author.from(name));
                 }
@@ -521,7 +542,7 @@ public class OpenLibrarySearchEngine
 
         s = result.optString("publish_date");
         if (!s.isEmpty()) {
-            Date date = DateUtils.parseDate(s);
+            final Date date = DateUtils.parseDate(s);
             if (date != null) {
                 bookData.putString(DBDefinitions.KEY_DATE_PUBLISHED, s);
             }
@@ -575,6 +596,10 @@ public class OpenLibrarySearchEngine
             }
         }
 
+        if (isCancelled()) {
+            return bookData;
+        }
+
         if (fetchThumbnail[0]) {
             // get the largest cover image available.
             o = result.optJSONObject("cover");
@@ -591,8 +616,9 @@ public class OpenLibrarySearchEngine
                 }
                 // we assume that the download will work if there is a url.
                 if (!coverUrl.isEmpty()) {
-                    String name = isbn + FILENAME_SUFFIX + "_" + sizeParam;
-                    String fileSpec = ImageUtils.saveImage(context, coverUrl, name, null);
+                    final String name = isbn + FILENAME_SUFFIX + "_" + sizeParam;
+                    final String fileSpec = ImageUtils
+                            .saveImage(context, coverUrl, name, 666, null);
                     if (fileSpec != null) {
                         ArrayList<String> imageList =
                                 bookData.getStringArrayList(Book.BKEY_FILE_SPEC_ARRAY[0]);
@@ -606,12 +632,16 @@ public class OpenLibrarySearchEngine
             }
         }
 
-        ArrayList<Publisher> publishers = new ArrayList<>();
+        if (isCancelled()) {
+            return bookData;
+        }
+
+        final ArrayList<Publisher> publishers = new ArrayList<>();
         a = result.optJSONArray("publishers");
         if (a != null && a.length() > 0) {
             for (int ai = 0; ai < a.length(); ai++) {
                 o = a.optJSONObject(ai);
-                String name = o.optString("name");
+                final String name = o.optString("name");
                 if (!name.isEmpty()) {
                     publishers.add(Publisher.from(name));
                 }
@@ -622,12 +652,12 @@ public class OpenLibrarySearchEngine
         }
 
         // always use the first author only for TOC entries.
-        ArrayList<TocEntry> toc = new ArrayList<>();
+        final ArrayList<TocEntry> toc = new ArrayList<>();
         a = result.optJSONArray("table_of_contents");
         if (a != null && a.length() > 0) {
             for (int ai = 0; ai < a.length(); ai++) {
                 o = a.optJSONObject(ai);
-                String title = o.optString("title");
+                final String title = o.optString("title");
                 if (!title.isEmpty()) {
                     toc.add(new TocEntry(authors.get(0), title, ""));
                 }

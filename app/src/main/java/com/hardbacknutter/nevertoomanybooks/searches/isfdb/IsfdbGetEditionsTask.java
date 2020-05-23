@@ -41,6 +41,7 @@ import java.util.ArrayList;
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskBase;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 
@@ -75,8 +76,10 @@ public class IsfdbGetEditionsTask
         Thread.currentThread().setName(TAG + mIsbn);
         final Context context = App.getTaskContext();
 
+        final SearchEngine searchEngine = new IsfdbSearchEngine();
+        searchEngine.setCaller(this);
         try {
-            return new IsfdbEditionsHandler().fetch(context, mIsbn);
+            return new IsfdbEditionsHandler(searchEngine).fetch(context, mIsbn);
         } catch (@NonNull final SocketTimeoutException e) {
             if (BuildConfig.DEBUG /* always */) {
                 Log.d(TAG, "doInBackground", e);

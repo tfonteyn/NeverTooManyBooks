@@ -121,7 +121,7 @@ public abstract class BookBaseFragmentViewModel
      */
     @IntRange(from = -1)
     public int getAndClearCurrentCoverHandlerIndex() {
-        int current = mCurrentCoverHandlerIndex;
+        final int current = mCurrentCoverHandlerIndex;
         mCurrentCoverHandlerIndex = -1;
         return current;
     }
@@ -163,7 +163,7 @@ public abstract class BookBaseFragmentViewModel
 
                 @Override
                 public void onFinished(@NonNull final FinishMessage<Integer> message) {
-                    String msg = GoodreadsHandler.handleResult(context, message);
+                    final String msg = GoodreadsHandler.handleResult(context, message);
                     if (msg != null) {
                         // success, failure, cancelled
                         mUserMessage.setValue(msg);

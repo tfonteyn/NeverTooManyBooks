@@ -393,7 +393,7 @@ public class UpdateFieldsFragment
         }
 
         // hook the task up.
-        dialog.setCancellable(mUpdateFieldsModel);
+        dialog.setCanceller(mUpdateFieldsModel);
 
         return dialog;
     }

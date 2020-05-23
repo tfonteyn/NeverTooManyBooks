@@ -189,7 +189,7 @@ public class ExportFragment
         }
 
         // hook the task up.
-        dialog.setCancellable(mExportModel.getTask());
+        dialog.setCanceller(mExportModel.getTask());
         return dialog;
     }
 

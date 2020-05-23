@@ -235,8 +235,8 @@ public class BooksOnBookshelfModel
      */
     @BooklistBuilder.ListRebuildMode
     private int getPreferredListRebuildState(@NonNull final Context context) {
-        String value = PreferenceManager.getDefaultSharedPreferences(context)
-                                        .getString(Prefs.pk_booklist_rebuild_state, null);
+        final String value = PreferenceManager.getDefaultSharedPreferences(context)
+                                              .getString(Prefs.pk_booklist_rebuild_state, null);
         if (value != null && !value.isEmpty()) {
             return Integer.parseInt(value);
         }
@@ -375,7 +375,6 @@ public class BooksOnBookshelfModel
         Objects.requireNonNull(mCurrentBookshelf, ErrorMsg.NULL_CURRENT_BOOKSHELF);
         return mCurrentBookshelf;
     }
-
 
     /**
      * Get the style of the current bookshelf.
@@ -774,7 +773,7 @@ public class BooksOnBookshelfModel
 
                 @Override
                 public void onFinished(@NonNull final FinishMessage<Integer> message) {
-                    String msg = GoodreadsHandler.handleResult(context, message);
+                    final String msg = GoodreadsHandler.handleResult(context, message);
                     if (msg != null) {
                         // success, failure, cancelled
                         mUserMessage.setValue(msg);
@@ -797,44 +796,52 @@ public class BooksOnBookshelfModel
 
     /**
      * This is used to re-display the list in onResume.
-     * i.e. mDesiredCentralBookId was set in #onActivityResult
+     * i.e. {@link #mDesiredCentralBookId} was set in #onActivityResult
      * but a rebuild was not needed.
      *
-     * @return the target rows, or {@code null} if none.
+     * @return the node(s), or {@code null} if none
      */
     @Nullable
-    public ArrayList<RowStateDAO.Node> getTargetRows() {
+    public ArrayList<RowStateDAO.Node> getTargetNodes() {
         if (mDesiredCentralBookId == 0) {
             return null;
         }
-        Objects.requireNonNull(mCursor, ErrorMsg.NULL_CURSOR);
-        ArrayList<RowStateDAO.Node> targetRows =
-                mCursor.getBooklistBuilder().getTargetRows(mDesiredCentralBookId);
 
+        Objects.requireNonNull(mCursor, ErrorMsg.NULL_CURSOR);
+        final long bookId = mDesiredCentralBookId;
         mDesiredCentralBookId = 0;
-        return targetRows;
+
+        return mCursor.getBooklistBuilder().getBookNodes(bookId);
     }
 
     /**
      * Set the desired state on the given node.
      *
-     * @param rowId              of the node in the list
+     * @param nodeRowId          list-view row id of the node in the list
      * @param nextState          the state to set the node to
      * @param relativeChildLevel up to and including this (relative to the node) child level;
      *
-     * @return {@code true} if the new state is expanded; {@code false} if collapsed
+     * @return the node
      */
-    public boolean toggleNode(final long rowId,
-                              @RowStateDAO.Node.NodeNextState final int nextState,
-                              final int relativeChildLevel) {
+    @NonNull
+    public RowStateDAO.Node toggleNode(final long nodeRowId,
+                                       @RowStateDAO.Node.NodeNextState final int nextState,
+                                       final int relativeChildLevel) {
         Objects.requireNonNull(mCursor, ErrorMsg.NULL_CURSOR);
-        return mCursor.getBooklistBuilder().toggleNode(rowId, nextState, relativeChildLevel);
+        return mCursor.getBooklistBuilder().toggleNode(nodeRowId, nextState, relativeChildLevel);
     }
 
     @NonNull
     public ArrayList<Long> getCurrentBookIdList() {
         Objects.requireNonNull(mCursor, ErrorMsg.NULL_CURSOR);
         return mCursor.getBooklistBuilder().getCurrentBookIdList();
+    }
+
+    @Nullable
+    public RowStateDAO.Node getNextBookWithoutCover(@NonNull final Context context,
+                                                    final long rowId) {
+        Objects.requireNonNull(mCursor, ErrorMsg.NULL_CURSOR);
+        return mCursor.getBooklistBuilder().getNextBookWithoutCover(context, rowId);
     }
 
     @NonNull
@@ -851,7 +858,7 @@ public class BooksOnBookshelfModel
 
     @Nullable
     public String getHeaderFilterText(@NonNull final Context context) {
-        BooklistStyle style = getCurrentStyle(context);
+        final BooklistStyle style = getCurrentStyle(context);
         if (style.showHeader(context, BooklistStyle.HEADER_SHOW_FILTER)) {
             final Collection<String> filterText = new ArrayList<>();
             for (Filter filter : style.getActiveFilters(context)) {
@@ -873,7 +880,7 @@ public class BooksOnBookshelfModel
 
     @Nullable
     public String getHeaderStyleName(@NonNull final Context context) {
-        BooklistStyle style = getCurrentStyle(context);
+        final BooklistStyle style = getCurrentStyle(context);
         if (style.showHeader(context, BooklistStyle.HEADER_SHOW_STYLE_NAME)) {
             return style.getLabel(context);
         }
@@ -882,7 +889,7 @@ public class BooksOnBookshelfModel
 
     @Nullable
     public String getHeaderBookCount(@NonNull final Context context) {
-        BooklistStyle style = getCurrentStyle(context);
+        final BooklistStyle style = getCurrentStyle(context);
         if (style.showHeader(context, BooklistStyle.HEADER_SHOW_BOOK_COUNT)) {
             if (mUniqueBooks != mTotalBooks) {
                 return context.getString(R.string.txt_displaying_n_books_in_m_entries,
@@ -893,6 +900,21 @@ public class BooksOnBookshelfModel
             }
         }
         return null;
+    }
+
+    @NonNull
+    public Book getBook(final long bookId) {
+        return new Book(bookId, mDb);
+    }
+
+    @Nullable
+    public Series getSeries(final long seriesId) {
+        return mDb.getSeries(seriesId);
+    }
+
+    @Nullable
+    public Author getAuthor(final long authorId) {
+        return mDb.getAuthor(authorId);
     }
 
     /**
@@ -1179,7 +1201,7 @@ public class BooksOnBookshelfModel
                 // process the results.
 
                 // these are the row(s) we want to center the new list on.
-                mResultsHolder.targetRows = mBuilder.getTargetRows(mDesiredCentralBookId);
+                mResultsHolder.targetRows = mBuilder.getBookNodes(mDesiredCentralBookId);
                 // Now we have the expanded groups as needed, get the list cursor
                 // The cursor will hold a reference to the builder.
                 mResultsHolder.listCursor = mBuilder.getNewListCursor();

@@ -56,9 +56,9 @@ import static org.mockito.Mockito.when;
 
 /**
  * <a href="https://github.com/konmik/nucleus/blob/master/nucleus-test-kit/src/main/java/mocks/BundleMock.java">BundleMock</a>
- *
- *         // ADDED 2020-02-02: allow storing null values
- *         doAnswer(put).when(bundle).putString(anyString(), isNull());
+ * <p>
+ * ADDED 2020-02-02: allow storing null values
+ * doAnswer(put).when(bundle).putString(anyString(), isNull());
  */
 public final class BundleMock {
 

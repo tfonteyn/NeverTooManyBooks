@@ -49,6 +49,7 @@ import java.util.Locale;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageFileInfo;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
+import com.hardbacknutter.nevertoomanybooks.tasks.Canceller;
 
 /**
  * See notes in the package-info.java file.
@@ -83,6 +84,9 @@ public class IsfdbSearchEngine
     /** The ISFDB site uses US style currency notation. */
     static final Locale SITE_LOCALE = Locale.US;
 
+    /** Override connect-timeout for this site. See {@link SearchEngine#getConnectTimeoutMs()}. */
+    private static final int CONNECT_TIMEOUT_MS = 20_000;
+
     /** Common CGI directory. */
     static final String CGI_BIN = "/cgi-bin/";
     /** bibliographic information for one title. */
@@ -108,6 +112,9 @@ public class IsfdbSearchEngine
     @VisibleForTesting
     public static final String PREFS_HOST_URL = PREF_PREFIX + "host.url";
 
+    @Nullable
+    private Canceller mCaller;
+
     @NonNull
     public static String getBaseURL(@NonNull final Context context) {
         return PreferenceManager.getDefaultSharedPreferences(context)
@@ -126,6 +133,21 @@ public class IsfdbSearchEngine
         context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
     }
 
+    @Override
+    public void setCaller(@Nullable final Canceller caller) {
+        mCaller = caller;
+    }
+
+    @Override
+    public boolean isCancelled() {
+        return mCaller == null || mCaller.isCancelled();
+    }
+
+    @Override
+    public int getConnectTimeoutMs() {
+        return CONNECT_TIMEOUT_MS;
+    }
+
     @NonNull
     @Override
     public Locale getLocale(@NonNull final Context context) {
@@ -139,7 +161,7 @@ public class IsfdbSearchEngine
                                    @NonNull final boolean[] fetchThumbnail)
             throws IOException {
 
-        return new IsfdbBookHandler()
+        return new IsfdbBookHandler(this)
                 .fetchByNativeId(context, nativeId, isAddSeriesFromToc(context),
                                  fetchThumbnail, new Bundle());
     }
@@ -151,11 +173,11 @@ public class IsfdbSearchEngine
                                @NonNull final boolean[] fetchThumbnail)
             throws IOException {
 
-        List<Edition> editions = new IsfdbEditionsHandler().fetch(context, validIsbn);
+        final List<Edition> editions = new IsfdbEditionsHandler(this).fetch(context, validIsbn);
         if (editions.isEmpty()) {
             return new Bundle();
         } else {
-            return new IsfdbBookHandler()
+            return new IsfdbBookHandler(this)
                     .fetch(context, editions, isAddSeriesFromToc(context),
                            fetchThumbnail, new Bundle());
         }
@@ -172,12 +194,12 @@ public class IsfdbSearchEngine
                          @NonNull final boolean[] fetchThumbnail)
             throws IOException {
 
-        String url = getBaseURL(context) + CGI_BIN + URL_ADV_SEARCH_RESULTS_CGI + "?"
-                     + "ORDERBY=pub_title"
-                     + "&ACTION=query"
-                     + "&START=0"
-                     + "&TYPE=Publication"
-                     + "&C=AND";
+        final String url = getBaseURL(context) + CGI_BIN + URL_ADV_SEARCH_RESULTS_CGI + "?"
+                           + "ORDERBY=pub_title"
+                           + "&ACTION=query"
+                           + "&START=0"
+                           + "&TYPE=Publication"
+                           + "&C=AND";
 
         int index = 0;
         String args = "";
@@ -216,12 +238,12 @@ public class IsfdbSearchEngine
         if (args.isEmpty()) {
             return new Bundle();
         }
-        List<Edition> editions = new IsfdbEditionsHandler()
+        final List<Edition> editions = new IsfdbEditionsHandler(this)
                 .fetchPath(context, url + args);
         if (editions.isEmpty()) {
             return new Bundle();
         } else {
-            return new IsfdbBookHandler()
+            return new IsfdbBookHandler(this)
                     .fetch(context, editions, isAddSeriesFromToc(context),
                            fetchThumbnail, new Bundle());
         }
@@ -234,12 +256,12 @@ public class IsfdbSearchEngine
                                          final int cIdx,
                                          @Nullable final ImageFileInfo.Size size) {
         try {
-            List<Edition> editions = new IsfdbEditionsHandler().fetch(context, validIsbn);
+            final List<Edition> editions = new IsfdbEditionsHandler(this).fetch(context, validIsbn);
             if (editions.isEmpty()) {
                 return null;
             } else {
                 final Bundle bookData =
-                        new IsfdbBookHandler().fetchCover(context, editions, new Bundle());
+                        new IsfdbBookHandler(this).fetchCover(context, editions, new Bundle());
                 return CoverByIsbn.getFirstCoverFileFoundPath(bookData, cIdx);
             }
         } catch (@NonNull final IOException ignore) {
@@ -269,14 +291,13 @@ public class IsfdbSearchEngine
     @Override
     public List<String> getAlternativeEditions(@NonNull final Context context,
                                                @NonNull final String isbn) {
-
         // the resulting data we'll return
-        List<String> isbnList = new ArrayList<>();
+        final List<String> isbnList = new ArrayList<>();
         // add the original isbn
         isbnList.add(isbn);
 
         try {
-            List<Edition> editions = new IsfdbEditionsHandler().fetch(context, isbn);
+            final List<Edition> editions = new IsfdbEditionsHandler(this).fetch(context, isbn);
             for (Edition edition : editions) {
                 if (edition.isbn != null) {
                     isbnList.add(edition.isbn);

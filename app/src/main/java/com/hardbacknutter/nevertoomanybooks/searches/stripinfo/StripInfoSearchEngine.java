@@ -33,6 +33,7 @@ import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
 import java.io.IOException;
@@ -40,6 +41,7 @@ import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
+import com.hardbacknutter.nevertoomanybooks.tasks.Canceller;
 
 /**
  * <a href="https://stripinfo.be/">https://stripinfo.be/</a>
@@ -58,8 +60,10 @@ public class StripInfoSearchEngine
     /** base urls. */
     public static final String BASE_URL = "https://stripinfo.be";
 
-    /** connect-timeout. */
-    private static final int SOCKET_TIMEOUT_MS = 7_000;
+    /** Override connect-timeout for this site. See {@link SearchEngine#getConnectTimeoutMs()}. */
+    private static final int CONNECT_TIMEOUT_MS = 7_000;
+    @Nullable
+    private Canceller mCaller;
 
     /**
      * View a Book on the web site.
@@ -75,7 +79,7 @@ public class StripInfoSearchEngine
 
     @Override
     public int getConnectTimeoutMs() {
-        return SOCKET_TIMEOUT_MS;
+        return CONNECT_TIMEOUT_MS;
     }
 
     @NonNull
@@ -90,6 +94,16 @@ public class StripInfoSearchEngine
         return SITE_LOCALE;
     }
 
+    @Override
+    public void setCaller(@Nullable final Canceller caller) {
+        mCaller = caller;
+    }
+
+    @Override
+    public boolean isCancelled() {
+        return mCaller == null || mCaller.isCancelled();
+    }
+
     /**
      * Also handles {@link SearchEngine.ByBarcode}.
      *
@@ -101,7 +115,7 @@ public class StripInfoSearchEngine
                                @NonNull final String validIsbn,
                                @NonNull final boolean[] fetchThumbnail)
             throws IOException {
-        return new StripInfoBookHandler(context, this)
+        return new StripInfoBookHandler(this, context)
                 .fetch(validIsbn, fetchThumbnail, new Bundle());
     }
 
@@ -111,7 +125,7 @@ public class StripInfoSearchEngine
                                    @NonNull final String nativeId,
                                    @NonNull final boolean[] fetchThumbnail)
             throws IOException {
-        return new StripInfoBookHandler(context, this)
+        return new StripInfoBookHandler(this, context)
                 .fetchByNativeId(nativeId, fetchThumbnail, new Bundle());
     }
 

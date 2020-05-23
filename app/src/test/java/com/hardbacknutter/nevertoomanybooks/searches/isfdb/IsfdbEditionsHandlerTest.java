@@ -36,9 +36,11 @@ import java.util.Locale;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import com.hardbacknutter.nevertoomanybooks.CommonSetup;
+import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -50,6 +52,15 @@ import static org.junit.jupiter.api.Assertions.fail;
  */
 class IsfdbEditionsHandlerTest
         extends CommonSetup {
+
+    private SearchEngine mSearchEngine;
+
+    @BeforeEach
+    public void setUp() {
+        super.setUp();
+        mSearchEngine = new IsfdbSearchEngine();
+        mSearchEngine.setCaller(new DummyCaller());
+    }
 
     @Test
     void parseMultiEdition() {
@@ -67,9 +78,9 @@ class IsfdbEditionsHandlerTest
         assertNotNull(doc);
         assertTrue(doc.hasText());
 
-        IsfdbEditionsHandler isfdbEditionsHandler = new IsfdbEditionsHandler(doc);
+        final IsfdbEditionsHandler handler = new IsfdbEditionsHandler(mSearchEngine, doc);
         // we've set the doc, so no internet download will be done.
-        ArrayList<Edition> editions = isfdbEditionsHandler.parseDoc(mContext);
+        final ArrayList<Edition> editions = handler.parseDoc(mContext);
 
         assertEquals(24, editions.size());
 

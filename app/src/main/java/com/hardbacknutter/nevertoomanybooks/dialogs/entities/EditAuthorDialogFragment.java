@@ -179,7 +179,7 @@ public class EditAuthorDialogFragment
         mDb.updateOrInsertAuthor(getContext(), mAuthor);
 
         if (mListener != null && mListener.get() != null) {
-            mListener.get().onBookChanged(0, BookChangedListener.AUTHOR, null);
+            mListener.get().onChange(0, BookChangedListener.AUTHOR, null);
         } else {
             if (BuildConfig.DEBUG /* always */) {
                 Log.w(TAG, "onBookChanged|" +

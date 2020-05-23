@@ -45,7 +45,6 @@ import com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.QueueManager;
 import com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.TQTask;
 import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.events.GrNoIsbnEvent;
 import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.events.GrNoMatchEvent;
-import com.hardbacknutter.nevertoomanybooks.searches.goodreads.GoodreadsSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.NetworkUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
@@ -57,8 +56,9 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsExceptio
 public abstract class SendBooksLegacyTaskBase
         extends TQTask {
 
-    /** wait time before declaring network failure. */
+    /** Timeout before declaring network failure. */
     private static final int FIVE_MINUTES = 300;
+
     private static final long serialVersionUID = -625429251891312453L;
     /** Number of books with no ISBN. */
     int mNoIsbn;
@@ -85,9 +85,8 @@ public abstract class SendBooksLegacyTaskBase
     public boolean run(@NonNull final QueueManager queueManager) {
         final Context context = LocaleUtils.applyLocale(App.getTaskContext());
         try {
-            NetworkUtils.poke(context,
-                              GoodreadsHandler.BASE_URL,
-                              GoodreadsSearchEngine.SOCKET_TIMEOUT_MS);
+            // can we reach the site at all ?
+            NetworkUtils.ping(context, GoodreadsHandler.BASE_URL);
 
             final GoodreadsAuth grAuth = new GoodreadsAuth(context);
             final GoodreadsHandler apiHandler = new GoodreadsHandler(grAuth);

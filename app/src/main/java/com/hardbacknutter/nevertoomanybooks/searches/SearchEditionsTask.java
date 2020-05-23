@@ -34,6 +34,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -41,10 +42,12 @@ import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
+import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskBase;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.NetworkUtils;
 
 /**
  * Fetch alternative edition isbn's.
@@ -95,14 +98,17 @@ public class SearchEditionsTask
         final List<Site> sites = SiteList.getList(context, locale, SiteList.Type.AltEditions)
                                          .getSites(true);
         for (Site site : sites) {
+            final SearchEngine searchEngine = site.getSearchEngine(this);
             try {
-                final SearchEngine searchEngine = site.getSearchEngine();
-                if (searchEngine instanceof SearchEngine.AlternativeEditions) {
-                    editions.addAll(((SearchEngine.AlternativeEditions) searchEngine)
-                                            .getAlternativeEditions(context, mIsbn));
-                }
-            } catch (@NonNull final RuntimeException ignore) {
-                // ignore
+                // can we reach the site at all ?
+                NetworkUtils.ping(context, searchEngine.getUrl(context));
+
+                editions.addAll(((SearchEngine.AlternativeEditions) searchEngine)
+                                        .getAlternativeEditions(context, mIsbn));
+
+            } catch (@NonNull final IOException | RuntimeException e) {
+                Logger.error(context, TAG, e);
+                mException = e;
             }
         }
         return editions;

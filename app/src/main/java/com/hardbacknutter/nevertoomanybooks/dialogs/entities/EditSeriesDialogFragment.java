@@ -165,7 +165,7 @@ public class EditSeriesDialogFragment
         mDb.updateOrInsertSeries(getContext(), LocaleUtils.getUserLocale(getContext()), mSeries);
 
         if (mListener != null && mListener.get() != null) {
-            mListener.get().onBookChanged(0, BookChangedListener.SERIES, null);
+            mListener.get().onChange(0, BookChangedListener.SERIES, null);
         } else {
             if (BuildConfig.DEBUG /* always */) {
                 Log.w(TAG, "onBookChanged|" +

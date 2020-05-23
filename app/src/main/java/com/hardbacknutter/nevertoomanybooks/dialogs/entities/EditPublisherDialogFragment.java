@@ -152,7 +152,7 @@ public class EditPublisherDialogFragment
         mDb.updatePublisher(mPublisher.getName(), mName);
 
         if (mListener != null && mListener.get() != null) {
-            mListener.get().onBookChanged(0, BookChangedListener.PUBLISHER, null);
+            mListener.get().onChange(0, BookChangedListener.PUBLISHER, null);
         } else {
             if (BuildConfig.DEBUG /* always */) {
                 Log.w(TAG, "onBookChanged|" +

@@ -72,9 +72,9 @@ abstract class KbNlHandlerBase
         if (s == null) {
             return null;
         }
-        StringBuilder sb = new StringBuilder();
+        final StringBuilder sb = new StringBuilder();
         for (int i = 0; i < s.length(); i++) {
-            char c = s.charAt(i);
+            final char c = s.charAt(i);
             // allows an X anywhere instead of just at the end;
             // Doesn't really matter, we'll check for being a valid ISBN later anyhow.
             if (Character.isDigit(c) || (isIsbn && Character.toUpperCase(c) == 'X')) {

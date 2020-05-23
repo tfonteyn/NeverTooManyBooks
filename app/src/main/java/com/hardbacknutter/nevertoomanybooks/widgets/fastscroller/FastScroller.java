@@ -95,7 +95,7 @@ public class FastScroller {
         int thumbWidth = verticalThumbDrawable.getIntrinsicWidth();
         switch (Prefs.getFastScrollerOverlayStyle()) {
             case OverlayProvider.STYLE_CLASSIC: {
-                overlay = new ClassicOverlay(recyclerView, thumbWidth, PopupStyles.CLASSIC);
+                overlay = new ClassicOverlay(recyclerView, thumbWidth);
                 break;
             }
             case OverlayProvider.STYLE_MD1: {

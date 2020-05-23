@@ -442,7 +442,7 @@ public class GoodreadsHandler {
 
         // Get the list of shelves from Goodreads.
         // This is cached per instance of GoodreadsHandler.
-        GoodreadsShelves grShelfList = getShelves(context);
+        final GoodreadsShelves grShelfList = getShelves(context);
 
         long grBookId;
         Bundle grBook = null;
@@ -452,7 +452,7 @@ public class GoodreadsHandler {
             grBookId = rowData.getLong(DBDefinitions.KEY_EID_GOODREADS_BOOK);
             if (grBookId != 0) {
                 // Get the book details to make sure we have a valid book ID
-                boolean[] thumbs = {false, false};
+                final boolean[] thumbs = {false, false};
                 grBook = getBookById(context, grBookId, thumbs, new Bundle());
             }
         } catch (@NonNull final CredentialsException | Http404Exception | IOException e) {

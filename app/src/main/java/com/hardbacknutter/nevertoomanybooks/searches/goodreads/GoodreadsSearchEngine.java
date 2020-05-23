@@ -53,12 +53,13 @@ import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsHandler;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsWork;
 import com.hardbacknutter.nevertoomanybooks.goodreads.api.Http404Exception;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
+import com.hardbacknutter.nevertoomanybooks.tasks.Canceller;
 import com.hardbacknutter.nevertoomanybooks.utils.Throttler;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 
 /**
  * <a href="https://www.goodreads.com">https://www.goodreads.com</a>
- *
+ * <p>
  * Uses {@link SearchEngine.CoverByIsbn#getCoverImageFallback} because the API
  * has no specific cover access methods, but the site has very good covers making the overhead
  * worth it.
@@ -75,11 +76,16 @@ public class GoodreadsSearchEngine
     /** Can only send requests at a throttled speed. */
     @NonNull
     public static final Throttler THROTTLER = new Throttler();
+    /** Override connect-timeout for this site. See {@link SearchEngine#getConnectTimeoutMs()}. */
+    public static final int CONNECT_TIMEOUT_MS = 10_000;
 
     @NonNull
     private final GoodreadsHandler mApiHandler;
     @NonNull
     private final GoodreadsAuth mGoodreadsAuth;
+
+    @Nullable
+    private Canceller mCaller;
 
     /**
      * Constructor.
@@ -103,8 +109,23 @@ public class GoodreadsSearchEngine
      */
     public static void openWebsite(@NonNull final Context context,
                                    final long bookId) {
-        String url = GoodreadsHandler.BASE_URL + "/book/show/" + bookId;
+        final String url = GoodreadsHandler.BASE_URL + "/book/show/" + bookId;
         context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+    }
+
+    @Override
+    public int getConnectTimeoutMs() {
+        return CONNECT_TIMEOUT_MS;
+    }
+
+    @Override
+    public void setCaller(@Nullable final Canceller caller) {
+        mCaller = caller;
+    }
+
+    @Override
+    public boolean isCancelled() {
+        return mCaller == null || mCaller.isCancelled();
     }
 
     @NonNull
@@ -122,11 +143,11 @@ public class GoodreadsSearchEngine
         }
 
         final String key = GoodreadsHandler.PREFS_HIDE_ALERT + prefSuffix;
-        boolean show = required || !PreferenceManager.getDefaultSharedPreferences(context)
-                                                     .getBoolean(key, false);
+        final boolean show = required || !PreferenceManager.getDefaultSharedPreferences(context)
+                                                           .getBoolean(key, false);
 
         if (show) {
-            Intent intent = new Intent(context, GoodreadsRegistrationActivity.class);
+            final Intent intent = new Intent(context, GoodreadsRegistrationActivity.class);
             StandardDialogs.registerOnSite(context, R.string.site_goodreads,
                                            intent, required, key);
         }
@@ -139,7 +160,6 @@ public class GoodreadsSearchEngine
                                @NonNull final String validIsbn,
                                @NonNull final boolean[] fetchThumbnail)
             throws CredentialsException, IOException {
-
         try {
             return mApiHandler.getBookByIsbn(context, validIsbn, fetchThumbnail, new Bundle());
 
@@ -155,9 +175,8 @@ public class GoodreadsSearchEngine
                                    @NonNull final String nativeId,
                                    @NonNull final boolean[] fetchThumbnail)
             throws CredentialsException, IOException {
-
         try {
-            long grBookId = Long.parseLong(nativeId);
+            final long grBookId = Long.parseLong(nativeId);
             return mApiHandler.getBookById(context, grBookId, fetchThumbnail, new Bundle());
 
         } catch (@NonNull final Http404Exception | NumberFormatException e) {
@@ -187,7 +206,7 @@ public class GoodreadsSearchEngine
 
         if (author != null && !author.isEmpty() && title != null && !title.isEmpty()) {
             try {
-                List<GoodreadsWork> works = mApiHandler.search(context, author + ' ' + title);
+                final List<GoodreadsWork> works = mApiHandler.search(context, author + ' ' + title);
                 // only return the first one found
                 if (!works.isEmpty()) {
                     return mApiHandler.getBookById(context, works.get(0).grBookId,

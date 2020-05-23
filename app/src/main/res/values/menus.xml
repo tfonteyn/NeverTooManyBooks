@@ -65,13 +65,12 @@
     <!-- Shops last -->
     <integer name="MENU_ORDER_VIEW_BOOK_AT_AMAZON">890</integer>
 
-
     <integer name="MENU_ORDER_AMAZON">900</integer>
     <integer name="MENU_ORDER_AMAZON_AUTHOR">905</integer>
     <integer name="MENU_ORDER_AMAZON_SERIES">910</integer>
     <integer name="MENU_ORDER_AMAZON_AUTHOR_IN_SERIES">915</integer>
 
-    <integer name="MENU_ORDER_LEVEL_TOGGLE">999</integer>
+    <integer name="MENU_NEXT_MISSING_COVER">999</integer>
 
     <item name="MENU_DIVIDER" type="id" />
 
@@ -184,5 +183,6 @@
     <!-- debug options for the SQLite shell activity. -->
     <item name="MENU_DEBUG_SQ_SHELL_RUN" type="id" />
     <item name="MENU_DEBUG_SQ_SHELL_LIST_TABLES" type="id" />
+    <item name="MENU_NEXT_MISSING_COVER" type="id" />
 
 </resources>

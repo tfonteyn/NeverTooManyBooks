@@ -47,6 +47,7 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
+import com.hardbacknutter.nevertoomanybooks.tasks.Canceller;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 
@@ -81,6 +82,19 @@ public final class AmazonSearchEngine
      * </ul>
      */
     private static final String SEARCH_SUFFIX = "/gp/search?index=books";
+
+    @Nullable
+    private Canceller mCaller;
+
+    @Override
+    public void setCaller(@Nullable final Canceller caller) {
+        mCaller = caller;
+    }
+
+    @Override
+    public boolean isCancelled() {
+        return mCaller == null || mCaller.isCancelled();
+    }
 
     @NonNull
     public static String getBaseURL(@NonNull final Context context) {
@@ -196,7 +210,7 @@ public final class AmazonSearchEngine
                                    @NonNull final boolean[] fetchThumbnail)
             throws IOException {
 
-        return new AmazonHtmlHandler(context, this)
+        return new AmazonHtmlHandler(this, context)
                 .fetchByNativeId(nativeId, fetchThumbnail, new Bundle());
     }
 

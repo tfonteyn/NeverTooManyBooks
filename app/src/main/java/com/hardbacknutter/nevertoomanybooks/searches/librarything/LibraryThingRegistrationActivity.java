@@ -90,8 +90,8 @@ public class LibraryThingRegistrationActivity
                                               Uri.parse(LibraryThingSearchEngine.BASE_URL
                                                         + "/services/keys.php"))));
 
-        String key = PreferenceManager.getDefaultSharedPreferences(this)
-                                      .getString(LibraryThingSearchEngine.PREFS_DEV_KEY, "");
+        final String key = PreferenceManager.getDefaultSharedPreferences(this)
+                                            .getString(LibraryThingSearchEngine.PREFS_DEV_KEY, "");
         mVb.devKey.setText(key);
 
         // Saves first, then TESTS the key.

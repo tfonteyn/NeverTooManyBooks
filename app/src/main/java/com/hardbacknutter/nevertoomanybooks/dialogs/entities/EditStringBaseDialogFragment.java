@@ -176,7 +176,7 @@ public abstract class EditStringBaseDialogFragment
 
         final Bundle data = onSave();
         if (mListener != null && mListener.get() != null) {
-            mListener.get().onBookChanged(0, mChangeFlags, data);
+            mListener.get().onChange(0, mChangeFlags, data);
         } else {
             if (BuildConfig.DEBUG /* always */) {
                 Log.w(TAG, "onBookChanged|" +
@@ -192,7 +192,7 @@ public abstract class EditStringBaseDialogFragment
      * Save data.
      *
      * @return the bundle to pass back to
-     * {@link BookChangedListener#onBookChanged(long, int, Bundle)}
+     * {@link BookChangedListener#onChange(long, int, Bundle)}
      */
     @Nullable
     abstract Bundle onSave();

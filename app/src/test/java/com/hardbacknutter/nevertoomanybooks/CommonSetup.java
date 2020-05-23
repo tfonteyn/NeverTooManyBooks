@@ -50,6 +50,7 @@ import com.hardbacknutter.nevertoomanybooks.searches.amazon.AmazonSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searches.isfdb.IsfdbSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searches.kbnl.KbNlSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
+import com.hardbacknutter.nevertoomanybooks.tasks.Canceller;
 import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 
@@ -155,5 +156,19 @@ public class CommonSetup {
                 .thenReturn("http://www.isfdb.org");
         when(mSharedPreferences.getString(eq(KbNlSearchEngine.PREFS_HOST_URL), anyString()))
                 .thenReturn("http://opc4.kb.nl");
+    }
+
+    public static class DummyCaller
+            implements Canceller {
+
+        @Override
+        public boolean cancel(final boolean mayInterruptIfRunning) {
+            return false;
+        }
+
+        @Override
+        public boolean isCancelled() {
+            return false;
+        }
     }
 }

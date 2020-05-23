@@ -39,6 +39,7 @@ import java.util.Locale;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import com.hardbacknutter.nevertoomanybooks.CommonSetup;
@@ -60,12 +61,21 @@ import static org.junit.jupiter.api.Assertions.fail;
 class StripInfoTest
         extends CommonSetup {
 
+    private SearchEngine mSearchEngine;
+
+    @BeforeEach
+    public void setUp() {
+        super.setUp();
+        mSearchEngine = new StripInfoSearchEngine();
+        mSearchEngine.setCaller(new DummyCaller());
+    }
+
     @Test
     void parse01() {
         setLocale(Locale.FRANCE);
-        String locationHeader = "https://www.stripinfo.be/reeks/strip"
-                                + "/336348_Hauteville_House_14_De_37ste_parallel";
-        String filename = "/stripinfo/336348_Hauteville_House_14_De_37ste_parallel.html";
+        final String locationHeader = "https://www.stripinfo.be/reeks/strip"
+                                      + "/336348_Hauteville_House_14_De_37ste_parallel";
+        final String filename = "/stripinfo/336348_Hauteville_House_14_De_37ste_parallel.html";
 
         Document doc = null;
         try (InputStream is = this.getClass().getResourceAsStream(filename)) {
@@ -77,12 +87,10 @@ class StripInfoTest
         assertNotNull(doc);
         assertTrue(doc.hasText());
 
-        SearchEngine searchEngine = new StripInfoSearchEngine();
-        StripInfoBookHandler stripInfoBookHandler =
-                new StripInfoBookHandler(mContext, searchEngine, doc);
+        final StripInfoBookHandler handler = new StripInfoBookHandler(mSearchEngine, mContext, doc);
         // we've set the doc, so no internet download will be done.
-        boolean[] fetchThumbnail = {false, false};
-        Bundle bookData = stripInfoBookHandler.parseDoc(mRawData, fetchThumbnail);
+        final boolean[] fetchThumbnail = {false, false};
+        final Bundle bookData = handler.parseDoc(mRawData, fetchThumbnail);
 
         assertFalse(bookData.isEmpty());
         System.out.println(bookData);
@@ -95,13 +103,13 @@ class StripInfoTest
         assertEquals("nld", bookData.getString(DBDefinitions.KEY_LANGUAGE));
         assertEquals("Kleur", bookData.getString(DBDefinitions.KEY_COLOR));
 
-        ArrayList<Publisher> allPublishers = bookData
+        final ArrayList<Publisher> allPublishers = bookData
                 .getParcelableArrayList(Book.BKEY_PUBLISHER_ARRAY);
         assertNotNull(allPublishers);
         assertEquals(1, allPublishers.size());
         assertEquals("Silvester", allPublishers.get(0).getName());
 
-        ArrayList<Series> allSeries = bookData.getParcelableArrayList(Book.BKEY_SERIES_ARRAY);
+        final ArrayList<Series> allSeries = bookData.getParcelableArrayList(Book.BKEY_SERIES_ARRAY);
         assertNotNull(allSeries);
         assertEquals(1, allSeries.size());
 
@@ -109,21 +117,21 @@ class StripInfoTest
         assertEquals("Hauteville House", series.getTitle());
         assertEquals("14", series.getNumber());
 
-        ArrayList<Author> allAuthors = bookData.getParcelableArrayList(Book.BKEY_AUTHOR_ARRAY);
-        assertNotNull(allAuthors);
-        assertEquals(3, allAuthors.size());
+        final ArrayList<Author> authors = bookData.getParcelableArrayList(Book.BKEY_AUTHOR_ARRAY);
+        assertNotNull(authors);
+        assertEquals(3, authors.size());
 
-        Author author = allAuthors.get(0);
+        Author author = authors.get(0);
         assertEquals("Duval", author.getFamilyName());
         assertEquals("Fred", author.getGivenNames());
         assertEquals(Author.TYPE_WRITER, author.getType());
 
-        author = allAuthors.get(1);
+        author = authors.get(1);
         assertEquals("Gioux", author.getFamilyName());
         assertEquals("Thierry", author.getGivenNames());
         assertEquals(Author.TYPE_ARTIST, author.getType());
 
-        author = allAuthors.get(2);
+        author = authors.get(2);
         assertEquals("Sayago", author.getFamilyName());
         assertEquals("Nuria", author.getGivenNames());
         assertEquals(Author.TYPE_COLORIST, author.getType());
@@ -132,10 +140,11 @@ class StripInfoTest
     @Test
     void parse02() {
         setLocale(Locale.FRANCE);
-        String locationHeader = "https://www.stripinfo.be/reeks/strip"
-                                + "/2060_De_boom_van_de_twee_lentes_1_De_boom_van_de_twee_lentes";
-        String filename = "/stripinfo/2060_De_boom_van_de_twee_lentes_1"
-                          + "_De_boom_van_de_twee_lentes.html";
+        final String locationHeader = "https://www.stripinfo.be/reeks/strip"
+                                      + "/2060_De_boom_van_de_twee_lentes_1"
+                                      + "_De_boom_van_de_twee_lentes";
+        final String filename = "/stripinfo/2060_De_boom_van_de_twee_lentes_1"
+                                + "_De_boom_van_de_twee_lentes.html";
 
         Document doc = null;
         try (InputStream is = this.getClass().getResourceAsStream(filename)) {
@@ -147,12 +156,11 @@ class StripInfoTest
         assertNotNull(doc);
         assertTrue(doc.hasText());
 
-        SearchEngine searchEngine = new StripInfoSearchEngine();
-        StripInfoBookHandler stripInfoBookHandler =
-                new StripInfoBookHandler(mContext, searchEngine, doc);
+        final StripInfoBookHandler handler = new StripInfoBookHandler(mSearchEngine, mContext, doc);
+
         // we've set the doc, so no internet download will be done.
-        boolean[] fetchThumbnail = {false, false};
-        Bundle bookData = stripInfoBookHandler.parseDoc(mRawData, fetchThumbnail);
+        final boolean[] fetchThumbnail = {false, false};
+        final Bundle bookData = handler.parseDoc(mRawData, fetchThumbnail);
 
         assertFalse(bookData.isEmpty());
         System.out.println(bookData);
@@ -165,13 +173,13 @@ class StripInfoTest
         assertEquals("nld", bookData.getString(DBDefinitions.KEY_LANGUAGE));
         assertEquals("Kleur", bookData.getString(DBDefinitions.KEY_COLOR));
 
-        ArrayList<Publisher> allPublishers = bookData
+        final ArrayList<Publisher> allPublishers = bookData
                 .getParcelableArrayList(Book.BKEY_PUBLISHER_ARRAY);
         assertNotNull(allPublishers);
         assertEquals(1, allPublishers.size());
         assertEquals("Le Lombard", allPublishers.get(0).getName());
 
-        ArrayList<Series> allSeries = bookData.getParcelableArrayList(Book.BKEY_SERIES_ARRAY);
+        final ArrayList<Series> allSeries = bookData.getParcelableArrayList(Book.BKEY_SERIES_ARRAY);
         assertNotNull(allSeries);
         assertEquals(2, allSeries.size());
 
@@ -183,16 +191,16 @@ class StripInfoTest
         assertEquals("Getekend", series.getTitle());
         assertEquals("", series.getNumber());
 
-        ArrayList<Author> allAuthors = bookData.getParcelableArrayList(Book.BKEY_AUTHOR_ARRAY);
-        assertNotNull(allAuthors);
-        assertEquals(20, allAuthors.size());
+        final ArrayList<Author> authors = bookData.getParcelableArrayList(Book.BKEY_AUTHOR_ARRAY);
+        assertNotNull(authors);
+        assertEquals(20, authors.size());
 
-        Author author = allAuthors.get(0);
+        Author author = authors.get(0);
         assertEquals("Miel", author.getFamilyName());
         assertEquals("Rudi", author.getGivenNames());
         assertEquals(Author.TYPE_WRITER, author.getType());
 
-        author = allAuthors.get(1);
+        author = authors.get(1);
         assertEquals("Batem", author.getFamilyName());
         assertEquals("", author.getGivenNames());
         assertEquals(Author.TYPE_ARTIST, author.getType());
@@ -202,9 +210,9 @@ class StripInfoTest
     @Test
     void parseIntegrale() {
         setLocale(Locale.FRANCE);
-        String locationHeader = "https://www.stripinfo.be/reeks/strip/"
-                                + "316016_Johan_en_Pirrewiet_INT_5_De_integrale_5";
-        String filename = "/stripinfo/316016_Johan_en_Pirrewiet_INT_5_De_integrale_5.html";
+        final String locationHeader = "https://www.stripinfo.be/reeks/strip/"
+                                      + "316016_Johan_en_Pirrewiet_INT_5_De_integrale_5";
+        final String filename = "/stripinfo/316016_Johan_en_Pirrewiet_INT_5_De_integrale_5.html";
 
         Document doc = null;
         try (InputStream is = this.getClass().getResourceAsStream(filename)) {
@@ -216,12 +224,11 @@ class StripInfoTest
         assertNotNull(doc);
         assertTrue(doc.hasText());
 
-        SearchEngine searchEngine = new StripInfoSearchEngine();
-        StripInfoBookHandler stripInfoBookHandler =
-                new StripInfoBookHandler(mContext, searchEngine, doc);
+        final StripInfoBookHandler handler = new StripInfoBookHandler(mSearchEngine, mContext, doc);
+
         // we've set the doc, so no internet download will be done.
-        boolean[] fetchThumbnail = {false, false};
-        Bundle bookData = stripInfoBookHandler.parseDoc(mRawData, fetchThumbnail);
+        final boolean[] fetchThumbnail = {false, false};
+        final Bundle bookData = handler.parseDoc(mRawData, fetchThumbnail);
 
         assertFalse(bookData.isEmpty());
         System.out.println(bookData);
@@ -234,13 +241,13 @@ class StripInfoTest
         assertEquals("nld", bookData.getString(DBDefinitions.KEY_LANGUAGE));
         assertEquals("Kleur", bookData.getString(DBDefinitions.KEY_COLOR));
 
-        ArrayList<Publisher> allPublishers = bookData
+        final ArrayList<Publisher> allPublishers = bookData
                 .getParcelableArrayList(Book.BKEY_PUBLISHER_ARRAY);
         assertNotNull(allPublishers);
         assertEquals(1, allPublishers.size());
         assertEquals("Le Lombard", allPublishers.get(0).getName());
 
-        ArrayList<TocEntry> tocs = bookData.getParcelableArrayList(Book.BKEY_TOC_ENTRY_ARRAY);
+        final ArrayList<TocEntry> tocs = bookData.getParcelableArrayList(Book.BKEY_TOC_ENTRY_ARRAY);
         assertNotNull(tocs);
         assertEquals(4, tocs.size());
 
@@ -251,7 +258,7 @@ class StripInfoTest
 
         assertEquals("Culliford", tocs.get(0).getAuthor().getFamilyName());
 
-        ArrayList<Series> allSeries = bookData.getParcelableArrayList(Book.BKEY_SERIES_ARRAY);
+        final ArrayList<Series> allSeries = bookData.getParcelableArrayList(Book.BKEY_SERIES_ARRAY);
         assertNotNull(allSeries);
         assertEquals(1, allSeries.size());
 
@@ -259,16 +266,16 @@ class StripInfoTest
         assertEquals("Johan en Pirrewiet", series.getTitle());
         assertEquals("INT 5", series.getNumber());
 
-        ArrayList<Author> allAuthors = bookData.getParcelableArrayList(Book.BKEY_AUTHOR_ARRAY);
-        assertNotNull(allAuthors);
-        assertEquals(6, allAuthors.size());
+        final ArrayList<Author> authors = bookData.getParcelableArrayList(Book.BKEY_AUTHOR_ARRAY);
+        assertNotNull(authors);
+        assertEquals(6, authors.size());
 
-        Author author = allAuthors.get(0);
+        Author author = authors.get(0);
         assertEquals("Culliford", author.getFamilyName());
         assertEquals("Thierry", author.getGivenNames());
         assertEquals(Author.TYPE_WRITER, author.getType());
 
-        author = allAuthors.get(3);
+        author = authors.get(3);
         assertEquals("Maury", author.getFamilyName());
         assertEquals("Alain", author.getGivenNames());
         assertEquals(Author.TYPE_ARTIST, author.getType());
@@ -278,9 +285,9 @@ class StripInfoTest
     @Test
     void parseIntegrale2() {
         setLocale(Locale.FRANCE);
-        String locationHeader = "https://www.stripinfo.be/reeks/strip/"
-                                + "17030_Comanche_1_Red_Dust";
-        String filename = "/stripinfo/17030_Comanche_1_Red_Dust.html";
+        final String locationHeader = "https://www.stripinfo.be/reeks/strip/"
+                                      + "17030_Comanche_1_Red_Dust";
+        final String filename = "/stripinfo/17030_Comanche_1_Red_Dust.html";
 
         Document doc = null;
         try (InputStream is = this.getClass().getResourceAsStream(filename)) {
@@ -292,12 +299,11 @@ class StripInfoTest
         assertNotNull(doc);
         assertTrue(doc.hasText());
 
-        SearchEngine searchEngine = new StripInfoSearchEngine();
-        StripInfoBookHandler stripInfoBookHandler =
-                new StripInfoBookHandler(mContext, searchEngine, doc);
+        final StripInfoBookHandler handler = new StripInfoBookHandler(mSearchEngine, mContext, doc);
+
         // we've set the doc, so no internet download will be done.
-        boolean[] fetchThumbnail = {false, false};
-        Bundle bookData = stripInfoBookHandler.parseDoc(mRawData, fetchThumbnail);
+        final boolean[] fetchThumbnail = {false, false};
+        final Bundle bookData = handler.parseDoc(mRawData, fetchThumbnail);
 
         assertFalse(bookData.isEmpty());
         System.out.println(bookData);
@@ -309,13 +315,13 @@ class StripInfoTest
         assertEquals("nld", bookData.getString(DBDefinitions.KEY_LANGUAGE));
         assertEquals("Kleur", bookData.getString(DBDefinitions.KEY_COLOR));
 
-        ArrayList<Publisher> allPublishers = bookData
+        final ArrayList<Publisher> allPublishers = bookData
                 .getParcelableArrayList(Book.BKEY_PUBLISHER_ARRAY);
         assertNotNull(allPublishers);
         assertEquals(1, allPublishers.size());
         assertEquals("Le Lombard", allPublishers.get(0).getName());
 
-        ArrayList<TocEntry> tocs = bookData.getParcelableArrayList(Book.BKEY_TOC_ENTRY_ARRAY);
+        final ArrayList<TocEntry> tocs = bookData.getParcelableArrayList(Book.BKEY_TOC_ENTRY_ARRAY);
         assertNotNull(tocs);
         assertEquals(3, tocs.size());
 
@@ -325,7 +331,7 @@ class StripInfoTest
 
         assertEquals("Greg", tocs.get(0).getAuthor().getFamilyName());
 
-        ArrayList<Series> allSeries = bookData.getParcelableArrayList(Book.BKEY_SERIES_ARRAY);
+        final ArrayList<Series> allSeries = bookData.getParcelableArrayList(Book.BKEY_SERIES_ARRAY);
         assertNotNull(allSeries);
         assertEquals(1, allSeries.size());
 
@@ -333,16 +339,16 @@ class StripInfoTest
         assertEquals("Comanche", series.getTitle());
         assertEquals("1", series.getNumber());
 
-        ArrayList<Author> allAuthors = bookData.getParcelableArrayList(Book.BKEY_AUTHOR_ARRAY);
-        assertNotNull(allAuthors);
-        assertEquals(2, allAuthors.size());
+        final ArrayList<Author> authors = bookData.getParcelableArrayList(Book.BKEY_AUTHOR_ARRAY);
+        assertNotNull(authors);
+        assertEquals(2, authors.size());
 
-        Author author = allAuthors.get(0);
+        Author author = authors.get(0);
         assertEquals("Greg", author.getFamilyName());
         assertEquals("", author.getGivenNames());
         assertEquals(Author.TYPE_WRITER, author.getType());
 
-        author = allAuthors.get(1);
+        author = authors.get(1);
         assertEquals("Hermann", author.getFamilyName());
         assertEquals("", author.getGivenNames());
         assertEquals(Author.TYPE_ARTIST, author.getType());
@@ -351,9 +357,9 @@ class StripInfoTest
     @Test
     void parseFavReeks2() {
         setLocale(Locale.FRANCE);
-        String locationHeader = "https://www.stripinfo.be/reeks/strip/"
-                                + "8155_De_avonturen_van_de_3L_7_Spoken_in_de_grot";
-        String filename = "/stripinfo/8155_De_avonturen_van_de_3L_7_Spoken_in_de_grot.html";
+        final String locationHeader = "https://www.stripinfo.be/reeks/strip/"
+                                      + "8155_De_avonturen_van_de_3L_7_Spoken_in_de_grot";
+        final String filename = "/stripinfo/8155_De_avonturen_van_de_3L_7_Spoken_in_de_grot.html";
 
         Document doc = null;
         try (InputStream is = this.getClass().getResourceAsStream(filename)) {
@@ -365,12 +371,11 @@ class StripInfoTest
         assertNotNull(doc);
         assertTrue(doc.hasText());
 
-        SearchEngine searchEngine = new StripInfoSearchEngine();
-        StripInfoBookHandler stripInfoBookHandler =
-                new StripInfoBookHandler(mContext, searchEngine, doc);
+        final StripInfoBookHandler handler = new StripInfoBookHandler(mSearchEngine, mContext, doc);
+
         // we've set the doc, so no internet download will be done.
-        boolean[] fetchThumbnail = {false, false};
-        Bundle bookData = stripInfoBookHandler.parseDoc(mRawData, fetchThumbnail);
+        final boolean[] fetchThumbnail = {false, false};
+        final Bundle bookData = handler.parseDoc(mRawData, fetchThumbnail);
 
         assertFalse(bookData.isEmpty());
         System.out.println(bookData);
@@ -381,16 +386,16 @@ class StripInfoTest
         assertEquals("nld", bookData.getString(DBDefinitions.KEY_LANGUAGE));
         assertEquals("Kleur", bookData.getString(DBDefinitions.KEY_COLOR));
 
-        ArrayList<Publisher> allPublishers = bookData
+        final ArrayList<Publisher> allPublishers = bookData
                 .getParcelableArrayList(Book.BKEY_PUBLISHER_ARRAY);
         assertNotNull(allPublishers);
         assertEquals(1, allPublishers.size());
         assertEquals("Le Lombard", allPublishers.get(0).getName());
 
-        ArrayList<TocEntry> tocs = bookData.getParcelableArrayList(Book.BKEY_TOC_ENTRY_ARRAY);
+        final ArrayList<TocEntry> tocs = bookData.getParcelableArrayList(Book.BKEY_TOC_ENTRY_ARRAY);
         assertNull(tocs);
 
-        ArrayList<Series> allSeries = bookData.getParcelableArrayList(Book.BKEY_SERIES_ARRAY);
+        final ArrayList<Series> allSeries = bookData.getParcelableArrayList(Book.BKEY_SERIES_ARRAY);
         assertNotNull(allSeries);
         assertEquals(2, allSeries.size());
 
@@ -401,16 +406,16 @@ class StripInfoTest
         assertEquals("Favorietenreeks", series.getTitle());
         assertEquals("2.50", series.getNumber());
 
-        ArrayList<Author> allAuthors = bookData.getParcelableArrayList(Book.BKEY_AUTHOR_ARRAY);
-        assertNotNull(allAuthors);
-        assertEquals(2, allAuthors.size());
+        final ArrayList<Author> authors = bookData.getParcelableArrayList(Book.BKEY_AUTHOR_ARRAY);
+        assertNotNull(authors);
+        assertEquals(2, authors.size());
 
-        Author author = allAuthors.get(0);
+        Author author = authors.get(0);
         assertEquals("Duchateau", author.getFamilyName());
         assertEquals("André-Paul", author.getGivenNames());
         assertEquals(Author.TYPE_WRITER, author.getType());
 
-        author = allAuthors.get(1);
+        author = authors.get(1);
         assertEquals("Mittéï", author.getFamilyName());
         assertEquals("", author.getGivenNames());
         assertEquals(Author.TYPE_ARTIST, author.getType());
@@ -421,8 +426,8 @@ class StripInfoTest
     @Test
     void parseMultiResult() {
         setLocale(Locale.FRANCE);
-        String locationHeader = "https://stripinfo.be/zoek/zoek?zoekstring=pluvi";
-        String filename = "/stripinfo/multi-result-pluvi.html";
+        final String locationHeader = "https://stripinfo.be/zoek/zoek?zoekstring=pluvi";
+        final String filename = "/stripinfo/multi-result-pluvi.html";
 
         Document doc = null;
         try (InputStream is = this.getClass().getResourceAsStream(filename)) {
@@ -434,14 +439,13 @@ class StripInfoTest
         assertNotNull(doc);
         assertTrue(doc.hasText());
 
-        SearchEngine searchEngine = new StripInfoSearchEngine();
-        StripInfoBookHandler stripInfoBookHandler =
-                new StripInfoBookHandler(mContext, searchEngine, doc);
+        final StripInfoBookHandler handler = new StripInfoBookHandler(mSearchEngine, mContext, doc);
+
         // we've set the doc, but will redirect.. so an internet download WILL be done.
         Bundle bookData = null;
         try {
-            boolean[] fetchThumbnail = {false, false};
-            bookData = stripInfoBookHandler.parseMultiResult(mRawData, fetchThumbnail);
+            final boolean[] fetchThumbnail = {false, false};
+            bookData = handler.parseMultiResult(mRawData, fetchThumbnail);
         } catch (@NonNull final SocketTimeoutException e) {
             fail(e);
         }
@@ -457,16 +461,16 @@ class StripInfoTest
         assertEquals("fra", bookData.getString(DBDefinitions.KEY_LANGUAGE));
         assertEquals("Kleur", bookData.getString(DBDefinitions.KEY_COLOR));
 
-        ArrayList<Publisher> allPublishers = bookData
+        final ArrayList<Publisher> allPublishers = bookData
                 .getParcelableArrayList(Book.BKEY_PUBLISHER_ARRAY);
         assertNotNull(allPublishers);
         assertEquals(1, allPublishers.size());
         assertEquals("Delcourt", allPublishers.get(0).getName());
 
-        ArrayList<TocEntry> tocs = bookData.getParcelableArrayList(Book.BKEY_TOC_ENTRY_ARRAY);
+        final ArrayList<TocEntry> tocs = bookData.getParcelableArrayList(Book.BKEY_TOC_ENTRY_ARRAY);
         assertNull(tocs);
 
-        ArrayList<Series> allSeries = bookData.getParcelableArrayList(Book.BKEY_SERIES_ARRAY);
+        final ArrayList<Series> allSeries = bookData.getParcelableArrayList(Book.BKEY_SERIES_ARRAY);
         assertNotNull(allSeries);
         assertEquals(2, allSeries.size());
 
@@ -478,24 +482,23 @@ class StripInfoTest
         assertEquals("Mirages", series.getTitle());
         assertEquals("", series.getNumber());
 
-        ArrayList<Author> allAuthors = bookData.getParcelableArrayList(Book.BKEY_AUTHOR_ARRAY);
-        assertNotNull(allAuthors);
-        assertEquals(3, allAuthors.size());
+        final ArrayList<Author> authors = bookData.getParcelableArrayList(Book.BKEY_AUTHOR_ARRAY);
+        assertNotNull(authors);
+        assertEquals(3, authors.size());
 
-        Author author = allAuthors.get(0);
+        Author author = authors.get(0);
         assertEquals("Béhé", author.getFamilyName());
         assertEquals("", author.getGivenNames());
         assertEquals(Author.TYPE_WRITER, author.getType());
 
-        author = allAuthors.get(1);
+        author = authors.get(1);
         assertEquals("Laprun", author.getFamilyName());
         assertEquals("Amandine", author.getGivenNames());
         assertEquals(Author.TYPE_WRITER, author.getType());
 
-        author = allAuthors.get(2);
+        author = authors.get(2);
         assertEquals("Surcouf", author.getFamilyName());
         assertEquals("Erwann", author.getGivenNames());
         assertEquals(Author.TYPE_ARTIST | Author.TYPE_COLORIST, author.getType());
-
     }
 }

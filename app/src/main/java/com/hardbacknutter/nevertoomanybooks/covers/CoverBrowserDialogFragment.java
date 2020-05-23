@@ -189,7 +189,21 @@ public class CoverBrowserDialogFragment
     }
 
     @Override
+    public void onDismiss(@NonNull final DialogInterface dialog) {
+        if (BuildConfig.DEBUG) {
+            Log.d(TAG, "onDismiss");
+        }
+        mModel.cancelAllTasks();
+        super.onDismiss(dialog);
+    }
+
+    @Override
     public void onCancel(@NonNull final DialogInterface dialog) {
+        if (BuildConfig.DEBUG) {
+            Log.d(TAG, "onCancel");
+        }
+        // is having this in onDismiss not enough?
+        mModel.cancelAllTasks();
         // prevent new tasks being started.
         mIsCancelled = true;
         super.onCancel(dialog);
@@ -236,21 +250,12 @@ public class CoverBrowserDialogFragment
      * handle result from the {@link CoverBrowserViewModel} GetGalleryImageTask.
      * <p>
      * TODO: pass the data via a MutableLiveData object and use a local FIFO queue.
-     *
-     * @param imageFileInfo the file we got, if any
      */
     private void setGalleryImage(@NonNull final ImageFileInfo imageFileInfo) {
 
         Objects.requireNonNull(mGalleryAdapter, ErrorMsg.NULL_GALLERY_ADAPTER);
 
         final int editionIndex = mEditions.indexOf(imageFileInfo.isbn);
-
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVER_BROWSER) {
-            Log.d(TAG, "setGalleryImage"
-                       + "|imageFileInfo=" + imageFileInfo
-                       + "|editionIndex=" + editionIndex);
-        }
-
         if (editionIndex >= 0) {
             final File tmpFile = imageFileInfo.getFile();
             if (tmpFile != null && tmpFile.exists()) {

@@ -116,7 +116,9 @@ public class GoodreadsWork {
                                    @NonNull final String url) {
 
         try (TerminatorConnection con =
-                     TerminatorConnection.open(context, url, NR_OF_TRIES,
+                     TerminatorConnection.open(context, url,
+                                               GoodreadsSearchEngine.CONNECT_TIMEOUT_MS,
+                                               NR_OF_TRIES,
                                                GoodreadsSearchEngine.THROTTLER);
              final ByteArrayOutputStream out = new ByteArrayOutputStream()) {
 

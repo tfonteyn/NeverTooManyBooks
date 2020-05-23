@@ -50,7 +50,7 @@ import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener.TaskStatus;
  */
 public abstract class TaskBase<Result>
         extends AsyncTask<Void, TaskListener.ProgressMessage, Result>
-        implements ProgressDialogFragment.Cancellable {
+        implements Canceller {
 
     /** Log tag. */
     private static final String TAG = "TaskBase";
@@ -159,7 +159,7 @@ public abstract class TaskBase<Result>
     @CallSuper
     protected void onCancelled(@NonNull final Result result) {
         if (mTaskListener.get() != null) {
-            mTaskListener.get().onFinished(new TaskListener.FinishMessage<>(
+            mTaskListener.get().onCancelled(new TaskListener.FinishMessage<>(
                     mTaskId, TaskStatus.Cancelled, result, mException));
         } else {
             if (BuildConfig.DEBUG /* always */) {

@@ -268,7 +268,7 @@ public class EditLenderDialogFragment
         }
 
         if (mListener != null && mListener.get() != null) {
-            mListener.get().onBookChanged(mBookId, BookChangedListener.BOOK_LOANEE, data);
+            mListener.get().onChange(mBookId, BookChangedListener.BOOK_LOANEE, data);
         } else {
             if (BuildConfig.DEBUG /* always */) {
                 Log.w(TAG, "onBookChanged|" +

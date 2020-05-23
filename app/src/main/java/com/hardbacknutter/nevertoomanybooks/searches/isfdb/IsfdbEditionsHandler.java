@@ -42,6 +42,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
+import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 
 /**
@@ -68,7 +69,8 @@ class IsfdbEditionsHandler
     /**
      * Constructor.
      */
-    IsfdbEditionsHandler() {
+    IsfdbEditionsHandler(@NonNull final SearchEngine searchEngine) {
+        super(searchEngine);
     }
 
     /**
@@ -77,8 +79,10 @@ class IsfdbEditionsHandler
      * @param doc the JSoup Document.
      */
     @VisibleForTesting
-    IsfdbEditionsHandler(@NonNull final Document doc) {
-        super(doc);
+    IsfdbEditionsHandler(@NonNull final SearchEngine searchEngine,
+                         @NonNull final Document doc) {
+        this(searchEngine);
+        mDoc = doc;
     }
 
     /**
@@ -105,6 +109,10 @@ class IsfdbEditionsHandler
             return mEditions;
         }
 
+        if (mSearchEngine.isCancelled()) {
+            return mEditions;
+        }
+
         return parseDoc(context);
     }
 
@@ -127,6 +135,10 @@ class IsfdbEditionsHandler
 
         if (loadPage(context, url) == null) {
             // null result, abort
+            return mEditions;
+        }
+
+        if (mSearchEngine.isCancelled()) {
             return mEditions;
         }
 
@@ -172,16 +184,16 @@ class IsfdbEditionsHandler
      * @param doc to parse
      */
     private void findEntries(@NonNull final Document doc) {
-        Element publications = doc.selectFirst("table.publications");
+        final Element publications = doc.selectFirst("table.publications");
         if (publications == null) {
             return;
         }
 
         // first edition line is a "tr.table1", 2nd "tr.table0", 3rd "tr.table1" etc...
-        Elements oddEntries = publications.select("tr.table1");
-        Elements evenEntries = publications.select("tr.table0");
+        final Elements oddEntries = publications.select("tr.table1");
+        final Elements evenEntries = publications.select("tr.table0");
         // combine them in a sorted list
-        Collection<Element> entries = new Elements();
+        final Collection<Element> entries = new Elements();
         int i = 0;
         while (i < oddEntries.size() && i < evenEntries.size()) {
             entries.add(oddEntries.get(i));
@@ -197,13 +209,13 @@ class IsfdbEditionsHandler
 
         for (Element tr : entries) {
             // 1th column: Title ==the book link
-            Element edLink = tr.child(0).select("a").first();
+            final Element edLink = tr.child(0).select("a").first();
             if (edLink != null) {
-                String url = edLink.attr("href");
+                final String url = edLink.attr("href");
                 if (url != null) {
                     String isbnStr = null;
                     // 4th column: ISBN/Catalog ID
-                    String catNr = tr.child(4).text();
+                    final String catNr = tr.child(4).text();
                     if (!catNr.isEmpty()) {
                         ISBN isbn = ISBN.createISBN(catNr);
                         if (isbn.isValid(true)) {
@@ -212,7 +224,6 @@ class IsfdbEditionsHandler
                     }
 
                     mEditions.add(new Edition(stripNumber(url, '?'), isbnStr));
-
                 }
             }
         }

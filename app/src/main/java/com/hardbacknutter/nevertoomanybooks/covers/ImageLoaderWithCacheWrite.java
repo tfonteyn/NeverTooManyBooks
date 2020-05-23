@@ -68,7 +68,7 @@ import com.hardbacknutter.nevertoomanybooks.database.CoversDAO;
  * This behaves exactly the same as {@link ImageLoader} but when done,
  * it starts a new task to send the image to the image database cache.
  */
-class ImageLoaderWithCaching
+class ImageLoaderWithCacheWrite
         extends ImageLoader {
 
     private final String mUuid;
@@ -85,14 +85,14 @@ class ImageLoaderWithCaching
      * @param uuid      UUID of the book
      * @param cIdx      0..n image index
      */
-    ImageLoaderWithCaching(@NonNull final ImageView imageView,
-                           @NonNull final File file,
-                           final int maxWidth,
-                           final int maxHeight,
-                           @Nullable final Runnable onSuccess,
+    ImageLoaderWithCacheWrite(@NonNull final ImageView imageView,
+                              @NonNull final File file,
+                              final int maxWidth,
+                              final int maxHeight,
+                              @Nullable final Runnable onSuccess,
 
-                           final String uuid,
-                           @IntRange(from = 0) final int cIdx) {
+                              final String uuid,
+                              @IntRange(from = 0) final int cIdx) {
         super(imageView, file, maxWidth, maxHeight, onSuccess);
 
         mUuid = uuid;

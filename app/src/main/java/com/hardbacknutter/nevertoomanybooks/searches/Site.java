@@ -27,7 +27,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.searches;
 
-import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -36,6 +35,7 @@ import androidx.annotation.NonNull;
 
 import java.util.Locale;
 
+import com.hardbacknutter.nevertoomanybooks.tasks.Canceller;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.UnexpectedValueException;
 
 /**
@@ -183,6 +183,7 @@ public final class Site
 
     /**
      * Get the {@link SearchEngine} instance for this site.
+     * Before returning, the engine will be reset.
      *
      * @return (cached) instance
      */
@@ -191,19 +192,22 @@ public final class Site
             mSearchEngine = SearchSites.getSearchEngine(id);
         }
 
+        mSearchEngine.reset();
         return mSearchEngine;
     }
 
     /**
-     * Get the current/standard Locale for this Site.
+     * Convenience method to get the {@link SearchEngine} instance for this site,
+     * and set the caller.
      *
-     * @param context Current context
+     * @param caller to set
      *
-     * @return site locale
+     * @return (cached) instance
      */
-    @NonNull
-    public Locale getLocale(@NonNull final Context context) {
-        return getSearchEngine().getLocale(context);
+    public SearchEngine getSearchEngine(@NonNull final Canceller caller) {
+        SearchEngine searchEngine = getSearchEngine();
+        searchEngine.setCaller(caller);
+        return searchEngine;
     }
 
     void loadFromPrefs(@NonNull final SharedPreferences preferences,

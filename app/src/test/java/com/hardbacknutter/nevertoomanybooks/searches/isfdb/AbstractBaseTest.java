@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -38,6 +38,9 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import com.hardbacknutter.nevertoomanybooks.CommonSetup;
+import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.mock;
@@ -56,14 +59,18 @@ class AbstractBaseTest {
     @Mock
     Context mContext;
 
+    private SearchEngine mSearchEngine;
+
     @BeforeEach
     void setUp() {
         MockitoAnnotations.initMocks(this);
 
         mContext = mock(Context.class);
         when(mContext.getApplicationContext()).thenReturn(mContext);
-    }
 
+        mSearchEngine = new IsfdbSearchEngine();
+        mSearchEngine.setCaller(new CommonSetup.DummyCaller());
+    }
 
     /**
      * Search for 0-88733-160-2; which has a single edition, so should redirect to the book.
@@ -71,9 +78,9 @@ class AbstractBaseTest {
      */
     @Test
     void searchSingleEditionIsbn() {
-        DummyLoader loader = new DummyLoader();
+        final DummyLoader loader = new DummyLoader(mSearchEngine);
 
-        String url = sBaseUrl + "/cgi-bin/se.cgi?arg=0887331602&type=ISBN";
+        final String url = sBaseUrl + "/cgi-bin/se.cgi?arg=0887331602&type=ISBN";
         String resultingUrl = null;
         try {
             resultingUrl = loader.loadPage(mContext, url);
@@ -90,9 +97,9 @@ class AbstractBaseTest {
      */
     @Test
     void searchMultiEditionIsbn() {
-        DummyLoader loader = new DummyLoader();
+        final DummyLoader loader = new DummyLoader(mSearchEngine);
 
-        String url = sBaseUrl + "/cgi-bin/se.cgi?arg=9781473208926&type=ISBN";
+        final String url = sBaseUrl + "/cgi-bin/se.cgi?arg=9781473208926&type=ISBN";
         String resultingUrl = null;
         try {
             resultingUrl = loader.loadPage(mContext, url);
@@ -105,5 +112,8 @@ class AbstractBaseTest {
     private static class DummyLoader
             extends AbstractBase {
 
+        DummyLoader(@NonNull final SearchEngine searchEngine) {
+            super(searchEngine);
+        }
     }
 }

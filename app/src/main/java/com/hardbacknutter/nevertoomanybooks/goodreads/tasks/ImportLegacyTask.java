@@ -691,8 +691,10 @@ class ImportLegacyTask
             if (coverUrl != null) {
                 final String tmpName = bookData.getLong(DBDefinitions.KEY_EID_GOODREADS_BOOK)
                                        + GoodreadsSearchEngine.FILENAME_SUFFIX + "_" + sizeSuffix;
-                final String fileSpec = ImageUtils.saveImage(context, coverUrl, tmpName,
-                                                             GoodreadsSearchEngine.THROTTLER);
+                final String fileSpec =
+                        ImageUtils.saveImage(context, coverUrl, tmpName,
+                                             GoodreadsSearchEngine.CONNECT_TIMEOUT_MS,
+                                             GoodreadsSearchEngine.THROTTLER);
                 if (fileSpec != null) {
                     bookData.putString(Book.BKEY_FILE_SPEC[0], fileSpec);
                 }

@@ -37,6 +37,7 @@ import java.util.Locale;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import com.hardbacknutter.nevertoomanybooks.CommonSetup;
@@ -46,6 +47,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
+import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -59,11 +61,20 @@ import static org.junit.jupiter.api.Assertions.fail;
 class IsfdbBookHandlerTest
         extends CommonSetup {
 
+    private SearchEngine mSearchEngine;
+
+    @BeforeEach
+    public void setUp() {
+        super.setUp();
+        mSearchEngine = new IsfdbSearchEngine();
+        mSearchEngine.setCaller(new DummyCaller());
+    }
+
     @Test
     void parse01() {
         setLocale(Locale.UK);
-        String locationHeader = "http://www.isfdb.org/cgi-bin/pl.cgi?112781";
-        String filename = "/isfdb/112781.html";
+        final String locationHeader = "http://www.isfdb.org/cgi-bin/pl.cgi?112781";
+        final String filename = "/isfdb/112781.html";
 
         Document doc = null;
         try (InputStream is = this.getClass().getResourceAsStream(filename)) {
@@ -75,11 +86,11 @@ class IsfdbBookHandlerTest
         assertNotNull(doc);
         assertTrue(doc.hasText());
 
-        IsfdbBookHandler isfdbBookHandler = new IsfdbBookHandler(doc);
+        final IsfdbBookHandler handler = new IsfdbBookHandler(mSearchEngine, doc);
         // we've set the doc, so no internet download will be done.
         try {
-            boolean[] fetchThumbnail = {false, false};
-            mRawData = isfdbBookHandler.parseDoc(mContext, false, fetchThumbnail, mRawData);
+            final boolean[] fetchThumbnail = {false, false};
+            mRawData = handler.parseDoc(mContext, false, fetchThumbnail, mRawData);
         } catch (@NonNull final SocketTimeoutException e) {
             fail(e);
         }
@@ -104,14 +115,14 @@ class IsfdbBookHandlerTest
 
         assertEquals("Month from Locus1", mRawData.getString(DBDefinitions.KEY_DESCRIPTION));
 
-        ArrayList<Publisher> allPublishers = mRawData
+        final ArrayList<Publisher> allPublishers = mRawData
                 .getParcelableArrayList(Book.BKEY_PUBLISHER_ARRAY);
         assertNotNull(allPublishers);
         assertEquals(1, allPublishers.size());
 
         assertEquals("Methuen", allPublishers.get(0).getName());
 
-        ArrayList<Author> authors = mRawData.getParcelableArrayList(Book.BKEY_AUTHOR_ARRAY);
+        final ArrayList<Author> authors = mRawData.getParcelableArrayList(Book.BKEY_AUTHOR_ARRAY);
         assertNotNull(authors);
         assertEquals(2, authors.size());
         assertEquals("Russell", authors.get(0).getFamilyName());
@@ -126,7 +137,7 @@ class IsfdbBookHandlerTest
 //        assertEquals("Hugi", authors.get(1).getFamilyName());
 //        assertEquals("Maurice G.", authors.get(1).getGivenNames());
 
-        ArrayList<TocEntry> toc = mRawData.getParcelableArrayList(Book.BKEY_TOC_ENTRY_ARRAY);
+        final ArrayList<TocEntry> toc = mRawData.getParcelableArrayList(Book.BKEY_TOC_ENTRY_ARRAY);
         assertNotNull(toc);
         //7 • Allamagoosa • (1955) • short story by Eric Frank Russell
         //24 • Hobbyist • (1947) • novelette by Eric Frank Russell
@@ -137,7 +148,7 @@ class IsfdbBookHandlerTest
         //141 • Ultima Thule • (1951) • short story by Eric Frank Russell
         assertEquals(7, toc.size());
         // just check one.
-        TocEntry entry = toc.get(3);
+        final TocEntry entry = toc.get(3);
         assertEquals("Into Your Tent I'll Creep", entry.getTitle());
         assertEquals("1957", entry.getFirstPublication());
         // don't do this, the first pub date is read as a year-string only.
@@ -149,8 +160,8 @@ class IsfdbBookHandlerTest
     @Test
     void parse02() {
         setLocale(Locale.UK);
-        String locationHeader = "http://www.isfdb.org/cgi-bin/pl.cgi?431964";
-        String filename = "/isfdb/431964.html";
+        final String locationHeader = "http://www.isfdb.org/cgi-bin/pl.cgi?431964";
+        final String filename = "/isfdb/431964.html";
 
         Document doc = null;
         try (InputStream is = this.getClass().getResourceAsStream(filename)) {
@@ -162,11 +173,12 @@ class IsfdbBookHandlerTest
         assertNotNull(doc);
         assertTrue(doc.hasText());
 
-        IsfdbBookHandler isfdbBookHandler = new IsfdbBookHandler(doc);
+        final IsfdbBookHandler handler = new IsfdbBookHandler(mSearchEngine, doc);
+
         // we've set the doc, so no internet download will be done.
         try {
-            boolean[] fetchThumbnail = {false, false};
-            mRawData = isfdbBookHandler.parseDoc(mContext, true, fetchThumbnail, mRawData);
+            final boolean[] fetchThumbnail = {false, false};
+            mRawData = handler.parseDoc(mContext, true, fetchThumbnail, mRawData);
         } catch (@NonNull final SocketTimeoutException e) {
             fail(e);
         }
@@ -184,14 +196,14 @@ class IsfdbBookHandlerTest
         assertEquals("hc", mRawData.getString(DBDefinitions.KEY_FORMAT));
         assertEquals("NOVEL", mRawData.getString(IsfdbBookHandler.BookField.BOOK_TYPE));
 
-        ArrayList<Publisher> allPublishers = mRawData
+        final ArrayList<Publisher> allPublishers = mRawData
                 .getParcelableArrayList(Book.BKEY_PUBLISHER_ARRAY);
         assertNotNull(allPublishers);
         assertEquals(1, allPublishers.size());
 
         assertEquals("Gollancz", allPublishers.get(0).getName());
 
-        ArrayList<Author> authors = mRawData.getParcelableArrayList(Book.BKEY_AUTHOR_ARRAY);
+        final ArrayList<Author> authors = mRawData.getParcelableArrayList(Book.BKEY_AUTHOR_ARRAY);
         assertNotNull(authors);
         assertEquals(2, authors.size());
         assertEquals("Pratchett", authors.get(0).getFamilyName());
@@ -202,14 +214,14 @@ class IsfdbBookHandlerTest
         assertEquals("Joe", authors.get(1).getGivenNames());
         assertEquals(Author.TYPE_COVER_ARTIST, authors.get(1).getType());
 
-        ArrayList<Series> series = mRawData.getParcelableArrayList(Book.BKEY_SERIES_ARRAY);
+        final ArrayList<Series> series = mRawData.getParcelableArrayList(Book.BKEY_SERIES_ARRAY);
         assertNotNull(series);
         assertEquals(2, series.size());
         assertEquals("The Discworld Collector's Library", series.get(0).getTitle());
         assertEquals("Discworld", series.get(1).getTitle());
         assertEquals("4", series.get(1).getNumber());
 
-        ArrayList<TocEntry> toc = mRawData.getParcelableArrayList(Book.BKEY_TOC_ENTRY_ARRAY);
+        final ArrayList<TocEntry> toc = mRawData.getParcelableArrayList(Book.BKEY_TOC_ENTRY_ARRAY);
         assertNotNull(toc);
         assertEquals(1, toc.size());
         TocEntry entry = toc.get(0);
@@ -222,8 +234,8 @@ class IsfdbBookHandlerTest
     @Test
     void parse03() {
         setLocale(Locale.UK);
-        String locationHeader = "http://www.isfdb.org/cgi-bin/pl.cgi?542125";
-        String filename = "/isfdb/542125.html";
+        final String locationHeader = "http://www.isfdb.org/cgi-bin/pl.cgi?542125";
+        final String filename = "/isfdb/542125.html";
 
         Document doc = null;
         try (InputStream is = this.getClass().getResourceAsStream(filename)) {
@@ -235,11 +247,12 @@ class IsfdbBookHandlerTest
         assertNotNull(doc);
         assertTrue(doc.hasText());
 
-        IsfdbBookHandler isfdbBookHandler = new IsfdbBookHandler(doc);
+        final IsfdbBookHandler bookHandler = new IsfdbBookHandler(mSearchEngine, doc);
+
         // we've set the doc, so no internet download will be done.
         try {
-            boolean[] fetchThumbnail = {false, false};
-            mRawData = isfdbBookHandler.parseDoc(mContext, true, fetchThumbnail, mRawData);
+            final boolean[] fetchThumbnail = {false, false};
+            mRawData = bookHandler.parseDoc(mContext, true, fetchThumbnail, mRawData);
         } catch (@NonNull final SocketTimeoutException e) {
             fail(e);
         }
@@ -259,14 +272,14 @@ class IsfdbBookHandlerTest
         assertEquals("2015943558", mRawData.getString(DBDefinitions.KEY_EID_LCCN));
         assertEquals("B00W2EBY8O", mRawData.getString(DBDefinitions.KEY_EID_ASIN));
 
-        ArrayList<Publisher> allPublishers = mRawData
+        final ArrayList<Publisher> allPublishers = mRawData
                 .getParcelableArrayList(Book.BKEY_PUBLISHER_ARRAY);
         assertNotNull(allPublishers);
         assertEquals(1, allPublishers.size());
 
         assertEquals("Harper", allPublishers.get(0).getName());
 
-        ArrayList<Author> authors = mRawData.getParcelableArrayList(Book.BKEY_AUTHOR_ARRAY);
+        final ArrayList<Author> authors = mRawData.getParcelableArrayList(Book.BKEY_AUTHOR_ARRAY);
         assertNotNull(authors);
         assertEquals(2, authors.size());
         assertEquals("Pratchett", authors.get(0).getFamilyName());
@@ -277,13 +290,13 @@ class IsfdbBookHandlerTest
         assertEquals("Jim", authors.get(1).getGivenNames());
         assertEquals(Author.TYPE_COVER_ARTIST, authors.get(1).getType());
 
-        ArrayList<Series> series = mRawData.getParcelableArrayList(Book.BKEY_SERIES_ARRAY);
+        final ArrayList<Series> series = mRawData.getParcelableArrayList(Book.BKEY_SERIES_ARRAY);
         assertNotNull(series);
         assertEquals(1, series.size());
         assertEquals("Tiffany Aching", series.get(0).getTitle());
         assertEquals("41", series.get(0).getNumber());
 
-        ArrayList<TocEntry> toc = mRawData.getParcelableArrayList(Book.BKEY_TOC_ENTRY_ARRAY);
+        final ArrayList<TocEntry> toc = mRawData.getParcelableArrayList(Book.BKEY_TOC_ENTRY_ARRAY);
         assertNotNull(toc);
         assertEquals(2, toc.size());
         TocEntry entry = toc.get(0);

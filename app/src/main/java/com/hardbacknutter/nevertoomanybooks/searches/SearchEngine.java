@@ -55,6 +55,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
+import com.hardbacknutter.nevertoomanybooks.tasks.Canceller;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
@@ -79,14 +80,6 @@ public interface SearchEngine {
     String TAG = "SearchEngine";
 
     /**
-     * Default timeout we allow for a connection to work.
-     * Initial tests show that the sites we use, connect in less than 200ms.
-     * <p>
-     * Override {@link #getConnectTimeoutMs} if you want a SearchEngine to be configurable.
-     */
-    int SOCKET_TIMEOUT_MS = 1500;
-
-    /**
      * Get the resource id for the human-readable name of the site.
      * Only to be used for displaying!
      *
@@ -95,6 +88,42 @@ public interface SearchEngine {
     @AnyThread
     @StringRes
     int getNameResId();
+
+    /**
+     * Get the root/website url.
+     * This will be used e.g. for checking if the site is up.
+     *
+     * @param context Current context
+     *
+     * @return url, including scheme.
+     */
+    @AnyThread
+    @NonNull
+    String getUrl(@NonNull Context context);
+
+    /**
+     * Get the current/standard Locale for this engine.
+     *
+     * @param context Current context
+     *
+     * @return site locale
+     */
+    @NonNull
+    Locale getLocale(@NonNull Context context);
+
+    /**
+     * Default timeout we allow for a connection to work.
+     * <p>
+     * Tests with WiFi 5GHz indoor, optimal placement, show that the sites we use,
+     * connect in less than 200ms.
+     * <p>
+     * Defaults to 5 second. Override as needed.
+     * <p>
+     * TODO: use different defaults depending on network capabilities?
+     */
+    default int getConnectTimeoutMs() {
+        return 5_000;
+    }
 
     /**
      * Get the human-readable name of the site.
@@ -108,32 +137,6 @@ public interface SearchEngine {
     @NonNull
     default String getName(@NonNull final Context context) {
         return context.getString(getNameResId());
-    }
-
-    /**
-     * Get the root/website url.
-     *
-     * @param context Current context
-     *
-     * @return url, including scheme.
-     */
-    @AnyThread
-    @NonNull
-    String getUrl(@NonNull Context context);
-
-
-    /**
-     * Get the current/standard Locale for this engine.
-     *
-     * @param context Current context
-     *
-     * @return site locale
-     */
-    @NonNull
-    Locale getLocale(@NonNull Context context);
-
-    default int getConnectTimeoutMs() {
-        return SOCKET_TIMEOUT_MS;
     }
 
     /**
@@ -151,6 +154,26 @@ public interface SearchEngine {
     @AnyThread
     default boolean isAvailable(@NonNull final Context context) {
         return true;
+    }
+
+    /**
+     * Reset the engine, ready for a new search.
+     * This is called by {@link Site#getSearchEngine()}.
+     * <p>
+     * The default implementation calls {@code setCaller(null)}.
+     * Custom implementations should do the same.
+     */
+    default void reset() {
+        setCaller(null);
+    }
+
+    default void setCaller(@Nullable Canceller caller) {
+
+    }
+
+    @AnyThread
+    default boolean isCancelled() {
+        return false;
     }
 
     /**
@@ -397,7 +420,7 @@ public interface SearchEngine {
         /**
          * Helper method.
          * There is normally no need to call this method directly, except when you
-         * override {@link #searchCoverImageByIsbn(Context, String, int, ImageFileInfo.Size)}.
+         * override {@link #searchCoverImageByIsbn}.
          * <br><br>
          * Do NOT use if the site either does not support returning images during search.
          * <br><br>
@@ -418,7 +441,7 @@ public interface SearchEngine {
                                             @NonNull final String isbnStr,
                                             @IntRange(from = 0) final int cIdx) {
 
-            boolean[] fetchThumbnail = new boolean[2];
+            final boolean[] fetchThumbnail = new boolean[2];
             fetchThumbnail[cIdx] = true;
 
             try {
@@ -448,7 +471,7 @@ public interface SearchEngine {
 
             } catch (@NonNull final CredentialsException | IOException | SearchException e) {
                 if (BuildConfig.DEBUG /* always */) {
-                    Log.d(TAG, "", e);
+                    Log.d(TAG, "getCoverImageFallback", e);
                 }
             }
 
@@ -456,8 +479,7 @@ public interface SearchEngine {
         }
 
         /**
-         * Helper method. A wrapper around
-         * {@link #searchCoverImageByIsbn(Context, String, int, ImageFileInfo.Size)}.
+         * Helper method. A wrapper around {@link #searchCoverImageByIsbn}.
          * Will try in order of large, medium, small depending on the site
          * supporting multiple sizes.
          *
@@ -473,8 +495,8 @@ public interface SearchEngine {
                                   @IntRange(from = 0) final int cIdx,
                                   @NonNull final Bundle bookData) {
 
-            String fileSpec = engine
-                    .searchCoverImageByIsbn(appContext, isbn, cIdx, ImageFileInfo.Size.Large);
+            String fileSpec = engine.searchCoverImageByIsbn(appContext,
+                                                            isbn, cIdx, ImageFileInfo.Size.Large);
             if (engine.supportsMultipleSizes()) {
                 if (fileSpec == null) {
                     fileSpec = engine
@@ -526,7 +548,6 @@ public interface SearchEngine {
         default boolean supportsMultipleSizes() {
             return false;
         }
-
     }
 
     /** Optional. */
@@ -549,9 +570,8 @@ public interface SearchEngine {
     }
 
     /**
-     * An engine should throw this exception when throwing an IOException is to heavy.
-     * e.g. if the IOException is recognised at the engine level, it can/should
-     * be masked by a user friendly SearchException.
+     * If possible, an engine should mask a recognised exception with this
+     * user friendly SearchException with a message suited for displaying to the user .
      */
     class SearchException
             extends FormattedMessageException {

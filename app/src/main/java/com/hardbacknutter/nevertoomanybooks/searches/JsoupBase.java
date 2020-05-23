@@ -37,7 +37,6 @@ import androidx.annotation.WorkerThread;
 import java.io.EOFException;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.net.HttpURLConnection;
 import java.net.SocketTimeoutException;
 
 import javax.net.ssl.SSLProtocolException;
@@ -71,48 +70,24 @@ public abstract class JsoupBase {
 
     /** Log tag. */
     private static final String TAG = "JsoupBase";
-
+    @NonNull
+    protected final SearchEngine mSearchEngine;
     /** The parsed downloaded web page. */
     protected Document mDoc;
-
     /** If the site drops connection, we retry once. */
     private boolean mRetry = true;
-
     /** The user agent to send. */
     private String mUserAgent = USER_AGENT_VALUE;
-    /** Initial connection timeout. */
-    private int mConnectTimeout;
     /** Timeout for individual reads. */
     private int mReadTimeout;
-
-
     /** {@code null} by default: for Jsoup to figure it out. */
     private String mCharSetName;
 
     /**
      * Constructor.
      */
-    protected JsoupBase() {
-    }
-
-    /**
-     * Constructor for mocking.
-     *
-     * @param doc the pre-loaded Jsoup document.
-     */
-    @VisibleForTesting
-    protected JsoupBase(@NonNull final Document doc) {
-        mDoc = doc;
-    }
-
-    /**
-     * Optionally override the connection timeout.
-     *
-     * @param connectTimeout to use
-     */
-    protected void setConnectTimeout(
-            @SuppressWarnings("SameParameterValue") final int connectTimeout) {
-        mConnectTimeout = connectTimeout;
+    protected JsoupBase(@NonNull final SearchEngine searchEngine) {
+        mSearchEngine = searchEngine;
     }
 
     /**
@@ -174,28 +149,19 @@ public abstract class JsoupBase {
                 Logger.d(TAG, "loadPage|REQUESTED|url=\"" + url + '\"');
             }
 
-            try (TerminatorConnection tCon = new TerminatorConnection(context, url)) {
-                HttpURLConnection con = tCon.getHttpURLConnection();
-
+            try (TerminatorConnection con = new TerminatorConnection(
+                    context, url, mSearchEngine.getConnectTimeoutMs())) {
                 // added due to https://github.com/square/okhttp/issues/1517
                 // it's a server issue, this is a workaround.
                 con.setRequestProperty("Connection", "close");
-
-                if (mConnectTimeout > 0) {
-                    con.setConnectTimeout(mConnectTimeout);
-                }
                 if (mReadTimeout > 0) {
                     con.setReadTimeout(mReadTimeout);
                 }
-
                 if (mUserAgent != null) {
                     con.setRequestProperty("User-Agent", mUserAgent);
                 }
-                if (BuildConfig.DEBUG && DEBUG_SWITCHES.JSOUP) {
-                    Logger.d(TAG, "loadPage|BEFORE open|con.getURL()=" + con.getURL().toString());
-                }
                 // GO!
-                tCon.open();
+                con.open();
 
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.JSOUP) {
                     Logger.d(TAG, "loadPage|AFTER open|con.getURL()=" + con.getURL());
@@ -207,6 +173,7 @@ public abstract class JsoupBase {
                 // We need the actual url for further processing.
                 String locationHeader = con.getHeaderField("location");
                 if (locationHeader == null || locationHeader.isEmpty()) {
+                    //noinspection ConstantConditions
                     locationHeader = con.getURL().toString();
 
                     if (BuildConfig.DEBUG && DEBUG_SWITCHES.JSOUP) {
@@ -230,7 +197,7 @@ public abstract class JsoupBase {
                 However that is WRONG (org.jsoup:jsoup:1.11.3)
                 It will NOT resolve the redirect itself and 'location' == 'baseUri'
                 */
-                mDoc = Jsoup.parse(tCon.getInputStream(), mCharSetName, locationHeader);
+                mDoc = Jsoup.parse(con.getInputStream(), mCharSetName, locationHeader);
 
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.JSOUP) {
                     Logger.d(TAG, "loadPage|AFTER parsing|mDoc.location()=" + mDoc.location());
