@@ -141,28 +141,13 @@ public final class Prefs {
     public static final String PSK_STYLE_SHOW_DETAILS = "psk_style_show_details";
     /** Style - PreferenceScreen/PreferenceCategory Key. */
     public static final String PSK_STYLE_FILTERS = "psk_style_filters";
+
     /** Site - Credentials. */
     public static final String PSK_CREDENTIALS = "psk_credentials";
+
+
     /** Global - PreferenceScreen/PreferenceCategory Key. */
     public static final String PSK_BARCODE_SCANNER = "psk_barcode_scanner";
-    /** Global - PreferenceScreen/PreferenceCategory Key. */
-    static final String PSK_SEARCH_SITE_ORDER = "psk_search_site_order";
-    /** Global - Purge action. */
-    static final String PSK_PURGE_IMAGE_CACHE = "psk_purge_image_cache";
-    /** Global - Purge action. */
-    static final String PSK_PURGE_FILES = "psk_purge_files";
-    /** Global - Reset tips. */
-    static final String PSK_TIP_RESET_ALL = "psk_tip_reset_all";
-    /** Global. */
-    static final String PSK_REBUILD_INDEX = "psk_rebuild_index";
-    /** Global. */
-    static final String PSK_REBUILD_FTS = "psk_rebuild_fts";
-    /** Global - Send debug info. */
-    static final String PSK_SEND_DEBUG_INFO = "psk_send_debug_info";
-    /** Global - Export the database. */
-    static final String PSK_EXPORT_DATABASE = "psk_export_database";
-    /** Global - Purge action. */
-    static final String PSK_PURGE_BLNS = "psk_purge_blns";
 
     private static final String pk_edit_book_tabs_native_id = "edit.book.tab.nativeId";
 

@@ -130,7 +130,7 @@ public abstract class BasePreferenceFragment
         Preference preference;
 
         // Purge image cache database table.
-        preference = findPreference(Prefs.PSK_PURGE_IMAGE_CACHE);
+        preference = findPreference("psk_purge_image_cache");
         if (preference != null) {
             preference.setOnPreferenceClickListener(p -> {
                 //noinspection ConstantConditions
@@ -147,7 +147,7 @@ public abstract class BasePreferenceFragment
             });
         }
 
-        preference = findPreference(Prefs.PSK_SEARCH_SITE_ORDER);
+        preference = findPreference("psk_search_site_order");
         if (preference != null) {
             preference.setOnPreferenceClickListener(p -> {
                 Intent intent = new Intent(getContext(), SearchAdminActivity.class);
@@ -157,7 +157,7 @@ public abstract class BasePreferenceFragment
         }
 
         // Purge BLNS database table.
-        preference = findPreference(Prefs.PSK_PURGE_BLNS);
+        preference = findPreference("psk_purge_blns");
         if (preference != null) {
             preference.setOnPreferenceClickListener(p -> {
                 //noinspection ConstantConditions
@@ -173,7 +173,7 @@ public abstract class BasePreferenceFragment
             });
         }
 
-        preference = findPreference(Prefs.PSK_TIP_RESET_ALL);
+        preference = findPreference("psk_tip_reset_all");
         if (preference != null) {
             preference.setOnPreferenceClickListener(p -> {
                 //noinspection ConstantConditions
@@ -184,7 +184,7 @@ public abstract class BasePreferenceFragment
             });
         }
 
-        preference = findPreference(Prefs.PSK_REBUILD_FTS);
+        preference = findPreference("psk_rebuild_fts");
         if (preference != null) {
             preference.setOnPreferenceClickListener(p -> {
                 //noinspection ConstantConditions
@@ -206,7 +206,7 @@ public abstract class BasePreferenceFragment
             });
         }
 
-        preference = findPreference(Prefs.PSK_REBUILD_INDEX);
+        preference = findPreference("psk_rebuild_index");
         if (preference != null) {
             preference.setOnPreferenceClickListener(p -> {
                 //noinspection ConstantConditions
@@ -228,7 +228,7 @@ public abstract class BasePreferenceFragment
             });
         }
 
-        preference = findPreference(Prefs.PSK_PURGE_FILES);
+        preference = findPreference("psk_purge_files");
         if (preference != null) {
             preference.setOnPreferenceClickListener(p -> {
                 //noinspection ConstantConditions
@@ -250,7 +250,7 @@ public abstract class BasePreferenceFragment
             });
         }
 
-        preference = findPreference(Prefs.PSK_SEND_DEBUG_INFO);
+        preference = findPreference("psk_send_debug_info");
         if (preference != null) {
             preference.setOnPreferenceClickListener(p -> {
                 //noinspection ConstantConditions
@@ -272,7 +272,7 @@ public abstract class BasePreferenceFragment
             });
         }
 
-        preference = findPreference(Prefs.PSK_EXPORT_DATABASE);
+        preference = findPreference("psk_export_database");
         if (preference != null) {
             // Export database - Mainly meant for debug or external processing.
             preference.setOnPreferenceClickListener(p -> {
