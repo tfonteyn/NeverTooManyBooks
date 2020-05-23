@@ -522,9 +522,11 @@ public class CoverHandler {
         // getting alternative editions is limited to LibraryThing and ISFDB for now.
         // ISFDB is obviously limited to their specific genre,
         // so remind the user that LT is rather essential.
-        if (!LibraryThingSearchEngine.hasKey(mContext)) {
-            LibraryThingSearchEngine.alertRegistrationNeeded(mContext, false, "cover_browser");
-            return;
+        if (BuildConfig.ENABLE_LIBRARY_THING) {
+            if (!LibraryThingSearchEngine.hasKey(mContext)) {
+                LibraryThingSearchEngine.alertRegistrationNeeded(mContext, false, "cover_browser");
+                return;
+            }
         }
 
         final String isbnStr = mIsbnView.getText().toString();

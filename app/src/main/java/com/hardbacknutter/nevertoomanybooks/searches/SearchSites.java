@@ -38,6 +38,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.Locale;
 
+import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.searches.amazon.AmazonSearchEngine;
@@ -169,6 +170,8 @@ public final class SearchSites {
     /**
      * Get a new SearchEngine class instance for the given ID.
      *
+     * <strong>Should only be called by {@link Site#getSearchEngine()}</strong>.
+     *
      * @param id site id
      *
      * @return instance
@@ -229,12 +232,20 @@ public final class SearchSites {
         // but this gives more control (e.g. language and other defaults).
         switch (type) {
             case Data: {
-                //ALL sites
                 list.add(Site.createSite(AMAZON, type, false));
+
                 list.add(Site.createSite(GOODREADS, type, true));
-                list.add(Site.createSite(GOOGLE_BOOKS, type, true));
-                list.add(Site.createSite(LIBRARY_THING, type, true));
+
+                if (BuildConfig.ENABLE_GOOGLE_BOOKS) {
+                    list.add(Site.createSite(GOOGLE_BOOKS, type, true));
+                }
+
+                if (BuildConfig.ENABLE_LIBRARY_THING) {
+                    list.add(Site.createSite(LIBRARY_THING, type, true));
+                }
+
                 list.add(Site.createSite(ISFDB, type, true));
+
                 // Dutch.
                 list.add(Site.createSite(STRIP_INFO_BE, type,
                                          isLang(systemLocale, userLocale, NLD)));
@@ -251,15 +262,24 @@ public final class SearchSites {
                 // These are only used by the {@link CoverBrowserViewModel}.
 
                 list.add(Site.createSite(ISFDB, type, true));
+
                 //list.add(Site.createSite(STRIP_INFO_BE, type,
                 //                         isLang(systemLocale, userLocale, NLD)));
+
+//                if (BuildConfig.ENABLE_GOOGLE_BOOKS) {
                 //list.add(Site.createSite(GOOGLE_BOOKS, type, true));
+//                }
+
                 list.add(Site.createSite(GOODREADS, type, true));
+
                 //list.add(Site.createSite(AMAZON, type, false));
+
                 list.add(Site.createSite(KB_NL, type, isLang(systemLocale, userLocale, NLD)));
 
-                // Disabled by default as this site lacks many covers.
-                list.add(Site.createSite(LIBRARY_THING, type, false));
+                if (BuildConfig.ENABLE_LIBRARY_THING) {
+                    // Disabled by default as this site lacks many covers.
+                    list.add(Site.createSite(LIBRARY_THING, type, false));
+                }
                 // Disabled by default as this site lacks many covers.
                 list.add(Site.createSite(OPEN_LIBRARY, type, false));
                 break;
@@ -267,7 +287,10 @@ public final class SearchSites {
 
             case AltEditions: {
                 // Sites that implement {@link SearchEngine.AlternativeEditions}.
-                list.add(Site.createSite(LIBRARY_THING, type, true));
+
+                if (BuildConfig.ENABLE_LIBRARY_THING_ALT_ED) {
+                    list.add(Site.createSite(LIBRARY_THING, type, true));
+                }
                 list.add(Site.createSite(ISFDB, type, true));
                 break;
             }

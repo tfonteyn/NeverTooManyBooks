@@ -30,7 +30,9 @@ package com.hardbacknutter.nevertoomanybooks.settings;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
+import androidx.preference.Preference;
 
+import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 
 /**
@@ -44,5 +46,10 @@ public class WebSearchesPreferenceFragment
                                     @Nullable final String rootKey) {
 
         setPreferencesFromResource(R.xml.preferences_site_searches, rootKey);
+
+        Preference site = findPreference("psk_search_site_library_thing");
+        if (site != null) {
+            site.setVisible(BuildConfig.ENABLE_LIBRARY_THING);
+        }
     }
 }
