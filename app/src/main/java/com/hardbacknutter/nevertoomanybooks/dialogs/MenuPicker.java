@@ -61,9 +61,6 @@ import com.hardbacknutter.nevertoomanybooks.R;
  */
 public class MenuPicker {
 
-    /** If set, we'll use {@link MenuPickerDialogFragment} where implemented. */
-    public static final boolean __COMPILE_TIME_USE_FRAGMENT = false;
-
     @NonNull
     private final AlertDialog mDialog;
 

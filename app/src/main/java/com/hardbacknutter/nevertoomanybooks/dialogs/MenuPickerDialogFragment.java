@@ -68,6 +68,9 @@ import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
  * <p>
  * Experimental: manual menu construction fully supported,
  * using a menu inflater works but will ignore icons.
+ * <p>
+ * See build.gradle for app module; android/defaultConfig
+ * buildConfigField("boolean", "MENU_PICKER_USES_FRAGMENT", "false")
  */
 public class MenuPickerDialogFragment
         extends DialogFragment {
@@ -137,10 +140,10 @@ public class MenuPickerDialogFragment
             }
             final int id = item.getItemId();
             final Pick pick = new Pick(id,
-                                 item.getOrder(),
-                                 item.getTitle().toString(),
-                                 0,
-                                 subPickList);
+                                       item.getOrder(),
+                                       item.getTitle().toString(),
+                                       0,
+                                       subPickList);
             pickList.add(pick);
         }
 

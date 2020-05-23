@@ -235,40 +235,32 @@ public class AuthorWorksFragment
     }
 
     private void onCreateContextMenu(final int position) {
-        if (MenuPicker.__COMPILE_TIME_USE_FRAGMENT) {
-            onCreateContextMenu2(position);
-            return;
+        final Resources res = getResources();
+        final TocEntry item = mModel.getTocEntries().get(position);
+
+        if (BuildConfig.MENU_PICKER_USES_FRAGMENT) {
+            final ArrayList<MenuPickerDialogFragment.Pick> menu = new ArrayList<>();
+            menu.add(new MenuPickerDialogFragment.Pick(R.id.MENU_DELETE,
+                                                       res.getInteger(R.integer.MENU_ORDER_DELETE),
+                                                       getString(R.string.action_delete),
+                                                       R.drawable.ic_delete));
+
+            //noinspection ConstantConditions
+            final String title = item.getLabel(getContext());
+            MenuPickerDialogFragment.newInstance(title, null, menu, position)
+                                    .show(getChildFragmentManager(), MenuPickerDialogFragment.TAG);
+        } else {
+            //noinspection ConstantConditions
+            final Menu menu = MenuPicker.createMenu(getContext());
+            menu.add(Menu.NONE, R.id.MENU_DELETE,
+                     res.getInteger(R.integer.MENU_ORDER_DELETE),
+                     R.string.action_delete)
+                .setIcon(R.drawable.ic_delete);
+
+            final String title = item.getLabel(getContext());
+            new MenuPicker(getContext(), title, menu, position, this::onContextItemSelected)
+                    .show();
         }
-
-        final Resources r = getResources();
-        final TocEntry item = mModel.getTocEntries().get(position);
-
-        //noinspection ConstantConditions
-        final Menu menu = MenuPicker.createMenu(getContext());
-        menu.add(Menu.NONE, R.id.MENU_DELETE,
-                 r.getInteger(R.integer.MENU_ORDER_DELETE),
-                 R.string.action_delete)
-            .setIcon(R.drawable.ic_delete);
-
-        final String title = item.getLabel(getContext());
-        new MenuPicker(getContext(), title, menu, position, this::onContextItemSelected)
-                .show();
-    }
-
-    private void onCreateContextMenu2(final int position) {
-        final Resources r = getResources();
-        final TocEntry item = mModel.getTocEntries().get(position);
-
-        final ArrayList<MenuPickerDialogFragment.Pick> menu = new ArrayList<>();
-        menu.add(new MenuPickerDialogFragment.Pick(R.id.MENU_DELETE,
-                                                   r.getInteger(R.integer.MENU_ORDER_DELETE),
-                                                   getString(R.string.action_delete),
-                                                   R.drawable.ic_delete));
-
-        //noinspection ConstantConditions
-        final String title = item.getLabel(getContext());
-        MenuPickerDialogFragment.newInstance(title, null, menu, position)
-                                .show(getChildFragmentManager(), MenuPickerDialogFragment.TAG);
     }
 
     /**

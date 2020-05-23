@@ -256,62 +256,54 @@ public class PreferredStylesActivity
     }
 
     private void onCreateContextMenu(final int position) {
-        if (MenuPicker.__COMPILE_TIME_USE_FRAGMENT) {
-            onCreateContextMenu2(position);
-            return;
-        }
-
-        final Resources r = getResources();
+        final Resources res = getResources();
         final BooklistStyle style = mModel.getList().get(position);
 
-        final Menu menu = MenuPicker.createMenu(this);
+        if (BuildConfig.MENU_PICKER_USES_FRAGMENT) {
+            final ArrayList<MenuPickerDialogFragment.Pick> menu = new ArrayList<>();
 
-        if (style.isUserDefined()) {
-            menu.add(Menu.NONE, R.id.MENU_EDIT,
-                     r.getInteger(R.integer.MENU_ORDER_EDIT),
-                     R.string.action_edit_ellipsis)
-                .setIcon(R.drawable.ic_edit);
-            menu.add(Menu.NONE, R.id.MENU_DELETE,
-                     r.getInteger(R.integer.MENU_ORDER_DELETE),
-                     R.string.action_delete)
-                .setIcon(R.drawable.ic_delete);
+            if (style.isUserDefined()) {
+                menu.add(new MenuPickerDialogFragment.Pick(
+                        R.id.MENU_EDIT, res.getInteger(R.integer.MENU_ORDER_EDIT),
+                        getString(R.string.action_edit_ellipsis),
+                        R.drawable.ic_edit));
+                menu.add(new MenuPickerDialogFragment.Pick(
+                        R.id.MENU_DELETE, res.getInteger(R.integer.MENU_ORDER_DELETE),
+                        getString(R.string.action_delete),
+                        R.drawable.ic_delete));
+            }
+
+            menu.add(new MenuPickerDialogFragment.Pick(
+                    R.id.MENU_DUPLICATE, res.getInteger(R.integer.MENU_ORDER_DUPLICATE),
+                    getString(R.string.action_duplicate),
+                    R.drawable.ic_content_copy));
+
+            final String title = style.getLabel(this);
+            MenuPickerDialogFragment.newInstance(title, null, menu, position)
+                                    .show(getSupportFragmentManager(),
+                                          MenuPickerDialogFragment.TAG);
+        } else {
+            final Menu menu = MenuPicker.createMenu(this);
+            if (style.isUserDefined()) {
+                menu.add(Menu.NONE, R.id.MENU_EDIT,
+                         res.getInteger(R.integer.MENU_ORDER_EDIT),
+                         R.string.action_edit_ellipsis)
+                    .setIcon(R.drawable.ic_edit);
+                menu.add(Menu.NONE, R.id.MENU_DELETE,
+                         res.getInteger(R.integer.MENU_ORDER_DELETE),
+                         R.string.action_delete)
+                    .setIcon(R.drawable.ic_delete);
+            }
+
+            menu.add(Menu.NONE, R.id.MENU_DUPLICATE,
+                     res.getInteger(R.integer.MENU_ORDER_DUPLICATE),
+                     R.string.action_duplicate)
+                .setIcon(R.drawable.ic_content_copy);
+
+            final String title = style.getLabel(this);
+            new MenuPicker(this, title, menu, position, this::onContextItemSelected)
+                    .show();
         }
-
-        menu.add(Menu.NONE, R.id.MENU_DUPLICATE,
-                 r.getInteger(R.integer.MENU_ORDER_DUPLICATE),
-                 R.string.action_duplicate)
-            .setIcon(R.drawable.ic_content_copy);
-
-        String title = style.getLabel(this);
-        new MenuPicker(this, title, menu, position, this::onContextItemSelected)
-                .show();
-    }
-
-    private void onCreateContextMenu2(final int position) {
-        final Resources r = getResources();
-        final BooklistStyle style = mModel.getList().get(position);
-
-        final ArrayList<MenuPickerDialogFragment.Pick> menu = new ArrayList<>();
-
-        if (style.isUserDefined()) {
-            menu.add(new MenuPickerDialogFragment.Pick(R.id.MENU_EDIT,
-                                                       r.getInteger(R.integer.MENU_ORDER_EDIT),
-                                                       getString(R.string.action_edit_ellipsis),
-                                                       R.drawable.ic_edit));
-            menu.add(new MenuPickerDialogFragment.Pick(R.id.MENU_DELETE,
-                                                       r.getInteger(R.integer.MENU_ORDER_DELETE),
-                                                       getString(R.string.action_delete),
-                                                       R.drawable.ic_delete));
-        }
-
-        menu.add(new MenuPickerDialogFragment.Pick(R.id.MENU_DUPLICATE,
-                                                   r.getInteger(R.integer.MENU_ORDER_DUPLICATE),
-                                                   getString(R.string.action_duplicate),
-                                                   R.drawable.ic_content_copy));
-
-        final String title = style.getLabel(this);
-        MenuPickerDialogFragment.newInstance(title, null, menu, position)
-                                .show(getSupportFragmentManager(), MenuPickerDialogFragment.TAG);
     }
 
     /**
