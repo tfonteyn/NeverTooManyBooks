@@ -111,9 +111,9 @@
             />
 
         <TextView
-            android:id="@+id/lbl_format"
+            android:id="@+id/lbl_archive_format"
             style="@style/Label.Header.Small"
-            android:text="@string/lbl_archive_type"
+            android:text="@string/lbl_archive_format"
             app:layout_constraintStart_toEndOf="@id/guideline"
             app:layout_constraintTop_toBottomOf="@id/cbx_prefs_and_styles"
             />
@@ -123,19 +123,19 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/indent2"
-            app:layout_constraintStart_toStartOf="@id/lbl_format"
-            app:layout_constraintTop_toBottomOf="@id/lbl_format"
+            app:layout_constraintStart_toStartOf="@id/lbl_archive_format"
+            app:layout_constraintTop_toBottomOf="@id/lbl_archive_format"
             tools:entries="@array/tools_placeholder"
             />
 
         <TextView
             android:id="@+id/archive_format_info"
-            style="@style/Blurb.Small"
+            style="@style/Text.Blurb.Small"
             android:textIsSelectable="true"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@id/archive_format"
             app:layout_constraintTop_toBottomOf="@id/archive_format"
-            tools:text="@string/lbl_archive_type_xml_info"
+            tools:text="@string/lbl_archive_format_xml_info"
             />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

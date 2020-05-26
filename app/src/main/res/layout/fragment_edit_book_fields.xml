@@ -39,7 +39,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_margin="@dimen/border1"
+        android:layout_margin="@dimen/screenBorder"
         >
 
         <ImageView
@@ -139,7 +139,7 @@
             android:id="@+id/btn_scan"
             style="@style/Envelope.Button"
             android:layout_marginStart="@dimen/indent2"
-            android:layout_marginTop="@dimen/border1"
+            android:layout_marginTop="6dp"
             android:enabled="true"
             app:icon="@drawable/ic_barcode"
             app:layout_constraintBottom_toBottomOf="@id/lbl_isbn"

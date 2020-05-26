@@ -28,9 +28,6 @@
   -->
 
 <resources>
-    <!--
-        - DialogFrame's which might show the onscreen keyboard, are FULLSCREEN.
-        - displaying a zoomed cover is FULLSCREEN
-    -->
+    <!-- DialogFrame's which might show the onscreen keyboard, are FULLSCREEN. -->
     <bool name="isLargeScreen">false</bool>
 </resources>

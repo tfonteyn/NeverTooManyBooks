@@ -218,7 +218,7 @@
     <string name="lbl_archive_type_backup">Yedek kopya (%1$s)</string>
     <string name="lbl_archive_type_backup_info">Tam Yedekleme / Geri Yükleme arşivi</string>
     <string name="lbl_archive_type_xml">XML dışa aktarma (%1$s)</string>
-    <string name="lbl_archive_type_xml_info">Tüm veriler XML formatında. Yalnızca XML dışa aktarma, içe aktarma yok.</string>
+    <string name="lbl_archive_format_xml_info">Tüm veriler XML formatında. Yalnızca XML dışa aktarma, içe aktarma yok.</string>
     <string name="lbl_author">Yazar</string>
     <string name="lbl_author_type">Yazar tipi</string>
     <string name="lbl_author_type_artist">çizimler</string>
@@ -666,7 +666,7 @@
     <string name="action_discard">Sil</string>
     <string name="btn_show_list">Gösteri listesi</string>
     <string name="btn_less_ellipsis">Az…</string>
-    <string name="lbl_archive_type">Biçim</string>
+    <string name="lbl_archive_format">Biçim</string>
     <string name="menu_cover_rotate_automatic">Otomatik</string>
     <string name="and_others_plus"><![CDATA[%1$s … <small>[+%2$d]</small>]]></string>
 

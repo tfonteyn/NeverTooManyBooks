@@ -1544,7 +1544,7 @@
     <string name="lbl_publication_month">Publication Month</string>
 
     <!-- Label for the spinner where the user selects the format of the export file/archive. -->
-    <string name="lbl_archive_type">Format</string>
+    <string name="lbl_archive_format">Format</string>
 
     <!-- Text in a spinner dropdown. Must be fairly short. -->
     <string name="lbl_archive_type_backup">Backup (%1$s)</string>
@@ -1559,7 +1559,7 @@
     <!-- Text in a spinner dropdown. Must be fairly short. -->
     <string name="lbl_archive_type_xml">XML export (%1$s)</string>
     <!-- Explanatory note for 'lbl_archive_type_xml' -->
-    <string name="lbl_archive_type_xml_info">All data in XML format. XML is export only, no import.</string>
+    <string name="lbl_archive_format_xml_info">All data in XML format. XML is export only, no import.</string>
 
     <!-- 'export books' option. -->
     <string name="lbl_export_option_books_since_last_full_backup">

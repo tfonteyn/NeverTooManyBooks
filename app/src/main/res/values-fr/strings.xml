@@ -223,7 +223,7 @@
     <string name="lbl_archive_type_backup">Copie de sauvegarde (%1$s)</string>
     <string name="lbl_archive_type_backup_info">Archive de sauvegarde / restauration complète</string>
     <string name="lbl_archive_type_xml">Exportation XML (%1$s)</string>
-    <string name="lbl_archive_type_xml_info">Toutes les données au format XML. XML est uniquement exportable, pas d\'importation.</string>
+    <string name="lbl_archive_format_xml_info">Toutes les données au format XML. XML est uniquement exportable, pas d\'importation.</string>
     <string name="lbl_author">Auteur</string>
     <string name="lbl_author_type">Type d\'auteur</string>
     <string name="lbl_author_type_artist">dessins</string>
@@ -674,7 +674,7 @@
     <string name="action_discard">Jeter</string>
     <string name="btn_show_list">Afficher la liste</string>
     <string name="btn_less_ellipsis">Moins…</string>
-    <string name="lbl_archive_type">Format</string>
+    <string name="lbl_archive_format">Format</string>
     <string name="menu_cover_rotate_automatic">Automatique</string>
     <string name="and_others_plus"><![CDATA[%1$s … <small>[+%2$d]</small>]]></string>
 

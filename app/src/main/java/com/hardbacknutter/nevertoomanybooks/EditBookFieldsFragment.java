@@ -279,7 +279,7 @@ public class EditBookFieldsFragment
 
         //noinspection ConstantConditions
         if (DBDefinitions.isUsed(getContext(), DBDefinitions.KEY_THUMBNAIL)) {
-            final int[] scale = getResources().getIntArray(R.array.covers_edit);
+            final int[] scale = getResources().getIntArray(R.array.cover_scale_edit);
 
             mCoverHandler[0] = new CoverHandler(this, mProgressBar,
                                                 book, mVb.isbn, 0, mVb.coverImage0,

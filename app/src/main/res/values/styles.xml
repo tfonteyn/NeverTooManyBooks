@@ -59,14 +59,14 @@
 
     <!-- Section field labels where there is a set of data below. -->
     <style name="Label.Header">
-        <item name="android:layout_marginTop">@dimen/border2</item>
-        <item name="android:layout_marginBottom">@dimen/border1</item>
+        <item name="android:layout_marginTop">16dp</item>
+        <item name="android:textAllCaps">true</item>
         <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
     </style>
 
     <!-- Section field labels where there is a set of data below. -->
     <style name="Label.Header.Small">
-        <item name="android:textAllCaps">true</item>
+        <item name="android:layout_marginTop">4dp</item>
         <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
     </style>
 
@@ -113,30 +113,23 @@
         <item name="android:textStyle">italic</item>
     </style>
 
+    <!-- informational piece of text -->
+    <style name="Text.Blurb">
+        <item name="android:layout_marginStart">@dimen/indent1</item>
+        <item name="android:layout_marginEnd">@dimen/indent2</item>
+    </style>
+
+    <!-- informational piece of text -->
+    <style name="Text.Blurb.Small">
+        <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
+    </style>
+
     <!-- On loan to X. -->
     <style name="Text.OnLoanBar">
         <item name="android:background">?attr/colorOnBackground</item>
         <item name="android:paddingStart">@dimen/indent2</item>
         <item name="android:paddingEnd">@dimen/indent2</item>
         <item name="android:textAppearance">?android:attr/textAppearanceLargeInverse</item>
-    </style>
-
-    <!-- *************************************************************************************** -->
-    <!-- Information (blurb) Text fields -->
-    <!-- *************************************************************************************** -->
-
-    <!-- informational piece of text -->
-    <style name="Blurb">
-        <item name="android:layout_width">0dp</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_marginStart">@dimen/indent1</item>
-        <item name="android:layout_marginEnd">@dimen/indent2</item>
-        <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
-    </style>
-
-    <!-- informational piece of text -->
-    <style name="Blurb.Small">
-        <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
     </style>
 
     <!-- *************************************************************************************** -->
@@ -261,22 +254,6 @@
         <item name="android:digits">1234567890xX</item>
         <!-- the inputType is IGNORED when the field is a {@link EditIsbn} -->
         <item name="android:inputType">textCapCharacters|textNoSuggestions</item>
-    </style>
-
-    <!-- An editable CheckBox. We basically want this to be the same height as EditText fields.
-         48dp is the Default and full height of a standard EditView with default text size inside.
-         48dp is also == "?attr/minTouchTargetSize"; but that attr is private so we can't use it.
-     -->
-    <style name="CheckboxEntry" parent="Widget.MaterialComponents.CompoundButton.CheckBox">
-        <item name="android:layout_width">0dp</item>
-        <item name="android:layout_height">48dp</item>
-        <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
-    </style>
-
-    <style name="CheckboxEntry.Small" parent="Widget.MaterialComponents.CompoundButton.CheckBox">
-        <item name="android:layout_width">0dp</item>
-        <item name="android:layout_height">36dp</item>
-        <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
     </style>
 
     <!-- *************************************************************************************** -->
@@ -625,6 +602,7 @@
     <style name="Url">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
+        <item name="android:padding">@dimen/border1</item>
         <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
         <item name="android:textColor">?android:attr/textColorPrimaryNoDisable</item>
     </style>
@@ -687,12 +665,10 @@
     <style name="TocSwitch">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_marginTop">@dimen/border1</item>
         <item name="android:buttonTint">@android:color/transparent</item>
         <item name="android:contentDescription">@string/lbl_table_of_content</item>
         <item name="android:visibility">gone</item>
     </style>
-
 
     <!-- *************************************************************************************** -->
 </resources>

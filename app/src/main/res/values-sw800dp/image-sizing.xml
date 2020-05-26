@@ -27,15 +27,34 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
+<!--
+     https://www.vogella.com/tutorials/AndroidStylesThemes/article.html
+     Section 1.2: w600, w800, w1000 can be seen as switching/margin points
+     -->
 <resources>
-    <!-- displayed side by side. -->
-    <integer-array name="covers_details">
-        <item>4</item>
-        <item>3</item>
-    </integer-array>
-    <!-- displayed side by side. -->
-    <integer-array name="covers_edit">
-        <item>2</item>
-        <item>2</item>
-    </integer-array>
+    <dimen name="cover_base_size">100dp</dimen>
+    <integer name="cover_zoom_screen_percentage">70</integer>
+
+    <!-- tools only; used to mock reasonable sized images.
+    SCALE_FACTOR = {0, 1, 2, 3, 5, 8, 12}; * 100dp
+    Width is set at a ratio 0.64.
+    (0.60 is common for paperbacks)
+-->
+    <dimen name="tools_cover_x_small_height">100dp</dimen>
+    <dimen name="tools_cover_x_small_width">64dp</dimen>
+
+    <dimen name="tools_cover_small_height">200dp</dimen>
+    <dimen name="tools_cover_small_width">128dp</dimen>
+
+    <dimen name="tools_cover_medium_height">300dp</dimen>
+    <dimen name="tools_cover_medium_width">192dp</dimen>
+
+    <dimen name="tools_cover_large_height">500dp</dimen>
+    <dimen name="tools_cover_large_width">320dp</dimen>
+
+    <dimen name="tools_cover_1x_large_height">800dp</dimen>
+    <dimen name="tools_cover_1x_large_width">512dp</dimen>
+
+    <dimen name="tools_cover_2x_large_height">1200dp</dimen>
+    <dimen name="tools_cover_2x_large_width">768dp</dimen>
 </resources>

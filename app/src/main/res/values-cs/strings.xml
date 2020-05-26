@@ -218,7 +218,7 @@
     <string name="lbl_archive_type_backup">Záložní kopie (%1$s)</string>
     <string name="lbl_archive_type_backup_info">Úplný archiv zálohy / obnovy</string>
     <string name="lbl_archive_type_xml">Export XML (%1$s)</string>
-    <string name="lbl_archive_type_xml_info">Všechna data ve formátu XML. XML je pouze export, bez importu.</string>
+    <string name="lbl_archive_format_xml_info">Všechna data ve formátu XML. XML je pouze export, bez importu.</string>
     <string name="lbl_author">Autor</string>
     <string name="lbl_author_type">Typ autora</string>
     <string name="lbl_author_type_artist">ilustrace</string>
@@ -666,7 +666,7 @@
     <string name="action_discard">Zahodit</string>
     <string name="btn_show_list">Zobrazit seznam</string>
     <string name="btn_less_ellipsis">Méně…</string>
-    <string name="lbl_archive_type">Formát</string>
+    <string name="lbl_archive_format">Formát</string>
     <string name="menu_cover_rotate_automatic">Automatický</string>
     <string name="and_others_plus"><![CDATA[%1$s … <small>[+%2$d]</small>]]></string>
 

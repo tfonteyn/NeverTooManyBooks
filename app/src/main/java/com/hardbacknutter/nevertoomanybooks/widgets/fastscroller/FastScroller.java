@@ -45,7 +45,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 
 /**
  * Fast scroll drag bar height too short when there are lots of items in the recyclerview.
@@ -93,7 +92,7 @@ public class FastScroller {
         // it can still be null.
         final OverlayProvider overlay;
         int thumbWidth = verticalThumbDrawable.getIntrinsicWidth();
-        switch (Prefs.getFastScrollerOverlayStyle()) {
+        switch (getFastScrollerOverlayStyle()) {
             case OverlayProvider.STYLE_CLASSIC: {
                 overlay = new ClassicOverlay(recyclerView, thumbWidth);
                 break;
@@ -129,6 +128,14 @@ public class FastScroller {
         final TypedValue tv = new TypedValue();
         theme.resolveAttribute(attr, tv, true);
         return context.getResources().getColor(tv.resourceId, theme);
+    }
+
+    /** FIXME: Compile time set FastScroller overlay style... maybe make a real preference ? */
+    @OverlayProvider.Style
+    private static int getFastScrollerOverlayStyle() {
+        // return FastScroller.OverlayProvider.STYLE_CLASSIC;
+        return OverlayProvider.STYLE_MD1;
+        // return FastScroller.OverlayProvider.STYLE_MD2;
     }
 
     /**

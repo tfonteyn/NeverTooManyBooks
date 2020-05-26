@@ -224,7 +224,7 @@
     <string name="lbl_archive_type_backup">Backup kopie (%1$s)</string>
     <string name="lbl_archive_type_backup_info">Volledig back-up- / herstelarchief</string>
     <string name="lbl_archive_type_xml">XML-export (%1$s)</string>
-    <string name="lbl_archive_type_xml_info">Alle gegevens in XML formaat. XML is enkel export, geen import.</string>
+    <string name="lbl_archive_format_xml_info">Alle gegevens in XML formaat. XML is enkel export, geen import.</string>
     <string name="lbl_author">Auteur</string>
     <string name="lbl_author_type">Auteur type</string>
     <string name="lbl_author_type_artist">illustraties</string>
@@ -673,7 +673,7 @@
     <string name="action_discard">Weggooien</string>
     <string name="btn_show_list">Lijst weergeven</string>
     <string name="btn_less_ellipsis">Minder…</string>
-    <string name="lbl_archive_type">Formaat</string>
+    <string name="lbl_archive_format">Formaat</string>
     <string name="menu_cover_rotate_automatic">Automatisch</string>
     <string name="and_others_plus"><![CDATA[%1$s … <small>[+%2$d]</small>]]></string>
 

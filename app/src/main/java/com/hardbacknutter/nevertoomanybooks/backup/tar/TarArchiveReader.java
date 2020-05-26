@@ -60,6 +60,7 @@ public class TarArchiveReader
     /** Buffer for {@link #mInputStream}. */
     private static final int BUFFER_SIZE = 65535;
 
+    /** Provide access to the Uri InputStream. */
     @NonNull
     private final ContentResolver mContentResolver;
     /**
@@ -108,7 +109,7 @@ public class TarArchiveReader
             }
 
             // Based on the file name, determine entity type
-            ArchiveContainerEntry typeFound = ArchiveContainerEntry.getType(entry.getName());
+            final ArchiveContainerEntry typeFound = ArchiveContainerEntry.getType(entry.getName());
             if (type.equals(typeFound)) {
                 return new TarReaderEntity(typeFound, this, entry);
             }
@@ -120,12 +121,12 @@ public class TarArchiveReader
     public ReaderEntity next()
             throws IOException {
 
-        TarArchiveEntry entry = getInputStream().getNextTarEntry();
+        final TarArchiveEntry entry = getInputStream().getNextTarEntry();
         if (entry == null) {
             return null;
         }
 
-        ArchiveContainerEntry typeFound = ArchiveContainerEntry.getType(entry.getName());
+        final ArchiveContainerEntry typeFound = ArchiveContainerEntry.getType(entry.getName());
         return new TarReaderEntity(typeFound, this, entry);
     }
 
@@ -141,7 +142,7 @@ public class TarArchiveReader
         if (mInfo == null) {
             // Tar archive info is stored in an xml file in the archive itself.
             // We try and find the InfoHeader entity, and process it with the XMLImporter
-            ReaderEntity entity;
+            final ReaderEntity entity;
             try {
                 entity = seek(ArchiveContainerEntry.InfoHeaderXml);
             } catch (@NonNull final IOException e) {
@@ -183,7 +184,7 @@ public class TarArchiveReader
     private TarArchiveInputStream getInputStream()
             throws IOException {
         if (mInputStream == null) {
-            InputStream is = mContentResolver.openInputStream(getUri());
+            final InputStream is = mContentResolver.openInputStream(getUri());
             if (is == null) {
                 throw new IOException("InputStream was NULL");
             }
@@ -216,6 +217,7 @@ public class TarArchiveReader
         /** The entity source stream. */
         @NonNull
         private final TarArchiveReader mReader;
+        /** Tar archive entry. */
         @NonNull
         private final TarArchiveEntry mEntry;
         /** Entity type. */

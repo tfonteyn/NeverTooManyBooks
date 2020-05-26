@@ -132,11 +132,11 @@ public class CoverBrowserDialogFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        final int scalePreview = getResources().getInteger(R.integer.covers_browser_preview);
+        final int scalePreview = getResources().getInteger(R.integer.cover_scale_browser_preview);
         //noinspection ConstantConditions
         mPreviewMaxSize = ImageScale.getSize(getContext(), scalePreview);
 
-        final int scaleGallery = getResources().getInteger(R.integer.covers_browser_gallery);
+        final int scaleGallery = getResources().getInteger(R.integer.cover_scale_browser_gallery);
         mGalleryAdapter = new GalleryAdapter(scaleGallery);
 
         mModel = new ViewModelProvider(this).get(CoverBrowserViewModel.class);

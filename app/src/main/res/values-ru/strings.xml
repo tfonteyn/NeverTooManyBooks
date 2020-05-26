@@ -217,7 +217,7 @@
     <string name="lbl_archive_type_backup">резервная копия (%1$s)</string>
     <string name="lbl_archive_type_backup_info">Полное резервное копирование / восстановление архива</string>
     <string name="lbl_archive_type_xml">Экспорт XML (%1$s)</string>
-    <string name="lbl_archive_type_xml_info">Все данные в формате XML. Только экспорт XML, без импорта.</string>
+    <string name="lbl_archive_format_xml_info">Все данные в формате XML. Только экспорт XML, без импорта.</string>
     <string name="lbl_author">Автор</string>
     <string name="lbl_author_type">Тип автора</string>
     <string name="lbl_author_type_artist">иллюстрации</string>
@@ -665,7 +665,7 @@
     <string name="action_discard">Выбросьте</string>
     <string name="btn_show_list">Показать список</string>
     <string name="btn_less_ellipsis">Меньше…</string>
-    <string name="lbl_archive_type">Формат</string>
+    <string name="lbl_archive_format">Формат</string>
     <string name="menu_cover_rotate_automatic">автоматическая</string>
     <string name="and_others_plus"><![CDATA[%1$s … <small>[+%2$d]</small>]]></string>
 

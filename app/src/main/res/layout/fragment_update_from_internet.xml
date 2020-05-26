@@ -40,12 +40,12 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_margin="@dimen/border1"
+        android:layout_margin="@dimen/screenBorder"
         >
 
         <TextView
             android:id="@+id/select_fields_blurb"
-            style="@style/Blurb.Small"
+            style="@style/Text.Blurb.Small"
             android:layout_marginStart="@dimen/indent2"
             android:text="@string/txt_select_fields_to_update"
             app:layout_constraintEnd_toEndOf="parent"
@@ -69,7 +69,6 @@
                 android:id="@+id/field_list"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_margin="@dimen/border1"
                 android:orientation="vertical"
                 >
                 <!-- fields are added here dynamically -->

@@ -52,7 +52,8 @@ import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
  *     {@code
  *             <CheckBox
  *             android:id="@+id/cbx_read"
- *             style="@style/CheckboxEntry"
+ *             android:layout_width="0dp"
+ *             android:layout_height="wrap_content"
  *             android:text="@string/lbl_read"
  *             app:layout_constraintStart_toStartOf="parent"
  *             app:layout_constraintEnd_toEndOf="parent"

@@ -381,8 +381,7 @@ public class EditBookActivity
                 // ignore
             }
             // We'll never get here...
-            //noinspection ConstantConditions
-            return null;
+            throw new IllegalStateException();
         }
 
         /** Value class to match up a tab fragment class and the title to use for the tab. */

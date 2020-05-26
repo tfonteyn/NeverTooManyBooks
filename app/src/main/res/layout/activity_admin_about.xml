@@ -51,7 +51,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/border1"
+        android:layout_margin="@dimen/screenBorder"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         >
 
@@ -117,8 +117,7 @@
 
         <TextView
             android:id="@+id/debug_section_lbl"
-            style="@style/Label.Header.Small"
-            android:paddingTop="16dp"
+            style="@style/Label.Header"
             android:text="@string/debug"
             app:layout_constraintStart_toEndOf="@id/indents"
             app:layout_constraintTop_toBottomOf="@id/sepBar"
@@ -160,7 +159,6 @@
         <TextView
             android:id="@+id/contacts"
             style="@style/Label.Header"
-            android:paddingTop="@dimen/border2"
             android:text="@string/lbl_about_contact"
             app:layout_constraintStart_toEndOf="@id/indents"
             app:layout_constraintTop_toBottomOf="@id/debug_dump_temp_tables"
@@ -169,9 +167,9 @@
         <TextView
             android:id="@+id/sourcecode6"
             style="@style/Url"
-            android:layout_marginStart="@dimen/indent2"
-            app:layout_constraintBaseline_toBaselineOf="@id/contacts"
-            app:layout_constraintStart_toEndOf="@id/contacts"
+            android:layout_marginStart="@dimen/border2"
+            app:layout_constraintStart_toStartOf="@id/contacts"
+            app:layout_constraintTop_toBottomOf="@id/contacts"
             tools:ignore="SelectableText"
             tools:text="sourcecode url"
             />
@@ -202,7 +200,7 @@
 
         <!--        <TextView-->
         <!--            android:id="@+id/creators"-->
-        <!--            style="@style/Blurb.Small"-->
+        <!--            style="@style/Text.Blurb.Small"-->
         <!--            android:text="@string/original_creators"-->
         <!--            app:layout_constraintStart_toStartOf="@id/indents"-->
         <!--            app:layout_constraintTop_toBottomOf="@id/lbl_creators"-->
@@ -236,7 +234,7 @@
 
         <!--        <TextView-->
         <!--            android:id="@+id/b1"-->
-        <!--            style="@style/Blurb.Small"-->
+        <!--            style="@style/Text.Blurb.Small"-->
         <!--            android:text="@string/lbl_about_translators"-->
         <!--            app:layout_constraintEnd_toEndOf="parent"-->
         <!--            app:layout_constraintStart_toEndOf="@id/indents"-->
@@ -245,7 +243,7 @@
 
         <!--        <TextView-->
         <!--            android:id="@+id/translators"-->
-        <!--            style="@style/Blurb.Small"-->
+        <!--            style="@style/Text.Blurb.Small"-->
         <!--            android:text="@string/translators"-->
         <!--            app:layout_constraintEnd_toEndOf="parent"-->
         <!--            app:layout_constraintStart_toEndOf="@id/indents"-->

@@ -212,7 +212,7 @@ public class ImportManager
     public ArchiveReader getArchiveReader(@NonNull final Context context)
             throws InvalidArchiveException, IOException {
 
-        ArchiveReader reader;
+        final ArchiveReader reader;
         switch (getContainer(context)) {
             case Tar:
                 reader = new TarArchiveReader(context, this);

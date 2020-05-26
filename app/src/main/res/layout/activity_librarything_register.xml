@@ -33,7 +33,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_margin="@dimen/border1"
     tools:context=".searches.librarything.LibraryThingRegistrationActivity"
     >
 
@@ -52,12 +51,13 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_margin="@dimen/screenBorder"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         >
 
         <TextView
             android:id="@+id/b1"
-            style="@style/Blurb"
+            style="@style/Text.Blurb"
             android:text="@string/lt_info"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -67,7 +67,6 @@
         <TextView
             android:id="@+id/register_url"
             style="@style/Url"
-            android:layout_marginTop="@dimen/border1"
             android:text="@string/lt_url_text_register"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -77,7 +76,6 @@
         <TextView
             android:id="@+id/dev_key_url"
             style="@style/Url"
-            android:layout_marginTop="@dimen/border1"
             android:text="@string/lt_url_text_dev_key"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -86,8 +84,7 @@
 
         <TextView
             android:id="@+id/b2"
-            style="@style/Blurb"
-            android:layout_marginTop="@dimen/border1"
+            style="@style/Text.Blurb"
             android:text="@string/lt_lbl_key"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

@@ -27,11 +27,12 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<!-- On screens larger than sw600 (a 7" tablet) -->
+<!-- On screens larger than sw600 (a 7" tablet)
+
+     https://www.vogella.com/tutorials/AndroidStylesThemes/article.html
+     Section 1.2: w600, w800, w1000 can be seen as switching/margin points
+ -->
 <resources>
-    <!--
-    - DialogFrame's which might show the onscreen keyboard, are FLOATING dialogs.
-    - displaying a zoomed cover is limited to (roughly) 5" to prevent overly scaled up images.
--->
+    <!-- DialogFrame's which might show the onscreen keyboard, are FLOATING. -->
     <bool name="isLargeScreen">true</bool>
 </resources>

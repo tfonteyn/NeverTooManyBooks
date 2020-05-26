@@ -107,7 +107,8 @@
 
             <CheckBox
                 android:id="@+id/cbx_is_complete"
-                style="@style/CheckboxEntry"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
                 android:paddingStart="@dimen/indent2"
                 android:paddingEnd="@dimen/indent2"
                 android:text="@string/lbl_is_complete"
@@ -157,7 +158,8 @@
 
             <CheckBox
                 android:id="@+id/cbx_author_type_writer"
-                style="@style/CheckboxEntry"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
                 android:text="@string/lbl_author_type_writer"
                 app:layout_constraintEnd_toStartOf="@id/typeColumnDiv"
                 app:layout_constraintStart_toStartOf="parent"
@@ -166,7 +168,8 @@
 
             <CheckBox
                 android:id="@+id/cbx_author_type_contributor"
-                style="@style/CheckboxEntry"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
                 android:text="@string/lbl_author_type_contributor"
                 app:layout_constraintEnd_toStartOf="@id/typeColumnDiv"
                 app:layout_constraintStart_toStartOf="parent"
@@ -175,18 +178,19 @@
 
             <CheckBox
                 android:id="@+id/cbx_author_type_intro"
-                style="@style/CheckboxEntry"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
                 android:text="@string/lbl_author_type_intro"
                 app:layout_constraintEnd_toStartOf="@id/typeColumnDiv"
                 app:layout_constraintHorizontal_bias="1.0"
-
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/cbx_author_type_contributor"
                 />
 
             <CheckBox
                 android:id="@+id/cbx_author_type_translator"
-                style="@style/CheckboxEntry"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
                 android:text="@string/lbl_author_type_translator"
                 app:layout_constraintEnd_toStartOf="@id/typeColumnDiv"
                 app:layout_constraintStart_toStartOf="parent"
@@ -195,7 +199,8 @@
 
             <CheckBox
                 android:id="@+id/cbx_author_type_editor"
-                style="@style/CheckboxEntry"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
                 android:text="@string/lbl_author_type_editor"
                 app:layout_constraintEnd_toStartOf="@id/typeColumnDiv"
                 app:layout_constraintStart_toStartOf="parent"
@@ -204,7 +209,8 @@
 
             <CheckBox
                 android:id="@+id/cbx_author_type_artist"
-                style="@style/CheckboxEntry"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
                 android:text="@string/lbl_author_type_artist"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/typeColumnDiv"
@@ -213,7 +219,8 @@
 
             <CheckBox
                 android:id="@+id/cbx_author_type_inking"
-                style="@style/CheckboxEntry"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
                 android:text="@string/lbl_author_type_inking"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/typeColumnDiv"
@@ -222,7 +229,8 @@
 
             <CheckBox
                 android:id="@+id/cbx_author_type_colorist"
-                style="@style/CheckboxEntry"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
                 android:text="@string/lbl_author_type_colorist"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/typeColumnDiv"
@@ -231,7 +239,8 @@
 
             <CheckBox
                 android:id="@+id/cbx_author_type_cover_artist"
-                style="@style/CheckboxEntry"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
                 android:text="@string/lbl_author_type_cover_artist"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/typeColumnDiv"
@@ -240,7 +249,8 @@
 
             <CheckBox
                 android:id="@+id/cbx_author_type_cover_inking"
-                style="@style/CheckboxEntry"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
                 android:text="@string/lbl_author_type_cover_inking"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/typeColumnDiv"
@@ -249,7 +259,8 @@
 
             <CheckBox
                 android:id="@+id/cbx_author_type_cover_colorist"
-                style="@style/CheckboxEntry"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
                 android:text="@string/lbl_author_type_cover_colorist"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/typeColumnDiv"

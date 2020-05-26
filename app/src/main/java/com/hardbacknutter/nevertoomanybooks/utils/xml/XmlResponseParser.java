@@ -85,16 +85,16 @@ public class XmlResponseParser
             Log.d(TAG, "startElement|localName=`" + localName + '`');
         }
         // Create a new context for this new tag saving the current inter-tag text for later
-        ElementContext tag = new ElementContext(uri, localName, qName, attributes,
-                                                mBuilder.toString());
+        final ElementContext tag = new ElementContext(uri, localName, qName, attributes,
+                                                      mBuilder.toString());
 
         // Get the current element
-        ElementContext enclosingTag = mParents.get(mParents.size() - 1);
+        final ElementContext enclosingTag = mParents.get(mParents.size() - 1);
 
         // If there is an active filter, then see if the new tag is of any interest
         if (enclosingTag.getFilter() != null) {
             // Check for interest in new tag
-            XmlFilter filter = enclosingTag.getFilter().getSubFilter(tag);
+            final XmlFilter filter = enclosingTag.getFilter().getSubFilter(tag);
             // If new tag has a filter, store it in the new context object
             tag.setFilter(filter);
             // If we got a filter, tell it a tag is now starting.
@@ -118,7 +118,7 @@ public class XmlResponseParser
                            @NonNull final String qName) {
 
         // Get out current context from the hierarchy and pop from stack
-        ElementContext tag = mParents.remove(mParents.size() - 1);
+        final ElementContext tag = mParents.remove(mParents.size() - 1);
 
         // Minor paranoia. Make sure name matches. Total waste of time, right?
         if (!localName.equals(tag.getLocalName())) {

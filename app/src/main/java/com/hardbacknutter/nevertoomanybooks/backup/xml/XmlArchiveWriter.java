@@ -81,8 +81,9 @@ public class XmlArchiveWriter
 
         mOutputStream = new FileOutputStream(mHelper.getTempOutputFile(context));
 
-        String text = XmlUtils.XML_VERSION_1_0_ENCODING_UTF_8
-                      + '<' + XmlTags.XML_ROOT + XmlUtils.versionAttr(XmlExporter.VERSION) + ">\n";
+        final String text = XmlUtils.XML_VERSION_1_0_ENCODING_UTF_8
+                            + '<' + XmlTags.XML_ROOT + XmlUtils.versionAttr(XmlExporter.VERSION)
+                            + ">\n";
         mOutputStream.write(text.getBytes(StandardCharsets.UTF_8));
     }
 
@@ -99,7 +100,7 @@ public class XmlArchiveWriter
         mTmpBookXmlFile = File.createTempFile("data_xml_", ".tmp");
         mTmpBookXmlFile.deleteOnExit();
 
-        Exporter exporter = new XmlExporter(context, Options.BOOKS, mHelper.getDateSince());
+        final Exporter exporter = new XmlExporter(context, Options.BOOKS, mHelper.getDateSince());
         mResults.add(exporter.write(context, mTmpBookXmlFile, progressListener));
     }
 
@@ -121,7 +122,7 @@ public class XmlArchiveWriter
     }
 
     /**
-     * Supports text files only.
+     * Add a File to the archive. Supports text files only.
      *
      * @param name     ignored
      * @param file     to store in the archive
@@ -140,6 +141,7 @@ public class XmlArchiveWriter
     }
 
     /**
+     * Write a generic byte array to the archive.
      *
      * @param name     ignored
      * @param bytes    to store in the archive
@@ -160,7 +162,7 @@ public class XmlArchiveWriter
     @Override
     public void close()
             throws IOException {
-        String text = "</" + XmlTags.XML_ROOT + ">\n";
+        final String text = "</" + XmlTags.XML_ROOT + ">\n";
         mOutputStream.write(text.getBytes(StandardCharsets.UTF_8));
         mOutputStream.close();
         super.close();

@@ -39,7 +39,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/border1"
+        android:layout_margin="@dimen/screenBorder"
         >
 
         <androidx.constraintlayout.widget.Guideline
@@ -66,7 +66,7 @@
             tools:ignore="MissingConstraints"
             />
 
-        <!-- NEWTHINGS: add new site specific ID: add a RadioButton widget and and the name to the ConstraintRadioGroup. -->
+        <!-- NEWTHINGS: add new site specific ID: add a RadioButton widget + the name to the ConstraintRadioGroup. -->
 
         <RadioButton
             android:id="@+id/site_goodreads"

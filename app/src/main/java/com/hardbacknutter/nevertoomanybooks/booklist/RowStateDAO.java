@@ -93,8 +93,6 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TMP_TB
  *      <li>updateABC: private methods that write to the in-memory table</li>
  *      <li>saveABC: private methods that write to the database</li>
  * </ul>
- * <p>
- * FIXME: to many confusing methods to update nodes.
  */
 public class RowStateDAO
         implements AutoCloseable {
@@ -600,6 +598,7 @@ public class RowStateDAO
         }
     }
 
+
     /**
      * Expand or collapse <strong>all</strong> nodes.
      *
@@ -621,23 +620,23 @@ public class RowStateDAO
             if (topLevel == 1) {
                 if (expand) {
                     // expand and show all levels
-                    updateNodesForLevel(">=", topLevel, true, true);
+                    updateAllNodesForLevel(">=", topLevel, true, true);
                 } else {
                     // collapse level 1, but keep it visible.
-                    updateNodesForLevel("=", topLevel, false, true);
+                    updateAllNodesForLevel("=", topLevel, false, true);
                     // collapse and hide all other levels
-                    updateNodesForLevel(">", topLevel, false, false);
+                    updateAllNodesForLevel(">", topLevel, false, false);
                 }
 
             } else /* topLevel > 1 */ {
                 // always expand and show levels less than the defined top-level.
-                updateNodesForLevel("<", topLevel, true, true);
+                updateAllNodesForLevel("<", topLevel, true, true);
 
                 // collapse the specified level, but keep it visible.
-                updateNodesForLevel("=", topLevel, false, true);
+                updateAllNodesForLevel("=", topLevel, false, true);
 
                 // set the desired state to all other levels
-                updateNodesForLevel(">", topLevel, expand, expand);
+                updateAllNodesForLevel(">", topLevel, expand, expand);
             }
 
             // Store the state of all nodes.
@@ -659,7 +658,48 @@ public class RowStateDAO
     }
 
     /**
-     * Save the state for all nodes to permanent storage.
+     * {@link #expandAllNodes} 1. Update the status/visibility of all nodes for the given level.
+     *
+     * @param levelOperand one of "<", "=", ">", "<=" or ">="
+     * @param level        the level
+     * @param expand       state to set
+     * @param visible      visibility to set
+     */
+    private void updateAllNodesForLevel(@NonNull final CharSequence levelOperand,
+                                        @IntRange(from = 1) final int level,
+                                        final boolean expand,
+                                        final boolean visible) {
+        if (BuildConfig.DEBUG /* always */) {
+            // developer sanity check
+            if (!"< = > <= >=".contains(levelOperand)) {
+                throw new IllegalArgumentException();
+            }
+        }
+
+        //Note to self: levelOperand is concatenated, so do not cache this stmt.
+        final String sql = "UPDATE " + mTable.getName() + " SET "
+                           + KEY_BL_NODE_EXPANDED + "=?," + KEY_BL_NODE_VISIBLE + "=?"
+                           + " WHERE " + KEY_BL_NODE_LEVEL + levelOperand + "?";
+
+        final int rowsUpdated;
+        try (SynchronizedStatement stmt = mSyncedDb.compileStatement(sql)) {
+            stmt.bindBoolean(1, expand);
+            stmt.bindBoolean(2, visible);
+            stmt.bindLong(3, level);
+            rowsUpdated = stmt.executeUpdateDelete();
+        }
+
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_NODE_STATE) {
+            Log.d(TAG, "updateNodesForLevel"
+                       + "|level" + levelOperand + level
+                       + "|expand=" + expand
+                       + "|visible=" + visible
+                       + "|rowsUpdated=" + rowsUpdated);
+        }
+    }
+
+    /**
+     * {@link #expandAllNodes} 2. Save the state for all nodes to permanent storage.
      * We only store visible nodes and their expansion state.
      *
      * <strong>Note:</strong> always use the current bookshelf/style
@@ -730,6 +770,7 @@ public class RowStateDAO
         }
     }
 
+
     /**
      * Expand/collapse the passed node.
      * <br><br>
@@ -795,83 +836,7 @@ public class RowStateDAO
     }
 
     /**
-     * Find the next row ('after' the given row) at the given level (or lower).
-     *
-     * @param rowId from where to start looking
-     * @param level level to look for
-     *
-     * @return row id
-     */
-    private long findNextNode(final long rowId,
-                              final int level) {
-
-        SynchronizedStatement stmt = mStatementManager.get(STMT_GET_NEXT_NODE_AT_SAME_LEVEL);
-        if (stmt == null) {
-            stmt = mStatementManager.add(
-                    STMT_GET_NEXT_NODE_AT_SAME_LEVEL,
-                    "SELECT " + KEY_PK_ID + " FROM " + mTable.getName()
-                    + " WHERE " + KEY_PK_ID + ">?" + " AND " + KEY_BL_NODE_LEVEL + "<=?"
-                    + " ORDER BY " + KEY_PK_ID + " LIMIT 1");
-        }
-
-        final long nextRowId;
-        //noinspection SynchronizationOnLocalVariableOrMethodParameter
-        synchronized (stmt) {
-            stmt.bindLong(1, rowId);
-            stmt.bindLong(2, level);
-            nextRowId = stmt.simpleQueryForLongOrZero();
-        }
-
-        // if there was no next node, use the end of the list.
-        if (nextRowId <= 0) {
-            return Long.MAX_VALUE;
-        }
-        return nextRowId;
-    }
-
-    /**
-     * Update the status/visibility of all nodes for the given level.
-     *
-     * @param levelOperand one of "<", "=", ">", "<=" or ">="
-     * @param level        the level
-     * @param expand       state to set
-     * @param visible      visibility to set
-     */
-    private void updateNodesForLevel(@NonNull final CharSequence levelOperand,
-                                     @IntRange(from = 1) final int level,
-                                     final boolean expand,
-                                     final boolean visible) {
-        if (BuildConfig.DEBUG /* always */) {
-            // developer sanity check
-            if (!"< = > <= >=".contains(levelOperand)) {
-                throw new IllegalArgumentException();
-            }
-        }
-
-        //Note to self: levelOperand is concatenated, so do not cache this stmt.
-        final String sql = "UPDATE " + mTable.getName() + " SET "
-                           + KEY_BL_NODE_EXPANDED + "=?," + KEY_BL_NODE_VISIBLE + "=?"
-                           + " WHERE " + KEY_BL_NODE_LEVEL + levelOperand + "?";
-
-        final int rowsUpdated;
-        try (SynchronizedStatement stmt = mSyncedDb.compileStatement(sql)) {
-            stmt.bindBoolean(1, expand);
-            stmt.bindBoolean(2, visible);
-            stmt.bindLong(3, level);
-            rowsUpdated = stmt.executeUpdateDelete();
-        }
-
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_NODE_STATE) {
-            Log.d(TAG, "updateNodesForLevel"
-                       + "|level" + levelOperand + level
-                       + "|expand=" + expand
-                       + "|visible=" + visible
-                       + "|rowsUpdated=" + rowsUpdated);
-        }
-    }
-
-    /**
-     * Update a single node.
+     * {@link #setNode} 1. Update a single node.
      *
      * @param rowId   the row/node to update
      * @param expand  state to set
@@ -907,7 +872,42 @@ public class RowStateDAO
     }
 
     /**
-     * Update the nodes <strong>between</strong> the two given rows;
+     * {@link #setNode} 2. Find the next row ('after' the given row) at the given level (or lower).
+     *
+     * @param rowId from where to start looking
+     * @param level level to look for
+     *
+     * @return row id
+     */
+    private long findNextNode(final long rowId,
+                              final int level) {
+
+        SynchronizedStatement stmt = mStatementManager.get(STMT_GET_NEXT_NODE_AT_SAME_LEVEL);
+        if (stmt == null) {
+            stmt = mStatementManager.add(
+                    STMT_GET_NEXT_NODE_AT_SAME_LEVEL,
+                    "SELECT " + KEY_PK_ID + " FROM " + mTable.getName()
+                    + " WHERE " + KEY_PK_ID + ">?" + " AND " + KEY_BL_NODE_LEVEL + "<=?"
+                    + " ORDER BY " + KEY_PK_ID + " LIMIT 1");
+        }
+
+        final long nextRowId;
+        //noinspection SynchronizationOnLocalVariableOrMethodParameter
+        synchronized (stmt) {
+            stmt.bindLong(1, rowId);
+            stmt.bindLong(2, level);
+            nextRowId = stmt.simpleQueryForLongOrZero();
+        }
+
+        // if there was no next node, use the end of the list.
+        if (nextRowId <= 0) {
+            return Long.MAX_VALUE;
+        }
+        return nextRowId;
+    }
+
+    /**
+     * {@link #setNode} 3. Update the nodes <strong>between</strong> the two given rows;
      * i.e. <strong>excluding</strong> the start and end row.
      *
      * @param startRowExcl     between this row
@@ -985,7 +985,7 @@ public class RowStateDAO
     }
 
     /**
-     * Save the state for a single node to permanent storage.
+     * {@link #setNode} 4. Save the state for a single node to permanent storage.
      *
      * <strong>Note:</strong> always uses the current bookshelf/style
      *
@@ -1096,9 +1096,9 @@ public class RowStateDAO
         }
     }
 
+
     /**
-     * Get the base insert statement for
-     * {@link #saveAllNodes} and {@link #saveNodesBetween}.
+     * Get the base insert statement for {@link #saveAllNodes} and {@link #saveNodesBetween}.
      *
      * @return sql insert
      */

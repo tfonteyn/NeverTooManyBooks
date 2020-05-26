@@ -62,7 +62,7 @@ public class ImportHelperDialogFragment
     private ImportHelperViewModel mModel;
     /** View Binding. */
     private DialogImportOptionsBinding mVb;
-
+    /** Indicates if we're importing from a CSV file. */
     private boolean mIsCsvBooks;
 
     /**

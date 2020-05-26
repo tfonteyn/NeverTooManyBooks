@@ -136,7 +136,7 @@ public class KbNlSearchEngine
         final String url = getBaseURL(context) + String.format(BOOK_URL, validIsbn);
 
         final SAXParserFactory factory = SAXParserFactory.newInstance();
-        KbNlBookHandler handler = new KbNlBookHandler(new Bundle());
+        final KbNlBookHandler handler = new KbNlBookHandler(new Bundle());
 
         try (TerminatorConnection con = new TerminatorConnection(
                 context, url, getConnectTimeoutMs())) {
@@ -153,7 +153,7 @@ public class KbNlSearchEngine
             throw new IOException(e);
         }
 
-        Bundle bookData = handler.getResult();
+        final Bundle bookData = handler.getResult();
 
         if (isCancelled()) {
             return bookData;
@@ -178,7 +178,7 @@ public class KbNlSearchEngine
                                          @NonNull final String validIsbn,
                                          @IntRange(from = 0) final int cIdx,
                                          @Nullable final ImageFileInfo.Size size) {
-        String sizeSuffix;
+        final String sizeSuffix;
         if (size == null) {
             sizeSuffix = "large";
         } else {

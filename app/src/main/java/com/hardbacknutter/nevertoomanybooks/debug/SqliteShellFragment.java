@@ -43,6 +43,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import java.util.Locale;
+
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
@@ -169,8 +171,7 @@ public class SqliteShellFragment
     }
 
     private void executeSql(@NonNull final String sql) {
-        //noinspection StringToUpperCaseOrToLowerCaseWithoutLocale
-        String lcSql = sql.toLowerCase();
+        String lcSql = sql.toLowerCase(Locale.ROOT);
         try {
             if (lcSql.startsWith("update") || lcSql.startsWith("delete")) {
                 //noinspection ConstantConditions

@@ -560,9 +560,9 @@ public class XmlExporter
                                            rowData.getLong(DBDefinitions.KEY_EID_ISFDB)));
                 writer.write(XmlUtils.attr(DBDefinitions.KEY_EID_GOODREADS_BOOK,
                                            rowData.getLong(DBDefinitions.KEY_EID_GOODREADS_BOOK)));
-                writer.write(XmlUtils.attr(DBDefinitions.KEY_BOOK_GOODREADS_LAST_SYNC_DATE,
-                                           rowData.getString(
-                                                   DBDefinitions.KEY_BOOK_GOODREADS_LAST_SYNC_DATE)));
+                writer.write(XmlUtils.attr(
+                        DBDefinitions.KEY_BOOK_GOODREADS_LAST_SYNC_DATE,
+                        rowData.getString(DBDefinitions.KEY_BOOK_GOODREADS_LAST_SYNC_DATE)));
 
                 // cross-linked with the loanee table
                 writer.write(XmlUtils.attr(DBDefinitions.KEY_LOANEE,

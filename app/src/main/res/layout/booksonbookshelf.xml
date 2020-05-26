@@ -64,6 +64,9 @@
             </com.google.android.material.appbar.MaterialToolbar>
         </com.google.android.material.appbar.AppBarLayout>
 
+        <!--
+                android:layout_margin="@dimen/screenBorder"
+        -->
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/content_frame"
             android:layout_width="match_parent"

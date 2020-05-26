@@ -53,6 +53,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Locale;
 import java.util.regex.Pattern;
 
 /**
@@ -634,8 +635,7 @@ public class DiacriticArrayAdapter<T>
                 results.values = list;
                 results.count = list.size();
             } else {
-                //noinspection StringToUpperCaseOrToLowerCaseWithoutLocale
-                final String prefixString = prefix.toString().toLowerCase();
+                final String prefixString = prefix.toString().toLowerCase(Locale.getDefault());
 
                 final ArrayList<T> values;
                 synchronized (mLock) {
@@ -647,8 +647,7 @@ public class DiacriticArrayAdapter<T>
 
                 for (int i = 0; i < count; i++) {
                     final T value = values.get(i);
-                    //noinspection StringToUpperCaseOrToLowerCaseWithoutLocale
-                    final String valueText = value.toString().toLowerCase();
+                    final String valueText = value.toString().toLowerCase(Locale.getDefault());
 
                     String valueTextNoDiacritics = filterDiacritics(valueText);
                     String prefixStringNoDiacritics = filterDiacritics(prefixString);
@@ -684,10 +683,9 @@ public class DiacriticArrayAdapter<T>
          * @return ascii text
          */
         private String filterDiacritics(@NonNull final CharSequence text) {
-            //noinspection StringToUpperCaseOrToLowerCaseWithoutLocale
             return DIACRITICS_REGEX.matcher(Normalizer.normalize(text, Normalizer.Form.NFD))
                                    .replaceAll("")
-                                   .toLowerCase();
+                                   .toLowerCase(Locale.getDefault());
         }
 
         @Override

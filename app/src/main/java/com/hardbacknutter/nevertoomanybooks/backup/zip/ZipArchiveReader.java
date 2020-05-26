@@ -60,6 +60,7 @@ public class ZipArchiveReader
     /** Buffer for {@link #mInputStream}. */
     private static final int BUFFER_SIZE = 65535;
 
+    /** Provide access to the Uri InputStream. */
     @NonNull
     private final ContentResolver mContentResolver;
     /**
@@ -108,7 +109,7 @@ public class ZipArchiveReader
             }
 
             // Based on the file name, determine entity type
-            ArchiveContainerEntry typeFound = ArchiveContainerEntry.getType(entry.getName());
+            final ArchiveContainerEntry typeFound = ArchiveContainerEntry.getType(entry.getName());
             if (type.equals(typeFound)) {
                 return new ZipReaderEntity(typeFound, this, entry);
             }
@@ -120,12 +121,12 @@ public class ZipArchiveReader
     public ReaderEntity next()
             throws IOException {
 
-        ZipEntry entry = getInputStream().getNextEntry();
+        final ZipEntry entry = getInputStream().getNextEntry();
         if (entry == null) {
             return null;
         }
 
-        ArchiveContainerEntry typeFound = ArchiveContainerEntry.getType(entry.getName());
+        final ArchiveContainerEntry typeFound = ArchiveContainerEntry.getType(entry.getName());
         return new ZipReaderEntity(typeFound, this, entry);
     }
 
@@ -141,7 +142,7 @@ public class ZipArchiveReader
         if (mInfo == null) {
             // Archive info is stored in an xml file in the archive itself.
             // We try and find the InfoHeader entity, and process it with the XMLImporter
-            ReaderEntity entity;
+            final ReaderEntity entity;
             try {
                 entity = seek(ArchiveContainerEntry.InfoHeaderXml);
             } catch (@NonNull final ZipException e) {
@@ -177,7 +178,7 @@ public class ZipArchiveReader
     private ZipInputStream getInputStream()
             throws IOException {
         if (mInputStream == null) {
-            InputStream is = mContentResolver.openInputStream(getUri());
+            final InputStream is = mContentResolver.openInputStream(getUri());
             if (is == null) {
                 throw new IOException("InputStream was NULL");
             }
@@ -210,6 +211,7 @@ public class ZipArchiveReader
         /** The entity source stream. */
         @NonNull
         private final ZipArchiveReader mReader;
+        /** Zip archive entry. */
         @NonNull
         private final ZipEntry mEntry;
         /** Entity type. */
@@ -240,7 +242,7 @@ public class ZipArchiveReader
         @NonNull
         @Override
         public Date getDateModified() {
-            long time = mEntry.getTime();
+            final long time = mEntry.getTime();
             if (time != -1) {
                 return new Date(mEntry.getTime());
             } else {

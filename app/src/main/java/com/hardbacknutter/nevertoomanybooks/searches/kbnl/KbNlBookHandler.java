@@ -234,11 +234,11 @@ class KbNlBookHandler
      * }</pre>
      */
     private void processTitle(@NonNull final Iterable<String> currentData) {
-        StringBuilder sbTitle = new StringBuilder();
+        final StringBuilder sbTitle = new StringBuilder();
         for (String name : currentData) {
             sbTitle.append(name).append(" ");
         }
-        String cleanedTitle = sbTitle.toString().split("/")[0].trim();
+        final String cleanedTitle = sbTitle.toString().split("/")[0].trim();
         mBookData.putString(DBDefinitions.KEY_TITLE, cleanedTitle);
     }
 
@@ -283,13 +283,13 @@ class KbNlBookHandler
                                @Author.Type final int type) {
         for (String name : currentData) {
             // remove a year part in the name
-            String cleanedString = name.split("\\(")[0].trim();
+            final String cleanedString = name.split("\\(")[0].trim();
             // reject separators as for example: <psi:text>;</psi:text>
             if (cleanedString.length() == 1) {
                 return;
             }
 
-            Author author = Author.from(cleanedString);
+            final Author author = Author.from(cleanedString);
             author.setType(type);
             mAuthors.add(author);
         }
@@ -324,10 +324,10 @@ class KbNlBookHandler
      * }</pre>
      */
     private void processSeriesNumber(@NonNull final List<String> currentData) {
-        String title = mBookData.getString(DBDefinitions.KEY_TITLE);
+        final String title = mBookData.getString(DBDefinitions.KEY_TITLE);
         // should never happen, but paranoia...
         if (title != null) {
-            Series series = Series.from(title, currentData.get(0));
+            final Series series = Series.from(title, currentData.get(0));
             mSeries.add(series);
         }
     }
@@ -395,7 +395,7 @@ class KbNlBookHandler
      * }</pre>
      */
     private void processPublisher(@NonNull final Iterable<String> currentData) {
-        StringBuilder sbPublisher = new StringBuilder();
+        final StringBuilder sbPublisher = new StringBuilder();
         for (String name : currentData) {
             if (!name.isEmpty()) {
                 sbPublisher.append(name).append(" ");
@@ -432,7 +432,7 @@ class KbNlBookHandler
      */
     private void processDatePublished(@NonNull final List<String> currentData) {
         if (!mBookData.containsKey(DBDefinitions.KEY_DATE_PUBLISHED)) {
-            String year = digits(currentData.get(0), false);
+            final String year = digits(currentData.get(0), false);
             if (year != null && !year.isEmpty()) {
                 mBookData.putString(DBDefinitions.KEY_DATE_PUBLISHED, year);
             }
@@ -457,8 +457,8 @@ class KbNlBookHandler
     private void processPages(@NonNull final List<String> currentData) {
         if (!mBookData.containsKey(DBDefinitions.KEY_PAGES)) {
             try {
-                String cleanedString = currentData.get(0).split(" ")[0];
-                int pages = Integer.parseInt(cleanedString);
+                final String cleanedString = currentData.get(0).split(" ")[0];
+                final int pages = Integer.parseInt(cleanedString);
                 mBookData.putString(DBDefinitions.KEY_PAGES, String.valueOf(pages));
             } catch (@NonNull final NumberFormatException e) {
                 // use source

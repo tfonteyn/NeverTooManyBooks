@@ -27,17 +27,35 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<androidx.recyclerview.widget.RecyclerView
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/author_works"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:layout_margin="@dimen/screenBorder"
-    android:clickable="true"
-    android:focusable="true"
-    app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:listitem="@layout/row_toc_entry"
-    />
+<!--
+     https://www.vogella.com/tutorials/AndroidStylesThemes/article.html
+     Section 1.2: w600, w800, w1000 can be seen as switching/margin points
+     -->
+<resources>
+    <dimen name="cover_base_size">70dp</dimen>
+    <integer name="cover_zoom_screen_percentage">80</integer>
 
+    <!-- tools only; used to mock reasonable sized images.
+        SCALE_FACTOR = {0, 1, 2, 3, 5, 8, 12}; * 70dp
+        Width is set at a ratio 0.64.
+        (0.60 is common for paperbacks)
+    -->
+    <dimen name="tools_cover_x_small_height">70dp</dimen>
+    <dimen name="tools_cover_x_small_width">45dp</dimen>
+
+    <dimen name="tools_cover_small_height">140dp</dimen>
+    <dimen name="tools_cover_small_width">84dp</dimen>
+
+    <dimen name="tools_cover_medium_height">210dp</dimen>
+    <dimen name="tools_cover_medium_width">126dp</dimen>
+
+    <dimen name="tools_cover_large_height">350dp</dimen>
+    <dimen name="tools_cover_large_width">210dp</dimen>
+
+    <dimen name="tools_cover_1x_large_height">560dp</dimen>
+    <dimen name="tools_cover_1x_large_width">336dp</dimen>
+
+    <dimen name="tools_cover_2x_large_height">840dp</dimen>
+    <dimen name="tools_cover_2x_large_width">505dp</dimen>
+
+</resources>

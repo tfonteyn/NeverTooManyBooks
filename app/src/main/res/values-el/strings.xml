@@ -219,7 +219,7 @@
     <string name="lbl_archive_type_backup">Αντίγραφο ασφαλείας (%1$s)</string>
     <string name="lbl_archive_type_backup_info">Αρχείο πλήρους αντιγράφου ασφαλείας / επαναφοράς</string>
     <string name="lbl_archive_type_xml">Εξαγωγή XML (%1$s)</string>
-    <string name="lbl_archive_type_xml_info">Όλα τα δεδομένα σε μορφή XML. Η XML είναι μόνο εξαγωγή, χωρίς εισαγωγή.</string>
+    <string name="lbl_archive_format_xml_info">Όλα τα δεδομένα σε μορφή XML. Η XML είναι μόνο εξαγωγή, χωρίς εισαγωγή.</string>
     <string name="lbl_author">Συγγραφέας</string>
     <string name="lbl_author_type">Τύπος συγγραφέα</string>
     <string name="lbl_author_type_artist">εικονογραφήσεις</string>
@@ -670,7 +670,7 @@
     <string name="action_discard">Απορρίπτω</string>
     <string name="btn_show_list">Εμφάνιση λίστας</string>
     <string name="btn_less_ellipsis">Πιο λιγο…</string>
-    <string name="lbl_archive_type">Μορφή</string>
+    <string name="lbl_archive_format">Μορφή</string>
     <string name="menu_cover_rotate_automatic">Αυτόματο</string>
     <string name="and_others_plus"><![CDATA[%1$s … <small>[+%2$d]</small>]]></string>
 

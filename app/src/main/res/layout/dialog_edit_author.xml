@@ -101,7 +101,8 @@
 
             <CheckBox
                 android:id="@+id/cbx_is_complete"
-                style="@style/CheckboxEntry"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
                 android:paddingStart="@dimen/indent2"
                 android:paddingEnd="@dimen/indent2"
                 android:text="@string/lbl_is_complete"
@@ -111,7 +112,7 @@
 
             <TextView
                 android:id="@+id/blurb"
-                style="@style/Blurb.Small"
+                style="@style/Text.Blurb.Small"
                 android:text="@string/warning_immediate_global_changes"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"

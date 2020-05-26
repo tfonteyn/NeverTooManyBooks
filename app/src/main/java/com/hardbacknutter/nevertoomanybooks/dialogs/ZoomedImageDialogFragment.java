@@ -124,30 +124,20 @@ public class ZoomedImageDialogFragment
         final double screenHwRatio = ((float) configuration.screenHeightDp)
                                      / ((float) configuration.screenWidthDp);
 
-        final double width;
-        final double height;
+        // screen space we use is depending on the screen size...
+        // or we end up with pixelated overblown images.
+        final int percentage = resources.getInteger(R.integer.cover_zoom_screen_percentage);
+        final float multiplier = metrics.density * ((float) percentage / 100);
+        final int maxWidth;
+        final int maxHeight;
 
-        if (resources.getBoolean(R.bool.isLargeScreen)) {
-            // Pixel2: w411dp h659dp
-            if (configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
-                width = 420;
-                height = 660;
-            } else {
-                width = 660;
-                height = 420;
-            }
+        if (configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
+            maxWidth = (int) (multiplier * configuration.screenWidthDp);
+            maxHeight = (int) (maxWidth * screenHwRatio);
         } else {
-            if (configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
-                width = 0.95 * configuration.screenWidthDp;
-                height = width * screenHwRatio;
-            } else {
-                height = 0.95 * configuration.screenHeightDp;
-                width = height / screenHwRatio;
-            }
+            maxHeight = (int) (multiplier * configuration.screenHeightDp);
+            maxWidth = (int) (maxHeight / screenHwRatio);
         }
-
-        final int maxWidth = (int) (width * metrics.density);
-        final int maxHeight = (int) (height * metrics.density);
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMAGE_UTILS) {
             Log.d(TAG,

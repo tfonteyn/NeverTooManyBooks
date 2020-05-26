@@ -48,6 +48,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.backup.base.Options;
 import com.hardbacknutter.nevertoomanybooks.backup.base.OptionsDialogBase;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogExportOptionsBinding;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.UnexpectedValueException;
 
 public class ExportHelperDialogFragment
         extends OptionsDialogBase<ExportManager> {
@@ -137,7 +138,7 @@ public class ExportHelperDialogFragment
         list.add(getString(R.string.lbl_archive_type_xml, ArchiveContainer.Xml.getFileExt()));
 
         //noinspection ConstantConditions
-        ArrayAdapter archiveFormatAdapter =
+        final ArrayAdapter archiveFormatAdapter =
                 new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, list);
         archiveFormatAdapter.setDropDownViewResource(R.layout.dropdown_menu_popup_item);
         mVb.archiveFormat.setAdapter(archiveFormatAdapter);
@@ -148,7 +149,6 @@ public class ExportHelperDialogFragment
                                        final int position,
                                        final long id) {
 
-                //noinspection SwitchStatementWithoutDefaultBranch
                 switch (position) {
                     case 0:
                         helper.setArchiveContainer(ArchiveContainer.Tar);
@@ -185,7 +185,7 @@ public class ExportHelperDialogFragment
 
                     case 3:
                         helper.setArchiveContainer(ArchiveContainer.Xml);
-                        mVb.archiveFormatInfo.setText(R.string.lbl_archive_type_xml_info);
+                        mVb.archiveFormatInfo.setText(R.string.lbl_archive_format_xml_info);
                         mVb.cbxBooks.setChecked(true);
                         mVb.cbxBooks.setEnabled(true);
                         mVb.cbxPrefsAndStyles.setChecked(true);
@@ -193,6 +193,9 @@ public class ExportHelperDialogFragment
                         mVb.cbxCovers.setChecked(false);
                         mVb.cbxCovers.setEnabled(false);
                         break;
+
+                    default:
+                        throw new UnexpectedValueException(position);
                 }
             }
 

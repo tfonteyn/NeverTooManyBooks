@@ -98,7 +98,7 @@ public class TarArchiveWriter
     }
 
     /**
-     * Supports text files only.
+     * Add a File to the archive. Supports text files only.
      *
      * @param name     for the entry;  allows easier overriding of the file name
      * @param file     to store in the archive
@@ -123,6 +123,8 @@ public class TarArchiveWriter
     }
 
     /**
+     * Write a generic byte array to the archive.
+     *
      * @param name     for the entry
      * @param bytes    to store in the archive
      * @param compress ignored

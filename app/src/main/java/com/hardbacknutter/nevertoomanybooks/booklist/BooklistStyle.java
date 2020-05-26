@@ -316,7 +316,7 @@ public class BooklistStyle
                          @NonNull final String uuid) {
         mId = id;
         mUuid = uuid;
-        initPrefs(context, mNameResId == 0);
+        initPrefs(context, true);
     }
 
 //    /**

@@ -92,15 +92,12 @@ import com.hardbacknutter.nevertoomanybooks.widgets.ddsupport.SimpleItemTouchHel
 import com.hardbacknutter.nevertoomanybooks.widgets.ddsupport.StartDragListener;
 
 /**
- * The ISFDB direct interaction should be seen as temporary as this class should not
- * have to know about any specific search web site.
+ * The ISFDB direct interaction should be seen as temporary as this class
+ * should not have to know about any specific search web site.
  * <p>
- * This is still not obsolete as the standard search engines can only return a single book,
- * and hence a single TOC. The interaction here with ISFDB allows the user to reject the first
- * (book)TOC found, and get the next one (etc...).
- * <p>
- * FIXME: code needs some cleanup: editing a row in a dialog versus editing by copying a
- * row to the onscreen boxes
+ * This is still not obsolete as the standard search engines can only return a
+ * single book, and hence a single TOC. The interaction here with ISFDB allows
+ * the user to reject the first (book)TOC found, and get the next one (etc...).
  */
 public class EditBookTocFragment
         extends EditBookBaseFragment {

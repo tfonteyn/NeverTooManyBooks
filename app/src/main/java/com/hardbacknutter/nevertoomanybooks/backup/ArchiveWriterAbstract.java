@@ -86,10 +86,10 @@ public abstract class ArchiveWriterAbstract
 
     /** progress message. */
     @NonNull
-    private final String mProgress_msg_covers;
+    private final String mProgressMsgCovers;
     /** progress message. */
     @NonNull
-    private final String mProgress_msg_covers_skip;
+    private final String mProgressMsgCoversSkip;
 
     /** {@link #prepareBooks} writes to this file; {@link #writeBooks} copies it to the archive. */
     @Nullable
@@ -105,9 +105,9 @@ public abstract class ArchiveWriterAbstract
                                     @NonNull final ExportManager helper) {
         super(context, helper);
 
-        mProgress_msg_covers = context.getString(
+        mProgressMsgCovers = context.getString(
                 R.string.progress_end_export_result_n_covers_processed_m_missing);
-        mProgress_msg_covers_skip = context.getString(
+        mProgressMsgCoversSkip = context.getString(
                 R.string.progress_msg_n_covers_processed_m_missing_s_skipped);
     }
 
@@ -262,7 +262,7 @@ public abstract class ArchiveWriterAbstract
                             @NonNull final ProgressListener progressListener)
             throws IOException {
 
-        long timeFrom = mHelper.getTimeFrom();
+        final long timeFrom = mHelper.getTimeFrom();
 
         int exported = 0;
         int skipped = 0;
@@ -275,9 +275,9 @@ public abstract class ArchiveWriterAbstract
         try (Cursor cursor = mDb.fetchBookUuidList()) {
             final int uuidCol = cursor.getColumnIndex(DBDefinitions.KEY_BOOK_UUID);
             while (cursor.moveToNext() && !progressListener.isCancelled()) {
-                String uuid = cursor.getString(uuidCol);
+                final String uuid = cursor.getString(uuidCol);
                 for (int cIdx = 0; cIdx < 2; cIdx++) {
-                    File cover = AppDir.getCoverFile(context, uuid, cIdx);
+                    final File cover = AppDir.getCoverFile(context, uuid, cIdx);
                     if (cover.exists()) {
                         if (cover.lastModified() > timeFrom) {
                             if (!dryRun) {
@@ -296,16 +296,16 @@ public abstract class ArchiveWriterAbstract
 
                 // progress messages only during real-run.
                 if (!dryRun) {
-                    String message;
+                    final String message;
                     if (skipped == 0) {
-                        message = String.format(mProgress_msg_covers,
+                        message = String.format(mProgressMsgCovers,
                                                 exported, missing[0], missing[1]);
                     } else {
-                        message = String.format(mProgress_msg_covers_skip,
+                        message = String.format(mProgressMsgCoversSkip,
                                                 exported, missing[0], missing[1], skipped);
                     }
                     delta++;
-                    long now = System.currentTimeMillis();
+                    final long now = System.currentTimeMillis();
                     if ((now - lastUpdate) > PROGRESS_UPDATE_INTERVAL_IN_MS) {
                         progressListener.onProgressStep(delta, message);
                         lastUpdate = now;

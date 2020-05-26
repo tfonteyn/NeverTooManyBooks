@@ -433,11 +433,6 @@ public final class LanguageUtils {
 
                 final SharedPreferences prefs = getLanguageCache(context);
 
-                //FIXME: temp hack - remove me
-                if (prefs.contains("eng")) {
-                    prefs.edit().clear().apply();
-                }
-
                 // the one the user is using our app in (can be different from the system one)
                 createLanguageMappingCache(prefs, LocaleUtils.getUserLocale(context));
 

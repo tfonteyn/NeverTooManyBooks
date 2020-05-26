@@ -351,7 +351,7 @@ public class BookDetailsFragment
         }
 
         if (DBDefinitions.isUsed(prefs, DBDefinitions.KEY_THUMBNAIL)) {
-            final int[] scale = getResources().getIntArray(R.array.covers_details);
+            final int[] scale = getResources().getIntArray(R.array.cover_scale_details);
 
             mCoverHandler[0] = new CoverHandler(this, mProgressBar,
                                                 book, mVb.isbn, 0, mVb.coverImage0,

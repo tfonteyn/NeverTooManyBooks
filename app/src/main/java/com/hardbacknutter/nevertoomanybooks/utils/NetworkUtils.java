@@ -41,6 +41,7 @@ import androidx.preference.PreferenceManager;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.util.Locale;
 import java.util.regex.Pattern;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
@@ -142,8 +143,7 @@ public final class NetworkUtils {
             throw new IOException("networkUnavailable");
         }
 
-        //noinspection StringToUpperCaseOrToLowerCaseWithoutLocale
-        final String url = urlStr.toLowerCase();
+        final String url = urlStr.toLowerCase(Locale.ROOT);
         final int port = url.startsWith("https://") ? 443 : 80;
         final String host = SLASH_PATTERN.split(url)[1].split("/")[0];
 

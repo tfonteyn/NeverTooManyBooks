@@ -33,7 +33,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_margin="@dimen/border1"
     tools:context=".searches.goodreads.GoodreadsRegistrationActivity"
     >
 
@@ -60,10 +59,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
+            android:layout_margin="@dimen/screenBorder"
             >
 
             <TextView
-                style="@style/Blurb"
+                style="@style/Text.Blurb"
                 android:layout_width="match_parent"
                 android:text="@string/gr_auth_blurb_part1"
                 />
@@ -72,19 +72,18 @@
                 android:id="@+id/goodreads_url"
                 style="@style/Url"
                 android:layout_gravity="center_horizontal"
-                android:layout_margin="@dimen/border2"
                 tools:ignore="SelectableText"
                 tools:text="https://www.goodreads.com"
                 />
 
             <TextView
-                style="@style/Blurb"
+                style="@style/Text.Blurb"
                 android:layout_width="match_parent"
                 android:text="@string/gr_auth_blurb_part2"
                 />
 
             <TextView
-                style="@style/Blurb"
+                style="@style/Text.Blurb"
                 android:layout_width="match_parent"
                 android:text="@string/gr_auth_blurb_part3"
                 />
@@ -99,7 +98,7 @@
 
             <TextView
                 android:id="@+id/forget_blurb"
-                style="@style/Blurb"
+                style="@style/Text.Blurb"
                 android:layout_width="match_parent"
                 android:text="@string/gr_auth_blurb_part4"
                 android:visibility="gone"

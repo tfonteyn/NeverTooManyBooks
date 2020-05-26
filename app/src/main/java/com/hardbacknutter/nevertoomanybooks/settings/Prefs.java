@@ -44,7 +44,6 @@ import java.util.Map;
 import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
-import com.hardbacknutter.nevertoomanybooks.widgets.fastscroller.FastScroller;
 
 /**
  * Uppercase preference keys are internal only.
@@ -243,13 +242,4 @@ public final class Prefs {
                 .getDefaultSharedPreferences(context)
                 .getBoolean(pk_edit_book_tabs_native_id, false);
     }
-
-    /** FIXME: Compile time set FastScroller overlay style... maybe make a real preference ? */
-    @FastScroller.OverlayProvider.Style
-    public static int getFastScrollerOverlayStyle() {
-//        return FastScroller.OverlayProvider.STYLE_CLASSIC;
-        return FastScroller.OverlayProvider.STYLE_MD1;
-//        return FastScroller.OverlayProvider.STYLE_MD2;
-    }
-
 }

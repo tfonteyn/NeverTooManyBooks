@@ -36,7 +36,7 @@
 
     <TextView
         android:id="@+id/fixedContent"
-        style="@style/Blurb"
+        style="@style/Text.Blurb"
         android:layout_width="wrap_content"
         android:layout_marginBottom="@dimen/border2"
         android:text="@string/tip_authors_works"

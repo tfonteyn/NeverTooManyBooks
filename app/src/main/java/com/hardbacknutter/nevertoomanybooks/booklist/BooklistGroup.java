@@ -238,7 +238,6 @@ public class BooklistGroup
         mGroupKey = GroupKey.getGroupKey(mId);
         mUuid = style.getUuid();
         mIsUserDefinedStyle = style.isUserDefined();
-        initPrefs();
     }
 
     /**
@@ -254,8 +253,6 @@ public class BooklistGroup
         mIsUserDefinedStyle = in.readInt() != 0;
         mAccumulatedDomains = new ArrayList<>();
         in.readList(mAccumulatedDomains, getClass().getClassLoader());
-        // now the prefs
-        initPrefs();
     }
 
     /**
@@ -423,12 +420,6 @@ public class BooklistGroup
     }
 
     /**
-     * Only ever init the Preferences if you have a valid UUID.
-     */
-    void initPrefs() {
-    }
-
-    /**
      * Get the Preference objects that this group will contribute to a Style.
      *
      * @return a map with the prefs
@@ -555,6 +546,8 @@ public class BooklistGroup
         BooklistSeriesGroup(@NonNull final BooklistStyle style) {
             super(SERIES, style);
             mDisplayDomain = createDisplayDomain();
+
+            initPrefs();
         }
 
         /**
@@ -564,9 +557,10 @@ public class BooklistGroup
          */
         private BooklistSeriesGroup(@NonNull final Parcel in) {
             super(in);
-            mAllSeries.set(in);
-
             mDisplayDomain = createDisplayDomain();
+
+            initPrefs();
+            mAllSeries.set(in);
         }
 
         /**
@@ -580,6 +574,11 @@ public class BooklistGroup
             return PreferenceManager
                     .getDefaultSharedPreferences(context)
                     .getBoolean(Prefs.pk_style_group_series_show_books_under_each_series, false);
+        }
+
+        private void initPrefs() {
+            mAllSeries = new PBoolean(Prefs.pk_style_group_series_show_books_under_each_series,
+                                      mUuid, mIsUserDefinedStyle);
         }
 
         @NonNull
@@ -601,12 +600,6 @@ public class BooklistGroup
             mAllSeries.writeToParcel(dest);
         }
 
-        @Override
-        void initPrefs() {
-            super.initPrefs();
-            mAllSeries = new PBoolean(Prefs.pk_style_group_series_show_books_under_each_series,
-                                      mUuid, mIsUserDefinedStyle);
-        }
 
         @NonNull
         @Override
@@ -689,6 +682,8 @@ public class BooklistGroup
          */
         BooklistAuthorGroup(@NonNull final BooklistStyle style) {
             super(AUTHOR, style);
+            initPrefs();
+
             mShowAuthorByGivenNameFirst = style.isShowAuthorByGivenNameFirst(App.getAppContext());
             mSortAuthorByGivenNameFirst = style.isSortAuthorByGivenNameFirst(App.getAppContext());
             mDisplayDomain = createDisplayDomain();
@@ -702,6 +697,7 @@ public class BooklistGroup
          */
         private BooklistAuthorGroup(@NonNull final Parcel in) {
             super(in);
+            initPrefs();
             mAllAuthors.set(in);
 
             mShowAuthorByGivenNameFirst = in.readInt() != 0;
@@ -781,9 +777,7 @@ public class BooklistGroup
             dest.writeInt(mSortAuthorByGivenNameFirst ? 1 : 0);
         }
 
-        @Override
-        protected void initPrefs() {
-            super.initPrefs();
+        void initPrefs() {
             mAllAuthors = new PBoolean(Prefs.pk_style_group_author_show_books_under_each_author,
                                        mUuid, mIsUserDefinedStyle);
 

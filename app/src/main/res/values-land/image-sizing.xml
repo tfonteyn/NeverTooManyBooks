@@ -27,17 +27,15 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<androidx.recyclerview.widget.RecyclerView
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/author_works"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:layout_margin="@dimen/screenBorder"
-    android:clickable="true"
-    android:focusable="true"
-    app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:listitem="@layout/row_toc_entry"
-    />
-
+<resources>
+    <!-- displayed side by side. -->
+    <integer-array name="cover_scale_details">
+        <item>4</item>
+        <item>3</item>
+    </integer-array>
+    <!-- displayed side by side. -->
+    <integer-array name="cover_scale_edit">
+        <item>2</item>
+        <item>2</item>
+    </integer-array>
+</resources>

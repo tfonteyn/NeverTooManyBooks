@@ -33,15 +33,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="@dimen/border1"
     >
 
-    <!-- tools:text fields are set to the longest string used which gave the 4/6 weight ratio
-        Russian is the only exception where the second column can be split in two lines -->
     <TextView
         android:id="@+id/field"
-        style="@style/Label.Field"
         android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/cbx_usage"
         app:layout_constraintHorizontal_weight="4"
         app:layout_constraintStart_toStartOf="parent"
@@ -52,13 +51,15 @@
 
     <CheckBox
         android:id="@+id/cbx_usage"
-        style="@style/Label.Field"
         android:layout_width="0dp"
+        android:layout_height="36dp"
+        android:textAppearance="?android:attr/textAppearanceSmall"
         android:textStyle="italic"
-        app:layout_constraintBaseline_toBaselineOf="@id/field"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_weight="6"
         app:layout_constraintStart_toEndOf="@id/field"
+        app:layout_constraintTop_toTopOf="parent"
         tools:text="@string/lbl_field_usage_overwrite"
         />
 

@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ @Copyright 2020 HardBackNutter
+  ~ @License GNU General Public License
+  ~
+  ~ This file is part of NeverTooManyBooks.
+  ~
+  ~ In August 2018, this project was forked from:
+  ~ Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
+  ~
+  ~ Without their original creation, this project would not exist in its
+  ~ current form. It was however largely rewritten/refactored and any
+  ~ comments on this fork should be directed at HardBackNutter and not
+  ~ at the original creators.
+  ~
+  ~ NeverTooManyBooks is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ NeverTooManyBooks is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  ~ See the GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<resources>
+    <!-- The base size for cover images. Get's multiplied with the scale. -->
+    <dimen name="cover_base_size">50dp</dimen>
+    <!-- Maximum space a zoomed cover can use of the screen; 0..100 -->
+    <integer name="cover_zoom_screen_percentage">95</integer>
+
+    <!--
+    "cover_scale_*": item values from ImageScale.java (i.e. NOT the scale values themselves!)
+    Note the scale used in the BoB screen is user configurable, hence not listed here.
+    -->
+
+    <!-- Book details screen.
+         Displayed front cover at the top, back cover below. -->
+    <integer-array name="cover_scale_details">
+        <item>4</item>
+        <item>2</item>
+    </integer-array>
+    <!-- Book edit screen.
+         Displayed side by side. -->
+    <integer-array name="cover_scale_edit">
+        <item>3</item>
+        <item>3</item>
+    </integer-array>
+
+    <integer name="cover_scale_browser_gallery">2</integer>
+    <integer name="cover_scale_browser_preview">4</integer>
+
+    <!-- tools only; used to mock reasonable sized images.
+    SCALE_FACTOR = {0, 1, 2, 3, 5, 8, 12}; * 50dp
+    Width is set at a ratio 0.64.
+    (0.60 is common for paperbacks)
+-->
+    <dimen name="tools_cover_x_small_height">50dp</dimen>
+    <dimen name="tools_cover_x_small_width">32dp</dimen>
+
+    <dimen name="tools_cover_small_height">100dp</dimen>
+    <dimen name="tools_cover_small_width">64dp</dimen>
+
+    <dimen name="tools_cover_medium_height">150dp</dimen>
+    <dimen name="tools_cover_medium_width">96dp</dimen>
+
+    <dimen name="tools_cover_large_height">250dp</dimen>
+    <dimen name="tools_cover_large_width">160dp</dimen>
+
+    <dimen name="tools_cover_1x_large_height">400dp</dimen>
+    <dimen name="tools_cover_1x_large_width">256dp</dimen>
+
+    <dimen name="tools_cover_2x_large_height">600dp</dimen>
+    <dimen name="tools_cover_2x_large_width">384dp</dimen>
+</resources>

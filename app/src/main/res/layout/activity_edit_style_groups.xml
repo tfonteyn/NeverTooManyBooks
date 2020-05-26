@@ -52,9 +52,9 @@
         android:id="@+id/groupList"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_margin="@dimen/screenBorder"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         tools:listitem="@layout/row_edit_style_groups"
-
         />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

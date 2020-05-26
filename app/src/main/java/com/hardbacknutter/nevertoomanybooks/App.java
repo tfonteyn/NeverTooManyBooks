@@ -52,11 +52,6 @@ import com.hardbacknutter.nevertoomanybooks.debug.DebugReport;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 
-/**
- * Application implementation.
- * <p>
- * Mainly handles the app Theme and system locale changes.
- */
 @AcraMailSender(
         mailTo = "",
         // mailTo = "debug@email",
@@ -215,7 +210,7 @@ public class App
         super.onConfigurationChanged(newConfig);
 
         if (BuildConfig.DEBUG /* always */) {
-            Log.d(TAG, "onConfigurationChanged| Locale.getDefault=" + Locale.getDefault());
+            Log.d(TAG, "onConfigurationChanged|Locale.getDefault=" + Locale.getDefault());
             if (Build.VERSION.SDK_INT >= 24) {
                 Log.d(TAG, "onConfigurationChanged|newConfig.getLocales().get(0)="
                            + newConfig.getLocales().get(0));

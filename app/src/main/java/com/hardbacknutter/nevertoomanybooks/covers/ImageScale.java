@@ -39,7 +39,16 @@ import java.lang.annotation.RetentionPolicy;
 import com.hardbacknutter.nevertoomanybooks.R;
 
 /**
- * Scaling of thumbnails in the application.
+ * Scaling of cover images.
+ * <p>
+ * The scale INDEX (0..6) is either set by the user,
+ * or by a resource which can depend on screen size.
+ * This INDEX is used to lookup the SCALE_FACTOR.
+ * Lastly, the SCALE_FACTOR is multiplied by the DIMEN resource
+ * that provides a base dp value which again depends on screen size.
+ *
+ * Dev. note: alternative implementation: a "dimen-array" (non-existent) or
+ * an "integer-array" and then manually convert the int values to dp.
  * <p>
  * Must be kept in sync with res/values/strings-preferences.xml#pv_cover_scale_factor
  * <p>
@@ -62,7 +71,7 @@ public final class ImageScale {
     /** Thumbnail Scaling. */
     public static final int SCALE_2X_LARGE = 6;
 
-    /** scaling factor for each SCALE_* option. See {@link #getSize}. */
+    /** scaling factor for each SCALE_* option. */
     private static final int[] SCALE_FACTOR = {0, 1, 2, 3, 5, 8, 12};
 
     private ImageScale() {
