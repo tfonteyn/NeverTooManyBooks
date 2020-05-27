@@ -58,6 +58,7 @@
             app:layout_constraintTop_toTopOf="parent"
             />
 
+        <!--suppress LongLine -->
         <com.hardbacknutter.nevertoomanybooks.widgets.ConstraintRadioGroup
             android:id="@+id/sites_group"
             android:layout_width="0dp"

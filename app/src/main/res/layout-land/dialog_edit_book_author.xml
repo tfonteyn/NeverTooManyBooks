@@ -93,6 +93,7 @@
                 app:layout_constraintGuide_percent="0.66"
                 />
 
+            <!--suppress LongLine -->
             <com.hardbacknutter.nevertoomanybooks.widgets.ExtGroup
                 android:id="@+id/author_type_group"
                 android:layout_width="0dp"

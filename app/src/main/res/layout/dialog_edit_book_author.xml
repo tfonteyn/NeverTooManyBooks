@@ -125,6 +125,7 @@
                 app:layout_constraintTop_toBottomOf="@id/lbl_given_names"
                 />
 
+            <!--suppress LongLine -->
             <com.hardbacknutter.nevertoomanybooks.widgets.ExtGroup
                 android:id="@+id/author_type_group"
                 android:layout_width="0dp"
