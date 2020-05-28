@@ -610,8 +610,8 @@ public class BookDetailsFragment
                 Snackbar.make(mVb.getRoot(), R.string.progress_msg_connecting,
                               Snackbar.LENGTH_LONG).show();
                 //noinspection ConstantConditions
-                new SendOneBookTask(book.getId(), mFragmentVM
-                        .getGoodreadsTaskListener(getContext()))
+                new SendOneBookTask(book.getId(),
+                                    mFragmentVM.getGoodreadsTaskListener(getContext()))
                         .execute();
                 return true;
             }

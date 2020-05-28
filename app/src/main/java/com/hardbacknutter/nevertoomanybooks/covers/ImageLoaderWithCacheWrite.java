@@ -103,7 +103,8 @@ class ImageLoaderWithCacheWrite
     protected void onPostExecute(@Nullable final Bitmap bitmap) {
         super.onPostExecute(bitmap);
         if (bitmap != null) {
-            // Start another task to send it to the cache
+            // Start another task to send it to the cache; use the default serial
+            // executor, we only want a single write thread at a time.
             new CoversDAO.ImageCacheWriterTask(mUuid, mCIdx, mMaxWidth, mMaxHeight, bitmap)
                     .execute();
         }

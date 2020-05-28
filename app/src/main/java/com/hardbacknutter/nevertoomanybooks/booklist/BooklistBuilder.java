@@ -536,9 +536,7 @@ public class BooklistBuilder
                     + /*             */ " VALUES(" + listValues + ");"
                     + "\n END";
 
-            try (SynchronizedStatement stmt = mSyncedDb.compileStatement(levelTgSql)) {
-                stmt.execute();
-            }
+            mSyncedDb.execSQL(levelTgSql);
         }
 
         // Create a trigger to maintain the 'current' value
@@ -555,9 +553,7 @@ public class BooklistBuilder
                 + /*              */ " VALUES (" + valuesColumns + ");"
                 + "\n END";
 
-        try (SynchronizedStatement stmt = mSyncedDb.compileStatement(currentValueTgSql)) {
-            stmt.execute();
-        }
+        mSyncedDb.execSQL(currentValueTgSql);
     }
 
     /**

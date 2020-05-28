@@ -61,7 +61,7 @@ public class FastScroller {
      *
      * @param recyclerView the View to hook up
      */
-    public static void init(@NonNull final RecyclerView recyclerView) {
+    public static void attach(@NonNull final RecyclerView recyclerView) {
 
         if (!(recyclerView.getLayoutManager() instanceof LinearLayoutManager)) {
             throw new IllegalArgumentException("Not a LinearLayoutManager");

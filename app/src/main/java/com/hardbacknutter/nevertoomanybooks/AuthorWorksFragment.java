@@ -141,7 +141,7 @@ public class AuthorWorksFragment
         listView.addItemDecoration(
                 new DividerItemDecoration(context, linearLayoutManager.getOrientation()));
 
-        FastScroller.init(listView);
+        FastScroller.attach(listView);
 
         mAdapter = new TocAdapter(context);
         listView.setAdapter(mAdapter);
