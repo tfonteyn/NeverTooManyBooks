@@ -58,8 +58,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
@@ -119,6 +117,7 @@ import com.hardbacknutter.nevertoomanybooks.viewmodels.BooksOnBookshelfModel;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.EditBookshelvesModel;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.tasks.ExportTaskModel;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.tasks.ImportTaskModel;
+import com.hardbacknutter.nevertoomanybooks.widgets.FabMenu;
 import com.hardbacknutter.nevertoomanybooks.widgets.fastscroller.FastScroller;
 
 /**
@@ -164,6 +163,8 @@ public class BooksOnBookshelf
 
     /** simple indeterminate progress spinner to show while getting the list of books. */
     private ProgressBar mProgressBar;
+    /** The dropdown button to select a Bookshelf. */
+    private Spinner mBookshelfSpinner;
     /** Listener for clicks on the list. */
     private final BooklistAdapter.OnRowClickedListener mOnRowClickedListener =
             new BooklistAdapter.OnRowClickedListener() {
@@ -239,20 +240,6 @@ public class BooksOnBookshelf
                     return true;
                 }
             };
-    //    private BooksonbookshelfBinding mVb;
-    private final OptionsDialogBase.OptionsListener<ImportManager> mImportOptionsListener =
-            new OptionsDialogBase.OptionsListener<ImportManager>() {
-                @Override
-                public void onOptionsSet(@NonNull final ImportManager options) {
-                    mImportModel.startArchiveImportTask(options);
-                }
-            };
-    /** The dropdown button to select a Bookshelf. */
-    private Spinner mBookshelfSpinner;
-    /** The normal FAB button; opens or closes the FAB menu. */
-    private FloatingActionButton mFab;
-    /** Array with the submenu FAB buttons. Element 0 shows at the bottom. */
-    private ExtendedFloatingActionButton[] mFabMenuItems;
 
     /** List header. */
     private TextView mHeaderStyleNameView;
@@ -269,7 +256,6 @@ public class BooksOnBookshelf
     private ArrayAdapter<BooksOnBookshelfModel.BookshelfSpinnerEntry> mBookshelfSpinnerAdapter;
     /** The ViewModel. */
     private BooksOnBookshelfModel mModel;
-
     /** Listener for the Bookshelf Spinner. */
     private final OnItemSelectedListener mOnBookshelfSelectionChanged =
             new OnItemSelectedListener() {
@@ -335,8 +321,14 @@ public class BooksOnBookshelf
 //            }
 //        }
     };
-    /** Overlay enabled while the FAB menu is shown to intercept clicks and close the FAB menu. */
-    private View mFabOverlay;
+    //    private BooksonbookshelfBinding mVb;
+    private final OptionsDialogBase.OptionsListener<ImportManager> mImportOptionsListener =
+            new OptionsDialogBase.OptionsListener<ImportManager>() {
+                @Override
+                public void onOptionsSet(@NonNull final ImportManager options) {
+                    mImportModel.startArchiveImportTask(options);
+                }
+            };
     /**
      * Apply the style that a user has selected.
      * Called from {@link StylePickerDialogFragment}.
@@ -364,32 +356,8 @@ public class BooksOnBookshelf
             this::exportPickUri;
     /** Import. */
     private ImportTaskModel mImportModel;
-    /** Define a scroller to show, or collapse/hide the FAB. */
-    private final RecyclerView.OnScrollListener mUpdateFABVisibility =
-            new RecyclerView.OnScrollListener() {
-                @Override
-                public void onScrolled(@NonNull final RecyclerView recyclerView,
-                                       final int dx,
-                                       final int dy) {
-                    if (dy > 0 || dy < 0 && mFab.isShown()) {
-                        hideFABMenu();
-                        mFab.hide();
-                    }
-                }
-
-                @Override
-                public void onScrollStateChanged(@NonNull final RecyclerView recyclerView,
-                                                 final int newState) {
-                    // This method is not called when the fast scroller stops scrolling but
-                    // we can ignore that as in practice a minuscule swipe brings the FAB back.
-                    if (newState == RecyclerView.SCROLL_STATE_IDLE
-                        || newState == RecyclerView.SCROLL_STATE_SETTLING) {
-                        showFABMenu(false);
-                        mFab.show();
-                    }
-                    super.onScrollStateChanged(recyclerView, newState);
-                }
-            };
+    /** Encapsulates the FAB button/menu. */
+    private FabMenu mFabMenu;
 
     @Override
     protected void onSetContentView() {
@@ -405,15 +373,13 @@ public class BooksOnBookshelf
 
         mProgressBar = findViewById(R.id.progressBar);
 
-        mFab = findViewById(R.id.fab);
-        mFabOverlay = findViewById(R.id.fabOverlay);
-        // Make SURE that the array length fits the options list below.
-        mFabMenuItems = new ExtendedFloatingActionButton[5];
-        mFabMenuItems[0] = findViewById(R.id.fab0);
-        mFabMenuItems[1] = findViewById(R.id.fab1);
-        mFabMenuItems[2] = findViewById(R.id.fab2);
-        mFabMenuItems[3] = findViewById(R.id.fab3);
-        mFabMenuItems[4] = findViewById(R.id.fab4);
+        mFabMenu = new FabMenu(findViewById(R.id.fab),
+                               findViewById(R.id.fabOverlay),
+                               findViewById(R.id.fab0),
+                               findViewById(R.id.fab1),
+                               findViewById(R.id.fab2),
+                               findViewById(R.id.fab3),
+                               findViewById(R.id.fab4));
     }
 
     @Override
@@ -476,9 +442,8 @@ public class BooksOnBookshelf
         // initialize but do not populate the list; the latter is done in onResume
         mLayoutManager = new LinearLayoutManager(this);
         mListView.setLayoutManager(mLayoutManager);
-        mListView.addOnScrollListener(mUpdateFABVisibility);
         mListView.addItemDecoration(new TopLevelItemDecoration(this));
-        FastScroller.init(mListView);
+        FastScroller.attach(mListView);
 
         // initialize but do not populate the list;  the latter is done in setBookShelfSpinner
         mBookshelfSpinnerAdapter = new ArrayAdapter<>(
@@ -486,16 +451,17 @@ public class BooksOnBookshelf
         mBookshelfSpinnerAdapter.setDropDownViewResource(R.layout.dropdown_menu_popup_item);
         mBookshelfSpinner.setAdapter(mBookshelfSpinnerAdapter);
 
-        mFab.setOnClickListener(v -> showFABMenu(!mFabMenuItems[0].isShown()));
-        mFabMenuItems[0].setOnClickListener(v -> addByIsbn(true));
-        mFabMenuItems[1].setOnClickListener(v -> addByIsbn(false));
-        mFabMenuItems[2].setOnClickListener(v -> addBySearch(BookSearchByTextFragment.TAG));
-        mFabMenuItems[3].setOnClickListener(v -> addManually());
+        mFabMenu.attach(mListView);
+        mFabMenu.getItem(0).setOnClickListener(v -> addByIsbn(true));
+        mFabMenu.getItem(1).setOnClickListener(v -> addByIsbn(false));
+        mFabMenu.getItem(2).setOnClickListener(v -> addBySearch(BookSearchByTextFragment.TAG));
+        mFabMenu.getItem(3).setOnClickListener(v -> addManually());
         if (Prefs.showEditBookTabNativeId(this)) {
-            mFabMenuItems[4].setEnabled(true);
-            mFabMenuItems[4].setOnClickListener(v -> addBySearch(BookSearchByNativeIdFragment.TAG));
+            mFabMenu.getItem(4).setEnabled(true);
+            mFabMenu.getItem(4).setOnClickListener(
+                    v -> addBySearch(BookSearchByNativeIdFragment.TAG));
         } else {
-            mFabMenuItems[4].setEnabled(false);
+            mFabMenu.getItem(4).setEnabled(false);
         }
 
         // Popup the search widget when the user starts to type.
@@ -548,70 +514,6 @@ public class BooksOnBookshelf
         }
         // actioning on the criteria wil happen automatically at list building time.
         mModel.getSearchCriteria().setKeywords(query);
-    }
-
-    /**
-     * Hide the FAB menu if it's showing. Does not affect the FAB button itself.
-     */
-    private void hideFABMenu() {
-        if (mFabMenuItems[0].isShown()) {
-            showFABMenu(false);
-        }
-    }
-
-    /**
-     * When the user clicks the FAB button, we open/close the FAB menu and change the FAB icon.
-     *
-     * @param show flag
-     */
-    private void showFABMenu(final boolean show) {
-        if (show) {
-            mFab.setImageResource(R.drawable.ic_close);
-            // mFabOverlay overlaps the whole screen and intercepts clicks.
-            // This does not include the ToolBar.
-            mFabOverlay.setVisibility(View.VISIBLE);
-            mFabOverlay.setOnClickListener(v -> hideFABMenu());
-        } else {
-            mFab.setImageResource(R.drawable.ic_add);
-            mFabOverlay.setVisibility(View.GONE);
-            mFabOverlay.setOnClickListener(null);
-        }
-
-        final float baseY = getResources().getDimension(R.dimen.fab_menu_translationY_base);
-        final float deltaY = getResources().getDimension(R.dimen.fab_menu_translationY_delta);
-
-        final float baseX = getResources().getDimension(R.dimen.fab_menu_translationX);
-        final float deltaX = getResources().getDimension(R.dimen.fab_menu_translationX_delta);
-
-        // Test for split-screen layouts (or really small devices?)
-        // Having more then 4 FAB buttons is not really a good UI design
-        // But this just about fits our 5...
-        //TODO: use resource qualifiers instead.
-        final boolean smallScreen = getResources().getConfiguration().screenHeightDp < 400;
-
-        int i = 0;
-        for (ExtendedFloatingActionButton fab : mFabMenuItems) {
-            // allow for null items
-            if (fab != null && fab.isEnabled()) {
-                if (show) {
-                    fab.show();
-                    if (!smallScreen) {
-                        // on top of base FAB
-                        fab.animate().translationX(baseX);
-                        fab.animate().translationY(baseY + ((i + 1) * deltaY));
-                    } else {
-                        // to the left of FAB and up
-                        fab.animate().translationX(baseX + deltaX);
-                        fab.animate().translationY(i * deltaY);
-                    }
-                } else {
-                    fab.animate().translationX(0);
-                    fab.animate().translationY(0);
-                    fab.hide();
-                }
-                i++;
-            }
-        }
     }
 
     @Override
@@ -671,11 +573,10 @@ public class BooksOnBookshelf
     @Override
     @CallSuper
     public boolean onPrepareOptionsMenu(@NonNull final Menu menu) {
+        mFabMenu.hide();
 
         final boolean showECPreferred = mModel.getCurrentStyle(this).getTopLevel(this) > 1;
         menu.findItem(R.id.MENU_LEVEL_PREFERRED_COLLAPSE).setVisible(showECPreferred);
-
-        hideFABMenu();
 
         return super.onPrepareOptionsMenu(menu);
     }
@@ -683,7 +584,7 @@ public class BooksOnBookshelf
     @Override
     @CallSuper
     public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
-        hideFABMenu();
+        mFabMenu.hide();
 
         switch (item.getItemId()) {
             case R.id.MENU_SORT: {
@@ -1310,9 +1211,9 @@ public class BooksOnBookshelf
 
     @Override
     public void onBackPressed() {
-        // If the FAB menu is showing, hide it.
-        if (mFabMenuItems[0].isShown()) {
-            showFABMenu(false);
+        // If the FAB menu is showing, hide it and suppress the back key.
+        if (mFabMenu.isShown()) {
+            mFabMenu.show(false);
             return;
         }
 
@@ -1393,7 +1294,7 @@ public class BooksOnBookshelf
     @Override
     @CallSuper
     public void onPause() {
-        hideFABMenu();
+        mFabMenu.hide();
         saveListPosition();
         super.onPause();
     }
