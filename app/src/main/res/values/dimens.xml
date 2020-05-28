@@ -89,6 +89,8 @@
     <dimen name="isbn_key_pad_width">320dp</dimen>
     <!-- The ISBN keypad should not stretch beyond a reasonable height. -->
     <dimen name="isbn_key_pad_height">240dp</dimen>
+    <!-- The ISBN keypad margin for the keys. -->
+    <dimen name="isbn_key_pad_key_margin">4dp</dimen>
     <!-- The ISBN keypad backspace button width: 2x icon width. -->
     <dimen name="isbn_key_pad_backspace_button_width">48dp</dimen>
     <!-- The ISBN keypad backspace button (no text): center the icon: 1/2 icon width -->
@@ -150,9 +152,9 @@
     <!-- Export options dialog in landscape mode showing all options.-->
     <dimen name="export_dialog_landscape_width">540dp</dimen>
 
-    <!-- indent an element so it matches up with the text part of a standard size text field
-    which has a drawable at the start/end. -->
-    <dimen name="icon_size">24dp</dimen>
     <!-- the width for a Button displaying an icon (24dp) and no text. -->
     <dimen name="icon_button_width">48dp</dimen>
+
+    <!-- generic drawable padding. -->
+    <dimen name="drawable_padding1">4dp</dimen>
 </resources>

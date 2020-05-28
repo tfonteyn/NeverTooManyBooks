@@ -32,42 +32,26 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <!-- *************************************************************************************** -->
-    <!-- Field & section labels -->
+    <!-- Field & Header labels -->
     <!-- *************************************************************************************** -->
 
     <!-- Base style; not to be used directly in layouts. -->
     <style name="Label">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
         <item name="android:textStyle">bold</item>
     </style>
 
-    <!-- generic field labels where the data is below the label -->
+    <!-- Generic field labels. -->
     <style name="Label.Field">
-    </style>
-
-    <!-- generic field labels where the data is on the side of the label -->
-    <style name="Label.Field.Inline">
-        <item name="android:paddingEnd">@dimen/indent1</item>
-    </style>
-
-    <!-- Section field labels where the data is below the label -->
-    <style name="Label.Section">
-        <item name="android:layout_marginTop">@dimen/border1</item>
-    </style>
-
-    <!-- Section field labels where there is a set of data below. -->
-    <style name="Label.Header">
-        <item name="android:layout_marginTop">16dp</item>
-        <item name="android:textAllCaps">true</item>
-        <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
-    </style>
-
-    <!-- Section field labels where there is a set of data below. -->
-    <style name="Label.Header.Small">
-        <item name="android:layout_marginTop">4dp</item>
         <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
+    </style>
+
+    <!-- Header field labels. -->
+    <style name="Label.Header">
+        <item name="android:textAllCaps">true</item>
+        <item name="android:layout_marginTop">@dimen/border2</item>
+        <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
     </style>
 
     <!-- *************************************************************************************** -->
@@ -89,18 +73,20 @@
 
     <!-- Description and personal notes. -->
     <style name="Text.Notes">
-        <item name="android:textIsSelectable">true</item>
         <item name="android:background">@drawable/outline_rounded</item>
+    </style>
+
+    <!-- On loan to X. -->
+    <style name="Text.OnLoanBar">
+        <item name="android:paddingStart">@dimen/indent2</item>
+        <item name="android:paddingEnd">@dimen/indent2</item>
+        <item name="android:background">?attr/colorOnBackground</item>
+        <item name="android:textAppearance">?android:attr/textAppearanceLargeInverse</item>
     </style>
 
     <!-- 'minor' detail text field; for example format, isbn,... -->
     <style name="Text.Small">
         <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
-    </style>
-
-    <!-- Book title gets a distinct style. -->
-    <style name="Text.Small.BookTitle" tools:keep="@style/TextDetail_Small_BookTitle">
-        <item name="android:textStyle">italic</item>
     </style>
 
     <!-- 'major' detail text field. -->
@@ -122,14 +108,6 @@
     <!-- informational piece of text -->
     <style name="Text.Blurb.Small">
         <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
-    </style>
-
-    <!-- On loan to X. -->
-    <style name="Text.OnLoanBar">
-        <item name="android:background">?attr/colorOnBackground</item>
-        <item name="android:paddingStart">@dimen/indent2</item>
-        <item name="android:paddingEnd">@dimen/indent2</item>
-        <item name="android:textAppearance">?android:attr/textAppearanceLargeInverse</item>
     </style>
 
     <!-- *************************************************************************************** -->
@@ -264,8 +242,8 @@
     <style name="IsbnKeyPad" parent="Widget.MaterialComponents.Button">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">0dp</item>
-        <item name="android:layout_marginStart">@dimen/indent1</item>
-        <item name="android:layout_marginEnd">@dimen/indent1</item>
+        <item name="android:layout_marginStart">@dimen/isbn_key_pad_key_margin</item>
+        <item name="android:layout_marginEnd">@dimen/isbn_key_pad_key_margin</item>
     </style>
 
     <!-- 0..9 and X -->
@@ -367,8 +345,8 @@
     <style name="Flag">
         <!-- Using 'Theme.AppCompat' a wrap_content/wrap_content worked fine.
              Since using 'Theme.MaterialComponents' it had to be set to 24/24 (i.e. icon size) -->
-        <item name="android:layout_width">@dimen/icon_size</item>
-        <item name="android:layout_height">@dimen/icon_size</item>
+        <item name="android:layout_width">24dp</item>
+        <item name="android:layout_height">24dp</item>
         <item name="android:enabled">false</item>
         <item name="android:clickable">false</item>
         <item name="android:focusable">false</item>
@@ -602,7 +580,7 @@
     <style name="Url">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:padding">@dimen/border1</item>
+        <item name="android:padding">4dp</item>
         <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
         <item name="android:textColor">?android:attr/textColorPrimaryNoDisable</item>
     </style>
@@ -612,7 +590,7 @@
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_marginStart">@dimen/indent1</item>
-        <item name="android:padding">@dimen/border1</item>
+        <item name="android:padding">4dp</item>
         <item name="android:background">@android:color/transparent</item>
         <item name="android:src">@drawable/ic_info_outline</item>
     </style>

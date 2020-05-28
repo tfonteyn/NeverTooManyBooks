@@ -49,7 +49,7 @@
     <TextView
         android:id="@+id/title"
         style="@style/Text"
-        android:layout_marginStart="@dimen/indent1"
+        android:layout_marginStart="4dp"
         app:layout_constraintStart_toEndOf="@id/coverImage0"
         app:layout_constraintTop_toTopOf="parent"
         tools:ignore="SelectableText"
@@ -59,7 +59,7 @@
     <TextView
         android:id="@+id/author"
         style="@style/Text"
-        android:layout_marginStart="@dimen/indent2"
+        android:layout_marginStart="8dp"
         app:layout_constraintStart_toEndOf="@id/coverImage0"
         app:layout_constraintTop_toBottomOf="@id/title"
         tools:ignore="SelectableText"

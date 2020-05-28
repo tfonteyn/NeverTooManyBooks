@@ -39,7 +39,7 @@
         android:id="@+id/title"
         style="@style/Text.BookTitle"
         android:drawableStart="@drawable/ic_book"
-        android:drawablePadding="@dimen/indent1"
+        android:drawablePadding="@dimen/drawable_padding1"
         android:textIsSelectable="false"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/year"

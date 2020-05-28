@@ -286,7 +286,7 @@
 
         <TextView
             android:id="@+id/lbl_series"
-            style="@style/Label.Section"
+            style="@style/Label.Field"
             android:text="@string/lbl_series"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/barrier_top_section"
@@ -313,6 +313,7 @@
         <CheckBox
             android:id="@+id/cbx_anthology"
             style="@style/Flag.Generic"
+            android:layout_marginStart="@dimen/border2"
             app:layout_constraintStart_toEndOf="@id/lbl_anthology"
             app:layout_constraintTop_toBottomOf="@id/series_title"
             tools:checked="true"
@@ -320,7 +321,7 @@
 
         <TextView
             android:id="@+id/lbl_toc"
-            style="@style/Label.Field.Inline"
+            style="@style/Label.Field"
             android:text="@string/lbl_table_of_content"
             android:visibility="gone"
             app:layout_constraintStart_toStartOf="parent"
@@ -331,6 +332,7 @@
         <com.google.android.material.switchmaterial.SwitchMaterial
             android:id="@+id/btn_show_toc"
             style="@style/TocSwitch"
+            android:layout_marginStart="@dimen/border2"
             app:layout_constraintBaseline_toBaselineOf="@id/lbl_toc"
             app:layout_constraintStart_toEndOf="@id/lbl_toc"
             app:layout_constraintTop_toBottomOf="@id/series_title"
@@ -368,7 +370,7 @@
 
         <TextView
             android:id="@+id/lbl_genre"
-            style="@style/Label.Section"
+            style="@style/Label.Field"
             android:text="@string/lbl_genre"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/edition"
@@ -385,7 +387,7 @@
 
         <TextView
             android:id="@+id/lbl_bookshelves"
-            style="@style/Label.Section"
+            style="@style/Label.Field"
             android:text="@string/lbl_bookshelves_long"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/genre"
@@ -404,7 +406,7 @@
 
         <TextView
             android:id="@+id/lbl_notes"
-            style="@style/Label.Section"
+            style="@style/Label.Field"
             android:text="@string/lbl_personal_notes"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/bookshelves"
@@ -428,7 +430,7 @@
 
         <TextView
             android:id="@+id/lbl_signed"
-            style="@style/Label.Field.Inline"
+            style="@style/Label.Field"
             android:text="@string/lbl_signed"
             app:layout_constraintBaseline_toBaselineOf="@id/cbx_signed"
             app:layout_constraintStart_toEndOf="@id/indent_fields"
@@ -437,6 +439,7 @@
         <CheckBox
             android:id="@+id/cbx_signed"
             style="@style/Flag.Generic"
+            android:layout_marginStart="@dimen/border2"
             app:layout_constraintStart_toEndOf="@id/lbl_signed"
             app:layout_constraintTop_toBottomOf="@id/notes"
             tools:checked="true"
@@ -444,7 +447,7 @@
 
         <TextView
             android:id="@+id/lbl_date_acquired"
-            style="@style/Label.Field.Inline"
+            style="@style/Label.Field"
             android:text="@string/lbl_date_acquired"
             app:layout_constraintBaseline_toBaselineOf="@id/date_acquired"
             app:layout_constraintStart_toEndOf="@id/indent_fields"
@@ -453,6 +456,7 @@
         <TextView
             android:id="@+id/date_acquired"
             style="@style/Text"
+            android:layout_marginStart="@dimen/border2"
             app:layout_constraintStart_toEndOf="@id/lbl_date_acquired"
             app:layout_constraintTop_toBottomOf="@id/cbx_signed"
             tools:ignore="SelectableText"
@@ -461,7 +465,7 @@
 
         <TextView
             android:id="@+id/lbl_price_paid"
-            style="@style/Label.Field.Inline"
+            style="@style/Label.Field"
             android:text="@string/lbl_price_paid"
             app:layout_constraintBaseline_toBaselineOf="@id/price_paid"
             app:layout_constraintStart_toEndOf="@id/indent_fields"
@@ -470,6 +474,7 @@
         <TextView
             android:id="@+id/price_paid"
             style="@style/Text"
+            android:layout_marginStart="@dimen/border2"
             app:layout_constraintStart_toEndOf="@id/lbl_price_paid"
             app:layout_constraintTop_toBottomOf="@id/date_acquired"
             tools:ignore="SelectableText"
@@ -478,7 +483,7 @@
 
         <TextView
             android:id="@+id/lbl_condition"
-            style="@style/Label.Field.Inline"
+            style="@style/Label.Field"
             android:text="@string/lbl_condition"
             app:layout_constraintBaseline_toBaselineOf="@id/condition"
             app:layout_constraintStart_toEndOf="@id/indent_fields"
@@ -487,6 +492,7 @@
         <TextView
             android:id="@+id/condition"
             style="@style/Text"
+            android:layout_marginStart="@dimen/border2"
             app:layout_constraintStart_toEndOf="@id/lbl_condition"
             app:layout_constraintTop_toBottomOf="@id/price_paid"
             tools:ignore="SelectableText"
@@ -495,7 +501,7 @@
 
         <TextView
             android:id="@+id/lbl_condition_cover"
-            style="@style/Label.Field.Inline"
+            style="@style/Label.Field"
             android:text="@string/lbl_dust_cover"
             app:layout_constraintBaseline_toBaselineOf="@id/condition_cover"
             app:layout_constraintStart_toEndOf="@id/indent_fields"
@@ -504,6 +510,7 @@
         <TextView
             android:id="@+id/condition_cover"
             style="@style/Text"
+            android:layout_marginStart="@dimen/border2"
             app:layout_constraintStart_toEndOf="@id/lbl_condition_cover"
             app:layout_constraintTop_toBottomOf="@id/condition"
             tools:ignore="SelectableText"
@@ -512,7 +519,7 @@
 
         <TextView
             android:id="@+id/lbl_read_start"
-            style="@style/Label.Field.Inline"
+            style="@style/Label.Field"
             android:text="@string/lbl_read_start"
             app:layout_constraintBaseline_toBaselineOf="@id/read_start"
             app:layout_constraintStart_toEndOf="@id/indent_fields"
@@ -521,6 +528,7 @@
         <TextView
             android:id="@+id/read_start"
             style="@style/Text"
+            android:layout_marginStart="@dimen/border2"
             app:layout_constraintStart_toEndOf="@id/lbl_read_start"
             app:layout_constraintTop_toBottomOf="@id/condition_cover"
             tools:ignore="SelectableText"
@@ -529,7 +537,7 @@
 
         <TextView
             android:id="@+id/lbl_read_end"
-            style="@style/Label.Field.Inline"
+            style="@style/Label.Field"
             android:text="@string/lbl_read_end"
             app:layout_constraintBaseline_toBaselineOf="@id/read_end"
             app:layout_constraintStart_toEndOf="@id/indent_fields"
@@ -538,6 +546,7 @@
         <TextView
             android:id="@+id/read_end"
             style="@style/Text"
+            android:layout_marginStart="@dimen/border2"
             app:layout_constraintStart_toEndOf="@id/lbl_read_end"
             app:layout_constraintTop_toBottomOf="@id/read_start"
             tools:ignore="SelectableText"
@@ -546,7 +555,7 @@
 
         <TextView
             android:id="@+id/lbl_location_long"
-            style="@style/Label.Field.Inline"
+            style="@style/Label.Field"
             android:text="@string/lbl_location_long"
             app:layout_constraintBaseline_toBaselineOf="@id/location"
             app:layout_constraintStart_toEndOf="@id/indent_fields"
@@ -555,6 +564,7 @@
         <TextView
             android:id="@+id/location"
             style="@style/Text"
+            android:layout_marginStart="@dimen/border2"
             app:layout_constraintStart_toEndOf="@id/lbl_location_long"
             app:layout_constraintTop_toBottomOf="@id/read_end"
             tools:ignore="SelectableText"

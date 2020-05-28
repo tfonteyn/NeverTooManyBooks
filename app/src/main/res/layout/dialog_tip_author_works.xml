@@ -47,7 +47,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:drawableStart="@drawable/ic_library_books"
-        android:drawablePadding="@dimen/border2"
+        android:drawablePadding="@dimen/drawable_padding1"
         android:text="@string/tip_authors_works_multiple_books"
         />
 
@@ -55,7 +55,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:drawableStart="@drawable/ic_book"
-        android:drawablePadding="@dimen/border2"
+        android:drawablePadding="@dimen/drawable_padding1"
         android:text="@string/tip_authors_works_book"
         />
 </LinearLayout>

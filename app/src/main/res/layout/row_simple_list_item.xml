@@ -41,7 +41,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/border2"
-        android:drawablePadding="@dimen/border2"
+        android:drawablePadding="@dimen/drawable_padding1"
         android:text=""
         android:textAppearance="?attr/textAppearanceListItem"
         tools:drawableStart="@drawable/ic_image"

@@ -112,7 +112,7 @@
 
         <TextView
             android:id="@+id/lbl_archive_format"
-            style="@style/Label.Header.Small"
+            style="@style/Label.Field"
             android:text="@string/lbl_archive_format"
             app:layout_constraintStart_toEndOf="@id/guideline"
             app:layout_constraintTop_toBottomOf="@id/cbx_prefs_and_styles"
