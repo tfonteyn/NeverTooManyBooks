@@ -52,7 +52,6 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Objects;
-import java.util.concurrent.RejectedExecutionException;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
@@ -66,7 +65,7 @@ import com.hardbacknutter.nevertoomanybooks.searches.SiteList;
  * Displays and manages a cover image browser in a dialog, allowing the user to select
  * an image from a list to use as the (new) book cover image.
  * <p>
- * Displays gallery images using {@link CoverBrowserViewModel#getPriorityExecutor()}.
+ * Displays gallery images using {@link CoverBrowserViewModel#getGalleryDisplayExecutor()}.
  * Displays preview image on the UI thread.
  *
  * <p>
@@ -317,7 +316,8 @@ public class CoverBrowserDialogFragment
                 mVb.preview.setVisibility(View.VISIBLE);
                 mVb.statusMessage.setText(R.string.txt_tap_on_image_to_select);
             })
-                    .executeOnExecutor(mModel.getPriorityExecutor());
+                    // use the default executor which is free right now
+                    .execute();
 
         } else {
             Snackbar.make(mVb.preview, R.string.warning_cover_not_found,
@@ -410,23 +410,13 @@ public class CoverBrowserDialogFragment
             if (ImageUtils.isFileGood(file)) {
                 // we have a file, load it into the view.
                 new ImageLoader(holder.imageView, file, mWidth, mHeight, null)
-                        .executeOnExecutor(mModel.getPriorityExecutor());
+                        .executeOnExecutor(mModel.getGalleryDisplayExecutor());
 
             } else {
                 // No valid file available; use a placeholder.
                 ImageUtils.setPlaceholder(holder.imageView, R.drawable.ic_image, 0, mHeight);
-                try {
-                    // and queue a request for it.
-                    mModel.fetchGalleryImage(isbn);
-
-                } catch (@NonNull final RejectedExecutionException e) {
-                    // some books have a LOT of editions... Dr. Asimov
-                    if (BuildConfig.DEBUG /* always */) {
-                        Log.d(TAG, "onBindViewHolder"
-                                   + "|isbn=" + isbn
-                                   + "Exception msg=" + e.getMessage());
-                    }
-                }
+                // and queue a request for it.
+                mModel.fetchGalleryImage(isbn);
             }
 
             holder.imageView.setOnClickListener(v -> setSelectedImage(imageFileInfo));

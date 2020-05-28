@@ -29,7 +29,6 @@ package com.hardbacknutter.nevertoomanybooks.dialogs;
 
 import android.content.res.Configuration;
 import android.content.res.Resources;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -159,6 +158,6 @@ public class ZoomedImageDialogFragment
 
         // load and resize as needed.
         new ImageLoader(mImageView, mImageFile, maxWidth, maxHeight, null)
-                .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                .execute();
     }
 }

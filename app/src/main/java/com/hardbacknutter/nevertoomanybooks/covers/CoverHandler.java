@@ -35,7 +35,6 @@ import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.Menu;
@@ -470,7 +469,7 @@ public class CoverHandler {
             mBook.putString(Book.BKEY_FILE_SPEC[mCIdx], file.getAbsolutePath());
 
             new ImageLoader(mCoverView, file, mWidth, mHeight, null)
-                    .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                    .execute();
             mCoverView.setBackground(null);
 
         } else {

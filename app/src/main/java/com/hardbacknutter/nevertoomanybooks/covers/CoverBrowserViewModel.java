@@ -71,8 +71,12 @@ public class CoverBrowserViewModel
 
     /** Unique identifier generator for all tasks. */
     private final AtomicInteger mTaskIdCounter = new AtomicInteger();
-    /** Executor for getting the preview image, and for displaying images. */
-    private final Executor mPriorityExecutor = AlternativeExecutor.create("preview", 32);
+
+    /** Executor for displaying gallery images. */
+    private final Executor mGalleryDisplayExecutor = AlternativeExecutor.create("gallery/d");
+    /** Executor for fetching gallery images. */
+    private final Executor mGalleryNetworkExecutor = AlternativeExecutor.create("gallery/n");
+
     /** Holder for all active tasks, so we can cancel them if needed. */
     private final SparseArray<AsyncTask> mAllTasks = new SparseArray<>();
 
@@ -174,9 +178,14 @@ public class CoverBrowserViewModel
         }
     }
 
+    /**
+     * Get the executor used for displaying gallery images.
+     *
+     * @return executor
+     */
     @NonNull
-    Executor getPriorityExecutor() {
-        return mPriorityExecutor;
+    Executor getGalleryDisplayExecutor() {
+        return mGalleryDisplayExecutor;
     }
 
     int getImageIndex() {
@@ -214,6 +223,7 @@ public class CoverBrowserViewModel
         synchronized (mAllTasks) {
             mAllTasks.put(mEditionsTask.getTaskId(), mEditionsTask);
         }
+        // use the default executor which is free right now
         mEditionsTask.execute();
     }
 
@@ -240,8 +250,7 @@ public class CoverBrowserViewModel
         synchronized (mAllTasks) {
             mAllTasks.put(task.getTaskId(), task);
         }
-        // default parallel executor.
-        task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        task.executeOnExecutor(mGalleryNetworkExecutor);
     }
 
     /** Observable. */
@@ -271,7 +280,8 @@ public class CoverBrowserViewModel
         synchronized (mAllTasks) {
             mAllTasks.put(mSelectedImageTask.getTaskId(), mSelectedImageTask);
         }
-        mSelectedImageTask.executeOnExecutor(mPriorityExecutor);
+        // use the default executor which is free right now
+        mSelectedImageTask.execute();
     }
 
     /** Observable. */

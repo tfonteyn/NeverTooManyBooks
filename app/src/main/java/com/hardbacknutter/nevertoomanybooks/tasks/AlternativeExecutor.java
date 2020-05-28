@@ -38,39 +38,36 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import com.hardbacknutter.nevertoomanybooks.covers.CoverBrowserDialogFragment;
-
 /**
- * A copy of {@link AsyncTask#THREAD_POOL_EXECUTOR} with lower configuration numbers.
+ * A copy of {@link AsyncTask#THREAD_POOL_EXECUTOR}.
  * <p>
  * Main (only?) purpose is to provide a <strong>second</strong> Executor.
  * This allows to run specific tasks that we don't want to submit (and wait on) the
  * shared one in AsyncTask.
  * <p>
- * <br>Example: {@link CoverBrowserDialogFragment} uses the default one
- * to get thumbnails, but uses this alternative one to get the larger
- * preview image without waiting in the shared queue.
+ * <strong>Note:</strong> this executor uses an unbounded queue.
  */
 public final class AlternativeExecutor {
 
-    public static Executor create(@NonNull final String threadName,
-                                  final int poolWorkQueue) {
-        // core pool size set to 1, instead of 2..4 (cpu dependent)
-        final ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(
-                1, Runtime.getRuntime().availableProcessors(),
-                30, TimeUnit.SECONDS,
-                new LinkedBlockingQueue<>(poolWorkQueue),
-                new ThreadFactory() {
-                    private final AtomicInteger mCount = new AtomicInteger(1);
-
-                    public Thread newThread(@NonNull final Runnable r) {
-                        return new Thread(r, threadName + '#' + mCount.getAndIncrement());
-                    }
-                });
-        threadPoolExecutor.allowCoreThreadTimeOut(true);
-        return threadPoolExecutor;
-    }
+    // these are copied from AsyncTask#THREAD_POOL_EXECUTOR
+    private static final int CORE_POOL_SIZE = 1;
+    private static final int MAXIMUM_POOL_SIZE = 20;
+    private static final int KEEP_ALIVE_SECONDS = 3;
 
     private AlternativeExecutor() {
+    }
+
+    public static Executor create(@NonNull final String threadName) {
+        final ThreadPoolExecutor executor = new ThreadPoolExecutor(
+                CORE_POOL_SIZE, MAXIMUM_POOL_SIZE, KEEP_ALIVE_SECONDS, TimeUnit.SECONDS,
+                new LinkedBlockingQueue<>(), new ThreadFactory() {
+            private final AtomicInteger mCount = new AtomicInteger(1);
+
+            public Thread newThread(@NonNull final Runnable r) {
+                return new Thread(r, threadName + '#' + mCount.getAndIncrement());
+            }
+        });
+        executor.allowCoreThreadTimeOut(true);
+        return executor;
     }
 }
