@@ -56,6 +56,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
 public class EditBookNotesFragment
         extends EditBookBaseFragment {
 
+    /** Log tag. */
     private static final String TAG = "EditBookNotesFragment";
 
     /**

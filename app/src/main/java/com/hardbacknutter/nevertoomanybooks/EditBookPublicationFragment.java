@@ -47,6 +47,7 @@ import com.hardbacknutter.nevertoomanybooks.fields.formatters.DoubleNumberFormat
 public class EditBookPublicationFragment
         extends EditBookBaseFragment {
 
+    /** Log tag. */
     private static final String TAG = "EditBookPublicationFrag";
 
     @NonNull

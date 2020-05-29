@@ -134,14 +134,14 @@ public class FTSSearchActivity
 
         mDb = new DAO(TAG);
 
-        final Bundle currentArgs = savedInstanceState != null ? savedInstanceState
-                                                              : getIntent().getExtras();
-        if (currentArgs != null) {
-            mAuthorSearchText = currentArgs.getString(
+        final Bundle args = savedInstanceState != null ? savedInstanceState
+                                                       : getIntent().getExtras();
+        if (args != null) {
+            mAuthorSearchText = args.getString(
                     BooksOnBookshelfModel.SearchCriteria.BKEY_SEARCH_TEXT_AUTHOR);
-            mTitleSearchText = currentArgs.getString(DBDefinitions.KEY_TITLE);
-            mSeriesTitleSearchText = currentArgs.getString(DBDefinitions.KEY_SERIES_TITLE);
-            mKeywordsSearchText = currentArgs.getString(
+            mTitleSearchText = args.getString(DBDefinitions.KEY_TITLE);
+            mSeriesTitleSearchText = args.getString(DBDefinitions.KEY_SERIES_TITLE);
+            mKeywordsSearchText = args.getString(
                     BooksOnBookshelfModel.SearchCriteria.BKEY_SEARCH_TEXT_KEYWORDS);
         }
 

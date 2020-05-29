@@ -67,6 +67,7 @@ import com.hardbacknutter.nevertoomanybooks.viewmodels.EditBookshelvesModel;
 public class EditBookshelvesFragment
         extends Fragment {
 
+    /** Log tag. */
     static final String TAG = "EditBookshelvesFragment";
 
     /** The adapter for the list. */

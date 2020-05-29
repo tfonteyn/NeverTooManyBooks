@@ -189,20 +189,20 @@ public class SearchCoordinator
             final Context context = LocaleUtils.applyLocale(App.getAppContext());
 
             // process the outcome and queue another task as needed.
-            int tasksActive = onSearchTaskFinished(context, message);
+            final int tasksActive = onSearchTaskFinished(context, message);
 
             // no more tasks ? Then send the results back to our creator.
             if (tasksActive == 0) {
-                long processTime = System.nanoTime();
+                final long processTime = System.nanoTime();
 
                 mIsSearchActive = false;
                 accumulateResults(context);
-                String searchErrors = accumulateErrors(context);
+                final String searchErrors = accumulateErrors(context);
 
                 if (searchErrors != null && !searchErrors.isEmpty()) {
                     mBookData.putString(BKEY_SEARCH_ERROR, searchErrors);
                 }
-                FinishMessage<Bundle> scFinished = new FinishMessage<>(
+                final FinishMessage<Bundle> scFinished = new FinishMessage<>(
                         R.id.TASK_ID_SEARCH_COORDINATOR,
                         mIsCancelled ? TaskStatus.Cancelled : TaskStatus.Success,
                         mBookData, null);
@@ -216,11 +216,11 @@ public class SearchCoordinator
 
                     if (DEBUG_SWITCHES.TIMERS) {
                         for (int i = 0; i < mSearchTasksStartTime.size(); i++) {
-                            long start = mSearchTasksStartTime.valueAt(i);
+                            final long start = mSearchTasksStartTime.valueAt(i);
                             // use the key, not the index!
-                            int key = mSearchTasksStartTime.keyAt(i);
-                            long end = mSearchTasksEndTime.get(key);
-                            String name = SearchSites.getName(key);
+                            final int key = mSearchTasksStartTime.keyAt(i);
+                            final long end = mSearchTasksEndTime.get(key);
+                            final String name = SearchSites.getName(key);
                             if (end != 0) {
                                 Log.d(TAG, String.format(Locale.ENGLISH,
                                                          "mSearchTaskListener.onFinished"
@@ -310,7 +310,7 @@ public class SearchCoordinator
                 mIsbnSearchText = args.getString(DBDefinitions.KEY_ISBN, "");
 
                 //TODO: (maybe) implement native id as argument
-//                mNativeIdSearchText = args.get...(UniqueId.BKEY_NATIVE_ID_ARRAY);
+                // mNativeIdSearchText = args.get...(UniqueId.BKEY_NATIVE_ID_ARRAY);
 
                 mAuthorSearchText = args
                         .getString(BooksOnBookshelfModel.SearchCriteria.BKEY_SEARCH_TEXT_AUTHOR,
@@ -320,7 +320,7 @@ public class SearchCoordinator
                 mPublisherSearchText = args.getString(DBDefinitions.KEY_PUBLISHER, "");
 
                 // use global preference.
-                Locale locale = LocaleUtils.getUserLocale(context);
+                final Locale locale = LocaleUtils.getUserLocale(context);
                 mSiteList = SiteList.getList(context, locale, SiteList.Type.Data);
             }
         }
@@ -770,7 +770,7 @@ public class SearchCoordinator
             return false;
         }
 
-        SearchEngine searchEngine = site.getSearchEngine();
+        final SearchEngine searchEngine = site.getSearchEngine();
         if (!searchEngine.isAvailable(context)) {
             return false;
         }
@@ -783,7 +783,7 @@ public class SearchCoordinator
             nativeId = mNativeIdSearchText.get(site.id);
         }
 
-        SearchTask task = new SearchTask(context, site.id, searchEngine, mSearchTaskListener);
+        final SearchTask task = new SearchTask(context, site.id, searchEngine, mSearchTaskListener);
         task.setFetchThumbnail(mFetchThumbnail);
 
         if (nativeId != null && !nativeId.isEmpty()
@@ -850,9 +850,9 @@ public class SearchCoordinator
             List<Site> allSites = SiteList.getDataSitesByReliability(context);
             for (Site site : allSites) {
                 if (mSearchResults.containsKey(site.id)) {
-                    Bundle bookData = mSearchResults.get(site.id);
+                    final Bundle bookData = mSearchResults.get(site.id);
                     if (bookData != null && bookData.containsKey(DBDefinitions.KEY_ISBN)) {
-                        String isbnFound = bookData.getString(DBDefinitions.KEY_ISBN);
+                        final String isbnFound = bookData.getString(DBDefinitions.KEY_ISBN);
                         // do they match?
                         if (isbnFound != null && !isbnFound.isEmpty()
                             && mIsbn.equals(ISBN.createISBN(isbnFound))) {
@@ -905,10 +905,10 @@ public class SearchCoordinator
 
         // Pick the best covers for each list (if any) and clean/delete all others.
         for (int cIdx = 0; cIdx < 2; cIdx++) {
-            ArrayList<String> imageList = mBookData
+            final ArrayList<String> imageList = mBookData
                     .getStringArrayList(Book.BKEY_FILE_SPEC_ARRAY[cIdx]);
             if (imageList != null && !imageList.isEmpty()) {
-                String coverName = ImageUtils.getBestImage(imageList);
+                final String coverName = ImageUtils.getBestImage(imageList);
                 if (coverName != null) {
                     mBookData.putString(Book.BKEY_FILE_SPEC[cIdx], coverName);
                 }
@@ -917,13 +917,13 @@ public class SearchCoordinator
         }
 
         // If we did not get an ISBN, use the one we originally searched for.
-        String isbn = mBookData.getString(DBDefinitions.KEY_ISBN);
+        final String isbn = mBookData.getString(DBDefinitions.KEY_ISBN);
         if (isbn == null || isbn.isEmpty()) {
             mBookData.putString(DBDefinitions.KEY_ISBN, mIsbnSearchText);
         }
 
         // If we did not get an title, use the one we originally searched for.
-        String title = mBookData.getString(DBDefinitions.KEY_TITLE);
+        final String title = mBookData.getString(DBDefinitions.KEY_TITLE);
         if (title == null || title.isEmpty()) {
             mBookData.putString(DBDefinitions.KEY_TITLE, mTitleSearchText);
         }
@@ -944,7 +944,7 @@ public class SearchCoordinator
      */
     private void accumulateSiteData(@NonNull final Context context,
                                     @NonNull final Site site) {
-        Bundle siteData = mSearchResults.get(site.id);
+        final Bundle siteData = mSearchResults.get(site.id);
         if (siteData == null || siteData.isEmpty()) {
             return;
         }
@@ -984,12 +984,12 @@ public class SearchCoordinator
      */
     private void accumulateStringData(@NonNull final String key,
                                       @NonNull final Bundle siteData) {
-        Object dataToAdd = siteData.get(key);
+        final Object dataToAdd = siteData.get(key);
         if (dataToAdd == null || dataToAdd.toString().trim().isEmpty()) {
             return;
         }
 
-        String dest = mBookData.getString(key);
+        final String dest = mBookData.getString(key);
         if (dest == null || dest.isEmpty()) {
             // just use it
             mBookData.putString(key, dataToAdd.toString());
@@ -1016,8 +1016,8 @@ public class SearchCoordinator
     private void accumulateDates(@NonNull final Locale siteLocale,
                                  @NonNull final String key,
                                  @NonNull final Bundle siteData) {
-        String currentDateHeld = mBookData.getString(key);
-        String dataToAdd = siteData.getString(key);
+        final String currentDateHeld = mBookData.getString(key);
+        final String dataToAdd = siteData.getString(key);
 
         if (currentDateHeld == null || currentDateHeld.isEmpty()) {
             // copy, even if the incoming date might not be valid.
@@ -1028,10 +1028,10 @@ public class SearchCoordinator
             // Overwrite with the new date if we can parse it and
             // if the current one was present but not valid.
             if (dataToAdd != null) {
-                Date newDate = DateUtils.parseDate(siteLocale, dataToAdd);
+                final Date newDate = DateUtils.parseDate(siteLocale, dataToAdd);
                 if (newDate != null) {
                     if (DateUtils.parseDate(siteLocale, currentDateHeld) == null) {
-                        String value = DateUtils.utcSqlDate(newDate);
+                        final String value = DateUtils.utcSqlDate(newDate);
                         // current date was invalid, use new one.
                         mBookData.putString(key, value);
                         if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
@@ -1058,7 +1058,7 @@ public class SearchCoordinator
      */
     private <T extends Parcelable> void accumulateList(@NonNull final String key,
                                                        @NonNull final Bundle siteData) {
-        ArrayList<T> dataToAdd = siteData.getParcelableArrayList(key);
+        final ArrayList<T> dataToAdd = siteData.getParcelableArrayList(key);
         if (dataToAdd == null || dataToAdd.isEmpty()) {
             return;
         }
@@ -1094,11 +1094,11 @@ public class SearchCoordinator
         String errorMessage = null;
         // no synchronized needed, at this point all other threads have finished.
         if (!mSearchFinishedMessages.isEmpty()) {
-            StringBuilder sb = new StringBuilder();
+            final StringBuilder sb = new StringBuilder();
             for (Map.Entry<Integer, TaskListener.FinishMessage<Bundle>>
-                    error : mSearchFinishedMessages.entrySet()) {
-                String siteError = createSiteError(context, error.getKey(), error.getValue());
-                sb.append(siteError).append('\n');
+                    entry : mSearchFinishedMessages.entrySet()) {
+                final String error = createSiteError(context, entry.getKey(), entry.getValue());
+                sb.append(error).append('\n');
             }
             errorMessage = sb.toString();
         }
@@ -1120,9 +1120,8 @@ public class SearchCoordinator
                                    @StringRes final int siteId,
                                    @NonNull final TaskListener.FinishMessage<Bundle> message) {
 
-        String siteName = SearchSites.getName(siteId);
+        final String siteName = SearchSites.getName(siteId);
         String text;
-
         switch (message.status) {
             case Cancelled:
                 text = context.getString(R.string.progress_end_cancelled);
@@ -1190,7 +1189,7 @@ public class SearchCoordinator
         int progressCount = 0;
 
         // Start with the base message if we have one.
-        StringBuilder sb;
+        final StringBuilder sb;
         if (mBaseMessage != null && !mBaseMessage.isEmpty()) {
             sb = new StringBuilder(mBaseMessage);
         } else {

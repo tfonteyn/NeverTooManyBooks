@@ -102,6 +102,7 @@ import com.hardbacknutter.nevertoomanybooks.widgets.ddsupport.StartDragListener;
 public class EditBookTocFragment
         extends EditBookBaseFragment {
 
+    /** Log tag. */
     private static final String TAG = "EditBookTocFragment";
 
     /** If the list changes, the book is dirty. */
@@ -691,9 +692,9 @@ public class EditBookTocFragment
                 mListener.get().commitIsfdbData(mTocBitMask, mTocEntries);
             } else {
                 if (BuildConfig.DEBUG /* always */) {
-                    Log.w(TAG, "onCommitToc|" +
-                               (mListener == null ? ErrorMsg.LISTENER_WAS_NULL
-                                                  : ErrorMsg.LISTENER_WAS_DEAD));
+                    Log.w(TAG, "onCommitToc|"
+                               + (mListener == null ? ErrorMsg.LISTENER_WAS_NULL
+                                                    : ErrorMsg.LISTENER_WAS_DEAD));
                 }
             }
         }
@@ -704,9 +705,9 @@ public class EditBookTocFragment
                 mListener.get().getNextEdition();
             } else {
                 if (BuildConfig.DEBUG /* always */) {
-                    Log.w(TAG, "onGetNext|" +
-                               (mListener == null ? ErrorMsg.LISTENER_WAS_NULL
-                                                  : ErrorMsg.LISTENER_WAS_DEAD));
+                    Log.w(TAG, "onGetNext|"
+                               + (mListener == null ? ErrorMsg.LISTENER_WAS_NULL
+                                                    : ErrorMsg.LISTENER_WAS_DEAD));
                 }
             }
         }

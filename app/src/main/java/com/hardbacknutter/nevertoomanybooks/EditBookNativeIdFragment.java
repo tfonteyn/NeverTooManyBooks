@@ -45,6 +45,7 @@ import com.hardbacknutter.nevertoomanybooks.fields.formatters.LongNumberFormatte
 public class EditBookNativeIdFragment
         extends EditBookBaseFragment {
 
+    /** Log tag. */
     private static final String TAG = "EditBookNativeIdFrag";
 
     @NonNull
