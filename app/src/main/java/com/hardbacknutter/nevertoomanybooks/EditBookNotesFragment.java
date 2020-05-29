@@ -170,7 +170,7 @@ public class EditBookNotesFragment
      */
     private void addReadCheckboxOnClickListener() {
         // only bother when it's in use
-        final Field readCbx = getField(R.id.cbx_read);
+        final Field<?, ?> readCbx = getField(R.id.cbx_read);
         //noinspection ConstantConditions
         if (readCbx.isUsed(getContext())) {
             //noinspection ConstantConditions

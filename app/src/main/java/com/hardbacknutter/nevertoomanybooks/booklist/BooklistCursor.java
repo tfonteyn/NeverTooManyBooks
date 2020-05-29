@@ -318,13 +318,12 @@ public class BooklistCursor
                 if (oldPos < 0) {
                     // Not in MRU; just add it to the top
                     mMruListPos = (mMruListPos + 1) % MRU_LIST_SIZE;
-                    mMruList[mMruListPos] = cursorId;
 
                 } else {
 
+                    int nextPosition = oldPos;
                     if (oldPos <= mMruListPos) {
                         // Just shuffle intervening items down
-                        int nextPosition = oldPos;
                         int currentPosition;
                         while (nextPosition < mMruListPos) {
                             currentPosition = nextPosition++;
@@ -334,7 +333,6 @@ public class BooklistCursor
                         // Need to shuffle intervening items 'down' with a wrap;
                         // this code would actually work for the above case, but it's slower.
                         // Not sure it really matters.
-                        int nextPosition = oldPos;
                         int currentPosition;
                         // (Only really need '%' for case where oldPos<=listPos.)
                         int rowsToMove = (MRU_LIST_SIZE - (oldPos - mMruListPos)) % MRU_LIST_SIZE;
@@ -344,8 +342,9 @@ public class BooklistCursor
                             mMruList[currentPosition] = mMruList[nextPosition];
                         }
                     }
-                    mMruList[mMruListPos] = cursorId;
                 }
+
+                mMruList[mMruListPos] = cursorId;
             }
 
             // Set as the active cursor

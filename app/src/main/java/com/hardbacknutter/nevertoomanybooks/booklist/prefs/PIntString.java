@@ -75,8 +75,8 @@ public class PIntString
     public static int getListPreference(@NonNull final Context context,
                                         @NonNull final String key,
                                         final int defValue) {
-        String value = PreferenceManager.getDefaultSharedPreferences(context)
-                                        .getString(key, null);
+        final String value = PreferenceManager.getDefaultSharedPreferences(context)
+                                              .getString(key, null);
         if (value == null || value.isEmpty()) {
             return defValue;
         }
@@ -85,8 +85,8 @@ public class PIntString
 
     @NonNull
     public Integer getGlobalValue(@NonNull final Context context) {
-        String value = PreferenceManager.getDefaultSharedPreferences(context)
-                                        .getString(getKey(), null);
+        final String value = PreferenceManager.getDefaultSharedPreferences(context)
+                                              .getString(getKey(), null);
         if (value != null && !value.isEmpty()) {
             return Integer.parseInt(value);
         }
@@ -104,7 +104,7 @@ public class PIntString
     public Integer getValue(@NonNull final Context context) {
         if (mIsPersistent) {
             // reminder: {@link androidx.preference.ListPreference} is stored as a String
-            String value = getPrefs(context).getString(getKey(), null);
+            final String value = getPrefs(context).getString(getKey(), null);
             if (value != null && !value.isEmpty()) {
                 return Integer.parseInt(value);
             }

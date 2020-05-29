@@ -68,11 +68,20 @@ public interface Filter<T> {
         return getExpression(context) != null;
     }
 
+    @NonNull
     default String getKey() {
         throw new UnsupportedOperationException();
     }
 
-    default T get() {
+    /**
+     * Get the value this filter represents.
+     *
+     * @param context Current context
+     *
+     * @return native value
+     */
+    @NonNull
+    default T getValue(@NonNull final Context context) {
         throw new UnsupportedOperationException();
     }
 

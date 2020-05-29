@@ -138,7 +138,7 @@ public class ExportHelperDialogFragment
         list.add(getString(R.string.lbl_archive_type_xml, ArchiveContainer.Xml.getFileExt()));
 
         //noinspection ConstantConditions
-        final ArrayAdapter archiveFormatAdapter =
+        final ArrayAdapter<String> archiveFormatAdapter =
                 new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, list);
         archiveFormatAdapter.setDropDownViewResource(R.layout.dropdown_menu_popup_item);
         mVb.archiveFormat.setAdapter(archiveFormatAdapter);

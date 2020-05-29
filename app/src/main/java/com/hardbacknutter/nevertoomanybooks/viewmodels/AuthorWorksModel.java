@@ -56,8 +56,6 @@ public class AuthorWorksModel
     /** Database Access. */
     private DAO mDb;
     /** Author is set in {@link #init}. */
-    @SuppressWarnings("NullableProblems")
-    @NonNull
     private Author mAuthor;
     private Bookshelf mBookshelf;
     /** Initially we get toc entries and books. */

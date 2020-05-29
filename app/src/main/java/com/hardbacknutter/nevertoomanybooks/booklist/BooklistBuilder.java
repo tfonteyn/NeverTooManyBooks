@@ -146,7 +146,7 @@ public class BooklistBuilder
     private final Map<String, VirtualDomain> mBookDomains = new HashMap<>();
 
     /** the list of Filters. */
-    private final Collection<Filter> mFilters = new ArrayList<>();
+    private final Collection<Filter<?>> mFilters = new ArrayList<>();
     /** Style to use while building the list. */
     @SuppressWarnings("FieldNotUsedInToString")
     @NonNull
@@ -289,7 +289,7 @@ public class BooklistBuilder
                                                     + "SELECT " + KEY_FTS_BOOKS_PK + " FROM "
                                                     + TBL_FTS_BOOKS.getName()
                                                     + " WHERE " + TBL_FTS_BOOKS.getName()
-                                                    + " MATCH '" + query + "\')"
+                                                    + " MATCH '" + query + "')"
                                                     + ')');
         }
     }
@@ -812,7 +812,7 @@ public class BooklistBuilder
         /** Set to {@code true} if we're filtering on a specific bookshelf. */
         private final boolean mFilteredOnBookshelf;
         /** the list of Filters. */
-        private final Collection<Filter> mFilters = new ArrayList<>();
+        private final Collection<Filter<?>> mFilters = new ArrayList<>();
 
         @NonNull
         private final Context mContext;
@@ -884,8 +884,8 @@ public class BooklistBuilder
                        final boolean isGroup) {
 
             // Add to the table, if not already there
-            boolean added = mDestinationTable.addDomain(vDomain.getDomain());
-            String expression = vDomain.getExpression();
+            final boolean added = mDestinationTable.addDomain(vDomain.getDomain());
+            final String expression = vDomain.getExpression();
 
             // If the domain was already present, and it has an expression,
             // check the expression being different (or not) from the stored expression
@@ -951,7 +951,7 @@ public class BooklistBuilder
          *
          * @param filters list of filters; only active filters will be added
          */
-        void addFilters(@NonNull final Collection<Filter> filters) {
+        void addFilters(@NonNull final Collection<Filter<?>> filters) {
             mFilters.addAll(filters);
         }
 
@@ -1070,7 +1070,7 @@ public class BooklistBuilder
             // the user wants the book to show under all its Authors
             if (!mStyle.isShowBooksUnderEachAuthor(context)) {
                 @Author.Type
-                int primaryAuthorType = mStyle.getPrimaryAuthorType(context);
+                final int primaryAuthorType = mStyle.getPrimaryAuthorType(context);
                 if (primaryAuthorType == Author.TYPE_UNKNOWN) {
                     // don't care about Author type, so just grab the primary (i.e. pos==1)
                     sql.append(" AND ")
@@ -1111,9 +1111,9 @@ public class BooklistBuilder
          * @param context Current context
          */
         private String buildWhere(@NonNull final Context context) {
-            StringBuilder where = new StringBuilder();
+            final StringBuilder where = new StringBuilder();
 
-            for (Filter filter : mFilters) {
+            for (Filter<?> filter : mFilters) {
                 // Theoretically all filters should be active here, but paranoia...
                 if (filter.isActive(context)) {
                     if (where.length() != 0) {

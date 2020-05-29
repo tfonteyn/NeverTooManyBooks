@@ -303,9 +303,10 @@ public class XmlExporter
 
             // Active filters with their Preferences.
             writer.write('<' + XmlTags.TAG_FILTER_LIST + '>');
-            for (Filter filter : style.getActiveFilters(context)) {
+            for (Filter<?> filter : style.getActiveFilters(context)) {
                 if (filter.isActive(context)) {
-                    writer.write(XmlUtils.tag(XmlTags.TAG_FILTER, filter.getKey(), filter.get()));
+                    writer.write(XmlUtils.tag(XmlTags.TAG_FILTER,
+                                              filter.getKey(), filter.getValue(context)));
                 }
             }
             writer.write("</" + XmlTags.TAG_FILTER_LIST + '>');

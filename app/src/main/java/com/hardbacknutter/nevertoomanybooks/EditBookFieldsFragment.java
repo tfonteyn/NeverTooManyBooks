@@ -81,7 +81,7 @@ public class EditBookFieldsFragment
     /** Log tag. */
     private static final String TAG = "EditBookFieldsFragment";
     /** re-usable validator. */
-    private static final FieldValidator NON_BLANK_VALIDATOR = new NonBlankValidator();
+    private static final FieldValidator<Object, View> NON_BLANK_VALIDATOR = new NonBlankValidator();
 
     /** Dialog listener (strong reference). */
     private final CheckListDialogFragment.CheckListResultsListener mCheckListResultsListener =
@@ -317,17 +317,14 @@ public class EditBookFieldsFragment
         //noinspection SwitchStatementWithTooFewBranches
         switch (item.getItemId()) {
             case R.id.MENU_STRICT_ISBN: {
-                final boolean checked = !item.isChecked();
-                item.setChecked(checked);
-                mIsbnValidationTextWatcher.setStrictIsbn(checked);
-                if (checked) {
-                    // don't add twice
-                    mVb.isbn.removeTextChangedListener(mIsbnCleanupTextWatcher);
+                mStrictIsbn = !item.isChecked();
+                item.setChecked(mStrictIsbn);
+                mIsbnValidationTextWatcher.setStrictIsbn(mStrictIsbn);
+                // don't add twice
+                mVb.isbn.removeTextChangedListener(mIsbnCleanupTextWatcher);
+                if (mStrictIsbn) {
                     mVb.isbn.addTextChangedListener(mIsbnCleanupTextWatcher);
-                } else {
-                    mVb.isbn.removeTextChangedListener(mIsbnCleanupTextWatcher);
                 }
-                mStrictIsbn = checked;
                 return true;
             }
 

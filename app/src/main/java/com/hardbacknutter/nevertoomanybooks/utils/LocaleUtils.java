@@ -34,7 +34,6 @@ import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.os.Build;
-import android.os.LocaleList;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -307,24 +306,6 @@ public final class LocaleUtils {
         }
         return locale;
     }
-
-    /**
-     * Return the user preferred Locale list.
-     *
-     * @param context Current context
-     *
-     * @return LocaleList
-     */
-    @NonNull
-    public static LocaleList getUserLocaleList(@NonNull final Context context) {
-        if (Build.VERSION.SDK_INT >= 24) {
-            return context.getResources().getConfiguration().getLocales();
-        } else {
-            //noinspection deprecation
-            return new LocaleList(context.getResources().getConfiguration().locale);
-        }
-    }
-
 
     @NonNull
     private static Context updateResources(@NonNull final Context context,

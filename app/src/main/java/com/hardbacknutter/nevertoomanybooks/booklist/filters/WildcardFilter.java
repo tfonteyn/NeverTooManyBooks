@@ -52,7 +52,7 @@ import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition
  * </pre>
  */
 public class WildcardFilter
-        implements Filter {
+        implements Filter<String> {
 
     private final TableDefinition mTable;
     private final String mDomainKey;
@@ -62,9 +62,9 @@ public class WildcardFilter
     /**
      * Constructor.
      *
-     * @param table    to use by the expression
-     * @param domainKey   to use by the expression
-     * @param criteria to use by the expression
+     * @param table     to use by the expression
+     * @param domainKey to use by the expression
+     * @param criteria  to use by the expression
      */
     public WildcardFilter(@NonNull final TableDefinition table,
                           @NonNull final String domainKey,
@@ -83,6 +83,12 @@ public class WildcardFilter
     @Override
     public boolean isActive(@NonNull final Context context) {
         return DBDefinitions.isUsed(context, mDomainKey);
+    }
+
+    @Override
+    @NonNull
+    public String getValue(@NonNull final Context context) {
+        return mCriteria;
     }
 
     @Override

@@ -261,7 +261,7 @@ public class BooklistStyle
      * <p>
      * <strong>IMPORTANT:</strong> The key in the Map is the actual preference key itself.
      */
-    private Map<String, Filter> mFilters;
+    private Map<String, Filter<?>> mFilters;
 
     /**
      * Global defaults constructor.
@@ -390,7 +390,7 @@ public class BooklistStyle
             bookDetailField.set(in);
         }
         // the collection is ordered, so we don't need the keys.
-        for (Filter filter : mFilters.values()) {
+        for (Filter<?> filter : mFilters.values()) {
             filter.set(in);
         }
     }
@@ -445,7 +445,7 @@ public class BooklistStyle
             bookDetailField.set(in);
         }
         // the collection is ordered, so we don't need the keys.
-        for (Filter filter : mFilters.values()) {
+        for (Filter<?> filter : mFilters.values()) {
             filter.set(in);
         }
     }
@@ -735,7 +735,7 @@ public class BooklistStyle
             bookDetailField.writeToParcel(dest);
         }
         // the collection is ordered, so we don't write the keys.
-        for (Filter filter : mFilters.values()) {
+        for (Filter<?> filter : mFilters.values()) {
             filter.writeToParcel(dest);
         }
     }
@@ -842,7 +842,7 @@ public class BooklistStyle
      */
     @NonNull
     public Map<String, PPref> getPreferences(final boolean all) {
-        Map<String, PPref> map = new HashMap<>();
+        final Map<String, PPref> map = new HashMap<>();
         map.put(mName.getKey(), mName);
 
         map.put(mIsPreferred.getKey(), mIsPreferred);
@@ -862,7 +862,7 @@ public class BooklistStyle
 
         if (all) {
             // all filters (both active and non-active)
-            for (Filter filter : mFilters.values()) {
+            for (Filter<?> filter : mFilters.values()) {
                 map.put(filter.getKey(), (PPref) filter);
             }
 
@@ -883,8 +883,8 @@ public class BooklistStyle
      */
     public void updatePreferences(@NonNull final Context context,
                                   @NonNull final Map<String, PPref> newPrefs) {
-        SharedPreferences.Editor ed = context.getSharedPreferences(mUuid, Context.MODE_PRIVATE)
-                                             .edit();
+        final SharedPreferences.Editor ed =
+                context.getSharedPreferences(mUuid, Context.MODE_PRIVATE).edit();
         updatePreferences(context, ed, newPrefs);
         ed.apply();
     }
@@ -899,11 +899,11 @@ public class BooklistStyle
     private void updatePreferences(@NonNull final Context context,
                                    @NonNull final SharedPreferences.Editor ed,
                                    @NonNull final Map<String, PPref> newPrefs) {
-        Map<String, PPref> currentPreferences = getPreferences(true);
+        final Map<String, PPref> currentPreferences = getPreferences(true);
 
         for (PPref p : newPrefs.values()) {
             // do we have this Preference ?
-            PPref ourPPref = currentPreferences.get(p.getKey());
+            final PPref ourPPref = currentPreferences.get(p.getKey());
             if (ourPPref != null) {
                 // if we do, then update our value
                 //noinspection unchecked
@@ -1004,7 +1004,7 @@ public class BooklistStyle
      */
     @ImageScale.Scale
     public int getThumbnailScale(@NonNull final Context context) {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         if (isBookDetailUsed(context, prefs, DBDefinitions.KEY_THUMBNAIL)) {
             return mThumbnailScale.getValue(context);
         }
@@ -1134,9 +1134,9 @@ public class BooklistStyle
      * @return list
      */
     @NonNull
-    public Collection<Filter> getActiveFilters(@NonNull final Context context) {
-        Collection<Filter> activeFilters = new ArrayList<>();
-        for (Filter filter : mFilters.values()) {
+    public Collection<Filter<?>> getActiveFilters(@NonNull final Context context) {
+        final Collection<Filter<?>> activeFilters = new ArrayList<>();
+        for (Filter<?> filter : mFilters.values()) {
             if (filter.isActive(context)) {
                 activeFilters.add(filter);
             }
@@ -1154,8 +1154,8 @@ public class BooklistStyle
      */
     public List<String> getFilterLabels(@NonNull final Context context,
                                         final boolean all) {
-        List<String> labels = new ArrayList<>();
-        for (Filter filter : mFilters.values()) {
+        final List<String> labels = new ArrayList<>();
+        for (Filter<?> filter : mFilters.values()) {
             if (filter.isActive(context) || all) {
                 labels.add(filter.getLabel(context));
             }
@@ -1174,7 +1174,7 @@ public class BooklistStyle
      */
     @NonNull
     public List<String> getBookDetailsFieldLabels(@NonNull final Context context) {
-        List<String> labels = new ArrayList<>();
+        final List<String> labels = new ArrayList<>();
 
         //noinspection ConstantConditions
         if (mAllBookDetailFields.get(DBDefinitions.KEY_THUMBNAIL).isTrue(context)) {
@@ -1233,7 +1233,7 @@ public class BooklistStyle
             return false;
         }
 
-        BooklistStyle that = (BooklistStyle) obj;
+        final BooklistStyle that = (BooklistStyle) obj;
 
         if (mUuid.isEmpty() || that.mUuid.isEmpty()) {
             return false;
@@ -1282,7 +1282,7 @@ public class BooklistStyle
         }
 
         if (mAllBookDetailFields.containsKey(key)) {
-            PBoolean value = mAllBookDetailFields.get(key);
+            final PBoolean value = mAllBookDetailFields.get(key);
             return value != null && value.isTrue(context);
         }
         return false;
@@ -1297,7 +1297,7 @@ public class BooklistStyle
      * @return the type of author we consider the primary author
      */
     int getPrimaryAuthorType(@NonNull final Context context) {
-        BooklistGroup.BooklistAuthorGroup group = (BooklistGroup.BooklistAuthorGroup)
+        final BooklistGroup.BooklistAuthorGroup group = (BooklistGroup.BooklistAuthorGroup)
                 (mStyleGroups.getGroupById(BooklistGroup.AUTHOR));
         if (group != null) {
             return group.getPrimaryType(context);
@@ -1316,7 +1316,7 @@ public class BooklistStyle
      * @return {@code true} if we want to show a book under each of its Authors
      */
     boolean isShowBooksUnderEachAuthor(@NonNull final Context context) {
-        BooklistGroup.BooklistAuthorGroup group = (BooklistGroup.BooklistAuthorGroup)
+        final BooklistGroup.BooklistAuthorGroup group = (BooklistGroup.BooklistAuthorGroup)
                 (mStyleGroups.getGroupById(BooklistGroup.AUTHOR));
         if (group != null) {
             return group.showBooksUnderEachAuthor(context);
@@ -1335,7 +1335,7 @@ public class BooklistStyle
      * @return {@code true} if we want to show a book under each of its Series.
      */
     boolean isShowBooksUnderEachSeries(@NonNull final Context context) {
-        BooklistGroup.BooklistSeriesGroup group = (BooklistGroup.BooklistSeriesGroup)
+        final BooklistGroup.BooklistSeriesGroup group = (BooklistGroup.BooklistSeriesGroup)
                 (mStyleGroups.getGroupById(BooklistGroup.SERIES));
         if (group != null) {
             return group.showBooksUnderEachSeries(context);
@@ -1520,7 +1520,7 @@ public class BooklistStyle
         @Override
         public void set(@NonNull final Parcel in) {
             clear(App.getAppContext());
-            List<BooklistGroup> list = new ArrayList<>();
+            final List<BooklistGroup> list = new ArrayList<>();
             in.readList(list, getClass().getClassLoader());
             // (faster) equivalent of add(@NonNull final BooklistGroup group)
             // but split in adding the group and...
@@ -1586,7 +1586,7 @@ public class BooklistStyle
             }
 
             // check if the style already exists.
-            long existingId = db.getStyleIdByUuid(style.getUuid());
+            final long existingId = db.getStyleIdByUuid(style.getUuid());
             if (existingId == 0) {
                 if (db.insertStyle(style) > 0) {
                     S_USER_STYLES.put(style.getUuid(), style);
@@ -1704,12 +1704,12 @@ public class BooklistStyle
          */
         @NonNull
         private static Set<String> get(@NonNull final Context context) {
-            Set<String> uuidSet = new LinkedHashSet<>();
-            String itemsStr = PreferenceManager.getDefaultSharedPreferences(context)
-                                               .getString(PREF_BL_PREFERRED_STYLES, null);
+            final Set<String> uuidSet = new LinkedHashSet<>();
+            final String itemsStr = PreferenceManager.getDefaultSharedPreferences(context)
+                                                     .getString(PREF_BL_PREFERRED_STYLES, null);
 
             if (itemsStr != null && !itemsStr.isEmpty()) {
-                String[] entries = itemsStr.split(",");
+                final String[] entries = itemsStr.split(",");
                 for (String entry : entries) {
                     if (entry != null && !entry.isEmpty()) {
                         uuidSet.add(entry);
@@ -1743,7 +1743,7 @@ public class BooklistStyle
          */
         public static void save(@NonNull final Context context,
                                 @NonNull final Iterable<BooklistStyle> styles) {
-            Collection<String> list = new LinkedHashSet<>();
+            final Collection<String> list = new LinkedHashSet<>();
             for (BooklistStyle style : styles) {
                 if (style.isPreferred(context)) {
                     list.add(style.getUuid());
@@ -1760,7 +1760,7 @@ public class BooklistStyle
          */
         public static void addPreferredStyle(@NonNull final Context context,
                                              @NonNull final BooklistStyle style) {
-            Set<String> list = get(context);
+            final Set<String> list = get(context);
             list.add(style.getUuid());
             set(context, list);
         }
@@ -1779,11 +1779,11 @@ public class BooklistStyle
                 @NonNull final Context context,
                 @NonNull final Map<String, BooklistStyle> allStyles) {
 
-            Map<String, BooklistStyle> resultingStyles = new LinkedHashMap<>();
+            final Map<String, BooklistStyle> resultingStyles = new LinkedHashMap<>();
 
             // first check the saved and ordered list
             for (String uuid : get(context)) {
-                BooklistStyle style = allStyles.get(uuid);
+                final BooklistStyle style = allStyles.get(uuid);
                 if (style != null) {
                     // catch mismatches in any imported bad-data.
                     style.setPreferred(true);
@@ -1985,8 +1985,10 @@ public class BooklistStyle
 
         private static void create(@NonNull final Context context) {
 
+            BooklistStyle style;
+
             // Author/Series
-            BooklistStyle style = getDefault(context);
+            style = getDefault(context);
             S_BUILTIN_STYLES.put(style.getUuid(), style);
 
             // Unread

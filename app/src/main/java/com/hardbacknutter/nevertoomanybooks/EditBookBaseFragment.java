@@ -254,7 +254,7 @@ public abstract class EditBookBaseFragment
      */
     void addAutocomplete(@IdRes final int fieldId,
                          @NonNull final List<String> list) {
-        final Field field = getField(fieldId);
+        final Field<?, ?> field = getField(fieldId);
         // only bother when it's in use and we have a list
         //noinspection ConstantConditions
         if (field.isUsed(getContext()) && !list.isEmpty()) {
@@ -311,7 +311,7 @@ public abstract class EditBookBaseFragment
                     timeEnd = tmp;
                 }
 
-                final MaterialDatePicker picker = MaterialDatePicker.Builder
+                final MaterialDatePicker<Pair<Long, Long>> picker = MaterialDatePicker.Builder
                         .dateRangePicker()
                         .setTitleText(dialogTitleIdSpan)
                         .setSelection(new Pair<>(timeStart, timeEnd))
@@ -343,7 +343,7 @@ public abstract class EditBookBaseFragment
             field.getAccessor().getView().setOnClickListener(v -> {
                 final Long selection = DateUtils.parseTime(field.getAccessor().getValue(),
                                                            todayIfNone);
-                final MaterialDatePicker picker = MaterialDatePicker.Builder
+                final MaterialDatePicker<Long> picker = MaterialDatePicker.Builder
                         .datePicker()
                         .setTitleText(dialogTitleId)
                         .setSelection(selection)

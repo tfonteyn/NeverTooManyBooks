@@ -232,14 +232,13 @@ public final class ImageUtils {
             // This 2nd task uses the serial executor.
             new ImageLoaderWithCacheWrite(imageView, file, maxWidth, maxHeight, null, uuid, cIdx)
                     .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-            return true;
 
         } else {
             // Cache not used: Get the image from the file system and display it.
             new ImageLoader(imageView, file, maxWidth, maxHeight, null)
                     .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-            return true;
         }
+        return true;
     }
 
     /**

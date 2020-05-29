@@ -178,8 +178,10 @@ android {
         targetCompatibility = '1.8'
     }
 
-    viewBinding {
-        enabled = true
+    buildFeatures {
+        viewBinding {
+            enabled = true
+        }
     }
 
     testOptions {
@@ -229,7 +231,7 @@ dependencies {
     implementation 'androidx.viewpager2:viewpager2:1.1.0-alpha01'
 
     // https://github.com/material-components/material-components-android/releases
-    implementation 'com.google.android.material:material:1.2.0-alpha06'
+    implementation 'com.google.android.material:material:1.2.0-beta01'
 
     // barcode decoder using https://developers.google.com/android/guides/setup
     implementation 'com.google.android.gms:play-services-vision:20.0.0'
@@ -257,7 +259,7 @@ dependencies {
 
     testImplementation 'org.mockito:mockito-core:3.3.3'
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.2'
-    testImplementation 'org.json:json:20190722'
+    testImplementation 'org.json:json:20200518'
 
     // if enabling, uncomment the App.onCreate as well
 //    implementation 'com.facebook.stetho:stetho:1.5.1'

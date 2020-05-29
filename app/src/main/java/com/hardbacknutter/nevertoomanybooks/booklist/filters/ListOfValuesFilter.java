@@ -41,7 +41,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.StringList;
  * @param <T> type the elements of the 'IN' list.
  */
 public class ListOfValuesFilter<T>
-        implements Filter {
+        implements Filter<String> {
 
     @NonNull
     private final TableDefinition mTable;
@@ -94,6 +94,12 @@ public class ListOfValuesFilter<T>
     @Override
     public boolean isActive(@NonNull final Context context) {
         return DBDefinitions.isUsed(context, mDomainKey);
+    }
+
+    @Override
+    @NonNull
+    public String getValue(@NonNull final Context context) {
+        return mCriteria;
     }
 
     @Override

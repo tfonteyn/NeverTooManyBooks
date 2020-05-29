@@ -189,9 +189,9 @@ public final class XmlUtils {
             return tag(TAG_DOUBLE, name, String.valueOf(value));
 
         } else if (value instanceof Set) {
-            return tagWithBody(TAG_SET, name, typedCollection((Collection) value));
+            return tagWithBody(TAG_SET, name, typedCollection((Collection<?>) value));
         } else if (value instanceof List) {
-            return tagWithBody(TAG_LIST, name, typedCollection((Collection) value));
+            return tagWithBody(TAG_LIST, name, typedCollection((Collection<?>) value));
 
         } else if (value instanceof Serializable) {
             return tagWithBody(TAG_SERIALIZABLE, name,
@@ -209,7 +209,7 @@ public final class XmlUtils {
      *
      * @return partial xml
      */
-    private static String typedCollection(@NonNull final Iterable values)
+    private static String typedCollection(@NonNull final Iterable<?> values)
             throws IOException {
         StringBuilder sb = new StringBuilder("\n");
         for (Object value : values) {

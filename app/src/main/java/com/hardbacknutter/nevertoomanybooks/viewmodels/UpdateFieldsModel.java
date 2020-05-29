@@ -392,7 +392,7 @@ public class UpdateFieldsModel
                 // always add the language to the ORIGINAL data if we have one,
                 // so we can use it for the Locale details when processing the results.
                 if (langCol > 0) {
-                    String lang = mCurrentCursor.getString(langCol);
+                    final String lang = mCurrentCursor.getString(langCol);
                     if (lang != null && !lang.isEmpty()) {
                         mCurrentBookData.putString(DBDefinitions.KEY_LANGUAGE, lang);
                     }
@@ -439,7 +439,7 @@ public class UpdateFieldsModel
                     final SparseArray<String> nativeIds = new SparseArray<>();
                     for (String key : DBDefinitions.NATIVE_ID_KEYS) {
                         // values can be Long and String, and it's a Bundle, need to get as Object
-                        Object o = mCurrentBookData.get(key);
+                        final Object o = mCurrentBookData.get(key);
                         if (o != null) {
                             final String value = o.toString().trim();
                             if (!value.isEmpty() && !"0".equals(value)) {
@@ -586,7 +586,7 @@ public class UpdateFieldsModel
         boolean copyThumb = false;
         switch (usage.getUsage()) {
             case CopyIfBlank:
-                File file = AppDir.getCoverFile(context, uuid, cIdx);
+                final File file = AppDir.getCoverFile(context, uuid, cIdx);
                 copyThumb = !file.exists() || file.length() == 0;
                 break;
 
@@ -703,7 +703,8 @@ public class UpdateFieldsModel
                             case Book.BKEY_SERIES_ARRAY:
                             case Book.BKEY_TOC_ENTRY_ARRAY:
                                 if (bookData.containsKey(usage.fieldId)) {
-                                    ArrayList list = bookData.getParcelableArrayList(usage.fieldId);
+                                    final ArrayList<Parcelable> list =
+                                            bookData.getParcelableArrayList(usage.fieldId);
                                     if (list == null || list.isEmpty()) {
                                         fieldUsages.put(usage.fieldId, usage);
                                     }
@@ -712,7 +713,7 @@ public class UpdateFieldsModel
 
                             default:
                                 // If the original was blank, add to list
-                                String value = bookData.getString(usage.fieldId);
+                                final String value = bookData.getString(usage.fieldId);
                                 if (value == null || value.isEmpty()) {
                                     fieldUsages.put(usage.fieldId, usage);
                                 }
@@ -755,7 +756,8 @@ public class UpdateFieldsModel
             case Book.BKEY_SERIES_ARRAY:
             case Book.BKEY_TOC_ENTRY_ARRAY:
                 if (currentBookData.containsKey(fieldId)) {
-                    ArrayList<Parcelable> list = currentBookData.getParcelableArrayList(fieldId);
+                    final ArrayList<Parcelable> list =
+                            currentBookData.getParcelableArrayList(fieldId);
                     if (list != null && !list.isEmpty()) {
                         return true;
                     }
@@ -764,7 +766,7 @@ public class UpdateFieldsModel
 
             default:
                 // If the original was non-blank, erase from list
-                String value = currentBookData.getString(fieldId);
+                final String value = currentBookData.getString(fieldId);
                 if (value != null && !value.isEmpty()) {
                     return true;
                 }
