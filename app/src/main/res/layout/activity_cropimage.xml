@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2019 HardBackNutter
+  ~ @Copyright 2020 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -27,19 +27,17 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<!-- A frame will let the FAB show on top of the image
-     Padding is added to make grabbing easier -->
+<!-- A frame will let the FAB show on top of the image -->
 <FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="@dimen/border2"
-    tools:context=".cropper.CropImageActivity"
+    android:layout_margin="@dimen/screenBorder"
+    tools:context=".covers.CropImageActivity"
     >
 
-    <com.hardbacknutter.nevertoomanybooks.cropper.CropImageView
+    <com.hardbacknutter.nevertoomanybooks.covers.CropImageView
         android:id="@+id/coverImage0"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

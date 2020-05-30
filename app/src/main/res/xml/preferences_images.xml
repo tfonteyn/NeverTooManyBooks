@@ -87,7 +87,7 @@
     <PreferenceCategory
         android:title="@string/lbl_advanced_options">
 
-        <!-- default CropImageViewTouchBase.LAYER_TYPE_USE_DEFAULT == -1 -->
+        <!-- default CropImageView.LAYER_TYPE_USE_DEFAULT == -1 -->
         <ListPreference
             android:defaultValue="-1"
             android:dialogIcon="@drawable/ic_warning"

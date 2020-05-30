@@ -52,7 +52,6 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.preference.PreferenceManager;
 
 import com.google.android.material.snackbar.Snackbar;
 
@@ -68,7 +67,6 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.RequestCode;
 import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PIntString;
-import com.hardbacknutter.nevertoomanybooks.cropper.CropImageActivity;
 import com.hardbacknutter.nevertoomanybooks.database.CoversDAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
@@ -395,7 +393,9 @@ public class CoverHandler {
                 CameraHelper.deleteCameraFile(mContext);
                 return true;
             }
+
             case RequestCode.CROP_IMAGE:
+                // the dst is available in data.getData(), but we can just use getCoverFile()
             case RequestCode.EDIT_IMAGE: {
                 if (resultCode == Activity.RESULT_OK) {
                     final File srcFile = AppDir.Cache.getFile(mContext, TEMP_COVER_FILENAME);
@@ -594,16 +594,11 @@ public class CoverHandler {
         // delete any orphaned file.
         FileUtils.delete(dstFile);
 
-        final boolean wholeImage = PreferenceManager
-                .getDefaultSharedPreferences(mContext)
-                .getBoolean(Prefs.pk_image_cropper_frame_whole, false);
-
         final Intent intent = new Intent(mContext, CropImageActivity.class)
-                .putExtra(CropImageActivity.BKEY_IMAGE_ABSOLUTE_PATH,
+                .putExtra(CropImageActivity.BKEY_SOURCE,
                           srcFile.getAbsolutePath())
-                .putExtra(CropImageActivity.BKEY_OUTPUT_ABSOLUTE_PATH,
-                          dstFile.getAbsolutePath())
-                .putExtra(CropImageActivity.BKEY_WHOLE_IMAGE, wholeImage);
+                .putExtra(CropImageActivity.BKEY_DESTINATION,
+                          dstFile.getAbsolutePath());
 
         mFragment.startActivityForResult(intent, RequestCode.CROP_IMAGE);
     }

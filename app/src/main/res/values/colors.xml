@@ -30,11 +30,8 @@
 <resources>
 
     <!-- These are not themed. -->
-    <color name="CropHighlightView_focusPaint">@color/grey_600</color>
-    <color name="CropHighlightView_noFocusPaint">@color/grey_600</color>
-    <color name="CropHighlightView_outlinePaint_noFocus">@color/black</color>
-    <color name="CropHighlightView_outlinePaint_circle">@color/purple_a400</color>
-    <color name="CropHighlightView_outlinePaint_rectangle">@color/orange_600</color>
+    <color name="cropper_focus">@color/grey_600</color>
+    <color name="cropper_outline_rectangle">@color/orange_600</color>
 
 
     <!-- Material Design - Color Palette -->
