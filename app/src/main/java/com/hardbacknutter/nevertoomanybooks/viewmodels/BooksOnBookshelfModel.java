@@ -199,6 +199,7 @@ public class BooksOnBookshelfModel
 
                     if (mListHasBeenLoaded) {
                         // sanity check
+                        Objects.requireNonNull(message.result, ErrorMsg.NULL_CURSOR);
                         Objects.requireNonNull(message.result.listCursor, ErrorMsg.NULL_CURSOR);
 
                         // preserve the new state
@@ -1224,7 +1225,7 @@ public class BooksOnBookshelfModel
         }
 
         @Override
-        protected void onCancelled(@NonNull final BuilderResult result) {
+        protected void onCancelled(@Nullable final BuilderResult result) {
             cleanup();
             super.onCancelled(result);
         }

@@ -247,7 +247,7 @@ public class Synchronizer {
                     // Probably happens because thread was interrupted. Just die.
                     try {
                         mLock.unlock();
-                    } catch (@NonNull final RuntimeException ignored) {
+                    } catch (@NonNull final RuntimeException ignore) {
                     }
                     throw new LockException("Unable to get exclusive lock", e);
                 }

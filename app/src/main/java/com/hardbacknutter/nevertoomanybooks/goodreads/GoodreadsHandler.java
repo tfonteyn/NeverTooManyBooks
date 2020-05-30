@@ -40,10 +40,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.RowDataHolder;
 import com.hardbacknutter.nevertoomanybooks.goodreads.api.AddBookToShelfApiHandler;
@@ -175,15 +177,32 @@ public class GoodreadsHandler {
     public static String handleResult(@NonNull final Context context,
                                       @NonNull final TaskListener.FinishMessage<Integer> message) {
 
+        return handleResult(context, message.taskId, message.result,
+                            message.status, message.exception);
+    }
+
+    /**
+     * Handle the {@link TaskListener.TaskStatus} and the goodreads extended {@link GrStatus}.
+     *
+     * @param context Current context
+     *
+     * @return a String to display to the user, or {@code null} when registration is needed.
+     */
+    @Nullable
+    public static String handleResult(@NonNull final Context context,
+                                      final int taskId,
+                                      @Nullable final Integer result,
+                                      @NonNull final TaskListener.TaskStatus status,
+                                      @Nullable final Exception exception) {
         // FIRST Handle authorization efforts from RequestAuthTask
-        if (message.taskId == R.id.TASK_ID_GR_REQUEST_AUTH) {
+        if (taskId == R.id.TASK_ID_GR_REQUEST_AUTH && result != null) {
             // Did authorization fail ?
-            if (message.result == GrStatus.AUTHORIZATION_FAILED) {
+            if (result == GrStatus.AUTHORIZATION_FAILED) {
                 return GrStatus.getString(context, GrStatus.AUTHORIZATION_FAILED);
             }
 
             // Did we fail after we tried again ?
-            if (message.result == GrStatus.AUTHORIZATION_NEEDED) {
+            if (result == GrStatus.AUTHORIZATION_NEEDED) {
                 // If so, report this, but do NOT return {@code null}
                 // as otherwise we'd get into a registration loop.
                 return context.getString(R.string.error_site_authentication_failed,
@@ -191,23 +210,26 @@ public class GoodreadsHandler {
             }
         }
 
-        // all is fine or the user cancelled: just return the result information message.
-        if (message.status == TaskListener.TaskStatus.Success
-            || message.status == TaskListener.TaskStatus.Cancelled) {
-            return GrStatus.getString(context, message.result);
+        if (status == TaskListener.TaskStatus.Success) {
+            Objects.requireNonNull(result, ErrorMsg.NULL_TASK_RESULTS);
+            return GrStatus.getString(context, result);
+
+        } else if (status == TaskListener.TaskStatus.Cancelled) {
+            return GrStatus.getString(context, result != null ? result : GrStatus.CANCELLED);
 
         } else {
+            Objects.requireNonNull(result, ErrorMsg.NULL_TASK_RESULTS);
             // Should we ask the user to register?
-            if (message.result == GrStatus.AUTHORIZATION_NEEDED) {
+            if (result == GrStatus.AUTHORIZATION_NEEDED) {
                 return null;
             }
 
             // Report the error
-            String errorMsg = GrStatus.getString(context, message.result);
+            String errorMsg = GrStatus.getString(context, result);
             // worst case, add the actual exception.
-            if (message.result == GrStatus.UNEXPECTED_ERROR) {
-                if (message.exception != null) {
-                    errorMsg += ' ' + message.exception.getLocalizedMessage();
+            if (result == GrStatus.UNEXPECTED_ERROR) {
+                if (exception != null) {
+                    errorMsg += ' ' + exception.getLocalizedMessage();
                 }
             }
             return errorMsg;

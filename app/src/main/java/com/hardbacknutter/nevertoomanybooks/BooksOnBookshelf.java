@@ -1695,6 +1695,9 @@ public class BooksOnBookshelf
 
         switch (message.status) {
             case Success: {
+                // sanity check
+                Objects.requireNonNull(message.result, ErrorMsg.NULL_TASK_RESULTS);
+
                 final MaterialAlertDialogBuilder dialogBuilder =
                         new MaterialAlertDialogBuilder(this)
                                 .setIcon(R.drawable.ic_info)
@@ -1722,6 +1725,8 @@ public class BooksOnBookshelf
                 break;
             }
             case Failed: {
+                // sanity check
+                Objects.requireNonNull(message.result, ErrorMsg.NULL_TASK_RESULTS);
                 String msg = message.result.createExceptionReport(this, message.exception);
                 new MaterialAlertDialogBuilder(this)
                         .setIcon(R.drawable.ic_error)
@@ -1848,18 +1853,27 @@ public class BooksOnBookshelf
 
         switch (message.status) {
             case Success: {
+                // sanity check
+                Objects.requireNonNull(message.result, ErrorMsg.NULL_TASK_RESULTS);
                 onImportFinished(R.string.progress_end_import_complete,
                                  message.result.getOptions(),
                                  message.result.getResults());
                 break;
             }
             case Cancelled: {
-                onImportFinished(R.string.progress_end_import_partially_complete,
-                                 message.result.getOptions(),
-                                 message.result.getResults());
+                if (message.result != null) {
+                    onImportFinished(R.string.progress_end_import_partially_complete,
+                                     message.result.getOptions(),
+                                     message.result.getResults());
+                } else {
+                    Snackbar.make(mListView, R.string.progress_end_cancelled,
+                                  Snackbar.LENGTH_LONG).show();
+                }
                 break;
             }
             case Failed: {
+                // sanity check
+                Objects.requireNonNull(message.result, ErrorMsg.NULL_TASK_RESULTS);
                 String msg = message.result.createExceptionReport(this, message.exception);
                 new MaterialAlertDialogBuilder(this)
                         .setIcon(R.drawable.ic_error)

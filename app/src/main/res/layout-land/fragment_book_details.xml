@@ -592,7 +592,7 @@
 
         <TextView
             android:id="@+id/description"
-            style="@style/Text.Notes"
+            style="@style/Text.Description"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/indent_fields"
             app:layout_constraintTop_toBottomOf="@id/location"

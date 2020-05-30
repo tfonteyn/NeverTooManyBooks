@@ -155,9 +155,17 @@ public abstract class TaskBase<Result>
         }
     }
 
+    /**
+     * <p>Runs on the UI thread after {@link #cancel(boolean)} is invoked and
+     * {@link #doInBackground} has finished.</p>
+     *
+     * @param result The result, if any, computed in {@link #doInBackground}, can be {@code null}.
+     *               If the task was cancelled before starting the result
+     *               <strong>WILL ALWAYS BE {@code null}</strong>
+     */
     @Override
     @CallSuper
-    protected void onCancelled(@NonNull final Result result) {
+    protected void onCancelled(@Nullable final Result result) {
         if (mTaskListener.get() != null) {
             mTaskListener.get().onCancelled(new TaskListener.FinishMessage<>(
                     mTaskId, TaskStatus.Cancelled, result, mException));

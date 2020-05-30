@@ -245,6 +245,9 @@ public class ExportFragment
 
         switch (message.status) {
             case Success: {
+                // sanity check
+                Objects.requireNonNull(message.result, ErrorMsg.NULL_TASK_RESULTS);
+
                 //noinspection ConstantConditions
                 MaterialAlertDialogBuilder dialogBuilder =
                         new MaterialAlertDialogBuilder(getContext())
@@ -282,6 +285,8 @@ public class ExportFragment
                 break;
             }
             case Failed: {
+                // sanity check
+                Objects.requireNonNull(message.result, ErrorMsg.NULL_TASK_RESULTS);
                 //noinspection ConstantConditions
                 String msg = message.result.createExceptionReport(getContext(), message.exception);
                 //noinspection ConstantConditions

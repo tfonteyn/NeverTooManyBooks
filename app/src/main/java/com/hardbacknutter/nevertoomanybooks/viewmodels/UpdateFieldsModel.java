@@ -502,8 +502,8 @@ public class UpdateFieldsModel
      * @return {@code true} if a search was started.
      */
     public boolean processSearchResults(@NonNull final Context context,
-                                        @NonNull final Bundle bookData) {
-        if (!mIsCancelled && !bookData.isEmpty()) {
+                                        @Nullable final Bundle bookData) {
+        if (!mIsCancelled && bookData != null && !bookData.isEmpty()) {
             // Filter the data to remove keys we don't care about
             final Collection<String> toRemove = new ArrayList<>();
             for (String key : bookData.keySet()) {
@@ -658,7 +658,9 @@ public class UpdateFieldsModel
         final TaskListener.FinishMessage<Bundle> message = new TaskListener.FinishMessage<>(
                 R.id.TASK_ID_UPDATE_FIELDS, taskStatus, data, e);
         // the last book id which was handled; can be used to restart the update.
-        mFromBookIdOnwards = message.result.getLong(UpdateFieldsModel.BKEY_LAST_BOOK_ID);
+        if (message.result != null) {
+            mFromBookIdOnwards = message.result.getLong(UpdateFieldsModel.BKEY_LAST_BOOK_ID);
+        }
 
         mTaskFinishedMessage.setValue(message);
     }

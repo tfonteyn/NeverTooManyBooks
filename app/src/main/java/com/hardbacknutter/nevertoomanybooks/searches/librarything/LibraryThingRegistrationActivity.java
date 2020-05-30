@@ -66,7 +66,9 @@ public class LibraryThingRegistrationActivity
     private final TaskListener<Integer> mListener = new TaskListener<Integer>() {
         @Override
         public void onFinished(@NonNull final FinishMessage<Integer> message) {
-            Snackbar.make(mVb.devKey, message.result, Snackbar.LENGTH_LONG).show();
+            int stringId = message.result != null ? message.result
+                                                  : R.string.progress_end_cancelled;
+            Snackbar.make(mVb.devKey, stringId, Snackbar.LENGTH_LONG).show();
         }
     };
 

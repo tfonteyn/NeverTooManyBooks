@@ -51,7 +51,10 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputLayout;
 
+import java.util.Objects;
+
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
+import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchCoordinator;
@@ -162,6 +165,9 @@ public abstract class BookSearchBaseFragment
             onSearchCancelled();
             return;
         }
+
+        // sanity check
+        Objects.requireNonNull(message.result, ErrorMsg.NULL_TASK_RESULTS);
 
         final String searchErrors = message.result.getString(SearchCoordinator.BKEY_SEARCH_ERROR);
         if (searchErrors != null) {

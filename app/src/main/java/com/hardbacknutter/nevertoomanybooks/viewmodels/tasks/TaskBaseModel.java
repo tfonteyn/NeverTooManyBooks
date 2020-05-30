@@ -74,14 +74,14 @@ public abstract class TaskBaseModel<Result>
         }
     };
     @Nullable
-    private TaskBase mTask;
+    private TaskBase<Result> mTask;
 
     @Nullable
-    public TaskBase getTask() {
+    public TaskBase<Result> getTask() {
         return mTask;
     }
 
-    public void setTask(@Nullable final TaskBase task) {
+    public void setTask(@Nullable final TaskBase<Result> task) {
         mTask = task;
     }
 

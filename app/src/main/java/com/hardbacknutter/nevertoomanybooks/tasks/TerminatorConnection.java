@@ -291,7 +291,7 @@ public final class TerminatorConnection
                 } else {
                     try {
                         Thread.sleep(RETRY_AFTER_MS);
-                    } catch (@NonNull final InterruptedException ignored) {
+                    } catch (@NonNull final InterruptedException ignore) {
                     }
                 }
             }

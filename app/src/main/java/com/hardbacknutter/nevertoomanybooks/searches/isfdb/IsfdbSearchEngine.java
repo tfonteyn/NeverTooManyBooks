@@ -265,7 +265,7 @@ public class IsfdbSearchEngine
                 return CoverByIsbn.getFirstCoverFileFoundPath(bookData, cIdx);
             }
         } catch (@NonNull final IOException ignore) {
-            // ignored
+            // ignore
         }
         return null;
     }

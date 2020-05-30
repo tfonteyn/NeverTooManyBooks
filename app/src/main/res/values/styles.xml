@@ -71,8 +71,11 @@
         <item name="android:textStyle">italic</item>
     </style>
 
-    <!-- Description and personal notes. -->
+    <!-- Book personal notes. -->
     <style name="Text.Notes">
+    </style>
+    <!-- Book Description. -->
+    <style name="Text.Description">
         <item name="android:background">@drawable/outline_rounded</item>
     </style>
 

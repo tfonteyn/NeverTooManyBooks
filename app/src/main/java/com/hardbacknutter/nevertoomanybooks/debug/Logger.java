@@ -229,7 +229,7 @@ public final class Logger {
         try (FileWriter fw = new FileWriter(logFile, true);
              Writer out = new BufferedWriter(fw)) {
             out.write(fullMessage);
-        } catch (@SuppressWarnings("OverlyBroadCatchBlock") @NonNull final Exception ignored) {
+        } catch (@SuppressWarnings("OverlyBroadCatchBlock") @NonNull final Exception ignore) {
             // do nothing - we can't log an error in the logger
         }
     }
@@ -338,7 +338,7 @@ public final class Logger {
                 FileUtils.copyWithBackup(logFile, backup, LOGFILE_COPIES);
             }
         } catch (@SuppressWarnings("OverlyBroadCatchBlock") @NonNull final Exception ignore) {
-            // ignore
+            // do nothing - we can't log an error in the logger
         }
     }
 

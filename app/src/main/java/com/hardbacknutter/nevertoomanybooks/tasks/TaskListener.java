@@ -48,7 +48,7 @@ import androidx.annotation.Nullable;
 public interface TaskListener<Result> {
 
     /**
-     * Called when a task finishes.
+     * Called when a task finishes; success or failure.
      */
     void onFinished(@NonNull FinishMessage<Result> message);
 
@@ -86,8 +86,10 @@ public interface TaskListener<Result> {
     class FinishMessage<Result> {
 
         public final int taskId;
-        public final Result result;
 
+        /** Can be {@code null} regardless of the doBackground implementation. */
+        @Nullable
+        public final Result result;
         @NonNull
         public final TaskStatus status;
         @Nullable
@@ -98,13 +100,12 @@ public interface TaskListener<Result> {
          *
          * @param taskId    ID for the task which was provided at construction time.
          * @param status    Success, Failed, Cancelled, ...
-         * @param result    the result object from the {@link AsyncTask}.
-         *                  Nullable/NonNull is up to the implementation.
+         * @param result    the result object from the {@link AsyncTask},
          * @param exception if the task finished with an exception, or {@code null}.
          */
         public FinishMessage(final int taskId,
                              @NonNull final TaskStatus status,
-                             final Result result,
+                             @Nullable final Result result,
                              @Nullable final Exception exception) {
             this.taskId = taskId;
             this.status = status;
@@ -130,26 +131,22 @@ public interface TaskListener<Result> {
     class ProgressMessage {
 
         public final int taskId;
-
-        /** No-op if {@code null} otherwise change mode to the requested one. */
-        @Nullable
-        final Boolean indeterminate;
-
         /**
          * The maximum position for the progressbar,
          * should be ignored if a mode change was requested with indeterminate.
          */
         public final int maxPosition;
-
         /**
          * Absolute position for the progressbar,
          * should be ignored if a mode change was requested with indeterminate.
          */
         public final int position;
-
         /** Optional text to display. */
         @Nullable
         public final String text;
+        /** No-op if {@code null} otherwise change mode to the requested one. */
+        @Nullable
+        final Boolean indeterminate;
 
         public ProgressMessage(final int taskId,
                                @Nullable final Boolean indeterminate,

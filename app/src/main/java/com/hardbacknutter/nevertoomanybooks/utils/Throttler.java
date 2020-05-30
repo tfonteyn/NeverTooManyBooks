@@ -104,7 +104,7 @@ public class Throttler {
             try {
                 //Log.d(TAG, "wait=" + wait);
                 Thread.sleep(wait);
-            } catch (@NonNull final InterruptedException ignored) {
+            } catch (@NonNull final InterruptedException ignore) {
             }
         }
     }

@@ -45,6 +45,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.util.Objects;
 
@@ -278,18 +279,28 @@ public class ImportFragment
 
         switch (message.status) {
             case Success: {
+                // sanity check
+                Objects.requireNonNull(message.result, ErrorMsg.NULL_TASK_RESULTS);
                 onImportFinished(R.string.progress_end_import_complete,
                                  message.result.getOptions(),
                                  message.result.getResults());
                 break;
             }
             case Cancelled: {
-                onImportFinished(R.string.progress_end_import_partially_complete,
-                                 message.result.getOptions(),
-                                 message.result.getResults());
+                if (message.result != null) {
+                    onImportFinished(R.string.progress_end_import_partially_complete,
+                                     message.result.getOptions(),
+                                     message.result.getResults());
+                } else {
+                    //noinspection ConstantConditions
+                    Snackbar.make(getView(), R.string.progress_end_cancelled,
+                                  Snackbar.LENGTH_LONG).show();
+                }
                 break;
             }
             case Failed: {
+                // sanity check
+                Objects.requireNonNull(message.result, ErrorMsg.NULL_TASK_RESULTS);
                 //noinspection ConstantConditions
                 String msg = message.result.createExceptionReport(getContext(), message.exception);
                 //noinspection ConstantConditions

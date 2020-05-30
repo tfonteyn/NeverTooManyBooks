@@ -105,7 +105,7 @@ public class SimpleXmlFilter {
         final BuilderContext bc = (BuilderContext) elementContext.getUserArg();
         final String name = bc.collectField;
         try {
-            long l = Long.parseLong(elementContext.getBody());
+            final long l = Long.parseLong(elementContext.getBody());
             bc.getData().putLong(name, l);
         } catch (@NonNull final NumberFormatException ignore) {
             // ignore
@@ -116,10 +116,10 @@ public class SimpleXmlFilter {
         final BuilderContext bc = (BuilderContext) elementContext.getUserArg();
         final String name = bc.collectField;
         try {
-            boolean b = textToBoolean(elementContext.getBody());
+            final boolean b = textToBoolean(elementContext.getBody());
             bc.getData().putBoolean(name, b);
         } catch (@NonNull final NumberFormatException ignore) {
-            // Ignore but don't add
+            // ignore
         }
     };
     /** See constructor. */
@@ -150,9 +150,8 @@ public class SimpleXmlFilter {
             final BuilderContext bc = (BuilderContext) elementContext.getUserArg();
             final String name = bc.collectField;
             try {
-                double d = ParseUtils.parseDouble(elementContext.getBody(), mLocale);
+                final double d = ParseUtils.parseDouble(elementContext.getBody(), mLocale);
                 bc.getData().putDouble(name, d);
-
             } catch (@NonNull final NumberFormatException ignore) {
                 // ignore
             }

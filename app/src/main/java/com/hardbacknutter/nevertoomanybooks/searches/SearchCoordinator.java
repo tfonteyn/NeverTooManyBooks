@@ -60,6 +60,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
@@ -67,6 +68,7 @@ import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageUtils;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.tasks.Canceller;
@@ -377,6 +379,8 @@ public class SearchCoordinator
                 break;
 
             case Success:
+                // sanity check
+                Objects.requireNonNull(message.result, ErrorMsg.NULL_TASK_RESULTS);
                 // Store for later
                 synchronized (mSearchResults) {
                     mSearchResults.put(message.taskId, message.result);
@@ -392,7 +396,7 @@ public class SearchCoordinator
         mSearchCoordinatorProgressMessage.setValue(accumulateProgress(context));
 
         if (mWaitingForExactCode) {
-            if (hasIsbn(message.result)) {
+            if (message.result != null && hasIsbn(message.result)) {
                 mWaitingForExactCode = false;
                 // replace the search text with the (we hope) exact isbn
                 mIsbnSearchText = message.result.getString(DBDefinitions.KEY_ISBN, "");
