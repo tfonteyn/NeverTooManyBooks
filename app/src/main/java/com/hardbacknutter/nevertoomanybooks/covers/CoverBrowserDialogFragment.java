@@ -143,8 +143,10 @@ public class CoverBrowserDialogFragment
 
         mModel.onEditionsLoaded().observe(this, this::showGallery);
         mModel.onGalleryImage().observe(this, this::setGalleryImage);
-        mModel.onSelectedImage().observe(this, imageFileInfo ->
-                setSelectedImage(imageFileInfo.getFile()));
+        mModel.onSelectedImage().observe(this, imageFileInfo -> {
+            final File file = imageFileInfo != null ? imageFileInfo.getFile() : null;
+            setSelectedImage(file);
+        });
     }
 
     @NonNull
@@ -227,16 +229,17 @@ public class CoverBrowserDialogFragment
      *
      * @param isbnList the list to use.
      */
-    private void showGallery(@NonNull final Collection<String> isbnList) {
+    private void showGallery(@Nullable final Collection<String> isbnList) {
         mEditions.clear();
-        mEditions.addAll(isbnList);
 
-        if (mEditions.isEmpty()) {
+        if (isbnList == null || isbnList.isEmpty()) {
             Snackbar.make(mVb.statusMessage, R.string.warning_no_editions,
                           Snackbar.LENGTH_LONG).show();
             dismiss();
             return;
         }
+
+        mEditions.addAll(isbnList);
 
         Objects.requireNonNull(mGalleryAdapter, ErrorMsg.NULL_GALLERY_ADAPTER);
         mGalleryAdapter.notifyDataSetChanged();
@@ -250,11 +253,16 @@ public class CoverBrowserDialogFragment
      * <p>
      * TODO: pass the data via a MutableLiveData object and use a local FIFO queue.
      */
-    private void setGalleryImage(@NonNull final ImageFileInfo imageFileInfo) {
-
+    private void setGalleryImage(@Nullable final ImageFileInfo imageFileInfo) {
         Objects.requireNonNull(mGalleryAdapter, ErrorMsg.NULL_GALLERY_ADAPTER);
 
-        final int editionIndex = mEditions.indexOf(imageFileInfo.isbn);
+        final int editionIndex;
+        if (imageFileInfo != null) {
+            editionIndex = mEditions.indexOf(imageFileInfo.isbn);
+        } else {
+            editionIndex = -1;
+        }
+
         if (editionIndex >= 0) {
             final File tmpFile = imageFileInfo.getFile();
             if (tmpFile != null && tmpFile.exists()) {

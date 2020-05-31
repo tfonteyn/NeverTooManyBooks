@@ -1874,7 +1874,7 @@ public class BooksOnBookshelf
             case Failed: {
                 // sanity check
                 Objects.requireNonNull(message.result, ErrorMsg.NULL_TASK_RESULTS);
-                String msg = message.result.createExceptionReport(this, message.exception);
+                String msg = message.result.createErrorReport(this, message.exception);
                 new MaterialAlertDialogBuilder(this)
                         .setIcon(R.drawable.ic_error)
                         .setTitle(R.string.error_import_failed)

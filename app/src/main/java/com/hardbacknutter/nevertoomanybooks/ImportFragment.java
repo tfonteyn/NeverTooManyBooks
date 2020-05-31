@@ -302,7 +302,7 @@ public class ImportFragment
                 // sanity check
                 Objects.requireNonNull(message.result, ErrorMsg.NULL_TASK_RESULTS);
                 //noinspection ConstantConditions
-                String msg = message.result.createExceptionReport(getContext(), message.exception);
+                String msg = message.result.createErrorReport(getContext(), message.exception);
                 //noinspection ConstantConditions
                 new MaterialAlertDialogBuilder(getContext())
                         .setIcon(R.drawable.ic_error)

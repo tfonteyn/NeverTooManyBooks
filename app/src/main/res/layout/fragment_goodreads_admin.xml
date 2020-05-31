@@ -44,7 +44,7 @@
         >
 
         <Button
-            android:id="@+id/lbl_sync_with_goodreads"
+            android:id="@+id/btn_sync"
             style="@style/MenuButton"
             app:icon="@drawable/ic_autorenew"
             android:text="@string/gr_title_sync_with_goodreads"
@@ -54,33 +54,33 @@
             />
 
         <Button
-            android:id="@+id/lbl_import_all_from_goodreads"
+            android:id="@+id/btn_import"
             style="@style/MenuButton"
             app:icon="@drawable/ic_file_download"
             android:text="@string/gr_menu_import_all_from_goodreads"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/lbl_sync_with_goodreads"
+            app:layout_constraintTop_toBottomOf="@id/btn_sync"
             />
 
         <Button
-            android:id="@+id/lbl_send_updated_books_to_goodreads"
+            android:id="@+id/btn_send_updated_books"
             style="@style/MenuButton"
             app:icon="@drawable/ic_send"
             android:text="@string/gr_menu_send_updated"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/lbl_import_all_from_goodreads"
+            app:layout_constraintTop_toBottomOf="@id/btn_import"
             />
 
         <Button
-            android:id="@+id/lbl_send_all_books_to_goodreads"
+            android:id="@+id/btn_send_all_books"
             style="@style/MenuButton"
             app:icon="@drawable/ic_file_upload"
             android:text="@string/gr_menu_send_all"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/lbl_send_updated_books_to_goodreads"
+            app:layout_constraintTop_toBottomOf="@id/btn_send_updated_books"
             />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

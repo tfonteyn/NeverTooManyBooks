@@ -191,41 +191,52 @@ public class BooksOnBookshelfModel
             new TaskListener<BuilderResult>() {
                 @Override
                 public void onFinished(@NonNull final FinishMessage<BuilderResult> message) {
-                    // Save a flag to say list was loaded at least once successfully (or not)
-                    mListHasBeenLoaded = message.status == TaskStatus.Success;
+                    mShowProgressBar.setValue(false);
 
                     // reset the central book id.
                     mDesiredCentralBookId = 0;
 
-                    if (mListHasBeenLoaded) {
-                        // sanity check
-                        Objects.requireNonNull(message.result, ErrorMsg.NULL_CURSOR);
-                        Objects.requireNonNull(message.result.listCursor, ErrorMsg.NULL_CURSOR);
+                    switch (message.status) {
+                        case Success: {
+                            // sanity check
+                            Objects.requireNonNull(message.result, ErrorMsg.NULL_CURSOR);
+                            Objects.requireNonNull(message.result.listCursor, ErrorMsg.NULL_CURSOR);
 
-                        // preserve the new state
-                        mRebuildState = BooklistBuilder.PREF_REBUILD_SAVED_STATE;
+                            // Save a flag to say list was loaded at least once successfully
+                            mListHasBeenLoaded = true;
 
-                        mTotalBooks = message.result.totalBookCount;
-                        mUniqueBooks = message.result.distinctBookCount;
+                            // preserve the new state
+                            mRebuildState = BooklistBuilder.PREF_REBUILD_SAVED_STATE;
 
-                        @Nullable
-                        final BooklistCursor oldCursor = mCursor;
-                        mCursor = message.result.listCursor;
-                        if (oldCursor != null) {
-                            BooklistBuilder.closeCursor(oldCursor, mCursor);
+                            mTotalBooks = message.result.totalBookCount;
+                            mUniqueBooks = message.result.distinctBookCount;
+
+                            @Nullable
+                            final BooklistCursor oldCursor = mCursor;
+                            mCursor = message.result.listCursor;
+                            if (oldCursor != null) {
+                                BooklistBuilder.closeCursor(oldCursor, mCursor);
+                            }
+
+                            mBuilderSuccess.setValue(message.result.getTargetRows());
+                            break;
                         }
+                        case Cancelled:
+                            // just restore the old list if we can
+                            if (mListHasBeenLoaded) {
+                                mBuilderFailed.setValue(mCursor);
+                            } else {
+                                // Something is REALLY BAD
+                                throw new IllegalStateException("BuilderResult=" + message);
+                            }
+                            break;
 
-                        mBuilderSuccess.setValue(message.result.getTargetRows());
-
-                    } else {
-                        // restore the old list
-                        mBuilderFailed.setValue(mCursor);
+                        case Failed:
+                            // Something is REALLY BAD
+                            throw new IllegalStateException("BuilderResult=" + message);
                     }
-
-                    mShowProgressBar.setValue(false);
                 }
             };
-
 
     /**
      * Get the current preferred rebuild state for the list.
@@ -774,13 +785,10 @@ public class BooksOnBookshelfModel
 
                 @Override
                 public void onFinished(@NonNull final FinishMessage<Integer> message) {
-                    final String msg = GoodreadsHandler.handleResult(context, message);
-                    if (msg != null) {
-                        // success, failure, cancelled
-                        mUserMessage.setValue(msg);
-                    } else {
-                        // needs Registration
+                    if (GoodreadsHandler.authNeeded(message)) {
                         mNeedsGoodreads.setValue(true);
+                    } else {
+                        mUserMessage.setValue(GoodreadsHandler.digest(context, message));
                     }
                 }
 

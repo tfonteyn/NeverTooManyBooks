@@ -163,13 +163,10 @@ public abstract class BookBaseFragmentViewModel
 
                 @Override
                 public void onFinished(@NonNull final FinishMessage<Integer> message) {
-                    final String msg = GoodreadsHandler.handleResult(context, message);
-                    if (msg != null) {
-                        // success, failure, cancelled
-                        mUserMessage.setValue(msg);
-                    } else {
-                        // needs Registration
+                    if (GoodreadsHandler.authNeeded(message)) {
                         mNeedsGoodreads.setValue(true);
+                    } else {
+                        mUserMessage.setValue(GoodreadsHandler.digest(context, message));
                     }
                 }
 

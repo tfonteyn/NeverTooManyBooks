@@ -480,10 +480,6 @@ public final class CoversDAO
             }
         }
 
-        public static File getDatabasePath(@NonNull final Context context) {
-            return context.getDatabasePath(COVERS_DATABASE_NAME);
-        }
-
         /**
          * As with SQLiteOpenHelper, routine called to create DB.
          */

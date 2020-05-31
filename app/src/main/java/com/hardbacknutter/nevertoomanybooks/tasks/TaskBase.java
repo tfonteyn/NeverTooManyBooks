@@ -167,7 +167,7 @@ public abstract class TaskBase<Result>
     @CallSuper
     protected void onCancelled(@Nullable final Result result) {
         if (mTaskListener.get() != null) {
-            mTaskListener.get().onCancelled(new TaskListener.FinishMessage<>(
+            mTaskListener.get().onFinished(new TaskListener.FinishMessage<>(
                     mTaskId, TaskStatus.Cancelled, result, mException));
         } else {
             if (BuildConfig.DEBUG /* always */) {
@@ -180,9 +180,13 @@ public abstract class TaskBase<Result>
     @UiThread
     protected void onPostExecute(@NonNull final Result result) {
         if (mTaskListener.get() != null) {
-            TaskStatus status = mException == null ? TaskStatus.Success : TaskStatus.Failed;
-            mTaskListener.get().onFinished(new TaskListener.FinishMessage<>(
-                    mTaskId, status, result, mException));
+            if (mException == null) {
+                mTaskListener.get().onFinished(new TaskListener.FinishMessage<>(
+                        mTaskId, TaskStatus.Success, result, null));
+            } else {
+                mTaskListener.get().onFinished(new TaskListener.FinishMessage<>(
+                        mTaskId, TaskStatus.Failed, result, mException));
+            }
         } else {
             if (BuildConfig.DEBUG /* always */) {
                 Log.d(TAG, "onPostExecute|" + ErrorMsg.LISTENER_WAS_DEAD);

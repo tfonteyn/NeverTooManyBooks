@@ -72,6 +72,8 @@ public final class GrStatus {
     /** There is connectivity but something went wrong. */
     public static final int IO_ERROR = 16;
 
+    public static final int AUTHENTICATION_FAILED = 17;
+
     private GrStatus() {
     }
 
@@ -93,6 +95,9 @@ public final class GrStatus {
                                          context.getString(R.string.site_goodreads));
             case AUTHORIZATION_FAILED:
                 return context.getString(R.string.error_site_authorization_failed,
+                                         context.getString(R.string.site_goodreads));
+            case AUTHENTICATION_FAILED:
+                return context.getString(R.string.error_site_authentication_failed,
                                          context.getString(R.string.site_goodreads));
 
             // the internal logic for CredentialsMissing and CredentialsError
@@ -145,7 +150,8 @@ public final class GrStatus {
              CREDENTIALS_MISSING, CREDENTIALS_ERROR,
              TASK_QUEUED_WITH_SUCCESS, IMPORT_TASK_ALREADY_QUEUED, EXPORT_TASK_ALREADY_QUEUED,
              NO_ISBN, BOOK_NOT_FOUND, NOT_FOUND,
-             CANCELLED, NO_INTERNET, IO_ERROR})
+             CANCELLED, NO_INTERNET, IO_ERROR,
+             AUTHENTICATION_FAILED})
     @Retention(RetentionPolicy.SOURCE)
     public @interface Status {
 

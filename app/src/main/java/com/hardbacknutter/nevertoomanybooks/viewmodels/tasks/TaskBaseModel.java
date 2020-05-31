@@ -62,9 +62,12 @@ public abstract class TaskBaseModel<Result>
     /** Using MutableLiveData as we actually want re-delivery after a device rotation. */
     private final MutableLiveData<TaskListener.ProgressMessage>
             mTaskProgressMessage = new MutableLiveData<>();
+
+    /** Passthrough listener sending the incoming message to the MutableLiveData. */
     private final TaskListener<Result> mTaskListener = new TaskListener<Result>() {
         @Override
         public void onFinished(@NonNull final FinishMessage<Result> message) {
+            mTask = null;
             mTaskFinishedMessage.setValue(message);
         }
 
@@ -94,7 +97,6 @@ public abstract class TaskBaseModel<Result>
     /** Observable. */
     @NonNull
     public MutableLiveData<TaskListener.FinishMessage<Result>> onTaskFinished() {
-        mTask = null;
         return mTaskFinishedMessage;
     }
 

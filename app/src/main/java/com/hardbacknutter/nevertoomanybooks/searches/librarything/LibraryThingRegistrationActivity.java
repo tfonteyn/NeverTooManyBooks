@@ -66,8 +66,8 @@ public class LibraryThingRegistrationActivity
     private final TaskListener<Integer> mListener = new TaskListener<Integer>() {
         @Override
         public void onFinished(@NonNull final FinishMessage<Integer> message) {
-            int stringId = message.result != null ? message.result
-                                                  : R.string.progress_end_cancelled;
+            final int stringId =
+                    message.result != null ? message.result : R.string.progress_end_cancelled;
             Snackbar.make(mVb.devKey, stringId, Snackbar.LENGTH_LONG).show();
         }
     };
@@ -152,7 +152,6 @@ public class LibraryThingRegistrationActivity
                 }
 
                 if (isCancelled()) {
-                    // return value not used as onPostExecute is not called
                     return R.string.progress_end_cancelled;
                 }
                 return R.string.warning_cover_not_found;

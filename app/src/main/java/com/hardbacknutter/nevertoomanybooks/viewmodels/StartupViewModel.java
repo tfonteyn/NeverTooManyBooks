@@ -94,6 +94,7 @@ public class StartupViewModel
          */
         @Override
         public void onFinished(@NonNull final FinishMessage<Boolean> message) {
+            // We don't care about the status.
             synchronized (mAllTasks) {
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.STARTUP_TASKS) {
                     Log.d(TAG, "onFinished|" + message);

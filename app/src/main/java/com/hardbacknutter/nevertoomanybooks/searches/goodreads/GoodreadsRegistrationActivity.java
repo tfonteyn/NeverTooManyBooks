@@ -27,6 +27,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.searches.goodreads;
 
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -57,13 +58,12 @@ public class GoodreadsRegistrationActivity
     private final TaskListener<Integer> mTaskListener = new TaskListener<Integer>() {
         @Override
         public void onFinished(@NonNull final FinishMessage<Integer> message) {
-
-            String msg = GoodreadsHandler.handleResult(GoodreadsRegistrationActivity.this,
-                                                       message);
-            if (msg != null) {
-                Snackbar.make(mAuthButton, msg, Snackbar.LENGTH_LONG).show();
+            final Context context = GoodreadsRegistrationActivity.this;
+            if (GoodreadsHandler.authNeeded(message)) {
+                RequestAuthTask.prompt(context, mTaskListener);
             } else {
-                RequestAuthTask.prompt(GoodreadsRegistrationActivity.this, mTaskListener);
+                Snackbar.make(mAuthButton, GoodreadsHandler.digest(context, message),
+                              Snackbar.LENGTH_LONG).show();
             }
         }
 

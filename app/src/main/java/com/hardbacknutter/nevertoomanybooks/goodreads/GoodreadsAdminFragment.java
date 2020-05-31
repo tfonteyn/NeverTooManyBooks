@@ -103,20 +103,20 @@ public class GoodreadsAdminFragment
 //                mProgressDialog.dismiss();
 //            }
 
-            //noinspection ConstantConditions
-            final String msg = GoodreadsHandler.handleResult(getContext(), message);
-            if (msg != null) {
-                Snackbar.make(mVb.getRoot(), msg, Snackbar.LENGTH_LONG).show();
-            } else {
+            if (GoodreadsHandler.authNeeded(message)) {
+                //noinspection ConstantConditions
                 RequestAuthTask.prompt(getContext(), mGoodreadsTaskModel.getTaskListener());
+            } else {
+                //noinspection ConstantConditions
+                Snackbar.make(mVb.getRoot(), GoodreadsHandler.digest(getContext(), message),
+                              Snackbar.LENGTH_LONG).show();
             }
         });
 
-
-        mVb.lblSyncWithGoodreads.setOnClickListener(v -> onImport(true));
-        mVb.lblImportAllFromGoodreads.setOnClickListener(v1 -> onImport(false));
-        mVb.lblSendUpdatedBooksToGoodreads.setOnClickListener(v -> onSend(true));
-        mVb.lblSendAllBooksToGoodreads.setOnClickListener(v -> onSend(false));
+        mVb.btnSync.setOnClickListener(v -> onImport(true));
+        mVb.btnImport.setOnClickListener(v1 -> onImport(false));
+        mVb.btnSendUpdatedBooks.setOnClickListener(v -> onSend(true));
+        mVb.btnSendAllBooks.setOnClickListener(v -> onSend(false));
     }
 
     @Override

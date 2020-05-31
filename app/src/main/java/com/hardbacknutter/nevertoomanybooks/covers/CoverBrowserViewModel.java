@@ -85,9 +85,7 @@ public class CoverBrowserViewModel
         synchronized (mAllTasks) {
             mAllTasks.remove(message.taskId);
         }
-        if (message.status == TaskListener.TaskStatus.Success && message.result != null) {
-            mGalleryImage.setValue(message.result);
-        }
+        mGalleryImage.setValue(message.result);
     };
     /** Editions. */
     @Nullable
@@ -98,9 +96,7 @@ public class CoverBrowserViewModel
             mAllTasks.remove(message.taskId);
             mEditionsTask = null;
         }
-        if (message.status == TaskListener.TaskStatus.Success && message.result != null) {
-            mEditions.setValue(message.result);
-        }
+        mEditions.setValue(message.result);
     };
     /** SelectedImage. */
     @Nullable
@@ -111,9 +107,7 @@ public class CoverBrowserViewModel
             mAllTasks.remove(message.taskId);
             mSelectedImageTask = null;
         }
-        if (message.status == TaskListener.TaskStatus.Success && message.result != null) {
-            mSelectedImage.setValue(message.result);
-        }
+        mSelectedImage.setValue(message.result);
     };
 
 
@@ -230,7 +224,7 @@ public class CoverBrowserViewModel
     /**
      * Observable.
      *
-     * @return list of ISBN numbers for alternative editions.
+     * @return list of ISBN numbers for alternative editions; can be {@code null}.
      */
     @NonNull
     MutableLiveData<Collection<String>> onEditionsLoaded() {
@@ -253,7 +247,11 @@ public class CoverBrowserViewModel
         task.executeOnExecutor(mGalleryNetworkExecutor);
     }
 
-    /** Observable. */
+    /**
+     * Observable.
+     *
+     * @return a gallery image file info; can be {@code null}.
+     */
     @NonNull
     MutableLiveData<ImageFileInfo> onGalleryImage() {
         return mGalleryImage;
@@ -284,7 +282,11 @@ public class CoverBrowserViewModel
         mSelectedImageTask.execute();
     }
 
-    /** Observable. */
+    /**
+     * Observable.
+     *
+     * @return the preview image file info; can be {@code null}.
+     */
     @NonNull
     MutableLiveData<ImageFileInfo> onSelectedImage() {
         return mSelectedImage;

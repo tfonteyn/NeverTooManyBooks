@@ -281,8 +281,8 @@ public class ImportManager
                + '}';
     }
 
-    public String createExceptionReport(@NonNull final Context context,
-                                        @Nullable final Exception e) {
+    public String createErrorReport(@NonNull final Context context,
+                                    @Nullable final Exception e) {
         String msg = null;
 
         if (e instanceof InvalidArchiveException) {

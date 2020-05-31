@@ -61,6 +61,7 @@ import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.UnexpectedValueException;
 
 /**
  * Manages connections and interfaces between the {@code SearchEngine} and the actual
@@ -166,73 +167,79 @@ public class GoodreadsHandler {
     }
 
     /**
-     * Handle the {@link TaskListener.TaskStatus} and the goodreads extended {@link GrStatus}.
+     * Check the task outcome whether the user should authenticate.
+     * URGENT: TEST: this needs thorough testing for non-successful calls
+     *
+     * @param message to process
+     *
+     * @return {@code true} if authentication should be requested
+     */
+    public static boolean authNeeded(@NonNull final TaskListener.FinishMessage<Integer> message) {
+        return (message.status == TaskListener.TaskStatus.Failed
+                && message.result != null
+                && message.result == GrStatus.AUTHORIZATION_NEEDED);
+    }
+
+    /**
+     * Digest the task outcome, and return a user displayable String message.
+     * URGENT: TEST: this needs thorough testing for non-successful calls
      *
      * @param context Current context
      * @param message to process
      *
-     * @return a String to display to the user, or {@code null} when registration is needed.
+     * @return a String to display to the user
      */
-    @Nullable
-    public static String handleResult(@NonNull final Context context,
-                                      @NonNull final TaskListener.FinishMessage<Integer> message) {
+    @NonNull
+    public static String digest(@NonNull final Context context,
+                                @NonNull final TaskListener.FinishMessage<Integer> message) {
 
-        return handleResult(context, message.taskId, message.result,
-                            message.status, message.exception);
-    }
+        // Reminder: the task status is ONLY about the task itself.
+        // The 'result' contains the actual GrStatus which we need to handle here.
+        switch (message.status) {
+            case Success: {
+                Objects.requireNonNull(message.result, ErrorMsg.NULL_TASK_RESULTS);
 
-    /**
-     * Handle the {@link TaskListener.TaskStatus} and the goodreads extended {@link GrStatus}.
-     *
-     * @param context Current context
-     *
-     * @return a String to display to the user, or {@code null} when registration is needed.
-     */
-    @Nullable
-    public static String handleResult(@NonNull final Context context,
-                                      final int taskId,
-                                      @Nullable final Integer result,
-                                      @NonNull final TaskListener.TaskStatus status,
-                                      @Nullable final Exception exception) {
-        // FIRST Handle authorization efforts from RequestAuthTask
-        if (taskId == R.id.TASK_ID_GR_REQUEST_AUTH && result != null) {
-            // Did authorization fail ?
-            if (result == GrStatus.AUTHORIZATION_FAILED) {
-                return GrStatus.getString(context, GrStatus.AUTHORIZATION_FAILED);
+                // FIRST Handle authorization efforts from RequestAuthTask
+                if (message.taskId == R.id.TASK_ID_GR_REQUEST_AUTH) {
+                    // Did authorization fail ?
+                    if (message.result == GrStatus.AUTHORIZATION_FAILED) {
+                        return GrStatus.getString(context, GrStatus.AUTHORIZATION_FAILED);
+                    }
+
+                    // Did we fail after we tried again ?
+                    if (message.result == GrStatus.AUTHORIZATION_NEEDED) {
+                        // If so, report this, but do NOT return {@code null}
+                        // as otherwise we'd get into a registration loop.
+                        return GrStatus.getString(context, GrStatus.AUTHENTICATION_FAILED);
+                    }
+                }
+
+                return GrStatus.getString(context, message.result);
             }
 
-            // Did we fail after we tried again ?
-            if (result == GrStatus.AUTHORIZATION_NEEDED) {
-                // If so, report this, but do NOT return {@code null}
-                // as otherwise we'd get into a registration loop.
-                return context.getString(R.string.error_site_authentication_failed,
-                                         context.getString(R.string.site_goodreads));
-            }
-        }
-
-        if (status == TaskListener.TaskStatus.Success) {
-            Objects.requireNonNull(result, ErrorMsg.NULL_TASK_RESULTS);
-            return GrStatus.getString(context, result);
-
-        } else if (status == TaskListener.TaskStatus.Cancelled) {
-            return GrStatus.getString(context, result != null ? result : GrStatus.CANCELLED);
-
-        } else {
-            Objects.requireNonNull(result, ErrorMsg.NULL_TASK_RESULTS);
-            // Should we ask the user to register?
-            if (result == GrStatus.AUTHORIZATION_NEEDED) {
-                return null;
-            }
-
-            // Report the error
-            String errorMsg = GrStatus.getString(context, result);
-            // worst case, add the actual exception.
-            if (result == GrStatus.UNEXPECTED_ERROR) {
-                if (exception != null) {
-                    errorMsg += ' ' + exception.getLocalizedMessage();
+            case Cancelled: {
+                if (message.result != null) {
+                    return GrStatus.getString(context, message.result);
+                } else {
+                    return GrStatus.getString(context, GrStatus.CANCELLED);
                 }
             }
-            return errorMsg;
+
+            case Failed: {
+                Objects.requireNonNull(message.result, ErrorMsg.NULL_TASK_RESULTS);
+                // Report the error; worst case, add the actual exception.
+                final String errorMsg;
+                if (message.result == GrStatus.UNEXPECTED_ERROR && message.exception != null) {
+                    errorMsg = GrStatus.getString(context, message.result)
+                               + ' ' + message.exception.getLocalizedMessage();
+                } else {
+                    errorMsg = GrStatus.getString(context, message.result);
+                }
+                return errorMsg;
+            }
+
+            default:
+                throw new UnexpectedValueException(message.status);
         }
     }
 

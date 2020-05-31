@@ -227,9 +227,9 @@ public class EditBookTocFragment
         super.onViewCreated(view, savedInstanceState);
 
         mIsfdbEditionsTaskModel.onTaskFinished().observe(getViewLifecycleOwner(),
-                                                         this::onGetEditionsTaskFinished);
+                                                         this::onIsfdbEditions);
         mIsfdbGetBookTaskModel.onTaskFinished().observe(getViewLifecycleOwner(),
-                                                        this::onGetBookTaskFinished);
+                                                        this::onIsfdbBook);
 
         // set up the list view. The adapter is setup in onPopulateViews
         final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
@@ -267,15 +267,22 @@ public class EditBookTocFragment
      * we got one or more editions from ISFDB.
      * Stores the url's locally as the user might want to try the next in line
      */
-    private void onGetEditionsTaskFinished(
-            @NonNull final TaskListener.FinishMessage<ArrayList<Edition>> message) {
+    private void onIsfdbEditions(@NonNull final TaskListener.FinishMessage<ArrayList<Edition>>
+                                         message) {
         mIsfdbEditions = message.result != null ? message.result : new ArrayList<>();
         searchIsfdb();
     }
 
-    private void onGetBookTaskFinished(@NonNull final TaskListener.FinishMessage<Bundle> message) {
-        final Bundle bookData = message.result;
-        if (bookData == null) {
+    private void onIsfdbBook(@NonNull final TaskListener.FinishMessage<Bundle> message) {
+        if (message.status == TaskListener.TaskStatus.Cancelled) {
+            Snackbar.make(mVb.getRoot(), R.string.progress_end_cancelled,
+                          Snackbar.LENGTH_LONG).show();
+            return;
+        } else if (message.status == TaskListener.TaskStatus.Failed) {
+            Snackbar.make(mVb.getRoot(), R.string.warning_search_failed,
+                          Snackbar.LENGTH_LONG).show();
+            return;
+        } else if (message.result == null) {
             Snackbar.make(mVb.getRoot(), R.string.warning_book_not_found,
                           Snackbar.LENGTH_LONG).show();
             return;
@@ -284,7 +291,7 @@ public class EditBookTocFragment
         final Book book = mBookViewModel.getBook();
 
         // update the book with Series information that was gathered from the TOC
-        final List<Series> series = bookData.getParcelableArrayList(Book.BKEY_SERIES_ARRAY);
+        final List<Series> series = message.result.getParcelableArrayList(Book.BKEY_SERIES_ARRAY);
         if (series != null && !series.isEmpty()) {
             final ArrayList<Series> inBook = book.getParcelableArrayList(Book.BKEY_SERIES_ARRAY);
             // add, weeding out duplicates
@@ -298,7 +305,7 @@ public class EditBookTocFragment
 
         // update the book with the first publication date that was gathered from the TOC
         final String bookFirstPublication =
-                bookData.getString(DBDefinitions.KEY_DATE_FIRST_PUBLICATION);
+                message.result.getString(DBDefinitions.KEY_DATE_FIRST_PUBLICATION);
         if (bookFirstPublication != null) {
             if (book.getString(DBDefinitions.KEY_DATE_FIRST_PUBLICATION).isEmpty()) {
                 book.putString(DBDefinitions.KEY_DATE_FIRST_PUBLICATION, bookFirstPublication);
@@ -307,7 +314,7 @@ public class EditBookTocFragment
 
         // finally the TOC itself;  only put on display for the user to approve
         final boolean hasOtherEditions = (mIsfdbEditions != null) && (mIsfdbEditions.size() > 1);
-        ConfirmTocDialogFragment.newInstance(bookData, hasOtherEditions)
+        ConfirmTocDialogFragment.newInstance(message.result, hasOtherEditions)
                                 .show(getChildFragmentManager(), ConfirmTocDialogFragment.TAG);
     }
 

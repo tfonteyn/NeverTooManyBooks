@@ -27,8 +27,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.tasks;
 
-import android.os.AsyncTask;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -48,23 +46,9 @@ import androidx.annotation.Nullable;
 public interface TaskListener<Result> {
 
     /**
-     * Called when a task finishes; success or failure.
+     * Called when a task finishes. The status is embedded in the message.
      */
     void onFinished(@NonNull FinishMessage<Result> message);
-
-    /**
-     * Called when a task was cancelled.
-     */
-    default void onCancelled(@NonNull final FinishMessage<Result> message) {
-        onFinished(message);
-    }
-
-//    /**
-//     * Called when a task failed.
-//     */
-//    default void onFailed(@NonNull final FinishMessage<Result> message) {
-//        onFinished(message);
-//    }
 
     /**
      * Progress messages.
@@ -85,24 +69,28 @@ public interface TaskListener<Result> {
      */
     class FinishMessage<Result> {
 
+        /** ID for the task which was provided at construction time. */
         public final int taskId;
 
-        /** Can be {@code null} regardless of the doBackground implementation. */
-        @Nullable
-        public final Result result;
+        /** Success, Failed, Cancelled. */
         @NonNull
         public final TaskStatus status;
+
+        /**
+         * The result object from the task.
+         * It can be {@code null} regardless of the task implementation.
+         * Only considered valid if the status is Success or Cancelled.
+         */
+        @Nullable
+        public final Result result;
+
+        /**
+         * Set if the task finished with an exception, or {@code null} for no-error.
+         * Only considered valid if the status is Failed.
+         */
         @Nullable
         public final Exception exception;
 
-        /**
-         * Constructor.
-         *
-         * @param taskId    ID for the task which was provided at construction time.
-         * @param status    Success, Failed, Cancelled, ...
-         * @param result    the result object from the {@link AsyncTask},
-         * @param exception if the task finished with an exception, or {@code null}.
-         */
         public FinishMessage(final int taskId,
                              @NonNull final TaskStatus status,
                              @Nullable final Result result,
