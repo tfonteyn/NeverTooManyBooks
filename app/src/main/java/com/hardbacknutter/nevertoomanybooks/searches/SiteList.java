@@ -40,6 +40,7 @@ import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.settings.SearchAdminActivity;
@@ -342,17 +343,17 @@ public class SiteList
         if (!enabledOnly) {
             return mList;
         }
-        // someday...
+        // Studio 4 support
 //        if (Build.VERSION.SDK_INT >= 24) {
-//            return mList.stream().filter(Site::isEnabled).collect(Collectors.toList());
+        return mList.stream().filter(Site::isEnabled).collect(Collectors.toList());
 //        } else {
-        List<Site> filteredList = new ArrayList<>();
-        for (Site site : mList) {
-            if (site.isEnabled()) {
-                filteredList.add(site);
-            }
-        }
-        return filteredList;
+//            List<Site> filteredList = new ArrayList<>();
+//            for (Site site : mList) {
+//                if (site.isEnabled()) {
+//                    filteredList.add(site);
+//                }
+//            }
+//            return filteredList;
 //        }
     }
 

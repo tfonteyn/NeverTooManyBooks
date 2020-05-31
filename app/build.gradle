@@ -113,11 +113,6 @@ android {
     //  7       24      73.7
     //  6       23      84.9‬
     //
-    // Java 8 streams needs API 24
-    // https://developer.android.com/studio/write/java8-support
-    // But Studio 4 will support them on lower versions:
-    // https://developer.android.com/studio/preview/features#j8-desugar
-    //
     // The scanner library for pre-24 API is no longer updated.
     //
     defaultConfig {
@@ -174,14 +169,15 @@ android {
     }
 
     compileOptions {
+        // https://developer.android.com/studio/releases/#4-0-0-desugar
+        coreLibraryDesugaringEnabled true
+
         sourceCompatibility = '1.8'
         targetCompatibility = '1.8'
     }
 
     buildFeatures {
-        viewBinding {
-            enabled = true
-        }
+        viewBinding = true
     }
 
     testOptions {
@@ -195,6 +191,7 @@ android {
             }
         }
     }
+
     packagingOptions {
         exclude 'META-INF/LICENSE'
         exclude 'META-INF/LICENSE.md'
@@ -213,6 +210,7 @@ android {
 
 // AndroidX release notes:  https://developer.android.com/jetpack/androidx/versions
 dependencies {
+    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:1.0.5'
     //
     implementation 'androidx.activity:activity:1.2.0-alpha05'
     implementation 'androidx.annotation:annotation:1.1.0'
