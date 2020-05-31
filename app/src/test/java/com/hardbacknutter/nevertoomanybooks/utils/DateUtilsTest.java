@@ -92,6 +92,7 @@ class DateUtilsTest {
     void parseAmbiguousMMDD() {
         Locale locale = Locale.getDefault();
         DateUtils.create(locale);
+        DateParser.create(locale);
         set12oClock();
 
         // Patter list has MMdd before ddMM
@@ -115,6 +116,7 @@ class DateUtilsTest {
     void parseDDMM() {
         Locale locale = Locale.getDefault();
         DateUtils.create(locale);
+        DateParser.create(locale);
         set12oClock();
 
         assertEquals(sd_1987_06_25, DateUtils.parseDate("25-06-1987"));
@@ -143,14 +145,15 @@ class DateUtilsTest {
         // Daylight savings time will be offset by 1 hour.
         Locale locale = Locale.UK;
         DateUtils.create(locale);
+        DateParser.create(locale);
 
         assertEquals(wd_2017_01_12_11_57_41, DateUtils.parseSqlDateTime("2017-01-12 11:57:41"));
 
-        sd_1987_06_25.setHours(sd_1987_06_25.getHours() + 1);
+        //sd_1987_06_25.setHours(sd_1987_06_25.getHours() + 1);
         assertEquals(sd_1987_06_25, DateUtils.parseSqlDateTime("1987-06-25"));
-        sd_1987_06_10.setHours(sd_1987_06_10.getHours() + 1);
+        //sd_1987_06_10.setHours(sd_1987_06_10.getHours() + 1);
         assertEquals(sd_1987_06_10, DateUtils.parseSqlDateTime("1987-06-10"));
-        sd_1987_06_01.setHours(sd_1987_06_01.getHours() + 1);
+        //sd_1987_06_01.setHours(sd_1987_06_01.getHours() + 1);
         assertEquals(sd_1987_06_01, DateUtils.parseSqlDateTime("1987-06"));
 
     }
@@ -163,6 +166,7 @@ class DateUtilsTest {
         // Testing with English only
         Locale locale = Locale.ENGLISH;
         DateUtils.create(locale);
+        DateParser.create(locale);
 
         set12oClock();
 
@@ -189,6 +193,7 @@ class DateUtilsTest {
         // Testing with French, English
         Locale locale = Locale.FRENCH;
         DateUtils.create(locale);
+        DateParser.create(locale);
 
         set12oClock();
 

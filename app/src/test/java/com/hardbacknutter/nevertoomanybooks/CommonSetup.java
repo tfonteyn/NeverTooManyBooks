@@ -51,6 +51,7 @@ import com.hardbacknutter.nevertoomanybooks.searches.isfdb.IsfdbSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searches.kbnl.KbNlSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.tasks.Canceller;
+import com.hardbacknutter.nevertoomanybooks.utils.DateParser;
 import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 
@@ -94,6 +95,7 @@ public class CommonSetup {
         mLocale0 = locale0;
         Locale.setDefault(mLocale0);
         DateUtils.create(mLocale0);
+        DateParser.create(mLocale0);
     }
 
     /**

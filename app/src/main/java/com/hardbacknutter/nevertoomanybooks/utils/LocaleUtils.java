@@ -205,6 +205,7 @@ public final class LocaleUtils {
             sPreferredLocale = createLocale(localeSpec);
             // (re)create our parser format lists
             DateUtils.create(sPreferredLocale, LocaleUtils.getSystemLocale());
+            DateParser.create(sPreferredLocale, LocaleUtils.getSystemLocale());
         }
 
         // Update the JDK usage of Locale
