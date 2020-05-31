@@ -36,6 +36,7 @@ import java.util.Date;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
+import com.hardbacknutter.nevertoomanybooks.utils.DateFormatUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
 
 /**
@@ -69,9 +70,9 @@ public class DateValidator
         if (value.isEmpty()) {
             value = mDefaultValue;
         } else {
-            Date date = DateUtils.parseDate(value);
+            final Date date = DateUtils.parseDate(value);
             if (date != null) {
-                value = DateUtils.utcSqlDateTime(date);
+                value = DateFormatUtils.isoUtcDateTime(date);
             } else {
                 throw new ValidatorException(R.string.vldt_date_expected_for_x, errorLabelId);
             }

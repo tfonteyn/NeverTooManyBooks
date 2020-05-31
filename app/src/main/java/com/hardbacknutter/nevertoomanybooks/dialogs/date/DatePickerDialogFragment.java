@@ -40,7 +40,7 @@ import androidx.fragment.app.DialogFragment;
 import java.util.Calendar;
 
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
-import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.DateFormatUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 
 public class DatePickerDialogFragment
@@ -62,19 +62,19 @@ public class DatePickerDialogFragment
     public static DialogFragment newInstance(@StringRes final int dialogTitleId,
                                              @Nullable final String currentValue,
                                              final boolean todayIfNone) {
-        final String date;
+        final String dateStr;
         if (todayIfNone && (currentValue == null || currentValue.isEmpty())) {
-            date = DateUtils.localSqlDateForToday();
+            dateStr = DateFormatUtils.isoLocalDateForToday();
         } else if (currentValue != null) {
-            date = currentValue;
+            dateStr = currentValue;
         } else {
-            date = "";
+            dateStr = "";
         }
 
         final DialogFragment frag = new DatePickerDialogFragment();
         final Bundle args = new Bundle(2);
         args.putInt(StandardDialogs.BKEY_DIALOG_TITLE, dialogTitleId);
-        args.putString(BKEY_DATE, date);
+        args.putString(BKEY_DATE, dateStr);
         frag.setArguments(args);
         return frag;
     }

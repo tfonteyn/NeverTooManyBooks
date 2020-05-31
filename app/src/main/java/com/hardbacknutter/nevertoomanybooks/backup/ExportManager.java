@@ -58,6 +58,7 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
+import com.hardbacknutter.nevertoomanybooks.utils.DateFormatUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.FormattedMessageException;
@@ -311,7 +312,7 @@ public class ExportManager
         PreferenceManager.getDefaultSharedPreferences(context)
                          .edit()
                          .putString(PREF_LAST_FULL_BACKUP_DATE,
-                                    DateUtils.utcSqlDateTimeForToday())
+                                    DateFormatUtils.isoUtcDateTimeForToday())
                          .putInt(Prefs.PREF_STARTUP_BACKUP_COUNTDOWN,
                                  Prefs.STARTUP_BACKUP_COUNTDOWN)
                          .apply();

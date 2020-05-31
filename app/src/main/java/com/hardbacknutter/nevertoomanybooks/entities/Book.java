@@ -56,7 +56,7 @@ import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 import com.hardbacknutter.nevertoomanybooks.datamanager.validators.ValidatorException;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
-import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.DateFormatUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.Money;
 
@@ -373,7 +373,7 @@ public class Book
         if (db.setBookRead(getId(), isRead)) {
             putBoolean(DBDefinitions.KEY_READ, isRead);
             if (isRead) {
-                putString(DBDefinitions.KEY_READ_END, DateUtils.localSqlDateForToday());
+                putString(DBDefinitions.KEY_READ_END, DateFormatUtils.isoLocalDateForToday());
             } else {
                 putString(DBDefinitions.KEY_READ_END, "");
             }

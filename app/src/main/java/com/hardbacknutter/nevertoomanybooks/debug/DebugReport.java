@@ -45,7 +45,6 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -53,7 +52,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DBHelper;
 import com.hardbacknutter.nevertoomanybooks.scanner.ScannerManager;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
-import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.DateFormatUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.GenericFileProvider;
 
@@ -195,10 +194,9 @@ public final class DebugReport {
 
         try {
             // Copy the database from the internal protected area to the cache area.
-            final File dbFile = AppDir.Cache.getFile(context, DB_EXPORT_FILE_PREFIX
-                                                              + '-'
-                                                              + DateUtils.utcSqlDate(new Date())
-                                                              + ".db");
+            final File dbFile = AppDir.Cache.getFile(
+                    context, DB_EXPORT_FILE_PREFIX
+                             + '-' + DateFormatUtils.isoUtcDateForToday() + ".db");
             dbFile.deleteOnExit();
             FileUtils.copy(DBHelper.getDatabasePath(context), dbFile);
 

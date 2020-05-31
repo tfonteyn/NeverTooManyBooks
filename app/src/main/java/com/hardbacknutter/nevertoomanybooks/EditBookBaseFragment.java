@@ -47,7 +47,6 @@ import androidx.lifecycle.ViewModelProvider;
 import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.android.material.datepicker.MaterialPickerOnPositiveButtonClickListener;
 
-import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -61,6 +60,7 @@ import com.hardbacknutter.nevertoomanybooks.fields.Field;
 import com.hardbacknutter.nevertoomanybooks.fields.Fields;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
 import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.RequestAuthTask;
+import com.hardbacknutter.nevertoomanybooks.utils.DateFormatUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.EditBookFragmentViewModel;
 
@@ -83,7 +83,7 @@ public abstract class EditBookBaseFragment
     private final DatePickerResultsListener
             mPartialDatePickerResultsListener = (year, month, day) -> {
         final int fieldId = mFragmentVM.getCurrentDialogFieldId()[0];
-        String date = DateUtils.buildPartialDate(year, month, day);
+        String date = DateFormatUtils.isoPartialDate(year, month, day);
         onDateSet(fieldId, date);
     };
 
@@ -381,7 +381,7 @@ public abstract class EditBookBaseFragment
                            @Nullable final Long selection) {
         String value;
         if (selection != null) {
-            value = DateUtils.localSqlDate(new Date(selection));
+            value = DateFormatUtils.isoLocalDate(selection);
         } else {
             value = "";
         }

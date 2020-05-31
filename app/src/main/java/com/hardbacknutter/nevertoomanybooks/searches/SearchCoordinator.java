@@ -74,6 +74,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.tasks.Canceller;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 import com.hardbacknutter.nevertoomanybooks.utils.Csv;
+import com.hardbacknutter.nevertoomanybooks.utils.DateFormatUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
@@ -1040,7 +1041,7 @@ public class SearchCoordinator
                 final Date newDate = DateUtils.parseDate(siteLocale, dataToAdd);
                 if (newDate != null) {
                     if (DateUtils.parseDate(siteLocale, currentDateHeld) == null) {
-                        final String value = DateUtils.utcSqlDate(newDate);
+                        final String value = DateFormatUtils.isoUtcDate(newDate);
                         // current date was invalid, use new one.
                         mBookData.putString(key, value);
                         if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {

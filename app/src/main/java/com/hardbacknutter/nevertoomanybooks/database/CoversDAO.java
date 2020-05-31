@@ -48,7 +48,6 @@ import androidx.annotation.WorkerThread;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.util.Date;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import com.hardbacknutter.nevertoomanybooks.App;
@@ -62,7 +61,7 @@ import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
-import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.DateFormatUtils;
 
 /**
  * DB Helper for Covers DB. It uses the Application Context.
@@ -258,13 +257,13 @@ public final class CoversDAO
                 return null;
             }
 
-            File file = AppDir.getCoverFile(context, uuid, cIdx);
-            String dateStr = DateUtils.utcSqlDateTime(new Date(file.lastModified()));
-            String cacheId = constructCacheId(uuid, cIdx, maxWidth, maxHeight);
+            final File file = AppDir.getCoverFile(context, uuid, cIdx);
+            final String dateStr = DateFormatUtils.isoUtcDateTime(file.lastModified());
+            final String cacheId = constructCacheId(uuid, cIdx, maxWidth, maxHeight);
             try (Cursor cursor = sSyncedDb.rawQuery(SQL_GET_IMAGE,
                                                     new String[]{cacheId, dateStr})) {
                 if (cursor.moveToFirst()) {
-                    byte[] bytes = cursor.getBlob(0);
+                    final byte[] bytes = cursor.getBlob(0);
                     if (bytes != null) {
                         return BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
                     }

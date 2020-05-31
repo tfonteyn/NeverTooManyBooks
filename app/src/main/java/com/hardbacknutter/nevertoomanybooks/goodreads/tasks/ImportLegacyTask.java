@@ -75,6 +75,7 @@ import com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.QueueManager;
 import com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.TQTask;
 import com.hardbacknutter.nevertoomanybooks.searches.goodreads.GoodreadsSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
+import com.hardbacknutter.nevertoomanybooks.utils.DateFormatUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
@@ -148,7 +149,7 @@ class ImportLegacyTask
             if (lastSync == null) {
                 mUpdatesAfter = null;
             } else {
-                mUpdatesAfter = DateUtils.utcSqlDateTime(lastSync);
+                mUpdatesAfter = DateFormatUtils.isoUtcDateTime(lastSync);
             }
         } else {
             mUpdatesAfter = null;
@@ -177,7 +178,7 @@ class ImportLegacyTask
      */
     private void setLastSyncDate(@NonNull final Context context,
                                  @Nullable final Date date) {
-        String dateStr = date != null ? DateUtils.utcSqlDateTime(date) : null;
+        String dateStr = date != null ? DateFormatUtils.isoUtcDateTime(date) : null;
         PreferenceManager.getDefaultSharedPreferences(context).edit()
                          .putString(PREFS_LAST_SYNC_DATE, dateStr).apply();
     }
@@ -703,7 +704,7 @@ class ImportLegacyTask
 
         // We need to set BOTH of these fields, otherwise the add/update method will set the
         // last_update_date for us, and that would be ahead of the Goodreads update date.
-        String now = DateUtils.utcSqlDateTimeForToday();
+        String now = DateFormatUtils.isoUtcDateTimeForToday();
         bookData.putString(DBDefinitions.KEY_BOOK_GOODREADS_LAST_SYNC_DATE, now);
         bookData.putString(DBDefinitions.KEY_DATE_LAST_UPDATED, now);
 
@@ -732,12 +733,12 @@ class ImportLegacyTask
             return null;
         }
 
-        Date d = DateUtils.parseDate(value);
-        if (d == null) {
+        final Date date = DateUtils.parseDate(value);
+        if (date == null) {
             return null;
         }
 
-        value = DateUtils.utcSqlDateTime(d);
+        value = DateFormatUtils.isoUtcDateTime(date);
         bookData.putString(destKey, value);
         return value;
     }

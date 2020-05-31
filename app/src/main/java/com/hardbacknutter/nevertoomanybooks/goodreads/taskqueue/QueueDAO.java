@@ -43,6 +43,7 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 
+import com.hardbacknutter.nevertoomanybooks.utils.DateFormatUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
 
 import static com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.QueueDBHelper.KEY_CATEGORY;
@@ -189,9 +190,9 @@ class QueueDAO
      * @param name Name of the queue
      */
     void createQueue(@NonNull final String name) {
-        long id = getQueueId(name);
+        final long id = getQueueId(name);
         if (id == 0) {
-            ContentValues cv = new ContentValues();
+            final ContentValues cv = new ContentValues();
             cv.put(KEY_NAME, name);
             getDb().insert(TBL_QUEUE, null, cv);
         }
@@ -236,16 +237,16 @@ class QueueDAO
      */
     void enqueueTask(@NonNull final Task task,
                      @NonNull final String queueName) {
-        long queueId = getQueueId(queueName);
+        final long queueId = getQueueId(queueName);
         if (queueId == 0) {
             throw new IllegalArgumentException("Queue '" + queueName + "' does not exist");
         }
 
-        ContentValues cv = new ContentValues();
+        final ContentValues cv = new ContentValues();
         cv.put(KEY_TASK, SerializationUtils.serializeObject(task));
         cv.put(KEY_CATEGORY, task.getCategory());
         cv.put(KEY_QUEUE_ID, queueId);
-        long id = getDb().insert(TBL_TASK, null, cv);
+        final long id = getDb().insert(TBL_TASK, null, cv);
         task.setId(id);
     }
 
@@ -262,10 +263,10 @@ class QueueDAO
      */
     @Nullable
     ScheduledTask getNextTask(@NonNull final String queueName) {
-        Date currentTime = new Date();
-        String currTimeStr = DateUtils.utcSqlDateTime(currentTime);
+        final Date currentTime = new Date();
+        final String currTimeStr = DateFormatUtils.isoUtcDateTimeForToday();
 
-        SQLiteDatabase db = getDb();
+        final SQLiteDatabase db = getDb();
         Cursor cursor = null;
 
         try {
@@ -286,13 +287,13 @@ class QueueDAO
             }
 
             // Determine the number of milliseconds to wait before we should run the task
-            int dateCol = cursor.getColumnIndex(KEY_RETRY_DATE);
+            final int dateCol = cursor.getColumnIndex(KEY_RETRY_DATE);
             Date retryDate = DateUtils.parseSqlDateTime(cursor.getString(dateCol));
             if (retryDate == null) {
                 retryDate = new Date();
             }
 
-            long timeUntilRunnable;
+            final long timeUntilRunnable;
             if (retryDate.after(currentTime)) {
                 // set timeUntilRunnable to let caller know the queue is not empty
                 timeUntilRunnable = retryDate.getTime() - currentTime.getTime();
@@ -301,10 +302,10 @@ class QueueDAO
                 timeUntilRunnable = 0;
             }
 
-            int id = cursor.getInt(cursor.getColumnIndex(KEY_PK_ID));
-            byte[] serializedTask = cursor.getBlob(cursor.getColumnIndex(KEY_TASK));
+            final int id = cursor.getInt(cursor.getColumnIndex(KEY_PK_ID));
+            final byte[] serializedTask = cursor.getBlob(cursor.getColumnIndex(KEY_TASK));
 
-            int retries = cursor.getInt(cursor.getColumnIndex(KEY_RETRY_COUNT));
+            final int retries = cursor.getInt(cursor.getColumnIndex(KEY_RETRY_COUNT));
 
             return new ScheduledTask(id, serializedTask, retries, timeUntilRunnable);
 
@@ -325,7 +326,7 @@ class QueueDAO
      * @param task The task to be updated
      */
     void updateTask(@NonNull final Task task) {
-        ContentValues cv = new ContentValues();
+        final ContentValues cv = new ContentValues();
         cv.put(KEY_TASK, SerializationUtils.serializeObject(task));
         cv.put(KEY_CATEGORY, task.getCategory());
         getDb().update(TBL_TASK, cv, KEY_PK_ID + "=?",
@@ -343,7 +344,7 @@ class QueueDAO
     void setTaskCompleted(final long id) {
         if (hasEvents(id)) {
             // Just set is as completed
-            ContentValues cv = new ContentValues();
+            final ContentValues cv = new ContentValues();
             cv.put(KEY_STATUS_CODE, Task.COMPLETED);
             getDb().update(TBL_TASK, cv, KEY_PK_ID + "=?", new String[]{String.valueOf(id)});
         } else {
@@ -363,11 +364,11 @@ class QueueDAO
      */
     void setTaskFailed(@NonNull final Task task,
                        @NonNull final String message) {
-        ContentValues cv = new ContentValues();
+        final ContentValues cv = new ContentValues();
         cv.put(KEY_FAILURE_REASON, message);
         cv.put(KEY_STATUS_CODE, Task.FAILED);
         cv.put(KEY_TASK, SerializationUtils.serializeObject(task));
-        Exception e = task.getLastException();
+        final Exception e = task.getLastException();
         if (e != null) {
             cv.put(KEY_EXCEPTION, SerializationUtils.serializeObject(e));
         }
@@ -389,11 +390,11 @@ class QueueDAO
             setTaskFailed(task, "Retry limit exceeded");
         } else {
             // Compute time Task can next be run
-            Calendar cal = Calendar.getInstance();
+            final Calendar cal = Calendar.getInstance();
             cal.add(Calendar.SECOND, task.getRetryDelay());
             // Update record
-            ContentValues cv = new ContentValues();
-            cv.put(KEY_RETRY_DATE, DateUtils.utcSqlDateTime(cal.getTime()));
+            final ContentValues cv = new ContentValues();
+            cv.put(KEY_RETRY_DATE, DateFormatUtils.isoUtcDateTime(cal.getTimeInMillis()));
             cv.put(KEY_RETRY_COUNT, task.getRetries() + 1);
             cv.put(KEY_TASK, SerializationUtils.serializeObject(task));
             getDb().update(TBL_TASK, cv, KEY_PK_ID + "=?",
@@ -413,11 +414,11 @@ class QueueDAO
      */
     void storeTaskEvent(final long taskId,
                         @NonNull final Event event) {
-        SQLiteDatabase db = getDb();
+        final SQLiteDatabase db = getDb();
 
         // Construct statements we want
         if (mCheckTaskExistsStmt == null) {
-            String sql = "SELECT COUNT(*) FROM " + TBL_TASK + " WHERE " + KEY_PK_ID + "=?";
+            final String sql = "SELECT COUNT(*) FROM " + TBL_TASK + " WHERE " + KEY_PK_ID + "=?";
             mCheckTaskExistsStmt = db.compileStatement(sql);
             mStatements.add(mCheckTaskExistsStmt);
         }
@@ -426,14 +427,14 @@ class QueueDAO
         try {
             // Check task exists
             mCheckTaskExistsStmt.bindLong(1, taskId);
-            long count = mCheckTaskExistsStmt.simpleQueryForLong();
+            final long count = mCheckTaskExistsStmt.simpleQueryForLong();
             if (count > 0) {
                 // Setup parameters for insert
-                ContentValues cv = new ContentValues();
+                final ContentValues cv = new ContentValues();
                 cv.put(KEY_TASK_ID, taskId);
                 cv.put(KEY_EVENT, SerializationUtils.serializeObject(event));
 
-                long eventId = db.insert(TBL_EVENT, null, cv);
+                final long eventId = db.insert(TBL_EVENT, null, cv);
                 db.setTransactionSuccessful();
                 event.setId(eventId);
             }
@@ -512,7 +513,7 @@ class QueueDAO
      * @param id of Event to delete.
      */
     void deleteEvent(final long id) {
-        SQLiteDatabase db = getDb();
+        final SQLiteDatabase db = getDb();
         db.beginTransaction();
         try {
             db.delete(TBL_EVENT, KEY_PK_ID + "=?", new String[]{String.valueOf(id)});
@@ -529,7 +530,7 @@ class QueueDAO
      * @param id of Task to delete.
      */
     void deleteTask(final long id) {
-        SQLiteDatabase db = getDb();
+        final SQLiteDatabase db = getDb();
         db.beginTransaction();
         try {
             db.delete(TBL_EVENT, KEY_TASK_ID + "=?", new String[]{String.valueOf(id)});
@@ -542,11 +543,11 @@ class QueueDAO
     }
 
     void cleanupOldTasks(@SuppressWarnings("SameParameterValue") final int days) {
-        Calendar cal = Calendar.getInstance();
+        final Calendar cal = Calendar.getInstance();
         cal.add(Calendar.DATE, -days);
-        String oneWeekAgo = DateUtils.utcSqlDateTime(cal.getTime());
+        final String oneWeekAgo = DateFormatUtils.isoUtcDateTime(cal.getTimeInMillis());
 
-        SQLiteDatabase db = getDb();
+        final SQLiteDatabase db = getDb();
 
         db.beginTransaction();
         try {
@@ -569,11 +570,11 @@ class QueueDAO
     }
 
     void cleanupOldEvents(@SuppressWarnings("SameParameterValue") final int days) {
-        Calendar cal = Calendar.getInstance();
+        final Calendar cal = Calendar.getInstance();
         cal.add(Calendar.DATE, -days);
-        String oneWeekAgo = DateUtils.utcSqlDateTime(cal.getTime());
+        final String oneWeekAgo = DateFormatUtils.isoUtcDateTime(cal.getTimeInMillis());
 
-        SQLiteDatabase db = getDb();
+        final SQLiteDatabase db = getDb();
 
         db.beginTransaction();
         try {

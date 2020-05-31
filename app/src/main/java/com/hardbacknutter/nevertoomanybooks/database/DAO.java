@@ -84,7 +84,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsHandler;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 import com.hardbacknutter.nevertoomanybooks.utils.Csv;
-import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.DateFormatUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
@@ -409,15 +409,15 @@ public class DAO
      */
     @NonNull
     public Cursor fetchBooksForExport(@Nullable final Date sinceDate) {
-        String whereClause;
+        final String whereClause;
         if (sinceDate == null) {
             whereClause = "";
         } else {
             whereClause = TBL_BOOKS.dot(KEY_DATE_LAST_UPDATED)
-                          + ">'" + DateUtils.utcSqlDateTime(sinceDate) + '\'';
+                          + ">'" + DateFormatUtils.isoUtcDateTime(sinceDate) + '\'';
         }
 
-        String sql = SqlAllBooks.withPrimaryAuthorAndSeries(whereClause);
+        final String sql = SqlAllBooks.withPrimaryAuthorAndSeries(whereClause);
         return sSyncedDb.rawQuery(sql, null);
     }
 
@@ -1249,12 +1249,12 @@ public class DAO
 
             // if we do NOT have a date set, then use TODAY
             if (!cv.containsKey(DBDefinitions.KEY_DATE_ADDED)) {
-                cv.put(DBDefinitions.KEY_DATE_ADDED, DateUtils.utcSqlDateTimeForToday());
+                cv.put(DBDefinitions.KEY_DATE_ADDED, DateFormatUtils.isoUtcDateTimeForToday());
             }
 
             // if we do NOT have a date set, then use TODAY
             if (!cv.containsKey(KEY_DATE_LAST_UPDATED)) {
-                cv.put(KEY_DATE_LAST_UPDATED, DateUtils.utcSqlDateTimeForToday());
+                cv.put(KEY_DATE_LAST_UPDATED, DateFormatUtils.isoUtcDateTimeForToday());
             }
 
             // the book itself
@@ -1324,7 +1324,7 @@ public class DAO
             // or if it's not present already.
             if ((flags & BOOK_FLAG_USE_UPDATE_DATE_IF_PRESENT) == 0
                 || !cv.containsKey(KEY_DATE_LAST_UPDATED)) {
-                cv.put(KEY_DATE_LAST_UPDATED, DateUtils.utcSqlDateTimeForToday());
+                cv.put(KEY_DATE_LAST_UPDATED, DateFormatUtils.isoUtcDateTimeForToday());
             }
 
             // go !
@@ -1367,7 +1367,7 @@ public class DAO
         ContentValues cv = new ContentValues();
         cv.put(KEY_READ, read);
         if (read) {
-            cv.put(KEY_READ_END, DateUtils.localSqlDateForToday());
+            cv.put(KEY_READ_END, DateFormatUtils.isoLocalDateForToday());
         } else {
             cv.put(KEY_READ_END, "");
         }

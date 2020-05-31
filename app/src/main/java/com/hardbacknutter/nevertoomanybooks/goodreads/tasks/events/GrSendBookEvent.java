@@ -54,7 +54,7 @@ import com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.Event;
 import com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.EventsCursor;
 import com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.QueueManager;
 import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.SendOneBookLegacyTask;
-import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.DateFormatUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 
 /**
@@ -134,7 +134,7 @@ public class GrSendBookEvent
         holder.authorView.setText(context.getString(R.string.lbl_by_author_s, authorName));
         holder.errorView.setText(getDescription(context));
 
-        final String date = DateUtils.toPrettyDateTime(row.getEventDate(), userLocale);
+        final String date = DateFormatUtils.toPrettyDateTime(row.getEventDate(), userLocale);
         holder.dateView.setText(context.getString(R.string.gr_tq_occurred_at, date));
 
         holder.checkedButton.setChecked(row.isSelected());

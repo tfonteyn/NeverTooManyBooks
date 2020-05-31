@@ -44,7 +44,7 @@ import java.nio.charset.StandardCharsets;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
-import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.DateFormatUtils;
 
 public interface Exporter
         extends Closeable {
@@ -53,10 +53,8 @@ public interface Exporter
     int BUFFER_SIZE = 65535;
 
     static String getNamePrefix(@NonNull final Context context) {
-        return context.getString(R.string.app_name) + '-'
-               + DateUtils.localSqlDateForToday()
-                          .replace(" ", "-")
-                          .replace(":", "")
+        return context.getString(R.string.app_name)
+               + '-' + DateFormatUtils.isoLocalDateForToday()
                + ".ntmb";
     }
 

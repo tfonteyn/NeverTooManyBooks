@@ -34,7 +34,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistGroup;
-import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.DateFormatUtils;
 
 /**
  * Defines a domain; name, type, ...
@@ -208,7 +208,7 @@ public class Domain
         if (mDefaultClause == null) {
             return null;
         } else if ("current_timestamp".equals(mDefaultClause)) {
-            return DateUtils.utcSqlDateTimeForToday();
+            return DateFormatUtils.isoUtcDateTimeForToday();
         } else if (mDefaultClause.startsWith("'") && mDefaultClause.endsWith("'")) {
             return mDefaultClause.substring(1, mDefaultClause.length() - 1);
         }

@@ -34,11 +34,11 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.util.Date;
-import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.dialogs.date.BaseDatePickerDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.fields.accessors.EditTextAccessor;
 import com.hardbacknutter.nevertoomanybooks.fields.accessors.TextAccessor;
+import com.hardbacknutter.nevertoomanybooks.utils.DateFormatUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 
@@ -63,7 +63,7 @@ public class DateFieldFormatter
 
     /**
      * Display as a human-friendly date, local timezone.
-     *
+     * <p>
      * {@inheritDoc}
      */
     @NonNull
@@ -73,8 +73,7 @@ public class DateFieldFormatter
         if (rawValue == null || rawValue.isEmpty()) {
             return "";
         } else {
-            Locale locale = LocaleUtils.getUserLocale(context);
-            return DateUtils.toPrettyDate(locale, rawValue);
+            return DateFormatUtils.toPrettyDate(rawValue, LocaleUtils.getUserLocale(context));
         }
     }
 
@@ -84,7 +83,7 @@ public class DateFieldFormatter
     @Override
     @NonNull
     public String extract(@NonNull final TextView view) {
-        String text = view.getText().toString().trim();
+        final String text = view.getText().toString().trim();
         // extract a year-only string as-is. As we're using controlled input,
         // this will always be a 4-digit valid year.
         if (text.length() == 4) {
@@ -92,9 +91,9 @@ public class DateFieldFormatter
         }
 
         // FIXME:a partial date consisting of Month+Year, will always get a day==1 added.
-        Date d = DateUtils.parseDate(text);
-        if (d != null) {
-            return DateUtils.utcSqlDate(d);
+        final Date date = DateUtils.parseDate(text);
+        if (date != null) {
+            return DateFormatUtils.isoUtcDate(date);
         }
         return text;
     }

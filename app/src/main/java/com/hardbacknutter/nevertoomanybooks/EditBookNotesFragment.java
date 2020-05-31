@@ -51,7 +51,7 @@ import com.hardbacknutter.nevertoomanybooks.fields.accessors.TextViewAccessor;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.DateFieldFormatter;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.DoubleNumberFormatter;
 import com.hardbacknutter.nevertoomanybooks.fields.validators.FieldValidator;
-import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.DateFormatUtils;
 
 public class EditBookNotesFragment
         extends EditBookBaseFragment {
@@ -179,7 +179,7 @@ public class EditBookNotesFragment
                 if (cb.isChecked()) {
                     final Field<String, TextView> readEnd = getField(R.id.read_end);
                     if (readEnd.getAccessor().isEmpty()) {
-                        final String value = DateUtils.localSqlDateForToday();
+                        final String value = DateFormatUtils.isoLocalDateForToday();
                         // Update, display and notify
                         readEnd.getAccessor().setValue(value);
                         readEnd.onChanged(true);

@@ -72,7 +72,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.ItemWithTitle;
 import com.hardbacknutter.nevertoomanybooks.entities.RowDataHolder;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
-import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.DateFormatUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.LanguageUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
@@ -276,7 +276,7 @@ public class BooklistAdapter
                             } else {
                                 tmpLocale = mUserLocale;
                             }
-                            return DateUtils.getMonthName(tmpLocale, m, false);
+                            return DateFormatUtils.toPrettyMonthName(m, false, tmpLocale);
                         }
                     } catch (@NonNull final NumberFormatException e) {
                         if (BuildConfig.DEBUG /* always */) {
@@ -973,8 +973,8 @@ public class BooklistAdapter
         String getPublisherAndPubDateText(@NonNull final RowDataHolder rowData) {
             final String publicationDate;
             if (mInUse.pubDate) {
-                publicationDate = DateUtils.toPrettyDate(
-                        mLocale, rowData.getString(DBDefinitions.KEY_DATE_PUBLISHED));
+                publicationDate = DateFormatUtils.toPrettyDate(
+                        rowData.getString(DBDefinitions.KEY_DATE_PUBLISHED), mLocale);
             } else {
                 publicationDate = null;
             }

@@ -55,7 +55,6 @@ import com.google.android.material.snackbar.Snackbar;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Objects;
-import java.util.regex.Pattern;
 
 import com.hardbacknutter.nevertoomanybooks.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
@@ -72,7 +71,7 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.scanner.ScannerManager;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
-import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.DateFormatUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.SoundManager;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.ResultDataModel;
@@ -100,8 +99,6 @@ public abstract class BasePreferenceFragment
     public static final String BKEY_AUTO_SCROLL_TO_KEY = TAG + ":scrollTo";
     private static final String DIALOG_FRAGMENT_TAG = TAG + ":dialog";
     private static final int REQ_PICK_FILE_FOR_EXPORT_DATABASE = 1;
-    private static final Pattern SPACE_PATTERN = Pattern.compile(" ", Pattern.LITERAL);
-    private static final Pattern COLON_PATTERN = Pattern.compile(":", Pattern.LITERAL);
 
     protected ResultDataModel mResultDataModel;
     @Nullable
@@ -276,15 +273,14 @@ public abstract class BasePreferenceFragment
         if (preference != null) {
             // Export database - Mainly meant for debug or external processing.
             preference.setOnPreferenceClickListener(p -> {
-                String name = SPACE_PATTERN.matcher(DateUtils.localSqlDateForToday())
-                                           .replaceAll("-");
-                name = COLON_PATTERN.matcher(name).replaceAll("");
+                final String name = getString(R.string.app_name)
+                                    + '-' + DateFormatUtils.isoLocalDateForToday()
+                                    + ".ntmb.db";
 
                 final Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT)
                         .addCategory(Intent.CATEGORY_OPENABLE)
                         .setType("*/*")
-                        .putExtra(Intent.EXTRA_TITLE,
-                                  getString(R.string.app_name) + '-' + name + ".ntmb.db");
+                        .putExtra(Intent.EXTRA_TITLE, name);
                 startActivityForResult(intent, REQ_PICK_FILE_FOR_EXPORT_DATABASE);
                 return true;
             });

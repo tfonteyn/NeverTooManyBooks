@@ -42,7 +42,7 @@ import org.xml.sax.helpers.DefaultHandler;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsAuth;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsHandler;
-import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.DateFormatUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.utils.xml.SimpleXmlFilter;
@@ -444,12 +444,12 @@ public class ReviewsListApiHandler
                           @NonNull final String key) {
 
         if (bundle.containsKey(key)) {
-            String dateString = bundle.getString(key);
+            final String dateString = bundle.getString(key);
             if (dateString != null && !dateString.isEmpty()) {
                 try {
-                    Date date = UPDATE_DATE_FMT.parse(dateString);
+                    final Date date = UPDATE_DATE_FMT.parse(dateString);
                     if (date != null) {
-                        bundle.putString(key, DateUtils.utcSqlDateTime(date));
+                        bundle.putString(key, DateFormatUtils.isoUtcDateTime(date));
                     }
                 } catch (@NonNull final ParseException e) {
                     bundle.remove(key);

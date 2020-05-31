@@ -42,6 +42,7 @@ import java.util.Date;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.database.DBHelper;
+import com.hardbacknutter.nevertoomanybooks.utils.DateFormatUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
 
 /**
@@ -95,7 +96,7 @@ public class ArchiveInfo {
 
         mBundle.putInt(INFO_SDK, Build.VERSION.SDK_INT);
         mBundle.putInt(INFO_DATABASE_VERSION, DBHelper.DATABASE_VERSION);
-        mBundle.putString(INFO_CREATION_DATE, DateUtils.utcSqlDateTimeForToday());
+        mBundle.putString(INFO_CREATION_DATE, DateFormatUtils.isoUtcDateTimeForToday());
 
         try {
             PackageInfo info =
