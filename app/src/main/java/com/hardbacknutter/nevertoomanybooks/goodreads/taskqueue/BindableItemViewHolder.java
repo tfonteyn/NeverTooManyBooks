@@ -31,6 +31,11 @@ import android.view.View;
 
 import androidx.annotation.NonNull;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
+import java.util.Locale;
+
 import com.hardbacknutter.nevertoomanybooks.R;
 
 public class BindableItemViewHolder {
@@ -42,5 +47,21 @@ public class BindableItemViewHolder {
     protected BindableItemViewHolder(@NonNull final View view) {
         itemView = view;
         itemView.setTag(R.id.TAG_VIEW_HOLDER, this);
+    }
+
+    /**
+     * Pretty format a LocalDateTime to a datetime-string, using the specified locale.
+     *
+     * @param date          to format
+     * @param displayLocale to use
+     *
+     * @return human readable datetime string
+     */
+    @NonNull
+    protected String toPrettyDateTime(@NonNull final LocalDateTime date,
+                                      @NonNull final Locale displayLocale) {
+        return date.format(DateTimeFormatter
+                                   .ofLocalizedDateTime(FormatStyle.MEDIUM, FormatStyle.SHORT)
+                                   .withLocale(displayLocale));
     }
 }

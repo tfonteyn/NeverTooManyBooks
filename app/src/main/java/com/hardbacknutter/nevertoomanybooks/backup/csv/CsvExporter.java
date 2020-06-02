@@ -36,7 +36,7 @@ import androidx.annotation.Nullable;
 
 import java.io.IOException;
 import java.io.Writer;
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
@@ -90,7 +90,7 @@ public class CsvExporter
     private static final String EXPORT_FIELD_HEADERS =
             "\"" + DBDefinitions.KEY_PK_ID + "\","
             + '"' + DBDefinitions.KEY_BOOK_UUID + "\","
-            + '"' + DBDefinitions.KEY_DATE_LAST_UPDATED + "\","
+            + '"' + DBDefinitions.KEY_UTC_LAST_UPDATED + "\","
             + '"' + CSV_COLUMN_AUTHORS + "\","
             + '"' + DBDefinitions.KEY_TITLE + "\","
             + '"' + DBDefinitions.KEY_ISBN + "\","
@@ -126,14 +126,14 @@ public class CsvExporter
             + '"' + DBDefinitions.KEY_DESCRIPTION + "\","
             + '"' + DBDefinitions.KEY_GENRE + "\","
             + '"' + DBDefinitions.KEY_LANGUAGE + "\","
-            + '"' + DBDefinitions.KEY_DATE_ADDED + "\","
+            + '"' + DBDefinitions.KEY_UTC_ADDED + "\","
             //NEWTHINGS: add new site specific ID: add column label
             + '"' + DBDefinitions.KEY_EID_LIBRARY_THING + "\","
             + '"' + DBDefinitions.KEY_EID_STRIP_INFO_BE + "\","
             + '"' + DBDefinitions.KEY_EID_OPEN_LIBRARY + "\","
             + '"' + DBDefinitions.KEY_EID_ISFDB + "\","
             + '"' + DBDefinitions.KEY_EID_GOODREADS_BOOK + "\","
-            + '"' + DBDefinitions.KEY_BOOK_GOODREADS_LAST_SYNC_DATE + "\""
+            + '"' + DBDefinitions.KEY_UTC_LAST_SYNC_DATE_GOODREADS + "\""
             + '\n';
 
     private static final String EMPTY_QUOTED_STRING = "\"\"";
@@ -152,17 +152,20 @@ public class CsvExporter
     /** export configuration. */
     private final int mOptions;
     @Nullable
-    private final Date mSince;
+    private final LocalDateTime mUtcSinceDateTime;
 
     /**
      * Constructor.
      *
-     * @param context Current context
+     * @param context          Current context
+     * @param options          {@link Options} flags
+     * @param utcSinceDateTime (optional) UTC based date to select only books modified or added
+     *                         since.
      */
     @AnyThread
     public CsvExporter(@NonNull final Context context,
                        final int options,
-                       @Nullable final Date since) {
+                       @Nullable final LocalDateTime utcSinceDateTime) {
         if (BuildConfig.DEBUG /* always */) {
             // For now, we only want to write one entity at a time.
             // This is by choice so debug is easier.
@@ -176,7 +179,7 @@ public class CsvExporter
         mUnknownString = context.getString(R.string.unknown).toUpperCase(locale);
 
         mOptions = options;
-        mSince = since;
+        mUtcSinceDateTime = utcSinceDateTime;
         mDb = new DAO(TAG);
         mBookshelfCoder = CsvCoder.getBookshelfCoder(BooklistStyle.getDefault(context, mDb));
     }
@@ -200,7 +203,7 @@ public class CsvExporter
 
         long lastUpdate = 0;
 
-        try (Cursor cursor = mDb.fetchBooksForExport(mSince)) {
+        try (Cursor cursor = mDb.fetchBooksForExport(mUtcSinceDateTime)) {
             // header: the top row with column labels
             writer.write(EXPORT_FIELD_HEADERS);
 
@@ -230,7 +233,7 @@ public class CsvExporter
                 writer.write(",");
                 writer.write(encode(rowData.getString(DBDefinitions.KEY_BOOK_UUID)));
                 writer.write(",");
-                writer.write(encode(rowData.getString(DBDefinitions.KEY_DATE_LAST_UPDATED)));
+                writer.write(encode(rowData.getString(DBDefinitions.KEY_UTC_LAST_UPDATED)));
                 writer.write(",");
                 writer.write(encode(authors));
                 writer.write(",");
@@ -299,7 +302,7 @@ public class CsvExporter
                 writer.write(",");
                 writer.write(encode(rowData.getString(DBDefinitions.KEY_LANGUAGE)));
                 writer.write(",");
-                writer.write(encode(rowData.getString(DBDefinitions.KEY_DATE_ADDED)));
+                writer.write(encode(rowData.getString(DBDefinitions.KEY_UTC_ADDED)));
                 writer.write(",");
 
                 //NEWTHINGS: add new site specific ID: add column value
@@ -314,7 +317,7 @@ public class CsvExporter
                 writer.write(encode(rowData.getLong(DBDefinitions.KEY_EID_GOODREADS_BOOK)));
                 writer.write(",");
                 writer.write(
-                        encode(rowData.getString(DBDefinitions.KEY_BOOK_GOODREADS_LAST_SYNC_DATE)));
+                        encode(rowData.getString(DBDefinitions.KEY_UTC_LAST_SYNC_DATE_GOODREADS)));
                 writer.write("\n");
 
                 mResults.booksExported++;

@@ -98,8 +98,7 @@ public class FastScrollerOverlay
     public void showOverlay(final boolean isDragging,
                             final int thumbCenter) {
 
-        final RecyclerView.Adapter adapter = mView.getAdapter();
-        if (!(adapter instanceof FastScroller.PopupTextProvider)) {
+        if (!(mView.getAdapter() instanceof FastScroller.PopupTextProvider)) {
             return;
         }
 
@@ -113,7 +112,7 @@ public class FastScrollerOverlay
             return;
         }
 
-        final String[] popupLines = ((FastScroller.PopupTextProvider) adapter)
+        final String[] popupLines = ((FastScroller.PopupTextProvider) mView.getAdapter())
                 .getPopupText(position);
 
         // Do we have at least one line of text ?
@@ -123,7 +122,7 @@ public class FastScrollerOverlay
 
         mPopupView.setVisibility(hasPopup ? View.VISIBLE : View.INVISIBLE);
         if (hasPopup) {
-            StringBuilder popupText = new StringBuilder(popupLines[0]);
+            final StringBuilder popupText = new StringBuilder(popupLines[0]);
             if (popupLines.length > 1) {
                 for (int line = 1; line < popupLines.length; line++) {
                     if (popupLines[line] != null) {

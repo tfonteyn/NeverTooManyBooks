@@ -46,12 +46,15 @@ import androidx.fragment.app.DialogFragment;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 
-import java.util.Calendar;
+import java.time.LocalDate;
+import java.time.Month;
+import java.time.format.DateTimeFormatter;
+import java.time.format.TextStyle;
+import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
-import com.hardbacknutter.nevertoomanybooks.utils.DateFormatUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 
 /**
@@ -74,8 +77,6 @@ public class PartialDatePickerDialogFragment
     /** Displayed to user: unset day. */
     private static final String UNKNOWN_DAY = "--";
 
-    /** Used for reading month names + calculating number of days in a month. */
-    private Calendar mCalendarForCalculations;
     private NumberPicker mDayPicker;
     /** This listener is called after <strong>any change</strong> made to the pickers. */
     private final NumberPicker.OnValueChangeListener mOnValueChangeListener =
@@ -123,7 +124,7 @@ public class PartialDatePickerDialogFragment
                                              final boolean todayIfNone) {
         final String dateStr;
         if (todayIfNone && (currentValue == null || currentValue.isEmpty())) {
-            dateStr = DateFormatUtils.isoLocalDateForToday();
+            dateStr = LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE);
         } else if (currentValue != null) {
             dateStr = currentValue;
         } else {
@@ -147,16 +148,11 @@ public class PartialDatePickerDialogFragment
             mDialogTitleId = args.getInt(StandardDialogs.BKEY_DIALOG_TITLE);
         }
 
-        //noinspection ConstantConditions
-        mCalendarForCalculations = Calendar.getInstance(LocaleUtils.getUserLocale(getContext()));
-
-        final Calendar calendar = Calendar.getInstance(LocaleUtils.getUserLocale(getContext()));
-
         setupDate(savedInstanceState);
         // can't have a null year. (but month/day can be null)
         // The user can/should use the "clear" button if they want no date at all.
         if (mYear == null) {
-            mYear = calendar.get(Calendar.YEAR);
+            mYear = LocalDate.now().getYear();
         }
     }
 
@@ -193,8 +189,7 @@ public class PartialDatePickerDialogFragment
         mDayPicker.setOnValueChangedListener(mOnValueChangeListener);
 
         // set the initial date
-        final int currentYear = mCalendarForCalculations.get(Calendar.YEAR);
-        yearPicker.setValue(mYear != null ? mYear : currentYear);
+        yearPicker.setValue(mYear != null ? mYear : LocalDate.now().getYear());
         monthPicker.setValue(mMonth != null ? mMonth : 0);
         mDayPicker.setValue(mDay != null ? mDay : 0);
         updateDaysInMonth();
@@ -242,13 +237,12 @@ public class PartialDatePickerDialogFragment
      * Generate the month names (abbreviated). There are 13: first entry being 'unknown'.
      */
     private String[] getMonthAbbr() {
-        // Set the day to 1 to avoid wrapping.
-        mCalendarForCalculations.set(Calendar.DAY_OF_MONTH, 1);
-        String[] monthNames = new String[13];
+        //noinspection ConstantConditions
+        final Locale userLocale = LocaleUtils.getUserLocale(getContext());
+        final String[] monthNames = new String[13];
         monthNames[0] = UNKNOWN_MONTH;
         for (int i = 1; i <= 12; i++) {
-            mCalendarForCalculations.set(Calendar.MONTH, i - 1);
-            monthNames[i] = String.format("%tb", mCalendarForCalculations);
+            monthNames[i] = Month.of(i).getDisplayName(TextStyle.SHORT, userLocale);
         }
         return monthNames;
     }
@@ -257,15 +251,12 @@ public class PartialDatePickerDialogFragment
      * Depending on year/month selected, set the correct number of days.
      */
     private void updateDaysInMonth() {
-        // Save the current day in case the regen alters it
-        Integer daySave = mDay;
+        Integer currentlySelectedDay = mDay;
 
         // Determine the total days if we have a valid month/year
         int totalDays;
         if (mYear != null && mMonth != null && mMonth > 0) {
-            mCalendarForCalculations.set(Calendar.YEAR, mYear);
-            mCalendarForCalculations.set(Calendar.MONTH, mMonth - 1);
-            totalDays = mCalendarForCalculations.getActualMaximum(Calendar.DAY_OF_MONTH);
+            totalDays = LocalDate.of(mYear, mMonth, 1).lengthOfMonth();
         } else {
             // allow the user to start inputting with day first.
             totalDays = 31;
@@ -274,13 +265,13 @@ public class PartialDatePickerDialogFragment
         mDayPicker.setMaxValue(totalDays);
 
         // Ensure selected day is valid
-        if (daySave == null || daySave == 0) {
+        if (currentlySelectedDay == null || currentlySelectedDay == 0) {
             mDayPicker.setValue(0);
         } else {
-            if (daySave > totalDays) {
-                daySave = totalDays;
+            if (currentlySelectedDay > totalDays) {
+                currentlySelectedDay = totalDays;
             }
-            mDayPicker.setValue(daySave);
+            mDayPicker.setValue(currentlySelectedDay);
         }
     }
 

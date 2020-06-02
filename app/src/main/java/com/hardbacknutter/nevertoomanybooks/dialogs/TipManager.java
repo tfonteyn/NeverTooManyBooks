@@ -48,9 +48,9 @@ import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.utils.LinkifyUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.UnexpectedValueException;
 
 /**
  * Original 'hints' renamed to 'tips' to avoid confusion with "android:hint".
@@ -142,7 +142,7 @@ public final class TipManager {
 //                    tip = new Tip("booklist_global_properties");
 //                    break;
                 default:
-                    throw new UnexpectedValueException(id);
+                    throw new IllegalArgumentException(ErrorMsg.UNEXPECTED_VALUE + id);
             }
             ALL.put(id, tip);
         }

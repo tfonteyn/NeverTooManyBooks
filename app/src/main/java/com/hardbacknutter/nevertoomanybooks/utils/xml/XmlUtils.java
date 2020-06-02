@@ -42,7 +42,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.UnexpectedValueException;
+import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 
 /**
  * Minimalist builder for XML tags and attributes.
@@ -170,6 +170,8 @@ public final class XmlUtils {
      * @param value to encode
      *
      * @return xml tag
+     *
+     * @throws IOException on failure
      */
     public static String typedTag(@Nullable final String name,
                                   @NonNull final Object value)
@@ -198,7 +200,8 @@ public final class XmlUtils {
                                Base64.encodeToString(convertToBytes(value), Base64.DEFAULT));
 
         } else {
-            throw new UnexpectedValueException(value.getClass().getCanonicalName());
+            throw new IllegalArgumentException(
+                    ErrorMsg.UNEXPECTED_VALUE + value.getClass().getCanonicalName());
         }
     }
 
@@ -208,6 +211,8 @@ public final class XmlUtils {
      * @param values to encode
      *
      * @return partial xml
+     *
+     * @throws IOException on failure
      */
     private static String typedCollection(@NonNull final Iterable<?> values)
             throws IOException {

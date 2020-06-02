@@ -35,7 +35,7 @@ import androidx.annotation.Nullable;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Date;
+import java.time.Instant;
 
 import com.hardbacknutter.nevertoomanybooks.backup.ArchiveContainerEntry;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportManager;
@@ -107,11 +107,10 @@ public class CsvArchiveReader
             return ArchiveContainerEntry.BooksCsv.getName();
         }
 
-        @NonNull
         @Override
-        public Date getDateModified() {
+        public long getLastModifiedEpochMilli() {
             // just pretend
-            return new Date();
+            return Instant.now().toEpochMilli();
         }
 
         @NonNull

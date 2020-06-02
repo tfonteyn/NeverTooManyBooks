@@ -48,11 +48,11 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import java.lang.ref.WeakReference;
 
 import com.hardbacknutter.nevertoomanybooks.database.DBHelper;
+import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.QueueManager;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.Notifier;
 import com.hardbacknutter.nevertoomanybooks.utils.UpgradeMessageManager;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.UnexpectedValueException;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.StartupViewModel;
 
 /**
@@ -169,7 +169,7 @@ public class StartupActivity
                 break;
 
             default:
-                throw new UnexpectedValueException(mStartupStage);
+                throw new IllegalArgumentException(ErrorMsg.UNEXPECTED_VALUE + mStartupStage);
         }
     }
 

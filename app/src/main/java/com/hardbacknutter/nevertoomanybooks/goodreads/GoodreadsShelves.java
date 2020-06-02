@@ -48,7 +48,7 @@ class GoodreadsShelves {
     }
 
     boolean isExclusive(@Nullable final String name) {
-        GoodreadsShelf shelf = mMap.get(name);
+        final GoodreadsShelf shelf = mMap.get(name);
         return shelf != null && shelf.isExclusive();
     }
 }

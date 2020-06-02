@@ -60,10 +60,10 @@ import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.ColumnInfo;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.VirtualDomain;
+import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.UniqueMap;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.UnexpectedValueException;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_AUTHOR_FORMATTED;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_AUTHOR_IS_COMPLETE;
@@ -74,7 +74,6 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BO
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_COLOR;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_CONDITION;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_DATE_ACQUIRED;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_DATE_ADDED;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_DATE_READ_END;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_FORMAT;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_GENRE;
@@ -85,7 +84,6 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BO
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_RATING;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_READ;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_DATE_FIRST_PUBLICATION;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_DATE_LAST_UPDATED;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_DATE_PUBLISHED;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_FK_AUTHOR;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_FK_SERIES;
@@ -93,15 +91,15 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_LO
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_SERIES_IS_COMPLETE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_SERIES_TITLE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_TITLE;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_UTC_ADDED;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_UTC_LAST_UPDATED;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_AUTHOR_IS_COMPLETE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOKSHELF_NAME;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOK_CONDITION;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOK_NUM_IN_SERIES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_COLOR;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_DATE_ACQUIRED;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_DATE_ADDED;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_DATE_FIRST_PUBLICATION;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_DATE_LAST_UPDATED;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_DATE_PUBLISHED;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FK_AUTHOR;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FK_SERIES;
@@ -119,6 +117,8 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_SE
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_SERIES_TITLE_OB;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_TITLE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_TITLE_OB;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_UTC_ADDED;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_UTC_LAST_UPDATED;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_AUTHORS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKSHELF;
@@ -850,9 +850,9 @@ public class BooklistGroup
         private static final VirtualDomain DATE_READ_END =
                 new VirtualDomain(DOM_BOOK_DATE_READ_END, null, VirtualDomain.SORT_DESC);
         private static final VirtualDomain DATE_ADDED =
-                new VirtualDomain(DOM_BOOK_DATE_ADDED, null, VirtualDomain.SORT_DESC);
+                new VirtualDomain(DOM_UTC_ADDED, null, VirtualDomain.SORT_DESC);
         private static final VirtualDomain DATE_LAST_UPDATED =
-                new VirtualDomain(DOM_DATE_LAST_UPDATED, null, VirtualDomain.SORT_DESC);
+                new VirtualDomain(DOM_UTC_LAST_UPDATED, null, VirtualDomain.SORT_DESC);
         private static final VirtualDomain DATE_ACQUIRED =
                 new VirtualDomain(DOM_BOOK_DATE_ACQUIRED, null, VirtualDomain.SORT_DESC);
 
@@ -908,8 +908,6 @@ public class BooklistGroup
          * @param id for the desired group key
          *
          * @return new GroupKey instance
-         *
-         * @throws UnexpectedValueException if an invalid id was passed in
          */
         private static GroupKey createGroupKey(@Id final int id) {
             // NEWTHINGS: GROUP_KEY_x
@@ -1153,7 +1151,7 @@ public class BooklistGroup
                     return new GroupKey(R.string.lbl_added_year, "ya",
                                         new Domain.Builder("blg_add_y", ColumnInfo.TYPE_INTEGER)
                                                 .build(),
-                                        DAO.SqlColumns.year(TBL_BOOKS.dot(KEY_DATE_ADDED), true),
+                                        DAO.SqlColumns.year(TBL_BOOKS.dot(KEY_UTC_ADDED), true),
                                         VirtualDomain.SORT_DESC)
                             .addBaseDomain(DATE_ADDED);
                 }
@@ -1162,7 +1160,7 @@ public class BooklistGroup
                     return new GroupKey(R.string.lbl_added_month, "ma",
                                         new Domain.Builder("blg_add_m", ColumnInfo.TYPE_INTEGER)
                                                 .build(),
-                                        DAO.SqlColumns.month(TBL_BOOKS.dot(KEY_DATE_ADDED), true),
+                                        DAO.SqlColumns.month(TBL_BOOKS.dot(KEY_UTC_ADDED), true),
                                         VirtualDomain.SORT_DESC)
                             .addBaseDomain(DATE_ADDED);
                 }
@@ -1171,7 +1169,7 @@ public class BooklistGroup
                     return new GroupKey(R.string.lbl_added_day, "da",
                                         new Domain.Builder("blg_add_d", ColumnInfo.TYPE_INTEGER)
                                                 .build(),
-                                        DAO.SqlColumns.day(TBL_BOOKS.dot(KEY_DATE_ADDED), true),
+                                        DAO.SqlColumns.day(TBL_BOOKS.dot(KEY_UTC_ADDED), true),
                                         VirtualDomain.SORT_DESC)
                             .addBaseDomain(DATE_ADDED);
                 }
@@ -1182,7 +1180,7 @@ public class BooklistGroup
                                         new Domain.Builder("blg_upd_y", ColumnInfo.TYPE_INTEGER)
                                                 .build(),
                                         DAO.SqlColumns
-                                                .year(TBL_BOOKS.dot(KEY_DATE_LAST_UPDATED), true),
+                                                .year(TBL_BOOKS.dot(KEY_UTC_LAST_UPDATED), true),
                                         VirtualDomain.SORT_DESC)
                             .addBaseDomain(DATE_LAST_UPDATED);
                 }
@@ -1192,7 +1190,7 @@ public class BooklistGroup
                                         new Domain.Builder("blg_upd_m", ColumnInfo.TYPE_INTEGER)
                                                 .build(),
                                         DAO.SqlColumns
-                                                .month(TBL_BOOKS.dot(KEY_DATE_LAST_UPDATED), true),
+                                                .month(TBL_BOOKS.dot(KEY_UTC_LAST_UPDATED), true),
                                         VirtualDomain.SORT_DESC)
                             .addBaseDomain(DATE_LAST_UPDATED);
                 }
@@ -1202,7 +1200,7 @@ public class BooklistGroup
                                         new Domain.Builder("blg_upd_d", ColumnInfo.TYPE_INTEGER)
                                                 .build(),
                                         DAO.SqlColumns
-                                                .day(TBL_BOOKS.dot(KEY_DATE_LAST_UPDATED), true),
+                                                .day(TBL_BOOKS.dot(KEY_UTC_LAST_UPDATED), true),
                                         VirtualDomain.SORT_DESC)
                             .addBaseDomain(DATE_LAST_UPDATED);
                 }
@@ -1239,7 +1237,7 @@ public class BooklistGroup
                 }
 
                 default:
-                    throw new UnexpectedValueException(id);
+                    throw new IllegalArgumentException(ErrorMsg.UNEXPECTED_VALUE + id);
             }
         }
 

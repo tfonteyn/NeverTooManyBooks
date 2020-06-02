@@ -55,6 +55,8 @@ import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.io.File;
+import java.time.Month;
+import java.time.format.TextStyle;
 import java.util.Locale;
 import java.util.Objects;
 
@@ -72,7 +74,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.ItemWithTitle;
 import com.hardbacknutter.nevertoomanybooks.entities.RowDataHolder;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
-import com.hardbacknutter.nevertoomanybooks.utils.DateFormatUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.LanguageUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
@@ -276,7 +277,7 @@ public class BooklistAdapter
                             } else {
                                 tmpLocale = mUserLocale;
                             }
-                            return DateFormatUtils.toPrettyMonthName(m, false, tmpLocale);
+                            return Month.of(m).getDisplayName(TextStyle.FULL_STANDALONE, tmpLocale);
                         }
                     } catch (@NonNull final NumberFormatException e) {
                         if (BuildConfig.DEBUG /* always */) {
@@ -973,8 +974,9 @@ public class BooklistAdapter
         String getPublisherAndPubDateText(@NonNull final RowDataHolder rowData) {
             final String publicationDate;
             if (mInUse.pubDate) {
-                publicationDate = DateFormatUtils.toPrettyDate(
-                        rowData.getString(DBDefinitions.KEY_DATE_PUBLISHED), mLocale);
+                publicationDate = LocaleUtils.toPrettyDate(itemView.getContext(),
+                                                           rowData.getString(
+                                                                   DBDefinitions.KEY_DATE_PUBLISHED));
             } else {
                 publicationDate = null;
             }

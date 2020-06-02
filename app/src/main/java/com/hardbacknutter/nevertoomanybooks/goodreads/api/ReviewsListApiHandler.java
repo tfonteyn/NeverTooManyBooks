@@ -31,18 +31,18 @@ import android.content.Context;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import java.io.IOException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 
 import org.xml.sax.helpers.DefaultHandler;
 
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsAuth;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsHandler;
-import com.hardbacknutter.nevertoomanybooks.utils.DateFormatUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.utils.xml.SimpleXmlFilter;
@@ -58,11 +58,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlResponseParser;
  * So we cannot import them here.
  */
 public class ReviewsListApiHandler
-        extends com.hardbacknutter.nevertoomanybooks.goodreads.api.ApiHandler {
-
-    /** Date format used for parsing 'last_update_date'. */
-    private static final SimpleDateFormat UPDATE_DATE_FMT
-            = new SimpleDateFormat("EEE MMM dd HH:mm:ss ZZZZ yyyy", LocaleUtils.getSystemLocale());
+        extends ApiHandler {
 
     /**
      * Parameters.
@@ -84,20 +80,14 @@ public class ReviewsListApiHandler
             // Specify 'shelf=all' because it seems Goodreads returns the shelf that is selected
             // in 'My Books' on the web interface by default.
             + "&shelf=all";
-    /**
-     * Listener to handle the contents of the date_updated field. We only
-     * keep it if it is a valid date, and we store it in SQL format using
-     * UTC TZ so comparisons work.
-     */
-    private final XmlListener mUpdatedListener = (bc, c) ->
-            date2Sql(bc.getData(), ReviewField.UPDATED);
 
-    /**
-     * Listener to handle the contents of the date_added field. We only
-     * keep it if it is a valid date, and we store it in SQL format using
-     * UTC TZ so comparisons work.
-     */
-    private final XmlListener mAddedListener = (bc, c) -> date2Sql(bc.getData(), ReviewField.ADDED);
+    /** Handle date_added. */
+    private final XmlListener mAddedListener = (bc, c) ->
+            ReviewField.validateDate(bc.getData(), ReviewField.ADDED);
+
+    /** Handle date_updated. */
+    private final XmlListener mUpdatedListener = (bc, c) ->
+            ReviewField.validateDate(bc.getData(), ReviewField.UPDATED);
 
     private SimpleXmlFilter mFilters;
 
@@ -440,24 +430,6 @@ public class ReviewsListApiHandler
                 .done();
     }
 
-    private void date2Sql(@NonNull final Bundle bundle,
-                          @NonNull final String key) {
-
-        if (bundle.containsKey(key)) {
-            final String dateString = bundle.getString(key);
-            if (dateString != null && !dateString.isEmpty()) {
-                try {
-                    final Date date = UPDATE_DATE_FMT.parse(dateString);
-                    if (date != null) {
-                        bundle.putString(key, DateFormatUtils.isoUtcDateTime(date));
-                    }
-                } catch (@NonNull final ParseException e) {
-                    bundle.remove(key);
-                }
-            }
-        }
-    }
-
     /**
      * Goodreads specific field names we add to the bundle based on parsed XML data.
      */
@@ -473,8 +445,11 @@ public class ReviewsListApiHandler
         public static final String PUBLICATION_YEAR = "__pubYear";
         public static final String PUBLICATION_MONTH = "__pubMonth";
 
+        /** <date_added>Mon Feb 13 05:32:30 -0800 2012</date_added> */
         public static final String ADDED = "__added";
+        /** <date_updated>Mon Feb 13 05:32:31 -0800 2012</date_updated> */
         public static final String UPDATED = "__updated";
+
         public static final String REVIEWS = "__reviews";
         public static final String AUTHORS = "__authors";
         public static final String AUTHOR_NAME_GF = "__author_name";
@@ -485,11 +460,65 @@ public class ReviewsListApiHandler
         public static final String PAGES = "__pages";
         static final String BODY = "__body";
         static final String REVIEW_ID = "__review_id";
-
         static final String START = "__start";
         static final String END = "__end";
 
+        /** Date format used for parsing the date fields. */
+        private static final DateTimeFormatter DATE_PARSER = DateTimeFormatter
+                .ofPattern("EEE MMM dd HH:mm:ss ZZZZ yyyy", LocaleUtils.getSystemLocale());
+
         private ReviewField() {
+        }
+
+        @Nullable
+        public static LocalDateTime parseDate(@Nullable final String dateStr) {
+            if (dateStr == null || dateStr.isEmpty()) {
+                return null;
+            }
+            try {
+                return LocalDateTime.parse(dateStr, ReviewField.DATE_PARSER);
+            } catch (@NonNull final DateTimeParseException e) {
+                return null;
+            }
+        }
+
+        /**
+         * Check a field for being a valid date.
+         * If it's valid, store the reformatted value back into the bundle.
+         * If it's invalid, remove the field from the bundle.
+         */
+        public static void validateDate(@NonNull final Bundle bundle,
+                                        @NonNull final String key) {
+            if (bundle.containsKey(key)) {
+                final LocalDateTime date = parseDate(bundle.getString(key));
+                if (date != null) {
+                    bundle.putString(key, date.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
+                } else {
+                    bundle.remove(key);
+                }
+            }
+        }
+
+        /**
+         * Copy a valid datetime string from the source to the destination bundle.
+         * The source bundle is not changed.
+         *
+         * @return ISO datetime string, or {@code null} if parsing failed
+         */
+        @Nullable
+        public static String copyDateIfValid(@NonNull final Bundle sourceBundle,
+                                             @NonNull final String sourceKey,
+                                             @NonNull final Bundle destBundle,
+                                             @NonNull final String destKey) {
+
+            final LocalDateTime date = parseDate(sourceBundle.getString(sourceKey));
+            if (date != null) {
+                String value = date.format(DateTimeFormatter.ISO_LOCAL_DATE);
+                destBundle.putString(destKey, value);
+                return value;
+            }
+
+            return null;
         }
     }
 }

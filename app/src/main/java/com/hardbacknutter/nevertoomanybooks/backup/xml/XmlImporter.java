@@ -81,11 +81,11 @@ import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PInt;
 import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PPref;
 import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PString;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
+import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.UnexpectedValueException;
 import com.hardbacknutter.nevertoomanybooks.utils.xml.ElementContext;
 import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlFilter;
 import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlResponseParser;
@@ -549,7 +549,8 @@ public class XmlImporter
                                  break;
 
                              default:
-                                 throw new UnexpectedValueException(mTag.type);
+                                 throw new IllegalArgumentException(
+                                         ErrorMsg.UNEXPECTED_VALUE + mTag.type);
                          }
 
                      } catch (@NonNull final NumberFormatException e) {
@@ -611,17 +612,17 @@ public class XmlImporter
 
         default void putFloat(@NonNull final K key,
                               final float value) {
-            throw new UnexpectedValueException("Float, key=" + key);
+            throw new IllegalArgumentException(ErrorMsg.UNEXPECTED_VALUE + "Float, key=" + key);
         }
 
         default void putLong(@NonNull final K key,
                              final long value) {
-            throw new UnexpectedValueException("Long, key=" + key);
+            throw new IllegalArgumentException(ErrorMsg.UNEXPECTED_VALUE + "Long, key=" + key);
         }
 
         default void putDouble(@NonNull final K key,
                                final double value) {
-            throw new UnexpectedValueException("Double, key=" + key);
+            throw new IllegalArgumentException(ErrorMsg.UNEXPECTED_VALUE + "Double, key=" + key);
         }
 
         /**
@@ -630,7 +631,7 @@ public class XmlImporter
          */
         default void putStringSet(@NonNull final K key,
                                   @NonNull final Iterable<String> value) {
-            throw new UnexpectedValueException("StringSet, key=" + key);
+            throw new IllegalArgumentException(ErrorMsg.UNEXPECTED_VALUE + "StringSet, key=" + key);
         }
 
         /**
@@ -639,12 +640,14 @@ public class XmlImporter
          */
         default void putStringList(@NonNull final K key,
                                    @NonNull final Iterable<String> value) {
-            throw new UnexpectedValueException("StringList, key=" + key);
+            throw new IllegalArgumentException(ErrorMsg.UNEXPECTED_VALUE
+                                               + "StringList, key=" + key);
         }
 
         default void putSerializable(@NonNull final K key,
                                      @NonNull final Serializable value) {
-            throw new UnexpectedValueException("Serializable, key=" + key);
+            throw new IllegalArgumentException(ErrorMsg.UNEXPECTED_VALUE
+                                               + "Serializable, key=" + key);
         }
     }
 

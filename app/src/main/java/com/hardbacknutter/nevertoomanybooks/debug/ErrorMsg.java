@@ -29,6 +29,8 @@ package com.hardbacknutter.nevertoomanybooks.debug;
 
 public final class ErrorMsg {
 
+    public static final String UNEXPECTED_VALUE = "Unexpected value: ";
+
     public static final String ISBN_MUST_BE_VALID = "isbn must be valid";
     public static final String NO_TARGET_FRAGMENT_SET = "no target fragment set";
 

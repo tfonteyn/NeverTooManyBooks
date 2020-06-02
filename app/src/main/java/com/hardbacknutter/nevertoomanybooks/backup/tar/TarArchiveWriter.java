@@ -38,7 +38,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Date;
+import java.time.Instant;
 
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveOutputStream;
@@ -138,7 +138,7 @@ public class TarArchiveWriter
             throws IOException {
 
         final TarArchiveEntry entry = new TarArchiveEntry(name);
-        entry.setModTime(new Date());
+        entry.setModTime(Instant.now().toEpochMilli());
         entry.setSize(bytes.length);
         mOutputStream.putArchiveEntry(entry);
         try (InputStream is = new ByteArrayInputStream(bytes)) {

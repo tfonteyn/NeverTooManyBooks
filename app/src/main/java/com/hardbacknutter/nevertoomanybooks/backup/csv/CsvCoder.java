@@ -204,7 +204,7 @@ final class CsvCoder {
 
             /**
              * Attempts to parse a single string into an TocEntry.
-             * <ul>The date *must* match a patter of a (partial) SQL date string:
+             * <ul>The date *must* match a pattern of a (partial) ISO date string:
              *      <li>(YYYY)</li>
              *      <li>(YYYY-MM)</li>
              *      <li>(YYYY-MM-DD)</li>

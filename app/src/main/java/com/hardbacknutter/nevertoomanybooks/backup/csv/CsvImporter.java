@@ -41,9 +41,9 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -69,7 +69,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.ItemWithFixableId;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
-import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.DateParser;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.StringList;
 
@@ -244,7 +244,7 @@ public class CsvImporter
 
         final boolean updateOnlyIfNewer;
         if ((mOptions & ImportManager.IMPORT_ONLY_NEW_OR_UPDATED) != 0) {
-            requireColumnOrThrow(book, DBDefinitions.KEY_DATE_LAST_UPDATED);
+            requireColumnOrThrow(book, DBDefinitions.KEY_UTC_LAST_UPDATED);
             updateOnlyIfNewer = true;
         } else {
             updateOnlyIfNewer = false;
@@ -453,12 +453,15 @@ public class CsvImporter
                                       @SuppressWarnings("TypeMayBeWeakened")
                                       @NonNull final Book book,
                                       final long bookId) {
+        final LocalDateTime utcImportDate =
+                DateParser.ISO.parse(book.getString(DBDefinitions.KEY_UTC_LAST_UPDATED));
+        if (utcImportDate == null) {
+            return false;
+        }
 
-        Date bookDate = DateUtils.parseSqlDateTime(db.getBookLastUpdateDate(bookId));
-        Date importDate = DateUtils.parseSqlDateTime(
-                book.getString(DBDefinitions.KEY_DATE_LAST_UPDATED));
+        final LocalDateTime utcLastUpdated = db.getBookLastUpdateUtcDate(bookId);
 
-        return importDate != null && (bookDate == null || importDate.compareTo(bookDate) > 0);
+        return utcLastUpdated == null || utcImportDate.isAfter(utcLastUpdated);
     }
 
     /**

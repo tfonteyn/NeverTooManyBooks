@@ -38,18 +38,18 @@ import android.database.sqlite.SQLiteStatement;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collection;
-import java.util.Date;
 
-import com.hardbacknutter.nevertoomanybooks.utils.DateFormatUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.DateParser;
 
 import static com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.QueueDBHelper.KEY_CATEGORY;
 import static com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.QueueDBHelper.KEY_EVENT;
 import static com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.QueueDBHelper.KEY_EVENT_COUNT;
-import static com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.QueueDBHelper.KEY_EVENT_DATE;
 import static com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.QueueDBHelper.KEY_EXCEPTION;
 import static com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.QueueDBHelper.KEY_FAILURE_REASON;
 import static com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.QueueDBHelper.KEY_NAME;
@@ -57,10 +57,11 @@ import static com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.QueueDBHe
 import static com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.QueueDBHelper.KEY_PRIORITY;
 import static com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.QueueDBHelper.KEY_QUEUE_ID;
 import static com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.QueueDBHelper.KEY_RETRY_COUNT;
-import static com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.QueueDBHelper.KEY_RETRY_DATE;
 import static com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.QueueDBHelper.KEY_STATUS_CODE;
 import static com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.QueueDBHelper.KEY_TASK;
 import static com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.QueueDBHelper.KEY_TASK_ID;
+import static com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.QueueDBHelper.KEY_UTC_EVENT_DATETIME;
+import static com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.QueueDBHelper.KEY_UTC_RETRY_DATETIME;
 import static com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.QueueDBHelper.TBL_EVENT;
 import static com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.QueueDBHelper.TBL_QUEUE;
 import static com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.QueueDBHelper.TBL_TASK;
@@ -122,14 +123,14 @@ class QueueDAO
 
     /** Query to check for the highest priority task that can run now. */
     private static final String SQL_TASK_WHICH_CAN_RUN_NOW =
-            SQL_NEXT_TASK_BASE + " AND t." + KEY_RETRY_DATE + "<=?"
-            + " ORDER BY " + KEY_PRIORITY + ',' + KEY_RETRY_DATE + ',' + KEY_PK_ID
+            SQL_NEXT_TASK_BASE + " AND t." + KEY_UTC_RETRY_DATETIME + "<=?"
+            + " ORDER BY " + KEY_PRIORITY + ',' + KEY_UTC_RETRY_DATETIME + ',' + KEY_PK_ID
             + " LIMIT 1";
 
     /** Query to check for the first task that is waiting to run. */
     private static final String SQL_TASK_WHICH_IS_WAITING =
-            SQL_NEXT_TASK_BASE + " AND t." + KEY_RETRY_DATE + ">?"
-            + " ORDER BY " + KEY_RETRY_DATE + ',' + KEY_PRIORITY + ',' + KEY_PK_ID
+            SQL_NEXT_TASK_BASE + " AND t." + KEY_UTC_RETRY_DATETIME + ">?"
+            + " ORDER BY " + KEY_UTC_RETRY_DATETIME + ',' + KEY_PRIORITY + ',' + KEY_PK_ID
             + " LIMIT 1";
 
     /** Remove orphaned tasks THAT WERE SUCCESSFUL. */
@@ -149,15 +150,16 @@ class QueueDAO
     /** Remove Events attached to old tasks. */
     private static final String SQL_DELETE_OLD_EVENTS_WITH_TASKS =
             "DELETE FROM " + TBL_EVENT + " WHERE " + KEY_TASK_ID + " IN ("
-            + "SELECT " + KEY_PK_ID + " FROM " + TBL_TASK + " WHERE " + KEY_RETRY_DATE + "<?)";
+            + "SELECT " + KEY_PK_ID + " FROM " + TBL_TASK + " WHERE " + KEY_UTC_RETRY_DATETIME
+            + "<?)";
 
     /** Remove old tasks. */
     private static final String SQL_DELETE_OLD_TASKS =
-            "DELETE FROM " + TBL_TASK + " WHERE " + KEY_RETRY_DATE + "<?";
+            "DELETE FROM " + TBL_TASK + " WHERE " + KEY_UTC_RETRY_DATETIME + "<?";
 
     /** Remove old events. */
     private static final String SQL_DELETE_OLD_EVENTS =
-            "DELETE FROM " + TBL_EVENT + " WHERE " + KEY_EVENT_DATE + "<?";
+            "DELETE FROM " + TBL_EVENT + " WHERE " + KEY_UTC_EVENT_DATETIME + "<?";
 
     @NonNull
     private final QueueDBHelper mQueueDBHelper;
@@ -263,22 +265,22 @@ class QueueDAO
      */
     @Nullable
     ScheduledTask getNextTask(@NonNull final String queueName) {
-        final Date currentTime = new Date();
-        final String currTimeStr = DateFormatUtils.isoUtcDateTimeForToday();
+
+        final LocalDateTime currentUtcDateTime = LocalDateTime.now(ZoneOffset.UTC);
+        final String[] sqlArg = new String[]{
+                queueName, currentUtcDateTime.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)};
 
         final SQLiteDatabase db = getDb();
         Cursor cursor = null;
 
         try {
             // Get highest priority task that can run now
-            cursor = db.rawQuery(SQL_TASK_WHICH_CAN_RUN_NOW,
-                                 new String[]{queueName, currTimeStr});
+            cursor = db.rawQuery(SQL_TASK_WHICH_CAN_RUN_NOW, sqlArg);
             // If there is no task available now. Look for one that is waiting.
             if (!cursor.moveToFirst()) {
-                // Close this cursor so we can reuse it.
+                // Close before reusing
                 cursor.close();
-                cursor = db.rawQuery(SQL_TASK_WHICH_IS_WAITING,
-                                     new String[]{queueName, currTimeStr});
+                cursor = db.rawQuery(SQL_TASK_WHICH_IS_WAITING, sqlArg);
             }
 
             // Still no tasks to run ? All done.
@@ -287,19 +289,20 @@ class QueueDAO
             }
 
             // Determine the number of milliseconds to wait before we should run the task
-            final int dateCol = cursor.getColumnIndex(KEY_RETRY_DATE);
-            Date retryDate = DateUtils.parseSqlDateTime(cursor.getString(dateCol));
-            if (retryDate == null) {
-                retryDate = new Date();
+            LocalDateTime utcRetryDate = DateParser.ISO.parse(
+                    cursor.getString(cursor.getColumnIndex(KEY_UTC_RETRY_DATETIME)));
+            if (utcRetryDate == null) {
+                utcRetryDate = LocalDateTime.now(ZoneOffset.UTC);
             }
 
-            final long timeUntilRunnable;
-            if (retryDate.after(currentTime)) {
+            final long millisUntilRunnable;
+            if (utcRetryDate.isAfter(currentUtcDateTime)) {
                 // set timeUntilRunnable to let caller know the queue is not empty
-                timeUntilRunnable = retryDate.getTime() - currentTime.getTime();
+                millisUntilRunnable = Duration.between(currentUtcDateTime, utcRetryDate).abs()
+                                              .toMillis();
             } else {
                 // No need to wait
-                timeUntilRunnable = 0;
+                millisUntilRunnable = 0;
             }
 
             final int id = cursor.getInt(cursor.getColumnIndex(KEY_PK_ID));
@@ -307,7 +310,7 @@ class QueueDAO
 
             final int retries = cursor.getInt(cursor.getColumnIndex(KEY_RETRY_COUNT));
 
-            return new ScheduledTask(id, serializedTask, retries, timeUntilRunnable);
+            return new ScheduledTask(id, serializedTask, retries, millisUntilRunnable);
 
         } finally {
             if (cursor != null) {
@@ -390,11 +393,13 @@ class QueueDAO
             setTaskFailed(task, "Retry limit exceeded");
         } else {
             // Compute time Task can next be run
-            final Calendar cal = Calendar.getInstance();
-            cal.add(Calendar.SECOND, task.getRetryDelay());
-            // Update record
+            final String utcRetryDateTime =
+                    LocalDateTime.now(ZoneOffset.UTC)
+                                 .plusSeconds(task.getRetryDelay())
+                                 .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+
             final ContentValues cv = new ContentValues();
-            cv.put(KEY_RETRY_DATE, DateFormatUtils.isoUtcDateTime(cal.getTimeInMillis()));
+            cv.put(KEY_UTC_RETRY_DATETIME, utcRetryDateTime);
             cv.put(KEY_RETRY_COUNT, task.getRetries() + 1);
             cv.put(KEY_TASK, SerializationUtils.serializeObject(task));
             getDb().update(TBL_TASK, cv, KEY_PK_ID + "=?",
@@ -543,21 +548,21 @@ class QueueDAO
     }
 
     void cleanupOldTasks(@SuppressWarnings("SameParameterValue") final int days) {
-        final Calendar cal = Calendar.getInstance();
-        cal.add(Calendar.DATE, -days);
-        final String oneWeekAgo = DateFormatUtils.isoUtcDateTime(cal.getTimeInMillis());
+        final String utcDateTime = LocalDateTime.now(ZoneOffset.UTC)
+                                                .minusDays(days)
+                                                .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
 
         final SQLiteDatabase db = getDb();
 
         db.beginTransaction();
         try {
             try (SQLiteStatement stmt = db.compileStatement(SQL_DELETE_OLD_EVENTS_WITH_TASKS)) {
-                stmt.bindString(1, oneWeekAgo);
+                stmt.bindString(1, utcDateTime);
                 stmt.executeUpdateDelete();
             }
 
             try (SQLiteStatement stmt = db.compileStatement(SQL_DELETE_OLD_TASKS)) {
-                stmt.bindString(1, oneWeekAgo);
+                stmt.bindString(1, utcDateTime);
                 stmt.executeUpdateDelete();
             }
 
@@ -570,16 +575,16 @@ class QueueDAO
     }
 
     void cleanupOldEvents(@SuppressWarnings("SameParameterValue") final int days) {
-        final Calendar cal = Calendar.getInstance();
-        cal.add(Calendar.DATE, -days);
-        final String oneWeekAgo = DateFormatUtils.isoUtcDateTime(cal.getTimeInMillis());
+        final String utcDateTime = LocalDateTime.now(ZoneOffset.UTC)
+                                                .minusDays(days)
+                                                .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
 
         final SQLiteDatabase db = getDb();
 
         db.beginTransaction();
         try {
             try (SQLiteStatement stmt = db.compileStatement(SQL_DELETE_OLD_EVENTS)) {
-                stmt.bindString(1, oneWeekAgo);
+                stmt.bindString(1, utcDateTime);
                 stmt.executeUpdateDelete();
             }
 
@@ -592,6 +597,8 @@ class QueueDAO
     }
 
     /**
+     * Delete orphaned events and tasks.
+     *
      * @param db with a TRANSACTION started.
      */
     private void cleanupOrphans(@NonNull final SQLiteDatabase db) {
@@ -634,7 +641,7 @@ class QueueDAO
     static class ScheduledTask {
 
         /** Time, in milliseconds, until Task needs to be executed. */
-        private final long mTimeUntilRunnable;
+        private final long mMillisUntilRunnable;
         /** Blob for Task retrieved from DB. We do not deserializeObject until necessary. */
         private final byte[] mBlob;
         /** Retry count retrieved from DB. */
@@ -645,16 +652,16 @@ class QueueDAO
         /**
          * Constructor.
          *
-         * @param id                new task id to apply
-         * @param serializedTask    the task
-         * @param retries           number of retries left
-         * @param timeUntilRunnable Milliseconds until task should be run
+         * @param id                  new task id to apply
+         * @param serializedTask      the task
+         * @param retries             number of retries left
+         * @param millisUntilRunnable Milliseconds until task should be run
          */
         ScheduledTask(final int id,
-                      final byte[] serializedTask,
+                      @NonNull final byte[] serializedTask,
                       final int retries,
-                      final long timeUntilRunnable) {
-            mTimeUntilRunnable = timeUntilRunnable;
+                      final long millisUntilRunnable) {
+            mMillisUntilRunnable = millisUntilRunnable;
             mId = id;
             mRetries = retries;
             mBlob = serializedTask;
@@ -665,8 +672,8 @@ class QueueDAO
          *
          * @return Milliseconds to wait
          */
-        long getTimeUntilRunnable() {
-            return mTimeUntilRunnable;
+        long getMillisUntilRunnable() {
+            return mMillisUntilRunnable;
         }
 
         /**

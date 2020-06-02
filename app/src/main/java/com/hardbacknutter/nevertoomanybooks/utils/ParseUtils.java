@@ -83,9 +83,9 @@ public final class ParseUtils {
                                 @NonNull final CharSequence source,
                                 final char... escapeChars) {
 
-        StringBuilder sb = new StringBuilder();
+        final StringBuilder sb = new StringBuilder();
         for (int i = 0; i < source.length(); i++) {
-            char c = source.charAt(i);
+            final char c = source.charAt(i);
             switch (c) {
                 case '\\':
                     sb.append("\\\\");
@@ -143,9 +143,9 @@ public final class ParseUtils {
         }
 
         boolean isEsc = false;
-        StringBuilder sb = new StringBuilder();
+        final StringBuilder sb = new StringBuilder();
         for (int i = 0; i < source.length(); i++) {
-            char c = source.charAt(i);
+            final char c = source.charAt(i);
             if (isEsc) {
                 switch (c) {
                     case '\\':
@@ -200,7 +200,7 @@ public final class ParseUtils {
             return ((Number) source).longValue();
 
         } else {
-            String stringValue = source.toString().trim();
+            final String stringValue = source.toString().trim();
             if (stringValue.isEmpty()) {
                 return 0;
             } else {
@@ -268,7 +268,7 @@ public final class ParseUtils {
         } else {
             // we only do english terms, as it's expected that these come from some
             // sort of program code during imports etc...
-            String stringValue = source.trim().toLowerCase(Locale.ENGLISH);
+            final String stringValue = source.trim().toLowerCase(Locale.ENGLISH);
             switch (stringValue) {
                 case "1":
                 case "y":
@@ -315,7 +315,7 @@ public final class ParseUtils {
             return ((Number) source).floatValue();
 
         } else {
-            String stringValue = source.toString().trim();
+            final String stringValue = source.toString().trim();
             if (stringValue.isEmpty()) {
                 return 0f;
             }
@@ -358,8 +358,8 @@ public final class ParseUtils {
 
         for (Locale locale : locales) {
             try {
-                DecimalFormat nf = (DecimalFormat) DecimalFormat.getInstance(locale);
-                Number number = nf.parse(source);
+                final DecimalFormat nf = (DecimalFormat) DecimalFormat.getInstance(locale);
+                final Number number = nf.parse(source);
                 if (number != null) {
                     return number.floatValue();
                 }
@@ -392,7 +392,7 @@ public final class ParseUtils {
             return ((Number) source).doubleValue();
 
         } else {
-            String stringValue = source.toString().trim();
+            final String stringValue = source.toString().trim();
             if (stringValue.isEmpty()) {
                 return 0;
             } else {
@@ -437,17 +437,16 @@ public final class ParseUtils {
 
         // we check in order - first match returns.
         // Locale.US is used for '.' as decimal and ',' as thousands separator.
-        Locale[] locales = {sourceLocale, LocaleUtils.getSystemLocale(), Locale.US};
+        final Locale[] locales = {sourceLocale, LocaleUtils.getSystemLocale(), Locale.US};
 
         for (Locale locale : locales) {
             try {
-                Number number;
-                DecimalFormat nf = (DecimalFormat) DecimalFormat.getInstance(locale);
-                char decSep = nf.getDecimalFormatSymbols().getDecimalSeparator();
+                final DecimalFormat nf = (DecimalFormat) DecimalFormat.getInstance(locale);
+                final char decSep = nf.getDecimalFormatSymbols().getDecimalSeparator();
 
                 // if the dec sep is present, decode with Locale; otherwise try next Locale
                 if (source.indexOf(decSep) != -1) {
-                    number = nf.parse(source);
+                    final Number number = nf.parse(source);
                     if (number != null) {
                         return number.doubleValue();
                     }

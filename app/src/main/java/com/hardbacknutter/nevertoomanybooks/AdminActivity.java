@@ -37,8 +37,8 @@ import androidx.lifecycle.ViewModelProvider;
 
 import java.util.Objects;
 
+import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsAdminFragment;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.UnexpectedValueException;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.ActivityResultDataModel;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.ResultDataModel;
 
@@ -57,7 +57,7 @@ public class AdminActivity
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        String tag = getIntent().getStringExtra(BaseActivity.BKEY_FRAGMENT_TAG);
+        final String tag = getIntent().getStringExtra(BaseActivity.BKEY_FRAGMENT_TAG);
         Objects.requireNonNull(tag);
         replaceFragment(R.id.main_fragment, tag);
     }
@@ -67,8 +67,6 @@ public class AdminActivity
      *
      * @param containerViewId to receive the fragment
      * @param tag             for the required fragment
-     *
-     * @throws UnexpectedValueException if an invalid tag was passed in
      */
     private void replaceFragment(@SuppressWarnings("SameParameterValue")
                                  @IdRes final int containerViewId,
@@ -86,7 +84,7 @@ public class AdminActivity
                 return;
 
             default:
-                throw new UnexpectedValueException(tag);
+                throw new IllegalArgumentException(ErrorMsg.UNEXPECTED_VALUE + tag);
         }
     }
 

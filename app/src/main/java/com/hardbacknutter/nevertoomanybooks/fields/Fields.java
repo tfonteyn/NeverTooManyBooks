@@ -97,7 +97,7 @@ import com.hardbacknutter.nevertoomanybooks.widgets.DiacriticArrayAdapter;
 public class Fields {
 
     /** the list with all fields. */
-    private final SparseArray<Field> mAllFields = new SparseArray<>();
+    private final SparseArray<Field<?, ? extends View>> mAllFields = new SparseArray<>();
 
     public int size() {
         return mAllFields.size();
@@ -163,12 +163,9 @@ public class Fields {
      * @param id  Field/View ID
      *
      * @return Associated Field.
-     *
-     * @throws IllegalArgumentException if the field does not exist.
      */
     @NonNull
-    public <T, V extends View> Field<T, V> getField(@IdRes final int id)
-            throws IllegalArgumentException {
+    public <T, V extends View> Field<T, V> getField(@IdRes final int id) {
         //noinspection unchecked
         final Field<T, V> field = (Field<T, V>) mAllFields.get(id);
         if (field != null) {

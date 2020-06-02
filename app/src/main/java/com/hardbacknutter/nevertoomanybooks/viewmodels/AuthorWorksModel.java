@@ -42,10 +42,10 @@ import com.hardbacknutter.nevertoomanybooks.AuthorWorksFragment;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.UnexpectedValueException;
 
 public class AuthorWorksModel
         extends ResultDataModel {
@@ -155,7 +155,7 @@ public class AuthorWorksModel
                 break;
 
             default:
-                throw new UnexpectedValueException(item.getType());
+                throw new IllegalArgumentException(ErrorMsg.UNEXPECTED_VALUE + item.getType());
         }
     }
 

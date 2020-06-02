@@ -41,10 +41,11 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
-import com.hardbacknutter.nevertoomanybooks.utils.DateFormatUtils;
 
 public interface Exporter
         extends Closeable {
@@ -54,7 +55,7 @@ public interface Exporter
 
     static String getNamePrefix(@NonNull final Context context) {
         return context.getString(R.string.app_name)
-               + '-' + DateFormatUtils.isoLocalDateForToday()
+               + '-' + LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE)
                + ".ntmb";
     }
 

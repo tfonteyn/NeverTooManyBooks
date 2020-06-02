@@ -36,11 +36,11 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.searches.SiteList;
 import com.hardbacknutter.nevertoomanybooks.settings.BarcodePreferenceFragment;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.UnexpectedValueException;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.ActivityResultDataModel;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.ResultDataModel;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.ScannerViewModel;
@@ -76,8 +76,6 @@ public class BookSearchActivity
      *
      * @param containerViewId to receive the fragment
      * @param tag             for the required fragment
-     *
-     * @throws UnexpectedValueException if an invalid tag was passed in
      */
     private void replaceFragment(@SuppressWarnings("SameParameterValue")
                                  @IdRes final int containerViewId,
@@ -100,7 +98,7 @@ public class BookSearchActivity
                 return;
 
             default:
-                throw new UnexpectedValueException(tag);
+                throw new IllegalArgumentException(ErrorMsg.UNEXPECTED_VALUE + tag);
         }
     }
 

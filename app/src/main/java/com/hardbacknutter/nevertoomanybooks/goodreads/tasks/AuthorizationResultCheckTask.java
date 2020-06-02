@@ -32,7 +32,6 @@ import android.os.AsyncTask;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
 
 import java.io.IOException;
 
@@ -78,19 +77,14 @@ public class AuthorizationResultCheckTask
     protected void onPostExecute(@NonNull final Boolean result) {
         final Context context = LocaleUtils.applyLocale(App.getAppContext());
 
-        @StringRes
-        int title;
-        String msg;
-
         if (result) {
-            title = R.string.info_authorized;
-            msg = context.getString(R.string.info_site_authorization_successful,
-                                    context.getString(R.string.site_goodreads));
-
-            Notifier.show(context, Notifier.CHANNEL_INFO, context.getString(title), msg);
+            final String msg = context.getString(R.string.info_site_authorization_successful,
+                                                 context.getString(R.string.site_goodreads));
+            Notifier.show(context, Notifier.CHANNEL_INFO,
+                          context.getString(R.string.info_authorized), msg);
 
         } else {
-            title = R.string.info_not_authorized;
+            final String msg;
             if (mException instanceof FormattedMessageException) {
                 msg = ((FormattedMessageException) mException).getLocalizedMessage(context);
 
@@ -104,7 +98,8 @@ public class AuthorizationResultCheckTask
                                         context.getString(R.string.site_goodreads));
             }
 
-            Notifier.show(context, Notifier.CHANNEL_ERROR, context.getString(title), msg);
+            Notifier.show(context, Notifier.CHANNEL_ERROR,
+                          context.getString(R.string.info_not_authorized), msg);
         }
     }
 }

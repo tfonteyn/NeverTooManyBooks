@@ -870,7 +870,7 @@ public class BooksOnBookshelfModel
         final BooklistStyle style = getCurrentStyle(context);
         if (style.showHeader(context, BooklistStyle.HEADER_SHOW_FILTER)) {
             final Collection<String> filterText = new ArrayList<>();
-            for (Filter filter : style.getActiveFilters(context)) {
+            for (Filter<?> filter : style.getActiveFilters(context)) {
                 filterText.add(filter.getLabel(context));
             }
 

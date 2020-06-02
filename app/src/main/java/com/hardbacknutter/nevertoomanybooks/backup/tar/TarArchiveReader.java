@@ -37,7 +37,6 @@ import androidx.annotation.Nullable;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Date;
 
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
@@ -245,10 +244,9 @@ public class TarArchiveReader
             return mEntry.getName();
         }
 
-        @NonNull
         @Override
-        public Date getDateModified() {
-            return mEntry.getLastModifiedDate();
+        public long getLastModifiedEpochMilli() {
+            return mEntry.getModTime().getTime();
         }
 
         @NonNull

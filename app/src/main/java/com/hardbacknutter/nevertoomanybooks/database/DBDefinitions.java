@@ -60,6 +60,28 @@ import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
  * <strong>Note:</strong> Fields 'name' attribute must be in LOWER CASE.
  * <p>
  * TODO: Collated indexes need to be done manually. See {@link DBHelper} #createIndices
+ * <p>
+ * Currently (2020-06-01) UTC dates (time) are used with::
+ * <ul>Main database:
+ *  <li>{@link #DOM_UTC_ADDED}</li>
+ *  <li>{@link #DOM_UTC_LAST_UPDATED}</li>
+ *  <li>{@link #DOM_UTC_LAST_SYNC_DATE_GOODREADS}</li>
+ * </ul>
+ * <ul>TaskQueue (Goodreads) database; QueueDBHelper.
+ *   <li>#KEY_UTC_QUEUED_DATETIME</li>
+ *   <li>#KEY_UTC_RETRY_DATETIME</li>
+ *   <li>#KEY_UTC_EVENT_DATETIME</li>
+ * </ul>
+ * <ul>Covers cache database:
+ *   <li>{@link CoversDAO}#DOM_UTC_DATETIME}</li>
+ * </ul>
+ * <p>
+ * All others, are considered USER local time zone.
+ * <p>
+ * Rationale: given this is an app running on a device in the users pocket,
+ * using UTC for those columns would only be useful to users who travel to other timezones,
+ * reset their devices to the new timezone, and actively edit (user) date columns while
+ * travelling.
  */
 @SuppressWarnings("WeakerAccess")
 public final class DBDefinitions {
@@ -239,9 +261,9 @@ public final class DBDefinitions {
     /** {@link #TBL_BOOKS}. */
     public static final Domain DOM_BOOK_DATE_ACQUIRED;
     /** {@link #TBL_BOOKS} added to the collection. */
-    public static final Domain DOM_BOOK_DATE_ADDED;
+    public static final Domain DOM_UTC_ADDED;
     /** {@link #TBL_BOOKS}. */
-    public static final Domain DOM_DATE_LAST_UPDATED;
+    public static final Domain DOM_UTC_LAST_UPDATED;
     /** {@link #TBL_BOOKS}. */
     public static final Domain DOM_BOOK_GENRE;
     /** {@link #TBL_BOOKS}. */
@@ -265,7 +287,7 @@ public final class DBDefinitions {
     /** {@link #TBL_BOOKS}. Book ID, not 'work' ID. */
     public static final Domain DOM_EID_GOODREADS_BOOK;
     /** {@link #TBL_BOOKS}. */
-    public static final Domain DOM_BOOK_GOODREADS_LAST_SYNC_DATE;
+    public static final Domain DOM_UTC_LAST_SYNC_DATE_GOODREADS;
     /** {@link #TBL_BOOKS}. */
     public static final Domain DOM_EID_ISFDB;
     /** {@link #TBL_BOOKS}. */
@@ -376,7 +398,7 @@ public final class DBDefinitions {
     public static final String KEY_FK_STYLE = "style";
     /** External id. - Long. */
     public static final String KEY_EID_GOODREADS_BOOK = "goodreads_book_id";
-    public static final String KEY_BOOK_GOODREADS_LAST_SYNC_DATE = "last_goodreads_sync_date";
+    public static final String KEY_UTC_LAST_SYNC_DATE_GOODREADS = "last_goodreads_sync_date";
     /** External id. - Long. */
     public static final String KEY_EID_ISFDB = "isfdb_book_id";
     /** External id. - Long. */
@@ -438,8 +460,8 @@ public final class DBDefinitions {
     /** {@link #TBL_TOC_ENTRIES}. */
     public static final String KEY_BOOK_TOC_ENTRY_POSITION = "toc_entry_position";
     /** {@link #TBL_BOOKS}. */
-    public static final String KEY_DATE_ADDED = "date_added";
-    public static final String KEY_DATE_LAST_UPDATED = "last_update_date";
+    public static final String KEY_UTC_ADDED = "date_added";
+    public static final String KEY_UTC_LAST_UPDATED = "last_update_date";
     public static final String KEY_UUID = "uuid";
     public static final String KEY_TITLE = "title";
     public static final String KEY_TITLE_OB = KEY_TITLE + SUFFIX_KEY_ORDER_BY;
@@ -629,8 +651,8 @@ public final class DBDefinitions {
                 new Domain.Builder(KEY_DATE_FIRST_PUBLICATION, ColumnInfo.TYPE_DATE)
                         .notNull().withDefaultEmptyString().build();
 
-        DOM_DATE_LAST_UPDATED =
-                new Domain.Builder(KEY_DATE_LAST_UPDATED, ColumnInfo.TYPE_DATETIME)
+        DOM_UTC_LAST_UPDATED =
+                new Domain.Builder(KEY_UTC_LAST_UPDATED, ColumnInfo.TYPE_DATETIME)
                         .notNull().withDefaultCurrentTimeStamp().build();
 
         /* ======================================================================================
@@ -842,8 +864,8 @@ public final class DBDefinitions {
                 new Domain.Builder(KEY_PRICE_PAID_CURRENCY, ColumnInfo.TYPE_TEXT)
                         .notNull().withDefaultEmptyString().build();
 
-        DOM_BOOK_DATE_ADDED =
-                new Domain.Builder(KEY_DATE_ADDED, ColumnInfo.TYPE_DATETIME)
+        DOM_UTC_ADDED =
+                new Domain.Builder(KEY_UTC_ADDED, ColumnInfo.TYPE_DATETIME)
                         .notNull().withDefaultCurrentTimeStamp().build();
 
         DOM_BOOK_LOCATION =
@@ -887,8 +909,12 @@ public final class DBDefinitions {
                 new Domain.Builder(KEY_EID_GOODREADS_BOOK, ColumnInfo.TYPE_INTEGER).build();
         NATIVE_ID_DOMAINS.add(DOM_EID_GOODREADS_BOOK);
 
-        DOM_BOOK_GOODREADS_LAST_SYNC_DATE =
-                new Domain.Builder(KEY_BOOK_GOODREADS_LAST_SYNC_DATE, ColumnInfo.TYPE_DATE)
+        // Stores dates in UTC format!
+        // The default of 0000-00-00 is not needed, and an empty string should
+        // have been used. As modifying the schema requires copying the entire books
+        // table, we just leave it as is for now.
+        DOM_UTC_LAST_SYNC_DATE_GOODREADS =
+                new Domain.Builder(KEY_UTC_LAST_SYNC_DATE_GOODREADS, ColumnInfo.TYPE_DATETIME)
                         .notNull().withDefault("'0000-00-00'").build();
 
         DOM_EID_ISFDB =
@@ -1058,12 +1084,12 @@ public final class DBDefinitions {
                              DOM_EID_OPEN_LIBRARY,
                              DOM_EID_STRIP_INFO_BE,
                              DOM_EID_GOODREADS_BOOK,
-                             DOM_BOOK_GOODREADS_LAST_SYNC_DATE,
+                             DOM_UTC_LAST_SYNC_DATE_GOODREADS,
 
                              // internal data
                              DOM_BOOK_UUID,
-                             DOM_BOOK_DATE_ADDED,
-                             DOM_DATE_LAST_UPDATED)
+                             DOM_UTC_ADDED,
+                             DOM_UTC_LAST_UPDATED)
 
                  .setPrimaryKey(DOM_PK_ID)
                  .addIndex(KEY_TITLE_OB, false, DOM_TITLE_OB)

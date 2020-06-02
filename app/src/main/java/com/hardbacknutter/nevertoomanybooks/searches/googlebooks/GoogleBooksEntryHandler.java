@@ -193,7 +193,7 @@ class GoogleBooksEntryHandler
      */
     private static final String XML_ISBN = "identifier";
     /**
-     * An SQL date String.
+     * An ISO date String.
      * <dc:date>1977</dc:date>
      * <dc:date>2011-12-19</dc:date>
      */

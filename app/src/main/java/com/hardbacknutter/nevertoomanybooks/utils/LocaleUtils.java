@@ -42,6 +42,9 @@ import androidx.annotation.VisibleForTesting;
 import androidx.preference.PreferenceManager;
 
 import java.lang.ref.WeakReference;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -204,7 +207,6 @@ public final class LocaleUtils {
             sPreferredLocaleSpec = localeSpec;
             sPreferredLocale = createLocale(localeSpec);
             // (re)create our parser format lists
-            DateUtils.create(sPreferredLocale, LocaleUtils.getSystemLocale());
             DateParser.create(sPreferredLocale, LocaleUtils.getSystemLocale());
         }
 
@@ -292,7 +294,7 @@ public final class LocaleUtils {
     @SuppressLint("NewApi")
     @NonNull
     public static Locale getUserLocale(@NonNull final Context context) {
-        Locale locale;
+        final Locale locale;
         if (Build.VERSION.SDK_INT >= 24 || Logger.isJUnitTest()) {
             locale = context.getResources().getConfiguration().getLocales().get(0);
         } else {
@@ -486,6 +488,26 @@ public final class LocaleUtils {
 
         final Context localizedContext = context.createConfigurationContext(configuration);
         return localizedContext.getResources();
+    }
+
+    /**
+     * Pretty format a (potentially partial) ISO date to a date-string, using the specified locale.
+     *
+     * @param isoDateStr ISO formatted date.
+     *
+     * @return human readable date string; either properly formatted,
+     * or the incoming string if parsing failed.
+     */
+    @NonNull
+    public static String toPrettyDate(@NonNull final Context context,
+                                      @NonNull final String isoDateStr) {
+        final LocalDateTime date = DateParser.ALL.parse(isoDateStr);
+        if (date != null) {
+            return date.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)
+                                                .withLocale(getUserLocale(context)));
+        }
+
+        return isoDateStr;
     }
 
     public interface OnLocaleChangedListener {

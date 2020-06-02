@@ -35,18 +35,19 @@ import android.database.sqlite.SQLiteQuery;
 import androidx.annotation.NonNull;
 
 import java.io.Closeable;
-import java.util.Date;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 
-import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.DateParser;
 
 import static com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.QueueDBHelper.KEY_EVENT_COUNT;
 import static com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.QueueDBHelper.KEY_EXCEPTION;
 import static com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.QueueDBHelper.KEY_FAILURE_REASON;
 import static com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.QueueDBHelper.KEY_PK_ID;
-import static com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.QueueDBHelper.KEY_QUEUED_DATE;
-import static com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.QueueDBHelper.KEY_RETRY_DATE;
 import static com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.QueueDBHelper.KEY_STATUS_CODE;
 import static com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.QueueDBHelper.KEY_TASK;
+import static com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.QueueDBHelper.KEY_UTC_QUEUED_DATETIME;
+import static com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.QueueDBHelper.KEY_UTC_RETRY_DATETIME;
 
 /**
  * Cursor subclass used to make accessing Tasks a little easier.
@@ -73,7 +74,9 @@ public final class TasksCursor
     private static int sExceptionCol = -2;
 
     /**
-     * Constructor, based on SQLiteCursor constructor.
+     * Constructor.
+     *
+     * @see SQLiteCursor
      */
     TasksCursor(@NonNull final SQLiteCursorDriver driver,
                 @NonNull final String editTable,
@@ -81,32 +84,48 @@ public final class TasksCursor
         super(driver, editTable, query);
     }
 
+    /**
+     * Get the date of when the task was queued.
+     *
+     * @return date; UTC based
+     */
     @NonNull
-    Date getQueuedDate() {
+    LocalDateTime getQueuedDate() {
         if (sQueuedDateCol < 0) {
-            sQueuedDateCol = getColumnIndex(KEY_QUEUED_DATE);
+            sQueuedDateCol = getColumnIndex(KEY_UTC_QUEUED_DATETIME);
         }
 
-        Date date = DateUtils.parseSqlDateTime(getString(sQueuedDateCol));
-        if (date == null) {
-            date = new Date();
+        LocalDateTime utcDate = DateParser.ISO.parse(getString(sQueuedDateCol));
+        if (utcDate == null) {
+            utcDate = LocalDateTime.now(ZoneOffset.UTC);
         }
-        return date;
+        return utcDate;
     }
 
+    /**
+     * Get the date of when the task was last retried.
+     *
+     * @return date; UTC based
+     */
     @NonNull
-    Date getRetryDate() {
+    LocalDateTime getRetryDate() {
         if (sRetryDateCol < 0) {
-            sRetryDateCol = getColumnIndex(KEY_RETRY_DATE);
+            sRetryDateCol = getColumnIndex(KEY_UTC_RETRY_DATETIME);
         }
 
-        Date date = DateUtils.parseSqlDateTime(getString(sRetryDateCol));
-        if (date == null) {
-            date = new Date();
+        LocalDateTime utcDate = DateParser.ISO.parse(getString(sRetryDateCol));
+        if (utcDate == null) {
+            utcDate = LocalDateTime.now(ZoneOffset.UTC);
         }
-        return date;
+        return utcDate;
     }
 
+    /**
+     * Get the status code.
+     *
+     * @return status
+     */
+    @NonNull
     String getStatusCode() {
         if (sStatusCodeCol < 0) {
             sStatusCodeCol = getColumnIndex(KEY_STATUS_CODE);
@@ -115,10 +134,11 @@ public final class TasksCursor
     }
 
     /**
-     * Accessor for reason field.
+     * Get the failure reason.
      *
      * @return reason
      */
+    @NonNull
     public String getReason() {
         if (sReasonCol < 0) {
             sReasonCol = getColumnIndex(KEY_FAILURE_REASON);
@@ -127,7 +147,7 @@ public final class TasksCursor
     }
 
     /**
-     * Accessor for Exception field.
+     * Get the Exception.
      *
      * @return Exception object
      */

@@ -95,13 +95,13 @@ android {
 
     // another site: https://gs.statcounter.com/
     // https://gs.statcounter.com/os-version-market-share/android/mobile-tablet/worldwide
-    // 2020-04-01 world wide:
-    // 10.0     12.45
-    // 9.0      51.02
-    // 8.1      62.84
-    // 8.0      70.46
-    // 7.0      76.89
-    // 6.0      86.26
+    // 2020-05-01 world wide:
+    // 10.0     18.63
+    // 9.0      53.34
+    // 8.1      64.96
+    // 8.0      72.11
+    // 7.0      78.30
+    // 6.0      87.04
 
     //  2020-04-11.: from Android Studio 'new project' page
     //  A       API     %
@@ -169,11 +169,11 @@ android {
     }
 
     compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+
         // https://developer.android.com/studio/releases/#4-0-0-desugar
         coreLibraryDesugaringEnabled true
-
-        sourceCompatibility = '1.8'
-        targetCompatibility = '1.8'
     }
 
     buildFeatures {

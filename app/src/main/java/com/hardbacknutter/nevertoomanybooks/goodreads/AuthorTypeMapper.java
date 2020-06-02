@@ -131,7 +131,7 @@ public final class AuthorTypeMapper {
 
     public static int map(@NonNull final Locale locale,
                           @NonNull final String typeName) {
-        Integer mapped = MAPPER.get(typeName.toLowerCase(locale).trim());
+        final Integer mapped = MAPPER.get(typeName.toLowerCase(locale).trim());
         if (mapped != null) {
             return mapped;
         }

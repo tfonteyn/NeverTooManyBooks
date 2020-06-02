@@ -151,7 +151,7 @@ public abstract class SendBooksLegacyTaskBase
             status = GrStatus.UNEXPECTED_ERROR;
         }
 
-        long bookId = rowData.getLong(DBDefinitions.KEY_PK_ID);
+        final long bookId = rowData.getLong(DBDefinitions.KEY_PK_ID);
 
         // update the current status, so it can be displayed to the user continuously.
         setLastExtStatus(status);
@@ -187,6 +187,7 @@ public abstract class SendBooksLegacyTaskBase
             case GrStatus.AUTHORIZATION_SUCCESSFUL:
             case GrStatus.AUTHORIZATION_FAILED:
             case GrStatus.AUTHORIZATION_NEEDED:
+            case GrStatus.AUTHENTICATION_FAILED:
             case GrStatus.CREDENTIALS_MISSING:
             case GrStatus.CREDENTIALS_ERROR:
             case GrStatus.TASK_QUEUED_WITH_SUCCESS:

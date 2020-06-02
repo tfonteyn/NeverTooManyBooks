@@ -31,14 +31,13 @@ import androidx.annotation.NonNull;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Date;
 
 import com.hardbacknutter.nevertoomanybooks.backup.ArchiveContainerEntry;
 
 /**
  * Interface provided by every entity read from an archive file.
  * This class effectively should wrap an archive format specific entry in a format agnostic entry.
- *
+ * <p>
  * Note we're also forcing the encapsulation of the {@link ArchiveReader} input stream.
  */
 public interface ReaderEntity {
@@ -60,16 +59,16 @@ public interface ReaderEntity {
     ArchiveContainerEntry getType();
 
     /**
-     * Get the Modified date from archive entry.
+     * Get the last modification time of this archive entry in EpochMilli.
      *
-     * @return Date
+     * @return EpochMilli
      */
-    @NonNull
-    Date getDateModified();
+    long getLastModifiedEpochMilli();
 
     /**
      * Get the stream to read the entity.
-     * Do <strong>NOT</strong> close this stream.
+     * Callers <strong>MUST NOT</strong> close this stream.
+     * Implementations should close it when appropriate.
      *
      * @return the InputStream
      *

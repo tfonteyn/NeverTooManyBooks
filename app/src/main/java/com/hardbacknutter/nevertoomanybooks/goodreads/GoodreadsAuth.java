@@ -222,7 +222,7 @@ public class GoodreadsAuth {
         }
 
         // Get the stored token values from prefs
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         sAccessToken = prefs.getString(ACCESS_TOKEN, null);
         sAccessSecret = prefs.getString(ACCESS_SECRET, null);
 
@@ -308,7 +308,7 @@ public class GoodreadsAuth {
         // should not be needed:
         //sCredentialsValidated = false;
         try {
-            AuthUserApiHandler authUserApi = new AuthUserApiHandler(this);
+            final AuthUserApiHandler authUserApi = new AuthUserApiHandler(this);
             if (authUserApi.getAuthUser() != 0) {
                 // Cache the results to avoid network calls later
                 sUsername = authUserApi.getUsername();
@@ -391,9 +391,9 @@ public class GoodreadsAuth {
                    IOException {
 
         // Get the temporarily saved request tokens.
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        String requestToken = prefs.getString(REQUEST_TOKEN, null);
-        String requestSecret = prefs.getString(REQUEST_SECRET, null);
+        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        final String requestToken = prefs.getString(REQUEST_TOKEN, null);
+        final String requestSecret = prefs.getString(REQUEST_SECRET, null);
 
         // sanity check; the tokens are stored in #requestAuthorization
         if (requestToken == null || requestToken.isEmpty()
@@ -471,7 +471,7 @@ public class GoodreadsAuth {
             // https://zewaren.net/oauth-java.html
             // The key to signing the POST fields is to add them as additional parameters,
             // but already percent-encoded; and also to add the realm header.
-            HttpParameters parameters = new HttpParameters();
+            final HttpParameters parameters = new HttpParameters();
             for (Map.Entry<String, String> entry : parameterMap.entrySet()) {
                 // note we need to encode both key and value.
                 parameters.put(OAuth.percentEncode(entry.getKey()),

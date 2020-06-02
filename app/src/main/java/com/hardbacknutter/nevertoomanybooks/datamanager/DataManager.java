@@ -57,11 +57,11 @@ import com.hardbacknutter.nevertoomanybooks.datamanager.validators.LongValidator
 import com.hardbacknutter.nevertoomanybooks.datamanager.validators.NonBlankValidator;
 import com.hardbacknutter.nevertoomanybooks.datamanager.validators.OrValidator;
 import com.hardbacknutter.nevertoomanybooks.datamanager.validators.ValidatorException;
+import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.RowDataHolder;
 import com.hardbacknutter.nevertoomanybooks.utils.Money;
 import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.UnexpectedValueException;
 
 /**
  * Class to manage a version of a set of related data.
@@ -126,11 +126,8 @@ public class DataManager
      * Store all passed values in our collection.
      *
      * @param src bundle to copy from
-     *
-     * @throws UnexpectedValueException if the type of the Object is not supported.
      */
-    public void putAll(@NonNull final Bundle src)
-            throws UnexpectedValueException {
+    public void putAll(@NonNull final Bundle src) {
         for (String key : src.keySet()) {
             put(key, src.get(key));
         }
@@ -178,7 +175,8 @@ public class DataManager
                     break;
 
                 default:
-                    throw new UnexpectedValueException(cursor.getType(i));
+                    throw new IllegalArgumentException(ErrorMsg.UNEXPECTED_VALUE
+                                                       + cursor.getType(i));
             }
         }
     }
@@ -188,12 +186,9 @@ public class DataManager
      *
      * @param key   Key of data object
      * @param value to store
-     *
-     * @throws UnexpectedValueException if the type of the Object is not supported.
      */
     public void put(@NonNull final String key,
-                    @Nullable final Object value)
-            throws UnexpectedValueException {
+                    @Nullable final Object value) {
 
         if (value instanceof String) {
             mRawData.putString(key, (String) value);
@@ -225,7 +220,8 @@ public class DataManager
             putNull(key);
 
         } else {
-            throw new UnexpectedValueException("put|key=`" + key + "`|value=" + value);
+            throw new IllegalArgumentException(ErrorMsg.UNEXPECTED_VALUE
+                                               + "put|key=`" + key + "`|value=" + value);
         }
     }
 

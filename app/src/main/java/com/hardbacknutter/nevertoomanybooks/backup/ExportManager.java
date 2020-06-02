@@ -41,7 +41,10 @@ import androidx.preference.PreferenceManager;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Date;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.App;
@@ -58,8 +61,7 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
-import com.hardbacknutter.nevertoomanybooks.utils.DateFormatUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.DateParser;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.FormattedMessageException;
 
@@ -113,7 +115,7 @@ public class ExportManager
     private ArchiveContainer mArchiveContainer;
     /** EXPORT_SINCE_LAST_BACKUP. */
     @Nullable
-    private Date mDateFrom;
+    private LocalDateTime mFromUtcDateTime;
 
     /**
      * Constructor.
@@ -131,9 +133,11 @@ public class ExportManager
      */
     private ExportManager(@NonNull final Parcel in) {
         mOptions = in.readInt();
-        long dateLong = in.readLong();
-        if (dateLong != 0) {
-            mDateFrom = new Date(dateLong);
+        long epochMilli = in.readLong();
+        if (epochMilli != 0) {
+            // parcel from the epoch
+            mFromUtcDateTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(epochMilli),
+                                                       ZoneOffset.UTC);
         }
         mUri = in.readParcelable(getClass().getClassLoader());
         mResults = in.readParcelable(getClass().getClassLoader());
@@ -186,20 +190,28 @@ public class ExportManager
         mUri = uri;
     }
 
+    /**
+     * Get the date-since.
+     *
+     * @return date (UTC based), or {@code null} if not in use
+     */
     @Nullable
-    public Date getDateSince() {
-        return mDateFrom;
+    public LocalDateTime getUtcDateTimeSince() {
+        if (((mOptions & EXPORT_SINCE_LAST_BACKUP) != 0)) {
+            return mFromUtcDateTime;
+        } else {
+            return null;
+        }
     }
 
     /**
      * Convenience method to return the date-from as a time {@code long}.
-     * Returns 0 if the date is not set.
      *
-     * @return time
+     * @return epochMilli, or {@code 0} if not in use
      */
-    long getTimeFrom() {
-        if (mDateFrom != null && ((mOptions & EXPORT_SINCE_LAST_BACKUP) != 0)) {
-            return mDateFrom.getTime();
+    long getDateSinceAsEpochMilli() {
+        if (mFromUtcDateTime != null && ((mOptions & EXPORT_SINCE_LAST_BACKUP) != 0)) {
+            return mFromUtcDateTime.toInstant(ZoneOffset.UTC).toEpochMilli();
         } else {
             return 0;
         }
@@ -260,9 +272,9 @@ public class ExportManager
             throw new IllegalStateException("Uri was NULL");
         }
         if ((mOptions & EXPORT_SINCE_LAST_BACKUP) != 0) {
-            mDateFrom = getLastFullBackupDate(App.getAppContext());
+            mFromUtcDateTime = getLastFullBackupDate(App.getAppContext());
         } else {
-            mDateFrom = null;
+            mFromUtcDateTime = null;
         }
     }
 
@@ -304,18 +316,21 @@ public class ExportManager
     }
 
     /**
-     * Store the date of the last full backup ('now') and reset the startup prompt-counter.
+     * Store the date of the last full backup ('now', UTC based)
+     * and reset the startup prompt-counter.
      *
      * @param context Current context
      */
     private void setLastFullBackupDate(@NonNull final Context context) {
-        PreferenceManager.getDefaultSharedPreferences(context)
-                         .edit()
-                         .putString(PREF_LAST_FULL_BACKUP_DATE,
-                                    DateFormatUtils.isoUtcDateTimeForToday())
-                         .putInt(Prefs.PREF_STARTUP_BACKUP_COUNTDOWN,
-                                 Prefs.STARTUP_BACKUP_COUNTDOWN)
-                         .apply();
+        PreferenceManager
+                .getDefaultSharedPreferences(context)
+                .edit()
+                .putString(PREF_LAST_FULL_BACKUP_DATE,
+                           LocalDateTime.now(ZoneOffset.UTC)
+                                        .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME))
+                .putInt(Prefs.PREF_STARTUP_BACKUP_COUNTDOWN,
+                        Prefs.STARTUP_BACKUP_COUNTDOWN)
+                .apply();
     }
 
     /**
@@ -326,12 +341,12 @@ public class ExportManager
      * @return Date in the UTC timezone.
      */
     @Nullable
-    private Date getLastFullBackupDate(@NonNull final Context context) {
+    private LocalDateTime getLastFullBackupDate(@NonNull final Context context) {
         String lastBackup = PreferenceManager.getDefaultSharedPreferences(context)
                                              .getString(PREF_LAST_FULL_BACKUP_DATE, null);
 
         if (lastBackup != null && !lastBackup.isEmpty()) {
-            return DateUtils.parseSqlDateTime(lastBackup);
+            return DateParser.ISO.parse(lastBackup);
         }
 
         return null;
@@ -346,8 +361,9 @@ public class ExportManager
     public void writeToParcel(@NonNull final Parcel dest,
                               final int flags) {
         dest.writeInt(mOptions);
-        if (mDateFrom != null) {
-            dest.writeLong(mDateFrom.getTime());
+        if (mFromUtcDateTime != null) {
+            // parcel to the epoch
+            dest.writeLong(mFromUtcDateTime.toInstant(ZoneOffset.UTC).toEpochMilli());
         } else {
             dest.writeInt(0);
         }
@@ -362,7 +378,7 @@ public class ExportManager
                + ", mOptions=0b" + Integer.toBinaryString(mOptions)
                + ", mUri=" + mUri
                + ", mArchiveType=" + mArchiveContainer
-               + ", mDateFrom=" + mDateFrom
+               + ", mDateFrom=" + mFromUtcDateTime
                + ", mResults=" + mResults
                + '}';
     }

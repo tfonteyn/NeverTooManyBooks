@@ -45,7 +45,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsExceptio
  * <strong>Note:</strong> THIS DOES NOT RETURN XML. The text output is the ID.
  */
 public class IsbnToIdApiHandler
-        extends com.hardbacknutter.nevertoomanybooks.goodreads.api.ApiHandler {
+        extends ApiHandler {
 
     /** Param 1: isbn; param 2: dev key. */
     private static final String URL = GoodreadsHandler.BASE_URL + "/book/isbn_to_id/%1$s?key=%2$s";

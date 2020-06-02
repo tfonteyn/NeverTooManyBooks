@@ -113,7 +113,7 @@ class Queue
                         mManager.onQueueTerminating(this);
                         return;
                     }
-                    if (scheduledTask.getTimeUntilRunnable() == 0) {
+                    if (scheduledTask.getMillisUntilRunnable() == 0) {
                         // Ready to run now.
                         task = scheduledTask.getTask();
                         mTask = new WeakReference<>(task);
@@ -131,7 +131,7 @@ class Queue
                     // Not ready, just wait. Allow for possible wake-up calls if something
                     // else gets queued.
                     synchronized (this) {
-                        wait(scheduledTask.getTimeUntilRunnable());
+                        wait(scheduledTask.getMillisUntilRunnable());
                     }
                 }
             }

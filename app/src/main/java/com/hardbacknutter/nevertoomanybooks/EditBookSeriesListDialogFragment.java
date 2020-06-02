@@ -97,7 +97,7 @@ public class EditBookSeriesListDialogFragment
     /** the rows. */
     private ArrayList<Series> mList;
     /** The adapter for the list itself. */
-    private RecyclerViewAdapterBase mListAdapter;
+    private SeriesListAdapter mListAdapter;
     /** Drag and drop support for the list view. */
     private ItemTouchHelper mItemTouchHelper;
 

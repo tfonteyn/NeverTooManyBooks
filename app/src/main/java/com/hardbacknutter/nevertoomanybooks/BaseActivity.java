@@ -344,7 +344,7 @@ public abstract class BaseActivity
      * @param fragmentTag     tag for the fragment
      */
     protected void addFragment(@IdRes final int containerViewId,
-                               @NonNull final Class fragmentClass,
+                               @NonNull final Class<? extends Fragment> fragmentClass,
                                @NonNull final String fragmentTag) {
         loadFragment(containerViewId, fragmentClass, fragmentTag, true);
     }
@@ -360,7 +360,7 @@ public abstract class BaseActivity
      * @param fragmentTag     tag for the fragment
      */
     protected void replaceFragment(@IdRes final int containerViewId,
-                                   @NonNull final Class fragmentClass,
+                                   @NonNull final Class<? extends Fragment> fragmentClass,
                                    @NonNull final String fragmentTag) {
         loadFragment(containerViewId, fragmentClass, fragmentTag, false);
     }
@@ -381,7 +381,7 @@ public abstract class BaseActivity
      * @param isAdd           whether to use add or replace
      */
     private void loadFragment(@IdRes final int containerViewId,
-                              @NonNull final Class fragmentClass,
+                              @NonNull final Class<? extends Fragment> fragmentClass,
                               @NonNull final String tag,
                               final boolean isAdd) {
 

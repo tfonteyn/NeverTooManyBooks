@@ -64,7 +64,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlResponseParser;
  * - (perhaps) gr_bookshelf_name
  */
 public class AddBookToShelfApiHandler
-        extends com.hardbacknutter.nevertoomanybooks.goodreads.api.ApiHandler {
+        extends ApiHandler {
 
     /** Add one book to one shelf (or remove it). */
     private static final String URL_1_1 =

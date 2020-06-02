@@ -55,7 +55,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlDumpParser;
  * The response actually contains the private notes; but there seems to be no way to *send* them.
  */
 public class ReviewEditApiHandler
-        extends com.hardbacknutter.nevertoomanybooks.goodreads.api.ApiHandler {
+        extends ApiHandler {
 
     /**
      * Parameters.

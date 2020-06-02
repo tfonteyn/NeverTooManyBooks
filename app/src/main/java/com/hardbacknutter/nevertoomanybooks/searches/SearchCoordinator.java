@@ -50,10 +50,11 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -74,8 +75,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.tasks.Canceller;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 import com.hardbacknutter.nevertoomanybooks.utils.Csv;
-import com.hardbacknutter.nevertoomanybooks.utils.DateFormatUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.DateParser;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.NetworkUtils;
@@ -1038,12 +1038,13 @@ public class SearchCoordinator
             // Overwrite with the new date if we can parse it and
             // if the current one was present but not valid.
             if (dataToAdd != null) {
-                final Date newDate = DateUtils.parseDate(siteLocale, dataToAdd);
+                final LocalDateTime newDate = DateParser.ALL.parse(siteLocale, dataToAdd);
                 if (newDate != null) {
-                    if (DateUtils.parseDate(siteLocale, currentDateHeld) == null) {
-                        final String value = DateFormatUtils.isoUtcDate(newDate);
-                        // current date was invalid, use new one.
-                        mBookData.putString(key, value);
+                    if (DateParser.ALL.parse(siteLocale, currentDateHeld) == null) {
+                        // current date was invalid, use the new one instead.
+                        // (theoretically this check was not needed, as we should not have
+                        // an invalid date stored anyhow... but paranoia rules)
+                        mBookData.putString(key, newDate.format(DateTimeFormatter.ISO_LOCAL_DATE));
                         if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
                             Log.d(TAG, "accumulateDates|copied"
                                        + "|key=" + key + "|value=`" + dataToAdd + '`');

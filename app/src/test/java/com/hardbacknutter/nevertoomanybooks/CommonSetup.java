@@ -52,7 +52,6 @@ import com.hardbacknutter.nevertoomanybooks.searches.kbnl.KbNlSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.tasks.Canceller;
 import com.hardbacknutter.nevertoomanybooks.utils.DateParser;
-import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -88,13 +87,12 @@ public class CommonSetup {
     /**
      * @param locale0 to use for
      *                JDK
-     *                DateUtils.create(locale0)
+     *                DateParser.create(locale0)
      *                context.getResources().getConfiguration().getLocales().get(0)
      */
     public void setLocale(@NonNull final Locale locale0) {
         mLocale0 = locale0;
         Locale.setDefault(mLocale0);
-        DateUtils.create(mLocale0);
         DateParser.create(mLocale0);
     }
 
@@ -105,7 +103,6 @@ public class CommonSetup {
     void tearDown() {
         mLocale0 = null;
         Locale.setDefault(mJdkLocale);
-        DateUtils.clear();
     }
 
     @BeforeEach

@@ -53,6 +53,8 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.Objects;
 
@@ -71,7 +73,6 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.scanner.ScannerManager;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
-import com.hardbacknutter.nevertoomanybooks.utils.DateFormatUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.SoundManager;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.ResultDataModel;
@@ -273,9 +274,10 @@ public abstract class BasePreferenceFragment
         if (preference != null) {
             // Export database - Mainly meant for debug or external processing.
             preference.setOnPreferenceClickListener(p -> {
-                final String name = getString(R.string.app_name)
-                                    + '-' + DateFormatUtils.isoLocalDateForToday()
-                                    + ".ntmb.db";
+                final String name =
+                        getString(R.string.app_name)
+                        + '-' + LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE)
+                        + ".ntmb.db";
 
                 final Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT)
                         .addCategory(Intent.CATEGORY_OPENABLE)

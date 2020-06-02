@@ -83,6 +83,8 @@ public abstract class ArchiveWriterAbstractBase
      *
      * @param context          Current context
      * @param progressListener to send progress updates to
+     *
+     * @throws IOException on failure
      */
     @Override
     @WorkerThread

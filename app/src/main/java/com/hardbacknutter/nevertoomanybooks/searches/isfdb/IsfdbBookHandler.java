@@ -38,9 +38,10 @@ import androidx.annotation.VisibleForTesting;
 import androidx.annotation.WorkerThread;
 
 import java.net.SocketTimeoutException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -62,8 +63,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
-import com.hardbacknutter.nevertoomanybooks.utils.DateFormatUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.DateParser;
 import com.hardbacknutter.nevertoomanybooks.utils.Money;
 
 class IsfdbBookHandler
@@ -579,13 +579,13 @@ class IsfdbBookHandler
                     // e.g. "1975-04-00" or "1974-00-00" Cut that part off.
                     tmpString = UNKNOWN_M_D_PATTERN.matcher(tmpString).replaceAll("");
                     // and we're paranoid...
-                    final Date date = DateUtils.parseDate(tmpString);
+                    final LocalDateTime date = DateParser.ALL.parse(tmpString);
                     if (date != null) {
                         // Note that partial dates, e.g. "1987", "1978-03"
                         // will get 'completed' to "1987-01-01", "1978-03-01"
                         // This should be acceptable IMHO.
                         bookData.putString(DBDefinitions.KEY_DATE_PUBLISHED,
-                                           DateFormatUtils.isoUtcDate(date));
+                                           date.format(DateTimeFormatter.ISO_LOCAL_DATE));
                     }
 
                 } else if ("ISBN:".equalsIgnoreCase(fieldName)) {

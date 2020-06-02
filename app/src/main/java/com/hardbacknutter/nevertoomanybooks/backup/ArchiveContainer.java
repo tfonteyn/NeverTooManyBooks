@@ -37,9 +37,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.regex.Pattern;
 
+import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.UnexpectedValueException;
 
 /**
  * Archive formats (partially) supported.
@@ -130,8 +130,6 @@ public enum ArchiveContainer {
      * Get the <strong>proposed</strong> archive file extension.
      *
      * @return file name extension starting with a '.'
-     *
-     * @throws UnexpectedValueException if the type is unknown.
      */
     public String getFileExt() {
         switch (this) {
@@ -147,7 +145,7 @@ public enum ArchiveContainer {
                 return ".db";
             case Unknown:
             default:
-                throw new UnexpectedValueException(name());
+                throw new IllegalArgumentException(ErrorMsg.UNEXPECTED_VALUE + name());
         }
     }
 }

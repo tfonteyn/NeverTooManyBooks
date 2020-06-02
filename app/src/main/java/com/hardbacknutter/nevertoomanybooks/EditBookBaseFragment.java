@@ -47,7 +47,13 @@ import androidx.lifecycle.ViewModelProvider;
 import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.android.material.datepicker.MaterialPickerOnPositiveButtonClickListener;
 
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataEditor;
@@ -60,8 +66,7 @@ import com.hardbacknutter.nevertoomanybooks.fields.Field;
 import com.hardbacknutter.nevertoomanybooks.fields.Fields;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
 import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.RequestAuthTask;
-import com.hardbacknutter.nevertoomanybooks.utils.DateFormatUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.DateParser;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.EditBookFragmentViewModel;
 
 public abstract class EditBookBaseFragment
@@ -80,12 +85,8 @@ public abstract class EditBookBaseFragment
     EditBookFragmentViewModel mFragmentVM;
 
     /** Dialog listener (strong reference). */
-    private final DatePickerResultsListener
-            mPartialDatePickerResultsListener = (year, month, day) -> {
-        final int fieldId = mFragmentVM.getCurrentDialogFieldId()[0];
-        String date = DateFormatUtils.isoPartialDate(year, month, day);
-        onDateSet(fieldId, date);
-    };
+    private final DatePickerResultsListener mPartialDatePickerListener = (year, month, day) ->
+            onDateSet(mFragmentVM.getCurrentDialogFieldId()[0], year, month, day);
 
     /** Dialog listener (strong reference). */
     private final MaterialPickerOnPositiveButtonClickListener<Long>
@@ -104,6 +105,27 @@ public abstract class EditBookBaseFragment
     };
 
     /**
+     * Convert a LocalDate to an Instant in time.
+     *
+     * @param field       to extract from
+     * @param todayIfNone if set, and the incoming date is null, use 'today' for the date
+     *
+     * @return instant
+     */
+    private static Instant getInstant(@NonNull final Field<String, TextView> field,
+                                      final boolean todayIfNone) {
+        final LocalDateTime date = DateParser.ALL.parse(field.getAccessor().getValue());
+        if (date == null && !todayIfNone) {
+            return null;
+        }
+
+        if (date != null) {
+            date.toInstant(ZoneOffset.UTC);
+        }
+        return Instant.now();
+    }
+
+    /**
      * Convenience wrapper.
      * <p>
      * Return the Field associated with the passed ID.
@@ -113,12 +135,9 @@ public abstract class EditBookBaseFragment
      * @param id  Field/View ID
      *
      * @return Associated Field.
-     *
-     * @throws IllegalArgumentException if the field does not exist.
      */
     @NonNull
-    <T, V extends View> Field<T, V> getField(@IdRes final int id)
-            throws IllegalArgumentException {
+    <T, V extends View> Field<T, V> getField(@IdRes final int id) {
         return getFields().getField(id);
     }
 
@@ -195,7 +214,7 @@ public abstract class EditBookBaseFragment
 
         if (childFragment instanceof PartialDatePickerDialogFragment) {
             ((PartialDatePickerDialogFragment) childFragment)
-                    .setListener(mPartialDatePickerResultsListener);
+                    .setListener(mPartialDatePickerListener);
 
         } else if (TAG_DATE_PICKER_SINGLE.equals(childFragment.getTag())) {
             //noinspection unchecked
@@ -300,21 +319,24 @@ public abstract class EditBookBaseFragment
             // date-span for the end-date
             //noinspection ConstantConditions
             fieldEndDate.getAccessor().getView().setOnClickListener(v -> {
-                Long timeStart = DateUtils.parseTime(fieldStartDate.getAccessor().getValue(),
-                                                     todayIfNone);
-                Long timeEnd = DateUtils.parseTime(fieldEndDate.getAccessor().getValue(),
-                                                   todayIfNone);
+                final Instant timeStart = getInstant(fieldStartDate, todayIfNone);
+                Long startSelection = timeStart != null ? timeStart.toEpochMilli() : null;
+
+                final Instant timeEnd = getInstant(fieldEndDate, todayIfNone);
+                Long endSelection = timeEnd != null ? timeEnd.toEpochMilli() : null;
+
                 // sanity check
-                if (timeStart != null && timeEnd != null && timeStart > timeEnd) {
-                    Long tmp = timeStart;
-                    timeStart = timeEnd;
-                    timeEnd = tmp;
+                if (startSelection != null && endSelection != null
+                    && startSelection > endSelection) {
+                    Long tmp = startSelection;
+                    startSelection = endSelection;
+                    endSelection = tmp;
                 }
 
                 final MaterialDatePicker<Pair<Long, Long>> picker = MaterialDatePicker.Builder
                         .dateRangePicker()
                         .setTitleText(dialogTitleIdSpan)
-                        .setSelection(new Pair<>(timeStart, timeEnd))
+                        .setSelection(new Pair<>(startSelection, endSelection))
                         .build();
                 mFragmentVM.setCurrentDialogFieldId(fieldStartDate.getId(), fieldEndDate.getId());
                 picker.show(getChildFragmentManager(), TAG_DATE_PICKER_RANGE);
@@ -341,8 +363,8 @@ public abstract class EditBookBaseFragment
         if (field.isUsed(getContext())) {
             //noinspection ConstantConditions
             field.getAccessor().getView().setOnClickListener(v -> {
-                final Long selection = DateUtils.parseTime(field.getAccessor().getValue(),
-                                                           todayIfNone);
+                final Instant time = getInstant(field, todayIfNone);
+                final Long selection = time != null ? time.toEpochMilli() : null;
                 final MaterialDatePicker<Long> picker = MaterialDatePicker.Builder
                         .datePicker()
                         .setTitleText(dialogTitleId)
@@ -378,10 +400,42 @@ public abstract class EditBookBaseFragment
     }
 
     private void onDateSet(@IdRes final int fieldId,
+                           @Nullable final Integer year,
+                           @Nullable final Integer month,
+                           @Nullable final Integer day) {
+        String date;
+        if (year == null || year == 0) {
+            date = "";
+        } else {
+            date = String.format(Locale.ENGLISH, "%04d", year);
+
+            if (month != null && month > 0) {
+                String mm = Integer.toString(month);
+                if (mm.length() == 1) {
+                    mm = '0' + mm;
+                }
+                date += '-' + mm;
+
+                if (day != null && day > 0) {
+                    String dd = Integer.toString(day);
+                    if (dd.length() == 1) {
+                        dd = '0' + dd;
+                    }
+                    date += '-' + dd;
+                }
+            }
+        }
+
+        onDateSet(fieldId, date);
+    }
+
+    private void onDateSet(@IdRes final int fieldId,
                            @Nullable final Long selection) {
-        String value;
+        final String value;
         if (selection != null) {
-            value = DateFormatUtils.isoLocalDate(selection);
+            value = Instant.ofEpochMilli(selection)
+                           .atZone(ZoneId.systemDefault())
+                           .format(DateTimeFormatter.ISO_LOCAL_DATE);
         } else {
             value = "";
         }
@@ -390,7 +444,7 @@ public abstract class EditBookBaseFragment
 
     private void onDateSet(@IdRes final int fieldId,
                            @NonNull final String value) {
-        Field<String, TextView> field = getField(fieldId);
+        final Field<String, TextView> field = getField(fieldId);
         field.getAccessor().setValue(value);
         field.onChanged(true);
 

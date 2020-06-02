@@ -46,8 +46,11 @@ import androidx.annotation.Nullable;
 import java.io.Closeable;
 import java.io.File;
 import java.text.Normalizer;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -73,6 +76,7 @@ import com.hardbacknutter.nevertoomanybooks.database.definitions.ColumnInfo;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.TableInfo;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
+import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -84,11 +88,10 @@ import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsHandler;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 import com.hardbacknutter.nevertoomanybooks.utils.Csv;
-import com.hardbacknutter.nevertoomanybooks.utils.DateFormatUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.DateParser;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.UnexpectedValueException;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_AUTHOR_FAMILY_NAME;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_AUTHOR_FAMILY_NAME_OB;
@@ -106,16 +109,13 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BO
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOK_CONDITION;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOK_CONDITION_COVER;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOK_COUNT;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOK_GOODREADS_LAST_SYNC_DATE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOK_NUM_IN_SERIES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOK_SERIES_POSITION;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOK_TOC_ENTRY_POSITION;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOK_UUID;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_COLOR;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_DATE_ACQUIRED;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_DATE_ADDED;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_DATE_FIRST_PUBLICATION;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_DATE_LAST_UPDATED;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_DATE_PUBLISHED;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_DESCRIPTION;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_EDITION_BITMASK;
@@ -162,6 +162,9 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_TI
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_TITLE_OB;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_TOC_BITMASK;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_TOC_TYPE;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_UTC_ADDED;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_UTC_LAST_SYNC_DATE_GOODREADS;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_UTC_LAST_UPDATED;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_UUID;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_AUTHORS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKLIST_STYLES;
@@ -402,19 +405,21 @@ public class DAO
     /**
      * A complete export of all tables (flattened) in the database.
      *
-     * @param sinceDate to select all books added/modified since that date.
-     *                  Set to {@code null} for *all* books.
+     * @param utcLastUpdateDateTime to select all books added/modified since that date.
+     *                              Set to {@code null} for *all* books.
      *
      * @return Cursor over all books, authors, etc
      */
     @NonNull
-    public Cursor fetchBooksForExport(@Nullable final Date sinceDate) {
+    public Cursor fetchBooksForExport(@Nullable final LocalDateTime utcLastUpdateDateTime) {
         final String whereClause;
-        if (sinceDate == null) {
+        if (utcLastUpdateDateTime == null) {
             whereClause = "";
         } else {
-            whereClause = TBL_BOOKS.dot(KEY_DATE_LAST_UPDATED)
-                          + ">'" + DateFormatUtils.isoUtcDateTime(sinceDate) + '\'';
+            whereClause = TBL_BOOKS.dot(KEY_UTC_LAST_UPDATED)
+                          + ">'"
+                          + utcLastUpdateDateTime.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+                          + '\'';
         }
 
         final String sql = SqlAllBooks.withPrimaryAuthorAndSeries(whereClause);
@@ -941,7 +946,7 @@ public class DAO
                 return getColumnAsList(SqlSelectFullTable.AUTHORS_FORMATTED_NAMES_GIVEN_FIRST, key);
 
             default:
-                throw new UnexpectedValueException(key);
+                throw new IllegalArgumentException(ErrorMsg.UNEXPECTED_VALUE + key);
         }
     }
 
@@ -1061,10 +1066,10 @@ public class DAO
      *
      * @param bookId of the book
      *
-     * @return the last update date as a standard sql date string
+     * @return the last update date; UTC based.
      */
     @Nullable
-    public String getBookLastUpdateDate(final long bookId) {
+    public LocalDateTime getBookLastUpdateUtcDate(final long bookId) {
         SynchronizedStatement stmt = mSqlStatementManager.get(STMT_GET_BOOK_UPDATE_DATE);
         if (stmt == null) {
             stmt = mSqlStatementManager.add(STMT_GET_BOOK_UPDATE_DATE,
@@ -1074,7 +1079,7 @@ public class DAO
         //noinspection SynchronizationOnLocalVariableOrMethodParameter
         synchronized (stmt) {
             stmt.bindLong(1, bookId);
-            return stmt.simpleQueryForStringOrNull();
+            return DateParser.ISO.parse(stmt.simpleQueryForStringOrNull());
         }
     }
 
@@ -1084,12 +1089,9 @@ public class DAO
      * @param bookId of the book
      *
      * @return the book UUID, or {@code null} if not found/failure
-     *
-     * @throws IllegalArgumentException if the bookId==0
      */
     @Nullable
-    public String getBookUuid(final long bookId)
-            throws IllegalArgumentException {
+    public String getBookUuid(final long bookId) {
         // sanity check
         if (bookId == 0) {
             throw new IllegalArgumentException("cannot get uuid for id==0");
@@ -1234,31 +1236,34 @@ public class DAO
             book.preprocessForStoring(context, true);
 
             // Make sure we have at least one author
-            List<Author> authors = book.getParcelableArrayList(Book.BKEY_AUTHOR_ARRAY);
+            final List<Author> authors = book.getParcelableArrayList(Book.BKEY_AUTHOR_ARRAY);
             if (authors.isEmpty()) {
                 throw new DaoWriteException("No authors for book=" + book);
             }
 
             // correct field types if needed, and filter out fields we don't have in the db table.
-            ContentValues cv = filterValues(TBL_BOOKS, book, book.getLocale(context));
+            final ContentValues cv = filterValues(TBL_BOOKS, book, book.getLocale(context));
 
             // if we have an id, use it.
             if (bookId > 0) {
                 cv.put(KEY_PK_ID, bookId);
             }
 
-            // if we do NOT have a date set, then use TODAY
-            if (!cv.containsKey(DBDefinitions.KEY_DATE_ADDED)) {
-                cv.put(DBDefinitions.KEY_DATE_ADDED, DateFormatUtils.isoUtcDateTimeForToday());
+            final String utcNow = LocalDateTime.now(ZoneOffset.UTC)
+                                               .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+
+            // if we do NOT have a date set, then use NOW
+            if (!cv.containsKey(DBDefinitions.KEY_UTC_ADDED)) {
+                cv.put(DBDefinitions.KEY_UTC_ADDED, utcNow);
             }
 
-            // if we do NOT have a date set, then use TODAY
-            if (!cv.containsKey(KEY_DATE_LAST_UPDATED)) {
-                cv.put(KEY_DATE_LAST_UPDATED, DateFormatUtils.isoUtcDateTimeForToday());
+            // if we do NOT have a date set, then use NOW
+            if (!cv.containsKey(KEY_UTC_LAST_UPDATED)) {
+                cv.put(KEY_UTC_LAST_UPDATED, utcNow);
             }
 
             // the book itself
-            long newBookId = sSyncedDb.insert(TBL_BOOKS.getName(), null, cv);
+            final long newBookId = sSyncedDb.insert(TBL_BOOKS.getName(), null, cv);
             if (newBookId > 0) {
                 // the links to series, authors,...
                 insertBookDependents(context, newBookId, book);
@@ -1313,7 +1318,7 @@ public class DAO
             book.preprocessForStoring(context, false);
 
             // correct field types if needed, and filter out fields we don't have in the db table.
-            ContentValues cv = filterValues(TBL_BOOKS, book, book.getLocale(context));
+            final ContentValues cv = filterValues(TBL_BOOKS, book, book.getLocale(context));
 
             // Disallow UUID updates
             if (cv.containsKey(KEY_BOOK_UUID)) {
@@ -1321,17 +1326,21 @@ public class DAO
             }
 
             // set the KEY_DATE_LAST_UPDATED to 'now' if we're allowed,
-            // or if it's not present already.
+            // or if it's not already present.
             if ((flags & BOOK_FLAG_USE_UPDATE_DATE_IF_PRESENT) == 0
-                || !cv.containsKey(KEY_DATE_LAST_UPDATED)) {
-                cv.put(KEY_DATE_LAST_UPDATED, DateFormatUtils.isoUtcDateTimeForToday());
+                || !cv.containsKey(KEY_UTC_LAST_UPDATED)) {
+
+                cv.put(KEY_UTC_LAST_UPDATED,
+                       LocalDateTime.now(ZoneOffset.UTC)
+                                    .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
             }
 
             // go !
             // A prepared statement would be faster for importing books....
             // but we don't know what columns are provided in the bundle....
-            boolean success = 0 < sSyncedDb.update(TBL_BOOKS.getName(), cv, KEY_PK_ID + "=?",
-                                                   new String[]{String.valueOf(bookId)});
+            final boolean success = 0 < sSyncedDb.update(TBL_BOOKS.getName(), cv,
+                                                         KEY_PK_ID + "=?",
+                                                         new String[]{String.valueOf(bookId)});
             if (success) {
                 insertBookDependents(context, bookId, book);
                 ftsUpdate(context, bookId);
@@ -1364,10 +1373,10 @@ public class DAO
      */
     public boolean setBookRead(final long id,
                                final boolean read) {
-        ContentValues cv = new ContentValues();
+        final ContentValues cv = new ContentValues();
         cv.put(KEY_READ, read);
         if (read) {
-            cv.put(KEY_READ_END, DateFormatUtils.isoLocalDateForToday());
+            cv.put(KEY_READ_END, LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE));
         } else {
             cv.put(KEY_READ_END, "");
         }
@@ -1386,7 +1395,7 @@ public class DAO
      */
     public boolean setAuthorComplete(final long authorId,
                                      final boolean isComplete) {
-        ContentValues cv = new ContentValues();
+        final ContentValues cv = new ContentValues();
         cv.put(KEY_AUTHOR_IS_COMPLETE, isComplete);
 
         return 0 < sSyncedDb.update(TBL_AUTHORS.getName(), cv, KEY_PK_ID + "=?",
@@ -2621,7 +2630,7 @@ public class DAO
 
     /**
      * Returns a unique list of all languages in the database.
-     * The list is ordered by {@link DBDefinitions#KEY_DATE_LAST_UPDATED}.
+     * The list is ordered by {@link DBDefinitions#KEY_UTC_LAST_UPDATED}.
      *
      * @return The list; normally all ISO codes
      */
@@ -3098,7 +3107,7 @@ public class DAO
                      + _WHERE_ + KEY_PK_ID + ">?";
 
         if (updatesOnly) {
-            sql += " AND " + KEY_DATE_LAST_UPDATED + '>' + KEY_BOOK_GOODREADS_LAST_SYNC_DATE;
+            sql += " AND " + KEY_UTC_LAST_UPDATED + '>' + KEY_UTC_LAST_SYNC_DATE_GOODREADS;
         }
 
         // the order by is used to be able to restart an export.
@@ -3200,15 +3209,12 @@ public class DAO
      * @param bookLocale      the Locale to use for character case manipulation
      *
      * @return New and filtered ContentValues
-     *
-     * @throws IllegalArgumentException on any failure.
      */
     @NonNull
     private ContentValues filterValues(@SuppressWarnings("SameParameterValue")
                                        @NonNull final TableDefinition tableDefinition,
                                        @NonNull final DataManager dataManager,
-                                       @NonNull final Locale bookLocale)
-            throws IllegalArgumentException {
+                                       @NonNull final Locale bookLocale) {
 
         TableInfo tableInfo = tableDefinition.getTableInfo(sSyncedDb);
 
@@ -3833,8 +3839,8 @@ public class DAO
                 + ',' + TBL_BOOKS.dotAs(KEY_PRICE_PAID)
                 + ',' + TBL_BOOKS.dotAs(KEY_PRICE_PAID_CURRENCY)
                 // added/updated
-                + ',' + TBL_BOOKS.dotAs(KEY_DATE_ADDED)
-                + ',' + TBL_BOOKS.dotAs(KEY_DATE_LAST_UPDATED)
+                + ',' + TBL_BOOKS.dotAs(KEY_UTC_ADDED)
+                + ',' + TBL_BOOKS.dotAs(KEY_UTC_LAST_UPDATED)
                 // external links
                 //NEWTHINGS: add new site specific ID: add column
                 + ',' + TBL_BOOKS.dotAs(KEY_EID_LIBRARY_THING)
@@ -3842,7 +3848,7 @@ public class DAO
                 + ',' + TBL_BOOKS.dotAs(KEY_EID_OPEN_LIBRARY)
                 + ',' + TBL_BOOKS.dotAs(KEY_EID_ISFDB)
                 + ',' + TBL_BOOKS.dotAs(KEY_EID_GOODREADS_BOOK)
-                + ',' + TBL_BOOKS.dotAs(KEY_BOOK_GOODREADS_LAST_SYNC_DATE);
+                + ',' + TBL_BOOKS.dotAs(KEY_UTC_LAST_SYNC_DATE_GOODREADS);
 
 
         /** The base SELECT to get the Book columns. */
@@ -4092,7 +4098,7 @@ public class DAO
          * Without a time part, we assume the zone is local (or irrelevant).
          */
         @NonNull
-        private static String localDateExpression(@NonNull final String fieldSpec) {
+        private static String localDateTimeExpression(@NonNull final String fieldSpec) {
             return "CASE"
                    + " WHEN " + fieldSpec + " GLOB '*-*-* *' "
                    + " THEN datetime(" + fieldSpec + ", 'localtime')"
@@ -4118,7 +4124,7 @@ public class DAO
 
             //TODO: This covers a timezone offset for Dec-31 / Jan-01 only - how important is this?
             if (toLocal) {
-                fieldSpec = localDateExpression(fieldSpec);
+                fieldSpec = localDateTimeExpression(fieldSpec);
             }
             return "(CASE"
                    + " WHEN " + fieldSpec + " GLOB '[0-9][0-9][0-9][0-9]*'"
@@ -4142,7 +4148,7 @@ public class DAO
         public static String month(@NonNull String fieldSpec,
                                    final boolean toLocal) {
             if (toLocal) {
-                fieldSpec = localDateExpression(fieldSpec);
+                fieldSpec = localDateTimeExpression(fieldSpec);
             }
             return "CASE"
                    + " WHEN " + fieldSpec + " GLOB '[0-9][0-9][0-9][0-9]-[0-9][0-9]*'"
@@ -4169,7 +4175,7 @@ public class DAO
         public static String day(@NonNull String fieldSpec,
                                  final boolean toLocal) {
             if (toLocal) {
-                fieldSpec = localDateExpression(fieldSpec);
+                fieldSpec = localDateTimeExpression(fieldSpec);
             }
             // Just look for 4 leading numbers followed by 2 or 1 digit then another 2 or 1 digit.
             // We don't care about anything else.
@@ -4304,7 +4310,7 @@ public class DAO
                 "SELECT DISTINCT " + KEY_LANGUAGE
                 + _FROM_ + TBL_BOOKS.getName()
                 + " WHERE " + KEY_LANGUAGE + "<> ''"
-                + " ORDER BY " + KEY_DATE_LAST_UPDATED + COLLATION;
+                + " ORDER BY " + KEY_UTC_LAST_UPDATED + COLLATION;
 
         /** name only, for {@link AutoCompleteTextView}. */
         private static final String LOCATIONS =
@@ -4646,7 +4652,7 @@ public class DAO
          * Get the last-update-date for a {@link Book} by its id.
          */
         static final String LAST_UPDATE_DATE_BY_BOOK_ID =
-                "SELECT " + KEY_DATE_LAST_UPDATED + _FROM_ + TBL_BOOKS.getName()
+                "SELECT " + KEY_UTC_LAST_UPDATED + _FROM_ + TBL_BOOKS.getName()
                 + _WHERE_ + KEY_PK_ID + "=?";
 
         /**
@@ -4785,7 +4791,7 @@ public class DAO
          */
         static final String GOODREADS_LAST_SYNC_DATE =
                 "UPDATE " + TBL_BOOKS.getName()
-                + " SET " + KEY_BOOK_GOODREADS_LAST_SYNC_DATE + "=current_timestamp"
+                + " SET " + KEY_UTC_LAST_SYNC_DATE_GOODREADS + "=current_timestamp"
                 + _WHERE_ + KEY_PK_ID + "=?";
 
         /**
@@ -4803,37 +4809,37 @@ public class DAO
 
         static final String FORMAT =
                 "UPDATE " + TBL_BOOKS.getName()
-                + " SET " + KEY_DATE_LAST_UPDATED + "=current_timestamp"
+                + " SET " + KEY_UTC_LAST_UPDATED + "=current_timestamp"
                 + ',' + KEY_FORMAT + "=?"
                 + _WHERE_ + KEY_FORMAT + "=?";
 
         static final String COLOR =
                 "UPDATE " + TBL_BOOKS.getName()
-                + " SET " + KEY_DATE_LAST_UPDATED + "=current_timestamp"
+                + " SET " + KEY_UTC_LAST_UPDATED + "=current_timestamp"
                 + ',' + KEY_COLOR + "=?"
                 + _WHERE_ + KEY_COLOR + "=?";
 
         static final String GENRE =
                 "UPDATE " + TBL_BOOKS.getName()
-                + " SET " + KEY_DATE_LAST_UPDATED + "=current_timestamp"
+                + " SET " + KEY_UTC_LAST_UPDATED + "=current_timestamp"
                 + ',' + KEY_GENRE + "=?"
                 + _WHERE_ + KEY_GENRE + "=?";
 
         static final String LANGUAGE =
                 "UPDATE " + TBL_BOOKS.getName()
-                + " SET " + KEY_DATE_LAST_UPDATED + "=current_timestamp"
+                + " SET " + KEY_UTC_LAST_UPDATED + "=current_timestamp"
                 + ',' + KEY_LANGUAGE + "=?"
                 + _WHERE_ + KEY_LANGUAGE + "=?";
 
         static final String LOCATION =
                 "UPDATE " + TBL_BOOKS.getName()
-                + " SET " + KEY_DATE_LAST_UPDATED + "=current_timestamp"
+                + " SET " + KEY_UTC_LAST_UPDATED + "=current_timestamp"
                 + ',' + KEY_LOCATION + "=?"
                 + _WHERE_ + KEY_LOCATION + "=?";
 
         static final String PUBLISHER =
                 "UPDATE " + TBL_BOOKS.getName()
-                + " SET " + KEY_DATE_LAST_UPDATED + "=current_timestamp"
+                + " SET " + KEY_UTC_LAST_UPDATED + "=current_timestamp"
                 + ',' + KEY_PUBLISHER + "=?"
                 + _WHERE_ + KEY_PUBLISHER + "=?";
     }

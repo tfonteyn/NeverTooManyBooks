@@ -38,8 +38,8 @@ import androidx.preference.PreferenceManager;
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.Writer;
+import java.time.LocalDateTime;
 import java.util.Collection;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
@@ -134,7 +134,7 @@ public class XmlExporter
     private final ExportResults mResults = new ExportResults();
     private final int mOptions;
     @Nullable
-    private final Date mSince;
+    private final LocalDateTime mUtcSinceDateTime;
     /** cached localized "unknown" string. */
     @NonNull
     private final String mUnknownString;
@@ -142,13 +142,14 @@ public class XmlExporter
     /**
      * Constructor.
      *
-     * @param context Current context
-     * @param options what to export
-     * @param since   (optional) date to use as cut-off for the last-updated date
+     * @param context          Current context
+     * @param options          {@link Options} flags
+     * @param utcSinceDateTime (optional) UTC based date to select only books modified or added
+     *                         since.
      */
     public XmlExporter(@NonNull final Context context,
                        final int options,
-                       @Nullable final Date since) {
+                       @Nullable final LocalDateTime utcSinceDateTime) {
         if (BuildConfig.DEBUG /* always */) {
             // For now, we only want to write one entity at a time.
             // This is by choice so debug is easier.
@@ -162,7 +163,7 @@ public class XmlExporter
         mUnknownString = context.getString(R.string.unknown).toUpperCase(locale);
 
         mOptions = options;
-        mSince = since;
+        mUtcSinceDateTime = utcSinceDateTime;
         mDb = new DAO(TAG);
     }
 
@@ -464,7 +465,7 @@ public class XmlExporter
 
         long lastUpdate = 0;
 
-        try (Cursor cursor = mDb.fetchBooksForExport(mSince)) {
+        try (Cursor cursor = mDb.fetchBooksForExport(mUtcSinceDateTime)) {
             writer.write('<' + XmlTags.TAG_BOOK_LIST);
             writer.write(XmlUtils.versionAttr(XML_EXPORTER_BOOKS_VERSION));
             writer.write(XmlUtils.sizeAttr(cursor.getCount()));
@@ -490,10 +491,10 @@ public class XmlExporter
                                            rowData.getString(DBDefinitions.KEY_ISBN)));
                 writer.write(XmlUtils.attr(DBDefinitions.KEY_BOOK_UUID,
                                            rowData.getString(DBDefinitions.KEY_BOOK_UUID)));
-                writer.write(XmlUtils.attr(DBDefinitions.KEY_DATE_ADDED,
-                                           rowData.getString(DBDefinitions.KEY_DATE_ADDED)));
-                writer.write(XmlUtils.attr(DBDefinitions.KEY_DATE_LAST_UPDATED,
-                                           rowData.getString(DBDefinitions.KEY_DATE_LAST_UPDATED)));
+                writer.write(XmlUtils.attr(DBDefinitions.KEY_UTC_ADDED,
+                                           rowData.getString(DBDefinitions.KEY_UTC_ADDED)));
+                writer.write(XmlUtils.attr(DBDefinitions.KEY_UTC_LAST_UPDATED,
+                                           rowData.getString(DBDefinitions.KEY_UTC_LAST_UPDATED)));
                 writer.write(XmlUtils.attr(DBDefinitions.KEY_READ,
                                            rowData.getBoolean(DBDefinitions.KEY_READ)));
                 writer.write(XmlUtils.attr(DBDefinitions.KEY_READ_START,
@@ -562,8 +563,8 @@ public class XmlExporter
                 writer.write(XmlUtils.attr(DBDefinitions.KEY_EID_GOODREADS_BOOK,
                                            rowData.getLong(DBDefinitions.KEY_EID_GOODREADS_BOOK)));
                 writer.write(XmlUtils.attr(
-                        DBDefinitions.KEY_BOOK_GOODREADS_LAST_SYNC_DATE,
-                        rowData.getString(DBDefinitions.KEY_BOOK_GOODREADS_LAST_SYNC_DATE)));
+                        DBDefinitions.KEY_UTC_LAST_SYNC_DATE_GOODREADS,
+                        rowData.getString(DBDefinitions.KEY_UTC_LAST_SYNC_DATE_GOODREADS)));
 
                 // cross-linked with the loanee table
                 writer.write(XmlUtils.attr(DBDefinitions.KEY_LOANEE,

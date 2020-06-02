@@ -33,8 +33,11 @@ import android.os.Parcelable;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
+
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistGroup;
-import com.hardbacknutter.nevertoomanybooks.utils.DateFormatUtils;
 
 /**
  * Defines a domain; name, type, ...
@@ -207,8 +210,10 @@ public class Domain
     public String getDefault() {
         if (mDefaultClause == null) {
             return null;
+
         } else if ("current_timestamp".equals(mDefaultClause)) {
-            return DateFormatUtils.isoUtcDateTimeForToday();
+            return LocalDateTime.now(ZoneOffset.UTC).format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+
         } else if (mDefaultClause.startsWith("'") && mDefaultClause.endsWith("'")) {
             return mDefaultClause.substring(1, mDefaultClause.length() - 1);
         }
@@ -382,7 +387,7 @@ public class Domain
         }
 
         /**
-         * Add a current timestamp default constraint.
+         * Add a current UTC timestamp default constraint.
          *
          * @return Builder (for chaining)
          */

@@ -388,11 +388,11 @@ public class EditBookActivity
         private static class TabInfo {
 
             @NonNull
-            final Class clazz;
+            final Class<? extends Fragment> clazz;
             @StringRes
             final int titleId;
 
-            TabInfo(@NonNull final Class clazz,
+            TabInfo(@NonNull final Class<? extends Fragment> clazz,
                     final int titleId) {
                 this.clazz = clazz;
                 this.titleId = titleId;

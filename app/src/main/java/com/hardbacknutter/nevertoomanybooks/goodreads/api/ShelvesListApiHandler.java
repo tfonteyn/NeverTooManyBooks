@@ -52,7 +52,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlResponseParser;
  * <a href="https://www.goodreads.com/api/index#shelves.list">shelves.list</a>
  */
 public class ShelvesListApiHandler
-        extends com.hardbacknutter.nevertoomanybooks.goodreads.api.ApiHandler {
+        extends ApiHandler {
 
     private static final String URL = GoodreadsHandler.BASE_URL + "/shelf/list.xml?"
                                       + "key=%1$s&page=%2$s&user_id=%3$s";

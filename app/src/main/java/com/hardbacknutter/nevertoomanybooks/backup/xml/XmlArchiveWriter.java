@@ -100,7 +100,8 @@ public class XmlArchiveWriter
         mTmpBookXmlFile = File.createTempFile("data_xml_", ".tmp");
         mTmpBookXmlFile.deleteOnExit();
 
-        final Exporter exporter = new XmlExporter(context, Options.BOOKS, mHelper.getDateSince());
+        final Exporter exporter = new XmlExporter(context, Options.BOOKS,
+                                                  mHelper.getUtcDateTimeSince());
         mResults.add(exporter.write(context, mTmpBookXmlFile, progressListener));
     }
 

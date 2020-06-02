@@ -110,7 +110,6 @@ import com.hardbacknutter.nevertoomanybooks.settings.styles.PreferredStylesActiv
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.UnexpectedValueException;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.BookDetailsFragmentViewModel;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.BookViewModel;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.BooksOnBookshelfModel;
@@ -1628,7 +1627,7 @@ public class BooksOnBookshelf
                     break;
 
                 default:
-                    throw new UnexpectedValueException("taskId=" + taskId);
+                    throw new IllegalArgumentException(ErrorMsg.UNEXPECTED_VALUE + "id=" + taskId);
             }
             dialog.show(fm, ProgressDialogFragment.TAG);
         }
@@ -1644,7 +1643,7 @@ public class BooksOnBookshelf
                 break;
 
             default:
-                throw new UnexpectedValueException("taskId=" + taskId);
+                throw new IllegalArgumentException(ErrorMsg.UNEXPECTED_VALUE + "taskId=" + taskId);
         }
         return dialog;
     }

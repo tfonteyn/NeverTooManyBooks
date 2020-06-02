@@ -61,7 +61,6 @@ import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.UnexpectedValueException;
 
 /**
  * Manages connections and interfaces between the {@code SearchEngine} and the actual
@@ -228,18 +227,16 @@ public class GoodreadsHandler {
             case Failed: {
                 Objects.requireNonNull(message.result, ErrorMsg.NULL_TASK_RESULTS);
                 // Report the error; worst case, add the actual exception.
-                final String errorMsg;
                 if (message.result == GrStatus.UNEXPECTED_ERROR && message.exception != null) {
-                    errorMsg = GrStatus.getString(context, message.result)
-                               + ' ' + message.exception.getLocalizedMessage();
+                    return GrStatus.getString(context, message.result)
+                           + ' ' + message.exception.getLocalizedMessage();
                 } else {
-                    errorMsg = GrStatus.getString(context, message.result);
+                    return GrStatus.getString(context, message.result);
                 }
-                return errorMsg;
             }
 
             default:
-                throw new UnexpectedValueException(message.status);
+                throw new IllegalArgumentException(ErrorMsg.UNEXPECTED_VALUE + message.status);
         }
     }
 
@@ -322,7 +319,8 @@ public class GoodreadsHandler {
             throws CredentialsException, Http404Exception, IOException {
 
         if (mShelvesList == null) {
-            ShelvesListApiHandler handler = new ShelvesListApiHandler(context, mGoodreadsAuth);
+            final ShelvesListApiHandler handler =
+                    new ShelvesListApiHandler(context, mGoodreadsAuth);
             mShelvesList = new GoodreadsShelves(handler.getAll());
         }
         return mShelvesList;

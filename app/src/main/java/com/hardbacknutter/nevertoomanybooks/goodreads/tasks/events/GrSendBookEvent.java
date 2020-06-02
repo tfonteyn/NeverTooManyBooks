@@ -38,6 +38,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -54,7 +55,6 @@ import com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.Event;
 import com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.EventsCursor;
 import com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.QueueManager;
 import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.SendOneBookLegacyTask;
-import com.hardbacknutter.nevertoomanybooks.utils.DateFormatUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 
 /**
@@ -93,7 +93,7 @@ public class GrSendBookEvent
      * @param context Current context
      */
     private void retry(@NonNull final Context context) {
-        QueueManager qm = QueueManager.getQueueManager();
+        final QueueManager qm = QueueManager.getQueueManager();
         SendOneBookLegacyTask task = new SendOneBookLegacyTask(
                 context.getString(R.string.gr_send_book_to_goodreads, mBookId),
                 mBookId);
@@ -133,9 +133,7 @@ public class GrSendBookEvent
         holder.titleView.setText(title);
         holder.authorView.setText(context.getString(R.string.lbl_by_author_s, authorName));
         holder.errorView.setText(getDescription(context));
-
-        final String date = DateFormatUtils.toPrettyDateTime(row.getEventDate(), userLocale);
-        holder.dateView.setText(context.getString(R.string.gr_tq_occurred_at, date));
+        holder.setOccurredAt(row.getEventDate(), userLocale);
 
         holder.checkedButton.setChecked(row.isSelected());
         holder.checkedButton.setOnCheckedChangeListener(
@@ -154,11 +152,10 @@ public class GrSendBookEvent
     public void addContextMenuItems(@NonNull final Context context,
                                     @NonNull final List<ContextDialogItem> menuItems,
                                     @NonNull final DAO db) {
-
         // EDIT BOOK
-        menuItems
-                .add(new ContextDialogItem(context.getString(R.string.action_edit_ellipsis), () -> {
-                    Intent intent = new Intent(context, EditBookActivity.class)
+        menuItems.add(
+                new ContextDialogItem(context.getString(R.string.action_edit_ellipsis), () -> {
+                    final Intent intent = new Intent(context, EditBookActivity.class)
                             .putExtra(DBDefinitions.KEY_PK_ID, mBookId);
                     context.startActivity(intent);
                 }));
@@ -179,7 +176,7 @@ public class GrSendBookEvent
                 QueueManager.getQueueManager().deleteEvent(getId())));
 
         // RETRY EVENT
-        String isbn = db.getBookIsbn(mBookId);
+        final String isbn = db.getBookIsbn(mBookId);
         if (isbn != null && !isbn.isEmpty()) {
             menuItems.add(new ContextDialogItem(context.getString(R.string.action_retry), () -> {
                 retry(context);
@@ -206,10 +203,10 @@ public class GrSendBookEvent
         final TextView titleView;
         final TextView authorView;
         final TextView errorView;
-        final TextView dateView;
-
         final CompoundButton checkedButton;
         final Button retryButton;
+        /** Use {@link #setOccurredAt} to access. */
+        private final TextView dateView;
 
         BookEventViewHolder(@NonNull final View itemView) {
             super(itemView);
@@ -223,6 +220,12 @@ public class GrSendBookEvent
 
             // not used for now
             checkedButton.setVisibility(View.GONE);
+        }
+
+        public void setOccurredAt(@NonNull final LocalDateTime eventDate,
+                                  final Locale userLocale) {
+            dateView.setText(dateView.getContext().getString(
+                    R.string.gr_tq_occurred_at, toPrettyDateTime(eventDate, userLocale)));
         }
     }
 }

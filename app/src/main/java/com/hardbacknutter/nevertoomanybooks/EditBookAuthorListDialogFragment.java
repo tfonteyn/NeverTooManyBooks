@@ -107,7 +107,7 @@ public class EditBookAuthorListDialogFragment
     /** the rows. */
     private ArrayList<Author> mList;
     /** The adapter for the list itself. */
-    private RecyclerViewAdapterBase mListAdapter;
+    private AuthorListAdapter mListAdapter;
     /** Drag and drop support for the list view. */
     private ItemTouchHelper mItemTouchHelper;
 

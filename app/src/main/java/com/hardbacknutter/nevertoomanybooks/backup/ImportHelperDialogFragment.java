@@ -41,7 +41,7 @@ import androidx.lifecycle.ViewModelProvider;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import java.io.IOException;
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -202,7 +202,7 @@ public class ImportHelperDialogFragment
         }
 
         @Nullable
-        Date getArchiveCreationDate() {
+        LocalDateTime getArchiveCreationDate() {
             if (mInfo == null) {
                 return null;
             } else {

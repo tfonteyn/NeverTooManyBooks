@@ -43,10 +43,10 @@ import java.util.Locale;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.settings.SearchAdminActivity;
 import com.hardbacknutter.nevertoomanybooks.utils.Csv;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.UnexpectedValueException;
 
 /**
  * Combines a list of {@link Site} objects with the {@link Type}.
@@ -418,7 +418,7 @@ public class SiteList
                     return R.string.tab_lbl_alternative_editions;
 
                 default:
-                    throw new UnexpectedValueException(this);
+                    throw new IllegalArgumentException(ErrorMsg.UNEXPECTED_VALUE + this);
             }
         }
 
@@ -432,7 +432,7 @@ public class SiteList
                     return TAG + ":alt_ed";
 
                 default:
-                    throw new UnexpectedValueException(this);
+                    throw new IllegalArgumentException(ErrorMsg.UNEXPECTED_VALUE + this);
             }
         }
 
@@ -446,7 +446,7 @@ public class SiteList
                     return PREFS_ORDER_PREFIX + "alt_ed";
 
                 default:
-                    throw new UnexpectedValueException(this);
+                    throw new IllegalArgumentException(ErrorMsg.UNEXPECTED_VALUE + this);
             }
         }
     }

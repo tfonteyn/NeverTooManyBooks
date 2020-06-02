@@ -37,7 +37,7 @@ import androidx.annotation.Nullable;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Date;
+import java.time.Instant;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 import java.util.zip.ZipInputStream;
@@ -239,15 +239,14 @@ public class ZipArchiveReader
             return mEntry.getName();
         }
 
-        @NonNull
         @Override
-        public Date getDateModified() {
+        public long getLastModifiedEpochMilli() {
             final long time = mEntry.getTime();
             if (time != -1) {
-                return new Date(mEntry.getTime());
+                return mEntry.getTime();
             } else {
                 // just pretend
-                return new Date();
+                return Instant.now().toEpochMilli();
             }
         }
 

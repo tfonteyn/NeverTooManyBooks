@@ -69,10 +69,10 @@ public final class BundleMock {
     @SuppressWarnings({"SuspiciousMethodCalls", "ResultOfMethodCallIgnored", "unchecked"})
     private static Bundle mock(@NonNull final HashMap<String, Object> map) {
 
-        Answer unsupported = invocation -> {
+        Answer<Object> unsupported = invocation -> {
             throw new UnsupportedOperationException();
         };
-        Answer put = invocation -> {
+        Answer<Object> put = invocation -> {
             map.put((String) invocation.getArguments()[0], invocation.getArguments()[1]);
             return null;
         };

@@ -193,7 +193,7 @@ public abstract class ArchiveWriterAbstract
         mTmpBookCsvFile = File.createTempFile("books_csv_", ".tmp");
         mTmpBookCsvFile.deleteOnExit();
 
-        Exporter exporter = new CsvExporter(context, Options.BOOKS, mHelper.getDateSince());
+        Exporter exporter = new CsvExporter(context, Options.BOOKS, mHelper.getUtcDateTimeSince());
         mResults.add(exporter.write(context, mTmpBookCsvFile, progressListener));
     }
 
@@ -262,7 +262,7 @@ public abstract class ArchiveWriterAbstract
                             @NonNull final ProgressListener progressListener)
             throws IOException {
 
-        final long timeFrom = mHelper.getTimeFrom();
+        final long timeFrom = mHelper.getDateSinceAsEpochMilli();
 
         int exported = 0;
         int skipped = 0;

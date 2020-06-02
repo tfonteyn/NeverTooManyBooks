@@ -56,6 +56,7 @@ import java.util.ArrayList;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistBuilder;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.dialogs.MenuPicker;
 import com.hardbacknutter.nevertoomanybooks.dialogs.MenuPickerDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
@@ -64,7 +65,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.utils.AttrUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.UnexpectedValueException;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.AuthorWorksModel;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.BooksOnBookshelfModel;
 import com.hardbacknutter.nevertoomanybooks.widgets.fastscroller.FastScroller;
@@ -297,7 +297,8 @@ public class AuthorWorksFragment
                         break;
                     }
                     default:
-                        throw new UnexpectedValueException(item.getType());
+                        throw new IllegalArgumentException(
+                                ErrorMsg.UNEXPECTED_VALUE + item.getType());
                 }
                 return true;
 
@@ -414,7 +415,7 @@ public class AuthorWorksFragment
                     itemView = mInflater.inflate(R.layout.row_toc_entry_book, parent, false);
                     break;
                 default:
-                    throw new UnexpectedValueException(viewType);
+                    throw new IllegalArgumentException(ErrorMsg.UNEXPECTED_VALUE + viewType);
             }
 
             return new Holder(itemView);
@@ -437,14 +438,14 @@ public class AuthorWorksFragment
             }
             // optional
             if (holder.firstPublicationView != null) {
-                String date = tocEntry.getFirstPublication();
+                final String date = tocEntry.getFirstPublication();
                 // "< 4" covers empty and illegal dates
                 if (date.length() < 4) {
                     holder.firstPublicationView.setVisibility(View.GONE);
                 } else {
                     // screen space is at a premium here, and books can have 'yyyy-mm-dd' dates,
                     // so cut the date to just the year.
-                    String fp = context.getString(R.string.brackets, date.substring(0, 4));
+                    final String fp = context.getString(R.string.brackets, date.substring(0, 4));
                     holder.firstPublicationView.setText(fp);
                     holder.firstPublicationView.setVisibility(View.VISIBLE);
                 }

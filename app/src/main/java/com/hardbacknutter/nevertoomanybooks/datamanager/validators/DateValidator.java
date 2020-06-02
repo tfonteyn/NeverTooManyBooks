@@ -32,12 +32,12 @@ import android.content.Context;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 
-import java.util.Date;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
-import com.hardbacknutter.nevertoomanybooks.utils.DateFormatUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.DateParser;
 
 /**
  * Validator to apply a default value and validate as a Date.
@@ -70,9 +70,9 @@ public class DateValidator
         if (value.isEmpty()) {
             value = mDefaultValue;
         } else {
-            final Date date = DateUtils.parseDate(value);
+            final LocalDateTime date = DateParser.ALL.parse(value);
             if (date != null) {
-                value = DateFormatUtils.isoUtcDateTime(date);
+                value = date.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
             } else {
                 throw new ValidatorException(R.string.vldt_date_expected_for_x, errorLabelId);
             }

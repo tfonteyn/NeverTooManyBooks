@@ -44,8 +44,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.Locale;
 
@@ -64,7 +65,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.tasks.Canceller;
 import com.hardbacknutter.nevertoomanybooks.tasks.TerminatorConnection;
-import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.DateParser;
 
 /**
  * <a href="https://openlibrary.org/developers/api">API</a>
@@ -90,7 +91,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
  * <ul>Problems:
  *      <li>"data" does not contain all information that the site has.</li>
  *      <li>"details" seems, by their own admission, not to be stable yet.</li>
- *      <li>both: dates are not structured, but {@link DateUtils} can work around that.</li>
+ *      <li>both: dates are not structured, but {@link DateParser} can work around that.</li>
  *      <li>last update dates on the website & api docs are sometimes from years ago.
  * Is this still developed ?</li>
  * </ul>
@@ -542,9 +543,10 @@ public class OpenLibrarySearchEngine
 
         s = result.optString("publish_date");
         if (!s.isEmpty()) {
-            final Date date = DateUtils.parseDate(s);
+            final LocalDateTime date = DateParser.ALL.parse(s);
             if (date != null) {
-                bookData.putString(DBDefinitions.KEY_DATE_PUBLISHED, s);
+                bookData.putString(DBDefinitions.KEY_DATE_PUBLISHED,
+                                   date.format(DateTimeFormatter.ISO_LOCAL_DATE));
             }
         }
 

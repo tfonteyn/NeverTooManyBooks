@@ -36,7 +36,6 @@ import androidx.annotation.Nullable;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.UnexpectedValueException;
 
 /**
  * CSV & list formatting utilities.
@@ -130,10 +129,10 @@ public final class Csv {
                                   @Nullable final String lineFormat,
                                   @Nullable final Formatter<E> valueFormatter) {
 
-        StringBuilder result = new StringBuilder();
+        final StringBuilder result = new StringBuilder();
         boolean first = true;
         for (E element : collection) {
-            String value;
+            final String value;
             if (valueFormatter == null) {
                 if (element != null) {
                     value = String.valueOf(element).trim();
@@ -156,7 +155,7 @@ public final class Csv {
                 } else {
                     if (BuildConfig.DEBUG /* always */) {
                         if (!lineFormat.contains("%s")) {
-                            throw new UnexpectedValueException("lineFormat without %s");
+                            throw new IllegalArgumentException("lineFormat without %s");
                         }
                     }
                     result.append(String.format(lineFormat, value));
@@ -182,10 +181,10 @@ public final class Csv {
                                       @NonNull final Iterable<E> collection,
                                       @Nullable final Formatter<E> valueFormatter) {
 
-        StringBuilder result = new StringBuilder();
+        final StringBuilder result = new StringBuilder();
         boolean first = true;
         for (E element : collection) {
-            String value;
+            final String value;
             if (valueFormatter == null) {
                 if (element != null) {
                     value = String.valueOf(element).trim();
@@ -231,9 +230,9 @@ public final class Csv {
                             context.getString(R.string.list_element), valueFormatter);
         }
 
-        StringBuilder result = new StringBuilder();
+        final StringBuilder result = new StringBuilder();
         for (E element : collection) {
-            String value;
+            final String value;
             if (valueFormatter == null) {
                 if (element != null) {
                     value = String.valueOf(element).trim();

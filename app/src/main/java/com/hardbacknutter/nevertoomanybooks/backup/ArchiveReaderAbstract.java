@@ -37,7 +37,6 @@ import androidx.annotation.Nullable;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Date;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
@@ -303,15 +302,14 @@ public abstract class ArchiveReaderAbstract
     private boolean readCover(@NonNull final Context context,
                               @NonNull final ReaderEntity cover) {
         try {
-            Date coverDate = cover.getDateModified();
+            long coverDate = cover.getLastModifiedEpochMilli();
 
             // see if we have this file already
             File file = AppDir.Covers.getFile(context, cover.getName());
             final boolean exists = file.exists();
             if ((mHelper.getOptions() & ImportManager.IMPORT_ONLY_NEW_OR_UPDATED) != 0) {
                 if (exists) {
-                    final Date currFileDate = new Date(file.lastModified());
-                    if (currFileDate.compareTo(coverDate) >= 0) {
+                    if (file.lastModified() > coverDate) {
                         return false;
                     }
                 }
@@ -322,7 +320,7 @@ public abstract class ArchiveReaderAbstract
 
             if (file != null && file.exists()) {
                 //noinspection ResultOfMethodCallIgnored
-                file.setLastModified(cover.getDateModified().getTime());
+                file.setLastModified(cover.getLastModifiedEpochMilli());
             }
 
             if (exists) {

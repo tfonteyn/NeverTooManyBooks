@@ -61,9 +61,8 @@ import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.UpgradeMessageManager;
 
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_UTC_LAST_SYNC_DATE_GOODREADS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOKSHELF_NAME;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOK_GOODREADS_LAST_SYNC_DATE;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_DATE_LAST_UPDATED;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_EID_GOODREADS_BOOK;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_EID_ISFDB;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_EID_LIBRARY_THING;
@@ -77,6 +76,8 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FT
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_ISBN;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_PK_ID;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_STYLE_IS_BUILTIN;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_UTC_LAST_SYNC_DATE_GOODREADS;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_UTC_LAST_UPDATED;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_UUID;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_AUTHORS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKLIST_STYLES;
@@ -359,7 +360,7 @@ public final class DBHelper
         body = " AFTER DELETE ON " + TBL_BOOK_BOOKSHELF.getName() + " FOR EACH ROW\n"
                + " BEGIN\n"
                + "  UPDATE " + TBL_BOOKS.getName()
-               + "  SET " + KEY_DATE_LAST_UPDATED + "=current_timestamp"
+               + "  SET " + KEY_UTC_LAST_UPDATED + "=current_timestamp"
                + " WHERE " + KEY_PK_ID + "=OLD." + KEY_FK_BOOK + ";\n"
                + " END";
 
@@ -395,7 +396,7 @@ public final class DBHelper
         body = " AFTER UPDATE ON " + TBL_AUTHORS.getName() + " FOR EACH ROW\n"
                + " BEGIN\n"
                + "  UPDATE " + TBL_BOOKS.getName()
-               + "  SET " + KEY_DATE_LAST_UPDATED + "=current_timestamp"
+               + "  SET " + KEY_UTC_LAST_UPDATED + "=current_timestamp"
 
                + " WHERE " + KEY_PK_ID + " IN \n"
                // actual books by this Author
@@ -421,7 +422,7 @@ public final class DBHelper
         body = " AFTER DELETE ON " + TBL_BOOK_SERIES.getName() + " FOR EACH ROW\n"
                + " BEGIN\n"
                + "  UPDATE " + TBL_BOOKS.getName()
-               + "  SET " + KEY_DATE_LAST_UPDATED + "=current_timestamp"
+               + "  SET " + KEY_UTC_LAST_UPDATED + "=current_timestamp"
                + " WHERE " + KEY_PK_ID + "=OLD." + KEY_FK_BOOK + ";\n"
                + " END";
 
@@ -437,7 +438,7 @@ public final class DBHelper
         body = " AFTER UPDATE ON " + TBL_SERIES.getName() + " FOR EACH ROW\n"
                + " BEGIN\n"
                + "  UPDATE " + TBL_BOOKS.getName()
-               + "  SET " + KEY_DATE_LAST_UPDATED + "=current_timestamp"
+               + "  SET " + KEY_UTC_LAST_UPDATED + "=current_timestamp"
                + " WHERE " + KEY_PK_ID + " IN \n"
                + "(SELECT " + KEY_FK_BOOK + " FROM " + TBL_BOOK_SERIES.getName()
                + " WHERE " + KEY_FK_SERIES + "=OLD." + KEY_PK_ID + ");\n"
@@ -455,7 +456,7 @@ public final class DBHelper
         body = " AFTER DELETE ON " + TBL_BOOK_LOANEE.getName() + " FOR EACH ROW\n"
                + " BEGIN\n"
                + "  UPDATE " + TBL_BOOKS.getName()
-               + "  SET " + KEY_DATE_LAST_UPDATED + "=current_timestamp"
+               + "  SET " + KEY_UTC_LAST_UPDATED + "=current_timestamp"
                + " WHERE " + KEY_PK_ID + "=OLD." + KEY_FK_BOOK + ";\n"
                + " END";
 
@@ -471,7 +472,7 @@ public final class DBHelper
         body = " AFTER UPDATE ON " + TBL_BOOK_LOANEE.getName() + " FOR EACH ROW\n"
                + " BEGIN\n"
                + "  UPDATE " + TBL_BOOKS.getName()
-               + "  SET " + KEY_DATE_LAST_UPDATED + "=current_timestamp"
+               + "  SET " + KEY_UTC_LAST_UPDATED + "=current_timestamp"
                + " WHERE " + KEY_PK_ID + "=NEW." + KEY_FK_BOOK + ";\n"
                + " END";
 
@@ -487,7 +488,7 @@ public final class DBHelper
         body = " AFTER INSERT ON " + TBL_BOOK_LOANEE.getName() + " FOR EACH ROW\n"
                + " BEGIN\n"
                + "  UPDATE " + TBL_BOOKS.getName()
-               + "  SET " + KEY_DATE_LAST_UPDATED + "=current_timestamp"
+               + "  SET " + KEY_UTC_LAST_UPDATED + "=current_timestamp"
                + " WHERE " + KEY_PK_ID + "=NEW." + KEY_FK_BOOK + ";\n"
                + " END";
 
@@ -527,7 +528,9 @@ public final class DBHelper
 
                + ',' + KEY_EID_OPEN_LIBRARY + "=''"
 
-               + ',' + KEY_BOOK_GOODREADS_LAST_SYNC_DATE + "=''"
+               + ',' + KEY_UTC_LAST_SYNC_DATE_GOODREADS + "="
+               + DOM_UTC_LAST_SYNC_DATE_GOODREADS.getDefault()
+
                + /* */ " WHERE " + KEY_PK_ID + "=NEW." + KEY_PK_ID + ";\n"
                + " END";
 
@@ -693,6 +696,10 @@ public final class DBHelper
                              .remove("compat.booklist.mode")
                              .apply();
         }
+
+        // TODO: if at a future time we make a change that requires to copy/reload the books table,
+        // we should at the same time change DOM_UTC_LAST_SYNC_DATE_GOODREADS
+        // See note in the DBDefinitions class.
 
         // Rebuild all indices
         recreateIndices(syncedDb);

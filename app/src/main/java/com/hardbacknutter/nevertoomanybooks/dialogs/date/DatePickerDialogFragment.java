@@ -37,11 +37,10 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.fragment.app.DialogFragment;
 
-import java.util.Calendar;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
-import com.hardbacknutter.nevertoomanybooks.utils.DateFormatUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 
 public class DatePickerDialogFragment
         extends BaseDatePickerDialogFragment
@@ -64,7 +63,7 @@ public class DatePickerDialogFragment
                                              final boolean todayIfNone) {
         final String dateStr;
         if (todayIfNone && (currentValue == null || currentValue.isEmpty())) {
-            dateStr = DateFormatUtils.isoLocalDateForToday();
+            dateStr = LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE);
         } else if (currentValue != null) {
             dateStr = currentValue;
         } else {
@@ -99,19 +98,18 @@ public class DatePickerDialogFragment
 
         setupDate(savedInstanceState);
 
-        //noinspection ConstantConditions
-        Calendar calendar = Calendar.getInstance(LocaleUtils.getUserLocale(getContext()));
-
         // can't have null values, revert to today if needed.
+        final LocalDate now = LocalDate.now();
         if (mYear == null) {
-            mYear = calendar.get(Calendar.YEAR);
+            mYear = now.getYear();
         }
         if (mMonth == null) {
-            mMonth = calendar.get(Calendar.MONTH) + 1;
+            mMonth = now.getMonthValue();
         }
         if (mDay == null) {
-            mDay = calendar.get(Calendar.DAY_OF_MONTH);
+            mDay = now.getDayOfMonth();
         }
+        //noinspection ConstantConditions
         return new DatePickerDialog(getContext(), this, mYear, mMonth - 1, mDay);
     }
 }

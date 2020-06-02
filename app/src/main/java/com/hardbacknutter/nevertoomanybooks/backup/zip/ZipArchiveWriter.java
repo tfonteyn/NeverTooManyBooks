@@ -38,7 +38,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Date;
+import java.time.Instant;
 import java.util.zip.CRC32;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -133,7 +133,7 @@ public class ZipArchiveWriter
             throws IOException {
 
         final ZipEntry entry = new ZipEntry(name);
-        entry.setTime(new Date().getTime());
+        entry.setTime(Instant.now().toEpochMilli());
         if (compress) {
             entry.setMethod(ZipEntry.DEFLATED);
         } else {

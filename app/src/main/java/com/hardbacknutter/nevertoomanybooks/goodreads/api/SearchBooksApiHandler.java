@@ -55,7 +55,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlResponseParser;
  * <a href="https://www.goodreads.com/api/index#search.books">search.books</a>
  */
 public class SearchBooksApiHandler
-        extends com.hardbacknutter.nevertoomanybooks.goodreads.api.ApiHandler {
+        extends ApiHandler {
 
     private static final String URL = GoodreadsHandler.BASE_URL + "/search/index.xml";
 

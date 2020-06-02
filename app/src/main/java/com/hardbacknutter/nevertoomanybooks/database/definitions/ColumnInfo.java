@@ -32,8 +32,8 @@ import android.database.Cursor;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.UnexpectedValueException;
 
 /**
  * Column info support. This is useful for auto-building queries from maps that have
@@ -64,6 +64,12 @@ public class ColumnInfo {
      * Date and datetime are kept for clarity.
      * <p>
      * <a href="https://sqlite.org/datatype3.html#date_and_time_datatype">date_and_time</a>
+     * <p>
+     * According to:
+     * <a href="https://sqlite.org/datatype3.html#affinity_name_examples">affinity</a>
+     * dates actually have an affinity with INT.
+     * As we always use them as TEXT, {@link StorageClass}
+     * puts them in the {@link StorageClass#Text} bucket.
      */
     public static final String TYPE_DATE = "date";
     public static final String TYPE_DATETIME = "datetime";
@@ -177,6 +183,7 @@ public class ColumnInfo {
 
                 case TYPE_TEXT:
                 case "char":
+                    // see definitions of TYPE_DATE/TYPE_DATETIME
                 case TYPE_DATE:
                 case TYPE_DATETIME:
                     return StorageClass.Text;
@@ -192,7 +199,7 @@ public class ColumnInfo {
                 default:
                     // note that "" (empty) type is treated as TEXT.
                     // But we really should not allow our columns to be defined without a type.
-                    throw new UnexpectedValueException(columnType);
+                    throw new IllegalArgumentException(ErrorMsg.UNEXPECTED_VALUE + columnType);
             }
         }
     }

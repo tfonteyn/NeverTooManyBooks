@@ -50,29 +50,29 @@ public final class GrStatus {
     public static final int AUTHORIZATION_SUCCESSFUL = 4;
     public static final int AUTHORIZATION_FAILED = 5;
 
-    public static final int CREDENTIALS_MISSING = 6;
-    public static final int CREDENTIALS_ERROR = 7;
+    public static final int AUTHENTICATION_FAILED = 6;
 
-    public static final int TASK_QUEUED_WITH_SUCCESS = 8;
-    public static final int IMPORT_TASK_ALREADY_QUEUED = 9;
-    public static final int EXPORT_TASK_ALREADY_QUEUED = 10;
+    public static final int CREDENTIALS_MISSING = 7;
+    public static final int CREDENTIALS_ERROR = 8;
+
+    public static final int TASK_QUEUED_WITH_SUCCESS = 9;
+    public static final int IMPORT_TASK_ALREADY_QUEUED = 10;
+    public static final int EXPORT_TASK_ALREADY_QUEUED = 11;
 
     /** The book has no ISBN! We can only lookup books with an ISBN. */
-    public static final int NO_ISBN = 11;
+    public static final int NO_ISBN = 12;
     /** A specific action to get a book failed to find it. */
-    public static final int BOOK_NOT_FOUND = 12;
+    public static final int BOOK_NOT_FOUND = 13;
 
     /** A generic action to find 'something' failed. */
-    public static final int NOT_FOUND = 13;
+    public static final int NOT_FOUND = 14;
 
     /** The user cancelled the action. */
-    public static final int CANCELLED = 14;
+    public static final int CANCELLED = 15;
     /** There is no connectivity. */
-    public static final int NO_INTERNET = 15;
+    public static final int NO_INTERNET = 16;
     /** There is connectivity but something went wrong. */
-    public static final int IO_ERROR = 16;
-
-    public static final int AUTHENTICATION_FAILED = 17;
+    public static final int IO_ERROR = 17;
 
     private GrStatus() {
     }
@@ -85,6 +85,9 @@ public final class GrStatus {
         switch (errorCode) {
             case COMPLETED:
                 return context.getString(R.string.gr_tq_completed);
+            case CANCELLED:
+                return context.getString(R.string.progress_end_cancelled);
+
 
             case AUTHORIZATION_NEEDED:
                 return context.getString(R.string.gr_authorization_needed);
@@ -96,13 +99,10 @@ public final class GrStatus {
             case AUTHORIZATION_FAILED:
                 return context.getString(R.string.error_site_authorization_failed,
                                          context.getString(R.string.site_goodreads));
-            case AUTHENTICATION_FAILED:
-                return context.getString(R.string.error_site_authentication_failed,
-                                         context.getString(R.string.site_goodreads));
 
-            // the internal logic for CredentialsMissing and CredentialsError
-            // is different, but we can use the same message for displaying
-            // as the two appear identical to the user
+            // the internal logic for these is different, but we can use the same
+            // message for displaying as they appear to be identical to the user
+            case AUTHENTICATION_FAILED:
             case CREDENTIALS_MISSING:
             case CREDENTIALS_ERROR:
                 return context.getString(R.string.error_site_authentication_failed,
@@ -110,10 +110,8 @@ public final class GrStatus {
 
             case TASK_QUEUED_WITH_SUCCESS:
                 return context.getString(R.string.gr_tq_task_has_been_queued);
-
             case IMPORT_TASK_ALREADY_QUEUED:
                 return context.getString(R.string.gr_tq_import_task_is_already_queued);
-
             case EXPORT_TASK_ALREADY_QUEUED:
                 return context.getString(R.string.gr_tq_export_task_is_already_queued);
 
@@ -128,8 +126,6 @@ public final class GrStatus {
             case NOT_FOUND:
                 return context.getString(R.string.gr_tq_failed);
 
-            case CANCELLED:
-                return context.getString(R.string.progress_end_cancelled);
 
             case NO_INTERNET:
                 return context.getString(R.string.error_network_no_connection);

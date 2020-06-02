@@ -48,10 +48,8 @@ import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
@@ -92,8 +90,6 @@ public final class Logger {
     /** Prefix for logfile entries. Not used on the console. */
     private static final String ERROR = "ERROR";
     private static final String WARN = "WARN";
-    private static final DateFormat DATE_FORMAT =
-            new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH);
 
     private Logger() {
     }
@@ -155,9 +151,9 @@ public final class Logger {
      * Use when an error or unusual result should be noted, but will not affect the flow of the app.
      * No stacktrace!
      *
-     * @param context    Current context
-     * @param tag        log tag
-     * @param params     to concat
+     * @param context Current context
+     * @param tag     log tag
+     * @param params  to concat
      */
     public static void warn(@NonNull final Context context,
                             @NonNull final String tag,
@@ -214,21 +210,20 @@ public final class Logger {
             return;
         }
 
-        String exMsg;
+        final String exMsg;
         if (e != null) {
             exMsg = '|' + e.getLocalizedMessage() + '\n' + getStackTraceString(e);
         } else {
             exMsg = "";
         }
-        String fullMessage = DATE_FORMAT.format(new Date())
-                             + '|' + tag + '|' + type + '|' + message + exMsg;
+        final String fullMsg = LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+                               + '|' + tag + '|' + type + '|' + message + exMsg;
 
-
-        File logFile = AppDir.Log.getFile(context, ERROR_LOG_FILE);
+        final File logFile = AppDir.Log.getFile(context, ERROR_LOG_FILE);
         //noinspection ImplicitDefaultCharsetUsage
         try (FileWriter fw = new FileWriter(logFile, true);
              Writer out = new BufferedWriter(fw)) {
-            out.write(fullMessage);
+            out.write(fullMsg);
         } catch (@SuppressWarnings("OverlyBroadCatchBlock") @NonNull final Exception ignore) {
             // do nothing - we can't log an error in the logger
         }

@@ -30,13 +30,11 @@ package com.hardbacknutter.nevertoomanybooks.utils;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Year;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.time.format.DateTimeParseException;
-import java.time.format.ResolverStyle;
 import java.time.temporal.ChronoField;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -45,60 +43,50 @@ import java.util.Locale;
 
 public class DateParser {
 
-    /** {@link DATE}. */
-    private static final String[] NUMERICAL_DATE = {
-            "MM-dd-yyyy",
-            "dd-MM-yyyy",
+    /** ISO patterns only. */
+    private static final String[] ISO_PATTERNS = {
+            "yyyy-MM-dd HH:mm:ss",
+            "yyyy-MM-dd HH:mm",
             "yyyy-MM-dd",
             "yyyy-MM",
             };
 
-    /** {@link DATETIME}. */
-    private static final String[] NUMERICAL_DATE_TIME = {
+    /** All numerical (i.e. Locale independent) patterns. */
+    private static final String[] NUMERICAL = {
+            // US format first
             "MM-dd-yyyy HH:mm:ss",
             "MM-dd-yyyy HH:mm",
+
+            // International next
             "dd-MM-yyyy HH:mm:ss",
             "dd-MM-yyyy HH:mm",
 
-            "yyyy-MM-dd HH:mm:ss",
-            "yyyy-MM-dd HH:mm",
-            "yyyy-MM-dd HH:mm:ss",
-            "yyyy-MM-dd HH:mm",
+            // same without time
+            "MM-dd-yyyy",
+            "dd-MM-yyyy",
             };
 
-    /** {@link DATE} + {@link DATETIME}. */
-    private static final String[] TEXT_DATE = {
+    /** Patterns with Locale dependent text. */
+    private static final String[] TEXT = {
+            // These are the wide spread common formats
             "dd-MMM-yyyy",
             "dd-MMMM-yyyy",
             "dd-MMM-yy",
             "dd-MMMM-yy",
 
-            // Amazon: 12 jan. 2017
+            // Used by Goodreads; Dates of the form: 'Fri May 5 17:23:11 -0800 2012'
+            "EEE MMM dd HH:mm:ss ZZZZ yyyy",
+
+            // Used by Amazon; e.g. "12 jan. 2017"
             "dd MMM. yyyy",
 
-            // OpenLibrary
+            // Used by OpenLibrary
             "dd MMM yyyy",
             "dd MMMM yyyy",
             "MMM d, yyyy",
             "MMMM d, yyyy",
             "MMM yyyy",
             "MMMM yyyy",
-
-            // Not sure these are really needed.
-            // Dates of the form: 'Fri May 5 17:23:11 -0800 2012'
-            "EEE MMM dd HH:mm:ss ZZZZ yyyy",
-            "EEE MMM dd HH:mm ZZZZ yyyy",
-            "EEE MMM dd ZZZZ yyyy",
-            };
-
-    /** {@link ISO} */
-    private static final String[] ISO_DATE_TIME = {
-            "yyyy-MM-dd",
-            "yyyy-MM",
-            "yyyy-MM-dd HH:mm:ss",
-            "yyyy-MM-dd HH:mm",
-            "yyyy-MM-dd HH:mm:ss",
-            "yyyy-MM-dd HH:mm",
             };
 
     /**
@@ -107,28 +95,8 @@ public class DateParser {
      * @param locales the locales to use
      */
     public static void create(@NonNull final Locale... locales) {
-        DATE.create(locales);
-        DATETIME.create(locales);
-        ISO.create(locales);
-    }
-
-    /**
-     * add english if not already in the list of locales.
-     */
-    private static void addEnglish(@NonNull final Collection<DateTimeFormatter> group,
-                                   @SuppressWarnings("SameParameterValue")
-                                   @NonNull final String[] patterns,
-                                   @NonNull final Locale[] locales) {
-        boolean hasEnglish = false;
-        for (Locale locale : locales) {
-            if (Locale.ENGLISH.equals(locale)) {
-                hasEnglish = true;
-                break;
-            }
-        }
-        if (!hasEnglish) {
-            addFormats(group, patterns, Locale.ENGLISH);
-        }
+        ALL.create(locales);
+        ISO.create();
     }
 
     /**
@@ -138,7 +106,7 @@ public class DateParser {
      * @param patterns list of patterns to add
      * @param locales  to use
      */
-    private static void addFormats(@NonNull final Collection<DateTimeFormatter> group,
+    private static void addParsers(@NonNull final Collection<DateTimeFormatter> group,
                                    @NonNull final String[] patterns,
                                    @NonNull final Locale... locales) {
         // prevent duplicate locales
@@ -162,102 +130,88 @@ public class DateParser {
         }
     }
 
-    public static final class DATE {
+    /**
+     * Attempt to parse a date string.
+     * Any missing parts of the pattern will get set to default: 1-Jan, 00:00:00
+     * If the year is missing, {@code null} is returned.
+     *
+     * @param dateStr String to parse
+     *
+     * @return Resulting date if parsed, otherwise {@code null}
+     */
+    @Nullable
+    private static LocalDateTime parse(@NonNull final Iterable<DateTimeFormatter> parsers,
+                                       @Nullable final String dateStr) {
+        if (dateStr == null || dateStr.isEmpty()) {
+            return null;
+        }
+        // shortcut for plain 4 digit years.
+        if (dateStr.length() == 4) {
+            try {
+                return Year.parse(dateStr).atDay(1).atTime(0, 0);
+            } catch (@NonNull final DateTimeParseException ignore) {
+                // ignored
+            }
+        }
+
+        // First try to parse using the default ResolverStyle
+        for (DateTimeFormatter dtf : parsers) {
+            try {
+                return LocalDateTime.parse(dateStr, dtf);
+            } catch (@NonNull final DateTimeParseException ignore) {
+                // ignore and try the next one
+            }
+        }
+
+        // 2020-06-02: disabled 'lenient' as it seems to cause more false results then good
+//        // Try again being lenient (ResolverStyle.LENIENT)
+//        for (DateTimeFormatter dtf : parsers) {
+//            try {
+//                // Keep in mind this creates a new copy of the formatter.
+//                return LocalDateTime.parse(dateStr, dtf.withResolverStyle(ResolverStyle.LENIENT));
+//            } catch (@NonNull final DateTimeParseException ignore) {
+//                // ignore and try the next one
+//            }
+//        }
+
+        return null;
+    }
+
+    /**
+     * Parses generic date and date-time strings.
+     */
+    public static final class ALL {
 
         /** List of patterns we'll use to parse dates. */
         private static final Collection<DateTimeFormatter> PARSERS = new ArrayList<>();
 
         public static void create(@NonNull final Locale... locales) {
+            final Locale systemLocale = LocaleUtils.getSystemLocale();
             PARSERS.clear();
-            addFormats(PARSERS, NUMERICAL_DATE, Locale.getDefault());
-            addFormats(PARSERS, TEXT_DATE, locales);
-            addEnglish(PARSERS, TEXT_DATE, locales);
+            addParsers(PARSERS, NUMERICAL, systemLocale);
+            addParsers(PARSERS, ISO_PATTERNS, systemLocale);
+            addParsers(PARSERS, TEXT, locales);
+            addEnglish(PARSERS, TEXT, locales);
         }
 
         /**
-         * Attempt to parse a date string using the passed locale.
-         *
-         * @param locale  to use
-         * @param dateStr String to parse
-         *
-         * @return Resulting date if successfully parsed, otherwise {@code null}
+         * add english if not already in the list of locales.
          */
-        public static LocalDate parse(@NonNull final Locale locale,
-                                      @NonNull final String dateStr) {
-            // URGENT: parse should use passed locale FIRST
-            return parse(dateStr);
-        }
-
-        /**
-         * Attempt to parse a date string.
-         *
-         * @param dateStr String to parse
-         *
-         * @return Resulting date if parsed, otherwise {@code null}
-         */
-        @Nullable
-        public static LocalDate parse(@Nullable final String dateStr) {
-            if (dateStr == null || dateStr.isEmpty()) {
-                return null;
-            }
-            // shortcut for plain 4 digit years.
-            if (dateStr.length() == 4) {
-                try {
-                    return Year.parse(dateStr).atDay(1);
-                } catch (@NonNull final DateTimeParseException ignore) {
-                    // ignored
+        private static void addEnglish(@SuppressWarnings("SameParameterValue")
+                                       @NonNull final Collection<DateTimeFormatter> group,
+                                       @SuppressWarnings("SameParameterValue")
+                                       @NonNull final String[] patterns,
+                                       @NonNull final Locale[] locales) {
+            boolean hasEnglish = false;
+            for (Locale locale : locales) {
+                if (Locale.ENGLISH.equals(locale)) {
+                    hasEnglish = true;
+                    break;
                 }
             }
-
-            // First try to parse using default rules (ResolverStyle.SMART)
-            final LocalDate date = parse(dateStr, false);
-            if (date != null) {
-                return date;
+            if (!hasEnglish) {
+                addParsers(group, patterns, Locale.ENGLISH);
             }
-            // Try again being lenient (ResolverStyle.LENIENT)
-            return parse(dateStr, true);
-        }
-
-        /**
-         * Attempt to parse a date string;
-         * Allow the caller to specify if the parsing should be smart (default) or lenient.
-         *
-         * @param dateStr String to parse
-         * @param lenient {@code true} if parsing should be lenient
-         *
-         * @return Resulting date if successfully parsed, otherwise {@code null}
-         */
-        @Nullable
-        private static LocalDate parse(@NonNull final CharSequence dateStr,
-                                       final boolean lenient) {
-            for (DateTimeFormatter dtf : PARSERS) {
-                try {
-                    if (!lenient) {
-                        return LocalDate.parse(dateStr, dtf);
-                    } else {
-                        // Keep in mind this creates a new copy of the formatter.
-                        return LocalDate.parse(dateStr,
-                                               dtf.withResolverStyle(ResolverStyle.LENIENT));
-                    }
-                } catch (@NonNull final DateTimeParseException ignore) {
-                    // ignore
-                }
-            }
-            return null;
-        }
-    }
-
-    public static final class DATETIME {
-
-        /** List of patterns we'll use to parse datetime stamps. */
-        private static final Collection<DateTimeFormatter> PARSERS = new ArrayList<>();
-
-        public static void create(@NonNull final Locale... locales) {
-            PARSERS.clear();
-            addFormats(PARSERS, NUMERICAL_DATE, Locale.getDefault());
-            addFormats(PARSERS, NUMERICAL_DATE_TIME, locales);
-            addFormats(PARSERS, TEXT_DATE, locales);
-            addEnglish(PARSERS, TEXT_DATE, locales);
         }
 
         /**
@@ -283,83 +237,27 @@ public class DateParser {
          */
         @Nullable
         public static LocalDateTime parse(@Nullable final String dateStr) {
-            if (dateStr == null || dateStr.isEmpty()) {
-                return null;
-            }
-            // shortcut for plain 4 digit years.
-            if (dateStr.length() == 4) {
-                try {
-                    return Year.parse(dateStr).atDay(1).atTime(12, 0);
-                } catch (@NonNull final DateTimeParseException ignore) {
-                    // ignored
-                }
-            }
-
-            // First try to parse using default rules (ResolverStyle.SMART)
-            final LocalDateTime date = parse(dateStr, false);
-            if (date != null) {
-                return date;
-            }
-            // Try again being lenient (ResolverStyle.LENIENT)
-            return parse(dateStr, true);
-        }
-
-        /**
-         * Attempt to parse a date string;
-         * Allow the caller to specify if the parsing should be smart (default) or lenient.
-         *
-         * @param dateStr String to parse
-         * @param lenient {@code true} if parsing should be lenient
-         *
-         * @return Resulting date if successfully parsed, otherwise {@code null}
-         */
-        @Nullable
-        private static LocalDateTime parse(@NonNull final CharSequence dateStr,
-                                           final boolean lenient) {
-            for (DateTimeFormatter dtf : PARSERS) {
-                try {
-                    if (!lenient) {
-                        return LocalDateTime.parse(dateStr, dtf);
-                    } else {
-                        // Keep in mind this creates a new copy of the formatter.
-                        return LocalDateTime.parse(dateStr,
-                                                   dtf.withResolverStyle(ResolverStyle.LENIENT));
-                    }
-                } catch (@NonNull final DateTimeParseException ignore) {
-                    // ignore
-                }
-            }
-            return null;
+            return DateParser.parse(PARSERS, dateStr);
         }
     }
 
+    /**
+     * Parses ISO formatted date and date-time strings.
+     */
     public static final class ISO {
 
         /** List of patterns we'll use to parse ISO datetime stamps.. */
         private static final Collection<DateTimeFormatter> PARSERS = new ArrayList<>();
 
-        public static void create(@SuppressWarnings("unused")
-                                  @NonNull final Locale... locales) {
+        public static void create() {
             PARSERS.clear();
-            addFormats(PARSERS, ISO_DATE_TIME, Locale.getDefault());
-        }
-
-        /**
-         * Attempt to parse a date string using the passed locale.
-         *
-         * @param locale  to use
-         * @param dateStr String to parse
-         *
-         * @return Resulting date if successfully parsed, otherwise {@code null}
-         */
-        public static LocalDateTime parse(@NonNull final Locale locale,
-                                          @NonNull final String dateStr) {
-            // URGENT: parse should use passed locale FIRST
-            return parse(dateStr);
+            addParsers(PARSERS, ISO_PATTERNS, LocaleUtils.getSystemLocale());
         }
 
         /**
          * Attempt to parse a date string.
+         * Any missing parts of the pattern will get set to default: 1-Jan, 00:00:00
+         * If the year is missing, {@code null} is returned.
          *
          * @param dateStr String to parse
          *
@@ -367,53 +265,7 @@ public class DateParser {
          */
         @Nullable
         public static LocalDateTime parse(@Nullable final String dateStr) {
-            if (dateStr == null || dateStr.isEmpty()) {
-                return null;
-            }
-            // shortcut for plain 4 digit years.
-            if (dateStr.length() == 4) {
-                try {
-                    return Year.parse(dateStr).atDay(1).atTime(12, 0);
-                } catch (@NonNull final DateTimeParseException ignore) {
-                    // ignored
-                }
-            }
-
-            // First try to parse using default rules (ResolverStyle.SMART)
-            final LocalDateTime date = parse(dateStr, false);
-            if (date != null) {
-                return date;
-            }
-            // Try again being lenient (ResolverStyle.LENIENT)
-            return parse(dateStr, true);
-        }
-
-        /**
-         * Attempt to parse a date string;
-         * Allow the caller to specify if the parsing should be smart (default) or lenient.
-         *
-         * @param dateStr String to parse
-         * @param lenient {@code true} if parsing should be lenient
-         *
-         * @return Resulting date if successfully parsed, otherwise {@code null}
-         */
-        @Nullable
-        private static LocalDateTime parse(@NonNull final CharSequence dateStr,
-                                           final boolean lenient) {
-            for (DateTimeFormatter dtf : PARSERS) {
-                try {
-                    if (!lenient) {
-                        return LocalDateTime.parse(dateStr, dtf);
-                    } else {
-                        // Keep in mind this creates a new copy of the formatter.
-                        return LocalDateTime.parse(dateStr,
-                                                   dtf.withResolverStyle(ResolverStyle.LENIENT));
-                    }
-                } catch (@NonNull final DateTimeParseException ignore) {
-                    // ignore
-                }
-            }
-            return null;
+            return DateParser.parse(PARSERS, dateStr);
         }
     }
 }

@@ -66,10 +66,10 @@ public class GoodreadsShelf {
      */
     public static String canonicalizeName(@NonNull final Locale locale,
                                           @NonNull final String name) {
-        StringBuilder canonical = new StringBuilder();
-        String lcName = name.toLowerCase(locale);
+        final StringBuilder canonical = new StringBuilder();
+        final String lcName = name.toLowerCase(locale);
         for (int i = 0; i < lcName.length(); i++) {
-            char c = lcName.charAt(i);
+            final char c = lcName.charAt(i);
             if (Character.isLetterOrDigit(c)) {
                 canonical.append(c);
             } else {

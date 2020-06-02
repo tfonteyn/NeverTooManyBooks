@@ -37,13 +37,13 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import java.util.Date;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.database.DBHelper;
-import com.hardbacknutter.nevertoomanybooks.utils.DateFormatUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.DateParser;
 
 /**
  * Class to encapsulate the INFO block from an archive.
@@ -96,7 +96,8 @@ public class ArchiveInfo {
 
         mBundle.putInt(INFO_SDK, Build.VERSION.SDK_INT);
         mBundle.putInt(INFO_DATABASE_VERSION, DBHelper.DATABASE_VERSION);
-        mBundle.putString(INFO_CREATION_DATE, DateFormatUtils.isoUtcDateTimeForToday());
+        mBundle.putString(INFO_CREATION_DATE,
+                          LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
 
         try {
             PackageInfo info =
@@ -138,8 +139,8 @@ public class ArchiveInfo {
      * @return date, or {@code null} if none or invalid
      */
     @Nullable
-    public Date getCreationDate() {
-        return DateUtils.parseSqlDateTime(mBundle.getString(INFO_CREATION_DATE));
+    public LocalDateTime getCreationDate() {
+        return DateParser.ISO.parse(mBundle.getString(INFO_CREATION_DATE));
     }
 
     /**

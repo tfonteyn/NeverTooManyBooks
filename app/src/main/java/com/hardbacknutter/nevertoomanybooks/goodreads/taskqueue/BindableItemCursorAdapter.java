@@ -54,6 +54,7 @@ public class BindableItemCursorAdapter<
 
     /** hash of class names and values used to dynamically allocate layout numbers. */
     private final Map<String, Integer> mItemTypeLookups = new HashMap<>();
+    private final LayoutInflater mLayoutInflater;
     /** The position passed to the last call of {@link #getItemViewType}. */
     private int mLastItemViewTypePosition = -1;
     /** The item type returned by the last call of {@link #getItemViewType}. */
@@ -61,8 +62,6 @@ public class BindableItemCursorAdapter<
     /** The Event used in the last call of {@link #getItemViewType}. */
     private BI mLastItemViewTypeItem;
     private int mItemTypeCount;
-
-    private final LayoutInflater mLayoutInflater;
 
     /**
      * Constructor; calls superclass and allocates an Inflater for later use.

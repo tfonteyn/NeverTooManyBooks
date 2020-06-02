@@ -35,9 +35,10 @@ import android.database.sqlite.SQLiteQuery;
 import androidx.annotation.NonNull;
 import androidx.collection.LongSparseArray;
 
-import java.util.Date;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 
-import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.DateParser;
 
 /**
  * Cursor subclass used to make accessing Events a little easier.
@@ -56,7 +57,9 @@ public class EventsCursor
     private final LongSparseArray<Boolean> mSelections = new LongSparseArray<>();
 
     /**
-     * Constructor, based on SQLiteCursor constructor.
+     * Constructor.
+     *
+     * @see SQLiteCursor
      */
     EventsCursor(@NonNull final SQLiteCursorDriver driver,
                  @NonNull final String editTable,
@@ -65,20 +68,20 @@ public class EventsCursor
     }
 
     /**
-     * Accessor for Event date field.
+     * Get the date of when the Event occurred.
      *
-     * @return Exception date
+     * @return date; UTC based
      */
     @NonNull
-    public Date getEventDate() {
+    public LocalDateTime getEventDate() {
         if (sDateCol < 0) {
-            sDateCol = getColumnIndex(QueueDBHelper.KEY_EVENT_DATE);
+            sDateCol = getColumnIndex(QueueDBHelper.KEY_UTC_EVENT_DATETIME);
         }
-        Date date = DateUtils.parseSqlDateTime(getString(sDateCol));
-        if (date == null) {
-            date = new Date();
+        LocalDateTime utcDate = DateParser.ISO.parse(getString(sDateCol));
+        if (utcDate == null) {
+            utcDate = LocalDateTime.now(ZoneOffset.UTC);
         }
-        return date;
+        return utcDate;
     }
 
     /**
@@ -88,7 +91,7 @@ public class EventsCursor
      */
     public boolean isSelected() {
         synchronized (mSelections) {
-            Boolean isSelected = mSelections.get(getId());
+            final Boolean isSelected = mSelections.get(getId());
             if (isSelected != null) {
                 return isSelected;
             } else {
@@ -110,10 +113,9 @@ public class EventsCursor
         if (sEventCol < 0) {
             sEventCol = getColumnIndex(QueueDBHelper.KEY_EVENT);
         }
-        byte[] blob = getBlob(sEventCol);
         Event event;
         try {
-            event = SerializationUtils.deserializeObject(blob);
+            event = SerializationUtils.deserializeObject(getBlob(sEventCol));
         } catch (@NonNull final SerializationUtils.DeserializationException de) {
             event = new LegacyEvent(context);
         }

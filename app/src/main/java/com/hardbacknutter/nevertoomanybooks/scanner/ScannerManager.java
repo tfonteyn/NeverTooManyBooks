@@ -101,7 +101,8 @@ public final class ScannerManager {
     private static final int DEFAULT = EMBEDDED_ZXING;
 
     /** Collection of ScannerFactory objects. */
-    private static final SparseArray<Class> SCANNER_FACTORIES = new SparseArray<>();
+    private static final SparseArray<Class<? extends ScannerFactory>>
+            SCANNER_FACTORIES = new SparseArray<>();
 
     static {
         SCANNER_FACTORIES.put(EMBEDDED_ZXING,

@@ -169,9 +169,9 @@ public class GoodreadsWork {
             } else {
                 // We already have an image (but it could be empty!), so just expand it.
                 if (mImageBytes.length != 0) {
-                    Bitmap bitmap = BitmapFactory.decodeByteArray(mImageBytes, 0,
-                                                                  mImageBytes.length,
-                                                                  new BitmapFactory.Options());
+                    final Bitmap bitmap = BitmapFactory
+                            .decodeByteArray(mImageBytes, 0, mImageBytes.length,
+                                             new BitmapFactory.Options());
                     ImageUtils.setImageView(imageView, maxWidth, maxHeight, bitmap, 0);
                 } else {
                     ImageUtils.setPlaceholder(imageView, R.drawable.ic_broken_image, 0);
@@ -208,9 +208,9 @@ public class GoodreadsWork {
                 // Make sure our view is still associated with us
                 if (this.equals(imageView.getTag(R.id.TAG_ITEM))) {
                     if (mImageBytes.length != 0) {
-                        Bitmap bitmap = BitmapFactory.decodeByteArray(mImageBytes, 0,
-                                                                      mImageBytes.length,
-                                                                      new BitmapFactory.Options());
+                        final Bitmap bitmap = BitmapFactory
+                                .decodeByteArray(mImageBytes, 0, mImageBytes.length,
+                                                 new BitmapFactory.Options());
                         ImageUtils.setImageView(imageView, mMaxWidth, mMaxHeight, bitmap, 0);
                     } else {
                         ImageUtils.setPlaceholder(imageView, R.drawable.ic_broken_image, 0);

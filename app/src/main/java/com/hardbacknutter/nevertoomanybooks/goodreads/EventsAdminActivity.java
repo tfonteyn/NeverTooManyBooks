@@ -117,7 +117,7 @@ public class EventsAdminActivity
     @NonNull
     @Override
     protected EventsCursorAdapter getListAdapter(@NonNull final DAO db) {
-        Cursor cursor;
+        final Cursor cursor;
         if (mTaskId == 0) {
             cursor = QueueManager.getQueueManager().getEvents();
         } else {

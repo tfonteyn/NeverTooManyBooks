@@ -41,6 +41,7 @@ import java.util.Locale;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.searches.amazon.AmazonSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searches.goodreads.GoodreadsSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searches.googlebooks.GoogleBooksSearchEngine;
@@ -50,7 +51,6 @@ import com.hardbacknutter.nevertoomanybooks.searches.librarything.LibraryThingSe
 import com.hardbacknutter.nevertoomanybooks.searches.openlibrary.OpenLibrarySearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searches.stripinfo.StripInfoSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.settings.sites.IsfdbPreferencesFragment;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.UnexpectedValueException;
 
 /**
  * Manages the setup of {@link SearchEngine} and {@link Site} instances.
@@ -141,8 +141,6 @@ public final class SearchSites {
      * @param id for the site
      *
      * @return the name
-     *
-     * @throws UnexpectedValueException if an invalid id was passed in
      */
     public static String getName(@Id final int id) {
         switch (id) {
@@ -163,7 +161,7 @@ public final class SearchSites {
             case STRIP_INFO_BE:
                 return "StripInfo";
             default:
-                throw new UnexpectedValueException(id);
+                throw new IllegalArgumentException(ErrorMsg.UNEXPECTED_VALUE + id);
         }
     }
 
@@ -175,8 +173,6 @@ public final class SearchSites {
      * @param id site id
      *
      * @return instance
-     *
-     * @throws UnexpectedValueException if an invalid id was passed in
      */
     static SearchEngine getSearchEngine(@Id final int id) {
         switch (id) {
@@ -197,7 +193,7 @@ public final class SearchSites {
             case STRIP_INFO_BE:
                 return new StripInfoSearchEngine();
             default:
-                throw new UnexpectedValueException(id);
+                throw new IllegalArgumentException(ErrorMsg.UNEXPECTED_VALUE + id);
         }
     }
 
@@ -308,12 +304,9 @@ public final class SearchSites {
      * @param resId to find
      *
      * @return site id.
-     *
-     * @throws UnexpectedValueException if an invalid resId was passed in
      */
     @Id
-    public static int getSiteIdFromResId(@IdRes final int resId)
-            throws UnexpectedValueException {
+    public static int getSiteIdFromResId(@IdRes final int resId) {
         //NEWTHINGS: add new site specific ID: not all sites have/need a resource/menu id.
         switch (resId) {
             case R.id.MENU_VIEW_BOOK_AT_AMAZON:
@@ -341,7 +334,7 @@ public final class SearchSites {
                 return STRIP_INFO_BE;
 
             default:
-                throw new UnexpectedValueException(resId);
+                throw new IllegalArgumentException(ErrorMsg.UNEXPECTED_VALUE + resId);
         }
     }
 
@@ -351,12 +344,9 @@ public final class SearchSites {
      * @param key to find
      *
      * @return site id.
-     *
-     * @throws UnexpectedValueException if an invalid key was passed in
      */
     @Id
-    public static int getSiteIdFromDBDefinitions(@NonNull final String key)
-            throws UnexpectedValueException {
+    public static int getSiteIdFromDBDefinitions(@NonNull final String key) {
         //NEWTHINGS: add new site specific ID: all native keys should be listed
         switch (key) {
             case DBDefinitions.KEY_EID_GOODREADS_BOOK:
@@ -375,7 +365,7 @@ public final class SearchSites {
                 return STRIP_INFO_BE;
 
             default:
-                throw new UnexpectedValueException(key);
+                throw new IllegalArgumentException(ErrorMsg.UNEXPECTED_VALUE + key);
         }
     }
 

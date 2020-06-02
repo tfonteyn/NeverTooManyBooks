@@ -43,6 +43,8 @@ import java.io.File;
 import java.io.IOException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -52,7 +54,6 @@ import com.hardbacknutter.nevertoomanybooks.database.DBHelper;
 import com.hardbacknutter.nevertoomanybooks.scanner.ScannerManager;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
-import com.hardbacknutter.nevertoomanybooks.utils.DateFormatUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.GenericFileProvider;
 
@@ -195,8 +196,10 @@ public final class DebugReport {
         try {
             // Copy the database from the internal protected area to the cache area.
             final File dbFile = AppDir.Cache.getFile(
-                    context, DB_EXPORT_FILE_PREFIX
-                             + '-' + DateFormatUtils.isoUtcDateForToday() + ".db");
+                    context,
+                    DB_EXPORT_FILE_PREFIX
+                    + '-' + LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+                    + ".db");
             dbFile.deleteOnExit();
             FileUtils.copy(DBHelper.getDatabasePath(context), dbFile);
 

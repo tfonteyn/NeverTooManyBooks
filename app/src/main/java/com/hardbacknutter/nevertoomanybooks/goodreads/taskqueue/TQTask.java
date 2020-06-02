@@ -41,13 +41,12 @@ import java.util.Locale;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GrStatus;
-import com.hardbacknutter.nevertoomanybooks.utils.DateFormatUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 
 /**
  * Base class for tasks. This builds and populates simple View objects to display the task.
  * <p>
- * A Task *MUST* be serializable.z\
+ * A Task *MUST* be serializable.
  * This means that it can not contain any references to UI components or similar objects.
  */
 public abstract class TQTask
@@ -115,11 +114,8 @@ public abstract class TQTask
 
             case QUEUED:
                 statusText = context.getString(R.string.gr_tq_queued);
-                final String date = DateFormatUtils
-                        .toPrettyDateTime(row.getRetryDate(), userLocale);
-                final String info = context.getString(R.string.gr_tq_retry_x_of_y_next_at_z,
-                                                      getRetries(), getRetryLimit(), date);
-                holder.retryInfoView.setText(info);
+                holder.setRetryInfo(getRetries(), getRetryLimit(),
+                                    row.getRetryDate(), userLocale);
                 holder.retryInfoView.setVisibility(View.VISIBLE);
                 holder.retryButton.setVisibility(View.GONE);
                 break;
@@ -161,9 +157,7 @@ public abstract class TQTask
             holder.errorView.setVisibility(View.GONE);
         }
 
-        final String date = DateFormatUtils.toPrettyDateTime(row.getQueuedDate(), userLocale);
-        final String info = context.getString(R.string.gr_tq_generic_task_info, getId(), date);
-        holder.jobInfoView.setText(info);
+        holder.setJobInfo(getId(), row.getQueuedDate(), userLocale);
     }
 
     @Override

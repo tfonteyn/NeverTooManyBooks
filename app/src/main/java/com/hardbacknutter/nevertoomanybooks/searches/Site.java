@@ -35,8 +35,8 @@ import androidx.annotation.NonNull;
 
 import java.util.Locale;
 
+import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.tasks.Canceller;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.UnexpectedValueException;
 
 /**
  * Represents a site we will search.
@@ -122,7 +122,7 @@ public final class Site
                 break;
 
             default:
-                throw new UnexpectedValueException(type);
+                throw new IllegalArgumentException(ErrorMsg.UNEXPECTED_VALUE + type);
         }
     }
 

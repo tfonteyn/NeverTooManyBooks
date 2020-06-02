@@ -112,7 +112,11 @@ public class BaseDatePickerDialogFragment
     }
 
     /**
-     * Parse the input SQL date string into the individual components.
+     * Parse the input ISO date string into the individual components.
+     * <p>
+     * Note we don't use {@link com.hardbacknutter.nevertoomanybooks.utils.DateParser}
+     * as we the current implementation always returns full dates.
+     * Here, we explicitly need to support partial dates.
      *
      * <ul>Allowed formats:
      *      <li>yyyy-mm-dd time</li>

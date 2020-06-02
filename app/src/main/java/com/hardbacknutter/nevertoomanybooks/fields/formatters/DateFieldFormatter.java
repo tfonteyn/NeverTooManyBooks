@@ -33,13 +33,13 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import java.util.Date;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 import com.hardbacknutter.nevertoomanybooks.dialogs.date.BaseDatePickerDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.fields.accessors.EditTextAccessor;
 import com.hardbacknutter.nevertoomanybooks.fields.accessors.TextAccessor;
-import com.hardbacknutter.nevertoomanybooks.utils.DateFormatUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.DateParser;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 
 /**
@@ -73,12 +73,12 @@ public class DateFieldFormatter
         if (rawValue == null || rawValue.isEmpty()) {
             return "";
         } else {
-            return DateFormatUtils.toPrettyDate(rawValue, LocaleUtils.getUserLocale(context));
+            return LocaleUtils.toPrettyDate(context, rawValue);
         }
     }
 
     /**
-     * Extract as an SQL date, UTC timezone.
+     * Extract as an ISO date.
      */
     @Override
     @NonNull
@@ -91,9 +91,9 @@ public class DateFieldFormatter
         }
 
         // FIXME:a partial date consisting of Month+Year, will always get a day==1 added.
-        final Date date = DateUtils.parseDate(text);
+        final LocalDateTime date = DateParser.ALL.parse(text);
         if (date != null) {
-            return DateFormatUtils.isoUtcDate(date);
+            return date.format(DateTimeFormatter.ISO_LOCAL_DATE);
         }
         return text;
     }

@@ -67,7 +67,8 @@ public class CsvArchiveWriter
                                @NonNull final ProgressListener progressListener)
             throws IOException {
 
-        try (Exporter exporter = new CsvExporter(context, Options.BOOKS, mHelper.getDateSince())) {
+        try (Exporter exporter = new CsvExporter(context, Options.BOOKS,
+                                                 mHelper.getUtcDateTimeSince())) {
             return exporter.write(context, mHelper.getTempOutputFile(context), progressListener);
         }
     }

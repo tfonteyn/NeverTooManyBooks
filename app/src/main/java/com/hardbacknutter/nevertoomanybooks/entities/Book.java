@@ -40,6 +40,8 @@ import androidx.annotation.VisibleForTesting;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Locale;
@@ -56,7 +58,6 @@ import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 import com.hardbacknutter.nevertoomanybooks.datamanager.validators.ValidatorException;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
-import com.hardbacknutter.nevertoomanybooks.utils.DateFormatUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.Money;
 
@@ -373,7 +374,8 @@ public class Book
         if (db.setBookRead(getId(), isRead)) {
             putBoolean(DBDefinitions.KEY_READ, isRead);
             if (isRead) {
-                putString(DBDefinitions.KEY_READ_END, DateFormatUtils.isoLocalDateForToday());
+                putString(DBDefinitions.KEY_READ_END,
+                          LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE));
             } else {
                 putString(DBDefinitions.KEY_READ_END, "");
             }

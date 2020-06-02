@@ -42,7 +42,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 
 /**
- * TODO: OwnedBookCreateApiHandler WORK IN PROGRESS.
+ * TODO: OwnedBookCreateApiHandler WORK IN PROGRESS. Dates are likely not handled correctly yet.
  * <p>
  * owned_books.create   —   Add to books owned.
  *
@@ -50,7 +50,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsExceptio
  */
 @SuppressWarnings("unused")
 class OwnedBookCreateApiHandler
-        extends com.hardbacknutter.nevertoomanybooks.goodreads.api.ApiHandler {
+        extends ApiHandler {
 
     private static final String URL = GoodreadsHandler.BASE_URL + "/owned_books.xml";
 

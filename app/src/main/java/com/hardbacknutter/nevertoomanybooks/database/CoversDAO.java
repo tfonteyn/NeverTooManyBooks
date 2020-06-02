@@ -48,6 +48,9 @@ import androidx.annotation.WorkerThread;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.time.Instant;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import com.hardbacknutter.nevertoomanybooks.App;
@@ -61,7 +64,6 @@ import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
-import com.hardbacknutter.nevertoomanybooks.utils.DateFormatUtils;
 
 /**
  * DB Helper for Covers DB. It uses the Application Context.
@@ -110,7 +112,7 @@ public final class CoversDAO
     private static final String CKEY_PK_ID = "_id";
     private static final String CKEY_CACHE_ID = "filename";
     private static final String CKEY_IMAGE = "image";
-    private static final String CKEY_DATE = "date";
+    private static final String CKEY_UTC_DATETIME = "last_update_date";
     private static final String CKEY_WIDTH = "width";
     private static final String CKEY_HEIGHT = "height";
 
@@ -124,8 +126,8 @@ public final class CoversDAO
     private static final Domain DOM_IMAGE =
             new Domain.Builder(CKEY_IMAGE, ColumnInfo.TYPE_BLOB).notNull().build();
 
-    private static final Domain DOM_DATE =
-            new Domain.Builder(CKEY_DATE, ColumnInfo.TYPE_DATETIME)
+    private static final Domain DOM_UTC_DATETIME =
+            new Domain.Builder(CKEY_UTC_DATETIME, ColumnInfo.TYPE_DATETIME)
                     .notNull().withDefaultCurrentTimeStamp().build();
 
     /** The actual stored bitmap width. */
@@ -138,13 +140,13 @@ public final class CoversDAO
 
     /** table definitions. */
     private static final TableDefinition TBL_IMAGE =
-            new TableDefinition("image", DOM_PK_ID, DOM_IMAGE, DOM_DATE,
+            new TableDefinition("image", DOM_PK_ID, DOM_IMAGE, DOM_UTC_DATETIME,
                                 DOM_WIDTH, DOM_HEIGHT, DOM_CACHE_ID);
 
     /** Get a cached image. */
     private static final String SQL_GET_IMAGE =
             "SELECT " + CKEY_IMAGE + " FROM " + TBL_IMAGE.getName()
-            + " WHERE " + CKEY_CACHE_ID + "=? AND " + CKEY_DATE + ">?";
+            + " WHERE " + CKEY_CACHE_ID + "=? AND " + CKEY_UTC_DATETIME + ">?";
 
     /** Run a count for the desired file. 1 == exists, 0 == not there. */
     private static final String SQL_COUNT_ID =
@@ -172,8 +174,8 @@ public final class CoversDAO
                 .setPrimaryKey(DOM_PK_ID)
                 .addIndex("id", true, DOM_PK_ID)
                 .addIndex(CKEY_CACHE_ID, true, DOM_CACHE_ID)
-                .addIndex(CKEY_CACHE_ID + '_' + CKEY_DATE,
-                          true, DOM_CACHE_ID, DOM_DATE);
+                .addIndex(CKEY_CACHE_ID + '_' + CKEY_UTC_DATETIME,
+                          true, DOM_CACHE_ID, DOM_UTC_DATETIME);
     }
 
     /** Collection of statements pre-compiled for this object. */
@@ -258,10 +260,12 @@ public final class CoversDAO
             }
 
             final File file = AppDir.getCoverFile(context, uuid, cIdx);
-            final String dateStr = DateFormatUtils.isoUtcDateTime(file.lastModified());
+            final String utcDateStr = Instant.ofEpochMilli(file.lastModified())
+                                             .atZone(ZoneOffset.UTC)
+                                             .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
             final String cacheId = constructCacheId(uuid, cIdx, maxWidth, maxHeight);
             try (Cursor cursor = sSyncedDb.rawQuery(SQL_GET_IMAGE,
-                                                    new String[]{cacheId, dateStr})) {
+                                                    new String[]{cacheId, utcDateStr})) {
                 if (cursor.moveToFirst()) {
                     final byte[] bytes = cursor.getBlob(0);
                     if (bytes != null) {

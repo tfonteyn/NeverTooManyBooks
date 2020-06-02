@@ -88,8 +88,6 @@ public class SendOneBookTask
         Thread.currentThread().setName(TAG + mBookId);
         final Context context = LocaleUtils.applyLocale(App.getTaskContext());
 
-        @GrStatus.Status
-        int status;
         try {
             if (!NetworkUtils.isNetworkAvailable(context)) {
                 return GrStatus.NO_INTERNET;
@@ -110,7 +108,8 @@ public class SendOneBookTask
                             getTaskId(), context.getString(R.string.progress_msg_sending)));
 
                     final RowDataHolder rowData = new CursorRow(cursor);
-                    status = apiHandler.sendOneBook(context, db, rowData);
+                    @GrStatus.Status
+                    int status = apiHandler.sendOneBook(context, db, rowData);
                     if (status == GrStatus.COMPLETED) {
                         // Record the update
                         db.setGoodreadsSyncDate(mBookId);

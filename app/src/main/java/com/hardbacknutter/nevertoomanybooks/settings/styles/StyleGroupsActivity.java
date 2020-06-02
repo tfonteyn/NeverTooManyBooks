@@ -94,7 +94,7 @@ public class StyleGroupsActivity
 
         // setup the adapter
         // The adapter for the list.
-        RecyclerViewAdapterBase listAdapter =
+        GroupWrapperListAdapter listAdapter =
                 new GroupWrapperListAdapter(this, mModel.getList(),
                                             vh -> mItemTouchHelper.startDrag(vh));
 

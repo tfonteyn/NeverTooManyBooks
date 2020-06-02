@@ -34,6 +34,9 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 
+import java.time.LocalDateTime;
+import java.util.Locale;
+
 import com.hardbacknutter.nevertoomanybooks.R;
 
 /**
@@ -42,13 +45,15 @@ import com.hardbacknutter.nevertoomanybooks.R;
 class TaskViewHolder
         extends BindableItemViewHolder {
 
+    /** Use {@link #setRetryInfo} to access. */
+    protected final TextView retryInfoView;
     final TextView descriptionView;
     final TextView stateView;
-    final TextView retryInfoView;
     final TextView errorView;
-    final TextView jobInfoView;
     final CompoundButton checkButton;
     final Button retryButton;
+    /** Use {@link #setJobInfo} to access. */
+    private final TextView jobInfoView;
 
     TaskViewHolder(@NonNull final View itemView) {
         super(itemView);
@@ -60,5 +65,22 @@ class TaskViewHolder
         jobInfoView = itemView.findViewById(R.id.job_info);
         checkButton = itemView.findViewById(R.id.cbx_selected);
         retryButton = itemView.findViewById(R.id.btn_retry);
+    }
+
+    public void setJobInfo(final long taskId,
+                           @NonNull final LocalDateTime queuedDate,
+                           @NonNull final Locale userLocale) {
+        jobInfoView.setText(jobInfoView.getContext().getString(
+                R.string.gr_tq_generic_task_info, taskId,
+                toPrettyDateTime(queuedDate, userLocale)));
+    }
+
+    public void setRetryInfo(final int retries,
+                             final int retryLimit,
+                             @NonNull final LocalDateTime retryDate,
+                             @NonNull final Locale userLocale) {
+        retryInfoView.setText(retryInfoView.getContext().getString(
+                R.string.gr_tq_retry_x_of_y_next_at_z, retries, retryLimit,
+                toPrettyDateTime(retryDate, userLocale)));
     }
 }

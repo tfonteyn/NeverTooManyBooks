@@ -46,11 +46,11 @@ class QueueDBHelper
     static final String KEY_NAME = "name";
     static final String KEY_EVENT = "event";
     static final String KEY_EVENT_COUNT = "event_count";
-    static final String KEY_EVENT_DATE = "event_date";
+    static final String KEY_UTC_EVENT_DATETIME = "event_date";
     static final String KEY_QUEUE_ID = "queue_id";
-    static final String KEY_QUEUED_DATE = "queued_date";
+    static final String KEY_UTC_QUEUED_DATETIME = "queued_date";
     static final String KEY_PRIORITY = "priority";
-    static final String KEY_RETRY_DATE = "retry_date";
+    static final String KEY_UTC_RETRY_DATETIME = "retry_date";
     static final String KEY_RETRY_COUNT = "retry_count";
     static final String KEY_STATUS_CODE = "status_code";
     static final String KEY_TASK = "task";
@@ -76,11 +76,11 @@ class QueueDBHelper
             "CREATE TABLE " + TBL_TASK + " ("
             + KEY_PK_ID + " integer PRIMARY KEY AUTOINCREMENT,"
             + KEY_QUEUE_ID + " integer NOT NULL REFERENCES " + TBL_QUEUE + ','
-            + KEY_QUEUED_DATE + " datetime DEFAULT current_timestamp,"
+            + KEY_UTC_QUEUED_DATETIME + " datetime DEFAULT current_timestamp,"
             + KEY_PRIORITY + " integer DEFAULT 0,"
             + KEY_STATUS_CODE + " text DEFAULT '" + Task.QUEUED + "',"
             + KEY_CATEGORY + " integer DEFAULT 0 NOT NULL,"
-            + KEY_RETRY_DATE + " datetime DEFAULT current_timestamp,"
+            + KEY_UTC_RETRY_DATETIME + " datetime DEFAULT current_timestamp,"
             + KEY_RETRY_COUNT + " integer DEFAULT 0,"
             + KEY_FAILURE_REASON + " text,"
             + KEY_EXCEPTION + " blob,"
@@ -90,7 +90,7 @@ class QueueDBHelper
             + KEY_PK_ID + " integer PRIMARY KEY AUTOINCREMENT,\n"
             + KEY_TASK_ID + " integer REFERENCES " + TBL_TASK + ','
             + KEY_EVENT + " blob NOT NULL,"
-            + KEY_EVENT_DATE + " datetime DEFAULT current_timestamp)",
+            + KEY_UTC_EVENT_DATETIME + " datetime DEFAULT current_timestamp)",
             };
 
     private static final String[] INDEXES = new String[]{
@@ -99,14 +99,14 @@ class QueueDBHelper
 
             "CREATE UNIQUE INDEX " + TBL_TASK + "_IX1 ON " + TBL_TASK + " (" + KEY_PK_ID + ')',
             "CREATE INDEX " + TBL_TASK + "_IX2 ON " + TBL_TASK
-            + " (" + KEY_STATUS_CODE + ',' + KEY_QUEUE_ID + ',' + KEY_RETRY_DATE + ')',
+            + " (" + KEY_STATUS_CODE + ',' + KEY_QUEUE_ID + ',' + KEY_UTC_RETRY_DATETIME + ')',
             "CREATE INDEX " + TBL_TASK + "_IX3 ON " + TBL_TASK
-            + " (" + KEY_STATUS_CODE + ',' + KEY_QUEUE_ID + ',' + KEY_RETRY_DATE
+            + " (" + KEY_STATUS_CODE + ',' + KEY_QUEUE_ID + ',' + KEY_UTC_RETRY_DATETIME
             + ',' + KEY_PRIORITY + ')',
 
             "CREATE UNIQUE INDEX " + TBL_EVENT + "_IX1 ON " + TBL_EVENT + " (" + KEY_PK_ID + ')',
             "CREATE UNIQUE INDEX " + TBL_EVENT + "_IX2 ON " + TBL_EVENT
-            + " (" + KEY_EVENT_DATE + ',' + KEY_PK_ID + ')',
+            + " (" + KEY_UTC_EVENT_DATETIME + ',' + KEY_PK_ID + ')',
             "CREATE INDEX " + TBL_EVENT + "_IX3 ON " + TBL_EVENT
             + " (" + KEY_TASK_ID + ',' + KEY_PK_ID + ')',
             };
