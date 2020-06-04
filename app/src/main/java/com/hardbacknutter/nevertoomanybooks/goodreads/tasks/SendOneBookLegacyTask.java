@@ -41,9 +41,11 @@ import com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.TQTask;
 
 /**
  * Task to send a single books details to Goodreads.
+ * This is used during retrying a formerly failed book and is
+ * <strong>initiated by the queue manager</strong>.
  * <p>
- * A Task *MUST* be serializable.
- * This means that it can not contain any references to UI components or similar objects.
+ * This Task *MUST* be serializable hence can not contain
+ * any references to UI components or similar objects.
  */
 public class SendOneBookLegacyTask
         extends SendBooksLegacyTaskBase {

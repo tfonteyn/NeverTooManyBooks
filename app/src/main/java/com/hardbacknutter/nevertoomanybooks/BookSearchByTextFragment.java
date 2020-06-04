@@ -123,7 +123,7 @@ public class BookSearchByTextFragment
         populateAuthorList();
 
         if (savedInstanceState == null) {
-            mSearchCoordinator.getSiteList().promptToRegister(getContext(), false, "search");
+            mCoordinator.getSiteList().promptToRegister(getContext(), false, "search");
 
             TipManager.display(getContext(), R.string.tip_book_search_by_text, null);
         }
@@ -144,8 +144,8 @@ public class BookSearchByTextFragment
     boolean onPreSearch() {
         viewToModel();
 
-        final String authorSearchText = mSearchCoordinator.getAuthorSearchText();
-        final String titleSearchText = mSearchCoordinator.getTitleSearchText();
+        final String authorSearchText = mCoordinator.getAuthorSearchText();
+        final String titleSearchText = mCoordinator.getTitleSearchText();
 
         if (!authorSearchText.isEmpty()) {
             // Always add the current search text to the list of recent searches.
@@ -223,8 +223,7 @@ public class BookSearchByTextFragment
         // we add them manually as the template for a new book.
 
         if (!bookData.containsKey(DBDefinitions.KEY_TITLE)) {
-            bookData.putString(DBDefinitions.KEY_TITLE,
-                               mSearchCoordinator.getTitleSearchText());
+            bookData.putString(DBDefinitions.KEY_TITLE, mCoordinator.getTitleSearchText());
         }
 
         final ArrayList<Author> authors =
@@ -232,13 +231,13 @@ public class BookSearchByTextFragment
         if (authors == null || authors.isEmpty()) {
             // do NOT use the array, that's reserved for verified names.
             bookData.putString(BooksOnBookshelfModel.SearchCriteria.BKEY_SEARCH_TEXT_AUTHOR,
-                               mSearchCoordinator.getAuthorSearchText());
+                               mCoordinator.getAuthorSearchText());
         }
 
         if (!bookData.containsKey(DBDefinitions.KEY_PUBLISHER)) {
-            bookData.putString(DBDefinitions.KEY_PUBLISHER,
-                               mSearchCoordinator.getPublisherSearchText());
+            bookData.putString(DBDefinitions.KEY_PUBLISHER, mCoordinator.getPublisherSearchText());
         }
+
         // edit book
         super.onSearchResults(bookData);
     }
@@ -258,17 +257,17 @@ public class BookSearchByTextFragment
     }
 
     private void modelToView() {
-        mVb.author.setText(mSearchCoordinator.getAuthorSearchText());
-        mVb.title.setText(mSearchCoordinator.getTitleSearchText());
-        mVb.publisher.setText(mSearchCoordinator.getPublisherSearchText());
+        mVb.author.setText(mCoordinator.getAuthorSearchText());
+        mVb.title.setText(mCoordinator.getTitleSearchText());
+        mVb.publisher.setText(mCoordinator.getPublisherSearchText());
     }
 
     private void viewToModel() {
-        mSearchCoordinator.setAuthorSearchText(mVb.author.getText().toString().trim());
+        mCoordinator.setAuthorSearchText(mVb.author.getText().toString().trim());
         //noinspection ConstantConditions
-        mSearchCoordinator.setTitleSearchText(mVb.title.getText().toString().trim());
+        mCoordinator.setTitleSearchText(mVb.title.getText().toString().trim());
         //noinspection ConstantConditions
-        mSearchCoordinator.setPublisherSearchText(mVb.publisher.getText().toString().trim());
+        mCoordinator.setPublisherSearchText(mVb.publisher.getText().toString().trim());
     }
 
     @Override

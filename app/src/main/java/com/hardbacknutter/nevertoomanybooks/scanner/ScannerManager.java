@@ -51,7 +51,6 @@ import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.RequestCode;
-import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PIntString;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 
 /**
@@ -295,7 +294,7 @@ public final class ScannerManager {
     }
 
     private static int getPreferredScanner(@NonNull final Context context) {
-        return PIntString.getListPreference(context, Prefs.pk_scanner_preferred, DEFAULT);
+        return Prefs.getListPreference(context, Prefs.pk_scanner_preferred, DEFAULT);
     }
 
     static boolean isBeepOnBarcodeFound(@NonNull final Context context) {
@@ -327,7 +326,7 @@ public final class ScannerManager {
         // Scanners installed
         try {
             message.append("Preferred Scanner: ")
-                   .append(PIntString.getListPreference(context, Prefs.pk_scanner_preferred, -1))
+                   .append(Prefs.getListPreference(context, Prefs.pk_scanner_preferred, -1))
                    .append('\n');
 
             for (String scannerAction : ALL_ACTIONS) {

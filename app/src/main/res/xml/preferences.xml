@@ -133,6 +133,27 @@
     </PreferenceCategory>
 
     <PreferenceCategory
+        android:title="@string/action_edit">
+
+        <ListPreference
+            android:defaultValue="1"
+            android:entries="@array/pe_edit_book_isbn_checks"
+            android:entryValues="@array/pv_edit_book_isbn_checks"
+            android:icon="@drawable/ic_barcode"
+            android:key="edit.book.isbn.checks"
+            android:title="@string/pt_edit_book_isbn_checks" />
+
+        <SwitchPreference
+            android:defaultValue="false"
+            android:icon="@drawable/ic_tab"
+            android:key="edit.book.tab.nativeId"
+            android:summaryOff="@string/no"
+            android:summaryOn="@string/yes"
+            android:title="@string/pt_allow_edit_native_id" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
         android:title="@string/pg_booklist">
         <!-- edit the global defaults for styles.
         WORK IN PROGRESS, HAS ISSUES, CRASHES due to not passing 'extras' with the tag name

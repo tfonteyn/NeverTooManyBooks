@@ -35,6 +35,7 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.preference.ListPreference;
 import androidx.preference.PreferenceManager;
 
 import java.util.ArrayList;
@@ -149,11 +150,70 @@ public final class Prefs {
     public static final String PSK_BARCODE_SCANNER = "psk_barcode_scanner";
 
     private static final String pk_edit_book_tabs_native_id = "edit.book.tab.nativeId";
+    public static final String pk_edit_book_isbn_checks = "edit.book.isbn.checks";
 
     /** Log tag. */
     private static final String TAG = "Prefs";
 
     private Prefs() {
+    }
+
+    public static boolean showEditBookTabNativeId(@NonNull final Context context) {
+        return PreferenceManager
+                .getDefaultSharedPreferences(context)
+                .getBoolean(pk_edit_book_tabs_native_id, false);
+    }
+
+    /**
+     * {@link ListPreference} stores the selected value as a String.
+     * But they are really Integer values. Hence this transmogrification....
+     *
+     * @param context  Current context
+     * @param key      The name of the preference to retrieve.
+     * @param defValue Value to return if this preference does not exist.
+     *
+     * @return int (stored as String) global preference
+     */
+    public static int getListPreference(@NonNull final Context context,
+                                        @NonNull final String key,
+                                        final int defValue) {
+        final String value = PreferenceManager.getDefaultSharedPreferences(context)
+                                              .getString(key, null);
+        if (value == null || value.isEmpty()) {
+            return defValue;
+        }
+        return Integer.parseInt(value);
+    }
+
+    /**
+     * DEBUG only.
+     *
+     * @param context Current context
+     * @param uuid    SharedPreferences
+     */
+    @SuppressLint("LogConditional")
+    public static void dumpPreferences(@NonNull final Context context,
+                                       @Nullable final String uuid) {
+        Map<String, ?> map;
+        if (uuid != null) {
+            map = context.getSharedPreferences(uuid, Context.MODE_PRIVATE).getAll();
+        } else {
+            map = PreferenceManager.getDefaultSharedPreferences(context).getAll();
+        }
+        List<String> keyList = new ArrayList<>(map.keySet());
+        //noinspection ZeroLengthArrayAllocation
+        String[] keys = keyList.toArray(new String[]{});
+        Arrays.sort(keys);
+
+        StringBuilder sb = new StringBuilder("\n\nSharedPreferences: "
+                                             + (uuid != null ? uuid : "global"));
+        for (String key : keys) {
+            Object value = map.get(key);
+            sb.append('\n').append(key).append('=').append(value);
+        }
+        sb.append("\n\n");
+
+        Log.d(TAG, "dumpPreferences|" + sb);
     }
 
     /**
@@ -204,42 +264,5 @@ public final class Prefs {
                 sourcePrefs.edit().clear().apply();
             }
         }
-    }
-
-    /**
-     * DEBUG only.
-     *
-     * @param context Current context
-     * @param uuid    SharedPreferences
-     */
-    @SuppressLint("LogConditional")
-    public static void dumpPreferences(@NonNull final Context context,
-                                       @Nullable final String uuid) {
-        Map<String, ?> map;
-        if (uuid != null) {
-            map = context.getSharedPreferences(uuid, Context.MODE_PRIVATE).getAll();
-        } else {
-            map = PreferenceManager.getDefaultSharedPreferences(context).getAll();
-        }
-        List<String> keyList = new ArrayList<>(map.keySet());
-        //noinspection ZeroLengthArrayAllocation
-        String[] keys = keyList.toArray(new String[]{});
-        Arrays.sort(keys);
-
-        StringBuilder sb = new StringBuilder("\n\nSharedPreferences: "
-                                             + (uuid != null ? uuid : "global"));
-        for (String key : keys) {
-            Object value = map.get(key);
-            sb.append('\n').append(key).append('=').append(value);
-        }
-        sb.append("\n\n");
-
-        Log.d(TAG, "dumpPreferences|" + sb);
-    }
-
-    public static boolean showEditBookTabNativeId(@NonNull final Context context) {
-        return PreferenceManager
-                .getDefaultSharedPreferences(context)
-                .getBoolean(pk_edit_book_tabs_native_id, false);
     }
 }

@@ -43,6 +43,7 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.view.MenuCompat;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
@@ -97,14 +98,9 @@ public class EditBookFieldsFragment
     private ISBN.ValidationTextWatcher mIsbnValidationTextWatcher;
     /** Watch and clean the text entered in the ISBN field. */
     private ISBN.CleanupTextWatcher mIsbnCleanupTextWatcher;
-    /**
-     * Set to {@code true} limits to using ISBN-10/13.
-     * Otherwise we also allow UPC/EAN codes.
-     * False by default, as we don't want to mess with external codes unless the user really
-     * wants to.
-     * TODO: perhaps make this a preference?
-     */
-    private boolean mStrictIsbn;
+    /** The level of checking the ISBN code. */
+    @ISBN.Validity
+    private int mIsbnValidityCheck;
     /** The scanner. Must be in the Activity scope. */
     @Nullable
     private ScannerViewModel mScannerModel;
@@ -192,14 +188,13 @@ public class EditBookFieldsFragment
             });
         }
 
-        mIsbnValidationTextWatcher = new ISBN.ValidationTextWatcher(mVb.lblIsbn, mVb.isbn,
-                                                                    mStrictIsbn);
-        mVb.isbn.addTextChangedListener(mIsbnValidationTextWatcher);
+        mIsbnValidityCheck = ISBN.getEditValidityLevel(getContext());
 
-        mIsbnCleanupTextWatcher = new ISBN.CleanupTextWatcher(mVb.isbn);
-        if (mStrictIsbn) {
-            mVb.isbn.addTextChangedListener(mIsbnCleanupTextWatcher);
-        }
+        mIsbnCleanupTextWatcher = new ISBN.CleanupTextWatcher(mVb.isbn, mIsbnValidityCheck);
+        mVb.isbn.addTextChangedListener(mIsbnCleanupTextWatcher);
+        mIsbnValidationTextWatcher = new ISBN.ValidationTextWatcher(
+                mVb.lblIsbn, mVb.isbn, mIsbnValidityCheck);
+        mVb.isbn.addTextChangedListener(mIsbnValidationTextWatcher);
     }
 
     @Override
@@ -304,29 +299,51 @@ public class EditBookFieldsFragment
     @Override
     public void onCreateOptionsMenu(@NonNull final Menu menu,
                                     @NonNull final MenuInflater inflater) {
-        menu.add(Menu.NONE, R.id.MENU_STRICT_ISBN, 0, R.string.lbl_strict_isbn)
-            .setCheckable(true)
-            .setChecked(mStrictIsbn)
-            .setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
+        inflater.inflate(R.menu.sm_isbn_validity, menu);
+        MenuCompat.setGroupDividerEnabled(menu, true);
 
         super.onCreateOptionsMenu(menu, inflater);
     }
 
     @Override
+    public void onPrepareOptionsMenu(@NonNull final Menu menu) {
+        super.onPrepareOptionsMenu(menu);
+        switch (mIsbnValidityCheck) {
+            case ISBN.VALIDITY_STRICT:
+                menu.findItem(R.id.MENU_ISBN_VALIDITY_STRICT).setChecked(true);
+                break;
+
+            case ISBN.VALIDITY_LOOSE:
+                menu.findItem(R.id.MENU_ISBN_VALIDITY_LOOSE).setChecked(true);
+                break;
+
+            case ISBN.VALIDITY_NONE:
+            default:
+                menu.findItem(R.id.MENU_ISBN_VALIDITY_NONE).setChecked(true);
+                break;
+        }
+    }
+
+    @Override
     public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
-        //noinspection SwitchStatementWithTooFewBranches
         switch (item.getItemId()) {
-            case R.id.MENU_STRICT_ISBN: {
-                mStrictIsbn = !item.isChecked();
-                item.setChecked(mStrictIsbn);
-                mIsbnValidationTextWatcher.setStrictIsbn(mStrictIsbn);
-                // don't add twice
-                mVb.isbn.removeTextChangedListener(mIsbnCleanupTextWatcher);
-                if (mStrictIsbn) {
-                    mVb.isbn.addTextChangedListener(mIsbnCleanupTextWatcher);
-                }
+            case R.id.MENU_ISBN_VALIDITY_NONE:
+                mIsbnValidityCheck = ISBN.VALIDITY_NONE;
+                mIsbnCleanupTextWatcher.setValidityLevel(ISBN.VALIDITY_NONE);
+                mIsbnValidationTextWatcher.setValidityLevel(ISBN.VALIDITY_NONE);
                 return true;
-            }
+
+            case R.id.MENU_ISBN_VALIDITY_LOOSE:
+                mIsbnValidityCheck = ISBN.VALIDITY_LOOSE;
+                mIsbnCleanupTextWatcher.setValidityLevel(ISBN.VALIDITY_LOOSE);
+                mIsbnValidationTextWatcher.setValidityLevel(ISBN.VALIDITY_LOOSE);
+                return true;
+
+            case R.id.MENU_ISBN_VALIDITY_STRICT:
+                mIsbnValidityCheck = ISBN.VALIDITY_STRICT;
+                mIsbnCleanupTextWatcher.setValidityLevel(ISBN.VALIDITY_STRICT);
+                mIsbnValidationTextWatcher.setValidityLevel(ISBN.VALIDITY_STRICT);
+                return true;
 
             default:
                 return super.onOptionsItemSelected(item);

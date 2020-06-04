@@ -28,27 +28,15 @@
   -->
 
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-    <PreferenceCategory
-        android:title="@string/pg_ui">
 
-        <SwitchPreference
-            android:defaultValue="false"
-            android:icon="@drawable/ic_tab"
-            android:key="edit.book.tab.nativeId"
-            android:summaryOff="@string/no"
-            android:summaryOn="@string/yes"
-            android:title="@string/pt_allow_edit_native_id" />
+    <PreferenceCategory
+        android:title="@string/pt_maintenance">
 
         <Preference
             android:icon="@drawable/ic_undo"
             android:key="psk_tip_reset_all"
             android:title="@string/tip_reset_all"
             />
-
-    </PreferenceCategory>
-
-    <PreferenceCategory
-        android:title="@string/pt_maintenance">
 
         <Preference
             android:icon="@drawable/ic_close"

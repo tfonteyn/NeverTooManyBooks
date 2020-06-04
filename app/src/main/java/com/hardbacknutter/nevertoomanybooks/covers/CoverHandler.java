@@ -66,7 +66,6 @@ import java.util.Objects;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.RequestCode;
-import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PIntString;
 import com.hardbacknutter.nevertoomanybooks.database.CoversDAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
@@ -371,11 +370,11 @@ public class CoverHandler {
 
                         // Should we apply an explicit rotation angle?
                         // (which would overrule the setWindowManager call)
-                        final int angle = PIntString
+                        final int angle = Prefs
                                 .getListPreference(mContext, Prefs.pk_camera_image_autorotate, 0);
                         // What action should we take after we're done?
                         @NextAction
-                        final int action = PIntString
+                        final int action = Prefs
                                 .getListPreference(mContext, Prefs.pk_camera_image_action,
                                                    ACTION_NOTHING);
 

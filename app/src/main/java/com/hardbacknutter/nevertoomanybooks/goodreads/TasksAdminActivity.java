@@ -61,7 +61,7 @@ public class TasksAdminActivity
 
         setTitle(R.string.gr_tq_menu_background_tasks);
 
-        //When any task is added/changed/deleted, update the list. Lazy, yes.
+        //When any task is added/changed/deleted, we'll update the Cursor.
         QueueManager.getQueueManager().registerTaskListener(mOnChangeListener);
 
         if (savedInstanceState == null) {

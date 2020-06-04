@@ -668,5 +668,7 @@
     <string name="lbl_archive_format">Формат</string>
     <string name="menu_cover_rotate_automatic">автоматическая</string>
     <string name="and_others_plus"><![CDATA[%1$s … <small>[+%2$d]</small>]]></string>
+    <string name="strict">Строгий</string>
+    <string name="pe_edit_book_isbn_checks_loose">свободно</string>
 
 </resources>

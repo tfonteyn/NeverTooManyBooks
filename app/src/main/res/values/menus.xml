@@ -49,6 +49,8 @@
     <integer name="MENU_ORDER_DUPLICATE">510</integer>
     <integer name="MENU_ORDER_DELETE">520</integer>
 
+    <integer name="MENU_ORDER_ISBN_VALIDITY">550</integer>
+
     <integer name="MENU_ORDER_UPDATE_FIELDS">700</integer>
     <integer name="MENU_ORDER_LENDING">710</integer>
     <integer name="MENU_ORDER_SHARE">720</integer>
@@ -157,8 +159,11 @@
 
     <!-- options menu: on-the-fly access to setting search order -->
     <item name="MENU_PREFS_SEARCH_SITES" type="id" />
-    <!-- options menu: enforce strict ISBN (or not) -->
-    <item name="MENU_STRICT_ISBN" type="id" />
+    <!-- options menu: enforce ISBN validity checks during input -->
+    <item name="SUBMENU_ISBN_VALIDITY" type="id" />
+    <item name="MENU_ISBN_VALIDITY_NONE" type="id" />
+    <item name="MENU_ISBN_VALIDITY_LOOSE" type="id" />
+    <item name="MENU_ISBN_VALIDITY_STRICT" type="id" />
 
     <!-- options menu: on the FTS search activity -->
     <item name="MENU_REBUILD_FTS" type="id" />
@@ -166,6 +171,8 @@
     <item name="MENU_PURGE_BLNS" type="id" />
 
     <item name="MENU_SHOW_GR_EVENTS" type="id" />
+
+    <item name="MENU_NEXT_MISSING_COVER" type="id" />
 
     <!-- options menu -->
     <item name="MENU_RESET" type="id" />
@@ -183,6 +190,6 @@
     <!-- debug options for the SQLite shell activity. -->
     <item name="MENU_DEBUG_SQ_SHELL_RUN" type="id" />
     <item name="MENU_DEBUG_SQ_SHELL_LIST_TABLES" type="id" />
-    <item name="MENU_NEXT_MISSING_COVER" type="id" />
+
 
 </resources>

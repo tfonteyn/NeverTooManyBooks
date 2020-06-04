@@ -121,7 +121,7 @@ public class BookSearchByIsbnFragment
         //noinspection ConstantConditions
         getActivity().setTitle(R.string.lbl_search_isbn);
 
-        mVb.isbn.setText(mSearchCoordinator.getIsbnSearchText());
+        mVb.isbn.setText(mCoordinator.getIsbnSearchText());
 
         mVb.key0.setOnClickListener(v -> mVb.isbn.onKey('0'));
         mVb.key1.setOnClickListener(v -> mVb.isbn.onKey('1'));
@@ -141,14 +141,16 @@ public class BookSearchByIsbnFragment
             return true;
         });
 
-        mIsbnValidationTextWatcher = new ISBN.ValidationTextWatcher(
-                mVb.lblIsbn, mVb.isbn, mSearchCoordinator.isStrictIsbn());
-        mVb.isbn.addTextChangedListener(mIsbnValidationTextWatcher);
+        // The search preference determines the level here; NOT the 'edit book'
+        int isbnValidityCheck = mCoordinator.isStrictIsbn() ? ISBN.VALIDITY_STRICT
+                                                            : ISBN.VALIDITY_NONE;
 
-        mIsbnCleanupTextWatcher = new ISBN.CleanupTextWatcher(mVb.isbn);
-        if (mSearchCoordinator.isStrictIsbn()) {
-            mVb.isbn.addTextChangedListener(mIsbnCleanupTextWatcher);
-        }
+        mIsbnCleanupTextWatcher = new ISBN.CleanupTextWatcher(
+                mVb.isbn, isbnValidityCheck);
+        mVb.isbn.addTextChangedListener(mIsbnCleanupTextWatcher);
+        mIsbnValidationTextWatcher = new ISBN.ValidationTextWatcher(
+                mVb.lblIsbn, mVb.isbn, isbnValidityCheck);
+        mVb.isbn.addTextChangedListener(mIsbnValidationTextWatcher);
 
         //noinspection ConstantConditions
         mVb.btnSearch.setOnClickListener(v -> prepareSearch(mVb.isbn.getText().toString().trim()));
@@ -175,9 +177,9 @@ public class BookSearchByIsbnFragment
             .setIcon(R.drawable.ic_barcode)
             .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
 
-        menu.add(Menu.NONE, R.id.MENU_STRICT_ISBN, 0, R.string.lbl_strict_isbn)
+        menu.add(Menu.NONE, R.id.MENU_ISBN_VALIDITY_STRICT, 0, R.string.lbl_strict_isbn)
             .setCheckable(true)
-            .setChecked(mSearchCoordinator.isStrictIsbn())
+            .setChecked(mCoordinator.isStrictIsbn())
             .setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
 
         super.onCreateOptionsMenu(menu, inflater);
@@ -191,18 +193,14 @@ public class BookSearchByIsbnFragment
                 mScanMode = mScannerModel.scan(this, RequestCode.SCAN_BARCODE);
                 return true;
             }
-            case R.id.MENU_STRICT_ISBN: {
+            case R.id.MENU_ISBN_VALIDITY_STRICT: {
                 final boolean checked = !item.isChecked();
                 item.setChecked(checked);
-                mIsbnValidationTextWatcher.setStrictIsbn(checked);
-                if (checked) {
-                    // don't add twice
-                    mVb.isbn.removeTextChangedListener(mIsbnCleanupTextWatcher);
-                    mVb.isbn.addTextChangedListener(mIsbnCleanupTextWatcher);
-                } else {
-                    mVb.isbn.removeTextChangedListener(mIsbnCleanupTextWatcher);
-                }
-                mSearchCoordinator.setStrictIsbn(checked);
+                mCoordinator.setStrictIsbn(checked);
+
+                int validity = checked ? ISBN.VALIDITY_STRICT : ISBN.VALIDITY_NONE;
+                mIsbnCleanupTextWatcher.setValidityLevel(validity);
+                mIsbnValidationTextWatcher.setValidityLevel(validity);
                 return true;
             }
 
@@ -215,7 +213,7 @@ public class BookSearchByIsbnFragment
     public void onPause() {
         super.onPause();
         //noinspection ConstantConditions
-        mSearchCoordinator.setIsbnSearchText(mVb.isbn.getText().toString().trim());
+        mCoordinator.setIsbnSearchText(mVb.isbn.getText().toString().trim());
     }
 
     @Override
@@ -334,7 +332,7 @@ public class BookSearchByIsbnFragment
      */
     private void prepareSearch(@NonNull final String userEntry) {
 
-        final boolean strictIsbn = mSearchCoordinator.isStrictIsbn();
+        final boolean strictIsbn = mCoordinator.isStrictIsbn();
         final ISBN code = new ISBN(userEntry, strictIsbn);
 
         // not a valid code ?
@@ -355,7 +353,7 @@ public class BookSearchByIsbnFragment
         }
 
         // at this point, we know we have a searchable code
-        mSearchCoordinator.setIsbnSearchText(code.asText());
+        mCoordinator.setIsbnSearchText(code.asText());
 
         if (strictIsbn && mScanMode) {
             Objects.requireNonNull(mScannerModel, ErrorMsg.NULL_SCANNER_MODEL);

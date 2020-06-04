@@ -66,6 +66,7 @@ public class EventsAdminActivity
 
         setTitle(R.string.gr_tq_title_task_errors);
 
+        //When any event is added/changed/deleted, we'll update the Cursor.
         QueueManager.getQueueManager().registerEventListener(mOnChangeListener);
 
         if (savedInstanceState == null) {

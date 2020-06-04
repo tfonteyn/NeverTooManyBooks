@@ -46,8 +46,8 @@ import com.hardbacknutter.nevertoomanybooks.utils.Notifier;
 /**
  * Background task class to send all books in the database to Goodreads.
  * <p>
- * A Task *MUST* be serializable.
- * This means that it can not contain any references to UI components or similar objects.
+ * This Task *MUST* be serializable hence can not contain
+ * any references to UI components or similar objects.
  */
 class SendBooksLegacyTask
         extends SendBooksLegacyTaskBase {

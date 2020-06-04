@@ -974,9 +974,8 @@ public class BooklistAdapter
         String getPublisherAndPubDateText(@NonNull final RowDataHolder rowData) {
             final String publicationDate;
             if (mInUse.pubDate) {
-                publicationDate = LocaleUtils.toPrettyDate(itemView.getContext(),
-                                                           rowData.getString(
-                                                                   DBDefinitions.KEY_DATE_PUBLISHED));
+                publicationDate = LocaleUtils.toPrettyDate(
+                        itemView.getContext(), rowData.getString(DBDefinitions.KEY_DATE_PUBLISHED));
             } else {
                 publicationDate = null;
             }
@@ -1057,6 +1056,9 @@ public class BooklistAdapter
     static class GenericStringHolder
             extends RowViewHolder {
 
+        /*** Default resource id for the View to populate. */
+        @IdRes
+        static final int mTextViewId = R.id.name;
         /**
          * The group this holder represents.
          * It's ok to store this as it's intrinsically linked with the ViewType.
@@ -1075,10 +1077,6 @@ public class BooklistAdapter
         /** The parent adapter. */
         @NonNull
         final BooklistAdapter mAdapter;
-
-        /*** Default resource id for the View to populate. */
-        @IdRes
-        static final int mTextViewId = R.id.name;
 
         /**
          * Constructor.

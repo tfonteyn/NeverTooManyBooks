@@ -499,6 +499,7 @@ public class GoodreadsAuth {
     public static class AuthorizationException
             extends Exception {
 
+
         private static final long serialVersionUID = 5691917497651682323L;
 
         AuthorizationException(@NonNull final Throwable cause) {

@@ -153,7 +153,7 @@ public class SearchCoordinator
     /** Original ISBN text for search. */
     @NonNull
     private String mIsbnSearchText = "";
-    /** {@code true} for strict ISBN checking, {@code false} for also allowing generic code. */
+    /** {@code true} for strict ISBN checking, {@code false} for allowing generic codes. */
     private boolean mStrictIsbn = true;
 
     /** Created by {@link #prepareSearch(Context)}. NonNull afterwards. */

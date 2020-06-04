@@ -19,7 +19,6 @@ Issues checked: 834 down to 677 (inc)
 New fields:
 ENHANCE: https://github.com/eleybourn/Book-Catalogue/issues/813 - detailed authorship and original title/language
 ==> LibraryThing seems to have fields for original title/language. Needs investigating.
-ENHANCE: https://github.com/eleybourn/Book-Catalogue/issues/753 - Add Edition[done], Print[done], and condition[TODO] (book / dustcover)
 ENHANCE: https://github.com/eleybourn/Book-Catalogue/issues/799 - original title (for translations, so also original language)
 ==> superseded by 813
 
@@ -38,8 +37,6 @@ ENHANCE: https://github.com/eleybourn/Book-Catalogue/issues/806 - same as 723
     and then redo the search WITH the isbn
 ==> so this is why we only ever get ONE result back.
 
-Bugs seen:
-
 Implemented:
 https://github.com/eleybourn/Book-Catalogue/issues/834 - 820..834: all screen orientation change issues
 https://github.com/eleybourn/Book-Catalogue/issues/809 - same as 740
@@ -48,11 +45,12 @@ https://github.com/eleybourn/Book-Catalogue/issues/779 - Unneeded comma at end o
 https://github.com/eleybourn/Book-Catalogue/issues/770 - Set as read from long press
 https://github.com/eleybourn/Book-Catalogue/issues/763 - Feature request: Series/Author complete/done checkbox
 https://github.com/eleybourn/Book-Catalogue/issues/761 - Surround ISBN with quotes on CSV export?
+https://github.com/eleybourn/Book-Catalogue/issues/753 - Add Edition, Print, and condition
 https://github.com/eleybourn/Book-Catalogue/issues/751 - Different decimal separator for price (German)
 https://github.com/eleybourn/Book-Catalogue/issues/742 - Cannot Delete Title in Anthologies
 https://github.com/eleybourn/Book-Catalogue/issues/740 - Date prompt appears to be UCT, not local time
 https://github.com/eleybourn/Book-Catalogue/issues/732 - Mark as read from the main list
-https://github.com/eleybourn/Book-Catalogue/issues/728 - Option to re-download the cover -> fixed by simply adding the current isbn to the 'alternative editions' list to search
+https://github.com/eleybourn/Book-Catalogue/issues/728 - Option to re-download the cover
 https://github.com/eleybourn/Book-Catalogue/issues/725 - share-function
 https://github.com/eleybourn/Book-Catalogue/issues/721 - The application directory should be cleaned
 https://github.com/eleybourn/Book-Catalogue/issues/720 - Moving user-created styles doesn't work

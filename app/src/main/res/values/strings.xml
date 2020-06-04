@@ -868,6 +868,10 @@
     -->
     <string name="pt_search_prefer_isbn10">Use ISBN-10 when possible</string>
 
+    <!-- ListPreference -->
+    <string name="pt_edit_book_isbn_checks">ISBN validity checks</string>
+    <string name="pe_edit_book_isbn_checks_loose">Loose</string>
+
     <!-- SwitchPreference - search engines can collect Series information from the toc.
         This is not always desirable, and by default switched off. -->
     <string name="pt_collect_series_info_from_toc">Collect Series info from TOC</string>
@@ -881,6 +885,7 @@
     <!-- SwitchPreference - Some web sites expose their native website book id.
          Allow the user to lookup books using such an ID, and manually modify them. -->
     <string name="pt_allow_edit_native_id">Allow editing native website book id</string>
+
 
     <string name="pt_primary_author_type">Primary author type</string>
     <string name="pt_maintenance">Maintenance</string>
@@ -1360,8 +1365,10 @@
 
     <string name="done">Done</string>
     <string name="unused">unused</string>
+
     <!-- e.g. indicates nothing was selected; nothing was done. -->
     <string name="none">None</string>
+    <string name="strict">Strict</string>
 
     <!-- 'and' as used in lists:  x and y -->
     <string name="list_and">and</string>

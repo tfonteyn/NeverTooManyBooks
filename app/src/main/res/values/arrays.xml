@@ -75,6 +75,18 @@
         <item>2</item>
     </string-array>
 
+    <!-- ListPreference - the level of validity checking of ISBN numbers while editing (by the user) of a book. -->
+    <string-array name="pe_edit_book_isbn_checks">
+        <item>@string/none</item>
+        <item>@string/pe_edit_book_isbn_checks_loose</item>
+        <item>@string/strict</item>
+    </string-array>
+    <string-array name="pv_edit_book_isbn_checks">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+    </string-array>
+
     <!-- ListPreference - booklist state-related preferences -->
     <string-array name="pe_bob_list_state">
         <item>@string/pe_bob_list_rebuild_state_preferred</item>

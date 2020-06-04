@@ -72,7 +72,7 @@ public abstract class BookSearchBaseFragment
     /** Log tag. */
     private static final String TAG = "BookSearchBaseFrag";
     DAO mDb;
-    SearchCoordinator mSearchCoordinator;
+    SearchCoordinator mCoordinator;
 
     @Nullable
     private ProgressDialogFragment mProgressDialog;
@@ -87,9 +87,9 @@ public abstract class BookSearchBaseFragment
 
         // Activity scope!
         //noinspection ConstantConditions
-        mSearchCoordinator = new ViewModelProvider(getActivity()).get(SearchCoordinator.class);
+        mCoordinator = new ViewModelProvider(getActivity()).get(SearchCoordinator.class);
         //noinspection ConstantConditions
-        mSearchCoordinator.init(getContext(), requireArguments());
+        mCoordinator.init(getContext(), requireArguments());
     }
 
     @Override
@@ -97,10 +97,8 @@ public abstract class BookSearchBaseFragment
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        mSearchCoordinator.onProgress()
-                          .observe(getViewLifecycleOwner(), this::onSearchProgress);
-        mSearchCoordinator.onOneBookDone()
-                          .observe(getViewLifecycleOwner(), this::onSearchFinished);
+        mCoordinator.onProgress().observe(getViewLifecycleOwner(), this::onSearchProgress);
+        mCoordinator.onOneBookDone().observe(getViewLifecycleOwner(), this::onSearchFinished);
 
         //noinspection ConstantConditions
         mResultDataModel = new ViewModelProvider(getActivity()).get(ResultDataModel.class);
@@ -145,7 +143,7 @@ public abstract class BookSearchBaseFragment
                         .putExtra(SearchAdminModel.BKEY_LIST_TYPE,
                                   (Parcelable) SiteList.Type.Data)
                         .putExtra(SiteList.Type.Data.getBundleKey(),
-                                  mSearchCoordinator.getSiteList());
+                                  mCoordinator.getSiteList());
                 startActivityForResult(intent, RequestCode.PREFERRED_SEARCH_SITES);
                 return true;
             }
@@ -212,7 +210,7 @@ public abstract class BookSearchBaseFragment
         }
 
         // hook the task up.
-        dialog.setCanceller(mSearchCoordinator);
+        dialog.setCanceller(mCoordinator);
 
         return dialog;
     }
@@ -231,7 +229,7 @@ public abstract class BookSearchBaseFragment
      */
     @CallSuper
     void onClearPreviousSearchCriteria() {
-        mSearchCoordinator.clearSearchText();
+        mCoordinator.clearSearchText();
     }
 
     /**
@@ -242,7 +240,7 @@ public abstract class BookSearchBaseFragment
      */
     final void startSearch() {
         // check if we have an active search, if so, quit silently.
-        if (mSearchCoordinator.isSearchActive()) {
+        if (mCoordinator.isSearchActive()) {
             return;
         }
 
@@ -288,7 +286,7 @@ public abstract class BookSearchBaseFragment
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     boolean onSearch() {
         //noinspection ConstantConditions
-        return mSearchCoordinator.search(getContext());
+        return mCoordinator.search(getContext());
     }
 
     /**
@@ -324,7 +322,7 @@ public abstract class BookSearchBaseFragment
                 if (resultCode == Activity.RESULT_OK && data != null) {
                     SiteList siteList = data.getParcelableExtra(SiteList.Type.Data.getBundleKey());
                     if (siteList != null) {
-                        mSearchCoordinator.setSiteList(siteList);
+                        mCoordinator.setSiteList(siteList);
                     }
                 }
                 break;

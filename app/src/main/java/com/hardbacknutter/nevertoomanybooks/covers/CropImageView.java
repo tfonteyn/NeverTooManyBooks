@@ -72,7 +72,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PIntString;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 
 /**
@@ -175,8 +174,8 @@ public class CropImageView
                                 @NonNull final Bitmap bitmap,
                                 final boolean wholeImage) {
 
-        final int type = PIntString.getListPreference(context, Prefs.pk_image_cropper_layer_type,
-                                                      LAYER_TYPE_DEFAULT);
+        final int type = Prefs.getListPreference(context, Prefs.pk_image_cropper_layer_type,
+                                                 LAYER_TYPE_DEFAULT);
         if (type != LAYER_TYPE_DEFAULT) {
             setLayerType(type, null);
         }

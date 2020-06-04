@@ -50,8 +50,8 @@ import com.hardbacknutter.nevertoomanybooks.utils.NetworkUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 
 /**
- * A Task *MUST* be serializable.
- * This means that it can not contain any references to UI components or similar objects.
+ * This Task *MUST* be serializable hence can not contain
+ * any references to UI components or similar objects.
  */
 public abstract class SendBooksLegacyTaskBase
         extends TQTask {
@@ -59,7 +59,8 @@ public abstract class SendBooksLegacyTaskBase
     /** Timeout before declaring network failure. */
     private static final int FIVE_MINUTES = 300;
 
-    private static final long serialVersionUID = -625429251891312453L;
+    private static final long serialVersionUID = -7348431827842548151L;
+
     /** Number of books with no ISBN. */
     int mNoIsbn;
     /** Number of books that had ISBN but could not be found. */
@@ -119,6 +120,7 @@ public abstract class SendBooksLegacyTaskBase
      * @param context    Current context
      * @param apiHandler the Goodreads Manager
      * @param db         Database Access
+     * @param rowData    the book data to send
      *
      * @return {@code false} on failure, {@code true} on success
      */

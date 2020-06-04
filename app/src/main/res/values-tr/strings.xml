@@ -400,7 +400,7 @@
     <string name="lbl_name">Ad</string>
     <string name="name_colon_value">%1$s: %2$s</string>
     <string name="no">Hayır</string>
-    <string name="none">Hiçbiri</string>
+    <string name="none">Yok</string>
     <string name="notification_channel_error">Hata</string>
     <string name="notification_channel_info">Bilgi</string>
     <string name="pe_bob_filter_anthology_no">Antolojiler hariç hepsi</string>
@@ -669,5 +669,7 @@
     <string name="lbl_archive_format">Biçim</string>
     <string name="menu_cover_rotate_automatic">Otomatik</string>
     <string name="and_others_plus"><![CDATA[%1$s … <small>[+%2$d]</small>]]></string>
+    <string name="strict">Sıkı</string>
+    <string name="pe_edit_book_isbn_checks_loose">Serbest</string>
 
 </resources>

@@ -127,8 +127,7 @@ public class BookSearchByNativeIdFragment
         //noinspection ConstantConditions
         final String nativeId = mVb.nativeId.getText().toString().trim();
         //noinspection ConstantConditions
-        return mSearchCoordinator.searchByNativeId(getContext(),
-                                                   Site.createDataSite(siteId), nativeId);
+        return mCoordinator.searchByNativeId(getContext(), Site.createDataSite(siteId), nativeId);
     }
 
     @Override

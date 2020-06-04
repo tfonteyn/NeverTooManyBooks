@@ -31,7 +31,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 import androidx.annotation.NonNull;
-import androidx.preference.ListPreference;
 import androidx.preference.PreferenceManager;
 
 /**
@@ -60,27 +59,6 @@ public class PIntString
                       final boolean isPersistent,
                       @NonNull final Integer defValue) {
         super(key, uuid, isPersistent, defValue);
-    }
-
-    /**
-     * {@link ListPreference} stores the selected value as a String.
-     * But they are really Integer values. Hence this transmogrification....
-     *
-     * @param context  Current context
-     * @param key      The name of the preference to retrieve.
-     * @param defValue Value to return if this preference does not exist.
-     *
-     * @return int (stored as String) global preference
-     */
-    public static int getListPreference(@NonNull final Context context,
-                                        @NonNull final String key,
-                                        final int defValue) {
-        final String value = PreferenceManager.getDefaultSharedPreferences(context)
-                                              .getString(key, null);
-        if (value == null || value.isEmpty()) {
-            return defValue;
-        }
-        return Integer.parseInt(value);
     }
 
     @NonNull

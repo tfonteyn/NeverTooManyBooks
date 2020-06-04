@@ -58,8 +58,8 @@ public class BindableItemViewHolder {
      * @return human readable datetime string
      */
     @NonNull
-    protected String toPrettyDateTime(@NonNull final LocalDateTime date,
-                                      @NonNull final Locale displayLocale) {
+    protected static String toPrettyDateTime(@NonNull final LocalDateTime date,
+                                             @NonNull final Locale displayLocale) {
         return date.format(DateTimeFormatter
                                    .ofLocalizedDateTime(FormatStyle.MEDIUM, FormatStyle.SHORT)
                                    .withLocale(displayLocale));

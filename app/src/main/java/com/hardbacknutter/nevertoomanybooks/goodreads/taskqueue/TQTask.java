@@ -57,7 +57,7 @@ public abstract class TQTask
     public static final int CAT_EXPORT_ALL = 2;
     public static final int CAT_EXPORT_ONE = 3;
 
-    private static final long serialVersionUID = 3129519336104843325L;
+    private static final long serialVersionUID = 4676971523754206924L;
 
     @GrStatus.Status
     private int mLastExtStatus;

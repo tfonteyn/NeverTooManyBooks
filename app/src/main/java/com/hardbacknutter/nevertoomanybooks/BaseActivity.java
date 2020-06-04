@@ -62,7 +62,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.Objects;
 
-import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PIntString;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsAdminFragment;
@@ -182,7 +181,7 @@ public abstract class BaseActivity
     @ThemeId
     public static int applyNightMode(@NonNull final Context context) {
         // Always read from prefs.
-        sCurrentNightMode = PIntString.getListPreference(context, Prefs.pk_ui_theme, DEFAULT_THEME);
+        sCurrentNightMode = Prefs.getListPreference(context, Prefs.pk_ui_theme, DEFAULT_THEME);
 
         final int dnMode;
         switch (sCurrentNightMode) {
@@ -236,7 +235,7 @@ public abstract class BaseActivity
     public boolean isNightModeChanged(@NonNull final Context context,
                                       @ThemeId final int mode) {
         // always reload from prefs.
-        sCurrentNightMode = PIntString.getListPreference(context, Prefs.pk_ui_theme, DEFAULT_THEME);
+        sCurrentNightMode = Prefs.getListPreference(context, Prefs.pk_ui_theme, DEFAULT_THEME);
         return mode != sCurrentNightMode;
     }
 

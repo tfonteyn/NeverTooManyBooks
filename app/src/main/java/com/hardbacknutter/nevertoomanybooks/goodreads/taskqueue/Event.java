@@ -55,6 +55,7 @@ public abstract class Event<
                    Serializable {
 
     private static final long serialVersionUID = 7879945038246273501L;
+
     @NonNull
     private final String mDescription;
     private long mId;

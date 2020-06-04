@@ -87,10 +87,13 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsExceptio
  * they have placed on bookshelves, irrespective of whether they have rated, reviewed
  * or marked the book as 'owned'.
  * <p>
- * A Task *MUST* be serializable.
- * This means that it can not contain any references to UI components or similar objects.
+ * This Task *MUST* be serializable hence can not contain
+ * any references to UI components or similar objects.
  * <p>
  * URGENT: needs testing... to many changes
+ * <p>
+ * Reminder on dates: parsing website dates, use {@link DateTimeFormatter#parse}.
+ * Dates from the local database, use {@link DateParser}.
  */
 class ImportLegacyTask
         extends TQTask {
@@ -109,7 +112,7 @@ class ImportLegacyTask
     private static final String PREFS_LAST_SYNC_DATE =
             GoodreadsHandler.PREF_PREFIX + "LastSyncDate";
 
-    private static final long serialVersionUID = -5568330360147890405L;
+    private static final long serialVersionUID = 2320581474758496720L;
 
     /**
      * The date before which updates are irrelevant.

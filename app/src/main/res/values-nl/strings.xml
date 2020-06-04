@@ -676,5 +676,7 @@
     <string name="lbl_archive_format">Formaat</string>
     <string name="menu_cover_rotate_automatic">Automatisch</string>
     <string name="and_others_plus"><![CDATA[%1$s … <small>[+%2$d]</small>]]></string>
+    <string name="strict">Strikt</string>
+    <string name="pe_edit_book_isbn_checks_loose">Ruim</string>
 
 </resources>
