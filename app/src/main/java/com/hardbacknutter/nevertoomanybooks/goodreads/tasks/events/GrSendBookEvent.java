@@ -135,10 +135,6 @@ public class GrSendBookEvent
         holder.errorView.setText(getDescription(context));
         holder.setOccurredAt(row.getEventDate(), userLocale);
 
-        holder.checkedButton.setChecked(row.isSelected());
-        holder.checkedButton.setOnCheckedChangeListener(
-                (v, isChecked) -> row.setSelected(getId(), isChecked));
-
         final String isbn = db.getBookIsbn(mBookId);
         if (isbn != null && !isbn.isEmpty()) {
             holder.retryButton.setVisibility(View.VISIBLE);

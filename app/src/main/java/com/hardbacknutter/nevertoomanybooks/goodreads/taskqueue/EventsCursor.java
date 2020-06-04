@@ -33,7 +33,6 @@ import android.database.sqlite.SQLiteCursorDriver;
 import android.database.sqlite.SQLiteQuery;
 
 import androidx.annotation.NonNull;
-import androidx.collection.LongSparseArray;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -53,8 +52,6 @@ public class EventsCursor
     private static int sDateCol = -2;
     /** Column number of Exception column. */
     private static int sEventCol = -2;
-
-    private final LongSparseArray<Boolean> mSelections = new LongSparseArray<>();
 
     /**
      * Constructor.
@@ -82,29 +79,6 @@ public class EventsCursor
             utcDate = LocalDateTime.now(ZoneOffset.UTC);
         }
         return utcDate;
-    }
-
-    /**
-     * Fake attribute to handle multi-select ListViews. if we ever do them.
-     *
-     * @return Flag indicating if current row has been 'selected'.
-     */
-    public boolean isSelected() {
-        synchronized (mSelections) {
-            final Boolean isSelected = mSelections.get(getId());
-            if (isSelected != null) {
-                return isSelected;
-            } else {
-                return false;
-            }
-        }
-    }
-
-    public void setSelected(final long id,
-                            final boolean selected) {
-        synchronized (mSelections) {
-            mSelections.put(id, selected);
-        }
     }
 
     @Override
