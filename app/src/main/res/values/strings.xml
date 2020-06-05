@@ -722,7 +722,7 @@
     <string name="gr_tq_title_task_errors">Task Errors</string>
     <string name="gr_tq_menu_delete_event">Delete Event</string>
     <string name="gr_tq_menu_delete_task">Delete Task</string>
-    <string name="gr_tq_menu_background_tasks">GoodReads Background Tasks</string>
+    <string name="gr_tq_menu_background_tasks">Background Tasks</string>
     <string name="gr_tq_btn_cleanup_old_tasks">Cleanup Old Tasks</string>
     <string name="gr_tq_btn_cleanup_old_events">Cleanup Old Events</string>
     <string name="gr_tq_task_has_been_queued">Task has been queued</string>
