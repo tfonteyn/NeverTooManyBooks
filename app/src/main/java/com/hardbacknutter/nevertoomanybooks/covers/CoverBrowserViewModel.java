@@ -78,6 +78,7 @@ public class CoverBrowserViewModel
     private final Executor mGalleryNetworkExecutor = AlternativeExecutor.create("gallery/n");
 
     /** Holder for all active tasks, so we can cancel them if needed. */
+    @SuppressWarnings("rawtypes")
     private final SparseArray<AsyncTask> mAllTasks = new SparseArray<>();
 
     /** GalleryImage. */
@@ -165,6 +166,7 @@ public class CoverBrowserViewModel
     void cancelAllTasks() {
         synchronized (mAllTasks) {
             for (int i = 0; i < mAllTasks.size(); i++) {
+                //noinspection rawtypes
                 final AsyncTask task = mAllTasks.valueAt(i);
                 task.cancel(true);
             }
