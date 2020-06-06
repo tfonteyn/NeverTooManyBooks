@@ -666,6 +666,10 @@ public class BooklistStyle
                                  new PBoolean(Prefs.pk_style_book_show_format,
                                               mUuid, isUserDefined));
 
+        mAllBookDetailFields.put(DBDefinitions.KEY_RATING,
+                                 new PBoolean(Prefs.pk_style_book_rating,
+                                              mUuid, isUserDefined));
+
         // all filters
         mFilters = new LinkedHashMap<>();
 
@@ -1181,14 +1185,6 @@ public class BooklistStyle
             labels.add(context.getString(R.string.lbl_thumbnails));
         }
         //noinspection ConstantConditions
-        if (mAllBookDetailFields.get(DBDefinitions.KEY_BOOKSHELF_NAME).isTrue(context)) {
-            labels.add(context.getString(R.string.lbl_bookshelves));
-        }
-        //noinspection ConstantConditions
-        if (mAllBookDetailFields.get(DBDefinitions.KEY_LOCATION).isTrue(context)) {
-            labels.add(context.getString(R.string.lbl_location));
-        }
-        //noinspection ConstantConditions
         if (mAllBookDetailFields.get(DBDefinitions.KEY_AUTHOR_FORMATTED).isTrue(context)) {
             labels.add(context.getString(R.string.lbl_author));
         }
@@ -1208,7 +1204,18 @@ public class BooklistStyle
         if (mAllBookDetailFields.get(DBDefinitions.KEY_FORMAT).isTrue(context)) {
             labels.add(context.getString(R.string.lbl_format));
         }
-
+        //noinspection ConstantConditions
+        if (mAllBookDetailFields.get(DBDefinitions.KEY_LOCATION).isTrue(context)) {
+            labels.add(context.getString(R.string.lbl_location));
+        }
+        //noinspection ConstantConditions
+        if (mAllBookDetailFields.get(DBDefinitions.KEY_BOOKSHELF_NAME).isTrue(context)) {
+            labels.add(context.getString(R.string.lbl_bookshelves));
+        }
+        //noinspection ConstantConditions
+        if (mAllBookDetailFields.get(DBDefinitions.KEY_RATING).isTrue(context)) {
+            labels.add(context.getString(R.string.lbl_rating));
+        }
         Collections.sort(labels);
         return labels;
     }

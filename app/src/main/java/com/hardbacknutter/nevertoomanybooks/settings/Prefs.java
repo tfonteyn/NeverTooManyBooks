@@ -121,6 +121,9 @@ public final class Prefs {
     public static final String pk_style_book_show_isbn = "style.booklist.show.isbn";
     /** Show format for each book. */
     public static final String pk_style_book_show_format = "style.booklist.show.format";
+    /** Show rating for each book. */
+    public static final String pk_style_book_rating = "style.booklist.show.rating";
+
     /** Booklist Filter - ListPreference. */
     public static final String pk_style_filter_read = "style.booklist.filter.read";
     /** Booklist Filter - ListPreference. */

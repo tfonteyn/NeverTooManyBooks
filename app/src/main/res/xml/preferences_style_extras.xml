@@ -30,12 +30,21 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
     <PreferenceCategory
         android:title="@string/pg_bob_show_details">
+
         <SwitchPreference
             android:defaultValue="false"
-            android:key="style.booklist.show.format"
+            android:key="style.booklist.show.rating"
             android:summaryOff="@string/no"
             android:summaryOn="@string/yes"
-            android:title="@string/lbl_format"
+            android:title="@string/lbl_rating"
+            />
+
+        <SwitchPreference
+            android:defaultValue="false"
+            android:key="style.booklist.show.author"
+            android:summaryOff="@string/no"
+            android:summaryOn="@string/yes"
+            android:title="@string/lbl_author"
             />
 
         <SwitchPreference
@@ -64,10 +73,10 @@
 
         <SwitchPreference
             android:defaultValue="false"
-            android:key="style.booklist.show.bookshelves"
+            android:key="style.booklist.show.format"
             android:summaryOff="@string/no"
             android:summaryOn="@string/yes"
-            android:title="@string/lbl_bookshelves_long"
+            android:title="@string/lbl_format"
             />
 
         <SwitchPreference
@@ -80,10 +89,10 @@
 
         <SwitchPreference
             android:defaultValue="false"
-            android:key="style.booklist.show.author"
+            android:key="style.booklist.show.bookshelves"
             android:summaryOff="@string/no"
             android:summaryOn="@string/yes"
-            android:title="@string/lbl_author"
+            android:title="@string/lbl_bookshelves_long"
             />
     </PreferenceCategory>
 </PreferenceScreen>

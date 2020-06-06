@@ -75,6 +75,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.RowDataHolder;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsHandler;
+import com.hardbacknutter.nevertoomanybooks.goodreads.GrStatus;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskBase;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
@@ -553,7 +554,11 @@ public class BooksOnBookshelfModel
                     DBDefinitions.DOM_BOOK_LOCATION,
                     DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_LOCATION)));
         }
-
+        if (style.isBookDetailUsed(context, prefs, DBDefinitions.KEY_RATING)) {
+            blb.addDomain(new VirtualDomain(
+                    DBDefinitions.DOM_BOOK_RATING,
+                    DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_RATING)));
+        }
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
             Log.d(TAG, "mSearchCriteria=" + mSearchCriteria);
@@ -785,7 +790,7 @@ public class BooksOnBookshelfModel
 
                 @Override
                 public void onFinished(@NonNull final FinishMessage<Integer> message) {
-                    if (GoodreadsHandler.authNeeded(message)) {
+                    if (message.result != null && message.result == GrStatus.FAILED_CREDENTIALS) {
                         mNeedsGoodreads.setValue(true);
                     } else {
                         mUserMessage.setValue(GoodreadsHandler.digest(context, message));

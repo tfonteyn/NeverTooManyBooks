@@ -642,11 +642,17 @@ public class BooklistAdapter
         private boolean lending;
         /** Book level. */
         private boolean series;
+        /** Book row details - Based on style. */
+        private boolean cover;
 
         /** Book row details - Based on style. */
-        private boolean bookshelf;
+        private boolean rating;
         /** Book row details - Based on style. */
         private boolean author;
+        /** Book row details - Based on style. */
+        private boolean publisher;
+        /** Book row details - Based on style. */
+        private boolean pubDate;
         /** Book row details - Based on style. */
         private boolean isbn;
         /** Book row details - Based on style. */
@@ -654,11 +660,7 @@ public class BooklistAdapter
         /** Book row details - Based on style. */
         private boolean location;
         /** Book row details - Based on style. */
-        private boolean publisher;
-        /** Book row details - Based on style. */
-        private boolean pubDate;
-        /** Book row details - Based on style. */
-        private boolean cover;
+        private boolean bookshelf;
 
         /** Set to true after {@link #set} is called. */
         private boolean isSet;
@@ -679,15 +681,17 @@ public class BooklistAdapter
             lending = DBDefinitions.isUsed(prefs, DBDefinitions.KEY_LOANEE);
             series = DBDefinitions.isUsed(prefs, DBDefinitions.KEY_SERIES_TITLE);
 
-            bookshelf = style
-                    .isBookDetailUsed(context, prefs, DBDefinitions.KEY_BOOKSHELF_NAME_CSV);
+            cover = style.isBookDetailUsed(context, prefs, DBDefinitions.KEY_THUMBNAIL);
+
+            rating = style.isBookDetailUsed(context, prefs, DBDefinitions.KEY_RATING);
             author = style.isBookDetailUsed(context, prefs, DBDefinitions.KEY_AUTHOR_FORMATTED);
+            publisher = style.isBookDetailUsed(context, prefs, DBDefinitions.KEY_PUBLISHER);
+            pubDate = style.isBookDetailUsed(context, prefs, DBDefinitions.KEY_DATE_PUBLISHED);
             isbn = style.isBookDetailUsed(context, prefs, DBDefinitions.KEY_ISBN);
             format = style.isBookDetailUsed(context, prefs, DBDefinitions.KEY_FORMAT);
             location = style.isBookDetailUsed(context, prefs, DBDefinitions.KEY_LOCATION);
-            publisher = style.isBookDetailUsed(context, prefs, DBDefinitions.KEY_PUBLISHER);
-            pubDate = style.isBookDetailUsed(context, prefs, DBDefinitions.KEY_DATE_PUBLISHED);
-            cover = style.isBookDetailUsed(context, prefs, DBDefinitions.KEY_THUMBNAIL);
+            bookshelf = style.isBookDetailUsed(context, prefs,
+                                               DBDefinitions.KEY_BOOKSHELF_NAME_CSV);
         }
 
         /**
@@ -713,6 +717,7 @@ public class BooklistAdapter
             isbn = isbn && rowData.contains(DBDefinitions.KEY_ISBN);
             format = format && rowData.contains(DBDefinitions.KEY_FORMAT);
             location = location && rowData.contains(DBDefinitions.KEY_LOCATION);
+            rating = rating && rowData.contains(DBDefinitions.KEY_RATING);
             publisher = publisher && rowData.contains(DBDefinitions.KEY_PUBLISHER);
             pubDate = pubDate && rowData.contains(DBDefinitions.KEY_DATE_PUBLISHED);
         }
@@ -789,6 +794,8 @@ public class BooklistAdapter
         private final TextView mSeriesNumLongView;
 
         /** View that stores the related book field. */
+        private final RatingBar mRatingBar;
+        /** View that stores the related book field. */
         private final TextView mAuthorView;
         /** View that stores the related book field. */
         private final TextView mPublisherView;
@@ -841,12 +848,14 @@ public class BooklistAdapter
             mOnLoanView = itemView.findViewById(R.id.cbx_on_loan);
             mSeriesNumView = itemView.findViewById(R.id.series_num);
             mSeriesNumLongView = itemView.findViewById(R.id.series_num_long);
-            mBookshelvesView = itemView.findViewById(R.id.shelves);
+
+            mRatingBar = itemView.findViewById(R.id.rating);
             mAuthorView = itemView.findViewById(R.id.author);
+            mPublisherView = itemView.findViewById(R.id.publisher);
             mIsbnView = itemView.findViewById(R.id.isbn);
             mFormatView = itemView.findViewById(R.id.format);
             mLocationView = itemView.findViewById(R.id.location);
-            mPublisherView = itemView.findViewById(R.id.publisher);
+            mBookshelvesView = itemView.findViewById(R.id.shelves);
 
             // We use a square space for the image so both portrait/landscape images work out.
             mMaxCoverSize = ImageScale.getSize(context, style.getThumbnailScale(context));
@@ -949,12 +958,20 @@ public class BooklistAdapter
                 }
             }
 
-            if (mInUse.bookshelf) {
-                showOrHide(mBookshelvesView,
-                           rowData.getString(DBDefinitions.KEY_BOOKSHELF_NAME_CSV));
+            if (mInUse.rating) {
+                final int rating = rowData.getInt(DBDefinitions.KEY_RATING);
+                if (rating != 0) {
+                    mRatingBar.setRating(rating);
+                    mRatingBar.setVisibility(View.VISIBLE);
+                } else {
+                    mRatingBar.setVisibility(View.GONE);
+                }
             }
             if (mInUse.author) {
                 showOrHide(mAuthorView, rowData.getString(DBDefinitions.KEY_AUTHOR_FORMATTED));
+            }
+            if (mInUse.publisher || mInUse.pubDate) {
+                showOrHide(mPublisherView, getPublisherAndPubDateText(rowData));
             }
             if (mInUse.isbn) {
                 showOrHide(mIsbnView, rowData.getString(DBDefinitions.KEY_ISBN));
@@ -965,8 +982,9 @@ public class BooklistAdapter
             if (mInUse.location) {
                 showOrHide(mLocationView, rowData.getString(DBDefinitions.KEY_LOCATION));
             }
-            if (mInUse.publisher || mInUse.pubDate) {
-                showOrHide(mPublisherView, getPublisherAndPubDateText(rowData));
+            if (mInUse.bookshelf) {
+                showOrHide(mBookshelvesView,
+                           rowData.getString(DBDefinitions.KEY_BOOKSHELF_NAME_CSV));
             }
         }
 
