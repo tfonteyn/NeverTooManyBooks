@@ -71,7 +71,8 @@ public class BookSearchByIsbnFragment
 
     static final String BKEY_SCAN_MODE = TAG + ":scanMode";
 
-    private boolean mScanMode;
+    /** {@code true} if we are in scan mode. */
+    private boolean mInScanMode;
 
     /** The scanner. */
     @Nullable
@@ -98,7 +99,7 @@ public class BookSearchByIsbnFragment
 
         final Bundle args = savedInstanceState != null ? savedInstanceState : getArguments();
         if (args != null) {
-            mScanMode = args.getBoolean(BKEY_SCAN_MODE, false);
+            mInScanMode = args.getBoolean(BKEY_SCAN_MODE, false);
         }
         //noinspection ConstantConditions
         mScannerModel = new ViewModelProvider(getActivity()).get(ScannerViewModel.class);
@@ -142,11 +143,10 @@ public class BookSearchByIsbnFragment
         });
 
         // The search preference determines the level here; NOT the 'edit book'
-        int isbnValidityCheck = mCoordinator.isStrictIsbn() ? ISBN.VALIDITY_STRICT
-                                                            : ISBN.VALIDITY_NONE;
+        final int isbnValidityCheck = mCoordinator.isStrictIsbn() ? ISBN.VALIDITY_STRICT
+                                                                  : ISBN.VALIDITY_NONE;
 
-        mIsbnCleanupTextWatcher = new ISBN.CleanupTextWatcher(
-                mVb.isbn, isbnValidityCheck);
+        mIsbnCleanupTextWatcher = new ISBN.CleanupTextWatcher(mVb.isbn, isbnValidityCheck);
         mVb.isbn.addTextChangedListener(mIsbnCleanupTextWatcher);
         mIsbnValidationTextWatcher = new ISBN.ValidationTextWatcher(
                 mVb.lblIsbn, mVb.isbn, isbnValidityCheck);
@@ -157,8 +157,8 @@ public class BookSearchByIsbnFragment
 
         // auto-start scanner first time.
         //noinspection ConstantConditions
-        if (mScanMode && mScannerModel.isFirstStart()) {
-            mScanMode = mScannerModel.scan(this, RequestCode.SCAN_BARCODE);
+        if (mInScanMode && mScannerModel.isFirstStart()) {
+            mInScanMode = mScannerModel.scan(this, RequestCode.SCAN_BARCODE);
         }
 
 //        if (savedInstanceState == null) {
@@ -190,7 +190,7 @@ public class BookSearchByIsbnFragment
         switch (item.getItemId()) {
             case R.id.MENU_SCAN_BARCODE: {
                 Objects.requireNonNull(mScannerModel, ErrorMsg.NULL_SCANNER_MODEL);
-                mScanMode = mScannerModel.scan(this, RequestCode.SCAN_BARCODE);
+                mInScanMode = mScannerModel.scan(this, RequestCode.SCAN_BARCODE);
                 return true;
             }
             case R.id.MENU_ISBN_VALIDITY_STRICT: {
@@ -198,7 +198,7 @@ public class BookSearchByIsbnFragment
                 item.setChecked(checked);
                 mCoordinator.setStrictIsbn(checked);
 
-                int validity = checked ? ISBN.VALIDITY_STRICT : ISBN.VALIDITY_NONE;
+                final int validity = checked ? ISBN.VALIDITY_STRICT : ISBN.VALIDITY_NONE;
                 mIsbnCleanupTextWatcher.setValidityLevel(validity);
                 mIsbnValidationTextWatcher.setValidityLevel(validity);
                 return true;
@@ -219,16 +219,16 @@ public class BookSearchByIsbnFragment
     @Override
     public void onSaveInstanceState(@NonNull final Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putBoolean(BKEY_SCAN_MODE, mScanMode);
+        outState.putBoolean(BKEY_SCAN_MODE, mInScanMode);
     }
 
     @Override
     void onSearchCancelled() {
         super.onSearchCancelled();
 
-        if (mScanMode) {
+        if (mInScanMode) {
             Objects.requireNonNull(mScannerModel, ErrorMsg.NULL_SCANNER_MODEL);
-            mScanMode = mScannerModel.scan(this, RequestCode.SCAN_BARCODE);
+            mInScanMode = mScannerModel.scan(this, RequestCode.SCAN_BARCODE);
         }
     }
 
@@ -246,9 +246,9 @@ public class BookSearchByIsbnFragment
                 // first do the common action when the user has saved the data for the book.
                 super.onActivityResult(requestCode, resultCode, data);
                 // go scan next book until the user cancels scanning.
-                if (mScanMode) {
+                if (mInScanMode) {
                     Objects.requireNonNull(mScannerModel, ErrorMsg.NULL_SCANNER_MODEL);
-                    mScanMode = mScannerModel.scan(this, RequestCode.SCAN_BARCODE);
+                    mInScanMode = mScannerModel.scan(this, RequestCode.SCAN_BARCODE);
                 }
                 break;
             }
@@ -271,7 +271,7 @@ public class BookSearchByIsbnFragment
                     }
                 }
 
-                mScanMode = false;
+                mInScanMode = false;
                 return;
             }
             case RequestCode.SETTINGS: {
@@ -294,20 +294,20 @@ public class BookSearchByIsbnFragment
                     }
                 }
 
-                if (mScanMode) {
+                if (mInScanMode) {
                     Objects.requireNonNull(mScannerModel, ErrorMsg.NULL_SCANNER_MODEL);
-                    mScanMode = mScannerModel.scan(this, RequestCode.SCAN_BARCODE);
+                    mInScanMode = mScannerModel.scan(this, RequestCode.SCAN_BARCODE);
                 }
                 break;
             }
             case RequestCode.UPDATE_GOOGLE_PLAY_SERVICES: {
-                if (mScanMode) {
+                if (mInScanMode) {
                     if (resultCode == Activity.RESULT_OK) {
                         Objects.requireNonNull(mScannerModel, ErrorMsg.NULL_SCANNER_MODEL);
                         // go scan next book until the user cancels scanning.
-                        mScanMode = mScannerModel.scan(this, RequestCode.SCAN_BARCODE);
+                        mInScanMode = mScannerModel.scan(this, RequestCode.SCAN_BARCODE);
                     } else {
-                        mScanMode = false;
+                        mInScanMode = false;
                     }
                 }
                 break;
@@ -337,7 +337,7 @@ public class BookSearchByIsbnFragment
 
         // not a valid code ?
         if (!code.isValid(strictIsbn)) {
-            if (mScanMode) {
+            if (mInScanMode) {
                 Objects.requireNonNull(mScannerModel, ErrorMsg.NULL_SCANNER_MODEL);
                 //noinspection ConstantConditions
                 mScannerModel.onInvalidBeep(getContext());
@@ -345,9 +345,9 @@ public class BookSearchByIsbnFragment
 
             showError(mVb.lblIsbn, getString(R.string.warning_x_is_not_a_valid_code, userEntry));
 
-            if (mScanMode) {
+            if (mInScanMode) {
                 Objects.requireNonNull(mScannerModel, ErrorMsg.NULL_SCANNER_MODEL);
-                mScanMode = mScannerModel.scan(this, RequestCode.SCAN_BARCODE);
+                mInScanMode = mScannerModel.scan(this, RequestCode.SCAN_BARCODE);
             }
             return;
         }
@@ -355,7 +355,7 @@ public class BookSearchByIsbnFragment
         // at this point, we know we have a searchable code
         mCoordinator.setIsbnSearchText(code.asText());
 
-        if (strictIsbn && mScanMode) {
+        if (strictIsbn && mInScanMode) {
             Objects.requireNonNull(mScannerModel, ErrorMsg.NULL_SCANNER_MODEL);
             //noinspection ConstantConditions
             mScannerModel.onValidBeep(getContext());
@@ -376,9 +376,9 @@ public class BookSearchByIsbnFragment
                     // User aborts this isbn
                     .setNegativeButton(android.R.string.cancel, (d, w) -> {
                         onClearPreviousSearchCriteria();
-                        if (mScanMode) {
+                        if (mInScanMode) {
                             Objects.requireNonNull(mScannerModel, ErrorMsg.NULL_SCANNER_MODEL);
-                            mScanMode = mScannerModel.scan(this, RequestCode.SCAN_BARCODE);
+                            mInScanMode = mScannerModel.scan(this, RequestCode.SCAN_BARCODE);
                         }
                     })
                     // User wants to review the existing book

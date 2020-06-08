@@ -33,28 +33,35 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 import androidx.annotation.NonNull;
 
+import com.hardbacknutter.nevertoomanybooks.App;
+
 /**
- * Standard Android class to handle database open/creation.upgrade.
+ * Standard Android class to handle database open/creation/upgrade.
  */
 class QueueDBHelper
         extends SQLiteOpenHelper {
 
-    static final String KEY_PK_ID = "_id";
-    static final String KEY_CATEGORY = "category";
-    static final String KEY_EXCEPTION = "exception";
-    static final String KEY_FAILURE_REASON = "failure_reason";
-    static final String KEY_NAME = "name";
-    static final String KEY_EVENT = "event";
-    static final String KEY_EVENT_COUNT = "event_count";
-    static final String KEY_UTC_EVENT_DATETIME = "event_date";
-    static final String KEY_QUEUE_ID = "queue_id";
-    static final String KEY_UTC_QUEUED_DATETIME = "queued_date";
-    static final String KEY_PRIORITY = "priority";
-    static final String KEY_UTC_RETRY_DATETIME = "retry_date";
-    static final String KEY_RETRY_COUNT = "retry_count";
-    static final String KEY_STATUS_CODE = "status_code";
-    static final String KEY_TASK = "task";
+    public static final String KEY_PK_ID = "_id";
+
+    public static final String KEY_TASK = "task";
+    public static final String KEY_TASK_CATEGORY = "category";
+    public static final String KEY_TASK_EXCEPTION = "exception";
+    public static final String KEY_TASK_FAILURE_REASON = "failure_reason";
+    public static final String KEY_TASK_QUEUED_UTC_DATETIME = "queued_date";
+    public static final String KEY_TASK_RETRY_UTC_DATETIME = "retry_date";
+    public static final String KEY_TASK_STATUS_CODE = "status_code";
+
+    public static final String KEY_EVENT = "event";
+    public static final String KEY_EVENT_COUNT = "event_count";
+    public static final String KEY_EVENT_UTC_DATETIME = "event_date";
+
+    static final String KEY_QUEUE_NAME = "name";
+
+    static final String KEY_TASK_PRIORITY = "priority";
+    static final String KEY_TASK_RETRY_COUNT = "retry_count";
+
     static final String KEY_TASK_ID = "task_id";
+    static final String KEY_QUEUE_ID = "queue_id";
 
     /** Queue definitions. */
     static final String TBL_QUEUE = "queue";
@@ -63,50 +70,53 @@ class QueueDBHelper
     /** Event table definitions. */
     static final String TBL_EVENT = "event";
 
-    /** File name for database. */
-    private static final String DATABASE_NAME = "net.philipwarner.taskqueue.database.db";
-    private static final int DATABASE_VERSION = 2;
+    /** File name for the database. */
+    private static final String DATABASE_NAME = "taskqueue.db";
+    /** Current version of the database. */
+    private static final int DATABASE_VERSION = 1;
 
     /** Collection of all table definitions. */
     private static final String[] TABLES = new String[]{
             "CREATE TABLE " + TBL_QUEUE + " ("
             + KEY_PK_ID + " integer PRIMARY KEY AUTOINCREMENT,"
-            + KEY_NAME + " text)",
+            + KEY_QUEUE_NAME + " text)",
 
             "CREATE TABLE " + TBL_TASK + " ("
             + KEY_PK_ID + " integer PRIMARY KEY AUTOINCREMENT,"
             + KEY_QUEUE_ID + " integer NOT NULL REFERENCES " + TBL_QUEUE + ','
-            + KEY_UTC_QUEUED_DATETIME + " datetime DEFAULT current_timestamp,"
-            + KEY_PRIORITY + " integer DEFAULT 0,"
-            + KEY_STATUS_CODE + " text DEFAULT '" + Task.QUEUED + "',"
-            + KEY_CATEGORY + " integer DEFAULT 0 NOT NULL,"
-            + KEY_UTC_RETRY_DATETIME + " datetime DEFAULT current_timestamp,"
-            + KEY_RETRY_COUNT + " integer DEFAULT 0,"
-            + KEY_FAILURE_REASON + " text,"
-            + KEY_EXCEPTION + " blob,"
+            + KEY_TASK_QUEUED_UTC_DATETIME + " datetime DEFAULT current_timestamp,"
+            + KEY_TASK_PRIORITY + " integer DEFAULT 0,"
+            + KEY_TASK_STATUS_CODE + " text DEFAULT '" + TQTask.QUEUED + "',"
+            + KEY_TASK_CATEGORY + " integer DEFAULT 0 NOT NULL,"
+            + KEY_TASK_RETRY_UTC_DATETIME + " datetime DEFAULT current_timestamp,"
+            + KEY_TASK_RETRY_COUNT + " integer DEFAULT 0,"
+            + KEY_TASK_FAILURE_REASON + " text,"
+            + KEY_TASK_EXCEPTION + " blob,"
             + KEY_TASK + " blob NOT NULL)",
 
             "CREATE TABLE " + TBL_EVENT + " ("
-            + KEY_PK_ID + " integer PRIMARY KEY AUTOINCREMENT,\n"
+            + KEY_PK_ID + " integer PRIMARY KEY AUTOINCREMENT,"
             + KEY_TASK_ID + " integer REFERENCES " + TBL_TASK + ','
             + KEY_EVENT + " blob NOT NULL,"
-            + KEY_UTC_EVENT_DATETIME + " datetime DEFAULT current_timestamp)",
+            + KEY_EVENT_UTC_DATETIME + " datetime DEFAULT current_timestamp)",
             };
 
     private static final String[] INDEXES = new String[]{
             "CREATE UNIQUE INDEX " + TBL_QUEUE + "_IX1 ON " + TBL_QUEUE + " (" + KEY_PK_ID + ')',
-            "CREATE UNIQUE INDEX " + TBL_QUEUE + "_IX2 ON " + TBL_QUEUE + " (" + KEY_NAME + ')',
+            "CREATE UNIQUE INDEX " + TBL_QUEUE + "_IX2 ON " + TBL_QUEUE + " (" + KEY_QUEUE_NAME
+            + ')',
 
             "CREATE UNIQUE INDEX " + TBL_TASK + "_IX1 ON " + TBL_TASK + " (" + KEY_PK_ID + ')',
             "CREATE INDEX " + TBL_TASK + "_IX2 ON " + TBL_TASK
-            + " (" + KEY_STATUS_CODE + ',' + KEY_QUEUE_ID + ',' + KEY_UTC_RETRY_DATETIME + ')',
+            + " (" + KEY_TASK_STATUS_CODE + ',' + KEY_QUEUE_ID + ',' + KEY_TASK_RETRY_UTC_DATETIME
+            + ')',
             "CREATE INDEX " + TBL_TASK + "_IX3 ON " + TBL_TASK
-            + " (" + KEY_STATUS_CODE + ',' + KEY_QUEUE_ID + ',' + KEY_UTC_RETRY_DATETIME
-            + ',' + KEY_PRIORITY + ')',
+            + " (" + KEY_TASK_STATUS_CODE + ',' + KEY_QUEUE_ID + ',' + KEY_TASK_RETRY_UTC_DATETIME
+            + ',' + KEY_TASK_PRIORITY + ')',
 
             "CREATE UNIQUE INDEX " + TBL_EVENT + "_IX1 ON " + TBL_EVENT + " (" + KEY_PK_ID + ')',
             "CREATE UNIQUE INDEX " + TBL_EVENT + "_IX2 ON " + TBL_EVENT
-            + " (" + KEY_UTC_EVENT_DATETIME + ',' + KEY_PK_ID + ')',
+            + " (" + KEY_EVENT_UTC_DATETIME + ',' + KEY_PK_ID + ')',
             "CREATE INDEX " + TBL_EVENT + "_IX3 ON " + TBL_EVENT
             + " (" + KEY_TASK_ID + ',' + KEY_PK_ID + ')',
             };
@@ -122,6 +132,10 @@ class QueueDBHelper
 
     @Override
     public void onCreate(@NonNull final SQLiteDatabase db) {
+
+        // URGENT: remove before next beta
+        App.getAppContext().deleteDatabase("net.philipwarner.taskqueue.database.db");
+
         for (String table : TABLES) {
             db.execSQL(table);
         }
@@ -141,17 +155,13 @@ class QueueDBHelper
     public void onUpgrade(@NonNull final SQLiteDatabase db,
                           final int oldVersion,
                           final int newVersion) {
-        int currVersion = oldVersion;
-
-        if (currVersion == 1) {
-            //noinspection UnusedAssignment
-            currVersion++;
-            String sql = "ALTER TABLE " + TBL_TASK + " Add " + KEY_CATEGORY + " integer default 0";
-            db.execSQL(sql);
-        }
-
-        // Turn on foreign key support so that CASCADE works.
-        db.execSQL("PRAGMA foreign_keys = ON");
+//        int currVersion = oldVersion;
+//
+//        if (currVersion == 1) {
+//            //noinspection UnusedAssignment
+//            currVersion++;
+//
+//        }
     }
 
     @Override

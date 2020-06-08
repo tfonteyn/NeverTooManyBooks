@@ -43,8 +43,6 @@ public class ImportTaskModel
         extends TaskBaseModel<ImportManager> {
 
     public void startArchiveImportTask(@NonNull final ImportManager helper) {
-        ArchiveImportTask task = new ArchiveImportTask(helper, getTaskListener());
-        setTask(task);
-        task.execute();
+        execute(new ArchiveImportTask(helper, getTaskListener()));
     }
 }

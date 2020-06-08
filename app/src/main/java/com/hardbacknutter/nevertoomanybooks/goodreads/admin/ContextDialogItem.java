@@ -25,7 +25,7 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue;
+package com.hardbacknutter.nevertoomanybooks.goodreads.admin;
 
 import android.content.Context;
 
@@ -63,8 +63,8 @@ public class ContextDialogItem
      * @param context Current context
      * @param items   List of items to display
      */
-    static void showContextDialog(@NonNull final Context context,
-                                  @NonNull final Collection<ContextDialogItem> items) {
+    public static void showContextDialog(@NonNull final Context context,
+                                         @NonNull final Collection<ContextDialogItem> items) {
         if (!items.isEmpty()) {
             final ContextDialogItem[] itemArray = new ContextDialogItem[items.size()];
             items.toArray(itemArray);

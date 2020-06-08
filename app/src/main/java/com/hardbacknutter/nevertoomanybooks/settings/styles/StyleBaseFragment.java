@@ -91,7 +91,7 @@ public abstract class StyleBaseFragment
     public void onCreatePreferences(@Nullable final Bundle savedInstanceState,
                                     @Nullable final String rootKey) {
 
-        Bundle args = getArguments();
+        final Bundle args = getArguments();
         if (args != null) {
             mStyle = args.getParcelable(BooklistStyle.BKEY_STYLE);
             mTemplateId = args.getLong(BKEY_TEMPLATE_ID);
@@ -183,7 +183,7 @@ public abstract class StyleBaseFragment
         super.onViewCreated(view, savedInstanceState);
 
         //noinspection ConstantConditions
-        ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
+        final ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
         if (actionBar != null) {
             if (mStyle.getId() == 0) {
                 actionBar.setTitle(R.string.lbl_clone_style);

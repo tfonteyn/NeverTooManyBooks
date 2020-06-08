@@ -25,7 +25,7 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue;
+package com.hardbacknutter.nevertoomanybooks.goodreads.admin;
 
 import android.os.Bundle;
 import android.widget.ListView;
@@ -41,24 +41,34 @@ import com.hardbacknutter.nevertoomanybooks.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
+import com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.QueueManager;
+import com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.TQCursorAdapter;
+import com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.TQItem;
 
-public abstract class BindableItemAdminActivity
+public abstract class BaseAdminActivity
         extends BaseActivity {
 
     /** Log tag. */
-    private static final String TAG = "BindableItemAdminAct";
+    private static final String TAG = "BaseAdminActivity";
 
     /** Database Access. */
     private DAO mDb;
 
     /** The adapter for the list. */
-    private BindableItemCursorAdapter mListAdapter;
+    private TQCursorAdapter mListAdapter;
 
     /** Listener to handle changes made to the underlying cursor. */
     protected final QueueManager.OnChangeListener mOnChangeListener = this::refreshData;
 
+    /**
+     * Get a CursorAdapter returning the items we are interested in.
+     *
+     * @param db Database Access
+     *
+     * @return CursorAdapter to use
+     */
     @NonNull
-    protected abstract BindableItemCursorAdapter getListAdapter(@NonNull DAO db);
+    protected abstract TQCursorAdapter getListAdapter(@NonNull DAO db);
 
     @Override
     protected void onSetContentView() {
@@ -70,14 +80,41 @@ public abstract class BindableItemAdminActivity
         mDb = new DAO(TAG);
         super.onCreate(savedInstanceState);
 
-        ListView listView = findViewById(R.id.item_list);
-
         mListAdapter = getListAdapter(mDb);
 
+        final ListView listView = findViewById(R.id.item_list);
         listView.setAdapter(mListAdapter);
-        listView.setOnItemClickListener(
-                (parent, v, position, id) ->
-                        onItemClick(mListAdapter.getItem(position).getBindableItem(this)));
+        listView.setOnItemClickListener((parent, v, position, id) -> onItemClick(
+                mListAdapter.getTQItem(v.getContext(), position)));
+    }
+
+    /**
+     * Build a context menu dialogue when an item is clicked.
+     *
+     * @param item which was clicked
+     */
+    private void onItemClick(@NonNull final TQItem item) {
+        // If it owns a hint, display it first
+        if (item instanceof TipManager.TipOwner) {
+            TipManager.display(this, ((TipManager.TipOwner) item).getTip(), () ->
+                    showContextDialog(item));
+        } else {
+            showContextDialog(item);
+        }
+    }
+
+    private void showContextDialog(@NonNull final TQItem item) {
+        final List<ContextDialogItem> menuItems = new ArrayList<>();
+        // allow the parent Activity to add menu options
+        addContextMenuItems(menuItems, item);
+        // allow the selected item to add menu options
+        item.addContextMenuItems(this, menuItems, mDb);
+        ContextDialogItem.showContextDialog(this, menuItems);
+    }
+
+    protected void addContextMenuItems(@NonNull final List<ContextDialogItem> menuItems,
+                                       @NonNull final TQItem item) {
+        // nothing to add by default
     }
 
     /**
@@ -95,35 +132,6 @@ public abstract class BindableItemAdminActivity
         if (mListAdapter.getCursor().requery()) {
             mListAdapter.notifyDataSetChanged();
         }
-    }
-
-    /**
-     * Build a context menu dialogue when an item is clicked.
-     *
-     * @param item which was clicked
-     */
-    private void onItemClick(@NonNull final BindableItem item) {
-        // If it owns a hint, display it first
-        if (item instanceof TipManager.TipOwner) {
-            TipManager.display(this, ((TipManager.TipOwner) item).getTip(), () ->
-                    showContextDialog(item));
-        } else {
-            showContextDialog(item);
-        }
-    }
-
-    private void showContextDialog(@NonNull final BindableItem item) {
-        List<ContextDialogItem> menuItems = new ArrayList<>();
-        // allow the parent Activity to add menu options
-        addContextMenuItems(menuItems, item);
-        // allow the selected item to add menu options
-        item.addContextMenuItems(this, menuItems, mDb);
-        ContextDialogItem.showContextDialog(this, menuItems);
-    }
-
-    protected void addContextMenuItems(@NonNull final List<ContextDialogItem> menuItems,
-                                       @NonNull final BindableItem item) {
-        // do nothing by default
     }
 
     @Override

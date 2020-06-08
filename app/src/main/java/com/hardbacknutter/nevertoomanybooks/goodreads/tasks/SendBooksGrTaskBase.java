@@ -33,58 +33,63 @@ import androidx.annotation.NonNull;
 
 import java.io.IOException;
 
-import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
-import com.hardbacknutter.nevertoomanybooks.entities.RowDataHolder;
+import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsAuth;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsHandler;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GrStatus;
 import com.hardbacknutter.nevertoomanybooks.goodreads.api.Http404Exception;
+import com.hardbacknutter.nevertoomanybooks.goodreads.events.GrNoIsbnEvent;
+import com.hardbacknutter.nevertoomanybooks.goodreads.events.GrNoMatchEvent;
 import com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.QueueManager;
-import com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.TQTask;
-import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.events.GrNoIsbnEvent;
-import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.events.GrNoMatchEvent;
-import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.NetworkUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 
-/**
- * This Task *MUST* be serializable hence can not contain
- * any references to UI components or similar objects.
- */
-public abstract class SendBooksLegacyTaskBase
-        extends TQTask {
+public abstract class SendBooksGrTaskBase
+        extends BaseTQTask {
 
     /** Timeout before declaring network failure. */
     private static final int FIVE_MINUTES = 300;
 
     private static final long serialVersionUID = -7348431827842548151L;
 
-    /** Number of books with no ISBN. */
-    int mNoIsbn;
+    /** Number of books without ISBN. */
+    private int mNoIsbn;
     /** Number of books that had ISBN but could not be found. */
-    int mNotFound;
+    private int mNotFound;
     /** Number of books successfully sent. */
-    int mSent;
+    private int mSent;
 
     /**
      * Constructor.
      *
      * @param description for the task
      */
-    SendBooksLegacyTaskBase(@NonNull final String description) {
+    SendBooksGrTaskBase(@NonNull final String description) {
         super(description);
     }
 
+    public int getNumberOfBooksWithoutIsbn() {
+        return mNoIsbn;
+    }
+
+    public int getNumberOfBooksNotFound() {
+        return mNotFound;
+    }
+
+    public int getNumberOfBooksSent() {
+        return mSent;
+    }
+
     /**
-     * Run the task, log exceptions.
+     * Run the task.
      *
      * @return {@code false} to requeue, {@code true} for success
      */
     @Override
-    public boolean run(@NonNull final QueueManager queueManager) {
-        final Context context = LocaleUtils.applyLocale(App.getTaskContext());
+    public boolean run(@NonNull final QueueManager queueManager,
+                       @NonNull final Context context) {
         try {
             // can we reach the site at all ?
             NetworkUtils.ping(context, GoodreadsHandler.BASE_URL);
@@ -105,6 +110,8 @@ public abstract class SendBooksLegacyTaskBase
     }
 
     /**
+     * Start the send process.
+     *
      * @param context    Current context
      * @param apiHandler the Goodreads Manager
      *
@@ -120,7 +127,7 @@ public abstract class SendBooksLegacyTaskBase
      * @param context    Current context
      * @param apiHandler the Goodreads Manager
      * @param db         Database Access
-     * @param rowData    the book data to send
+     * @param bookData   the book data to send
      *
      * @return {@code false} on failure, {@code true} on success
      */
@@ -129,79 +136,50 @@ public abstract class SendBooksLegacyTaskBase
                         @NonNull final Context context,
                         @NonNull final GoodreadsHandler apiHandler,
                         @NonNull final DAO db,
-                        @NonNull final RowDataHolder rowData) {
+                        @NonNull final DataHolder bookData) {
 
-        @GrStatus.Status
-        int status;
+        final long bookId = bookData.getLong(DBDefinitions.KEY_PK_ID);
+
         try {
-            status = apiHandler.sendOneBook(context, db, rowData);
+            @GrStatus.Status
+            int status = apiHandler.sendOneBook(context, db, bookData);
+            setLastExtStatus(status);
+            if (status == GrStatus.SUCCESS) {
+                mSent++;
+                db.setGoodreadsSyncDate(bookId);
+                return true;
+
+            } else if (status == GrStatus.FAILED_BOOK_HAS_NO_ISBN) {
+                // not a success, but don't try again until the user acts on the stored event
+                mNoIsbn++;
+                storeEvent(new GrNoIsbnEvent(context, bookId));
+                return true;
+            }
+            // any other status is a non fatal error
 
         } catch (@NonNull final CredentialsException e) {
-            setLastException(e);
-            status = GrStatus.CREDENTIALS_ERROR;
+            setLastExtStatus(GrStatus.FAILED_CREDENTIALS, e);
 
         } catch (@NonNull final Http404Exception e) {
-            setLastException(e);
-            status = GrStatus.BOOK_NOT_FOUND;
+            setLastExtStatus(GrStatus.FAILED_BOOK_NOT_FOUND_ON_GOODREADS, e);
+            storeEvent(new GrNoMatchEvent(context, bookId));
+            mNotFound++;
+            // not a success, but don't try again until the user acts on the stored event
+            return true;
 
         } catch (@NonNull final IOException e) {
-            setLastException(e);
-            status = GrStatus.IO_ERROR;
+            setLastExtStatus(GrStatus.FAILED_IO_EXCEPTION, e);
+            // wait 5 minutes on network errors.
+            if (getRetryDelay() > FIVE_MINUTES) {
+                setRetryDelay(FIVE_MINUTES);
+            }
 
         } catch (@NonNull final RuntimeException e) {
-            setLastException(e);
-            status = GrStatus.UNEXPECTED_ERROR;
+            // catch all, as we REALLY don't want the whole task to fail.
+            setLastExtStatus(GrStatus.FAILED_UNEXPECTED_EXCEPTION, e);
         }
 
-        final long bookId = rowData.getLong(DBDefinitions.KEY_PK_ID);
-
-        // update the current status, so it can be displayed to the user continuously.
-        setLastExtStatus(status);
-
-        switch (status) {
-            case GrStatus.COMPLETED:
-                // Record the change
-                db.setGoodreadsSyncDate(bookId);
-                mSent++;
-                return true;
-
-            case GrStatus.NO_ISBN:
-                storeEvent(new GrNoIsbnEvent(context, bookId));
-                mNoIsbn++;
-                // not a success, but don't try again until the user acts on the stored event
-                return true;
-
-            case GrStatus.BOOK_NOT_FOUND:
-                storeEvent(new GrNoMatchEvent(context, bookId));
-                mNotFound++;
-                // not a success, but don't try again until the user acts on the stored event
-                return true;
-
-            case GrStatus.IO_ERROR:
-                // wait 5 minutes on network errors.
-                if (getRetryDelay() > FIVE_MINUTES) {
-                    setRetryDelay(FIVE_MINUTES);
-                }
-                queueManager.updateTask(this);
-                return false;
-
-            case GrStatus.AUTHORIZATION_ALREADY_GRANTED:
-            case GrStatus.AUTHORIZATION_SUCCESSFUL:
-            case GrStatus.AUTHORIZATION_FAILED:
-            case GrStatus.AUTHORIZATION_NEEDED:
-            case GrStatus.AUTHENTICATION_FAILED:
-            case GrStatus.CREDENTIALS_MISSING:
-            case GrStatus.CREDENTIALS_ERROR:
-            case GrStatus.TASK_QUEUED_WITH_SUCCESS:
-            case GrStatus.IMPORT_TASK_ALREADY_QUEUED:
-            case GrStatus.EXPORT_TASK_ALREADY_QUEUED:
-            case GrStatus.CANCELLED:
-            case GrStatus.NO_INTERNET:
-            case GrStatus.UNEXPECTED_ERROR:
-            case GrStatus.NOT_FOUND:
-            default:
-                queueManager.updateTask(this);
-                return false;
-        }
+        queueManager.updateTask(this);
+        return false;
     }
 }

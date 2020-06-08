@@ -91,7 +91,7 @@ public class ReviewEditApiHandler
      * @param readStart       (optional) Date when we started reading this book, YYYY-MM-DD format
      * @param readEnd         (optional) Date when we finished reading this book, YYYY-MM-DD format
      * @param rating          Rating 0-5 with 0 == No rating
-     * @param privateNotes    (optional) Text for the Goodreads PRIVATE notes
+     * //@param privateNotes    (optional) Text for the Goodreads PRIVATE notes
      * @param review          (optional) Text for the review, PUBLIC
      *
      * @throws CredentialsException with GoodReads
@@ -103,12 +103,12 @@ public class ReviewEditApiHandler
                        @Nullable final String readStart,
                        @Nullable final String readEnd,
                        @IntRange(from = 0, to = 5) final int rating,
-                       @Nullable final String privateNotes,
+                       //@Nullable final String privateNotes,
                        @Nullable final String review)
             throws CredentialsException, Http404Exception, IOException {
 
-        String url = String.format(URL, reviewId);
-        Map<String, String> parameters = new HashMap<>();
+        final String url = String.format(URL, reviewId);
+        final Map<String, String> parameters = new HashMap<>();
 
         parameters.put("id", String.valueOf(reviewId));
 
@@ -132,19 +132,18 @@ public class ReviewEditApiHandler
             parameters.put("review[rating]", String.valueOf(rating));
         }
 
+        // Do NOT sync Private Notes <-> Review.
+        if (review != null) {
+            parameters.put("review[review]", review);
+        }
         //ENHANCE: see if we 'somehow' can sync our personal notes with the site private notes.
         // This was a pure guess... and it was rejected by the site.
 //        if (privateNotes != null) {
 //            parameters.put("review[notes]", review);
 //        }
 
-        // Do not sync Notes<->Review. We will add a local 'Review' field later.
-        if (review != null) {
-            parameters.put("review[review]", review);
-        }
-
         DefaultHandler handler = null;
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.GOODREADS) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.GOODREADS_HTTP_XML) {
             handler = new XmlDumpParser();
         }
         executePost(url, parameters, true, handler);

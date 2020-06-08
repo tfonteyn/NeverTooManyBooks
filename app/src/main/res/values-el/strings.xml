@@ -145,7 +145,7 @@
     <string name="gr_info_send_books">H βιβλιοθήκη σας θα σταλθεί στο Goodreads.\n\nΜπορείτε να στείλετε όλα τα βιβλία σας, ή τα βιβλία που έχουν ενημερωθεί από την τελευταία φορα που αντιγράφηκαν από ή στο Goodreads (μαζί με όλα τα βιβλία που δεν έχουν σταλεί ακόμα) ή μπορείτε να ακυρώσετε την ενημέρωση.\n\nΑν δεν έχετε στείλει ποτέ βιβλία δεν υπάρχει διαφορά ανάμεσα στις δύο πρώτες επιλογές.</string>
     <string name="gr_menu_import_all_from_goodreads">Εισαγωγή όλων, από Goodreads</string>
     <string name="gr_menu_send_all">Αποστολή όλων</string>
-    <string name="gr_menu_send_to_goodreads">Αποστολή στο Goodreads</string>
+    <string name="gr_send_to_goodreads">Αποστολή στο Goodreads</string>
     <string name="gr_menu_send_updated">Αποστολή ενημερωμένων</string>
     <string name="gr_pt_collect_genre">Χρησιμοποιήστε δημοφιλή ονόματα βιβλιοθηκών ως είδη βιβλίων</string>
     <string name="gr_send_book_to_goodreads">Αποστολή βιβλίου %1$d στο Goodreads</string>

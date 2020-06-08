@@ -29,6 +29,7 @@ package com.hardbacknutter.nevertoomanybooks.utils;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import java.util.HashMap;
 
@@ -45,8 +46,18 @@ public class UniqueMap<K, V>
         super(new HashMap<>());
     }
 
+    /**
+     * Associates the specified value with the specified key in this map.
+     *
+     * @param key   key with which the specified value is to be associated
+     * @param value value to be associated with the specified key
+     *
+     * @return always {@code null}
+     *
+     * @throws IllegalArgumentException if the key was already present
+     */
     @Override
-    @NonNull
+    @Nullable
     @CallSuper
     public V put(@NonNull final K key,
                  @NonNull final V value) {
@@ -56,7 +67,8 @@ public class UniqueMap<K, V>
         /*
          * collection contract says to return the previous value associated with the key,
          * or {@code null} if there was no mapping for that key.
+         * Which in our case means always {@code null}
          */
-        return value;
+        return null;
     }
 }

@@ -27,27 +27,21 @@
  */
 package com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue;
 
-
 import android.content.Context;
 import android.database.Cursor;
+import android.widget.CursorAdapter;
 
 import androidx.annotation.NonNull;
 
-import com.hardbacknutter.nevertoomanybooks.database.DAO;
+public abstract class TQCursorAdapter
+        extends CursorAdapter {
 
-public class EventsCursorAdapter
-        extends BindableItemCursorAdapter<Event, EventsCursor> {
-
-    /**
-     * Constructor.
-     *
-     * @param context Current context
-     * @param cursor  Cursor to use as source
-     * @param db      Database Access
-     */
-    public EventsCursorAdapter(@NonNull final Context context,
-                               @NonNull final Cursor cursor,
-                               @NonNull final DAO db) {
-        super(context, cursor, db);
+    public TQCursorAdapter(@NonNull final Context context,
+                           @NonNull final Cursor c) {
+        super(context, c);
     }
+
+    @NonNull
+    public abstract TQItem getTQItem(@NonNull Context context,
+                                     int position);
 }

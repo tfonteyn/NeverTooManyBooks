@@ -39,40 +39,37 @@ import com.hardbacknutter.nevertoomanybooks.R;
 
 public final class GrStatus {
 
-    /** The no-error code. */
-    public static final int COMPLETED = 0;
+    /** Everything was good. */
+    public static final int SUCCESS = 0;
+    /** The user cancelled the action. */
+    public static final int CANCELLED = 1;
 
-    /** Not a clue what happened. */
-    public static final int UNEXPECTED_ERROR = 1;
+    public static final int SUCCESS_TASK_QUEUED = 2;
+    public static final int SUCCESS_AUTHORIZATION_GRANTED = 3;
+    public static final int SUCCESS_AUTHORIZATION_ALREADY_GRANTED = 4;
 
-    public static final int AUTHORIZATION_NEEDED = 2;
-    public static final int AUTHORIZATION_ALREADY_GRANTED = 3;
-    public static final int AUTHORIZATION_SUCCESSFUL = 4;
-    public static final int AUTHORIZATION_FAILED = 5;
+    /** There simply is no network available to use. */
+    public static final int FAILED_NETWORK_UNAVAILABLE = 100;
 
-    public static final int AUTHENTICATION_FAILED = 6;
-
-    public static final int CREDENTIALS_MISSING = 7;
-    public static final int CREDENTIALS_ERROR = 8;
-
-    public static final int TASK_QUEUED_WITH_SUCCESS = 9;
-    public static final int IMPORT_TASK_ALREADY_QUEUED = 10;
-    public static final int EXPORT_TASK_ALREADY_QUEUED = 11;
+    /** Authorizing this application with Goodreads failed. */
+    public static final int FAILED_AUTHORIZATION = 101;
+    /** The (current) user credentials are not valid. i.e. Authentication failed. */
+    public static final int FAILED_CREDENTIALS = 102;
 
     /** The book has no ISBN! We can only lookup books with an ISBN. */
-    public static final int NO_ISBN = 12;
+    public static final int FAILED_BOOK_HAS_NO_ISBN = 103;
     /** A specific action to get a book failed to find it. */
-    public static final int BOOK_NOT_FOUND = 13;
+    public static final int FAILED_BOOK_NOT_FOUND_ON_GOODREADS = 104;
 
-    /** A generic action to find 'something' failed. */
-    public static final int NOT_FOUND = 14;
+    public static final int FAILED_IMPORT_TASK_ALREADY_QUEUED = 105;
+    public static final int FAILED_EXPORT_TASK_ALREADY_QUEUED = 106;
 
-    /** The user cancelled the action. */
-    public static final int CANCELLED = 15;
-    /** There is no connectivity. */
-    public static final int NO_INTERNET = 16;
-    /** There is connectivity but something went wrong. */
-    public static final int IO_ERROR = 17;
+
+    /** Not a clue what happened. */
+    public static final int FAILED_UNEXPECTED_EXCEPTION = 200;
+    /** There is network connectivity but something went wrong. */
+    public static final int FAILED_IO_EXCEPTION = 201;
+
 
     private GrStatus() {
     }
@@ -83,71 +80,56 @@ public final class GrStatus {
         // We could have created an array or map... but we have a couple of special cases,
         // so just leaving this as a switch.
         switch (errorCode) {
-            case COMPLETED:
+            case SUCCESS:
                 return context.getString(R.string.gr_tq_completed);
             case CANCELLED:
                 return context.getString(R.string.progress_end_cancelled);
 
-
-            case AUTHORIZATION_NEEDED:
-                return context.getString(R.string.gr_authorization_needed);
-            case AUTHORIZATION_ALREADY_GRANTED:
+            case SUCCESS_AUTHORIZATION_ALREADY_GRANTED:
                 return context.getString(R.string.gr_authorization_already_granted);
-            case AUTHORIZATION_SUCCESSFUL:
+            case SUCCESS_AUTHORIZATION_GRANTED:
                 return context.getString(R.string.info_site_authorization_successful,
                                          context.getString(R.string.site_goodreads));
-            case AUTHORIZATION_FAILED:
+            case FAILED_AUTHORIZATION:
                 return context.getString(R.string.error_site_authorization_failed,
                                          context.getString(R.string.site_goodreads));
 
-            // the internal logic for these is different, but we can use the same
-            // message for displaying as they appear to be identical to the user
-            case AUTHENTICATION_FAILED:
-            case CREDENTIALS_MISSING:
-            case CREDENTIALS_ERROR:
+            case FAILED_CREDENTIALS:
                 return context.getString(R.string.error_site_authentication_failed,
                                          context.getString(R.string.site_goodreads));
 
-            case TASK_QUEUED_WITH_SUCCESS:
+            case SUCCESS_TASK_QUEUED:
                 return context.getString(R.string.gr_tq_task_has_been_queued);
-            case IMPORT_TASK_ALREADY_QUEUED:
+            case FAILED_IMPORT_TASK_ALREADY_QUEUED:
                 return context.getString(R.string.gr_tq_import_task_is_already_queued);
-            case EXPORT_TASK_ALREADY_QUEUED:
+            case FAILED_EXPORT_TASK_ALREADY_QUEUED:
                 return context.getString(R.string.gr_tq_export_task_is_already_queued);
 
 
-            case NO_ISBN:
+            case FAILED_BOOK_HAS_NO_ISBN:
                 return context.getString(R.string.warning_no_isbn_stored_for_book);
-
-            case BOOK_NOT_FOUND:
+            case FAILED_BOOK_NOT_FOUND_ON_GOODREADS:
                 return context.getString(R.string.warning_no_matching_book_found);
 
-            // This could do with a more informative message...
-            case NOT_FOUND:
-                return context.getString(R.string.gr_tq_failed);
-
-
-            case NO_INTERNET:
+            case FAILED_NETWORK_UNAVAILABLE:
                 return context.getString(R.string.error_network_no_connection);
-
-            case IO_ERROR:
+            case FAILED_IO_EXCEPTION:
                 return context.getString(R.string.error_site_access_failed,
                                          context.getString(R.string.site_goodreads));
-
-            case UNEXPECTED_ERROR:
+            case FAILED_UNEXPECTED_EXCEPTION:
             default:
                 return context.getString(R.string.error_unexpected_error);
         }
     }
 
-    @IntDef({COMPLETED, UNEXPECTED_ERROR,
-             AUTHORIZATION_NEEDED, AUTHORIZATION_ALREADY_GRANTED,
-             AUTHORIZATION_SUCCESSFUL, AUTHORIZATION_FAILED,
-             CREDENTIALS_MISSING, CREDENTIALS_ERROR,
-             TASK_QUEUED_WITH_SUCCESS, IMPORT_TASK_ALREADY_QUEUED, EXPORT_TASK_ALREADY_QUEUED,
-             NO_ISBN, BOOK_NOT_FOUND, NOT_FOUND,
-             CANCELLED, NO_INTERNET, IO_ERROR,
-             AUTHENTICATION_FAILED})
+    @IntDef({SUCCESS, CANCELLED,
+             SUCCESS_TASK_QUEUED,
+             SUCCESS_AUTHORIZATION_GRANTED, SUCCESS_AUTHORIZATION_ALREADY_GRANTED,
+             FAILED_NETWORK_UNAVAILABLE,
+             FAILED_AUTHORIZATION, FAILED_CREDENTIALS,
+             FAILED_BOOK_HAS_NO_ISBN, FAILED_BOOK_NOT_FOUND_ON_GOODREADS,
+             FAILED_IMPORT_TASK_ALREADY_QUEUED, FAILED_EXPORT_TASK_ALREADY_QUEUED,
+             FAILED_UNEXPECTED_EXCEPTION, FAILED_IO_EXCEPTION})
     @Retention(RetentionPolicy.SOURCE)
     public @interface Status {
 

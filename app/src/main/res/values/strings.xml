@@ -640,7 +640,7 @@
     <string name="gr_menu_send_all">Send all</string>
 
     <!-- book and book list menu options -->
-    <string name="gr_menu_send_to_goodreads">Send to Goodreads</string>
+    <string name="gr_send_to_goodreads">Send to Goodreads</string>
 
     <string name="gr_pt_collect_genre">Use popular bookshelf names as book genres</string>
 

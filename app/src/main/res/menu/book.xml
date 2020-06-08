@@ -90,5 +90,5 @@
         android:id="@id/MENU_BOOK_SEND_TO_GOODREADS"
         android:icon="@drawable/ic_goodreads"
         android:orderInCategory="@integer/MENU_ORDER_SEND_TO_GOODREADS"
-        android:title="@string/gr_menu_send_to_goodreads" />
+        android:title="@string/gr_send_to_goodreads" />
 </menu>

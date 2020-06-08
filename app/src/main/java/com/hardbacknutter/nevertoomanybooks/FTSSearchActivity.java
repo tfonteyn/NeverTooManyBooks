@@ -213,7 +213,7 @@ public class FTSSearchActivity
     }
 
     private void updateUi(final int count) {
-        String s = getResources().getQuantityString(R.plurals.n_books_found, count, count);
+        final String s = getResources().getQuantityString(R.plurals.n_books_found, count, count);
         mVb.booksFound.setText(s);
     }
 

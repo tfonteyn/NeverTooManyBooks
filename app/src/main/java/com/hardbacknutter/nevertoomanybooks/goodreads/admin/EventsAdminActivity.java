@@ -25,9 +25,9 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.goodreads;
+package com.hardbacknutter.nevertoomanybooks.goodreads.admin;
 
-import android.content.Intent;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -38,40 +38,43 @@ import androidx.annotation.Nullable;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
-import java.util.List;
-
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
-import com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.BindableItem;
-import com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.BindableItemAdminActivity;
-import com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.ContextDialogItem;
 import com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.QueueManager;
-import com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.TasksCursorAdapter;
 
 /**
- * Activity to display the available QueueManager Task object subclasses to the user.
+ * Activity to display all Events in the QueueManager.
  */
-public class TasksAdminActivity
-        extends BindableItemAdminActivity {
+public class EventsAdminActivity
+        extends BaseAdminActivity {
+
+    /** Key to store optional task id when activity is started. */
+    public static final String REQ_BKEY_TASK_ID = "EventsAdminActivity.TaskId";
+
+    /** Task ID, if provided in intent. */
+    private long mTaskId;
 
     @Override
-    protected void onCreate(@Nullable final Bundle savedInstanceState) {
+    public void onCreate(@Nullable final Bundle savedInstanceState) {
+
+        mTaskId = getIntent().getLongExtra(REQ_BKEY_TASK_ID, 0);
+        // Once we have the task id, call the parent
         super.onCreate(savedInstanceState);
 
-        setTitle(R.string.gr_tq_menu_background_tasks);
+        setTitle(R.string.gr_tq_title_task_errors);
 
-        //When any task is added/changed/deleted, we'll update the Cursor.
-        QueueManager.getQueueManager().registerTaskListener(mOnChangeListener);
+        //When any event is added/changed/deleted, we'll update the Cursor.
+        QueueManager.getQueueManager().registerEventListener(mOnChangeListener);
 
         if (savedInstanceState == null) {
-            TipManager.display(this, R.string.tip_background_tasks, null);
+            TipManager.display(this, R.string.tip_background_task_events, null);
         }
     }
 
     @Override
     public boolean onCreateOptionsMenu(@NonNull final Menu menu) {
-        menu.add(Menu.NONE, R.id.MENU_RESET, 0, R.string.gr_tq_btn_cleanup_old_tasks)
+        menu.add(Menu.NONE, R.id.MENU_RESET, 0, R.string.gr_tq_btn_cleanup_old_events)
             .setIcon(R.drawable.ic_delete)
             .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
 
@@ -85,47 +88,47 @@ public class TasksAdminActivity
             case R.id.MENU_RESET: {
                 new MaterialAlertDialogBuilder(this)
                         .setIcon(R.drawable.ic_warning)
-                        .setMessage(R.string.gr_tq_btn_cleanup_old_tasks)
+                        .setMessage(R.string.gr_tq_btn_cleanup_old_events)
                         .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
                         .setPositiveButton(android.R.string.ok, (d, w) -> {
-                            QueueManager.getQueueManager().cleanupOldTasks();
+                            QueueManager.getQueueManager().cleanupOldEvents();
                             refreshData();
                         })
                         .create()
                         .show();
                 return true;
             }
+
             default:
                 return super.onOptionsItemSelected(item);
         }
     }
 
     /**
-     * Get a CursorAdapter returning the tasks we are interested in (here: all tasks).
+     * Get a CursorAdapter returning all events we are interested in,
+     * either specific to our task or all events.
+     *
+     * @param db Database Access
      *
      * @return CursorAdapter to use
      */
     @NonNull
     @Override
-    protected TasksCursorAdapter getListAdapter(@NonNull final DAO db) {
-        return new TasksCursorAdapter(this, QueueManager.getQueueManager().getTasks(), db);
-    }
+    protected EventCursorAdapter getListAdapter(@NonNull final DAO db) {
+        final Cursor cursor;
+        if (mTaskId == 0) {
+            cursor = QueueManager.getQueueManager().getEvents();
+        } else {
+            cursor = QueueManager.getQueueManager().getEvents(mTaskId);
+        }
 
-    @Override
-    public void addContextMenuItems(@NonNull final List<ContextDialogItem> menuItems,
-                                    @NonNull final BindableItem item) {
-        menuItems.add(new ContextDialogItem(
-                getString(R.string.gr_tq_show_events_ellipsis), () -> {
-            Intent intent = new Intent(this, EventsAdminActivity.class)
-                    .putExtra(EventsAdminActivity.REQ_BKEY_TASK_ID, item.getId());
-            startActivity(intent);
-        }));
+        return new EventCursorAdapter(this, cursor, db);
     }
 
     @Override
     @CallSuper
     protected void onDestroy() {
-        QueueManager.getQueueManager().unregisterTaskListener(mOnChangeListener);
+        QueueManager.getQueueManager().unregisterEventListener(mOnChangeListener);
         super.onDestroy();
     }
 }

@@ -121,7 +121,7 @@ public class PreferredStylesActivity
                                                  ErrorMsg.ARGS_MISSING_EXTRAS));
 
         mListView = findViewById(R.id.stylesList);
-        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+        final LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         mListView.setLayoutManager(layoutManager);
         mListView.addItemDecoration(
                 new DividerItemDecoration(this, layoutManager.getOrientation()));
@@ -134,7 +134,7 @@ public class PreferredStylesActivity
         mListAdapter.registerAdapterDataObserver(mAdapterDataObserver);
         mListView.setAdapter(mListAdapter);
 
-        SimpleItemTouchHelperCallback sitHelperCallback =
+        final SimpleItemTouchHelperCallback sitHelperCallback =
                 new SimpleItemTouchHelperCallback(mListAdapter);
         mItemTouchHelper = new ItemTouchHelper(sitHelperCallback);
         mItemTouchHelper.attachToRecyclerView(mListView);
@@ -160,11 +160,11 @@ public class PreferredStylesActivity
 
     @Override
     public void onBackPressed() {
-        Intent resultData = new Intent()
+        final Intent resultData = new Intent()
                 .putExtra(BooklistStyle.BKEY_STYLE_MODIFIED, mModel.isDirty());
 
         // return the currently selected style, so the caller can apply it.
-        BooklistStyle selectedStyle = mListAdapter.getSelected();
+        final BooklistStyle selectedStyle = mListAdapter.getSelected();
         if (selectedStyle != null) {
             resultData.putExtra(BooklistStyle.BKEY_STYLE, selectedStyle);
         }
@@ -220,7 +220,6 @@ public class PreferredStylesActivity
 
     @Override
     public boolean onCreateOptionsMenu(@NonNull final Menu menu) {
-
         menu.add(Menu.NONE, R.id.MENU_PURGE_BLNS, 0, R.string.lbl_purge_blns)
             .setIcon(R.drawable.ic_delete)
             .setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
@@ -239,11 +238,10 @@ public class PreferredStylesActivity
 
     @Override
     public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
-
         //noinspection SwitchStatementWithTooFewBranches
         switch (item.getItemId()) {
             case R.id.MENU_PURGE_BLNS: {
-                BooklistStyle selected = mListAdapter.getSelected();
+                final BooklistStyle selected = mListAdapter.getSelected();
                 if (selected != null) {
                     StandardDialogs.purgeBLNS(this, R.string.lbl_style, selected, () ->
                             mModel.purgeBLNS(selected.getId()));
@@ -317,10 +315,9 @@ public class PreferredStylesActivity
     private boolean onContextItemSelected(@IdRes final int menuItem,
                                           final int position) {
 
-        BooklistStyle style = mModel.getList().get(position);
+        final BooklistStyle style = mModel.getList().get(position);
 
         switch (menuItem) {
-
             case R.id.MENU_EDIT:
                 // dev sanity check
                 if (BuildConfig.DEBUG /* always */) {
@@ -363,7 +360,7 @@ public class PreferredStylesActivity
         // IMPORTANT: we parcel the style to edit it.
         // This allows us to handle a new style (id==0) without storing it in the database first.
         // upon returning in onActivityResult, we'll handle the id.
-        Intent intent = new Intent(this, SettingsActivity.class)
+        final Intent intent = new Intent(this, SettingsActivity.class)
                 .putExtra(BaseActivity.BKEY_FRAGMENT_TAG, StyleFragment.TAG)
                 .putExtra(BooklistStyle.BKEY_STYLE, style)
                 .putExtra(StyleBaseFragment.BKEY_TEMPLATE_ID, templateStyleId);
@@ -423,7 +420,7 @@ public class PreferredStylesActivity
         public Holder onCreateViewHolder(@NonNull final ViewGroup parent,
                                          final int viewType) {
 
-            View view = getLayoutInflater()
+            final View view = getLayoutInflater()
                     .inflate(R.layout.row_edit_preferred_styles, parent, false);
             return new Holder(view);
         }
@@ -433,7 +430,7 @@ public class PreferredStylesActivity
                                      final int position) {
             super.onBindViewHolder(holder, position);
 
-            BooklistStyle style = getItem(position);
+            final BooklistStyle style = getItem(position);
 
             holder.nameView.setText(style.getLabel(getContext()));
 
@@ -488,11 +485,11 @@ public class PreferredStylesActivity
          */
         private void setPreferred(@NonNull final Holder holder) {
             // current row/style
-            int position = holder.getBindingAdapterPosition();
-            BooklistStyle style = getItem(position);
+            final int position = holder.getBindingAdapterPosition();
+            final BooklistStyle style = getItem(position);
 
             // handle the 'preferred' state of the current row/style
-            boolean checked = !style.isPreferred(getContext());
+            final boolean checked = !style.isPreferred(getContext());
             style.setPreferred(checked);
             //noinspection ConstantConditions
             holder.mCheckableButton.setChecked(checked);

@@ -72,7 +72,7 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FK
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FK_BOOK;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FK_SERIES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FK_STYLE;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FTS_BOOKS_PK;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FTS_BOOK_ID;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_ISBN;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_PK_ID;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_STYLE_IS_BUILTIN;
@@ -505,7 +505,7 @@ public final class DBHelper
         body = " AFTER DELETE ON " + TBL_BOOKS.getName() + " FOR EACH ROW\n"
                + " BEGIN\n"
                + "  DELETE FROM " + TBL_FTS_BOOKS.getName()
-               + " WHERE " + KEY_FTS_BOOKS_PK + "=OLD." + KEY_PK_ID + ";\n"
+               + " WHERE " + KEY_FTS_BOOK_ID + "=OLD." + KEY_PK_ID + ";\n"
                + " END";
 
         db.execSQL("DROP TRIGGER IF EXISTS " + name);
@@ -554,10 +554,10 @@ public final class DBHelper
     @SuppressWarnings("unused")
     @Override
     public void onCreate(@NonNull final SQLiteDatabase db) {
-        final Context localContext = LocaleUtils.applyLocale(App.getAppContext());
+        final Context context = LocaleUtils.applyLocale(App.getAppContext());
 
         // 'Upgrade' from not being installed. Run this first to avoid racing issues.
-        UpgradeMessageManager.setUpgradeAcknowledged(localContext);
+        UpgradeMessageManager.setUpgradeAcknowledged(context);
 
         final SynchronizedDb syncedDb = new SynchronizedDb(db, sSynchronizer);
 
@@ -589,7 +589,7 @@ public final class DBHelper
                    + ',' + KEY_FK_STYLE
                    + ") VALUES ("
                    + Bookshelf.ALL_BOOKS
-                   + ",'" + localContext.getString(R.string.bookshelf_all_books)
+                   + ",'" + context.getString(R.string.bookshelf_all_books)
                    + "'," + BooklistStyle.DEFAULT_STYLE_ID
                    + ')');
 
@@ -600,7 +600,7 @@ public final class DBHelper
                    + ',' + KEY_FK_STYLE
                    + ") VALUES ("
                    + Bookshelf.DEFAULT
-                   + ",'" + localContext.getString(R.string.bookshelf_my_books)
+                   + ",'" + context.getString(R.string.bookshelf_my_books)
                    + "'," + BooklistStyle.DEFAULT_STYLE_ID
                    + ')');
 
@@ -628,6 +628,8 @@ public final class DBHelper
                           final int oldVersion,
                           final int newVersion) {
 
+        final Context context = App.getAppContext();
+
         if (BuildConfig.DEBUG /* always */) {
             Log.d(TAG, "ENTER|onUpgrade"
                        + "|Old database version: " + oldVersion
@@ -640,7 +642,7 @@ public final class DBHelper
         }
 
         if (oldVersion != newVersion) {
-            final Context context = App.getAppContext();
+
             String backup = DB_UPGRADE_FILE_PREFIX + "-" + oldVersion + '-' + newVersion;
             try {
                 final File destFile = AppDir.Upgrades.getFile(context, backup);
@@ -684,7 +686,6 @@ public final class DBHelper
             TBL_BOOKSHELF.alterTableAddColumn(syncedDb, DBDefinitions.DOM_BOOKSHELF_BL_TOP_OFFSET);
             TBL_BOOKSHELF.alterTableAddColumn(syncedDb, DBDefinitions.DOM_BOOKSHELF_BL_TOP_ROW_ID);
 
-            final Context context = App.getAppContext();
             PreferenceManager.getDefaultSharedPreferences(context)
                              .edit()
                              .remove("booklist.top.row")

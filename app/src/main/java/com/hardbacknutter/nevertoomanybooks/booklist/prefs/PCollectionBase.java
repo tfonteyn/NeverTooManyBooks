@@ -87,13 +87,7 @@ public abstract class PCollectionBase<E, T extends Collection<E>>
     public void set(@NonNull final Context context,
                     @Nullable final String values) {
         if (mIsPersistent) {
-            SharedPreferences.Editor ed = getPrefs(context).edit();
-            if (values == null) {
-                ed.remove(getKey());
-            } else {
-                ed.putString(getKey(), values);
-            }
-            ed.apply();
+            getPrefs(context).edit().putString(getKey(), values).apply();
         } else {
             // Not implemented for now, and in fact not needed/used for now (2020-03-11)
             // Problem is that we'd need to split the incoming CSV string, and re-create the list.
@@ -192,12 +186,14 @@ public abstract class PCollectionBase<E, T extends Collection<E>>
                         newList.add(e);
                     }
                 }
+
+                final SharedPreferences.Editor ed = getPrefs(context).edit();
                 if (newList.isEmpty()) {
-                    getPrefs(context).edit().remove(getKey()).apply();
+                    ed.remove(getKey());
                 } else {
-                    getPrefs(context)
-                            .edit().putString(getKey(), TextUtils.join(DELIM, newList)).apply();
+                    ed.putString(getKey(), TextUtils.join(DELIM, newList));
                 }
+                ed.apply();
             }
         } else {
             Objects.requireNonNull(mNonPersistedValue, ErrorMsg.NULL_NON_PERSISTED_VALUE);

@@ -572,8 +572,7 @@ public class EditBookAuthorListDialogFragment
             // and this is more user friendly if they flip the switch more than once.
             mVb.btnUseAuthorType.setChecked(enable);
             for (int i = 0; i < mTypeButtons.size(); i++) {
-                final CompoundButton typeBtn = mTypeButtons.valueAt(i);
-                typeBtn.setEnabled(enable);
+                mTypeButtons.valueAt(i).setEnabled(enable);
             }
         }
 

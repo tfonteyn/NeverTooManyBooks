@@ -77,7 +77,7 @@ public class SearchAdminModel
                 // first see if we got passed in any custom lists.
                 for (SiteList.Type type : SiteList.Type.values()) {
                     if (!mListMap.containsKey(type)) {
-                        SiteList siteList = args.getParcelable(type.getBundleKey());
+                        final SiteList siteList = args.getParcelable(type.getBundleKey());
                         if (siteList != null) {
                             mListMap.put(type, siteList);
                         }
@@ -106,8 +106,7 @@ public class SearchAdminModel
 
         SiteList list = mListMap.get(type);
         if (list == null) {
-            Locale locale = LocaleUtils.getUserLocale(context);
-            list = SiteList.getList(context, locale, type);
+            list = SiteList.getList(context, LocaleUtils.getUserLocale(context), type);
             mListMap.put(type, list);
         }
         return list;
@@ -123,7 +122,7 @@ public class SearchAdminModel
     public boolean persist(@NonNull final Context context) {
         int shouldHave = 0;
         int has = 0;
-        Locale systemLocale = LocaleUtils.getSystemLocale();
+        final Locale systemLocale = LocaleUtils.getSystemLocale();
         for (SiteList list : mListMap.values()) {
             list.update(context, systemLocale);
             shouldHave++;
@@ -137,7 +136,7 @@ public class SearchAdminModel
                    @NonNull final Locale locale,
                    @NonNull final SiteList.Type type) {
 
-        SiteList newList = SiteList.resetList(context, locale, type);
+        final SiteList newList = SiteList.resetList(context, locale, type);
 
         SiteList currentList = mListMap.get(type);
         if (currentList == null) {

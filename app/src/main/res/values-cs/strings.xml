@@ -144,7 +144,7 @@
     <string name="gr_info_send_books">Zde můžete odeslat Vaši knihovnu na Goodreads.\nMůžete odeslat buď všechny knihy, nebo pouze ty knihy, které byly aktualizovány od chvíle, kdy jste naposledy kopíroval z nebo do Goodreads (spolu se všemi knihami, které doposud nebyly odeslány) nebo můžete aktualizaci zrušit.\n\nPokud jste doposud žádnou knihu neodeslal, pak mezi první a druhou volbou není žádký rozdíl.</string>
     <string name="gr_menu_import_all_from_goodreads">Importovat vše z Goodreads</string>
     <string name="gr_menu_send_all">Odeslat vše</string>
-    <string name="gr_menu_send_to_goodreads">Poslat do Goodreads</string>
+    <string name="gr_send_to_goodreads">Poslat do Goodreads</string>
     <string name="gr_menu_send_updated">Odeslat aktualizované</string>
     <string name="gr_pt_collect_genre">Jako žánry knih použijte populární názvy knihoven</string>
     <string name="gr_send_book_to_goodreads">Poslat knihu %1$d do Goodreads</string>

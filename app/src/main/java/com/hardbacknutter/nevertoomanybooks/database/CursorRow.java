@@ -35,7 +35,7 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.entities.RowDataHolder;
+import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 
 /**
  * A handy wrapper allowing to fetch columns by name.
@@ -43,12 +43,12 @@ import com.hardbacknutter.nevertoomanybooks.entities.RowDataHolder;
  * <strong>Note:</strong> converts {@code null} Strings to an empty String.
  * <p>
  * Tip: when using a CursorRow as a parameter to a constructor, e.g.
- * {@link com.hardbacknutter.nevertoomanybooks.entities.Bookshelf#Bookshelf(long, RowDataHolder)}
+ * {@link com.hardbacknutter.nevertoomanybooks.entities.Bookshelf#Bookshelf(long, DataHolder)}
  * always pass the id additionally/separately. This gives the calling code a change to use
  * for example the foreign key id.
  */
 public class CursorRow
-        implements RowDataHolder {
+        implements DataHolder {
 
     /** Log tag. */
     private static final String TAG = "CursorRow";
@@ -58,8 +58,6 @@ public class CursorRow
 
     /**
      * Constructor.
-     * <p>
-     * Cache all column indexes for this cursors column.
      *
      * @param cursor to read from
      */
@@ -171,6 +169,26 @@ public class CursorRow
     }
 
     /**
+     * @param key to get
+     *
+     * @return the byte array (blob) of the column ({@code null} comes back as 0)
+     *
+     * @throws ColumnNotPresentException if the column was not present.
+     */
+    public byte[] getBlob(@NonNull final String key)
+            throws ColumnNotPresentException {
+
+        int col = mCursor.getColumnIndex(key);
+        if (col == -1) {
+            throw new ColumnNotPresentException(key);
+        }
+        // if (mCursor.isNull(col)) {
+        //     return null;
+        // }
+        return mCursor.getBlob(col);
+    }
+
+    /**
      * See the comments on methods in {@link android.database.CursorWindow}
      * for info on type conversions which explains our use of getLong/getDouble.
      *
@@ -181,7 +199,7 @@ public class CursorRow
     @SuppressWarnings("unused")
     @NonNull
     public Bundle getAll(@NonNull final Context context) {
-        Bundle bundle = new Bundle();
+        final Bundle bundle = new Bundle();
 
         for (String columnName : mCursor.getColumnNames()) {
             int col = mCursor.getColumnIndex(columnName);

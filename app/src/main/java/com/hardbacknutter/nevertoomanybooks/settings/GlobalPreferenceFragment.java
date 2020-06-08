@@ -58,7 +58,7 @@ public class GlobalPreferenceFragment
 
         setPreferencesFromResource(R.xml.preferences, rootKey);
 
-        boolean storedSortTitleReordered = getPreferenceManager()
+        final boolean storedSortTitleReordered = getPreferenceManager()
                 .getSharedPreferences().getBoolean(Prefs.pk_sort_title_reordered, true);
         if (savedInstanceState == null) {
             mCurrentSortTitleReordered = storedSortTitleReordered;

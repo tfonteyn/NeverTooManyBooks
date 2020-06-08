@@ -176,7 +176,7 @@ public class UpdateFieldsFragment
             cb.setText(usage.getUsageLabel(getContext()));
             cb.setTag(R.id.TAG_FIELD_USAGE, usage);
             cb.setOnClickListener(v -> {
-                FieldUsage fieldUsage = (FieldUsage) cb.getTag(R.id.TAG_FIELD_USAGE);
+                final FieldUsage fieldUsage = (FieldUsage) cb.getTag(R.id.TAG_FIELD_USAGE);
                 fieldUsage.nextState();
                 cb.setChecked(fieldUsage.isWanted());
                 cb.setText(fieldUsage.getUsageLabel(getContext()));
@@ -380,7 +380,7 @@ public class UpdateFieldsFragment
 
     @NonNull
     private ProgressDialogFragment getOrCreateProgressDialog() {
-        FragmentManager fm = getChildFragmentManager();
+        final FragmentManager fm = getChildFragmentManager();
 
         // get dialog after a fragment restart
         ProgressDialogFragment dialog = (ProgressDialogFragment)

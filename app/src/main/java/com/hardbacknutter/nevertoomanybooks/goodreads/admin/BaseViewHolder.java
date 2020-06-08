@@ -25,35 +25,43 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue;
+package com.hardbacknutter.nevertoomanybooks.goodreads.admin;
 
-import android.content.Context;
-import android.view.ViewGroup;
-import android.widget.LinearLayout;
-import android.widget.TextView;
+import android.view.View;
 
 import androidx.annotation.NonNull;
 
-class LegacyViewHolder
-        extends BindableItemViewHolder {
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
+import java.util.Locale;
 
-    final TextView tv1;
-    final TextView tv2;
+import com.hardbacknutter.nevertoomanybooks.R;
 
-    LegacyViewHolder(@NonNull final Context context) {
-        super(new LinearLayout(context));
+public abstract class BaseViewHolder {
 
-        LinearLayout view = (LinearLayout) itemView;
-        view.setOrientation(LinearLayout.VERTICAL);
+    /** Container View for this item. */
+    @NonNull
+    protected final View itemView;
 
-        ViewGroup.LayoutParams margins = new LinearLayout.LayoutParams(
-                ViewGroup.MarginLayoutParams.MATCH_PARENT,
-                ViewGroup.MarginLayoutParams.WRAP_CONTENT);
+    protected BaseViewHolder(@NonNull final View view) {
+        itemView = view;
+        itemView.setTag(R.id.TAG_VIEW_HOLDER, this);
+    }
 
-        tv1 = new TextView(context);
-        view.addView(tv1, margins);
-
-        tv2 = new TextView(context);
-        view.addView(tv2, margins);
+    /**
+     * Pretty format a LocalDateTime to a datetime-string, using the specified locale.
+     *
+     * @param date          to format
+     * @param displayLocale to use
+     *
+     * @return human readable datetime string
+     */
+    @NonNull
+    protected static String toPrettyDateTime(@NonNull final LocalDateTime date,
+                                             @NonNull final Locale displayLocale) {
+        return date.format(DateTimeFormatter
+                                   .ofLocalizedDateTime(FormatStyle.MEDIUM, FormatStyle.SHORT)
+                                   .withLocale(displayLocale));
     }
 }

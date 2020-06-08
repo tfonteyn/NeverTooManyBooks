@@ -29,9 +29,14 @@ package com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue;
 
 import android.content.Context;
 
+import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 
-import java.io.Serializable;
+import java.util.List;
+
+import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.database.DAO;
+import com.hardbacknutter.nevertoomanybooks.goodreads.admin.ContextDialogItem;
 
 
 /**
@@ -39,28 +44,21 @@ import java.io.Serializable;
  * do not prevent the task from completing. Examples might include a long running export job
  * in which 3 items fail, but 678 succeed -- in this case it is useful to export the successful
  * ones and report the failures later.
- * <p>
- * The {@link Task#setLastException(Exception)} method stores the exception in the database
- * for later retrieval.
- * <p>
- * Client applications should consider subclassing this object.
- * <p>
- * An Event *MUST* be serializable.
- * This means that it can not contain any references to UI components or similar objects.
  */
-public abstract class Event<
-        BICursor extends BindableItemCursor,
-        BIViewHolder extends BindableItemViewHolder>
-        implements BindableItem<BICursor, BIViewHolder>,
-                   Serializable {
+public class TQEvent
+        implements TQItem {
 
-    private static final long serialVersionUID = 7879945038246273501L;
-
+    private static final long serialVersionUID = -8207960724623016221L;
     @NonNull
     private final String mDescription;
     private long mId;
 
-    protected Event(@NonNull final String description) {
+    /**
+     * Constructor.
+     *
+     * @param description for this event
+     */
+    protected TQEvent(@NonNull final String description) {
         mDescription = description;
     }
 
@@ -74,14 +72,24 @@ public abstract class Event<
     }
 
     @NonNull
-    protected String getDescription(@NonNull final Context context) {
+    public String getDescription(@NonNull final Context context) {
         return mDescription;
+    }
+
+    @Override
+    @CallSuper
+    public void addContextMenuItems(@NonNull final Context context,
+                                    @NonNull final List<ContextDialogItem> menuItems,
+                                    @NonNull final DAO db) {
+        menuItems.add(new ContextDialogItem(context.getString(R.string.gr_tq_menu_delete_event),
+                                            () -> QueueManager.getQueueManager()
+                                                              .deleteEvent(getId())));
     }
 
     @Override
     @NonNull
     public String toString() {
-        return "Event{"
+        return "TQEvent{"
                + "mId=" + mId
                + ", mDescription=`" + mDescription + '`'
                + '}';

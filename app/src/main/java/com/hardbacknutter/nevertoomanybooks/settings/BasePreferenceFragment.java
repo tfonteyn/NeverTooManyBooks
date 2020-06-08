@@ -109,7 +109,7 @@ public abstract class BasePreferenceFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Bundle args = getArguments();
+        final Bundle args = getArguments();
         if (args != null) {
             mAutoScrollToKey = args.getString(BKEY_AUTO_SCROLL_TO_KEY);
         }
@@ -293,7 +293,7 @@ public abstract class BasePreferenceFragment
     public void onResume() {
         super.onResume();
 
-        PreferenceScreen screen = getPreferenceScreen();
+        final PreferenceScreen screen = getPreferenceScreen();
         screen.getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
 
         // Set the summaries reflecting the current values for all Preferences.
@@ -441,7 +441,7 @@ public abstract class BasePreferenceFragment
      */
     @CallSuper
     protected void updateSummary(@NonNull final String key) {
-        Preference preference = findPreference(key);
+        final Preference preference = findPreference(key);
         if (preference != null) {
             preference.setSummary(getValueAsString(preference));
         }
@@ -457,7 +457,7 @@ public abstract class BasePreferenceFragment
     @NonNull
     private CharSequence getValueAsString(@NonNull final Preference preference) {
         if (preference instanceof ListPreference) {
-            CharSequence value = ((ListPreference) preference).getEntry();
+            final CharSequence value = ((ListPreference) preference).getEntry();
             return value != null ? value : getString(R.string.hint_not_set);
         }
         if (preference instanceof EditTextPreference) {
@@ -465,7 +465,7 @@ public abstract class BasePreferenceFragment
         }
 
         if (preference instanceof BitmaskPreference) {
-            BitmaskPreference bmp = (BitmaskPreference) preference;
+            final BitmaskPreference bmp = (BitmaskPreference) preference;
             if (!bmp.isActive()) {
                 return bmp.getNotSetSummary();
             }
@@ -473,10 +473,10 @@ public abstract class BasePreferenceFragment
         }
 
         if (preference instanceof MultiSelectListPreference) {
-            MultiSelectListPreference msp = (MultiSelectListPreference) preference;
-            StringBuilder text = new StringBuilder();
+            final MultiSelectListPreference msp = (MultiSelectListPreference) preference;
+            final StringBuilder text = new StringBuilder();
             for (String s : msp.getValues()) {
-                int index = msp.findIndexOfValue(s);
+                final int index = msp.findIndexOfValue(s);
                 if (index >= 0) {
                     text.append(msp.getEntries()[index]).append('\n');
 

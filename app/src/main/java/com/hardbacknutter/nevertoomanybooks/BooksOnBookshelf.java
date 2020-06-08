@@ -98,8 +98,8 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditSeriesDialogFra
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
+import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
-import com.hardbacknutter.nevertoomanybooks.entities.RowDataHolder;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsHandler;
 import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.RequestAuthTask;
@@ -183,7 +183,7 @@ public class BooksOnBookshelf
                     if (!cursor.moveToPosition(position)) {
                         return;
                     }
-                    final RowDataHolder rowData = new CursorRow(cursor);
+                    final DataHolder rowData = new CursorRow(cursor);
 
                     // If it's a book, open the details screen.
                     if (rowData.getInt(DBDefinitions.KEY_BL_NODE_GROUP) == BooklistGroup.BOOK) {
@@ -222,7 +222,7 @@ public class BooksOnBookshelf
                     if (!cursor.moveToPosition(position)) {
                         return false;
                     }
-                    final RowDataHolder rowData = new CursorRow(cursor);
+                    final DataHolder rowData = new CursorRow(cursor);
 
                     // build the menu for this row
                     final Menu menu = MenuPicker.createMenu(BooksOnBookshelf.this);
@@ -629,7 +629,7 @@ public class BooksOnBookshelf
      * @return {@code true} if there is a menu to show
      */
     private boolean onCreateContextMenu(@NonNull final Menu menu,
-                                        @NonNull final RowDataHolder rowData) {
+                                        @NonNull final DataHolder rowData) {
         menu.clear();
 
         final int rowGroupId = rowData.getInt(DBDefinitions.KEY_BL_NODE_GROUP);
@@ -774,7 +774,7 @@ public class BooksOnBookshelf
             return false;
         }
 
-        final RowDataHolder rowData = new CursorRow(cursor);
+        final DataHolder rowData = new CursorRow(cursor);
 
         switch (menuItem) {
             case R.id.MENU_BOOK_EDIT: {
@@ -1183,7 +1183,7 @@ public class BooksOnBookshelf
                     Objects.requireNonNull(data, ErrorMsg.NULL_INTENT_DATA);
                     final Uri uri = data.getData();
                     if (uri != null) {
-                        mExportModel.startArchiveExportTask(uri);
+                        mExportModel.startArchiveExportTask(this, uri);
                     }
                 }
                 break;

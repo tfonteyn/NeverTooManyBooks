@@ -223,7 +223,7 @@ public class Series
      * @param rowData with data
      */
     public Series(final long id,
-                  @NonNull final RowDataHolder rowData) {
+                  @NonNull final DataHolder rowData) {
         mId = id;
         mTitle = rowData.getString(DBDefinitions.KEY_SERIES_TITLE);
         mIsComplete = rowData.getBoolean(DBDefinitions.KEY_SERIES_IS_COMPLETE);

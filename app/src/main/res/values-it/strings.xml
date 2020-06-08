@@ -145,7 +145,7 @@
     <string name="gr_info_send_books">Questa funzione invierà la tua libreria a Goodreads.\n\nPuoi scegliere se inviare tutti i tuoi libri, o solo i libri che hai modificato dall\'ultimo aggiornamento con Goodreads (inclusi tutti i libri che non sono ancora stati inviati), oppure cancellare l\'aggiornamento.\n\nSe non hai mai inviato alcun libro, non vi è differenza tra le prime due opzioni.</string>
     <string name="gr_menu_import_all_from_goodreads">Importa tutti da Goodreads</string>
     <string name="gr_menu_send_all">Invia tutti</string>
-    <string name="gr_menu_send_to_goodreads">Invia a Goodreads</string>
+    <string name="gr_send_to_goodreads">Invia a Goodreads</string>
     <string name="gr_menu_send_updated">Invia modificati</string>
     <string name="gr_pt_collect_genre">Usa nomi di scaffali popolari come generi di libri</string>
     <string name="gr_send_book_to_goodreads">Invia il libro %1$d a Goodreads</string>

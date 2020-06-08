@@ -386,7 +386,7 @@ public abstract class BaseActivity
 
         final FragmentManager fm = getSupportFragmentManager();
         if (fm.findFragmentByTag(tag) == null) {
-            Fragment fragment;
+            final Fragment fragment;
             try {
                 fragment = (Fragment) fragmentClass.newInstance();
             } catch (IllegalAccessException | InstantiationException e) {

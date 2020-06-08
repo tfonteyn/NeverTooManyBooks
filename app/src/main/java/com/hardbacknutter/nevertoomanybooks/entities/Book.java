@@ -200,9 +200,9 @@ public class Book
      */
     @NonNull
     public Intent getShareBookIntent(@NonNull final Context context) {
-        String title = getString(DBDefinitions.KEY_TITLE);
-        double rating = getDouble(DBDefinitions.KEY_RATING);
-        String author = getString(DBDefinitions.KEY_AUTHOR_FORMATTED_GIVEN_FIRST);
+        final String title = getString(DBDefinitions.KEY_TITLE);
+        final double rating = getDouble(DBDefinitions.KEY_RATING);
+        final String author = getString(DBDefinitions.KEY_AUTHOR_FORMATTED_GIVEN_FIRST);
         String series = getString(DBDefinitions.KEY_SERIES_FORMATTED);
 
         if (!series.isEmpty()) {
@@ -213,9 +213,9 @@ public class Book
         String ratingString = "";
         if (rating > 0) {
             // force rounding
-            int ratingTmp = (int) rating;
+            final int ratingTmp = (int) rating;
             // get fraction
-            double decimal = rating - ratingTmp;
+            final double decimal = rating - ratingTmp;
             if (decimal > 0) {
                 ratingString = String.valueOf(rating) + '/' + RATING_STARS;
             } else {
@@ -236,8 +236,8 @@ public class Book
 //            Uri uri = GenericFileProvider.getUriForFile(context, coverFile);
 //        }
 
-        String text = context.getString(R.string.txt_share_book_im_reading,
-                                        title, author, series, ratingString);
+        final String text = context.getString(R.string.txt_share_book_im_reading,
+                                              title, author, series, ratingString);
 
         return Intent.createChooser(new Intent(Intent.ACTION_SEND)
                                             .setType("text/plain")
@@ -369,7 +369,7 @@ public class Book
      */
     private boolean setRead(@NonNull final DAO db,
                             final boolean isRead) {
-        boolean old = getBoolean(DBDefinitions.KEY_READ);
+        final boolean old = getBoolean(DBDefinitions.KEY_READ);
 
         if (db.setBookRead(getId(), isRead)) {
             putBoolean(DBDefinitions.KEY_READ, isRead);
@@ -461,7 +461,7 @@ public class Book
      */
     @Nullable
     public String getPrimaryAuthor(@NonNull final Context context) {
-        ArrayList<Author> authors = getParcelableArrayList(BKEY_AUTHOR_ARRAY);
+        final ArrayList<Author> authors = getParcelableArrayList(BKEY_AUTHOR_ARRAY);
         return authors.isEmpty() ? null : authors.get(0).getLabel(context);
     }
 
@@ -473,7 +473,7 @@ public class Book
      */
     public void refreshAuthorList(@NonNull final Context context,
                                   @NonNull final DAO db) {
-        ArrayList<Author> list = getParcelableArrayList(BKEY_AUTHOR_ARRAY);
+        final ArrayList<Author> list = getParcelableArrayList(BKEY_AUTHOR_ARRAY);
         for (Author author : list) {
             db.refreshAuthor(context, author);
         }
@@ -487,7 +487,7 @@ public class Book
      */
     @Nullable
     public String getPrimarySeriesTitle() {
-        ArrayList<Series> list = getParcelableArrayList(BKEY_SERIES_ARRAY);
+        final ArrayList<Series> list = getParcelableArrayList(BKEY_SERIES_ARRAY);
         return list.isEmpty() ? null : list.get(0).getTitle();
     }
 
@@ -539,7 +539,7 @@ public class Book
                                       final boolean updateLanguage) {
         Locale bookLocale = null;
         if (contains(DBDefinitions.KEY_LANGUAGE)) {
-            String lang = getString(DBDefinitions.KEY_LANGUAGE);
+            final String lang = getString(DBDefinitions.KEY_LANGUAGE);
 
             bookLocale = LocaleUtils.getLocale(context, lang);
             if (bookLocale == null) {
@@ -575,7 +575,7 @@ public class Book
     public void refreshSeriesList(@NonNull final Context context,
                                   @NonNull final DAO db) {
 
-        ArrayList<Series> list = getParcelableArrayList(BKEY_SERIES_ARRAY);
+        final ArrayList<Series> list = getParcelableArrayList(BKEY_SERIES_ARRAY);
         for (Series series : list) {
             db.refreshSeries(context, series, getLocale(context));
         }
@@ -651,17 +651,18 @@ public class Book
                                      final boolean isNew) {
 
         // Handle Language field FIRST, we need it for _OB fields.
-        Locale bookLocale = getAndUpdateLocale(context, LocaleUtils.getUserLocale(context), true);
+        final Locale bookLocale = getAndUpdateLocale(
+                context, LocaleUtils.getUserLocale(context), true);
 
         // Handle TITLE
         if (contains(DBDefinitions.KEY_TITLE)) {
-            String obTitle = reorderTitleForSorting(context, bookLocale);
+            final String obTitle = reorderTitleForSorting(context, bookLocale);
             putString(DBDefinitions.KEY_TITLE_OB, DAO.encodeOrderByColumn(obTitle, bookLocale));
         }
 
         // Handle TOC_BITMASK only, no handling of actual titles here,
         // but making sure TOC_MULTIPLE_AUTHORS is correct.
-        ArrayList<TocEntry> tocEntries = getParcelableArrayList(BKEY_TOC_ENTRY_ARRAY);
+        final ArrayList<TocEntry> tocEntries = getParcelableArrayList(BKEY_TOC_ENTRY_ARRAY);
         if (!tocEntries.isEmpty()) {
             @Book.TocBits
             long type = getLong(DBDefinitions.KEY_TOC_BITMASK);
@@ -673,7 +674,7 @@ public class Book
 
         // make sure we only store valid bits
         if (contains(DBDefinitions.KEY_EDITION_BITMASK)) {
-            int editions = getInt(DBDefinitions.KEY_EDITION_BITMASK) & Edition.BITMASK_ALL;
+            final int editions = getInt(DBDefinitions.KEY_EDITION_BITMASK) & Edition.BITMASK_ALL;
             putInt(DBDefinitions.KEY_EDITION_BITMASK, editions);
         }
 
@@ -705,7 +706,7 @@ public class Book
         // handle a price without a currency.
         if (contains(valueKey) && !contains(currencyKey)) {
             // we presume the user bought the book in their own currency.
-            Money money = new Money(bookLocale, getString(valueKey));
+            final Money money = new Money(bookLocale, getString(valueKey));
             if (money.getCurrency() != null) {
                 putDouble(valueKey, money.doubleValue());
                 putString(currencyKey, money.getCurrency().toUpperCase(bookLocale));
@@ -735,14 +736,14 @@ public class Book
     @VisibleForTesting
     void preprocessExternalIds(final boolean isNew) {
         for (Domain domain : DBDefinitions.NATIVE_ID_DOMAINS) {
-            String key = domain.getName();
+            final String key = domain.getName();
             if (contains(key)) {
                 switch (domain.getType()) {
                     case ColumnInfo.TYPE_INTEGER: {
-                        Object o = get(key);
+                        final Object o = get(key);
                         try {
                             // null and empty strings become zero
-                            long v = getLong(key);
+                            final long v = getLong(key);
 
                             if (isNew && (o == null || v < 1)) {
                                 // for new books, remove zero values altogether
@@ -767,7 +768,7 @@ public class Book
                         break;
                     }
                     case ColumnInfo.TYPE_TEXT: {
-                        Object o = get(key);
+                        final Object o = get(key);
                         if (isNew && (o == null
                                       || o.toString().isEmpty()
                                       || "0".equals(o.toString()))) {
@@ -812,9 +813,9 @@ public class Book
     @VisibleForTesting
     void preprocessNullsAndBlanks(final boolean isNew) {
         for (Domain domain : DBDefinitions.TBL_BOOKS.getDomains()) {
-            String key = domain.getName();
+            final String key = domain.getName();
             if (contains(key) && domain.hasDefault()) {
-                Object value = get(key);
+                final Object value = get(key);
                 if ((domain.isNotBlank() && value != null && value.toString().isEmpty())
                     || ((domain.isNotNull() && value == null))) {
                     if (isNew) {
@@ -915,7 +916,7 @@ public class Book
 
         @NonNull
         public static Map<Integer, String> getEditions(@NonNull final Context context) {
-            Map<Integer, String> map = new LinkedHashMap<>();
+            final Map<Integer, String> map = new LinkedHashMap<>();
             for (Map.Entry<Integer, Integer> entry : ALL.entrySet()) {
                 map.put(entry.getKey(), context.getString(entry.getValue()));
             }

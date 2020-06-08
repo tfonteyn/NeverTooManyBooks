@@ -261,7 +261,7 @@ public class Author
      * @param rowData with data
      */
     public Author(final long id,
-                  @NonNull final RowDataHolder rowData) {
+                  @NonNull final DataHolder rowData) {
         mId = id;
         mFamilyName = rowData.getString(DBDefinitions.KEY_AUTHOR_FAMILY_NAME);
         mGivenNames = rowData.getString(DBDefinitions.KEY_AUTHOR_GIVEN_NAMES);

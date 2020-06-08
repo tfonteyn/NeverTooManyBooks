@@ -14,6 +14,12 @@ TODO: go over ViewModel usage and related onSaveInstanceState. Remove the latter
 
 ENHANCE: image url loading... keep DIY, or move to Glide (v4.10.0 is using androidx)
 
+TODO: task-queue - minimalistic traditional database backed 'MessageQueue' like product
+    Only used by the GoodReads api where it does make sense to have 'survivable' tasks.
+    Hardcoded defaults clean up dead tasks after 7 days.
+    WorkManager sounds like a good replacement.
+
+
 Issues checked: 834 down to 677 (inc)
 
 New fields:

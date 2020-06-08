@@ -82,11 +82,12 @@ public class StyleGroupsActivity
         super.onCreate(savedInstanceState);
 
         mModel = new ViewModelProvider(this).get(StyleGroupsModel.class);
-        mModel.init(Objects.requireNonNull(getIntent().getExtras(), ErrorMsg.ARGS_MISSING_EXTRAS));
+        Objects.requireNonNull(getIntent().getExtras(), ErrorMsg.ARGS_MISSING_EXTRAS);
+        mModel.init(this, getIntent().getExtras());
 
         // The View for the list.
-        RecyclerView listView = findViewById(R.id.groupList);
-        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+        final RecyclerView listView = findViewById(R.id.groupList);
+        final LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         listView.setLayoutManager(layoutManager);
         listView.addItemDecoration(
                 new DividerItemDecoration(this, layoutManager.getOrientation()));
@@ -94,18 +95,18 @@ public class StyleGroupsActivity
 
         // setup the adapter
         // The adapter for the list.
-        GroupWrapperListAdapter listAdapter =
+        final GroupWrapperListAdapter listAdapter =
                 new GroupWrapperListAdapter(this, mModel.getList(),
                                             vh -> mItemTouchHelper.startDrag(vh));
 
         listView.setAdapter(listAdapter);
 
-        SimpleItemTouchHelperCallback sitHelperCallback =
+        final SimpleItemTouchHelperCallback sitHelperCallback =
                 new SimpleItemTouchHelperCallback(listAdapter);
         mItemTouchHelper = new ItemTouchHelper(sitHelperCallback);
         mItemTouchHelper.attachToRecyclerView(listView);
 
-        ActionBar actionBar = getSupportActionBar();
+        final ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             actionBar.setTitle(R.string.lbl_edit_style);
             actionBar.setSubtitle(getString(R.string.name_colon_value,
@@ -136,7 +137,7 @@ public class StyleGroupsActivity
                     .create()
                     .show();
         } else {
-            Intent resultData = new Intent()
+            final Intent resultData = new Intent()
                     .putExtra(BooklistStyle.BKEY_STYLE, mModel.getStyle());
             setResult(Activity.RESULT_OK, resultData);
             super.onBackPressed();
@@ -179,7 +180,7 @@ public class StyleGroupsActivity
         public Holder onCreateViewHolder(@NonNull final ViewGroup parent,
                                          final int viewType) {
 
-            View view = getLayoutInflater()
+            final View view = getLayoutInflater()
                     .inflate(R.layout.row_edit_style_groups, parent, false);
             return new Holder(view);
         }
@@ -189,7 +190,7 @@ public class StyleGroupsActivity
                                      final int position) {
             super.onBindViewHolder(holder, position);
 
-            StyleGroupsModel.GroupWrapper groupWrapper = getItem(position);
+            final StyleGroupsModel.GroupWrapper groupWrapper = getItem(position);
 
             holder.nameView.setText(groupWrapper.group.getLabel(getContext()));
             //noinspection ConstantConditions

@@ -43,7 +43,7 @@ import androidx.annotation.NonNull;
 
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
-import com.hardbacknutter.nevertoomanybooks.entities.RowDataHolder;
+import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.searches.amazon.AmazonSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searches.goodreads.GoodreadsSearchEngine;
@@ -71,7 +71,7 @@ final class MenuHandler {
     }
 
     static void prepareOptionalMenus(@NonNull final Menu menu,
-                                     @NonNull final RowDataHolder rowData) {
+                                     @NonNull final DataHolder rowData) {
 
         final boolean hasAuthor = rowData.contains(DBDefinitions.KEY_FK_AUTHOR)
                                   && rowData.getLong(DBDefinitions.KEY_FK_AUTHOR) > 0;
@@ -86,12 +86,12 @@ final class MenuHandler {
      * Get a map with all valid native ids for the given item.
      * All values will be cast to String.
      *
-     * @param rowData a RowDataHolder compatible object with native id keys.
+     * @param rowData a DataHolder compatible object with native id keys.
      *
      * @return map, can be empty.
      */
     @NonNull
-    private static SparseArray<String> getNativeIds(@NonNull final RowDataHolder rowData) {
+    private static SparseArray<String> getNativeIds(@NonNull final DataHolder rowData) {
         final SparseArray<String> nativeIds = new SparseArray<>();
         for (String key : DBDefinitions.NATIVE_ID_KEYS) {
             final String value = rowData.getString(key);
@@ -130,7 +130,7 @@ final class MenuHandler {
 
     static boolean handleOpenOnWebsiteMenus(@NonNull final Context context,
                                             @IdRes final int menuItem,
-                                            @NonNull final RowDataHolder rowData) {
+                                            @NonNull final DataHolder rowData) {
         switch (menuItem) {
             case R.id.MENU_VIEW_BOOK_AT_AMAZON:
                 AmazonSearchEngine.openWebsite(
@@ -193,15 +193,15 @@ final class MenuHandler {
 
     static void setupSearch(@NonNull final Activity activity,
                             @NonNull final Menu menu) {
-        MenuItem searchItem = menu.findItem(R.id.MENU_SEARCH);
+        final MenuItem searchItem = menu.findItem(R.id.MENU_SEARCH);
         if (searchItem != null) {
             // Reminder: we let the SearchView handle it's own icons.
             // The hint text is defined in xml/searchable.xml
-            SearchView searchView = (SearchView) searchItem.getActionView();
-            SearchManager searchManager = (SearchManager)
+            final SearchView searchView = (SearchView) searchItem.getActionView();
+            final SearchManager searchManager = (SearchManager)
                     activity.getSystemService(Context.SEARCH_SERVICE);
             //noinspection ConstantConditions
-            SearchableInfo si = searchManager.getSearchableInfo(
+            final SearchableInfo si = searchManager.getSearchableInfo(
                     new ComponentName(activity, BooksOnBookshelf.class.getName()));
             searchView.setSearchableInfo(si);
         }

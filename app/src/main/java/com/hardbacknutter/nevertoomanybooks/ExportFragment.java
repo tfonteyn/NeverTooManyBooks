@@ -153,7 +153,8 @@ public class ExportFragment
                     Objects.requireNonNull(data, ErrorMsg.NULL_INTENT_DATA);
                     final Uri uri = data.getData();
                     if (uri != null) {
-                        mExportModel.startArchiveExportTask(uri);
+                        //noinspection ConstantConditions
+                        mExportModel.startArchiveExportTask(getContext(), uri);
                     }
                 } else {
                     //noinspection ConstantConditions
@@ -177,7 +178,7 @@ public class ExportFragment
 
     @NonNull
     private ProgressDialogFragment getOrCreateProgressDialog() {
-        FragmentManager fm = getChildFragmentManager();
+        final FragmentManager fm = getChildFragmentManager();
 
         // get dialog after a fragment restart
         ProgressDialogFragment dialog = (ProgressDialogFragment)
@@ -267,10 +268,9 @@ public class ExportFragment
                                                    (d, which) -> onExportEmail(uri));
                 }
 
-                dialogBuilder
-                        .setMessage(msg)
-                        .create()
-                        .show();
+                dialogBuilder.setMessage(msg)
+                             .create()
+                             .show();
 
                 //noinspection ConstantConditions
                 getActivity().setResult(Activity.RESULT_OK, mResultDataModel.getResultData());
@@ -288,7 +288,8 @@ public class ExportFragment
                 // sanity check
                 Objects.requireNonNull(message.result, ErrorMsg.NULL_TASK_RESULTS);
                 //noinspection ConstantConditions
-                String msg = message.result.createExceptionReport(getContext(), message.exception);
+                final String msg = message.result
+                        .createExceptionReport(getContext(), message.exception);
                 //noinspection ConstantConditions
                 new MaterialAlertDialogBuilder(getContext())
                         .setIcon(R.drawable.ic_error)
@@ -312,7 +313,7 @@ public class ExportFragment
         final String subject = '[' + getString(R.string.app_name) + "] "
                                + getString(R.string.lbl_books);
 
-        ArrayList<Uri> uris = new ArrayList<>();
+        final ArrayList<Uri> uris = new ArrayList<>();
         uris.add(uri);
         try {
             final Intent intent = new Intent(Intent.ACTION_SEND_MULTIPLE)

@@ -112,7 +112,10 @@ public final class DEBUG_SWITCHES {
     public static final boolean SEARCH_COORDINATOR = false;
 
     /** {@link com.hardbacknutter.nevertoomanybooks.goodreads}. */
-    public static final boolean GOODREADS = false;
+    public static final boolean GOODREADS_HTTP_XML = false;
+    public static final boolean GOODREADS_SEND = true;
+    public static final boolean GOODREADS_IMPORT = true;
+
     /** {@link com.hardbacknutter.nevertoomanybooks.searches.isfdb}. */
     public static final boolean ISFDB = false;
 

@@ -29,6 +29,7 @@ package com.hardbacknutter.nevertoomanybooks.goodreads.tasks;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -43,8 +44,8 @@ import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsAuth;
+import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsRegistrationActivity;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GrStatus;
-import com.hardbacknutter.nevertoomanybooks.searches.goodreads.GoodreadsRegistrationActivity;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskBase;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 import com.hardbacknutter.nevertoomanybooks.utils.NetworkUtils;
@@ -99,32 +100,45 @@ public class RequestAuthTask
         Thread.currentThread().setName(TAG);
         final Context context = App.getTaskContext();
 
-        if (!NetworkUtils.isNetworkAvailable(context)) {
-            return GrStatus.NO_INTERNET;
-        }
-
-        final GoodreadsAuth grAuth = new GoodreadsAuth(context);
-        if (grAuth.hasValidCredentials(context)) {
-            return GrStatus.AUTHORIZATION_ALREADY_GRANTED;
-        }
-
         try {
+            if (!NetworkUtils.isNetworkAvailable(context)) {
+                return GrStatus.FAILED_NETWORK_UNAVAILABLE;
+            }
+
+            final GoodreadsAuth grAuth = new GoodreadsAuth(context);
+            if (grAuth.hasValidCredentials(context)) {
+                return GrStatus.SUCCESS_AUTHORIZATION_ALREADY_GRANTED;
+            }
+
             // This step can take several seconds....
-            grAuth.requestAuthorization(context);
+            final Uri authUri = grAuth.requestAuthorization(context);
+            // Open the web page. TODO: this should really be moved out of doInBackground
+            final Intent intent = new Intent(Intent.ACTION_VIEW, authUri);
+            // fix for running on Android 9+ for starting the new activity
+            // from a non-activity context
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            context.startActivity(intent);
+
+            if (isCancelled()) {
+                return GrStatus.CANCELLED;
+            }
+            // Note this is 'task' success only.
+            // The actual outcome depends on the forked web site visit.
+            return GrStatus.SUCCESS;
 
         } catch (@NonNull final IOException e) {
             mException = e;
             Logger.error(context, TAG, e);
-            return GrStatus.IO_ERROR;
+            return GrStatus.FAILED_IO_EXCEPTION;
 
         } catch (@NonNull final GoodreadsAuth.AuthorizationException e) {
             mException = e;
-            return GrStatus.AUTHORIZATION_FAILED;
-        }
+            return GrStatus.FAILED_AUTHORIZATION;
 
-        if (isCancelled()) {
-            return GrStatus.CANCELLED;
+        } catch (@NonNull final RuntimeException e) {
+            Logger.error(context, TAG, e);
+            mException = e;
+            return GrStatus.FAILED_UNEXPECTED_EXCEPTION;
         }
-        return GrStatus.AUTHORIZATION_SUCCESSFUL;
     }
 }

@@ -79,6 +79,8 @@
     <item name="TASK_ID_GR_SEND_BOOKS" type="id" />
     <item name="TASK_ID_GR_IMPORT" type="id" />
     <item name="TASK_ID_GR_GET_WORKS" type="id" />
+    <item name="LEGACY_VIEW_1" type="id" />
+    <item name="LEGACY_VIEW_2" type="id" />
 
     <!-- END predefined AsyncTask IDs -->
 

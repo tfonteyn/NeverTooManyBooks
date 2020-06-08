@@ -122,7 +122,7 @@ public class StartupActivity
         // Version Number
         final TextView view = findViewById(R.id.version);
         try {
-            PackageInfo info = getPackageManager().getPackageInfo(getPackageName(), 0);
+            final PackageInfo info = getPackageManager().getPackageInfo(getPackageName(), 0);
             view.setText(info.versionName);
         } catch (@NonNull final PackageManager.NameNotFoundException ignore) {
             // ignore

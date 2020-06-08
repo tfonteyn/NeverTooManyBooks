@@ -233,7 +233,7 @@ abstract class ApiHandlerNative {
         request.connect();
 
         final int code = request.getResponseCode();
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.GOODREADS) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.GOODREADS_HTTP_XML) {
             Log.d(TAG, "execute"
                        + "\nrequest: " + request.getURL()
                        + "\nresponse: " + code + ' ' + request.getResponseMessage());
@@ -323,7 +323,7 @@ abstract class ApiHandlerNative {
         request.connect();
 
         int code = request.getResponseCode();
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.GOODREADS) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.GOODREADS_HTTP_XML) {
             Log.d(TAG, "execute"
                        + "\nrequest: " + request.getURL()
                        + "\nresponse: " + code + ' ' + request.getResponseMessage());

@@ -81,8 +81,8 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
+import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.entities.ItemWithTitle;
-import com.hardbacknutter.nevertoomanybooks.entities.RowDataHolder;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsHandler;
@@ -132,7 +132,7 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FK
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FK_TOC_ENTRY;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FORMAT;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FTS_AUTHOR_NAME;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FTS_BOOKS_PK;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FTS_BOOK_ID;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FTS_TOC_ENTRY_TITLE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_GENRE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_ISBN;
@@ -280,8 +280,6 @@ public class DAO
     private static final String STMT_UPDATE_AUTHOR_ON_TOC_ENTRIES = "UpdateAuthorOnTocEntry";
     private static final String STMT_UPDATE_GOODREADS_SYNC_DATE = "UpdateGoodreadsSyncDate";
     private static final String STMT_UPDATE_FTS = "UpdateFts";
-    /** log error string. */
-    private static final String ERROR_REQUIRES_TRANSACTION = "Requires a transaction";
     /** log error string. */
     private static final String ERROR_FAILED_TO_UPDATE_FTS = "Failed to onProgress FTS";
     /** See {@link #encodeString}. */
@@ -709,7 +707,7 @@ public class DAO
         ArrayList<TocEntry> list = new ArrayList<>();
         //noinspection ZeroLengthArrayAllocation
         try (Cursor cursor = sSyncedDb.rawQuery(sql, paramList.toArray(new String[0]))) {
-            final RowDataHolder rowData = new CursorRow(cursor);
+            final DataHolder rowData = new CursorRow(cursor);
             while (cursor.moveToNext()) {
                 TocEntry tocEntry = new TocEntry(rowData.getLong(KEY_PK_ID),
                                                  author,
@@ -1552,7 +1550,7 @@ public class DAO
                           @NonNull final List<Series> seriesList) {
 
         if (!sSyncedDb.inTransaction()) {
-            throw new TransactionException(ERROR_REQUIRES_TRANSACTION);
+            throw new TransactionException(ErrorMsg.TRANSACTION_REQUIRED);
         }
 
         // Need to delete the current records because they may have been reordered and a simple
@@ -1635,7 +1633,7 @@ public class DAO
                                    final long bookId,
                                    @NonNull final Book book) {
         if (!sSyncedDb.inTransaction()) {
-            throw new TransactionException(ERROR_REQUIRES_TRANSACTION);
+            throw new TransactionException(ErrorMsg.TRANSACTION_REQUIRED);
         }
 
         ArrayList<TocEntry> list = book.getParcelableArrayList(Book.BKEY_TOC_ENTRY_ARRAY);
@@ -1772,7 +1770,7 @@ public class DAO
                            @NonNull final List<Author> authorList) {
 
         if (!sSyncedDb.inTransaction()) {
-            throw new TransactionException(ERROR_REQUIRES_TRANSACTION);
+            throw new TransactionException(ErrorMsg.TRANSACTION_REQUIRED);
         }
 
         // Need to delete the current records because they may have been reordered and a simple
@@ -1859,7 +1857,7 @@ public class DAO
                                      @NonNull final Book book) {
 
         if (!sSyncedDb.inTransaction()) {
-            throw new TransactionException(ERROR_REQUIRES_TRANSACTION);
+            throw new TransactionException(ErrorMsg.TRANSACTION_REQUIRED);
         }
 
         ArrayList<Bookshelf> bookshelves =
@@ -1935,7 +1933,7 @@ public class DAO
         ArrayList<TocEntry> list = new ArrayList<>();
         try (Cursor cursor = sSyncedDb.rawQuery(SqlSelectList.TOC_ENTRIES_BY_BOOK_ID,
                                                 new String[]{String.valueOf(bookId)})) {
-            final RowDataHolder rowData = new CursorRow(cursor);
+            final DataHolder rowData = new CursorRow(cursor);
             while (cursor.moveToNext()) {
                 list.add(new TocEntry(rowData.getLong(KEY_PK_ID),
                                       new Author(rowData.getLong(KEY_FK_AUTHOR), rowData),
@@ -2064,7 +2062,7 @@ public class DAO
         ArrayList<Author> list = new ArrayList<>();
         try (Cursor cursor = sSyncedDb.rawQuery(SqlSelectList.AUTHORS_BY_BOOK_ID,
                                                 new String[]{String.valueOf(bookId)})) {
-            final RowDataHolder rowData = new CursorRow(cursor);
+            final DataHolder rowData = new CursorRow(cursor);
             while (cursor.moveToNext()) {
                 list.add(new Author(rowData.getLong(KEY_PK_ID), rowData));
             }
@@ -2084,7 +2082,7 @@ public class DAO
         ArrayList<Series> list = new ArrayList<>();
         try (Cursor cursor = sSyncedDb.rawQuery(SqlSelectList.SERIES_BY_BOOK_ID,
                                                 new String[]{String.valueOf(bookId)})) {
-            final RowDataHolder rowData = new CursorRow(cursor);
+            final DataHolder rowData = new CursorRow(cursor);
             while (cursor.moveToNext()) {
                 list.add(new Series(rowData.getLong(KEY_PK_ID), rowData));
             }
@@ -2298,7 +2296,7 @@ public class DAO
         try (Cursor cursor = sSyncedDb.rawQuery(SqlSelect.BOOKSHELF_BY_NAME,
                                                 new String[]{name})) {
             if (cursor.moveToFirst()) {
-                final RowDataHolder rowData = new CursorRow(cursor);
+                final DataHolder rowData = new CursorRow(cursor);
                 return new Bookshelf(rowData.getLong(KEY_PK_ID), rowData);
             } else {
                 return null;
@@ -2385,7 +2383,7 @@ public class DAO
     public ArrayList<Bookshelf> getBookshelves() {
         ArrayList<Bookshelf> list = new ArrayList<>();
         try (Cursor cursor = fetchBookshelves()) {
-            final RowDataHolder rowData = new CursorRow(cursor);
+            final DataHolder rowData = new CursorRow(cursor);
             while (cursor.moveToNext()) {
                 list.add(new Bookshelf(rowData.getLong(KEY_PK_ID), rowData));
             }
@@ -2418,7 +2416,7 @@ public class DAO
         ArrayList<Bookshelf> list = new ArrayList<>();
         try (Cursor cursor = sSyncedDb.rawQuery(SqlSelectList.BOOKSHELVES_BY_BOOK_ID,
                                                 new String[]{String.valueOf(bookId)})) {
-            final RowDataHolder rowData = new CursorRow(cursor);
+            final DataHolder rowData = new CursorRow(cursor);
             while (cursor.moveToNext()) {
                 list.add(new Bookshelf(rowData.getLong(KEY_PK_ID), rowData));
             }
@@ -2446,7 +2444,7 @@ public class DAO
                      + " ORDER BY " + KEY_PK_ID;
 
         try (Cursor cursor = sSyncedDb.rawQuery(sql, null)) {
-            final RowDataHolder rowData = new CursorRow(cursor);
+            final DataHolder rowData = new CursorRow(cursor);
             while (cursor.moveToNext()) {
                 long id = rowData.getLong(KEY_PK_ID);
                 String uuid = rowData.getString(KEY_UUID);
@@ -2919,7 +2917,7 @@ public class DAO
         try (Cursor cursor = sSyncedDb.rawQuery(SqlSelect.SERIES_BY_ID,
                                                 new String[]{String.valueOf(id)})) {
             if (cursor.moveToFirst()) {
-                final RowDataHolder rowData = new CursorRow(cursor);
+                final DataHolder rowData = new CursorRow(cursor);
                 return new Series(id, rowData);
             } else {
                 return null;
@@ -3407,7 +3405,7 @@ public class DAO
                               @NonNull final SynchronizedStatement stmt) {
 
         if (!sSyncedDb.inTransaction()) {
-            throw new TransactionException(ERROR_REQUIRES_TRANSACTION);
+            throw new TransactionException(ErrorMsg.TRANSACTION_REQUIRED);
         }
 
         // Accumulator for author names for each book
@@ -3423,17 +3421,19 @@ public class DAO
         int colSeriesInfo = -2;
         int colTOCEntryInfo = -2;
 
-        final RowDataHolder rowData = new CursorRow(cursor);
+        final DataHolder rowData = new CursorRow(cursor);
         // Process each book
         while (cursor.moveToNext()) {
             authorText.setLength(0);
             seriesText.setLength(0);
             tocTitles.setLength(0);
 
+            final long bookId = rowData.getLong(KEY_PK_ID);
+            // Query Parameter
+            final String[] qpBookId = new String[]{String.valueOf(bookId)};
+
             // Get list of authors
-            try (Cursor authors = sSyncedDb.rawQuery(
-                    SqlFTS.GET_AUTHORS_BY_BOOK_ID,
-                    new String[]{String.valueOf(rowData.getLong(KEY_PK_ID))})) {
+            try (Cursor authors = sSyncedDb.rawQuery(SqlFTS.GET_AUTHORS_BY_BOOK_ID, qpBookId)) {
                 // Get column indexes, if not already got
                 if (colGivenNames < 0) {
                     colGivenNames = authors.getColumnIndex(KEY_AUTHOR_GIVEN_NAMES);
@@ -3441,46 +3441,45 @@ public class DAO
                 if (colFamilyName < 0) {
                     colFamilyName = authors.getColumnIndex(KEY_AUTHOR_FAMILY_NAME);
                 }
-                // Append each author
+
                 while (authors.moveToNext()) {
-                    authorText.append(authors.getString(colGivenNames)).append(' ');
-                    authorText.append(authors.getString(colFamilyName)).append(';');
+                    authorText.append(authors.getString(colGivenNames))
+                              .append(' ')
+                              .append(authors.getString(colFamilyName))
+                              .append(';');
                 }
             }
 
             // Get list of series
-            try (Cursor series = sSyncedDb.rawQuery(
-                    SqlFTS.GET_SERIES_BY_BOOK_ID,
-                    new String[]{String.valueOf(rowData.getLong(KEY_PK_ID))})) {
+            try (Cursor series = sSyncedDb.rawQuery(SqlFTS.GET_SERIES_BY_BOOK_ID, qpBookId)) {
                 // Get column indexes, if not already got
                 if (colSeriesInfo < 0) {
                     colSeriesInfo = series.getColumnIndexOrThrow(KEY_SERIES_TITLE);
                 }
-                // Append each series
+
                 while (series.moveToNext()) {
                     seriesText.append(series.getString(colSeriesInfo)).append(';');
                 }
             }
 
             // Get list of TOC titles
-            try (Cursor tocEntries = sSyncedDb.rawQuery(
-                    SqlFTS.GET_TOC_TITLES_BY_BOOK_ID,
-                    new String[]{String.valueOf(rowData.getLong(KEY_PK_ID))})) {
+            try (Cursor toc = sSyncedDb.rawQuery(SqlFTS.GET_TOC_TITLES_BY_BOOK_ID, qpBookId)) {
                 // Get column indexes, if not already got
                 if (colTOCEntryInfo < 0) {
-                    colTOCEntryInfo = tocEntries.getColumnIndexOrThrow(KEY_TITLE);
+                    colTOCEntryInfo = toc.getColumnIndexOrThrow(KEY_TITLE);
                 }
-                while (tocEntries.moveToNext()) {
-                    tocTitles.append(tocEntries.getString(colTOCEntryInfo)).append(';');
+
+                while (toc.moveToNext()) {
+                    tocTitles.append(toc.getString(colTOCEntryInfo)).append(';');
                 }
             }
 
             //noinspection SynchronizationOnLocalVariableOrMethodParameter
             synchronized (stmt) {
                 bindStringOrNull(stmt, 1, rowData.getString(KEY_TITLE));
-                // DOM_FTS_AUTHOR_NAME
+                // KEY_FTS_AUTHOR_NAME
                 bindStringOrNull(stmt, 2, authorText.toString());
-                // DOM_SERIES_TITLE
+                // KEY_SERIES_TITLE
                 bindStringOrNull(stmt, 3, seriesText.toString());
                 bindStringOrNull(stmt, 4, rowData.getString(KEY_DESCRIPTION));
                 bindStringOrNull(stmt, 5, rowData.getString(KEY_PRIVATE_NOTES));
@@ -3488,11 +3487,11 @@ public class DAO
                 bindStringOrNull(stmt, 7, rowData.getString(KEY_GENRE));
                 bindStringOrNull(stmt, 8, rowData.getString(KEY_LOCATION));
                 bindStringOrNull(stmt, 9, rowData.getString(KEY_ISBN));
-                // DOM_FTS_TOC_ENTRY_TITLE
+                // KEY_FTS_TOC_ENTRY_TITLE
                 bindStringOrNull(stmt, 10, tocTitles.toString());
 
-                // DOM_FTS_BOOKS_PK; either as insert param, or as where clause param
-                stmt.bindLong(11, rowData.getLong(KEY_PK_ID));
+                // KEY_FTS_BOOK_ID : in a where clause, or as insert parameter
+                stmt.bindLong(11, bookId);
 
                 stmt.execute();
             }
@@ -3511,7 +3510,7 @@ public class DAO
                            final long bookId) {
 
         if (!sSyncedDb.inTransaction()) {
-            throw new TransactionException(ERROR_REQUIRES_TRANSACTION);
+            throw new TransactionException(ErrorMsg.TRANSACTION_REQUIRED);
         }
 
         try {
@@ -3542,7 +3541,7 @@ public class DAO
                            final long bookId) {
 
         if (!sSyncedDb.inTransaction()) {
-            throw new TransactionException();
+            throw new TransactionException(ErrorMsg.TRANSACTION_REQUIRED);
         }
 
         try {
@@ -3565,10 +3564,6 @@ public class DAO
      * This can take several seconds with many books or a slow device.
      */
     public void ftsRebuild() {
-        if (sSyncedDb.inTransaction()) {
-            throw new TransactionException();
-        }
-
         long t0 = 0;
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
             t0 = System.nanoTime();
@@ -3586,10 +3581,10 @@ public class DAO
             //IMPORTANT: withConstraints MUST BE false
             ftsTemp.recreate(sSyncedDb, false);
 
-            try (SynchronizedStatement insert = sSyncedDb.compileStatement(
+            try (SynchronizedStatement stmt = sSyncedDb.compileStatement(
                     "INSERT INTO " + ftsTemp.getName() + SqlFTS.INSERT_BODY);
                  Cursor cursor = sSyncedDb.rawQuery(SqlSelectFullTable.BOOKS, null)) {
-                ftsSendBooks(cursor, insert);
+                ftsSendBooks(cursor, stmt);
             }
 
             sSyncedDb.setTransactionSuccessful();
@@ -4983,7 +4978,7 @@ public class DAO
                 + ',' + KEY_ISBN
                 + ',' + KEY_FTS_TOC_ENTRY_TITLE
 
-                + ',' + KEY_FTS_BOOKS_PK
+                + ',' + KEY_FTS_BOOK_ID
                 + ") VALUES (?,?,?,?,?,?,?,?,?,?,?)";
 
         /**
@@ -5009,12 +5004,12 @@ public class DAO
                 + ',' + KEY_ISBN + "=?"
                 + ',' + KEY_FTS_TOC_ENTRY_TITLE + "=?"
 
-                + _WHERE_ + KEY_FTS_BOOKS_PK + "=?";
+                + _WHERE_ + KEY_FTS_BOOK_ID + "=?";
 
         /** Standard Local-search. */
         static final String SEARCH_SUGGESTIONS =
                 // KEY_FTS_BOOKS_PK is the _id into the books table.
-                "SELECT " + KEY_FTS_BOOKS_PK + " AS " + KEY_PK_ID
+                "SELECT " + KEY_FTS_BOOK_ID + " AS " + KEY_PK_ID
                 + ',' + TBL_FTS_BOOKS.dotAs(KEY_TITLE,
                                             SearchManager.SUGGEST_COLUMN_TEXT_1)
                 + ',' + TBL_FTS_BOOKS.dotAs(KEY_FTS_AUTHOR_NAME,
@@ -5028,7 +5023,7 @@ public class DAO
         static final String SEARCH
                 = "SELECT "
                   // KEY_FTS_BOOKS_PK is the _id into the books table.
-                  + KEY_FTS_BOOKS_PK + " AS " + KEY_PK_ID
+                  + KEY_FTS_BOOK_ID + " AS " + KEY_PK_ID
                   + _FROM_ + TBL_FTS_BOOKS.getName()
                   + _WHERE_ + TBL_FTS_BOOKS.getName() + " MATCH ?"
                   + " LIMIT ?";

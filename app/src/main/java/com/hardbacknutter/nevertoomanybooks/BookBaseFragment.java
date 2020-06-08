@@ -254,9 +254,9 @@ public abstract class BookBaseFragment
 
         switch (item.getItemId()) {
             case R.id.MENU_UPDATE_FROM_INTERNET: {
-                ArrayList<Long> bookIdList = new ArrayList<>();
+                final ArrayList<Long> bookIdList = new ArrayList<>();
                 bookIdList.add(book.getId());
-                Intent intent = new Intent(context, BookSearchActivity.class)
+                final Intent intent = new Intent(context, BookSearchActivity.class)
                         .putExtra(BaseActivity.BKEY_FRAGMENT_TAG, UpdateFieldsFragment.TAG)
                         .putExtra(Book.BKEY_BOOK_ID_ARRAY, bookIdList)
                         // pass the title for displaying to the user

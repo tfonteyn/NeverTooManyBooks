@@ -47,7 +47,6 @@ import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
-import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveWriter;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ExportResults;
@@ -263,8 +262,10 @@ public class ExportManager
 
     /**
      * Called by the export task before starting.
+     *
+     * @param context Current context
      */
-    public void validate() {
+    public void validate(@NonNull final Context context) {
         if ((mOptions & MASK) == 0) {
             throw new IllegalStateException("options not set");
         }
@@ -272,7 +273,7 @@ public class ExportManager
             throw new IllegalStateException("Uri was NULL");
         }
         if ((mOptions & EXPORT_SINCE_LAST_BACKUP) != 0) {
-            mFromUtcDateTime = getLastFullBackupDate(App.getAppContext());
+            mFromUtcDateTime = getLastFullBackupDate(context);
         } else {
             mFromUtcDateTime = null;
         }

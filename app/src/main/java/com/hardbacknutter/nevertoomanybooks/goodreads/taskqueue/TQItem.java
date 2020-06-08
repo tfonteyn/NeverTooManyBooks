@@ -25,34 +25,41 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.goodreads.tasks.events;
+package com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue;
 
 import android.content.Context;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.StringRes;
 
-import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
+import java.io.Serializable;
+import java.util.List;
+
+import com.hardbacknutter.nevertoomanybooks.database.DAO;
+import com.hardbacknutter.nevertoomanybooks.goodreads.admin.ContextDialogItem;
 
 /**
- * Event indicating the book could not be found at Goodreads.
+ * An TQItem *MUST* be serializable as we're going to store it in a database.
+ * This means that it can not contain any references to UI components or similar objects.
  */
-public class GrNoMatchEvent
-        extends GrSendBookEvent
-        implements TipManager.TipOwner {
+public interface TQItem
+        extends Serializable {
 
+    long getId();
 
-    private static final long serialVersionUID = -3990635074220791456L;
+    void setId(long id);
 
-    public GrNoMatchEvent(@NonNull final Context context,
-                          final long bookId) {
-        super(context.getString(R.string.warning_no_matching_book_found), bookId);
-    }
+    String getDescription(@NonNull Context context);
 
-    @Override
-    @StringRes
-    public int getTip() {
-        return R.string.gr_info_no_match;
-    }
+    /**
+     * Called when an item in a list has been clicked, this method should populate the passed
+     * 'menuItems' parameter with one {@link ContextDialogItem} per operation that can be
+     * performed on this object.
+     *
+     * @param context   that can be used to get String resources for the menus
+     * @param menuItems menu collection to fill
+     * @param db        Database Access
+     */
+    void addContextMenuItems(@NonNull final Context context,
+                             @NonNull final List<ContextDialogItem> menuItems,
+                             @NonNull final DAO db);
 }

@@ -59,7 +59,7 @@ import com.hardbacknutter.nevertoomanybooks.datamanager.validators.OrValidator;
 import com.hardbacknutter.nevertoomanybooks.datamanager.validators.ValidatorException;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
-import com.hardbacknutter.nevertoomanybooks.entities.RowDataHolder;
+import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.utils.Money;
 import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 
@@ -74,7 +74,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
  * </ul>
  */
 public class DataManager
-        implements RowDataHolder {
+        implements DataHolder {
 
     /** re-usable validator. */
     protected static final DataValidator LONG_VALIDATOR = new LongValidator();
@@ -541,7 +541,6 @@ public class DataManager
         }
         mRawData.putSerializable(key, value);
     }
-
 
     /**
      * Get all (real and virtual) keys for this data manager.

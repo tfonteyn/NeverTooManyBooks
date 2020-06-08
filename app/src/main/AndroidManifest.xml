@@ -142,9 +142,9 @@
             android:name=".searches.librarything.LibraryThingRegistrationActivity"
             android:windowSoftInputMode="stateAlwaysHidden|adjustResize" />
 
-        <activity android:name=".searches.goodreads.GoodreadsRegistrationActivity" />
-        <activity android:name=".goodreads.TasksAdminActivity" />
-        <activity android:name=".goodreads.EventsAdminActivity" />
+        <activity android:name=".goodreads.GoodreadsRegistrationActivity" />
+        <activity android:name=".goodreads.admin.TasksAdminActivity" />
+        <activity android:name=".goodreads.admin.EventsAdminActivity" />
         <activity android:name=".goodreads.GoodreadsSearchActivity" />
         <!--
              The callback-activity after we requested authorizing this application
@@ -153,7 +153,7 @@
              The scheme is hardcoded to avoid confusion between java and android package names.
         -->
         <activity
-            android:name=".searches.goodreads.GoodreadsAuthorizationActivity"
+            android:name=".goodreads.GoodreadsAuthorizationActivity"
             android:launchMode="singleInstance">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />

@@ -383,7 +383,7 @@ public final class DBDefinitions {
     /** Primary key. */
     public static final String KEY_PK_ID = "_id";
     /** Primary key. */
-    public static final String KEY_FTS_BOOKS_PK = "docid";
+    public static final String KEY_FTS_BOOK_ID = "docid";
     /** Foreign key. */
     public static final String KEY_FK_BOOK = "book";
     /** Foreign key. */
@@ -1323,7 +1323,7 @@ public final class DBDefinitions {
         TBL_FTS_BOOKS = new TableDefinition("books_fts").setType(TableType.FTS3);
 
         DOM_FTS_BOOKS_PK =
-                new Domain.Builder(KEY_FTS_BOOKS_PK, ColumnInfo.TYPE_INTEGER).primaryKey().build();
+                new Domain.Builder(KEY_FTS_BOOK_ID, ColumnInfo.TYPE_INTEGER).primaryKey().build();
 
         DOM_FTS_AUTHOR_NAME =
                 new Domain.Builder(KEY_FTS_AUTHOR_NAME, ColumnInfo.TYPE_TEXT).build();

@@ -28,7 +28,6 @@
 package com.hardbacknutter.nevertoomanybooks.goodreads;
 
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 
@@ -297,7 +296,6 @@ public class GoodreadsAuth {
             return true;
         }
 
-
         // If we don't have credentials at all, just leave
         if (!hasCredentials(context)) {
             return false;
@@ -330,11 +328,13 @@ public class GoodreadsAuth {
      *
      * @param context Application context
      *
+     * @return the authentication Uri to which the user should be send
+     *
      * @throws AuthorizationException with GoodReads
      * @throws IOException            on other failures
      */
     @WorkerThread
-    public void requestAuthorization(@NonNull final Context context)
+    public Uri requestAuthorization(@NonNull final Context context)
             throws AuthorizationException,
                    IOException {
 
@@ -356,13 +356,14 @@ public class GoodreadsAuth {
             throw new IllegalStateException(e);
         }
 
-        // Some urls come back without a scheme, add it to make a valid URL for the parser
+        // Some urls come back without a scheme, add it to make a valid URL
         if (!authUrl.startsWith("http://") && !authUrl.startsWith("https://")) {
             Logger.warn(context, TAG, "requestAuthorization|no scheme for authUrl=" + authUrl);
+            // Assume http will auto-redirect to https if the website needs that instead.
             authUrl = "http://" + authUrl;
         }
 
-        // Temporarily save the token; this GoodreadsSearchEngine object may be destroyed
+        // Temporarily save the token; this object may be destroyed
         // before the web page returns.
         PreferenceManager.getDefaultSharedPreferences(context)
                          .edit()
@@ -370,8 +371,7 @@ public class GoodreadsAuth {
                          .putString(REQUEST_SECRET, mConsumer.getTokenSecret())
                          .apply();
 
-        // Open the web page
-        context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(authUrl)));
+        return Uri.parse(authUrl);
     }
 
     /**
@@ -498,7 +498,6 @@ public class GoodreadsAuth {
      */
     public static class AuthorizationException
             extends Exception {
-
 
         private static final long serialVersionUID = 5691917497651682323L;
 

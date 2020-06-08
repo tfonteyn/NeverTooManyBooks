@@ -91,8 +91,8 @@ public class About
             } else {
                 versionCode = info.versionCode;
             }
-            String version = info.versionName
-                             + " (" + versionCode + '/' + DBHelper.DATABASE_VERSION + ')';
+            final String version = info.versionName
+                                   + " (" + versionCode + '/' + DBHelper.DATABASE_VERSION + ')';
 
             mVb.version.setText(version);
         } catch (@NonNull final PackageManager.NameNotFoundException ignore) {
@@ -156,5 +156,4 @@ public class About
             Logger.error(this, TAG, e);
         }
     }
-
 }

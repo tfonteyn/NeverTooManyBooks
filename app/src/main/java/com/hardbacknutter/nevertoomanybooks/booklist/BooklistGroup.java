@@ -259,18 +259,20 @@ public class BooklistGroup
      * Create a new BooklistGroup of the specified id, creating any specific
      * subclasses as necessary.
      *
-     * @param id    of group to create
-     * @param style the style
+     * @param context Current context
+     * @param id      of group to create
+     * @param style   the style
      *
      * @return instance
      */
     @SuppressLint("SwitchIntDef")
     @NonNull
-    public static BooklistGroup newInstance(@Id final int id,
+    public static BooklistGroup newInstance(@NonNull final Context context,
+                                            @Id final int id,
                                             @NonNull final BooklistStyle style) {
         switch (id) {
             case AUTHOR:
-                return new BooklistAuthorGroup(style);
+                return new BooklistAuthorGroup(context, style);
             case SERIES:
                 return new BooklistSeriesGroup(style);
 
@@ -282,18 +284,20 @@ public class BooklistGroup
     /**
      * Get a list of BooklistGroup's, one for each defined {@link GroupKey}'s.
      *
-     * @param style the style
+     * @param context Current context
+     * @param style   the style
      *
      * @return the list
      */
     @SuppressLint("WrongConstant")
     @NonNull
-    public static List<BooklistGroup> getAllGroups(@NonNull final BooklistStyle style) {
+    public static List<BooklistGroup> getAllGroups(@NonNull final Context context,
+                                                   @NonNull final BooklistStyle style) {
         List<BooklistGroup> list = new ArrayList<>();
         // Get the set of all valid <strong>Group</strong> values.
         // In other words: all valid groups, <strong>except</strong> the BOOK.
         for (int id = 1; id <= GROUP_KEY_MAX; id++) {
-            list.add(newInstance(id, style));
+            list.add(newInstance(context, id, style));
         }
         return list;
     }
@@ -678,14 +682,16 @@ public class BooklistGroup
         /**
          * Constructor.
          *
-         * @param style the style
+         * @param context Current context
+         * @param style   the style
          */
-        BooklistAuthorGroup(@NonNull final BooklistStyle style) {
+        BooklistAuthorGroup(@NonNull final Context context,
+                            @NonNull final BooklistStyle style) {
             super(AUTHOR, style);
             initPrefs();
 
-            mShowAuthorByGivenNameFirst = style.isShowAuthorByGivenNameFirst(App.getAppContext());
-            mSortAuthorByGivenNameFirst = style.isSortAuthorByGivenNameFirst(App.getAppContext());
+            mShowAuthorByGivenNameFirst = style.isShowAuthorByGivenNameFirst(context);
+            mSortAuthorByGivenNameFirst = style.isSortAuthorByGivenNameFirst(context);
             mDisplayDomain = createDisplayDomain();
             mSortedDomain = createSortDomain();
         }

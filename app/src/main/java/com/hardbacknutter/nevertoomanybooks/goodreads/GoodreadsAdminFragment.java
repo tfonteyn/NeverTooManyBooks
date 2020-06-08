@@ -45,15 +45,14 @@ import com.google.android.material.snackbar.Snackbar;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentGoodreadsAdminBinding;
+import com.hardbacknutter.nevertoomanybooks.goodreads.admin.TasksAdminActivity;
 import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.ImportTask;
 import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.RequestAuthTask;
 import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.SendBooksTask;
-import com.hardbacknutter.nevertoomanybooks.tasks.TaskBase;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.tasks.GoodreadsTaskModel;
 
 /**
- * Disabled the progress dialog as it's not actually needed for now.
- * But leaving the code for future use.
+ * Starting point for sending and importing books with Goodreads.
  */
 public class GoodreadsAdminFragment
         extends Fragment {
@@ -61,12 +60,9 @@ public class GoodreadsAdminFragment
     /** Fragment manager tag. */
     public static final String TAG = "GoodreadsAdminFragment";
 
-//    @Nullable
-//    private ProgressDialogFragment mProgressDialog;
-
     /** ViewModel for task control. */
-    private GoodreadsTaskModel mGoodreadsTaskModel;
-
+    private GoodreadsTaskModel mGrTaskModel;
+    /** View binding. */
     private FragmentGoodreadsAdminBinding mVb;
 
     @Override
@@ -75,7 +71,7 @@ public class GoodreadsAdminFragment
 
         setHasOptionsMenu(true);
 
-        mGoodreadsTaskModel = new ViewModelProvider(this).get(GoodreadsTaskModel.class);
+        mGrTaskModel = new ViewModelProvider(this).get(GoodreadsTaskModel.class);
     }
 
     @Nullable
@@ -92,20 +88,10 @@ public class GoodreadsAdminFragment
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-//        mGoodreadsTaskModel.onTaskProgress().observe(getViewLifecycleOwner(), message -> {
-//            if (mProgressDialog == null) {
-//                mProgressDialog = getOrCreateProgressDialog();
-//            }
-//            mProgressDialog.onProgress(message);
-//        });
-        mGoodreadsTaskModel.onTaskFinished().observe(getViewLifecycleOwner(), message -> {
-//            if (mProgressDialog != null) {
-//                mProgressDialog.dismiss();
-//            }
-
-            if (GoodreadsHandler.authNeeded(message)) {
+        mGrTaskModel.onTaskFinished().observe(getViewLifecycleOwner(), message -> {
+            if (message.result != null && message.result == GrStatus.FAILED_CREDENTIALS) {
                 //noinspection ConstantConditions
-                RequestAuthTask.prompt(getContext(), mGoodreadsTaskModel.getTaskListener());
+                RequestAuthTask.prompt(getContext(), mGrTaskModel.getTaskListener());
             } else {
                 //noinspection ConstantConditions
                 Snackbar.make(mVb.getRoot(), GoodreadsHandler.digest(getContext(), message),
@@ -113,10 +99,10 @@ public class GoodreadsAdminFragment
             }
         });
 
-        mVb.btnSync.setOnClickListener(v -> onImport(true));
-        mVb.btnImport.setOnClickListener(v1 -> onImport(false));
-        mVb.btnSendUpdatedBooks.setOnClickListener(v -> onSend(true));
-        mVb.btnSendAllBooks.setOnClickListener(v -> onSend(false));
+        mVb.btnSync.setOnClickListener(v -> importBooks(true));
+        mVb.btnImport.setOnClickListener(v -> importBooks(false));
+        mVb.btnSendUpdatedBooks.setOnClickListener(v -> sendBooks(true));
+        mVb.btnSendAllBooks.setOnClickListener(v -> sendBooks(false));
     }
 
     @Override
@@ -136,8 +122,7 @@ public class GoodreadsAdminFragment
         switch (item.getItemId()) {
             case R.id.MENU_GOODREADS_TASKS: {
                 // Start the activity that shows the active GoodReads tasks
-                final Intent intent = new Intent(getContext(), TasksAdminActivity.class);
-                startActivity(intent);
+                startActivity(new Intent(getContext(), TasksAdminActivity.class));
                 return true;
             }
 
@@ -146,47 +131,13 @@ public class GoodreadsAdminFragment
         }
     }
 
-    private void onImport(final boolean isSync) {
+    private void importBooks(final boolean sync) {
         Snackbar.make(mVb.getRoot(), R.string.progress_msg_connecting, Snackbar.LENGTH_LONG).show();
-
-        final TaskBase<Integer> task =
-                new ImportTask(isSync, mGoodreadsTaskModel.getTaskListener());
-
-//        mProgressDialog = ProgressDialogFragment
-//                .newInstance(R.string.gr_title_sync_with_goodreads, false, false, 0);
-//        mProgressDialog.show(getChildFragmentManager(), ProgressDialogFragment.TAG);
-
-        mGoodreadsTaskModel.setTask(task);
-//        mProgressDialog.setCanceller(task);
-        task.execute();
+        mGrTaskModel.execute(new ImportTask(sync, mGrTaskModel.getTaskListener()));
     }
 
-    private void onSend(final boolean updatesOnly) {
+    private void sendBooks(final boolean updatesOnly) {
         Snackbar.make(mVb.getRoot(), R.string.progress_msg_connecting, Snackbar.LENGTH_LONG).show();
-
-        final TaskBase<Integer> task =
-                new SendBooksTask(updatesOnly, mGoodreadsTaskModel.getTaskListener());
-        mGoodreadsTaskModel.setTask(task);
-        task.execute();
+        mGrTaskModel.execute(new SendBooksTask(updatesOnly, mGrTaskModel.getTaskListener()));
     }
-
-//    @SuppressWarnings("unused")
-//    @NonNull
-//    private ProgressDialogFragment getOrCreateProgressDialog() {
-//        final FragmentManager fm = getChildFragmentManager();
-//
-//        // get dialog after a fragment restart
-//        ProgressDialogFragment dialog = (ProgressDialogFragment)
-//                fm.findFragmentByTag(ProgressDialogFragment.TAG);
-//        // not found? create it
-//        if (dialog == null) {
-//            dialog = ProgressDialogFragment
-//                      .newInstance(R.string.gr_title_send_book, false, false, 0);
-//            dialog.show(fm, ProgressDialogFragment.TAG);
-//        }
-//
-//        // hook the task up.
-//        dialog.setCanceller(mGoodreadsTaskModel.getTask());
-//        return dialog;
-//    }
 }

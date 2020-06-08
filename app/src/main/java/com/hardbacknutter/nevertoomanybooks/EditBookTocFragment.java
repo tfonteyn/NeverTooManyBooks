@@ -399,8 +399,7 @@ public class EditBookTocFragment
                     final IsfdbGetBookTask task =
                             new IsfdbGetBookTask(isfdbId, isAddSeriesFromToc(),
                                                  mIsfdbGetBookTaskModel.getTaskListener());
-                    mIsfdbGetBookTaskModel.setTask(task);
-                    task.execute();
+                    mIsfdbGetBookTaskModel.execute(task);
                     return true;
                 }
 
@@ -412,8 +411,7 @@ public class EditBookTocFragment
                         final IsfdbGetEditionsTask task =
                                 new IsfdbGetEditionsTask(isbn.asText(),
                                                          mIsfdbEditionsTaskModel.getTaskListener());
-                        mIsfdbEditionsTaskModel.setTask(task);
-                        task.execute();
+                        mIsfdbEditionsTaskModel.execute(task);
                         return true;
                     }
                 }
@@ -583,8 +581,7 @@ public class EditBookTocFragment
             final IsfdbGetBookTask task =
                     new IsfdbGetBookTask(mIsfdbEditions, isAddSeriesFromToc(),
                                          mIsfdbGetBookTaskModel.getTaskListener());
-            mIsfdbGetBookTaskModel.setTask(task);
-            task.execute();
+            mIsfdbGetBookTaskModel.execute(task);
         } else {
             Snackbar.make(mVb.getRoot(), R.string.warning_no_editions,
                           Snackbar.LENGTH_LONG).show();

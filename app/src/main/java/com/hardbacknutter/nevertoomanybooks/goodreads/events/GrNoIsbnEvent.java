@@ -25,29 +25,33 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.entities;
+package com.hardbacknutter.nevertoomanybooks.goodreads.events;
 
-import android.database.Cursor;
+import android.content.Context;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.StringRes;
 
-import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
+import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 
 /**
- * Read-only interface that allows a method to take both a custom {@link Cursor}
- * and a {@link DataManager} as an argument without having to distinguish between them.
+ * Event indicating the book's ISBN was blank.
  */
-public interface RowDataHolder {
+public class GrNoIsbnEvent
+        extends SendBookEvent
+        implements TipManager.TipOwner {
 
-    boolean contains(@NonNull String key);
+    private static final long serialVersionUID = -5466960636472729577L;
 
-    @NonNull
-    String getString(@NonNull String key);
+    public GrNoIsbnEvent(@NonNull final Context context,
+                         final long bookId) {
+        super(context.getString(R.string.warning_no_isbn_stored_for_book), bookId);
+    }
 
-    boolean getBoolean(@NonNull String key);
-
-    int getInt(@NonNull String key);
-    long getLong(@NonNull String key);
-
-    double getDouble(@NonNull String key);
+    @Override
+    @StringRes
+    public int getTip() {
+        return R.string.gr_info_no_isbn;
+    }
 }

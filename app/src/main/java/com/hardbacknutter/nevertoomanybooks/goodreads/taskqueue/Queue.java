@@ -37,6 +37,8 @@ import java.lang.ref.WeakReference;
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.QueueDAO.ScheduledTask;
+import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.BaseTQTask;
+import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 
 /**
  * Represents a thread that runs tasks from a related named queue.
@@ -54,7 +56,7 @@ class Queue
     private final String mName;
 
     /** Currently running task. */
-    private WeakReference<Task> mTask;
+    private WeakReference<TQTask> mTask;
 
     /** Flag to indicate process is terminating. */
     private boolean mTerminate;
@@ -98,11 +100,11 @@ class Queue
      * Main worker thread logic.
      */
     public void run() {
-        final Context context = App.getTaskContext();
+        final Context context = LocaleUtils.applyLocale(App.getTaskContext());
         try (QueueDAO queueDAO = new QueueDAO(context)) {
             while (!mTerminate) {
-                ScheduledTask scheduledTask;
-                Task task;
+                final ScheduledTask scheduledTask;
+                final TQTask task;
                 // All queue manipulation needs to be synchronized on the manager, as does
                 // assignments of 'active' tasks in queues.
                 synchronized (mManager) {
@@ -126,7 +128,7 @@ class Queue
                 // If we get here, we have a task, or know that there is one waiting to run.
                 // Just wait for any wait that is longer than a minute.
                 if (task != null) {
-                    runTask(queueDAO, task);
+                    runTask(context, queueDAO, task);
                 } else {
                     // Not ready, just wait. Allow for possible wake-up calls if something
                     // else gets queued.
@@ -152,34 +154,41 @@ class Queue
     /**
      * Run the task then save the results.
      */
-    private void runTask(@NonNull final QueueDAO queueDAO,
-                         @NonNull final Task task) {
-        boolean result = false;
+    private void runTask(@NonNull final Context context,
+                         @NonNull final QueueDAO queueDAO,
+                         @NonNull final TQTask task) {
+        boolean success = false;
         boolean requeue = false;
         try {
             task.setLastException(null);
-            // notify here, as we allow mManager.runTask to be overridden
             mManager.notifyTaskChange();
-            result = mManager.runTask(task);
-            requeue = !result;
+
+            if (task instanceof BaseTQTask) {
+                success = ((BaseTQTask) task).run(mManager, context);
+            } else {
+                // Either extend Task, or override QueueManager.runTask()
+                throw new IllegalStateException("Can not handle tasks that are not BaseTQTask");
+            }
+            requeue = !success;
+
         } catch (@NonNull final RuntimeException e) {
             // Don't overwrite exception set by handler
             if (task.getLastException() == null) {
                 task.setLastException(e);
             }
-            Logger.error(App.getTaskContext(), TAG, e, "Error running task " + task.getId());
+            Logger.error(context, TAG, e, "Error running task " + task.getId());
         }
 
         // Update the related database record to process the task correctly.
         synchronized (mManager) {
-            if (task.isAborting()) {
+            if (task.isCancelled()) {
                 queueDAO.deleteTask(task.getId());
-            } else if (result) {
+            } else if (success) {
                 queueDAO.setTaskCompleted(task.getId());
             } else if (requeue) {
                 queueDAO.requeueTask(task);
             } else {
-                Exception e = task.getLastException();
+                final Exception e = task.getLastException();
                 String msg = null;
                 if (e != null) {
                     msg = e.getLocalizedMessage();
@@ -193,7 +202,7 @@ class Queue
     }
 
     @Nullable
-    public Task getTask() {
+    public TQTask getTask() {
         if (mTask == null) {
             return null;
         } else {

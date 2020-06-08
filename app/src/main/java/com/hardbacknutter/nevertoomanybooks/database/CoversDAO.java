@@ -346,7 +346,7 @@ public final class CoversDAO
      * @param context Current context
      */
     private void open(@NonNull final Context context) {
-        SQLiteOpenHelper coversHelper = CoversDbHelper.getInstance(context);
+        final SQLiteOpenHelper coversHelper = CoversDbHelper.getInstance(context);
         // Try to connect.
         try {
             sSyncedDb = new SynchronizedDb(coversHelper, SYNCHRONIZER);
@@ -377,7 +377,7 @@ public final class CoversDAO
     public void close() {
         // must be in a synchronized, as we use noi twice.
         synchronized (INSTANCE_COUNTER) {
-            int noi = INSTANCE_COUNTER.decrementAndGet();
+            final int noi = INSTANCE_COUNTER.decrementAndGet();
             if (BuildConfig.DEBUG /* always */) {
                 Log.d(TAG, "close|instances left: " + INSTANCE_COUNTER);
             }
@@ -413,7 +413,7 @@ public final class CoversDAO
             return;
         }
 
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        final ByteArrayOutputStream out = new ByteArrayOutputStream();
         // Rapid scrolling of view could already have recycled the bitmap.
         if (bitmap.isRecycled()) {
             return;
@@ -427,10 +427,10 @@ public final class CoversDAO
             return;
         }
 
-        byte[] image = out.toByteArray();
+        final byte[] image = out.toByteArray();
 
-        String cacheId = constructCacheId(uuid, cIdx, width, height);
-        ContentValues cv = new ContentValues();
+        final String cacheId = constructCacheId(uuid, cIdx, width, height);
+        final ContentValues cv = new ContentValues();
         cv.put(CKEY_CACHE_ID, cacheId);
         cv.put(CKEY_IMAGE, image);
         cv.put(CKEY_WIDTH, bitmap.getHeight());

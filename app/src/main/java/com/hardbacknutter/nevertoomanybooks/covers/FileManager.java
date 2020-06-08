@@ -54,6 +54,7 @@ import com.hardbacknutter.nevertoomanybooks.tasks.TaskBase;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
+import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 
 /**
  * Handles downloading, checking and cleanup of files.
@@ -305,7 +306,7 @@ public class FileManager {
         @WorkerThread
         protected ImageFileInfo doInBackground(@Nullable final Void... voids) {
             Thread.currentThread().setName(TAG + mIsbn);
-            final Context context = App.getTaskContext();
+            final Context context = LocaleUtils.applyLocale(App.getTaskContext());
 
             try {
                 return mFileManager.search(this, context, mIsbn, mCIdx, mSizes);

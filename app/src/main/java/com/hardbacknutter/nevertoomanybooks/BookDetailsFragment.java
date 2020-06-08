@@ -144,10 +144,11 @@ public class BookDetailsFragment
                              @Nullable final ViewGroup container,
                              @Nullable final Bundle savedInstanceState) {
 
-        //noinspection ConstantConditions
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
-
         mVb = FragmentBookDetailsBinding.inflate(inflater, container, false);
+
+        //noinspection ConstantConditions
+        final SharedPreferences prefs = PreferenceManager
+                .getDefaultSharedPreferences(getContext());
 
         // Anthology/TOC fields
         if (!DBDefinitions.isUsed(prefs, DBDefinitions.KEY_TOC_BITMASK)) {
@@ -340,7 +341,8 @@ public class BookDetailsFragment
         super.onPopulateViews(fields, book);
 
         //noinspection ConstantConditions
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+        final SharedPreferences prefs = PreferenceManager
+                .getDefaultSharedPreferences(getContext());
 
         if (DBDefinitions.isUsed(prefs, DBDefinitions.KEY_LOANEE)) {
             populateLoanedToField(mBookViewModel.getLoanee());
@@ -655,8 +657,7 @@ public class BookDetailsFragment
                                @Nullable final MotionEvent e2,
                                final float velocityX,
                                final float velocityY) {
-            // 2020-05-10: had a crash where e1 (or e2?) was null.
-            // This was during a split screen / dual window operation.
+
             if (e1 == null || e2 == null) {
                 return false;
             }

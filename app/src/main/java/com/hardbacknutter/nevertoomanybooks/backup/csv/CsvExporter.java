@@ -51,7 +51,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
-import com.hardbacknutter.nevertoomanybooks.entities.RowDataHolder;
+import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
@@ -210,11 +210,11 @@ public class CsvExporter
             int progressMaxCount = progressListener.getMax() + cursor.getCount();
             progressListener.setMax(progressMaxCount);
 
-            final RowDataHolder rowData = new CursorRow(cursor);
+            final DataHolder bookData = new CursorRow(cursor);
 
             while (cursor.moveToNext() && !progressListener.isCancelled()) {
 
-                long bookId = rowData.getLong(DBDefinitions.KEY_PK_ID);
+                long bookId = bookData.getLong(DBDefinitions.KEY_PK_ID);
 
                 String authors = mAuthorCoder.encodeList(mDb.getAuthorsByBookId(bookId));
                 // Sanity check: ensure author is non-blank.
@@ -222,7 +222,7 @@ public class CsvExporter
                     authors = mUnknownString;
                 }
 
-                String title = rowData.getString(DBDefinitions.KEY_TITLE);
+                String title = bookData.getString(DBDefinitions.KEY_TITLE);
                 // Sanity check: ensure title is non-blank.
                 if (title.trim().isEmpty()) {
                     title = mUnknownString;
@@ -231,93 +231,93 @@ public class CsvExporter
                 // it's a buffered writer, no need to first StringBuilder the line.
                 writer.write(encode(bookId));
                 writer.write(",");
-                writer.write(encode(rowData.getString(DBDefinitions.KEY_BOOK_UUID)));
+                writer.write(encode(bookData.getString(DBDefinitions.KEY_BOOK_UUID)));
                 writer.write(",");
-                writer.write(encode(rowData.getString(DBDefinitions.KEY_UTC_LAST_UPDATED)));
+                writer.write(encode(bookData.getString(DBDefinitions.KEY_UTC_LAST_UPDATED)));
                 writer.write(",");
                 writer.write(encode(authors));
                 writer.write(",");
                 writer.write(encode(title));
                 writer.write(",");
-                writer.write(encode(rowData.getString(DBDefinitions.KEY_ISBN)));
+                writer.write(encode(bookData.getString(DBDefinitions.KEY_ISBN)));
                 writer.write(",");
-                writer.write(encode(rowData.getString(DBDefinitions.KEY_PUBLISHER)));
+                writer.write(encode(bookData.getString(DBDefinitions.KEY_PUBLISHER)));
                 writer.write(",");
-                writer.write(encode(rowData.getString(DBDefinitions.KEY_PRINT_RUN)));
+                writer.write(encode(bookData.getString(DBDefinitions.KEY_PRINT_RUN)));
                 writer.write(",");
-                writer.write(encode(rowData.getString(DBDefinitions.KEY_DATE_PUBLISHED)));
+                writer.write(encode(bookData.getString(DBDefinitions.KEY_DATE_PUBLISHED)));
                 writer.write(",");
-                writer.write(encode(rowData.getString(DBDefinitions.KEY_DATE_FIRST_PUBLICATION)));
+                writer.write(encode(bookData.getString(DBDefinitions.KEY_DATE_FIRST_PUBLICATION)));
                 writer.write(",");
-                writer.write(encode(rowData.getLong(DBDefinitions.KEY_EDITION_BITMASK)));
+                writer.write(encode(bookData.getLong(DBDefinitions.KEY_EDITION_BITMASK)));
                 writer.write(",");
-                writer.write(encode(rowData.getDouble(DBDefinitions.KEY_RATING)));
+                writer.write(encode(bookData.getDouble(DBDefinitions.KEY_RATING)));
                 writer.write(",");
                 writer.write(
                         encode(mBookshelfCoder.encodeList(mDb.getBookshelvesByBookId(bookId))));
                 writer.write(",");
-                writer.write(encode(rowData.getInt(DBDefinitions.KEY_READ)));
+                writer.write(encode(bookData.getInt(DBDefinitions.KEY_READ)));
                 writer.write(",");
                 writer.write(encode(mSeriesCoder.encodeList(mDb.getSeriesByBookId(bookId))));
                 writer.write(",");
-                writer.write(encode(rowData.getString(DBDefinitions.KEY_PAGES)));
+                writer.write(encode(bookData.getString(DBDefinitions.KEY_PAGES)));
                 writer.write(",");
-                writer.write(encode(rowData.getString(DBDefinitions.KEY_PRIVATE_NOTES)));
+                writer.write(encode(bookData.getString(DBDefinitions.KEY_PRIVATE_NOTES)));
                 writer.write(",");
-                writer.write(encode(rowData.getString(DBDefinitions.KEY_BOOK_CONDITION)));
+                writer.write(encode(bookData.getString(DBDefinitions.KEY_BOOK_CONDITION)));
                 writer.write(",");
-                writer.write(encode(rowData.getString(DBDefinitions.KEY_BOOK_CONDITION_COVER)));
+                writer.write(encode(bookData.getString(DBDefinitions.KEY_BOOK_CONDITION_COVER)));
                 writer.write(",");
-                writer.write(encode(rowData.getDouble(DBDefinitions.KEY_PRICE_LISTED)));
+                writer.write(encode(bookData.getDouble(DBDefinitions.KEY_PRICE_LISTED)));
                 writer.write(",");
-                writer.write(encode(rowData.getString(DBDefinitions.KEY_PRICE_LISTED_CURRENCY)));
+                writer.write(encode(bookData.getString(DBDefinitions.KEY_PRICE_LISTED_CURRENCY)));
                 writer.write(",");
-                writer.write(encode(rowData.getDouble(DBDefinitions.KEY_PRICE_PAID)));
+                writer.write(encode(bookData.getDouble(DBDefinitions.KEY_PRICE_PAID)));
                 writer.write(",");
-                writer.write(encode(rowData.getString(DBDefinitions.KEY_PRICE_PAID_CURRENCY)));
+                writer.write(encode(bookData.getString(DBDefinitions.KEY_PRICE_PAID_CURRENCY)));
                 writer.write(",");
-                writer.write(encode(rowData.getString(DBDefinitions.KEY_DATE_ACQUIRED)));
+                writer.write(encode(bookData.getString(DBDefinitions.KEY_DATE_ACQUIRED)));
                 writer.write(",");
-                writer.write(encode(rowData.getLong(DBDefinitions.KEY_TOC_BITMASK)));
+                writer.write(encode(bookData.getLong(DBDefinitions.KEY_TOC_BITMASK)));
                 writer.write(",");
-                writer.write(encode(rowData.getString(DBDefinitions.KEY_LOCATION)));
+                writer.write(encode(bookData.getString(DBDefinitions.KEY_LOCATION)));
                 writer.write(",");
-                writer.write(encode(rowData.getString(DBDefinitions.KEY_READ_START)));
+                writer.write(encode(bookData.getString(DBDefinitions.KEY_READ_START)));
                 writer.write(",");
-                writer.write(encode(rowData.getString(DBDefinitions.KEY_READ_END)));
+                writer.write(encode(bookData.getString(DBDefinitions.KEY_READ_END)));
                 writer.write(",");
-                writer.write(encode(rowData.getString(DBDefinitions.KEY_FORMAT)));
+                writer.write(encode(bookData.getString(DBDefinitions.KEY_FORMAT)));
                 writer.write(",");
-                writer.write(encode(rowData.getString(DBDefinitions.KEY_COLOR)));
+                writer.write(encode(bookData.getString(DBDefinitions.KEY_COLOR)));
                 writer.write(",");
-                writer.write(encode(rowData.getInt(DBDefinitions.KEY_SIGNED)));
+                writer.write(encode(bookData.getInt(DBDefinitions.KEY_SIGNED)));
                 writer.write(",");
-                writer.write(encode(rowData.getString(DBDefinitions.KEY_LOANEE)));
+                writer.write(encode(bookData.getString(DBDefinitions.KEY_LOANEE)));
                 writer.write(",");
                 writer.write(encode(mTocCoder.encodeList(mDb.getTocEntryByBook(bookId))));
                 writer.write(",");
-                writer.write(encode(rowData.getString(DBDefinitions.KEY_DESCRIPTION)));
+                writer.write(encode(bookData.getString(DBDefinitions.KEY_DESCRIPTION)));
                 writer.write(",");
-                writer.write(encode(rowData.getString(DBDefinitions.KEY_GENRE)));
+                writer.write(encode(bookData.getString(DBDefinitions.KEY_GENRE)));
                 writer.write(",");
-                writer.write(encode(rowData.getString(DBDefinitions.KEY_LANGUAGE)));
+                writer.write(encode(bookData.getString(DBDefinitions.KEY_LANGUAGE)));
                 writer.write(",");
-                writer.write(encode(rowData.getString(DBDefinitions.KEY_UTC_ADDED)));
+                writer.write(encode(bookData.getString(DBDefinitions.KEY_UTC_ADDED)));
                 writer.write(",");
 
                 //NEWTHINGS: add new site specific ID: add column value
-                writer.write(encode(rowData.getLong(DBDefinitions.KEY_EID_LIBRARY_THING)));
+                writer.write(encode(bookData.getLong(DBDefinitions.KEY_EID_LIBRARY_THING)));
                 writer.write(",");
-                writer.write(encode(rowData.getLong(DBDefinitions.KEY_EID_STRIP_INFO_BE)));
+                writer.write(encode(bookData.getLong(DBDefinitions.KEY_EID_STRIP_INFO_BE)));
                 writer.write(",");
-                writer.write(encode(rowData.getString(DBDefinitions.KEY_EID_OPEN_LIBRARY)));
+                writer.write(encode(bookData.getString(DBDefinitions.KEY_EID_OPEN_LIBRARY)));
                 writer.write(",");
-                writer.write(encode(rowData.getLong(DBDefinitions.KEY_EID_ISFDB)));
+                writer.write(encode(bookData.getLong(DBDefinitions.KEY_EID_ISFDB)));
                 writer.write(",");
-                writer.write(encode(rowData.getLong(DBDefinitions.KEY_EID_GOODREADS_BOOK)));
+                writer.write(encode(bookData.getLong(DBDefinitions.KEY_EID_GOODREADS_BOOK)));
                 writer.write(",");
                 writer.write(
-                        encode(rowData.getString(DBDefinitions.KEY_UTC_LAST_SYNC_DATE_GOODREADS)));
+                        encode(bookData.getString(DBDefinitions.KEY_UTC_LAST_SYNC_DATE_GOODREADS)));
                 writer.write("\n");
 
                 mResults.booksExported++;

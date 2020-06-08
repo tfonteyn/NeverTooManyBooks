@@ -25,33 +25,39 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.goodreads.tasks.events;
+package com.hardbacknutter.nevertoomanybooks.entities;
 
-import android.content.Context;
+import android.database.Cursor;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.StringRes;
+import androidx.annotation.Nullable;
 
-import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
+import java.time.LocalDateTime;
+
+import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
+import com.hardbacknutter.nevertoomanybooks.utils.DateParser;
 
 /**
- * Event indicating the book's ISBN was blank.
+ * Read-only interface that allows a method to take both a custom {@link Cursor}
+ * and a {@link DataManager} as an argument without having to distinguish between them.
  */
-public class GrNoIsbnEvent
-        extends GrSendBookEvent
-        implements TipManager.TipOwner {
+public interface DataHolder {
 
-    private static final long serialVersionUID = -5372916976117578861L;
+    boolean contains(@NonNull String key);
 
-    public GrNoIsbnEvent(@NonNull final Context context,
-                         final long bookId) {
-        super(context.getString(R.string.warning_no_isbn_stored_for_book), bookId);
-    }
+    int getInt(@NonNull String key);
 
-    @Override
-    @StringRes
-    public int getTip() {
-        return R.string.gr_info_no_isbn;
+    long getLong(@NonNull String key);
+
+    double getDouble(@NonNull String key);
+
+    boolean getBoolean(@NonNull String key);
+
+    @NonNull
+    String getString(@NonNull String key);
+
+    @Nullable
+    default LocalDateTime getDate(@NonNull final String key) {
+        return DateParser.ISO.parse(getString(key));
     }
 }

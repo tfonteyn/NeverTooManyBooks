@@ -27,61 +27,22 @@
  */
 package com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue;
 
-import android.content.Context;
-import android.view.LayoutInflater;
-import android.view.ViewGroup;
-
 import androidx.annotation.NonNull;
 
-import java.util.List;
-
-import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.database.DAO;
-
 /**
- * Class to wrap events that can not be de-serialized so that a {@link EventsCursor} always
- * returns a valid {@link Event}.
+ * Class to wrap events that can not be de-serialized.
  */
 public class LegacyEvent
-        extends Event<EventsCursor, LegacyViewHolder> {
+        extends TQEvent {
 
-
-    private static final long serialVersionUID = 585493755218719498L;
+    private static final long serialVersionUID = 7439931836236689928L;
 
     /**
      * Constructor.
      *
-     * @param context Current context
+     * @param description for the event
      */
-    LegacyEvent(@NonNull final Context context) {
-        super(context.getString(R.string.legacy_record));
+    public LegacyEvent(@NonNull final String description) {
+        super(description);
     }
-
-    @NonNull
-    @Override
-    public LegacyViewHolder onCreateViewHolder(@NonNull final LayoutInflater layoutInflater,
-                                               @NonNull final ViewGroup parent) {
-        return new LegacyViewHolder(parent.getContext());
-    }
-
-    @Override
-    public void onBindViewHolder(@NonNull final LegacyViewHolder holder,
-                                 @NonNull final EventsCursor invalid,
-                                 @NonNull final DAO db) {
-        Context context = holder.itemView.getContext();
-        holder.tv1.setText(context.getString(R.string.legacy_record, getId()));
-        holder.tv2.setText(context.getString(R.string.legacy_description));
-    }
-
-    @Override
-    public void addContextMenuItems(@NonNull final Context context,
-                                    @NonNull final List<ContextDialogItem> menuItems,
-                                    @NonNull final DAO db) {
-
-        menuItems.add(new ContextDialogItem(
-                context.getString(R.string.gr_tq_menu_delete_event),
-                () -> QueueManager.getQueueManager().deleteEvent(getId())));
-
-    }
-
 }

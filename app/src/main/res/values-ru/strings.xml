@@ -143,7 +143,7 @@
     <string name="gr_info_send_books">Это отправит Вашу библиотеку на Goodreads.\n\nВы можете выбрать так, чтобы отослать все ваши книги или только те, которые были обновлены с тех пор как были копированы с или на Goodreads (включая все книги, которые ещё не были отправлены). Также Вы можете отменить обновление.\n\nЕсли никогда не отправляли книги, тогда нет никакой разницы между первыми двумя вариантами.</string>
     <string name="gr_menu_import_all_from_goodreads">Импортировать все из Goodreads</string>
     <string name="gr_menu_send_all">Отправить все</string>
-    <string name="gr_menu_send_to_goodreads">Послать на Goodreads</string>
+    <string name="gr_send_to_goodreads">Послать на Goodreads</string>
     <string name="gr_menu_send_updated">Отправить обновленные</string>
     <string name="gr_pt_collect_genre">Используйте популярные названия книжных полок в качестве книжных жанров</string>
     <string name="gr_send_book_to_goodreads">Отправить книгу %1$d на Goodreads</string>

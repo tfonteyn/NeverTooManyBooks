@@ -52,7 +52,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Matcher;
 
-import com.hardbacknutter.nevertoomanybooks.App;
+import com.hardbacknutter.nevertoomanybooks.BuildConfig;
+import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyle;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageUtils;
@@ -63,8 +64,8 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
+import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.entities.ItemWithFixableId;
-import com.hardbacknutter.nevertoomanybooks.entities.RowDataHolder;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.goodreads.AuthorTypeMapper;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsAuth;
@@ -87,19 +88,14 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsExceptio
  * they have placed on bookshelves, irrespective of whether they have rated, reviewed
  * or marked the book as 'owned'.
  * <p>
- * This Task *MUST* be serializable hence can not contain
- * any references to UI components or similar objects.
- * <p>
- * URGENT: needs testing... to many changes
- * <p>
  * Reminder on dates: parsing website dates, use {@link DateTimeFormatter#parse}.
  * Dates from the local database, use {@link DateParser}.
  */
-class ImportLegacyTask
-        extends TQTask {
+class ImportGrTask
+        extends BaseTQTask {
 
     /** Log tag. */
-    private static final String TAG = "ImportLegacyTask";
+    private static final String TAG = "GR.ImportGrTask";
 
     /**
      * Number of books to retrieve in one batch; we are encouraged to make fewer calls, so
@@ -112,7 +108,7 @@ class ImportLegacyTask
     private static final String PREFS_LAST_SYNC_DATE =
             GoodreadsHandler.PREF_PREFIX + "LastSyncDate";
 
-    private static final long serialVersionUID = 2320581474758496720L;
+    private static final long serialVersionUID = 7980810111326540691L;
 
     /**
      * The date before which updates are irrelevant.
@@ -144,13 +140,13 @@ class ImportLegacyTask
     /**
      * Constructor.
      *
-     * @param context     Current context
      * @param description for the task
+     * @param context     Current context
      * @param isSync      Flag indicating this job is a sync job
      */
-    ImportLegacyTask(@NonNull final Context context,
-                     @NonNull final String description,
-                     final boolean isSync) {
+    ImportGrTask(@NonNull final String description,
+                 @NonNull final Context context,
+                 final boolean isSync) {
 
         super(description);
 
@@ -187,8 +183,8 @@ class ImportLegacyTask
      */
     private void setLastSyncDate(@NonNull final Context context,
                                  @Nullable final LocalDateTime date) {
-        final String dateStr =
-                date != null ? date.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME) : null;
+        final String dateStr = date != null ? date.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+                                            : null;
         PreferenceManager.getDefaultSharedPreferences(context).edit()
                          .putString(PREFS_LAST_SYNC_DATE, dateStr).apply();
     }
@@ -199,19 +195,21 @@ class ImportLegacyTask
      * @return {@code false} to requeue, {@code true} for success
      */
     @Override
-    public boolean run(@NonNull final QueueManager queueManager) {
-        final Context context = LocaleUtils.applyLocale(App.getTaskContext());
+    public boolean run(@NonNull final QueueManager queueManager,
+                       @NonNull final Context context) {
         try (DAO db = new DAO(TAG)) {
             // Load the Goodreads reviews
             final boolean ok = processReviews(context, db, queueManager);
-            // If it's a sync job, then start the 'send' part and save last syn date
+
+            // If it's a sync job, then start the 'send' part and save the last syn date
             if (mIsSync) {
+                final String desc = context.getString(R.string.gr_title_send_book);
+                final TQTask task = new SendBooksGrTask(desc, true);
+                QueueManager.getQueueManager().enqueueTask(QueueManager.Q_MAIN, task);
+
                 setLastSyncDate(context, mStartDate);
-                QueueManager.getQueueManager().enqueueTask(
-                        new SendBooksLegacyTask(context.getString(R.string.gr_title_send_book),
-                                                true),
-                        QueueManager.Q_MAIN);
             }
+
             return ok;
         } catch (@NonNull final CredentialsException e) {
             setLastException(e);
@@ -283,7 +281,7 @@ class ImportLegacyTask
             // Processing may involve a SLOW thumbnail download...
             // so we don't run the import in a transaction.
             for (Bundle review : reviews) {
-                if (isAborting()) {
+                if (isCancelled()) {
                     return false;
                 }
 
@@ -293,8 +291,17 @@ class ImportLegacyTask
                             ReviewField.parseDate(review.getString(ReviewField.UPDATED));
                     if (reviewUpd != null && reviewUpd.isBefore(mLastSyncDate)) {
                         // skip to the next review
+                        if (BuildConfig.DEBUG && DEBUG_SWITCHES.GOODREADS_IMPORT) {
+                            Logger.d(TAG, "skipping|grId="
+                                          + review.getLong(DBDefinitions.KEY_EID_GOODREADS_BOOK));
+                        }
                         continue;
                     }
+                }
+
+                if (BuildConfig.DEBUG && DEBUG_SWITCHES.GOODREADS_IMPORT) {
+                    Logger.d(TAG, "process|grId="
+                                  + review.getLong(DBDefinitions.KEY_EID_GOODREADS_BOOK));
                 }
 
                 processReview(context, db, review);
@@ -342,12 +349,12 @@ class ImportLegacyTask
 
             if (found) {
                 // If found, update all related books
-                final RowDataHolder rowData = new CursorRow(cursor);
+                final DataHolder bookData = new CursorRow(cursor);
                 do {
-                    if (isAborting()) {
+                    if (isCancelled()) {
                         break;
                     }
-                    updateBook(context, db, review, rowData);
+                    updateBook(context, db, review, bookData);
                 } while (cursor.moveToNext());
             } else {
                 // it's a new book, add it
@@ -364,6 +371,7 @@ class ImportLegacyTask
      * Passed a Goodreads shelf name, return the best matching local bookshelf name,
      * or the original if no match found.
      *
+     * @param locale      to use
      * @param db          Database Access
      * @param grShelfName Goodreads shelf name
      *
@@ -396,6 +404,8 @@ class ImportLegacyTask
 
     /**
      * Extract a list of ISBNs from the bundle.
+     *
+     * @return list of ISBN numbers
      */
     @NonNull
     private List<String> extractIsbnList(@NonNull final Bundle review) {
@@ -419,7 +429,7 @@ class ImportLegacyTask
     private void updateBook(@NonNull final Context context,
                             @NonNull final DAO db,
                             @NonNull final Bundle sourceData,
-                            @NonNull final RowDataHolder bookData) {
+                            @NonNull final DataHolder bookData) {
 
         // If the review has an 'updated' date, then check if we should update the book
         if (sourceData.containsKey(ReviewField.UPDATED)) {
@@ -805,7 +815,7 @@ class ImportLegacyTask
 
     @Override
     public int getCategory() {
-        return TQTask.CAT_IMPORT_ALL;
+        return TQTask.CAT_IMPORT;
     }
 
     /**

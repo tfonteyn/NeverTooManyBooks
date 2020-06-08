@@ -146,7 +146,7 @@
     <string name="gr_info_send_books">Esta opción enviará su biblioteca a Goodreads.\n\nPuede elegir enviar todos sus libros o sólo los que haya actualizado desde la última vez que fueron copiados a o desde Goodreads (incluyendo todos los libros que todavía no han sido enviados), o cancelar la actualización.\n\nSi no ha enviado nunca ningún libro, entonces no hay ninguna diferencia entre las dos opciones.</string>
     <string name="gr_menu_import_all_from_goodreads">Importar todo de Goodreads</string>
     <string name="gr_menu_send_all">Enviar todo</string>
-    <string name="gr_menu_send_to_goodreads">Enviar a Goodreads</string>
+    <string name="gr_send_to_goodreads">Enviar a Goodreads</string>
     <string name="gr_menu_send_updated">Sólo actualizados</string>
     <string name="gr_pt_collect_genre">Use nombres de estanterías populares como géneros de libros</string>
     <string name="gr_send_book_to_goodreads">Enviar libro %1$d a Goodreads</string>

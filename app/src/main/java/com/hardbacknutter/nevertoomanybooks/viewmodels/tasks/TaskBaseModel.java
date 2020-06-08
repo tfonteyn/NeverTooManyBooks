@@ -84,8 +84,9 @@ public abstract class TaskBaseModel<Result>
         return mTask;
     }
 
-    public void setTask(@Nullable final TaskBase<Result> task) {
+    public void execute(@NonNull final TaskBase<Result> task) {
         mTask = task;
+        mTask.execute();
     }
 
     /** Observable. */

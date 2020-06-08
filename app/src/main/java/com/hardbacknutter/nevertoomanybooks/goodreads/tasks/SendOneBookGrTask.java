@@ -34,7 +34,7 @@ import androidx.annotation.NonNull;
 
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
-import com.hardbacknutter.nevertoomanybooks.entities.RowDataHolder;
+import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsHandler;
 import com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.QueueManager;
 import com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.TQTask;
@@ -43,16 +43,13 @@ import com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.TQTask;
  * Task to send a single books details to Goodreads.
  * This is used during retrying a formerly failed book and is
  * <strong>initiated by the queue manager</strong>.
- * <p>
- * This Task *MUST* be serializable hence can not contain
- * any references to UI components or similar objects.
  */
-public class SendOneBookLegacyTask
-        extends SendBooksLegacyTaskBase {
+public class SendOneBookGrTask
+        extends SendBooksGrTaskBase {
 
     /** Log tag. */
-    private static final String TAG = "SendOneBookLegacyTask";
-    private static final long serialVersionUID = -7285893840841719107L;
+    private static final String TAG = "GR.SendOneBookTQTask";
+    private static final long serialVersionUID = 3836442077648262220L;
 
     /** id of book to send. */
     private final long mBookId;
@@ -63,14 +60,14 @@ public class SendOneBookLegacyTask
      * @param description for the task
      * @param bookId      Book to send
      */
-    public SendOneBookLegacyTask(@NonNull final String description,
-                                 final long bookId) {
+    public SendOneBookGrTask(@NonNull final String description,
+                             final long bookId) {
         super(description);
         mBookId = bookId;
     }
 
     /**
-     * Perform the main task. Called from within {@link #run}
+     * Perform the main task. Called from within {@link BaseTQTask#run}
      *
      * @param queueManager QueueManager
      * @param context      Current context
@@ -84,9 +81,9 @@ public class SendOneBookLegacyTask
 
         try (DAO db = new DAO(TAG);
              Cursor cursor = db.fetchBookForExportToGoodreads(mBookId)) {
-            final RowDataHolder rowData = new CursorRow(cursor);
+            final DataHolder bookData = new CursorRow(cursor);
             while (cursor.moveToNext()) {
-                if (!sendOneBook(queueManager, context, apiHandler, db, rowData)) {
+                if (!sendOneBook(queueManager, context, apiHandler, db, bookData)) {
                     // quit on error
                     return false;
                 }
@@ -97,6 +94,6 @@ public class SendOneBookLegacyTask
 
     @Override
     public int getCategory() {
-        return TQTask.CAT_EXPORT_ONE;
+        return TQTask.CAT_EXPORT_ONE_BOOK;
     }
 }

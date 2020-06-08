@@ -954,7 +954,7 @@ public class XmlImporter
             // So loop all groups, and get their Preferences.
             // Do NOT add the group itself to the style at this point as our import
             // might not actually have it.
-            for (BooklistGroup group : BooklistGroup.getAllGroups(mStyle)) {
+            for (BooklistGroup group : BooklistGroup.getAllGroups(mContext, mStyle)) {
                 mStylePrefs.putAll(group.getPreferences());
             }
         }

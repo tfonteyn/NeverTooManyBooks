@@ -47,7 +47,7 @@ public class WebSearchesPreferenceFragment
 
         setPreferencesFromResource(R.xml.preferences_site_searches, rootKey);
 
-        Preference site = findPreference("psk_search_site_library_thing");
+        final Preference site = findPreference("psk_search_site_library_thing");
         if (site != null) {
             site.setVisible(BuildConfig.ENABLE_LIBRARY_THING);
         }

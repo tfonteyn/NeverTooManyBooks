@@ -86,7 +86,7 @@ public class SettingsActivity
 
         final FragmentManager fm = getSupportFragmentManager();
         if (fm.findFragmentByTag(tag) == null) {
-            Fragment frag;
+            final Fragment frag;
             switch (tag) {
                 case GlobalPreferenceFragment.TAG:
                     frag = new GlobalPreferenceFragment();
@@ -173,7 +173,7 @@ public class SettingsActivity
                                            @NonNull final PreferenceScreen pref) {
 
         // start a NEW copy of the same fragment
-        Fragment fragment;
+        final Fragment fragment;
         try {
             fragment = caller.getClass().newInstance();
         } catch (IllegalAccessException | InstantiationException e) {

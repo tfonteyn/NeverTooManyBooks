@@ -87,7 +87,7 @@ public class SearchSuggestionProvider
                 mDb = new DAO(TAG);
             }
 
-            Cursor cursor = mDb.fetchSearchSuggestions(selectionArgs[0]);
+            final Cursor cursor = mDb.fetchSearchSuggestions(selectionArgs[0]);
             //  if (cursor != null) {
             //      //noinspection ConstantConditions
             //     cursor.setNotificationUri(getContext().getContentResolver(), uri);
@@ -106,7 +106,7 @@ public class SearchSuggestionProvider
         }
 
         // not sure this is actually useful.
-        int length = uri.getPathSegments().size();
+        final int length = uri.getPathSegments().size();
         if (length >= 1) {
             String base = uri.getPathSegments().get(0);
             if ("suggestions".equals(base)) {

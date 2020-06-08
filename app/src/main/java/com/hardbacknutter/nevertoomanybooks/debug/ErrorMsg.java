@@ -34,6 +34,8 @@ public final class ErrorMsg {
     public static final String ISBN_MUST_BE_VALID = "isbn must be valid";
     public static final String NO_TARGET_FRAGMENT_SET = "no target fragment set";
 
+    public static final String TRANSACTION_REQUIRED = "Requires a transaction";
+
     public static final String LISTENER_WAS_NULL = "Listener was NULL";
     public static final String LISTENER_WAS_DEAD = "Listener was dead";
 

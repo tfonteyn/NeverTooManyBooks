@@ -115,11 +115,11 @@ public class SqlStatementManager
     @NonNull
     public SynchronizedStatement add(@NonNull final String name,
                                      @NonNull final String sql) {
-        SynchronizedStatement old = mStatements.get(name);
+        final SynchronizedStatement old = mStatements.get(name);
         if (old != null) {
             old.close();
         }
-        SynchronizedStatement stmt = mSyncedDb.compileStatement(sql);
+        final SynchronizedStatement stmt = mSyncedDb.compileStatement(sql);
         mStatements.put(name, stmt);
         return stmt;
     }

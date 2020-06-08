@@ -201,7 +201,7 @@ public class TransFormTask
             }
         } catch (@NonNull final OutOfMemoryError e) {
             // this is likely to fail if we're out of memory, but let's try at least
-            Logger.error(App.getAppContext(), TAG, e);
+            Logger.error(App.getTaskContext(), TAG, e);
         }
 
         return source;

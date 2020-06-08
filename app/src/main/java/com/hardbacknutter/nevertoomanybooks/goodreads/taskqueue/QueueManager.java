@@ -28,10 +28,8 @@
 package com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue;
 
 import android.content.Context;
-import android.os.Bundle;
+import android.database.Cursor;
 import android.os.Handler;
-import android.os.Message;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
@@ -42,9 +40,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-
-import com.hardbacknutter.nevertoomanybooks.App;
-import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 
 /**
  * Class to handle service-level aspects of the queues.
@@ -62,12 +57,12 @@ public final class QueueManager {
     /** small_jobs: trivial background tasks that will only take a few seconds. */
     public static final String Q_SMALL_JOBS = "small_jobs";
 
-    /** For internal message sending. */
-    private static final String INTERNAL = "__internal";
-    /** Type of INTERNAL message. */
-    private static final String TOAST = "toast";
-    /** Key for actual (text) message. */
-    private static final String MESSAGE = "message";
+//    /** For internal message sending. */
+//    private static final String INTERNAL = "__internal";
+//    /** Type of INTERNAL message. */
+//    private static final String TOAST = "toast";
+//    /** Key for actual (text) message. */
+//    private static final String MESSAGE = "message";
     /**
      * Static reference to the active QueueManager - singleton.
      */
@@ -78,24 +73,25 @@ public final class QueueManager {
     private final QueueDAO mQueueDAO;
     /** Collection of currently active queues. */
     private final Map<String, Queue> mActiveQueues = new HashMap<>();
-    /** The UI thread. */
-    @NonNull
-    private final WeakReference<Thread> mUIThread;
+//    /** The UI thread. */
+//    @NonNull
+//    private final WeakReference<Thread> mUIThread;
+
     /** Objects listening for Event operations. */
     @NonNull
-    private final List<WeakReference<OnChangeListener>> mEventChangeListeners =
-            new ArrayList<>();
+    private final List<WeakReference<OnChangeListener>> mEventChangeListeners = new ArrayList<>();
     /** Objects listening for Task operations. */
     @NonNull
-    private final List<WeakReference<OnChangeListener>> mTaskChangeListeners;
+    private final List<WeakReference<OnChangeListener>> mTaskChangeListeners = new ArrayList<>();
 
     /** Handle inter-thread messages. */
-    private final MessageHandler mMessageHandler;
+//    private final MessageHandler mMessageHandler;
+    private final Handler mHandler = new Handler();
 
     /**
      * Constructor.
      *
-     * @param context Current context
+     * @param context Current context; NOT stored.
      */
     private QueueManager(@NonNull final Context context) {
         if (sInstance != null) {
@@ -106,11 +102,9 @@ public final class QueueManager {
         sInstance = this;
 
         // Save the thread ... it is the UI thread
-        mUIThread = new WeakReference<>(Thread.currentThread());
+//        mUIThread = new WeakReference<>(Thread.currentThread());
         // setup the handler with access to ourselves
-        mMessageHandler = new MessageHandler(new WeakReference<>(this));
-
-        mTaskChangeListeners = new ArrayList<>();
+//        mMessageHandler = new MessageHandler(new WeakReference<>(this));
 
         mQueueDAO = new QueueDAO(context);
         // Revive active queues.
@@ -126,7 +120,7 @@ public final class QueueManager {
      * Constructor. Called from {@link com.hardbacknutter.nevertoomanybooks.StartupActivity}
      * so processing can start immediately after startup.
      *
-     * @param context Current context
+     * @param context Current context; NOT stored.
      */
     public static void create(@NonNull final Context context) {
         if (sInstance == null) {
@@ -143,7 +137,7 @@ public final class QueueManager {
     public void registerTaskListener(@NonNull final OnChangeListener listener) {
         synchronized (mTaskChangeListeners) {
             for (WeakReference<OnChangeListener> lr : mTaskChangeListeners) {
-                OnChangeListener l = lr.get();
+                final OnChangeListener l = lr.get();
                 if (listener.equals(l)) {
                     return;
                 }
@@ -152,11 +146,10 @@ public final class QueueManager {
         }
     }
 
-    /** ignores any failures. */
     public void unregisterTaskListener(@NonNull final OnChangeListener listener) {
         try {
             synchronized (mTaskChangeListeners) {
-                Collection<WeakReference<OnChangeListener>> ll = new ArrayList<>();
+                final Collection<WeakReference<OnChangeListener>> ll = new ArrayList<>();
                 for (WeakReference<OnChangeListener> l : mTaskChangeListeners) {
                     if (l.get().equals(listener)) {
                         ll.add(l);
@@ -174,7 +167,7 @@ public final class QueueManager {
     public void registerEventListener(@NonNull final OnChangeListener listener) {
         synchronized (mEventChangeListeners) {
             for (WeakReference<OnChangeListener> lr : mEventChangeListeners) {
-                OnChangeListener l = lr.get();
+                final OnChangeListener l = lr.get();
                 if (listener.equals(l)) {
                     return;
                 }
@@ -183,11 +176,10 @@ public final class QueueManager {
         }
     }
 
-    /** ignores any failures. */
     public void unregisterEventListener(@NonNull final OnChangeListener listener) {
         try {
             synchronized (mEventChangeListeners) {
-                Collection<WeakReference<OnChangeListener>> ll = new ArrayList<>();
+                final Collection<WeakReference<OnChangeListener>> ll = new ArrayList<>();
                 for (WeakReference<OnChangeListener> l : mEventChangeListeners) {
                     if (l.get().equals(listener)) {
                         ll.add(l);
@@ -204,7 +196,7 @@ public final class QueueManager {
 
     void notifyTaskChange() {
         // Make a copy of the list so we can cull dead elements from the original
-        List<WeakReference<OnChangeListener>> list;
+        final List<WeakReference<OnChangeListener>> list;
         synchronized (mTaskChangeListeners) {
             list = new ArrayList<>(mTaskChangeListeners);
         }
@@ -217,7 +209,8 @@ public final class QueueManager {
                 }
             } else {
                 try {
-                    mMessageHandler.post(listener::onChange);
+//                    mMessageHandler.post(listener::onChange);
+                    mHandler.post(listener::onChange);
                 } catch (@NonNull final RuntimeException ignore) {
                     // ignore
                 }
@@ -227,7 +220,7 @@ public final class QueueManager {
 
     private void notifyEventChange() {
         // Make a copy of the list so we can cull dead elements from the original
-        List<WeakReference<OnChangeListener>> list;
+        final List<WeakReference<OnChangeListener>> list;
         synchronized (mEventChangeListeners) {
             list = new ArrayList<>(mEventChangeListeners);
         }
@@ -240,7 +233,8 @@ public final class QueueManager {
                 }
             } else {
                 try {
-                    mMessageHandler.post(listener::onChange);
+//                    mMessageHandler.post(listener::onChange);
+                    mHandler.post(listener::onChange);
                 } catch (@NonNull final RuntimeException ignore) {
                     // ignore
                 }
@@ -251,18 +245,18 @@ public final class QueueManager {
     /**
      * Store a Task in the database to run on the specified Queue and start queue if necessary.
      *
-     * @param task      task to queue
      * @param queueName Name of queue
+     * @param task      task to queue
      */
-    public void enqueueTask(@NonNull final Task task,
-                            @NonNull final String queueName) {
+    public void enqueueTask(@NonNull final String queueName,
+                            @NonNull final TQTask task) {
         synchronized (this) {
             // Save it first
             mQueueDAO.enqueueTask(task, queueName);
 
             if (mActiveQueues.containsKey(queueName)) {
                 // notify the queue there is work to do
-                Queue queue = mActiveQueues.get(queueName);
+                final Queue queue = mActiveQueues.get(queueName);
                 //noinspection ConstantConditions,SynchronizationOnLocalVariableOrMethodParameter
                 synchronized (queue) {
                     // Reminder: notify() **MUST** be called inside
@@ -309,55 +303,38 @@ public final class QueueManager {
     }
 
     /**
-     * Called by a Queue object to run a task. This method is in the QueueManager so that
-     * it can be easily overridden by a subclass.
-     *
-     * @param task Task to run
-     *
-     * @return {@code false} to requeue, {@code true} for success
-     */
-    boolean runTask(@NonNull final Task task) {
-        if (task instanceof TQTask) {
-            return ((TQTask) task).run(this);
-        } else {
-            // Either extend TQTask, or override QueueManager.runTask()
-            throw new IllegalStateException("Can not handle tasks that are not TQTask");
-        }
-    }
-
-    /**
      * Save the passed task back to the database. The parameter must be a Task that
      * is already in the database. This method is used to preserve a task state.
      *
      * @param task The task to be updated. Must exist in database.
      */
-    public void updateTask(@NonNull final Task task) {
+    public void updateTask(@NonNull final TQTask task) {
         mQueueDAO.updateTask(task);
         notifyTaskChange();
     }
 
-    /**
-     * Make a toast message for the caller. Queue in UI thread if necessary.
-     * <p>
-     * Hardwired to use {@link Toast} as there is no way to get an activity or view
-     * for using SnackBar.
-     */
-    private void doToast(@NonNull final String message) {
-        if (Thread.currentThread() == mUIThread.get()) {
-            synchronized (this) {
-                Toast.makeText(LocaleUtils.applyLocale(App.getAppContext()),
-                               message, Toast.LENGTH_LONG).show();
-            }
-        } else {
-            // Send message to the handler
-            Message msg = mMessageHandler.obtainMessage();
-            Bundle bundle = new Bundle();
-            bundle.putString(INTERNAL, TOAST);
-            bundle.putString(MESSAGE, message);
-            msg.setData(bundle);
-            mMessageHandler.sendMessage(msg);
-        }
-    }
+//    /**
+//     * Make a toast message for the caller. Queue in UI thread if necessary.
+//     * <p>
+//     * Hardwired to use {@link Toast} as there is no way to get an activity or view
+//     * for using SnackBar.
+//     */
+//    private void doToast(@NonNull final String message) {
+//        if (Thread.currentThread() == mUIThread.get()) {
+//            synchronized (this) {
+//                Toast.makeText(LocaleUtils.applyLocale(App.getAppContext()),
+//                               message, Toast.LENGTH_LONG).show();
+//            }
+//        } else {
+//            // Send message to the handler
+//            final Message msg = mMessageHandler.obtainMessage();
+//            final Bundle bundle = new Bundle();
+//            bundle.putString(INTERNAL, TOAST);
+//            bundle.putString(MESSAGE, message);
+//            msg.setData(bundle);
+//            mMessageHandler.sendMessage(msg);
+//        }
+//    }
 
     /**
      * Store an Event object for later retrieval after task has completed. This is
@@ -366,41 +343,41 @@ public final class QueueManager {
      * @param taskId Related task
      * @param event  Event
      */
-    void storeTaskEvent(final long taskId,
-                        @NonNull final Event event) {
+    public void storeTaskEvent(final long taskId,
+                               @NonNull final TQEvent event) {
         mQueueDAO.storeTaskEvent(taskId, event);
         notifyEventChange();
     }
 
     /**
-     * Return an EventsCursor for all events.
+     * Get a Cursor returning all events.
      *
-     * @return EventsCursor
+     * @return Cursor
      */
     @NonNull
-    public EventsCursor getEvents() {
+    public Cursor getEvents() {
         return mQueueDAO.getEvents();
     }
 
     /**
-     * Return an EventsCursor for the specified task ID.
+     * Get a Cursor returning all events for the passed task.
      *
-     * @param taskId id of the task
+     * @param taskId id of the task whose exceptions we want
      *
-     * @return EventsCursor
+     * @return Cursor
      */
     @NonNull
-    public EventsCursor getEvents(final long taskId) {
+    public Cursor getEvents(final long taskId) {
         return mQueueDAO.getEvents(taskId);
     }
 
     /**
-     * Return a TasksCursor for all tasks.
+     * Get a Cursor returning all tasks.
      *
-     * @return TasksCursor
+     * @return Cursor
      */
     @NonNull
-    public TasksCursor getTasks() {
+    public Cursor getTasks() {
         return mQueueDAO.getTasks();
     }
 
@@ -420,16 +397,16 @@ public final class QueueManager {
      *
      * @param id of Task to delete.
      */
-    void deleteTask(final long id) {
+    public void deleteTask(final long id) {
         boolean isActive = false;
-        // Check if the task is running in a queue.
+        // Synchronize so that no queue will be able to get another task while we are deleting
         synchronized (this) {
-            // Synchronize so that no queue will be able to get another task while we are deleting
+            // Check if the task is running in a queue.
             for (Queue queue : mActiveQueues.values()) {
-                Task task = queue.getTask();
+                final TQTask task = queue.getTask();
                 if (task != null && task.getId() == id) {
                     // Abort it, don't delete from DB...it will do that WHEN it aborts
-                    task.abortTask();
+                    task.cancel();
                     isActive = true;
                 }
             }
@@ -474,40 +451,41 @@ public final class QueueManager {
     }
 
     public interface OnChangeListener {
+
         void onChange();
     }
 
-    /**
-     * Handler for internal UI thread messages.
-     */
-    private static class MessageHandler
-            extends Handler {
-
-        @NonNull
-        private final WeakReference<QueueManager> mQueueManager;
-
-        /**
-         * Constructor.
-         *
-         * @param queueManager the manager
-         */
-        MessageHandler(@NonNull final WeakReference<QueueManager> queueManager) {
-            mQueueManager = queueManager;
-        }
-
-        public void handleMessage(@NonNull final Message msg) {
-            Bundle bundle = msg.getData();
-            if (bundle.containsKey(INTERNAL)) {
-                String type = bundle.getString(INTERNAL);
-                if (TOAST.equals(type)) {
-                    String text = bundle.getString(MESSAGE);
-                    if (text != null) {
-                        mQueueManager.get().doToast(text);
-                    }
-                }
-            } else {
-                throw new IllegalArgumentException("Unknown message");
-            }
-        }
-    }
+//    /**
+//     * Handler for internal UI thread messages.
+//     */
+//    private static class MessageHandler
+//            extends Handler {
+//
+//        @NonNull
+//        private final WeakReference<QueueManager> mQueueManager;
+//
+//        /**
+//         * Constructor.
+//         *
+//         * @param queueManager the manager
+//         */
+//        MessageHandler(@NonNull final WeakReference<QueueManager> queueManager) {
+//            mQueueManager = queueManager;
+//        }
+//
+//        public void handleMessage(@NonNull final Message msg) {
+//            final Bundle bundle = msg.getData();
+//            if (bundle.containsKey(INTERNAL)) {
+//                final String type = bundle.getString(INTERNAL);
+//                if (TOAST.equals(type)) {
+//                    final String text = bundle.getString(MESSAGE);
+//                    if (text != null) {
+//                        mQueueManager.get().doToast(text);
+//                    }
+//                }
+//            } else {
+//                throw new IllegalArgumentException("Unknown message");
+//            }
+//        }
+//    }
 }

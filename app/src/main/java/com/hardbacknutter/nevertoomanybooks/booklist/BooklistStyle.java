@@ -297,7 +297,7 @@ public class BooklistStyle
         mNameResId = nameId;
         initPrefs(context, mNameResId == 0);
         for (@BooklistGroup.Id int groupId : groupIds) {
-            mStyleGroups.add(context, BooklistGroup.newInstance(groupId, this));
+            mStyleGroups.add(context, BooklistGroup.newInstance(context, groupId, this));
         }
     }
 
@@ -1430,7 +1430,7 @@ public class BooklistStyle
             // load the group ID's from the SharedPreference and populates the Group object list.
             mGroups.clear();
             for (@BooklistGroup.Id int id : getValue(context)) {
-                mGroups.put(id, BooklistGroup.newInstance(id, style));
+                mGroups.put(id, BooklistGroup.newInstance(context, id, style));
             }
         }
 

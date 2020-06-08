@@ -33,7 +33,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".searches.goodreads.GoodreadsRegistrationActivity"
+    tools:context=".goodreads.GoodreadsRegistrationActivity"
     >
 
     <com.google.android.material.appbar.AppBarLayout
@@ -89,7 +89,7 @@
                 />
 
             <Button
-                android:id="@+id/authorize"
+                android:id="@+id/btn_authorize"
                 style="@style/MenuButton"
                 android:layout_gravity="center_horizontal"
                 android:text="@string/info_authorized_needed"
@@ -97,7 +97,7 @@
                 />
 
             <TextView
-                android:id="@+id/forget_blurb"
+                android:id="@+id/lbl_delete_credentials"
                 style="@style/Text.Blurb"
                 android:layout_width="match_parent"
                 android:text="@string/gr_auth_blurb_part4"

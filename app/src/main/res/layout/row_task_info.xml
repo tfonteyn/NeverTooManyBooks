@@ -114,11 +114,9 @@
         />
 
     <TextView
-        android:id="@+id/job_info"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:id="@+id/info"
+        style="@style/Text.Small"
         android:focusable="false"
-        android:textAppearance="?attr/textAppearanceListItemSecondary"
         android:textIsSelectable="false"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@id/description"

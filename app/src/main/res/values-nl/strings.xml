@@ -148,7 +148,7 @@
     <string name="gr_info_send_books">Dit zendt uw bibliotheek naar Goodreads.\n\nJe kan er voor kiezen alle boeken te sturen of alleen de boeken die je hebt bijgewerkt sinds deze werden gekopieerd van of naar Goodreads (inclusief alle boeken die nog niet werden verzonden) of je kan de update annuleren.\n\n Als ja nog nooit boeken hebt verzonden is er geen verschil tussen de eerste twee opties.</string>
     <string name="gr_menu_import_all_from_goodreads">Importeer alles uit Goodreads</string>
     <string name="gr_menu_send_all">Zend alles</string>
-    <string name="gr_menu_send_to_goodreads">Zend naar Goodreads</string>
+    <string name="gr_send_to_goodreads">Zend naar Goodreads</string>
     <string name="gr_menu_send_updated">Zend bijgewerkte boeken</string>
     <string name="gr_pt_collect_genre">Gebruik populaire boekenplanknamen als boekgenres</string>
     <string name="gr_send_book_to_goodreads">Zend boek %1$d naar Goodreads</string>

@@ -49,8 +49,10 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsExceptio
 public class FetchWorksTask
         extends TaskBase<List<GoodreadsWork>> {
 
-    private static final String TAG = "FetchWorksTask";
+    /** Log tag. */
+    private static final String TAG = "GR.FetchWorksTask";
 
+    /** keywords to search for. */
     private final String mSearchText;
 
     /**
@@ -79,8 +81,8 @@ public class FetchWorksTask
         } catch (@NonNull final Http404Exception e) {
             Logger.error(context, TAG, e, e.getUrl());
             mException = e;
-        } catch (@NonNull final CredentialsException | IOException
-                | RuntimeException e) {
+
+        } catch (@NonNull final CredentialsException | IOException | RuntimeException e) {
             Logger.error(context, TAG, e);
             mException = e;
         }

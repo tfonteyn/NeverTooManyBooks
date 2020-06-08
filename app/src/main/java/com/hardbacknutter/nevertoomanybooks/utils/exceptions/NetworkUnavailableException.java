@@ -25,43 +25,35 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue;
 
-import android.view.View;
+package com.hardbacknutter.nevertoomanybooks.utils.exceptions;
 
-import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.FormatStyle;
-import java.util.Locale;
+import java.io.IOException;
 
+import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 
-public class BindableItemViewHolder {
+/**
+ * Should be thrown if the device has no network connectivity at all for whatever reason.
+ */
+public class NetworkUnavailableException
+        extends IOException {
 
-    /** Container View for this item. */
-    @NonNull
-    public final View itemView;
+    private static final long serialVersionUID = 8027184885533560891L;
 
-    protected BindableItemViewHolder(@NonNull final View view) {
-        itemView = view;
-        itemView.setTag(R.id.TAG_VIEW_HOLDER, this);
+    @Nullable
+    @Override
+    public String getMessage() {
+        return App.getAppContext().getString(R.string.error_network_no_connection);
     }
 
-    /**
-     * Pretty format a LocalDateTime to a datetime-string, using the specified locale.
-     *
-     * @param date          to format
-     * @param displayLocale to use
-     *
-     * @return human readable datetime string
-     */
-    @NonNull
-    protected static String toPrettyDateTime(@NonNull final LocalDateTime date,
-                                             @NonNull final Locale displayLocale) {
-        return date.format(DateTimeFormatter
-                                   .ofLocalizedDateTime(FormatStyle.MEDIUM, FormatStyle.SHORT)
-                                   .withLocale(displayLocale));
+    @Nullable
+    @Override
+    public String getLocalizedMessage() {
+        return LocaleUtils.applyLocale(App.getAppContext())
+                          .getString(R.string.error_network_no_connection);
     }
 }

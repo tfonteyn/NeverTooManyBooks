@@ -197,7 +197,7 @@ public abstract class BookSearchBaseFragment
 
     @NonNull
     private ProgressDialogFragment getOrCreateProgressDialog() {
-        FragmentManager fm = getChildFragmentManager();
+        final FragmentManager fm = getChildFragmentManager();
 
         // get dialog after a fragment restart
         ProgressDialogFragment dialog = (ProgressDialogFragment)
@@ -320,7 +320,8 @@ public abstract class BookSearchBaseFragment
             // no changes committed, we got data to use temporarily
             case RequestCode.PREFERRED_SEARCH_SITES: {
                 if (resultCode == Activity.RESULT_OK && data != null) {
-                    SiteList siteList = data.getParcelableExtra(SiteList.Type.Data.getBundleKey());
+                    final SiteList siteList = data.getParcelableExtra(
+                            SiteList.Type.Data.getBundleKey());
                     if (siteList != null) {
                         mCoordinator.setSiteList(siteList);
                     }

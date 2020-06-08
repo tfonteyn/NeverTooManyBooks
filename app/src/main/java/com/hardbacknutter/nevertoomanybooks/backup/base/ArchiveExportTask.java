@@ -61,15 +61,17 @@ public class ArchiveExportTask
     /**
      * Constructor.
      *
+     * @param context      Current context
      * @param helper       export configuration
      * @param taskListener for sending progress and finish messages to.
      */
     @UiThread
-    public ArchiveExportTask(@NonNull final ExportManager helper,
+    public ArchiveExportTask(@NonNull final Context context,
+                             @NonNull final ExportManager helper,
                              @NonNull final TaskListener<ExportManager> taskListener) {
         super(R.id.TASK_ID_EXPORT, taskListener);
         mHelper = helper;
-        mHelper.validate();
+        mHelper.validate(context);
     }
 
     @Override

@@ -116,7 +116,7 @@ public class EditBookNativeIdFragment
 //            sites = SearchSites.SEARCH_FLAG_MASK;
 //        } else {
 //            //noinspection ConstantConditions
-//            Locale locale = LocaleUtils.getUserLocale(getContext());
+//            final Locale locale = LocaleUtils.getUserLocale(getContext());
 //            sites = SiteList.getList(getContext(), locale, SiteList.Type.Data).getEnabledSites();
 //        }
 //

@@ -28,145 +28,170 @@
 package com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue;
 
 import android.content.Context;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
 
+import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.util.List;
-import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
-import com.hardbacknutter.nevertoomanybooks.goodreads.GrStatus;
-import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
+import com.hardbacknutter.nevertoomanybooks.goodreads.admin.ContextDialogItem;
 
 /**
- * Base class for tasks. This builds and populates simple View objects to display the task.
- * <p>
- * A Task *MUST* be serializable.
- * This means that it can not contain any references to UI components or similar objects.
+ * Abstract base class for all Tasks.
  */
 public abstract class TQTask
-        extends Task<TasksCursor, TaskViewHolder> {
+        implements TQItem {
 
-    /** The import_one task is now implemented as a standard ASyncTask. */
-    public static final int CAT_IMPORT_ALL = 1;
-    public static final int CAT_EXPORT_ALL = 2;
-    public static final int CAT_EXPORT_ONE = 3;
+    /**
+     * See {@link #getCategory()}.
+     * <p>
+     * {@code 0} is used for legacy tasks.
+     */
+    public static final int CAT_UNKNOWN = 0;
+    /** We're only allowing a single import task to be scheduled/run at any time. */
+    public static final int CAT_IMPORT = 1;
+    /** We're only allowing a single export task to be scheduled/run at any time. */
+    public static final int CAT_EXPORT = 2;
+    /** But we can schedule multiple single-book export times at any time. */
+    public static final int CAT_EXPORT_ONE_BOOK = 3;
 
-    private static final long serialVersionUID = 4676971523754206924L;
+    public static final String COMPLETED = "S";
+    public static final String FAILED = "F";
+    public static final String QUEUED = "Q";
 
-    @GrStatus.Status
-    private int mLastExtStatus;
+    private static final int RETRY_LIMIT = 15;
+    private static final long serialVersionUID = 6663611438001508755L;
+
+    @NonNull
+    private final String mDescription;
+    private long mId;
+    @Nullable
+    private Exception mLastException;
+
+    private int mRetries;
+    private int mRetryDelay;
+    private boolean mIsCancelled;
 
     /**
      * Constructor.
      *
-     * @param description for the task
+     * @param description for the task; should be localized for display to the user.
      */
-    protected TQTask(@NonNull final String description) {
-        super(description);
+    public TQTask(@NonNull final String description) {
+        mDescription = description;
     }
 
-    protected void setLastExtStatus(@GrStatus.Status final int status) {
-        mLastExtStatus = status;
+    @Override
+    public long getId() {
+        return mId;
+    }
+
+    public void setId(final long id) {
+        mId = id;
     }
 
     /**
-     * @return {@code false} to requeue, {@code true} for success
+     * Get the user-displayable description for this task.
+     *
+     * @param context Current context
+     *
+     * @return localized description string
      */
-    public abstract boolean run(@NonNull QueueManager queueManager);
-
-    @Override
     @NonNull
-    public TaskViewHolder onCreateViewHolder(@NonNull final LayoutInflater layoutInflater,
-                                             @NonNull final ViewGroup parent) {
-        View itemView = layoutInflater.inflate(R.layout.row_task_info, parent, false);
-        return new TaskViewHolder(itemView);
+    public String getDescription(@NonNull final Context context) {
+        return mDescription;
+    }
+
+    /**
+     * Return an application-defined category for the task.
+     * <p>
+     * The category can be used to lookup queued tasks based on category, for example to
+     * allow an application to ensure only one job of a particular category is queued, or
+     * to retrieve all jobs of a particular category.
+     */
+    public abstract int getCategory();
+
+    @Nullable
+    public Exception getLastException() {
+        return mLastException;
+    }
+
+    public void setLastException(@Nullable final Exception e) {
+        mLastException = e;
+    }
+
+    /**
+     * There is little that can be done to abort a task; we trust the implementations to
+     * check this flag periodically on long tasks.
+     */
+    public boolean isCancelled() {
+        return mIsCancelled;
+    }
+
+    public void cancel() {
+        mIsCancelled = true;
+    }
+
+    public int getRetryLimit() {
+        return RETRY_LIMIT;
+    }
+
+    public int getRetryDelay() {
+        return mRetryDelay;
+    }
+
+    public void setRetryDelay(@SuppressWarnings("SameParameterValue") final int delay) {
+        mRetryDelay = delay;
+    }
+
+    public void setRetryDelay() {
+        mRetryDelay = (int) Math.pow(2, mRetries + 1);
+    }
+
+    public int getRetries() {
+        return mRetries;
+    }
+
+    public void setRetries(final int retries) {
+        mRetries = retries;
+    }
+
+    public boolean canRetry() {
+        return mRetries < RETRY_LIMIT;
+    }
+
+    public void storeEvent(@NonNull final TQEvent event) {
+        QueueManager.getQueueManager().storeTaskEvent(mId, event);
+    }
+
+    public void resetRetryCounter() {
+        mRetries = 0;
+        setRetryDelay();
     }
 
     @Override
-    public void onBindViewHolder(@NonNull final TaskViewHolder holder,
-                                 @NonNull final TasksCursor row,
-                                 @NonNull final DAO db) {
-
-        final Context context = holder.itemView.getContext();
-        final Locale userLocale = LocaleUtils.getUserLocale(context);
-
-        holder.descriptionView.setText(getDescription(context));
-        final String statusCode = row.getStatusCode().toUpperCase(Locale.ENGLISH);
-        String statusText;
-        switch (statusCode) {
-            case COMPLETED:
-                statusText = context.getString(R.string.gr_tq_completed);
-                holder.retryInfoView.setVisibility(View.GONE);
-                holder.retryButton.setVisibility(View.GONE);
-                break;
-
-            case FAILED:
-                statusText = context.getString(R.string.gr_tq_failed);
-                holder.retryInfoView.setVisibility(View.GONE);
-                holder.retryButton.setVisibility(View.VISIBLE);
-                break;
-
-            case QUEUED:
-                statusText = context.getString(R.string.gr_tq_queued);
-                holder.setRetryInfo(getRetries(), getRetryLimit(),
-                                    row.getRetryDate(), userLocale);
-                holder.retryInfoView.setVisibility(View.VISIBLE);
-                holder.retryButton.setVisibility(View.GONE);
-                break;
-
-            default:
-                statusText = context.getString(R.string.unknown);
-                holder.retryInfoView.setVisibility(View.GONE);
-                holder.retryButton.setVisibility(View.GONE);
-                break;
-        }
-
-        statusText += context.getString(R.string.gr_tq_events_recorded, row.getNoteCount());
-        holder.stateView.setText(statusText);
-
-        @Nullable
-        Exception e = getLastException();
-        // take a copy!
-        @GrStatus.Status
-        int extStatus = mLastExtStatus;
-
-        if (extStatus != GrStatus.COMPLETED) {
-            String msg;
-            if (extStatus == GrStatus.UNEXPECTED_ERROR && e != null) {
-                // UnexpectedError... display the exception
-                msg = e.getLocalizedMessage();
-                if (msg == null) {
-                    msg = e.getClass().getSimpleName();
-                }
-            } else {
-                // display a formatted clean status message
-                msg = GrStatus.getString(context, extStatus);
-            }
-
-            msg = context.getString(R.string.gr_tq_last_error_e, msg);
-            holder.errorView.setText(msg);
-            holder.errorView.setVisibility(View.VISIBLE);
-
-        } else {
-            holder.errorView.setVisibility(View.GONE);
-        }
-
-        holder.setJobInfo(getId(), row.getQueuedDate(), userLocale);
-    }
-
-    @Override
+    @CallSuper
     public void addContextMenuItems(@NonNull final Context context,
                                     @NonNull final List<ContextDialogItem> menuItems,
                                     @NonNull final DAO db) {
-
         menuItems.add(new ContextDialogItem(
                 context.getString(R.string.gr_tq_menu_delete_task),
                 () -> QueueManager.getQueueManager().deleteTask(getId())));
+    }
+
+    @Override
+    @NonNull
+    public String toString() {
+        return "TQTask{"
+               + "mDescription=`" + mDescription + '`'
+               + ", mId=" + mId
+               + ", mLastException=" + mLastException
+               + ", mRetries=" + mRetries
+               + ", mRetryDelay=" + mRetryDelay
+               + ", mIsAborting=" + mIsCancelled
+               + '}';
     }
 }

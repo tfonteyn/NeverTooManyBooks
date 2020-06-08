@@ -76,7 +76,7 @@ public class StyleFragment
                                     @Nullable final String rootKey) {
         super.onCreatePreferences(savedInstanceState, rootKey);
 
-        Preference thumbScale = findPreference(Prefs.pk_style_scale_thumbnail);
+        final Preference thumbScale = findPreference(Prefs.pk_style_scale_thumbnail);
         if (thumbScale != null) {
             thumbScale.setDependency(Prefs.pk_style_book_show_thumbnails);
         }
@@ -107,13 +107,13 @@ public class StyleFragment
 
     @Override
     public void onResume() {
-        PreferenceScreen screen = getPreferenceScreen();
+        final PreferenceScreen screen = getPreferenceScreen();
         // loop over all groups, add the preferences for groups we have
         // and hide for groups we don't/no longer have.
         // Use the global style to get the groups.
         //noinspection ConstantConditions
-        BooklistStyle style = new BooklistStyle(getContext());
-        for (BooklistGroup group : BooklistGroup.getAllGroups(style)) {
+        final BooklistStyle style = new BooklistStyle(getContext());
+        for (BooklistGroup group : BooklistGroup.getAllGroups(getContext(), style)) {
             group.setPreferencesVisible(screen, mStyle.containsGroup(group.getId()));
         }
 
@@ -134,7 +134,7 @@ public class StyleFragment
 
         switch (key) {
             case Prefs.pk_style_scale_font: {
-                SeekBarPreference preference = findPreference(key);
+                final SeekBarPreference preference = findPreference(key);
                 if (preference != null) {
                     //noinspection ConstantConditions
                     String summary = getResources()
@@ -145,7 +145,7 @@ public class StyleFragment
                 break;
             }
             case Prefs.pk_style_scale_thumbnail: {
-                SeekBarPreference preference = findPreference(key);
+                final SeekBarPreference preference = findPreference(key);
                 if (preference != null) {
                     //noinspection ConstantConditions
                     String summary = getResources()
@@ -157,7 +157,7 @@ public class StyleFragment
             }
 
             case Prefs.pk_style_levels_expansion: {
-                SeekBarPreference preference = findPreference(key);
+                final SeekBarPreference preference = findPreference(key);
                 if (preference != null) {
                     preference.setMax(mStyle.getGroupCount());
                     //noinspection ConstantConditions
@@ -168,7 +168,7 @@ public class StyleFragment
 
             case Prefs.pk_style_groups: {
                 // the 'groups' in use.
-                Preference preference = findPreference(key);
+                final Preference preference = findPreference(key);
                 if (preference != null) {
                     //noinspection ConstantConditions
                     preference.setSummary(mStyle.getGroupLabels(getContext()));
@@ -179,10 +179,10 @@ public class StyleFragment
             case Prefs.pk_style_book_show_thumbnails:
             case Prefs.PSK_STYLE_SHOW_DETAILS: {
                 // the 'extra' fields in use.
-                Preference preference = findPreference(Prefs.PSK_STYLE_SHOW_DETAILS);
+                final Preference preference = findPreference(Prefs.PSK_STYLE_SHOW_DETAILS);
                 if (preference != null) {
                     //noinspection ConstantConditions
-                    List<String> labels = mStyle.getBookDetailsFieldLabels(getContext());
+                    final List<String> labels = mStyle.getBookDetailsFieldLabels(getContext());
                     if (labels.isEmpty()) {
                         preference.setSummary(getString(R.string.none));
                     } else {
@@ -193,10 +193,10 @@ public class StyleFragment
             }
             case Prefs.PSK_STYLE_FILTERS: {
                 // the 'filters' in use
-                Preference preference = findPreference(key);
+                final Preference preference = findPreference(key);
                 if (preference != null) {
                     //noinspection ConstantConditions
-                    List<String> labels = mStyle.getFilterLabels(getContext(), false);
+                    final List<String> labels = mStyle.getFilterLabels(getContext(), false);
                     if (labels.isEmpty()) {
                         preference.setSummary(getString(R.string.none));
                     } else {

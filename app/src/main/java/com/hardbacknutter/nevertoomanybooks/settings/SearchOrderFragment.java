@@ -50,7 +50,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Locale;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -98,7 +97,7 @@ public class SearchOrderFragment
     public View onCreateView(@NonNull final LayoutInflater inflater,
                              @Nullable final ViewGroup container,
                              @Nullable final Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_edit_search_order, container, false);
+        final View view = inflater.inflate(R.layout.fragment_edit_search_order, container, false);
         mListView = view.findViewById(R.id.siteList);
         return view;
     }
@@ -108,7 +107,7 @@ public class SearchOrderFragment
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
+        final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         mListView.setLayoutManager(linearLayoutManager);
         //noinspection ConstantConditions
         mListView.addItemDecoration(
@@ -117,12 +116,12 @@ public class SearchOrderFragment
 
         // Get all sites; enabled AND disabled.
         //noinspection ConstantConditions
-        List<Site> list = mModel.getList(getContext(), mOurType).getSites(false);
+        final List<Site> list = mModel.getList(getContext(), mOurType).getSites(false);
         mListAdapter = new SearchSiteListAdapter(getContext(), mOurType, list,
                                                  vh -> mItemTouchHelper.startDrag(vh));
         mListView.setAdapter(mListAdapter);
 
-        SimpleItemTouchHelperCallback sitHelperCallback =
+        final SimpleItemTouchHelperCallback sitHelperCallback =
                 new SimpleItemTouchHelperCallback(mListAdapter);
         mItemTouchHelper = new ItemTouchHelper(sitHelperCallback);
         mItemTouchHelper.attachToRecyclerView(mListView);
@@ -146,9 +145,7 @@ public class SearchOrderFragment
         switch (item.getItemId()) {
             case R.id.MENU_RESET: {
                 //noinspection ConstantConditions
-                Locale locale = LocaleUtils.getUserLocale(getContext());
-                //noinspection ConstantConditions
-                mModel.resetList(getContext(), locale, mOurType);
+                mModel.resetList(getContext(), LocaleUtils.getUserLocale(getContext()), mOurType);
                 mListAdapter.notifyDataSetChanged();
                 return true;
             }
@@ -184,7 +181,8 @@ public class SearchOrderFragment
         @Override
         public Holder onCreateViewHolder(@NonNull final ViewGroup parent,
                                          final int viewType) {
-            View view = getLayoutInflater().inflate(R.layout.row_edit_searchsite, parent, false);
+            final View view = getLayoutInflater()
+                    .inflate(R.layout.row_edit_searchsite, parent, false);
             return new Holder(view, mShowInfo);
         }
 
@@ -196,13 +194,13 @@ public class SearchOrderFragment
             @NonNull
             final Context context = getContext();
 
-            Site site = getItem(position);
+            final Site site = getItem(position);
             holder.nameView.setText(site.getName());
 
             if (mShowInfo) {
-                SearchEngine searchEngine = site.getSearchEngine();
+                final SearchEngine searchEngine = site.getSearchEngine();
                 // do not list SearchEngine.CoverByIsbn, it's irrelevant to the user.
-                Collection<String> info = new ArrayList<>();
+                final Collection<String> info = new ArrayList<>();
                 if (searchEngine instanceof SearchEngine.ByIsbn) {
                     info.add(context.getString(R.string.lbl_isbn));
                 }

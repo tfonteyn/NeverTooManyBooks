@@ -185,7 +185,7 @@ public class SearchTask
     }
 
     @Override
-    @Nullable
+    @NonNull
     protected Bundle doInBackground(@Nullable final Void... voids) {
         final Context context = LocaleUtils.applyLocale(App.getTaskContext());
         Thread.currentThread().setName(TAG + ' ' + mSearchEngine.getName(context));
@@ -244,7 +244,7 @@ public class SearchTask
                 | SearchEngine.SearchException | RuntimeException e) {
             Logger.error(context, TAG, e);
             mException = e;
-            return null;
+            return new Bundle();
         }
     }
 

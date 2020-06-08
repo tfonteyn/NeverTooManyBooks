@@ -61,13 +61,15 @@ public class StyleGroupsModel
     /**
      * Pseudo constructor.
      *
-     * @param args {@link Intent#getExtras()} or {@link Fragment#getArguments()}
+     * @param context Current context
+     * @param args    {@link Intent#getExtras()} or {@link Fragment#getArguments()}
      */
-    public void init(@NonNull final Bundle args) {
+    public void init(@NonNull final Context context,
+                     @NonNull final Bundle args) {
         if (mStyle == null) {
             mStyle = args.getParcelable(BooklistStyle.BKEY_STYLE);
             Objects.requireNonNull(mStyle, ErrorMsg.ARGS_MISSING_STYLE);
-            mList = createList();
+            mList = createList(context);
         }
     }
 
@@ -82,18 +84,20 @@ public class StyleGroupsModel
     /**
      * Construct the list by wrapping each group with its 'present' flag.
      *
+     * @param context Current context
+     *
      * @return the list
      */
     @NonNull
-    private ArrayList<GroupWrapper> createList() {
+    private ArrayList<GroupWrapper> createList(@NonNull final Context context) {
         // Build an array list with the groups from the style
-        ArrayList<GroupWrapper> wrappers = new ArrayList<>(mStyle.getGroupCount());
+        final ArrayList<GroupWrapper> wrappers = new ArrayList<>(mStyle.getGroupCount());
         for (BooklistGroup group : mStyle.getGroups()) {
             wrappers.add(new GroupWrapper(group, true));
         }
         // Get all other groups and add any missing ones to the list so the user can
         // add them if wanted.
-        for (BooklistGroup group : BooklistGroup.getAllGroups(mStyle)) {
+        for (BooklistGroup group : BooklistGroup.getAllGroups(context, mStyle)) {
             if (!mStyle.containsGroup(group.getId())) {
                 wrappers.add(new GroupWrapper(group, false));
             }
@@ -107,7 +111,7 @@ public class StyleGroupsModel
      * @param context Current context
      */
     void updateStyle(@NonNull final Context context) {
-        Map<String, PPref> allPreferences = mStyle.getPreferences(true);
+        final Map<String, PPref> allPreferences = mStyle.getPreferences(true);
 
         // Loop through all groups
         for (GroupWrapper wrapper : mList) {

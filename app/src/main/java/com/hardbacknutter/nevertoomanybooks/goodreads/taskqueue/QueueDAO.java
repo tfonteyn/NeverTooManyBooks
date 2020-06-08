@@ -31,7 +31,6 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.database.sqlite.SQLiteDoneException;
 import android.database.sqlite.SQLiteStatement;
 
@@ -45,23 +44,25 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import com.hardbacknutter.nevertoomanybooks.database.dbsync.TransactionException;
+import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.utils.DateParser;
 
-import static com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.QueueDBHelper.KEY_CATEGORY;
 import static com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.QueueDBHelper.KEY_EVENT;
 import static com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.QueueDBHelper.KEY_EVENT_COUNT;
-import static com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.QueueDBHelper.KEY_EXCEPTION;
-import static com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.QueueDBHelper.KEY_FAILURE_REASON;
-import static com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.QueueDBHelper.KEY_NAME;
+import static com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.QueueDBHelper.KEY_EVENT_UTC_DATETIME;
 import static com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.QueueDBHelper.KEY_PK_ID;
-import static com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.QueueDBHelper.KEY_PRIORITY;
 import static com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.QueueDBHelper.KEY_QUEUE_ID;
-import static com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.QueueDBHelper.KEY_RETRY_COUNT;
-import static com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.QueueDBHelper.KEY_STATUS_CODE;
+import static com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.QueueDBHelper.KEY_QUEUE_NAME;
 import static com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.QueueDBHelper.KEY_TASK;
+import static com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.QueueDBHelper.KEY_TASK_CATEGORY;
+import static com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.QueueDBHelper.KEY_TASK_EXCEPTION;
+import static com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.QueueDBHelper.KEY_TASK_FAILURE_REASON;
 import static com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.QueueDBHelper.KEY_TASK_ID;
-import static com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.QueueDBHelper.KEY_UTC_EVENT_DATETIME;
-import static com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.QueueDBHelper.KEY_UTC_RETRY_DATETIME;
+import static com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.QueueDBHelper.KEY_TASK_PRIORITY;
+import static com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.QueueDBHelper.KEY_TASK_RETRY_COUNT;
+import static com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.QueueDBHelper.KEY_TASK_RETRY_UTC_DATETIME;
+import static com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.QueueDBHelper.KEY_TASK_STATUS_CODE;
 import static com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.QueueDBHelper.TBL_EVENT;
 import static com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.QueueDBHelper.TBL_QUEUE;
 import static com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.QueueDBHelper.TBL_TASK;
@@ -72,21 +73,13 @@ import static com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.QueueDBHe
 class QueueDAO
         implements AutoCloseable {
 
-    /** Static Factory object to create the custom cursor. */
-    private static final CursorFactory TASK_CURSOR_FACTORY =
-            (db, masterQuery, editTable, query) -> new TasksCursor(masterQuery, editTable, query);
-    /** Static Factory object to create the custom cursor. */
-    private static final CursorFactory EVENTS_CURSOR_FACTORY =
-            (db, masterQuery, editTable, query) -> new EventsCursor(masterQuery, editTable, query);
-
     /** Long. */
     private static final String SQL_COUNT_ACTIVE_TASKS =
             "SELECT COUNT(*) FROM " + TBL_TASK
-            + " WHERE NOT " + KEY_STATUS_CODE + " IN ("
-            + "'" + Task.COMPLETED + "','" + Task.FAILED + "')"
-            + " AND " + KEY_CATEGORY + "=?";
+            + " WHERE NOT " + KEY_TASK_STATUS_CODE + " IN ("
+            + "'" + TQTask.COMPLETED + "','" + TQTask.FAILED + "')"
+            + " AND " + KEY_TASK_CATEGORY + "=?";
 
-    /** TasksCursor. */
     private static final String SQL_FETCH_ALL_TASKS =
             "SELECT t.*, "
             + " (SELECT COUNT(*) FROM " + TBL_EVENT + " e"
@@ -95,21 +88,19 @@ class QueueDAO
             + " FROM " + TBL_TASK + " t"
             + " ORDER BY t." + KEY_PK_ID + " DESC";
 
-    /** EventsCursor. */
     private static final String SQL_FETCH_ALL_EVENTS =
             "SELECT * FROM " + TBL_EVENT
             + " ORDER BY " + KEY_PK_ID;
 
-    /** EventsCursor. */
     private static final String SQL_FETCH_EVENTS_FOR_TASK =
             "SELECT * FROM " + TBL_EVENT + " WHERE " + KEY_TASK_ID + "=?"
             + " ORDER BY " + KEY_PK_ID;
 
     private static final String SQL_GET_QUEUE_ID =
-            "SELECT " + KEY_PK_ID + " FROM " + TBL_QUEUE + " WHERE " + KEY_NAME + "=?";
+            "SELECT " + KEY_PK_ID + " FROM " + TBL_QUEUE + " WHERE " + KEY_QUEUE_NAME + "=?";
 
     private static final String SQL_FETCH_ALL_QUEUES =
-            "SELECT " + KEY_NAME + " FROM " + TBL_QUEUE + " ORDER BY " + KEY_NAME;
+            "SELECT " + KEY_QUEUE_NAME + " FROM " + TBL_QUEUE + " ORDER BY " + KEY_QUEUE_NAME;
 
     /** Long. */
     private static final String SQL_COUNT_EVENTS =
@@ -118,25 +109,25 @@ class QueueDAO
     private static final String SQL_NEXT_TASK_BASE =
             "SELECT t.* FROM " + TBL_QUEUE + " q"
             + " JOIN " + TBL_TASK + " t ON t." + KEY_QUEUE_ID + " = q." + KEY_PK_ID
-            + " WHERE t." + KEY_STATUS_CODE + "= '" + Task.QUEUED + "'"
-            + " AND q." + KEY_NAME + "=?";
+            + " WHERE t." + KEY_TASK_STATUS_CODE + "= '" + TQTask.QUEUED + "'"
+            + " AND q." + KEY_QUEUE_NAME + "=?";
 
     /** Query to check for the highest priority task that can run now. */
     private static final String SQL_TASK_WHICH_CAN_RUN_NOW =
-            SQL_NEXT_TASK_BASE + " AND t." + KEY_UTC_RETRY_DATETIME + "<=?"
-            + " ORDER BY " + KEY_PRIORITY + ',' + KEY_UTC_RETRY_DATETIME + ',' + KEY_PK_ID
+            SQL_NEXT_TASK_BASE + " AND t." + KEY_TASK_RETRY_UTC_DATETIME + "<=?"
+            + " ORDER BY " + KEY_TASK_PRIORITY + ',' + KEY_TASK_RETRY_UTC_DATETIME + ',' + KEY_PK_ID
             + " LIMIT 1";
 
     /** Query to check for the first task that is waiting to run. */
     private static final String SQL_TASK_WHICH_IS_WAITING =
-            SQL_NEXT_TASK_BASE + " AND t." + KEY_UTC_RETRY_DATETIME + ">?"
-            + " ORDER BY " + KEY_UTC_RETRY_DATETIME + ',' + KEY_PRIORITY + ',' + KEY_PK_ID
+            SQL_NEXT_TASK_BASE + " AND t." + KEY_TASK_RETRY_UTC_DATETIME + ">?"
+            + " ORDER BY " + KEY_TASK_RETRY_UTC_DATETIME + ',' + KEY_TASK_PRIORITY + ',' + KEY_PK_ID
             + " LIMIT 1";
 
     /** Remove orphaned tasks THAT WERE SUCCESSFUL. */
     private static final String SQL_DELETE_COMPLETED_TASKS =
             "DELETE FROM " + TBL_TASK + " WHERE "
-            + KEY_STATUS_CODE + " = '" + Task.COMPLETED + "'"
+            + KEY_TASK_STATUS_CODE + " = '" + TQTask.COMPLETED + "'"
             + " AND NOT EXISTS(SELECT * FROM " + TBL_EVENT + " e"
             + /* */ " WHERE e." + KEY_TASK_ID + '=' + TBL_TASK + '.' + KEY_PK_ID + ')';
 
@@ -150,16 +141,16 @@ class QueueDAO
     /** Remove Events attached to old tasks. */
     private static final String SQL_DELETE_OLD_EVENTS_WITH_TASKS =
             "DELETE FROM " + TBL_EVENT + " WHERE " + KEY_TASK_ID + " IN ("
-            + "SELECT " + KEY_PK_ID + " FROM " + TBL_TASK + " WHERE " + KEY_UTC_RETRY_DATETIME
+            + "SELECT " + KEY_PK_ID + " FROM " + TBL_TASK + " WHERE " + KEY_TASK_RETRY_UTC_DATETIME
             + "<?)";
 
     /** Remove old tasks. */
     private static final String SQL_DELETE_OLD_TASKS =
-            "DELETE FROM " + TBL_TASK + " WHERE " + KEY_UTC_RETRY_DATETIME + "<?";
+            "DELETE FROM " + TBL_TASK + " WHERE " + KEY_TASK_RETRY_UTC_DATETIME + "<?";
 
     /** Remove old events. */
     private static final String SQL_DELETE_OLD_EVENTS =
-            "DELETE FROM " + TBL_EVENT + " WHERE " + KEY_UTC_EVENT_DATETIME + "<?";
+            "DELETE FROM " + TBL_EVENT + " WHERE " + KEY_EVENT_UTC_DATETIME + "<?";
 
     @NonNull
     private final QueueDBHelper mQueueDBHelper;
@@ -195,7 +186,7 @@ class QueueDAO
         final long id = getQueueId(name);
         if (id == 0) {
             final ContentValues cv = new ContentValues();
-            cv.put(KEY_NAME, name);
+            cv.put(KEY_QUEUE_NAME, name);
             getDb().insert(TBL_QUEUE, null, cv);
         }
     }
@@ -237,7 +228,7 @@ class QueueDAO
      * @param task      Task instance to save and run
      * @param queueName Queue name
      */
-    void enqueueTask(@NonNull final Task task,
+    void enqueueTask(@NonNull final TQTask task,
                      @NonNull final String queueName) {
         final long queueId = getQueueId(queueName);
         if (queueId == 0) {
@@ -246,7 +237,7 @@ class QueueDAO
 
         final ContentValues cv = new ContentValues();
         cv.put(KEY_TASK, SerializationUtils.serializeObject(task));
-        cv.put(KEY_CATEGORY, task.getCategory());
+        cv.put(KEY_TASK_CATEGORY, task.getCategory());
         cv.put(KEY_QUEUE_ID, queueId);
         final long id = getDb().insert(TBL_TASK, null, cv);
         task.setId(id);
@@ -290,7 +281,7 @@ class QueueDAO
 
             // Determine the number of milliseconds to wait before we should run the task
             LocalDateTime utcRetryDate = DateParser.ISO.parse(
-                    cursor.getString(cursor.getColumnIndex(KEY_UTC_RETRY_DATETIME)));
+                    cursor.getString(cursor.getColumnIndex(KEY_TASK_RETRY_UTC_DATETIME)));
             if (utcRetryDate == null) {
                 utcRetryDate = LocalDateTime.now(ZoneOffset.UTC);
             }
@@ -308,7 +299,7 @@ class QueueDAO
             final int id = cursor.getInt(cursor.getColumnIndex(KEY_PK_ID));
             final byte[] serializedTask = cursor.getBlob(cursor.getColumnIndex(KEY_TASK));
 
-            final int retries = cursor.getInt(cursor.getColumnIndex(KEY_RETRY_COUNT));
+            final int retries = cursor.getInt(cursor.getColumnIndex(KEY_TASK_RETRY_COUNT));
 
             return new ScheduledTask(id, serializedTask, retries, millisUntilRunnable);
 
@@ -328,10 +319,10 @@ class QueueDAO
      *
      * @param task The task to be updated
      */
-    void updateTask(@NonNull final Task task) {
+    void updateTask(@NonNull final TQTask task) {
         final ContentValues cv = new ContentValues();
         cv.put(KEY_TASK, SerializationUtils.serializeObject(task));
-        cv.put(KEY_CATEGORY, task.getCategory());
+        cv.put(KEY_TASK_CATEGORY, task.getCategory());
         getDb().update(TBL_TASK, cv, KEY_PK_ID + "=?",
                        new String[]{String.valueOf(task.getId())});
     }
@@ -348,7 +339,7 @@ class QueueDAO
         if (hasEvents(id)) {
             // Just set is as completed
             final ContentValues cv = new ContentValues();
-            cv.put(KEY_STATUS_CODE, Task.COMPLETED);
+            cv.put(KEY_TASK_STATUS_CODE, TQTask.COMPLETED);
             getDb().update(TBL_TASK, cv, KEY_PK_ID + "=?", new String[]{String.valueOf(id)});
         } else {
             // Delete successful tasks which have no events
@@ -365,15 +356,15 @@ class QueueDAO
      * @param task    The task to be updated
      * @param message Final message to store. Task can also contain an Exception object.
      */
-    void setTaskFailed(@NonNull final Task task,
+    void setTaskFailed(@NonNull final TQTask task,
                        @NonNull final String message) {
         final ContentValues cv = new ContentValues();
-        cv.put(KEY_FAILURE_REASON, message);
-        cv.put(KEY_STATUS_CODE, Task.FAILED);
+        cv.put(KEY_TASK_FAILURE_REASON, message);
+        cv.put(KEY_TASK_STATUS_CODE, TQTask.FAILED);
         cv.put(KEY_TASK, SerializationUtils.serializeObject(task));
         final Exception e = task.getLastException();
         if (e != null) {
-            cv.put(KEY_EXCEPTION, SerializationUtils.serializeObject(e));
+            cv.put(KEY_TASK_EXCEPTION, SerializationUtils.serializeObject(e));
         }
 
         getDb().update(TBL_TASK, cv, KEY_PK_ID + "=?",
@@ -388,7 +379,7 @@ class QueueDAO
      *
      * @param task The task to requeue
      */
-    void requeueTask(@NonNull final Task task) {
+    void requeueTask(@NonNull final TQTask task) {
         if (!task.canRetry()) {
             setTaskFailed(task, "Retry limit exceeded");
         } else {
@@ -399,8 +390,8 @@ class QueueDAO
                                  .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
 
             final ContentValues cv = new ContentValues();
-            cv.put(KEY_UTC_RETRY_DATETIME, utcRetryDateTime);
-            cv.put(KEY_RETRY_COUNT, task.getRetries() + 1);
+            cv.put(KEY_TASK_RETRY_UTC_DATETIME, utcRetryDateTime);
+            cv.put(KEY_TASK_RETRY_COUNT, task.getRetries() + 1);
             cv.put(KEY_TASK, SerializationUtils.serializeObject(task));
             getDb().update(TBL_TASK, cv, KEY_PK_ID + "=?",
                            new String[]{String.valueOf(task.getId())});
@@ -418,7 +409,7 @@ class QueueDAO
      * @param event  to store
      */
     void storeTaskEvent(final long taskId,
-                        @NonNull final Event event) {
+                        @SuppressWarnings("TypeMayBeWeakened") @NonNull final TQEvent event) {
         final SQLiteDatabase db = getDb();
 
         // Construct statements we want
@@ -449,35 +440,35 @@ class QueueDAO
     }
 
     /**
-     * Get an Events Cursor returning all events for the passed task.
+     * Get a Cursor returning all events for the passed task.
      *
      * @param taskId id of the task whose exceptions we want
      *
-     * @return A new EventsCursor
+     * @return Cursor
      */
     @NonNull
-    EventsCursor getEvents(final long taskId) {
-        return (EventsCursor) getDb().rawQueryWithFactory(
-                EVENTS_CURSOR_FACTORY, SQL_FETCH_EVENTS_FOR_TASK,
-                new String[]{String.valueOf(taskId)}, "");
+    Cursor getEvents(final long taskId) {
+        return getDb().rawQuery(SQL_FETCH_EVENTS_FOR_TASK, new String[]{String.valueOf(taskId)});
     }
 
     /**
-     * @return EventsCursor returning all events.
+     * Get a Cursor returning all events.
+     *
+     * @return Cursor
      */
     @NonNull
-    EventsCursor getEvents() {
-        return (EventsCursor) getDb().rawQueryWithFactory(
-                EVENTS_CURSOR_FACTORY, SQL_FETCH_ALL_EVENTS, null, "");
+    Cursor getEvents() {
+        return getDb().rawQuery(SQL_FETCH_ALL_EVENTS, null);
     }
 
     /**
-     * @return TasksCursor returning all tasks.
+     * Get a Cursor returning all tasks.
+     *
+     * @return Cursor
      */
     @NonNull
-    TasksCursor getTasks() {
-        return (TasksCursor) getDb().rawQueryWithFactory(
-                TASK_CURSOR_FACTORY, SQL_FETCH_ALL_TASKS, null, "");
+    Cursor getTasks() {
+        return getDb().rawQuery(SQL_FETCH_ALL_TASKS, null);
     }
 
     /**
@@ -603,7 +594,7 @@ class QueueDAO
      */
     private void cleanupOrphans(@NonNull final SQLiteDatabase db) {
         if (!db.inTransaction()) {
-            throw new IllegalStateException("not in a transaction");
+            throw new TransactionException(ErrorMsg.TRANSACTION_REQUIRED);
         }
         try (SQLiteStatement stmt = db.compileStatement(SQL_DELETE_ORPHANED_EVENTS)) {
             stmt.executeUpdateDelete();
@@ -682,8 +673,8 @@ class QueueDAO
          * @return related Task object
          */
         @Nullable
-        Task getTask() {
-            Task task;
+        TQTask getTask() {
+            TQTask task;
 
             try {
                 task = SerializationUtils.deserializeObject(mBlob);

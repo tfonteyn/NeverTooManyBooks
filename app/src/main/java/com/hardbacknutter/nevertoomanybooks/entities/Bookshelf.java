@@ -154,7 +154,7 @@ public class Bookshelf
      * @param rowData with data
      */
     public Bookshelf(final long id,
-                     @NonNull final RowDataHolder rowData) {
+                     @NonNull final DataHolder rowData) {
         mId = id;
         mName = rowData.getString(DBDefinitions.KEY_BOOKSHELF_NAME);
         mStyleUuid = rowData.getString(DBDefinitions.KEY_UUID);

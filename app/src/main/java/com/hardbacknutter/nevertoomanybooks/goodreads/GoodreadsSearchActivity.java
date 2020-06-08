@@ -60,9 +60,8 @@ import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.databinding.ActivityGoodreadsSearchBinding;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
-import com.hardbacknutter.nevertoomanybooks.entities.RowDataHolder;
+import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.FetchWorksTask;
-import com.hardbacknutter.nevertoomanybooks.searches.goodreads.GoodreadsRegistrationActivity;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.BooksOnBookshelfModel;
 
@@ -103,8 +102,8 @@ public class GoodreadsSearchActivity
      */
     public static void open(@NonNull final Context context,
                             final long bookId) {
-        final GoodreadsAuth auth = new GoodreadsAuth(context);
-        if (!auth.hasCredentials(context)) {
+        final GoodreadsAuth grAuth = new GoodreadsAuth(context);
+        if (!grAuth.hasCredentials(context)) {
             context.startActivity(new Intent(context, GoodreadsRegistrationActivity.class));
         }
 
@@ -268,11 +267,11 @@ public class GoodreadsSearchActivity
                 if (mBookId > 0) {
                     try (Cursor cursor = mDb.fetchBookById(mBookId)) {
                         if (cursor.moveToFirst()) {
-                            final RowDataHolder rowData = new CursorRow(cursor);
-                            mAuthorText = rowData.getString(
+                            final DataHolder bookData = new CursorRow(cursor);
+                            mAuthorText = bookData.getString(
                                     DBDefinitions.KEY_AUTHOR_FORMATTED_GIVEN_FIRST);
-                            mTitleText = rowData.getString(DBDefinitions.KEY_TITLE);
-                            mIsbnText = rowData.getString(DBDefinitions.KEY_ISBN);
+                            mTitleText = bookData.getString(DBDefinitions.KEY_TITLE);
+                            mIsbnText = bookData.getString(DBDefinitions.KEY_ISBN);
                         } else {
                             mBookNoLongerExists.setValue(true);
                         }

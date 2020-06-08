@@ -110,7 +110,7 @@ class ExtCursor
         }
 
         if (mTableInfo != null) {
-            ColumnInfo columnInfo = mTableInfo.getColumn(getColumnName(columnIndex));
+            final ColumnInfo columnInfo = mTableInfo.getColumn(getColumnName(columnIndex));
             if (columnInfo != null) {
                 return columnInfo.getType();
             }

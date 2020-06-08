@@ -176,7 +176,7 @@ public class ImportFragment
 
     @NonNull
     private ProgressDialogFragment getOrCreateProgressDialog() {
-        FragmentManager fm = getChildFragmentManager();
+        final FragmentManager fm = getChildFragmentManager();
 
         // get dialog after a fragment restart
         ProgressDialogFragment dialog = (ProgressDialogFragment)
@@ -214,7 +214,7 @@ public class ImportFragment
      */
     private void importShowOptions(@NonNull final Uri uri) {
         // options will be overridden if the import is a CSV.
-        ImportManager helper = new ImportManager(Options.ALL, uri);
+        final ImportManager helper = new ImportManager(Options.ALL, uri);
 
         //noinspection ConstantConditions
         final ArchiveContainer container = helper.getContainer(getContext());
@@ -302,7 +302,8 @@ public class ImportFragment
                 // sanity check
                 Objects.requireNonNull(message.result, ErrorMsg.NULL_TASK_RESULTS);
                 //noinspection ConstantConditions
-                String msg = message.result.createErrorReport(getContext(), message.exception);
+                final String msg = message.result
+                        .createErrorReport(getContext(), message.exception);
                 //noinspection ConstantConditions
                 new MaterialAlertDialogBuilder(getContext())
                         .setIcon(R.drawable.ic_error)

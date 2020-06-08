@@ -170,7 +170,7 @@ public class AuthorWorksFragment
 //        }
 //        super.onResume();
 //        if (getActivity() instanceof BaseActivity) {
-//            BaseActivity activity = (BaseActivity) getActivity();
+//            final BaseActivity activity = (BaseActivity) getActivity();
 //            if (activity.maybeRecreate()) {
 //                return;
 //            }
@@ -190,7 +190,7 @@ public class AuthorWorksFragment
 
     @Override
     public void onPrepareOptionsMenu(@NonNull final Menu menu) {
-        MenuItem all = menu.findItem(R.id.MENU_AUTHOR_WORKS_ALL_BOOKSHELVES);
+        final MenuItem all = menu.findItem(R.id.MENU_AUTHOR_WORKS_ALL_BOOKSHELVES);
         // hide if a specific INITIAL bookshelf was set.
         all.setVisible(mModel.getBookshelfId() != Bookshelf.ALL_BOOKS);
         // check if the user overrules the initial
@@ -200,7 +200,6 @@ public class AuthorWorksFragment
 
     @Override
     public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
-
         switch (item.getItemId()) {
             case R.id.MENU_AUTHOR_WORKS_ALL: {
                 item.setChecked(true);
@@ -318,7 +317,7 @@ public class AuthorWorksFragment
         switch (item.getType()) {
             case TocEntry.TYPE_BOOK: {
                 // open new activity to show the book, 'back' will return to this one.
-                Intent intent = new Intent(getContext(), BookDetailsActivity.class)
+                final Intent intent = new Intent(getContext(), BookDetailsActivity.class)
                         .putExtra(DBDefinitions.KEY_PK_ID, item.getId());
                 startActivity(intent);
                 break;
@@ -327,14 +326,14 @@ public class AuthorWorksFragment
                 final ArrayList<Long> bookIdList = mModel.getBookIds(item);
                 if (bookIdList.size() == 1) {
                     // open new activity to show the book, 'back' will return to this one.
-                    Intent intent = new Intent(getContext(), BookDetailsActivity.class)
+                    final Intent intent = new Intent(getContext(), BookDetailsActivity.class)
                             .putExtra(DBDefinitions.KEY_PK_ID, bookIdList.get(0));
                     startActivity(intent);
                     break;
 
                 } else {
                     // multiple books, open the list as a NEW ACTIVITY
-                    Intent intent = new Intent(getContext(), BooksOnBookshelf.class)
+                    final Intent intent = new Intent(getContext(), BooksOnBookshelf.class)
                             .putExtra(Book.BKEY_BOOK_ID_ARRAY, bookIdList)
                             // Open the list expanded, as otherwise you end up with
                             // the author as a single line, and no books shown at all,

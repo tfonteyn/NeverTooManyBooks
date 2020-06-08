@@ -48,6 +48,7 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.NetworkUnavailableException;
 
 public final class NetworkUtils {
 
@@ -129,18 +130,19 @@ public final class NetworkUtils {
      * Any path after the hostname will be ignored.
      * If a port is specified.. it's ignored. Only ports 80/443 are used.
      *
-     * @param appContext Application context
-     * @param urlStr     url to check
+     * @param context Application context
+     * @param urlStr  url to check
      *
-     * @throws IOException if we cannot reach the site, or if the network itself is unavailable
+     * @throws NetworkUnavailableException if the network itself is unavailable
+     * @throws IOException                 if we cannot reach the site
      */
     @WorkerThread
-    public static void ping(@NonNull final Context appContext,
+    public static void ping(@NonNull final Context context,
                             @NonNull final String urlStr)
-            throws IOException {
+            throws NetworkUnavailableException, IOException {
 
-        if (!isNetworkAvailable(appContext)) {
-            throw new IOException("networkUnavailable");
+        if (!isNetworkAvailable(context)) {
+            throw new NetworkUnavailableException();
         }
 
         final String url = urlStr.toLowerCase(Locale.ROOT);

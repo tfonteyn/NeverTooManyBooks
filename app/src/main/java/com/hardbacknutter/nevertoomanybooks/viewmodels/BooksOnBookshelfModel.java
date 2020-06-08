@@ -72,13 +72,14 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
-import com.hardbacknutter.nevertoomanybooks.entities.RowDataHolder;
+import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsHandler;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GrStatus;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskBase;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
+import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 
 public class BooksOnBookshelfModel
         extends ViewModel {
@@ -662,7 +663,7 @@ public class BooksOnBookshelfModel
      *
      * @return {@code true} if this book is available for lending.
      */
-    public boolean isAvailable(@NonNull final RowDataHolder rowData) {
+    public boolean isAvailable(@NonNull final DataHolder rowData) {
         final String loanee;
         if (rowData.contains(DBDefinitions.KEY_LOANEE)) {
             loanee = rowData.getString(DBDefinitions.KEY_LOANEE);
@@ -682,7 +683,7 @@ public class BooksOnBookshelfModel
      */
     @Nullable
     public String getAuthorFromRow(@NonNull final Context context,
-                                   @NonNull final RowDataHolder rowData) {
+                                   @NonNull final DataHolder rowData) {
         if (rowData.contains(DBDefinitions.KEY_FK_AUTHOR)
             && rowData.getLong(DBDefinitions.KEY_FK_AUTHOR) > 0) {
             final Author author = mDb.getAuthor(rowData.getLong(DBDefinitions.KEY_FK_AUTHOR));
@@ -709,7 +710,7 @@ public class BooksOnBookshelfModel
      * @return the unformatted Series name (i.e. without the number)
      */
     @Nullable
-    public String getSeriesFromRow(@NonNull final RowDataHolder rowData) {
+    public String getSeriesFromRow(@NonNull final DataHolder rowData) {
         if (rowData.contains(DBDefinitions.KEY_FK_SERIES)
             && rowData.getLong(DBDefinitions.KEY_FK_SERIES) > 0) {
             final Series series = mDb.getSeries(rowData.getLong(DBDefinitions.KEY_FK_SERIES));
@@ -1201,7 +1202,7 @@ public class BooksOnBookshelfModel
         @WorkerThread
         protected BuilderResult doInBackground(@Nullable final Void... voids) {
             Thread.currentThread().setName(TAG);
-            final Context context = App.getTaskContext();
+            final Context context = LocaleUtils.applyLocale(App.getTaskContext());
 
             try {
                 // Build the underlying data

@@ -42,6 +42,7 @@ import java.util.Map;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.fields.Fields;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsHandler;
+import com.hardbacknutter.nevertoomanybooks.goodreads.GrStatus;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 
 /**
@@ -163,7 +164,7 @@ public abstract class BookBaseFragmentViewModel
 
                 @Override
                 public void onFinished(@NonNull final FinishMessage<Integer> message) {
-                    if (GoodreadsHandler.authNeeded(message)) {
+                    if (message.result != null && message.result == GrStatus.FAILED_CREDENTIALS) {
                         mNeedsGoodreads.setValue(true);
                     } else {
                         mUserMessage.setValue(GoodreadsHandler.digest(context, message));

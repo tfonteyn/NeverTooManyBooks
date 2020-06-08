@@ -78,7 +78,7 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BO
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOK_AUTHOR_TYPE_BITMASK;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOK_SERIES_POSITION;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FK_BOOK;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FTS_BOOKS_PK;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FTS_BOOK_ID;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_LOANEE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_PK_ID;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_AUTHORS;
@@ -286,7 +286,7 @@ public class BooklistBuilder
             mFilters.add((final Context context) -> '(' + TBL_BOOKS.dot(KEY_PK_ID)
                                                     + " IN ("
                                                     // fetch the ids only
-                                                    + "SELECT " + KEY_FTS_BOOKS_PK + " FROM "
+                                                    + "SELECT " + KEY_FTS_BOOK_ID + " FROM "
                                                     + TBL_FTS_BOOKS.getName()
                                                     + " WHERE " + TBL_FTS_BOOKS.getName()
                                                     + " MATCH '" + query + "')"

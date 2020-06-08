@@ -55,6 +55,7 @@ public class SynchronizedDb {
 
     /** log error string. */
     private static final String ERROR_UPDATE_INSIDE_SHARED_TX = "Update inside shared TX";
+    private static final String ERROR_ALREADY_IN_A_TRANSACTION = "Already in a transaction";
 
     /** Underlying database. */
     @NonNull
@@ -413,7 +414,7 @@ public class SynchronizedDb {
         Synchronizer.SyncLock txLock = null;
         if (mTxLock != null) {
             if (mTxLock.getType() != Synchronizer.LOCK_EXCLUSIVE) {
-                throw new TransactionException("Compile inside shared TX");
+                throw new TransactionException("compileStatement called inside shared TX");
             }
         } else {
             txLock = mSynchronizer.getExclusiveLock();
@@ -496,7 +497,7 @@ public class SynchronizedDb {
             if (mTxLock == null) {
                 mSqlDb.beginTransaction();
             } else {
-                throw new TransactionException("Already in a transaction");
+                throw new TransactionException(ERROR_ALREADY_IN_A_TRANSACTION);
             }
         } catch (@NonNull final RuntimeException e) {
             txLock.unlock();

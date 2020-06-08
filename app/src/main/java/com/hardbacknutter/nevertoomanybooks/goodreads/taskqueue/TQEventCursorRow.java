@@ -28,40 +28,36 @@
 package com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue;
 
 import android.content.Context;
-import android.database.sqlite.SQLiteCursor;
-import android.database.sqlite.SQLiteCursorDriver;
-import android.database.sqlite.SQLiteQuery;
+import android.database.Cursor;
 
 import androidx.annotation.NonNull;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 
+import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.utils.DateParser;
 
-/**
- * Cursor subclass used to make accessing Events a little easier.
- */
-public class EventsCursor
-        extends SQLiteCursor
-        implements BindableItemCursor<Event> {
-
-    /** Column number of id column. */
-    private static int sIdCol = -2;
-    /** Column number of date column. */
-    private static int sDateCol = -2;
-    /** Column number of Exception column. */
-    private static int sEventCol = -2;
+public class TQEventCursorRow
+        extends CursorRow {
 
     /**
      * Constructor.
      *
-     * @see SQLiteCursor
+     * @param cursor to read from
      */
-    EventsCursor(@NonNull final SQLiteCursorDriver driver,
-                 @NonNull final String editTable,
-                 @NonNull final SQLiteQuery query) {
-        super(driver, editTable, query);
+    public TQEventCursorRow(@NonNull final Cursor cursor) {
+        super(cursor);
+    }
+
+    /**
+     * Get the id of the Event.
+     *
+     * @return id
+     */
+    public long getId() {
+        return getLong(QueueDBHelper.KEY_PK_ID);
     }
 
     /**
@@ -71,37 +67,31 @@ public class EventsCursor
      */
     @NonNull
     public LocalDateTime getEventDate() {
-        if (sDateCol < 0) {
-            sDateCol = getColumnIndex(QueueDBHelper.KEY_UTC_EVENT_DATETIME);
-        }
-        LocalDateTime utcDate = DateParser.ISO.parse(getString(sDateCol));
+        LocalDateTime utcDate = DateParser.ISO.parse(
+                getString(QueueDBHelper.KEY_EVENT_UTC_DATETIME));
         if (utcDate == null) {
             utcDate = LocalDateTime.now(ZoneOffset.UTC);
         }
         return utcDate;
     }
 
-    @Override
+    /**
+     * Get the actual Event object.
+     *
+     * @param context Current context
+     *
+     * @return (subclass of) TQEvent
+     */
     @NonNull
-    public Event getBindableItem(@NonNull final Context context) {
-        if (sEventCol < 0) {
-            sEventCol = getColumnIndex(QueueDBHelper.KEY_EVENT);
-        }
-        Event event;
+    public TQEvent getEvent(@NonNull final Context context) {
+        TQEvent event;
+        byte[] blob = getBlob(QueueDBHelper.KEY_EVENT);
         try {
-            event = SerializationUtils.deserializeObject(getBlob(sEventCol));
+            event = SerializationUtils.deserializeObject(blob);
         } catch (@NonNull final SerializationUtils.DeserializationException de) {
-            event = new LegacyEvent(context);
+            event = new LegacyEvent(context.getString(R.string.legacy_record, getId()));
         }
         event.setId(getId());
         return event;
-    }
-
-    @Override
-    public long getId() {
-        if (sIdCol < 0) {
-            sIdCol = getColumnIndex(QueueDBHelper.KEY_PK_ID);
-        }
-        return getLong(sIdCol);
     }
 }

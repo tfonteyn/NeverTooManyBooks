@@ -37,11 +37,12 @@ import androidx.annotation.WorkerThread;
 import java.io.IOException;
 
 import com.hardbacknutter.nevertoomanybooks.App;
+import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
-import com.hardbacknutter.nevertoomanybooks.entities.RowDataHolder;
+import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsAuth;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsHandler;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GrStatus;
@@ -56,8 +57,8 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsExceptio
  * Start a background task that exports a single books to Goodreads.
  * This is used for sending single books, <strong>initiated by the user</strong>.
  * <p>
- * See also {@link SendOneBookLegacyTask} which is used internally by
- * {@link SendBooksLegacyTask}. The core of the task is (should be) identical.
+ * See also {@link SendOneBookGrTask} which is used internally by
+ * {@link SendBooksGrTask}. The core of the task is (should be) identical.
  */
 public class SendOneBookTask
         extends TaskBase<Integer> {
@@ -90,12 +91,16 @@ public class SendOneBookTask
 
         try {
             if (!NetworkUtils.isNetworkAvailable(context)) {
-                return GrStatus.NO_INTERNET;
+                return GrStatus.FAILED_NETWORK_UNAVAILABLE;
             }
+
             final GoodreadsAuth grAuth = new GoodreadsAuth(context);
-            final GoodreadsHandler apiHandler = new GoodreadsHandler(grAuth);
             if (!grAuth.hasValidCredentials(context)) {
-                return GrStatus.CREDENTIALS_MISSING;
+                return GrStatus.FAILED_CREDENTIALS;
+            }
+
+            if (isCancelled()) {
+                return GrStatus.CANCELLED;
             }
 
             try (DAO db = new DAO(TAG);
@@ -107,34 +112,46 @@ public class SendOneBookTask
                     publishProgress(new TaskListener.ProgressMessage(
                             getTaskId(), context.getString(R.string.progress_msg_sending)));
 
-                    final RowDataHolder rowData = new CursorRow(cursor);
+                    final GoodreadsHandler apiHandler = new GoodreadsHandler(grAuth);
+                    final DataHolder bookData = new CursorRow(cursor);
                     @GrStatus.Status
-                    int status = apiHandler.sendOneBook(context, db, rowData);
-                    if (status == GrStatus.COMPLETED) {
+                    int status = apiHandler.sendOneBook(context, db, bookData);
+                    if (status == GrStatus.SUCCESS) {
                         // Record the update
                         db.setGoodreadsSyncDate(mBookId);
                     }
                     return status;
+
+                } else {
+                    // THIS REALLY SHOULD NOT HAPPEN: we did not find the book
+                    // in our database which we wanted to send
+                    if (BuildConfig.DEBUG /* always */) {
+                        throw new IllegalStateException("Book not found: bookId=" + mBookId);
+                    }
+                    // pretend it's Goodreads fault.
+                    return GrStatus.FAILED_BOOK_NOT_FOUND_ON_GOODREADS;
                 }
             }
+
         } catch (@NonNull final CredentialsException e) {
             mException = e;
             Logger.error(context, TAG, e);
-            return GrStatus.CREDENTIALS_ERROR;
+            return GrStatus.FAILED_CREDENTIALS;
+
         } catch (@NonNull final Http404Exception e) {
             mException = e;
             Logger.error(context, TAG, e, e.getUrl());
-            return GrStatus.BOOK_NOT_FOUND;
+            return GrStatus.FAILED_BOOK_NOT_FOUND_ON_GOODREADS;
+
         } catch (@NonNull final IOException e) {
             mException = e;
             Logger.error(context, TAG, e);
-            return GrStatus.IO_ERROR;
+            return GrStatus.FAILED_IO_EXCEPTION;
+
         } catch (@NonNull final RuntimeException e) {
             mException = e;
             Logger.error(context, TAG, e);
-            return GrStatus.UNEXPECTED_ERROR;
+            return GrStatus.FAILED_UNEXPECTED_EXCEPTION;
         }
-
-        return GrStatus.UNEXPECTED_ERROR;
     }
 }

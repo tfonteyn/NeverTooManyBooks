@@ -41,7 +41,7 @@ import java.io.Serializable;
 /**
  * Collection of methods to wrap common serialization routines.
  */
-final class SerializationUtils {
+public final class SerializationUtils {
 
     private SerializationUtils() {
     }
@@ -78,7 +78,7 @@ final class SerializationUtils {
      */
     @SuppressWarnings("unchecked")
     @NonNull
-    static <T> T deserializeObject(@NonNull final byte[] obj)
+    public static <T> T deserializeObject(@NonNull final byte[] obj)
             throws DeserializationException {
         try (ObjectInputStream is = new ObjectInputStream(new ByteArrayInputStream(obj))) {
             return (T) is.readObject();
@@ -90,7 +90,7 @@ final class SerializationUtils {
     /**
      * Catchall class for errors in serialization.
      */
-    static class DeserializationException
+    public static class DeserializationException
             extends Exception {
 
         private static final long serialVersionUID = -2040548134317746620L;

@@ -25,14 +25,13 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.searches.goodreads;
+package com.hardbacknutter.nevertoomanybooks.goodreads;
 
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -41,28 +40,27 @@ import com.google.android.material.snackbar.Snackbar;
 
 import com.hardbacknutter.nevertoomanybooks.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsAuth;
-import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsHandler;
+import com.hardbacknutter.nevertoomanybooks.databinding.ActivityGoodreadsRegisterBinding;
 import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.RequestAuthTask;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 
 /**
- * Activity to allow the user to authorize the application to access their
- * Goodreads account and to explain Goodreads.
+ * Allow the user to explain Goodreads and authorize this application to access their
+ * Goodreads account.
  */
 public class GoodreadsRegistrationActivity
         extends BaseActivity {
 
-    private View mAuthButton;
+    private ActivityGoodreadsRegisterBinding mVb;
 
     private final TaskListener<Integer> mTaskListener = new TaskListener<Integer>() {
         @Override
         public void onFinished(@NonNull final FinishMessage<Integer> message) {
             final Context context = GoodreadsRegistrationActivity.this;
-            if (GoodreadsHandler.authNeeded(message)) {
+            if (message.result != null && message.result == GrStatus.FAILED_CREDENTIALS) {
                 RequestAuthTask.prompt(context, mTaskListener);
             } else {
-                Snackbar.make(mAuthButton, GoodreadsHandler.digest(context, message),
+                Snackbar.make(mVb.btnAuthorize, GoodreadsHandler.digest(context, message),
                               Snackbar.LENGTH_LONG).show();
             }
         }
@@ -70,14 +68,15 @@ public class GoodreadsRegistrationActivity
         @Override
         public void onProgress(@NonNull final ProgressMessage message) {
             if (message.text != null) {
-                Snackbar.make(mAuthButton, message.text, Snackbar.LENGTH_LONG).show();
+                Snackbar.make(mVb.btnAuthorize, message.text, Snackbar.LENGTH_LONG).show();
             }
         }
     };
 
     @Override
     protected void onSetContentView() {
-        setContentView(R.layout.activity_goodreads_register);
+        mVb = ActivityGoodreadsRegisterBinding.inflate(getLayoutInflater());
+        setContentView(mVb.getRoot());
     }
 
     @Override
@@ -87,30 +86,24 @@ public class GoodreadsRegistrationActivity
         setTitle(R.string.site_goodreads);
 
         // Goodreads Reg Link
-        TextView register = findViewById(R.id.goodreads_url);
-        register.setText(GoodreadsHandler.BASE_URL);
-        register.setOnClickListener(v -> startActivity(
+        mVb.goodreadsUrl.setText(GoodreadsHandler.BASE_URL);
+        mVb.goodreadsUrl.setOnClickListener(v -> startActivity(
                 new Intent(Intent.ACTION_VIEW, Uri.parse(GoodreadsHandler.BASE_URL))));
 
-        // Auth button
-        mAuthButton = findViewById(R.id.authorize);
-        mAuthButton.setOnClickListener(v -> {
-            Snackbar.make(mAuthButton, R.string.progress_msg_connecting,
+        mVb.btnAuthorize.setOnClickListener(v -> {
+            Snackbar.make(mVb.btnAuthorize, R.string.progress_msg_connecting,
                           Snackbar.LENGTH_LONG).show();
             new RequestAuthTask(mTaskListener).execute();
         });
 
-        // Forget credentials
-        View blurb = findViewById(R.id.forget_blurb);
-        View removeButton = findViewById(R.id.btn_delete_credentials);
-        GoodreadsAuth auth = new GoodreadsAuth(this);
-        if (auth.hasCredentials(this)) {
-            blurb.setVisibility(View.VISIBLE);
-            removeButton.setVisibility(View.VISIBLE);
-            removeButton.setOnClickListener(v -> GoodreadsAuth.clearAll(this));
+        final GoodreadsAuth grAuth = new GoodreadsAuth(this);
+        if (grAuth.hasCredentials(this)) {
+            mVb.lblDeleteCredentials.setVisibility(View.VISIBLE);
+            mVb.btnDeleteCredentials.setVisibility(View.VISIBLE);
+            mVb.btnDeleteCredentials.setOnClickListener(v -> GoodreadsAuth.clearAll(this));
         } else {
-            blurb.setVisibility(View.GONE);
-            removeButton.setVisibility(View.GONE);
+            mVb.lblDeleteCredentials.setVisibility(View.GONE);
+            mVb.btnDeleteCredentials.setVisibility(View.GONE);
         }
     }
 }

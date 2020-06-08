@@ -37,7 +37,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
-import com.hardbacknutter.nevertoomanybooks.entities.RowDataHolder;
+import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsHandler;
 import com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.QueueManager;
 import com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.TQTask;
@@ -45,16 +45,13 @@ import com.hardbacknutter.nevertoomanybooks.utils.Notifier;
 
 /**
  * Background task class to send all books in the database to Goodreads.
- * <p>
- * This Task *MUST* be serializable hence can not contain
- * any references to UI components or similar objects.
  */
-class SendBooksLegacyTask
-        extends SendBooksLegacyTaskBase {
+class SendBooksGrTask
+        extends SendBooksGrTaskBase {
 
     /** Log tag. */
-    private static final String TAG = "SendBooksLegacyTask";
-    private static final long serialVersionUID = -789131278094482961L;
+    private static final String TAG = "GR.SendBooksGrTask";
+    private static final long serialVersionUID = 6713289839682264456L;
 
     /** Flag: send only the updated, or all books. */
     private final boolean mUpdatesOnly;
@@ -72,14 +69,14 @@ class SendBooksLegacyTask
      * @param description for the task
      * @param updatesOnly {@code true} to send updated books only, {@code false} for all books.
      */
-    SendBooksLegacyTask(@NonNull final String description,
-                        final boolean updatesOnly) {
+    SendBooksGrTask(@NonNull final String description,
+                    final boolean updatesOnly) {
         super(description);
         mUpdatesOnly = updatesOnly;
     }
 
     /**
-     * Perform the main task. Called from within {@link #run}
+     * Perform the main task. Called from within {@link BaseTQTask#run}
      * <p>
      * Deal with restarts by using mLastId as starting point.
      * (Remember: the task gets serialized to the taskqueue database.)
@@ -96,18 +93,19 @@ class SendBooksLegacyTask
 
         try (DAO db = new DAO(TAG);
              Cursor cursor = db.fetchBooksForExportToGoodreads(mLastId, mUpdatesOnly)) {
-            final RowDataHolder rowData = new CursorRow(cursor);
+            final DataHolder bookData = new CursorRow(cursor);
             mTotalBooks = cursor.getCount() + mCount;
+
             boolean needsRetryReset = true;
             while (cursor.moveToNext()) {
-                if (!sendOneBook(queueManager, context, apiHandler, db, rowData)) {
+                if (!sendOneBook(queueManager, context, apiHandler, db, bookData)) {
                     // quit on error
                     return false;
                 }
 
                 // Update internal status
                 mCount++;
-                mLastId = rowData.getLong(DBDefinitions.KEY_PK_ID);
+                mLastId = bookData.getLong(DBDefinitions.KEY_PK_ID);
                 // If we have done one successfully, reset the counter so a
                 // subsequent network error does not result in a long delay
                 if (needsRetryReset) {
@@ -117,7 +115,7 @@ class SendBooksLegacyTask
 
                 queueManager.updateTask(this);
 
-                if (isAborting()) {
+                if (isCancelled()) {
                     queueManager.updateTask(this);
                     return false;
                 }
@@ -125,15 +123,18 @@ class SendBooksLegacyTask
         }
 
         Notifier.show(context, Notifier.CHANNEL_INFO,
-                      context.getString(R.string.gr_menu_send_to_goodreads),
+                      context.getString(R.string.gr_send_to_goodreads),
                       context.getString(R.string.gr_info_send_all_books_results,
-                                               mCount, mSent, mNoIsbn, mNotFound));
+                                        mCount,
+                                        getNumberOfBooksSent(),
+                                        getNumberOfBooksWithoutIsbn(),
+                                        getNumberOfBooksNotFound()));
         return true;
     }
 
     @Override
     public int getCategory() {
-        return TQTask.CAT_EXPORT_ALL;
+        return TQTask.CAT_EXPORT;
     }
 
     /**

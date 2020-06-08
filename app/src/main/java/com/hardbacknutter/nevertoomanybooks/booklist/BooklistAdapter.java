@@ -71,8 +71,8 @@ import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ZoomedImageDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.entities.ItemWithTitle;
-import com.hardbacknutter.nevertoomanybooks.entities.RowDataHolder;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 import com.hardbacknutter.nevertoomanybooks.utils.LanguageUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
@@ -115,7 +115,7 @@ public class BooklistAdapter
     private final Cursor mCursor;
     /** provides read only access to the row data. */
     @NonNull
-    private final RowDataHolder mRowData;
+    private final DataHolder mNodeData;
     @NonNull
     private final FieldsInUse mFieldsInUse;
 
@@ -136,7 +136,7 @@ public class BooklistAdapter
         mUserLocale = LocaleUtils.getUserLocale(context);
         mStyle = style;
         mCursor = cursor;
-        mRowData = new CursorRow(mCursor);
+        mNodeData = new CursorRow(mCursor);
         mLevelIndent = context.getResources().getDimensionPixelSize(R.dimen.bob_level_indent);
 
         mFieldsInUse = new FieldsInUse(context, style);
@@ -362,7 +362,7 @@ public class BooklistAdapter
 
         final Context context = parent.getContext();
 
-        final int level = mRowData.getInt(DBDefinitions.KEY_BL_NODE_LEVEL);
+        final int level = mNodeData.getInt(DBDefinitions.KEY_BL_NODE_LEVEL);
         // Indent (0..) based on level (1..)
         int indent = level - 1;
 
@@ -457,7 +457,7 @@ public class BooklistAdapter
         });
 
         // further binding depends on the type of row (i.e. holder).
-        holder.onBindViewHolder(mRowData, mStyle);
+        holder.onBindViewHolder(mNodeData, mStyle);
     }
 
     /**
@@ -471,7 +471,7 @@ public class BooklistAdapter
     @BooklistGroup.Id
     public int getItemViewType(final int position) {
         if (mCursor.moveToPosition(position)) {
-            return mRowData.getInt(DBDefinitions.KEY_BL_NODE_GROUP);
+            return mNodeData.getInt(DBDefinitions.KEY_BL_NODE_GROUP);
         } else {
             // bogus, should not happen
             return BooklistGroup.BOOK;
@@ -486,7 +486,7 @@ public class BooklistAdapter
     @Override
     public long getItemId(final int position) {
         if (hasStableIds() && mCursor.moveToPosition(position)) {
-            return mRowData.getLong(DBDefinitions.KEY_PK_ID);
+            return mNodeData.getLong(DBDefinitions.KEY_PK_ID);
         } else {
             return RecyclerView.NO_ID;
         }
@@ -499,7 +499,7 @@ public class BooklistAdapter
      */
     int getLevel(final int position) {
         if (mCursor.moveToPosition(position)) {
-            return mRowData.getInt(DBDefinitions.KEY_BL_NODE_LEVEL);
+            return mNodeData.getInt(DBDefinitions.KEY_BL_NODE_LEVEL);
         } else {
             return 0;
         }
@@ -582,12 +582,12 @@ public class BooklistAdapter
         try {
             if (level > (mStyle.getGroupCount())) {
                 // it's a book; use the title (no need to take the group.format round-trip).
-                return mRowData.getString(DBDefinitions.KEY_TITLE);
+                return mNodeData.getString(DBDefinitions.KEY_TITLE);
 
             } else {
                 // it's a group; use the display domain as the text
                 final BooklistGroup group = mStyle.getGroupByLevel(level);
-                final String value = mRowData.getString(group.getDisplayDomain().getName());
+                final String value = mNodeData.getString(group.getDisplayDomain().getName());
                 if (!value.isEmpty()) {
                     return format(mInflater.getContext(), group.getId(), value, null);
                 }
@@ -700,7 +700,7 @@ public class BooklistAdapter
          *
          * @param rowData to read fields from
          */
-        void set(@NonNull final RowDataHolder rowData) {
+        void set(@NonNull final DataHolder rowData) {
             if (isSet) {
                 return;
             }
@@ -756,7 +756,7 @@ public class BooklistAdapter
          * @param rowData with data to bind
          * @param style   to use
          */
-        abstract void onBindViewHolder(@NonNull RowDataHolder rowData,
+        abstract void onBindViewHolder(@NonNull DataHolder rowData,
                                        @NonNull BooklistStyle style);
     }
 
@@ -867,7 +867,7 @@ public class BooklistAdapter
         }
 
         @Override
-        void onBindViewHolder(@NonNull final RowDataHolder rowData,
+        void onBindViewHolder(@NonNull final DataHolder rowData,
                               @NonNull final BooklistStyle style) {
             // update the in-use flags with row-data available fields. Do this once only.
             if (!mInUse.isSet) {
@@ -989,7 +989,7 @@ public class BooklistAdapter
         }
 
         @Nullable
-        String getPublisherAndPubDateText(@NonNull final RowDataHolder rowData) {
+        String getPublisherAndPubDateText(@NonNull final DataHolder rowData) {
             final String publicationDate;
             if (mInUse.pubDate) {
                 publicationDate = LocaleUtils.toPrettyDate(
@@ -1059,7 +1059,7 @@ public class BooklistAdapter
         }
 
         @Override
-        void onBindViewHolder(@NonNull final RowDataHolder rowData,
+        void onBindViewHolder(@NonNull final DataHolder rowData,
                               @NonNull final BooklistStyle style) {
             int rating = rowData.getInt(mKey);
             mRatingBar.setRating(rating);
@@ -1114,7 +1114,7 @@ public class BooklistAdapter
         }
 
         @Override
-        void onBindViewHolder(@NonNull final RowDataHolder rowData,
+        void onBindViewHolder(@NonNull final DataHolder rowData,
                               @NonNull final BooklistStyle style) {
             mTextView.setText(format(rowData.getString(mKey)));
 
@@ -1175,7 +1175,7 @@ public class BooklistAdapter
         }
 
         @Override
-        void onBindViewHolder(@NonNull final RowDataHolder rowData,
+        void onBindViewHolder(@NonNull final DataHolder rowData,
                               @NonNull final BooklistStyle style) {
             // do the text part first
             super.onBindViewHolder(rowData, style);
@@ -1209,7 +1209,7 @@ public class BooklistAdapter
         }
 
         @Override
-        void onBindViewHolder(@NonNull final RowDataHolder rowData,
+        void onBindViewHolder(@NonNull final DataHolder rowData,
                               @NonNull final BooklistStyle style) {
             // grab the book language first
             mBookLanguage = rowData.getString(DBDefinitions.KEY_LANGUAGE);
