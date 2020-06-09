@@ -33,5 +33,13 @@
     android:id="@+id/btn_option"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:drawablePadding="20dp"
+    android:ellipsize="marquee"
+    android:gravity="center_vertical"
+    android:minHeight="?attr/listPreferredItemHeightSmall"
+    android:paddingStart="20dp"
+    android:paddingEnd="?attr/dialogPreferredPadding"
+    android:textAppearance="?android:attr/textAppearanceMedium"
+    android:textColor="?attr/textColorAlertDialogListItem"
     tools:text="@sample/data.json/styles/name"
     />

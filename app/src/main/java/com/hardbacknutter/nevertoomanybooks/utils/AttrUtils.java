@@ -97,11 +97,12 @@ public final class AttrUtils {
 
         final int[] textSizeAttr = new int[]{android.R.attr.textSize};
         final int indexOfAttrTextSize = 0;
-        final TypedArray ta = context.obtainStyledAttributes(tv.data, textSizeAttr);
-        final int textSize = ta.getDimensionPixelSize(indexOfAttrTextSize, -1);
-        ta.recycle();
-
-        return textSize;
+        final TypedArray ta = context.getTheme().obtainStyledAttributes(tv.data, textSizeAttr);
+        try {
+            return ta.getDimensionPixelSize(indexOfAttrTextSize, -1);
+        } finally {
+            ta.recycle();
+        }
     }
 
     /**

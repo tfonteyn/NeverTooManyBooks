@@ -45,19 +45,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Entity;
 /**
  * Add a list of RadioButtons to a RecyclerView.
  * <p>
- * Handles that only one RadioButton is selected at any time.
- *
- * <pre>
- *     Row layout:
- *     {@code
- *     <RadioButton
- *          xmlns:android="http://schemas.android.com/apk/res/android"
- *          xmlns:tools="http://schemas.android.com/tools"
- *          android:id="@+id/btn_radio"
- *          tools:text="@sample/data.json/styles/name"
- *     />
- *     }
- * </pre>
+ * Row layout: {@code R.layout.row_choice_single}
  *
  * @param <T> type of the {@link Entity} represented by each RadioButton.
  */
@@ -65,34 +53,35 @@ public class RadioGroupRecyclerAdapter<T extends Entity>
         extends RecyclerView.Adapter<RadioGroupRecyclerAdapter.Holder> {
 
     @NonNull
-    private final LayoutInflater mInflater;
-    @NonNull
     private final Context mContext;
+
+    @NonNull
+    private final LayoutInflater mInflater;
     @NonNull
     private final List<T> mItems;
     @Nullable
     private final SelectionListener<T> mOnSelectionListener;
     /** The (pre-)selected item. */
     @Nullable
-    private T mSelectedItem;
+    private T mSelection;
 
     /**
      * Constructor.
      *
-     * @param context      Current context
-     * @param items        List of items
-     * @param selectedItem (optional) the pre-selected item
-     * @param listener     (optional) to send a selection to
+     * @param context   Current context
+     * @param items     List of items
+     * @param selection (optional) the pre-selected item
+     * @param listener  (optional) to send a selection to
      */
     public RadioGroupRecyclerAdapter(@NonNull final Context context,
                                      @NonNull final List<T> items,
-                                     @Nullable final T selectedItem,
+                                     @Nullable final T selection,
                                      @Nullable final SelectionListener<T> listener) {
 
         mContext = context;
         mInflater = LayoutInflater.from(mContext);
         mItems = items;
-        mSelectedItem = selectedItem;
+        mSelection = selection;
         mOnSelectionListener = listener;
     }
 
@@ -100,7 +89,7 @@ public class RadioGroupRecyclerAdapter<T extends Entity>
     @NonNull
     public Holder onCreateViewHolder(@NonNull final ViewGroup parent,
                                      final int viewType) {
-        final View view = mInflater.inflate(R.layout.row_radiobutton, parent, false);
+        final View view = mInflater.inflate(R.layout.row_choice_single, parent, false);
         return new Holder(view);
     }
 
@@ -113,8 +102,7 @@ public class RadioGroupRecyclerAdapter<T extends Entity>
         holder.buttonView.setTag(R.id.TAG_ITEM, item);
 
         holder.buttonView.setText(item.getLabel(mContext));
-        // check the pre-selected item.
-        final boolean checked = mSelectedItem != null && item.getId() == mSelectedItem.getId();
+        final boolean checked = mSelection != null && item.getId() == mSelection.getId();
         holder.buttonView.setChecked(checked);
         holder.buttonView.setOnClickListener(this::itemCheckChanged);
     }
@@ -122,33 +110,23 @@ public class RadioGroupRecyclerAdapter<T extends Entity>
 
     private void itemCheckChanged(@NonNull final View v) {
         //noinspection unchecked
-        mSelectedItem = (T) v.getTag(R.id.TAG_ITEM);
+        mSelection = (T) v.getTag(R.id.TAG_ITEM);
         // this triggers a bind calls for the rows, which in turn set the checked status.
         notifyDataSetChanged();
         if (mOnSelectionListener != null) {
-            // use a post allowing the UI to update the radio buttons first
-            v.post(() -> mOnSelectionListener.onSelected(mSelectedItem));
+            // use a post allowing the UI to update the view first
+            v.post(() -> mOnSelectionListener.onSelected(mSelection));
         }
     }
 
     /**
      * Get the selected item.
      *
-     * @return item, can be {@code null}.
+     * @return item, can be {@code null} if no item is selected.
      */
     @Nullable
-    public T getSelectedItem() {
-        return mSelectedItem;
-    }
-
-    /** Delete the selected position from the List. */
-    @SuppressWarnings("unused")
-    public void deleteSelectedPosition() {
-        if (mSelectedItem != null) {
-            mItems.remove(mSelectedItem);
-            mSelectedItem = null;
-            notifyDataSetChanged();
-        }
+    public T getSelection() {
+        return mSelection;
     }
 
     @Override

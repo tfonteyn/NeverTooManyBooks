@@ -80,8 +80,10 @@ public class ExtGroup
     private boolean mApplyOnClick;
     private boolean mApplyTags;
 
-    public ExtGroup(@NonNull final Context context) {
-        super(context);
+    public ExtGroup(@NonNull final Context context,
+                    @Nullable final AttributeSet attrs,
+                    final int defStyleAttr) {
+        super(context, attrs, defStyleAttr);
     }
 
     public ExtGroup(@NonNull final Context context,
@@ -89,42 +91,30 @@ public class ExtGroup
         super(context, attrs);
     }
 
-    public ExtGroup(@NonNull final Context context,
-                    @Nullable final AttributeSet attrs,
-                    final int defStyleAttr) {
-        super(context, attrs, defStyleAttr);
+    public ExtGroup(@NonNull final Context context) {
+        super(context);
     }
 
+    // reminder: this method is called from the super constructor.
+    // and this is BEFORE this class-init phase.
     protected void init(@Nullable final AttributeSet attrs) {
         super.init(attrs);
         mUseViewMeasure = false;
 
-        // Must do this here, as init is called from a super class constructor.
-        // i.e. before this class its internal init phase.
-        mApplyVisibility = true;
-        mApplyOnClick = true;
-        mApplyTags = true;
-
         if (attrs != null) {
-            TypedArray a = this.getContext().obtainStyledAttributes(attrs, R.styleable.ExtGroup);
-            int N = a.getIndexCount();
-
-            for (int i = 0; i < N; ++i) {
-                int attr = a.getIndex(i);
-                //noinspection SwitchStatementWithoutDefaultBranch
-                switch (attr) {
-                    case R.styleable.ExtGroup_applyVisibility:
-                        mApplyVisibility = a.getBoolean(attr, true);
-                        break;
-                    case R.styleable.ExtGroup_applyOnClick:
-                        mApplyOnClick = a.getBoolean(attr, true);
-                        break;
-                    case R.styleable.ExtGroup_applyTags:
-                        mApplyTags = a.getBoolean(attr, true);
-                        break;
-                }
+            final TypedArray ta = getContext().getTheme().obtainStyledAttributes(
+                    attrs, R.styleable.ExtGroup, 0, 0);
+            try {
+                mApplyVisibility = ta.getBoolean(R.styleable.ExtGroup_applyVisibility, true);
+                mApplyOnClick = ta.getBoolean(R.styleable.ExtGroup_applyOnClick, true);
+                mApplyTags = ta.getBoolean(R.styleable.ExtGroup_applyTags, true);
+            } finally {
+                ta.recycle();
             }
-            a.recycle();
+        } else {
+            mApplyVisibility = true;
+            mApplyOnClick = true;
+            mApplyTags = true;
         }
     }
 

@@ -124,6 +124,7 @@ public class StylePickerDialogFragment
         final RecyclerView listView = root.findViewById(R.id.styles);
         final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         listView.setLayoutManager(linearLayoutManager);
+
         //noinspection ConstantConditions
         mAdapter = new RadioGroupRecyclerAdapter<>(getContext(),
                                                    mBooklistStyles, mCurrentStyle,
@@ -166,7 +167,7 @@ public class StylePickerDialogFragment
      * Send the selected style back. Silently returns if there was nothing selected.
      */
     private void onStyleSelected() {
-        mCurrentStyle = mAdapter.getSelectedItem();
+        mCurrentStyle = mAdapter.getSelection();
         if (mCurrentStyle == null) {
             return;
         }
@@ -187,7 +188,7 @@ public class StylePickerDialogFragment
      * Edit the selected style. Silently returns if there was nothing selected.
      */
     private void onEditStyle() {
-        mCurrentStyle = mAdapter.getSelectedItem();
+        mCurrentStyle = mAdapter.getSelection();
         if (mCurrentStyle == null) {
             return;
         }
