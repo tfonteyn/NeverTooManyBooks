@@ -159,6 +159,7 @@ public class ImportHelperDialogFragment
                                                            checkedId == mVb.rbBooksSync.getId()));
         } else {
             // If the archive does not have a valid creation-date field, then we can't use sync
+            // TODO Maybe change string to "... archive is missing a creation date field.
             mVb.rbBooksGroup.setEnabled(false);
             mVb.rbBooksAll.setChecked(true);
             mVb.rbBooksSync.setChecked(false);

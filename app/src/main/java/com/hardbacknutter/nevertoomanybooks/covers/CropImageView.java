@@ -67,6 +67,7 @@ import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatImageView;
+import androidx.preference.PreferenceManager;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -103,11 +104,7 @@ public class CropImageView
      */
     private static final int LAYER_TYPE_DEFAULT = -1;
 
-    /**
-     * 400% zoom regardless of screen or image orientation.
-     * If in the future we decode the full mega-pixel image,
-     * rather than the current 1024x768, this should be changed down to 200%.
-     */
+    /** 400% zoom regardless of screen or image orientation. */
     private static final int ZOOM_FACTOR = 4;
 
     private final Handler mHandler = new Handler();
@@ -170,15 +167,23 @@ public class CropImageView
         setScaleType(ScaleType.MATRIX);
     }
 
-    public void initCropOverlay(@NonNull final Context context,
-                                @NonNull final Bitmap bitmap,
-                                final boolean wholeImage) {
+    /**
+     * After activity startup, call this method to setup the view with the original bitmap.
+     *
+     * @param bitmap to crop
+     */
+    public void initCropView(@NonNull final Bitmap bitmap) {
 
-        final int type = Prefs.getListPreference(context, Prefs.pk_image_cropper_layer_type,
+        final int type = Prefs.getListPreference(getContext(), Prefs.pk_image_cropper_layer_type,
                                                  LAYER_TYPE_DEFAULT);
         if (type != LAYER_TYPE_DEFAULT) {
             setLayerType(type, null);
         }
+
+        // Flag indicating if by default the crop rectangle should be the whole image.
+        final boolean wholeImage = PreferenceManager
+                .getDefaultSharedPreferences(getContext())
+                .getBoolean(Prefs.pk_image_cropper_frame_whole, false);
 
         setBitmapMatrix(bitmap);
         if (getScale() == 1f) {
@@ -211,42 +216,32 @@ public class CropImageView
     }
 
     /**
-     * Update the bitmap, prepare the base matrix according to the size
-     * of the bitmap, reset the supplementary matrix and calculate the maximum zoom allowed.
+     * Get the finished cropped bitmap. After this call, the Activity should quit (even if the
+     * result is invalid).
+     *
+     * @return cropped bitmap, or {@code null} on any failure.
      */
-    public void setBitmapMatrix(@NonNull final Bitmap bitmap) {
-        // postpone to run during layout phase if the View has not been measured yet.
-        if (getWidth() <= 0) {
-            mOnLayoutRunnable = () -> setBitmapMatrix(bitmap);
-            return;
-        }
-
-        setBaseMatrix(bitmap);
-        setImageBitmap(bitmap);
-        mSuppMatrix.reset();
-        setImageMatrix(getImageViewMatrix());
-
-        // Set the maximum zoom, which is relative to the base matrix.
-        mMaxZoom = ZOOM_FACTOR * Math.max((float) bitmap.getWidth() / (float) mWidth,
-                                          (float) bitmap.getHeight() / (float) mHeight);
-    }
-
     @Nullable
-    public Rect getCropRect() {
+    public Bitmap getCroppedBitmap() {
         if (mHighlightView == null) {
             return null;
-
-        } else {
-            // return a copy, don't let the original escape.
-            return new Rect((int) mHighlightView.mCropRect.left,
-                            (int) mHighlightView.mCropRect.top,
-                            (int) mHighlightView.mCropRect.right,
-                            (int) mHighlightView.mCropRect.bottom);
         }
-    }
 
-    public void setNoTouching(final boolean noTouching) {
-        mNoTouching = noTouching;
+        // Stop responding to user touches.
+        mNoTouching = true;
+
+        final Rect cropRect = new Rect((int) mHighlightView.mCropRect.left,
+                                       (int) mHighlightView.mCropRect.top,
+                                       (int) mHighlightView.mCropRect.right,
+                                       (int) mHighlightView.mCropRect.bottom);
+        final int width = cropRect.width();
+        final int height = cropRect.height();
+
+        final Bitmap croppedBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+        final Canvas canvas = new Canvas(croppedBitmap);
+        final Rect dstRect = new Rect(0, 0, width, height);
+        canvas.drawBitmap(mBitmap, cropRect, dstRect, null);
+        return croppedBitmap;
     }
 
     @Override
@@ -374,6 +369,27 @@ public class CropImageView
     private float getScale() {
         mSuppMatrix.getValues(mMatrixValues);
         return mMatrixValues[Matrix.MSCALE_X];
+    }
+
+    /**
+     * Update the bitmap, prepare the base matrix according to the size
+     * of the bitmap, reset the supplementary matrix and calculate the maximum zoom allowed.
+     */
+    private void setBitmapMatrix(@NonNull final Bitmap bitmap) {
+        // postpone to run during layout phase if the View has not been measured yet.
+        if (getWidth() <= 0) {
+            mOnLayoutRunnable = () -> setBitmapMatrix(bitmap);
+            return;
+        }
+
+        setBaseMatrix(bitmap);
+        setImageBitmap(bitmap);
+        mSuppMatrix.reset();
+        setImageMatrix(getImageViewMatrix());
+
+        // Set the maximum zoom, which is relative to the base matrix.
+        mMaxZoom = ZOOM_FACTOR * Math.max((float) bitmap.getWidth() / (float) mWidth,
+                                          (float) bitmap.getHeight() / (float) mHeight);
     }
 
     /** Setup the base matrix so that the image is centered and scaled properly. */

@@ -62,11 +62,6 @@ import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.ResultDataModel;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.tasks.ExportTaskModel;
 
-/**
- * TODO: consider using true background tasks without progress dialog and have them report
- * being finished/failed via a notification. That would allow the user to continue using
- * the app while the export is running.
- */
 public class ExportFragment
         extends Fragment {
 

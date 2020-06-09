@@ -48,8 +48,6 @@ import android.content.ContentResolver;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
-import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -57,7 +55,6 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.preference.PreferenceManager;
 
 import com.google.android.material.snackbar.Snackbar;
 
@@ -72,7 +69,7 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.databinding.ActivityCropimageBinding;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
-import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
+import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 
 /**
@@ -103,14 +100,8 @@ public class CropImageActivity
     /** used to calculate free space on Shared Storage, 100kb per picture is an overestimation. */
     private static final long ESTIMATED_PICTURE_SIZE = 100_000L;
 
-    /** The source bitmap. */
-    @Nullable
-    private Bitmap mBitmap;
     /** The destination URI where to write the result to. */
     private Uri mDestinationUri;
-
-    /** Whether the "save" button is already clicked. */
-    private boolean mIsSaving;
 
     /** View binding. */
     private ActivityCropimageBinding mVb;
@@ -143,27 +134,24 @@ public class CropImageActivity
 
         final String srcPath = Objects.requireNonNull(args.getString(BKEY_SOURCE));
         final Uri uri = Uri.fromFile(new File(srcPath));
+
+        Bitmap bitmap = null;
         try (InputStream is = getContentResolver().openInputStream(uri)) {
-            mBitmap = BitmapFactory.decodeStream(is);
+            bitmap = BitmapFactory.decodeStream(is);
         } catch (@NonNull final IOException e) {
             if (BuildConfig.DEBUG /* always */) {
                 Log.d(TAG, "", e);
             }
         }
 
-        if (mBitmap != null) {
+        if (bitmap != null) {
             final String dstPath = Objects.requireNonNull(args.getString(BKEY_DESTINATION));
             mDestinationUri = Uri.fromFile(new File(dstPath));
 
+            mVb.coverImage0.initCropView(bitmap);
+
             // the FAB button saves the image, use 'back' to cancel.
             mVb.fab.setOnClickListener(v -> onSave());
-
-            // Flag indicating if by default the crop rectangle should be the whole image.
-            final boolean wholeImage = PreferenceManager
-                    .getDefaultSharedPreferences(this)
-                    .getBoolean(Prefs.pk_image_cropper_frame_whole, false);
-
-            mVb.coverImage0.initCropOverlay(this, mBitmap, wholeImage);
 
         } else {
             finish();
@@ -171,35 +159,25 @@ public class CropImageActivity
     }
 
     private void onSave() {
-        if (mIsSaving) {
-            return;
-        }
-        final Rect cropRect = mVb.coverImage0.getCropRect();
-        if (cropRect == null) {
-            return;
-        }
-        // prevent multiple saves.
-        mIsSaving = true;
-        // Tell the view to stop responding to user touches.
-        mVb.coverImage0.setNoTouching(true);
+        // prevent multiple saves (cropping the bitmap might take some time)
+        mVb.fab.setEnabled(false);
 
-        final int width = cropRect.width();
-        final int height = cropRect.height();
-
-        final Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
-        final Canvas canvas = new Canvas(bitmap);
-        final Rect dstRect = new Rect(0, 0, width, height);
-        //noinspection ConstantConditions
-        canvas.drawBitmap(mBitmap, cropRect, dstRect, null);
-
-        try (OutputStream os = getContentResolver().openOutputStream(mDestinationUri)) {
-            if (os != null) {
-                bitmap.compress(Bitmap.CompressFormat.PNG, 100, os);
-                final Intent data = new Intent().setData(mDestinationUri);
-                setResult(Activity.RESULT_OK, data);
+        Bitmap bitmap = mVb.coverImage0.getCroppedBitmap();
+        if (bitmap != null) {
+            try (OutputStream os = getContentResolver().openOutputStream(mDestinationUri)) {
+                if (os != null) {
+                    bitmap.compress(Bitmap.CompressFormat.PNG, 100, os);
+                    setResult(Activity.RESULT_OK, new Intent().setData(mDestinationUri));
+                }
+            } catch (@NonNull final IOException e) {
+                Logger.error(this, TAG, e);
+                bitmap = null;
             }
-        } catch (@NonNull final IOException e) {
-            Logger.error(this, TAG, e);
+        }
+
+        if (bitmap == null) {
+            StandardDialogs.showError(this, R.string.progress_msg_saving_image);
+            return;
         }
         finish();
     }

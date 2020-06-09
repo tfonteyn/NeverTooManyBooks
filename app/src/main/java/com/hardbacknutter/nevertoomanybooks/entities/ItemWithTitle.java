@@ -67,7 +67,7 @@ public interface ItemWithTitle {
                           @NonNull final String title,
                           @NonNull final Locale titleLocale) {
 
-        String[] titleWords = title.split(" ");
+        final String[] titleWords = title.split(" ");
         // Single word titles (or empty titles).. just return.
         if (titleWords.length < 2) {
             return title;
@@ -78,10 +78,10 @@ public interface ItemWithTitle {
         // 2. the user preferred Locale
         // 3. the user device Locale
         // 4. ENGLISH.
-        Locale[] locales = {titleLocale,
-                            LocaleUtils.getUserLocale(context),
-                            LocaleUtils.getSystemLocale(),
-                            Locale.ENGLISH};
+        final Locale[] locales = {titleLocale,
+                                  LocaleUtils.getUserLocale(context),
+                                  LocaleUtils.getSystemLocale(),
+                                  Locale.ENGLISH};
 
         for (Locale locale : locales) {
             if (locale == null) {
@@ -97,7 +97,7 @@ public interface ItemWithTitle {
             }
             // case sensitive, see notes in res/values/string.xml/pv_reformat_titles_prefixes
             if (words.contains(titleWords[0])) {
-                StringBuilder newTitle = new StringBuilder();
+                final StringBuilder newTitle = new StringBuilder();
                 for (int i = 1; i < titleWords.length; i++) {
                     if (i != 1) {
                         newTitle.append(' ');
@@ -115,7 +115,7 @@ public interface ItemWithTitle {
     static String reorder(@NonNull final Context context,
                           @NonNull final String title,
                           @NonNull final String language) {
-        Locale locale = LocaleUtils.getLocale(context, language);
+        final Locale locale = LocaleUtils.getLocale(context, language);
         if (locale != null) {
             return reorder(context, title, locale);
         } else {
