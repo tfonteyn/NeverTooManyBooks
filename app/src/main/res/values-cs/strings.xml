@@ -614,8 +614,8 @@
     <string name="warning_book_no_longer_exists">Zadaná kniha již neexistuje</string>
     <string name="warning_book_not_found">Nepodařilo se nalézt zadanou knihu</string>
     <string name="warning_cannot_delete_1st_bs">Nelze smazat defaultní knihovnu.</string>
-    <string name="warning_cover_copy_failed">Nelze kopírovat obraz.</string>
-    <string name="warning_cover_not_found">Obrázek nebyl nalezen</string>
+    <string name="warning_image_copy_failed">Obrázek nelze zkopírovat.</string>
+    <string name="warning_image_not_found">Obrázek nebyl nalezen.</string>
     <string name="warning_enable_at_least_1_website">Pro každou kategorii povolte alespoň jeden web.</string>
     <string name="warning_if_day_set_month_and_year_must_be">Je-li zadán den, musí být také uveden měsíc i rok.</string>
     <string name="warning_if_month_set_year_must_be">Pokud je zadán měsíc, musí být také uveden rok.</string>
@@ -671,5 +671,11 @@
     <string name="and_others_plus"><![CDATA[%1$s … <small>[+%2$d]</small>]]></string>
     <string name="strict">Přísné</string>
     <string name="pe_edit_book_isbn_checks_loose">Uvolněný</string>
+    <string name="warning_image_processing_failed">Obrázek nelze zpracovat.</string>
+    <string name="pt_edit_book_isbn_checks">Kontroly platnosti ISBN</string>
+    <string name="lbl_table_of_content_entry">Zápis do obsahu</string>
+    <string name="lbl_next_book_without_cover">Přeskočí na další knihu bez obálky</string>
+    <string name="book_color_support_color">Dvoubarevné</string>
+    <string name="book_format_digest">Malý</string>
 
 </resources>

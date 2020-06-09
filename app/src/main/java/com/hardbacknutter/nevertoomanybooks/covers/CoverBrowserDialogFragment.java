@@ -280,7 +280,7 @@ public class CoverBrowserDialogFragment
 
         // if none left, dismiss.
         if (mGalleryAdapter.getItemCount() == 0) {
-            Snackbar.make(mVb.statusMessage, R.string.warning_cover_not_found,
+            Snackbar.make(mVb.statusMessage, R.string.warning_image_not_found,
                           Snackbar.LENGTH_LONG).show();
             dismiss();
         }
@@ -328,7 +328,7 @@ public class CoverBrowserDialogFragment
                     .execute();
 
         } else {
-            Snackbar.make(mVb.preview, R.string.warning_cover_not_found,
+            Snackbar.make(mVb.preview, R.string.warning_image_not_found,
                           Snackbar.LENGTH_LONG).show();
             mVb.statusMessage.setText(R.string.txt_tap_on_thumb);
         }

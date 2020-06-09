@@ -154,7 +154,7 @@ public class LibraryThingRegistrationActivity
                 if (isCancelled()) {
                     return R.string.progress_end_cancelled;
                 }
-                return R.string.warning_cover_not_found;
+                return R.string.warning_image_not_found;
 
             } catch (@NonNull final RuntimeException e) {
                 Logger.error(context, TAG, e);

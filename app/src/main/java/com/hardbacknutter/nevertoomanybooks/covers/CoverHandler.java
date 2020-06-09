@@ -356,7 +356,7 @@ public class CoverHandler {
                         }
                     }
 
-                    StandardDialogs.showBadError(mContext, R.string.warning_cover_copy_failed);
+                    StandardDialogs.showError(mContext, R.string.warning_image_copy_failed);
                 }
                 return true;
             }

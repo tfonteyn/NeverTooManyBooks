@@ -613,8 +613,8 @@
     <string name="warning_book_no_longer_exists">Określona książka już nie istnieje</string>
     <string name="warning_book_not_found">Nie mogę znaleźć tej książki</string>
     <string name="warning_cannot_delete_1st_bs">Nie można usunąć pierwszej półki.</string>
-    <string name="warning_cover_copy_failed">Nie można skopiować obrazu.</string>
-    <string name="warning_cover_not_found">Zdjęcie nie znalezione</string>
+    <string name="warning_image_copy_failed">Nie można skopiować obrazu.</string>
+    <string name="warning_image_not_found">Nie można znaleźć obrazu.</string>
     <string name="warning_enable_at_least_1_website">Włącz przynajmniej jedną stronę internetową dla każdej kategorii.</string>
     <string name="warning_if_day_set_month_and_year_must_be">Jeśli określono dzień, należy również określić miesiąc i rok.</string>
     <string name="warning_if_month_set_year_must_be">Jeśli określono miesiąc, należy również określić rok.</string>
@@ -670,4 +670,10 @@
     <string name="and_others_plus"><![CDATA[%1$s … <small>[+%2$d]</small>]]></string>
     <string name="strict">Ścisły</string>
     <string name="pe_edit_book_isbn_checks_loose">Luźny</string>
+    <string name="warning_image_processing_failed">Nie można przetworzyć obrazu.</string>
+    <string name="pt_edit_book_isbn_checks">Kontrole ważności ISBN</string>
+    <string name="lbl_table_of_content_entry">Wpis w spisie treści</string>
+    <string name="lbl_next_book_without_cover">Przejdź do następnej książki bez okładki</string>
+    <string name="book_color_support_color">Dwukolorowy</string>
+    <string name="book_format_digest">Mały</string>
 </resources>

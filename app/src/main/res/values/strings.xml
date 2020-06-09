@@ -140,7 +140,7 @@
 
     <!-- A website did respond to a request, but the response was not valid.
          We report to the user that the site is not working as expected. -->
-    <string name="error_site_has_problems">The website has problems.</string>
+    <string name="error_site_has_problems">The website is not working as expected.</string>
 
     <!-- A search on a specific website failed, with the specified reason.
          param 1: site name; param 2: message
@@ -201,8 +201,7 @@
     <!-- Importing a CSV book list; individual lines can fail. Report the exact position. -->
     <string name="warning_import_unescaped_quote">Unescaped quote at row %1$d, position %2$d</string>
 
-    <!-- Explanatory note associated with import options not available with older archives.
-         FIXME: Maybe change string to "... archive is missing a creation date field.-->
+    <!-- Explanatory note associated with import options not available with older archives. -->
     <string name="warning_import_old_archive">This option is not supported for older archive versions.</string>
 
     <string name="warning_book_not_found">Unable to find the specified book.</string>
@@ -232,9 +231,12 @@
     <string name="warning_no_matching_book_found">No matching book found</string>
     <string name="warning_no_isbn_stored_for_book">No ISBN stored for book</string>
     <string name="warning_x_is_not_a_valid_code">“%1$s” is not a valid code</string>
-    <string name="warning_cover_not_found">Cover Not Found</string>
-    <!-- must end with a dot. -->
-    <string name="warning_cover_copy_failed">Could not copy cover.</string>
+
+    <!-- These must end with a dot. -->
+    <string name="warning_image_not_found">Image could not be found.</string>
+    <string name="warning_image_copy_failed">Image could not be copied.</string>
+    <string name="warning_image_processing_failed">Image could not be processed.</string>
+
     <string name="warning_no_editions">No additional edition information available</string>
     <string name="warning_if_day_set_month_and_year_must_be">
         If a day is specified, then both month and year must be specified.
@@ -1158,6 +1160,8 @@
     <!-- Button; where we can use a long text. Should also show icon: res/drawable/ic_barcode -->
     <string name="btn_scan_barcode">Scan barcode</string>
 
+    <string name="btn_show_list">Show list</string>
+
     <!-- generic response button texts -->
     <string name="btn_disable_message">Disable Message</string>
     <string name="btn_tell_me_more">Tell me more</string>
@@ -1267,9 +1271,11 @@
     <!--  book format - traditional 'paperback' also known as 'pocketbook' -->
     <string name="book_format_paperback">Paperback</string>
     <!--  book format - a large format paperback -->
-    <string name="book_format_trade_paperback">Trade Paperback</string>
+    <string name="book_format_paperback_large">Trade Paperback</string>
     <!--  book format - mostly used for magazines like 'readers digest'
-          A lot of english monthly magazines use the same format.  -->
+          A lot of english monthly magazines use the same format.
+          In French this is semi-officially known as "Petit format" or "Small size".
+    -->
     <string name="book_format_digest">Digest</string>
     <!--  book format - string used if a website indicates it's an eBook -->
     <string name="book_format_ebook">eBook</string>
@@ -1284,7 +1290,7 @@
     <string name="book_color_uncolored">Black &amp; white</string>
     <!-- uncolored, but with 1 or 2 support-colors.
          e.g. black and white, but additional red for emphasis -->
-    <string name="book_color_support_color">Uncolored + support color</string>
+    <string name="book_color_support_color">"Bicoloured "</string>
 
     <!-- ####################################################################################### -->
     <!-- == List values. == -->
@@ -1480,6 +1486,8 @@
     <string name="lbl_read_end">Date finished reading</string>
 
     <string name="lbl_table_of_content">Table Of Content</string>
+    <string name="lbl_table_of_content_entry">TOC Entry</string>
+
     <string name="lbl_read_and_unread">Read &amp; Unread</string>
 
     <string name="lbl_site_book_id">Website book ID</string>
@@ -1499,6 +1507,8 @@
     <string name="lbl_field_usage_skip">Skip</string>
 
     <string name="lbl_search_filtered_on_x">Filtered on: %1$s</string>
+
+    <string name="lbl_next_book_without_cover">Skip to the next book without cover</string>
 
     <string name="lbl_sorting">Sorting</string>
     <string name="lbl_formatting">Formatting</string>
@@ -1670,8 +1680,5 @@
     <string name="info_bitmask_preference">
         Select 0 or more options and tap “OK” to apply them, or tap “%1$s” to disregard all of them.
     </string>
-    <string name="lbl_table_of_content_entry">TOC Entry</string>
-    <string name="btn_show_list">Show list</string>
-    <string name="lbl_next_book_without_cover">Jump to next book without cover</string>
 
 </resources>

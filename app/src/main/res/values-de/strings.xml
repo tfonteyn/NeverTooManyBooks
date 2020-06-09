@@ -61,7 +61,7 @@
     <string name="book_format_hardcover">Gebundene Ausgabe</string>
     <string name="book_format_paperback">Taschenbuch</string>
     <string name="book_format_softcover">Softcover</string>
-    <string name="book_format_trade_paperback">Paperback</string>
+    <string name="book_format_paperback_large">Paperback</string>
     <string name="bookshelf_all_books">Alle Bücher</string>
     <string name="bookshelf_my_books">Meine Bücher</string>
     <string name="action_add">Hinzufügen</string>
@@ -622,8 +622,8 @@
     <string name="warning_book_no_longer_exists">Das gewünschte Buch existiert nicht mehr</string>
     <string name="warning_book_not_found">Das angegebene Buch wurde nicht gefunden</string>
     <string name="warning_cannot_delete_1st_bs">Das erste Bücherregal kann nicht gelöscht werden.</string>
-    <string name="warning_cover_copy_failed">Konnte Bild nicht kopieren.</string>
-    <string name="warning_cover_not_found">Bild nicht gefunden</string>
+    <string name="warning_image_copy_failed">Bild konnte nicht kopiert werden.</string>
+    <string name="warning_image_not_found">Bild konnte nicht gefunden werden.</string>
     <string name="warning_enable_at_least_1_website">Aktivieren Sie mindestens eine Website für jede Kategorie.</string>
     <string name="warning_if_day_set_month_and_year_must_be">Wenn der Tag angegeben wird, muss auch Monat und Jahr angegeben werden.</string>
     <string name="warning_if_month_set_year_must_be">Wenn das Monat angegeben wird, muss auch das Jahr angegeben werden.</string>
@@ -679,4 +679,9 @@
     <string name="and_others_plus"><![CDATA[%1$s … <small>[+%2$d]</small>]]></string>
     <string name="strict">Strikte</string>
     <string name="pe_edit_book_isbn_checks_loose">Locker</string>
+    <string name="warning_image_processing_failed">Bild konnte nicht verarbeitet werden.</string>
+    <string name="pt_edit_book_isbn_checks">ISBN-Gültigkeitsprüfungen</string>
+    <string name="lbl_table_of_content_entry">Eintrag im Inhaltsverzeichnis</string>
+    <string name="lbl_next_book_without_cover">Springe zum nächsten Buch ohne Cover</string>
+    <string name="book_color_support_color">Zweifarbig</string>
 </resources>

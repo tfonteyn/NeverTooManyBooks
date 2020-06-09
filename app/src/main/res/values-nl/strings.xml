@@ -51,16 +51,16 @@
     <string name="acra_resToastText">&APP_NAME; is onverwacht gecrasht. Help ons aub de toepassing beter te maken door deze crash te melden.</string>
     <string name="and_others">%s …</string>
     <string name="book_color_full_color">Gekleurd</string>
-    <string name="book_color_support_color">Twee kleuren</string>
+    <string name="book_color_support_color">Tweekleurig</string>
     <string name="book_color_uncolored">Ongekleurd</string>
     <string name="book_format_audiobook">Luisterboek</string>
-    <string name="book_format_digest">Digest</string>
+    <string name="book_format_digest">Klein</string>
     <string name="book_format_dimensions">Afmetingen</string>
     <string name="book_format_ebook">E-boek</string>
     <string name="book_format_hardcover">Hardcover</string>
     <string name="book_format_paperback">Pocket</string>
     <string name="book_format_softcover">Softcover</string>
-    <string name="book_format_trade_paperback">Paperback</string>
+    <string name="book_format_paperback_large">Paperback</string>
     <string name="bookshelf_all_books">Alle Boeken</string>
     <string name="bookshelf_my_books">Mijn Boeken</string>
     <string name="action_add">Toevoegen</string>
@@ -623,8 +623,8 @@
     <string name="warning_book_no_longer_exists">Het gespecificeerde boek bestaat niet meer</string>
     <string name="warning_book_not_found">Kan gespecificeerd boek niet vinden</string>
     <string name="warning_cannot_delete_1st_bs">De eerste boekenplank kan niet verwijderd worden.</string>
-    <string name="warning_cover_copy_failed">Afbeelding kon niet gekopiërt worden.</string>
-    <string name="warning_cover_not_found">Afbeelding niet gevonden</string>
+    <string name="warning_image_copy_failed">Afbeelding kan niet worden gekopieerd.</string>
+    <string name="warning_image_not_found">Afbeelding kan niet worden gevonden.</string>
     <string name="warning_enable_at_least_1_website">Schakel ten minste één website in voor elke categorie.</string>
     <string name="warning_if_day_set_month_and_year_must_be">Als de dag is gespecificeerd dan moet ook de maand en het jaar ingevuld worden.</string>
     <string name="warning_if_month_set_year_must_be">Als de maand is gespecificeerd moet ook het jaar worden ingevuld.</string>
@@ -678,5 +678,9 @@
     <string name="and_others_plus"><![CDATA[%1$s … <small>[+%2$d]</small>]]></string>
     <string name="strict">Strikt</string>
     <string name="pe_edit_book_isbn_checks_loose">Ruim</string>
+    <string name="warning_image_processing_failed">Afbeelding kan niet worden verwerkt.</string>
+    <string name="pt_edit_book_isbn_checks">ISBN geldigheidscontroles</string>
+    <string name="lbl_table_of_content_entry">Vermelding in de inhoudsopgave</string>
+    <string name="lbl_next_book_without_cover">Ga naar het volgende boek zonder omslag</string>
 
 </resources>

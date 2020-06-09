@@ -49,7 +49,7 @@ public final class FormatMapper
         // mass market paperback
         MAPPER.put("mmpb", R.string.book_format_paperback);
         MAPPER.put("pb", R.string.book_format_paperback);
-        MAPPER.put("tp", R.string.book_format_trade_paperback);
+        MAPPER.put("tp", R.string.book_format_paperback_large);
         MAPPER.put("hc", R.string.book_format_hardcover);
         MAPPER.put("ebook", R.string.book_format_ebook);
         MAPPER.put("digest", R.string.book_format_digest);

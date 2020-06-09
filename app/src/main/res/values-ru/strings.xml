@@ -613,8 +613,8 @@
     <string name="warning_book_no_longer_exists">Указанная книга больше не существует</string>
     <string name="warning_book_not_found">Поиск указанной книги не удался</string>
     <string name="warning_cannot_delete_1st_bs">Невозможно удалить единственную книжную полку.</string>
-    <string name="warning_cover_copy_failed">Не возможно скопировать изображение.</string>
-    <string name="warning_cover_not_found">Изображение не найдено</string>
+    <string name="warning_image_copy_failed">Изображение не может быть скопировано.</string>
+    <string name="warning_image_not_found">Изображение не может быть найдено.</string>
     <string name="warning_enable_at_least_1_website">Включите хотя бы один веб-сайт для каждой категории.</string>
     <string name="warning_if_day_set_month_and_year_must_be">Если указан день, также необходимо указать месяц и год.</string>
     <string name="warning_if_month_set_year_must_be">Если указан месяц, также необходимо указать год.</string>
@@ -670,5 +670,11 @@
     <string name="and_others_plus"><![CDATA[%1$s … <small>[+%2$d]</small>]]></string>
     <string name="strict">Строгий</string>
     <string name="pe_edit_book_isbn_checks_loose">свободно</string>
+    <string name="warning_image_processing_failed">Изображение не может быть обработано.</string>
+    <string name="pt_edit_book_isbn_checks">ISBN проверки достоверности</string>
+    <string name="lbl_table_of_content_entry">Запись в оглавлении</string>
+    <string name="lbl_next_book_without_cover">Перейти к следующей книге без обложки</string>
+    <string name="book_color_support_color">двухцветных</string>
+    <string name="book_format_digest">Малый</string>
 
 </resources>

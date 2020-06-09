@@ -54,7 +54,7 @@
     <string name="book_color_full_color">Colorato</string>
     <string name="book_color_uncolored">in bianco e nero</string>
     <string name="book_format_audiobook">Audiolibro</string>
-    <string name="book_format_digest">Digest</string>
+    <string name="book_format_digest">Piccolo</string>
     <string name="book_format_dimensions">Dimensioni</string>
     <string name="book_format_ebook">eBook</string>
     <string name="book_format_hardcover">Rilegato</string>
@@ -618,8 +618,8 @@
     <string name="warning_book_no_longer_exists">Il libro indicato non esiste più</string>
     <string name="warning_book_not_found">Impossibile trovare il libro specificato</string>
     <string name="warning_cannot_delete_1st_bs">Impossibile cancellare la prima libreria.</string>
-    <string name="warning_cover_copy_failed">Impossibile copiare l\'immagine.</string>
-    <string name="warning_cover_not_found">Immagine non trovata</string>
+    <string name="warning_image_copy_failed">L\'immagine non può essere copiata.</string>
+    <string name="warning_image_not_found">L\'immagine non è stata trovata.</string>
     <string name="warning_enable_at_least_1_website">Abilita almeno un sito Web per ogni categoria.</string>
     <string name="warning_if_day_set_month_and_year_must_be">Se si indica il giorno, occorre indicare anche mese ed anno.</string>
     <string name="warning_if_month_set_year_must_be">Se si indica il mese, occorre indicare anche l\'anno.</string>
@@ -675,5 +675,11 @@
     <string name="and_others_plus"><![CDATA[%1$s … <small>[+%2$d]</small>]]></string>
     <string name="strict">Rigoroso</string>
     <string name="pe_edit_book_isbn_checks_loose">Libero</string>
+    <string name="warning_image_processing_failed">L\'immagine non può essere elaborata.</string>
+    <string name="pt_edit_book_isbn_checks">Controlli di validità del codice ISBN</string>
+    <string name="lbl_table_of_content_entry">Voce nella tabella dei contenuti</string>
+    <string name="lbl_next_book_without_cover">Passa al prossimo libro senza copertina</string>
+    <string name="book_color_support_color">Bicolore</string>
+    <string name="book_format_paperback_large">Grande tascabile</string>
 
 </resources>

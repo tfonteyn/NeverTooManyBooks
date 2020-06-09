@@ -54,13 +54,13 @@
     <string name="book_color_full_color">De colores</string>
     <string name="book_color_uncolored">en blanco y negro</string>
     <string name="book_format_audiobook">Audio libro</string>
-    <string name="book_format_digest">Digest</string>
+    <string name="book_format_digest">Pequeño</string>
     <string name="book_format_dimensions">Dimensiones</string>
     <string name="book_format_ebook">Libro electronico</string>
     <string name="book_format_hardcover">Rústica cosida</string>
     <string name="book_format_paperback">Rústica fresada</string>
     <string name="book_format_softcover">Tapa blanda</string>
-    <string name="book_format_trade_paperback">Rústica PUR</string>
+    <string name="book_format_paperback_large">Rústica PUR</string>
     <string name="bookshelf_all_books">Todos los libros</string>
     <string name="bookshelf_my_books">Mis Libros</string>
     <string name="action_add">Añadir</string>
@@ -619,8 +619,8 @@
     <string name="warning_book_no_longer_exists">El libro especificado no existe</string>
     <string name="warning_book_not_found">No se ha encontrado el libro especificado</string>
     <string name="warning_cannot_delete_1st_bs">La biblioteca predefinida no se puede eliminar.</string>
-    <string name="warning_cover_copy_failed">No se pudo copiar la imagen.</string>
-    <string name="warning_cover_not_found">Imagen no encontrada</string>
+    <string name="warning_image_copy_failed">La imagen no se pudo copiar.</string>
+    <string name="warning_image_not_found">No se pudo encontrar la imagen.</string>
     <string name="warning_enable_at_least_1_website">Habilite al menos un sitio web para cada categoría.</string>
     <string name="warning_if_day_set_month_and_year_must_be">Si se especifica un día, deben especificarse también el mes y el año.</string>
     <string name="warning_if_month_set_year_must_be">Si se especifica el mes, debe especificarse también el año.</string>
@@ -676,5 +676,10 @@
     <string name="and_others_plus"><![CDATA[%1$s … <small>[+%2$d]</small>]]></string>
     <string name="strict">Estricto</string>
     <string name="pe_edit_book_isbn_checks_loose">Libre</string>
+    <string name="warning_image_processing_failed">La imagen no pudo ser procesada.</string>
+    <string name="pt_edit_book_isbn_checks">Comprobaciones de validez de ISBN</string>
+    <string name="lbl_table_of_content_entry">Entrada en la tabla de contenido</string>
+    <string name="lbl_next_book_without_cover">Pase al siguiente libro sin tapa</string>
+    <string name="book_color_support_color">Bicolor</string>
 
 </resources>
