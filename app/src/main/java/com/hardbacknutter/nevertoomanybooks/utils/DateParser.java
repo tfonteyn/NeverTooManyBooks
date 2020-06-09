@@ -136,12 +136,14 @@ public class DateParser {
      * If the year is missing, {@code null} is returned.
      *
      * @param dateStr String to parse
+     * @param locale  (optional) Locale to apply/try before the default list.
      *
      * @return Resulting date if parsed, otherwise {@code null}
      */
     @Nullable
     private static LocalDateTime parse(@NonNull final Iterable<DateTimeFormatter> parsers,
-                                       @Nullable final String dateStr) {
+                                       @Nullable final String dateStr,
+                                       @Nullable final Locale locale) {
         if (dateStr == null || dateStr.isEmpty()) {
             return null;
         }
@@ -154,7 +156,18 @@ public class DateParser {
             }
         }
 
-        // First try to parse using the default ResolverStyle
+        // Try the specified Locale first
+        if (locale != null) {
+            for (DateTimeFormatter dtf : parsers) {
+                try {
+                    return LocalDateTime.parse(dateStr, dtf.withLocale(locale));
+                } catch (@NonNull final DateTimeParseException ignore) {
+                    // ignore and try the next one
+                }
+            }
+        }
+
+        // Parse using the default ResolverStyle
         for (DateTimeFormatter dtf : parsers) {
             try {
                 return LocalDateTime.parse(dateStr, dtf);
@@ -216,16 +229,16 @@ public class DateParser {
 
         /**
          * Attempt to parse a date string using the passed locale.
+         * This method is meant to be used by site-specific code where the site Locale is known.
          *
-         * @param locale  to use
+         * @param locale  to try first; i.e. before the pre-defined list.
          * @param dateStr String to parse
          *
          * @return Resulting date if successfully parsed, otherwise {@code null}
          */
         public static LocalDateTime parse(@NonNull final Locale locale,
                                           @NonNull final String dateStr) {
-            // URGENT: parse should use passed locale FIRST
-            return parse(dateStr);
+            return DateParser.parse(PARSERS, dateStr, locale);
         }
 
         /**
@@ -237,7 +250,7 @@ public class DateParser {
          */
         @Nullable
         public static LocalDateTime parse(@Nullable final String dateStr) {
-            return DateParser.parse(PARSERS, dateStr);
+            return DateParser.parse(PARSERS, dateStr, null);
         }
     }
 
@@ -265,7 +278,7 @@ public class DateParser {
          */
         @Nullable
         public static LocalDateTime parse(@Nullable final String dateStr) {
-            return DateParser.parse(PARSERS, dateStr);
+            return DateParser.parse(PARSERS, dateStr, null);
         }
     }
 }
