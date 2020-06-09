@@ -417,7 +417,7 @@ public abstract class BasePreferenceFragment
                 return;
             }
             final DialogFragment frag = BitmaskPreference.BitmaskPreferenceDialogFragment
-                    .newInstance((BitmaskPreference) preference);
+                    .newInstance(this, (BitmaskPreference) preference);
             frag.show(fm, DIALOG_FRAGMENT_TAG);
             return;
         }

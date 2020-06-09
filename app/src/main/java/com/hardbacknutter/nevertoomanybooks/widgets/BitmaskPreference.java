@@ -36,6 +36,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.Fragment;
 import androidx.preference.MultiSelectListPreference;
 import androidx.preference.MultiSelectListPreferenceDialogFragmentCompat;
 import androidx.preference.PreferenceDialogFragmentCompat;
@@ -167,17 +168,26 @@ public class BitmaskPreference
 
         /**
          * Constructor.
+         * <p>
+         * The 'hostFragment' will be set as the target fragment.
+         * This is a requirement of {@link PreferenceDialogFragmentCompat}.
          *
-         * @param preference for this dialog
+         * @param hostFragment the fragment which is hosting the preference.
+         * @param preference   for this dialog
          *
          * @return instance
          */
-        public static DialogFragment newInstance(@NonNull final BitmaskPreference preference) {
+        public static DialogFragment newInstance(@NonNull final Fragment hostFragment,
+                                                 @NonNull final BitmaskPreference preference) {
             final DialogFragment frag = new BitmaskPreferenceDialogFragment();
             final Bundle args = new Bundle(2);
             args.putString(ARG_KEY, preference.getKey());
             args.putString(BKEY_NOT_SET_STRING, preference.getNotSetSummary());
             frag.setArguments(args);
+
+            // required by PreferenceDialogFragmentCompat
+            //noinspection deprecation
+            frag.setTargetFragment(hostFragment, 0);
             return frag;
         }
 
