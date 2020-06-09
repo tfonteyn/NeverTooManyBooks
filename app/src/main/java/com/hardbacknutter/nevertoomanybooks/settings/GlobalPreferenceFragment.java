@@ -27,6 +27,8 @@
  */
 package com.hardbacknutter.nevertoomanybooks.settings;
 
+import android.content.SharedPreferences;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -38,6 +40,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.tasks.Scheduler;
+import com.hardbacknutter.nevertoomanybooks.utils.AttrUtils;
 
 /**
  * Global settings page.
@@ -58,14 +61,20 @@ public class GlobalPreferenceFragment
 
         setPreferencesFromResource(R.xml.preferences, rootKey);
 
-        final boolean storedSortTitleReordered = getPreferenceManager()
-                .getSharedPreferences().getBoolean(Prefs.pk_sort_title_reordered, true);
+        final SharedPreferences prefs = getPreferenceManager().getSharedPreferences();
+
+        final boolean storedSortTitleReordered = prefs
+                .getBoolean(Prefs.pk_sort_title_reordered, true);
+
         if (savedInstanceState == null) {
             mCurrentSortTitleReordered = storedSortTitleReordered;
         } else {
             mCurrentSortTitleReordered = savedInstanceState
                     .getBoolean(BKEY_CURRENT_SORT_TITLE_REORDERED, storedSortTitleReordered);
         }
+
+        setVisualIndicator(findPreference(Prefs.pk_sort_title_reordered),
+                           Scheduler.PREF_REBUILD_ORDERBY_COLUMNS);
     }
 
     @Override
@@ -83,7 +92,7 @@ public class GlobalPreferenceFragment
         preference = findPreference(Prefs.pk_sort_title_reordered);
         if (preference != null) {
             preference.setOnPreferenceChangeListener((pref, newValue) -> {
-                final SwitchPreference sp = (SwitchPreference) pref;
+                final SwitchPreference p = (SwitchPreference) pref;
                 //noinspection ConstantConditions
                 new MaterialAlertDialogBuilder(getContext())
                         .setIcon(R.drawable.ic_warning)
@@ -91,13 +100,14 @@ public class GlobalPreferenceFragment
                         // this dialog is important. Make sure the user pays some attention
                         .setCancelable(false)
                         .setNegativeButton(android.R.string.cancel, (d, w) -> {
-                            sp.setChecked(mCurrentSortTitleReordered);
+                            p.setChecked(mCurrentSortTitleReordered);
                             Scheduler.scheduleOrderByRebuild(getContext(), false);
+                            setVisualIndicator(p, Scheduler.PREF_REBUILD_ORDERBY_COLUMNS);
                         })
                         .setPositiveButton(android.R.string.ok, (d, w) -> {
-                            sp.setChecked(!sp.isChecked());
+                            p.setChecked(!p.isChecked());
                             Scheduler.scheduleOrderByRebuild(getContext(), true);
-                            //URGENT: needs visual indicator when scheduled.
+                            setVisualIndicator(p, Scheduler.PREF_REBUILD_ORDERBY_COLUMNS);
                         })
                         .create()
                         .show();
@@ -106,4 +116,30 @@ public class GlobalPreferenceFragment
             });
         }
     }
+
+    /**
+     * Change the icon color depending on the preference being scheduled for change on restart.
+     * <p>
+     * TODO: this is not ideal as it does not explain to the user WHY the color is changed
+     * Check if its's possible to overlay the icon with another icon (showing e.g. a clock)
+     *
+     * @param preference   to modify
+     * @param schedulerKey to reflect
+     */
+    private void setVisualIndicator(@Nullable final Preference preference,
+                                    @SuppressWarnings("SameParameterValue")
+                                    @NonNull final String schedulerKey) {
+        if (preference != null) {
+            final Drawable d = preference.getIcon().mutate();
+            if (getPreferenceManager().getSharedPreferences().getBoolean(schedulerKey, false)) {
+                //noinspection ConstantConditions
+                d.setTint(getContext().getColor(R.color.red_500));
+            } else {
+                //noinspection ConstantConditions
+                d.setTint(AttrUtils.getColorInt(getContext(), R.attr.appIconTint));
+            }
+            preference.setIcon(d);
+        }
+    }
+
 }
