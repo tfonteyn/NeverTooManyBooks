@@ -108,6 +108,7 @@ public class BooklistAdapter
     /** Cached locale. */
     @NonNull
     private final Locale mUserLocale;
+    /** List style to apply. */
     @NonNull
     private final BooklistStyle mStyle;
     /** The cursor is the equivalent of the 'list of items'. */
@@ -116,9 +117,10 @@ public class BooklistAdapter
     /** provides read only access to the row data. */
     @NonNull
     private final DataHolder mNodeData;
+    /** A collection of 'in-use' flags for the fields we might display. */
     @NonNull
     private final FieldsInUse mFieldsInUse;
-
+    /** The combined click and long-click listeners for a single row. */
     @Nullable
     private OnRowClickedListener mOnRowClickedListener;
 
@@ -812,7 +814,10 @@ public class BooklistAdapter
         @NonNull
         private final Locale mLocale;
 
+        /** Whether to re-order the title as per global preference. */
         private final boolean mReorderTitle;
+
+        /** A collection of 'in-use' flags for the fields we might display. */
         private final FieldsInUse mInUse;
 
         /**
@@ -831,7 +836,12 @@ public class BooklistAdapter
                    @NonNull final BooklistStyle style,
                    @NonNull final FieldsInUse fieldsInUse) {
             super(itemView);
-            mReorderTitle = ItemWithTitle.isReorderTitleForDisplaying(itemView.getContext());
+
+            // disabled (for now?) as it makes less sense in this particular view/holder,
+            // and slows down scrolling.
+            // mReorderTitle = ItemWithTitle.isReorderTitleForDisplaying(itemView.getContext());
+            mReorderTitle = false;
+
             mInUse = fieldsInUse;
             Context context = itemView.getContext();
             mLocale = userLocale;
@@ -921,8 +931,7 @@ public class BooklistAdapter
                 // store the uuid for use in the OnClickListener
                 mCoverView.setTag(R.id.TAG_ITEM, uuid);
                 final boolean isSet = ImageUtils.setImageView(mCoverView, mMaxCoverSize,
-                                                              mMaxCoverSize, uuid, 0
-                                                             );
+                                                              mMaxCoverSize, uuid, 0);
                 if (isSet) {
                     // We do not go overkill here by adding a CoverHandler
                     // but only provide zooming by clicking on the image
@@ -1150,7 +1159,7 @@ public class BooklistAdapter
 
         /** Column name of related boolean column. */
         private final String mCheckableColumnKey;
-
+        /** The 'lock' aka 'is complete' icon drawable. */
         @NonNull
         private final Drawable mLock;
 
