@@ -119,12 +119,7 @@ public class RequestAuthTask
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             context.startActivity(intent);
 
-            if (isCancelled()) {
-                return GrStatus.CANCELLED;
-            }
-            // Note this is 'task' success only.
-            // The actual outcome depends on the forked web site visit.
-            return GrStatus.SUCCESS;
+            return GrStatus.SUCCESS_AUTHORIZATION_REQUESTED;
 
         } catch (@NonNull final IOException e) {
             mException = e;

@@ -47,6 +47,7 @@ public final class GrStatus {
     public static final int SUCCESS_TASK_QUEUED = 2;
     public static final int SUCCESS_AUTHORIZATION_GRANTED = 3;
     public static final int SUCCESS_AUTHORIZATION_ALREADY_GRANTED = 4;
+    public static final int SUCCESS_AUTHORIZATION_REQUESTED = 5;
 
     /** There simply is no network available to use. */
     public static final int FAILED_NETWORK_UNAVAILABLE = 100;
@@ -94,6 +95,11 @@ public final class GrStatus {
                 return context.getString(R.string.error_site_authorization_failed,
                                          context.getString(R.string.site_goodreads));
 
+            case SUCCESS_AUTHORIZATION_REQUESTED:
+                //TEST: might need a SUCCESS_AUTHORIZATION_REQUESTED message
+                // not sure if this will be seen though
+                return context.getString(R.string.gr_tq_completed);
+
             case FAILED_CREDENTIALS:
                 return context.getString(R.string.error_site_authentication_failed,
                                          context.getString(R.string.site_goodreads));
@@ -104,7 +110,6 @@ public final class GrStatus {
                 return context.getString(R.string.gr_tq_import_task_is_already_queued);
             case FAILED_EXPORT_TASK_ALREADY_QUEUED:
                 return context.getString(R.string.gr_tq_export_task_is_already_queued);
-
 
             case FAILED_BOOK_HAS_NO_ISBN:
                 return context.getString(R.string.warning_no_isbn_stored_for_book);
@@ -122,12 +127,15 @@ public final class GrStatus {
         }
     }
 
-    @IntDef({SUCCESS, CANCELLED,
+    @IntDef({SUCCESS,
+             CANCELLED,
              SUCCESS_TASK_QUEUED,
              SUCCESS_AUTHORIZATION_GRANTED, SUCCESS_AUTHORIZATION_ALREADY_GRANTED,
+             SUCCESS_AUTHORIZATION_REQUESTED,
              FAILED_NETWORK_UNAVAILABLE,
              FAILED_AUTHORIZATION, FAILED_CREDENTIALS,
-             FAILED_BOOK_HAS_NO_ISBN, FAILED_BOOK_NOT_FOUND_ON_GOODREADS,
+             FAILED_BOOK_HAS_NO_ISBN,
+             FAILED_BOOK_NOT_FOUND_ON_GOODREADS,
              FAILED_IMPORT_TASK_ALREADY_QUEUED, FAILED_EXPORT_TASK_ALREADY_QUEUED,
              FAILED_UNEXPECTED_EXCEPTION, FAILED_IO_EXCEPTION})
     @Retention(RetentionPolicy.SOURCE)
