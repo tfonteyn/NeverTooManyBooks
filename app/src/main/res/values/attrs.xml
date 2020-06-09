@@ -63,4 +63,7 @@
         <attr name="applyTags" format="boolean" />
     </declare-styleable>
 
+    <declare-styleable name="BitmaskPreference">
+        <attr name="disregardButtonText" format="string" />
+    </declare-styleable>
 </resources>

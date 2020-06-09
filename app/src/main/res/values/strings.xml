@@ -1674,11 +1674,9 @@
     <!-- param 1: type of item; param 2: item name.  Example: "Purge BLNS for Bookshelf ToRead" -->
     <string name="info_purge_blns_item_name">Purge BLNS for %1$s %2$s ?</string>
 
-    <!-- meant for dialog box where a set of bitmask checkboxes can be selected,
-        or the neutral button to indicate "don't use this at all".
-         Dialog UI still needs to change. -->
-    <string name="info_bitmask_preference">
-        Select 0 or more options and tap “OK” to apply them, or tap “%1$s” to disregard all of them.
+    <!-- Info message for the "editions" filter selection (part of the style settings). -->
+    <string name="info_filter_edition">
+        Select 0 or more options and tap “OK” to apply them, or tap “All books” to disregard all of them.
     </string>
 
 </resources>

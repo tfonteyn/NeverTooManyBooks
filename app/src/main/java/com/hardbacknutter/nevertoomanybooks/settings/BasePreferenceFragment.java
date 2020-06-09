@@ -47,6 +47,7 @@ import androidx.preference.ListPreference;
 import androidx.preference.MultiSelectListPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
+import androidx.preference.PreferenceGroup;
 import androidx.preference.PreferenceScreen;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -296,14 +297,31 @@ public abstract class BasePreferenceFragment
         final PreferenceScreen screen = getPreferenceScreen();
         screen.getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
 
-        // Set the summaries reflecting the current values for all Preferences.
-        for (String key : screen.getSharedPreferences().getAll().keySet()) {
-            updateSummary(key);
-        }
+        // Set the summaries reflecting the current values.
+        updateSummaries(screen);
 
         if (mAutoScrollToKey != null) {
             scrollToPreference(mAutoScrollToKey);
             mAutoScrollToKey = null;
+        }
+    }
+
+    /**
+     * Recursively update the summary for all preferences in the given group.
+     *
+     * @param group to update
+     */
+    private void updateSummaries(@NonNull final PreferenceGroup group) {
+        for (int i = 0; i < group.getPreferenceCount(); i++) {
+            final Preference p = group.getPreference(i);
+            if (p instanceof PreferenceGroup) {
+                updateSummaries((PreferenceGroup) p);
+            } else {
+                final String key = p.getKey();
+                if (key != null) {
+                    updateSummary(key);
+                }
+            }
         }
     }
 
@@ -443,7 +461,10 @@ public abstract class BasePreferenceFragment
     protected void updateSummary(@NonNull final String key) {
         final Preference preference = findPreference(key);
         if (preference != null) {
-            preference.setSummary(getValueAsString(preference));
+            final CharSequence summary = getValueAsString(preference);
+            if (summary != null) {
+                preference.setSummary(summary);
+            }
         }
     }
 
@@ -452,14 +473,15 @@ public abstract class BasePreferenceFragment
      *
      * @param preference to get the value of
      *
-     * @return the value string
+     * @return the value string, or {@code null} if the preference had no values
      */
-    @NonNull
+    @Nullable
     private CharSequence getValueAsString(@NonNull final Preference preference) {
         if (preference instanceof ListPreference) {
             final CharSequence value = ((ListPreference) preference).getEntry();
             return value != null ? value : getString(R.string.hint_not_set);
         }
+
         if (preference instanceof EditTextPreference) {
             return ((EditTextPreference) preference).getText();
         }
@@ -467,7 +489,7 @@ public abstract class BasePreferenceFragment
         if (preference instanceof BitmaskPreference) {
             final BitmaskPreference bmp = (BitmaskPreference) preference;
             if (!bmp.isActive()) {
-                return bmp.getNotSetSummary();
+                return bmp.getDisregardButtonText();
             }
             // if it is in use, drop through to MultiSelectListPreference
         }
@@ -483,7 +505,7 @@ public abstract class BasePreferenceFragment
                 } else {
                     // This re-surfaces sometimes after a careless dev. change.
                     Logger.warnWithStackTrace(
-                            preference.getContext(), TAG,
+                            msp.getContext(), TAG,
                             "MultiSelectListPreference:"
                             + "\n s=" + s
                             + "\n key=" + msp.getKey()
@@ -499,10 +521,10 @@ public abstract class BasePreferenceFragment
                 return text;
             } else {
                 // the preference has no values set, but that is a VALID setting and will be used.
-                return preference.getContext().getString(R.string.none);
+                return msp.getContext().getString(R.string.none);
             }
-        } else {
-            return "";
         }
+
+        return null;
     }
 }

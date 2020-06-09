@@ -28,6 +28,7 @@
   -->
 
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     >
     <PreferenceCategory
         android:title="@string/pg_filters">
@@ -67,13 +68,16 @@
             android:title="@string/lbl_loaned"
             />
 
+        <!--        -->
         <com.hardbacknutter.nevertoomanybooks.widgets.BitmaskPreference
             android:defaultValue="@array/empty_array"
+            android:dialogMessage="@string/info_filter_edition"
             android:entries="@array/pe_bob_filter_edition"
             android:entryValues="@array/pv_bob_filter_edition"
             android:icon="@drawable/ic_filter_list"
             android:key="style.booklist.filter.editions"
-            android:title="@string/lbl_edition" />
+            android:title="@string/lbl_edition"
+            app:disregardButtonText="@string/bookshelf_all_books" />
 
     </PreferenceCategory>
 </PreferenceScreen>

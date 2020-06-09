@@ -99,6 +99,14 @@
       "name": "Esperanto"
     }
   ],
+  "editions": [
+    {
+      "name": "First"
+    },
+    {
+      "name": "Bookclub"
+    }
+  ],
   "styles": [
     {
       "name": "Acquired"

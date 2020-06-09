@@ -27,14 +27,9 @@
  */
 package com.hardbacknutter.nevertoomanybooks.settings.styles;
 
-import android.os.Bundle;
-
-import androidx.annotation.Nullable;
 import androidx.annotation.XmlRes;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
-import com.hardbacknutter.nevertoomanybooks.widgets.BitmaskPreference;
 
 /**
  * Used/defined in xml/preferences_styles.xml
@@ -46,16 +41,5 @@ public class StyleFiltersFragment
     @XmlRes
     protected int getLayoutId() {
         return R.xml.preferences_style_filters;
-    }
-
-    @Override
-    public void onCreatePreferences(@Nullable final Bundle savedInstanceState,
-                                    @Nullable final String rootKey) {
-        super.onCreatePreferences(savedInstanceState, rootKey);
-
-        BitmaskPreference preference = findPreference(Prefs.pk_style_filter_editions);
-        if (preference != null) {
-            preference.setNotSetSummary(R.string.bookshelf_all_books);
-        }
     }
 }
