@@ -489,7 +489,7 @@ public abstract class BasePreferenceFragment
         if (preference instanceof BitmaskPreference) {
             final BitmaskPreference bmp = (BitmaskPreference) preference;
             if (!bmp.isActive()) {
-                return bmp.getDisregardButtonText();
+                return bmp.getDisregardSummaryText();
             }
             // if it is in use, drop through to MultiSelectListPreference
         }

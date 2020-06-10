@@ -56,10 +56,22 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.settings.styles.StyleFiltersFragment;
 
 /**
- * Handles a secondary preference key (originalKey + ".active")
+ * Allows a user to select 0 or more checkboxes (forming a bitmask) or select to disregard
+ * the entire setting.
+ * <p>
+ * The latter is handled with a secondary preference key (originalKey + ".active")
  * to enable/disabled the actual preference.
  * <p>
- * See {@link StyleFiltersFragment}.
+ * Usage example see {@link StyleFiltersFragment}.
+ *
+ * <pre>
+ *     {@code
+ *         <declare-styleable name="BitmaskPreference">
+ *           <attr name="disregardButtonText" format="string" />
+ *           <attr name="disregardSummaryText" format="string" />
+ *         </declare-styleable>
+ *     }
+ * </pre>
  */
 public class BitmaskPreference
         extends MultiSelectListPreference {
@@ -67,9 +79,18 @@ public class BitmaskPreference
     /** See {@link com.hardbacknutter.nevertoomanybooks.booklist.filters.BitmaskFilter}. */
     private static final String ACTIVE = ".active";
 
-    /** The summary resource to display if the preference is set to "don't use". */
+    /** The text to use for the neutral button, which allows the user to choose "don't use". */
     @Nullable
     private String mDisregardButtonText;
+
+    /**
+     * The summary text to display if the preference is set to "don't use".
+     * If not set, then the text from mDisregardButtonText will be used.
+     */
+    @Nullable
+    private String mDisregardSummaryText;
+
+
     @Nullable
     private Boolean mActive;
 
@@ -106,6 +127,8 @@ public class BitmaskPreference
             try {
                 mDisregardButtonText =
                         ta.getString(R.styleable.BitmaskPreference_disregardButtonText);
+                mDisregardSummaryText =
+                        ta.getString(R.styleable.BitmaskPreference_disregardSummaryText);
             } finally {
                 ta.recycle();
             }
@@ -116,26 +139,32 @@ public class BitmaskPreference
      * The summary to display when the value is <strong>not set</strong>.
      * This is different from when the value is set to all-blank.
      *
-     * @return string
+     * @return string, can be {@code null}
      */
-    @NonNull
+    @Nullable
+    public String getDisregardSummaryText() {
+        if (mDisregardSummaryText != null) {
+            return mDisregardSummaryText;
+        } else if (mDisregardButtonText != null) {
+            return mDisregardButtonText;
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * The text to display on the neutral button.
+     *
+     * @return string, can be {@code null}
+     */
+    @Nullable
     public String getDisregardButtonText() {
         if (mDisregardButtonText != null) {
             return mDisregardButtonText;
         } else {
-            return "";
+            return null;
         }
     }
-
-//    /**
-//     * The summary to display when the value is <strong>not set</strong>.
-//     * This is different from when the value is set to all-blank.
-//     *
-//     * @param notSetSummary summary text
-//     */
-//    public void setNotSetSummary(@NonNull final String notSetSummary) {
-//        mNotSetSummary = notSetSummary;
-//    }
 
     public boolean isActive() {
         if (mActive == null) {
@@ -295,8 +324,11 @@ public class BitmaskPreference
         protected void onPrepareDialogBuilder(@NonNull final AlertDialog.Builder builder) {
             super.onPrepareDialogBuilder(builder);
 
-            builder.setNeutralButton(((BitmaskPreference) getPreference()).getDisregardButtonText(),
-                                     (d, w) -> mUnused = true);
+            final String neutralText = ((BitmaskPreference) getPreference())
+                    .getDisregardButtonText();
+            if (neutralText != null) {
+                builder.setNeutralButton(neutralText, (d, w) -> mUnused = true);
+            }
         }
 
         @Override
