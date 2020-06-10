@@ -681,5 +681,6 @@
     <string name="lbl_next_book_without_cover">Μετάβαση στο επόμενο βιβλίο χωρίς εξώφυλλο</string>
     <string name="book_color_support_color">Δίχρωμος</string>
     <string name="book_format_digest">Kleines</string>
+    <string name="info_filter_edition">Επιλέξτε 0 ή περισσότερες επιλογές και πατήστε \"OK\" για να τις εφαρμόσετε ή πατήστε \"Όλα τα βιβλία\" για να τα αγνοήσετε όλα.</string>
 
 </resources>

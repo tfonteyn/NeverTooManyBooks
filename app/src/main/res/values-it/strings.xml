@@ -681,5 +681,6 @@
     <string name="lbl_next_book_without_cover">Passa al prossimo libro senza copertina</string>
     <string name="book_color_support_color">Bicolore</string>
     <string name="book_format_paperback_large">Grande tascabile</string>
+    <string name="info_filter_edition">Seleziona 0 o più opzioni e tocca “OK” per applicarle, oppure tocca “Tutti i libri” per ignorarle tutte.</string>
 
 </resources>

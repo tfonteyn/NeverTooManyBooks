@@ -682,5 +682,6 @@
     <string name="pt_edit_book_isbn_checks">ISBN geldigheidscontroles</string>
     <string name="lbl_table_of_content_entry">Vermelding in de inhoudsopgave</string>
     <string name="lbl_next_book_without_cover">Ga naar het volgende boek zonder omslag</string>
+    <string name="info_filter_edition">Selecteer 0 of meer opties en tik op \"OK\" om ze toe te passen, of tik op \"Alle boeken\" om ze allemaal te negeren.</string>
 
 </resources>

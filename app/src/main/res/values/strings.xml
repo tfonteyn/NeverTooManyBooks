@@ -40,12 +40,17 @@
     Each language string.xml file uses localized quotes as per
     https://en.wikipedia.org/wiki/Quotation_mark#Summary_table
     See top of each language resource file for the "quotes" comment.
+
+
+    en-rGB: https://issuetracker.google.com/issues/142590628
+    fixed in Studio 4.1
 -->
 <!DOCTYPE resources [<!ENTITY APP_NAME "NeverTooManyBooks">]>
 <!-- Quotes “…” - Regex to find wrong ones: ('|„|‘|’|«|») -->
 <!--suppress LongLine -->
-<resources>
-
+<resources
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:locale="en">
     <!-- ####################################################################################### -->
     <!-- == order formatters == -->
     <!-- ####################################################################################### -->
@@ -286,9 +291,7 @@
 
     <string name="txt_waiting_for_scanner">Waiting for scanner/camera</string>
 
-    <string name="error_bad_scanner">
-        It looks like your existing barcode scanner app is not compatible with &APP_NAME;.
-    </string>
+    <string name="error_bad_scanner">It looks like your existing barcode scanner app is not compatible with &APP_NAME;.</string>
 
     <!-- prompt to install a scanner. Shown above a menu of Scanners.
         This is used after a previous scanner selection was not working. -->
@@ -297,14 +300,12 @@
         installed, we recommend uninstalling it and reinstalling it.
     </string>
 
-    <string name="txt_manage_fields">
-        Selected fields are visible in the add/edit book screens. Unselected fields are hidden.
-    </string>
+    <string name="txt_manage_fields">Selected fields are visible in the add/edit book screens. Unselected fields are hidden.</string>
 
-    <string name="confirm_registration_required">
-        This feature requires registration with %1$s.\n
-        Would you like to see more information?
-    </string>
+    <!-- Info message for the "editions" filter selection (part of the style settings). -->
+    <string name="info_filter_edition">Select 0 or more options and tap “OK” to apply them, or tap “All books” to disregard all of them.</string>
+
+    <string name="confirm_registration_required">This feature requires registration with %1$s.\nWould you like to see more information?</string>
     <string name="confirm_registration_benefits">
         This feature benefits from registration with %1$s.\n
         Would you like to see more information, or disable this message?\n
@@ -319,9 +320,7 @@
         This is useful when synchronizing two devices.
     </string>
     <!-- Explanatory note for 'export to archive' initial 'simple' dialog -->
-    <string name="txt_export_backup_all">
-        All books, covers, preferences and custom styles will be exported to the archive.
-    </string>
+    <string name="txt_export_backup_all">All books, covers, preferences and custom styles will be exported to the archive.</string>
 
     <string name="txt_rebuild_scheduled">Rebuild scheduled</string>
 
@@ -1290,7 +1289,7 @@
     <string name="book_color_uncolored">Black &amp; white</string>
     <!-- uncolored, but with 1 or 2 support-colors.
          e.g. black and white, but additional red for emphasis -->
-    <string name="book_color_support_color">"Bicoloured "</string>
+    <string name="book_color_support_color">Bicolored</string>
 
     <!-- ####################################################################################### -->
     <!-- == List values. == -->
@@ -1673,10 +1672,5 @@
     <string name="info_purge_blns_all">Purge all BLNS</string>
     <!-- param 1: type of item; param 2: item name.  Example: "Purge BLNS for Bookshelf ToRead" -->
     <string name="info_purge_blns_item_name">Purge BLNS for %1$s %2$s ?</string>
-
-    <!-- Info message for the "editions" filter selection (part of the style settings). -->
-    <string name="info_filter_edition">
-        Select 0 or more options and tap “OK” to apply them, or tap “All books” to disregard all of them.
-    </string>
 
 </resources>

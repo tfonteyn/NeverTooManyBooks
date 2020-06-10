@@ -677,5 +677,6 @@
     <string name="lbl_next_book_without_cover">Kapaksız bir sonraki kitaba geç</string>
     <string name="book_color_support_color">çok renkli</string>
     <string name="book_format_digest">Küçük</string>
+    <string name="info_filter_edition">0 veya daha fazla seçenek belirleyin ve uygulamak için “Tamam” a veya tümünü yok saymak için “Tüm kitaplar” a basın.</string>
 
 </resources>

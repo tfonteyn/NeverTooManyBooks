@@ -684,4 +684,5 @@
     <string name="lbl_table_of_content_entry">Eintrag im Inhaltsverzeichnis</string>
     <string name="lbl_next_book_without_cover">Springe zum nächsten Buch ohne Cover</string>
     <string name="book_color_support_color">Zweifarbig</string>
+    <string name="info_filter_edition">Wählen Sie 0 oder mehr Optionen aus und tippen Sie auf \"OK\", um sie anzuwenden, oder tippen Sie auf \"Alle Bücher\", um alle zu ignorieren.</string>
 </resources>
