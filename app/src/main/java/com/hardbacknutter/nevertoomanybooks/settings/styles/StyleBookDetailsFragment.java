@@ -27,7 +27,10 @@
  */
 package com.hardbacknutter.nevertoomanybooks.settings.styles;
 
-import androidx.annotation.XmlRes;
+import android.os.Bundle;
+
+import androidx.annotation.CallSuper;
+import androidx.annotation.Nullable;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 
@@ -38,8 +41,10 @@ public class StyleBookDetailsFragment
         extends StyleBaseFragment {
 
     @Override
-    @XmlRes
-    protected int getLayoutId() {
-        return R.xml.preferences_style_extras;
+    @CallSuper
+    public void onCreatePreferences(@Nullable final Bundle savedInstanceState,
+                                    @Nullable final String rootKey) {
+        super.onCreatePreferences(savedInstanceState, rootKey);
+        setPreferencesFromResource(R.xml.preferences_style_extras, rootKey);
     }
 }

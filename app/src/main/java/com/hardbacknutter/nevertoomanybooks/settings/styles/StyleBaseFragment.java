@@ -35,7 +35,6 @@ import android.view.View;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.XmlRes;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -62,9 +61,6 @@ public abstract class StyleBaseFragment
     BooklistStyle mStyle;
 
     private long mTemplateId;
-
-    @XmlRes
-    protected abstract int getLayoutId();
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -110,8 +106,6 @@ public abstract class StyleBaseFragment
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.DUMP_STYLE) {
             Log.d(TAG, "onCreatePreferences|" + mStyle);
         }
-
-        setPreferencesFromResource(getLayoutId(), rootKey);
     }
 
     // experimental, not tested at all!

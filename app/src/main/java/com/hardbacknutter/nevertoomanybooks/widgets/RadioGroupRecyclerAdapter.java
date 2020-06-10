@@ -53,9 +53,6 @@ public class RadioGroupRecyclerAdapter<T extends Entity>
         extends RecyclerView.Adapter<RadioGroupRecyclerAdapter.Holder> {
 
     @NonNull
-    private final Context mContext;
-
-    @NonNull
     private final LayoutInflater mInflater;
     @NonNull
     private final List<T> mItems;
@@ -78,8 +75,7 @@ public class RadioGroupRecyclerAdapter<T extends Entity>
                                      @Nullable final T selection,
                                      @Nullable final SelectionListener<T> listener) {
 
-        mContext = context;
-        mInflater = LayoutInflater.from(mContext);
+        mInflater = LayoutInflater.from(context);
         mItems = items;
         mSelection = selection;
         mOnSelectionListener = listener;
@@ -101,12 +97,11 @@ public class RadioGroupRecyclerAdapter<T extends Entity>
         // store the item on a tag for easy retrieval
         holder.buttonView.setTag(R.id.TAG_ITEM, item);
 
-        holder.buttonView.setText(item.getLabel(mContext));
+        holder.buttonView.setText(item.getLabel(holder.buttonView.getContext()));
         final boolean checked = mSelection != null && item.getId() == mSelection.getId();
         holder.buttonView.setChecked(checked);
         holder.buttonView.setOnClickListener(this::itemCheckChanged);
     }
-
 
     private void itemCheckChanged(@NonNull final View v) {
         //noinspection unchecked

@@ -34,7 +34,6 @@ import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.XmlRes;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceScreen;
 import androidx.preference.SeekBarPreference;
@@ -66,15 +65,10 @@ public class StyleFragment
     public static final String TAG = "StylePreferenceFragment";
 
     @Override
-    @XmlRes
-    protected int getLayoutId() {
-        return R.xml.preferences_style;
-    }
-
-    @Override
     public void onCreatePreferences(@Nullable final Bundle savedInstanceState,
                                     @Nullable final String rootKey) {
         super.onCreatePreferences(savedInstanceState, rootKey);
+        setPreferencesFromResource(R.xml.preferences_style, rootKey);
 
         final Preference thumbScale = findPreference(Prefs.pk_style_scale_thumbnail);
         if (thumbScale != null) {
