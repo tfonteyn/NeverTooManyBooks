@@ -374,7 +374,7 @@ public class EditBookActivity
         @Override
         public Fragment createFragment(final int position) {
             try {
-                return (Fragment) mTabs.get(position).clazz.newInstance();
+                return mTabs.get(position).clazz.newInstance();
 
             } catch (@NonNull final IllegalAccessException
                     | java.lang.InstantiationException ignore) {

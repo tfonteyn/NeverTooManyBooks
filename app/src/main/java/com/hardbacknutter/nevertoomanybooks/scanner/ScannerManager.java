@@ -127,7 +127,7 @@ public final class ScannerManager {
     public static Scanner getScanner(@NonNull final Context context) {
         try {
             // Preferred scanner available?
-            ScannerFactory psf = (ScannerFactory)
+            final ScannerFactory psf =
                     SCANNER_FACTORIES.get(getPreferredScanner(context)).newInstance();
             if (psf.isAvailable(context)) {
                 return psf.getScanner(context);
@@ -135,7 +135,7 @@ public final class ScannerManager {
 
             // Search all supported scanners; return first working one
             for (int i = 0; i < SCANNER_FACTORIES.size(); i++) {
-                ScannerFactory sf = (ScannerFactory) SCANNER_FACTORIES.valueAt(i).newInstance();
+                final ScannerFactory sf = SCANNER_FACTORIES.valueAt(i).newInstance();
                 if (sf != psf && sf.isAvailable(context)) {
                     return sf.getScanner(context);
                 }
@@ -158,8 +158,7 @@ public final class ScannerManager {
                                       @NonNull final OnResultListener resultListener) {
         ScannerFactory sf = null;
         try {
-            sf = (ScannerFactory)
-                    SCANNER_FACTORIES.get(getPreferredScanner(activity)).newInstance();
+            sf = SCANNER_FACTORIES.get(getPreferredScanner(activity)).newInstance();
         } catch (@NonNull final IllegalAccessException | InstantiationException ignore) {
             // ignore
         }
@@ -188,10 +187,10 @@ public final class ScannerManager {
         } else {
             // without the store, we can't do any automatic installs.
             if (isGooglePlayStoreInstalled(activity)) {
-                String marketUrl = sf.getMarketUrl();
+                final String marketUrl = sf.getMarketUrl();
                 if (marketUrl != null && !marketUrl.isEmpty()) {
-                    Uri uri = Uri.parse(marketUrl);
-                    Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                    final Uri uri = Uri.parse(marketUrl);
+                    final Intent intent = new Intent(Intent.ACTION_VIEW, uri);
                     try {
                         activity.startActivity(intent);
                         // returning true is not a guarantee for the install working...
@@ -217,20 +216,21 @@ public final class ScannerManager {
     private static void updateGooglePlayServices(@NonNull final Activity activity,
                                                  @NonNull final OnResultListener resultListener) {
 
-        GoogleApiAvailability gApi = GoogleApiAvailability.getInstance();
-        int status = gApi.isGooglePlayServicesAvailable(activity);
+        final GoogleApiAvailability gApi = GoogleApiAvailability.getInstance();
+        final int status = gApi.isGooglePlayServicesAvailable(activity);
 
         if (status == ConnectionResult.SUCCESS) {
             // up-to-date, ready to use.
             resultListener.onResult(true);
 
         } else {
-            Dialog dialog = gApi.getErrorDialog(activity, status,
-                                                RequestCode.UPDATE_GOOGLE_PLAY_SERVICES,
-                                                d -> {
-                                                    setPreferredScanner(activity, ZXING_COMPATIBLE);
-                                                    resultListener.onResult(false);
-                                                });
+            final Dialog dialog = gApi.getErrorDialog(activity, status,
+                                                      RequestCode.UPDATE_GOOGLE_PLAY_SERVICES,
+                                                      d -> {
+                                                          setPreferredScanner(activity,
+                                                                              ZXING_COMPATIBLE);
+                                                          resultListener.onResult(false);
+                                                      });
             // Paranoia...
             if (dialog == null) {
                 resultListener.onResult(true);
@@ -268,8 +268,8 @@ public final class ScannerManager {
     private static void googlePlayStoreMissing(@NonNull final Context context,
                                                @NonNull final OnResultListener resultListener) {
 
-        String msg = context.getString(R.string.error_google_play_store_missing) + '\n'
-                     + context.getString(R.string.txt_install_scanner_recommendation);
+        final String msg = context.getString(R.string.error_google_play_store_missing) + '\n'
+                           + context.getString(R.string.txt_install_scanner_recommendation);
 
         new MaterialAlertDialogBuilder(context)
                 .setIcon(R.drawable.ic_warning)
@@ -321,7 +321,7 @@ public final class ScannerManager {
      */
     public static String collectDebugInfo(@NonNull final Context context) {
 
-        StringBuilder message = new StringBuilder();
+        final StringBuilder message = new StringBuilder();
 
         // Scanners installed
         try {
@@ -331,8 +331,8 @@ public final class ScannerManager {
 
             for (String scannerAction : ALL_ACTIONS) {
                 message.append("Scanner [").append(scannerAction).append("]:\n");
-                Intent scannerIntent = new Intent(scannerAction, null);
-                List<ResolveInfo> resolved =
+                final Intent scannerIntent = new Intent(scannerAction, null);
+                final List<ResolveInfo> resolved =
                         context.getPackageManager().queryIntentActivities(scannerIntent, 0);
 
                 if (!resolved.isEmpty()) {
