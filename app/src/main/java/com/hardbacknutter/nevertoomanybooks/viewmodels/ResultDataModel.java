@@ -74,6 +74,11 @@ public class ResultDataModel
     }
 
     public void putResultData(@NonNull final String name,
+                              @NonNull final String value) {
+        mResultData.putExtra(name, value);
+    }
+
+    public void putResultData(@NonNull final String name,
                               @NonNull final Parcelable value) {
         mResultData.putExtra(name, value);
     }

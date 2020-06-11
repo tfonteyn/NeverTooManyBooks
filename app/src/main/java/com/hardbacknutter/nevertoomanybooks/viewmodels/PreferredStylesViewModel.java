@@ -40,6 +40,7 @@ import java.util.ArrayList;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyle;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
+import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 
 public class PreferredStylesViewModel
         extends ViewModel {
@@ -51,7 +52,7 @@ public class PreferredStylesViewModel
     private DAO mDb;
 
     /** the selected style at onCreate time. */
-    private long mInitialStyleId;
+    private String mInitialStyleUuid;
 
     /** Flag set when anything is changed. Includes moving styles up/down, on/off, ... */
     private boolean mIsDirty;
@@ -78,9 +79,9 @@ public class PreferredStylesViewModel
             mDb = new DAO(TAG);
             mList = new ArrayList<>(BooklistStyle.getStyles(context, mDb, true).values());
 
-            mInitialStyleId = args.getLong(BooklistStyle.BKEY_STYLE_ID, 0);
-            if (mInitialStyleId == 0) {
-                throw new IllegalStateException("Style id must be passed in args");
+            mInitialStyleUuid = args.getString(BooklistStyle.BKEY_STYLE_UUID);
+            if (mInitialStyleUuid == null) {
+                throw new IllegalArgumentException(ErrorMsg.ARGS_MISSING_STYLE);
             }
         }
     }
@@ -95,12 +96,13 @@ public class PreferredStylesViewModel
     }
 
     /**
-     * Get the style id that was the selected style when this object was created.
+     * Get the style UUID that was the selected style when this object was created.
      *
-     * @return id
+     * @return UUID
      */
-    public long getInitialStyleId() {
-        return mInitialStyleId;
+    @NonNull
+    public String getInitialStyleUuid() {
+        return mInitialStyleUuid;
     }
 
     @NonNull
@@ -129,18 +131,21 @@ public class PreferredStylesViewModel
      *
      * @return position of the style in the list
      */
-    public int handleStyleChange(@NonNull final Context context,
-                                 @NonNull final BooklistStyle style,
-                                 final long templateId) {
+    public int onStyleChange(@NonNull final Context context,
+                             @NonNull final BooklistStyle style,
+                             final long templateId) {
         mIsDirty = true;
 
         // Always save a new style to the database first!
         if (style.getId() == 0) {
+            // this will also update the style in the list of user styles.
             BooklistStyle.StyleDAO.updateOrInsert(mDb, style);
         } else {
-            // update the style in the list of user styles.
+            // (only) update the style in the list of user styles.
             BooklistStyle.StyleDAO.update(style);
         }
+
+        // Now (re)organise the list of styles.
 
         // based on the uuid, find the style in the list.
         // Don't use 'indexOf' (use id instead), as the incoming style object

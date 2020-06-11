@@ -52,6 +52,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.BooklistAdapter;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyle;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 
 /**
  * Represents a Bookshelf.
@@ -269,22 +270,25 @@ public class Bookshelf
         return mName;
     }
 
+    public void setName(@NonNull final String name) {
+        mName = name;
+    }
+
     /**
-     * Set the style for this bookshelf. The style will also be set as the global default.
+     * Set the style for this bookshelf.
      *
      * @param context Current context
      * @param db      Database Access
-     * @param style   to set
+     * @param style   to set; must already exist (id != 0)
      */
     public void setStyle(@NonNull final Context context,
                          @NonNull final DAO db,
                          @NonNull final BooklistStyle style) {
-
-        style.setDefault(context);
-
+        if (style.getId() == 0) {
+            throw new IllegalArgumentException(ErrorMsg.ARGS_MISSING_STYLE);
+        }
+        db.updateOrInsertBookshelf(context, this, style.getId());
         mStyleUuid = style.getUuid();
-        final long styleId = getStyle(context, db).getId();
-        db.updateOrInsertBookshelf(context, this, styleId);
     }
 
     /**
@@ -299,10 +303,8 @@ public class Bookshelf
     public BooklistStyle getStyle(@NonNull final Context context,
                                   @NonNull final DAO db) {
 
-        BooklistStyle style = BooklistStyle.getStyle(context, db, mStyleUuid);
-        if (style == null) {
-            style = BooklistStyle.getDefault(context, db);
-        }
+        // Always validate first
+        final BooklistStyle style = BooklistStyle.getStyleOrDefault(context, db, mStyleUuid);
         // the previous uuid might have been overruled so we always refresh it
         mStyleUuid = style.getUuid();
         return style;

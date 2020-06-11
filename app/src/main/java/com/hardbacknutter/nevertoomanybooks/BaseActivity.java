@@ -477,7 +477,7 @@ public abstract class BaseActivity
             }
             case R.id.nav_manage_bookshelves: {
                 final Intent intent = new Intent(this, EditBookshelvesActivity.class);
-                startActivityForResult(intent, RequestCode.NAV_PANEL_EDIT_BOOKSHELVES);
+                startActivityForResult(intent, RequestCode.NAV_PANEL_MANAGE_BOOKSHELVES);
                 return true;
             }
             // case R.id.nav_manage_list_styles: {
@@ -485,7 +485,7 @@ public abstract class BaseActivity
             //     // we're on the main BooksOnBookshelf activity.
             //     // Enabling it elsewhere means we'd need to get a DAO to pass in.
             //     final Intent intent = new Intent(this, PreferredStylesActivity.class)
-            //         .putExtra(UniqueId.BKEY_STYLE_ID,
+            //         .putExtra(BooklistStyle.BKEY_STYLE_ID,
             //                   BooklistStyle.getDefaultStyle(this, mDb));
             //     startActivityForResult(intent, UniqueId.REQ_NAV_PANEL_EDIT_STYLES);
             //     return true;
@@ -588,14 +588,14 @@ public abstract class BaseActivity
                 return;
 
             // logging only
-            case RequestCode.NAV_PANEL_EDIT_BOOKSHELVES:
+            case RequestCode.NAV_PANEL_MANAGE_BOOKSHELVES:
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
                     Log.d(TAG, "BaseActivity.onActivityResult|REQ_NAV_PANEL_EDIT_BOOKSHELVES");
                 }
                 return;
 
             // logging only
-            case RequestCode.NAV_PANEL_EDIT_STYLES:
+            case RequestCode.NAV_PANEL_MANAGE_STYLES:
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
                     Log.d(TAG, "BaseActivity.onActivityResult|REQ_NAV_PANEL_EDIT_STYLES");
                 }

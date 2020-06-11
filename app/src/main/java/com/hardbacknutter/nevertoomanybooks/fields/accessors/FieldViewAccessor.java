@@ -167,4 +167,13 @@ public interface FieldViewAccessor<T, V extends View> {
                || value instanceof Checkable && !((Checkable) value).isChecked()
                || value.toString().isEmpty();
     }
+
+    /**
+     * Convenience method to facilitate creating a non-empty FieldValidator
+     *
+     * @param errorText to display if the field is empty.
+     */
+    default void setErrorIfEmpty(@NonNull String errorText) {
+        setError(isEmpty() ? errorText : null);
+    }
 }

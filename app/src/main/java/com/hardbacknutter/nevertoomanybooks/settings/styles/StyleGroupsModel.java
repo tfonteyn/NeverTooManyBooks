@@ -69,7 +69,19 @@ public class StyleGroupsModel
         if (mStyle == null) {
             mStyle = args.getParcelable(BooklistStyle.BKEY_STYLE);
             Objects.requireNonNull(mStyle, ErrorMsg.ARGS_MISSING_STYLE);
-            mList = createList(context);
+
+            // Build an array list with the groups from the style
+            mList = new ArrayList<>(mStyle.getGroupCount());
+            for (BooklistGroup group : mStyle.getGroups()) {
+                mList.add(new GroupWrapper(group, true));
+            }
+            // Get all other groups and add any missing ones to the list so the user can
+            // add them if wanted.
+            for (BooklistGroup group : BooklistGroup.getAllGroups(context, mStyle)) {
+                if (!mStyle.containsGroup(group.getId())) {
+                    mList.add(new GroupWrapper(group, false));
+                }
+            }
         }
     }
 
@@ -79,30 +91,6 @@ public class StyleGroupsModel
 
     public ArrayList<GroupWrapper> getList() {
         return mList;
-    }
-
-    /**
-     * Construct the list by wrapping each group with its 'present' flag.
-     *
-     * @param context Current context
-     *
-     * @return the list
-     */
-    @NonNull
-    private ArrayList<GroupWrapper> createList(@NonNull final Context context) {
-        // Build an array list with the groups from the style
-        final ArrayList<GroupWrapper> wrappers = new ArrayList<>(mStyle.getGroupCount());
-        for (BooklistGroup group : mStyle.getGroups()) {
-            wrappers.add(new GroupWrapper(group, true));
-        }
-        // Get all other groups and add any missing ones to the list so the user can
-        // add them if wanted.
-        for (BooklistGroup group : BooklistGroup.getAllGroups(context, mStyle)) {
-            if (!mStyle.containsGroup(group.getId())) {
-                wrappers.add(new GroupWrapper(group, false));
-            }
-        }
-        return wrappers;
     }
 
     /**

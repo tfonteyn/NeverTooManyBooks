@@ -143,18 +143,21 @@ public class BooklistStyle
     static final int FONT_SCALE_LARGE = 2;
     /** log tag. */
     private static final String TAG = "BooklistStyle";
+
     /**
-     * A BooklistStyle <strong>ID</strong>.
+     * A BooklistStyle <strong>UUID</strong>. This is used during the USE of a style.
      * <p>
-     * <br>type: {@code long}
+     * <br>type: {@code String}
      */
-    public static final String BKEY_STYLE_ID = TAG + ":id";
+    public static final String BKEY_STYLE_UUID = TAG + ":uuid";
+
     /**
-     * A parcelled BooklistStyle.
+     * A parcelled BooklistStyle. This is used during the EDITING of a style.
      * <p>
      * <br>type: {@link BooklistStyle}
      */
     public static final String BKEY_STYLE = TAG + ":style";
+
     /**
      * Styles related data was modified (or not).
      * This includes a Style being modified or deleted,
@@ -167,6 +170,7 @@ public class BooklistStyle
      * setResult
      */
     public static final String BKEY_STYLE_MODIFIED = TAG + ":modified";
+
     /** the amount of details to show in the header. */
     private static final int HEADER_BITMASK_ALL =
             HEADER_SHOW_BOOK_COUNT
@@ -451,7 +455,28 @@ public class BooklistStyle
     }
 
     /**
-     * Get the default style.
+     * Get the specified style. If not found, the default style will be returned.
+     *
+     * @param context Current context
+     * @param db      Database Access
+     * @param uuid    UUID of the style to get.
+     *
+     * @return the style, or the default style if not found
+     */
+    @NonNull
+    public static BooklistStyle getStyleOrDefault(@NonNull final Context context,
+                                                  @NonNull final DAO db,
+                                                  @NonNull final String uuid) {
+        final BooklistStyle style = getStyle(context, db, uuid);
+        if (style != null) {
+            return style;
+        }
+        // fall back to the user default.
+        return getDefault(context, db);
+    }
+
+    /**
+     * Get the <strong>user</strong> default style.
      *
      * @param context Current context
      * @param db      Database Access
@@ -465,20 +490,18 @@ public class BooklistStyle
         // read the global user default, or if not present the hardcoded default.
         final String uuid = PreferenceManager.getDefaultSharedPreferences(context)
                                              .getString(PREF_BL_STYLE_CURRENT_DEFAULT,
-                                                  Builtin.DEFAULT_STYLE_UUID);
+                                                        Builtin.DEFAULT_STYLE_UUID);
 
-        // any existing user or builtin style ?
         final BooklistStyle style = getStyle(context, db, uuid);
         if (style != null) {
             return style;
         }
-
-        // Return the builtin default if the uuid in prefs was invalid.
+        // fall back to the builtin default.
         return Builtin.getDefault(context);
     }
 
     /**
-     * Get the specified style.
+     * Get the specified style; {@code null} if not found.
      *
      * @param context Current context
      * @param db      Database Access
@@ -487,9 +510,9 @@ public class BooklistStyle
      * @return the style, or {@code null} if not found
      */
     @Nullable
-    public static BooklistStyle getStyle(@NonNull final Context context,
-                                         @NonNull final DAO db,
-                                         @NonNull final String uuid) {
+    private static BooklistStyle getStyle(@NonNull final Context context,
+                                          @NonNull final DAO db,
+                                          @NonNull final String uuid) {
         // Check Builtin first
         final BooklistStyle style = Builtin.getStyle(context, uuid);
         if (style != null) {
@@ -501,34 +524,6 @@ public class BooklistStyle
     }
 
     /**
-     * Get the specified style.
-     *
-     * @param context Current context
-     * @param db      Database Access
-     * @param id      ID of the style to get.
-     *
-     * @return the style, or {@code null} if not found
-     */
-    @SuppressWarnings("unused")
-    @Nullable
-    public static BooklistStyle getStyle(@NonNull final Context context,
-                                         @NonNull final DAO db,
-                                         final long id) {
-        if (id == 0) {
-            throw new IllegalArgumentException(ErrorMsg.ARGS_MISSING_STYLE + "|id=0");
-        }
-
-        // User defined ?
-        final BooklistStyle style = StyleDAO.getStyle(context, db, id);
-        if (style != null) {
-            return style;
-        }
-
-        // Builtin ? or null if not found
-        return Builtin.getStyle(context, id);
-    }
-
-    /**
      * Get an ordered Map with all the styles (user/builtin).
      * The preferred styles are at the front of the list.
      *
@@ -536,7 +531,7 @@ public class BooklistStyle
      * @param db      Database Access
      * @param all     if {@code true} then also return the non-preferred styles
      *
-     * @return ordered list
+     * @return LinkedHashMap, key: uuid, value: style
      */
     @NonNull
     public static Map<String, BooklistStyle> getStyles(@NonNull final Context context,
@@ -563,6 +558,19 @@ public class BooklistStyle
             }
         }
         return styles;
+    }
+
+    /**
+     * store the current style as the global default one.
+     *
+     * @param context Current context
+     * @param uuid    style to set
+     */
+    public static void setDefault(@NonNull final Context context,
+                                  @NonNull final String uuid) {
+        PreferenceManager.getDefaultSharedPreferences(context)
+                         .edit().putString(PREF_BL_STYLE_CURRENT_DEFAULT, uuid)
+                         .apply();
     }
 
     /**
@@ -831,9 +839,7 @@ public class BooklistStyle
      * @param context Current context
      */
     public void setDefault(@NonNull final Context context) {
-        PreferenceManager.getDefaultSharedPreferences(context)
-                         .edit().putString(PREF_BL_STYLE_CURRENT_DEFAULT, mUuid)
-                         .apply();
+        setDefault(context, mUuid);
     }
 
     /**
@@ -1065,7 +1071,7 @@ public class BooklistStyle
      * @return group list
      */
     @NonNull
-    public List<BooklistGroup> getGroups() {
+    public ArrayList<BooklistGroup> getGroups() {
         return mStyleGroups.getGroups();
     }
 
@@ -1435,7 +1441,7 @@ public class BooklistStyle
         }
 
         @NonNull
-        List<BooklistGroup> getGroups() {
+        ArrayList<BooklistGroup> getGroups() {
             return new ArrayList<>(mGroups.values());
         }
 

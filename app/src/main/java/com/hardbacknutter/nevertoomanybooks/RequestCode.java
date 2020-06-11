@@ -34,9 +34,9 @@ package com.hardbacknutter.nevertoomanybooks;
 public final class RequestCode {
 
     /** navigation panel. */
-    public static final int NAV_PANEL_EDIT_BOOKSHELVES = 1_001;
+    public static final int NAV_PANEL_MANAGE_BOOKSHELVES = 1_001;
     /** navigation panel. */
-    public static final int NAV_PANEL_EDIT_STYLES = 1_002;
+    public static final int NAV_PANEL_MANAGE_STYLES = 1_002;
     /** navigation panel. */
     public static final int NAV_PANEL_IMPORT = 1_003;
     /** navigation panel. */

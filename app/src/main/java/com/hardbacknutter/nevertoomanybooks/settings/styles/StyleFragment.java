@@ -91,8 +91,8 @@ public class StyleFragment
         preference = findPreference(Prefs.pk_style_groups);
         if (preference != null) {
             preference.setOnPreferenceClickListener(p -> {
-                Intent intent = new Intent(getContext(), StyleGroupsActivity.class);
-                intent.putExtra(BooklistStyle.BKEY_STYLE, mStyle);
+                Intent intent = new Intent(getContext(), StyleGroupsActivity.class)
+                        .putExtra(BooklistStyle.BKEY_STYLE, mStyle);
                 startActivityForResult(intent, RequestCode.EDIT_STYLE_GROUPS);
                 return true;
             });

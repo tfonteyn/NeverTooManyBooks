@@ -29,6 +29,7 @@ package com.hardbacknutter.nevertoomanybooks.booklist;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -38,6 +39,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.appcompat.app.AlertDialog;
+import androidx.core.util.Pair;
 import androidx.fragment.app.DialogFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -46,6 +48,8 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.BaseActivity;
@@ -66,12 +70,16 @@ public class StylePickerDialogFragment
     public static final String TAG = "StylePickerDialogFrag";
 
     private static final String BKEY_SHOW_ALL_STYLES = TAG + ":showAllStyles";
-    private final ArrayList<BooklistStyle> mBooklistStyles = new ArrayList<>();
+    /** The styles get transformed into Pair records which are passed to the adapter. */
+    private final List<Pair<String, String>> mAdapterItemList = new ArrayList<>();
+    /** Show all styles, or only the preferred styles. */
     private boolean mShowAllStyles;
-    private RadioGroupRecyclerAdapter<BooklistStyle> mAdapter;
+    /** The map with all styles as loaded from the database. */
+    private Map<String, BooklistStyle> mBooklistStyles;
+    private RadioGroupRecyclerAdapter<String, String> mAdapter;
     /** Currently selected style. */
     @Nullable
-    private BooklistStyle mCurrentStyle;
+    private String mCurrentStyleUuid;
 
     /** Where to send the result. */
     @Nullable
@@ -89,7 +97,7 @@ public class StylePickerDialogFragment
                                              final boolean all) {
         final DialogFragment frag = new StylePickerDialogFragment();
         final Bundle args = new Bundle(2);
-        args.putParcelable(BooklistStyle.BKEY_STYLE, currentStyle);
+        args.putString(BooklistStyle.BKEY_STYLE_UUID, currentStyle.getUuid());
         args.putBoolean(BKEY_SHOW_ALL_STYLES, all);
         frag.setArguments(args);
         return frag;
@@ -109,11 +117,9 @@ public class StylePickerDialogFragment
         super.onCreate(savedInstanceState);
 
         final Bundle args = requireArguments();
-        mCurrentStyle = args.getParcelable(BooklistStyle.BKEY_STYLE);
-        Objects.requireNonNull(mCurrentStyle, ErrorMsg.ARGS_MISSING_STYLE);
+        mCurrentStyleUuid = args.getString(BooklistStyle.BKEY_STYLE_UUID);
+        Objects.requireNonNull(mCurrentStyleUuid, ErrorMsg.ARGS_MISSING_STYLE);
         mShowAllStyles = args.getBoolean(BKEY_SHOW_ALL_STYLES, false);
-
-        loadStyles();
     }
 
     @NonNull
@@ -125,10 +131,12 @@ public class StylePickerDialogFragment
         final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         listView.setLayoutManager(linearLayoutManager);
 
+        loadStyles();
+
         //noinspection ConstantConditions
         mAdapter = new RadioGroupRecyclerAdapter<>(getContext(),
-                                                   mBooklistStyles, mCurrentStyle,
-                                                   style -> mCurrentStyle = style);
+                                                   mAdapterItemList, mCurrentStyleUuid,
+                                                   uuid -> mCurrentStyleUuid = uuid);
         listView.setAdapter(mAdapter);
 
         return new MaterialAlertDialogBuilder(getContext())
@@ -164,22 +172,22 @@ public class StylePickerDialogFragment
     }
 
     /**
-     * Send the selected style back. Silently returns if there was nothing selected.
+     * Send the selected style id back. Silently returns if there was nothing selected.
      */
     private void onStyleSelected() {
-        mCurrentStyle = mAdapter.getSelection();
-        if (mCurrentStyle == null) {
+        mCurrentStyleUuid = mAdapter.getSelection();
+        if (mCurrentStyleUuid == null) {
             return;
         }
         dismiss();
 
         if (mListener != null && mListener.get() != null) {
-            mListener.get().onStyleChanged(mCurrentStyle);
+            mListener.get().onStyleChanged(mCurrentStyleUuid);
         } else {
             if (BuildConfig.DEBUG /* always */) {
-                Log.w(TAG, "onStyleSelected|" +
-                           (mListener == null ? ErrorMsg.LISTENER_WAS_NULL
-                                              : ErrorMsg.LISTENER_WAS_DEAD));
+                Log.w(TAG, "onStyleSelected|"
+                           + (mListener == null ? ErrorMsg.LISTENER_WAS_NULL
+                                                : ErrorMsg.LISTENER_WAS_DEAD));
             }
         }
     }
@@ -188,26 +196,27 @@ public class StylePickerDialogFragment
      * Edit the selected style. Silently returns if there was nothing selected.
      */
     private void onEditStyle() {
-        mCurrentStyle = mAdapter.getSelection();
-        if (mCurrentStyle == null) {
+        mCurrentStyleUuid = mAdapter.getSelection();
+        if (mCurrentStyleUuid == null) {
             return;
         }
         dismiss();
 
+        BooklistStyle style = mBooklistStyles.get(mCurrentStyleUuid);
+        //noinspection ConstantConditions
+        final long templateId = style.getId();
+        if (!style.isUserDefined()) {
+            // clone a builtin style first
+            //noinspection ConstantConditions
+            style = style.clone(getContext());
+        }
+
         // use the activity so we get the results there.
         final Activity activity = getActivity();
         final Intent intent = new Intent(activity, SettingsActivity.class)
-                .putExtra(BaseActivity.BKEY_FRAGMENT_TAG, StyleFragment.TAG);
-
-        if (mCurrentStyle.isUserDefined()) {
-            intent.putExtra(BooklistStyle.BKEY_STYLE, mCurrentStyle);
-        } else {
-            // clone builtin style first
-            //noinspection ConstantConditions
-            intent.putExtra(BooklistStyle.BKEY_STYLE, mCurrentStyle.clone(getContext()));
-        }
-
-        intent.putExtra(StyleBaseFragment.BKEY_TEMPLATE_ID, mCurrentStyle.getId());
+                .putExtra(BaseActivity.BKEY_FRAGMENT_TAG, StyleFragment.TAG)
+                .putExtra(BooklistStyle.BKEY_STYLE, style)
+                .putExtra(StyleBaseFragment.BKEY_TEMPLATE_ID, templateId);
         //noinspection ConstantConditions
         activity.startActivityForResult(intent, RequestCode.EDIT_STYLE);
     }
@@ -219,19 +228,24 @@ public class StylePickerDialogFragment
     }
 
     /**
-     * Fetch the styles from the database.
+     * Fetch the styles.
      */
     private void loadStyles() {
+        final Context context = getContext();
+
         try (DAO db = new DAO(TAG)) {
-            mBooklistStyles.clear();
             //noinspection ConstantConditions
-            mBooklistStyles.addAll(BooklistStyle.getStyles(getContext(), db,
-                                                           mShowAllStyles).values());
+            mBooklistStyles = BooklistStyle.getStyles(context, db, mShowAllStyles);
+        }
+
+        mAdapterItemList.clear();
+        for (BooklistStyle style : mBooklistStyles.values()) {
+            mAdapterItemList.add(new Pair<>(style.getUuid(), style.getLabel(context)));
         }
     }
 
     public interface StyleChangedListener {
 
-        void onStyleChanged(@NonNull BooklistStyle style);
+        void onStyleChanged(@NonNull String uuid);
     }
 }

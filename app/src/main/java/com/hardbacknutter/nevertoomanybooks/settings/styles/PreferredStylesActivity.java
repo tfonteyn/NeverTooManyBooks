@@ -129,7 +129,7 @@ public class PreferredStylesActivity
 
         // setup the adapter
         mListAdapter = new BooklistStylesAdapter(this, mModel.getList(),
-                                                 mModel.getInitialStyleId(),
+                                                 mModel.getInitialStyleUuid(),
                                                  vh -> mItemTouchHelper.startDrag(vh));
         mListAdapter.registerAdapterDataObserver(mAdapterDataObserver);
         mListView.setAdapter(mListAdapter);
@@ -160,14 +160,17 @@ public class PreferredStylesActivity
 
     @Override
     public void onBackPressed() {
-        final Intent resultData = new Intent()
-                .putExtra(BooklistStyle.BKEY_STYLE_MODIFIED, mModel.isDirty());
+        final Intent resultData = new Intent();
 
-        // return the currently selected style, so the caller can apply it.
+        // return the currently selected style UUID, so the caller can apply it.
+        // This is independent from the fact of this style (or any other) been modified or not.
         final BooklistStyle selectedStyle = mListAdapter.getSelected();
         if (selectedStyle != null) {
-            resultData.putExtra(BooklistStyle.BKEY_STYLE, selectedStyle);
+            resultData.putExtra(BooklistStyle.BKEY_STYLE_UUID, selectedStyle.getUuid());
         }
+
+        // again: independent from the returned style!
+        resultData.putExtra(BooklistStyle.BKEY_STYLE_MODIFIED, mModel.isDirty());
 
         setResult(Activity.RESULT_OK, resultData);
         super.onBackPressed();
@@ -187,24 +190,27 @@ public class PreferredStylesActivity
             case RequestCode.EDIT_STYLE: {
                 if (resultCode == Activity.RESULT_OK) {
                     Objects.requireNonNull(data, ErrorMsg.NULL_INTENT_DATA);
+                    // We get the ACTUAL style back.
+                    // This style might be new (id==0) or already existing (id!=0).
                     @Nullable
                     final BooklistStyle style = data.getParcelableExtra(BooklistStyle.BKEY_STYLE);
 
                     if (data.getBooleanExtra(BooklistStyle.BKEY_STYLE_MODIFIED, false)) {
                         if (style != null) {
-                            // original style we cloned/edited
-                            final long templateId =
-                                    data.getLongExtra(StyleBaseFragment.BKEY_TEMPLATE_ID, 0);
+                            // id of the original style we cloned (different from current)
+                            // or edited (same as current).
+                            final long templateId = data.getLongExtra(
+                                    StyleBaseFragment.BKEY_TEMPLATE_ID, style.getId());
 
-                            final int position = mModel.handleStyleChange(this, style, templateId);
+                            final int position = mModel.onStyleChange(this, style, templateId);
                             mListAdapter.setSelectedPosition(position);
                         }
 
-                        // always update all rows
+                        // always update all rows as the order might have changed
                         mListAdapter.notifyDataSetChanged();
 
                     } else {
-                        // the style was not modified, discard it if this was a new style
+                        // the style was not modified, discard it if this was a cloned (new) style
                         if (style != null && style.getId() == 0) {
                             BooklistStyle.StyleDAO.discard(this, style);
                         }
@@ -355,11 +361,6 @@ public class PreferredStylesActivity
             Log.d(TAG, "ENTER|editStyle|" + style);
         }
 
-        //FIXME: create the style fully when cloning it. Then only pass the id around.
-        // we can still 'discard' it if needed.
-        // IMPORTANT: we parcel the style to edit it.
-        // This allows us to handle a new style (id==0) without storing it in the database first.
-        // upon returning in onActivityResult, we'll handle the id.
         final Intent intent = new Intent(this, SettingsActivity.class)
                 .putExtra(BaseActivity.BKEY_FRAGMENT_TAG, StyleFragment.TAG)
                 .putExtra(BooklistStyle.BKEY_STYLE, style)
@@ -393,8 +394,9 @@ public class PreferredStylesActivity
     private class BooklistStylesAdapter
             extends RecyclerViewAdapterBase<BooklistStyle, Holder> {
 
-        /** The id of the item which should be / is selected at creation time. */
-        private final long mInitialSelectedItemId;
+        /** The UUID of the item which should be / is selected at creation time. */
+        @NonNull
+        private final String mInitialSelectedItemUuid;
 
         /** Currently selected row. */
         private int mSelectedPosition = RecyclerView.NO_POSITION;
@@ -402,17 +404,17 @@ public class PreferredStylesActivity
         /**
          * Constructor.
          *
-         * @param context               Current context
-         * @param items                 List of styles
-         * @param initialSelectedItemId initially selected item id
-         * @param dragStartListener     Listener to handle the user moving rows up and down
+         * @param context                 Current context
+         * @param items                   List of styles
+         * @param initialSelectedItemUuid initially selected style UUID
+         * @param dragStartListener       Listener to handle the user moving rows up and down
          */
         BooklistStylesAdapter(@NonNull final Context context,
                               @NonNull final List<BooklistStyle> items,
-                              final long initialSelectedItemId,
+                              @NonNull final String initialSelectedItemUuid,
                               @NonNull final StartDragListener dragStartListener) {
             super(context, items, dragStartListener);
-            mInitialSelectedItemId = initialSelectedItemId;
+            mInitialSelectedItemUuid = initialSelectedItemUuid;
         }
 
         @NonNull
@@ -448,7 +450,7 @@ public class PreferredStylesActivity
 
             // select the original row if there was nothing selected (yet).
             if (mSelectedPosition == RecyclerView.NO_POSITION
-                && style.getId() == mInitialSelectedItemId) {
+                && mInitialSelectedItemUuid.equals(style.getUuid())) {
                 mSelectedPosition = position;
             }
 

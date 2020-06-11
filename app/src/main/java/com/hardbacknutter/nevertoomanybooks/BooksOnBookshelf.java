@@ -164,82 +164,6 @@ public class BooksOnBookshelf
     private ProgressBar mProgressBar;
     /** The dropdown button to select a Bookshelf. */
     private Spinner mBookshelfSpinner;
-    /** Listener for clicks on the list. */
-    private final BooklistAdapter.OnRowClickedListener mOnRowClickedListener =
-            new BooklistAdapter.OnRowClickedListener() {
-
-                /**
-                 * User clicked a row.
-                 * <ul>
-                 *      <li>Book: open the details screen.</li>
-                 *      <li>Not a book: expand/collapse the section as appropriate.</li>
-                 * </ul>
-                 */
-                @Override
-                public void onItemClick(final int position) {
-                    final Cursor cursor = mModel.getListCursor();
-                    // Move the cursor, so we can read the data for this row.
-                    // Paranoia: if the user can click it, then this move should be fine.
-                    if (!cursor.moveToPosition(position)) {
-                        return;
-                    }
-                    final DataHolder rowData = new CursorRow(cursor);
-
-                    // If it's a book, open the details screen.
-                    if (rowData.getInt(DBDefinitions.KEY_BL_NODE_GROUP) == BooklistGroup.BOOK) {
-                        final long rowId = rowData.getLong(DBDefinitions.KEY_PK_ID);
-                        final long bookId = rowData.getLong(DBDefinitions.KEY_FK_BOOK);
-                        // Note we (re)create the flat table *every time* the user click a book.
-                        // This guarantees an exact match in rowId'
-                        // (which turns out tricky if we cache the table)
-                        // ENHANCE: re-implement flat table caching
-                        final String navTableName = mModel.createFlattenedBooklist();
-                        final Intent intent = new Intent(BooksOnBookshelf.this,
-                                                         BookDetailsActivity.class)
-                                .putExtra(DBDefinitions.KEY_PK_ID, bookId)
-                                .putExtra(BookDetailsFragmentViewModel.BKEY_NAV_TABLE, navTableName)
-                                .putExtra(BookDetailsFragmentViewModel.BKEY_NAV_ROW_ID, rowId);
-                        startActivityForResult(intent, RequestCode.BOOK_VIEW);
-
-                    } else {
-                        // it's a level, expand/collapse.
-                        final int nodeRowId =
-                                rowData.getInt(DBDefinitions.KEY_BL_LIST_VIEW_NODE_ROW_ID);
-                        final RowStateDAO.Node node = mModel.toggleNode(
-                                nodeRowId, RowStateDAO.Node.NEXT_STATE_TOGGLE, 1);
-                        refreshNodePosition(node);
-                    }
-                }
-
-                /**
-                 * User long-clicked on a row. Bring up a context menu as appropriate.
-                 */
-                @Override
-                public boolean onItemLongClick(final int position) {
-                    final Cursor cursor = mModel.getListCursor();
-                    // Move the cursor, so we can read the data for this row.
-                    // Paranoia: if the user can click it, then this move should be fine.
-                    if (!cursor.moveToPosition(position)) {
-                        return false;
-                    }
-                    final DataHolder rowData = new CursorRow(cursor);
-
-                    // build the menu for this row
-                    final Menu menu = MenuPicker.createMenu(BooksOnBookshelf.this);
-                    if (onCreateContextMenu(menu, rowData)) {
-                        // we have a menu to show, set the title according to the level.
-                        final int level = rowData.getInt(DBDefinitions.KEY_BL_NODE_LEVEL);
-                        final String title = mAdapter.getLevelText(position, level);
-
-                        // bring up the context menu
-                        new MenuPicker(BooksOnBookshelf.this, title, menu, position,
-                                       BooksOnBookshelf.this::onContextItemSelected)
-                                .show();
-                    }
-                    return true;
-                }
-            };
-
     /** List header. */
     private TextView mHeaderStyleNameView;
     /** List header. */
@@ -320,28 +244,94 @@ public class BooksOnBookshelf
 //            }
 //        }
     };
-    //    private BooksonbookshelfBinding mVb;
-    private final OptionsDialogBase.OptionsListener<ImportManager> mImportOptionsListener =
-            new OptionsDialogBase.OptionsListener<ImportManager>() {
+    /** Listener for clicks on the list. */
+    private final BooklistAdapter.OnRowClickedListener mOnRowClickedListener =
+            new BooklistAdapter.OnRowClickedListener() {
+
+                /**
+                 * User clicked a row.
+                 * <ul>
+                 *      <li>Book: open the details screen.</li>
+                 *      <li>Not a book: expand/collapse the section as appropriate.</li>
+                 * </ul>
+                 */
                 @Override
-                public void onOptionsSet(@NonNull final ImportManager options) {
-                    mImportModel.startArchiveImportTask(options);
+                public void onItemClick(final int position) {
+                    final Cursor cursor = mModel.getListCursor();
+                    // Move the cursor, so we can read the data for this row.
+                    // Paranoia: if the user can click it, then this move should be fine.
+                    if (!cursor.moveToPosition(position)) {
+                        return;
+                    }
+                    final DataHolder rowData = new CursorRow(cursor);
+
+                    // If it's a book, open the details screen.
+                    if (rowData.getInt(DBDefinitions.KEY_BL_NODE_GROUP) == BooklistGroup.BOOK) {
+                        final long rowId = rowData.getLong(DBDefinitions.KEY_PK_ID);
+                        final long bookId = rowData.getLong(DBDefinitions.KEY_FK_BOOK);
+                        // Note we (re)create the flat table *every time* the user click a book.
+                        // This guarantees an exact match in rowId'
+                        // (which turns out tricky if we cache the table)
+                        // ENHANCE: re-implement flat table caching
+                        final String navTableName = mModel.createFlattenedBooklist();
+                        final Intent intent = new Intent(BooksOnBookshelf.this,
+                                                         BookDetailsActivity.class)
+                                .putExtra(DBDefinitions.KEY_PK_ID, bookId)
+                                .putExtra(BookDetailsFragmentViewModel.BKEY_NAV_TABLE, navTableName)
+                                .putExtra(BookDetailsFragmentViewModel.BKEY_NAV_ROW_ID, rowId);
+                        startActivityForResult(intent, RequestCode.BOOK_VIEW);
+
+                    } else {
+                        // it's a level, expand/collapse.
+                        final int nodeRowId =
+                                rowData.getInt(DBDefinitions.KEY_BL_LIST_VIEW_NODE_ROW_ID);
+                        final RowStateDAO.Node node = mModel.toggleNode(
+                                nodeRowId, RowStateDAO.Node.NEXT_STATE_TOGGLE, 1);
+                        refreshNodePosition(node);
+                    }
+                }
+
+                /**
+                 * User long-clicked on a row. Bring up a context menu as appropriate.
+                 */
+                @Override
+                public boolean onItemLongClick(final int position) {
+                    final Cursor cursor = mModel.getListCursor();
+                    // Move the cursor, so we can read the data for this row.
+                    // Paranoia: if the user can click it, then this move should be fine.
+                    if (!cursor.moveToPosition(position)) {
+                        return false;
+                    }
+                    final DataHolder rowData = new CursorRow(cursor);
+
+                    // build the menu for this row
+                    final Menu menu = MenuPicker.createMenu(BooksOnBookshelf.this);
+                    if (onCreateContextMenu(menu, rowData)) {
+                        // we have a menu to show, set the title according to the level.
+                        final int level = rowData.getInt(DBDefinitions.KEY_BL_NODE_LEVEL);
+                        final String title = mAdapter.getLevelText(position, level);
+
+                        // bring up the context menu
+                        new MenuPicker(BooksOnBookshelf.this, title, menu, position,
+                                       BooksOnBookshelf.this::onContextItemSelected)
+                                .show();
+                    }
+                    return true;
                 }
             };
     /**
-     * Apply the style that a user has selected.
-     * Called from {@link StylePickerDialogFragment}.
+     * Called from {@link StylePickerDialogFragment} when the user selected a style to apply.
      */
     private final StylePickerDialogFragment.StyleChangedListener mStyleChangedListener =
             new StylePickerDialogFragment.StyleChangedListener() {
-                public void onStyleChanged(@NonNull final BooklistStyle style) {
-                    // store the new data
-                    mModel.onStyleChanged(BooksOnBookshelf.this, style);
-                    // There is very little ability to preserve position when going from
-                    // a list sorted by Author/Series to on sorted by unread/addedDate/publisher.
-                    // Keeping the current row/pos is probably the most useful thing we can
-                    // do since we *may* come back to a similar list.
+                public void onStyleChanged(@NonNull final String uuid) {
+                    // preserve position for current bookshelf/style combination
                     saveListPosition();
+                    // apply the new style
+                    mModel.onStyleChanged(BooksOnBookshelf.this, uuid);
+                    // Set the rebuild state like this is the first time in,
+                    // which it sort of is, given we are changing style.
+                    mModel.setPreferredListRebuildState(BooksOnBookshelf.this);
                     // and do a rebuild
                     mModel.buildBookList(BooksOnBookshelf.this);
                 }
@@ -355,6 +345,14 @@ public class BooksOnBookshelf
             this::exportPickUri;
     /** Import. */
     private ImportTaskModel mImportModel;
+    //    private BooksonbookshelfBinding mVb;
+    private final OptionsDialogBase.OptionsListener<ImportManager> mImportOptionsListener =
+            new OptionsDialogBase.OptionsListener<ImportManager>() {
+                @Override
+                public void onOptionsSet(@NonNull final ImportManager options) {
+                    mImportModel.startArchiveImportTask(options);
+                }
+            };
     /** Encapsulates the FAB button/menu. */
     private FabMenu mFabMenu;
 
@@ -531,14 +529,14 @@ public class BooksOnBookshelf
                 final Intent intent = new Intent(this, EditBookshelvesActivity.class)
                         .putExtra(EditBookshelvesModel.BKEY_CURRENT_BOOKSHELF,
                                   mModel.getCurrentBookshelf().getId());
-                startActivityForResult(intent, RequestCode.NAV_PANEL_EDIT_BOOKSHELVES);
+                startActivityForResult(intent, RequestCode.NAV_PANEL_MANAGE_BOOKSHELVES);
                 return true;
             }
             case R.id.nav_manage_list_styles: {
                 final Intent intent = new Intent(this, PreferredStylesActivity.class)
-                        .putExtra(BooklistStyle.BKEY_STYLE_ID,
-                                  mModel.getCurrentStyle(this).getId());
-                startActivityForResult(intent, RequestCode.NAV_PANEL_EDIT_STYLES);
+                        .putExtra(BooklistStyle.BKEY_STYLE_UUID,
+                                  mModel.getCurrentStyle(this).getUuid());
+                startActivityForResult(intent, RequestCode.NAV_PANEL_MANAGE_STYLES);
                 return true;
             }
 
@@ -1114,8 +1112,7 @@ public class BooksOnBookshelf
                 }
                 break;
             }
-            // from BaseActivity Nav Panel
-            case RequestCode.NAV_PANEL_EDIT_BOOKSHELVES: {
+            case RequestCode.NAV_PANEL_MANAGE_BOOKSHELVES: {
                 if (resultCode == Activity.RESULT_OK && data != null) {
                     // the last edited/inserted shelf
                     final long bookshelfId = data.getLongExtra(DBDefinitions.KEY_PK_ID,
@@ -1127,19 +1124,34 @@ public class BooksOnBookshelf
                 }
                 break;
             }
-            // from BaseActivity Nav Panel or from sort menu dialog
-            case RequestCode.NAV_PANEL_EDIT_STYLES:
-                // or directly from the style edit screen
-            case RequestCode.EDIT_STYLE: {
+
+            case RequestCode.NAV_PANEL_MANAGE_STYLES: {
                 if (resultCode == Activity.RESULT_OK) {
                     Objects.requireNonNull(data, ErrorMsg.NULL_INTENT_DATA);
+                    // we get the UUID for the selected style back.
+                    final String styleUuid = data.getStringExtra(BooklistStyle.BKEY_STYLE_UUID);
+                    if (styleUuid != null) {
+                        mModel.onStyleChanged(this, styleUuid);
+                    }
 
+                    if (data.getBooleanExtra(BooklistStyle.BKEY_STYLE_MODIFIED, false)) {
+                        mModel.setForceRebuildInOnResume(true);
+                    }
+                }
+                break;
+            }
+
+            case RequestCode.EDIT_STYLE: {
+                // We get here from the StylePickerDialogFragment (i.e. the style menu)
+                // when the user choose to EDIT a style.
+                if (resultCode == Activity.RESULT_OK) {
+                    Objects.requireNonNull(data, ErrorMsg.NULL_INTENT_DATA);
+                    // We get the ACTUAL style back.
+                    // This style might be new (id==0) or already existing (id!=0).
                     @Nullable
                     final BooklistStyle style = data.getParcelableExtra(BooklistStyle.BKEY_STYLE);
                     if (style != null) {
-                        // save the new bookshelf/style combination
-                        mModel.getCurrentBookshelf().setAsPreferred(this);
-                        mModel.setCurrentStyle(this, style);
+                        mModel.onStyleChanged(this, style);
                     }
 
                     if (data.getBooleanExtra(BooklistStyle.BKEY_STYLE_MODIFIED, false)) {

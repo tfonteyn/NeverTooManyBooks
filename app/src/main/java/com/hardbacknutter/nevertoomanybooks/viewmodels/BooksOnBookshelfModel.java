@@ -240,6 +240,10 @@ public class BooksOnBookshelfModel
                 }
             };
 
+    public void setPreferredListRebuildState(@NonNull final Context context) {
+        mRebuildState = getPreferredListRebuildState(context);
+    }
+
     /**
      * Get the current preferred rebuild state for the list.
      *
@@ -404,40 +408,42 @@ public class BooksOnBookshelfModel
     }
 
     /**
-     * Set the style on the current bookshelf.
+     * Should be called after a style change.
+     * The given Style will be saved to the database if it was a new Style (id == 0).
      *
      * @param context Current context
-     * @param style   to set
+     * @param style   the style to apply
      */
-    public void setCurrentStyle(@NonNull final Context context,
-                                @NonNull final BooklistStyle style) {
-        Objects.requireNonNull(mCurrentBookshelf, ErrorMsg.NULL_CURRENT_BOOKSHELF);
-
+    public void onStyleChanged(@NonNull final Context context,
+                               @NonNull final BooklistStyle style) {
         // always save a new style to the database
         if (style.getId() == 0) {
             BooklistStyle.StyleDAO.updateOrInsert(mDb, style);
         }
 
-        mCurrentBookshelf.setStyle(context, mDb, style);
+        onStyleChanged(context, style.getUuid());
     }
 
     /**
      * Should be called after a style change.
+     * The style should exist (id != 0), or if it doesn't, the default style will be used instead.
      *
      * @param context Current context
-     * @param style   that was selected
+     * @param uuid    the style to apply
      */
     public void onStyleChanged(@NonNull final Context context,
-                               @NonNull final BooklistStyle style) {
+                               @NonNull final String uuid) {
         Objects.requireNonNull(mCurrentBookshelf, ErrorMsg.NULL_CURRENT_BOOKSHELF);
+
+        // Always validate first
+        final BooklistStyle style = BooklistStyle.getStyleOrDefault(context, mDb, uuid);
+
+        // set as the global default.
+        BooklistStyle.setDefault(context, style.getUuid());
 
         // save the new bookshelf/style combination
         mCurrentBookshelf.setAsPreferred(context);
         mCurrentBookshelf.setStyle(context, mDb, style);
-
-        // Set the rebuild state like this is the first time in, which it sort of is,
-        // given we are changing style.
-        mRebuildState = getPreferredListRebuildState(context);
     }
 
     public void setRebuildState(final int rebuildState) {

@@ -138,48 +138,63 @@ public class EditBookshelfDialogFragment
             return false;
         }
 
-        // check if a shelf with this name already exists (null if not)
-        final Bookshelf existingShelf = mDb.getBookshelfByName(mName);
-
-        // are we adding a new Bookshelf but trying to use an existing name?
-        if ((mBookshelf.getId() == 0) && (existingShelf != null)) {
-            final Context context = getContext();
-
-            //noinspection ConstantConditions
-            String msg = context.getString(R.string.warning_x_already_exists,
-                                           context.getString(R.string.lbl_bookshelf));
-            showError(mVb.lblBookshelf, msg);
-            return false;
-        }
-
         // anything actually changed ?
         if (mBookshelf.getName().equals(mName)) {
             return true;
         }
 
-        // Create a new Bookshelf as a holder for the changes.
-        //noinspection ConstantConditions
-        Bookshelf newBookshelf = new Bookshelf(mName, mBookshelf.getStyle(getContext(), mDb));
-        mBookshelf.copyFrom(newBookshelf);
+        // check if a shelf with this name already exists (will be null if not)
+        final Bookshelf existingShelfWithSameName = mDb.getBookshelfByName(mName);
 
-        if (existingShelf != null) {
+        // are we adding a new Bookshelf but trying to use an existing name?
+        if ((mBookshelf.getId() == 0) && (existingShelfWithSameName != null)) {
+            final Context context = getContext();
+
+            //noinspection ConstantConditions
+            final String msg = context.getString(R.string.warning_x_already_exists,
+                                                 context.getString(R.string.lbl_bookshelf));
+            showError(mVb.lblBookshelf, msg);
+            return false;
+        }
+
+        if (existingShelfWithSameName == null) {
+            // It's a simple rename.
+            mBookshelf.setName(mName);
+
+            //noinspection ConstantConditions
+            final long styleId = mBookshelf.getStyle(getContext(), mDb).getId();
+            if (mDb.updateOrInsertBookshelf(getContext(), mBookshelf, styleId)) {
+                if (mListener != null && mListener.get() != null) {
+                    mListener.get().onBookshelfChanged(mBookshelf.getId(), 0);
+                } else {
+                    if (BuildConfig.DEBUG /* always */) {
+                        Log.w(TAG, "onBookshelfChanged(rename)|"
+                                   + (mListener == null ? ErrorMsg.LISTENER_WAS_NULL
+                                                        : ErrorMsg.LISTENER_WAS_DEAD));
+                    }
+                }
+            }
+            return true;
+
+        } else {
             // Merge the 2 shelves
+            //noinspection ConstantConditions
             new MaterialAlertDialogBuilder(getContext())
                     .setIcon(R.drawable.ic_warning)
                     .setTitle(mName)
                     .setMessage(R.string.confirm_merge_bookshelves)
                     .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
                     .setPositiveButton(R.string.action_merge, (d, w) -> {
-                        // move all books
-                        int booksMoved = mDb.mergeBookshelves(mBookshelf.getId(),
-                                                              existingShelf.getId());
+                        // move all books from the shelf being edited to the existing shelf
+                        final long toShelfId = existingShelfWithSameName.getId();
+                        final int booksMoved = mDb.mergeBookshelves(mBookshelf.getId(), toShelfId);
                         if (mListener != null && mListener.get() != null) {
-                            mListener.get().onBookshelfChanged(existingShelf.getId(), booksMoved);
+                            mListener.get().onBookshelfChanged(toShelfId, booksMoved);
                         } else {
                             if (BuildConfig.DEBUG /* always */) {
-                                Log.w(TAG, "onBookshelfChanged(merge)|" +
-                                           (mListener == null ? ErrorMsg.LISTENER_WAS_NULL
-                                                              : ErrorMsg.LISTENER_WAS_DEAD));
+                                Log.w(TAG, "onBookshelfChanged(merge)|"
+                                           + (mListener == null ? ErrorMsg.LISTENER_WAS_NULL
+                                                                : ErrorMsg.LISTENER_WAS_DEAD));
                             }
                         }
                         // close the DialogFrame
@@ -188,21 +203,6 @@ public class EditBookshelfDialogFragment
                     .create()
                     .show();
             return false;
-
-        } else {
-            long styleId = mBookshelf.getStyle(getContext(), mDb).getId();
-            if (mDb.updateOrInsertBookshelf(getContext(), mBookshelf, styleId)) {
-                if (mListener != null && mListener.get() != null) {
-                    mListener.get().onBookshelfChanged(mBookshelf.getId(), 0);
-                } else {
-                    if (BuildConfig.DEBUG /* always */) {
-                        Log.w(TAG, "onBookshelfChanged(new)|" +
-                                   (mListener == null ? ErrorMsg.LISTENER_WAS_NULL
-                                                      : ErrorMsg.LISTENER_WAS_DEAD));
-                    }
-                }
-            }
-            return true;
         }
     }
 

@@ -35,32 +35,33 @@ import android.widget.CompoundButton;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.util.Pair;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.entities.Entity;
 
 /**
  * Add a list of RadioButtons to a RecyclerView.
  * <p>
  * Row layout: {@code R.layout.row_choice_single}
  *
- * @param <T> type of the {@link Entity} represented by each RadioButton.
+ * @param <ID> first element of a {@link Pair} - the id for the item
+ * @param <CS> second element of a {@link Pair} - the CharSequence to display
  */
-public class RadioGroupRecyclerAdapter<T extends Entity>
+public class RadioGroupRecyclerAdapter<ID, CS extends CharSequence>
         extends RecyclerView.Adapter<RadioGroupRecyclerAdapter.Holder> {
 
     @NonNull
     private final LayoutInflater mInflater;
     @NonNull
-    private final List<T> mItems;
+    private final List<Pair<ID, CS>> mItems;
     @Nullable
-    private final SelectionListener<T> mOnSelectionListener;
+    private final SelectionListener<ID> mOnSelectionListener;
     /** The (pre-)selected item. */
     @Nullable
-    private T mSelection;
+    private ID mSelection;
 
     /**
      * Constructor.
@@ -71,9 +72,9 @@ public class RadioGroupRecyclerAdapter<T extends Entity>
      * @param listener  (optional) to send a selection to
      */
     public RadioGroupRecyclerAdapter(@NonNull final Context context,
-                                     @NonNull final List<T> items,
-                                     @Nullable final T selection,
-                                     @Nullable final SelectionListener<T> listener) {
+                                     @NonNull final List<Pair<ID, CS>> items,
+                                     @Nullable final ID selection,
+                                     @Nullable final SelectionListener<ID> listener) {
 
         mInflater = LayoutInflater.from(context);
         mItems = items;
@@ -93,20 +94,20 @@ public class RadioGroupRecyclerAdapter<T extends Entity>
     public void onBindViewHolder(@NonNull final Holder holder,
                                  final int position) {
 
-        final T item = mItems.get(position);
+        final Pair<ID, CS> item = mItems.get(position);
         // store the item on a tag for easy retrieval
-        holder.buttonView.setTag(R.id.TAG_ITEM, item);
+        holder.buttonView.setTag(R.id.TAG_ITEM, item.first);
 
-        holder.buttonView.setText(item.getLabel(holder.buttonView.getContext()));
-        final boolean checked = mSelection != null && item.getId() == mSelection.getId();
+        holder.buttonView.setText(item.second);
+        final boolean checked = mSelection != null && mSelection == item.first;
         holder.buttonView.setChecked(checked);
         holder.buttonView.setOnClickListener(this::itemCheckChanged);
     }
 
     private void itemCheckChanged(@NonNull final View v) {
         //noinspection unchecked
-        mSelection = (T) v.getTag(R.id.TAG_ITEM);
-        // this triggers a bind calls for the rows, which in turn set the checked status.
+        mSelection = (ID) v.getTag(R.id.TAG_ITEM);
+        // this triggers a bind calls for the rows, which in turn sets the checked status.
         notifyDataSetChanged();
         if (mOnSelectionListener != null) {
             // use a post allowing the UI to update the view first
@@ -117,10 +118,10 @@ public class RadioGroupRecyclerAdapter<T extends Entity>
     /**
      * Get the selected item.
      *
-     * @return item, can be {@code null} if no item is selected.
+     * @return item id, can be {@code null} if no item is selected.
      */
     @Nullable
-    public T getSelection() {
+    public ID getSelection() {
         return mSelection;
     }
 
@@ -129,9 +130,9 @@ public class RadioGroupRecyclerAdapter<T extends Entity>
         return mItems.size();
     }
 
-    public interface SelectionListener<T> {
+    public interface SelectionListener<ID> {
 
-        void onSelected(T o);
+        void onSelected(ID id);
     }
 
     /**
