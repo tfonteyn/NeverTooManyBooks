@@ -28,9 +28,7 @@
 package com.hardbacknutter.nevertoomanybooks.utils;
 
 import android.annotation.SuppressLint;
-import android.annotation.TargetApi;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.os.Build;
@@ -103,11 +101,19 @@ public final class LocaleUtils {
     /** Cache for Locales; key: the BOOK language (ISO3). */
     private static final Map<String, Locale> LOCALE_MAP = new HashMap<>();
 
-    /** Remember the current language to detect when language is switched. */
-    @NonNull
-    private static String sPreferredLocaleSpec = SYSTEM_LANGUAGE;
+    /**
+     * The currently active/preferred user Locale.
+     * See {@link #applyLocale}.
+     */
     @Nullable
     private static Locale sPreferredLocale;
+
+    /**
+     * Remember the current Locale spec to detect when language is switched.
+     * See {@link #applyLocale}.
+     */
+    @NonNull
+    private static String sPreferredLocaleSpec = SYSTEM_LANGUAGE;
 
     private LocaleUtils() {
     }
@@ -122,8 +128,8 @@ public final class LocaleUtils {
      */
     @NonNull
     public static String getPersistedLocaleSpec(@NonNull final Context context) {
-        SharedPreferences p = PreferenceManager.getDefaultSharedPreferences(context);
-        return p.getString(Prefs.pk_ui_locale, SYSTEM_LANGUAGE);
+        return PreferenceManager.getDefaultSharedPreferences(context)
+                                .getString(Prefs.pk_ui_locale, SYSTEM_LANGUAGE);
     }
 
     /**
@@ -159,8 +165,8 @@ public final class LocaleUtils {
             // fra.getDisplayLanguage()     fra
             // fra.getDisplayName()         fra
 
-            String displayLanguage = locale.getDisplayLanguage();
-            String iso3 = locale.getISO3Language();
+            final String displayLanguage = locale.getDisplayLanguage();
+            final String iso3 = locale.getISO3Language();
 
             return !displayLanguage.isEmpty() && !displayLanguage.equalsIgnoreCase(iso3);
 
@@ -200,9 +206,8 @@ public final class LocaleUtils {
      */
     @NonNull
     public static Context applyLocale(@NonNull final Context context) {
-        String localeSpec = getPersistedLocaleSpec(context);
-
-        // create the Locale at first access, or if the requested is different from the current.
+        final String localeSpec = getPersistedLocaleSpec(context);
+        // Create the Locale at first access, or if the persisted is different from the current.
         if (sPreferredLocale == null || !sPreferredLocaleSpec.equals(localeSpec)) {
             sPreferredLocaleSpec = localeSpec;
             sPreferredLocale = createLocale(localeSpec);
@@ -213,14 +218,17 @@ public final class LocaleUtils {
         // Update the JDK usage of Locale
         Locale.setDefault(sPreferredLocale);
 
-        // Update the Android resource usage of Locale
-        Context updatedContext;
-        if (Build.VERSION.SDK_INT >= 24) {
-            updatedContext = updateResources(context, sPreferredLocale);
-        } else {
-            updatedContext = updateResourcesLegacy(context, sPreferredLocale);
+        // Update the Android configuration Locale
+        final Configuration deltaConfig = new Configuration();
+        deltaConfig.setLocale(sPreferredLocale);
+
+        if (Build.VERSION.SDK_INT < 26) {
+            // Workaround for platform bug on SDK < 26
+            // (https://issuetracker.google.com/issues/140607881)
+            deltaConfig.fontScale = 0f;
         }
 
+        final Context updatedContext = context.createConfigurationContext(deltaConfig);
         if (BuildConfig.DEBUG /* always */) {
             insanityCheck(updatedContext);
         }
@@ -242,7 +250,7 @@ public final class LocaleUtils {
             return getSystemLocale();
         } else {
             // Create a Locale from a concatenated Locale string (e.g. 'de', 'en_AU')
-            String[] parts;
+            final String[] parts;
             if (localeSpec.contains("_")) {
                 parts = localeSpec.split("_");
             } else {
@@ -310,48 +318,24 @@ public final class LocaleUtils {
         return locale;
     }
 
-    @NonNull
-    private static Context updateResources(@NonNull final Context context,
-                                           @NonNull final Locale locale) {
-        Configuration configuration = context.getResources().getConfiguration();
-        configuration.setLocale(locale);
-        configuration.setLayoutDirection(locale);
-
-        return context.createConfigurationContext(configuration);
-    }
-
-    @TargetApi(23)
-    @NonNull
-    private static Context updateResourcesLegacy(@NonNull final Context context,
-                                                 @NonNull final Locale locale) {
-        Resources resources = context.getResources();
-
-        Configuration configuration = resources.getConfiguration();
-        configuration.locale = locale;
-        configuration.setLayoutDirection(locale);
-
-        resources.updateConfiguration(configuration, resources.getDisplayMetrics());
-
-        return context;
-    }
-
     /**
      * DEBUG ONLY.
      *
      * @param context Current context
      */
     private static void insanityCheck(@NonNull final Context context) {
-        String persistedIso3 = createLocale(getPersistedLocaleSpec(context)).getISO3Language();
-        String userIso3 = getUserLocale(context).getISO3Language();
-        String defIso3 = Locale.getDefault().getISO3Language();
+        final String persistedIso3 =
+                createLocale(getPersistedLocaleSpec(context)).getISO3Language();
+        final String userIso3 = getUserLocale(context).getISO3Language();
+        final String defIso3 = Locale.getDefault().getISO3Language();
 
         if (!defIso3.equals(userIso3)
             || !defIso3.equals(persistedIso3)
         ) {
-            String error = "defIso3=" + defIso3
-                           + "|userIso3=" + userIso3
-                           + "|SharedPreferences=" + persistedIso3;
-            Error e = new java.lang.VerifyError(error);
+            final String error = "defIso3=" + defIso3
+                                 + "|userIso3=" + userIso3
+                                 + "|SharedPreferences=" + persistedIso3;
+            final Error e = new java.lang.VerifyError(error);
             Logger.error(context, TAG, e, error);
             throw e;
         }
@@ -382,7 +366,7 @@ public final class LocaleUtils {
             Iterator<WeakReference<OnLocaleChangedListener>> it =
                     ON_LOCALE_CHANGED_LISTENERS.iterator();
             while (it.hasNext()) {
-                WeakReference<OnLocaleChangedListener> listenerRef = it.next();
+                final WeakReference<OnLocaleChangedListener> listenerRef = it.next();
                 if (listenerRef.get() == null || listenerRef.get().equals(listener)) {
                     // remove dead listeners and the specified listener
                     it.remove();
@@ -399,7 +383,7 @@ public final class LocaleUtils {
             Iterator<WeakReference<OnLocaleChangedListener>> it =
                     ON_LOCALE_CHANGED_LISTENERS.iterator();
             while (it.hasNext()) {
-                WeakReference<OnLocaleChangedListener> listenerRef = it.next();
+                final WeakReference<OnLocaleChangedListener> listenerRef = it.next();
                 if (listenerRef.get() != null) {
                     listenerRef.get().onLocaleChanged();
                 } else {
@@ -434,7 +418,7 @@ public final class LocaleUtils {
         }
 
         String lang = inputLang.trim().toLowerCase(LocaleUtils.getUserLocale(context));
-        int len = lang.length();
+        final int len = lang.length();
         if (len > 3) {
             lang = LanguageUtils.getISO3FromDisplayName(context, lang);
         }
@@ -476,18 +460,16 @@ public final class LocaleUtils {
     @NonNull
     public static Resources getLocalizedResources(@NonNull final Context context,
                                                   @NonNull final Locale desiredLocale) {
-        final Configuration current = context.getResources().getConfiguration();
-        final Configuration configuration = new Configuration(current);
+        final Configuration deltaConfig = new Configuration();
         final String lang = desiredLocale.getLanguage();
         if (lang.length() == 2) {
-            configuration.setLocale(desiredLocale);
+            deltaConfig.setLocale(desiredLocale);
         } else {
             // any 3-char code might need to be converted to 2-char be able to find the resource.
-            configuration.setLocale(new Locale(LanguageUtils.getLocaleIsoFromISO3(context, lang)));
+            deltaConfig.setLocale(new Locale(LanguageUtils.getLocaleIsoFromISO3(context, lang)));
         }
 
-        final Context localizedContext = context.createConfigurationContext(configuration);
-        return localizedContext.getResources();
+        return context.createConfigurationContext(deltaConfig).getResources();
     }
 
     /**
