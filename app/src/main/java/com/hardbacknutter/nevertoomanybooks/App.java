@@ -31,14 +31,10 @@ import android.app.Application;
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.content.res.Configuration;
 import android.os.Build;
-import android.util.Log;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
-
-import java.util.Locale;
 
 import org.acra.ACRA;
 import org.acra.ReportField;
@@ -50,7 +46,6 @@ import org.acra.file.Directory;
 
 import com.hardbacknutter.nevertoomanybooks.debug.DebugReport;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
-import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 
 @AcraMailSender(
         mailTo = "",
@@ -114,8 +109,6 @@ import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 public class App
         extends Application {
 
-    /** Log tag. */
-    private static final String TAG = "App";
     /**
      * Give static methods access to our singleton.
      * <strong>Note:</strong> never store a context in a static, use the instance instead
@@ -160,7 +153,7 @@ public class App
      */
     public static long getVersion(@NonNull final Context context) {
         try {
-            PackageInfo info =
+            final PackageInfo info =
                     context.getPackageManager().getPackageInfo(context.getPackageName(), 0);
             if (Build.VERSION.SDK_INT >= 28) {
                 return info.getLongVersionCode();
@@ -193,31 +186,4 @@ public class App
 //        super.onCreate();
 //        Stetho.initializeWithDefaults(this);
 //    }
-
-    /**
-     * Ensure to re-apply the user-preferred Locale to the Application (this) object.
-     *
-     * @param newConfig The new device configuration.
-     */
-    @Override
-    @CallSuper
-    public void onConfigurationChanged(@NonNull final Configuration newConfig) {
-        final String localeSpec = LocaleUtils
-                .getPersistedLocaleSpec(sInstance.getApplicationContext());
-        // override in the new config
-        newConfig.setLocale(LocaleUtils.createLocale(localeSpec));
-        // propagate to registered callbacks.
-        super.onConfigurationChanged(newConfig);
-
-        if (BuildConfig.DEBUG /* always */) {
-            Log.d(TAG, "onConfigurationChanged|Locale.getDefault=" + Locale.getDefault());
-            if (Build.VERSION.SDK_INT >= 24) {
-                Log.d(TAG, "onConfigurationChanged|newConfig.getLocales().get(0)="
-                           + newConfig.getLocales().get(0));
-            } else {
-                Log.d(TAG, "onConfigurationChanged|newConfig.locale=" + newConfig.locale);
-            }
-        }
-    }
-
 }
