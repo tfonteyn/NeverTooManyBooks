@@ -97,7 +97,7 @@ public abstract class BaseDataAccessor<T, V extends View>
 
     /**
      * Supports setting the text on an {@link TextInputLayout} or {@link TextView}.
-     * Fails silently if the view is no present.
+     * Fails silently if the view is not present.
      *
      * @param errorText to show
      */
@@ -115,7 +115,7 @@ public abstract class BaseDataAccessor<T, V extends View>
                     til.setError(errorText);
                 } else if (errorView instanceof TextView) {
                     TextView textView = (TextView) errorView;
-                    textView.setText(errorText);
+                    textView.setError(errorText);
                 }
             }
         }
