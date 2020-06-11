@@ -271,9 +271,9 @@ public class EditLenderDialogFragment
             mListener.get().onChange(mBookId, BookChangedListener.BOOK_LOANEE, data);
         } else {
             if (BuildConfig.DEBUG /* always */) {
-                Log.w(TAG, "onBookChanged|" +
-                           (mListener == null ? ErrorMsg.LISTENER_WAS_NULL
-                                              : ErrorMsg.LISTENER_WAS_DEAD));
+                Log.w(TAG, "onBookChanged|"
+                           + (mListener == null ? ErrorMsg.LISTENER_WAS_NULL
+                                                : ErrorMsg.LISTENER_WAS_DEAD));
             }
         }
         return true;

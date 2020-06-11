@@ -168,9 +168,9 @@ public class EditSeriesDialogFragment
             mListener.get().onChange(0, BookChangedListener.SERIES, null);
         } else {
             if (BuildConfig.DEBUG /* always */) {
-                Log.w(TAG, "onBookChanged|" +
-                           (mListener == null ? ErrorMsg.LISTENER_WAS_NULL
-                                              : ErrorMsg.LISTENER_WAS_DEAD));
+                Log.w(TAG, "onBookChanged|"
+                           + (mListener == null ? ErrorMsg.LISTENER_WAS_NULL
+                                                : ErrorMsg.LISTENER_WAS_DEAD));
             }
         }
         return true;

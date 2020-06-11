@@ -74,9 +74,9 @@ public abstract class OptionsDialogBase<T>
             mListener.get().onOptionsSet(options);
         } else {
             if (BuildConfig.DEBUG /* always */) {
-                Log.w(TAG, "onOptionsSet|" +
-                           (mListener == null ? ErrorMsg.LISTENER_WAS_NULL
-                                              : ErrorMsg.LISTENER_WAS_DEAD));
+                Log.w(TAG, "onOptionsSet|"
+                           + (mListener == null ? ErrorMsg.LISTENER_WAS_NULL
+                                                : ErrorMsg.LISTENER_WAS_DEAD));
             }
         }
     }
@@ -86,9 +86,9 @@ public abstract class OptionsDialogBase<T>
             mListener.get().onCancelled();
         } else {
             if (BuildConfig.DEBUG /* always */) {
-                Log.w(TAG, "onCancelled|" +
-                           (mListener == null ? ErrorMsg.LISTENER_WAS_NULL
-                                              : ErrorMsg.LISTENER_WAS_DEAD));
+                Log.w(TAG, "onCancelled|"
+                           + (mListener == null ? ErrorMsg.LISTENER_WAS_NULL
+                                                : ErrorMsg.LISTENER_WAS_DEAD));
             }
         }
     }

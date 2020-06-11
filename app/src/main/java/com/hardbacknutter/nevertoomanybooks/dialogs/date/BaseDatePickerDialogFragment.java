@@ -180,9 +180,9 @@ public class BaseDatePickerDialogFragment
             mListener.get().onDateSet(year, month, day);
         } else {
             if (BuildConfig.DEBUG /* always */) {
-                Log.w(TAG, "send|" +
-                           (mListener == null ? ErrorMsg.LISTENER_WAS_NULL
-                                              : ErrorMsg.LISTENER_WAS_DEAD));
+                Log.w(TAG, "send|"
+                           + (mListener == null ? ErrorMsg.LISTENER_WAS_NULL
+                                                : ErrorMsg.LISTENER_WAS_DEAD));
             }
         }
     }

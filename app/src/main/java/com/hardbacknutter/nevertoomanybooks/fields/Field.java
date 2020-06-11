@@ -109,7 +109,7 @@ public class Field<T, V extends View> {
     private int mTextInputLayoutId;
 
     @Nullable
-    private FieldValidator mValidator;
+    private FieldValidator<T, V> mValidator;
 
     /**
      * Constructor.
@@ -294,14 +294,13 @@ public class Field<T, V extends View> {
      *
      * @return Field (for chaining)
      */
-    public Field<T, V> setFieldValidator(@NonNull final FieldValidator validator) {
+    public Field<T, V> setFieldValidator(@NonNull final FieldValidator<T, V> validator) {
         mValidator = validator;
         return this;
     }
 
     public void validate() {
         if (mValidator != null) {
-            //noinspection unchecked
             mValidator.validate(this);
         }
     }

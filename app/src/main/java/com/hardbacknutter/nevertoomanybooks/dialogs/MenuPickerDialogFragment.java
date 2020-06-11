@@ -487,9 +487,9 @@ public class MenuPickerDialogFragment
                                 mListener.get().onContextItemSelected(item.getItemId(), mPosition);
                             } else {
                                 if (BuildConfig.DEBUG /* always */) {
-                                    Log.w(TAG, "onContextItemSelected|" +
-                                               (mListener == null ? ErrorMsg.LISTENER_WAS_NULL
-                                                                  : ErrorMsg.LISTENER_WAS_DEAD));
+                                    Log.w(TAG, "onContextItemSelected|"
+                                               + (mListener == null ? ErrorMsg.LISTENER_WAS_NULL
+                                                                    : ErrorMsg.LISTENER_WAS_DEAD));
                                 }
                             }
                         }

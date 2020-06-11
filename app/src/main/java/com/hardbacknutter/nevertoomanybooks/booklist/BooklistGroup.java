@@ -293,7 +293,7 @@ public class BooklistGroup
     @NonNull
     public static List<BooklistGroup> getAllGroups(@NonNull final Context context,
                                                    @NonNull final BooklistStyle style) {
-        List<BooklistGroup> list = new ArrayList<>();
+        final List<BooklistGroup> list = new ArrayList<>();
         // Get the set of all valid <strong>Group</strong> values.
         // In other words: all valid groups, <strong>except</strong> the BOOK.
         for (int id = 1; id <= GROUP_KEY_MAX; id++) {
@@ -315,7 +315,7 @@ public class BooklistGroup
                                  final boolean visible) {
 
         for (String key : keys) {
-            Preference preference = category.findPreference(key);
+            final Preference preference = category.findPreference(key);
             if (preference != null) {
                 preference.setVisible(visible);
             }
@@ -609,7 +609,7 @@ public class BooklistGroup
         @Override
         @CallSuper
         public Map<String, PPref> getPreferences() {
-            Map<String, PPref> map = super.getPreferences();
+            final Map<String, PPref> map = super.getPreferences();
             map.put(mAllSeries.getKey(), mAllSeries);
             return map;
         }
@@ -618,9 +618,9 @@ public class BooklistGroup
         public void setPreferencesVisible(@NonNull final PreferenceScreen screen,
                                           final boolean visible) {
 
-            PreferenceCategory category = screen.findPreference(Prefs.PSK_STYLE_SERIES);
+            final PreferenceCategory category = screen.findPreference(Prefs.PSK_STYLE_SERIES);
             if (category != null) {
-                String[] keys = {Prefs.pk_style_group_series_show_books_under_each_series};
+                final String[] keys = {Prefs.pk_style_group_series_show_books_under_each_series};
                 setPreferenceVisibility(category, keys, visible);
             }
         }
@@ -767,7 +767,7 @@ public class BooklistGroup
         @Override
         ArrayList<VirtualDomain> getGroupDomains() {
             // We need to inject the mSortedDomain as first in the list.
-            ArrayList<VirtualDomain> list = new ArrayList<>();
+            final ArrayList<VirtualDomain> list = new ArrayList<>();
             list.add(0, mSortedDomain);
             list.addAll(super.getGroupDomains());
             return list;
@@ -796,7 +796,7 @@ public class BooklistGroup
         @Override
         @CallSuper
         public Map<String, PPref> getPreferences() {
-            Map<String, PPref> map = super.getPreferences();
+            final Map<String, PPref> map = super.getPreferences();
             map.put(mAllAuthors.getKey(), mAllAuthors);
             map.put(mPrimaryType.getKey(), mPrimaryType);
             return map;
@@ -806,10 +806,10 @@ public class BooklistGroup
         public void setPreferencesVisible(@NonNull final PreferenceScreen screen,
                                           final boolean visible) {
 
-            PreferenceCategory category = screen.findPreference(Prefs.PSK_STYLE_AUTHOR);
+            final PreferenceCategory category = screen.findPreference(Prefs.PSK_STYLE_AUTHOR);
             if (category != null) {
-                String[] keys = {Prefs.pk_style_group_author_show_books_under_each_author,
-                                 Prefs.pk_style_group_author_primary_type};
+                final String[] keys = {Prefs.pk_style_group_author_show_books_under_each_author,
+                                       Prefs.pk_style_group_author_primary_type};
 
                 setPreferenceVisibility(category, keys, visible);
             }

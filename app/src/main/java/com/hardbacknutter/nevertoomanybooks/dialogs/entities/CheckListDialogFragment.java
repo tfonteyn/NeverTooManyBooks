@@ -156,9 +156,9 @@ public class CheckListDialogFragment
 
         } else {
             if (BuildConfig.DEBUG /* always */) {
-                Log.w(TAG, "onCheckListEditorSave|" +
-                           (mListener == null ? ErrorMsg.LISTENER_WAS_NULL
-                                              : ErrorMsg.LISTENER_WAS_DEAD));
+                Log.w(TAG, "onCheckListEditorSave|"
+                           + (mListener == null ? ErrorMsg.LISTENER_WAS_NULL
+                                                : ErrorMsg.LISTENER_WAS_DEAD));
             }
         }
     }

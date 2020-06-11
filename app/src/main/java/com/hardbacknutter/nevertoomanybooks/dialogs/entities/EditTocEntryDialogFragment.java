@@ -211,9 +211,9 @@ public class EditTocEntryDialogFragment
             mListener.get().addOrUpdateEntry(mTocEntry, mHasMultipleAuthors);
         } else {
             if (BuildConfig.DEBUG /* always */) {
-                Log.w(TAG, "addOrUpdateEntry|" +
-                           (mListener == null ? ErrorMsg.LISTENER_WAS_NULL
-                                              : ErrorMsg.LISTENER_WAS_DEAD));
+                Log.w(TAG, "addOrUpdateEntry|"
+                           + (mListener == null ? ErrorMsg.LISTENER_WAS_NULL
+                                                : ErrorMsg.LISTENER_WAS_DEAD));
             }
         }
         return true;

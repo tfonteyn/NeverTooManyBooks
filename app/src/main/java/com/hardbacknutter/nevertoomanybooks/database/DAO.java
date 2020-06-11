@@ -1860,7 +1860,7 @@ public class DAO
             throw new TransactionException(ErrorMsg.TRANSACTION_REQUIRED);
         }
 
-        ArrayList<Bookshelf> bookshelves =
+        final ArrayList<Bookshelf> bookshelves =
                 book.getParcelableArrayList(Book.BKEY_BOOKSHELF_ARRAY);
 
         // Need to delete the current records because they may have been reordered and a simple
@@ -1877,14 +1877,14 @@ public class DAO
             stmt = mSqlStatementManager.add(STMT_INSERT_BOOK_BOOKSHELF, SqlInsert.BOOK_BOOKSHELF);
         }
 
-        Locale userLocale = LocaleUtils.getUserLocale(context);
+        final Locale userLocale = LocaleUtils.getUserLocale(context);
         for (Bookshelf bookshelf : bookshelves) {
             if (bookshelf.getName().isEmpty()) {
                 continue;
             }
 
             // validate the style first
-            long styleId = bookshelf.getStyle(context, this).getId();
+            final long styleId = bookshelf.getStyle(context, this).getId();
 
             if (bookshelf.fixId(context, this, userLocale) == 0) {
                 insertBookshelf(bookshelf, styleId);
@@ -2195,7 +2195,7 @@ public class DAO
             stmt.bindLong(3, bookshelf.getTopItemPosition());
             stmt.bindLong(4, bookshelf.getTopViewOffset());
             stmt.bindLong(5, bookshelf.getTopRowId());
-            long iId = stmt.executeInsert();
+            final long iId = stmt.executeInsert();
             if (iId > 0) {
                 bookshelf.setId(iId);
             }
@@ -2204,21 +2204,20 @@ public class DAO
     }
 
     /**
-     * Takes all books from Bookshelf 'sourceId', and puts them onto Bookshelf 'destId',
-     * then deletes Bookshelf 'sourceId'.
-     * <p>
-     * The style of the bookshelf will not be changed.
+     * Moves all books from the 'sourceId' Bookshelf, to the 'destId' Bookshelf.
+     * The (now empty) 'sourceId' Bookshelf is then deleted.
      *
      * @return the amount of books moved.
      */
     public int mergeBookshelves(final long sourceId,
                                 final long destId) {
 
-        ContentValues cv = new ContentValues();
+        final ContentValues cv = new ContentValues();
         cv.put(KEY_FK_BOOKSHELF, destId);
 
-        int rowsAffected;
-        SyncLock txLock = sSyncedDb.beginTransaction(true);
+        final int rowsAffected;
+
+        final SyncLock txLock = sSyncedDb.beginTransaction(true);
         try {
             rowsAffected = sSyncedDb.update(TBL_BOOK_BOOKSHELF.getName(), cv,
                                             KEY_FK_BOOKSHELF + "=?",
@@ -2244,9 +2243,9 @@ public class DAO
     @SuppressWarnings("UnusedReturnValue")
     public int deleteBookshelf(final long id) {
 
-        int rowsAffected;
+        final int rowsAffected;
 
-        SyncLock txLock = sSyncedDb.beginTransaction(true);
+        final SyncLock txLock = sSyncedDb.beginTransaction(true);
         try {
             purgeNodeStatesByBookshelf(id);
 

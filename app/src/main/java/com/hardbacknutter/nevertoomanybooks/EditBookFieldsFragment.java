@@ -70,8 +70,6 @@ import com.hardbacknutter.nevertoomanybooks.fields.formatters.AuthorListFormatte
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.CsvFormatter;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.LanguageFormatter;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.SeriesListFormatter;
-import com.hardbacknutter.nevertoomanybooks.fields.validators.FieldValidator;
-import com.hardbacknutter.nevertoomanybooks.fields.validators.NonBlankValidator;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.ScannerViewModel;
 
@@ -81,8 +79,6 @@ public class EditBookFieldsFragment
 
     /** Log tag. */
     private static final String TAG = "EditBookFieldsFragment";
-    /** re-usable validator. */
-    private static final FieldValidator<Object, View> NON_BLANK_VALIDATOR = new NonBlankValidator();
 
     /** Dialog listener (strong reference). */
     private final CheckListDialogFragment.CheckListResultsListener mCheckListResultsListener =
@@ -227,21 +223,23 @@ public class EditBookFieldsFragment
     protected void onInitFields(@NonNull final Fields fields) {
         super.onInitFields(fields);
 
+        final String nonBlankRequired = getString(R.string.vldt_non_blank_required);
+
         fields.add(R.id.author, new TextViewAccessor<>(
                            new AuthorListFormatter(Author.Details.Short, true, false)),
                    Book.BKEY_AUTHOR_ARRAY, DBDefinitions.KEY_FK_AUTHOR)
               .setRelatedFields(R.id.lbl_author)
               .setErrorViewId(R.id.lbl_author)
-              .setFieldValidator(NON_BLANK_VALIDATOR);
+              .setFieldValidator(field -> field.getAccessor().setErrorIfEmpty(nonBlankRequired));
 
         fields.add(R.id.series_title, new TextViewAccessor<>(
                            new SeriesListFormatter(Series.Details.Short, true, false)),
                    Book.BKEY_SERIES_ARRAY, DBDefinitions.KEY_SERIES_TITLE)
               .setRelatedFields(R.id.lbl_series);
 
-        fields.add(R.id.title, new EditTextAccessor<>(), DBDefinitions.KEY_TITLE)
+        fields.add(R.id.title, new EditTextAccessor<String>(), DBDefinitions.KEY_TITLE)
               .setErrorViewId(R.id.lbl_title)
-              .setFieldValidator(NON_BLANK_VALIDATOR);
+              .setFieldValidator(field -> field.getAccessor().setErrorIfEmpty(nonBlankRequired));
 
         fields.add(R.id.description, new EditTextAccessor<>(), DBDefinitions.KEY_DESCRIPTION)
               .setRelatedFields(R.id.lbl_description);
@@ -253,7 +251,7 @@ public class EditBookFieldsFragment
         fields.add(R.id.language, new EditTextAccessor<>(new LanguageFormatter(), true),
                    DBDefinitions.KEY_LANGUAGE)
               .setRelatedFields(R.id.lbl_language)
-              .setFieldValidator(NON_BLANK_VALIDATOR);
+              .setFieldValidator(field -> field.getAccessor().setErrorIfEmpty(nonBlankRequired));
 
         fields.add(R.id.genre, new EditTextAccessor<>(), DBDefinitions.KEY_GENRE)
               .setRelatedFields(R.id.lbl_genre);
