@@ -62,7 +62,6 @@ import android.view.MotionEvent;
 import android.view.View;
 
 import androidx.annotation.CallSuper;
-import androidx.annotation.ColorInt;
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -139,7 +138,7 @@ public class CropImageView
     private HighlightView mHighlightView;
     @Nullable
     private HighlightView mMotionHighlightView;
-    @HighlightView.MotionEdge
+    @HighlightView.MotionEdgeHit
     private int mMotionEdge;
 
     private float mLastX;
@@ -284,8 +283,8 @@ public class CropImageView
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN: {
                 if (mHighlightView != null) {
-                    @HighlightView.MotionEdge
-                    final int edge = mHighlightView.getMotionHit(event.getX(), event.getY());
+                    @HighlightView.MotionEdgeHit
+                    final int edge = mHighlightView.getMotionEdgeHit(event.getX(), event.getY());
                     if (edge != HighlightView.GROW_NONE) {
                         mMotionEdge = edge;
                         mMotionHighlightView = mHighlightView;
@@ -345,7 +344,7 @@ public class CropImageView
     protected void onDraw(@NonNull final Canvas canvas) {
         super.onDraw(canvas);
         if (mHighlightView != null) {
-            mHighlightView.draw(canvas);
+            mHighlightView.onDraw(canvas);
         }
     }
 
@@ -577,13 +576,14 @@ public class CropImageView
 
         private final Paint mFocusPaint = new Paint();
         private final Paint mOutlinePaint = new Paint();
-        @ColorInt
-        private final int mOutlinePaintRectangleColor;
 
-        /** in screen space. */
-        Rect mDrawRect;
+        final Rect mImageViewDrawingRect = new Rect();
+        final Path path = new Path();
         @NonNull
         private ModifyMode mMode = ModifyMode.None;
+        private final RectF mDrawRectF = new RectF();
+        /** in screen space. */
+        private Rect mDrawRect;
 
         /**
          * Constructor.
@@ -614,21 +614,20 @@ public class CropImageView
             mOutlinePaint.setStrokeWidth(3F);
             mOutlinePaint.setStyle(Paint.Style.STROKE);
             mOutlinePaint.setAntiAlias(true);
-
-            mOutlinePaintRectangleColor = res.getColor(R.color.cropper_outline_rectangle, theme);
+            mOutlinePaint.setColor(res.getColor(R.color.cropper_outline_rectangle, theme));
         }
 
-        void draw(@NonNull final Canvas canvas) {
+        void onDraw(@NonNull final Canvas canvas) {
             canvas.save();
 
-            final Path path = new Path();
-            final Rect viewDrawingRect = new Rect();
-            mImageView.getDrawingRect(viewDrawingRect);
-            path.addRect(new RectF(mDrawRect), Path.Direction.CW);
-            mOutlinePaint.setColor(mOutlinePaintRectangleColor);
+            mImageView.getDrawingRect(mImageViewDrawingRect);
+
+            path.reset();
+            mDrawRectF.set(mDrawRect);
+            path.addRect(mDrawRectF, Path.Direction.CW);
 
             canvas.clipPath(path, Region.Op.DIFFERENCE);
-            canvas.drawRect(viewDrawingRect, mFocusPaint);
+            canvas.drawRect(mImageViewDrawingRect, mFocusPaint);
             canvas.restore();
             canvas.drawPath(path, mOutlinePaint);
 
@@ -673,9 +672,9 @@ public class CropImageView
         }
 
         /** Determines which edges are hit by touching at (x, y). */
-        @MotionEdge
-        int getMotionHit(final float x,
-                         final float y) {
+        @MotionEdgeHit
+        int getMotionEdgeHit(final float x,
+                             final float y) {
 
             final Rect r = computeLayout();
 
@@ -712,7 +711,7 @@ public class CropImageView
          *
          * @param edge specifies which edges the user is dragging.
          */
-        void handleMotion(@MotionEdge final int edge,
+        void handleMotion(@MotionEdgeHit final int edge,
                           float dx,
                           float dy) {
 
@@ -832,7 +831,7 @@ public class CropImageView
                                       GROW_TOP_EDGE, GROW_BOTTOM_EDGE,
                                       MOVE})
         @Retention(RetentionPolicy.SOURCE)
-        @interface MotionEdge {
+        @interface MotionEdgeHit {
 
         }
     }
