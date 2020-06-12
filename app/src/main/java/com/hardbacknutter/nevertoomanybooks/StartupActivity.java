@@ -51,6 +51,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DBHelper;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.QueueManager;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.NightModeUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.Notifier;
 import com.hardbacknutter.nevertoomanybooks.utils.UpgradeMessageManager;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.StartupViewModel;
@@ -112,7 +113,7 @@ public class StartupActivity
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         // apply the user-preferred Theme before super.onCreate is called.
-        BaseActivity.applyNightMode(this);
+        NightModeUtils.applyNightMode(this);
 
         super.onCreate(savedInstanceState);
 

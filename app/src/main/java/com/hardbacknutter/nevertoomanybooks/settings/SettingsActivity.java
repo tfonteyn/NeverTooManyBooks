@@ -51,7 +51,6 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.settings.styles.StyleFragment;
-import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.ResultDataModel;
 
 /**
@@ -66,7 +65,7 @@ public class SettingsActivity
     /** Log tag. */
     private static final String TAG = "SettingsActivity";
 
-    private ResultDataModel mModel;
+    private ResultDataModel mResultData;
 
     @Override
     protected void onSetContentView() {
@@ -77,7 +76,7 @@ public class SettingsActivity
     protected void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mModel = new ViewModelProvider(this).get(ResultDataModel.class);
+        mResultData = new ViewModelProvider(this).get(ResultDataModel.class);
 
         String tag = getIntent().getStringExtra(BaseActivity.BKEY_FRAGMENT_TAG);
         if (tag == null) {
@@ -202,23 +201,11 @@ public class SettingsActivity
     @CallSuper
     public void onSharedPreferenceChanged(@NonNull final SharedPreferences sharedPreferences,
                                           @NonNull final String key) {
-
         switch (key) {
-            // Trigger a recreate of this activity, if this setting has changed.
+            // Trigger a recreate of this activity, if one of these settings have changed.
             case Prefs.pk_ui_theme:
-                if (isNightModeChanged(this, mInitialThemeId)) {
-                    setIsRecreating();
-                    recreate();
-                }
-                break;
-
-            // Trigger a recreate of this activity, if this setting has changed.
             case Prefs.pk_ui_locale:
-                if (LocaleUtils.isChanged(this, mInitialLocaleSpec)) {
-                    LocaleUtils.onLocaleChanged();
-                    setIsRecreating();
-                    recreate();
-                }
+                recreateIfNeeded();
                 break;
 
             default:
@@ -227,7 +214,7 @@ public class SettingsActivity
 
         // set the result (and again and again...). Also see the fragment method.
         // TODO: make the response conditional, not all changes warrant a recreate!
-        mModel.putResultData(BaseActivity.BKEY_RECREATE, true);
+        mResultData.putResultData(BaseActivity.BKEY_PREF_CHANGE_REQUIRES_RECREATE, true);
     }
 
     @Override
@@ -239,14 +226,14 @@ public class SettingsActivity
         }
 
         if (data != null) {
-            mModel.putResultData(data);
+            mResultData.putResultData(data);
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
 
     @Override
     public void onBackPressed() {
-        setResult(Activity.RESULT_OK, mModel.getResultData());
+        setResult(Activity.RESULT_OK, mResultData.getResultIntent());
         super.onBackPressed();
     }
 }

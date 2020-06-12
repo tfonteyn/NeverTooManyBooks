@@ -31,7 +31,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -47,7 +46,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -65,10 +63,9 @@ import java.util.Objects;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsAdminFragment;
-import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.settings.SettingsActivity;
-import com.hardbacknutter.nevertoomanybooks.utils.LanguageUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.NightModeUtils;
 
 /**
  * Base class for all Activity's (except the startup activity).
@@ -110,33 +107,22 @@ public abstract class BaseActivity
 
     /**
      * Something changed (or not) that warrants a recreation of the caller to be needed.
+     * This is normally/always set by one of the settings components if they decide the
+     * use changed some setting that required the caller to be recreated.
+     *
      * <p>
      * <br>type: {@code boolean}
      * setResult
      */
-    public static final String BKEY_RECREATE = TAG + ":recreate";
+    public static final String BKEY_PREF_CHANGE_REQUIRES_RECREATE = TAG + ":recreate";
 
-    /**
-     * We're not using the actual {@link AppCompatDelegate} mode constants
-     * due to 'day-night' depending on the OS version.
-     */
-    private static final int THEME_INVALID = -1;
-    private static final int THEME_DAY_NIGHT = 0;
-    private static final int THEME_LIGHT = 1;
-    private static final int THEME_DARK = 2;
-
-    /** The default theme to use. */
-    @ThemeId
-    private static final int DEFAULT_THEME = THEME_DAY_NIGHT;
     /** Situation normal. */
-    private static final int ACTIVITY_STATUS_RUNNING = 0;
+    private static final int ACTIVITY_IS_RUNNING = 0;
     /** Activity is in need of recreating. */
-    private static final int ACTIVITY_STATUS_NEEDS_RECREATING = 1;
+    private static final int ACTIVITY_REQUIRES_RECREATE = 1;
     /** A {@link #recreate()} action has been triggered. */
-    private static final int ACTIVITY_STATUS_IS_RECREATING = 2;
-    /** Cache the User-specified theme currently in use. '-1' to force an update at App startup. */
-    @ThemeId
-    private static int sCurrentNightMode = THEME_INVALID;
+    private static final int ACTIVITY_IS_RECREATING = 2;
+
     /**
      * internal; Stage of Activity  doing/needing setIsRecreating() action.
      * See {@link #onResume()}.
@@ -144,71 +130,30 @@ public abstract class BaseActivity
      * Note this is a static!
      */
     @ActivityStatus
-    private static int sActivityRecreateStatus;
+    private static int sActivityRecreateStatus = ACTIVITY_IS_RUNNING;
 
     /** Locale at {@link #onCreate} time. */
-    protected String mInitialLocaleSpec;
-    /** Theme at {@link #onCreate} time. */
-    @ThemeId
-    protected int mInitialThemeId;
+    private String mInitialLocaleSpec;
+
+    /** Night-mode at {@link #onCreate} time. */
+    @NightModeUtils.NightModeId
+    private int mInitialNightModeId;
+
     /** Optional - The side/navigation panel. */
     @Nullable
     private DrawerLayout mDrawerLayout;
+
     /** Optional - The side/navigation menu. */
     @Nullable
     private NavigationView mNavigationView;
+
+    /** Flag indicating this Activity is a self-proclaimed root Activity. */
     private boolean mHomeIsRootMenu;
 
     /**
-     * Apply the user's preferred NightMode.
-     * <p>
-     * The one and only place where this should get called is in {@code Activity.onCreate}
-     * <pre>
-     * {@code
-     *    public void onCreate(@Nullable final Bundle savedInstanceState) {
-     *        // apply the user-preferred Theme before super.onCreate is called.
-     *        applyNightMode(this);
-     *
-     *        super.onCreate(savedInstanceState);
-     *    }
-     * }
-     * </pre>
-     *
-     * @param context Current context
-     *
-     * @return the applied mode index.
-     */
-    @ThemeId
-    public static int applyNightMode(@NonNull final Context context) {
-        // Always read from prefs.
-        sCurrentNightMode = Prefs.getListPreference(context, Prefs.pk_ui_theme, DEFAULT_THEME);
-
-        final int dnMode;
-        switch (sCurrentNightMode) {
-            case THEME_INVALID:
-            case THEME_DAY_NIGHT:
-                if (Build.VERSION.SDK_INT >= 29) {
-                    dnMode = AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM;
-                } else {
-                    dnMode = AppCompatDelegate.MODE_NIGHT_AUTO_BATTERY;
-                }
-                break;
-
-            case THEME_DARK:
-                dnMode = AppCompatDelegate.MODE_NIGHT_YES;
-                break;
-
-            case THEME_LIGHT:
-            default:
-                dnMode = AppCompatDelegate.MODE_NIGHT_NO;
-                break;
-        }
-        AppCompatDelegate.setDefaultNightMode(dnMode);
-        return sCurrentNightMode;
-    }
-
-    /**
      * Hide the keyboard.
+     *
+     * @param view a View that can be used to get the context and the window token
      */
     public static void hideKeyboard(@NonNull final View view) {
         final InputMethodManager imm = (InputMethodManager)
@@ -218,84 +163,9 @@ public abstract class BaseActivity
         }
     }
 
-    protected void showError(@NonNull final TextInputLayout til,
-                             @NonNull final CharSequence error) {
-        til.setError(error);
-        new Handler().postDelayed(() -> til.setError(null), ERROR_DELAY_MS);
-    }
-
-    /**
-     * Test if the NightMode has changed.
-     *
-     * @param context Current context
-     * @param mode    to check
-     *
-     * @return {@code true} if the theme was changed
-     */
-    public boolean isNightModeChanged(@NonNull final Context context,
-                                      @ThemeId final int mode) {
-        // always reload from prefs.
-        sCurrentNightMode = Prefs.getListPreference(context, Prefs.pk_ui_theme, DEFAULT_THEME);
-        return mode != sCurrentNightMode;
-    }
-
-    protected void setIsRecreating() {
-        sActivityRecreateStatus = ACTIVITY_STATUS_IS_RECREATING;
-    }
-
-    boolean isRecreating() {
-        final boolean isRecreating = sActivityRecreateStatus == ACTIVITY_STATUS_IS_RECREATING;
-
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.RECREATE_ACTIVITY) {
-            Log.d(TAG, "EXIT"
-                       + "|isRecreating=" + isRecreating
-                       + "|LanguageUtils=" + LanguageUtils.toDebugString(this));
-        }
-        return isRecreating;
-    }
-
-    private void setNeedsRecreating() {
-        sActivityRecreateStatus = ACTIVITY_STATUS_NEEDS_RECREATING;
-    }
-
-    /**
-     * Check if the Locale/Theme was changed, which will trigger the Activity to be recreated.
-     *
-     * @return {@code true} if a recreate was triggered.
-     */
-    @SuppressWarnings("UnusedReturnValue")
-    private boolean maybeRecreate() {
-        final boolean localeChanged = LocaleUtils.isChanged(this, mInitialLocaleSpec);
-        if (localeChanged) {
-            LocaleUtils.onLocaleChanged();
-        }
-
-        if (sActivityRecreateStatus == ACTIVITY_STATUS_NEEDS_RECREATING
-            || isNightModeChanged(this, mInitialThemeId) || localeChanged) {
-            setIsRecreating();
-            recreate();
-
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.RECREATE_ACTIVITY) {
-                Log.d(TAG, "EXIT|BaseActivity.maybeRecreate|Recreate!");
-            }
-
-            return true;
-
-        } else {
-            // this is the second time we got here, so we have been re-created.
-            sActivityRecreateStatus = ACTIVITY_STATUS_RUNNING;
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.RECREATE_ACTIVITY) {
-                Log.d(TAG, "EXIT|BaseActivity.maybeRecreate|Resuming");
-            }
-        }
-
-        return false;
-    }
-
-    /**
-     * apply the user-preferred Locale before onCreate is called.
-     */
+    @Override
     protected void attachBaseContext(@NonNull final Context base) {
+        // apply the user-preferred Locale before onCreate is called.
         final Context localizedContext = LocaleUtils.applyLocale(base);
         super.attachBaseContext(localizedContext);
         // preserve, so we can check for changes in onResume.
@@ -313,7 +183,7 @@ public abstract class BaseActivity
     protected void onCreate(@Nullable final Bundle savedInstanceState) {
         // apply the user-preferred Theme before super.onCreate is called.
         // We preserve it, so we can check for changes in onResume.
-        mInitialThemeId = applyNightMode(this);
+        mInitialNightModeId = NightModeUtils.applyNightMode(this);
 
         super.onCreate(savedInstanceState);
         onSetContentView();
@@ -436,7 +306,42 @@ public abstract class BaseActivity
                   + "|config.screenWidthDp=" + configuration.screenWidthDp
                   + "|config.screenHeightDp=" + configuration.screenHeightDp);
         }
-        maybeRecreate();
+        recreateIfNeeded();
+    }
+
+    /**
+     * Trigger a recreate() on the Activity if needed.
+     *
+     * @return {@code true} if a recreate was triggered.
+     */
+    @SuppressWarnings("UnusedReturnValue")
+    protected boolean recreateIfNeeded() {
+        // check for, and broadcast, a change in locale.
+        final boolean isLocaleChanged = LocaleUtils.isChanged(this, mInitialLocaleSpec);
+        if (isLocaleChanged) {
+            LocaleUtils.onLocaleChanged();
+        }
+
+        // check for a change in night-mode.
+        final boolean isNightModeChanged = NightModeUtils.isChanged(this, mInitialNightModeId);
+
+        if (sActivityRecreateStatus == ACTIVITY_REQUIRES_RECREATE
+            || isLocaleChanged
+            || isNightModeChanged) {
+
+            sActivityRecreateStatus = ACTIVITY_IS_RECREATING;
+            recreate();
+            return true;
+
+        } else {
+            sActivityRecreateStatus = ACTIVITY_IS_RUNNING;
+        }
+
+        return false;
+    }
+
+    boolean isRecreating() {
+        return sActivityRecreateStatus == ACTIVITY_IS_RECREATING;
     }
 
     /**
@@ -450,6 +355,19 @@ public abstract class BaseActivity
         } else {
             super.onBackPressed();
         }
+    }
+
+    /**
+     * Show an error text on the given view.
+     * It will automatically be removed after {@link #ERROR_DELAY_MS}.
+     *
+     * @param view  on which to set the error
+     * @param error text to set
+     */
+    protected void showError(@NonNull final TextInputLayout view,
+                             @NonNull final CharSequence error) {
+        view.setError(error);
+        new Handler().postDelayed(() -> view.setError(null), ERROR_DELAY_MS);
     }
 
     /**
@@ -522,15 +440,6 @@ public abstract class BaseActivity
         }
     }
 
-    /**
-     * Is the home button/icon representing the root menu (or is it the 'up' action).
-     *
-     * @return {@code true} if it's the real home (hamburger) menu
-     */
-    private boolean homeIsRootMenu() {
-        return isTaskRoot() && mHomeIsRootMenu;
-    }
-
     @Override
     public boolean onCreateOptionsMenu(@NonNull final Menu menu) {
         MenuHandler.setupSearch(this, menu);
@@ -547,7 +456,8 @@ public abstract class BaseActivity
         switch (item.getItemId()) {
             // Default handler for home icon
             case android.R.id.home: {
-                if (homeIsRootMenu()) {
+                // Is this the real (or self-proclaimed) root activity?
+                if (isTaskRoot() && mHomeIsRootMenu) {
                     if (mDrawerLayout != null) {
                         mDrawerLayout.openDrawer(GravityCompat.START);
                         return true;
@@ -575,14 +485,15 @@ public abstract class BaseActivity
         // generic actions & logging. Anything specific should be done in a child class.
         switch (requestCode) {
             case RequestCode.NAV_PANEL_SETTINGS:
-                if (BuildConfig.DEBUG && (DEBUG_SWITCHES.ON_ACTIVITY_RESULT
-                                          || DEBUG_SWITCHES.RECREATE_ACTIVITY)) {
+                if (BuildConfig.DEBUG
+                    && (DEBUG_SWITCHES.ON_ACTIVITY_RESULT || DEBUG_SWITCHES.RECREATE_ACTIVITY)) {
                     Log.d(TAG, "BaseActivity.onActivityResult|REQ_NAV_PANEL_SETTINGS");
                 }
+
                 if (resultCode == Activity.RESULT_OK) {
                     Objects.requireNonNull(data, ErrorMsg.NULL_INTENT_DATA);
-                    if (data.getBooleanExtra(BKEY_RECREATE, false)) {
-                        setNeedsRecreating();
+                    if (data.getBooleanExtra(BKEY_PREF_CHANGE_REQUIRES_RECREATE, false)) {
+                        sActivityRecreateStatus = ACTIVITY_REQUIRES_RECREATE;
                     }
                 }
                 return;
@@ -640,17 +551,12 @@ public abstract class BaseActivity
         }
     }
 
-    @IntDef({ACTIVITY_STATUS_RUNNING,
-             ACTIVITY_STATUS_NEEDS_RECREATING,
-             ACTIVITY_STATUS_IS_RECREATING})
+    @IntDef({ACTIVITY_IS_RUNNING,
+             ACTIVITY_REQUIRES_RECREATE,
+             ACTIVITY_IS_RECREATING})
     @Retention(RetentionPolicy.SOURCE)
     @interface ActivityStatus {
 
     }
 
-    @IntDef({THEME_INVALID, THEME_DAY_NIGHT, THEME_DARK, THEME_LIGHT})
-    @Retention(RetentionPolicy.SOURCE)
-    @interface ThemeId {
-
-    }
 }
