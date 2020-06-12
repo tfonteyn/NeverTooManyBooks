@@ -107,18 +107,18 @@ public abstract class BasePreferenceFragment
     private String mAutoScrollToKey;
 
     @Override
-    public void onCreate(@Nullable final Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
+    @CallSuper
+    public void onCreatePreferences(final Bundle savedInstanceState,
+                                    final String rootKey) {
         final Bundle args = getArguments();
         if (args != null) {
             mAutoScrollToKey = args.getString(BKEY_AUTO_SCROLL_TO_KEY);
         }
 
-        initListeners();
-
         //noinspection ConstantConditions
         mResultData = new ViewModelProvider(getActivity()).get(ResultDataModel.class);
+
+        initListeners();
     }
 
     /**
@@ -306,6 +306,13 @@ public abstract class BasePreferenceFragment
         }
     }
 
+    @Override
+    public void onPause() {
+        getPreferenceScreen().getSharedPreferences()
+                             .unregisterOnSharedPreferenceChangeListener(this);
+        super.onPause();
+    }
+
     /**
      * Recursively update the summary for all preferences in the given group.
      *
@@ -443,12 +450,6 @@ public abstract class BasePreferenceFragment
         super.onDisplayPreferenceDialog(preference);
     }
 
-    @Override
-    public void onPause() {
-        getPreferenceScreen().getSharedPreferences()
-                             .unregisterOnSharedPreferenceChangeListener(this);
-        super.onPause();
-    }
 
     /**
      * Update the summary for the given key.

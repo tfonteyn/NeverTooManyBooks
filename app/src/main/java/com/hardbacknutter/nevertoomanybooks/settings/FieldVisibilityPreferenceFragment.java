@@ -46,6 +46,7 @@ public class FieldVisibilityPreferenceFragment
     @Override
     public void onCreatePreferences(@Nullable final Bundle savedInstanceState,
                                     @Nullable final String rootKey) {
+        super.onCreatePreferences(savedInstanceState, rootKey);
 
         setPreferencesFromResource(R.xml.preferences_field_visibility, rootKey);
     }
@@ -56,6 +57,7 @@ public class FieldVisibilityPreferenceFragment
                                           @NonNull final String key) {
 
         mResultData.putResultData(BaseActivity.BKEY_PREF_CHANGE_REQUIRES_RECREATE, true);
+
         super.onSharedPreferenceChanged(sharedPreferences, key);
     }
 }

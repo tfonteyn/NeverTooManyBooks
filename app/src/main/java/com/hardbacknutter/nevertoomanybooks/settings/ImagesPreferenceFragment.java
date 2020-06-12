@@ -42,6 +42,7 @@ public class ImagesPreferenceFragment
     @Override
     public void onCreatePreferences(@Nullable final Bundle savedInstanceState,
                                     @Nullable final String rootKey) {
+        super.onCreatePreferences(savedInstanceState, rootKey);
 
         setPreferencesFromResource(R.xml.preferences_images, rootKey);
     }

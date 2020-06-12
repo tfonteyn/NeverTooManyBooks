@@ -32,7 +32,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 
-import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
@@ -63,9 +62,9 @@ public abstract class StyleBaseFragment
     private long mTemplateId;
 
     @Override
-    @CallSuper
     public void onCreatePreferences(@Nullable final Bundle savedInstanceState,
                                     @Nullable final String rootKey) {
+        super.onCreatePreferences(savedInstanceState, rootKey);
 
         final Bundle args = getArguments();
         if (args != null) {
@@ -123,7 +122,6 @@ public abstract class StyleBaseFragment
     }
 
     @Override
-    @CallSuper
     public void onSharedPreferenceChanged(@NonNull final SharedPreferences sharedPreferences,
                                           @NonNull final String key) {
         super.onSharedPreferenceChanged(sharedPreferences, key);

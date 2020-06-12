@@ -68,6 +68,7 @@ public class StyleFragment
     public void onCreatePreferences(@Nullable final Bundle savedInstanceState,
                                     @Nullable final String rootKey) {
         super.onCreatePreferences(savedInstanceState, rootKey);
+
         setPreferencesFromResource(R.xml.preferences_style, rootKey);
 
         final Preference thumbScale = findPreference(Prefs.pk_style_scale_thumbnail);
