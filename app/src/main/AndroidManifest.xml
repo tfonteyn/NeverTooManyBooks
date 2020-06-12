@@ -80,15 +80,16 @@
             This is the activity that will appear in the app launcher
 
             The StartupActivity activity takes care of all pre-UI tasks.
-            android:configChanges="orientation|keyboardHidden" -> we'll basically IGNORE these,
-            hence it does not rebuild on orientation changes so progress dialogs are easier.
+            android:configChanges -> we'll IGNORE these,
+            hence the activity will not restart on those changes,
+            which makes handling the startup tasks a lot easier.
 
             The StartupActivity activity is just a forwarder to the BooksOnBookshelf Activity.
             So in theory it is OK to make it singleInstance
         -->
         <activity
             android:name=".StartupActivity"
-            android:configChanges="orientation|keyboardHidden"
+            android:configChanges="locale|orientation|keyboardHidden"
             android:launchMode="singleInstance"
             android:noHistory="true">
             <intent-filter>
