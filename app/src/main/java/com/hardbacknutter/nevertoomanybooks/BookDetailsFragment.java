@@ -571,7 +571,7 @@ public class BookDetailsFragment
                     mBookViewModel.deleteBook(getContext());
 
                     //noinspection ConstantConditions
-                    getActivity().setResult(Activity.RESULT_OK, mBookViewModel.getResultData());
+                    getActivity().setResult(Activity.RESULT_OK, mBookViewModel.getResultIntent());
                     getActivity().finish();
                 });
                 return true;

@@ -40,5 +40,5 @@ public interface ActivityResultDataModel {
      * @return intent
      */
     @NonNull
-    Intent getResultData();
+    Intent getResultIntent();
 }

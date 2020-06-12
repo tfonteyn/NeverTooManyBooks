@@ -71,7 +71,7 @@ public class BookDetailsActivity
     public void onBackPressed() {
         final BookViewModel model = new ViewModelProvider(this).get(BookViewModel.class);
         // Set the current visible book id as the Activity result data.
-        setResult(Activity.RESULT_OK, model.getResultData());
+        setResult(Activity.RESULT_OK, model.getResultIntent());
         super.onBackPressed();
     }
 

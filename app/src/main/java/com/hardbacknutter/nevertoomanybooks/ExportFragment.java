@@ -68,7 +68,7 @@ public class ExportFragment
     /** Log tag. */
     public static final String TAG = "ExportFragment";
     /** ViewModel. */
-    private ResultDataModel mResultDataModel;
+    private ResultDataModel mResultData;
     /** Export. */
     private ExportTaskModel mExportModel;
     private final OptionsDialogBase.OptionsListener<ExportManager> mExportOptionsListener =
@@ -92,7 +92,7 @@ public class ExportFragment
         super.onCreate(savedInstanceState);
 
         //noinspection ConstantConditions
-        mResultDataModel = new ViewModelProvider(getActivity()).get(ResultDataModel.class);
+        mResultData = new ViewModelProvider(getActivity()).get(ResultDataModel.class);
 
         mExportModel = new ViewModelProvider(this).get(ExportTaskModel.class);
     }
@@ -137,7 +137,7 @@ public class ExportFragment
         }
         // collect all data for passing to the calling Activity
         if (data != null) {
-            mResultDataModel.putResultData(data);
+            mResultData.putResultData(data);
         }
 
         //noinspection SwitchStatementWithTooFewBranches
@@ -216,7 +216,7 @@ public class ExportFragment
      *
      * @param helper export configuration
      */
-    private void exportPickUri(@NonNull final ExportManager helper) {
+    void exportPickUri(@NonNull final ExportManager helper) {
         // save the configured helper
         mExportModel.setHelper(helper);
         //noinspection ConstantConditions
@@ -268,7 +268,7 @@ public class ExportFragment
                              .show();
 
                 //noinspection ConstantConditions
-                getActivity().setResult(Activity.RESULT_OK, mResultDataModel.getResultData());
+                getActivity().setResult(Activity.RESULT_OK, mResultData.getResultIntent());
                 break;
             }
             case Cancelled: {

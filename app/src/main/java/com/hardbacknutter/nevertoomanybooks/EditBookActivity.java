@@ -318,7 +318,7 @@ public class EditBookActivity
 
     void setResultsAndFinish() {
         // The result data will contain the re-position book id.
-        setResult(Activity.RESULT_OK, mBookViewModel.getResultData());
+        setResult(Activity.RESULT_OK, mBookViewModel.getResultIntent());
         finish();
     }
 

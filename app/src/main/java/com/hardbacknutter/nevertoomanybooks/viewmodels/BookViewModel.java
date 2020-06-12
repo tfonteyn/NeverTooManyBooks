@@ -357,13 +357,13 @@ public class BookViewModel
 
     @NonNull
     @Override
-    public Intent getResultData() {
+    public Intent getResultIntent() {
         // always set the *current* book, so the BoB list can reposition correctly.
         if (mBook != null) {
             putResultData(DBDefinitions.KEY_PK_ID, mBook.getId());
         }
 
-        return super.getResultData();
+        return super.getResultIntent();
     }
 
     /**

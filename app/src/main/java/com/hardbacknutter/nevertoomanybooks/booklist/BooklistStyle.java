@@ -1691,18 +1691,6 @@ public class BooklistStyle
                                       @NonNull final String uuid) {
             return getStyles(context, db).get(uuid);
         }
-
-        @Nullable
-        static BooklistStyle getStyle(@NonNull final Context context,
-                                      @NonNull final DAO db,
-                                      final long id) {
-            for (BooklistStyle style : getStyles(context, db).values()) {
-                if (style.getId() == id) {
-                    return style;
-                }
-            }
-            return null;
-        }
     }
 
     /** Artificial grouping of all the menu-order methods for cleaner code. */
@@ -1983,17 +1971,6 @@ public class BooklistStyle
         static BooklistStyle getStyle(@NonNull final Context context,
                                       @NonNull final String uuid) {
             return getStyles(context).get(uuid);
-        }
-
-        @Nullable
-        static BooklistStyle getStyle(@NonNull final Context context,
-                                      final long id) {
-            for (BooklistStyle style : getStyles(context).values()) {
-                if (style.getId() == id) {
-                    return style;
-                }
-            }
-            return null;
         }
 
         private static void create(@NonNull final Context context) {

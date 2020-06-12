@@ -224,8 +224,8 @@ public class StyleFragment
                     mStyle = data.getParcelableExtra(BooklistStyle.BKEY_STYLE);
                     Objects.requireNonNull(mStyle, ErrorMsg.ARGS_MISSING_STYLE);
 
-                    mResultDataModel.putResultData(BooklistStyle.BKEY_STYLE_MODIFIED, true);
-                    mResultDataModel.putResultData(BooklistStyle.BKEY_STYLE, mStyle);
+                    mResultData.putResultData(BooklistStyle.BKEY_STYLE_MODIFIED, true);
+                    mResultData.putResultData(BooklistStyle.BKEY_STYLE, mStyle);
                 }
                 break;
 

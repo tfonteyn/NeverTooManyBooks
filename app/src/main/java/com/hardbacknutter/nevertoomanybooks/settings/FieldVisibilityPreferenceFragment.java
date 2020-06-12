@@ -55,7 +55,7 @@ public class FieldVisibilityPreferenceFragment
     public void onSharedPreferenceChanged(@NonNull final SharedPreferences sharedPreferences,
                                           @NonNull final String key) {
 
-        mResultDataModel.putResultData(BaseActivity.BKEY_RECREATE, true);
+        mResultData.putResultData(BaseActivity.BKEY_PREF_CHANGE_REQUIRES_RECREATE, true);
         super.onSharedPreferenceChanged(sharedPreferences, key);
     }
 }

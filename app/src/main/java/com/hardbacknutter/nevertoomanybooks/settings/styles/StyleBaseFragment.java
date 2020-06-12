@@ -87,12 +87,12 @@ public abstract class StyleBaseFragment
         // so even if the user makes no changes, we still send it back!
         // If the user does make changes, we'll overwrite it in onSharedPreferenceChanged
         if (!mStyle.isGlobal()) {
-            mResultDataModel.putResultData(BooklistStyle.BKEY_STYLE, mStyle);
+            mResultData.putResultData(BooklistStyle.BKEY_STYLE, mStyle);
         }
 
         // always pass the template id back if we had one.
         if (mTemplateId != 0) {
-            mResultDataModel.putResultData(BKEY_TEMPLATE_ID, mTemplateId);
+            mResultData.putResultData(BKEY_TEMPLATE_ID, mTemplateId);
         }
 
         // and the actual/current id+uuid
@@ -129,7 +129,7 @@ public abstract class StyleBaseFragment
         super.onSharedPreferenceChanged(sharedPreferences, key);
 
         // set the result (and again and again...)
-        mResultDataModel.putResultData(BooklistStyle.BKEY_STYLE_MODIFIED, true);
-        mResultDataModel.putResultData(BooklistStyle.BKEY_STYLE, mStyle);
+        mResultData.putResultData(BooklistStyle.BKEY_STYLE_MODIFIED, true);
+        mResultData.putResultData(BooklistStyle.BKEY_STYLE, mStyle);
     }
 }

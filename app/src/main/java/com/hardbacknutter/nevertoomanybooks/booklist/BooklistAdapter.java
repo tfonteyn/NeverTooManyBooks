@@ -99,21 +99,20 @@ public class BooklistAdapter
 
     /** Log tag. */
     private static final String TAG = "BooklistAdapter";
-
+    /** Cached locale. */
+    @NonNull
+    private final Locale mUserLocale;
+    /** The cursor is the equivalent of the 'list of items'. */
+    @NonNull
+    private final Cursor mCursor;
     /** The padding indent (in pixels) added for each level: padding = (level-1) * mLevelIndent. */
     private final int mLevelIndent;
     /** Cached inflater. */
     @NonNull
     private final LayoutInflater mInflater;
-    /** Cached locale. */
-    @NonNull
-    private final Locale mUserLocale;
     /** List style to apply. */
     @NonNull
     private final BooklistStyle mStyle;
-    /** The cursor is the equivalent of the 'list of items'. */
-    @NonNull
-    private final Cursor mCursor;
     /** provides read only access to the row data. */
     @NonNull
     private final DataHolder mNodeData;
@@ -123,7 +122,6 @@ public class BooklistAdapter
     /** The combined click and long-click listeners for a single row. */
     @Nullable
     private OnRowClickedListener mOnRowClickedListener;
-
     /**
      * Constructor.
      *
@@ -144,6 +142,16 @@ public class BooklistAdapter
         mFieldsInUse = new FieldsInUse(context, style);
 
         setHasStableIds(true);
+    }
+
+    @NonNull
+    public Locale getUserLocale() {
+        return mUserLocale;
+    }
+
+    @NonNull
+    public Cursor getCursor() {
+        return mCursor;
     }
 
     /**
@@ -675,7 +683,7 @@ public class BooklistAdapter
          */
         FieldsInUse(@NonNull final Context context,
                     @NonNull final BooklistStyle style) {
-            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+            final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 
             read = DBDefinitions.isUsed(prefs, DBDefinitions.KEY_READ);
             signed = DBDefinitions.isUsed(prefs, DBDefinitions.KEY_SIGNED);
@@ -843,7 +851,7 @@ public class BooklistAdapter
             mReorderTitle = false;
 
             mInUse = fieldsInUse;
-            Context context = itemView.getContext();
+            final Context context = itemView.getContext();
             mLocale = userLocale;
 
             mX_bracket_Y_bracket = context.getString(R.string.a_bracket_b_bracket);
@@ -1070,7 +1078,7 @@ public class BooklistAdapter
         @Override
         void onBindViewHolder(@NonNull final DataHolder rowData,
                               @NonNull final BooklistStyle style) {
-            int rating = rowData.getInt(mKey);
+            final int rating = rowData.getInt(mKey);
             mRatingBar.setRating(rating);
         }
     }
@@ -1128,8 +1136,8 @@ public class BooklistAdapter
             mTextView.setText(format(rowData.getString(mKey)));
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_NODE_STATE) {
-                int rowId = rowData.getInt(DBDefinitions.KEY_PK_ID);
-                final RowStateDAO.Node node = ((BooklistCursor) mAdapter.mCursor)
+                final int rowId = rowData.getInt(DBDefinitions.KEY_PK_ID);
+                final RowStateDAO.Node node = ((BooklistCursor) mAdapter.getCursor())
                         .getBooklistBuilder().getNodeByNodeId(rowId);
                 if (node.isExpanded) {
                     itemView.setBackgroundColor(Color.GREEN);
@@ -1228,13 +1236,13 @@ public class BooklistAdapter
 
         @Override
         public String format(@Nullable final String text) {
-            Context context = itemView.getContext();
+            final Context context = itemView.getContext();
             // FIXME: translated series are reordered in the book's language
             // It should be done using the Series language
             // but as long as we don't store the Series language there is no point
             Locale bookLocale = LocaleUtils.getLocale(context, mBookLanguage);
             if (bookLocale == null) {
-                bookLocale = mAdapter.mUserLocale;
+                bookLocale = mAdapter.getUserLocale();
             }
             return mAdapter.format(context, mGroupKeyId, text, bookLocale);
         }

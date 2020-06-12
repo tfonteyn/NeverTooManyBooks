@@ -59,9 +59,9 @@ public class AuthorWorksActivity
 
     @Override
     public void onBackPressed() {
-        final ActivityResultDataModel model = new ViewModelProvider(this)
+        final ActivityResultDataModel resultData = new ViewModelProvider(this)
                 .get(AuthorWorksModel.class);
-        setResult(Activity.RESULT_OK, model.getResultData());
+        setResult(Activity.RESULT_OK, resultData.getResultIntent());
         super.onBackPressed();
     }
 }

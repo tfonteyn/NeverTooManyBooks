@@ -50,7 +50,7 @@ public class ResultDataModel
 
     @Override
     @NonNull
-    public Intent getResultData() {
+    public Intent getResultIntent() {
         return mResultData;
     }
 

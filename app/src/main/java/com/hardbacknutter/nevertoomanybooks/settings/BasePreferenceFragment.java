@@ -102,7 +102,7 @@ public abstract class BasePreferenceFragment
     private static final String DIALOG_FRAGMENT_TAG = TAG + ":dialog";
     private static final int REQ_PICK_FILE_FOR_EXPORT_DATABASE = 1;
 
-    protected ResultDataModel mResultDataModel;
+    protected ResultDataModel mResultData;
     @Nullable
     private String mAutoScrollToKey;
 
@@ -118,7 +118,7 @@ public abstract class BasePreferenceFragment
         initListeners();
 
         //noinspection ConstantConditions
-        mResultDataModel = new ViewModelProvider(getActivity()).get(ResultDataModel.class);
+        mResultData = new ViewModelProvider(getActivity()).get(ResultDataModel.class);
     }
 
     /**
@@ -334,7 +334,7 @@ public abstract class BasePreferenceFragment
             case Prefs.pk_ui_theme:
             case Prefs.pk_sort_title_reordered:
             case Prefs.pk_show_title_reordered:
-                mResultDataModel.putResultData(BaseActivity.BKEY_RECREATE, true);
+                mResultData.putResultData(BaseActivity.BKEY_PREF_CHANGE_REQUIRES_RECREATE, true);
                 break;
 
             case Prefs.pk_scanner_preferred:
@@ -345,7 +345,7 @@ public abstract class BasePreferenceFragment
                         ScannerManager.setDefaultScanner(getContext());
                     }
                 });
-                mResultDataModel.putResultData(BKEY_SCANNER_MODIFIED, true);
+                mResultData.putResultData(BKEY_SCANNER_MODIFIED, true);
                 break;
 
             case Prefs.pk_sounds_scan_found_barcode:
@@ -388,7 +388,7 @@ public abstract class BasePreferenceFragment
         switch (requestCode) {
             case RequestCode.PREFERRED_SEARCH_SITES:
                 if (resultCode == Activity.RESULT_OK && data != null) {
-                    mResultDataModel.putResultData(data);
+                    mResultData.putResultData(data);
                 }
                 break;
 

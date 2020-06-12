@@ -70,7 +70,7 @@ public class ImportFragment
     @Nullable
     private ProgressDialogFragment mProgressDialog;
     /** ViewModel. */
-    private ResultDataModel mResultDataModel;
+    private ResultDataModel mResultData;
     /** Import. */
     private ImportTaskModel mImportModel;
     private final OptionsDialogBase.OptionsListener<ImportManager> mImportOptionsListener =
@@ -92,7 +92,7 @@ public class ImportFragment
         super.onCreate(savedInstanceState);
 
         //noinspection ConstantConditions
-        mResultDataModel = new ViewModelProvider(getActivity()).get(ResultDataModel.class);
+        mResultData = new ViewModelProvider(getActivity()).get(ResultDataModel.class);
         mImportModel = new ViewModelProvider(this).get(ImportTaskModel.class);
     }
 
@@ -136,7 +136,7 @@ public class ImportFragment
         }
         // collect all data for passing to the calling Activity
         if (data != null) {
-            mResultDataModel.putResultData(data);
+            mResultData.putResultData(data);
         }
 
         //noinspection SwitchStatementWithTooFewBranches
@@ -329,10 +329,9 @@ public class ImportFragment
                 .setTitle(titleId)
                 .setMessage(results.createReport(getContext()))
                 .setPositiveButton(R.string.done, (d, w) -> {
-                    mResultDataModel.putResultData(ImportResults.BKEY_IMPORT_RESULTS, options);
+                    mResultData.putResultData(ImportResults.BKEY_IMPORT_RESULTS, options);
                     //noinspection ConstantConditions
-                    getActivity().setResult(Activity.RESULT_OK,
-                                            mResultDataModel.getResultData());
+                    getActivity().setResult(Activity.RESULT_OK, mResultData.getResultIntent());
                     getActivity().finish();
                 })
                 .create()

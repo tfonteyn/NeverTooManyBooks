@@ -77,7 +77,7 @@ public abstract class BookSearchBaseFragment
     @Nullable
     private ProgressDialogFragment mProgressDialog;
     /** the ViewModel. */
-    private ResultDataModel mResultDataModel;
+    private ResultDataModel mResultData;
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -101,7 +101,7 @@ public abstract class BookSearchBaseFragment
         mCoordinator.onOneBookDone().observe(getViewLifecycleOwner(), this::onSearchFinished);
 
         //noinspection ConstantConditions
-        mResultDataModel = new ViewModelProvider(getActivity()).get(ResultDataModel.class);
+        mResultData = new ViewModelProvider(getActivity()).get(ResultDataModel.class);
 
         // Warn the user, but don't abort.
         //noinspection ConstantConditions
@@ -330,7 +330,7 @@ public abstract class BookSearchBaseFragment
             }
             case RequestCode.BOOK_EDIT: {
                 if (resultCode == Activity.RESULT_OK && data != null) {
-                    mResultDataModel.putResultData(data);
+                    mResultData.putResultData(data);
                 }
                 break;
             }
