@@ -71,7 +71,7 @@ public final class LinkifyUtils {
     @NonNull
     public static Spannable fromHtml(@NonNull final String html) {
         // Get the spannable HTML
-        Spanned text;
+        final Spanned text;
         if (Build.VERSION.SDK_INT >= 24) {
             // single linefeed between things like LI elements.
             text = Html.fromHtml(html, Html.FROM_HTML_MODE_COMPACT);
@@ -80,17 +80,15 @@ public final class LinkifyUtils {
         }
 
         // Save the span details for later restoration
-        URLSpan[] currentSpans = text.getSpans(0, text.length(), URLSpan.class);
+        final URLSpan[] currentSpans = text.getSpans(0, text.length(), URLSpan.class);
 
         // Build an empty spannable and add the links
-        Spannable buffer = new SpannableString(text);
+        final Spannable buffer = new SpannableString(text);
         Linkify.addLinks(buffer, LINKIFY_MASK);
 
         // Add back the HTML spannable's
         for (URLSpan span : currentSpans) {
-            int end = text.getSpanEnd(span);
-            int start = text.getSpanStart(span);
-            buffer.setSpan(span, start, end, 0);
+            buffer.setSpan(span, text.getSpanStart(span), text.getSpanEnd(span), 0);
         }
         return buffer;
     }

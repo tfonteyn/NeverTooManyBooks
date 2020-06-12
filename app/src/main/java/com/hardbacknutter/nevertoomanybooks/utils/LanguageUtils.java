@@ -59,8 +59,6 @@ import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
  */
 public final class LanguageUtils {
 
-    private static final String TAG = "LanguageUtils";
-
     /**
      * The SharedPreferences name where we'll maintain our language to ISO mappings.
      * Uses the {@link Locale#getDisplayName()} for the key,
@@ -85,7 +83,7 @@ public final class LanguageUtils {
     @NonNull
     public static String getDisplayNameFromISO3(@NonNull final Context context,
                                                 @NonNull final String iso3) {
-        Locale langLocale = LocaleUtils.getLocale(context, iso3);
+        final Locale langLocale = LocaleUtils.getLocale(context, iso3);
         if (langLocale == null) {
             return iso3;
         }
@@ -107,7 +105,7 @@ public final class LanguageUtils {
     public static String getISO3FromDisplayName(@NonNull final Context context,
                                                 @NonNull final String displayName) {
 
-        String source = displayName.trim().toLowerCase(LocaleUtils.getUserLocale(context));
+        final String source = displayName.trim().toLowerCase(LocaleUtils.getUserLocale(context));
         if (source.isEmpty()) {
             return "";
         }
@@ -128,8 +126,7 @@ public final class LanguageUtils {
             return "eng";
         } else {
             try {
-                Locale bl = LocaleUtils.createLocale(code);
-                return bl.getISO3Language();
+                return LocaleUtils.createLocale(code).getISO3Language();
             } catch (@NonNull final MissingResourceException ignore) {
                 return code;
             }
@@ -166,10 +163,10 @@ public final class LanguageUtils {
                                               @NonNull final String iso3) {
         // create the map on first usage
         if (LANG3_TO_LANG2_MAP == null) {
-            String[] languages = Locale.getISOLanguages();
+            final String[] languages = Locale.getISOLanguages();
             LANG3_TO_LANG2_MAP = new HashMap<>(languages.length);
             for (String language : languages) {
-                Locale locale = new Locale(language);
+                final Locale locale = new Locale(language);
                 LANG3_TO_LANG2_MAP.put(locale.getISO3Language(), language);
             }
         }
@@ -179,7 +176,7 @@ public final class LanguageUtils {
             return iso2;
         }
 
-        Locale locale = LocaleUtils.getUserLocale(context);
+        final Locale locale = LocaleUtils.getUserLocale(context);
 
         // try again ('terminology' seems to be preferred/standard on Android (ICU?)
         String lang = LanguageUtils.toTerminology(locale, iso3);
@@ -211,7 +208,7 @@ public final class LanguageUtils {
     @NonNull
     public static String toBibliographic(@NonNull final Locale locale,
                                          @NonNull final String iso3) {
-        String source = iso3.trim().toLowerCase(locale);
+        final String source = iso3.trim().toLowerCase(locale);
         if (source.length() != 3) {
             return source;
         }
@@ -296,7 +293,7 @@ public final class LanguageUtils {
     @NonNull
     public static String toTerminology(@NonNull final Locale locale,
                                        @NonNull final String iso3) {
-        String source = iso3.trim().toLowerCase(locale);
+        final String source = iso3.trim().toLowerCase(locale);
         if (source.length() != 3) {
             return source;
         }
@@ -379,9 +376,9 @@ public final class LanguageUtils {
     }
 
     public static String toDebugString(@NonNull final Context context) {
-        Locale userLocale = LocaleUtils.getUserLocale(context);
-        Locale systemLocale = LocaleUtils.getSystemLocale();
-        Locale defLocale = Locale.getDefault();
+        final Locale userLocale = LocaleUtils.getUserLocale(context);
+        final Locale systemLocale = LocaleUtils.getSystemLocale();
+        final Locale defLocale = Locale.getDefault();
 
         return ""
                + "\nsystemLocale       : " + systemLocale.getDisplayName()
@@ -402,7 +399,6 @@ public final class LanguageUtils {
             extends TaskBase<Boolean> {
 
         /** Log tag. */
-        @SuppressWarnings("InnerClassFieldHidesOuterClassField")
         private static final String TAG = "BuildLanguageMappings";
         /** Prefix added to the iso code for the 'done' flag in the language cache. */
         private static final String LANG_CREATED_PREFIX = "___";
@@ -469,7 +465,7 @@ public final class LanguageUtils {
             if (prefs.getBoolean(LANG_CREATED_PREFIX + locale.getISO3Language(), false)) {
                 return;
             }
-            SharedPreferences.Editor ed = prefs.edit();
+            final SharedPreferences.Editor ed = prefs.edit();
             for (Locale loc : Locale.getAvailableLocales()) {
                 ed.putString(loc.getDisplayLanguage(locale).toLowerCase(locale),
                              loc.getISO3Language());

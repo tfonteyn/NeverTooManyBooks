@@ -228,11 +228,7 @@ public final class LocaleUtils {
             deltaConfig.fontScale = 0f;
         }
 
-        final Context updatedContext = context.createConfigurationContext(deltaConfig);
-        if (BuildConfig.DEBUG /* always */) {
-            insanityCheck(updatedContext);
-        }
-        return updatedContext;
+        return context.createConfigurationContext(deltaConfig);
     }
 
     /**
@@ -302,42 +298,16 @@ public final class LocaleUtils {
     @SuppressLint("NewApi")
     @NonNull
     public static Locale getUserLocale(@NonNull final Context context) {
-        final Locale locale;
-        if (Build.VERSION.SDK_INT >= 24 || Logger.isJUnitTest()) {
-            locale = context.getResources().getConfiguration().getLocales().get(0);
+        // While running JUnit tests, we're mocking the getLocales().get(0) call.
+        if (BuildConfig.DEBUG && Logger.isJUnitTest()) {
+            return context.getResources().getConfiguration().getLocales().get(0);
+        }
+
+        if (Build.VERSION.SDK_INT >= 24) {
+            return context.getResources().getConfiguration().getLocales().get(0);
         } else {
-            locale = context.getResources().getConfiguration().locale;
-        }
-
-        // insanity check
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.LOCALE) {
-            if (!Locale.getDefault().equals(locale)) {
-                throw new IllegalStateException("user locale != default");
-            }
-        }
-        return locale;
-    }
-
-    /**
-     * DEBUG ONLY.
-     *
-     * @param context Current context
-     */
-    private static void insanityCheck(@NonNull final Context context) {
-        final String persistedIso3 =
-                createLocale(getPersistedLocaleSpec(context)).getISO3Language();
-        final String userIso3 = getUserLocale(context).getISO3Language();
-        final String defIso3 = Locale.getDefault().getISO3Language();
-
-        if (!defIso3.equals(userIso3)
-            || !defIso3.equals(persistedIso3)
-        ) {
-            final String error = "defIso3=" + defIso3
-                                 + "|userIso3=" + userIso3
-                                 + "|SharedPreferences=" + persistedIso3;
-            final Error e = new java.lang.VerifyError(error);
-            Logger.error(context, TAG, e, error);
-            throw e;
+            //noinspection deprecation
+            return context.getResources().getConfiguration().locale;
         }
     }
 

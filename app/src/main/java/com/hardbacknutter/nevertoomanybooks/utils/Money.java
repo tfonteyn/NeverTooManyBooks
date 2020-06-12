@@ -110,7 +110,7 @@ public class Money
     public Money(@NonNull final Locale locale,
                  @NonNull final CharSequence priceWithCurrency) {
 
-        String[] data = SPLIT_PRICE_CURRENCY_AMOUNT_PATTERN.split(priceWithCurrency, 2);
+        final String[] data = SPLIT_PRICE_CURRENCY_AMOUNT_PATTERN.split(priceWithCurrency, 2);
         if (data.length > 1) {
             String currencyCode = data[0].trim().toUpperCase(locale);
             // if we don't have a normalized ISO3 code, see if we can convert it to one.
@@ -121,7 +121,7 @@ public class Money
             if (currencyCode != null && currencyCode.length() == 3) {
                 try {
                     // buffer just in case the getCurrencyCode() fails.
-                    double tmpValue = ParseUtils.parseDouble(data[1], locale);
+                    final double tmpValue = ParseUtils.parseDouble(data[1], locale);
                     // re-get the code just in case it used a recognised but non-standard string
                     mCurrency = java.util.Currency.getInstance(currencyCode).getCurrencyCode();
                     mValue = tmpValue;
@@ -133,7 +133,7 @@ public class Money
         }
 
         // let's see if this was UK shillings/pence
-        Matcher m = SHILLING_PENCE_PATTERN.matcher(priceWithCurrency);
+        final Matcher m = SHILLING_PENCE_PATTERN.matcher(priceWithCurrency);
         if (m.find()) {
             try {
                 int shillings = 0;
@@ -253,7 +253,7 @@ public class Money
         if (CURRENCY_MAP.isEmpty()) {
             createCurrencyMap();
         }
-        String key = currency.trim().toLowerCase(LocaleUtils.getSystemLocale());
+        final String key = currency.trim().toLowerCase(LocaleUtils.getSystemLocale());
         return CURRENCY_MAP.get(key);
     }
 

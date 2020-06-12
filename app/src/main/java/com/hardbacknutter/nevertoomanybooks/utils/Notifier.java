@@ -110,7 +110,8 @@ public final class Notifier {
             // Slight overkill. We update the channel name here for the chance that the locale
             // changed. This is unlikely to happen frequently, but does no harm.
             //noinspection ConstantConditions
-            NotificationChannel channel = notificationManager.getNotificationChannel(channelId);
+            final NotificationChannel channel =
+                    notificationManager.getNotificationChannel(channelId);
             //noinspection SwitchStatementWithoutDefaultBranch
             switch (channelId) {
                 case CHANNEL_ERROR:
@@ -123,7 +124,7 @@ public final class Notifier {
         }
 
         @DrawableRes
-        int icon;
+        final int icon;
         switch (channelId) {
             case CHANNEL_ERROR:
                 icon = R.drawable.ic_warning;
