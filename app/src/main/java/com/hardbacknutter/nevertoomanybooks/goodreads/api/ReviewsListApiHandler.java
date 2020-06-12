@@ -36,7 +36,6 @@ import androidx.annotation.Nullable;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
 
 import org.xml.sax.helpers.DefaultHandler;
 
@@ -477,7 +476,10 @@ public class ReviewsListApiHandler
             }
             try {
                 return LocalDateTime.parse(dateStr, ReviewField.DATE_PARSER);
-            } catch (@NonNull final DateTimeParseException e) {
+                //URGENT: catching RuntimeException instead of DateTimeParseException
+                // due to issues with the java.time classes and proguard minify
+//            } catch (@NonNull final DateTimeParseException ignore) {
+            } catch (@NonNull final RuntimeException ignore) {
                 return null;
             }
         }

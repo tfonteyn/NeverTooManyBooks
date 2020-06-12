@@ -34,7 +34,6 @@ import java.time.LocalDateTime;
 import java.time.Year;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
-import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoField;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -151,7 +150,10 @@ public class DateParser {
         if (dateStr.length() == 4) {
             try {
                 return Year.parse(dateStr).atDay(1).atTime(0, 0);
-            } catch (@NonNull final DateTimeParseException ignore) {
+                //URGENT: catching RuntimeException instead of DateTimeParseException
+                // due to issues with the java.time classes and proguard minify
+//            } catch (@NonNull final DateTimeParseException ignore) {
+            } catch (@NonNull final RuntimeException ignore) {
                 // ignored
             }
         }
@@ -161,7 +163,10 @@ public class DateParser {
             for (DateTimeFormatter dtf : parsers) {
                 try {
                     return LocalDateTime.parse(dateStr, dtf.withLocale(locale));
-                } catch (@NonNull final DateTimeParseException ignore) {
+                    //URGENT: catching RuntimeException instead of DateTimeParseException
+                    // due to issues with the java.time classes and proguard minify
+//            } catch (@NonNull final DateTimeParseException ignore) {
+                } catch (@NonNull final RuntimeException ignore) {
                     // ignore and try the next one
                 }
             }
@@ -171,7 +176,10 @@ public class DateParser {
         for (DateTimeFormatter dtf : parsers) {
             try {
                 return LocalDateTime.parse(dateStr, dtf);
-            } catch (@NonNull final DateTimeParseException ignore) {
+                //URGENT: catching RuntimeException instead of DateTimeParseException
+                // due to issues with the java.time classes and proguard minify
+//            } catch (@NonNull final DateTimeParseException ignore) {
+            } catch (@NonNull final RuntimeException ignore) {
                 // ignore and try the next one
             }
         }
