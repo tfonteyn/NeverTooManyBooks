@@ -261,6 +261,7 @@
     <string name="lbl_covers_long">Cover-Bilder</string>
     <string name="lbl_covers">Buchumschläge</string>
     <string name="lbl_credentials">Anmeldeinformationen</string>
+    <string name="lbl_credentials_goodreads">Goodreads Anmeldeinformationen</string>
     <string name="lbl_currency">Devisen</string>
     <string name="lbl_date_acquired">Datum erworben</string>
     <string name="lbl_date_acquired_day">Tag erworben</string>

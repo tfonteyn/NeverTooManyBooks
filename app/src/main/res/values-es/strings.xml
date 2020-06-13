@@ -258,6 +258,7 @@
     <string name="lbl_covers_long">Portadas</string>
     <string name="lbl_covers">Portadas</string>
     <string name="lbl_credentials">Credenciales</string>
+    <string name="lbl_credentials_goodreads">Goodreads Credenciales</string>
     <string name="lbl_currency">Moneda</string>
     <string name="lbl_date_acquired">Fecha de adquisición</string>
     <string name="lbl_date_acquired_day">Día adquirido</string>

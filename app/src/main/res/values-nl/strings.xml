@@ -262,6 +262,7 @@
     <string name="lbl_covers_long">Omslagafbeeldingen</string>
     <string name="lbl_covers">Omslagen</string>
     <string name="lbl_credentials">Inloggegevens</string>
+    <string name="lbl_credentials_goodreads">Goodreads Inloggegevens</string>
     <string name="lbl_currency">Munt</string>
     <string name="lbl_date_acquired">Datum verworven</string>
     <string name="lbl_date_acquired_day">Dag verworven</string>

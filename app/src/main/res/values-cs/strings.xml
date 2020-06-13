@@ -256,6 +256,7 @@
     <string name="lbl_covers_long">Obrázky na obálce</string>
     <string name="lbl_covers">Přebal</string>
     <string name="lbl_credentials">Přihlašovací údaje</string>
+    <string name="lbl_credentials_goodreads">Goodreads Přihlašovací údaje</string>
     <string name="lbl_currency">Měna</string>
     <string name="lbl_date_acquired">Datum Nabytí</string>
     <string name="lbl_date_acquired_day">Den Nabytí</string>

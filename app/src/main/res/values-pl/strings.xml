@@ -255,6 +255,7 @@
     <string name="lbl_covers_long">Obrazy okładkowe</string>
     <string name="lbl_covers">Okładka</string>
     <string name="lbl_credentials">Poświadczenia</string>
+    <string name="lbl_credentials_goodreads">Goodreads Poświadczenia</string>
     <string name="lbl_currency">Waluta</string>
     <string name="lbl_date_acquired">Data nabycia</string>
     <string name="lbl_date_acquired_day">Dzień nabyty</string>

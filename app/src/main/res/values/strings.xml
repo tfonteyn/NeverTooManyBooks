@@ -911,6 +911,8 @@
     <string name="pe_bob_filter_anthology_no">All but Anthologies</string>
     <string name="pe_bob_filter_loaned_yes">Books on loan</string>
     <string name="pe_bob_filter_loaned_no">Books available</string>
+    <string name="pe_bob_filter_isbn_yes">With ISBN</string>
+    <string name="pe_bob_filter_isbn_no">Without ISBN</string>
 
     <!-- Preference Screen; The extra fields displayed on 'book-level' in the booklist -->
     <string name="pg_bob_show_details">Book Details</string>
@@ -1480,6 +1482,7 @@
     <string name="lbl_print_run">Print run</string>
 
     <string name="lbl_credentials">Credentials</string>
+    <string name="lbl_credentials_goodreads">Goodreads Credentials</string>
 
     <string name="lbl_read_start">Date started reading</string>
     <string name="lbl_read_end">Date finished reading</string>

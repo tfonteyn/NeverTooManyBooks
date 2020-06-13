@@ -257,6 +257,7 @@
     <string name="lbl_covers_long">Εικόνες εξωφύλλων</string>
     <string name="lbl_covers">Καλύπτει</string>
     <string name="lbl_credentials">Διαπιστευτήρια</string>
+    <string name="lbl_credentials_goodreads">Goodreads Διαπιστευτήρια</string>
     <string name="lbl_currency">Νομίσματα</string>
     <string name="lbl_date_acquired">Ημερομηνία που αποκτήθηκαν</string>
     <string name="lbl_date_acquired_day">Ημέρα που αποκτήθηκε</string>

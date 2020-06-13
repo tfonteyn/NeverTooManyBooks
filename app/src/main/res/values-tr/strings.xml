@@ -256,6 +256,7 @@
     <string name="lbl_covers_long">Kapak görselleri</string>
     <string name="lbl_covers">Kapaklar</string>
     <string name="lbl_credentials">Kimlik Bilgileri</string>
+    <string name="lbl_credentials_goodreads">Goodreads Kimlik Bilgileri</string>
     <string name="lbl_currency">Para birimi</string>
     <string name="lbl_date_acquired">Alınan Tarih</string>
     <string name="lbl_date_acquired_day">Alınan Gün</string>

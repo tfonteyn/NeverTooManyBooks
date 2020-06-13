@@ -255,6 +255,7 @@
     <string name="lbl_covers_long">Обложки</string>
     <string name="lbl_covers">обложки</string>
     <string name="lbl_credentials">Учетные данные</string>
+    <string name="lbl_credentials_goodreads">Goodreads Учетные данные</string>
     <string name="lbl_currency">валюта</string>
     <string name="lbl_date_acquired">Дата покупки</string>
     <string name="lbl_date_acquired_day">День куплен</string>
