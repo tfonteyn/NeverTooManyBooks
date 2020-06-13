@@ -172,7 +172,7 @@ class ImportGrTask
     private LocalDateTime getLastSyncDate(@NonNull final Context context) {
         final String dateStr = PreferenceManager.getDefaultSharedPreferences(context)
                                                 .getString(PREFS_LAST_SYNC_DATE, null);
-        return DateParser.ISO.parse(dateStr);
+        return DateParser.parseISO(dateStr);
     }
 
     /**
@@ -437,7 +437,7 @@ class ImportGrTask
             final LocalDateTime reviewUpd =
                     ReviewField.parseDate(sourceData.getString(ReviewField.UPDATED));
             // Get last time the book was sent to Goodreads (may be null)
-            final LocalDateTime lastSyncDate = DateParser.ISO.parse(
+            final LocalDateTime lastSyncDate = DateParser.parseISO(
                     bookData.getString(DBDefinitions.KEY_UTC_LAST_SYNC_DATE_GOODREADS));
 
             // If last update in Goodreads was before last Goodreads sync of book,

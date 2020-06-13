@@ -91,7 +91,7 @@ public class DateFieldFormatter
         }
 
         // FIXME:a partial date consisting of Month+Year, will always get a day==1 added.
-        final LocalDateTime date = DateParser.ALL.parse(text);
+        final LocalDateTime date = DateParser.parse(text);
         if (date != null) {
             return date.format(DateTimeFormatter.ISO_LOCAL_DATE);
         }

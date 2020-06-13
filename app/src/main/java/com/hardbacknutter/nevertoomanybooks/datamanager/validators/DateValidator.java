@@ -70,7 +70,7 @@ public class DateValidator
         if (value.isEmpty()) {
             value = mDefaultValue;
         } else {
-            final LocalDateTime date = DateParser.ALL.parse(value);
+            final LocalDateTime date = DateParser.parse(value);
             if (date != null) {
                 value = date.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
             } else {

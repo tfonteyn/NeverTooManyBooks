@@ -140,7 +140,7 @@ public class ArchiveInfo {
      */
     @Nullable
     public LocalDateTime getCreationDate() {
-        return DateParser.ISO.parse(mBundle.getString(INFO_CREATION_DATE));
+        return DateParser.parseISO(mBundle.getString(INFO_CREATION_DATE));
     }
 
     /**

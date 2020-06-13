@@ -543,7 +543,7 @@ public class OpenLibrarySearchEngine
 
         s = result.optString("publish_date");
         if (!s.isEmpty()) {
-            final LocalDateTime date = DateParser.ALL.parse(s);
+            final LocalDateTime date = DateParser.parse(s);
             if (date != null) {
                 bookData.putString(DBDefinitions.KEY_DATE_PUBLISHED,
                                    date.format(DateTimeFormatter.ISO_LOCAL_DATE));

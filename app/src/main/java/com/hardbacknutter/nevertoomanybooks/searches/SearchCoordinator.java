@@ -1038,9 +1038,9 @@ public class SearchCoordinator
             // Overwrite with the new date if we can parse it and
             // if the current one was present but not valid.
             if (dataToAdd != null) {
-                final LocalDateTime newDate = DateParser.ALL.parse(siteLocale, dataToAdd);
+                final LocalDateTime newDate = DateParser.parse(siteLocale, dataToAdd);
                 if (newDate != null) {
-                    if (DateParser.ALL.parse(siteLocale, currentDateHeld) == null) {
+                    if (DateParser.parse(siteLocale, currentDateHeld) == null) {
                         // current date was invalid, use the new one instead.
                         // (theoretically this check was not needed, as we should not have
                         // an invalid date stored anyhow... but paranoia rules)

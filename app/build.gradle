@@ -139,7 +139,6 @@ android {
         buildConfigField('boolean', 'ENABLE_LIBRARY_THING_ALT_ED', 'true')
 
         buildConfigField('boolean', 'ENABLE_GOOGLE_BOOKS', 'true')
-
     }
 
     buildTypes {
@@ -158,12 +157,9 @@ android {
 
             buildConfigField('boolean', 'MENU_PICKER_USES_FRAGMENT', 'true')
         }
-
     }
 
     lintOptions {
-        //disable 'MissingTranslation'
-
         // allow command line builds to complete
         abortOnError false
     }

@@ -67,7 +67,7 @@ public class TQEventCursorRow
      */
     @NonNull
     public LocalDateTime getEventDate() {
-        LocalDateTime utcDate = DateParser.ISO.parse(
+        LocalDateTime utcDate = DateParser.parseISO(
                 getString(QueueDBHelper.KEY_EVENT_UTC_DATETIME));
         if (utcDate == null) {
             utcDate = LocalDateTime.now(ZoneOffset.UTC);

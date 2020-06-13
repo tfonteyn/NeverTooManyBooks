@@ -280,7 +280,7 @@ class QueueDAO
             }
 
             // Determine the number of milliseconds to wait before we should run the task
-            LocalDateTime utcRetryDate = DateParser.ISO.parse(
+            LocalDateTime utcRetryDate = DateParser.parseISO(
                     cursor.getString(cursor.getColumnIndex(KEY_TASK_RETRY_UTC_DATETIME)));
             if (utcRetryDate == null) {
                 utcRetryDate = LocalDateTime.now(ZoneOffset.UTC);

@@ -454,7 +454,7 @@ public class CsvImporter
                                       @NonNull final Book book,
                                       final long bookId) {
         final LocalDateTime utcImportDate =
-                DateParser.ISO.parse(book.getString(DBDefinitions.KEY_UTC_LAST_UPDATED));
+                DateParser.parseISO(book.getString(DBDefinitions.KEY_UTC_LAST_UPDATED));
         if (utcImportDate == null) {
             return false;
         }

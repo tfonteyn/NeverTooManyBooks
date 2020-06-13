@@ -1077,7 +1077,7 @@ public class DAO
         //noinspection SynchronizationOnLocalVariableOrMethodParameter
         synchronized (stmt) {
             stmt.bindLong(1, bookId);
-            return DateParser.ISO.parse(stmt.simpleQueryForStringOrNull());
+            return DateParser.parseISO(stmt.simpleQueryForStringOrNull());
         }
     }
 

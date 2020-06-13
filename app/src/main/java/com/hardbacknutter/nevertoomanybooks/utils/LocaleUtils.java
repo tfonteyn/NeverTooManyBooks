@@ -453,7 +453,7 @@ public final class LocaleUtils {
     @NonNull
     public static String toPrettyDate(@NonNull final Context context,
                                       @NonNull final String isoDateStr) {
-        final LocalDateTime date = DateParser.ALL.parse(isoDateStr);
+        final LocalDateTime date = DateParser.parse(isoDateStr);
         if (date != null) {
             return date.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)
                                                 .withLocale(getUserLocale(context)));

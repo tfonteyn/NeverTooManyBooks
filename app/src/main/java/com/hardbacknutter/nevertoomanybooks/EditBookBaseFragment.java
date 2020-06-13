@@ -114,13 +114,13 @@ public abstract class EditBookBaseFragment
      */
     private static Instant getInstant(@NonNull final Field<String, TextView> field,
                                       final boolean todayIfNone) {
-        final LocalDateTime date = DateParser.ALL.parse(field.getAccessor().getValue());
+        final LocalDateTime date = DateParser.parse(field.getAccessor().getValue());
         if (date == null && !todayIfNone) {
             return null;
         }
 
         if (date != null) {
-            date.toInstant(ZoneOffset.UTC);
+            return date.toInstant(ZoneOffset.UTC);
         }
         return Instant.now();
     }
@@ -328,7 +328,7 @@ public abstract class EditBookBaseFragment
                 // sanity check
                 if (startSelection != null && endSelection != null
                     && startSelection > endSelection) {
-                    Long tmp = startSelection;
+                    final Long tmp = startSelection;
                     startSelection = endSelection;
                     endSelection = tmp;
                 }
@@ -391,7 +391,7 @@ public abstract class EditBookBaseFragment
         if (field.isUsed(getContext())) {
             //noinspection ConstantConditions
             field.getAccessor().getView().setOnClickListener(v -> {
-                DialogFragment picker = PartialDatePickerDialogFragment.newInstance(
+                final DialogFragment picker = PartialDatePickerDialogFragment.newInstance(
                         dialogTitleId, field.getAccessor().getValue(), todayIfNone);
                 mFragmentVM.setCurrentDialogFieldId(field.getId());
                 picker.show(getChildFragmentManager(), PartialDatePickerDialogFragment.TAG);

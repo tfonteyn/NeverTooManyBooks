@@ -88,14 +88,27 @@ public class DateParser {
             "MMMM yyyy",
             };
 
+    /** List of patterns we'll use to parse dates. */
+    private static final Collection<DateTimeFormatter> ALL_PARSERS = new ArrayList<>();
+    /** List of patterns we'll use to parse ISO datetime stamps.. */
+    private static final Collection<DateTimeFormatter> ISO_PARSERS = new ArrayList<>();
+
     /**
      * Create the parser lists.
      *
      * @param locales the locales to use
      */
     public static void create(@NonNull final Locale... locales) {
-        ALL.create(locales);
-        ISO.create();
+        final Locale systemLocale = LocaleUtils.getSystemLocale();
+
+        ALL_PARSERS.clear();
+        addParsers(ALL_PARSERS, NUMERICAL, systemLocale);
+        addParsers(ALL_PARSERS, ISO_PATTERNS, systemLocale);
+        addParsers(ALL_PARSERS, TEXT, locales);
+        addEnglish(ALL_PARSERS, TEXT, locales);
+
+        ISO_PARSERS.clear();
+        addParsers(ISO_PARSERS, ISO_PATTERNS, systemLocale);
     }
 
     /**
@@ -126,6 +139,26 @@ public class DateParser {
                     group.add(builder.toFormatter(locale));
                 }
             }
+        }
+    }
+
+    /**
+     * Create an English variant of a parser if English not already in the list of locales.
+     */
+    private static void addEnglish(@SuppressWarnings("SameParameterValue")
+                                   @NonNull final Collection<DateTimeFormatter> group,
+                                   @SuppressWarnings("SameParameterValue")
+                                   @NonNull final String[] patterns,
+                                   @NonNull final Locale[] locales) {
+        boolean hasEnglish = false;
+        for (Locale locale : locales) {
+            if (Locale.ENGLISH.equals(locale)) {
+                hasEnglish = true;
+                break;
+            }
+        }
+        if (!hasEnglish) {
+            addParsers(group, patterns, Locale.ENGLISH);
         }
     }
 
@@ -191,6 +224,7 @@ public class DateParser {
 //                // Keep in mind this creates a new copy of the formatter.
 //                return LocalDateTime.parse(dateStr, dtf.withResolverStyle(ResolverStyle.LENIENT));
 //            } catch (@NonNull final DateTimeParseException ignore) {
+//            } catch (@NonNull final RuntimeException ignore) {
 //                // ignore and try the next one
 //            }
 //        }
@@ -199,94 +233,42 @@ public class DateParser {
     }
 
     /**
-     * Parses generic date and date-time strings.
+     * Attempt to parse a date string.
+     *
+     * @param dateStr String to parse
+     *
+     * @return Resulting date if parsed, otherwise {@code null}
      */
-    public static final class ALL {
-
-        /** List of patterns we'll use to parse dates. */
-        private static final Collection<DateTimeFormatter> PARSERS = new ArrayList<>();
-
-        public static void create(@NonNull final Locale... locales) {
-            final Locale systemLocale = LocaleUtils.getSystemLocale();
-            PARSERS.clear();
-            addParsers(PARSERS, NUMERICAL, systemLocale);
-            addParsers(PARSERS, ISO_PATTERNS, systemLocale);
-            addParsers(PARSERS, TEXT, locales);
-            addEnglish(PARSERS, TEXT, locales);
-        }
-
-        /**
-         * add english if not already in the list of locales.
-         */
-        private static void addEnglish(@SuppressWarnings("SameParameterValue")
-                                       @NonNull final Collection<DateTimeFormatter> group,
-                                       @SuppressWarnings("SameParameterValue")
-                                       @NonNull final String[] patterns,
-                                       @NonNull final Locale[] locales) {
-            boolean hasEnglish = false;
-            for (Locale locale : locales) {
-                if (Locale.ENGLISH.equals(locale)) {
-                    hasEnglish = true;
-                    break;
-                }
-            }
-            if (!hasEnglish) {
-                addParsers(group, patterns, Locale.ENGLISH);
-            }
-        }
-
-        /**
-         * Attempt to parse a date string using the passed locale.
-         * This method is meant to be used by site-specific code where the site Locale is known.
-         *
-         * @param locale  to try first; i.e. before the pre-defined list.
-         * @param dateStr String to parse
-         *
-         * @return Resulting date if successfully parsed, otherwise {@code null}
-         */
-        public static LocalDateTime parse(@NonNull final Locale locale,
-                                          @NonNull final String dateStr) {
-            return DateParser.parse(PARSERS, dateStr, locale);
-        }
-
-        /**
-         * Attempt to parse a date string.
-         *
-         * @param dateStr String to parse
-         *
-         * @return Resulting date if parsed, otherwise {@code null}
-         */
-        @Nullable
-        public static LocalDateTime parse(@Nullable final String dateStr) {
-            return DateParser.parse(PARSERS, dateStr, null);
-        }
+    @Nullable
+    public static LocalDateTime parse(@Nullable final String dateStr) {
+        return parse(ALL_PARSERS, dateStr, null);
     }
 
     /**
-     * Parses ISO formatted date and date-time strings.
+     * Attempt to parse a date string using the passed locale.
+     * This method is meant to be used by site-specific code where the site Locale is known.
+     *
+     * @param locale  to try first; i.e. before the pre-defined list.
+     * @param dateStr String to parse
+     *
+     * @return Resulting date if successfully parsed, otherwise {@code null}
      */
-    public static final class ISO {
+    public static LocalDateTime parse(@NonNull final Locale locale,
+                                      @NonNull final String dateStr) {
+        return parse(ALL_PARSERS, dateStr, locale);
+    }
 
-        /** List of patterns we'll use to parse ISO datetime stamps.. */
-        private static final Collection<DateTimeFormatter> PARSERS = new ArrayList<>();
-
-        public static void create() {
-            PARSERS.clear();
-            addParsers(PARSERS, ISO_PATTERNS, LocaleUtils.getSystemLocale());
-        }
-
-        /**
-         * Attempt to parse a date string.
-         * Any missing parts of the pattern will get set to default: 1-Jan, 00:00:00
-         * If the year is missing, {@code null} is returned.
-         *
-         * @param dateStr String to parse
-         *
-         * @return Resulting date if parsed, otherwise {@code null}
-         */
-        @Nullable
-        public static LocalDateTime parse(@Nullable final String dateStr) {
-            return DateParser.parse(PARSERS, dateStr, null);
-        }
+    /**
+     * Attempt to parse a date string using ISO parsers.
+     * Any missing parts of the pattern will get set to default: 1-Jan, 00:00:00
+     * If the year is missing, {@code null} is returned.
+     *
+     * @param dateStr String to parse
+     *
+     * @return Resulting date if parsed, otherwise {@code null}
+     */
+    @Nullable
+    public static LocalDateTime parseISO(@Nullable final String dateStr) {
+        return DateParser.parse(ISO_PARSERS, dateStr, null);
     }
 }

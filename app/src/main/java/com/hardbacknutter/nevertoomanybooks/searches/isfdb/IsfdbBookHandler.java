@@ -579,7 +579,7 @@ class IsfdbBookHandler
                     // e.g. "1975-04-00" or "1974-00-00" Cut that part off.
                     tmpString = UNKNOWN_M_D_PATTERN.matcher(tmpString).replaceAll("");
                     // and we're paranoid...
-                    final LocalDateTime date = DateParser.ALL.parse(tmpString);
+                    final LocalDateTime date = DateParser.parse(tmpString);
                     if (date != null) {
                         // Note that partial dates, e.g. "1987", "1978-03"
                         // will get 'completed' to "1987-01-01", "1978-03-01"

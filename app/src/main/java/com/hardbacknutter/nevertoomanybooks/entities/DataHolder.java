@@ -58,6 +58,6 @@ public interface DataHolder {
 
     @Nullable
     default LocalDateTime getDate(@NonNull final String key) {
-        return DateParser.ISO.parse(getString(key));
+        return DateParser.parseISO(getString(key));
     }
 }

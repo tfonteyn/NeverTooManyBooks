@@ -67,7 +67,7 @@ public class TQTaskCursorRow
      */
     @NonNull
     public LocalDateTime getQueuedDate() {
-        LocalDateTime utcDate = DateParser.ISO.parse(
+        LocalDateTime utcDate = DateParser.parseISO(
                 getString(QueueDBHelper.KEY_TASK_QUEUED_UTC_DATETIME));
         if (utcDate == null) {
             utcDate = LocalDateTime.now(ZoneOffset.UTC);
@@ -82,7 +82,7 @@ public class TQTaskCursorRow
      */
     @NonNull
     public LocalDateTime getRetryDate() {
-        LocalDateTime utcDate = DateParser.ISO.parse(
+        LocalDateTime utcDate = DateParser.parseISO(
                 getString(QueueDBHelper.KEY_TASK_RETRY_UTC_DATETIME));
         if (utcDate == null) {
             utcDate = LocalDateTime.now(ZoneOffset.UTC);
