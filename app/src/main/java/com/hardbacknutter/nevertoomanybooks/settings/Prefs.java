@@ -125,6 +125,8 @@ public final class Prefs {
     public static final String pk_style_book_rating = "style.booklist.show.rating";
 
     /** Booklist Filter - ListPreference. */
+    public static final String pk_style_filter_isbn = "style.booklist.filter.isbn";
+    /** Booklist Filter - ListPreference. */
     public static final String pk_style_filter_read = "style.booklist.filter.read";
     /** Booklist Filter - ListPreference. */
     public static final String pk_style_filter_signed = "style.booklist.filter.signed";
@@ -144,10 +146,6 @@ public final class Prefs {
     public static final String PSK_STYLE_SHOW_DETAILS = "psk_style_show_details";
     /** Style - PreferenceScreen/PreferenceCategory Key. */
     public static final String PSK_STYLE_FILTERS = "psk_style_filters";
-
-    /** Site - Credentials. */
-    public static final String PSK_CREDENTIALS = "psk_credentials";
-
 
     /** Global - PreferenceScreen/PreferenceCategory Key. */
     public static final String PSK_BARCODE_SCANNER = "psk_barcode_scanner";

@@ -72,12 +72,17 @@
     <PreferenceCategory
         android:title="@android:string/search_go">
 
-        <!-- starts a dedicated Activity. -->
         <Preference
             android:icon="@drawable/ic_sort"
             android:key="psk_search_site_order"
             android:summary="@string/pt_website_order_and_enable"
             android:title="@string/lbl_websites">
+        </Preference>
+
+        <Preference
+            android:icon="@drawable/ic_security"
+            android:key="psk_credentials_goodreads"
+            android:title="@string/lbl_credentials_goodreads">
         </Preference>
 
         <Preference

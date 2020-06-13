@@ -34,7 +34,7 @@
 
         <Preference
             android:icon="@drawable/ic_security"
-            android:key="psk_credentials"
+            android:key="psk_credentials_goodreads"
             android:title="@string/lbl_credentials">
         </Preference>
 
