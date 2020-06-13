@@ -91,13 +91,13 @@ public class MenuPicker {
         mPosition = position;
         mListener = listener;
 
-        View root = LayoutInflater.from(context).inflate(R.layout.dialog_popupmenu, null);
+        final View root = LayoutInflater.from(context).inflate(R.layout.dialog_popupmenu, null);
 
         // list of options
-        RecyclerView listView = root.findViewById(R.id.item_list);
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context);
+        final RecyclerView listView = root.findViewById(R.id.item_list);
+        final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context);
         listView.setLayoutManager(linearLayoutManager);
-        MenuItemListAdapter adapter = new MenuItemListAdapter(context, menu);
+        final MenuItemListAdapter adapter = new MenuItemListAdapter(context, menu);
         listView.setAdapter(adapter);
 
         mDialog = new MaterialAlertDialogBuilder(context)
@@ -191,7 +191,7 @@ public class MenuPicker {
         void setMenu(@NonNull final Menu menu) {
             mList.clear();
             for (int i = 0; i < menu.size(); i++) {
-                MenuItem item = menu.getItem(i);
+                final MenuItem item = menu.getItem(i);
                 if (item.isVisible()) {
                     mList.add(item);
                 }
@@ -203,7 +203,7 @@ public class MenuPicker {
         @Override
         public Holder onCreateViewHolder(@NonNull final ViewGroup parent,
                                          final int viewType) {
-            View root;
+            final View root;
             if (viewType == MENU_ITEM) {
                 root = mInflater.inflate(R.layout.row_simple_list_item, parent, false);
             } else {
@@ -226,7 +226,7 @@ public class MenuPicker {
                                      final int position) {
 
             if (holder.textView != null) {
-                MenuItem item = mList.get(position);
+                final MenuItem item = mList.get(position);
                 holder.textView.setText(item.getTitle());
 
                 // add a little arrow to indicate sub-menus.
