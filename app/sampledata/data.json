@@ -65,7 +65,7 @@
       "name": "Under the stairs"
     },
     {
-      "name": "Fun"
+      "name": "Box 10"
     },
     {
       "name": "Office"
@@ -159,6 +159,17 @@
     },
     {
       "name": "Genre"
+    }
+  ],
+  "context_menu": [
+    {
+      "name": "Cut"
+    },
+    {
+      "name": "Copy"
+    },
+    {
+      "name": "Paste"
     }
   ]
 }

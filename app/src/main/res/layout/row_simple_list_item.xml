@@ -45,7 +45,7 @@
         android:text=""
         android:textAppearance="?attr/textAppearanceListItem"
         tools:drawableStart="@drawable/ic_image"
-        tools:text="menu item"
+        tools:text="@sample/data.json/context_menu/name"
         />
 
 </LinearLayout>
