@@ -72,7 +72,9 @@ import com.hardbacknutter.nevertoomanybooks.debug.DebugReport;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
+import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsRegistrationActivity;
 import com.hardbacknutter.nevertoomanybooks.scanner.ScannerManager;
+import com.hardbacknutter.nevertoomanybooks.searches.librarything.LibraryThingRegistrationActivity;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.SoundManager;
@@ -117,16 +119,38 @@ public abstract class BasePreferenceFragment
 
         //noinspection ConstantConditions
         mResultData = new ViewModelProvider(getActivity()).get(ResultDataModel.class);
-
-        initListeners();
     }
 
     /**
      * Hook up specific listeners/preferences.
      */
-    @CallSuper
-    protected void initListeners() {
+    @Override
+    public void onStart() {
+        super.onStart();
+
         Preference preference;
+
+        // there is overhead here in always trying to find all preferences listed,
+        // instead of doing this in the sub classes.
+        // For now, this allows us to move preferences (or even duplicate) easier.
+
+        preference = findPreference("psk_credentials_goodreads");
+        if (preference != null) {
+            preference.setOnPreferenceClickListener(p -> {
+                Intent intent = new Intent(getContext(), GoodreadsRegistrationActivity.class);
+                startActivity(intent);
+                return true;
+            });
+        }
+
+        preference = findPreference("psk_credentials_library_thing");
+        if (preference != null) {
+            preference.setOnPreferenceClickListener(p -> {
+                Intent intent = new Intent(getContext(), LibraryThingRegistrationActivity.class);
+                startActivity(intent);
+                return true;
+            });
+        }
 
         // Purge image cache database table.
         preference = findPreference("psk_purge_image_cache");

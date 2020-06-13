@@ -85,8 +85,8 @@ public class GlobalPreferenceFragment
     }
 
     @Override
-    protected void initListeners() {
-        super.initListeners();
+    public void onStart() {
+        super.onStart();
 
         Preference preference;
 

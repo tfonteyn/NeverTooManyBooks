@@ -83,8 +83,8 @@ public class StyleFragment
     }
 
     @Override
-    protected void initListeners() {
-        super.initListeners();
+    public void onStart() {
+        super.onStart();
 
         Preference preference;
 

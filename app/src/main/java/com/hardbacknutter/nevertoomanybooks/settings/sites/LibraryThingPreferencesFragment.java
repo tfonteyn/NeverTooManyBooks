@@ -27,16 +27,12 @@
  */
 package com.hardbacknutter.nevertoomanybooks.settings.sites;
 
-import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
-import androidx.preference.Preference;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.searches.librarything.LibraryThingRegistrationActivity;
 import com.hardbacknutter.nevertoomanybooks.settings.BasePreferenceFragment;
-import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 
 public class LibraryThingPreferencesFragment
         extends BasePreferenceFragment {
@@ -47,24 +43,5 @@ public class LibraryThingPreferencesFragment
         super.onCreatePreferences(savedInstanceState, rootKey);
 
         setPreferencesFromResource(R.xml.preferences_site_library_thing, rootKey);
-    }
-
-    /**
-     * Hook up specific listeners/preferences.
-     */
-    protected void initListeners() {
-        super.initListeners();
-
-        Preference preference;
-
-        preference = findPreference(Prefs.PSK_CREDENTIALS);
-        if (preference != null) {
-            preference.setOnPreferenceClickListener(p -> {
-                Intent intent = new Intent(getContext(), LibraryThingRegistrationActivity.class);
-                startActivity(intent);
-                return true;
-            });
-        }
-
     }
 }
