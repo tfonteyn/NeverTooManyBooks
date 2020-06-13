@@ -79,5 +79,14 @@
             android:title="@string/lbl_edition"
             app:disregardButtonText="@string/bookshelf_all_books" />
 
+        <ListPreference
+            android:defaultValue="-1"
+            android:entries="@array/pe_bob_filter_isbn"
+            android:entryValues="@array/pv_bob_filter_values"
+            android:icon="@drawable/ic_filter_list"
+            android:key="style.booklist.filter.isbn"
+            android:title="@string/lbl_isbn"
+            />
+
     </PreferenceCategory>
 </PreferenceScreen>

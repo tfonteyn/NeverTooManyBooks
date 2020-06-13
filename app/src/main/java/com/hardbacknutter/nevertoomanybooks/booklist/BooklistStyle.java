@@ -61,6 +61,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.BitmaskFilter;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.BooleanFilter;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.Filter;
+import com.hardbacknutter.nevertoomanybooks.booklist.filters.NotEmptyFilter;
 import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PBitmask;
 import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PBoolean;
 import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PIntList;
@@ -716,6 +717,13 @@ public class BooklistStyle
                                        0, Book.Edition.BITMASK_ALL,
                                        DBDefinitions.TBL_BOOKS,
                                        DBDefinitions.KEY_EDITION_BITMASK));
+
+        mFilters.put(Prefs.pk_style_filter_isbn,
+                     new NotEmptyFilter(R.string.lbl_isbn,
+                                        Prefs.pk_style_filter_isbn,
+                                        mUuid, isUserDefined,
+                                        DBDefinitions.TBL_BOOKS,
+                                        DBDefinitions.KEY_ISBN));
     }
 
     @SuppressWarnings("SameReturnValue")

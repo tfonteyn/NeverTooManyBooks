@@ -187,6 +187,13 @@
         <item>@string/pe_bob_filter_loaned_no</item>
     </string-array>
 
+    <!-- ListPreference - Booklist Filter -->
+    <string-array name="pe_bob_filter_isbn">
+        <item>@string/bookshelf_all_books</item>
+        <item>@string/pe_bob_filter_isbn_yes</item>
+        <item>@string/pe_bob_filter_isbn_no</item>
+    </string-array>
+
     <!-- shared for all Boolean Filters:
          don't-use-filter (-1),
          filter-true (1),

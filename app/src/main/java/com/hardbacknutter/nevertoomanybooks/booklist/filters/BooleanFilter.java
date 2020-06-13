@@ -27,7 +27,10 @@
  */
 package com.hardbacknutter.nevertoomanybooks.booklist.filters;
 
+import android.content.Context;
+
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
 import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition;
@@ -65,6 +68,16 @@ public class BooleanFilter
                          final TableDefinition table,
                          @NonNull final String domainKey) {
         super(labelId, key, uuid, isPersistent, table, domainKey);
+    }
+
+    @Override
+    @Nullable
+    public String getExpression(@NonNull final Context context) {
+        Integer value = getValue(context);
+        if (!P_NOT_USED.equals(value)) {
+            return mTable.dot(mDomainKey) + '=' + value;
+        }
+        return null;
     }
 
     /**

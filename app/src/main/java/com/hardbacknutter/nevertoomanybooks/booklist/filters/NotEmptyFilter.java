@@ -28,30 +28,18 @@
 package com.hardbacknutter.nevertoomanybooks.booklist.filters;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
-import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PIntString;
-import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition;
 
-public abstract class IntStringFilter
-        extends PIntString
-        implements Filter<Integer> {
-
-    protected static final Integer P_NOT_USED = -1;
-
-    @StringRes
-    private final int mLabelId;
-
-    protected final TableDefinition mTable;
-    protected final String mDomainKey;
+public class NotEmptyFilter
+        extends IntStringFilter {
 
     /**
      * Constructor.
-     * Default value is {@code P_NOT_USED}.
      *
      * @param labelId      string resource id to use as a display label
      * @param key          of the preference
@@ -59,41 +47,31 @@ public abstract class IntStringFilter
      * @param isPersistent {@code true} to have the value persisted.
      *                     {@code false} for in-memory only.
      * @param table        to use by the expression
-     * @param domainKey       to use by the expression
+     * @param domainKey    to use by the expression
      */
-    IntStringFilter(@StringRes final int labelId,
-                    @NonNull final String key,
-                    @NonNull final String uuid,
-                    final boolean isPersistent,
-                    @SuppressWarnings("SameParameterValue") @NonNull final TableDefinition table,
-                    @NonNull final String domainKey) {
-        super(key, uuid, isPersistent, P_NOT_USED);
-        mLabelId = labelId;
-        mTable = table;
-        mDomainKey = domainKey;
-    }
-
-    @NonNull
-    @Override
-    public String getLabel(@NonNull final Context context) {
-        return context.getString(mLabelId);
+    public NotEmptyFilter(@StringRes final int labelId,
+                          @NonNull final String key,
+                          @NonNull final String uuid,
+                          final boolean isPersistent,
+                          @SuppressWarnings("SameParameterValue") @NonNull
+                          final TableDefinition table,
+                          @NonNull final String domainKey) {
+        super(labelId, key, uuid, isPersistent, table, domainKey);
     }
 
     @Override
-    public boolean isActive(@NonNull final Context context) {
-        final SharedPreferences prefs = getPrefs(context);
-        return !P_NOT_USED.equals(getValue(context)) && DBDefinitions.isUsed(prefs, mDomainKey);
+    @Nullable
+    public String getExpression(@NonNull final Context context) {
+        Integer value = getValue(context);
+        if (!P_NOT_USED.equals(value)) {
+            if (value == 0) {
+                return "((" + mTable.dot(mDomainKey) + " IS NULL)"
+                       + " OR (" + mTable.dot(mDomainKey) + "=''))";
+            } else {
+                return "((" + mTable.dot(mDomainKey) + " IS NOT NULL)"
+                       + " AND (" + mTable.dot(mDomainKey) + "<>''))";
+            }
+        }
+        return null;
     }
-
-    @Override
-    @NonNull
-    public String toString() {
-        return "IntStringFilter{"
-               + "mTable=" + mTable.getName()
-               + ", mDomainKey=" + mDomainKey
-               + ", mLabelId=" + mLabelId
-               + ", " + super.toString()
-               + "}\n";
-    }
-
 }
