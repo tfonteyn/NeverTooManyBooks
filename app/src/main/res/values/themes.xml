@@ -54,16 +54,13 @@ https://material.io/design/material-theming/implementing-your-theme.html#color
         <item name="colorSecondaryVariant">@color/cyan_300</item>
         <item name="colorOnSecondary">@color/black</item>
 
-        <!--        <item name="colorSurface">@color/white</item>-->
-        <!--        <item name="colorOnSurface">@color/black</item>-->
-
         <item name="colorControlNormal">@color/black</item>
 
         <!--  ======================== -->
         <!-- Component theme overrides -->
         <!--  ======================== -->
 
-        <!-- <item name="materialAlertDialogTheme">@style/ThemeOverlay.App.MaterialAlertDialog</item>-->
+        <item name="materialAlertDialogTheme">@style/ThemeOverlay.App.MaterialAlertDialog</item>
 
         <item name="snackbarTextViewStyle">@style/SnackbarText</item>
 
@@ -90,24 +87,16 @@ https://material.io/design/material-theming/implementing-your-theme.html#color
 
     </style>
 
+    <style name="ThemeOverlay.App.MaterialAlertDialog" parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog">
+        <!-- determines the color of the button text. -->
+        <item name="colorPrimary">@color/black</item>
+    </style>
+
     <!-- Specific Theme for full screen usage. -->
     <style name="Theme.App.FullScreen">
         <item name="android:windowFullscreen">true</item>
         <item name="android:windowContentOverlay">@null</item>
         <item name="android:windowIsFloating">false</item>
     </style>
-
-    <!--    <style name="ThemeOverlay.App.MaterialAlertDialog" parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog">-->
-        <!--        <item name="colorPrimary">@color/shrine_pink_100</item>-->
-        <!--        <item name="colorSecondary">@color/shrine_pink_100</item>-->
-        <!--        <item name="colorSurface">@color/shrine_pink_light</item>-->
-        <!--        <item name="colorOnSurface">@color/shrine_pink_900</item>-->
-
-        <!--        <item name="alertDialogStyle">@style/MaterialAlertDialog.App</item>-->
-        <!--        <item name="materialAlertDialogTitleTextStyle">@style/MaterialAlertDialog.App.Title.Text</item>-->
-
-        <!--        <item name="buttonBarPositiveButtonStyle">@style/Widget.App.Button</item>-->
-        <!--        <item name="buttonBarNeutralButtonStyle">@style/Widget.App.Button</item>-->
-    <!--    </style>-->
 
 </resources>

@@ -52,7 +52,7 @@
         <!-- Component theme overrides -->
         <!--  ======================== -->
 
-        <!-- <item name="materialAlertDialogTheme">@style/ThemeOverlay.App.MaterialAlertDialog</item>-->
+         <item name="materialAlertDialogTheme">@style/ThemeOverlay.App.MaterialAlertDialog</item>
 
         <item name="snackbarTextViewStyle">@style/SnackbarText</item>
 
@@ -76,6 +76,10 @@
         <item name="appIconTintChecked">@color/green_300</item>
         <item name="appIconTintCompleted">@color/teal_300</item>
 
+    </style>
+
+    <style name="ThemeOverlay.App.MaterialAlertDialog" parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog">
+        <item name="colorPrimary">@color/white</item>
     </style>
 
 </resources>
