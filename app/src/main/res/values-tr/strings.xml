@@ -679,5 +679,6 @@
     <string name="book_color_support_color">çok renkli</string>
     <string name="book_format_digest">Küçük</string>
     <string name="info_filter_edition">0 veya daha fazla seçenek belirleyin ve uygulamak için “Tamam” a veya tümünü yok saymak için “Tüm kitaplar” a basın.</string>
+    <string name="notification_channel_warn">Uyarı</string>
 
 </resources>

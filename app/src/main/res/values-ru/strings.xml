@@ -678,5 +678,6 @@
     <string name="book_color_support_color">двухцветных</string>
     <string name="book_format_digest">Малый</string>
     <string name="info_filter_edition">Выберите 0 или более параметров и нажмите «ОК», чтобы применить их, или нажмите «Все книги», чтобы игнорировать все из них.</string>
+    <string name="notification_channel_warn">Предупреждение</string>
 
 </resources>

@@ -678,4 +678,5 @@
     <string name="book_color_support_color">Dwukolorowy</string>
     <string name="book_format_digest">Mały</string>
     <string name="info_filter_edition">Wybierz 0 lub więcej opcji i dotknij „OK”, aby je zastosować, lub dotknij „Wszystkie książki”, aby je zignorować.</string>
+    <string name="notification_channel_warn">Uwaga</string>
 </resources>

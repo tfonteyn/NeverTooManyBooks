@@ -679,5 +679,6 @@
     <string name="book_color_support_color">Dvoubarevné</string>
     <string name="book_format_digest">Malý</string>
     <string name="info_filter_edition">Vyberte 0 nebo více možností a klepnutím na „OK“ je použijete, nebo klepnutím na „Všechny knihy“ ignorujete všechny.</string>
+    <string name="notification_channel_warn">Pozor</string>
 
 </resources>

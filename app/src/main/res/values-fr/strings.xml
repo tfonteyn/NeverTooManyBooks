@@ -687,5 +687,6 @@
     <string name="book_color_support_color">Bicolore</string>
     <string name="book_format_paperback_large">Grand livre de poche</string>
     <string name="info_filter_edition">Sélectionnez 0 ou plusieurs options et appuyez sur \"OK\" pour les appliquer, ou appuyez sur \"Tous les livres\" pour les ignorer toutes.</string>
+    <string name="notification_channel_warn">Attention</string>
 
 </resources>

@@ -683,5 +683,6 @@
     <string name="book_color_support_color">Bicolore</string>
     <string name="book_format_paperback_large">Grande tascabile</string>
     <string name="info_filter_edition">Seleziona 0 o più opzioni e tocca “OK” per applicarle, oppure tocca “Tutti i libri” per ignorarle tutte.</string>
+    <string name="notification_channel_warn">Attenzione</string>
 
 </resources>
