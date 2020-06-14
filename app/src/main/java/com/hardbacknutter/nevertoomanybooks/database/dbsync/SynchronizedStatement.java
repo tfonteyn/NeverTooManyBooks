@@ -216,10 +216,10 @@ public class SynchronizedStatement
      */
     public long simpleQueryForLong()
             throws SQLiteDoneException {
-        Synchronizer.SyncLock sharedLock = mSync.getSharedLock();
+        final Synchronizer.SyncLock sharedLock = mSync.getSharedLock();
         try {
             long result = mStatement.simpleQueryForLong();
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_STMT_EXECUTE) {
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_EXEC_SQL) {
                 Log.d(TAG, "simpleQueryForLong|" + mStatement + "|result=" + result);
             }
             return result;
@@ -238,10 +238,10 @@ public class SynchronizedStatement
      * @return The result of the query, or 0 when no rows found
      */
     public long simpleQueryForLongOrZero() {
-        Synchronizer.SyncLock sharedLock = mSync.getSharedLock();
+        final Synchronizer.SyncLock sharedLock = mSync.getSharedLock();
         try {
             long result = mStatement.simpleQueryForLong();
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_STMT_EXECUTE) {
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_EXEC_SQL) {
                 Log.d(TAG, "simpleQueryForLongOrZero|" + mStatement + "|result=" + result);
             }
             return result;
@@ -263,7 +263,7 @@ public class SynchronizedStatement
      * @return The result of the query.
      */
     public long count() {
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_STMT_EXECUTE) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_EXEC_SQL) {
             if (!mIsCount) {
                 Log.d(TAG, "count|count statement not a count?", new Throwable());
             }
@@ -284,11 +284,11 @@ public class SynchronizedStatement
     @NonNull
     public String simpleQueryForString()
             throws SQLiteDoneException {
-        Synchronizer.SyncLock sharedLock = mSync.getSharedLock();
+        final Synchronizer.SyncLock sharedLock = mSync.getSharedLock();
         try {
             String result = mStatement.simpleQueryForString();
 
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_STMT_EXECUTE) {
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_EXEC_SQL) {
                 Log.d(TAG, "simpleQueryForString|" + mStatement + "|result=" + result);
             }
             return result;
@@ -309,12 +309,12 @@ public class SynchronizedStatement
      */
     @Nullable
     public String simpleQueryForStringOrNull() {
-        Synchronizer.SyncLock sharedLock = mSync.getSharedLock();
+        final Synchronizer.SyncLock sharedLock = mSync.getSharedLock();
         try {
             return mStatement.simpleQueryForString();
 
         } catch (@NonNull final SQLiteDoneException e) {
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_STMT_EXECUTE) {
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_EXEC_SQL) {
                 Log.d(TAG, "simpleQueryForStringOrNull|" + mStatement + "|result=NULL");
             }
             return null;
@@ -330,14 +330,14 @@ public class SynchronizedStatement
      * CREATE / DROP table, view, trigger, index etc.
      */
     public void execute() {
-        Synchronizer.SyncLock txLock;
+        final Synchronizer.SyncLock txLock;
         if (mIsReadOnly) {
             txLock = mSync.getSharedLock();
         } else {
             txLock = mSync.getExclusiveLock();
         }
         try {
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_STMT_EXECUTE) {
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_EXEC_SQL) {
                 Log.d(TAG, "execute|" + mStatement);
             }
             mStatement.execute();
@@ -356,10 +356,10 @@ public class SynchronizedStatement
      */
     @SuppressWarnings("UnusedReturnValue")
     public int executeUpdateDelete() {
-        Synchronizer.SyncLock exclusiveLock = mSync.getExclusiveLock();
+        final Synchronizer.SyncLock exclusiveLock = mSync.getExclusiveLock();
         try {
-            int rowsAffected = mStatement.executeUpdateDelete();
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_STMT_EXECUTE) {
+            final int rowsAffected = mStatement.executeUpdateDelete();
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_EXEC_SQL) {
                 Log.d(TAG, "executeUpdateDelete|" + mStatement + "|rowsAffected=" + rowsAffected);
             }
             return rowsAffected;
@@ -377,11 +377,11 @@ public class SynchronizedStatement
      * @return the row id of the newly inserted row, or {@code -1} if an error occurred
      */
     public long executeInsert() {
-        Synchronizer.SyncLock exclusiveLock = mSync.getExclusiveLock();
+        final Synchronizer.SyncLock exclusiveLock = mSync.getExclusiveLock();
         try {
-            long id = mStatement.executeInsert();
+            final long id = mStatement.executeInsert();
 
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_STMT_EXECUTE) {
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_EXEC_SQL) {
                 Log.d(TAG, "executeInsert|" + mStatement + "|id=" + id);
 
                 if (id == -1) {

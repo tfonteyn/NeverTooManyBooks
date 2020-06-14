@@ -29,7 +29,6 @@ package com.hardbacknutter.nevertoomanybooks.settings.styles;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 
 import androidx.annotation.NonNull;
@@ -37,8 +36,6 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyle;
 import com.hardbacknutter.nevertoomanybooks.settings.BasePreferenceFragment;
@@ -97,10 +94,6 @@ public abstract class StyleBaseFragment
         // and the actual/current id+uuid
         // mResultDataModel.putResultData(BooklistStyle.BKEY_STYLE_ID, mStyle.getId());
         // mResultDataModel.putResultData(BooklistStyle.BKEY_STYLE_UUID, mStyle.getUuid());
-
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.DUMP_STYLE) {
-            Log.d(TAG, "onCreatePreferences|" + mStyle);
-        }
     }
 
     @Override

@@ -29,7 +29,6 @@ package com.hardbacknutter.nevertoomanybooks.booklist;
 
 import android.database.AbstractCursor;
 import android.database.Cursor;
-import android.util.Log;
 import android.util.SparseArray;
 
 import androidx.annotation.CallSuper;
@@ -40,9 +39,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Objects;
-
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 
 /**
  * TODO: https://developer.android.com/topic/libraries/architecture/paging.html
@@ -289,9 +285,7 @@ public class BooklistCursor
                         }
                     }
                 }
-                if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_PSEUDO_CURSOR) {
-                    Log.d(TAG, "purging cursors: " + toPurge);
-                }
+
                 // Purge them
                 for (Integer i : toPurge) {
                     Cursor c = mCursors.get(i);

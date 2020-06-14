@@ -29,7 +29,6 @@ package com.hardbacknutter.nevertoomanybooks.utils;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -41,8 +40,6 @@ import java.util.Map;
 import java.util.MissingResourceException;
 
 import com.hardbacknutter.nevertoomanybooks.App;
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.searches.stripinfo.StripInfoSearchEngine;
@@ -375,22 +372,6 @@ public final class LanguageUtils {
         return context.getSharedPreferences(LANGUAGE_MAP, Context.MODE_PRIVATE);
     }
 
-    public static String toDebugString(@NonNull final Context context) {
-        final Locale userLocale = LocaleUtils.getUserLocale(context);
-        final Locale systemLocale = LocaleUtils.getSystemLocale();
-        final Locale defLocale = Locale.getDefault();
-
-        return ""
-               + "\nsystemLocale       : " + systemLocale.getDisplayName()
-               + "\nsystemLocale(user) : " + systemLocale.getDisplayName(userLocale)
-
-               + "\ndefLocale          : " + defLocale.getDisplayName()
-               + "\ndefLocale(user)    : " + defLocale.getDisplayName(userLocale)
-
-               + "\nuserLocale         : " + userLocale.getDisplayName()
-               + "\nuserLocale(user)   : " + userLocale.getDisplayName(userLocale);
-    }
-
     /**
      * Build the dedicated SharedPreferences file with the language mappings.
      * Only build once per Locale.
@@ -420,9 +401,6 @@ public final class LanguageUtils {
             Thread.currentThread().setName(TAG);
             final Context context = LocaleUtils.applyLocale(App.getTaskContext());
 
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.STARTUP_TASKS) {
-                Log.d(TAG, "doInBackground|taskId=" + getTaskId());
-            }
             publishProgress(new TaskListener.ProgressMessage(
                     getTaskId(), context.getString(R.string.progress_msg_optimizing)));
             try {

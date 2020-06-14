@@ -41,6 +41,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import com.hardbacknutter.nevertoomanybooks.BooksOnBookshelf;
+
 /**
  * Class to handle service-level aspects of the queues.
  * <p>
@@ -117,7 +119,7 @@ public final class QueueManager {
     }
 
     /**
-     * Constructor. Called from {@link com.hardbacknutter.nevertoomanybooks.StartupActivity}
+     * Constructor. Called from {@link BooksOnBookshelf}
      * so processing can start immediately after startup.
      *
      * @param context Current context; NOT stored.
@@ -130,7 +132,7 @@ public final class QueueManager {
 
     public static QueueManager getQueueManager() {
         // do not lazy initialize here. We want the QueueManager running at startup.
-        Objects.requireNonNull(sInstance, "init was not called?");
+        Objects.requireNonNull(sInstance, "create was not called?");
         return sInstance;
     }
 

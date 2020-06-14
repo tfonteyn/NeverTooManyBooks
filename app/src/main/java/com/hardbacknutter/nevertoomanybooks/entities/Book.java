@@ -49,7 +49,6 @@ import java.util.Map;
 import java.util.regex.Pattern;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
@@ -553,14 +552,6 @@ public class Book
         if (bookLocale != null) {
             return bookLocale;
         } else {
-            // this is not an issue as such, but helps during debug when the book *should*
-            // have a language and did not.
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.LOCALE) {
-                Log.d(TAG, "getAndUpdateLocale|no language set"
-                           + "|id=" + getId()
-                           + "|title=" + getString(DBDefinitions.KEY_TITLE),
-                      new Throwable());
-            }
             // none, use fallback.
             return fallbackLocale;
         }
@@ -731,7 +722,7 @@ public class Book
      * <p>
      * Further processing should be done in {@link #preprocessNullsAndBlanks(boolean)}.
      *
-     * @param isNew   {@code true} if the book is new
+     * @param isNew {@code true} if the book is new
      */
     @VisibleForTesting
     void preprocessExternalIds(final boolean isNew) {

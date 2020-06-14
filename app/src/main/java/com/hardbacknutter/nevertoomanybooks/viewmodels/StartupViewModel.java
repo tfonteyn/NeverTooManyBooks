@@ -30,7 +30,6 @@ package com.hardbacknutter.nevertoomanybooks.viewmodels;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -41,8 +40,6 @@ import androidx.preference.PreferenceManager;
 import java.util.Collection;
 import java.util.HashSet;
 
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageUtils;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.tasks.DBCleanerTask;
@@ -56,9 +53,7 @@ import com.hardbacknutter.nevertoomanybooks.scanner.GoogleBarcodeScanner;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskBase;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
-import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 import com.hardbacknutter.nevertoomanybooks.utils.LanguageUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.Notifier;
 import com.hardbacknutter.nevertoomanybooks.utils.UpgradeMessageManager;
 
 /**
@@ -81,8 +76,6 @@ public class StartupViewModel
     @NonNull
     private final Collection<Integer> mAllTasks = new HashSet<>(6);
 
-    private final MutableLiveData<Integer> mFatalMsgId = new MutableLiveData<>();
-
     private final MutableLiveData<Boolean> mAllTasksFinished = new MutableLiveData<>(false);
     private final MutableLiveData<Exception> mTaskException = new MutableLiveData<>();
     /** Using MutableLiveData as we actually want re-delivery after a device rotation. */
@@ -96,9 +89,6 @@ public class StartupViewModel
         public void onFinished(@NonNull final FinishMessage<Boolean> message) {
             // We don't care about the status.
             synchronized (mAllTasks) {
-                if (BuildConfig.DEBUG && DEBUG_SWITCHES.STARTUP_TASKS) {
-                    Log.d(TAG, "onFinished|" + message);
-                }
                 mAllTasks.remove(message.taskId);
                 if (mAllTasks.isEmpty()) {
                     mAllTasksFinished.setValue(true);
@@ -115,7 +105,7 @@ public class StartupViewModel
     /** Database Access. */
     private DAO mDb;
     /** Flag to ensure tasks are only ever started once. */
-    private boolean mStartTasks = true;
+    private boolean mIsFirstStart = true;
 
     /** Flag we need to prompt the user to make a backup after startup. */
     private boolean mProposeBackup;
@@ -127,16 +117,6 @@ public class StartupViewModel
 
     /** Indicates the upgrade message has been shown. */
     private boolean mUpgradeMessageShown;
-
-    /**
-     * Updated after a (any) task finishes with an exception.
-     *
-     * @return exception, or {@code null} for none.
-     */
-    @NonNull
-    public MutableLiveData<Integer> onFatalMsgId() {
-        return mFatalMsgId;
-    }
 
     /**
      * Developer warning: this is not a UI update.
@@ -181,40 +161,36 @@ public class StartupViewModel
      * @param context Current context
      */
     public void init(@NonNull final Context context) {
+        if (mIsFirstStart) {
+            // from here on, we have access to our log file
+            Logger.cycleLogs(context);
 
-        Notifier.init(context);
+            // prepare the maintenance flags and counters.
+            final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+            final int maintenanceCountdown = prefs
+                    .getInt(PREF_MAINTENANCE_COUNTDOWN, MAINTENANCE_COUNTDOWN);
+            final int backupCountdown = prefs
+                    .getInt(Prefs.PREF_STARTUP_BACKUP_COUNTDOWN, Prefs.STARTUP_BACKUP_COUNTDOWN);
 
-        final int msgId = AppDir.init(context);
-        if (msgId != 0) {
-            mFatalMsgId.setValue(msgId);
-            return;
+            prefs.edit()
+                 .putInt(PREF_MAINTENANCE_COUNTDOWN,
+                         maintenanceCountdown == 0 ? MAINTENANCE_COUNTDOWN :
+                         maintenanceCountdown - 1)
+                 .putInt(Prefs.PREF_STARTUP_BACKUP_COUNTDOWN,
+                         backupCountdown == 0 ? Prefs.STARTUP_BACKUP_COUNTDOWN :
+                         backupCountdown - 1)
+
+                 // The number of times the app was opened.
+                 .putInt(PREF_STARTUP_COUNT, prefs.getInt(PREF_STARTUP_COUNT, 0) + 1)
+                 .apply();
+
+            mDoMaintenance = maintenanceCountdown == 0;
+            mProposeBackup = backupCountdown == 0;
         }
-
-        Logger.cycleLogs(context);
-
-        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-
-        final int maintenanceCountdown = prefs
-                .getInt(PREF_MAINTENANCE_COUNTDOWN, MAINTENANCE_COUNTDOWN);
-        final int backupCountdown = prefs
-                .getInt(Prefs.PREF_STARTUP_BACKUP_COUNTDOWN, Prefs.STARTUP_BACKUP_COUNTDOWN);
-
-        prefs.edit()
-             .putInt(PREF_MAINTENANCE_COUNTDOWN,
-                     maintenanceCountdown == 0 ? MAINTENANCE_COUNTDOWN : maintenanceCountdown - 1)
-             .putInt(Prefs.PREF_STARTUP_BACKUP_COUNTDOWN,
-                     backupCountdown == 0 ? Prefs.STARTUP_BACKUP_COUNTDOWN : backupCountdown - 1)
-
-             // The number of times the app was opened.
-             .putInt(PREF_STARTUP_COUNT, prefs.getInt(PREF_STARTUP_COUNT, 0) + 1)
-             .apply();
-
-        mDoMaintenance = maintenanceCountdown == 0;
-        mProposeBackup = backupCountdown == 0;
     }
 
     public boolean isStartTasks() {
-        return mStartTasks;
+        return mIsFirstStart;
     }
 
     public boolean isProposeBackup() {
@@ -257,7 +233,7 @@ public class StartupViewModel
     public void startTasks(@NonNull final Context context) {
 
         // Clear the flag
-        mStartTasks = false;
+        mIsFirstStart = false;
 
         try {
             mDb = new DAO(TAG);
@@ -268,7 +244,7 @@ public class StartupViewModel
             return;
         }
 
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 
         int taskId = 0;
         // start these unconditionally
@@ -278,7 +254,8 @@ public class StartupViewModel
 
         // this is not critical, once every so often is fine
         if (mDoMaintenance) {
-            // cleaner must be started after the language mapper task.
+            // cleaner must be started after the language mapper task,
+            // but before the rebuild tasks.
             startTask(new DBCleanerTask(++taskId, mDb, mTaskListener), false);
         }
 

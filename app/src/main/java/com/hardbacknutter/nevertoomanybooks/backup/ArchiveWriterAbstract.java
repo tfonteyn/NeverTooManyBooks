@@ -29,7 +29,6 @@ package com.hardbacknutter.nevertoomanybooks.backup;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -43,8 +42,6 @@ import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveInfo;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveWriterAbstractBase;
@@ -79,8 +76,7 @@ public abstract class ArchiveWriterAbstract
      * A concrete writer merely defines the container.
      */
     protected static final int VERSION = 2;
-    /** Log tag. */
-    private static final String TAG = "ArchiveWriterAbstract";
+
     /** Buffer for the Writer. */
     private static final int BUFFER_SIZE = 65535;
 
@@ -322,14 +318,6 @@ public abstract class ArchiveWriterAbstract
             mResults.coversMissing[0] += missing[0];
             mResults.coversMissing[1] += missing[1];
             mResults.coversSkipped += skipped;
-        }
-
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.BACKUP) {
-            Log.d(TAG, "doCovers"
-                       + "|exported=" + exported
-                       + "|missing[0]=" + missing[0]
-                       + "|missing[1]=" + missing[1]
-                       + "|skipped=" + skipped);
         }
     }
 }

@@ -31,7 +31,6 @@ import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -44,8 +43,6 @@ import androidx.fragment.app.DialogFragment;
 import java.io.File;
 import java.util.Objects;
 
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageLoader;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
@@ -136,20 +133,6 @@ public class ZoomedImageDialogFragment
         } else {
             maxHeight = (int) (multiplier * configuration.screenHeightDp);
             maxWidth = (int) (maxHeight / screenHwRatio);
-        }
-
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMAGE_UTILS) {
-            Log.d(TAG,
-                  "|metrics.widthPixels=" + metrics.widthPixels
-                  + "|metrics.heightPixels=" + metrics.heightPixels
-                  + "|configuration.screenWidth=" + configuration.screenWidthDp * metrics.density
-                  + "|configuration.screenHeight=" + configuration.screenHeightDp * metrics.density
-
-                  + "|configuration.screenWidthDp=" + configuration.screenWidthDp
-                  + "|configuration.screenHeightDp=" + configuration.screenHeightDp
-                  + "|screenHwRatio=" + screenHwRatio
-                  + "|maxWidth=" + maxWidth
-                  + "|maxHeight=" + maxHeight);
         }
 
         //noinspection ConstantConditions

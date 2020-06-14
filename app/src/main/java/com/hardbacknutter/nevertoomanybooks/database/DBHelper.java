@@ -559,7 +559,7 @@ public final class DBHelper
         // 'Upgrade' from not being installed. Run this first to avoid racing issues.
         UpgradeMessageManager.setUpgradeAcknowledged(context);
 
-        final SynchronizedDb syncedDb = new SynchronizedDb(db, sSynchronizer);
+        final SynchronizedDb syncedDb = new SynchronizedDb(sSynchronizer, db);
 
         TableDefinition.createTables(db,
                                      // app tables
@@ -655,7 +655,7 @@ public final class DBHelper
             }
         }
 
-        final SynchronizedDb syncedDb = new SynchronizedDb(db, sSynchronizer);
+        final SynchronizedDb syncedDb = new SynchronizedDb(sSynchronizer, db);
 
         int curVersion = oldVersion;
 

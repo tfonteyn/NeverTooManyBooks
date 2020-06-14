@@ -316,18 +316,9 @@ public abstract class BaseActivity
      */
     @SuppressWarnings("UnusedReturnValue")
     protected boolean recreateIfNeeded() {
-        // check for, and broadcast, a change in locale.
-        final boolean isLocaleChanged = LocaleUtils.isChanged(this, mInitialLocaleSpec);
-        if (isLocaleChanged) {
-            LocaleUtils.onLocaleChanged();
-        }
-
-        // check for a change in night-mode.
-        final boolean isNightModeChanged = NightModeUtils.isChanged(this, mInitialNightModeId);
-
         if (sActivityRecreateStatus == ACTIVITY_REQUIRES_RECREATE
-            || isLocaleChanged
-            || isNightModeChanged) {
+            || LocaleUtils.isChanged(this, mInitialLocaleSpec)
+            || NightModeUtils.isChanged(this, mInitialNightModeId)) {
 
             sActivityRecreateStatus = ACTIVITY_IS_RECREATING;
             recreate();
@@ -485,8 +476,7 @@ public abstract class BaseActivity
         // generic actions & logging. Anything specific should be done in a child class.
         switch (requestCode) {
             case RequestCode.NAV_PANEL_SETTINGS:
-                if (BuildConfig.DEBUG
-                    && (DEBUG_SWITCHES.ON_ACTIVITY_RESULT || DEBUG_SWITCHES.RECREATE_ACTIVITY)) {
+                if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
                     Log.d(TAG, "BaseActivity.onActivityResult|REQ_NAV_PANEL_SETTINGS");
                 }
 

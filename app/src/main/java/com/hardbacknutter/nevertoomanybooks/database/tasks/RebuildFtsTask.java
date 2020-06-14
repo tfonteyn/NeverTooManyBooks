@@ -28,7 +28,6 @@
 package com.hardbacknutter.nevertoomanybooks.database.tasks;
 
 import android.content.Context;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -36,8 +35,6 @@ import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
 
 import com.hardbacknutter.nevertoomanybooks.App;
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
@@ -51,6 +48,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 public class RebuildFtsTask
         extends TaskBase<Boolean> {
 
+    /** Log tag. */
     private static final String TAG = "RebuildFtsTask";
 
     /** Database Access. */
@@ -78,9 +76,6 @@ public class RebuildFtsTask
         Thread.currentThread().setName(TAG);
         final Context context = LocaleUtils.applyLocale(App.getTaskContext());
 
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.STARTUP_TASKS) {
-            Log.d(TAG, "doInBackground|taskId=" + getTaskId());
-        }
         publishProgress(new TaskListener.ProgressMessage(getTaskId(), context.getString(
                 R.string.progress_msg_rebuilding_search_index)));
         try {

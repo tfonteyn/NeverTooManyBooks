@@ -71,7 +71,7 @@ public class SynchronizedCursor
     public int getCount() {
         // Cache the count (it's what SQLiteCursor does), and we avoid locking
         if (mCount == -1) {
-            Synchronizer.SyncLock sharedLock = mSync.getSharedLock();
+            final Synchronizer.SyncLock sharedLock = mSync.getSharedLock();
             try {
                 mCount = super.getCount();
             } finally {
@@ -87,7 +87,7 @@ public class SynchronizedCursor
     @Override
     @CallSuper
     public boolean requery() {
-        Synchronizer.SyncLock sharedLock = mSync.getSharedLock();
+        final Synchronizer.SyncLock sharedLock = mSync.getSharedLock();
         try {
             return super.requery();
         } finally {

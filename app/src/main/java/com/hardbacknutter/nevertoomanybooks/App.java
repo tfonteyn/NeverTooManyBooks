@@ -32,6 +32,7 @@ import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Build;
+import android.os.StrictMode;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
@@ -110,16 +111,9 @@ public class App
         extends Application {
 
     /**
-     * Give static methods access to our singleton.
-     * <strong>Note:</strong> never store a context in a static, use the instance instead
+     * Singleton.
      */
     private static App sInstance;
-
-    /** Singleton. */
-    @SuppressWarnings("unused")
-    public App() {
-        sInstance = this;
-    }
 
     /**
      * Get the Application Context <strong>using the device Locale</strong>.
@@ -162,23 +156,30 @@ public class App
                 return info.versionCode;
             }
         } catch (@NonNull final PackageManager.NameNotFoundException ignore) {
-            // ignore
+            // eh ?
+            return 0;
         }
-        // ouch
-        return 0;
+
     }
 
-    /**
-     * Initialize ACRA for a given Application.
-     *
-     * <br><br>{@inheritDoc}
-     */
     @Override
     @CallSuper
     protected void attachBaseContext(@NonNull final Context base) {
+        // create singleton self reference.
+        sInstance = this;
+
         super.attachBaseContext(base);
+        // Initialize ACRA reporting
         ACRA.init(this);
         ACRA.getErrorReporter().putCustomData("Signed-By", DebugReport.signedBy(this));
+
+        // https://developer.android.com/reference/android/os/StrictMode
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.STRICT_MODE) {
+            StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
+                                               .detectAll()
+                                               .penaltyLog()
+                                               .build());
+        }
     }
 
 //    @Override

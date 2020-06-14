@@ -29,7 +29,6 @@ package com.hardbacknutter.nevertoomanybooks.backup;
 
 import android.content.Context;
 import android.net.Uri;
-import android.util.Log;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
@@ -39,8 +38,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Objects;
 
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveInfo;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveReader;
@@ -181,10 +178,6 @@ public abstract class ArchiveReaderAbstract
 
             // process each entry based on type, unless we are cancelled.
             while (entity != null && !progressListener.isCancelled()) {
-                if (BuildConfig.DEBUG && DEBUG_SWITCHES.BACKUP) {
-                    Log.d(TAG, "read|entity=" + entity.getName());
-                }
-
                 switch (entity.getType()) {
                     case Cover: {
                         if (readCovers) {
@@ -282,11 +275,6 @@ public abstract class ArchiveReaderAbstract
             }
         }
 
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.BACKUP) {
-            Log.d(TAG, "read"
-                       + "|results=" + mResults
-                       + "|mHelper=" + mHelper);
-        }
         return mResults;
     }
 

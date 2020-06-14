@@ -357,9 +357,6 @@ public class PreferredStylesActivity
      */
     private void editStyle(@NonNull final BooklistStyle style,
                            final long templateStyleId) {
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.DUMP_STYLE) {
-            Log.d(TAG, "ENTER|editStyle|" + style);
-        }
 
         final Intent intent = new Intent(this, SettingsActivity.class)
                 .putExtra(BaseActivity.BKEY_FRAGMENT_TAG, StyleFragment.TAG)

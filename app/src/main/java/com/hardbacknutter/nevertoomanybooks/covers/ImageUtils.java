@@ -53,7 +53,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.CoversDAO;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
@@ -153,13 +152,6 @@ public final class ImageUtils {
                                     final int maxHeight,
                                     @NonNull final Bitmap bitmap,
                                     @DrawableRes final int background) {
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMAGE_UTILS) {
-            Log.d(TAG, "setImageView"
-                       + "|maxWidth=" + maxWidth
-                       + "|maxHeight=" + maxHeight
-                       + "|bm.width=" + bitmap.getWidth()
-                       + "|bm.height=" + bitmap.getHeight());
-        }
 
         final ViewGroup.LayoutParams lp = imageView.getLayoutParams();
         if (bitmap.getWidth() < bitmap.getHeight()) {
@@ -355,11 +347,11 @@ public final class ImageUtils {
     /**
      * Given a URL, get an image and save to a file. Called/run in a background task.
      *
-     * @param context   Application context
-     * @param url       Image file URL
-     * @param name      for the file.
+     * @param context        Application context
+     * @param url            Image file URL
+     * @param name           for the file.
      * @param connectTimeout in milliseconds
-     * @param throttler (optional) {@link Throttler} to use
+     * @param throttler      (optional) {@link Throttler} to use
      *
      * @return Downloaded fileSpec, or {@code null} on failure
      */

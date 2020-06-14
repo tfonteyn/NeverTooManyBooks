@@ -29,10 +29,8 @@ package com.hardbacknutter.nevertoomanybooks.database.dbsync;
 
 import android.content.ContentValues;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteCursorDriver;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.database.sqlite.SQLiteQuery;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -41,12 +39,26 @@ import androidx.annotation.Nullable;
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
+import com.hardbacknutter.nevertoomanybooks.database.DBHelper;
 import com.hardbacknutter.nevertoomanybooks.database.SearchSuggestionProvider;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 
 /**
  * Database wrapper class that performs thread synchronization on all operations.
+ * <p>
+ * About the SQLite version:
+ * <a href="https://developer.android.com/reference/android/database/sqlite/package-summary">
+ * package-summary</a>
+ * <p>
+ * API 28   3.22.0
+ * API 27   3.19.4
+ * API 26   3.18.2
+ * API 25   3.9.2
+ * API 24   3.9.2
+ * API 23   3.8.10.2
+ * <p>
+ * But some device manufacturers include different versions of SQLite on their devices.
  */
 public class SynchronizedDb {
 
@@ -54,8 +66,8 @@ public class SynchronizedDb {
     private static final String TAG = "SynchronizedDb";
 
     /** log error string. */
-    private static final String ERROR_UPDATE_INSIDE_SHARED_TX = "Update inside shared TX";
-    private static final String ERROR_ALREADY_IN_A_TRANSACTION = "Already in a transaction";
+    private static final String ERROR_INSIDE_SHARED_TX = "Inside shared TX";
+    private static final String ERROR_ALREADY_IN_A_TRANSACTION = "Already in a TX";
 
     /** Underlying database. */
     @NonNull
@@ -65,63 +77,53 @@ public class SynchronizedDb {
     private final Synchronizer mSynchronizer;
 
     /** Factory object to create the custom cursor. */
-    private final SQLiteDatabase.CursorFactory mCursorFactory = new SQLiteDatabase.CursorFactory() {
-        @Override
-        @NonNull
-        public SynchronizedCursor newCursor(@NonNull final SQLiteDatabase db,
-                                            @NonNull final SQLiteCursorDriver masterQuery,
-                                            @NonNull final String editTable,
-                                            @NonNull final SQLiteQuery query) {
-            return new SynchronizedCursor(masterQuery, editTable, query, mSynchronizer);
-        }
-    };
+    private final SQLiteDatabase.CursorFactory mCursorFactory = (db, mq, et, q) ->
+            new SynchronizedCursor(mq, et, q, getSynchronizer());
+
     /** Currently held transaction lock, if any. */
     @Nullable
     private Synchronizer.SyncLock mTxLock;
 
     /**
-     * Constructor. Use of this method is not recommended. It is better to use
-     * the methods that take a {@link SQLiteOpenHelper} object since opening the database
-     * may block another thread, or vice versa.
+     * Constructor. ONLY to be used by {@link DBHelper#onCreate} and {@link DBHelper#onUpgrade}.
      *
-     * @param db           Underlying database
      * @param synchronizer Synchronizer to use
+     * @param db           Underlying database
      */
-    public SynchronizedDb(@NonNull final SQLiteDatabase db,
-                          @NonNull final Synchronizer synchronizer) {
+    public SynchronizedDb(@NonNull final Synchronizer synchronizer,
+                          @NonNull final SQLiteDatabase db) {
+        mSynchronizer = synchronizer;
         mSqlDb = db;
-        mSynchronizer = synchronizer;
     }
 
     /**
      * Constructor.
      *
-     * @param sqLiteOpenHelper SQLiteOpenHelper to open underlying database
      * @param synchronizer     Synchronizer to use
+     * @param sqLiteOpenHelper SQLiteOpenHelper to open underlying database
      */
-    public SynchronizedDb(@NonNull final SQLiteOpenHelper sqLiteOpenHelper,
-                          @NonNull final Synchronizer synchronizer) {
+    public SynchronizedDb(@NonNull final Synchronizer synchronizer,
+                          @NonNull final SQLiteOpenHelper sqLiteOpenHelper) {
         mSynchronizer = synchronizer;
-        mSqlDb = openWithRetries(sqLiteOpenHelper);
+        mSqlDb = open(sqLiteOpenHelper);
     }
 
     /**
      * Constructor.
      *
-     * @param sqLiteOpenHelper  SQLiteOpenHelper to open underlying database
      * @param synchronizer      Synchronizer to use
+     * @param sqLiteOpenHelper  SQLiteOpenHelper to open underlying database
      * @param preparedStmtCache the number or prepared statements to cache.
      *                          The javadoc for setMaxSqlCacheSize says the default is 10,
      *                          but if you follow the source code, you end up in
      *                          android.database.sqlite.SQLiteDatabaseConfiguration
      *                          where the default is in fact 25!
-     *                          Do NOT set the size to less than 25.
      */
-    public SynchronizedDb(@NonNull final SQLiteOpenHelper sqLiteOpenHelper,
-                          @NonNull final Synchronizer synchronizer,
+    public SynchronizedDb(@NonNull final Synchronizer synchronizer,
+                          @NonNull final SQLiteOpenHelper sqLiteOpenHelper,
                           final int preparedStmtCache) {
         mSynchronizer = synchronizer;
-        mSqlDb = openWithRetries(sqLiteOpenHelper);
+        mSqlDb = open(sqLiteOpenHelper);
 
         // only set when bigger than default
         if ((preparedStmtCache > 25)
@@ -131,82 +133,19 @@ public class SynchronizedDb {
     }
 
     /**
-     * Call the passed database opener with retries to reduce risks of access conflicts
-     * causing crashes.
-     * <p>
-     * About the SQLite version:
-     * <a href="https://developer.android.com/reference/android/database/sqlite/package-summary">
-     * package-summary</a>
-     * API 28   3.22.0
-     * API 27   3.19.4
-     * API 26   3.18.2
-     * API 25   3.9.2
-     * API 24   3.9.2
-     * API 23   3.8.10.2 <=
-     * <p>
-     * But some device manufacturers include different versions of SQLite on their devices.
+     * Open the actual database.
      *
      * @param sqLiteOpenHelper SQLiteOpenHelper interface
      *
      * @return a writable database
      */
     @NonNull
-    private SQLiteDatabase openWithRetries(@NonNull final SQLiteOpenHelper sqLiteOpenHelper) {
-        // 10ms
-        int wait = 10;
-        // 2^10 * 10ms = 10.24sec (actually 2x that due to total wait time)
-        int retriesLeft = 10;
-
-        do {
-            Synchronizer.SyncLock exclusiveLock = mSynchronizer.getExclusiveLock();
-            try {
-                final SQLiteDatabase db = sqLiteOpenHelper.getWritableDatabase();
-                if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_SYNC) {
-                    Log.d(TAG, "openWithRetries"
-                               + "|path=" + db.getPath()
-                               + "|retriesLeft=" + retriesLeft);
-                    debugDumpInfo(db);
-                }
-                return db;
-            } catch (@NonNull final RuntimeException e) {
-                exclusiveLock.unlock();
-                exclusiveLock = null;
-                if (retriesLeft == 0) {
-                    throw new RuntimeException("Unable to open database, retries exhausted", e);
-                }
-                try {
-                    Thread.sleep(wait);
-                    // Decrement tries
-                    retriesLeft--;
-                    // Wait longer next time
-                    wait *= 2;
-                } catch (@NonNull final InterruptedException e1) {
-                    throw new RuntimeException("Unable to open database, interrupted", e1);
-                }
-            } finally {
-                if (exclusiveLock != null) {
-                    exclusiveLock.unlock();
-                }
-            }
-        } while (true);
-    }
-
-    /**
-     * DEBUG only.
-     */
-    private void debugDumpInfo(@NonNull final SQLiteDatabase db) {
-        final String[] sql = {"select sqlite_version() AS sqlite_version",
-                              "PRAGMA encoding",
-                              "PRAGMA collation_list",
-                              "PRAGMA foreign_keys",
-                              "PRAGMA recursive_triggers",
-                              };
-        for (String s : sql) {
-            try (Cursor cursor = db.rawQuery(s, null)) {
-                if (cursor.moveToNext()) {
-                    Log.d(TAG, "debugDumpInfo|" + s + " = " + cursor.getString(0));
-                }
-            }
+    private SQLiteDatabase open(@NonNull final SQLiteOpenHelper sqLiteOpenHelper) {
+        final Synchronizer.SyncLock exclusiveLock = mSynchronizer.getExclusiveLock();
+        try {
+            return sqLiteOpenHelper.getWritableDatabase();
+        } finally {
+            exclusiveLock.unlock();
         }
     }
 
@@ -222,7 +161,7 @@ public class SynchronizedDb {
         Synchronizer.SyncLock txLock = null;
         if (mTxLock != null) {
             if (mTxLock.getType() != Synchronizer.LOCK_EXCLUSIVE) {
-                throw new TransactionException(ERROR_UPDATE_INSIDE_SHARED_TX);
+                throw new TransactionException(ERROR_INSIDE_SHARED_TX);
             }
         } else {
             txLock = mSynchronizer.getExclusiveLock();
@@ -261,7 +200,7 @@ public class SynchronizedDb {
         Synchronizer.SyncLock txLock = null;
         if (mTxLock != null) {
             if (mTxLock.getType() != Synchronizer.LOCK_EXCLUSIVE) {
-                throw new TransactionException(ERROR_UPDATE_INSIDE_SHARED_TX);
+                throw new TransactionException(ERROR_INSIDE_SHARED_TX);
             }
         } else {
             txLock = mSynchronizer.getExclusiveLock();
@@ -276,15 +215,6 @@ public class SynchronizedDb {
                 txLock.unlock();
             }
         }
-    }
-
-    /**
-     * Drop the given table, if it exists.
-     *
-     * @param tableName to drop
-     */
-    public void drop(@NonNull final String tableName) {
-        execSQL("DROP TABLE IF EXISTS " + tableName);
     }
 
     /**
@@ -304,7 +234,7 @@ public class SynchronizedDb {
         Synchronizer.SyncLock txLock = null;
         if (mTxLock != null) {
             if (mTxLock.getType() != Synchronizer.LOCK_EXCLUSIVE) {
-                throw new TransactionException(ERROR_UPDATE_INSIDE_SHARED_TX);
+                throw new TransactionException(ERROR_INSIDE_SHARED_TX);
             }
         } else {
             txLock = mSynchronizer.getExclusiveLock();
@@ -386,35 +316,12 @@ public class SynchronizedDb {
     /**
      * Locking-aware wrapper for underlying database method.
      */
-    public void execSQL(@NonNull final String sql) {
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_SYNC_EXEC_SQL) {
-            Log.d(TAG, "ENTER|execSQL|sql=" + sql);
-        }
-
-        if (mTxLock != null) {
-            if (mTxLock.getType() != Synchronizer.LOCK_EXCLUSIVE) {
-                throw new TransactionException(ERROR_UPDATE_INSIDE_SHARED_TX);
-            }
-            mSqlDb.execSQL(sql);
-        } else {
-            Synchronizer.SyncLock txLock = mSynchronizer.getExclusiveLock();
-            try {
-                mSqlDb.execSQL(sql);
-            } finally {
-                txLock.unlock();
-            }
-        }
-    }
-
-    /**
-     * Locking-aware wrapper for underlying database method.
-     */
     @NonNull
     public SynchronizedStatement compileStatement(@NonNull final String sql) {
         Synchronizer.SyncLock txLock = null;
         if (mTxLock != null) {
             if (mTxLock.getType() != Synchronizer.LOCK_EXCLUSIVE) {
-                throw new TransactionException("compileStatement called inside shared TX");
+                throw new TransactionException(ERROR_INSIDE_SHARED_TX);
             }
         } else {
             txLock = mSynchronizer.getExclusiveLock();
@@ -430,20 +337,35 @@ public class SynchronizedDb {
     }
 
     /**
-     * DO NOT CALL THIS UNLESS YOU REALLY NEED TO. DATABASE ACCESS SHOULD GO THROUGH THIS CLASS.
-     *
-     * @return the underlying SQLiteDatabase object.
+     * Locking-aware wrapper for underlying database method.
      */
-    @NonNull
-    SQLiteDatabase getSQLiteDatabase() {
-        return mSqlDb;
+    public void execSQL(@NonNull final String sql) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_EXEC_SQL) {
+            Log.d(TAG, "ENTER|execSQL|sql=" + sql);
+        }
+
+        if (mTxLock != null) {
+            if (mTxLock.getType() != Synchronizer.LOCK_EXCLUSIVE) {
+                throw new TransactionException(ERROR_INSIDE_SHARED_TX);
+            }
+            mSqlDb.execSQL(sql);
+        } else {
+            Synchronizer.SyncLock txLock = mSynchronizer.getExclusiveLock();
+            try {
+                mSqlDb.execSQL(sql);
+            } finally {
+                txLock.unlock();
+            }
+        }
     }
 
     /**
-     * Run '<a href="https://www.sqlite.org/lang_analyze.html">analyse</a>' on the whole database.
+     * Drop the given table, if it exists.
+     *
+     * @param tableName to drop
      */
-    public void analyze() {
-        execSQL("analyze");
+    public void drop(@NonNull final String tableName) {
+        execSQL("DROP TABLE IF EXISTS " + tableName);
     }
 
     /**
@@ -452,6 +374,13 @@ public class SynchronizedDb {
      */
     public void optimize() {
         execSQL("PRAGMA optimize");
+    }
+
+    /**
+     * Run '<a href="https://www.sqlite.org/lang_analyze.html">analyse</a>' on the whole database.
+     */
+    public void analyze() {
+        execSQL("analyze");
     }
 
     /**
@@ -539,10 +468,40 @@ public class SynchronizedDb {
     }
 
     /**
+     * DO NOT CALL THIS UNLESS YOU REALLY NEED TO. DATABASE ACCESS SHOULD GO THROUGH THIS CLASS.
+     *
+     * @return the underlying SQLiteDatabase object.
+     */
+    @NonNull
+    SQLiteDatabase getSQLiteDatabase() {
+        return mSqlDb;
+    }
+
+    /**
      * @return the underlying Synchronizer object.
      */
     @NonNull
     Synchronizer getSynchronizer() {
         return mSynchronizer;
+    }
+
+    /**
+     * DEBUG only.
+     */
+    @SuppressWarnings("unused")
+    private void debugDumpInfo(@NonNull final SQLiteDatabase db) {
+        final String[] sql = {"SELECT sqlite_version() AS sqlite_version",
+                              "PRAGMA encoding",
+                              "PRAGMA collation_list",
+                              "PRAGMA foreign_keys",
+                              "PRAGMA recursive_triggers",
+                              };
+        for (String s : sql) {
+            try (Cursor cursor = db.rawQuery(s, null)) {
+                if (cursor.moveToNext()) {
+                    Log.d(TAG, "debugDumpInfo|" + s + " = " + cursor.getString(0));
+                }
+            }
+        }
     }
 }

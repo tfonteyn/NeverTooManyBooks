@@ -349,7 +349,7 @@ public final class CoversDAO
         final SQLiteOpenHelper coversHelper = CoversDbHelper.getInstance(context);
         // Try to connect.
         try {
-            sSyncedDb = new SynchronizedDb(coversHelper, SYNCHRONIZER);
+            sSyncedDb = new SynchronizedDb(SYNCHRONIZER, coversHelper);
         } catch (@NonNull final RuntimeException e) {
             // Assume exception means DB corrupt. Don't care, it's only a cache.
             if (BuildConfig.DEBUG /* always */) {
@@ -358,7 +358,7 @@ public final class CoversDAO
             // recreate a new one.
             try {
                 context.deleteDatabase(COVERS_DATABASE_NAME);
-                sSyncedDb = new SynchronizedDb(coversHelper, SYNCHRONIZER);
+                sSyncedDb = new SynchronizedDb(SYNCHRONIZER, coversHelper);
 
             } catch (@NonNull final RuntimeException e2) {
                 // If we fail after trying to create a new DB, log and give up.

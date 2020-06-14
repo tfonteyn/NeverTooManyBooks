@@ -28,7 +28,6 @@
 package com.hardbacknutter.nevertoomanybooks.backup.base;
 
 import android.content.Context;
-import android.util.Log;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
@@ -36,8 +35,6 @@ import androidx.annotation.WorkerThread;
 
 import java.io.IOException;
 
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.backup.ArchiveWriterAbstract;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportManager;
@@ -189,11 +186,6 @@ public abstract class ArchiveWriterAbstractBase
             progressListener.setIndeterminate(null);
         }
 
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.BACKUP) {
-            Log.d(TAG, "write"
-                       + "|results=" + mResults
-                       + "|mHelper=" + mHelper);
-        }
         return mResults;
     }
 

@@ -102,6 +102,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsHandler;
+import com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.QueueManager;
 import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.RequestAuthTask;
 import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.SendOneBookTask;
 import com.hardbacknutter.nevertoomanybooks.searches.amazon.AmazonSearchEngine;
@@ -356,6 +357,7 @@ public class BooksOnBookshelf
     /** Encapsulates the FAB button/menu. */
     private FabMenu mFabMenu;
 
+
     @Override
     protected void onSetContentView() {
 //        mVb = BooksonbookshelfBinding.inflate(getLayoutInflater());
@@ -402,6 +404,9 @@ public class BooksOnBookshelf
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
+        // Create the Goodreads QueueManager. This (re)starts stored tasks.
+        QueueManager.create(this);
+
         super.onCreate(savedInstanceState);
 
         mModel = new ViewModelProvider(this).get(BooksOnBookshelfModel.class);

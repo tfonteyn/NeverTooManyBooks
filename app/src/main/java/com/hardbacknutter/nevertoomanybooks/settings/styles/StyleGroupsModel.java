@@ -30,7 +30,6 @@ package com.hardbacknutter.nevertoomanybooks.settings.styles;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -40,8 +39,6 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.Objects;
 
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PPref;
@@ -49,9 +46,6 @@ import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 
 public class StyleGroupsModel
         extends ViewModel {
-
-    /** Log tag. */
-    private static final String TAG = "StyleGroupsModel";
 
     /** the rows. */
     private ArrayList<GroupWrapper> mList;
@@ -114,10 +108,6 @@ public class StyleGroupsModel
         // Apply any saved properties.
         // For now we don't have any updated preferences other then the groups.
         mStyle.updatePreferences(context, allPreferences);
-
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.DUMP_STYLE) {
-            Log.d(TAG, "onBackPressed|" + mStyle);
-        }
     }
 
 

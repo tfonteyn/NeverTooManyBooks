@@ -27,8 +27,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.database.dbsync;
 
-import android.util.Log;
-
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -40,9 +38,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
-
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 
 /**
  * Implementation of a Readers/Writer lock that is fully reentrant.
@@ -68,10 +63,6 @@ public class Synchronizer {
     static final int LOCK_SHARED = 1;
     static final int LOCK_EXCLUSIVE = 2;
 
-    /** Log tag. */
-    private static final String TAG = "Synchronizer";
-    /** divider to convert nanoseconds to milliseconds. */
-    private static final int NANO_TO_MILLIS = 1_000_000;
     /** Main lock for synchronization. */
     private final ReentrantLock mLock = new ReentrantLock();
     /** Condition fired when a reader releases a lock. */
@@ -79,6 +70,7 @@ public class Synchronizer {
     /** Collection of threads that have shared locks. */
     private final Map<Thread, Integer> mSharedOwners =
             Collections.synchronizedMap(new HashMap<>());
+
     /** Lock used to pass back to consumers of shared locks. */
     private final SyncLock mSharedLock = new SharedLock();
     /** Lock used to pass back to consumers of exclusive locks. */
@@ -108,20 +100,7 @@ public class Synchronizer {
     @NonNull
     SyncLock getSharedLock() {
         final Thread thread = Thread.currentThread();
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_SYNC_LOCKING) {
-            Log.d(TAG, "getSharedLock"
-                       + "|" + thread.getName()
-                       + "|requesting SHARED lock");
-        }
-
         mLock.lock();
-
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_SYNC_LOCKING) {
-            Log.d(TAG, "getSharedLock.lock"
-                       + "|" + thread.getName()
-                       + "|held by " + mLock.getHoldCount());
-        }
-
         purgeOldLocks();
         try {
             Integer count = mSharedOwners.get(thread);
@@ -131,19 +110,9 @@ public class Synchronizer {
                 count = 1;
             }
             mSharedOwners.put(thread, count);
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_SYNC_LOCKING) {
-                Log.d(TAG, "getSharedLock"
-                           + "|" + thread.getName()
-                           + "|SHARED threads=" + count);
-            }
             return mSharedLock;
         } finally {
             mLock.unlock();
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_SYNC_LOCKING) {
-                Log.d(TAG, "getSharedLock.unlock"
-                           + "|" + thread.getName()
-                           + "|held by " + mLock.getHoldCount());
-            }
         }
     }
 
@@ -152,29 +121,13 @@ public class Synchronizer {
      */
     private void releaseSharedLock() {
         final Thread thread = Thread.currentThread();
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_SYNC_LOCKING) {
-            Log.d(TAG, "releaseSharedLock"
-                       + "|" + thread.getName()
-                       + "|releasing SHARED lock");
-        }
         mLock.lock();
-
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_SYNC_LOCKING) {
-            Log.d(TAG, "releaseSharedLock.lock"
-                       + "|" + thread.getName()
-                       + "|held by " + mLock.getHoldCount());
-        }
         try {
             Integer count = mSharedOwners.get(thread);
             if (count != null) {
                 count--;
-                if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_SYNC_LOCKING) {
-                    Log.d(TAG, "releaseSharedLock"
-                               + "|" + thread.getName()
-                               + "|now has " + count + " SHARED locks");
-                }
                 if (count < 0) {
-                    throw new LockException("Release a lock count already zero");
+                    throw new LockException("Releasing a lock with count already zero");
                 }
                 if (count != 0) {
                     mSharedOwners.put(thread, count);
@@ -183,15 +136,10 @@ public class Synchronizer {
                     mReleased.signal();
                 }
             } else {
-                throw new LockException("Release a lock when not held");
+                throw new LockException("Releasing a lock when not held");
             }
         } finally {
             mLock.unlock();
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_SYNC_LOCKING) {
-                Log.d(TAG, "releaseSharedLock.unlock"
-                           + "|" + thread.getName()
-                           + "|held by " + mLock.getHoldCount());
-            }
         }
     }
 
@@ -209,62 +157,29 @@ public class Synchronizer {
     @NonNull
     SyncLock getExclusiveLock() {
         final Thread thread = Thread.currentThread();
-        long t0 = System.nanoTime();
-
         // Synchronize with other code
         mLock.lock();
-        try {
-            while (true) {
-                // Cleanup any old threads that are dead.
-                purgeOldLocks();
-                if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_SYNC_LOCKING) {
-                    Log.d(TAG, "getExclusiveLock"
-                               + "|Thread " + thread.getName()
-                               + "|requesting EXCLUSIVE lock with "
-                               + mSharedOwners.size() + " shared locks."
-                               + "|held by " + mLock.getHoldCount());
+        while (true) {
+            // Cleanup any old threads that are dead.
+            purgeOldLocks();
+            try {
+                // Simple case -- no locks held, just return and keep the lock
+                if (mSharedOwners.isEmpty()) {
+                    return mExclusiveLock;
                 }
-                try {
-                    // Simple case -- no locks held, just return and keep the lock
-                    if (mSharedOwners.isEmpty()) {
-                        return mExclusiveLock;
-                    }
-                    // Check for one lock, and it being this thread.
-                    if (mSharedOwners.size() == 1 && mSharedOwners.containsKey(thread)) {
-                        // One locker, and it is us...so upgrade is OK.
-                        return mExclusiveLock;
-                    }
+                // Check for one lock, and it being this thread.
+                if (mSharedOwners.size() == 1 && mSharedOwners.containsKey(thread)) {
+                    // One locker, and it is us...so upgrade is OK.
+                    return mExclusiveLock;
+                }
 
-                    // Someone else has it. Wait.
-                    if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_SYNC_LOCKING) {
-                        Log.d(TAG, "getExclusiveLock"
-                                   + "|Thread=" + thread.getName()
-                                   + "|waiting for DB access");
-                    }
-                    mReleased.await();
+                // Someone else has it. Wait.
+                mReleased.await();
 
-                } catch (@NonNull final InterruptedException | RuntimeException e) {
-                    // Probably happens because thread was interrupted. Just die.
-                    try {
-                        mLock.unlock();
-                    } catch (@NonNull final RuntimeException ignore) {
-                    }
-                    throw new LockException("Unable to get exclusive lock", e);
-                }
-            }
-        } finally {
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_SYNC_LOCKING) {
-                if (mLock.isHeldByCurrentThread()) {
-                    Log.d(TAG, "getExclusiveLock"
-                               + "|Thread=" + thread.getName()
-                               + "|waited=" + (System.nanoTime() - t0) / NANO_TO_MILLIS + " ms"
-                               + "|EXCLUSIVE access");
-                } else {
-                    Log.d(TAG, "getExclusiveLock"
-                               + "|Thread=" + thread.getName()
-                               + "|waited=" + (System.nanoTime() - t0) / NANO_TO_MILLIS + " ms"
-                               + "|FAILED TO GET EXCLUSIVE access");
-                }
+            } catch (@NonNull final InterruptedException | RuntimeException e) {
+                // Probably happens because thread was interrupted. Just die.
+                mLock.unlock();
+                throw new LockException("Unable to get exclusive lock", e);
             }
         }
     }
@@ -273,23 +188,10 @@ public class Synchronizer {
      * Release the {@link ExclusiveLock} previously taken.
      */
     private void releaseExclusiveLock() {
-        final Thread thread = Thread.currentThread();
-
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_SYNC_LOCKING) {
-            Log.d(TAG, "releaseExclusiveLock"
-                       + "|" + thread.getName()
-                       + "|releasing EXCLUSIVE lock");
-        }
-
         if (!mLock.isHeldByCurrentThread()) {
             throw new LockException("Exclusive Lock is not held by this thread");
         }
         mLock.unlock();
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_SYNC_LOCKING) {
-            Log.d(TAG, "releaseExclusiveLock.unlock"
-                       + "|" + thread.getName()
-                       + "|held by " + mLock.getHoldCount());
-        }
     }
 
     @IntDef({LOCK_SHARED, LOCK_EXCLUSIVE})
