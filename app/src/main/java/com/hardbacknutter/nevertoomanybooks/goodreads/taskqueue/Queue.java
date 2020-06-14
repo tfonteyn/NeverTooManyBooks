@@ -108,7 +108,7 @@ class Queue
                 // All queue manipulation needs to be synchronized on the manager, as does
                 // assignments of 'active' tasks in queues.
                 synchronized (mManager) {
-                    scheduledTask = queueDAO.getNextTask(mName);
+                    scheduledTask = queueDAO.getNextTask(context, mName);
                     if (scheduledTask == null) {
                         // No more tasks. Remove from manager and terminate.
                         mTerminate = true;

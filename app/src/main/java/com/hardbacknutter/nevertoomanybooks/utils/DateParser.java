@@ -27,8 +27,11 @@
  */
 package com.hardbacknutter.nevertoomanybooks.utils;
 
+import android.content.Context;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import java.time.LocalDateTime;
 import java.time.Year;
@@ -40,7 +43,8 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Locale;
 
-public class DateParser {
+public class DateParser
+        implements LocaleUtils.OnLocaleChangedListener {
 
     /** ISO patterns only. */
     private static final String[] ISO_PATTERNS = {
@@ -49,7 +53,6 @@ public class DateParser {
             "yyyy-MM-dd",
             "yyyy-MM",
             };
-
     /** All numerical (i.e. Locale independent) patterns. */
     private static final String[] NUMERICAL = {
             // US format first
@@ -64,7 +67,6 @@ public class DateParser {
             "MM-dd-yyyy",
             "dd-MM-yyyy",
             };
-
     /** Patterns with Locale dependent text. */
     private static final String[] TEXT = {
             // These are the wide spread common formats
@@ -87,18 +89,59 @@ public class DateParser {
             "MMM yyyy",
             "MMMM yyyy",
             };
-
+    /** Singleton. */
+    private static DateParser INSTANCE;
     /** List of patterns we'll use to parse dates. */
-    private static final Collection<DateTimeFormatter> ALL_PARSERS = new ArrayList<>();
+    private final Collection<DateTimeFormatter> ALL_PARSERS = new ArrayList<>();
     /** List of patterns we'll use to parse ISO datetime stamps.. */
-    private static final Collection<DateTimeFormatter> ISO_PARSERS = new ArrayList<>();
+    private final Collection<DateTimeFormatter> ISO_PARSERS = new ArrayList<>();
+
+    /**
+     * Constructor. Use {@link #getInstance(Context)}.
+     */
+    private DateParser() {
+    }
+
+    /**
+     * Get/create the singleton instance.
+     *
+     * @param context Current context
+     *
+     * @return instance
+     */
+    public static DateParser getInstance(@NonNull final Context context) {
+        synchronized (DateParser.class) {
+            if (INSTANCE == null) {
+                INSTANCE = new DateParser();
+                INSTANCE.create(LocaleUtils.getUserLocale(context), LocaleUtils.getSystemLocale());
+                LocaleUtils.registerOnLocaleChangedListener(INSTANCE);
+            }
+            return INSTANCE;
+        }
+    }
+
+    /**
+     * Get/create the singleton instance.
+     * For testing purposes only: the singleton is created each time and we don't register
+     * the OnLocaleChangedListener listener.
+     *
+     * @param locales the locales to use
+     *
+     * @return instance
+     */
+    @VisibleForTesting
+    public static DateParser createForTesting(@NonNull final Locale... locales) {
+        INSTANCE = new DateParser();
+        INSTANCE.create(locales);
+        return INSTANCE;
+    }
 
     /**
      * Create the parser lists.
      *
      * @param locales the locales to use
      */
-    public static void create(@NonNull final Locale... locales) {
+    private void create(@NonNull final Locale... locales) {
         final Locale systemLocale = LocaleUtils.getSystemLocale();
 
         ALL_PARSERS.clear();
@@ -118,9 +161,9 @@ public class DateParser {
      * @param patterns list of patterns to add
      * @param locales  to use
      */
-    private static void addParsers(@NonNull final Collection<DateTimeFormatter> group,
-                                   @NonNull final String[] patterns,
-                                   @NonNull final Locale... locales) {
+    private void addParsers(@NonNull final Collection<DateTimeFormatter> group,
+                            @NonNull final String[] patterns,
+                            @NonNull final Locale... locales) {
         // prevent duplicate locales
         final Collection<Locale> added = new HashSet<>();
         for (Locale locale : locales) {
@@ -145,11 +188,11 @@ public class DateParser {
     /**
      * Create an English variant of a parser if English not already in the list of locales.
      */
-    private static void addEnglish(@SuppressWarnings("SameParameterValue")
-                                   @NonNull final Collection<DateTimeFormatter> group,
-                                   @SuppressWarnings("SameParameterValue")
-                                   @NonNull final String[] patterns,
-                                   @NonNull final Locale[] locales) {
+    private void addEnglish(@SuppressWarnings("SameParameterValue")
+                            @NonNull final Collection<DateTimeFormatter> group,
+                            @SuppressWarnings("SameParameterValue")
+                            @NonNull final String[] patterns,
+                            @NonNull final Locale[] locales) {
         boolean hasEnglish = false;
         for (Locale locale : locales) {
             if (Locale.ENGLISH.equals(locale)) {
@@ -173,9 +216,9 @@ public class DateParser {
      * @return Resulting date if parsed, otherwise {@code null}
      */
     @Nullable
-    private static LocalDateTime parse(@NonNull final Iterable<DateTimeFormatter> parsers,
-                                       @Nullable final String dateStr,
-                                       @Nullable final Locale locale) {
+    private LocalDateTime parse(@NonNull final Iterable<DateTimeFormatter> parsers,
+                                @Nullable final String dateStr,
+                                @Nullable final Locale locale) {
         if (dateStr == null || dateStr.isEmpty()) {
             return null;
         }
@@ -240,7 +283,7 @@ public class DateParser {
      * @return Resulting date if parsed, otherwise {@code null}
      */
     @Nullable
-    public static LocalDateTime parse(@Nullable final String dateStr) {
+    public LocalDateTime parse(@Nullable final String dateStr) {
         return parse(ALL_PARSERS, dateStr, null);
     }
 
@@ -253,8 +296,8 @@ public class DateParser {
      *
      * @return Resulting date if successfully parsed, otherwise {@code null}
      */
-    public static LocalDateTime parse(@NonNull final Locale locale,
-                                      @NonNull final String dateStr) {
+    public LocalDateTime parse(@NonNull final Locale locale,
+                               @NonNull final String dateStr) {
         return parse(ALL_PARSERS, dateStr, locale);
     }
 
@@ -268,7 +311,12 @@ public class DateParser {
      * @return Resulting date if parsed, otherwise {@code null}
      */
     @Nullable
-    public static LocalDateTime parseISO(@Nullable final String dateStr) {
-        return DateParser.parse(ISO_PARSERS, dateStr, null);
+    public LocalDateTime parseISO(@Nullable final String dateStr) {
+        return parse(ISO_PARSERS, dateStr, null);
+    }
+
+    @Override
+    public void onLocaleChanged(@NonNull final Context context) {
+        create(LocaleUtils.getUserLocale(context), LocaleUtils.getSystemLocale());
     }
 }

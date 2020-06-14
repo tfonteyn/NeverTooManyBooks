@@ -30,12 +30,8 @@ package com.hardbacknutter.nevertoomanybooks.entities;
 import android.database.Cursor;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
-import java.time.LocalDateTime;
 
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
-import com.hardbacknutter.nevertoomanybooks.utils.DateParser;
 
 /**
  * Read-only interface that allows a method to take both a custom {@link Cursor}
@@ -55,9 +51,4 @@ public interface DataHolder {
 
     @NonNull
     String getString(@NonNull String key);
-
-    @Nullable
-    default LocalDateTime getDate(@NonNull final String key) {
-        return DateParser.parseISO(getString(key));
-    }
 }

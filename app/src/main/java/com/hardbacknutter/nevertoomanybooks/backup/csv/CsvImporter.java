@@ -429,7 +429,7 @@ public class CsvImporter
             return bids.bookId;
 
         } else {
-            if (!updateOnlyIfNewer || updateOnlyIfNewer(mDb, book, bids.bookId)) {
+            if (!updateOnlyIfNewer || updateOnlyIfNewer(context, mDb, book, bids.bookId)) {
                 mDb.updateBook(context, bids.bookId, book,
                                DAO.BOOK_FLAG_USE_UPDATE_DATE_IF_PRESENT);
                 mResults.booksUpdated++;
@@ -445,21 +445,24 @@ public class CsvImporter
     /**
      * Check if the incoming book is newer then the stored book data.
      *
-     * @param db     Database Access
-     * @param book   the book we're updating
-     * @param bookId the book id to lookup in our database
+     * @param context Current context
+     * @param db      Database Access
+     * @param book    the book we're updating
+     * @param bookId  the book id to lookup in our database
      */
-    private boolean updateOnlyIfNewer(@NonNull final DAO db,
+    private boolean updateOnlyIfNewer(@NonNull final Context context,
+                                      @NonNull final DAO db,
                                       @SuppressWarnings("TypeMayBeWeakened")
                                       @NonNull final Book book,
                                       final long bookId) {
         final LocalDateTime utcImportDate =
-                DateParser.parseISO(book.getString(DBDefinitions.KEY_UTC_LAST_UPDATED));
+                DateParser.getInstance(context)
+                          .parseISO(book.getString(DBDefinitions.KEY_UTC_LAST_UPDATED));
         if (utcImportDate == null) {
             return false;
         }
 
-        final LocalDateTime utcLastUpdated = db.getBookLastUpdateUtcDate(bookId);
+        final LocalDateTime utcLastUpdated = db.getBookLastUpdateUtcDate(context, bookId);
 
         return utcLastUpdated == null || utcImportDate.isAfter(utcLastUpdated);
     }

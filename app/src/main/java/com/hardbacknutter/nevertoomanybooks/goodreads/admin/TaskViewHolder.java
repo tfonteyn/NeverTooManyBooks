@@ -99,10 +99,10 @@ public class TaskViewHolder
 
             case TQTask.QUEUED:
                 statusText = context.getString(R.string.gr_tq_queued);
-                retryInfoView.setText(retryInfoView.getContext().getString(
+                retryInfoView.setText(context.getString(
                         R.string.gr_tq_retry_x_of_y_next_at_z, task.getRetries(),
                         task.getRetryLimit(),
-                        toPrettyDateTime(rowData.getRetryDate(), userLocale)));
+                        toPrettyDateTime(rowData.getRetryDate(context), userLocale)));
                 retryInfoView.setVisibility(View.VISIBLE);
                 retryButton.setVisibility(View.GONE);
                 break;
@@ -142,8 +142,8 @@ public class TaskViewHolder
             errorView.setVisibility(View.GONE);
         }
 
-        infoView.setText(infoView.getContext().getString(
+        infoView.setText(context.getString(
                 R.string.gr_tq_generic_task_info, task.getId(),
-                toPrettyDateTime(rowData.getQueuedDate(), userLocale)));
+                toPrettyDateTime(rowData.getQueuedDate(context), userLocale)));
     }
 }

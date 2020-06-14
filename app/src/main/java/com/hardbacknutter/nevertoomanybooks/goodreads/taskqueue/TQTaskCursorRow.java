@@ -63,11 +63,13 @@ public class TQTaskCursorRow
     /**
      * Get the date of when the Task was queued.
      *
+     * @param context Current context
+     *
      * @return date; UTC based
      */
     @NonNull
-    public LocalDateTime getQueuedDate() {
-        LocalDateTime utcDate = DateParser.parseISO(
+    public LocalDateTime getQueuedDate(@NonNull final Context context) {
+        LocalDateTime utcDate = DateParser.getInstance(context).parseISO(
                 getString(QueueDBHelper.KEY_TASK_QUEUED_UTC_DATETIME));
         if (utcDate == null) {
             utcDate = LocalDateTime.now(ZoneOffset.UTC);
@@ -78,11 +80,13 @@ public class TQTaskCursorRow
     /**
      * Get the date of when the Task was last retried.
      *
+     * @param context Current context
+     *
      * @return date; UTC based
      */
     @NonNull
-    public LocalDateTime getRetryDate() {
-        LocalDateTime utcDate = DateParser.parseISO(
+    public LocalDateTime getRetryDate(@NonNull final Context context) {
+        LocalDateTime utcDate = DateParser.getInstance(context).parseISO(
                 getString(QueueDBHelper.KEY_TASK_RETRY_UTC_DATETIME));
         if (utcDate == null) {
             utcDate = LocalDateTime.now(ZoneOffset.UTC);

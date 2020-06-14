@@ -347,7 +347,7 @@ public class ExportManager
                                              .getString(PREF_LAST_FULL_BACKUP_DATE, null);
 
         if (lastBackup != null && !lastBackup.isEmpty()) {
-            return DateParser.parseISO(lastBackup);
+            return DateParser.getInstance(context).parseISO(lastBackup);
         }
 
         return null;

@@ -27,6 +27,8 @@
  */
 package com.hardbacknutter.nevertoomanybooks.goodreads;
 
+import android.annotation.SuppressLint;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -40,8 +42,8 @@ import java.io.IOException;
 
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BaseActivity;
+import com.hardbacknutter.nevertoomanybooks.BooksOnBookshelf;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.StartupActivity;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.Notifier;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.FormattedMessageException;
@@ -52,6 +54,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.FormattedMessageExc
 public class GoodreadsAuthorizationActivity
         extends BaseActivity {
 
+    @SuppressLint("SyntheticAccessor")
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -67,9 +70,7 @@ public class GoodreadsAuthorizationActivity
         }
 
         // Bring our app back to the top
-        final Intent intent = new Intent(this, StartupActivity.class)
-                .setAction(Intent.ACTION_MAIN)
-                .addCategory(Intent.CATEGORY_LAUNCHER);
+        final Intent intent = new Intent(this, BooksOnBookshelf.class);
         startActivity(intent);
         finish();
     }
@@ -109,10 +110,13 @@ public class GoodreadsAuthorizationActivity
             final Context context = LocaleUtils.applyLocale(App.getAppContext());
 
             if (result) {
-                final String msg = context.getString(R.string.info_site_authorization_successful,
-                                                     context.getString(R.string.site_goodreads));
-                Notifier.show(context, Notifier.CHANNEL_INFO,
-                              context.getString(R.string.info_authorized), msg);
+                final PendingIntent pendingIntent = Notifier
+                        .createPendingIntent(context, BooksOnBookshelf.class);
+                Notifier.getInstance(context)
+                        .sendInfo(context, Notifier.ID_GOODREADS, pendingIntent,
+                                  R.string.info_authorized,
+                                  context.getString(R.string.info_site_authorization_successful,
+                                                    context.getString(R.string.site_goodreads)));
 
             } else {
                 final String msg;
@@ -129,8 +133,14 @@ public class GoodreadsAuthorizationActivity
                                             context.getString(R.string.site_goodreads));
                 }
 
-                Notifier.show(context, Notifier.CHANNEL_ERROR,
-                              context.getString(R.string.info_not_authorized), msg);
+
+                final PendingIntent pendingIntent = Notifier
+                        .createPendingIntentWithParentStack(context,
+                                                            GoodreadsRegistrationActivity.class);
+                Notifier.getInstance(context)
+                        .sendError(context, Notifier.ID_GOODREADS, pendingIntent,
+                                   R.string.info_not_authorized,
+                                   msg);
             }
         }
     }

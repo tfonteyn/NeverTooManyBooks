@@ -32,7 +32,6 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -40,8 +39,6 @@ import androidx.annotation.Nullable;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.database.DBHelper;
 import com.hardbacknutter.nevertoomanybooks.utils.DateParser;
 
@@ -49,9 +46,6 @@ import com.hardbacknutter.nevertoomanybooks.utils.DateParser;
  * Class to encapsulate the INFO block from an archive.
  */
 public class ArchiveInfo {
-
-    /** Log tag. */
-    private static final String TAG = "ArchiveInfo";
 
     /** Version of archiver used to write this archive. */
     private static final String INFO_ARCHIVER_VERSION = "ArchVersion";
@@ -136,11 +130,13 @@ public class ArchiveInfo {
     /**
      * Get the date from the creation-date field.
      *
+     * @param context Current context
+     *
      * @return date, or {@code null} if none or invalid
      */
     @Nullable
-    public LocalDateTime getCreationDate() {
-        return DateParser.parseISO(mBundle.getString(INFO_CREATION_DATE));
+    public LocalDateTime getCreationDate(@NonNull final Context context) {
+        return DateParser.getInstance(context).parseISO(mBundle.getString(INFO_CREATION_DATE));
     }
 
     /**
@@ -237,10 +233,6 @@ public class ArchiveInfo {
      */
     public void validate()
             throws InvalidArchiveException {
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.BACKUP) {
-            Log.d(TAG, "validate|" + mBundle);
-        }
-
         // extremely simple check: the archiver version field must be present
         if (!mBundle.containsKey(INFO_ARCHIVER_VERSION)) {
             throw new InvalidArchiveException("info block lacks version field");

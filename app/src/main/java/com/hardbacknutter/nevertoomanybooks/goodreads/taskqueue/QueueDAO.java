@@ -250,12 +250,14 @@ class QueueDAO
      * This method will find the highest priority RUNNABLE task, and failing that the
      * next available task.
      *
+     * @param context   Current context
      * @param queueName Name of queue to check
      *
      * @return ScheduledTask object containing details of task or {@code null} for none.
      */
     @Nullable
-    ScheduledTask getNextTask(@NonNull final String queueName) {
+    ScheduledTask getNextTask(@NonNull final Context context,
+                              @NonNull final String queueName) {
 
         final LocalDateTime currentUtcDateTime = LocalDateTime.now(ZoneOffset.UTC);
         final String[] sqlArg = new String[]{
@@ -280,7 +282,7 @@ class QueueDAO
             }
 
             // Determine the number of milliseconds to wait before we should run the task
-            LocalDateTime utcRetryDate = DateParser.parseISO(
+            LocalDateTime utcRetryDate = DateParser.getInstance(context).parseISO(
                     cursor.getString(cursor.getColumnIndex(KEY_TASK_RETRY_UTC_DATETIME)));
             if (utcRetryDate == null) {
                 utcRetryDate = LocalDateTime.now(ZoneOffset.UTC);

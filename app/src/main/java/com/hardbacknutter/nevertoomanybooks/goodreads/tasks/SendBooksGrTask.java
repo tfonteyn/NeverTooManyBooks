@@ -27,12 +27,14 @@
  */
 package com.hardbacknutter.nevertoomanybooks.goodreads.tasks;
 
+import android.app.PendingIntent;
 import android.content.Context;
 import android.database.Cursor;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 
+import com.hardbacknutter.nevertoomanybooks.BooksOnBookshelf;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
@@ -122,13 +124,16 @@ class SendBooksGrTask
             }
         }
 
-        Notifier.show(context, Notifier.CHANNEL_INFO,
-                      context.getString(R.string.gr_send_to_goodreads),
-                      context.getString(R.string.gr_info_send_all_books_results,
-                                        mCount,
-                                        getNumberOfBooksSent(),
-                                        getNumberOfBooksWithoutIsbn(),
-                                        getNumberOfBooksNotFound()));
+        final PendingIntent pendingIntent = Notifier
+                .createPendingIntent(context, BooksOnBookshelf.class);
+        Notifier.getInstance(context)
+                .sendInfo(context, Notifier.ID_GOODREADS, pendingIntent,
+                          R.string.gr_send_to_goodreads,
+                          context.getString(R.string.gr_info_send_all_books_results,
+                                            mCount,
+                                            getNumberOfBooksSent(),
+                                            getNumberOfBooksWithoutIsbn(),
+                                            getNumberOfBooksNotFound()));
         return true;
     }
 

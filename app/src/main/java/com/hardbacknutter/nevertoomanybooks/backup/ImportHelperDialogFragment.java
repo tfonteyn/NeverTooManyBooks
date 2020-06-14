@@ -145,7 +145,8 @@ public class ImportHelperDialogFragment
         }
 
         // enable or disable the sync option
-        if (mIsCsvBooks || mModel.getArchiveCreationDate() != null) {
+        //noinspection ConstantConditions
+        if (mIsCsvBooks || mModel.getArchiveCreationDate(getContext()) != null) {
             final boolean allBooks = (helper.getOptions()
                                       & ImportManager.IMPORT_ONLY_NEW_OR_UPDATED) == 0;
             mVb.rbBooksAll.setChecked(allBooks);
@@ -164,7 +165,6 @@ public class ImportHelperDialogFragment
             mVb.rbBooksAll.setChecked(true);
             mVb.rbBooksSync.setChecked(false);
             helper.setOption(ImportManager.IMPORT_ONLY_NEW_OR_UPDATED, false);
-            //noinspection ConstantConditions
             mVb.infoBtnRbBooksSync.setContentDescription(
                     getContext().getString(R.string.warning_import_old_archive));
         }
@@ -202,12 +202,19 @@ public class ImportHelperDialogFragment
             return mInfo;
         }
 
+        /**
+         * Get the archive creation date.
+         *
+         * @param context Current context
+         *
+         * @return the date, or {@code null} if none present
+         */
         @Nullable
-        LocalDateTime getArchiveCreationDate() {
+        LocalDateTime getArchiveCreationDate(@NonNull final Context context) {
             if (mInfo == null) {
                 return null;
             } else {
-                return mInfo.getCreationDate();
+                return mInfo.getCreationDate(context);
             }
         }
 

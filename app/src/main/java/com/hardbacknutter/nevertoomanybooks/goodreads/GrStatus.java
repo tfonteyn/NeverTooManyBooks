@@ -39,6 +39,8 @@ import com.hardbacknutter.nevertoomanybooks.R;
 
 public final class GrStatus {
 
+    public static final String BKEY = "GrStatus";
+
     /** Everything was good. */
     public static final int SUCCESS = 0;
     /** The user cancelled the action. */
@@ -61,9 +63,10 @@ public final class GrStatus {
     public static final int FAILED_BOOK_HAS_NO_ISBN = 103;
     /** A specific action to get a book failed to find it. */
     public static final int FAILED_BOOK_NOT_FOUND_ON_GOODREADS = 104;
+    public static final int FAILED_BOOK_NOT_FOUND_LOCALLY = 105;
 
-    public static final int FAILED_IMPORT_TASK_ALREADY_QUEUED = 105;
-    public static final int FAILED_EXPORT_TASK_ALREADY_QUEUED = 106;
+    public static final int FAILED_IMPORT_TASK_ALREADY_QUEUED = 106;
+    public static final int FAILED_EXPORT_TASK_ALREADY_QUEUED = 107;
 
 
     /** Not a clue what happened. */
@@ -115,6 +118,8 @@ public final class GrStatus {
                 return context.getString(R.string.warning_no_isbn_stored_for_book);
             case FAILED_BOOK_NOT_FOUND_ON_GOODREADS:
                 return context.getString(R.string.warning_no_matching_book_found);
+            case FAILED_BOOK_NOT_FOUND_LOCALLY:
+                return context.getString(R.string.warning_book_not_found);
 
             case FAILED_NETWORK_UNAVAILABLE:
                 return context.getString(R.string.error_network_no_connection);
@@ -124,6 +129,7 @@ public final class GrStatus {
             case FAILED_UNEXPECTED_EXCEPTION:
             default:
                 return context.getString(R.string.error_unexpected_error);
+
         }
     }
 
@@ -135,6 +141,7 @@ public final class GrStatus {
              FAILED_NETWORK_UNAVAILABLE,
              FAILED_AUTHORIZATION, FAILED_CREDENTIALS,
              FAILED_BOOK_HAS_NO_ISBN,
+             FAILED_BOOK_NOT_FOUND_LOCALLY,
              FAILED_BOOK_NOT_FOUND_ON_GOODREADS,
              FAILED_IMPORT_TASK_ALREADY_QUEUED, FAILED_EXPORT_TASK_ALREADY_QUEUED,
              FAILED_UNEXPECTED_EXCEPTION, FAILED_IO_EXCEPTION})

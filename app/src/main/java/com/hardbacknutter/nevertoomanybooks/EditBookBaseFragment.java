@@ -112,9 +112,11 @@ public abstract class EditBookBaseFragment
      *
      * @return instant
      */
-    private static Instant getInstant(@NonNull final Field<String, TextView> field,
-                                      final boolean todayIfNone) {
-        final LocalDateTime date = DateParser.parse(field.getAccessor().getValue());
+    private Instant getInstant(@NonNull final Field<String, TextView> field,
+                               final boolean todayIfNone) {
+        //noinspection ConstantConditions
+        final LocalDateTime date = DateParser.getInstance(getContext())
+                                             .parse(field.getAccessor().getValue());
         if (date == null && !todayIfNone) {
             return null;
         }

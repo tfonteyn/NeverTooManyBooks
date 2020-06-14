@@ -326,7 +326,7 @@ public class DAO
 
         // static DB wrapper
         if (sSyncedDb == null) {
-            sSyncedDb = new SynchronizedDb(sDbHelper, SYNCHRONIZER);
+            sSyncedDb = new SynchronizedDb(SYNCHRONIZER, sDbHelper);
         }
 
         // statements are instance based/managed
@@ -385,7 +385,7 @@ public class DAO
      *
      * @return ascii text
      */
-    private static String toAscii(@NonNull final CharSequence text) {
+    static String toAscii(@NonNull final CharSequence text) {
         return ASCII_REGEX.matcher(Normalizer.normalize(text, Normalizer.Form.NFD))
                           .replaceAll("");
     }
@@ -1062,12 +1062,15 @@ public class DAO
     /***
      * Return the book last update date based on the id.
      *
+     *
+     * @param context Current context
      * @param bookId of the book
      *
      * @return the last update date; UTC based.
      */
     @Nullable
-    public LocalDateTime getBookLastUpdateUtcDate(final long bookId) {
+    public LocalDateTime getBookLastUpdateUtcDate(@NonNull final Context context,
+                                                  final long bookId) {
         SynchronizedStatement stmt = mSqlStatementManager.get(STMT_GET_BOOK_UPDATE_DATE);
         if (stmt == null) {
             stmt = mSqlStatementManager.add(STMT_GET_BOOK_UPDATE_DATE,
@@ -1077,7 +1080,7 @@ public class DAO
         //noinspection SynchronizationOnLocalVariableOrMethodParameter
         synchronized (stmt) {
             stmt.bindLong(1, bookId);
-            return DateParser.parseISO(stmt.simpleQueryForStringOrNull());
+            return DateParser.getInstance(context).parseISO(stmt.simpleQueryForStringOrNull());
         }
     }
 
@@ -3920,7 +3923,7 @@ public class DAO
          * @return A full piece of SQL to perform the search
          */
         @NonNull
-        private static String withAllAuthorsAndSeries(@NonNull final String whereClause) {
+        static String withAllAuthorsAndSeries(@NonNull final String whereClause) {
             //TODO: RTL
             String andOthersText = " …";
 
@@ -3952,7 +3955,7 @@ public class DAO
          * @return A full piece of SQL to perform the search
          */
         @NonNull
-        private static String withPrimaryAuthorAndSeries(@NonNull final String whereClause) {
+        static String withPrimaryAuthorAndSeries(@NonNull final String whereClause) {
             return ALL_BOOKS
                    + (!whereClause.isEmpty() ? _WHERE_ + " (" + whereClause + ')' : "")
                    + " ORDER BY " + TBL_BOOKS.dot(KEY_PK_ID);
@@ -4211,13 +4214,13 @@ public class DAO
                 + _FROM_ + TBL_BOOKS.getName();
 
         /** {@link Book}, all columns. */
-        private static final String BOOKS = "SELECT * FROM " + TBL_BOOKS.getName();
+        static final String BOOKS = "SELECT * FROM " + TBL_BOOKS.getName();
 
         /** {@link Author}, all columns. */
-        private static final String AUTHORS = "SELECT * FROM " + TBL_AUTHORS.getName();
+        static final String AUTHORS = "SELECT * FROM " + TBL_AUTHORS.getName();
 
         /** {@link Series}, all columns. */
-        private static final String SERIES = "SELECT * FROM " + TBL_SERIES.getName();
+        static final String SERIES = "SELECT * FROM " + TBL_SERIES.getName();
 
         /** {@link Bookshelf} all columns. */
         private static final String BOOKSHELVES =
@@ -4231,7 +4234,7 @@ public class DAO
                 + _FROM_ + TBL_BOOKSHELF.ref() + TBL_BOOKSHELF.join(TBL_BOOKLIST_STYLES);
 
         /** {@link BooklistStyle} all columns. */
-        private static final String BOOKLIST_STYLES =
+        static final String BOOKLIST_STYLES =
                 "SELECT * FROM " + TBL_BOOKLIST_STYLES.getName();
 
         /** Book UUID only, for accessing all cover image files. */
@@ -5042,8 +5045,8 @@ public class DAO
          * @return Clean string
          */
         @NonNull
-        private static String cleanupFtsCriterion(@Nullable final String searchText,
-                                                  @Nullable final String domain) {
+        static String cleanupFtsCriterion(@Nullable final String searchText,
+                                          @Nullable final String domain) {
 
             if (searchText == null || searchText.isEmpty()) {
                 return "";

@@ -968,7 +968,7 @@ public class SearchCoordinator
         for (String key : siteData.keySet()) {
             if (DBDefinitions.KEY_DATE_PUBLISHED.equals(key)
                 || DBDefinitions.KEY_DATE_FIRST_PUBLICATION.equals(key)) {
-                accumulateDates(locale, key, siteData);
+                accumulateDates(context, locale, key, siteData);
 
             } else if (Book.BKEY_AUTHOR_ARRAY.equals(key)
                        || Book.BKEY_SERIES_ARRAY.equals(key)
@@ -1019,15 +1019,19 @@ public class SearchCoordinator
      * If so, then check if the previous date was actually valid at all.
      * if not, use new date.
      *
+     * @param context    Current context
      * @param siteLocale the specific Locale of the website
      * @param key        for the date field
      * @param siteData   to digest
      */
-    private void accumulateDates(@NonNull final Locale siteLocale,
+    private void accumulateDates(@NonNull final Context context,
+                                 @NonNull final Locale siteLocale,
                                  @NonNull final String key,
                                  @NonNull final Bundle siteData) {
         final String currentDateHeld = mBookData.getString(key);
         final String dataToAdd = siteData.getString(key);
+
+        final DateParser dateParser = DateParser.getInstance(context);
 
         if (currentDateHeld == null || currentDateHeld.isEmpty()) {
             // copy, even if the incoming date might not be valid.
@@ -1038,9 +1042,9 @@ public class SearchCoordinator
             // Overwrite with the new date if we can parse it and
             // if the current one was present but not valid.
             if (dataToAdd != null) {
-                final LocalDateTime newDate = DateParser.parse(siteLocale, dataToAdd);
+                final LocalDateTime newDate = dateParser.parse(siteLocale, dataToAdd);
                 if (newDate != null) {
-                    if (DateParser.parse(siteLocale, currentDateHeld) == null) {
+                    if (dateParser.parse(siteLocale, currentDateHeld) == null) {
                         // current date was invalid, use the new one instead.
                         // (theoretically this check was not needed, as we should not have
                         // an invalid date stored anyhow... but paranoia rules)

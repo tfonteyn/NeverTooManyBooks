@@ -63,11 +63,13 @@ public class TQEventCursorRow
     /**
      * Get the date of when the Event occurred.
      *
+     * @param context Current context
+     *
      * @return date; UTC based
      */
     @NonNull
-    public LocalDateTime getEventDate() {
-        LocalDateTime utcDate = DateParser.parseISO(
+    public LocalDateTime getEventDate(@NonNull final Context context) {
+        LocalDateTime utcDate = DateParser.getInstance(context).parseISO(
                 getString(QueueDBHelper.KEY_EVENT_UTC_DATETIME));
         if (utcDate == null) {
             utcDate = LocalDateTime.now(ZoneOffset.UTC);

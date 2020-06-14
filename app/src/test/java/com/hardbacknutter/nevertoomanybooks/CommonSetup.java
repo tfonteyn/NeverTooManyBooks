@@ -93,7 +93,7 @@ public class CommonSetup {
     public void setLocale(@NonNull final Locale locale0) {
         mLocale0 = locale0;
         Locale.setDefault(mLocale0);
-        DateParser.create(mLocale0);
+        DateParser.createForTesting(mLocale0);
     }
 
     /**

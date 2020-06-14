@@ -96,7 +96,8 @@ public class BookEventViewHolder
         authorView.setText(authorName);
         errorView.setText(event.getDescription(context));
         infoView.setText(infoView.getContext().getString(
-                R.string.gr_tq_occurred_at, toPrettyDateTime(rowData.getEventDate(), userLocale)));
+                R.string.gr_tq_occurred_at,
+                toPrettyDateTime(rowData.getEventDate(context), userLocale)));
 
         final String isbn = db.getBookIsbn(bookId);
         if (isbn != null && !isbn.isEmpty()) {

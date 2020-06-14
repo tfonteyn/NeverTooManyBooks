@@ -52,7 +52,6 @@ import java.util.Map;
 import java.util.MissingResourceException;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 
@@ -206,29 +205,34 @@ public final class LocaleUtils {
      */
     @NonNull
     public static Context applyLocale(@NonNull final Context context) {
-        final String localeSpec = getPersistedLocaleSpec(context);
+        boolean changed = false;
+
         // Create the Locale at first access, or if the persisted is different from the current.
+        final String localeSpec = getPersistedLocaleSpec(context);
         if (sPreferredLocale == null || !sPreferredLocaleSpec.equals(localeSpec)) {
             sPreferredLocaleSpec = localeSpec;
             sPreferredLocale = createLocale(localeSpec);
-            // (re)create our parser format lists
-            DateParser.create(sPreferredLocale, LocaleUtils.getSystemLocale());
+            changed = true;
         }
 
-        // Update the JDK usage of Locale
+        // Update the JDK usage of Locale - this MUST be done each and every time!
         Locale.setDefault(sPreferredLocale);
 
-        // Update the Android configuration Locale
+        // Update the Android usage of Locale - this MUST be done each and every time!
         final Configuration deltaConfig = new Configuration();
         deltaConfig.setLocale(sPreferredLocale);
-
         if (Build.VERSION.SDK_INT < 26) {
             // Workaround for platform bug on SDK < 26
             // (https://issuetracker.google.com/issues/140607881)
             deltaConfig.fontScale = 0f;
         }
+        final Context localizedContext = context.createConfigurationContext(deltaConfig);
 
-        return context.createConfigurationContext(deltaConfig);
+        if (changed) {
+            // refresh Locale aware components; only needed when the Locale was indeed changed.
+            onLocaleChanged(context);
+        }
+        return localizedContext;
     }
 
     /**
@@ -348,14 +352,14 @@ public final class LocaleUtils {
     /**
      * Broadcast to registered listener. Dead listeners are removed.
      */
-    public static void onLocaleChanged() {
+    private static void onLocaleChanged(@NonNull final Context context) {
         synchronized (ON_LOCALE_CHANGED_LISTENERS) {
             Iterator<WeakReference<OnLocaleChangedListener>> it =
                     ON_LOCALE_CHANGED_LISTENERS.iterator();
             while (it.hasNext()) {
                 final WeakReference<OnLocaleChangedListener> listenerRef = it.next();
                 if (listenerRef.get() != null) {
-                    listenerRef.get().onLocaleChanged();
+                    listenerRef.get().onLocaleChanged(context);
                 } else {
                     // remove dead listeners.
                     it.remove();
@@ -403,13 +407,6 @@ public final class LocaleUtils {
             if (isValid(locale)) {
                 LOCALE_MAP.put(lang, locale);
             } else {
-                if (BuildConfig.DEBUG && DEBUG_SWITCHES.LOCALE) {
-                    Log.d(TAG, "getLocale|invalid locale"
-                               + "|inputLang=" + inputLang
-                               + "|lang=" + lang
-                               + "|locale=" + locale);
-                }
-
                 locale = null;
             }
         }
@@ -453,7 +450,7 @@ public final class LocaleUtils {
     @NonNull
     public static String toPrettyDate(@NonNull final Context context,
                                       @NonNull final String isoDateStr) {
-        final LocalDateTime date = DateParser.parse(isoDateStr);
+        final LocalDateTime date = DateParser.getInstance(context).parse(isoDateStr);
         if (date != null) {
             return date.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)
                                                 .withLocale(getUserLocale(context)));
@@ -464,6 +461,6 @@ public final class LocaleUtils {
 
     public interface OnLocaleChangedListener {
 
-        void onLocaleChanged();
+        void onLocaleChanged(@NonNull final Context context);
     }
 }
