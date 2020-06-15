@@ -50,6 +50,7 @@ import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
+import com.hardbacknutter.nevertoomanybooks.settings.sites.GoodreadsPreferencesFragment;
 import com.hardbacknutter.nevertoomanybooks.settings.styles.StyleFragment;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.ResultDataModel;
 
@@ -93,6 +94,10 @@ public class SettingsActivity
 
                 case StyleFragment.TAG:
                     frag = new StyleFragment();
+                    break;
+
+                case GoodreadsPreferencesFragment.TAG:
+                    frag = new GoodreadsPreferencesFragment();
                     break;
 
                 default:

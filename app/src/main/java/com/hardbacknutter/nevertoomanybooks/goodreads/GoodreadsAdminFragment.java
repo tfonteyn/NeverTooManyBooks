@@ -43,12 +43,15 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.snackbar.Snackbar;
 
+import com.hardbacknutter.nevertoomanybooks.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentGoodreadsAdminBinding;
 import com.hardbacknutter.nevertoomanybooks.goodreads.admin.TasksAdminActivity;
 import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.ImportTask;
 import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.RequestAuthTask;
 import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.SendBooksTask;
+import com.hardbacknutter.nevertoomanybooks.settings.SettingsActivity;
+import com.hardbacknutter.nevertoomanybooks.settings.sites.GoodreadsPreferencesFragment;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.tasks.GoodreadsTaskModel;
 
 /**
@@ -111,14 +114,17 @@ public class GoodreadsAdminFragment
 
         menu.add(Menu.NONE, R.id.MENU_GOODREADS_TASKS, 0, R.string.gr_tq_menu_background_tasks)
             .setIcon(R.drawable.ic_format_list_bulleted)
-            .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+            .setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
+
+        menu.add(Menu.NONE, R.id.MENU_GOODREADS_SETTINGS, 0, R.string.lbl_settings)
+            .setIcon(R.drawable.ic_settings)
+            .setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
 
         super.onCreateOptionsMenu(menu, inflater);
     }
 
     @Override
     public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
-        //noinspection SwitchStatementWithTooFewBranches
         switch (item.getItemId()) {
             case R.id.MENU_GOODREADS_TASKS: {
                 // Start the activity that shows the active GoodReads tasks
@@ -126,6 +132,12 @@ public class GoodreadsAdminFragment
                 return true;
             }
 
+            case R.id.MENU_GOODREADS_SETTINGS: {
+                final Intent intent = new Intent(getContext(), SettingsActivity.class)
+                        .putExtra(BaseActivity.BKEY_FRAGMENT_TAG, GoodreadsPreferencesFragment.TAG);
+                startActivity(intent);
+                return true;
+            }
             default:
                 return super.onOptionsItemSelected(item);
         }

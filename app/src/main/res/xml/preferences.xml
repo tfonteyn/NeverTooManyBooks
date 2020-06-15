@@ -80,12 +80,6 @@
         </Preference>
 
         <Preference
-            android:icon="@drawable/ic_security"
-            android:key="psk_credentials_goodreads"
-            android:title="@string/lbl_credentials_goodreads">
-        </Preference>
-
-        <Preference
             android:fragment="com.hardbacknutter.nevertoomanybooks.settings.WebSearchesPreferenceFragment"
             android:icon="@drawable/ic_search"
             android:key="psk_web_searches"

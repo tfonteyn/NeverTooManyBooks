@@ -118,8 +118,11 @@
     <item name="MENU_PUBLISHER_EDIT" type="id" />
 
     <item name="MENU_SHARE" type="id" />
+
     <item name="MENU_BOOK_SEND_TO_GOODREADS" type="id" />
     <item name="MENU_GOODREADS_TASKS" type="id" />
+    <item name="MENU_GOODREADS_SETTINGS" type="id" />
+
     <item name="MENU_POPULATE_TOC_FROM_ISFDB" type="id" />
 
     <!-- standard Booklist options menu -->
