@@ -108,7 +108,6 @@ public class StyleGroupsActivity
 
         final ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
-            actionBar.setTitle(R.string.lbl_edit_style);
             actionBar.setSubtitle(getString(R.string.name_colon_value,
                                             getString(R.string.pg_style_groups),
                                             mModel.getStyle().getLabel(this)));

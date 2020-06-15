@@ -44,6 +44,7 @@
         <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/toolbar"
             style="@style/Toolbar"
+            tools:title="activity_main"
             />
     </com.google.android.material.appbar.AppBarLayout>
 

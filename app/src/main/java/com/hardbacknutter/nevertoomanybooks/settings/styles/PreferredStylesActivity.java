@@ -139,8 +139,6 @@ public class PreferredStylesActivity
         mItemTouchHelper = new ItemTouchHelper(sitHelperCallback);
         mItemTouchHelper.attachToRecyclerView(mListView);
 
-        setTitle(R.string.lbl_preferred_styles);
-
         if (savedInstanceState == null) {
             TipManager.display(this, R.string.tip_booklist_styles_editor, null);
         }

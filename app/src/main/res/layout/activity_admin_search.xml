@@ -43,6 +43,7 @@
         <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/toolbar"
             style="@style/Toolbar"
+            app:title="@string/lbl_websites"
             />
 
         <com.google.android.material.tabs.TabLayout

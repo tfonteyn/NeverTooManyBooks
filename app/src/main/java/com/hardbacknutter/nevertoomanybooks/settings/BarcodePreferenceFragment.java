@@ -39,6 +39,16 @@ import com.hardbacknutter.nevertoomanybooks.R;
 public class BarcodePreferenceFragment
         extends BasePreferenceFragment {
 
+    private static final String TAG = "BarcodePreferenceFrag";
+
+    /**
+     * The user modified the scanner in preferences (or not).
+     * <p>
+     * <br>type: {@code boolean}
+     * setResult
+     */
+    public static final String BKEY_SCANNER_MODIFIED = TAG + ":scannerModified";
+
     @Override
     public void onCreatePreferences(@Nullable final Bundle savedInstanceState,
                                     @Nullable final String rootKey) {

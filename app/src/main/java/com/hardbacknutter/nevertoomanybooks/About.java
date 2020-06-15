@@ -80,8 +80,6 @@ public class About
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setTitle(R.string.app_name);
-
         try {
             final PackageInfo info = getPackageManager().getPackageInfo(getPackageName(), 0);
 

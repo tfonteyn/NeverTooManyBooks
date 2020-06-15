@@ -90,18 +90,12 @@ public abstract class BasePreferenceFragment
         extends PreferenceFragmentCompat
         implements SharedPreferences.OnSharedPreferenceChangeListener {
 
-    /**
-     * The user modified the scanner in preferences (or not).
-     * <p>
-     * <br>type: {@code boolean}
-     * setResult
-     */
-    public static final String BKEY_SCANNER_MODIFIED = "scannerModified";
     /** Log tag. */
     private static final String TAG = "BasePreferenceFragment";
+
     /** Allows auto-scrolling on opening the preference screen to the desired key. */
     public static final String BKEY_AUTO_SCROLL_TO_KEY = TAG + ":scrollTo";
-    private static final String DIALOG_FRAGMENT_TAG = TAG + ":dialog";
+
     private static final int REQ_PICK_FILE_FOR_EXPORT_DATABASE = 1;
 
     protected ResultDataModel mResultData;
@@ -137,8 +131,7 @@ public abstract class BasePreferenceFragment
         preference = findPreference("psk_credentials_goodreads");
         if (preference != null) {
             preference.setOnPreferenceClickListener(p -> {
-                Intent intent = new Intent(getContext(), GoodreadsRegistrationActivity.class);
-                startActivity(intent);
+                startActivity(new Intent(getContext(), GoodreadsRegistrationActivity.class));
                 return true;
             });
         }
@@ -146,8 +139,7 @@ public abstract class BasePreferenceFragment
         preference = findPreference("psk_credentials_library_thing");
         if (preference != null) {
             preference.setOnPreferenceClickListener(p -> {
-                Intent intent = new Intent(getContext(), LibraryThingRegistrationActivity.class);
-                startActivity(intent);
+                startActivity(new Intent(getContext(), LibraryThingRegistrationActivity.class));
                 return true;
             });
         }
@@ -173,7 +165,7 @@ public abstract class BasePreferenceFragment
         preference = findPreference("psk_search_site_order");
         if (preference != null) {
             preference.setOnPreferenceClickListener(p -> {
-                Intent intent = new Intent(getContext(), SearchAdminActivity.class);
+                final Intent intent = new Intent(getContext(), SearchAdminActivity.class);
                 startActivityForResult(intent, RequestCode.PREFERRED_SEARCH_SITES);
                 return true;
             });
@@ -255,10 +247,10 @@ public abstract class BasePreferenceFragment
         if (preference != null) {
             preference.setOnPreferenceClickListener(p -> {
                 //noinspection ConstantConditions
-                long bytes = AppDir.purge(getContext(), false);
-                String msg = getString(R.string.txt_cleanup_files,
-                                       FileUtils.formatFileSize(getContext(), bytes),
-                                       getString(R.string.lbl_send_debug));
+                final long bytes = AppDir.purge(getContext(), false);
+                final String msg = getString(R.string.txt_cleanup_files,
+                                             FileUtils.formatFileSize(getContext(), bytes),
+                                             getString(R.string.lbl_send_debug));
 
                 new MaterialAlertDialogBuilder(getContext())
                         .setIcon(R.drawable.ic_warning)
@@ -376,7 +368,7 @@ public abstract class BasePreferenceFragment
                         ScannerManager.setDefaultScanner(getContext());
                     }
                 });
-                mResultData.putResultData(BKEY_SCANNER_MODIFIED, true);
+                mResultData.putResultData(BarcodePreferenceFragment.BKEY_SCANNER_MODIFIED, true);
                 break;
 
             case Prefs.pk_sounds_scan_found_barcode:
@@ -460,14 +452,15 @@ public abstract class BasePreferenceFragment
     @Override
     public void onDisplayPreferenceDialog(@NonNull final Preference preference) {
         if (preference instanceof BitmaskPreference) {
+            final String fragmentTag = "BitmaskPreferenceDialog";
             final FragmentManager fm = getParentFragmentManager();
             // check if dialog is already showing
-            if (fm.findFragmentByTag(DIALOG_FRAGMENT_TAG) != null) {
+            if (fm.findFragmentByTag(fragmentTag) != null) {
                 return;
             }
             final DialogFragment frag = BitmaskPreference.BitmaskPreferenceDialogFragment
                     .newInstance(this, (BitmaskPreference) preference);
-            frag.show(fm, DIALOG_FRAGMENT_TAG);
+            frag.show(fm, fragmentTag);
             return;
         }
 
@@ -529,8 +522,9 @@ public abstract class BasePreferenceFragment
 
                 } else {
                     // This re-surfaces sometimes after a careless dev. change.
+                    //noinspection ConstantConditions
                     Logger.warnWithStackTrace(
-                            msp.getContext(), TAG,
+                            getContext(), TAG,
                             "MultiSelectListPreference:"
                             + "\n s=" + s
                             + "\n key=" + msp.getKey()

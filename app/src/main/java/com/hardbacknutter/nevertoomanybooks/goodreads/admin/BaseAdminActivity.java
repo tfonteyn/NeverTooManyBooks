@@ -72,7 +72,7 @@ public abstract class BaseAdminActivity
 
     @Override
     protected void onSetContentView() {
-        setContentView(R.layout.activity_message_queue_list);
+        setContentView(R.layout.activity_task_queue_list);
     }
 
     @Override

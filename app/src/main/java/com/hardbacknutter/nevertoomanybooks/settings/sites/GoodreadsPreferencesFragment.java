@@ -37,6 +37,8 @@ import com.hardbacknutter.nevertoomanybooks.settings.BasePreferenceFragment;
 public class GoodreadsPreferencesFragment
         extends BasePreferenceFragment {
 
+    public static final String TAG = "GoodreadsPrefsFrag";
+
     @Override
     public void onCreatePreferences(@Nullable final Bundle savedInstanceState,
                                     @Nullable final String rootKey) {

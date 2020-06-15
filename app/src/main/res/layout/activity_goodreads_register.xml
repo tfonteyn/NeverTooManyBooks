@@ -45,6 +45,7 @@
         <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/toolbar"
             style="@style/Toolbar"
+            app:title="@string/site_goodreads"
             />
     </com.google.android.material.appbar.AppBarLayout>
 

@@ -81,7 +81,6 @@ public class LibraryThingRegistrationActivity
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setTitle(R.string.site_library_thing);
 
         mVb.registerUrl.setOnClickListener(
                 v -> startActivity(new Intent(Intent.ACTION_VIEW,
@@ -128,7 +127,7 @@ public class LibraryThingRegistrationActivity
          * @param taskListener for sending progress and finish messages to.
          */
         @UiThread
-        private ValidateKey(@NonNull final TaskListener<Integer> taskListener) {
+        ValidateKey(@NonNull final TaskListener<Integer> taskListener) {
             super(R.id.TASK_ID_LT_VALIDATE_KEY, taskListener);
         }
 

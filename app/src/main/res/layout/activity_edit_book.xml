@@ -44,6 +44,7 @@
         <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/toolbar"
             style="@style/Toolbar"
+            tools:title="activity_edit_book"
             />
 
         <com.google.android.material.tabs.TabLayout

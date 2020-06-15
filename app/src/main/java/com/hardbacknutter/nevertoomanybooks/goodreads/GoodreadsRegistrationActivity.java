@@ -83,8 +83,6 @@ public class GoodreadsRegistrationActivity
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setTitle(R.string.site_goodreads);
-
         // Goodreads Reg Link
         mVb.goodreadsUrl.setText(GoodreadsHandler.BASE_URL);
         mVb.goodreadsUrl.setOnClickListener(v -> startActivity(

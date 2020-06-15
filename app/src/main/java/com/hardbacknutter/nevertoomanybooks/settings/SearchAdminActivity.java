@@ -75,11 +75,9 @@ public class SearchAdminActivity
         mViewPager = findViewById(R.id.pager);
         final TabLayout tabBarLayout = findViewById(R.id.tab_panel);
 
-        if (mModel.getType() == null) {
-            setTitle(R.string.lbl_websites);
-
-        } else {
-            setTitle(mModel.getType().getLabelId());
+        if (mModel.getType() != null) {
+            //noinspection ConstantConditions
+            getSupportActionBar().setSubtitle(mModel.getType().getLabelId());
             tabBarLayout.setVisibility(View.GONE);
         }
 

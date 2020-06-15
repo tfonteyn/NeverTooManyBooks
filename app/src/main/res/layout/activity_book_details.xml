@@ -51,6 +51,7 @@
             <com.google.android.material.appbar.MaterialToolbar
                 android:id="@+id/toolbar"
                 style="@style/Toolbar"
+                tools:title="activity_book_details"
                 />
         </com.google.android.material.appbar.AppBarLayout>
 
