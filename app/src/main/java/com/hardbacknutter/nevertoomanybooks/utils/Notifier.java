@@ -110,17 +110,6 @@ public final class Notifier
     }
 
     /**
-     * Create the Notification channels we need.
-     * <p>
-     * This is called during startup.
-     *
-     * @param context Current context
-     */
-    public static void init(@NonNull final Context context) {
-
-    }
-
-    /**
      * Create a PendingIntent to take the user to this Activity.
      *
      * @param context Current context

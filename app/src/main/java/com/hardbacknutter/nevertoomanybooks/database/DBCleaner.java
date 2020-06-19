@@ -95,7 +95,7 @@ public class DBCleaner {
     public void languages(@NonNull final Context context) {
         for (String lang : mDb.getLanguageCodes()) {
             if (lang != null && !lang.isEmpty()) {
-                String iso;
+                final String iso;
                 if (lang.length() > 3) {
                     // It's likely a 'display' name of a language.
                     iso = LanguageUtils.getISO3FromDisplayName(context, lang);
@@ -170,17 +170,17 @@ public class DBCleaner {
             Log.d(TAG, "booleanCleanup|table=" + table + "|column=" + column);
         }
 
-        String select = "SELECT DISTINCT " + column + " FROM " + table
-                        + " WHERE " + column + " NOT IN ('0','1')";
+        final String select = "SELECT DISTINCT " + column + " FROM " + table
+                              + " WHERE " + column + " NOT IN ('0','1')";
         toLog("booleanCleanup", select);
 
-        String update = "UPDATE " + table + " SET " + column + "=?"
-                        + " WHERE lower(" + column + ") IN ";
+        final String update = "UPDATE " + table + " SET " + column + "=?"
+                              + " WHERE lower(" + column + ") IN ";
         String sql;
         sql = update + "('true','t','yes')";
         try (SynchronizedStatement stmt = mSyncedDb.compileStatement(sql)) {
             stmt.bindLong(1, 1);
-            int count = stmt.executeUpdateDelete();
+            final int count = stmt.executeUpdateDelete();
             if (BuildConfig.DEBUG /* always */) {
                 if (count > 0) {
                     Log.d(TAG, "booleanCleanup|true=" + count);
@@ -191,7 +191,7 @@ public class DBCleaner {
         sql = update + "('false','f','no')";
         try (SynchronizedStatement stmt = mSyncedDb.compileStatement(sql)) {
             stmt.bindLong(1, 0);
-            int count = stmt.executeUpdateDelete();
+            final int count = stmt.executeUpdateDelete();
             if (BuildConfig.DEBUG /* always */) {
                 if (count > 0) {
                     Log.d(TAG, "booleanCleanup|false=" + count);
@@ -209,25 +209,29 @@ public class DBCleaner {
      * @param context Current context
      */
     public void bookAuthors(@NonNull final Context context) {
-        String sql = "SELECT " + KEY_FK_BOOK + " FROM "
-                     + "(SELECT " + KEY_FK_BOOK + ", MIN(" + KEY_BOOK_AUTHOR_POSITION + ") AS mp"
-                     + " FROM " + TBL_BOOK_AUTHOR.getName() + " GROUP BY " + KEY_FK_BOOK
-                     + ") WHERE mp > 1";
+        final String sql = "SELECT " + KEY_FK_BOOK + " FROM "
+                           + "(SELECT " + KEY_FK_BOOK + ", MIN(" + KEY_BOOK_AUTHOR_POSITION
+                           + ") AS mp"
+                           + " FROM " + TBL_BOOK_AUTHOR.getName() + " GROUP BY " + KEY_FK_BOOK
+                           + ") WHERE mp > 1";
 
-        ArrayList<Long> bookIds = mDb.getIdList(sql);
+        final ArrayList<Long> bookIds = mDb.getIdList(sql);
         if (!bookIds.isEmpty()) {
             if (BuildConfig.DEBUG /* always */) {
                 Log.w(TAG, "bookSeries|" + TBL_BOOK_AUTHOR.getName()
                            + ", rows=" + bookIds.size());
             }
+            // ENHANCE: we really should fetch each book individually
+            final Locale bookLocale = LocaleUtils.getUserLocale(context);
+
             Synchronizer.SyncLock txLock = null;
             if (!mSyncedDb.inTransaction()) {
                 txLock = mSyncedDb.beginTransaction(true);
             }
             try {
                 for (long bookId : bookIds) {
-                    ArrayList<Author> list = mDb.getAuthorsByBookId(bookId);
-                    mDb.insertBookAuthors(context, bookId, list);
+                    final ArrayList<Author> list = mDb.getAuthorsByBookId(bookId);
+                    mDb.insertBookAuthors(context, bookId, list, false, bookLocale);
                 }
                 if (txLock != null) {
                     mSyncedDb.setTransactionSuccessful();
@@ -255,19 +259,20 @@ public class DBCleaner {
      * @param context Current context
      */
     public void bookSeries(@NonNull final Context context) {
-        String sql = "SELECT " + KEY_FK_BOOK + " FROM "
-                     + "(SELECT " + KEY_FK_BOOK + ", MIN(" + KEY_BOOK_SERIES_POSITION + ") AS mp"
-                     + " FROM " + TBL_BOOK_SERIES.getName() + " GROUP BY " + KEY_FK_BOOK
-                     + ") WHERE mp > 1";
+        final String sql = "SELECT " + KEY_FK_BOOK + " FROM "
+                           + "(SELECT " + KEY_FK_BOOK + ", MIN(" + KEY_BOOK_SERIES_POSITION
+                           + ") AS mp"
+                           + " FROM " + TBL_BOOK_SERIES.getName() + " GROUP BY " + KEY_FK_BOOK
+                           + ") WHERE mp > 1";
 
-        ArrayList<Long> bookIds = mDb.getIdList(sql);
+        final ArrayList<Long> bookIds = mDb.getIdList(sql);
         if (!bookIds.isEmpty()) {
             if (BuildConfig.DEBUG /* always */) {
                 Log.w(TAG, "bookSeries|" + TBL_BOOK_SERIES.getName()
                            + ", rows=" + bookIds.size());
             }
             // ENHANCE: we really should fetch each book individually
-            Locale bookLocale = LocaleUtils.getUserLocale(context);
+            final Locale bookLocale = LocaleUtils.getUserLocale(context);
 
             Synchronizer.SyncLock txLock = null;
             if (!mSyncedDb.inTransaction()) {
@@ -275,8 +280,8 @@ public class DBCleaner {
             }
             try {
                 for (long bookId : bookIds) {
-                    ArrayList<Series> list = mDb.getSeriesByBookId(bookId);
-                    mDb.insertBookSeries(context, bookId, bookLocale, list);
+                    final ArrayList<Series> list = mDb.getSeriesByBookId(bookId);
+                    mDb.insertBookSeries(context, bookId, list, false, bookLocale);
                 }
                 if (txLock != null) {
                     mSyncedDb.setTransactionSuccessful();
@@ -313,13 +318,13 @@ public class DBCleaner {
      * @param dryRun {@code true} to run the update.
      */
     private void bookBookshelf(final boolean dryRun) {
-        String select = "SELECT DISTINCT " + KEY_FK_BOOK
-                        + " FROM " + TBL_BOOK_BOOKSHELF
-                        + " WHERE " + KEY_FK_BOOKSHELF + "=NULL";
+        final String select = "SELECT DISTINCT " + KEY_FK_BOOK
+                              + " FROM " + TBL_BOOK_BOOKSHELF
+                              + " WHERE " + KEY_FK_BOOKSHELF + "=NULL";
         toLog("bookBookshelf|ENTER", select);
         if (!dryRun) {
-            String sql = "DELETE " + TBL_BOOK_BOOKSHELF
-                         + " WHERE " + KEY_FK_BOOKSHELF + "=NULL";
+            final String sql = "DELETE " + TBL_BOOK_BOOKSHELF
+                               + " WHERE " + KEY_FK_BOOKSHELF + "=NULL";
             try (SynchronizedStatement stmt = mSyncedDb.compileStatement(sql)) {
                 stmt.executeUpdateDelete();
             }
@@ -339,12 +344,12 @@ public class DBCleaner {
     public void nullString2empty(@NonNull final String table,
                                  @NonNull final String column,
                                  final boolean dryRun) {
-        String select = "SELECT DISTINCT " + column + " FROM " + table
-                        + " WHERE " + column + "=NULL";
+        final String select = "SELECT DISTINCT " + column + " FROM " + table
+                              + " WHERE " + column + "=NULL";
         toLog("nullString2empty|ENTER", select);
         if (!dryRun) {
-            String sql = "UPDATE " + table + " SET " + column + "=''"
-                         + " WHERE " + column + "=NULL";
+            final String sql = "UPDATE " + table + " SET " + column + "=''"
+                               + " WHERE " + column + "=NULL";
             try (SynchronizedStatement stmt = mSyncedDb.compileStatement(sql)) {
                 stmt.executeUpdateDelete();
             }
@@ -365,8 +370,8 @@ public class DBCleaner {
             try (SynchronizedCursor cursor = mSyncedDb.rawQuery(query, null)) {
                 Log.d(TAG, state + "|row count=" + cursor.getCount());
                 while (cursor.moveToNext()) {
-                    String field = cursor.getColumnName(0);
-                    String value = cursor.getString(0);
+                    final String field = cursor.getColumnName(0);
+                    final String value = cursor.getString(0);
 
                     Log.d(TAG, state + '|' + field + '=' + value);
                 }

@@ -614,7 +614,7 @@
     <string name="vldt_non_blank_required_for_x">Απαιτείται μη κενή τιμή για «%1$s»</string>
     <string name="vldt_read_start_after_end">Η ημερομηνία έναρξης ανάγνωσης είναι μετά την ημερομηνία λήξης</string>
     <string name="vldt_real_expected_for_x">Αναμένεται ένας πραγματικός αριθμός για «%1$s»</string>
-    <string name="warning_author_already_in_list">Ο συγγραφέας βρίσκεται ήδη στη λίστα</string>
+    <string name="X_warning_already_in_list_author">Ο συγγραφέας βρίσκεται ήδη στη λίστα</string>
     <string name="warning_backup_request">Θέλετε να κρατήσετε αντίγραφο ασφαλείας της βάσης στην SDcard;</string>
     <string name="warning_book_no_longer_exists">Το συγκεκριμένο βιβλίο δεν υπάρχει πλέον.</string>
     <string name="warning_book_not_found">Δεν μπόρεσε να βρεθεί το συγκεκριμένο βιβλίο</string>
@@ -646,7 +646,7 @@
     <string name="warning_select_an_existing_folder">Επιλέξτε έναν υπάρχοντα φάκελο.</string>
     <string name="warning_select_at_least_1_field">Επιλέξτε τουυλάχιστον ένα πεδία για ενημέρωση.</string>
     <string name="warning_select_at_least_1_group">Επιλέξτε τουλάχιστον μία ομάδα.</string>
-    <string name="warning_series_already_in_list">Η σειρά βρίσκεται ήδη στη λίστα</string>
+    <string name="X_warning_already_in_list_series">Η σειρά βρίσκεται ήδη στη λίστα</string>
     <string name="warning_toc_confirm">Παρακαλούμε επιβεβαιώστε ότι αυτοί οι τίτλοι ανθολογίας είναι (κυρίως) σωστοί</string>
     <string name="warning_x_already_exists">Το %1$s υπάρχει ήδη.</string>
     <string name="warning_x_is_not_a_valid_code">«%1$s» δεν είναι έγκυρος κωδικός κώδικας</string>
@@ -682,7 +682,8 @@
     <string name="lbl_next_book_without_cover">Μετάβαση στο επόμενο βιβλίο χωρίς εξώφυλλο</string>
     <string name="book_color_support_color">Δίχρωμος</string>
     <string name="book_format_digest">Kleines</string>
-    <string name="info_filter_edition">Επιλέξτε 0 ή περισσότερες επιλογές και πατήστε \"OK\" για να τις εφαρμόσετε ή πατήστε \"Όλα τα βιβλία\" για να τα αγνοήσετε όλα.</string>
+    <string name="info_filter_edition">Επιλέξτε 0 ή περισσότερες επιλογές και πατήστε «OK» για να τις εφαρμόσετε ή πατήστε «Όλα τα βιβλία» για να τα αγνοήσετε όλα.</string>
     <string name="notification_channel_warn">Προσοχή</string>
+    <string name="warning_already_in_list">Ήδη στη λίστα!</string>
 
 </resources>

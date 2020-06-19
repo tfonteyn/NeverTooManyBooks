@@ -47,12 +47,10 @@ import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
-import com.hardbacknutter.nevertoomanybooks.entities.ItemWithFixableId;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
-import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 
 /**
  * Holds the {@link Book} and whether it's dirty or not + some direct support functions.
@@ -191,11 +189,9 @@ public class BookViewModel
      * @param context Current context
      */
     private void ensureBookshelf(@NonNull final Context context) {
-        final ArrayList<Bookshelf> list =
-                mBook.getParcelableArrayList(Book.BKEY_BOOKSHELF_ARRAY);
+        final ArrayList<Bookshelf> list = mBook.getParcelableArrayList(Book.BKEY_BOOKSHELF_ARRAY);
         if (list.isEmpty()) {
             list.add(Bookshelf.getBookshelf(context, mDb, Bookshelf.PREFERRED, Bookshelf.DEFAULT));
-            mBook.putParcelableArrayList(Book.BKEY_BOOKSHELF_ARRAY, list);
         }
     }
 
@@ -324,23 +320,23 @@ public class BookViewModel
      */
     public boolean isSingleUsage(@NonNull final Context context,
                                  @NonNull final Author author) {
-        final long nrOfReferences = mDb.countBooksByAuthor(context, author)
-                                    + mDb.countTocEntryByAuthor(context, author);
+        final Locale bookLocale = mBook.getLocale(context);
+        final long nrOfReferences = mDb.countBooksByAuthor(context, author, bookLocale)
+                                    + mDb.countTocEntryByAuthor(context, author, bookLocale);
         return nrOfReferences <= (mBook.isNew() ? 0 : 1);
     }
 
     /**
      * Check if the passed Series is only used by this book.
      *
-     * @param context    Current context
-     * @param series     to check
-     * @param bookLocale Locale to use if the series has none set
+     * @param context Current context
+     * @param series  to check
      *
      * @return {@code true} if the Series is only used by this book
      */
     public boolean isSingleUsage(@NonNull final Context context,
-                                 @NonNull final Series series,
-                                 @NonNull final Locale bookLocale) {
+                                 @NonNull final Series series) {
+        final Locale bookLocale = mBook.getLocale(context);
         final long nrOfReferences = mDb.countBooksInSeries(context, series, bookLocale);
         return nrOfReferences <= (mBook.isNew() ? 0 : 1);
     }
@@ -376,7 +372,7 @@ public class BookViewModel
     public void saveBook(@NonNull final Context context)
             throws DAO.DaoWriteException {
         if (mBook.isNew()) {
-            final long id = mDb.insertBook(context, 0, mBook);
+            final long id = mDb.insertBook(context, 0, mBook, 0);
             putResultData(BKEY_BOOK_CREATED, true);
 
             // if the user added a cover to the new book, make it permanent
@@ -415,17 +411,19 @@ public class BookViewModel
     }
 
     public void pruneAuthors(@NonNull final Context context) {
-        pruneList(context, Book.BKEY_AUTHOR_ARRAY, LocaleUtils.getUserLocale(context));
+
+        final ArrayList<Author> authors = mBook.getParcelableArrayList(Book.BKEY_AUTHOR_ARRAY);
+        if (!authors.isEmpty()) {
+            mIsDirty = Author.pruneList(authors, context, mDb, true, mBook.getLocale(context));
+        }
 
         // No authors ? Fallback to a potential failed search result
         // which would contain whatever the user searched for.
-        ArrayList<Author> list = mBook.getParcelableArrayList(Book.BKEY_AUTHOR_ARRAY);
-        if (list.isEmpty()) {
-            String searchText = mBook.getString(
+        if (authors.isEmpty()) {
+            final String searchText = mBook.getString(
                     BooksOnBookshelfModel.SearchCriteria.BKEY_SEARCH_TEXT_AUTHOR);
             if (!searchText.isEmpty()) {
-                list.add(Author.from(searchText));
-                mBook.putParcelableArrayList(Book.BKEY_AUTHOR_ARRAY, list);
+                authors.add(Author.from(searchText));
                 mBook.remove(BooksOnBookshelfModel.SearchCriteria.BKEY_SEARCH_TEXT_AUTHOR);
                 mIsDirty = true;
             }
@@ -433,18 +431,8 @@ public class BookViewModel
     }
 
     public void pruneSeries(@NonNull final Context context) {
-        pruneList(context, Book.BKEY_SERIES_ARRAY, mBook.getLocale(context));
-    }
-
-    private void pruneList(@NonNull final Context context,
-                           @NonNull final String key,
-                           @NonNull final Locale locale) {
-
-        final ArrayList<? extends ItemWithFixableId> list = mBook.getParcelableArrayList(key);
-        if (!list.isEmpty() && ItemWithFixableId.pruneList(list, context, mDb, locale, false)) {
-            mBook.putParcelableArrayList(key, list);
-            mIsDirty = true;
-        }
+        mIsDirty = Series.pruneList(mBook.getParcelableArrayList(Book.BKEY_SERIES_ARRAY),
+                                    context, mDb, true, mBook.getLocale(context));
     }
 
     public MutableLiveData<ArrayList<Author>> getAuthorList() {

@@ -204,14 +204,14 @@ public interface SearchEngine {
      * @param bookData to read/write data
      */
     default void checkForSeriesNameInTitle(@NonNull final Bundle bookData) {
-        String fullTitle = bookData.getString(DBDefinitions.KEY_TITLE);
+        final String fullTitle = bookData.getString(DBDefinitions.KEY_TITLE);
         if (fullTitle != null) {
-            Matcher matcher = Series.TEXT1_BR_TEXT2_BR_PATTERN.matcher(fullTitle);
+            final Matcher matcher = Series.TEXT1_BR_TEXT2_BR_PATTERN.matcher(fullTitle);
             if (matcher.find()) {
-                // the cleaned title
-                String bookTitle = matcher.group(1);
+                // the cleansed title
+                final String bookTitle = matcher.group(1);
                 // the series title/number
-                String seriesTitleWithNumber = matcher.group(2);
+                final String seriesTitleWithNumber = matcher.group(2);
 
                 if (seriesTitleWithNumber != null && !seriesTitleWithNumber.isEmpty()) {
                     // we'll add to, or create the Series list
@@ -228,7 +228,7 @@ public interface SearchEngine {
 
                     // store Series back
                     bookData.putParcelableArrayList(Book.BKEY_SERIES_ARRAY, seriesList);
-                    // and store cleaned book title back
+                    // and store cleansed book title back
                     bookData.putString(DBDefinitions.KEY_TITLE, bookTitle);
                 }
             }

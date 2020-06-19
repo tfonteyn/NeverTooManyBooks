@@ -332,7 +332,7 @@ public class BookDetailsFragment
      *
      * <br><br>{@inheritDoc}
      *
-     * @param fields
+     * @param fields to populate
      * @param book   to load
      */
     @Override
@@ -438,8 +438,7 @@ public class BookDetailsFragment
         mVb.toc.setVisibility(View.GONE);
         mVb.btnShowToc.setChecked(false);
 
-        final ArrayList<TocEntry> tocList =
-                book.getParcelableArrayList(Book.BKEY_TOC_ENTRY_ARRAY);
+        final ArrayList<TocEntry> tocList = book.getParcelableArrayList(Book.BKEY_TOC_ARRAY);
 
         if (!tocList.isEmpty()) {
 
@@ -564,8 +563,7 @@ public class BookDetailsFragment
             }
             case R.id.MENU_BOOK_DELETE: {
                 final String title = book.getString(DBDefinitions.KEY_TITLE);
-                final List<Author> authors =
-                        book.getParcelableArrayList(Book.BKEY_AUTHOR_ARRAY);
+                final List<Author> authors = book.getParcelableArrayList(Book.BKEY_AUTHOR_ARRAY);
                 //noinspection ConstantConditions
                 StandardDialogs.deleteBook(getContext(), title, authors, () -> {
                     mBookViewModel.deleteBook(getContext());

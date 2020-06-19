@@ -78,6 +78,7 @@ public class EditBookSeriesListDialogFragment
 
     /** Fragment/Log tag. */
     public static final String TAG = "EditBookSeriesListDlg";
+
     /** Database Access. */
     private DAO mDb;
 
@@ -92,6 +93,7 @@ public class EditBookSeriesListDialogFragment
                     mBookViewModel.setDirty(true);
                 }
             };
+
     /** View Binding. */
     private DialogEditBookSeriesListBinding mVb;
     /** the rows. */
@@ -156,6 +158,11 @@ public class EditBookSeriesListDialogFragment
                 getContext(), R.layout.dropdown_menu_popup_item,
                 mDb.getSeriesTitles());
         mVb.seriesTitle.setAdapter(nameAdapter);
+        mVb.seriesTitle.setOnFocusChangeListener((v, hasFocus) -> {
+            if (hasFocus) {
+                mVb.seriesTitle.setError(null);
+            }
+        });
 
         // soft-keyboards 'done' button act as a shortcut to add the series
         mVb.seriesNum.setOnEditorActionListener((v, actionId, event) -> {
@@ -166,6 +173,7 @@ public class EditBookSeriesListDialogFragment
             }
             return false;
         });
+
         // set up the list view. The adapter is setup in onPopulateViews
         final LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         mVb.seriesList.setLayoutManager(layoutManager);
@@ -200,34 +208,38 @@ public class EditBookSeriesListDialogFragment
         return true;
     }
 
+    /**
+     * Create a new entry.
+     */
     private void onAdd() {
         // clear any previous error
         mVb.lblSeries.setError(null);
 
-        final String name = mVb.seriesTitle.getText().toString().trim();
-        if (name.isEmpty()) {
+        final String title = mVb.seriesTitle.getText().toString().trim();
+        if (title.isEmpty()) {
             mVb.lblSeries.setError(getString(R.string.vldt_non_blank_required));
             return;
         }
 
-        //noinspection ConstantConditions
-        final Locale bookLocale = mBookViewModel.getBook().getLocale(getContext());
-
-        final Series newSeries = new Series(name);
+        final Series newSeries = new Series(title);
         //noinspection ConstantConditions
         newSeries.setNumber(mVb.seriesNum.getText().toString().trim());
 
+        //noinspection ConstantConditions
+        final Locale bookLocale = mBookViewModel.getBook().getLocale(getContext());
+
         // see if it already exists
-        newSeries.fixId(getContext(), mDb, bookLocale);
+        newSeries.fixId(getContext(), mDb, true, bookLocale);
         // and check it's not already in the list.
         if (mList.contains(newSeries)) {
-            mVb.lblSeries.setError(getString(R.string.warning_series_already_in_list));
+            mVb.lblSeries.setError(getString(R.string.warning_already_in_list));
         } else {
             mList.add(newSeries);
             // clear the form for next entry and scroll to the new item
             mVb.seriesTitle.setText("");
             mVb.seriesNum.setText("");
             mVb.seriesTitle.requestFocus();
+
             mListAdapter.notifyItemInserted(mList.size() - 1);
             mVb.seriesList.scrollToPosition(mListAdapter.getItemCount() - 1);
         }
@@ -257,21 +269,20 @@ public class EditBookSeriesListDialogFragment
                 // so if the number is different, just update it
                 series.setNumber(tmpData.getNumber());
                 //noinspection ConstantConditions
-                Series.pruneList(mList, getContext(), mDb, bookLocale, false);
+                Series.pruneList(mList, getContext(), mDb, true, bookLocale);
                 mListAdapter.notifyDataSetChanged();
             }
             return;
         }
 
-        // The name of the Series was modified.
-        // Check if it's used by any other books.
-        if (mBookViewModel.isSingleUsage(getContext(), series, bookLocale)) {
+        // The name was modified. Check if it's used by any other books.
+        if (mBookViewModel.isSingleUsage(getContext(), series)) {
             // If it's not, we can simply modify the old object and we're done here.
             // There is no need to consult the user.
             // Copy the new data into the original object that the user was changing.
             series.copyFrom(tmpData, true);
             //noinspection ConstantConditions
-            Series.pruneList(mList, getContext(), mDb, bookLocale, false);
+            Series.pruneList(mList, getContext(), mDb, true, bookLocale);
             mListAdapter.notifyDataSetChanged();
             return;
         }
@@ -293,7 +304,7 @@ public class EditBookSeriesListDialogFragment
                     series.copyFrom(tmpData, true);
                     // This change is done in the database right NOW!
                     if (mDb.updateSeries(getContext(), series, bookLocale)) {
-                        Series.pruneList(mList, getContext(), mDb, bookLocale, false);
+                        Series.pruneList(mList, getContext(), mDb, true, bookLocale);
                         mBookViewModel.refreshSeriesList(getContext());
                         mListAdapter.notifyDataSetChanged();
 
@@ -309,15 +320,14 @@ public class EditBookSeriesListDialogFragment
                     // Note that if the user abandons the entire book edit,
                     // we will orphan this new Series. That's ok, it will get
                     // garbage collected from the database sooner or later.
-                    mDb.updateOrInsertSeries(getContext(),
-                                             bookLocale, tmpData);
+                    mDb.updateOrInsertSeries(getContext(), tmpData, bookLocale);
                     // unlink the old one (and unmodified), and link with the new one
                     // book/series positions will be fixed up when saving.
                     // Note that the old one *might* be orphaned at this time.
                     // Same remark as above.
                     mList.remove(series);
                     mList.add(tmpData);
-                    Series.pruneList(mList, getContext(), mDb, bookLocale, false);
+                    Series.pruneList(mList, getContext(), mDb, true, bookLocale);
                     mListAdapter.notifyDataSetChanged();
                 })
                 .create()
@@ -362,6 +372,7 @@ public class EditBookSeriesListDialogFragment
 
         /** Database Access. */
         private DAO mDb;
+        /** Displayed for info only. */
         @Nullable
         private String mBookTitle;
         /** View Binding. */
@@ -371,11 +382,11 @@ public class EditBookSeriesListDialogFragment
         private Series mSeries;
 
         /** Current edit. */
-        private String mSeriesTitle;
+        private String mTitle;
         /** Current edit. */
-        private boolean mSeriesIsComplete;
+        private boolean mIsComplete;
         /** Current edit. */
-        private String mSeriesNumber;
+        private String mNumber;
 
         public EditBookSeriesDialogFragment() {
             super(R.layout.dialog_edit_book_series);
@@ -412,14 +423,14 @@ public class EditBookSeriesListDialogFragment
             Objects.requireNonNull(mSeries, ErrorMsg.ARGS_MISSING_SERIES);
 
             if (savedInstanceState == null) {
-                mSeriesTitle = mSeries.getTitle();
-                mSeriesIsComplete = mSeries.isComplete();
-                mSeriesNumber = mSeries.getNumber();
+                mTitle = mSeries.getTitle();
+                mIsComplete = mSeries.isComplete();
+                mNumber = mSeries.getNumber();
             } else {
-                mSeriesTitle = savedInstanceState.getString(DBDefinitions.KEY_FK_SERIES);
-                mSeriesIsComplete = savedInstanceState
+                mTitle = savedInstanceState.getString(DBDefinitions.KEY_FK_SERIES);
+                mIsComplete = savedInstanceState
                         .getBoolean(DBDefinitions.KEY_SERIES_IS_COMPLETE, false);
-                mSeriesNumber = savedInstanceState.getString(DBDefinitions.KEY_BOOK_NUM_IN_SERIES);
+                mNumber = savedInstanceState.getString(DBDefinitions.KEY_BOOK_NUM_IN_SERIES);
             }
         }
 
@@ -448,27 +459,27 @@ public class EditBookSeriesListDialogFragment
             final DiacriticArrayAdapter<String> seriesNameAdapter = new DiacriticArrayAdapter<>(
                     getContext(), R.layout.dropdown_menu_popup_item, mDb.getSeriesTitles());
 
-            mVb.seriesTitle.setText(mSeriesTitle);
+            mVb.seriesTitle.setText(mTitle);
             mVb.seriesTitle.setAdapter(seriesNameAdapter);
 
-            mVb.cbxIsComplete.setChecked(mSeriesIsComplete);
+            mVb.cbxIsComplete.setChecked(mIsComplete);
 
-            mVb.seriesNum.setText(mSeriesNumber);
+            mVb.seriesNum.setText(mNumber);
         }
 
         private boolean saveChanges() {
             viewToModel();
 
             // basic check only, we're doing more extensive checks later on.
-            if (mSeriesTitle.isEmpty()) {
+            if (mTitle.isEmpty()) {
                 showError(mVb.lblSeriesTitle, R.string.vldt_non_blank_required);
                 return false;
             }
 
             // Create a new Series as a holder for all changes.
-            final Series tmpSeries = new Series(mSeriesTitle);
-            tmpSeries.setComplete(mSeriesIsComplete);
-            tmpSeries.setNumber(mSeriesNumber);
+            final Series tmpSeries = new Series(mTitle);
+            tmpSeries.setComplete(mIsComplete);
+            tmpSeries.setNumber(mNumber);
 
             //noinspection ConstantConditions
             ((EditBookSeriesListDialogFragment) getTargetFragment())
@@ -477,18 +488,18 @@ public class EditBookSeriesListDialogFragment
         }
 
         private void viewToModel() {
-            mSeriesTitle = mVb.seriesTitle.getText().toString().trim();
+            mTitle = mVb.seriesTitle.getText().toString().trim();
             //noinspection ConstantConditions
-            mSeriesNumber = mVb.seriesNum.getText().toString().trim();
-            mSeriesIsComplete = mVb.cbxIsComplete.isChecked();
+            mNumber = mVb.seriesNum.getText().toString().trim();
+            mIsComplete = mVb.cbxIsComplete.isChecked();
         }
 
         @Override
         public void onSaveInstanceState(@NonNull final Bundle outState) {
             super.onSaveInstanceState(outState);
-            outState.putString(DBDefinitions.KEY_FK_SERIES, mSeriesTitle);
-            outState.putBoolean(DBDefinitions.KEY_SERIES_IS_COMPLETE, mSeriesIsComplete);
-            outState.putString(DBDefinitions.KEY_BOOK_NUM_IN_SERIES, mSeriesNumber);
+            outState.putString(DBDefinitions.KEY_FK_SERIES, mTitle);
+            outState.putBoolean(DBDefinitions.KEY_SERIES_IS_COMPLETE, mIsComplete);
+            outState.putString(DBDefinitions.KEY_BOOK_NUM_IN_SERIES, mNumber);
         }
 
         @Override

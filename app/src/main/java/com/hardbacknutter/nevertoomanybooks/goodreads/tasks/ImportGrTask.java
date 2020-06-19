@@ -65,7 +65,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
-import com.hardbacknutter.nevertoomanybooks.entities.ItemWithFixableId;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.goodreads.AuthorTypeMapper;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsAuth;
@@ -73,7 +72,7 @@ import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsHandler;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsShelf;
 import com.hardbacknutter.nevertoomanybooks.goodreads.api.Http404Exception;
 import com.hardbacknutter.nevertoomanybooks.goodreads.api.ReviewsListApiHandler;
-import com.hardbacknutter.nevertoomanybooks.goodreads.api.ReviewsListApiHandler.ReviewField;
+import com.hardbacknutter.nevertoomanybooks.goodreads.api.ReviewsListApiHandler.Review;
 import com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.QueueManager;
 import com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.TQTask;
 import com.hardbacknutter.nevertoomanybooks.searches.goodreads.GoodreadsSearchEngine;
@@ -104,10 +103,6 @@ class ImportGrTask
      */
     private static final int BOOKS_PER_PAGE = 50;
 
-    /** last time we synced with Goodreads. */
-    private static final String PREFS_LAST_SYNC_DATE =
-            GoodreadsHandler.PREF_PREFIX + "LastSyncDate";
-
     private static final long serialVersionUID = 7980810111326540691L;
 
     /**
@@ -116,14 +111,11 @@ class ImportGrTask
      */
     @Nullable
     private final LocalDateTime mLastSyncDate;
-
     /** Flag indicating this job is a sync job: on completion, it will start an export. */
     private final boolean mIsSync;
-
-    /** Date at which this job started downloading the first page. */
+    /** Date at which this job processed the first page successfully. */
     @Nullable
     private LocalDateTime mStartDate;
-
     /** Current position in entire list of reviews. */
     private int mPosition;
 
@@ -155,38 +147,13 @@ class ImportGrTask
         // If it's a sync job, then find date of last successful sync and only apply
         // records from after that date. If no other job, then get all.
         if (mIsSync) {
-            mLastSyncDate = getLastSyncDate(context);
+            final String lastSyncDateStr = PreferenceManager
+                    .getDefaultSharedPreferences(context)
+                    .getString(GoodreadsHandler.PREFS_LAST_SYNC_DATE, null);
+            mLastSyncDate = DateParser.getInstance(context).parseISO(lastSyncDateStr);
         } else {
             mLastSyncDate = null;
         }
-    }
-
-    /**
-     * Get the date at which the last Goodreads synchronization was run.
-     *
-     * @param context Current context
-     *
-     * @return Last date
-     */
-    @Nullable
-    private LocalDateTime getLastSyncDate(@NonNull final Context context) {
-        final String dateStr = PreferenceManager.getDefaultSharedPreferences(context)
-                                                .getString(PREFS_LAST_SYNC_DATE, null);
-        return DateParser.getInstance(context).parseISO(dateStr);
-    }
-
-    /**
-     * Set the date at which the last Goodreads synchronization was run.
-     *
-     * @param context Current context
-     * @param date    Last date
-     */
-    private void setLastSyncDate(@NonNull final Context context,
-                                 @Nullable final LocalDateTime date) {
-        final String dateStr = date != null ? date.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
-                                            : null;
-        PreferenceManager.getDefaultSharedPreferences(context).edit()
-                         .putString(PREFS_LAST_SYNC_DATE, dateStr).apply();
     }
 
     /**
@@ -199,15 +166,22 @@ class ImportGrTask
                        @NonNull final Context context) {
         try (DAO db = new DAO(TAG)) {
             // Load the Goodreads reviews
-            final boolean ok = processReviews(context, db, queueManager);
+            final boolean ok = importReviews(context, db, queueManager);
 
             // If it's a sync job, then start the 'send' part and save the last syn date
             if (mIsSync) {
                 final String desc = context.getString(R.string.gr_title_send_book);
-                final TQTask task = new SendBooksGrTask(desc, true);
+                final TQTask task = new SendBooksGrTask(desc, false, true);
                 QueueManager.getQueueManager().enqueueTask(QueueManager.Q_MAIN, task);
 
-                setLastSyncDate(context, mStartDate);
+                final String lastSyncDateStr =
+                        mStartDate != null
+                        ? mStartDate.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+                        : null;
+                PreferenceManager.getDefaultSharedPreferences(context)
+                                 .edit()
+                                 .putString(GoodreadsHandler.PREFS_LAST_SYNC_DATE, lastSyncDateStr)
+                                 .apply();
             }
 
             return ok;
@@ -227,32 +201,43 @@ class ImportGrTask
      *
      * @throws CredentialsException with GoodReads
      */
-    private boolean processReviews(@NonNull final Context context,
-                                   @NonNull final DAO db,
-                                   @NonNull final QueueManager queueManager)
+    private boolean importReviews(@NonNull final Context context,
+                                  @NonNull final DAO db,
+                                  @NonNull final QueueManager queueManager)
             throws CredentialsException {
 
         final GoodreadsAuth grAuth = new GoodreadsAuth(context);
         final ReviewsListApiHandler api = new ReviewsListApiHandler(context, grAuth);
 
-        int currPage = mPosition / BOOKS_PER_PAGE;
-        while (true) {
-            // page numbers are 1-based; start at 0 and increment at start of each loop
-            currPage++;
+        // the result from the API call for a single page.
+        Bundle pageData;
+        // the reviews entry in the 'pageData' bundle.
+        ArrayList<Bundle> reviewsFromPage;
 
-            // In case of a restart, reset position to first in page
-            mPosition = BOOKS_PER_PAGE * (currPage - 1);
+        int page = mPosition / BOOKS_PER_PAGE;
+        do {
+            if (isCancelled()) {
+                return false;
+            }
 
-            Bundle results;
+            // page numbers are 1.. based; start at 0 and increment at start of each loop
+            page++;
+
+            // set position to first in page
+            mPosition = BOOKS_PER_PAGE * (page - 1);
 
             try {
                 // If we have not started successfully yet, record the date at which
                 // the run() was called. This date is used if the job is a sync job.
-                LocalDateTime startDate = null;
+                final LocalDateTime startDate;
                 if (mStartDate == null) {
                     startDate = LocalDateTime.now(ZoneOffset.UTC);
+                } else {
+                    startDate = null;
                 }
-                results = api.get(currPage, BOOKS_PER_PAGE);
+
+                pageData = api.get(page, BOOKS_PER_PAGE);
+
                 // If we succeeded, and this is the first time, save the date
                 if (mStartDate == null) {
                     mStartDate = startDate;
@@ -262,57 +247,48 @@ class ImportGrTask
                 return false;
             }
 
-            // Get the total, and if first call, save the object again so the UI can update.
-            mTotalBooks = (int) results.getLong(ReviewsListApiHandler.ReviewField.TOTAL);
+            // Get the total, and if first call, update the task data
+            mTotalBooks = (int) pageData.getLong(Review.TOTAL);
             if (mFirstCall) {
-                // So the details get updated
+                // Update the task data, so the UI can reflect the status
                 queueManager.updateTask(this);
                 mFirstCall = false;
             }
 
             // Get the reviews array and process it
-            final ArrayList<Bundle> reviews =
-                    results.getParcelableArrayList(ReviewsListApiHandler.ReviewField.REVIEWS);
-
-            if (reviews == null || reviews.isEmpty()) {
-                break;
-            }
-
-            // Processing may involve a SLOW thumbnail download...
-            // so we don't run the import in a transaction.
-            for (Bundle review : reviews) {
-                if (isCancelled()) {
-                    return false;
-                }
-
-                // if we sync'd before, we make sure we only import changes.
-                if (mLastSyncDate != null) {
-                    final LocalDateTime reviewUpd =
-                            ReviewField.parseDate(review.getString(ReviewField.UPDATED));
-                    if (reviewUpd != null && reviewUpd.isBefore(mLastSyncDate)) {
-                        // skip to the next review
-                        if (BuildConfig.DEBUG && DEBUG_SWITCHES.GOODREADS_IMPORT) {
-                            Logger.d(TAG, "skipping|grId="
-                                          + review.getLong(DBDefinitions.KEY_EID_GOODREADS_BOOK));
-                        }
-                        continue;
+            reviewsFromPage = pageData.getParcelableArrayList(Review.REVIEWS);
+            if (reviewsFromPage != null) {
+                // Note that processing may involve a SLOW thumbnail download...
+                // so we don't run the import in a transaction.
+                for (Bundle review : reviewsFromPage) {
+                    if (isCancelled()) {
+                        return false;
                     }
+
+                    // if we sync'd before, we make sure we only import changes.
+                    if (mLastSyncDate != null) {
+                        final LocalDateTime reviewUpd =
+                                Review.parseDate(review.getString(Review.UPDATED));
+                        if (reviewUpd != null && reviewUpd.isBefore(mLastSyncDate)) {
+
+                            if (BuildConfig.DEBUG && DEBUG_SWITCHES.GOODREADS_IMPORT) {
+                                Logger.d(TAG, "skipping|grId=" + review.getLong(
+                                        DBDefinitions.KEY_EID_GOODREADS_BOOK));
+                            }
+                            // skip to the next review
+                            continue;
+                        }
+                    }
+
+                    processReview(context, db, review);
+
+                    // Update after each book, so the UI can reflect the status
+                    queueManager.updateTask(this);
+                    mPosition++;
                 }
-
-                if (BuildConfig.DEBUG && DEBUG_SWITCHES.GOODREADS_IMPORT) {
-                    Logger.d(TAG, "process|grId="
-                                  + review.getLong(DBDefinitions.KEY_EID_GOODREADS_BOOK));
-                }
-
-                processReview(context, db, review);
-
-                // Update after each book. Mainly for a nice UI.
-                queueManager.updateTask(this);
-                mPosition++;
             }
-        }
-
-        db.analyze();
+            // loop until no results, or last page
+        } while (reviewsFromPage != null && reviewsFromPage.size() == BOOKS_PER_PAGE);
 
         return true;
     }
@@ -329,6 +305,10 @@ class ImportGrTask
                                @NonNull final Bundle review) {
 
         final long grBookId = review.getLong(DBDefinitions.KEY_EID_GOODREADS_BOOK);
+
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.GOODREADS_IMPORT) {
+            Logger.d(TAG, "processReview|grId=" + grBookId);
+        }
 
         // Find the book in our database - there may be more than one!
         // First look by Goodreads book ID
@@ -350,10 +330,8 @@ class ImportGrTask
             if (found) {
                 // If found, update all related books
                 final DataHolder bookData = new CursorRow(cursor);
+                // we're already at the first row, see above
                 do {
-                    if (isCancelled()) {
-                        break;
-                    }
                     updateBook(context, db, review, bookData);
                 } while (cursor.moveToNext());
             } else {
@@ -378,9 +356,9 @@ class ImportGrTask
      * @return Local name, or Goodreads name if no match
      */
     @Nullable
-    private String translateBookshelf(@NonNull final Locale locale,
-                                      @NonNull final DAO db,
-                                      @Nullable final String grShelfName) {
+    private String mapShelf(@NonNull final Locale locale,
+                            @NonNull final DAO db,
+                            @Nullable final String grShelfName) {
 
         if (grShelfName == null) {
             return null;
@@ -411,7 +389,7 @@ class ImportGrTask
     private List<String> extractIsbnList(@NonNull final Bundle review) {
 
         final List<String> list = new ArrayList<>(5);
-        addIfHasValue(list, review.getString(ReviewsListApiHandler.ReviewField.ISBN13));
+        addIfHasValue(list, review.getString(Review.ISBN13));
         addIfHasValue(list, review.getString(DBDefinitions.KEY_ISBN));
         return list;
     }
@@ -432,10 +410,9 @@ class ImportGrTask
                             @NonNull final DataHolder bookData) {
 
         // If the review has an 'updated' date, then check if we should update the book
-        if (sourceData.containsKey(ReviewField.UPDATED)) {
+        if (sourceData.containsKey(Review.UPDATED)) {
             // the incoming review
-            final LocalDateTime reviewUpd =
-                    ReviewField.parseDate(sourceData.getString(ReviewField.UPDATED));
+            final LocalDateTime reviewUpd = Review.parseDate(sourceData.getString(Review.UPDATED));
             // Get last time the book was sent to Goodreads (may be null)
             final LocalDateTime lastSyncDate = DateParser.getInstance(context).parseISO(
                     bookData.getString(DBDefinitions.KEY_UTC_LAST_SYNC_DATE_GOODREADS));
@@ -443,8 +420,7 @@ class ImportGrTask
             // If last update in Goodreads was before last Goodreads sync of book,
             // then don't bother updating book.
             // This typically happens if the last update in Goodreads was from us.
-            if (reviewUpd != null && lastSyncDate != null
-                && reviewUpd.isBefore(lastSyncDate)) {
+            if (reviewUpd != null && lastSyncDate != null && reviewUpd.isBefore(lastSyncDate)) {
                 // Skip this book
                 return;
             }
@@ -459,7 +435,8 @@ class ImportGrTask
         final Book book = new Book();
         book.putAll(buildBundle(context, db, bookId, bookLocale, sourceData));
         try {
-            db.updateBook(context, bookId, book, DAO.BOOK_FLAG_USE_UPDATE_DATE_IF_PRESENT);
+            db.updateBook(context, bookId, book, DAO.BOOK_FLAG_USE_UPDATE_DATE_IF_PRESENT
+                                                 | DAO.BOOK_FLAG_IS_BATCH_OPERATION);
         } catch (@NonNull final DAO.DaoWriteException e) {
             // ignore, but log it.
             Logger.error(context, TAG, e);
@@ -482,7 +459,7 @@ class ImportGrTask
         final Book book = new Book();
         book.putAll(buildBundle(context, db, 0, null, sourceData));
         try {
-            final long id = db.insertBook(context, 0, book);
+            final long id = db.insertBook(context, 0, book, DAO.BOOK_FLAG_IS_BATCH_OPERATION);
             for (int cIdx = 0; cIdx < 2; cIdx++) {
                 final String fileSpec = book.getString(Book.BKEY_FILE_SPEC[cIdx]);
                 if (!fileSpec.isEmpty()) {
@@ -499,15 +476,12 @@ class ImportGrTask
     }
 
     /**
-     * Build a book bundle based on the Goodreads 'review' data.
-     * <p>
-     * Some data is just copied while other data is processed (e.g. dates)
-     * and other are combined (authors & series).
+     * Build a book bundle based on the locally held data and the Goodreads 'review' data.
      *
      * @param context    Current context
      * @param db         Database Access
      * @param bookId     the local book to update; will be {@code 0} when this is a new book
-     * @param bookLocale to use.
+     * @param locale     to use, the book locale if there is one available, otherwise {@code null}
      * @param sourceData the source data from Goodreads
      *
      * @return bookData bundle
@@ -516,38 +490,36 @@ class ImportGrTask
     private Bundle buildBundle(@NonNull final Context context,
                                @NonNull final DAO db,
                                final long bookId,
-                               @Nullable final Locale bookLocale,
+                               @Nullable final Locale locale,
                                @NonNull final Bundle sourceData) {
+
+        final Locale userLocale = LocaleUtils.getUserLocale(context);
 
         // The ListReviewsApi does not return the Book language.
         // So during an insert, the bookLocale will always be null.
         // During an update, we *might* get the the locale if the local book data
         // had the language set.
         // Either way, if missing, use the default.
-        final Locale locale = bookLocale != null ? bookLocale : LocaleUtils.getUserLocale(context);
+        final Locale bookLocale = locale != null ? locale : userLocale;
 
         final Bundle bookData = new Bundle();
 
         //ENHANCE: https://github.com/eleybourn/Book-Catalogue/issues/812 - syn Goodreads notes
-        // Do not sync Notes<->Review. We will add a 'Review' field later.
+        // Do not sync Notes<->Review. The review notes are public on the site,
+        // while 'our' notes are meant to be private.
 
         addStringIfNonBlank(sourceData, DBDefinitions.KEY_PRIVATE_NOTES, bookData);
-
         addStringIfNonBlank(sourceData, DBDefinitions.KEY_TITLE, bookData);
-
         addStringIfNonBlank(sourceData, DBDefinitions.KEY_DESCRIPTION, bookData);
-
         addStringIfNonBlank(sourceData, DBDefinitions.KEY_FORMAT, bookData);
-
         addStringIfNonBlank(sourceData, DBDefinitions.KEY_PUBLISHER, bookData);
-
         addLongIfPresent(sourceData, DBDefinitions.KEY_EID_GOODREADS_BOOK, bookData);
 
-        ReviewField.copyDateIfValid(sourceData, DBDefinitions.KEY_READ_START,
-                                    bookData, DBDefinitions.KEY_READ_START);
+        Review.copyDateIfValid(sourceData, DBDefinitions.KEY_READ_START,
+                               bookData, DBDefinitions.KEY_READ_START);
 
-        final String readEnd = ReviewField.copyDateIfValid(sourceData, DBDefinitions.KEY_READ_END,
-                                                           bookData, DBDefinitions.KEY_READ_END);
+        final String readEnd = Review.copyDateIfValid(sourceData, DBDefinitions.KEY_READ_END,
+                                                      bookData, DBDefinitions.KEY_READ_END);
 
         final Double rating = addDoubleIfPresent(sourceData, DBDefinitions.KEY_RATING,
                                                  bookData, DBDefinitions.KEY_RATING);
@@ -558,12 +530,10 @@ class ImportGrTask
             bookData.putBoolean(DBDefinitions.KEY_READ, true);
         }
 
-        // Pages: convert long to String
-        if (sourceData.containsKey(ReviewField.PAGES)) {
-            final long pages = sourceData.getLong(ReviewField.PAGES);
-            if (pages != 0) {
-                bookData.putString(DBDefinitions.KEY_PAGES, String.valueOf(pages));
-            }
+        // Pages: convert long to String, but don't overwrite if we got none
+        final long pages = sourceData.getLong(Review.PAGES);
+        if (pages != 0) {
+            bookData.putString(DBDefinitions.KEY_PAGES, String.valueOf(pages));
         }
 
         /*
@@ -589,9 +559,9 @@ class ImportGrTask
          * Build the publication date based on the components
          */
         final String pubDate = GoodreadsHandler.buildDate(sourceData,
-                                                          ReviewField.PUBLICATION_YEAR,
-                                                          ReviewField.PUBLICATION_MONTH,
-                                                          ReviewField.PUBLICATION_DAY,
+                                                          Review.PUBLICATION_YEAR,
+                                                          Review.PUBLICATION_MONTH,
+                                                          Review.PUBLICATION_DAY,
                                                           null);
         if (pubDate != null && !pubDate.isEmpty()) {
             bookData.putString(DBDefinitions.KEY_DATE_PUBLISHED, pubDate);
@@ -600,61 +570,59 @@ class ImportGrTask
         /*
          * process the Authors
          */
-        final ArrayList<Bundle> grAuthors = sourceData.getParcelableArrayList(ReviewField.AUTHORS);
-        if (grAuthors == null) {
-            Logger.warnWithStackTrace(context, TAG, "grAuthors was null");
-            return bookData;
-        }
-        final ArrayList<Author> authors;
-        if (bookId == 0) {
-            // It's a new book. Start a clean list.
-            authors = new ArrayList<>();
-        } else {
-            // it's an update. Get current Authors.
-            authors = db.getAuthorsByBookId(bookId);
-        }
-
-        for (Bundle grAuthor : grAuthors) {
-            final String name = grAuthor.getString(ReviewField.AUTHOR_NAME_GF);
-            if (name != null && !name.trim().isEmpty()) {
-                final Author author = Author.from(name);
-                final String role = grAuthor.getString(ReviewField.AUTHOR_ROLE);
-                if (role != null && !role.trim().isEmpty()) {
-                    author.setType(AuthorTypeMapper.map(locale, role));
-                }
-                authors.add(author);
-
+        final ArrayList<Bundle> grAuthors = sourceData.getParcelableArrayList(Review.AUTHORS);
+        if (grAuthors != null) {
+            final ArrayList<Author> authors;
+            if (bookId == 0) {
+                // It's a new book. Start a clean list.
+                authors = new ArrayList<>();
+            } else {
+                // it's an update. Get current Authors.
+                authors = db.getAuthorsByBookId(bookId);
             }
+
+            for (Bundle grAuthor : grAuthors) {
+                final String name = grAuthor.getString(Review.AUTHOR_NAME_GF);
+                if (name != null && !name.trim().isEmpty()) {
+                    final Author author = Author.from(name);
+                    final String role = grAuthor.getString(Review.AUTHOR_ROLE);
+                    if (role != null && !role.trim().isEmpty()) {
+                        author.setType(AuthorTypeMapper.map(bookLocale, role));
+                    }
+                    authors.add(author);
+                }
+            }
+
+            Author.pruneList(authors, context, db, false, bookLocale);
+            bookData.putParcelableArrayList(Book.BKEY_AUTHOR_ARRAY, authors);
         }
-        bookData.putParcelableArrayList(Book.BKEY_AUTHOR_ARRAY, authors);
 
         /*
          * Cleanup the title by splitting off the Series (if present).
          */
-        if (bookData.containsKey(DBDefinitions.KEY_TITLE)) {
-            final String fullTitle = bookData.getString(DBDefinitions.KEY_TITLE);
-            if (fullTitle != null && !fullTitle.isEmpty()) {
-                final Matcher matcher = Series.TEXT1_BR_TEXT2_BR_PATTERN.matcher(fullTitle);
-                if (matcher.find()) {
-                    final String bookTitle = matcher.group(1);
-                    final String seriesTitleWithNumber = matcher.group(2);
-                    if (seriesTitleWithNumber != null && !seriesTitleWithNumber.isEmpty()) {
-                        final ArrayList<Series> seriesList;
-                        if (bookId == 0) {
-                            // It's a new book. Start a clean list.
-                            seriesList = new ArrayList<>();
-                        } else {
-                            // it's an update. Get current Series.
-                            seriesList = db.getSeriesByBookId(bookId);
-                        }
-
-                        final Series newSeries = Series.from(seriesTitleWithNumber);
-                        seriesList.add(newSeries);
-                        bookData.putString(DBDefinitions.KEY_TITLE, bookTitle);
-
-                        Series.pruneList(seriesList, context, db, locale, true);
-                        bookData.putParcelableArrayList(Book.BKEY_SERIES_ARRAY, seriesList);
+        final String fullTitle = bookData.getString(DBDefinitions.KEY_TITLE);
+        if (fullTitle != null && !fullTitle.isEmpty()) {
+            final Matcher matcher = Series.TEXT1_BR_TEXT2_BR_PATTERN.matcher(fullTitle);
+            if (matcher.find()) {
+                final String bookTitle = matcher.group(1);
+                final String seriesTitleWithNumber = matcher.group(2);
+                if (seriesTitleWithNumber != null && !seriesTitleWithNumber.isEmpty()) {
+                    final ArrayList<Series> seriesList;
+                    if (bookId == 0) {
+                        // It's a new book. Start a clean list.
+                        seriesList = new ArrayList<>();
+                    } else {
+                        // it's an update. Get current Series.
+                        seriesList = db.getSeriesByBookId(bookId);
                     }
+
+                    // store the cleansed title
+                    bookData.putString(DBDefinitions.KEY_TITLE, bookTitle);
+
+                    final Series newSeries = Series.from(seriesTitleWithNumber);
+                    seriesList.add(newSeries);
+                    Series.pruneList(seriesList, context, db, false, bookLocale);
+                    bookData.putParcelableArrayList(Book.BKEY_SERIES_ARRAY, seriesList);
                 }
             }
         }
@@ -662,43 +630,26 @@ class ImportGrTask
         /*
          * Process any bookshelves.
          */
-        if (sourceData.containsKey(ReviewField.SHELVES)) {
-            final ArrayList<Bundle> grShelves = sourceData
-                    .getParcelableArrayList(ReviewField.SHELVES);
-            if (grShelves == null) {
-                Logger.warnWithStackTrace(context, TAG, "grShelves was null");
-                return bookData;
-            }
-
-            //TEST: replaced this single line with getting the existing list
-            //ArrayList<Bookshelf> bsList = new ArrayList<>();
-            //--- begin 2019-02-04 ----
-            final ArrayList<Bookshelf> bsList;
+        final ArrayList<Bundle> grShelves = sourceData.getParcelableArrayList(Review.SHELVES);
+        if (grShelves != null) {
+            final ArrayList<Bookshelf> bookshelves;
             if (bookId == 0) {
                 // It's a new book. Start a clean list.
-                bsList = new ArrayList<>();
+                bookshelves = new ArrayList<>();
             } else {
                 // it's an update. Get current Bookshelves.
-                bsList = db.getBookshelvesByBookId(bookId);
+                bookshelves = db.getBookshelvesByBookId(bookId);
             }
-            // --- end 2019-02-04 ---
 
             // Explicitly use the user locale to handle shelf names
-            final Locale userLocale = LocaleUtils.getUserLocale(context);
-            for (Bundle shelfBundle : grShelves) {
-                String bsName = shelfBundle.getString(ReviewsListApiHandler.ReviewField.SHELF);
-                bsName = translateBookshelf(userLocale, db, bsName);
-
-                if (bsName != null && !bsName.isEmpty()) {
-                    bsList.add(new Bookshelf(bsName, BooklistStyle.getDefault(context, db)));
+            for (Bundle shelfData : grShelves) {
+                final String name = mapShelf(userLocale, db, shelfData.getString(Review.SHELF));
+                if (name != null && !name.isEmpty()) {
+                    bookshelves.add(new Bookshelf(name, BooklistStyle.getDefault(context, db)));
                 }
             }
-            //TEST see above
-            //--- begin 2019-02-04 ---
-            ItemWithFixableId.pruneList(bsList, context, db, userLocale, false);
-            //--- end 2019-02-04 ---
-
-            bookData.putParcelableArrayList(Book.BKEY_BOOKSHELF_ARRAY, bsList);
+            Bookshelf.pruneList(bookshelves, db);
+            bookData.putParcelableArrayList(Book.BKEY_BOOKSHELF_ARRAY, bookshelves);
         }
 
         /*
@@ -706,19 +657,19 @@ class ImportGrTask
          */
         if (bookId == 0) {
             // Use the Goodreads added date for new books
-            ReviewField.copyDateIfValid(sourceData, ReviewField.ADDED,
-                                        bookData, DBDefinitions.KEY_UTC_ADDED);
+            Review.copyDateIfValid(sourceData, Review.ADDED,
+                                   bookData, DBDefinitions.KEY_UTC_ADDED);
 
             // fetch thumbnail
             final String coverUrl;
             final String sizeSuffix;
-            final String largeImage = sourceData.getString(ReviewField.LARGE_IMAGE);
-            final String smallImage = sourceData.getString(ReviewField.SMALL_IMAGE);
+            final String largeImage = sourceData.getString(Review.LARGE_IMAGE);
+            final String smallImage = sourceData.getString(Review.SMALL_IMAGE);
             if (GoodreadsHandler.hasCover(largeImage)) {
-                sizeSuffix = ReviewField.LARGE_IMAGE;
+                sizeSuffix = Review.LARGE_IMAGE;
                 coverUrl = largeImage;
             } else if (GoodreadsHandler.hasCover(smallImage)) {
-                sizeSuffix = ReviewField.SMALL_IMAGE;
+                sizeSuffix = Review.SMALL_IMAGE;
                 coverUrl = smallImage;
             } else {
                 sizeSuffix = "";

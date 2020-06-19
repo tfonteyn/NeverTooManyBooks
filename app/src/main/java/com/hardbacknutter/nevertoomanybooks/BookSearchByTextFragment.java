@@ -226,8 +226,7 @@ public class BookSearchByTextFragment
             bookData.putString(DBDefinitions.KEY_TITLE, mCoordinator.getTitleSearchText());
         }
 
-        final ArrayList<Author> authors =
-                bookData.getParcelableArrayList(Book.BKEY_AUTHOR_ARRAY);
+        final ArrayList<Author> authors = bookData.getParcelableArrayList(Book.BKEY_AUTHOR_ARRAY);
         if (authors == null || authors.isEmpty()) {
             // do NOT use the array, that's reserved for verified names.
             bookData.putString(BooksOnBookshelfModel.SearchCriteria.BKEY_SEARCH_TEXT_AUTHOR,

@@ -39,19 +39,22 @@ import android.util.Log;
 import android.widget.AutoCompleteTextView;
 
 import androidx.annotation.CallSuper;
+import androidx.annotation.IntDef;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.io.Closeable;
 import java.io.File;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.text.Normalizer;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -204,6 +207,7 @@ public class DAO
      * If this flag is not set, the UPDATE_DATE will be set based on the current time
      */
     public static final int BOOK_FLAG_USE_UPDATE_DATE_IF_PRESENT = 1;
+    public static final int BOOK_FLAG_IS_BATCH_OPERATION = 1 << 1;
     /**
      * In addition to SQLite's default BINARY collator (others: NOCASE and RTRIM),
      * Android supplies two more.
@@ -228,26 +232,22 @@ public class DAO
     private static final String ERROR_FAILED_CREATING_BOOK_FROM = "Failed creating book from\n";
     /** log error string. */
     private static final String ERROR_FAILED_UPDATING_BOOK_FROM = "Failed updating book from\n";
-
     /** Synchronizer to coordinate DB access. Must be STATIC so all instances share same sync. */
     private static final Synchronizer SYNCHRONIZER = new Synchronizer();
-
     /** Static Factory object to create a {@link SynchronizedCursor} cursor. */
     @NonNull
     private static final SQLiteDatabase.CursorFactory CURSOR_FACTORY =
             (db, d, et, q) -> new SynchronizedCursor(d, et, q, SYNCHRONIZER);
-
     /** Static Factory object to create an {@link ExtCursor} cursor. */
     @NonNull
     private static final SQLiteDatabase.CursorFactory EXT_CURSOR_FACTORY =
             (db, d, et, q) -> new ExtCursor(d, et, q, SYNCHRONIZER);
-
     /** Column alias. */
     private static final String COLUMN_ALIAS_NR_OF_SERIES = "_num_series";
-//    /** Column alias. */
-//    private static final String COLUMN_ALIAS_NR_OF_AUTHORS = "_num_authors";
     /** statement names; keys into the cache map. */
     private static final String STMT_CHECK_BOOK_EXISTS = "CheckBookExists";
+    //    /** Column alias. */
+//    private static final String COLUMN_ALIAS_NR_OF_AUTHORS = "_num_authors";
     private static final String STMT_GET_AUTHOR_ID = "GetAuthorId";
     private static final String STMT_GET_SERIES_ID = "GetSeriesId";
     private static final String STMT_GET_TOC_ENTRY_ID = "GetTOCEntryId";
@@ -296,7 +296,6 @@ public class DAO
     private static DBHelper sDbHelper;
     /** Synchronization wrapper around the real database. */
     private static SynchronizedDb sSyncedDb;
-
     /** Collection of statements pre-compiled for this object. */
     private final SqlStatementManager mSqlStatementManager;
     @NonNull
@@ -602,27 +601,32 @@ public class DAO
 
     /**
      * Return the TocEntry id. The incoming object is not modified.
-     * (note that publication year is NOT used for comparing, under the assumption that
-     * two search-sources can give different dates by mistake).
+     * Note that the publication year is NOT used for comparing, under the assumption that
+     * two search-sources can give different dates by mistake.
      *
-     * @param context    Current context
-     * @param tocEntry   tocEntry to search for
-     * @param bookLocale Locale to use if the item has none set
+     * @param context  Current context
+     * @param tocEntry tocEntry to search for
      *
      * @return the id, or 0 (i.e. 'new') when not found
      */
     public long getTocEntryId(@NonNull final Context context,
                               @NonNull final TocEntry tocEntry,
+                              final boolean lookupLocale,
                               @NonNull final Locale bookLocale) {
 
-        Locale tocLocale = tocEntry.getLocale(context, this, bookLocale);
+        final Locale tocLocale;
+        if (lookupLocale) {
+            tocLocale = tocEntry.getLocale(context, this, bookLocale);
+        } else {
+            tocLocale = bookLocale;
+        }
 
         SynchronizedStatement stmt = mSqlStatementManager.get(STMT_GET_TOC_ENTRY_ID);
         if (stmt == null) {
             stmt = mSqlStatementManager.add(STMT_GET_TOC_ENTRY_ID, SqlGet.TOC_ENTRY_ID);
         }
 
-        String obTitle = tocEntry.reorderTitleForSorting(context, tocLocale);
+        final String obTitle = tocEntry.reorderTitleForSorting(context, tocLocale);
 
         //noinspection SynchronizationOnLocalVariableOrMethodParameter
         synchronized (stmt) {
@@ -733,7 +737,8 @@ public class DAO
     private long insertAuthor(@NonNull final Context context,
                               @NonNull final Author /* in/out */ author) {
 
-        Locale authorLocale = author.getLocale(context, this, LocaleUtils.getUserLocale(context));
+        final Locale authorLocale = author.getLocale(context, this,
+                                                     LocaleUtils.getUserLocale(context));
 
         SynchronizedStatement stmt = mSqlStatementManager.get(STMT_INSERT_AUTHOR);
         if (stmt == null) {
@@ -746,7 +751,7 @@ public class DAO
             stmt.bindString(3, author.getGivenNames());
             stmt.bindString(4, encodeOrderByColumn(author.getGivenNames(), authorLocale));
             stmt.bindBoolean(5, author.isComplete());
-            long iId = stmt.executeInsert();
+            final long iId = stmt.executeInsert();
             if (iId > 0) {
                 author.setId(iId);
             }
@@ -765,9 +770,10 @@ public class DAO
     public boolean updateAuthor(@NonNull final Context context,
                                 @NonNull final Author author) {
 
-        Locale authorLocale = author.getLocale(context, this, LocaleUtils.getUserLocale(context));
+        final Locale authorLocale = author.getLocale(context, this,
+                                                     LocaleUtils.getUserLocale(context));
 
-        ContentValues cv = new ContentValues();
+        final ContentValues cv = new ContentValues();
         cv.put(KEY_AUTHOR_FAMILY_NAME, author.getFamilyName());
         cv.put(KEY_AUTHOR_FAMILY_NAME_OB,
                encodeOrderByColumn(author.getFamilyName(), authorLocale));
@@ -791,17 +797,14 @@ public class DAO
      */
     @SuppressWarnings("UnusedReturnValue")
     public boolean updateOrInsertAuthor(@NonNull final Context context,
-                                        @NonNull final /* in/out */ Author author) {
-
-        if (author.getId() != 0) {
-            return updateAuthor(context, author);
+                                        @NonNull final /* in/out */ Author author,
+                                        @NonNull final Locale bookLocale) {
+        // try to find first.
+        if (author.fixId(context, this, true, bookLocale) == 0) {
+            return insertAuthor(context, author) > 0;
         } else {
-            // try to find first.
-            if (author.fixId(context, this, LocaleUtils.getUserLocale(context)) == 0) {
-                return insertAuthor(context, author) > 0;
-            }
+            return updateAuthor(context, author);
         }
-        return false;
     }
 
     /**
@@ -846,9 +849,15 @@ public class DAO
      */
     public long getAuthorId(@NonNull final Context context,
                             @NonNull final Author author,
-                            @NonNull final Locale fallbackLocale) {
+                            final boolean lookupLocale,
+                            @NonNull final Locale bookLocale) {
 
-        Locale authorLocale = author.getLocale(context, this, fallbackLocale);
+        final Locale authorLocale;
+        if (lookupLocale) {
+            authorLocale = author.getLocale(context, this, bookLocale);
+        } else {
+            authorLocale = bookLocale;
+        }
 
         SynchronizedStatement stmt = mSqlStatementManager.get(STMT_GET_AUTHOR_ID);
         if (stmt == null) {
@@ -874,11 +883,12 @@ public class DAO
      * @param author  to refresh
      */
     public void refreshAuthor(@NonNull final Context context,
-                              @NonNull final Author /* out */ author) {
+                              @NonNull final Author /* out */ author,
+                              @NonNull final Locale bookLocale) {
 
         if (author.getId() == 0) {
             // It wasn't saved before; see if it is now. If so, update ID.
-            author.fixId(context, this, LocaleUtils.getUserLocale(context));
+            author.fixId(context, this, true, bookLocale);
 
         } else {
             // It was saved, see if it still is and fetch possibly updated fields.
@@ -1004,9 +1014,9 @@ public class DAO
      * @return the number of {@link Book} this {@link Author} has
      */
     public long countBooksByAuthor(@NonNull final Context context,
-                                   @NonNull final Author author) {
-        if (author.getId() == 0 && author.fixId(context, this,
-                                                LocaleUtils.getUserLocale(context)) == 0) {
+                                   @NonNull final Author author,
+                                   @NonNull final Locale bookLocale) {
+        if (author.getId() == 0 && author.fixId(context, this, true, bookLocale) == 0) {
             return 0;
         }
 
@@ -1026,9 +1036,9 @@ public class DAO
      * @return the number of {@link TocEntry} this {@link Author} has
      */
     public long countTocEntryByAuthor(@NonNull final Context context,
-                                      @NonNull final Author author) {
-        if (author.getId() == 0 && author.fixId(context, this,
-                                                LocaleUtils.getUserLocale(context)) == 0) {
+                                      @NonNull final Author author,
+                                      @NonNull final Locale bookLocale) {
+        if (author.getId() == 0 && author.fixId(context, this, true, bookLocale) == 0) {
             return 0;
         }
 
@@ -1217,6 +1227,7 @@ public class DAO
      *                Only an Import is allowed to pass non-zero: will override the autoIncrement.
      * @param book    A collection with the columns to be set. May contain extra data.
      *                The id will be updated.
+     * @param flags   See {@link BookFlags} for flag definitions; {@code 0} for 'normal'.
      *
      * @return the row id of the newly inserted row
      *
@@ -1225,7 +1236,8 @@ public class DAO
     @IntRange(from = 1, to = Integer.MAX_VALUE)
     public long insertBook(@NonNull final Context context,
                            final long bookId,
-                           @NonNull final Book /* in/out */ book)
+                           @NonNull final Book /* in/out */ book,
+                           @BookFlags final int flags)
             throws DaoWriteException {
 
         SyncLock txLock = null;
@@ -1266,22 +1278,25 @@ public class DAO
             // the book itself
             final long newBookId = sSyncedDb.insert(TBL_BOOKS.getName(), null, cv);
             if (newBookId > 0) {
+                // set the new id/uuid on the Book itself
+                book.putLong(KEY_PK_ID, newBookId);
+                //noinspection ConstantConditions
+                book.putString(KEY_BOOK_UUID, getBookUuid(newBookId));
+
                 // the links to series, authors,...
-                insertBookDependents(context, newBookId, book);
+                final boolean isBatch = (flags & BOOK_FLAG_IS_BATCH_OPERATION) != 0;
+                insertBookDependents(context, book, !isBatch);
                 // and the search suggestions table
                 ftsInsert(context, newBookId);
                 if (txLock != null) {
                     sSyncedDb.setTransactionSuccessful();
                 }
-
-                // set the new id/uuid on the Book itself
-                book.putLong(KEY_PK_ID, newBookId);
-                //noinspection ConstantConditions
-                book.putString(KEY_BOOK_UUID, getBookUuid(newBookId));
                 // and return the id
                 return newBookId;
 
             } else {
+                book.putLong(KEY_PK_ID, 0);
+                book.remove(KEY_BOOK_UUID);
                 throw new DaoWriteException(ERROR_FAILED_CREATING_BOOK_FROM + book);
             }
 
@@ -1300,14 +1315,15 @@ public class DAO
      * @param context Current context
      * @param bookId  of the book; takes precedence over the id of the book itself.
      * @param book    A collection with the columns to be set. May contain extra data.
-     * @param flags   See {@link #BOOK_FLAG_USE_UPDATE_DATE_IF_PRESENT} for flag definition
+     *                Missing fields will NOT be touched in the database.
+     * @param flags   See {@link BookFlags} for flag definitions; {@code 0} for 'normal'.
      *
      * @throws DaoWriteException on failure
      */
     public void updateBook(@NonNull final Context context,
                            final long bookId,
                            @NonNull final Book book,
-                           final int flags)
+                           @BookFlags final int flags)
             throws DaoWriteException {
 
         SyncLock txLock = null;
@@ -1328,30 +1344,32 @@ public class DAO
 
             // set the KEY_DATE_LAST_UPDATED to 'now' if we're allowed,
             // or if it's not already present.
-            if ((flags & BOOK_FLAG_USE_UPDATE_DATE_IF_PRESENT) == 0
-                || !cv.containsKey(KEY_UTC_LAST_UPDATED)) {
-
+            final boolean useIfPresent = (flags & BOOK_FLAG_USE_UPDATE_DATE_IF_PRESENT) != 0;
+            if (!useIfPresent || !cv.containsKey(KEY_UTC_LAST_UPDATED)) {
                 cv.put(KEY_UTC_LAST_UPDATED,
                        LocalDateTime.now(ZoneOffset.UTC)
                                     .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
             }
 
             // go !
-            // A prepared statement would be faster for importing books....
-            // but we don't know what columns are provided in the bundle....
+            // We're updating ONLY the fields present in the ContentValues.
+            // Other fields in the database row are not affected.
             final boolean success = 0 < sSyncedDb.update(TBL_BOOKS.getName(), cv,
                                                          KEY_PK_ID + "=?",
                                                          new String[]{String.valueOf(bookId)});
+            final long rollbackId = book.getId();
             if (success) {
-                insertBookDependents(context, bookId, book);
+                // make sure the Book has the correct id.
+                book.putLong(KEY_PK_ID, bookId);
+
+                final boolean isBatch = (flags & BOOK_FLAG_IS_BATCH_OPERATION) != 0;
+                insertBookDependents(context, book, !isBatch);
                 ftsUpdate(context, bookId);
                 if (txLock != null) {
                     sSyncedDb.setTransactionSuccessful();
                 }
-                // make sure the Book has the correct id.
-                book.putLong(KEY_PK_ID, bookId);
-
             } else {
+                book.putLong(KEY_PK_ID, rollbackId);
                 throw new DaoWriteException(ERROR_FAILED_UPDATING_BOOK_FROM + book);
             }
         } catch (@NonNull final IllegalArgumentException e) {
@@ -1425,36 +1443,62 @@ public class DAO
      * All of these will first delete all entries in the Book-[tableX] table for this bookId,
      * and then insert the new rows.
      *
-     * @param context Current context
-     * @param bookId  of the book
-     * @param book    A collection with the columns to be set. May contain extra data.
+     * @param context      Current context
+     * @param book         A collection with the columns to be set. May contain extra data.
+     * @param lookupLocale set to {@code true} to force a database lookup of the locale.
+     *                     This can be (relatively) slow, and hence should be {@code false}
+     *                     during for example an import.
      */
     private void insertBookDependents(@NonNull final Context context,
-                                      final long bookId,
-                                      @NonNull final Book book) {
+                                      @NonNull final Book book,
+                                      final boolean lookupLocale) {
+        // unconditional lookup of the book locale!
+        Locale bookLocale = null;
 
         if (book.contains(Book.BKEY_BOOKSHELF_ARRAY)) {
-            insertBookBookshelf(context, bookId, book);
+            // Bookshelves will be inserted if new, but not updated
+            insertBookBookshelf(context,
+                                book.getId(),
+                                book.getParcelableArrayList(Book.BKEY_BOOKSHELF_ARRAY));
         }
 
         if (book.contains(Book.BKEY_AUTHOR_ARRAY)) {
-            insertBookAuthors(context, bookId,
-                              book.getParcelableArrayList(Book.BKEY_AUTHOR_ARRAY));
+            bookLocale = book.getLocale(context);
+            // Authors will be inserted if new, but not updated
+            insertBookAuthors(context,
+                              book.getId(),
+                              book.getParcelableArrayList(Book.BKEY_AUTHOR_ARRAY),
+                              lookupLocale,
+                              bookLocale);
         }
 
         if (book.contains(Book.BKEY_SERIES_ARRAY)) {
-            insertBookSeries(context, bookId, book.getLocale(context),
-                             book.getParcelableArrayList(Book.BKEY_SERIES_ARRAY));
+            if (bookLocale == null) {
+                bookLocale = book.getLocale(context);
+            }
+            // Series will be inserted if new, but not updated
+            insertBookSeries(context,
+                             book.getId(),
+                             book.getParcelableArrayList(Book.BKEY_SERIES_ARRAY),
+                             lookupLocale,
+                             bookLocale);
         }
 
-        if (book.contains(Book.BKEY_TOC_ENTRY_ARRAY)) {
-            // update: toc entries are two steps away; they can exist in other books
-            updateOrInsertTOC(context, bookId, book);
+        if (book.contains(Book.BKEY_TOC_ARRAY)) {
+            if (bookLocale == null) {
+                bookLocale = book.getLocale(context);
+            }
+            // TOC entries are two steps away; they can exist in other books
+            // Hence we will both insert if new AND update if needed.
+            updateOrInsertTOC(context,
+                              book.getId(),
+                              book.getParcelableArrayList(Book.BKEY_TOC_ARRAY),
+                              lookupLocale,
+                              bookLocale);
         }
 
-        if (book.contains(KEY_LOANEE)
-            && !book.getString(KEY_LOANEE).isEmpty()) {
-            lendBook(bookId, book.getString(KEY_LOANEE));
+        if (book.contains(KEY_LOANEE)) {
+            lendBook(book.getId(), book.getString(KEY_LOANEE));
         }
     }
 
@@ -1535,33 +1579,38 @@ public class DAO
 
     /**
      * Create the link between {@link Book} and {@link Series}.
-     * <p>
      * {@link DBDefinitions#TBL_BOOK_SERIES}
      * <p>
-     * Note that {@link DBDefinitions#KEY_BOOK_SERIES_POSITION} is a simple incrementing
-     * counter matching the order of the passed list.
+     * The list is pruned before storage.
+     * New series are added, existing ones are NOT updated.
      *
-     * @param context    Current context
-     * @param bookId     of the book
-     * @param bookLocale to use as fallback for the series locale
-     * @param seriesList the list of Series
+     * @param context      Current context
+     * @param bookId       of the book
+     * @param list         the list of Series
+     * @param lookupLocale set to {@code true} to force a database lookup of the locale.
+     *                     This can be (relatively) slow, and hence should be {@code false}
+     *                     during for example an import.
+     * @param bookLocale   Locale to use if the item has none set,
+     *                     or if lookupLocale was {@code false}
      */
     void insertBookSeries(@NonNull final Context context,
                           final long bookId,
-                          @NonNull final Locale bookLocale,
-                          @SuppressWarnings("TypeMayBeWeakened")
-                          @NonNull final List<Series> seriesList) {
+                          @NonNull final Collection<Series> list,
+                          final boolean lookupLocale,
+                          @NonNull final Locale bookLocale) {
 
         if (!sSyncedDb.inTransaction()) {
             throw new TransactionException(ErrorMsg.TRANSACTION_REQUIRED);
         }
 
-        // Need to delete the current records because they may have been reordered and a simple
-        // set of updates could result in unique key or index violations.
+        // fix id's and remove duplicates
+        Series.pruneList(list, context, this, lookupLocale, bookLocale);
+
+        // Just delete all current links; we'll insert them from scratch.
         deleteBookSeriesByBookId(bookId);
 
-        // anything to insert ?
-        if (seriesList.isEmpty()) {
+        // is there anything to insert ?
+        if (list.isEmpty()) {
             return;
         }
 
@@ -1570,36 +1619,22 @@ public class DAO
             stmt = mSqlStatementManager.add(STMT_INSERT_BOOK_SERIES, SqlInsert.BOOK_SERIES);
         }
 
-        // The list MAY contain duplicates (e.g. from Internet lookups of multiple
-        // sources), so we track them in a hash map
-        final Map<String, Boolean> idHash = new HashMap<>();
         int position = 0;
-        for (Series series : seriesList) {
-            if (series.fixId(context, this, bookLocale) == 0) {
-                if (insertSeries(context, series, bookLocale) <= 0) {
-                    Logger.warnWithStackTrace(context, TAG, "insertSeries failed??");
-                }
-            } else {
-                if (!updateSeries(context, series, bookLocale)) {
-                    Logger.warnWithStackTrace(context, TAG, "updateSeries failed??");
-                }
+        for (Series series : list) {
+            // create if needed - do NOT do updates here
+            if (series.getId() == 0) {
+                insertSeries(context, series, bookLocale);
             }
 
-            Locale seriesLocale = series.getLocale(context, this, bookLocale);
-            String uniqueId = series.getId() + '_' + series.getNumber().toLowerCase(seriesLocale);
-            if (!idHash.containsKey(uniqueId)) {
-                idHash.put(uniqueId, true);
-                position++;
-                //noinspection SynchronizationOnLocalVariableOrMethodParameter
-                synchronized (stmt) {
-                    stmt.bindLong(1, bookId);
-                    stmt.bindLong(2, series.getId());
-                    stmt.bindString(3, series.getNumber());
-                    stmt.bindLong(4, position);
-                    stmt.executeInsert();
-                }
+            position++;
+            //noinspection SynchronizationOnLocalVariableOrMethodParameter
+            synchronized (stmt) {
+                stmt.bindLong(1, bookId);
+                stmt.bindLong(2, series.getId());
+                stmt.bindString(3, series.getNumber());
+                stmt.bindLong(4, position);
+                stmt.executeInsert();
             }
-
         }
     }
 
@@ -1626,68 +1661,63 @@ public class DAO
     }
 
     /**
-     * Insert a List of TocEntry's for the given book.
+     * Create the link between {@link Book} and {@link TocEntry}.
+     * {@link DBDefinitions#TBL_BOOK_TOC_ENTRIES}
+     * <p>
+     * The list is pruned before storage.
+     * New entries are added, existing ones ARE updated.
      *
-     * @param context Current context
-     * @param bookId  of the book
-     * @param book    A collection with the columns to be set. May contain extra data.
+     * @param context      Current context
+     * @param bookId       of the book
+     * @param list         the list of TocEntry
+     * @param lookupLocale set to {@code true} to force a database lookup of the locale.
+     *                     This can be (relatively) slow, and hence should be {@code false}
+     *                     during for example an import.
+     * @param bookLocale   Locale to use if the item has none set,
+     *                     or if lookupLocale was {@code false}
      */
     private void updateOrInsertTOC(@NonNull final Context context,
                                    final long bookId,
-                                   @NonNull final Book book) {
+                                   @NonNull final Collection<TocEntry> list,
+                                   final boolean lookupLocale,
+                                   @NonNull final Locale bookLocale) {
+
         if (!sSyncedDb.inTransaction()) {
             throw new TransactionException(ErrorMsg.TRANSACTION_REQUIRED);
         }
 
-        ArrayList<TocEntry> list = book.getParcelableArrayList(Book.BKEY_TOC_ENTRY_ARRAY);
+        // fix id's and remove duplicates
+        TocEntry.pruneList(list, context, this, lookupLocale, bookLocale);
 
-        // Need to delete the current records because they may have been reordered and a simple
-        // set of updates could result in unique key or index violations.
+        // Just delete all current links; we'll insert them from scratch (easier positioning)
         deleteBookTocEntryByBookId(bookId);
 
-        // anything to insert ?
+        // is there anything to insert ?
         if (list.isEmpty()) {
             return;
         }
-
-        long position = 0;
 
         SynchronizedStatement stmt = mSqlStatementManager.get(STMT_INSERT_BOOK_TOC_ENTRY);
         if (stmt == null) {
             stmt = mSqlStatementManager.add(STMT_INSERT_BOOK_TOC_ENTRY, SqlInsert.BOOK_TOC_ENTRY);
         }
 
-        Locale userLocale = LocaleUtils.getUserLocale(context);
+        long position = 0;
         for (TocEntry tocEntry : list) {
-            // handle the author.
-            Author author = tocEntry.getAuthor();
-            if (author.fixId(context, this, userLocale) == 0) {
+            // Author must be handled separately; the id will already have been 'fixed'
+            // during the TocEntry.pruneList call.
+            final Author author = tocEntry.getAuthor();
+            if (author.getId() == 0) {
                 insertAuthor(context, author);
+            } else {
+                updateAuthor(context, author);
             }
 
-            Locale bookLocale = book.getLocale(context);
-            // As an entry can exist in multiple books, try to find the entry.
-            if (tocEntry.fixId(context, this, bookLocale) == 0) {
-                // it's a new entry
+            if (tocEntry.getId() == 0) {
                 insertTocEntry(context, tocEntry, bookLocale);
-
             } else {
-                // It's an existing entry.
-                // We cannot update the author (we never even get here if the author was changed)
-                // We *do* update the title to allow corrections of case,
-                // as the find was done on the KEY_TITLE_OB field.
-                // and we update the KEY_TITLE_OB as well obviously.
-                String obTitle = tocEntry.reorderTitleForSorting(context, bookLocale);
-
-                ContentValues cv = new ContentValues();
-                cv.put(KEY_TITLE, tocEntry.getTitle());
-                cv.put(KEY_TITLE_OB, encodeOrderByColumn(obTitle, bookLocale));
-                cv.put(KEY_DATE_FIRST_PUBLICATION, tocEntry.getFirstPublication());
-
-                // failures are ignored
-                sSyncedDb.update(TBL_TOC_ENTRIES.getName(), cv,
-                                 KEY_PK_ID + "=?",
-                                 new String[]{String.valueOf(tocEntry.getId())});
+                // we DO updates here.
+                updateTocEntry(context, tocEntry, bookLocale);
             }
 
             // create the book<->TocEntry link.
@@ -1695,13 +1725,12 @@ public class DAO
             // As we delete all links before insert/update'ng above, we normally
             // *always* need to re-create the link here.
             // However, this will fail if we inserted "The Universe" and updated "Universe, The"
-            // as the former will be stored as "Universe, The".
+            // as the former will be stored as "Universe, The" so conflicting with the latter.
             // We tried to mitigate this conflict before it could trigger an issue here, but it
             // complicated the code and frankly ended in a chain of special condition code branches
             // during processing of internet search data.
             // So... let's just catch the SQL constraint exception and ignore it.
             // (do not use the sql 'REPLACE' command! We want to keep the original position)
-
             try {
                 position++;
                 //noinspection SynchronizationOnLocalVariableOrMethodParameter
@@ -1711,12 +1740,48 @@ public class DAO
                     stmt.bindLong(3, position);
                     stmt.executeInsert();
                 }
-
-            } catch (@NonNull final SQLiteConstraintException e) {
+            } catch (@NonNull final SQLiteConstraintException ignore) {
                 // ignore and reset the position counter.
                 position--;
+
+                if (BuildConfig.DEBUG /* always */) {
+                    Log.d(TAG, "updateOrInsertTOC"
+                               + "|SQLiteConstraintException"
+                               + "|tocEntry=" + tocEntry.getId()
+                               + "|bookId=" + bookId);
+                }
             }
         }
+    }
+
+    /**
+     * Update a TocEntry. Does <strong>NOT</strong> update the author id.
+     *
+     * @param context    Current context
+     * @param tocEntry   to update
+     * @param bookLocale Locale to use if the item has none set
+     *
+     * @return {@code true} for success.
+     */
+    @SuppressWarnings("UnusedReturnValue")
+    private boolean updateTocEntry(@NonNull final Context context,
+                                   @NonNull final TocEntry tocEntry,
+                                   @NonNull final Locale bookLocale) {
+
+        final Locale tocLocale = tocEntry.getLocale(context, this, bookLocale);
+
+        final String obTitle = tocEntry.reorderTitleForSorting(context, tocLocale);
+
+        // We cannot update the author as it's part of the primary key.
+        // (we should never even get here if the author was changed)
+        final ContentValues cv = new ContentValues();
+        cv.put(KEY_TITLE, tocEntry.getTitle());
+        cv.put(KEY_TITLE_OB, encodeOrderByColumn(obTitle, tocLocale));
+        cv.put(KEY_DATE_FIRST_PUBLICATION, tocEntry.getFirstPublication());
+
+        return 0 < sSyncedDb.update(TBL_TOC_ENTRIES.getName(), cv,
+                                    KEY_PK_ID + "=?",
+                                    new String[]{String.valueOf(tocEntry.getId())});
     }
 
     /**
@@ -1733,21 +1798,22 @@ public class DAO
                                 @NonNull final TocEntry tocEntry,
                                 @NonNull final Locale bookLocale) {
 
-        Locale tocLocale = tocEntry.getLocale(context, this, bookLocale);
+        final Locale tocLocale = tocEntry.getLocale(context, this, bookLocale);
 
         SynchronizedStatement stmt = mSqlStatementManager.get(STMT_INSERT_TOC_ENTRY);
         if (stmt == null) {
             stmt = mSqlStatementManager.add(STMT_INSERT_TOC_ENTRY, SqlInsert.TOC_ENTRY);
         }
 
-        String obTitle = tocEntry.reorderTitleForSorting(context, tocLocale);
+        final String obTitle = tocEntry.reorderTitleForSorting(context, tocLocale);
+
         //noinspection SynchronizationOnLocalVariableOrMethodParameter
         synchronized (stmt) {
             stmt.bindLong(1, tocEntry.getAuthor().getId());
             stmt.bindString(2, tocEntry.getTitle());
             stmt.bindString(3, encodeOrderByColumn(obTitle, tocLocale));
             stmt.bindString(4, tocEntry.getFirstPublication());
-            long iId = stmt.executeInsert();
+            final long iId = stmt.executeInsert();
             if (iId > 0) {
                 tocEntry.setId(iId);
             }
@@ -1757,31 +1823,38 @@ public class DAO
 
     /**
      * Create the link between {@link Book} and {@link Author}.
-     * <p>
      * {@link DBDefinitions#TBL_BOOK_AUTHOR}
      * <p>
-     * Note that {@link DBDefinitions#KEY_BOOK_AUTHOR_POSITION} is a simple incrementing
-     * counter matching the order of the passed list.
+     * The list is pruned before storage.
+     * New authors are added, existing ones are NOT updated.
      *
-     * @param context    Current context
-     * @param bookId     of the book
-     * @param authorList the list of authors
+     * @param context      Current context
+     * @param bookId       of the book
+     * @param list         the list of authors
+     * @param lookupLocale set to {@code true} to force a database lookup of the locale.
+     *                     This can be (relatively) slow, and hence should be {@code false}
+     *                     during for example an import.
+     * @param bookLocale   Locale to use if the item has none set,
+     *                     or if lookupLocale was {@code false}
      */
     void insertBookAuthors(@NonNull final Context context,
                            final long bookId,
-                           @SuppressWarnings("TypeMayBeWeakened")
-                           @NonNull final List<Author> authorList) {
+                           @NonNull final Collection<Author> list,
+                           final boolean lookupLocale,
+                           @NonNull final Locale bookLocale) {
 
         if (!sSyncedDb.inTransaction()) {
             throw new TransactionException(ErrorMsg.TRANSACTION_REQUIRED);
         }
 
-        // Need to delete the current records because they may have been reordered and a simple
-        // set of updates could result in unique key or index violations.
+        // fix id's and remove duplicates
+        Author.pruneList(list, context, this, lookupLocale, bookLocale);
+
+        // Just delete all current links; we'll insert them from scratch (easier positioning)
         deleteBookAuthorByBookId(bookId);
 
-        // anything to insert ?
-        if (authorList.isEmpty()) {
+        // is there anything to insert ?
+        if (list.isEmpty()) {
             return;
         }
 
@@ -1790,33 +1863,21 @@ public class DAO
             stmt = mSqlStatementManager.add(STMT_INSERT_BOOK_AUTHORS, SqlInsert.BOOK_AUTHOR);
         }
 
-        Locale userLocale = LocaleUtils.getUserLocale(context);
-        // The list MAY contain duplicates, so we track them in a hash table
-        final Map<String, Boolean> idHash = new HashMap<>();
         int position = 0;
-        for (Author author : authorList) {
-            // find/insert the author
-            if (author.fixId(context, this, userLocale) == 0) {
+        for (Author author : list) {
+            // create if needed - do NOT do updates here
+            if (author.getId() == 0) {
                 insertAuthor(context, author);
             }
 
-            // we use the id as the KEY here, so yes, a String.
-            String authorIdStr = String.valueOf(author.getId());
-            if (!idHash.containsKey(authorIdStr)) {
-                // indicate this author(id) is already present...
-                // but override, so we get elimination of duplicates.
-                idHash.put(authorIdStr, true);
-
-                position++;
-                //noinspection SynchronizationOnLocalVariableOrMethodParameter
-                synchronized (stmt) {
-                    stmt.bindLong(1, bookId);
-                    stmt.bindLong(2, author.getId());
-                    stmt.bindLong(3, position);
-                    stmt.bindLong(4, author.getType());
-                    stmt.executeInsert();
-                }
-
+            position++;
+            //noinspection SynchronizationOnLocalVariableOrMethodParameter
+            synchronized (stmt) {
+                stmt.bindLong(1, bookId);
+                stmt.bindLong(2, author.getId());
+                stmt.bindLong(3, position);
+                stmt.bindLong(4, author.getType());
+                stmt.executeInsert();
             }
         }
     }
@@ -1845,33 +1906,31 @@ public class DAO
 
     /**
      * Create the link between {@link Book} and {@link Bookshelf}.
-     * <p>
      * {@link DBDefinitions#TBL_BOOK_BOOKSHELF}
      * <p>
-     * Note that {@link DBDefinitions#KEY_BOOK_SERIES_POSITION} is a simple incrementing
-     * counter matching the order of the passed list.
+     * The list is pruned before storage.
+     * New shelves are added, existing ones are NOT updated.
      *
      * @param context Current context
      * @param bookId  of the book
-     * @param book    A collection with the columns to be set. May contain extra data.
+     * @param list    the list of bookshelves
      */
     private void insertBookBookshelf(@NonNull final Context context,
                                      @IntRange(from = 1) final long bookId,
-                                     @NonNull final Book book) {
+                                     @NonNull final Collection<Bookshelf> list) {
 
         if (!sSyncedDb.inTransaction()) {
             throw new TransactionException(ErrorMsg.TRANSACTION_REQUIRED);
         }
 
-        final ArrayList<Bookshelf> bookshelves =
-                book.getParcelableArrayList(Book.BKEY_BOOKSHELF_ARRAY);
+        // fix id's and remove duplicates; shelves don't use a Locale, hence no lookup done.
+        Bookshelf.pruneList(list, this);
 
-        // Need to delete the current records because they may have been reordered and a simple
-        // set of updates could result in unique key or index violations.
+        // Just delete all current links; we'll insert them from scratch.
         deleteBookBookshelfByBookId(bookId);
 
-        // anything to insert ?
-        if (bookshelves.isEmpty()) {
+        // is there anything to insert ?
+        if (list.isEmpty()) {
             return;
         }
 
@@ -1880,16 +1939,11 @@ public class DAO
             stmt = mSqlStatementManager.add(STMT_INSERT_BOOK_BOOKSHELF, SqlInsert.BOOK_BOOKSHELF);
         }
 
-        final Locale userLocale = LocaleUtils.getUserLocale(context);
-        for (Bookshelf bookshelf : bookshelves) {
-            if (bookshelf.getName().isEmpty()) {
-                continue;
-            }
-
-            // validate the style first
-            final long styleId = bookshelf.getStyle(context, this).getId();
-
-            if (bookshelf.fixId(context, this, userLocale) == 0) {
+        for (Bookshelf bookshelf : list) {
+            // create if needed - do NOT do updates here
+            if (bookshelf.getId() == 0) {
+                // validate the style first
+                final long styleId = bookshelf.getStyle(context, this).getId();
                 insertBookshelf(bookshelf, styleId);
             }
 
@@ -1949,6 +2003,24 @@ public class DAO
         return list;
     }
 
+    /**
+     * Get a list of book ID's (most often just the one) in which this TocEntry (story) is present.
+     *
+     * @param tocId id of the entry (story)
+     *
+     * @return list with book ids
+     */
+    public ArrayList<Long> getBookIdsByTocEntry(final long tocId) {
+        ArrayList<Long> list = new ArrayList<>();
+        try (Cursor cursor = sSyncedDb.rawQuery(SqlGet.BOOK_ID_BY_TOC_ENTRY_ID,
+                                                new String[]{String.valueOf(tocId)})) {
+            while (cursor.moveToNext()) {
+                list.add(cursor.getLong(0));
+            }
+        }
+        return list;
+    }
+
     /*
      * Bad idea. Instead use: Book book = Book.getBook(mDb, bookId);
      * So you never get a {@code null} Book!
@@ -1980,24 +2052,6 @@ public class DAO
 //        }
 //        return null;
 //    }
-
-    /**
-     * Get a list of book ID's (most often just the one) in which this TocEntry (story) is present.
-     *
-     * @param tocId id of the entry (story)
-     *
-     * @return list with book ids
-     */
-    public ArrayList<Long> getBookIdsByTocEntry(final long tocId) {
-        ArrayList<Long> list = new ArrayList<>();
-        try (Cursor cursor = sSyncedDb.rawQuery(SqlGet.BOOK_ID_BY_TOC_ENTRY_ID,
-                                                new String[]{String.valueOf(tocId)})) {
-            while (cursor.moveToNext()) {
-                list.add(cursor.getLong(0));
-            }
-        }
-        return list;
-    }
 
     /**
      * Get a list of book ID's for the given Author.
@@ -2337,7 +2391,8 @@ public class DAO
      */
     public boolean updateBookshelf(@NonNull final Bookshelf bookshelf,
                                    final long styleId) {
-        ContentValues cv = new ContentValues();
+
+        final ContentValues cv = new ContentValues();
         cv.put(KEY_BOOKSHELF_NAME, bookshelf.getName());
         cv.put(KEY_BOOKSHELF_BL_TOP_POS, bookshelf.getTopItemPosition());
         cv.put(KEY_BOOKSHELF_BL_TOP_OFFSET, bookshelf.getTopViewOffset());
@@ -2353,25 +2408,20 @@ public class DAO
     /**
      * Add or update the passed Bookshelf, depending whether bookshelf.id == 0.
      *
-     * @param context   Current context
      * @param bookshelf object to insert or update. Will be updated with the id.
      * @param styleId   style for this bookshelf
      *
      * @return {@code true} for success
      */
     @SuppressWarnings("UnusedReturnValue")
-    public boolean updateOrInsertBookshelf(@NonNull final Context context,
-                                           @NonNull final /* in/out */ Bookshelf bookshelf,
+    public boolean updateOrInsertBookshelf(@NonNull final /* in/out */ Bookshelf bookshelf,
                                            final long styleId) {
-        if (bookshelf.getId() != 0) {
-            return updateBookshelf(bookshelf, styleId);
+        // try to find first.
+        if (bookshelf.fixId(this) == 0) {
+            return insertBookshelf(bookshelf, styleId) > 0;
         } else {
-            // try to find first.
-            if (bookshelf.fixId(context, this, LocaleUtils.getUserLocale(context)) == 0) {
-                return insertBookshelf(bookshelf, styleId) > 0;
-            }
+            return updateBookshelf(bookshelf, styleId);
         }
-        return false;
     }
 
     /**
@@ -2689,7 +2739,7 @@ public class DAO
      * Lend out a book / return a book.
      *
      * @param bookId book to lend
-     * @param loanee person to lend to; set to {@code null} to delete the loan
+     * @param loanee person to lend to; set to {@code null} or {@code ""} to delete the loan
      *
      * @return {@code true} for success.
      */
@@ -2790,21 +2840,21 @@ public class DAO
                               @NonNull final Series /* in/out */ series,
                               @NonNull final Locale bookLocale) {
 
-        Locale seriesLocale = series.getLocale(context, this, bookLocale);
+        final Locale seriesLocale = series.getLocale(context, this, bookLocale);
 
         SynchronizedStatement stmt = mSqlStatementManager.get(STMT_INSERT_SERIES);
         if (stmt == null) {
             stmt = mSqlStatementManager.add(STMT_INSERT_SERIES, SqlInsert.SERIES);
         }
 
-        String obTitle = series.reorderTitleForSorting(context, seriesLocale);
+        final String obTitle = series.reorderTitleForSorting(context, seriesLocale);
 
         //noinspection SynchronizationOnLocalVariableOrMethodParameter
         synchronized (stmt) {
             stmt.bindString(1, series.getTitle());
             stmt.bindString(2, encodeOrderByColumn(obTitle, seriesLocale));
             stmt.bindBoolean(3, series.isComplete());
-            long iId = stmt.executeInsert();
+            final long iId = stmt.executeInsert();
             if (iId > 0) {
                 series.setId(iId);
             }
@@ -2825,11 +2875,11 @@ public class DAO
                                 @NonNull final Series series,
                                 @NonNull final Locale bookLocale) {
 
-        Locale seriesLocale = series.getLocale(context, this, bookLocale);
+        final Locale seriesLocale = series.getLocale(context, this, bookLocale);
 
-        String obTitle = series.reorderTitleForSorting(context, seriesLocale);
+        final String obTitle = series.reorderTitleForSorting(context, seriesLocale);
 
-        ContentValues cv = new ContentValues();
+        final ContentValues cv = new ContentValues();
         cv.put(KEY_SERIES_TITLE, series.getTitle());
         cv.put(KEY_SERIES_TITLE_OB, encodeOrderByColumn(obTitle, seriesLocale));
         cv.put(KEY_SERIES_IS_COMPLETE, series.isComplete());
@@ -2843,25 +2893,20 @@ public class DAO
      * Add or update the passed Series, depending whether series.id == 0.
      *
      * @param context    Current context
-     * @param bookLocale Locale to use if the item has none set
      * @param series     object to insert or update. Will be updated with the id.
+     * @param bookLocale Locale to use if the item has none set
      *
      * @return {@code true} for success.
      */
     @SuppressWarnings("UnusedReturnValue")
     public boolean updateOrInsertSeries(@NonNull final Context context,
-                                        @NonNull final Locale bookLocale,
-                                        @NonNull final /* in/out */ Series series) {
-
-        if (series.getId() != 0) {
-            return updateSeries(context, series, bookLocale);
+                                        @NonNull final /* in/out */ Series series,
+                                        @NonNull final Locale bookLocale) {
+        // try to find first.
+        if (series.fixId(context, this, true, bookLocale) == 0) {
+            return insertSeries(context, series, bookLocale) > 0;
         } else {
-            // try to find first.
-            if (series.fixId(context, this, bookLocale) == 0) {
-                return insertSeries(context, series, bookLocale) > 0;
-            } else {
-                return updateSeries(context, series, bookLocale);
-            }
+            return updateSeries(context, series, bookLocale);
         }
     }
 
@@ -2949,24 +2994,29 @@ public class DAO
     /**
      * Find a Series, and return its ID. The incoming object is not modified.
      *
-     * @param context    Current context
-     * @param series     to find
-     * @param bookLocale Locale to use if the item has none set
+     * @param context Current context
+     * @param series  to find
      *
      * @return the id, or 0 (i.e. 'new') when not found
      */
     public long getSeriesId(@NonNull final Context context,
                             @NonNull final Series series,
+                            final boolean lookupLocale,
                             @NonNull final Locale bookLocale) {
 
-        Locale seriesLocale = series.getLocale(context, this, bookLocale);
+        final Locale seriesLocale;
+        if (lookupLocale) {
+            seriesLocale = series.getLocale(context, this, bookLocale);
+        } else {
+            seriesLocale = bookLocale;
+        }
 
         SynchronizedStatement stmt = mSqlStatementManager.get(STMT_GET_SERIES_ID);
         if (stmt == null) {
             stmt = mSqlStatementManager.add(STMT_GET_SERIES_ID, SqlGet.SERIES_ID_BY_NAME);
         }
 
-        String obTitle = series.reorderTitleForSorting(context, seriesLocale);
+        final String obTitle = series.reorderTitleForSorting(context, seriesLocale);
 
         //noinspection SynchronizationOnLocalVariableOrMethodParameter
         synchronized (stmt) {
@@ -2993,11 +3043,11 @@ public class DAO
 
         if (series.getId() == 0) {
             // It wasn't saved before; see if it is now. If so, update ID.
-            series.fixId(context, this, bookLocale);
+            series.fixId(context, this, true, bookLocale);
 
         } else {
             // It was saved, see if it still is and fetch possibly updated fields.
-            Series dbSeries = getSeries(series.getId());
+            final Series dbSeries = getSeries(series.getId());
             if (dbSeries != null) {
                 // copy any updated fields
                 series.copyFrom(dbSeries, false);
@@ -3031,7 +3081,7 @@ public class DAO
     public long countBooksInSeries(@NonNull final Context context,
                                    @NonNull final Series series,
                                    @NonNull final Locale bookLocale) {
-        if (series.getId() == 0 && series.fixId(context, this, bookLocale) == 0) {
+        if (series.getId() == 0 && series.fixId(context, this, true, bookLocale) == 0) {
             return 0;
         }
 
@@ -3725,6 +3775,13 @@ public class DAO
         sSyncedDb.optimize();
     }
 
+    @IntDef(flag = true, value = {BOOK_FLAG_USE_UPDATE_DATE_IF_PRESENT,
+                                  BOOK_FLAG_IS_BATCH_OPERATION})
+    @Retention(RetentionPolicy.SOURCE)
+    @interface BookFlags {
+
+    }
+
     public static class DaoWriteException
             extends Exception {
 
@@ -4199,8 +4256,7 @@ public class DAO
         /**
          * Columns from {@link DBDefinitions#TBL_BOOKS} we need to send a Book to Goodreads.
          * <p>
-         * See {@link GoodreadsHandler#sendOneBook}
-         * -> notes column disabled for now.
+         * Must be kept in sync with {@link GoodreadsHandler#sendOneBook}
          */
         static final String GOODREADS_BOOK_DATA_TO_SEND =
                 "SELECT " + KEY_PK_ID
@@ -4210,7 +4266,6 @@ public class DAO
                 + ',' + KEY_READ_START
                 + ',' + KEY_READ_END
                 + ',' + KEY_RATING
-                + ',' + KEY_PRIVATE_NOTES
                 + _FROM_ + TBL_BOOKS.getName();
 
         /** {@link Book}, all columns. */
@@ -4221,7 +4276,9 @@ public class DAO
 
         /** {@link Series}, all columns. */
         static final String SERIES = "SELECT * FROM " + TBL_SERIES.getName();
-
+        /** {@link BooklistStyle} all columns. */
+        static final String BOOKLIST_STYLES =
+                "SELECT * FROM " + TBL_BOOKLIST_STYLES.getName();
         /** {@link Bookshelf} all columns. */
         private static final String BOOKSHELVES =
                 "SELECT " + TBL_BOOKSHELF.dot(KEY_PK_ID)
@@ -4232,11 +4289,6 @@ public class DAO
                 + ',' + TBL_BOOKSHELF.dot(KEY_FK_STYLE)
                 + ',' + TBL_BOOKLIST_STYLES.dot(KEY_UUID)
                 + _FROM_ + TBL_BOOKSHELF.ref() + TBL_BOOKSHELF.join(TBL_BOOKLIST_STYLES);
-
-        /** {@link BooklistStyle} all columns. */
-        static final String BOOKLIST_STYLES =
-                "SELECT * FROM " + TBL_BOOKLIST_STYLES.getName();
-
         /** Book UUID only, for accessing all cover image files. */
         private static final String BOOK_ALL_UUID =
                 "SELECT " + KEY_BOOK_UUID + _FROM_ + TBL_BOOKS.getName();

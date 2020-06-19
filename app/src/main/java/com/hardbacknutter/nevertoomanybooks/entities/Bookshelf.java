@@ -40,7 +40,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.util.Locale;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Objects;
 
 import org.json.JSONException;
@@ -58,7 +60,7 @@ import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
  * Represents a Bookshelf.
  */
 public class Bookshelf
-        implements Parcelable, ItemWithFixableId, Entity {
+        implements Parcelable, Entity {
 
     /** {@link Parcelable}. */
     public static final Creator<Bookshelf> CREATOR =
@@ -170,7 +172,7 @@ public class Bookshelf
      *
      * @param in Parcel to construct the object from
      */
-    private Bookshelf(@NonNull final Parcel in) {
+    Bookshelf(@NonNull final Parcel in) {
         mId = in.readLong();
         //noinspection ConstantConditions
         mName = in.readString();
@@ -242,6 +244,39 @@ public class Bookshelf
     }
 
     /**
+     * Passed a list of Objects, remove duplicates.
+     *
+     * @param list List to clean up
+     * @param db   Database Access
+     *
+     * @return {@code true} if the list was modified.
+     */
+    public static boolean pruneList(@NonNull final Iterable<Bookshelf> list,
+                                    @NonNull final DAO db) {
+
+        boolean listModified = false;
+        final Iterator<Bookshelf> it;
+
+        // Keep track of hashCode
+        final Collection<Integer> hashCodes = new HashSet<>();
+        it = list.iterator();
+        while (it.hasNext()) {
+            final Bookshelf item = it.next();
+            item.fixId(db);
+
+            final Integer hashCode = item.hashCode();
+            if (!hashCodes.contains(hashCode)) {
+                hashCodes.add(hashCode);
+            } else {
+                it.remove();
+                listModified = true;
+            }
+        }
+
+        return listModified;
+    }
+
+    /**
      * Set this bookshelf as the current/preferred.
      *
      * @param context Current context
@@ -277,17 +312,17 @@ public class Bookshelf
     /**
      * Set the style for this bookshelf.
      *
-     * @param context Current context
-     * @param db      Database Access
-     * @param style   to set; must already exist (id != 0)
+     * @param db    Database Access
+     * @param style to set; must already exist (id != 0)
+     *
+     * @throws IllegalArgumentException if the style is 'new' (id==0)
      */
-    public void setStyle(@NonNull final Context context,
-                         @NonNull final DAO db,
+    public void setStyle(@NonNull final DAO db,
                          @NonNull final BooklistStyle style) {
         if (style.getId() == 0) {
             throw new IllegalArgumentException(ErrorMsg.ARGS_MISSING_STYLE);
         }
-        db.updateOrInsertBookshelf(context, this, style.getId());
+        db.updateOrInsertBookshelf(this, style.getId());
         mStyleUuid = style.getUuid();
     }
 
@@ -361,7 +396,7 @@ public class Bookshelf
         // not strictly needed to refresh the style id, but we might as well take
         // the opportunity to validate it.
         final long styleId = getStyle(context, db).getId();
-        db.updateOrInsertBookshelf(context, this, styleId);
+        db.updateOrInsertBookshelf(this, styleId);
     }
 
     /**
@@ -438,21 +473,17 @@ public class Bookshelf
         }
     }
 
-    @Override
-    public long fixId(@NonNull final Context context,
-                      @NonNull final DAO db,
-                      @NonNull final Locale locale) {
+    /**
+     * Tries to find the item in the database using all or some of its fields (except the id).
+     * If found, sets the item's id with the id found in the database.
+     *
+     * @param db Database Access
+     *
+     * @return the item id (also set on the item).
+     */
+    public long fixId(@NonNull final DAO db) {
         mId = db.getBookshelfId(this);
         return mId;
-    }
-
-    /**
-     * Each Bookshelf is defined exactly by a unique ID.
-     */
-    @SuppressWarnings("SameReturnValue")
-    @Override
-    public boolean isUniqueById() {
-        return true;
     }
 
     /**
@@ -465,6 +496,11 @@ public class Bookshelf
         return mId == ALL_BOOKS;
     }
 
+    /**
+     * Equality: <strong>id, name</strong>.
+     *
+     * @return hash
+     */
     @Override
     public int hashCode() {
         return Objects.hash(mId, mName);

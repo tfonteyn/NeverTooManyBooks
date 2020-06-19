@@ -295,7 +295,7 @@ public abstract class BookSearchBaseFragment
      *
      * @param bookData a Bundle with the results
      */
-    void onSearchResults(@NonNull Bundle bookData) {
+    void onSearchResults(@NonNull final Bundle bookData) {
         final Intent intent = new Intent(getContext(), EditBookActivity.class)
                 .putExtra(Book.BKEY_BOOK_DATA, bookData);
         startActivityForResult(intent, RequestCode.BOOK_EDIT);

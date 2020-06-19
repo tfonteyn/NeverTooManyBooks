@@ -494,7 +494,9 @@ public class DataManager
     public <T extends Parcelable> ArrayList<T> getParcelableArrayList(@NonNull final String key) {
         Object o = mRawData.get(key);
         if (o == null) {
-            return new ArrayList<>();
+            o = new ArrayList<>();
+            //noinspection unchecked
+            mRawData.putParcelableArrayList(key, (ArrayList<T>) o);
         }
         //noinspection unchecked
         return (ArrayList<T>) o;

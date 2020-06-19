@@ -90,8 +90,8 @@ public class EditBookNotesFragment
 
         addReadCheckboxOnClickListener();
 
-        addAutocomplete(R.id.price_paid_currency, mFragmentVM.getPricePaidCurrencyCodes());
-        addAutocomplete(R.id.location, mFragmentVM.getLocations());
+        addAutocomplete(R.id.price_paid_currency, mFragmentVM.getAllPricePaidCurrencyCodes());
+        addAutocomplete(R.id.location, mFragmentVM.getAllLocations());
 
         addDatePicker(getField(R.id.date_acquired), R.string.lbl_date_acquired, true);
 

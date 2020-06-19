@@ -609,7 +609,7 @@
     <string name="vldt_non_blank_required_for_x">Требуется не пустое значение для: «%1$s»</string>
     <string name="vldt_read_start_after_end">Дата начала чтения позже даты завершения</string>
     <string name="vldt_real_expected_for_x">Введите действительное число: «%1$s»</string>
-    <string name="warning_author_already_in_list">Автор уже есть в списке</string>
+    <string name="X_warning_already_in_list_author">Автор уже есть в списке</string>
     <string name="warning_backup_request">Вы хотите создать резервную копию базы данных на SD-карте?</string>
     <string name="warning_book_no_longer_exists">Указанная книга больше не существует</string>
     <string name="warning_book_not_found">Поиск указанной книги не удался</string>
@@ -641,7 +641,7 @@
     <string name="warning_select_an_existing_folder">Пожалуйста, выберите существующую папку.</string>
     <string name="warning_select_at_least_1_field">Выберите хотя бы одно поле для обновления.</string>
     <string name="warning_select_at_least_1_group">Выберите хотя бы одну группу.</string>
-    <string name="warning_series_already_in_list">Серия уже есть в списке</string>
+    <string name="X_warning_already_in_list_series">Серия уже есть в списке</string>
     <string name="warning_toc_confirm">Пожалуйста, подтвердите, что названия антологий (в основном) правильны</string>
     <string name="warning_x_already_exists">%1$s уже существует.</string>
     <string name="warning_x_is_not_a_valid_code">«%1$s» не является допустимым кодом</string>
@@ -679,5 +679,6 @@
     <string name="book_format_digest">Малый</string>
     <string name="info_filter_edition">Выберите 0 или более параметров и нажмите «ОК», чтобы применить их, или нажмите «Все книги», чтобы игнорировать все из них.</string>
     <string name="notification_channel_warn">Предупреждение</string>
+    <string name="warning_already_in_list">Уже в списке!</string>
 
 </resources>

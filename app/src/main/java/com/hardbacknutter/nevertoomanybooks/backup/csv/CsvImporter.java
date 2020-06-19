@@ -65,7 +65,6 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
-import com.hardbacknutter.nevertoomanybooks.entities.ItemWithFixableId;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
@@ -300,7 +299,7 @@ public class CsvImporter
 
                     handleAuthors(context, mDb, book);
                     handleSeries(context, mDb, book);
-                    handleBookshelves(context, mDb, book);
+                    handleBookshelves(mDb, book);
                     handleAnthology(context, mDb, book);
 
                     // The data is now ready to be send to the database
@@ -396,7 +395,7 @@ public class CsvImporter
 
         // Always import empty ID's (we don't try and search/match)...even if they are duplicates.
         if (!hasUuid && !bids.hasNumericId) {
-            bids.bookId = mDb.insertBook(context, 0, book);
+            bids.bookId = mDb.insertBook(context, 0, book, DAO.BOOK_FLAG_IS_BATCH_OPERATION);
             mResults.booksCreated++;
             // inserted id
             return bids.bookId;
@@ -423,7 +422,8 @@ public class CsvImporter
         }
 
         if (!exists) {
-            bids.bookId = mDb.insertBook(context, bids.bookId, book);
+            bids.bookId = mDb.insertBook(context, bids.bookId, book,
+                                         DAO.BOOK_FLAG_IS_BATCH_OPERATION);
             mResults.booksCreated++;
             // inserted id
             return bids.bookId;
@@ -431,7 +431,8 @@ public class CsvImporter
         } else {
             if (!updateOnlyIfNewer || updateOnlyIfNewer(context, mDb, book, bids.bookId)) {
                 mDb.updateBook(context, bids.bookId, book,
-                               DAO.BOOK_FLAG_USE_UPDATE_DATE_IF_PRESENT);
+                               DAO.BOOK_FLAG_USE_UPDATE_DATE_IF_PRESENT
+                               | DAO.BOOK_FLAG_IS_BATCH_OPERATION);
                 mResults.booksUpdated++;
                 // (updated) id
                 return bids.bookId;
@@ -471,12 +472,10 @@ public class CsvImporter
      * Process the bookshelves.
      * Database access is strictly limited to fetching ID's.
      *
-     * @param context Current context
-     * @param db      Database Access
-     * @param book    the book
+     * @param db   Database Access
+     * @param book the book
      */
-    private void handleBookshelves(@NonNull final Context context,
-                                   @NonNull final DAO db,
+    private void handleBookshelves(@NonNull final DAO db,
                                    @NonNull final Book book) {
 
         // Current version uses/prefers KEY_BOOKSHELF,
@@ -493,8 +492,7 @@ public class CsvImporter
         if (encodedList != null && !encodedList.isEmpty()) {
             ArrayList<Bookshelf> bookshelves = mBookshelfCoder.decodeList(encodedList);
             if (!bookshelves.isEmpty()) {
-                // Do not run in batch
-                ItemWithFixableId.pruneList(bookshelves, context, db, mUserLocale, false);
+                Bookshelf.pruneList(bookshelves, db);
                 book.putParcelableArrayList(Book.BKEY_BOOKSHELF_ARRAY, bookshelves);
             }
         }
@@ -516,39 +514,38 @@ public class CsvImporter
     private void handleAuthors(@NonNull final Context context,
                                @NonNull final DAO db,
                                @NonNull final Book book) {
-        ArrayList<Author> authors;
+        final ArrayList<Author> authors;
 
         // preferred format is a single CSV field
-        String encodedList = book.getString(CsvExporter.CSV_COLUMN_AUTHORS);
+        final String encodedList = book.getString(CsvExporter.CSV_COLUMN_AUTHORS);
         book.remove(CsvExporter.CSV_COLUMN_AUTHORS);
 
         if (!encodedList.isEmpty()) {
             authors = mAuthorCoder.decodeList(encodedList);
-            // run in batch mode, i.e. force using the user Locale;
-            ItemWithFixableId.pruneList(authors, context, db, mUserLocale, true);
+            Author.pruneList(authors, context, db, false, book.getLocale(context));
 
         } else {
             authors = new ArrayList<>();
 
             if (book.contains(DBDefinitions.KEY_AUTHOR_FORMATTED)) {
-                String a = book.getString(DBDefinitions.KEY_AUTHOR_FORMATTED);
+                final String a = book.getString(DBDefinitions.KEY_AUTHOR_FORMATTED);
                 if (!a.isEmpty()) {
                     authors.add(Author.from(a));
                 }
                 book.remove(DBDefinitions.KEY_AUTHOR_FORMATTED);
 
             } else if (book.contains(DBDefinitions.KEY_AUTHOR_FAMILY_NAME)) {
-                String family = book.getString(DBDefinitions.KEY_AUTHOR_FAMILY_NAME);
+                final String family = book.getString(DBDefinitions.KEY_AUTHOR_FAMILY_NAME);
                 if (!family.isEmpty()) {
                     // given will be "" if it's not present
-                    String given = book.getString(DBDefinitions.KEY_AUTHOR_GIVEN_NAMES);
+                    final String given = book.getString(DBDefinitions.KEY_AUTHOR_GIVEN_NAMES);
                     authors.add(new Author(family, given));
                 }
                 book.remove(DBDefinitions.KEY_AUTHOR_FAMILY_NAME);
                 book.remove(DBDefinitions.KEY_AUTHOR_GIVEN_NAMES);
 
             } else if (book.contains(OLD_STYLE_AUTHOR_NAME)) {
-                String a = book.getString(OLD_STYLE_AUTHOR_NAME);
+                final String a = book.getString(OLD_STYLE_AUTHOR_NAME);
                 if (!a.isEmpty()) {
                     authors.add(Author.from(a));
                 }
@@ -576,37 +573,36 @@ public class CsvImporter
                               @NonNull final DAO db,
                               @NonNull final Book book) {
 
-        ArrayList<Series> series;
+        final ArrayList<Series> list;
 
         // preferred format is a single CSV field
-        String encodedList = book.getString(CsvExporter.CSV_COLUMN_SERIES);
+        final String encodedList = book.getString(CsvExporter.CSV_COLUMN_SERIES);
         book.remove(CsvExporter.CSV_COLUMN_SERIES);
 
         if (!encodedList.isEmpty()) {
-            Locale bookLocale = book.getLocale(context);
-            series = mSeriesCoder.decodeList(encodedList);
-            // run in batch mode, i.e. force using the Book Locale;
-            // otherwise the import is far to slow and of little benefit.
-            Series.pruneList(series, context, db, bookLocale, true);
+            list = mSeriesCoder.decodeList(encodedList);
+
+            // Force using the Book Locale, otherwise the import is far to slow.
+            Series.pruneList(list, context, db, false, book.getLocale(context));
 
         } else {
-            series = new ArrayList<>();
+            list = new ArrayList<>();
 
             if (book.contains(DBDefinitions.KEY_SERIES_TITLE)) {
-                String title = book.getString(DBDefinitions.KEY_SERIES_TITLE);
+                final String title = book.getString(DBDefinitions.KEY_SERIES_TITLE);
                 if (!title.isEmpty()) {
-                    Series s = new Series(title);
+                    final Series series = new Series(title);
                     // number will be "" if it's not present
-                    s.setNumber(book.getString(DBDefinitions.KEY_BOOK_NUM_IN_SERIES));
-                    series.add(s);
+                    series.setNumber(book.getString(DBDefinitions.KEY_BOOK_NUM_IN_SERIES));
+                    list.add(series);
                 }
                 book.remove(DBDefinitions.KEY_SERIES_TITLE);
                 book.remove(DBDefinitions.KEY_BOOK_NUM_IN_SERIES);
             }
         }
 
-        if (!series.isEmpty()) {
-            book.putParcelableArrayList(Book.BKEY_SERIES_ARRAY, series);
+        if (!list.isEmpty()) {
+            book.putParcelableArrayList(Book.BKEY_SERIES_ARRAY, list);
         }
     }
 
@@ -624,15 +620,14 @@ public class CsvImporter
                                  @NonNull final DAO db,
                                  @NonNull final Book book) {
 
-        String encodedList = book.getString(CsvExporter.CSV_COLUMN_TOC);
+        final String encodedList = book.getString(CsvExporter.CSV_COLUMN_TOC);
         book.remove(CsvExporter.CSV_COLUMN_TOC);
 
         if (!encodedList.isEmpty()) {
-            ArrayList<TocEntry> toc = mTocCoder.decodeList(encodedList);
+            final ArrayList<TocEntry> toc = mTocCoder.decodeList(encodedList);
             if (!toc.isEmpty()) {
-                // Do not run in batch
-                ItemWithFixableId.pruneList(toc, context, db, book.getLocale(context), false);
-                book.putParcelableArrayList(Book.BKEY_TOC_ENTRY_ARRAY, toc);
+                TocEntry.pruneList(toc, context, db, false, book.getLocale(context));
+                book.putParcelableArrayList(Book.BKEY_TOC_ARRAY, toc);
             }
         }
     }
@@ -656,7 +651,7 @@ public class CsvImporter
         // Fields found in row
         final Collection<String> fields = new ArrayList<>();
         // Temporary storage for current field
-        StringBuilder sb = new StringBuilder();
+        final StringBuilder sb = new StringBuilder();
 
         // Current position
         int pos = 0;
@@ -762,7 +757,7 @@ public class CsvImporter
                         case ',':
                             // Add this field and reset for the next.
                             fields.add(sb.toString());
-                            sb = new StringBuilder();
+                            sb.setLength(0);
                             break;
 
                         default:
@@ -778,7 +773,7 @@ public class CsvImporter
         fields.add(sb.toString());
 
         // Return the result as a String[].
-        String[] imported = new String[fields.size()];
+        final String[] imported = new String[fields.size()];
         fields.toArray(imported);
 
         return imported;

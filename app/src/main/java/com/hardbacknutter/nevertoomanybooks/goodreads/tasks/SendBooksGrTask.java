@@ -33,6 +33,7 @@ import android.database.Cursor;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
+import androidx.preference.PreferenceManager;
 
 import com.hardbacknutter.nevertoomanybooks.BooksOnBookshelf;
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -53,13 +54,13 @@ class SendBooksGrTask
 
     /** Log tag. */
     private static final String TAG = "GR.SendBooksGrTask";
-    private static final long serialVersionUID = 6713289839682264456L;
+    private static final long serialVersionUID = -3922988908020406047L;
 
+    /** Flag: send only starting from the last book we did earlier, or all books. */
+    private final boolean mFromLastBookId;
     /** Flag: send only the updated, or all books. */
     private final boolean mUpdatesOnly;
 
-    /** Last book id processed. */
-    private long mLastId;
     /** Total count of books processed. */
     private int mCount;
     /** Total count of books that are in cursor. */
@@ -68,12 +69,17 @@ class SendBooksGrTask
     /**
      * Constructor.
      *
-     * @param description for the task
-     * @param updatesOnly {@code true} to send updated books only, {@code false} for all books.
+     * @param description    for the task
+     * @param fromLastBookId {@code true} to send from the last book we did earlier,
+     *                       {@code false} for all books.
+     * @param updatesOnly    {@code true} to send updated books only,
+     *                       {@code false} for all books.
      */
     SendBooksGrTask(@NonNull final String description,
+                    final boolean fromLastBookId,
                     final boolean updatesOnly) {
         super(description);
+        mFromLastBookId = fromLastBookId;
         mUpdatesOnly = updatesOnly;
     }
 
@@ -93,8 +99,16 @@ class SendBooksGrTask
                            @NonNull final Context context,
                            @NonNull final GoodreadsHandler apiHandler) {
 
+        long lastBookSend;
+        if (mFromLastBookId) {
+            lastBookSend = PreferenceManager.getDefaultSharedPreferences(context)
+                                            .getLong(GoodreadsHandler.PREFS_LAST_BOOK_SEND, 0);
+        } else {
+            lastBookSend = 0;
+        }
+
         try (DAO db = new DAO(TAG);
-             Cursor cursor = db.fetchBooksForExportToGoodreads(mLastId, mUpdatesOnly)) {
+             Cursor cursor = db.fetchBooksForExportToGoodreads(lastBookSend, mUpdatesOnly)) {
             final DataHolder bookData = new CursorRow(cursor);
             mTotalBooks = cursor.getCount() + mCount;
 
@@ -107,7 +121,7 @@ class SendBooksGrTask
 
                 // Update internal status
                 mCount++;
-                mLastId = bookData.getLong(DBDefinitions.KEY_PK_ID);
+                lastBookSend = bookData.getLong(DBDefinitions.KEY_PK_ID);
                 // If we have done one successfully, reset the counter so a
                 // subsequent network error does not result in a long delay
                 if (needsRetryReset) {
@@ -123,6 +137,11 @@ class SendBooksGrTask
                 }
             }
         }
+
+        // store the last book id we updated; used to reduce future (needless) checks.
+        PreferenceManager.getDefaultSharedPreferences(context)
+                         .edit().putLong(GoodreadsHandler.PREFS_LAST_BOOK_SEND, lastBookSend)
+                         .apply();
 
         final PendingIntent pendingIntent = Notifier
                 .createPendingIntent(context, BooksOnBookshelf.class);

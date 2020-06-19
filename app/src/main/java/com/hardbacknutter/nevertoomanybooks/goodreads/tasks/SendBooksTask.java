@@ -59,18 +59,25 @@ public class SendBooksTask
     /** Log tag. */
     private static final String TAG = "GR.SendBooksTask";
 
-    /** Whether to send only updated books. */
+    /** Flag: send only starting from the last book we did earlier, or all books. */
+    private final boolean mFromLastBookId;
+    /** Flag: send only the updated, or all books. */
     private final boolean mUpdatesOnly;
 
     /**
      * Constructor.
      *
-     * @param updatesOnly  {@code true} for updated books only, or {@code false} all books.
-     * @param taskListener for sending progress and finish messages to.
+     * @param fromLastBookId {@code true} to send from the last book we did earlier,
+     *                       {@code false} for all books.
+     * @param updatesOnly    {@code true} to send updated books only,
+     *                       {@code false} for all books.
+     * @param taskListener   for sending progress and finish messages to.
      */
-    public SendBooksTask(final boolean updatesOnly,
+    public SendBooksTask(final boolean fromLastBookId,
+                         final boolean updatesOnly,
                          @NonNull final TaskListener<Integer> taskListener) {
         super(R.id.TASK_ID_GR_SEND_BOOKS, taskListener);
+        mFromLastBookId = fromLastBookId;
         mUpdatesOnly = updatesOnly;
     }
 
@@ -105,7 +112,7 @@ public class SendBooksTask
             }
 
             final String desc = context.getString(R.string.gr_title_send_book);
-            final TQTask task = new SendBooksGrTask(desc, mUpdatesOnly);
+            final TQTask task = new SendBooksGrTask(desc, mFromLastBookId, mUpdatesOnly);
             QueueManager.getQueueManager().enqueueTask(QueueManager.Q_MAIN, task);
 
             return GrStatus.SUCCESS_TASK_QUEUED;

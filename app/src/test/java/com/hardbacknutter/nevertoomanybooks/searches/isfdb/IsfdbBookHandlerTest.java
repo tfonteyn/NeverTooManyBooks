@@ -89,8 +89,8 @@ class IsfdbBookHandlerTest
         final IsfdbBookHandler handler = new IsfdbBookHandler(mSearchEngine, doc);
         // we've set the doc, so no internet download will be done.
         try {
-            final boolean[] fetchThumbnail = {false, false};
-            mRawData = handler.parseDoc(mContext, false, fetchThumbnail, mRawData);
+            final boolean[] fetchThumbnails = {false, false};
+            mRawData = handler.parseDoc(mContext, false, fetchThumbnails, mRawData);
         } catch (@NonNull final SocketTimeoutException e) {
             fail(e);
         }
@@ -137,7 +137,7 @@ class IsfdbBookHandlerTest
 //        assertEquals("Hugi", authors.get(1).getFamilyName());
 //        assertEquals("Maurice G.", authors.get(1).getGivenNames());
 
-        final ArrayList<TocEntry> toc = mRawData.getParcelableArrayList(Book.BKEY_TOC_ENTRY_ARRAY);
+        final ArrayList<TocEntry> toc = mRawData.getParcelableArrayList(Book.BKEY_TOC_ARRAY);
         assertNotNull(toc);
         //7 • Allamagoosa • (1955) • short story by Eric Frank Russell
         //24 • Hobbyist • (1947) • novelette by Eric Frank Russell
@@ -177,8 +177,8 @@ class IsfdbBookHandlerTest
 
         // we've set the doc, so no internet download will be done.
         try {
-            final boolean[] fetchThumbnail = {false, false};
-            mRawData = handler.parseDoc(mContext, true, fetchThumbnail, mRawData);
+            final boolean[] fetchThumbnails = {false, false};
+            mRawData = handler.parseDoc(mContext, true, fetchThumbnails, mRawData);
         } catch (@NonNull final SocketTimeoutException e) {
             fail(e);
         }
@@ -221,7 +221,7 @@ class IsfdbBookHandlerTest
         assertEquals("Discworld", series.get(1).getTitle());
         assertEquals("4", series.get(1).getNumber());
 
-        final ArrayList<TocEntry> toc = mRawData.getParcelableArrayList(Book.BKEY_TOC_ENTRY_ARRAY);
+        final ArrayList<TocEntry> toc = mRawData.getParcelableArrayList(Book.BKEY_TOC_ARRAY);
         assertNotNull(toc);
         assertEquals(1, toc.size());
         TocEntry entry = toc.get(0);
@@ -251,8 +251,8 @@ class IsfdbBookHandlerTest
 
         // we've set the doc, so no internet download will be done.
         try {
-            final boolean[] fetchThumbnail = {false, false};
-            mRawData = bookHandler.parseDoc(mContext, true, fetchThumbnail, mRawData);
+            final boolean[] fetchThumbnails = {false, false};
+            mRawData = bookHandler.parseDoc(mContext, true, fetchThumbnails, mRawData);
         } catch (@NonNull final SocketTimeoutException e) {
             fail(e);
         }
@@ -296,7 +296,7 @@ class IsfdbBookHandlerTest
         assertEquals("Tiffany Aching", series.get(0).getTitle());
         assertEquals("41", series.get(0).getNumber());
 
-        final ArrayList<TocEntry> toc = mRawData.getParcelableArrayList(Book.BKEY_TOC_ENTRY_ARRAY);
+        final ArrayList<TocEntry> toc = mRawData.getParcelableArrayList(Book.BKEY_TOC_ARRAY);
         assertNotNull(toc);
         assertEquals(2, toc.size());
         TocEntry entry = toc.get(0);

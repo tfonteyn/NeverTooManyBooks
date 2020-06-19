@@ -96,25 +96,18 @@
     <!-- ####################################################################################### -->
 
     <string name="debug_subject">Gathered debugging information</string>
-    <string name="debug_body">
-        Please take the time to briefly describe the problem you are experiencing.
-    </string>
+    <string name="debug_body">Please take the time to briefly describe the problem you are experiencing.</string>
     <string name="debug_send_info_text">
-        This will create a backup copy of your database as well as any log files and
-        send it to the developers. If you do not wish to send any of these files,
-        delete them from the mail attachments before sending.
+        This will create a backup copy of your database as well as any log files and send it to the developers.
+        If you do not wish to send any of these files, delete them from the mail attachments before sending.
     </string>
 
     <string name="acra_resDialogText">
         It looks like &APP_NAME; has crashed. If possible describe anything you think may be
-        relevant below and press “OK” to send us an email about the crash.
-        You will see the email before it is sent.
+        relevant below and press “OK” to send us an email about the crash. You will see the email before it is sent.
     </string>
 
-    <string name="acra_resToastText">
-        &APP_NAME; has crashed unexpectedly. Please help us to make the application
-        better by reporting this crash.
-    </string>
+    <string name="acra_resToastText">&APP_NAME; has crashed unexpectedly. Please help us to make the application better by reporting this crash.</string>
     <string name="acra_resDialogCommentPrompt">Your comments (or just leave blank):</string>
     <string name="acra_resReportSendSuccessToast">Thank you!</string>
 
@@ -122,22 +115,14 @@
     <!-- ========== General error messages ========== -->
     <!-- ####################################################################################### -->
 
-    <string name="error_unexpected_error">
-        An unexpected error has occurred, please send the details to support via the “Admin” page from the main menu.
-    </string>
-    <string name="error_if_the_problem_persists">
-        If the problem persists, contact support via the “%1$s” option at the bottom of the settings page.
-    </string>
+    <string name="error_unexpected_error">An unexpected error has occurred, please send the details to support via the “Admin” page from the main menu.</string>
+    <string name="error_if_the_problem_persists">If the problem persists, contact support via the “%1$s” option at the bottom of the settings page.</string>
 
     <string name="error_unknown">An unknown error occurred.</string>
     <string name="error_network_no_connection">Internet connection is not available.</string>
     <string name="error_network_timeout">No response, please try again.</string>
 
-    <string name="error_site_access_failed">
-        There was a network problem while accessing %1$s. Please check if the website is up,
-        and if the problem persists please contact support.
-    </string>
-
+    <string name="error_site_access_failed">There was a network problem while accessing %1$s. Please check if the website is up, and if the problem persists please contact support.</string>
 
     <string name="error_email_failed">Failed to send the email.</string>
     <string name="error_google_play_store_missing">Google Play Store is not installed.</string>
@@ -153,10 +138,7 @@
       -->
     <string name="error_search_x_failed_y">Searching on %1$s failed: %2$s.</string>
 
-    <string name="error_search_failed_network">
-        Please open the Settings and check your network and Search Site preferences.\n
-        Also check your device network settings.
-    </string>
+    <string name="error_search_failed_network">Please open the Settings and check your network and Search Site preferences.\nAlso check your device network settings.</string>
 
     <string name="error_column_is_blank">Column “%1$s” is blank at row %2$d.</string>
     <string name="error_columns_are_blank">Columns “%1$s” are all blank at row %2$d.</string>
@@ -174,9 +156,7 @@
     <!-- generic import failure -->
     <string name="error_import_failed">Import failed.</string>
     <!-- Displayed when a CSV import fails -->
-    <string name="error_import_csv_file_must_contain_columns_x">
-        File must contain a column with one of the following names: %1$s
-    </string>
+    <string name="error_import_csv_file_must_contain_columns_x">File must contain a column with one of the following names: %1$s</string>
 
     <!-- Displayed when any read operation from Shared Storage fails -->
     <string name="error_storage_not_readable">Please check that storage is accessible.</string>
@@ -193,9 +173,8 @@
     <string name="warning_import_be_cautious">
         Warning. Importing data may update existing book records with new information if the
         uuid column is not present and the id in the import file is the same as an existing id.
-        This is usually fine if you changed a field in an exported file. If you created a new
-        book record, or are importing someone else\'s books, ensure the uuid field is present
-        or the id field is blank.
+        This is usually fine if you changed a field in an exported file. If you created a new book record,
+        or are importing someone else\'s books, ensure the uuid field is present or the id field is blank.
     </string>
 
     <!-- Importing a CSV book list partially failed with less then 10 lines failing -->
@@ -232,8 +211,11 @@
 
     <string name="warning_cannot_delete_1st_bs">Cannot Delete the 1st Bookshelf.</string>
     <string name="warning_missing_name">Name can not be blank</string>
-    <string name="warning_author_already_in_list">Author is already in the list</string>
-    <string name="warning_series_already_in_list">Series is already in the list</string>
+
+    <string name="warning_already_in_list">Already in the list!</string>
+    <string name="X_warning_already_in_list_author">Author is already in the list</string>
+    <string name="X_warning_already_in_list_series">Series is already in the list</string>
+
     <string name="warning_no_matching_book_found">No matching book found</string>
     <string name="warning_no_isbn_stored_for_book">No ISBN stored for book</string>
     <string name="warning_x_is_not_a_valid_code">“%1$s” is not a valid code</string>
@@ -243,13 +225,9 @@
     <string name="warning_image_copy_failed">Image could not be copied.</string>
     <string name="warning_image_processing_failed">Image could not be processed.</string>
 
-    <string name="warning_no_editions">No additional edition information available</string>
-    <string name="warning_if_day_set_month_and_year_must_be">
-        If a day is specified, then both month and year must be specified.
-    </string>
-    <string name="warning_if_month_set_year_must_be">
-        If a month is specified, then a year must also be specified.
-    </string>
+    <string name="warning_no_editions">No additional edition information available.</string>
+    <string name="warning_if_day_set_month_and_year_must_be">If a day is specified, then both month and year must be specified.</string>
+    <string name="warning_if_month_set_year_must_be">If a month is specified, then a year must also be specified.</string>
 
     <string name="warning_book_no_longer_exists">The specified book no longer exists.</string>
 
@@ -263,9 +241,7 @@
 
     <!-- A scanner was installed and loaded, but refused to actually start. -->
     <string name="warning_scanner_failed_to_start">The scanner failed to start.</string>
-    <string name="warning_scanner_retry_install">
-        We suggest you retry first, but if it keeps failing please reinstall your scanner, or install another scanner.
-    </string>
+    <string name="warning_scanner_retry_install">We suggest you retry first, but if it keeps failing please reinstall your scanner, or install another scanner.</string>
 
     <!-- ####################################################################################### -->
     <!-- ========== Info/help messages ========== -->
@@ -275,20 +251,17 @@
 
     <!-- param 1: file size; param 2: button text -->
     <string name="txt_cleanup_files">
-        Purgeable files currently use %1$s on the SD card. Log files and other data are saved
-        on the SD card at each upgrade, when you backup the database, or when the application
-        crashes. Tap the button below to purge these files from your SD card. If you have
-        been experiencing crashing or other errors, please consider using the
-        “%2$s” button first.
+        Purgeable files currently use %1$s on the SD card. Log files and other data are saved on the SD card
+        at each upgrade, when you backup the database, or when the application crashes. Tap the button below
+        to purge these files from your SD card. If you have been experiencing crashing or other errors,
+        please consider using the “%2$s” button first.
     </string>
 
     <string name="txt_share_book_im_reading">I\'m reading “%1$s” by %2$s %3$s %4$s</string>
     <string name="txt_tap_on_thumb">Tap on a thumbnail to display a larger image</string>
     <string name="txt_tap_on_image_to_select">Tap on the larger image to select</string>
 
-    <string name="txt_select_fields_to_update">
-        Selected fields will be updated from the internet. Unselected fields will remain unchanged.
-    </string>
+    <string name="txt_select_fields_to_update">Selected fields will be updated from the internet. Unselected fields will remain unchanged.</string>
 
     <string name="txt_waiting_for_scanner">Waiting for scanner/camera</string>
 
@@ -296,10 +269,7 @@
 
     <!-- prompt to install a scanner. Shown above a menu of Scanners.
         This is used after a previous scanner selection was not working. -->
-    <string name="txt_install_scanner_recommendation">
-        We recommend installing the Zxing barcode scanner application, and if it is already
-        installed, we recommend uninstalling it and reinstalling it.
-    </string>
+    <string name="txt_install_scanner_recommendation">We recommend installing the Zxing barcode scanner application, and if it is already installed, we recommend uninstalling it and reinstalling it.</string>
 
     <string name="txt_manage_fields">Selected fields are visible in the add/edit book screens. Unselected fields are hidden.</string>
 
@@ -316,10 +286,7 @@
     <!-- Explanatory note of the 'import from archive' "all books" option -->
     <string name="txt_import_option_all_books">New books will be added. Existing books will be updated.</string>
     <!-- Explanatory note of the 'import new & changed' option -->
-    <string name="txt_import_option_new_and_changed_books">
-        Only import books that are new, or which have been updated more recently in the archive.
-        This is useful when synchronizing two devices.
-    </string>
+    <string name="txt_import_option_new_and_changed_books">Only import books that are new, or which have been updated more recently in the archive. This is useful when synchronizing two devices.</string>
     <!-- Explanatory note for 'export to archive' initial 'simple' dialog -->
     <string name="txt_export_backup_all">All books, covers, preferences and custom styles will be exported to the archive.</string>
 
@@ -347,35 +314,19 @@
     <!-- ####################################################################################### -->
     <!-- ========== Messages for actions that need confirming first. ========== -->
     <!-- ####################################################################################### -->
-    <string name="confirm_unsaved_edits">
-        You have unsaved changes, if you exit now they will be lost.
-    </string>
-    <string name="confirm_unsaved_edits2">
-        You have unsaved changes. Are you sure you want to continue?
-    </string>
+    <string name="confirm_unsaved_edits">You have unsaved changes, if you exit now they will be lost.</string>
+    <string name="confirm_unsaved_edits2">You have unsaved changes. Are you sure you want to continue?</string>
 
     <string name="confirm_delete_series">
         Really delete series “%1$s”?\n
         \nThe books themselves will not be deleted.\n
-        \nConsider editing the series and changing the series name to that of another series
-        to preserve this data.
+        \nConsider editing the series and changing the series name to that of another series to preserve this data.
     </string>
-    <string name="confirm_delete_toc_entry">
-        Really delete the title “%1$s” by %2$s? It will be deleted from all books in
-        which it is listed. The books themselves will not be deleted.
-    </string>
+    <string name="confirm_delete_toc_entry">Really delete the title “%1$s” by %2$s? It will be deleted from all books in which it is listed. The books themselves will not be deleted.</string>
 
-    <string name="confirm_delete_book">
-        This will completely delete the book entitled “%1$s” by %2$s.
-        \nAre you sure you want to continue?
-    </string>
-    <string name="confirm_merge_bookshelves">
-        The bookshelf you are renaming already exists. Would you like to merge them?
-    </string>
-    <string name="confirm_duplicate_book_message">
-        The book you are trying to add already exists in the database,
-        are you sure you want to add another copy?
-    </string>
+    <string name="confirm_delete_book">This will completely delete the book entitled “%1$s” by %2$s.\nAre you sure you want to continue?</string>
+    <string name="confirm_merge_bookshelves">The bookshelf you are renaming already exists. Would you like to merge them?</string>
+    <string name="confirm_duplicate_book_message">The book you are trying to add already exists in the database, are you sure you want to add another copy?</string>
     <string name="confirm_overwrite_thumbnail">
         This will update the selected fields as shown, but images can optionally be downloaded for ALL books.\n
         \nDo you want to overwrite all existing images? Warning, this may take a long time.
@@ -472,9 +423,7 @@
     <string name="progress_msg_skip_s">Skipping “%1$s”</string>
 
     <!-- Progress message displayed when exporting covers -->
-    <string name="progress_msg_n_covers_processed_m_missing_s_skipped">
-        %1$d covers processed\n(%2$d/%3$d missing, %4$d skipped)
-    </string>
+    <string name="progress_msg_n_covers_processed_m_missing_s_skipped">%1$d covers processed\n(%2$d/%3$d missing, %4$d skipped)</string>
 
     <!-- Progress message displayed when importing books/covers.
         param 1: what, e.g. Books,Covers.
@@ -500,9 +449,7 @@
     <!-- Progress message displayed when importing books -->
     <string name="progress_end_export_result_n_books_processed">%1$d books processed</string>
     <!-- Progress message displayed when exporting covers -->
-    <string name="progress_end_export_result_n_covers_processed_m_missing">
-        %1$d covers processed\n(%2$d/%3$d missing)
-    </string>
+    <string name="progress_end_export_result_n_covers_processed_m_missing">%1$d covers processed\n(%2$d/%3$d missing)</string>
 
     <!-- ####################################################################################### -->
     <!-- ========== Tips which are shown in some places on how to use a screen ========== -->
@@ -511,15 +458,11 @@
     <string name="tip_reset_all">Reset tips</string>
     <string name="tip_reset_done">Tips have been reset</string>
 
-    <string name="tip_book_not_found">
-        The book was not found. You can sometimes find the correct barcode on the inside front
-        cover. Otherwise please enter the details manually.
-    </string>
+    <string name="tip_book_not_found">The book was not found. You can sometimes find the correct barcode on the inside front cover. Otherwise please enter the details manually.</string>
 
     <string name="tip_book_search_by_text">
-        Adding books by ISBN is much more accurate than adding by author and title and
-        is generally preferred. Please remember you can sometimes find the correct
-        barcode on the inside front cover.
+        Adding books by ISBN is much more accurate than adding by author and title and is generally preferred.
+        Please remember you can sometimes find the correct barcode on the inside front cover.
     </string>
     <string name="tip_booklist_styles_editor">
         You can use this screen to customize the list of styles that will be displayed in your
@@ -573,17 +516,11 @@
     <!-- Tip text displayed when user enters the 'read-only' book view -->
     <string name="tip_view_only_help">You can swipe left or right to navigate to other books.</string>
     <!-- Tip text displayed when user enters the booklist -->
-    <string name="tip_book_list">
-        Tapping on a book will show you the details of the book.
-        A long-press on an item in the list will give you more options.
-    </string>
+    <string name="tip_book_list">Tapping on a book will show you the details of the book. A long-press on an item in the list will give you more options.</string>
     <!-- Tip text displayed when user enters the 'Update fields from internet' screen
      The referred "View on…" is "menu_view_book_at"
      TODO: “View on…” should be a parameter. But that means modifying the Tip class -->
-    <string name="tip_update_fields_from_internet">
-        External site links are only processed if the site is actually contacted.
-        As a result the menu “View on…” will likewise only show what is available.
-    </string>
+    <string name="tip_update_fields_from_internet">External site links are only processed if the site is actually contacted. As a result the menu “View on…” will likewise only show what is available.</string>
 
     <!-- tip title and explanations for the icons used. -->
     <string name="tip_authors_works">Icons used</string>
@@ -602,13 +539,9 @@
     </string>
     <string name="lt_url_text_register">Register with LibraryThing</string>
     <string name="lt_url_text_dev_key">Request LibraryThing developer key</string>
-    <string name="lt_lbl_key">
-        Once you have the developer key, enter it below and it will be used to get extra data.
-    </string>
+    <string name="lt_lbl_key">Once you have the developer key, enter it below and it will be used to get extra data.</string>
     <string name="lt_key_is_correct">Your LibraryThing Developer Key is valid.</string>
-    <string name="lt_key_is_incorrect">
-        Your LibraryThing Developer Key was incorrect, or we could not connect to verify.
-    </string>
+    <string name="lt_key_is_incorrect">Your LibraryThing Developer Key was incorrect, or we could not connect to verify.</string>
 
     <!-- ####################################################################################### -->
     <!-- ========== ISFDB specific ========== -->
@@ -662,9 +595,7 @@
         Goodreads website. Due to the vagaries of the web, you may end up on a blank web page.
         Just tap the back button to return here!
     </string>
-    <string name="gr_auth_blurb_part3">
-        But remember…there is no need to do any of this: &APP_NAME; works just fine without it!
-    </string>
+    <string name="gr_auth_blurb_part3">But remember…there is no need to do any of this: &APP_NAME; works just fine without it!</string>
     <!-- Extra text displayed on the Goodreads activity when a user HAS registered -->
     <string name="gr_auth_blurb_part4">
         It looks like you have already authorized this app. If you would like to delete the
@@ -673,20 +604,13 @@
     </string>
 
     <string name="gr_authorization_needed">
-        This action can not be completed until this application is authorized on the Goodreads
-        website. Once you have authorized this application, please retry.\n
-        \nDo you want to authorize it now?
+        This action can not be completed until this application is authorized on the Goodreads website.
+        Once you have authorized this application, please retry.\n\nDo you want to authorize it now?
     </string>
-    <string name="gr_authorization_already_granted">
-        It looks like you have already authorized this application.
-        All Goodreads functions should already be available.
-    </string>
+    <string name="gr_authorization_already_granted">It looks like you have already authorized this application. All Goodreads functions should already be available.</string>
 
     <string name="gr_send_book_to_goodreads">Send book %1$d to Goodreads</string>
-    <string name="gr_info_send_all_books_results">
-        %1$d books processed: %2$d sent successfully, %3$d without ISBN and %4$d with ISBN but
-        not found in Goodreads
-    </string>
+    <string name="gr_info_send_all_books_results">%1$d books processed: %2$d sent successfully, %3$d without ISBN and %4$d with ISBN but not found in Goodreads</string>
 
     <string name="gr_info_send_books">
         This will send your library to Goodreads.\n
@@ -729,12 +653,8 @@
     <string name="gr_tq_btn_cleanup_old_events">Cleanup Old Events</string>
     <string name="gr_tq_task_has_been_queued">Task has been queued</string>
     <string name="gr_tq_requested_task_is_already_queued">Requested task is already queued</string>
-    <string name="gr_tq_export_task_is_already_queued">
-        An export task is already queued and must complete before this task can run
-    </string>
-    <string name="gr_tq_import_task_is_already_queued">
-        An import task is already queued and must complete before this task can run
-    </string>
+    <string name="gr_tq_export_task_is_already_queued">An export task is already queued and must complete before this task can run</string>
+    <string name="gr_tq_import_task_is_already_queued">An import task is already queued and must complete before this task can run</string>
     <string name="gr_tq_completed">Completed</string>
     <string name="gr_tq_failed">Failed</string>
     <string name="gr_tq_queued">Queued</string>
@@ -786,7 +706,7 @@
      This is case-sensitive, so each locale can decide if it's appropriate to for example
      move a word only if it starts with an uppercase, but not for the same word starting
      with a lowercase character.
--->
+    -->
     <string name="pv_reformat_titles_prefixes">a|A|an|An|the|The</string>
 
 
@@ -824,12 +744,8 @@
     <string name="pg_image_cache">Image cache</string>
     <!-- SwitchPreference - Thumbnails are cached in a database to avoid resizing all the time -->
     <string name="pt_thumbnails_cache_resized">Resized images are cached</string>
-    <string name="pe_thumbnails_cache_resized_each_time">
-        Resize images each time they are needed (uses less storage, scrolling will be slower)
-    </string>
-    <string name="pe_thumbnails_cache_resized_stored">
-        Cache resized images (scrolling will be faster, uses more storage)
-    </string>
+    <string name="pe_thumbnails_cache_resized_each_time">Resize images each time they are needed (uses less storage, scrolling will be slower)</string>
+    <string name="pe_thumbnails_cache_resized_stored">Cache resized images (scrolling will be faster, uses more storage)</string>
     <!-- ListPreference - Degrees by which to rotate camera pictures automatically -->
     <string name="pt_thumbnails_rotate_auto">Rotate pictures</string>
 
@@ -1131,7 +1047,6 @@
     <!-- == Button texts, must be short == -->
     <!-- ####################################################################################### -->
 
-
     <!-- generic action buttons/menus -->
     <string name="action_add">Add</string>
     <string name="action_new">New</string>
@@ -1218,6 +1133,7 @@
     <string name="hint_empty_month">(Month not set)</string>
     <!-- specific place holder text for Day rows. -->
     <string name="hint_empty_day">(Day not set)</string>
+
     <!-- ####################################################################################### -->
     <!-- == Size measurements; for now only file-sizes.  == -->
     <!-- ####################################################################################### -->
@@ -1623,8 +1539,7 @@
     <!-- Credits in the 'about' dialog -->
     <string name="lbl_about_translators">
         &APP_NAME; is the product of the efforts of many people, and would not have such wide
-        use without the generous help of our volunteer translators
-        (if we have forgotten someone, please tell us):
+        use without the generous help of our volunteer translators (if we have forgotten someone, please tell us):
     </string>
 
     <!-- ####################################################################################### -->

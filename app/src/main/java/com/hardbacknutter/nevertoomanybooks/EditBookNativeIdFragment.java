@@ -101,42 +101,4 @@ public class EditBookNativeIdFragment
         //noinspection ConstantConditions
         fields.setVisibility(getView(), false, true);
     }
-
-//    /**
-//     * Show all sites, or only the enabled sites.
-//     *
-//     * @param showAllSites flag
-//     */
-//    private void setSiteVisibility(final boolean showAllSites) {
-//
-//        @SearchSites.Id
-//        final int sites;
-//
-//        if (showAllSites) {
-//            sites = SearchSites.SEARCH_FLAG_MASK;
-//        } else {
-//            //noinspection ConstantConditions
-//            final Locale locale = LocaleUtils.getUserLocale(getContext());
-//            sites = SiteList.getList(getContext(), locale, SiteList.Type.Data).getEnabledSites();
-//        }
-//
-//        final Fields fields = mFragmentVM.getFields();
-//        final View parent = getView();
-//
-//        //noinspection ConstantConditions
-//        fields.getField(R.id.site_goodreads).setVisibility(
-//                parent, (sites & SearchSites.GOODREADS) != 0 ? View.VISIBLE : View.GONE);
-//
-//        fields.getField(R.id.site_isfdb).setVisibility(
-//                parent, (sites & SearchSites.ISFDB) != 0 ? View.VISIBLE : View.GONE);
-//
-//        fields.getField(R.id.site_library_thing).setVisibility(
-//                parent, (sites & SearchSites.LIBRARY_THING) != 0 ? View.VISIBLE : View.GONE);
-//
-//        fields.getField(R.id.site_open_library).setVisibility(
-//                parent, (sites & SearchSites.OPEN_LIBRARY) != 0 ? View.VISIBLE : View.GONE);
-//
-//        fields.getField(R.id.site_strip_info_be).setVisibility(
-//                parent, (sites & SearchSites.STRIP_INFO_BE) != 0 ? View.VISIBLE : View.GONE);
-//    }
 }

@@ -163,7 +163,7 @@ public class EditBookshelfDialogFragment
 
             //noinspection ConstantConditions
             final long styleId = mBookshelf.getStyle(getContext(), mDb).getId();
-            if (mDb.updateOrInsertBookshelf(getContext(), mBookshelf, styleId)) {
+            if (mDb.updateOrInsertBookshelf(mBookshelf, styleId)) {
                 if (mListener != null && mListener.get() != null) {
                     mListener.get().onBookshelfChanged(mBookshelf.getId(), 0);
                 } else {

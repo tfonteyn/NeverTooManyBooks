@@ -39,6 +39,10 @@ import androidx.preference.PreferenceManager;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
@@ -60,7 +64,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.StringList;
 
 /**
- * Class to hold author data.
+ * Represents an Author.
  *
  * <strong>Note:</strong> "type" is a column of {@link DBDefinitions#TBL_BOOK_AUTHOR}
  * So this class does not strictly represent an Author, but a "BookAuthor"
@@ -70,7 +74,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.StringList;
  * i.e one entry typed 'pseudonym' with the 'real-name-id' column pointing to the real name entry.
  */
 public class Author
-        implements Parcelable, ItemWithFixableId, Entity {
+        implements Parcelable, Entity {
 
     /** {@link Parcelable}. */
     public static final Creator<Author> CREATOR =
@@ -276,7 +280,7 @@ public class Author
      *
      * @param in Parcel to construct the object from
      */
-    private Author(@NonNull final Parcel in) {
+    Author(@NonNull final Parcel in) {
         mId = in.readLong();
         //noinspection ConstantConditions
         mFamilyName = in.readString();
@@ -377,7 +381,7 @@ public class Author
      *
      * @param context Current context
      *
-     * @return {@code true} if we want "given-names last-name" formatted authors.
+     * @return {@code true} if we want "given-names family" formatted authors.
      */
     private static boolean isShowGivenNameFirst(@NonNull final Context context) {
         return PreferenceManager.getDefaultSharedPreferences(context)
@@ -388,6 +392,7 @@ public class Author
      * Get the Authors. If there is more then one, we get the first Author + an ellipsis.
      *
      * @param context Current context
+     * @param authors list to condense
      *
      * @return a formatted string for author list.
      */
@@ -404,7 +409,94 @@ public class Author
             }
             return text;
         }
+    }
 
+    /**
+     * Passed a list of Author, remove duplicates.
+     * Consolidates author/- and author/type.
+     * <p>
+     * ENHANCE: Add aliases table to allow further pruning
+     * (e.g. Joe Haldeman == Joe W Haldeman).
+     *
+     * @param list         List to clean up
+     * @param context      Current context
+     * @param db           Database Access
+     * @param lookupLocale set to {@code true} to force a database lookup of the locale.
+     *                     This can be (relatively) slow, and hence should be {@code false}
+     *                     during for example an import.
+     * @param bookLocale   Locale to use if the item has none set,
+     *                     or if lookupLocale was {@code false}
+     *
+     * @return {@code true} if the list was modified.
+     */
+    public static boolean pruneList(@NonNull final Collection<Author> list,
+                                    @NonNull final Context context,
+                                    @NonNull final DAO db,
+                                    final boolean lookupLocale,
+                                    @NonNull final Locale bookLocale) {
+
+        boolean listModified = false;
+
+        // Keep track of hashCode -> Author
+        final Map<Integer, Author> hashCodesMap = new HashMap<>();
+        // We need to collect the 'previous' Author to delete, so cannot use the iterator.remove
+        final Collection<Author> toDelete = new ArrayList<>();
+
+        final Iterator<Author> it = list.iterator();
+        while (it.hasNext()) {
+            final Author author = it.next();
+
+            final Locale locale;
+            if (lookupLocale) {
+                locale = author.getLocale(context, db, bookLocale);
+            } else {
+                locale = bookLocale;
+            }
+            // try to find and update the id. Don't lookup the locale a 2nd time.
+            author.fixId(context, db, false, locale);
+
+            final Integer hashCode = author.hashCode();
+
+            if (!hashCodesMap.containsKey(hashCode)) {
+                // Not there, so just add and continue
+                hashCodesMap.put(hashCode, author);
+
+            } else {
+                @Type
+                final int type = author.getType();
+
+                // See if we can purge either one.
+                if (type == TYPE_UNKNOWN) {
+                    // Always delete an Author without a type
+                    // if an equal or more specific one exists
+                    it.remove();
+                    listModified = true;
+
+                } else {
+                    // See if the previous one also has a type
+                    final Author previous = hashCodesMap.get(hashCode);
+                    if (previous != null) {
+                        if (previous.getType() != 0) {
+                            // Both have types, simply combine them.
+                            author.setType(author.getType() | previous.getType());
+                        }
+
+                        // Either way,
+                        // Update our map (replacing the previous one)
+                        hashCodesMap.put(hashCode, author);
+                        // And remove the previous
+                        toDelete.add(previous);
+                        listModified = true;
+                    }
+                }
+            }
+        }
+
+        for (Author author : toDelete) {
+            list.remove(author);
+        }
+
+        return listModified;
     }
 
     /**
@@ -471,7 +563,7 @@ public class Author
     }
 
     /**
-     * Return the preferred 'human readable' version of the name.
+     * Return the <strong>preferred</strong> 'human readable' version of the name.
      *
      * @param context Current context
      *
@@ -479,8 +571,21 @@ public class Author
      */
     @NonNull
     public String getLabel(@NonNull final Context context) {
+        return getFormattedName(isShowGivenNameFirst(context));
+    }
+
+    /**
+     * Return the <strong>specified</strong> 'human readable' version of the name.
+     *
+     * @param givenNameFirst {@code true} if we want "given-names family-name" formatted name.
+     *                       {@code false} for "last-family, first-names"
+     *
+     * @return formatted name
+     */
+    @NonNull
+    public String getFormattedName(final boolean givenNameFirst) {
         if (!mGivenNames.isEmpty()) {
-            if (isShowGivenNameFirst(context)) {
+            if (givenNameFirst) {
                 return mGivenNames + ' ' + mFamilyName;
             } else {
                 return mFamilyName + ", " + mGivenNames;
@@ -623,45 +728,48 @@ public class Author
     }
 
     /**
-     * ENHANCE: The Locale of the Author should be based on the main language the author writes in.
+     * Get the Locale of the actual item; e.g. a book written in Spanish should
+     * return an Spanish Locale even if for example the user runs the app in German,
+     * and the device in Danish.
+     * <p>
+     * An item not using a locale, should just returns the fallbackLocale itself.
      *
-     * <br><br>{@inheritDoc}
+     * @param context    Current context
+     * @param db         Database Access
+     * @param userLocale Locale to use if the item does not have a Locale of its own.
+     *
+     * @return the item Locale, or the userLocale.
      */
     @NonNull
-    @Override
     public Locale getLocale(@NonNull final Context context,
                             @NonNull final DAO db,
                             @NonNull final Locale userLocale) {
+        //ENHANCE: The Author Locale should be based on the main language the author writes in.
         return userLocale;
     }
 
-    @Override
+    /**
+     * Try to find the Author. If found, update the id with the id as found in the database.
+     *
+     * @param context      Current context
+     * @param db           Database Access
+     * @param lookupLocale set to {@code true} to force a database lookup of the locale.
+     *                     This can be (relatively) slow, and hence should be {@code false}
+     *                     during for example an import.
+     * @param bookLocale   Locale to use if the item has none set,
+     *                     or if lookupLocale was {@code false}
+     *
+     * @return the item id (also set on the item).
+     */
     public long fixId(@NonNull final Context context,
                       @NonNull final DAO db,
-                      @NonNull final Locale locale) {
-        mId = db.getAuthorId(context, this, locale);
+                      final boolean lookupLocale,
+                      @NonNull final Locale bookLocale) {
+
+        mId = db.getAuthorId(context, this, lookupLocale, bookLocale);
         return mId;
     }
 
-    /**
-     * An Author with a given set of Family and Given-names is defined by a unique ID.<br>
-     * The other fields are not significant in a list of Authors.
-     * <ul>
-     *      <li>The 'isComplete' is a user setting.</li>
-     *      <li>The 'type' is on a per book basis.</li>
-     * </ul>
-     */
-    @SuppressWarnings("SameReturnValue")
-    @Override
-    public boolean isUniqueById() {
-        return true;
-    }
-
-    /**
-     * Equality: <strong>id, family and given-names</strong>.
-     *
-     * @return hash
-     */
     @Override
     public int hashCode() {
         return Objects.hash(mId, mFamilyName, mGivenNames);
@@ -669,14 +777,13 @@ public class Author
 
     /**
      * Equality: <strong>id, family and given-names</strong>.
-     * <p>
-     * <li>it's the same Object</li>
-     * <li>one or both of them are 'new' (e.g. id == 0) or have the same ID<br>
-     * AND family/given-names are equal</li>
-     * <li>if both are 'new' check if family/given-names are equal</li>
-     * <p>
+     * <ul>
+     *      <li>'type' is on a per book basis. See {@link #pruneList}.</li>
+     *      <li>'isComplete' is a user setting and is ignored.</li>
+     * </ul>
+     *
      * <strong>Compare is CASE SENSITIVE</strong>:
-     * This allows correcting case mistakes even with identical ID.<br>
+     * This allows correcting case mistakes even with identical ID.
      */
     @Override
     public boolean equals(@Nullable final Object obj) {
@@ -686,7 +793,7 @@ public class Author
         if (obj == null || getClass() != obj.getClass()) {
             return false;
         }
-        Author that = (Author) obj;
+        final Author that = (Author) obj;
         // if both 'exist' but have different ID's -> different.
         if (mId != 0 && that.mId != 0 && mId != that.mId) {
             return false;

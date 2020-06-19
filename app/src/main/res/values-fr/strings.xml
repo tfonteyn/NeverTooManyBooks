@@ -618,7 +618,7 @@
     <string name="vldt_non_blank_required_for_x">Valeur non vide attendue pour «%1$s»</string>
     <string name="vldt_read_start_after_end">La date de début de lecture est après la date de fin</string>
     <string name="vldt_real_expected_for_x">Valeur décimale attendue pour «%1$s»</string>
-    <string name="warning_author_already_in_list">L\'auteur est déjà dans la liste</string>
+    <string name="X_warning_already_in_list_author">L\'auteur est déjà dans la liste</string>
     <string name="warning_backup_request">Voulez-vous sauvegarder votre base de données sur la carte SD ?</string>
     <string name="warning_book_no_longer_exists">Le livre demandé n\'existe plus</string>
     <string name="warning_book_not_found">Impossible de trouver le livre demandé</string>
@@ -650,7 +650,7 @@
     <string name="warning_select_an_existing_folder">Veuillez sélectionner un dossier existant.</string>
     <string name="warning_select_at_least_1_field">Choisissez au moins un champ à mettre à jour.</string>
     <string name="warning_select_at_least_1_group">Sélectionnez au moins un groupe.</string>
-    <string name="warning_series_already_in_list">La série est déjà dans la liste</string>
+    <string name="X_warning_already_in_list_series">La série est déjà dans la liste</string>
     <string name="warning_toc_confirm">Merci de confirmer que les titres de cette anthologie sont corrects.</string>
     <string name="warning_x_already_exists">%1$s existe déjà.</string>
     <string name="warning_x_is_not_a_valid_code">«%1$s» n\'est pas un code valable</string>
@@ -686,7 +686,8 @@
     <string name="lbl_next_book_without_cover">Passer au livre suivant sans couverture</string>
     <string name="book_color_support_color">Bicolore</string>
     <string name="book_format_paperback_large">Grand livre de poche</string>
-    <string name="info_filter_edition">Sélectionnez 0 ou plusieurs options et appuyez sur \"OK\" pour les appliquer, ou appuyez sur \"Tous les livres\" pour les ignorer toutes.</string>
+    <string name="info_filter_edition">Sélectionnez 0 ou plusieurs options et appuyez sur «OK» pour les appliquer, ou appuyez sur «Tous les livres» pour les ignorer toutes.</string>
     <string name="notification_channel_warn">Attention</string>
+    <string name="warning_already_in_list">Déjà dans la liste!</string>
 
 </resources>

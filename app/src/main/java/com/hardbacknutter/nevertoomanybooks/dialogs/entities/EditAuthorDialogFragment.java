@@ -37,6 +37,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
 import java.lang.ref.WeakReference;
+import java.util.Locale;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.BookChangedListener;
@@ -48,6 +49,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditAuthorBinding;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
+import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.widgets.DiacriticArrayAdapter;
 
 /**
@@ -176,7 +178,8 @@ public class EditAuthorDialogFragment
         mAuthor.setComplete(mIsComplete);
         // There is no book involved here, so use the users Locale instead
         //noinspection ConstantConditions
-        mDb.updateOrInsertAuthor(getContext(), mAuthor);
+        final Locale bookLocale = LocaleUtils.getUserLocale(getContext());
+        mDb.updateOrInsertAuthor(getContext(), mAuthor, bookLocale);
 
         if (mListener != null && mListener.get() != null) {
             mListener.get().onChange(0, BookChangedListener.AUTHOR, null);

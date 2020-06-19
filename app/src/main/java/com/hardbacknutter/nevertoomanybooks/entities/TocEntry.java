@@ -34,16 +34,21 @@ import android.os.Parcelable;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 
 /**
- * Class to represent a single title within an TOC(Anthology).
+ * Represent a single title within an TOC(Anthology).
  * <p>
  * <strong>Note:</strong>
  * these are always insert/update'd ONLY when a book is insert/update'd
@@ -52,13 +57,13 @@ import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
  * and auto increment the position.
  * Retrieving by bookId is always done ordered by position.
  * <p>
- * TODO: orphaned TocEntry:
- * when to delete entries in ANTHOLOGY ? when last book is gone? or keep them for adding
- * to new books / wish list?
- * consider a purge based on book for orphan TocEntry (a purge based on Author is already done)
+ * TODO: orphaned TocEntry: when to delete entries ?
+ * when last book is gone? or keep them for adding to new books / wish list?
+ * - consider to add a purge based on book for orphaned TocEntry
+ * - a purge based on Author is already done)
  */
 public class TocEntry
-        implements Entity, ItemWithFixableId, ItemWithTitle {
+        implements Entity, ItemWithTitle {
 
     /** {@link Parcelable}. */
     public static final Creator<TocEntry> CREATOR =
@@ -79,6 +84,7 @@ public class TocEntry
     /** As used by the DAO. */
     public static final char TYPE_BOOK = 'B';
 
+    /** Row ID. */
     private long mId;
     @NonNull
     private Author mAuthor;
@@ -137,7 +143,7 @@ public class TocEntry
      *
      * @param in Parcel to construct the object from
      */
-    private TocEntry(@NonNull final Parcel in) {
+    TocEntry(@NonNull final Parcel in) {
         mId = in.readLong();
         //noinspection ConstantConditions
         mAuthor = in.readParcelable(getClass().getClassLoader());
@@ -148,6 +154,99 @@ public class TocEntry
 
         mType = (char) in.readInt();
         mBookCount = in.readInt();
+    }
+
+    /**
+     * Passed a list of Objects, remove duplicates.
+     *
+     * @param list         List to clean up
+     * @param context      Current context
+     * @param db           Database Access
+     * @param lookupLocale set to {@code true} to force a database lookup of the locale.
+     *                     This can be (relatively) slow, and hence should be {@code false}
+     *                     during for example an import.
+     * @param bookLocale   Locale to use if the item has none set,
+     *                     or if lookupLocale was {@code false}
+     *
+     * @return {@code true} if the list was modified.
+     */
+    public static boolean pruneList(@NonNull final Collection<TocEntry> list,
+                                    @NonNull final Context context,
+                                    @NonNull final DAO db,
+                                    final boolean lookupLocale,
+                                    @NonNull final Locale bookLocale) {
+
+        boolean listModified = false;
+
+        // Keep track of hashCode -> TocEntry
+        final Map<Integer, TocEntry> hashCodesMap = new HashMap<>();
+        // We need to collect the 'previous' TocEntry to delete, so cannot use the iterator.remove
+        final Collection<TocEntry> toDelete = new ArrayList<>();
+
+        final Iterator<TocEntry> it = list.iterator();
+        while (it.hasNext()) {
+            final TocEntry tocEntry = it.next();
+
+            final Locale locale;
+            if (lookupLocale) {
+                locale = tocEntry.getLocale(context, db, bookLocale);
+            } else {
+                locale = bookLocale;
+            }
+            // try to find and update the id. Don't lookup the locale a 2nd time.
+            tocEntry.fixId(context, db, false, locale);
+
+            final Integer hashCode = tocEntry.hashCode();
+
+            if (!hashCodesMap.containsKey(hashCode)) {
+                // Not there, so just add and continue
+                hashCodesMap.put(hashCode, tocEntry);
+
+            } else {
+                final String pubYear = tocEntry.getFirstPublication().trim();
+
+                // See if we can purge either one.
+                if (pubYear.isEmpty()) {
+                    // Always delete TocEntry with empty pubYear
+                    // if an equal or more specific one exists
+                    it.remove();
+                    listModified = true;
+
+                } else {
+                    // See if the previous one also has a pubYear
+                    final TocEntry previous = hashCodesMap.get(hashCode);
+                    if (previous != null) {
+                        if (previous.getFirstPublication().trim().isEmpty()) {
+                            // It doesn't. Keep the current.
+                            // Update our map (replacing the previous one)
+                            hashCodesMap.put(hashCode, tocEntry);
+                            // And remove the previous
+                            toDelete.add(previous);
+                            listModified = true;
+
+                        } else {
+                            // Both have numbers. See if they are the same.
+                            if (pubYear.toLowerCase(locale)
+                                       .equals(previous.getFirstPublication().trim()
+                                                       .toLowerCase(locale))) {
+                                // Same exact TocEntry, delete this one, keep the previous one.
+                                it.remove();
+                                listModified = true;
+                            }
+                            // else: two entries with a different pubYear.
+                            // This is almost certainly invalid, but we can't decide on the
+                            // 'right' one. The user should clean up manually.
+                        }
+                    }
+                }
+            }
+        }
+
+        for (TocEntry tocEntry : toDelete) {
+            list.remove(tocEntry);
+        }
+
+        return listModified;
     }
 
     /**
@@ -277,44 +376,51 @@ public class TocEntry
     }
 
     /**
-     * ENHANCE: The Locale of the TocEntry should be based on either a specific language
-     * setting for the TocEntry itself, or on the Locale of the <strong>primary</strong> book.
+     * Get the Locale of the actual item; e.g. a book written in Spanish should
+     * return an Spanish Locale even if for example the user runs the app in German,
+     * and the device in Danish.
      *
-     * <br><br>{@inheritDoc}
+     * @param context    Current context
+     * @param db         Database Access
+     * @param bookLocale Locale to use if the item does not have a Locale of its own.
+     *
+     * @return the item Locale, or the bookLocale.
      */
     @NonNull
-    @Override
     public Locale getLocale(@NonNull final Context context,
                             @NonNull final DAO db,
                             @NonNull final Locale bookLocale) {
+        //ENHANCE: The TocEntry Locale should be based on either a specific language
+        // setting for the TocEntry itself, or on the Locale of the primary book.
         return bookLocale;
     }
 
-    @Override
+    /**
+     * Tries to find the item in the database using all or some of its fields (except the id).
+     * If found, sets the item's id with the id found in the database.
+     * <p>
+     * If the item has 'sub' items, then it should call those as well.
+     *
+     * @param context      Current context
+     * @param db           Database Access
+     * @param lookupLocale set to {@code true} to force a database lookup of the locale.
+     *                     This can be (relatively) slow, and hence should be {@code false}
+     *                     during for example an import.
+     * @param bookLocale   Locale to use if the item has none set,
+     *                     or if lookupLocale was {@code false}
+     *
+     * @return the item id (also set on the item).
+     */
     public long fixId(@NonNull final Context context,
                       @NonNull final DAO db,
+                      final boolean lookupLocale,
                       @NonNull final Locale bookLocale) {
-        // don't use the bookLocale for the Author; translated books would have the wrong Locale.
-        mAuthor.fixId(context, db, LocaleUtils.getUserLocale(context));
-        mId = db.getTocEntryId(context, this, bookLocale);
+
+        mAuthor.fixId(context, db, lookupLocale, bookLocale);
+        mId = db.getTocEntryId(context, this, lookupLocale, bookLocale);
         return mId;
     }
 
-    /**
-     * Each TocEntry is defined exactly by a unique ID.
-     * I.o.w. each combination of Title + Author (id) and publication date is unique.
-     */
-    @Override
-    @SuppressWarnings("SameReturnValue")
-    public boolean isUniqueById() {
-        return true;
-    }
-
-    /**
-     * Equality: <strong>id, Author(id) and Title</strong>.
-     *
-     * @return hash
-     */
     @Override
     public int hashCode() {
         return Objects.hash(mId, mAuthor, mTitle);
@@ -322,13 +428,13 @@ public class TocEntry
 
     /**
      * Equality: <strong>id, Author(id) and Title</strong>.
-     * <p>
-     * <li>it's the same Object</li>
-     * <li>one or both of them are 'new' (e.g. id == 0) or have the same id<br>
-     * AND all other fields are equal</li>
-     * <li>if both are 'new' check if title/author are equal</li>
-     * <p>
-     * Compare is CASE SENSITIVE ! This allows correcting case mistakes even with identical id.
+     * <ul>
+     *      <li>mFirstPublicationDate is excluded on purpose due to to many discrepancies
+     *          depending on source.</li>
+     * </ul>
+     *
+     * <strong>Compare is CASE SENSITIVE</strong>:
+     * This allows correcting case mistakes even with identical ID.
      */
     @Override
     public boolean equals(@Nullable final Object obj) {

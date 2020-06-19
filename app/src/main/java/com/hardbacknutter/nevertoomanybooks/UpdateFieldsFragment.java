@@ -67,9 +67,6 @@ import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 import com.hardbacknutter.nevertoomanybooks.utils.NetworkUtils;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.UpdateFieldsModel;
 
-import static com.hardbacknutter.nevertoomanybooks.entities.FieldUsage.Usage.CopyIfBlank;
-import static com.hardbacknutter.nevertoomanybooks.entities.FieldUsage.Usage.Overwrite;
-
 /**
  * Search the internet for one book or a list of books and download/update book data
  * as per user choices.
@@ -87,7 +84,7 @@ public class UpdateFieldsFragment
     private UpdateFieldsModel mUpdateFieldsModel;
     @Nullable
     private ProgressDialogFragment mProgressDialog;
-
+    /** View binding. */
     private FragmentUpdateFromInternetBinding mVb;
 
     @Override
@@ -298,7 +295,7 @@ public class UpdateFieldsFragment
 
         // If the user has selected to overwrite thumbnails...
         final FieldUsage covers = mUpdateFieldsModel.getFieldUsage(DBDefinitions.KEY_THUMBNAIL);
-        if (covers != null && covers.getUsage().equals(Overwrite)) {
+        if (covers != null && covers.getUsage().equals(FieldUsage.Usage.Overwrite)) {
             // check if the user really wants to overwrite all covers
             new MaterialAlertDialogBuilder(getContext())
                     .setIcon(R.drawable.ic_warning)
@@ -306,11 +303,11 @@ public class UpdateFieldsFragment
                     .setMessage(R.string.confirm_overwrite_thumbnail)
                     .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
                     .setNeutralButton(R.string.no, (d, w) -> {
-                        covers.setUsage(CopyIfBlank);
+                        covers.setUsage(FieldUsage.Usage.CopyIfBlank);
                         startUpdate();
                     })
                     .setPositiveButton(R.string.yes, (d, w) -> {
-                        covers.setUsage(Overwrite);
+                        covers.setUsage(FieldUsage.Usage.Overwrite);
                         startUpdate();
                     })
                     .create()

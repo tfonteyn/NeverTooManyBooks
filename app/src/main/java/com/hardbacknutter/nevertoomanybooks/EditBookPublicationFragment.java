@@ -77,10 +77,10 @@ public class EditBookPublicationFragment
         super.onResume();
         // With all Views populated, (re-)add the helpers which rely on fields having valid views
 
-        addAutocomplete(R.id.format, mFragmentVM.getFormats());
-        addAutocomplete(R.id.color, mFragmentVM.getColors());
-        addAutocomplete(R.id.publisher, mFragmentVM.getPublishers());
-        addAutocomplete(R.id.price_listed_currency, mFragmentVM.getListPriceCurrencyCodes());
+        addAutocomplete(R.id.format, mFragmentVM.getAllFormats());
+        addAutocomplete(R.id.color, mFragmentVM.getAllColors());
+        addAutocomplete(R.id.publisher, mFragmentVM.getAllPublishers());
+        addAutocomplete(R.id.price_listed_currency, mFragmentVM.getAllListPriceCurrencyCodes());
 
         addPartialDatePicker(getField(R.id.date_published),
                              R.string.lbl_date_published, false);

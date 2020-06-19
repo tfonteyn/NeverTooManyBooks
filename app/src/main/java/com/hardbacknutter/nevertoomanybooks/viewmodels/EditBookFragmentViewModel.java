@@ -76,7 +76,7 @@ public class EditBookFragmentViewModel
     }
 
     @NonNull
-    public List<Bookshelf> getBookshelves() {
+    public List<Bookshelf> getAllBookshelves() {
         if (mBookshelves == null) {
             mBookshelves = mDb.getBookshelves();
         }
@@ -84,7 +84,7 @@ public class EditBookFragmentViewModel
     }
 
     @NonNull
-    public List<String> getAuthorNames() {
+    public List<String> getAllAuthorNames() {
         if (mAuthorNames == null) {
             mAuthorNames = mDb.getAuthorNames(DBDefinitions.KEY_AUTHOR_FORMATTED);
         }
@@ -97,7 +97,7 @@ public class EditBookFragmentViewModel
      * @return List of publishers
      */
     @NonNull
-    public List<String> getPublishers() {
+    public List<String> getAllPublishers() {
         if (mPublishers == null) {
             mPublishers = mDb.getPublisherNames();
         }
@@ -113,7 +113,7 @@ public class EditBookFragmentViewModel
      * @return The list of ISO 639-2 codes
      */
     @NonNull
-    public List<String> getLanguagesCodes() {
+    public List<String> getAllLanguagesCodes() {
         if (mLanguagesCodes == null) {
             mLanguagesCodes = mDb.getLanguageCodes();
         }
@@ -126,7 +126,7 @@ public class EditBookFragmentViewModel
      * @return List of formats
      */
     @NonNull
-    public List<String> getFormats() {
+    public List<String> getAllFormats() {
         if (mFormats == null) {
             mFormats = mDb.getFormats();
         }
@@ -139,7 +139,7 @@ public class EditBookFragmentViewModel
      * @return List of colors
      */
     @NonNull
-    public List<String> getColors() {
+    public List<String> getAllColors() {
         if (mColors == null) {
             mColors = mDb.getColors();
         }
@@ -152,7 +152,7 @@ public class EditBookFragmentViewModel
      * @return List of ISO currency codes
      */
     @NonNull
-    public List<String> getListPriceCurrencyCodes() {
+    public List<String> getAllListPriceCurrencyCodes() {
         if (mListPriceCurrencies == null) {
             mListPriceCurrencies = mDb.getCurrencyCodes(DBDefinitions.KEY_PRICE_LISTED_CURRENCY);
         }
@@ -165,7 +165,7 @@ public class EditBookFragmentViewModel
      * @return List of genres
      */
     @NonNull
-    public List<String> getGenres() {
+    public List<String> getAllGenres() {
         if (mGenres == null) {
             mGenres = mDb.getGenres();
         }
@@ -178,7 +178,7 @@ public class EditBookFragmentViewModel
      * @return List of locations
      */
     @NonNull
-    public List<String> getLocations() {
+    public List<String> getAllLocations() {
         if (mLocations == null) {
             mLocations = mDb.getLocations();
         }
@@ -191,7 +191,7 @@ public class EditBookFragmentViewModel
      * @return List of ISO currency codes
      */
     @NonNull
-    public List<String> getPricePaidCurrencyCodes() {
+    public List<String> getAllPricePaidCurrencyCodes() {
         if (mPricePaidCurrencies == null) {
             mPricePaidCurrencies = mDb.getCurrencyCodes(DBDefinitions.KEY_PRICE_PAID_CURRENCY);
         }

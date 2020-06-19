@@ -89,8 +89,8 @@ class StripInfoTest
 
         final StripInfoBookHandler handler = new StripInfoBookHandler(mSearchEngine, mContext, doc);
         // we've set the doc, so no internet download will be done.
-        final boolean[] fetchThumbnail = {false, false};
-        final Bundle bookData = handler.parseDoc(mRawData, fetchThumbnail);
+        final boolean[] fetchThumbnails = {false, false};
+        final Bundle bookData = handler.parseDoc(mRawData, fetchThumbnails);
 
         assertFalse(bookData.isEmpty());
         System.out.println(bookData);
@@ -159,8 +159,8 @@ class StripInfoTest
         final StripInfoBookHandler handler = new StripInfoBookHandler(mSearchEngine, mContext, doc);
 
         // we've set the doc, so no internet download will be done.
-        final boolean[] fetchThumbnail = {false, false};
-        final Bundle bookData = handler.parseDoc(mRawData, fetchThumbnail);
+        final boolean[] fetchThumbnails = {false, false};
+        final Bundle bookData = handler.parseDoc(mRawData, fetchThumbnails);
 
         assertFalse(bookData.isEmpty());
         System.out.println(bookData);
@@ -227,8 +227,8 @@ class StripInfoTest
         final StripInfoBookHandler handler = new StripInfoBookHandler(mSearchEngine, mContext, doc);
 
         // we've set the doc, so no internet download will be done.
-        final boolean[] fetchThumbnail = {false, false};
-        final Bundle bookData = handler.parseDoc(mRawData, fetchThumbnail);
+        final boolean[] fetchThumbnails = {false, false};
+        final Bundle bookData = handler.parseDoc(mRawData, fetchThumbnails);
 
         assertFalse(bookData.isEmpty());
         System.out.println(bookData);
@@ -247,7 +247,7 @@ class StripInfoTest
         assertEquals(1, allPublishers.size());
         assertEquals("Le Lombard", allPublishers.get(0).getName());
 
-        final ArrayList<TocEntry> tocs = bookData.getParcelableArrayList(Book.BKEY_TOC_ENTRY_ARRAY);
+        final ArrayList<TocEntry> tocs = bookData.getParcelableArrayList(Book.BKEY_TOC_ARRAY);
         assertNotNull(tocs);
         assertEquals(4, tocs.size());
 
@@ -302,8 +302,8 @@ class StripInfoTest
         final StripInfoBookHandler handler = new StripInfoBookHandler(mSearchEngine, mContext, doc);
 
         // we've set the doc, so no internet download will be done.
-        final boolean[] fetchThumbnail = {false, false};
-        final Bundle bookData = handler.parseDoc(mRawData, fetchThumbnail);
+        final boolean[] fetchThumbnails = {false, false};
+        final Bundle bookData = handler.parseDoc(mRawData, fetchThumbnails);
 
         assertFalse(bookData.isEmpty());
         System.out.println(bookData);
@@ -321,7 +321,7 @@ class StripInfoTest
         assertEquals(1, allPublishers.size());
         assertEquals("Le Lombard", allPublishers.get(0).getName());
 
-        final ArrayList<TocEntry> tocs = bookData.getParcelableArrayList(Book.BKEY_TOC_ENTRY_ARRAY);
+        final ArrayList<TocEntry> tocs = bookData.getParcelableArrayList(Book.BKEY_TOC_ARRAY);
         assertNotNull(tocs);
         assertEquals(3, tocs.size());
 
@@ -374,8 +374,8 @@ class StripInfoTest
         final StripInfoBookHandler handler = new StripInfoBookHandler(mSearchEngine, mContext, doc);
 
         // we've set the doc, so no internet download will be done.
-        final boolean[] fetchThumbnail = {false, false};
-        final Bundle bookData = handler.parseDoc(mRawData, fetchThumbnail);
+        final boolean[] fetchThumbnails = {false, false};
+        final Bundle bookData = handler.parseDoc(mRawData, fetchThumbnails);
 
         assertFalse(bookData.isEmpty());
         System.out.println(bookData);
@@ -392,7 +392,7 @@ class StripInfoTest
         assertEquals(1, allPublishers.size());
         assertEquals("Le Lombard", allPublishers.get(0).getName());
 
-        final ArrayList<TocEntry> tocs = bookData.getParcelableArrayList(Book.BKEY_TOC_ENTRY_ARRAY);
+        final ArrayList<TocEntry> tocs = bookData.getParcelableArrayList(Book.BKEY_TOC_ARRAY);
         assertNull(tocs);
 
         final ArrayList<Series> allSeries = bookData.getParcelableArrayList(Book.BKEY_SERIES_ARRAY);
@@ -444,8 +444,8 @@ class StripInfoTest
         // we've set the doc, but will redirect.. so an internet download WILL be done.
         Bundle bookData = null;
         try {
-            final boolean[] fetchThumbnail = {false, false};
-            bookData = handler.parseMultiResult(mRawData, fetchThumbnail);
+            final boolean[] fetchThumbnails = {false, false};
+            bookData = handler.parseMultiResult(mRawData, fetchThumbnails);
         } catch (@NonNull final SocketTimeoutException e) {
             fail(e);
         }
@@ -467,7 +467,7 @@ class StripInfoTest
         assertEquals(1, allPublishers.size());
         assertEquals("Delcourt", allPublishers.get(0).getName());
 
-        final ArrayList<TocEntry> tocs = bookData.getParcelableArrayList(Book.BKEY_TOC_ENTRY_ARRAY);
+        final ArrayList<TocEntry> tocs = bookData.getParcelableArrayList(Book.BKEY_TOC_ARRAY);
         assertNull(tocs);
 
         final ArrayList<Series> allSeries = bookData.getParcelableArrayList(Book.BKEY_SERIES_ARRAY);

@@ -60,8 +60,10 @@ import com.google.android.material.snackbar.Snackbar;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 
+import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogTocConfirmBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentEditBookTocBinding;
@@ -105,6 +107,36 @@ public class EditBookTocFragment
     /** Log tag. */
     private static final String TAG = "EditBookTocFragment";
 
+    /** Listen for the results (approval) to add the TOC to the list and refresh the screen. */
+    private final ConfirmTocDialogFragment.ConfirmTocResults mConfirmTocResultsListener =
+            new ConfirmTocDialogFragment.ConfirmTocResults() {
+                @Override
+                public void commitIsfdbData(@Book.TocBits final long tocBitMask,
+                                            @NonNull final List<TocEntry> tocEntries) {
+                    if (tocBitMask != 0) {
+                        final Book book = mBookViewModel.getBook();
+                        book.putLong(DBDefinitions.KEY_TOC_BITMASK, tocBitMask);
+                        populateTocBits(book);
+                    }
+
+                    // append the new data
+                    // theoretically we may create duplicates, practical chance is neglectable.
+                    // And if we did, they will get weeded out when saved to the DAO
+                    mList.addAll(tocEntries);
+                    mListAdapter.notifyDataSetChanged();
+                }
+
+                /**
+                 * Start a task to get the next edition of this book (that we know of).
+                 */
+                @Override
+                public void getNextEdition() {
+                    // remove the top one, and try again
+                    mIsfdbEditions.remove(0);
+                    searchIsfdb();
+                }
+            };
+
     /** If the list changes, the book is dirty. */
     private final SimpleAdapterDataObserver mAdapterDataObserver =
             new SimpleAdapterDataObserver() {
@@ -143,57 +175,26 @@ public class EditBookTocFragment
     @Nullable
     private Integer mEditPosition;
     private DiacriticArrayAdapter<String> mAuthorAdapter;
-
-    private final ConfirmTocDialogFragment.ConfirmTocResults mConfirmTocResultsListener =
-            new ConfirmTocDialogFragment.ConfirmTocResults() {
-                /**
-                 * The user approved, so add the TOC to the list and refresh the screen.
-                 */
-                @Override
-                public void commitIsfdbData(@Book.TocBits final long tocBitMask,
-                                            @NonNull final List<TocEntry> tocEntries) {
-                    if (tocBitMask != 0) {
-                        final Book book = mBookViewModel.getBook();
-                        book.putLong(DBDefinitions.KEY_TOC_BITMASK, tocBitMask);
-                        populateTocBits(book);
-                    }
-
-                    // append! the new data
-                    mList.addAll(tocEntries);
-                    mListAdapter.notifyDataSetChanged();
-                }
-
-                /**
-                 * Start a task to get the next edition of this book (that we know of).
-                 */
-                @Override
-                public void getNextEdition() {
-                    // remove the top one, and try again
-                    mIsfdbEditions.remove(0);
-                    searchIsfdb();
-                }
-            };
-
+    /** Database Access. */
+    private DAO mDb;
+    /** Listen for the results of the entry edit-dialog. */
     private final EditTocEntryDialogFragment.EditTocEntryResults mEditTocEntryResultsListener =
             new EditTocEntryDialogFragment.EditTocEntryResults() {
-                /**
-                 * Add the author/title from the edit fields as a new row in the TOC list.
-                 */
                 @Override
                 public void addOrUpdateEntry(@NonNull final TocEntry tocEntry,
                                              final boolean hasMultipleAuthors) {
-
                     updateMultiAuthor(hasMultipleAuthors);
 
                     if (mEditPosition == null) {
-                        // add the new entry
-                        mList.add(tocEntry);
+                        // It's a new entry for the list.
+                        addNewEntry(tocEntry);
+
                     } else {
-                        // find and update
+                        // It's an existing entry in the list, find it and update with the new data
                         final TocEntry original = mList.get(mEditPosition);
                         original.copyFrom(tocEntry);
+                        mListAdapter.notifyItemChanged(mEditPosition);
                     }
-                    mListAdapter.notifyDataSetChanged();
                 }
             };
 
@@ -206,6 +207,8 @@ public class EditBookTocFragment
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        mDb = new DAO(TAG);
 
         mIsfdbEditionsTaskModel = new ViewModelProvider(this).get(IsfdbEditionsTaskModel.class);
         mIsfdbGetBookTaskModel = new ViewModelProvider(this).get(IsfdbGetBookTaskModel.class);
@@ -300,7 +303,6 @@ public class EditBookTocFragment
                     inBook.add(s);
                 }
             }
-            book.putParcelableArrayList(Book.BKEY_SERIES_ARRAY, inBook);
         }
 
         // update the book with the first publication date that was gathered from the TOC
@@ -336,7 +338,7 @@ public class EditBookTocFragment
         }
 
         // Populate the list view with the book content table.
-        mList = book.getParcelableArrayList(Book.BKEY_TOC_ENTRY_ARRAY);
+        mList = book.getParcelableArrayList(Book.BKEY_TOC_ARRAY);
 
         //noinspection ConstantConditions
         mListAdapter = new TocListEditAdapter(getContext(), mList,
@@ -360,6 +362,7 @@ public class EditBookTocFragment
     public void onSaveFields(@NonNull final Book book) {
         super.onSaveFields(book);
 
+        // Combine the separate checkboxes into the single field.
         book.setBit(DBDefinitions.KEY_TOC_BITMASK, Book.TOC_MULTIPLE_WORKS,
                     mVb.cbxIsAnthology.isChecked());
         book.setBit(DBDefinitions.KEY_TOC_BITMASK, Book.TOC_MULTIPLE_AUTHORS,
@@ -367,7 +370,7 @@ public class EditBookTocFragment
 
         // The toc list is not a 'real' field. Hence the need to store it manually here.
         // It requires no special validation.
-        book.putParcelableArrayList(Book.BKEY_TOC_ENTRY_ARRAY, mList);
+        //book.putParcelableArrayList(Book.BKEY_TOC_ARRAY, mList);
     }
 
     @Override
@@ -527,7 +530,7 @@ public class EditBookTocFragment
                 //noinspection ConstantConditions
                 mAuthorAdapter = new DiacriticArrayAdapter<>(
                         getContext(), R.layout.dropdown_menu_popup_item,
-                        mFragmentVM.getAuthorNames());
+                        mFragmentVM.getAllAuthorNames());
                 mVb.author.setAdapter(mAuthorAdapter);
             }
 
@@ -542,10 +545,21 @@ public class EditBookTocFragment
         }
     }
 
+
     /**
-     * Create a new entry.
+     * Add a new entry to the list based on the on-screen fields. (i.e. not from the edit-dialog).
      */
     private void onAdd() {
+        // clear any previous error
+        mVb.lblTitle.setError(null);
+
+        //noinspection ConstantConditions
+        final String title = mVb.title.getText().toString().trim();
+        if (title.isEmpty()) {
+            mVb.title.setError(getString(R.string.vldt_non_blank_required));
+            return;
+        }
+
         final Author author;
         if (mVb.cbxMultipleAuthors.isChecked()) {
             author = Author.from(mVb.author.getText().toString().trim());
@@ -553,19 +567,41 @@ public class EditBookTocFragment
             author = mBookAuthor;
         }
         //noinspection ConstantConditions
-        final TocEntry tocEntry = new TocEntry(author,
-                                               mVb.title.getText().toString().trim(),
-                                               mVb.firstPublication.getText().toString().trim());
-        mList.add(tocEntry);
-        mListAdapter.notifyDataSetChanged();
+        final TocEntry newTocEntry = new TocEntry(author,
+                                                  mVb.title.getText().toString().trim(),
+                                                  mVb.firstPublication.getText().toString().trim());
+        addNewEntry(newTocEntry);
+    }
 
-        if (mVb.cbxMultipleAuthors.isChecked()) {
-            //noinspection ConstantConditions
-            mVb.author.setText(mBookAuthor.getLabel(getContext()));
-            mVb.author.selectAll();
+    /**
+     * Add a new entry to the list.
+     * Called either by {@link #onAdd} or from the edit-dialog listener.
+     *
+     * @param tocEntry to add
+     */
+    private void addNewEntry(@NonNull final TocEntry tocEntry) {
+        //noinspection ConstantConditions
+        final Locale bookLocale = mBookViewModel.getBook().getLocale(getContext());
+
+        // see if it already exists
+        tocEntry.fixId(getContext(), mDb, true, bookLocale);
+        // and check it's not already in the list.
+        if (mList.contains(tocEntry)) {
+            mVb.lblTitle.setError(getString(R.string.warning_already_in_list));
+        } else {
+            mList.add(tocEntry);
+            // clear the form for next entry and scroll to the new item
+            if (mVb.cbxMultipleAuthors.isChecked()) {
+                mVb.author.setText(mBookAuthor.getLabel(getContext()));
+                mVb.author.selectAll();
+            }
+            mVb.title.setText("");
+            mVb.firstPublication.setText("");
+            mVb.title.requestFocus();
+
+            mListAdapter.notifyItemInserted(mList.size() - 1);
+            mVb.tocList.scrollToPosition(mListAdapter.getItemCount() - 1);
         }
-        mVb.title.setText("");
-        mVb.firstPublication.setText("");
     }
 
     private boolean isAddSeriesFromToc() {
@@ -586,6 +622,14 @@ public class EditBookTocFragment
             Snackbar.make(mVb.getRoot(), R.string.warning_no_editions,
                           Snackbar.LENGTH_LONG).show();
         }
+    }
+
+    @Override
+    public void onDestroy() {
+        if (mDb != null) {
+            mDb.close();
+        }
+        super.onDestroy();
     }
 
     /**
@@ -642,7 +686,7 @@ public class EditBookTocFragment
             super.onCreate(savedInstanceState);
 
             final Bundle args = requireArguments();
-            mTocEntries = args.getParcelableArrayList(Book.BKEY_TOC_ENTRY_ARRAY);
+            mTocEntries = args.getParcelableArrayList(Book.BKEY_TOC_ARRAY);
             Objects.requireNonNull(mTocEntries, ErrorMsg.ARGS_MISSING_TOC_ENTRIES);
 
             mTocBitMask = args.getLong(DBDefinitions.KEY_TOC_BITMASK);

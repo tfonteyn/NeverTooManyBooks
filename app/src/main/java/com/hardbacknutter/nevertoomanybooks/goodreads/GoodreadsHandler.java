@@ -74,14 +74,22 @@ public class GoodreadsHandler {
     public static final String BASE_URL = "https://www.goodreads.com";
     public static final Locale SITE_LOCALE = Locale.US;
     /** Preferences prefix. */
-    public static final String PREF_PREFIX = "goodreads.";
+    private static final String PREF_PREFIX = "goodreads.";
+
     /** Preference that controls display of alert about Goodreads. */
     public static final String PREFS_HIDE_ALERT = PREF_PREFIX + "hide_alert.";
+    /** last time we synced with Goodreads. */
+    public static final String PREFS_LAST_SYNC_DATE = PREF_PREFIX + "last.sync.date";
+    /** last id we send to Goodreads. */
+    public static final String PREFS_LAST_BOOK_SEND = PREF_PREFIX + "last.send.id";
+
+    /** Log tag. */
     private static final String TAG = "GoodreadsHandler";
     /** Whether to show any Goodreads sync menus at all. */
     private static final String PREFS_SHOW_MENUS = PREF_PREFIX + "showMenu";
     /** Whether to collect genre string from the popular bookshelves. */
     private static final String PREFS_COLLECT_GENRE = PREF_PREFIX + "search.collect.genre";
+
 
     /** Authentication handler. */
     @NonNull
@@ -421,8 +429,8 @@ public class GoodreadsHandler {
      * <p>
      * See {@link DAO#fetchBookForExportToGoodreads}
      *
-     * @param context Current context
-     * @param db      Database Access
+     * @param context  Current context
+     * @param db       Database Access
      * @param bookData with book data to send
      *
      * @return Disposition of book
@@ -436,7 +444,7 @@ public class GoodreadsHandler {
     public int sendOneBook(@NonNull final Context context,
                            @NonNull final DAO db,
                            @NonNull final DataHolder bookData)
-    throws CredentialsException, Http404Exception, IOException {
+            throws CredentialsException, Http404Exception, IOException {
 
         final long bookId = bookData.getLong(DBDefinitions.KEY_PK_ID);
 
@@ -456,10 +464,10 @@ public class GoodreadsHandler {
             grBookId = bookData.getLong(DBDefinitions.KEY_EID_GOODREADS_BOOK);
             if (grBookId != 0) {
                 // Get the book details to make sure we have a valid book ID
-                final boolean[] thumbs = {false, false};
-                grBook = getBookById(context, grBookId, thumbs, new Bundle());
+                final boolean[] fetchThumbnails = {false, false};
+                grBook = getBookById(context, grBookId, fetchThumbnails, new Bundle());
             }
-        } catch (@NonNull final Http404Exception e) {
+        } catch (@NonNull final Http404Exception ignore) {
             grBookId = 0;
         }
 
@@ -475,11 +483,9 @@ public class GoodreadsHandler {
             }
 
             // Get the book details using ISBN
-            final boolean[] thumbs = {false, false};
-            grBook = getBookByIsbn(context, isbn.asText(), thumbs, new Bundle());
-            if (grBook.containsKey(DBDefinitions.KEY_EID_GOODREADS_BOOK)) {
-                grBookId = grBook.getLong(DBDefinitions.KEY_EID_GOODREADS_BOOK);
-            }
+            final boolean[] fetchThumbnails = {false, false};
+            grBook = getBookByIsbn(context, isbn.asText(), fetchThumbnails, new Bundle());
+            grBookId = grBook.getLong(DBDefinitions.KEY_EID_GOODREADS_BOOK);
 
             // If we got an ID, save it against the book
             if (grBookId != 0) {
@@ -490,19 +496,15 @@ public class GoodreadsHandler {
             }
         }
 
-        // We found a Goodreads book, update it
-        long reviewId = 0;
-
-        final Locale locale = LocaleUtils.getUserLocale(context);
-
+        // We found a Goodreads book.
         // Get the review id if we have the book details. For new books, it will not be present.
-        if (grBook.containsKey(ShowBookApiHandler.ShowBookFieldName.REVIEW_ID)) {
-            reviewId = grBook.getLong(ShowBookApiHandler.ShowBookFieldName.REVIEW_ID);
-        }
+        long reviewId = grBook.getLong(ShowBookApiHandler.ShowBookFieldName.REVIEW_ID);
 
         // Lists of shelf names and our best guess at the Goodreads canonical name
         final Collection<String> shelves = new ArrayList<>();
         final Collection<String> canonicalShelves = new ArrayList<>();
+
+        final Locale locale = LocaleUtils.getUserLocale(context);
 
         // Build the list of shelves for the book that we have in the local database
         int exclusiveCount = 0;
@@ -597,7 +599,6 @@ public class GoodreadsHandler {
                                      bookData.getString(DBDefinitions.KEY_READ_START),
                                      bookData.getString(DBDefinitions.KEY_READ_END),
                                      (int) bookData.getDouble(DBDefinitions.KEY_RATING),
-                                     //rowData.getString(DBDefinitions.KEY_PRIVATE_NOTES),
                                      null);
 
         return GrStatus.SUCCESS;

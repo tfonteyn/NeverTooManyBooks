@@ -226,11 +226,10 @@ public class DateParser
         if (dateStr.length() == 4) {
             try {
                 return Year.parse(dateStr).atDay(1).atTime(0, 0);
-                //URGENT: catching RuntimeException instead of DateTimeParseException
-                // due to issues with the java.time classes and proguard minify
+                //URGENT: DateTimeParseException https://issuetracker.google.com/issues/158417777
 //            } catch (@NonNull final DateTimeParseException ignore) {
             } catch (@NonNull final RuntimeException ignore) {
-                // ignored
+                // ignore and try the next one
             }
         }
 
@@ -239,8 +238,6 @@ public class DateParser
             for (DateTimeFormatter dtf : parsers) {
                 try {
                     return LocalDateTime.parse(dateStr, dtf.withLocale(locale));
-                    //URGENT: catching RuntimeException instead of DateTimeParseException
-                    // due to issues with the java.time classes and proguard minify
 //            } catch (@NonNull final DateTimeParseException ignore) {
                 } catch (@NonNull final RuntimeException ignore) {
                     // ignore and try the next one
@@ -252,8 +249,6 @@ public class DateParser
         for (DateTimeFormatter dtf : parsers) {
             try {
                 return LocalDateTime.parse(dateStr, dtf);
-                //URGENT: catching RuntimeException instead of DateTimeParseException
-                // due to issues with the java.time classes and proguard minify
 //            } catch (@NonNull final DateTimeParseException ignore) {
             } catch (@NonNull final RuntimeException ignore) {
                 // ignore and try the next one
@@ -267,7 +262,6 @@ public class DateParser
 //                // Keep in mind this creates a new copy of the formatter.
 //                return LocalDateTime.parse(dateStr, dtf.withResolverStyle(ResolverStyle.LENIENT));
 //            } catch (@NonNull final DateTimeParseException ignore) {
-//            } catch (@NonNull final RuntimeException ignore) {
 //                // ignore and try the next one
 //            }
 //        }

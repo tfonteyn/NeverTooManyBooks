@@ -735,7 +735,7 @@ class IsfdbBookHandler
         // the table of content
         final ArrayList<TocEntry> tocEntries = getTocList(context, bookData, addSeriesFromToc);
         if (!tocEntries.isEmpty()) {
-            bookData.putParcelableArrayList(Book.BKEY_TOC_ENTRY_ARRAY, tocEntries);
+            bookData.putParcelableArrayList(Book.BKEY_TOC_ARRAY, tocEntries);
         }
 
         // store accumulated ArrayList's, do this *after* we got the TOC

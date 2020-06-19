@@ -899,11 +899,11 @@ public class SearchCoordinator
             ArrayList<Publisher> publishers =
                     mBookData.getParcelableArrayList(Book.BKEY_PUBLISHER_ARRAY);
             if (publishers != null && !publishers.isEmpty()) {
-                // remove duplicates
+                // remove duplicates by turning the list into a set and back to a list
                 publishers = new ArrayList<>(new LinkedHashSet<>(publishers));
                 // and store as "pub1 - pub2 - ..."
                 mBookData.putString(DBDefinitions.KEY_PUBLISHER,
-                                    Csv.join(" - ", publishers, Publisher::getName));
+                                    Csv.join(Publisher.DELIMITER, publishers, Publisher::getName));
             }
             mBookData.remove(Book.BKEY_PUBLISHER_ARRAY);
         }
@@ -973,7 +973,7 @@ public class SearchCoordinator
             } else if (Book.BKEY_AUTHOR_ARRAY.equals(key)
                        || Book.BKEY_SERIES_ARRAY.equals(key)
                        || Book.BKEY_PUBLISHER_ARRAY.equals(key)
-                       || Book.BKEY_TOC_ENTRY_ARRAY.equals(key)
+                       || Book.BKEY_TOC_ARRAY.equals(key)
                        || Book.BKEY_FILE_SPEC_ARRAY[0].equals(key)
                        || Book.BKEY_FILE_SPEC_ARRAY[1].equals(key)) {
                 accumulateList(key, siteData);

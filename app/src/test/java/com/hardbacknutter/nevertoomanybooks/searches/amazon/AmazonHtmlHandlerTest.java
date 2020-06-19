@@ -83,8 +83,8 @@ class AmazonHtmlHandlerTest
 
         final AmazonHtmlHandler handler = new AmazonHtmlHandler(mSearchEngine, mContext, doc);
         // we've set the doc, so no internet download will be done.
-        final boolean[] fetchThumbnail = {false, false};
-        mRawData = handler.parseDoc(fetchThumbnail, mRawData);
+        final boolean[] fetchThumbnails = {false, false};
+        mRawData = handler.parseDoc(fetchThumbnails, mRawData);
 
         assertFalse(mRawData.isEmpty());
 
@@ -133,8 +133,8 @@ class AmazonHtmlHandlerTest
         final AmazonHtmlHandler handler = new AmazonHtmlHandler(mSearchEngine, mContext, doc);
 
         // we've set the doc, so no internet download will be done.
-        final boolean[] fetchThumbnail = {false, false};
-        mRawData = handler.parseDoc(fetchThumbnail, mRawData);
+        final boolean[] fetchThumbnails = {false, false};
+        mRawData = handler.parseDoc(fetchThumbnails, mRawData);
 
         assertFalse(mRawData.isEmpty());
 

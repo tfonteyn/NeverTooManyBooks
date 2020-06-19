@@ -75,8 +75,8 @@ class OpenLibrarySearchEngineTest
             assertNotNull(is);
             final String response = mSearchEngine.readResponseStream(is);
             final JSONObject json = new JSONObject(response);
-            final boolean[] fetchThumbnail = {false, false};
-            mRawData = mSearchEngine.handleResponse(mContext, json, fetchThumbnail, mRawData);
+            final boolean[] fetchThumbnails = {false, false};
+            mRawData = mSearchEngine.handleResponse(mContext, json, fetchThumbnails, mRawData);
 
         } catch (@NonNull final IOException | JSONException e) {
             fail(e);
@@ -114,7 +114,7 @@ class OpenLibrarySearchEngineTest
         assertEquals("John", authors.get(0).getGivenNames());
         assertEquals(Author.TYPE_UNKNOWN, authors.get(0).getType());
 
-        final ArrayList<TocEntry> tocs = mRawData.getParcelableArrayList(Book.BKEY_TOC_ENTRY_ARRAY);
+        final ArrayList<TocEntry> tocs = mRawData.getParcelableArrayList(Book.BKEY_TOC_ARRAY);
         assertNotNull(tocs);
         assertEquals(5, tocs.size());
 

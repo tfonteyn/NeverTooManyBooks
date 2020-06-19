@@ -618,7 +618,7 @@
     <string name="vldt_non_blank_required_for_x">Es ist ein Wert für „%1$s“ erforderlich</string>
     <string name="vldt_read_start_after_end">Das Datum Lesen beendet ist vor dem Datum mit Lesen begonnen</string>
     <string name="vldt_real_expected_for_x">Es wird ein Gleitkomma-Wert für „%1$s“ erwartet</string>
-    <string name="warning_author_already_in_list">Der Autor befindet sich bereits in der Liste</string>
+    <string name="X_warning_already_in_list_author">Der Autor befindet sich bereits in der Liste</string>
     <string name="warning_backup_request">Möchten Sie ihre Datenbank auf SD-Karte sichern?</string>
     <string name="warning_book_no_longer_exists">Das gewünschte Buch existiert nicht mehr</string>
     <string name="warning_book_not_found">Das angegebene Buch wurde nicht gefunden</string>
@@ -650,7 +650,7 @@
     <string name="warning_select_an_existing_folder">Bitte wählen Sie einen vorhandenen Verzeichnis.</string>
     <string name="warning_select_at_least_1_field">Wählen Sie mindestens ein Feld zum Aktualisieren aus</string>
     <string name="warning_select_at_least_1_group">Wählen Sie mindestens eine Gruppe aus.</string>
-    <string name="warning_series_already_in_list">Die Serie befindet sich bereits in der Liste</string>
+    <string name="X_warning_already_in_list_series">Die Serie befindet sich bereits in der Liste</string>
     <string name="warning_toc_confirm">Bitte bestätigen Sie dass diese Anthologie-Titel korrekt sind.</string>
     <string name="warning_x_already_exists">%1$s existiert bereits.</string>
     <string name="warning_x_is_not_a_valid_code">„%1$s“ ist keine gültige Code</string>
@@ -685,6 +685,7 @@
     <string name="lbl_table_of_content_entry">Eintrag im Inhaltsverzeichnis</string>
     <string name="lbl_next_book_without_cover">Springe zum nächsten Buch ohne Cover</string>
     <string name="book_color_support_color">Zweifarbig</string>
-    <string name="info_filter_edition">Wählen Sie 0 oder mehr Optionen aus und tippen Sie auf \"OK\", um sie anzuwenden, oder tippen Sie auf \"Alle Bücher\", um alle zu ignorieren.</string>
+    <string name="info_filter_edition">Wählen Sie 0 oder mehr Optionen aus und tippen Sie auf „OK“, um sie anzuwenden, oder tippen Sie auf „Alle Bücher“, um alle zu ignorieren.</string>
     <string name="notification_channel_warn">Warnung</string>
+    <string name="warning_already_in_list">Schon in der Liste!</string>
 </resources>

@@ -10,8 +10,6 @@ ENHANCE: database using 'lower()' in WHERE and ORDER BY clauses.
    those indexes.
  * 'order by' columns have been added to TITLE (book, series, tocEntry) and AUTHOR name fields.
 
-TODO: go over ViewModel usage and related onSaveInstanceState. Remove the latter when appropriate.
-
 ENHANCE: image url loading... keep DIY, or move to Glide (v4.10.0 is using androidx)
 
 TODO: task-queue - minimalistic traditional database backed 'MessageQueue' like product

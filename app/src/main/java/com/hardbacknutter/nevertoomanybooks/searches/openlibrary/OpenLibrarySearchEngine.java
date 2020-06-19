@@ -666,7 +666,7 @@ public class OpenLibrarySearchEngine
             }
         }
         if (!toc.isEmpty()) {
-            bookData.putParcelableArrayList(Book.BKEY_TOC_ENTRY_ARRAY, toc);
+            bookData.putParcelableArrayList(Book.BKEY_TOC_ARRAY, toc);
         }
 
         return bookData;

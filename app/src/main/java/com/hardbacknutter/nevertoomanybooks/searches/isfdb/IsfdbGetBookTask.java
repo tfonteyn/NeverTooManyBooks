@@ -110,15 +110,16 @@ public class IsfdbGetBookTask
         final SearchEngine searchEngine = new IsfdbSearchEngine();
         searchEngine.setCaller(this);
         try {
-            final boolean[] thumbs = {false, false};
+            final boolean[] fetchThumbnails = {false, false};
             if (mEditions != null) {
-                return new IsfdbBookHandler(searchEngine)
-                        .fetch(context, mEditions, mAddSeriesFromToc, thumbs, new Bundle());
+                return new IsfdbBookHandler(searchEngine).fetch(
+                        context, mEditions, mAddSeriesFromToc,
+                        fetchThumbnails, new Bundle());
 
             } else if (mIsfdbId != 0) {
-                return new IsfdbBookHandler(searchEngine)
-                        .fetchByNativeId(context, String.valueOf(mIsfdbId),
-                                         mAddSeriesFromToc, thumbs, new Bundle());
+                return new IsfdbBookHandler(searchEngine).fetchByNativeId(
+                        context, String.valueOf(mIsfdbId), mAddSeriesFromToc,
+                        fetchThumbnails, new Bundle());
 
             } else {
                 if (BuildConfig.DEBUG /* always */) {

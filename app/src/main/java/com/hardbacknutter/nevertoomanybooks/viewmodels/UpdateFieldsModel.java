@@ -57,22 +57,24 @@ import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
+import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.FieldUsage;
+import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
+import com.hardbacknutter.nevertoomanybooks.entities.Series;
+import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.searches.SiteList;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
+import com.hardbacknutter.nevertoomanybooks.utils.Csv;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 
 import static com.hardbacknutter.nevertoomanybooks.entities.FieldUsage.Usage.CopyIfBlank;
 import static com.hardbacknutter.nevertoomanybooks.entities.FieldUsage.Usage.Overwrite;
 
-/**
- * Work flow for the {@link TaskListener.FinishMessage}.
- */
 public class UpdateFieldsModel
         extends SearchCoordinator {
 
@@ -86,7 +88,14 @@ public class UpdateFieldsModel
     /** Using SingleLiveEvent to prevent multiple delivery after for example a device rotation. */
     private final MutableLiveData<TaskListener.FinishMessage<Bundle>>
             mTaskFinishedMessage = new SingleLiveEvent<>();
-
+    /**
+     * Current and original book data.
+     * Tracks between {@link #startSearch(Context)}
+     * and {@link #processSearchResults(Context, Bundle)}.
+     * <p>
+     * The object gets cleared and reused for each iteration of the loop.
+     */
+    private final Book mCurrentBook = new Book();
     /** Database Access. */
     private DAO mDb;
     /** Book ID's to fetch. {@code null} for all books. */
@@ -94,16 +103,8 @@ public class UpdateFieldsModel
     private ArrayList<Long> mBookIdList;
     /** Allows restarting an update task from the given book id onwards. 0 for all. */
     private long mFromBookIdOnwards;
-
     /** Indicates the user has requested a cancel. Up to the subclass to decide what to do. */
     private boolean mIsCancelled;
-
-    /**
-     * Current and original book data.
-     * Tracks between {@link #startSearch(Context)}
-     * and {@link #processSearchResults(Context, Bundle)}.
-     */
-    private Bundle mCurrentBookData = new Bundle();
     /**
      * Current book ID.
      * Tracks between {@link #startSearch(Context)}
@@ -185,7 +186,7 @@ public class UpdateFieldsModel
         addListField(prefs, Book.BKEY_SERIES_ARRAY, R.string.lbl_series_multiple,
                      DBDefinitions.KEY_SERIES_TITLE);
 
-        addListField(prefs, Book.BKEY_TOC_ENTRY_ARRAY, R.string.lbl_table_of_content,
+        addListField(prefs, Book.BKEY_TOC_ARRAY, R.string.lbl_table_of_content,
                      DBDefinitions.KEY_TOC_BITMASK);
 
         addListField(prefs, Book.BKEY_PUBLISHER_ARRAY, R.string.lbl_publisher,
@@ -372,74 +373,50 @@ public class UpdateFieldsModel
 
         try {
             final int idCol = mCurrentCursor.getColumnIndex(DBDefinitions.KEY_PK_ID);
-            final int langCol = mCurrentCursor.getColumnIndex(DBDefinitions.KEY_LANGUAGE);
 
             // loop/skip until we start a search for a book.
             while (mCurrentCursor.moveToNext() && !mIsCancelled) {
 
                 mCurrentProgressCounter++;
 
-                // Copy the fields from the cursor and build a complete set of data
-                // for this book.
-                // This only needs to include data that we can fetch (so, for example,
-                // bookshelves are ignored).
-                mCurrentBookData = new Bundle();
-                for (int i = 0; i < mCurrentCursor.getColumnCount(); i++) {
-                    mCurrentBookData.putString(mCurrentCursor.getColumnName(i),
-                                               mCurrentCursor.getString(i));
-                }
-
-                // always add the language to the ORIGINAL data if we have one,
-                // so we can use it for the Locale details when processing the results.
-                if (langCol > 0) {
-                    final String lang = mCurrentCursor.getString(langCol);
-                    if (lang != null && !lang.isEmpty()) {
-                        mCurrentBookData.putString(DBDefinitions.KEY_LANGUAGE, lang);
-                    }
-                }
-
-                // Get the book ID
+                //read the book ID
                 mCurrentBookId = mCurrentCursor.getLong(idCol);
 
-                // Get the array data about the book
-                mCurrentBookData.putParcelableArrayList(Book.BKEY_AUTHOR_ARRAY,
-                                                        mDb.getAuthorsByBookId(mCurrentBookId));
-                mCurrentBookData.putParcelableArrayList(Book.BKEY_SERIES_ARRAY,
-                                                        mDb.getSeriesByBookId(mCurrentBookId));
-                mCurrentBookData.putParcelableArrayList(Book.BKEY_TOC_ENTRY_ARRAY,
-                                                        mDb.getTocEntryByBook(mCurrentBookId));
+                // and populate the actual book based on the cursor data
+                mCurrentBook.reload(mDb, mCurrentBookId, mCurrentCursor);
 
                 // Check which fields this book needs.
-                mCurrentFieldsWanted = filter(context, mFieldUsages, mCurrentBookData);
+                mCurrentFieldsWanted = filter(context, mFieldUsages);
 
                 // Grab the searchable fields. Ideally we will have an ISBN but we may not.
-                final String isbn = mCurrentBookData.getString(DBDefinitions.KEY_ISBN);
-                final String title = mCurrentBookData.getString(DBDefinitions.KEY_TITLE);
-                final String author = mCurrentBookData.getString(
-                        DBDefinitions.KEY_AUTHOR_FORMATTED_GIVEN_FIRST);
+                final String isbn = mCurrentBook.getString(DBDefinitions.KEY_ISBN);
+                final String title = mCurrentBook.getString(DBDefinitions.KEY_TITLE);
 
                 if (!mCurrentFieldsWanted.isEmpty()) {
                     // remove all other criteria (this is CRUCIAL)
                     clearSearchText();
                     boolean canSearch = false;
 
-                    if (isbn != null && !isbn.isEmpty()) {
+                    if (!isbn.isEmpty()) {
                         setIsbnSearchText(isbn, true);
                         canSearch = true;
                     }
 
-                    if (author != null && !author.isEmpty()
-                        && title != null && !title.isEmpty()) {
-                        setAuthorSearchText(author);
-                        setTitleSearchText(title);
-                        canSearch = true;
+                    final Author author = mCurrentBook.getPrimaryAuthor();
+                    if (author != null) {
+                        final String authorName = author.getFormattedName(true);
+                        if (!authorName.isEmpty() && !title.isEmpty()) {
+                            setAuthorSearchText(authorName);
+                            setTitleSearchText(title);
+                            canSearch = true;
+                        }
                     }
 
                     // Collect native ids we can use
                     final SparseArray<String> nativeIds = new SparseArray<>();
                     for (String key : DBDefinitions.NATIVE_ID_KEYS) {
-                        // values can be Long and String, and it's a Bundle, need to get as Object
-                        final Object o = mCurrentBookData.get(key);
+                        // values can be Long and String, get as Object
+                        final Object o = mCurrentBook.get(key);
                         if (o != null) {
                             final String value = o.toString().trim();
                             if (!value.isEmpty() && !"0".equals(value)) {
@@ -454,9 +431,9 @@ public class UpdateFieldsModel
 
                     if (canSearch) {
                         // optional
-                        final String publisher = mCurrentBookData
+                        final String publisher = mCurrentBook
                                 .getString(DBDefinitions.KEY_PUBLISHER);
-                        if (publisher != null && !publisher.isEmpty()) {
+                        if (!publisher.isEmpty()) {
                             setPublisherSearchText(publisher);
                         }
 
@@ -470,7 +447,7 @@ public class UpdateFieldsModel
                         // Start searching
                         if (search(context)) {
                             // Update the progress base message.
-                            if (title != null && !title.isEmpty()) {
+                            if (!title.isEmpty()) {
                                 setBaseMessage(title);
                             } else {
                                 setBaseMessage(isbn);
@@ -503,7 +480,9 @@ public class UpdateFieldsModel
      */
     public boolean processSearchResults(@NonNull final Context context,
                                         @Nullable final Bundle bookData) {
+
         if (!mIsCancelled && bookData != null && !bookData.isEmpty()) {
+
             // Filter the data to remove keys we don't care about
             final Collection<String> toRemove = new ArrayList<>();
             for (String key : bookData.keySet()) {
@@ -512,10 +491,11 @@ public class UpdateFieldsModel
                     toRemove.add(key);
                 }
             }
-
             for (String key : toRemove) {
                 bookData.remove(key);
             }
+
+            final Locale bookLocale = mCurrentBook.getLocale(context);
 
             // For each field, process it according the usage.
             for (FieldUsage usage : mCurrentFieldsWanted.values()) {
@@ -528,13 +508,14 @@ public class UpdateFieldsModel
                     } else {
                         switch (usage.getUsage()) {
                             case CopyIfBlank:
-                                if (hasField(mCurrentBookData, usage.fieldId)) {
+                                // remove unneeded fields from the new data
+                                if (hasField(usage.fieldId)) {
                                     bookData.remove(usage.fieldId);
                                 }
                                 break;
 
                             case Append:
-                                appendLists(usage.fieldId, mCurrentBookData, bookData);
+                                appendLists(context, usage.fieldId, bookLocale, bookData);
                                 break;
 
                             case Overwrite:
@@ -551,12 +532,14 @@ public class UpdateFieldsModel
                 String bookLang = bookData.getString(DBDefinitions.KEY_LANGUAGE);
                 if (bookLang == null || bookLang.isEmpty()) {
                     // Otherwise add the original one.
-                    bookLang = mCurrentBookData.getString(DBDefinitions.KEY_LANGUAGE);
-                    if (bookLang != null && !bookLang.isEmpty()) {
+                    bookLang = mCurrentBook.getString(DBDefinitions.KEY_LANGUAGE);
+                    if (!bookLang.isEmpty()) {
                         bookData.putString(DBDefinitions.KEY_LANGUAGE, bookLang);
                     }
                 }
 
+                //IMPORTANT: note how we construct a NEW BOOK, with the DELTA-data which
+                // we want to commit to the existing book.
                 final Book book = new Book();
                 book.putAll(bookData);
                 try {
@@ -581,7 +564,7 @@ public class UpdateFieldsModel
                                                 @NonNull final Bundle bookData,
                                                 @NonNull final FieldUsage usage,
                                                 @IntRange(from = 0) final int cIdx) {
-        final String uuid = mCurrentBookData.getString(DBDefinitions.KEY_BOOK_UUID);
+        final String uuid = mCurrentBook.getString(DBDefinitions.KEY_BOOK_UUID);
         Objects.requireNonNull(uuid, ErrorMsg.NULL_UUID);
         boolean copyThumb = false;
         switch (usage.getUsage()) {
@@ -671,13 +654,11 @@ public class UpdateFieldsModel
      *
      * @param context         Current context
      * @param requestedFields the FieldUsage map to clean up
-     * @param bookData        Bundle with keys to filter on
      *
      * @return the filtered FieldUsage map
      */
     private Map<String, FieldUsage> filter(@NonNull final Context context,
-                                           @NonNull final Map<String, FieldUsage> requestedFields,
-                                           @NonNull final Bundle bookData) {
+                                           @NonNull final Map<String, FieldUsage> requestedFields) {
 
         final Map<String, FieldUsage> fieldUsages = new LinkedHashMap<>();
         for (FieldUsage usage : requestedFields.values()) {
@@ -695,19 +676,19 @@ public class UpdateFieldsModel
                 case CopyIfBlank:
                     // Handle special cases first, 'default:' for the rest
                     if (usage.fieldId.equals(Book.BKEY_FILE_SPEC[0])) {
-                        filterCoverImage(context, bookData, fieldUsages, usage, 0);
+                        filterCoverImage(context, fieldUsages, usage, 0);
                     } else if (usage.fieldId.equals(Book.BKEY_FILE_SPEC[1])) {
-                        filterCoverImage(context, bookData, fieldUsages, usage, 1);
+                        filterCoverImage(context, fieldUsages, usage, 1);
                     } else {
                         switch (usage.fieldId) {
                             // We should never have a book without authors, but be paranoid
                             case Book.BKEY_AUTHOR_ARRAY:
                             case Book.BKEY_SERIES_ARRAY:
-                            case Book.BKEY_TOC_ENTRY_ARRAY:
-                                if (bookData.containsKey(usage.fieldId)) {
+                            case Book.BKEY_TOC_ARRAY:
+                                if (mCurrentBook.contains(usage.fieldId)) {
                                     final ArrayList<Parcelable> list =
-                                            bookData.getParcelableArrayList(usage.fieldId);
-                                    if (list == null || list.isEmpty()) {
+                                            mCurrentBook.getParcelableArrayList(usage.fieldId);
+                                    if (list.isEmpty()) {
                                         fieldUsages.put(usage.fieldId, usage);
                                     }
                                 }
@@ -715,8 +696,8 @@ public class UpdateFieldsModel
 
                             default:
                                 // If the original was blank, add to list
-                                final String value = bookData.getString(usage.fieldId);
-                                if (value == null || value.isEmpty()) {
+                                final String value = mCurrentBook.getString(usage.fieldId);
+                                if (value.isEmpty()) {
                                     fieldUsages.put(usage.fieldId, usage);
                                 }
                                 break;
@@ -730,12 +711,11 @@ public class UpdateFieldsModel
     }
 
     private void filterCoverImage(@NonNull final Context context,
-                                  @NonNull final Bundle bookData,
                                   @NonNull final Map<String, FieldUsage> fieldUsages,
                                   @NonNull final FieldUsage usage,
                                   @IntRange(from = 0) final int cIdx) {
         // - If it's a thumbnail, then see if it's missing or empty.
-        final String uuid = bookData.getString(DBDefinitions.KEY_BOOK_UUID);
+        final String uuid = mCurrentBook.getString(DBDefinitions.KEY_BOOK_UUID);
         Objects.requireNonNull(uuid, ErrorMsg.NULL_UUID);
         final File file = AppDir.getCoverFile(context, uuid, cIdx);
         if (!file.exists() || file.length() == 0) {
@@ -746,21 +726,17 @@ public class UpdateFieldsModel
     /**
      * Check if we already have this field in the original data.
      *
-     * @param currentBookData to check
-     * @param fieldId         to test for
+     * @param fieldId to test for
      *
      * @return {@code true} if already present
      */
-    private boolean hasField(@NonNull final Bundle currentBookData,
-                             @NonNull final String fieldId) {
+    private boolean hasField(@NonNull final String fieldId) {
         switch (fieldId) {
             case Book.BKEY_AUTHOR_ARRAY:
             case Book.BKEY_SERIES_ARRAY:
-            case Book.BKEY_TOC_ENTRY_ARRAY:
-                if (currentBookData.containsKey(fieldId)) {
-                    final ArrayList<Parcelable> list =
-                            currentBookData.getParcelableArrayList(fieldId);
-                    if (list != null && !list.isEmpty()) {
+            case Book.BKEY_TOC_ARRAY:
+                if (mCurrentBook.contains(fieldId)) {
+                    if (!mCurrentBook.getParcelableArrayList(fieldId).isEmpty()) {
                         return true;
                     }
                 }
@@ -768,9 +744,12 @@ public class UpdateFieldsModel
 
             default:
                 // If the original was non-blank, erase from list
-                final String value = currentBookData.getString(fieldId);
-                if (value != null && !value.isEmpty()) {
-                    return true;
+                final Object o = mCurrentBook.get(fieldId);
+                if (o != null) {
+                    final String value = o.toString().trim();
+                    if (!value.isEmpty() && !"0".equals(value)) {
+                        return true;
+                    }
                 }
                 break;
         }
@@ -781,36 +760,64 @@ public class UpdateFieldsModel
     /**
      * Combines two ParcelableArrayList's, weeding out duplicates.
      *
-     * @param <T>         type of the ArrayList elements
-     * @param key         for data
-     * @param source      Bundle to read from
-     * @param destination Bundle to read from, and to write the combined list to
+     * @param context    Current context
+     * @param key        for data
+     * @param bookLocale to use
+     * @param bookData   Bundle to update
      */
-    private <T extends Parcelable> void appendLists(@NonNull final String key,
-                                                    @NonNull final Bundle source,
-                                                    @NonNull final Bundle destination) {
-        // Get the list from the original, if it's present.
-        ArrayList<T> destinationList = source.getParcelableArrayList(key);
-
-        // Otherwise use an empty list
-        if (destinationList == null) {
-            destinationList = new ArrayList<>();
-        }
-
-        // Get the list from the new data, if it's present.
-        final ArrayList<T> newDataList = destination.getParcelableArrayList(key);
-        if (newDataList != null && !newDataList.isEmpty()) {
-            // do the actual append by copying new data to the source list
-            // if the latter does not already have the object.
-            for (T item : newDataList) {
-                if (!destinationList.contains(item)) {
-                    destinationList.add(item);
+    private void appendLists(@NonNull final Context context,
+                             @NonNull final String key,
+                             @NonNull final Locale bookLocale,
+                             @NonNull final Bundle bookData) {
+        switch (key) {
+            case Book.BKEY_AUTHOR_ARRAY: {
+                final ArrayList<Author> list = bookData.getParcelableArrayList(key);
+                if (list != null && !list.isEmpty()) {
+                    list.addAll(mCurrentBook.getParcelableArrayList(key));
+                    Author.pruneList(list, context, mDb, false, bookLocale);
                 }
+                break;
             }
+            case Book.BKEY_SERIES_ARRAY: {
+                final ArrayList<Series> list = bookData.getParcelableArrayList(key);
+                if (list != null && !list.isEmpty()) {
+                    list.addAll(mCurrentBook.getParcelableArrayList(key));
+                    Series.pruneList(list, context, mDb, false, bookLocale);
+                }
+                break;
+            }
+            case Book.BKEY_TOC_ARRAY: {
+                final ArrayList<TocEntry> list = bookData.getParcelableArrayList(key);
+                if (list != null && !list.isEmpty()) {
+                    list.addAll(mCurrentBook.getParcelableArrayList(key));
+                    TocEntry.pruneList(list, context, mDb, false, bookLocale);
+                }
+                break;
+            }
+            case Book.BKEY_PUBLISHER_ARRAY: {
+                final ArrayList<Publisher> list = bookData.getParcelableArrayList(key);
+                if (list != null && !list.isEmpty()) {
+                    // special case: the Book has a single-string field with the publisher
+                    final String[] existingNames =
+                            mCurrentBook.getString(DBDefinitions.KEY_PUBLISHER)
+                                        // URGENT: this breaks for names with " - " *IN* the name
+                                        // and not just as a delimiter.
+                                        .split(Publisher.DELIMITER);
+                    for (String pubName : existingNames) {
+                        final Publisher p = Publisher.from(pubName);
+                        if (!list.contains(p)) {
+                            list.add(p);
+                        }
+                    }
+                    bookData.remove(key);
+                    bookData.putString(DBDefinitions.KEY_PUBLISHER,
+                                       Csv.join(Publisher.DELIMITER, list, Publisher::getName));
+                }
+                break;
+            }
+            default:
+                throw new IllegalArgumentException(ErrorMsg.UNEXPECTED_VALUE + key);
         }
-
-        // Save the combined list to the new data bundle.
-        destination.putParcelableArrayList(key, destinationList);
     }
 
     @Override

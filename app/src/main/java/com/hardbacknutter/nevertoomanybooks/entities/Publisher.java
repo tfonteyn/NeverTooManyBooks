@@ -36,7 +36,7 @@ import androidx.annotation.Nullable;
 import java.util.Objects;
 
 /**
- * Class to hold Publisher data. Used in lists.
+ * Represents a Publisher.
  * <p>
  * ENHANCE: use a dedicated table with the publishers
  * Any reference to 'id' in this class is meant for future implementation.
@@ -57,6 +57,7 @@ public class Publisher
                     return new Publisher[size];
                 }
             };
+    public static final String DELIMITER = " - ";
 
     /** Publisher name. */
     private String mName;
@@ -75,7 +76,7 @@ public class Publisher
      *
      * @param in Parcel to construct the object from
      */
-    private Publisher(@NonNull final Parcel in) {
+    Publisher(@NonNull final Parcel in) {
         mName = in.readString();
     }
 
@@ -83,6 +84,8 @@ public class Publisher
      * Constructor.
      *
      * @param name of publisher.
+     *
+     * @return Publisher
      */
     public static Publisher from(@NonNull final String name) {
         return new Publisher(name);
@@ -126,12 +129,12 @@ public class Publisher
 
     /**
      * Equality.
-     * <p>
+     * <ol>
      *      <li>it's the same Object</li>
      *      <li>one or both of them are 'new' (e.g. id == 0) or have the same id<br>
      *          AND the names are equal</li>
      *      <li>if both are 'new' check if family/given-names are equal</li>
-     * <p>
+     * </ol>
      * Compare is CASE SENSITIVE ! This allows correcting case mistakes even with identical id.
      */
     @Override
@@ -142,7 +145,7 @@ public class Publisher
         if (obj == null || getClass() != obj.getClass()) {
             return false;
         }
-        Publisher that = (Publisher) obj;
+        final Publisher that = (Publisher) obj;
         // no id to compare...
         return Objects.equals(mName, that.mName);
     }

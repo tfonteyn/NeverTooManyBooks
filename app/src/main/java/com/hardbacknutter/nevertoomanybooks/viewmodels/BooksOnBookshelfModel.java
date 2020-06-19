@@ -443,7 +443,7 @@ public class BooksOnBookshelfModel
 
         // save the new bookshelf/style combination
         mCurrentBookshelf.setAsPreferred(context);
-        mCurrentBookshelf.setStyle(context, mDb, style);
+        mCurrentBookshelf.setStyle(mDb, style);
     }
 
     public void setRebuildState(final int rebuildState) {

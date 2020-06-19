@@ -82,11 +82,11 @@ public class ReviewsListApiHandler
 
     /** Handle date_added. */
     private final XmlListener mAddedListener = (bc, c) ->
-            ReviewField.validateDate(bc.getData(), ReviewField.ADDED);
+            Review.validateDate(bc.getData(), Review.ADDED);
 
     /** Handle date_updated. */
     private final XmlListener mUpdatedListener = (bc, c) ->
-            ReviewField.validateDate(bc.getData(), ReviewField.UPDATED);
+            Review.validateDate(bc.getData(), Review.UPDATED);
 
     private SimpleXmlFilter mFilters;
 
@@ -112,10 +112,10 @@ public class ReviewsListApiHandler
      * <p>
      * {@code
      * Bundle results = get(page,perPage);
-     * mTotalBooks = (int) results.getLong(ReviewsListApiHandler.ReviewField.TOTAL);
+     * mTotalBooks = (int) results.getLong(ReviewsListApiHandler.Review.TOTAL);
      * <p>
      * ArrayList<Bundle> reviews = results.getParcelableArrayList(
-     * ReviewsListApiHandler.ReviewField.REVIEWS);
+     * ReviewsListApiHandler.Review.REVIEWS);
      * }
      *
      * @return A bundle containing an ArrayList of Bundles, one for each review.
@@ -336,14 +336,14 @@ public class ReviewsListApiHandler
                 //      ...
                 //  </Request>
                 //  <reviews start="3" end="4" total="933">
-                .s(XmlTags.XML_REVIEWS).asArray(ReviewField.REVIEWS)
-                .longAttr(XmlTags.XML_START, ReviewField.START)
-                .longAttr(XmlTags.XML_END, ReviewField.END)
-                .longAttr(XmlTags.XML_TOTAL, ReviewField.TOTAL)
+                .s(XmlTags.XML_REVIEWS).asArray(Review.REVIEWS)
+                .longAttr(XmlTags.XML_START, Review.START)
+                .longAttr(XmlTags.XML_END, Review.END)
+                .longAttr(XmlTags.XML_TOTAL, Review.TOTAL)
                 //      <review>
                 .s(XmlTags.XML_REVIEW).asArrayItem()
                 //          <id>276860380</id>
-                .longBody(XmlTags.XML_ID, ReviewField.REVIEW_ID)
+                .longBody(XmlTags.XML_ID, Review.REVIEW_ID)
                 //          <book>
                 .s(XmlTags.XML_BOOK)
                 //              <id type="integer">951750</id>
@@ -351,44 +351,44 @@ public class ReviewsListApiHandler
                 //              <isbn>0583120911</isbn>
                 .stringBody(XmlTags.XML_ISBN, DBDefinitions.KEY_ISBN)
                 //              <isbn13>9780583120913</isbn13>
-                .stringBody(XmlTags.XML_ISBN_13, ReviewField.ISBN13)
+                .stringBody(XmlTags.XML_ISBN_13, Review.ISBN13)
                 //              ...
                 //              <title><![CDATA[The Dying Earth]]></title>
                 .stringBody(XmlTags.XML_TITLE, DBDefinitions.KEY_TITLE)
                 //              <image_url>
                 //      http://photo.goodreads.com/books/1294108593m/951750.jpg</image_url>
-                .stringBody(XmlTags.XML_IMAGE_URL, ReviewField.LARGE_IMAGE)
+                .stringBody(XmlTags.XML_IMAGE_URL, Review.LARGE_IMAGE)
                 //              <small_image_url>
                 //      http://photo.goodreads.com/books/1294108593s/951750.jpg</small_image_url>
-                .stringBody(XmlTags.XML_SMALL_IMAGE_URL, ReviewField.SMALL_IMAGE)
+                .stringBody(XmlTags.XML_SMALL_IMAGE_URL, Review.SMALL_IMAGE)
                 //              ...
                 //              <num_pages>159</num_pages>
                 // Note we get this as a LONG to be consistent with the Goodreads type,
-                // while our app uses a String. So use a ReviewField and convert later.
-                .longBody(XmlTags.XML_NUM_PAGES, ReviewField.PAGES)
+                // while our app uses a String. So use a Review and convert later.
+                .longBody(XmlTags.XML_NUM_PAGES, Review.PAGES)
                 //              <format></format>
                 .stringBody(XmlTags.XML_FORMAT, DBDefinitions.KEY_FORMAT)
                 //              <publisher></publisher>
                 .stringBody(XmlTags.XML_PUBLISHER, DBDefinitions.KEY_PUBLISHER)
                 //              <publication_day>20</publication_day>
-                .longBody(XmlTags.XML_PUBLICATION_DAY, ReviewField.PUBLICATION_DAY)
+                .longBody(XmlTags.XML_PUBLICATION_DAY, Review.PUBLICATION_DAY)
                 //              <publication_year>1972</publication_year>
-                .longBody(XmlTags.XML_PUBLICATION_YEAR, ReviewField.PUBLICATION_YEAR)
+                .longBody(XmlTags.XML_PUBLICATION_YEAR, Review.PUBLICATION_YEAR)
                 //              <publication_month>4</publication_month>
-                .longBody(XmlTags.XML_PUBLICATION_MONTH, ReviewField.PUBLICATION_MONTH)
+                .longBody(XmlTags.XML_PUBLICATION_MONTH, Review.PUBLICATION_MONTH)
                 //              <description><![CDATA[]]></description>
                 .stringBody(XmlTags.XML_DESCRIPTION, DBDefinitions.KEY_DESCRIPTION)
                 //              ...
                 //              <authors>
-                .s(XmlTags.XML_AUTHORS).asArray(ReviewField.AUTHORS)
+                .s(XmlTags.XML_AUTHORS).asArray(Review.AUTHORS)
                 //                  <author>
                 .s(XmlTags.XML_AUTHOR).asArrayItem()
                 //                      <id>5376</id>
                 .longBody(XmlTags.XML_ID, DBDefinitions.KEY_FK_AUTHOR)
                 //                      <name><![CDATA[Jack Vance]]></name>
-                .stringBody(XmlTags.XML_NAME, ReviewField.AUTHOR_NAME_GF)
+                .stringBody(XmlTags.XML_NAME, Review.AUTHOR_NAME_GF)
                 //                      <role>Illustrator</role>
-                .stringBody(XmlTags.XML_ROLE, ReviewField.AUTHOR_ROLE)
+                .stringBody(XmlTags.XML_ROLE, Review.AUTHOR_ROLE)
                 //                      ...
                 //                  </author>
                 //              </authors>
@@ -399,10 +399,10 @@ public class ReviewsListApiHandler
                 .doubleBody(XmlTags.XML_RATING, DBDefinitions.KEY_RATING)
                 //          ...
                 //          <shelves>
-                .s(XmlTags.XML_SHELVES).asArray(ReviewField.SHELVES)
+                .s(XmlTags.XML_SHELVES).asArray(Review.SHELVES)
                 //              <shelf name="sci-fi-fantasy" />
                 .s(XmlTags.XML_SHELF).asArrayItem()
-                .stringAttr(XmlTags.XML_NAME, ReviewField.SHELF)
+                .stringAttr(XmlTags.XML_NAME, Review.SHELF)
                 .popTo(XmlTags.XML_REVIEW)
                 //              <shelf name="to-read" />
                 //          </shelves>
@@ -413,13 +413,13 @@ public class ReviewsListApiHandler
                 .stringBody(XmlTags.XML_READ_AT, DBDefinitions.KEY_READ_END)
                 //          <date_added>Mon Feb 13 05:32:30 -0800 2012</date_added>
                 .s(XmlTags.XML_DATE_ADDED)
-                .stringBody(ReviewField.ADDED).setListener(mAddedListener).pop()
+                .stringBody(Review.ADDED).setListener(mAddedListener).pop()
                 //          <date_updated>Mon Feb 13 05:32:31 -0800 2012</date_updated>
                 .s(XmlTags.XML_DATE_UPDATED)
-                .stringBody(ReviewField.UPDATED).setListener(mUpdatedListener).pop()
+                .stringBody(Review.UPDATED).setListener(mUpdatedListener).pop()
                 //          ...
                 //          <body><![CDATA[]]></body>
-                .stringBody(XmlTags.XML_BODY, ReviewField.BODY).pop()
+                .stringBody(XmlTags.XML_BODY, Review.BODY).pop()
                 //          ...
                 //          <owned>0</owned>
                 //      </review>
@@ -432,7 +432,7 @@ public class ReviewsListApiHandler
     /**
      * Goodreads specific field names we add to the bundle based on parsed XML data.
      */
-    public static final class ReviewField {
+    public static final class Review {
 
         public static final String TOTAL = "__total";
         public static final String ISBN13 = "__isbn13";
@@ -466,7 +466,7 @@ public class ReviewsListApiHandler
         private static final DateTimeFormatter DATE_PARSER = DateTimeFormatter
                 .ofPattern("EEE MMM dd HH:mm:ss ZZZZ yyyy", LocaleUtils.getSystemLocale());
 
-        private ReviewField() {
+        private Review() {
         }
 
         @Nullable
@@ -475,9 +475,8 @@ public class ReviewsListApiHandler
                 return null;
             }
             try {
-                return LocalDateTime.parse(dateStr, ReviewField.DATE_PARSER);
-                //URGENT: catching RuntimeException instead of DateTimeParseException
-                // due to issues with the java.time classes and proguard minify
+                return LocalDateTime.parse(dateStr, Review.DATE_PARSER);
+                //URGENT: DateTimeParseException https://issuetracker.google.com/issues/158417777
 //            } catch (@NonNull final DateTimeParseException ignore) {
             } catch (@NonNull final RuntimeException ignore) {
                 return null;

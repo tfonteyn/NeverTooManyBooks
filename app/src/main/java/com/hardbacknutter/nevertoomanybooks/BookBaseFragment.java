@@ -59,13 +59,12 @@ import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.fields.Fields;
 import com.hardbacknutter.nevertoomanybooks.searches.amazon.AmazonSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.utils.PermissionsHelper;
 import com.hardbacknutter.nevertoomanybooks.utils.ViewFocusOrder;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.BookViewModel;
-
-import static com.hardbacknutter.nevertoomanybooks.entities.Book.BKEY_AUTHOR_ARRAY;
 
 /**
  * Base class for {@link BookDetailsFragment} and {@link EditBookBaseFragment}.
@@ -204,7 +203,7 @@ public abstract class BookBaseFragment
                 actionBar.setTitle(book.getString(DBDefinitions.KEY_TITLE));
                 //noinspection ConstantConditions
                 actionBar.setSubtitle(Author.getCondensedNames(
-                        getContext(), book.getParcelableArrayList(BKEY_AUTHOR_ARRAY)));
+                        getContext(), book.getParcelableArrayList(Book.BKEY_AUTHOR_ARRAY)));
             }
         }
     }
@@ -268,20 +267,34 @@ public abstract class BookBaseFragment
                 return true;
             }
             case R.id.MENU_AMAZON_BOOKS_BY_AUTHOR: {
-                //noinspection ConstantConditions
-                AmazonSearchEngine.openWebsite(context, book.getPrimaryAuthor(context), null);
+                final Author primAuthor = book.getPrimaryAuthor();
+                if (primAuthor != null) {
+                    //noinspection ConstantConditions
+                    AmazonSearchEngine.openWebsite(context,
+                                                   primAuthor.getFormattedName(true),
+                                                   null);
+                }
                 return true;
             }
             case R.id.MENU_AMAZON_BOOKS_IN_SERIES: {
-                //noinspection ConstantConditions
-                AmazonSearchEngine.openWebsite(context, null, book.getPrimarySeriesTitle());
+                final Series primSeries = book.getPrimarySeries();
+                if (primSeries != null) {
+                    //noinspection ConstantConditions
+                    AmazonSearchEngine.openWebsite(context,
+                                                   null,
+                                                   primSeries.getTitle());
+                }
                 return true;
             }
             case R.id.MENU_AMAZON_BOOKS_BY_AUTHOR_IN_SERIES: {
-                //noinspection ConstantConditions
-                AmazonSearchEngine.openWebsite(context,
-                                               book.getPrimaryAuthor(context),
-                                               book.getPrimarySeriesTitle());
+                final Author primAuthor = book.getPrimaryAuthor();
+                final Series primSeries = book.getPrimarySeries();
+                if (primAuthor != null && primSeries != null) {
+                    //noinspection ConstantConditions
+                    AmazonSearchEngine.openWebsite(context,
+                                                   primAuthor.getFormattedName(true),
+                                                   primSeries.getTitle());
+                }
                 return true;
             }
 

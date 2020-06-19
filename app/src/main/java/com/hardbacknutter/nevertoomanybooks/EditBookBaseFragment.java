@@ -261,6 +261,7 @@ public abstract class EditBookBaseFragment
      * <p>
      * {@inheritDoc}
      */
+    @SuppressWarnings("ParameterNameDiffersFromOverriddenParameter")
     @CallSuper
     @Override
     public void onSaveFields(@NonNull final Book book) {

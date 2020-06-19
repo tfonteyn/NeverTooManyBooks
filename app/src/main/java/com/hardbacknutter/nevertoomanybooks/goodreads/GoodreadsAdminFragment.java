@@ -150,6 +150,6 @@ public class GoodreadsAdminFragment
 
     private void sendBooks(final boolean updatesOnly) {
         Snackbar.make(mVb.getRoot(), R.string.progress_msg_connecting, Snackbar.LENGTH_LONG).show();
-        mGrTaskModel.execute(new SendBooksTask(updatesOnly, mGrTaskModel.getTaskListener()));
+        mGrTaskModel.execute(new SendBooksTask(false, updatesOnly, mGrTaskModel.getTaskListener()));
     }
 }

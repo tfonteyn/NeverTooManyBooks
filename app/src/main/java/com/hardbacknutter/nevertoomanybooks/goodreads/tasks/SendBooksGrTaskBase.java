@@ -142,7 +142,7 @@ public abstract class SendBooksGrTaskBase
 
         try {
             @GrStatus.Status
-            int status = apiHandler.sendOneBook(context, db, bookData);
+            final int status = apiHandler.sendOneBook(context, db, bookData);
             setLastExtStatus(status);
             if (status == GrStatus.SUCCESS) {
                 mSent++;

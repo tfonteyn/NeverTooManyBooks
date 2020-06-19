@@ -173,12 +173,11 @@ public class EditBookFieldsFragment
         if (getField(R.id.bookshelves).isUsed(getContext())) {
             mVb.bookshelves.setOnClickListener(v -> {
                 mFragmentVM.setCurrentDialogFieldId(R.id.bookshelves);
-                final DialogFragment picker = CheckListDialogFragment
-                        .newInstance(getString(R.string.lbl_bookshelves_long),
-                                     new ArrayList<>(mFragmentVM.getBookshelves()),
-                                     new ArrayList<>(
-                                             mBookViewModel.getBook().getParcelableArrayList(
-                                                     Book.BKEY_BOOKSHELF_ARRAY)));
+                final DialogFragment picker = CheckListDialogFragment.newInstance(
+                        getString(R.string.lbl_bookshelves_long),
+                        new ArrayList<>(mFragmentVM.getAllBookshelves()),
+                        new ArrayList<>(mBookViewModel.getBook().getParcelableArrayList(
+                                Book.BKEY_BOOKSHELF_ARRAY)));
                 // child fragment. We use a listener, see onAttachFragment
                 picker.show(getChildFragmentManager(), CheckListDialogFragment.TAG);
             });
@@ -203,8 +202,8 @@ public class EditBookFieldsFragment
         super.onResume();
         // With all Views populated, (re-)add the helpers which rely on fields having valid views
 
-        addAutocomplete(R.id.genre, mFragmentVM.getGenres());
-        addAutocomplete(R.id.language, mFragmentVM.getLanguagesCodes());
+        addAutocomplete(R.id.genre, mFragmentVM.getAllGenres());
+        addAutocomplete(R.id.language, mFragmentVM.getAllLanguagesCodes());
     }
 
     @Override

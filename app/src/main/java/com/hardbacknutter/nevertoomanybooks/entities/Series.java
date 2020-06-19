@@ -38,7 +38,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
@@ -54,7 +53,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 
 /**
- * Class to hold book-related Series data.
+ * Represents a Series.
  *
  * <p>
  * <strong>Note:</strong> the Series "number" is a column of {@link DBDefinitions#TBL_BOOK_SERIES}
@@ -67,7 +66,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
  * but a particular pain is the titles/series for comics.
  */
 public class Series
-        implements Parcelable, ItemWithFixableId, Entity, ItemWithTitle {
+        implements Parcelable, Entity, ItemWithTitle {
 
     /** {@link Parcelable}. */
     public static final Creator<Series> CREATOR =
@@ -240,7 +239,7 @@ public class Series
      *
      * @param in Parcel to construct the object from
      */
-    private Series(@NonNull final Parcel in) {
+    Series(@NonNull final Parcel in) {
         mId = in.readLong();
         //noinspection ConstantConditions
         mTitle = in.readString();
@@ -393,99 +392,113 @@ public class Series
     }
 
     /**
+     * Passed a list of Series, remove duplicates.
+     * Consolidates series/- and series/number.
+     * <p>
      * Remove Series from the list where the titles are the same, but one entry has a
      * {@code null} or empty number.
      * e.g. the following list should be processed as indicated:
      * <p>
-     * fred(5)
-     * fred <-- delete
-     * bill <-- delete
-     * bill <-- delete
-     * bill(1)
-     * fred(5) <-- delete
-     * fred(6)
+     * foo(5)
+     * foo <-- delete
+     * bar <-- delete
+     * bar <-- delete
+     * bar(1)
+     * foo(5) <-- delete
+     * foo(6)
+     * <p>
+     * Note we keep BOTH foo(5) + foo(6)
+     * <p>
+     * ENHANCE: Add aliases table to allow further pruning
+     * (e.g. Foundation == The Foundation Saga).
      *
-     * @param list        to prune
-     * @param context     Current context
-     * @param db          Database Access;
-     * @param bookLocale  Locale to use if the item does not have a Locale of its own.
-     * @param isBatchMode set to {@code true} to force the use of the bookLocale,
-     *                    instead of taking a round trip to the database to try and guess
-     *                    the locale. Should be used for example during an import.
+     * @param list         to prune
+     * @param context      Current context
+     * @param db           Database Access;
+     * @param lookupLocale set to {@code true} to force a database lookup of the locale.
+     *                     This can be (relatively) slow, and hence should be {@code false}
+     *                     during for example an import.
+     * @param bookLocale   Locale to use if the item has none set,
+     *                     or if lookupLocale was {@code false}
      *
      * @return {@code true} if the list was modified.
      */
-    public static boolean pruneList(@NonNull final List<Series> list,
+    public static boolean pruneList(@NonNull final Collection<Series> list,
                                     @NonNull final Context context,
                                     @NonNull final DAO db,
-                                    @NonNull final Locale bookLocale,
-                                    final boolean isBatchMode) {
-        Map<String, Series> hashMap = new HashMap<>();
-        Collection<Series> toDelete = new ArrayList<>();
-        // will be set to true if we modify the list.
-        boolean modified = false;
-        Iterator<Series> it = list.iterator();
+                                    final boolean lookupLocale,
+                                    @NonNull final Locale bookLocale) {
 
+        boolean listModified = false;
+
+        // Keep track of hashCode -> Series
+        final Map<Integer, Series> hashCodesMap = new HashMap<>();
+        // We need to collect the 'previous' Series to delete, so cannot use the iterator.remove
+        final Collection<Series> toDelete = new ArrayList<>();
+
+        final Iterator<Series> it = list.iterator();
         while (it.hasNext()) {
-            Series series = it.next();
+            final Series series = it.next();
 
-            Locale locale;
-            if (isBatchMode) {
-                locale = bookLocale;
-            } else {
+            final Locale locale;
+            if (lookupLocale) {
                 locale = series.getLocale(context, db, bookLocale);
+            } else {
+                locale = bookLocale;
             }
+            // try to find and update the id. Don't lookup the locale a 2nd time.
+            series.fixId(context, db, false, locale);
 
-            String title = series.getTitle().trim().toLowerCase(locale);
-            String number = series.getNumber().trim().toLowerCase(locale);
+            final Integer hashCode = series.hashCode();
 
-            if (!hashMap.containsKey(title)) {
+            if (!hashCodesMap.containsKey(hashCode)) {
                 // Not there, so just add and continue
-                hashMap.put(title, series);
+                hashCodesMap.put(hashCode, series);
 
             } else {
+                final String number = series.getNumber().trim();
+
                 // See if we can purge either one.
                 if (number.isEmpty()) {
                     // Always delete Series with empty numbers
                     // if an equal or more specific one exists
                     it.remove();
-                    modified = true;
+                    listModified = true;
 
                 } else {
                     // See if the previous one also has a number
-                    Series previous = hashMap.get(title);
+                    final Series previous = hashCodesMap.get(hashCode);
                     if (previous != null) {
                         if (previous.getNumber().trim().isEmpty()) {
-                            // it doesn't. Remove the previous; we keep the current one.
+                            // It doesn't. Keep the current.
+                            // Update our map (replacing the previous one)
+                            hashCodesMap.put(hashCode, series);
+                            // And remove the previous
                             toDelete.add(previous);
-                            modified = true;
-                            // and update our map (replaces the previous one)
-                            hashMap.put(title, series);
+                            listModified = true;
 
                         } else {
                             // Both have numbers. See if they are the same.
-                            if (number.equals(previous.getNumber().trim().toLowerCase(locale))) {
-                                // Same exact Series, delete this one
+                            if (number.toLowerCase(locale)
+                                      .equals(previous.getNumber().trim().toLowerCase(locale))) {
+                                // Same exact Series, delete this one, keep the previous one.
                                 it.remove();
-                                modified = true;
+                                listModified = true;
                             }
-                            //else {
-                            // Nothing to do: this is a different Series number, keep both
-                            //}
+                            // else: the book has two numbers in a series.
+                            // This might be strange, but absolutely valid.
+                            // The user should clean up manually if needed.
                         }
                     }
                 }
             }
         }
 
-        for (Series s : toDelete) {
-            list.remove(s);
+        for (Series series : toDelete) {
+            list.remove(series);
         }
 
-        // now repeat but taking the id into account.
-        // (the order in the || is important...)
-        return ItemWithFixableId.pruneList(list, context, db, bookLocale, isBatchMode)
-               || modified;
+        return listModified;
     }
 
     /**
@@ -651,9 +664,8 @@ public class Series
      * @return the Locale of the Series
      */
     @NonNull
-    @Override
     public Locale getLocale(@NonNull final Context context,
-                            @Nullable final DAO db,
+                            @NonNull final DAO db,
                             @NonNull final Locale bookLocale) {
 
         //TODO: need a reliable way to cache the Locale here. i.e. store the language of a series.
@@ -661,59 +673,52 @@ public class Series
         // were we use batch mode. Also: a french book belonging to a dutch series...
         // the series title OB is wrong. For now this is partially mitigated by making
         // entering the book language mandatory.
-        if (db != null) {
-            String lang = db.getSeriesLanguage(mId);
-            if (!lang.isEmpty()) {
-                Locale seriesLocale = LocaleUtils.getLocale(context, lang);
-                if (seriesLocale != null) {
-                    return seriesLocale;
-                }
+        final String lang = db.getSeriesLanguage(mId);
+        if (!lang.isEmpty()) {
+            final Locale seriesLocale = LocaleUtils.getLocale(context, lang);
+            if (seriesLocale != null) {
+                return seriesLocale;
             }
         }
         return bookLocale;
     }
 
-    @Override
+    /**
+     * Try to find the Author. If found, update the id with the id as found in the database.
+     *
+     * @param context      Current context
+     * @param db           Database Access
+     * @param lookupLocale set to {@code true} to force a database lookup of the locale.
+     *                     This can be (relatively) slow, and hence should be {@code false}
+     *                     during for example an import.
+     * @param bookLocale   Locale to use if the item has none set,
+     *                     or if lookupLocale was {@code false}
+     *
+     * @return the item id (also set on the item).
+     */
     public long fixId(@NonNull final Context context,
                       @NonNull final DAO db,
+                      final boolean lookupLocale,
                       @NonNull final Locale bookLocale) {
-        mId = db.getSeriesId(context, this, bookLocale);
+
+        mId = db.getSeriesId(context, this, lookupLocale, bookLocale);
         return mId;
     }
 
-    /**
-     * A Series with a given Title is <strong>NOT</strong> defined by a unique ID.
-     * In a list of Series, the number of a book in a Series ('Elric(1)', 'Elric(2)' etc)
-     * can be different, while the Series itself will have the same ID, so it's not unique by ID.
-     */
-    @SuppressWarnings("SameReturnValue")
-    @Override
-    public boolean isUniqueById() {
-        return false;
-    }
-
-    /**
-     * Equality: <strong>id, title, number</strong>.
-     * <ul>
-     *      <li>The 'isComplete' is a user setting.</li>
-     * </ul>
-     *
-     * @return hash
-     */
     @Override
     public int hashCode() {
-        return Objects.hash(mId, mTitle, mNumber);
+        return Objects.hash(mId, mTitle);
     }
 
     /**
-     * Equality: <strong>id, title, number</strong>.
-     * <p>
-     * <li>it's the same Object</li>
-     * <li>one or both of them are 'new' (e.g. id == 0) or have the same ID<br>
-     * AND title are equal</li>
-     * <li>if both are 'new' check if title/number are equal</li>
-     * <p>
-     * Compare is CASE SENSITIVE ! This allows correcting case mistakes even with identical ID.
+     * Equality: <strong>id, title</strong>.
+     * <ul>
+     *      <li>'number' is on a per book basis. See {@link #pruneList}.</li>
+     *      <li>'isComplete' is a user setting and is ignored.</li>
+     * </ul>
+     *
+     * <strong>Compare is CASE SENSITIVE</strong>:
+     * This allows correcting case mistakes even with identical ID.
      */
     @Override
     public boolean equals(@Nullable final Object obj) {
@@ -723,13 +728,12 @@ public class Series
         if (obj == null || getClass() != obj.getClass()) {
             return false;
         }
-        Series that = (Series) obj;
+        final Series that = (Series) obj;
         // if both 'exist' but have different ID's -> different.
         if (mId != 0 && that.mId != 0 && mId != that.mId) {
             return false;
         }
-        return Objects.equals(mTitle, that.mTitle)
-               && Objects.equals(mNumber, that.mNumber);
+        return Objects.equals(mTitle, that.mTitle);
     }
 
     @Override

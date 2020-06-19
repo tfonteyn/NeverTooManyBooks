@@ -115,7 +115,7 @@ public class SendOneBookTask
                     final GoodreadsHandler apiHandler = new GoodreadsHandler(grAuth);
                     final DataHolder bookData = new CursorRow(cursor);
                     @GrStatus.Status
-                    int status = apiHandler.sendOneBook(context, db, bookData);
+                    final int status = apiHandler.sendOneBook(context, db, bookData);
                     if (status == GrStatus.SUCCESS) {
                         // Record the update
                         db.setGoodreadsSyncDate(mBookId);
@@ -129,7 +129,7 @@ public class SendOneBookTask
                         throw new IllegalStateException("Book not found: bookId=" + mBookId);
                     }
                     // pretend it's Goodreads fault.
-                    return GrStatus.FAILED_BOOK_NOT_FOUND_ON_GOODREADS;
+                    return GrStatus.FAILED_BOOK_NOT_FOUND_LOCALLY;
                 }
             }
 

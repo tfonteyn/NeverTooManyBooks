@@ -102,6 +102,7 @@ final class CsvCoder {
                 return author;
             }
 
+            @SuppressWarnings("ParameterNameDiffersFromOverriddenParameter")
             @NonNull
             @Override
             public String encode(@NonNull final Author author) {
@@ -147,11 +148,11 @@ final class CsvCoder {
             @Override
             @NonNull
             public Series decode(@NonNull final String element) {
-                List<String> parts = StringList.newInstance().decodeElement(element);
-                Series series = Series.from(parts.get(0));
+                final List<String> parts = StringList.newInstance().decodeElement(element);
+                final Series series = Series.from(parts.get(0));
                 if (parts.size() > 1) {
                     try {
-                        JSONObject details = new JSONObject(parts.get(1));
+                        final JSONObject details = new JSONObject(parts.get(1));
                         series.fromJson(details);
                     } catch (@NonNull final JSONException ignore) {
                         // ignore
@@ -160,6 +161,7 @@ final class CsvCoder {
                 return series;
             }
 
+            @SuppressWarnings("ParameterNameDiffersFromOverriddenParameter")
             @NonNull
             @Override
             public String encode(@NonNull final Series series) {
@@ -170,7 +172,7 @@ final class CsvCoder {
                     result += " (" + escape(series.getNumber(), escapeChars) + ')';
                 }
 
-                JSONObject details = new JSONObject();
+                final JSONObject details = new JSONObject();
                 try {
                     series.toJson(details);
                 } catch (@NonNull final JSONException e) {
@@ -220,9 +222,9 @@ final class CsvCoder {
             @Override
             @NonNull
             public TocEntry decode(@NonNull final String element) {
-                List<String> parts = StringList.newInstance().decodeElement(element);
+                final List<String> parts = StringList.newInstance().decodeElement(element);
                 String title = parts.get(0);
-                Author author = Author.from(parts.get(1));
+                final Author author = Author.from(parts.get(1));
 
                 Matcher matcher = DATE_PATTERN.matcher(title);
                 if (matcher.find()) {
@@ -236,6 +238,7 @@ final class CsvCoder {
                 return new TocEntry(author, title, "");
             }
 
+            @SuppressWarnings("ParameterNameDiffersFromOverriddenParameter")
             @NonNull
             @Override
             public String encode(@NonNull final TocEntry tocEntry) {
@@ -295,11 +298,11 @@ final class CsvCoder {
         @Override
         @NonNull
         public Bookshelf decode(@NonNull final String element) {
-            List<String> parts = StringList.newInstance().decodeElement(element);
-            Bookshelf bookshelf = new Bookshelf(parts.get(0), defaultStyle);
+            final List<String> parts = StringList.newInstance().decodeElement(element);
+            final Bookshelf bookshelf = new Bookshelf(parts.get(0), defaultStyle);
             if (parts.size() > 1) {
                 try {
-                    JSONObject details = new JSONObject(parts.get(1));
+                    final JSONObject details = new JSONObject(parts.get(1));
                     bookshelf.fromJson(details);
                 } catch (@NonNull final JSONException ignore) {
                     // ignore
@@ -308,12 +311,13 @@ final class CsvCoder {
             return bookshelf;
         }
 
+        @SuppressWarnings("ParameterNameDiffersFromOverriddenParameter")
         @NonNull
         @Override
         public String encode(@NonNull final Bookshelf bookshelf) {
             String result = escape(bookshelf.getName(), escapeChars);
 
-            JSONObject details = new JSONObject();
+            final JSONObject details = new JSONObject();
             try {
                 bookshelf.toJson(details);
             } catch (@NonNull final JSONException e) {
@@ -326,6 +330,5 @@ final class CsvCoder {
             }
             return result;
         }
-
     }
 }

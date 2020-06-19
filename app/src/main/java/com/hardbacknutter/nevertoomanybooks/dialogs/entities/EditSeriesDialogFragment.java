@@ -36,6 +36,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
 import java.lang.ref.WeakReference;
+import java.util.Locale;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.BookChangedListener;
@@ -162,7 +163,8 @@ public class EditSeriesDialogFragment
         mSeries.setComplete(mIsComplete);
         // There is no book involved here, so use the users Locale instead
         //noinspection ConstantConditions
-        mDb.updateOrInsertSeries(getContext(), LocaleUtils.getUserLocale(getContext()), mSeries);
+        final Locale bookLocale = LocaleUtils.getUserLocale(getContext());
+        mDb.updateOrInsertSeries(getContext(), mSeries, bookLocale);
 
         if (mListener != null && mListener.get() != null) {
             mListener.get().onChange(0, BookChangedListener.SERIES, null);

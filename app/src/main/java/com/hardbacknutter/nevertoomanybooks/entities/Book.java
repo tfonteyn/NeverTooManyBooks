@@ -62,6 +62,27 @@ import com.hardbacknutter.nevertoomanybooks.utils.Money;
 
 /**
  * Represents the underlying data for a book.
+ * <p>
+ * A note on the Locale of a Book, Series, Author, ...
+ * Some of this is not implemented yet and may never be.
+ * <p>
+ * A Spanish book (written in Spanish) should return the Spanish Locale.
+ * i.e. an original language book, should (obviously) return its original Locale.
+ * A Spanish book (translated from English) should return an Spanish Locale.
+ * i.e. a translated book, should return its translation Locale.
+ * <p>
+ * A Series should return the Locale as set by the user for that Series (not implemented yet).
+ * If not set, then the Locale of the first book in the series.
+ * Edge-case: books original in English, user has first book in Spanish, second book in English
+ * -> the Series is wrongly designated as Spanish. Solution; user manually sets the Series Locale.
+ * <p>
+ * A Author should return the Locale as set by the user for that Author (not implemented yet),
+ * This should normally be the primary language the author writes in.
+ * i.e. usually the author's native language, but some authors will e.g. use english/french...
+ * to reach a larger market without translation needs.
+ * If not set, then the Locale of the first book (oldest copyright? oldest 'added'?) of that author.
+ * <p>
+ * A TocEntry...
  */
 public class Book
         extends DataManager
@@ -125,7 +146,7 @@ public class Book
     /**
      * Bundle key for {@code ParcelableArrayList<TocEntry>}.
      */
-    public static final String BKEY_TOC_ENTRY_ARRAY = TAG + ":toc_titles_array";
+    public static final String BKEY_TOC_ARRAY = TAG + ":toc_array";
 
     /**
      * Bundle key for {@code ParcelableArrayList<Bookshelf>}.
@@ -287,8 +308,8 @@ public class Book
                                         getParcelableArrayList(BKEY_AUTHOR_ARRAY));
         bookData.putParcelableArrayList(BKEY_SERIES_ARRAY,
                                         getParcelableArrayList(BKEY_SERIES_ARRAY));
-        bookData.putParcelableArrayList(BKEY_TOC_ENTRY_ARRAY,
-                                        getParcelableArrayList(BKEY_TOC_ENTRY_ARRAY));
+        bookData.putParcelableArrayList(BKEY_TOC_ARRAY,
+                                        getParcelableArrayList(BKEY_TOC_ARRAY));
 
         // publication data
         bookData.putString(DBDefinitions.KEY_PUBLISHER,
@@ -432,36 +453,41 @@ public class Book
 
         try (Cursor bookCursor = db.fetchBookById(bookId)) {
             if (bookCursor.moveToFirst()) {
-                // clean slate
                 clear();
-                // Put all cursor fields in collection
                 putAll(bookCursor);
                 // load lists (or init with empty lists)
-                //ENHANCE: use SQL GROUP_CONCAT() to get these lists at the same time as the book.
-                //pro: one call for book and sublist(s)
-                //con: the sublist comes in as one column. Will need json format to keep it flexible
-                // and then decode here (or StringList custom (de)coding? hum...)
-                putParcelableArrayList(BKEY_BOOKSHELF_ARRAY,
-                                       db.getBookshelvesByBookId(bookId));
+                putParcelableArrayList(BKEY_BOOKSHELF_ARRAY, db.getBookshelvesByBookId(bookId));
                 putParcelableArrayList(BKEY_AUTHOR_ARRAY, db.getAuthorsByBookId(bookId));
                 putParcelableArrayList(BKEY_SERIES_ARRAY, db.getSeriesByBookId(bookId));
-                putParcelableArrayList(BKEY_TOC_ENTRY_ARRAY, db.getTocEntryByBook(bookId));
+                putParcelableArrayList(BKEY_TOC_ARRAY, db.getTocEntryByBook(bookId));
             }
         }
         return this;
     }
 
+    @NonNull
+    public Book reload(@NonNull final DAO db,
+                       final long bookId,
+                       @NonNull final Cursor bookCursor) {
+        clear();
+        putAll(bookCursor);
+        // load lists (or init with empty lists)
+        putParcelableArrayList(BKEY_BOOKSHELF_ARRAY, db.getBookshelvesByBookId(bookId));
+        putParcelableArrayList(BKEY_AUTHOR_ARRAY, db.getAuthorsByBookId(bookId));
+        putParcelableArrayList(BKEY_SERIES_ARRAY, db.getSeriesByBookId(bookId));
+        putParcelableArrayList(BKEY_TOC_ARRAY, db.getTocEntryByBook(bookId));
+        return this;
+    }
+
     /**
-     * Get the name of the first author in the list of authors for this book.
+     * Get the first author in the list of authors for this book.
      *
-     * @param context Current context
-     *
-     * @return the name or {@code null} if none
+     * @return the Author or {@code null} if none present
      */
     @Nullable
-    public String getPrimaryAuthor(@NonNull final Context context) {
+    public Author getPrimaryAuthor() {
         final ArrayList<Author> authors = getParcelableArrayList(BKEY_AUTHOR_ARRAY);
-        return authors.isEmpty() ? null : authors.get(0).getLabel(context);
+        return authors.isEmpty() ? null : authors.get(0);
     }
 
     /**
@@ -472,22 +498,23 @@ public class Book
      */
     public void refreshAuthorList(@NonNull final Context context,
                                   @NonNull final DAO db) {
+
+        final Locale bookLocale = getLocale(context);
         final ArrayList<Author> list = getParcelableArrayList(BKEY_AUTHOR_ARRAY);
         for (Author author : list) {
-            db.refreshAuthor(context, author);
+            db.refreshAuthor(context, author, bookLocale);
         }
-        putParcelableArrayList(BKEY_AUTHOR_ARRAY, list);
     }
 
     /**
-     * Get the name of the first Series in the list of Series for this book.
+     * Get the the first Series in the list of Series for this book.
      *
-     * @return name, or {@code null} if none found
+     * @return the Series, or {@code null} if none present
      */
     @Nullable
-    public String getPrimarySeriesTitle() {
+    public Series getPrimarySeries() {
         final ArrayList<Series> list = getParcelableArrayList(BKEY_SERIES_ARRAY);
-        return list.isEmpty() ? null : list.get(0).getTitle();
+        return list.isEmpty() ? null : list.get(0);
     }
 
     @Override
@@ -566,11 +593,11 @@ public class Book
     public void refreshSeriesList(@NonNull final Context context,
                                   @NonNull final DAO db) {
 
+        final Locale bookLocale = getLocale(context);
         final ArrayList<Series> list = getParcelableArrayList(BKEY_SERIES_ARRAY);
         for (Series series : list) {
-            db.refreshSeries(context, series, getLocale(context));
+            db.refreshSeries(context, series, bookLocale);
         }
-        putParcelableArrayList(BKEY_SERIES_ARRAY, list);
     }
 
     /**
@@ -599,11 +626,11 @@ public class Book
                      BLANK_OR_DOUBLE_VALIDATOR, R.string.lbl_price_paid);
 
         addCrossValidator(book -> {
-            String start = book.getString(DBDefinitions.KEY_READ_START);
+            final String start = book.getString(DBDefinitions.KEY_READ_START);
             if (start.isEmpty()) {
                 return;
             }
-            String end = book.getString(DBDefinitions.KEY_READ_END);
+            final String end = book.getString(DBDefinitions.KEY_READ_END);
             if (end.isEmpty()) {
                 return;
             }
@@ -653,7 +680,7 @@ public class Book
 
         // Handle TOC_BITMASK only, no handling of actual titles here,
         // but making sure TOC_MULTIPLE_AUTHORS is correct.
-        final ArrayList<TocEntry> tocEntries = getParcelableArrayList(BKEY_TOC_ENTRY_ARRAY);
+        final ArrayList<TocEntry> tocEntries = getParcelableArrayList(BKEY_TOC_ARRAY);
         if (!tocEntries.isEmpty()) {
             @Book.TocBits
             long type = getLong(DBDefinitions.KEY_TOC_BITMASK);
