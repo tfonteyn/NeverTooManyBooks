@@ -206,7 +206,7 @@ android {
 
 // AndroidX release notes:  https://developer.android.com/jetpack/androidx/versions
 dependencies {
-    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:1.0.5'
+    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:1.0.7'
     //
     implementation 'androidx.activity:activity:1.2.0-alpha06'
     implementation 'androidx.annotation:annotation:1.1.0'

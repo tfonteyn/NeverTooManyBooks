@@ -265,7 +265,7 @@ public interface SearchEngine {
          * Override this method, and return {@code true} if this engine uses
          * {@code String} based identifiers.
          *
-         * @return {code false} for numeric ids, {@code true} for string ids
+         * @return {code false} for numeric ID's, {@code true} for string ID's
          */
         default boolean hasStringId() {
             return false;

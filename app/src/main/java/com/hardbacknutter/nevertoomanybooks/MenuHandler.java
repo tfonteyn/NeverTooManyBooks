@@ -83,7 +83,7 @@ final class MenuHandler {
     }
 
     /**
-     * Get a map with all valid native ids for the given item.
+     * Get a map with all valid native ID's for the given item.
      * All values will be cast to String.
      *
      * @param rowData a DataHolder compatible object with native id keys.

@@ -38,12 +38,18 @@ import java.util.List;
 import com.hardbacknutter.nevertoomanybooks.BookChangedListener;
 import com.hardbacknutter.nevertoomanybooks.R;
 
+/**
+ * Dialog to edit an <strong>in-line in Books table</strong> Location.
+ */
 public class EditLocationDialogFragment
         extends EditStringBaseDialogFragment {
 
     /** Fragment/Log tag. */
     public static final String TAG = "EditLocationDialogFrag";
 
+    /**
+     * No-arg constructor for OS use.
+     */
     public EditLocationDialogFragment() {
         super(R.string.lbl_location, R.string.lbl_location, BookChangedListener.LOCATION);
     }
@@ -74,7 +80,7 @@ public class EditLocationDialogFragment
     @Nullable
     Bundle onSave() {
         //noinspection ConstantConditions
-        mDb.updateLocation(mOriginalText, mCurrentText);
+        mDb.renameLocation(mOriginalText, mCurrentText);
         return null;
     }
 }

@@ -171,7 +171,7 @@ public class Field<T, V extends View> {
     }
 
     /**
-     * set the field ids which should follow visibility with this Field.
+     * set the field ID's which should follow visibility with this Field.
      * <p>
      * <strong>Dev. note:</strong> this could be done using
      * {@link androidx.constraintlayout.widget.Group}

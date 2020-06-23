@@ -96,6 +96,7 @@ public class DBCleanerTask
             // re-sort positional links
             cleaner.bookAuthors(context);
             cleaner.bookSeries(context);
+            cleaner.bookPublishers(context);
 
             //TEST: we only check & log for now, but don't update yet...
             // we need to test with bad data

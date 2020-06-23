@@ -353,7 +353,7 @@ public class AuthorWorksFragment
     }
 
     /**
-     * Holder pattern for {@link TocAdapter}.
+     * Row ViewHolder for {@link TocAdapter}.
      */
     private static class Holder
             extends RecyclerView.ViewHolder {

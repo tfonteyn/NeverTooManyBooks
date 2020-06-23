@@ -427,7 +427,7 @@ public class GoodreadsHandler {
      *      <li>{@link DBDefinitions#KEY_RATING}</li>
      * </ul>
      * <p>
-     * See {@link DAO#fetchBookForExportToGoodreads}
+     * See {@link DAO#fetchBookForGoodreadsExport}
      *
      * @param context  Current context
      * @param db       Database Access

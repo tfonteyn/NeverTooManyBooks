@@ -294,7 +294,8 @@ public class UpdateFieldsFragment
         }
 
         // If the user has selected to overwrite thumbnails...
-        final FieldUsage covers = mUpdateFieldsModel.getFieldUsage(DBDefinitions.KEY_THUMBNAIL);
+        final FieldUsage covers = mUpdateFieldsModel
+                .getFieldUsage(DBDefinitions.PREFS_IS_USED_THUMBNAIL);
         if (covers != null && covers.getUsage().equals(FieldUsage.Usage.Overwrite)) {
             // check if the user really wants to overwrite all covers
             new MaterialAlertDialogBuilder(getContext())

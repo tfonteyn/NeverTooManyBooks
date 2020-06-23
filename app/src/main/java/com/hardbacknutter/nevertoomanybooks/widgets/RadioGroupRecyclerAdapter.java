@@ -136,7 +136,7 @@ public class RadioGroupRecyclerAdapter<ID, CS extends CharSequence>
     }
 
     /**
-     * Holder pattern for {@link RadioGroupRecyclerAdapter}.
+     * Row ViewHolder for {@link RadioGroupRecyclerAdapter}.
      */
     static class Holder
             extends RecyclerView.ViewHolder {

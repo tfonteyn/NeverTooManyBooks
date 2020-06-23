@@ -57,7 +57,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentEditBookFieldsBinding;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
-import com.hardbacknutter.nevertoomanybooks.dialogs.entities.CheckListDialogFragment;
+import com.hardbacknutter.nevertoomanybooks.dialogs.CheckListDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Entity;
@@ -133,7 +133,7 @@ public class EditBookFieldsFragment
         super.onViewCreated(view, savedInstanceState);
 
         //noinspection ConstantConditions
-        if (!DBDefinitions.isUsed(getContext(), DBDefinitions.KEY_THUMBNAIL)) {
+        if (!DBDefinitions.isUsed(getContext(), DBDefinitions.PREFS_IS_USED_THUMBNAIL)) {
             mVb.coverImage0.setVisibility(View.GONE);
             mVb.coverImage1.setVisibility(View.GONE);
         }
@@ -270,7 +270,7 @@ public class EditBookFieldsFragment
         super.onPopulateViews(fields, book);
 
         //noinspection ConstantConditions
-        if (DBDefinitions.isUsed(getContext(), DBDefinitions.KEY_THUMBNAIL)) {
+        if (DBDefinitions.isUsed(getContext(), DBDefinitions.PREFS_IS_USED_THUMBNAIL)) {
             final int[] scale = getResources().getIntArray(R.array.cover_scale_edit);
 
             mCoverHandler[0] = new CoverHandler(this, mProgressBar,

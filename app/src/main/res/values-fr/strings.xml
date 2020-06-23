@@ -199,7 +199,7 @@
     <string name="confirm_registration_benefits">Cette fonctionnalité bénéficie d\'une inscription avec %1$s.\nSouhaitez-vous avoir plus d\'informations ou désactiver ce message?\nVous trouverez ces informations ultérieurement dans la section «%2$s» des paramètres.</string>
     <string name="confirm_registration_required">Cette fonctionnalité nécessite une inscription avec %1$s.\n Souhaitez-vous avoir plus d\'informations?</string>
     <string name="txt_select_fields_to_update">Les champs sélectionnés vont être mis à jour à partir d\'Internet. Les champs non sélectionnés ne seront pas modifiés.</string>
-    <string name="txt_share_book_im_reading">Je lis «%1$s» par %2$s %3$s %4$s</string>
+    <string name="txt_share_book_im_reading">Je lis «%1$s» %2$s par %3$s %4$s</string>
     <string name="txt_tap_on_image_to_select">Appuyez sur la grande photo pour la sélectionner</string>
     <string name="txt_tap_on_thumb">Cliquez sur une vignette pour afficher une image plus grande</string>
     <string name="txt_waiting_for_scanner">En attente de scanner / caméra</string>

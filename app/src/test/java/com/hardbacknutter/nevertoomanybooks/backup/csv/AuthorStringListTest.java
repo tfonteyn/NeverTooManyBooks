@@ -33,6 +33,7 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import com.hardbacknutter.nevertoomanybooks.backup.csv.coders.AuthorCoder;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.utils.StringList;
 
@@ -91,7 +92,7 @@ class AuthorStringListTest {
         mAuthor.get(5).setType(Author.TYPE_ARTIST | Author.TYPE_COLORIST);
         mAuthor.get(6).setType(Author.TYPE_TRANSLATOR);
 
-        mCoder = CsvCoder.getAuthorCoder();
+        mCoder = new StringList<>(new AuthorCoder());
     }
 
     @Test
@@ -149,15 +150,15 @@ class AuthorStringListTest {
     @Test
     void encode01() {
         Author author = Author.from("Charles Emerson Winchester");
-        String authorStr = CsvCoder.getAuthorCoder().encodeElement(author);
+        String authorStr = new StringList<>(new AuthorCoder()).encodeElement(author);
 
         assertEquals("Winchester, Charles\\ Emerson", authorStr);
     }
 
     @Test
     void decode01() {
-        List<Author> author = CsvCoder.getAuthorCoder()
-                                      .decodeElement("Winchester, Charles\\ Emerson");
+        List<Author> author = new StringList<>(new AuthorCoder())
+                .decodeElement("Winchester, Charles\\ Emerson");
 
         assertEquals("Winchester", author.get(0).getFamilyName());
         assertEquals("Charles Emerson", author.get(0).getGivenNames());
@@ -165,8 +166,8 @@ class AuthorStringListTest {
 
     @Test
     void decode01b() {
-        List<Author> author = CsvCoder.getAuthorCoder()
-                                      .decodeElement("Winchester, Charles Emerson");
+        List<Author> author = new StringList<>(new AuthorCoder())
+                .decodeElement("Winchester, Charles Emerson");
 
         assertEquals("Winchester", author.get(0).getFamilyName());
         assertEquals("Charles Emerson", author.get(0).getGivenNames());

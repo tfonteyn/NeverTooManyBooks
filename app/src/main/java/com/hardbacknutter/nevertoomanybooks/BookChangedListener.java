@@ -45,15 +45,18 @@ public interface BookChangedListener {
     /** Series was modified. */
     int SERIES = 1 << 1;
     /** ... */
-    int FORMAT = 1 << 2;
-    int COLOR = 1 << 3;
-    int GENRE = 1 << 4;
-    int LANGUAGE = 1 << 5;
-    int LOCATION = 1 << 6;
-    int PUBLISHER = 1 << 7;
+    int PUBLISHER = 1 << 2;
+
+    int TOC_ENTRY = 1 << 3;
+
+    int FORMAT = 1 << 4;
+    int COLOR = 1 << 5;
+    int GENRE = 1 << 6;
+    int LANGUAGE = 1 << 7;
+    int LOCATION = 1 << 8;
 
     /** A book was set to read/unread. */
-    int BOOK_READ = 1 << 8;
+    int BOOK_READ = 1 << 9;
 
     /**
      * A book was either lend out, or returned.
@@ -61,24 +64,24 @@ public interface BookChangedListener {
      * When lend out:  data.putString(DBDefinitions.KEY_LOANEE, mLoanee);
      * When returned: data == null
      */
-    int BOOK_LOANEE = 1 << 9;
+    int BOOK_LOANEE = 1 << 10;
 
     /** A book was deleted. */
-    int BOOK_DELETED = 1 << 10;
+    int BOOK_DELETED = 1 << 11;
 
     /**
      * Called if changes were made.
      *
-     * @param bookId      the book that was changed, or 0 if the change was global
-     * @param whatChanged a bitmask build from the flags
-     * @param data        bundle with custom data, can be {@code null}
+     * @param bookId        the book that was changed, or 0 if the change was global
+     * @param fieldsChanged a bitmask build from the flags
+     * @param data          bundle with custom data, can be {@code null}
      */
     void onChange(long bookId,
-                  @Flags int whatChanged,
+                  @Flags int fieldsChanged,
                   @Nullable Bundle data);
 
-    @IntDef(flag = true, value = {AUTHOR, SERIES,
-                                  FORMAT, COLOR, GENRE, LANGUAGE, LOCATION, PUBLISHER,
+    @IntDef(flag = true, value = {AUTHOR, SERIES, PUBLISHER, TOC_ENTRY,
+                                  FORMAT, COLOR, GENRE, LANGUAGE, LOCATION,
                                   BOOK_READ, BOOK_LOANEE, BOOK_DELETED})
     @Retention(RetentionPolicy.SOURCE)
     @interface Flags {

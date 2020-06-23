@@ -369,7 +369,7 @@ public class ReviewsListApiHandler
                 //              <format></format>
                 .stringBody(XmlTags.XML_FORMAT, DBDefinitions.KEY_FORMAT)
                 //              <publisher></publisher>
-                .stringBody(XmlTags.XML_PUBLISHER, DBDefinitions.KEY_PUBLISHER)
+                .stringBody(XmlTags.XML_PUBLISHER, Review.PUBLISHER)
                 //              <publication_day>20</publication_day>
                 .longBody(XmlTags.XML_PUBLICATION_DAY, Review.PUBLICATION_DAY)
                 //              <publication_year>1972</publication_year>
@@ -455,6 +455,8 @@ public class ReviewsListApiHandler
         public static final String AUTHOR_ROLE = "__author_role";
         public static final String SHELF = "__shelf";
         public static final String SHELVES = "__shelves";
+        public static final String PUBLISHER = "__publisher";
+
         /** Type: long. */
         public static final String PAGES = "__pages";
         static final String BODY = "__body";

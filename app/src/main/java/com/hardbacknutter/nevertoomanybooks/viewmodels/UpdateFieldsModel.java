@@ -47,7 +47,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
@@ -68,7 +67,6 @@ import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.searches.SiteList;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
-import com.hardbacknutter.nevertoomanybooks.utils.Csv;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 
@@ -105,12 +103,13 @@ public class UpdateFieldsModel
     private long mFromBookIdOnwards;
     /** Indicates the user has requested a cancel. Up to the subclass to decide what to do. */
     private boolean mIsCancelled;
+
     /**
-     * Current book ID.
-     * Tracks between {@link #startSearch(Context)}
+     * Tracks the current book ID between {@link #nextBook(Context)}
      * and {@link #processSearchResults(Context, Bundle)}.
      */
     private long mCurrentBookId;
+
     /**
      * The (subset) of fields relevant to the current book.
      * Tracks between {@link #startSearch(Context)}
@@ -181,16 +180,16 @@ public class UpdateFieldsModel
 
         addField(prefs, DBDefinitions.KEY_TITLE, R.string.lbl_title, CopyIfBlank);
         addField(prefs, DBDefinitions.KEY_ISBN, R.string.lbl_isbn, CopyIfBlank);
-        addField(prefs, DBDefinitions.KEY_THUMBNAIL, R.string.lbl_cover, CopyIfBlank);
+        addField(prefs, DBDefinitions.PREFS_IS_USED_THUMBNAIL, R.string.lbl_cover, CopyIfBlank);
 
         addListField(prefs, Book.BKEY_SERIES_ARRAY, R.string.lbl_series_multiple,
                      DBDefinitions.KEY_SERIES_TITLE);
 
+        addListField(prefs, Book.BKEY_PUBLISHER_ARRAY, R.string.lbl_publishers,
+                     DBDefinitions.KEY_PUBLISHER_NAME);
+
         addListField(prefs, Book.BKEY_TOC_ARRAY, R.string.lbl_table_of_content,
                      DBDefinitions.KEY_TOC_BITMASK);
-
-        addListField(prefs, Book.BKEY_PUBLISHER_ARRAY, R.string.lbl_publisher,
-                     DBDefinitions.KEY_PUBLISHER);
 
         addField(prefs, DBDefinitions.KEY_PRINT_RUN, R.string.lbl_print_run, CopyIfBlank);
         addField(prefs, DBDefinitions.KEY_DATE_PUBLISHED, R.string.lbl_date_published, CopyIfBlank);
@@ -228,7 +227,7 @@ public class UpdateFieldsModel
     }
 
     /**
-     * Allows to set the 'lowest' Book id to start from. See {@link DAO#fetchBooks(List, long)}
+     * Allows to set the 'lowest' Book id to start from. See {@link DAO#fetchBooks(long)}
      *
      * @param fromBookIdOnwards the lowest book id to start from.
      *                          This allows to fetch a subset of the requested set.
@@ -338,19 +337,18 @@ public class UpdateFieldsModel
                         DBDefinitions.KEY_PRICE_LISTED_CURRENCY, R.string.lbl_currency);
 
         for (int cIdx = 0; cIdx < 2; cIdx++) {
-            addRelatedField(DBDefinitions.KEY_THUMBNAIL,
+            addRelatedField(DBDefinitions.PREFS_IS_USED_THUMBNAIL,
                             Book.BKEY_FILE_SPEC[cIdx], R.string.lbl_cover);
-        }
-
-        if (mBookIdList == null) {
-            //update the complete library starting from the given id
-            mCurrentBookId = mFromBookIdOnwards;
         }
 
         mCurrentProgressCounter = 0;
 
         try {
-            mCurrentCursor = mDb.fetchBooks(mBookIdList, mCurrentBookId);
+            if (mBookIdList == null || mBookIdList.isEmpty()) {
+                mCurrentCursor = mDb.fetchBooks(mFromBookIdOnwards);
+            } else {
+                mCurrentCursor = mDb.fetchBooks(mBookIdList);
+            }
             mCurrentCursorCount = mCurrentCursor.getCount();
 
         } catch (@NonNull final Exception e) {
@@ -383,13 +381,11 @@ public class UpdateFieldsModel
                 mCurrentBookId = mCurrentCursor.getLong(idCol);
 
                 // and populate the actual book based on the cursor data
-                mCurrentBook.reload(mDb, mCurrentBookId, mCurrentCursor);
+                mCurrentBook.load(mCurrentBookId, mCurrentCursor, mDb);
 
                 // Check which fields this book needs.
                 mCurrentFieldsWanted = filter(context, mFieldUsages);
 
-                // Grab the searchable fields. Ideally we will have an ISBN but we may not.
-                final String isbn = mCurrentBook.getString(DBDefinitions.KEY_ISBN);
                 final String title = mCurrentBook.getString(DBDefinitions.KEY_TITLE);
 
                 if (!mCurrentFieldsWanted.isEmpty()) {
@@ -397,6 +393,7 @@ public class UpdateFieldsModel
                     clearSearchText();
                     boolean canSearch = false;
 
+                    final String isbn = mCurrentBook.getString(DBDefinitions.KEY_ISBN);
                     if (!isbn.isEmpty()) {
                         setIsbnSearchText(isbn, true);
                         canSearch = true;
@@ -412,7 +409,7 @@ public class UpdateFieldsModel
                         }
                     }
 
-                    // Collect native ids we can use
+                    // Collect native ID's we can use
                     final SparseArray<String> nativeIds = new SparseArray<>();
                     for (String key : DBDefinitions.NATIVE_ID_KEYS) {
                         // values can be Long and String, get as Object
@@ -430,13 +427,16 @@ public class UpdateFieldsModel
                     }
 
                     if (canSearch) {
-                        // optional
-                        final String publisher = mCurrentBook
-                                .getString(DBDefinitions.KEY_PUBLISHER);
-                        if (!publisher.isEmpty()) {
-                            setPublisherSearchText(publisher);
+                        // optional: whether this is used will depend on SearchEngine/Preferences
+                        final Publisher publisher = mCurrentBook.getPrimaryPublisher();
+                        if (publisher != null) {
+                            final String publisherName = publisher.getName();
+                            if (!publisherName.isEmpty()) {
+                                setPublisherSearchText(publisherName);
+                            }
                         }
 
+                        // optional: whether this is used will depend on SearchEngine/Preferences
                         final boolean[] thumbs = new boolean[2];
                         for (int cIdx = 0; cIdx < 2; cIdx++) {
                             thumbs[cIdx] = mCurrentFieldsWanted
@@ -540,10 +540,9 @@ public class UpdateFieldsModel
 
                 //IMPORTANT: note how we construct a NEW BOOK, with the DELTA-data which
                 // we want to commit to the existing book.
-                final Book book = new Book();
-                book.putAll(bookData);
+                final Book book = Book.from(bookData);
                 try {
-                    mDb.updateBook(context, mCurrentBookId, book, 0);
+                    mDb.update(context, mCurrentBookId, book, 0);
                 } catch (@NonNull final DAO.DaoWriteException e) {
                     // ignore, but log it.
                     Logger.error(context, TAG, e);
@@ -684,6 +683,7 @@ public class UpdateFieldsModel
                             // We should never have a book without authors, but be paranoid
                             case Book.BKEY_AUTHOR_ARRAY:
                             case Book.BKEY_SERIES_ARRAY:
+                            case Book.BKEY_PUBLISHER_ARRAY:
                             case Book.BKEY_TOC_ARRAY:
                                 if (mCurrentBook.contains(usage.fieldId)) {
                                     final ArrayList<Parcelable> list =
@@ -734,6 +734,7 @@ public class UpdateFieldsModel
         switch (fieldId) {
             case Book.BKEY_AUTHOR_ARRAY:
             case Book.BKEY_SERIES_ARRAY:
+            case Book.BKEY_PUBLISHER_ARRAY:
             case Book.BKEY_TOC_ARRAY:
                 if (mCurrentBook.contains(fieldId)) {
                     if (!mCurrentBook.getParcelableArrayList(fieldId).isEmpty()) {
@@ -786,32 +787,19 @@ public class UpdateFieldsModel
                 }
                 break;
             }
+            case Book.BKEY_PUBLISHER_ARRAY: {
+                final ArrayList<Publisher> list = bookData.getParcelableArrayList(key);
+                if (list != null && !list.isEmpty()) {
+                    list.addAll(mCurrentBook.getParcelableArrayList(key));
+                    Publisher.pruneList(list, context, mDb, false, bookLocale);
+                }
+                break;
+            }
             case Book.BKEY_TOC_ARRAY: {
                 final ArrayList<TocEntry> list = bookData.getParcelableArrayList(key);
                 if (list != null && !list.isEmpty()) {
                     list.addAll(mCurrentBook.getParcelableArrayList(key));
                     TocEntry.pruneList(list, context, mDb, false, bookLocale);
-                }
-                break;
-            }
-            case Book.BKEY_PUBLISHER_ARRAY: {
-                final ArrayList<Publisher> list = bookData.getParcelableArrayList(key);
-                if (list != null && !list.isEmpty()) {
-                    // special case: the Book has a single-string field with the publisher
-                    final String[] existingNames =
-                            mCurrentBook.getString(DBDefinitions.KEY_PUBLISHER)
-                                        // URGENT: this breaks for names with " - " *IN* the name
-                                        // and not just as a delimiter.
-                                        .split(Publisher.DELIMITER);
-                    for (String pubName : existingNames) {
-                        final Publisher p = Publisher.from(pubName);
-                        if (!list.contains(p)) {
-                            list.add(p);
-                        }
-                    }
-                    bookData.remove(key);
-                    bookData.putString(DBDefinitions.KEY_PUBLISHER,
-                                       Csv.join(Publisher.DELIMITER, list, Publisher::getName));
                 }
                 break;
             }

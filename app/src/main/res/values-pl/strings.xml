@@ -193,7 +193,7 @@
     <string name="confirm_registration_benefits">Ta funkcja korzysta z rejestracji w %1$s.\n Czy chcesz zobaczyć więcej informacji lub wyłączyć tę wiadomość?\n Informacje te można znaleźć później w sekcji „%2$s” w ustawieniach.</string>
     <string name="confirm_registration_required">Ta funkcja wymaga rejestracji w %1$s.\n Czy chcesz zobaczyć więcej informacji?</string>
     <string name="txt_select_fields_to_update">Wybrane pola będą zaktualizowane wg danych z sieci. Pozostałe nie zostaną zmienione.</string>
-    <string name="txt_share_book_im_reading">Czytam „%1$s” przez %2$s %3$s %4$s</string>
+    <string name="txt_share_book_im_reading">Czytam „%1$s” %2$s przez %3$s %4$s</string>
     <string name="txt_tap_on_image_to_select">Stuknij w większy obraz, aby go wybrać</string>
     <string name="txt_tap_on_thumb">Kliknij na obrazku by go powiększyć</string>
     <string name="txt_waiting_for_scanner">Oczekiwanie na skaner / aparat</string>

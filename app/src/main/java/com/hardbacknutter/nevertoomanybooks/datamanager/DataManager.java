@@ -101,10 +101,16 @@ public class DataManager
     /** Raw data storage. */
     private final Bundle mRawData;
 
+    /**
+     * Constructor.
+     */
     protected DataManager() {
         mRawData = new Bundle();
     }
 
+    /**
+     * Constructor for Mock tests. Loads the bundle <strong>without</strong> type checks.
+     */
     @VisibleForTesting
     protected DataManager(@NonNull final Bundle rawData) {
         mRawData = rawData;
@@ -123,11 +129,11 @@ public class DataManager
     }
 
     /**
-     * Store all passed values in our collection.
+     * Store all passed values in our collection (with type checking).
      *
      * @param src bundle to copy from
      */
-    public void putAll(@NonNull final Bundle src) {
+    protected void putAll(@NonNull final Bundle src) {
         for (String key : src.keySet()) {
             put(key, src.get(key));
         }
@@ -145,10 +151,9 @@ public class DataManager
      *      <li>date -> string</li>
      * </ul>
      *
-     * @param cursor to read from
+     * @param cursor an already positioned Cursor to read from
      */
     protected void putAll(@NonNull final Cursor cursor) {
-        cursor.moveToFirst();
         for (int i = 0; i < cursor.getColumnCount(); i++) {
             final String name = cursor.getColumnName(i);
             switch (cursor.getType(i)) {

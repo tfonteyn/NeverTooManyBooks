@@ -47,12 +47,11 @@ import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookshelfBinding;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
+import com.hardbacknutter.nevertoomanybooks.dialogs.BaseDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 
 /**
- * Dialog to edit an existing or new bookshelf.
- * <p>
- * Calling point is a List.
+ * Dialog to edit an <strong>EXISTING or NEW</strong> {@link Bookshelf}.
  */
 public class EditBookshelfDialogFragment
         extends BaseDialogFragment {
@@ -74,6 +73,9 @@ public class EditBookshelfDialogFragment
     /** Current edit. */
     private String mName;
 
+    /**
+     * No-arg constructor for OS use.
+     */
     public EditBookshelfDialogFragment() {
         super(R.layout.dialog_edit_bookshelf);
     }
@@ -132,7 +134,7 @@ public class EditBookshelfDialogFragment
     }
 
     private boolean saveChanges() {
-        mName = mVb.bookshelf.getText().toString().trim();
+        viewToModel();
         if (mName.isEmpty()) {
             showError(mVb.lblBookshelf, R.string.vldt_non_blank_required);
             return false;
@@ -158,12 +160,19 @@ public class EditBookshelfDialogFragment
         }
 
         if (existingShelfWithSameName == null) {
-            // It's a simple rename.
+            // It's a simple rename, store changes
             mBookshelf.setName(mName);
 
             //noinspection ConstantConditions
             final long styleId = mBookshelf.getStyle(getContext(), mDb).getId();
-            if (mDb.updateOrInsertBookshelf(mBookshelf, styleId)) {
+
+            final boolean success;
+            if (mBookshelf.getId() == 0) {
+                success = mDb.insert(mBookshelf, styleId) > 0;
+            } else {
+                success = mDb.update(mBookshelf, styleId);
+            }
+            if (success) {
                 if (mListener != null && mListener.get() != null) {
                     mListener.get().onBookshelfChanged(mBookshelf.getId(), 0);
                 } else {
@@ -206,6 +215,10 @@ public class EditBookshelfDialogFragment
         }
     }
 
+    private void viewToModel() {
+        mName = mVb.bookshelf.getText().toString().trim();
+    }
+
     @Override
     public void onSaveInstanceState(@NonNull final Bundle outState) {
         super.onSaveInstanceState(outState);
@@ -223,7 +236,7 @@ public class EditBookshelfDialogFragment
 
     @Override
     public void onPause() {
-        mName = mVb.bookshelf.getText().toString().trim();
+        viewToModel();
         super.onPause();
     }
 

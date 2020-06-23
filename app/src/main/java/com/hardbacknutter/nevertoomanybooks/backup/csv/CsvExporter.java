@@ -45,6 +45,11 @@ import com.hardbacknutter.nevertoomanybooks.backup.ArchiveContainerEntry;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ExportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.base.Exporter;
 import com.hardbacknutter.nevertoomanybooks.backup.base.Options;
+import com.hardbacknutter.nevertoomanybooks.backup.csv.coders.AuthorCoder;
+import com.hardbacknutter.nevertoomanybooks.backup.csv.coders.BookshelfCoder;
+import com.hardbacknutter.nevertoomanybooks.backup.csv.coders.PublisherCoder;
+import com.hardbacknutter.nevertoomanybooks.backup.csv.coders.SeriesCoder;
+import com.hardbacknutter.nevertoomanybooks.backup.csv.coders.TocEntryCoder;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyle;
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
@@ -52,6 +57,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
+import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
@@ -78,6 +84,9 @@ public class CsvExporter
     static final String CSV_COLUMN_SERIES = "series_details";
     /** column in CSV file - string-encoded - used in import/export, never change this string. */
     static final String CSV_COLUMN_AUTHORS = "author_details";
+    /** column in CSV file - string-encoded - used in import/export, never change this string. */
+    static final String CSV_COLUMN_PUBLISHERS = "publisher";
+
     /** Log tag. */
     private static final String TAG = "CsvExporter";
     /** Only send progress updates every 200ms. */
@@ -94,7 +103,7 @@ public class CsvExporter
             + '"' + CSV_COLUMN_AUTHORS + "\","
             + '"' + DBDefinitions.KEY_TITLE + "\","
             + '"' + DBDefinitions.KEY_ISBN + "\","
-            + '"' + DBDefinitions.KEY_PUBLISHER + "\","
+            + '"' + CSV_COLUMN_PUBLISHERS + "\","
             + '"' + DBDefinitions.KEY_PRINT_RUN + "\","
             + '"' + DBDefinitions.KEY_DATE_PUBLISHED + "\","
             + '"' + DBDefinitions.KEY_DATE_FIRST_PUBLICATION + "\","
@@ -143,9 +152,10 @@ public class CsvExporter
     private final DAO mDb;
     /** cached localized "unknown" string. */
     private final String mUnknownString;
-    private final StringList<Author> mAuthorCoder = CsvCoder.getAuthorCoder();
-    private final StringList<Series> mSeriesCoder = CsvCoder.getSeriesCoder();
-    private final StringList<TocEntry> mTocCoder = CsvCoder.getTocCoder();
+    private final StringList<Author> mAuthorCoder = new StringList<>(new AuthorCoder());
+    private final StringList<Series> mSeriesCoder = new StringList<>(new SeriesCoder());
+    private final StringList<Publisher> mPublisherCoder = new StringList<>(new PublisherCoder());
+    private final StringList<TocEntry> mTocCoder = new StringList<>(new TocEntryCoder());
     private final StringList<Bookshelf> mBookshelfCoder;
     @NonNull
     private final ExportResults mResults = new ExportResults();
@@ -181,7 +191,8 @@ public class CsvExporter
         mOptions = options;
         mUtcSinceDateTime = utcSinceDateTime;
         mDb = new DAO(TAG);
-        mBookshelfCoder = CsvCoder.getBookshelfCoder(BooklistStyle.getDefault(context, mDb));
+        mBookshelfCoder = new StringList<>(
+                new BookshelfCoder(BooklistStyle.getDefault(context, mDb)));
     }
 
     @Override
@@ -207,14 +218,14 @@ public class CsvExporter
             // header: the top row with column labels
             writer.write(EXPORT_FIELD_HEADERS);
 
-            int progressMaxCount = progressListener.getMax() + cursor.getCount();
+            final int progressMaxCount = progressListener.getMax() + cursor.getCount();
             progressListener.setMax(progressMaxCount);
 
             final DataHolder bookData = new CursorRow(cursor);
 
             while (cursor.moveToNext() && !progressListener.isCancelled()) {
 
-                long bookId = bookData.getLong(DBDefinitions.KEY_PK_ID);
+                final long bookId = bookData.getLong(DBDefinitions.KEY_PK_ID);
 
                 String authors = mAuthorCoder.encodeList(mDb.getAuthorsByBookId(bookId));
                 // Sanity check: ensure author is non-blank.
@@ -241,7 +252,7 @@ public class CsvExporter
                 writer.write(",");
                 writer.write(encode(bookData.getString(DBDefinitions.KEY_ISBN)));
                 writer.write(",");
-                writer.write(encode(bookData.getString(DBDefinitions.KEY_PUBLISHER)));
+                writer.write(encode(mPublisherCoder.encodeList(mDb.getPublishersByBookId(bookId))));
                 writer.write(",");
                 writer.write(encode(bookData.getString(DBDefinitions.KEY_PRINT_RUN)));
                 writer.write(",");
@@ -322,7 +333,7 @@ public class CsvExporter
 
                 mResults.booksExported++;
 
-                long now = System.currentTimeMillis();
+                final long now = System.currentTimeMillis();
                 if ((now - lastUpdate) > PROGRESS_UPDATE_INTERVAL) {
                     progressListener.onProgress(mResults.booksExported, title);
                     lastUpdate = now;

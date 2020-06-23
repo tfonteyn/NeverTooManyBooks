@@ -52,6 +52,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Entity;
+import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
@@ -124,6 +125,27 @@ public final class StandardDialogs {
                 .setTitle(R.string.lbl_delete_series)
                 .setMessage(context.getString(R.string.confirm_delete_series,
                                               series.getLabel(context)))
+                .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
+                .setPositiveButton(android.R.string.ok, (d, w) -> onConfirm.run())
+                .create()
+                .show();
+    }
+
+    /**
+     * Ask the user to confirm a delete.
+     *
+     * @param context   Current context
+     * @param publisher Publisher we're about to delete
+     * @param onConfirm Runnable to execute if the user clicks the confirm button.
+     */
+    public static void deletePublisher(@NonNull final Context context,
+                                       @NonNull final Publisher publisher,
+                                       @NonNull final Runnable onConfirm) {
+        new MaterialAlertDialogBuilder(context)
+                .setIcon(R.drawable.ic_warning)
+                .setTitle(R.string.lbl_delete_publisher)
+                .setMessage(context.getString(R.string.confirm_delete_publisher,
+                                              publisher.getLabel(context)))
                 .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
                 .setPositiveButton(android.R.string.ok, (d, w) -> onConfirm.run())
                 .create()

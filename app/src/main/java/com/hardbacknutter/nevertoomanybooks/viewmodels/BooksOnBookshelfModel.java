@@ -73,6 +73,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
+import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsHandler;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GrStatus;
@@ -80,6 +81,8 @@ import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskBase;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
+
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_AUTHORS;
 
 public class BooksOnBookshelfModel
         extends ViewModel {
@@ -113,6 +116,7 @@ public class BooksOnBookshelfModel
             new VirtualDomain(
                     DBDefinitions.DOM_FK_AUTHOR,
                     DBDefinitions.TBL_BOOK_AUTHOR.dot(DBDefinitions.KEY_FK_AUTHOR)),
+
             // Always get the ISBN
             new VirtualDomain(
                     DBDefinitions.DOM_BOOK_ISBN,
@@ -409,18 +413,14 @@ public class BooksOnBookshelfModel
 
     /**
      * Should be called after a style change.
-     * The given Style will be saved to the database if it was a new Style (id == 0).
      *
      * @param context Current context
      * @param style   the style to apply
      */
     public void onStyleChanged(@NonNull final Context context,
                                @NonNull final BooklistStyle style) {
-        // always save a new style to the database
-        if (style.getId() == 0) {
-            BooklistStyle.StyleDAO.updateOrInsert(mDb, style);
-        }
 
+        BooklistStyle.StyleDAO.updateOrInsert(mDb, style);
         onStyleChanged(context, style.getUuid());
     }
 
@@ -530,9 +530,8 @@ public class BooksOnBookshelfModel
         if (style.isBookDetailUsed(context, prefs, DBDefinitions.KEY_AUTHOR_FORMATTED)) {
             blb.addDomain(new VirtualDomain(
                     DBDefinitions.DOM_AUTHOR_FORMATTED,
-                    style.isShowAuthorByGivenNameFirst(context)
-                    ? DAO.SqlColumns.EXP_AUTHOR_FORMATTED_GIVEN_SPACE_FAMILY
-                    : DAO.SqlColumns.EXP_AUTHOR_FORMATTED_FAMILY_COMMA_GIVEN));
+                    DAO.SqlColumns.getDisplayAuthor(TBL_AUTHORS.getAlias(),
+                                                    style.isShowAuthorByGivenName(context))));
         }
         // for now, don't get the author type.
         // if (style.isBookDetailUsed(prefs, DBDefinitions.KEY_BOOK_AUTHOR_TYPE_BITMASK)) {
@@ -541,10 +540,11 @@ public class BooksOnBookshelfModel
         //         DBDefinitions.TBL_BOOK_AUTHOR.dot(DBDefinitions.KEY_BOOK_AUTHOR_TYPE_BITMASK)));
         // }
 
-        if (style.isBookDetailUsed(context, prefs, DBDefinitions.KEY_PUBLISHER)) {
+        if (style.isBookDetailUsed(context, prefs, DBDefinitions.KEY_PUBLISHER_NAME)) {
+            // Collect a CSV list of the publishers of the book
             blb.addDomain(new VirtualDomain(
-                    DBDefinitions.DOM_BOOK_PUBLISHER,
-                    DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_PUBLISHER)));
+                    DBDefinitions.DOM_PUBLISHER_NAME_CSV,
+                    DAO.SqlColumns.EXP_PUBLISHER_NAME_CSV));
         }
         if (style.isBookDetailUsed(context, prefs, DBDefinitions.KEY_DATE_PUBLISHED)) {
             blb.addDomain(new VirtualDomain(
@@ -580,6 +580,7 @@ public class BooksOnBookshelfModel
             blb.setFilter(mSearchCriteria.ftsAuthor,
                           mSearchCriteria.ftsTitle,
                           mSearchCriteria.ftsSeries,
+                          mSearchCriteria.ftsPublisher,
                           mSearchCriteria.ftsKeywords);
 
             blb.setFilterOnLoanedToPerson(mSearchCriteria.loanee);
@@ -925,7 +926,12 @@ public class BooksOnBookshelfModel
 
     @NonNull
     public Book getBook(final long bookId) {
-        return new Book(bookId, mDb);
+        final Book book = new Book();
+        if (bookId > 0) {
+            // for an existing book, load the data
+            book.load(bookId, mDb);
+        }
+        return book;
     }
 
     @Nullable
@@ -936,6 +942,11 @@ public class BooksOnBookshelfModel
     @Nullable
     public Author getAuthor(final long authorId) {
         return mDb.getAuthor(authorId);
+    }
+
+    @Nullable
+    public Publisher getPublisher(final long publisherId) {
+        return mDb.getPublisher(publisherId);
     }
 
     /**
@@ -986,7 +997,13 @@ public class BooksOnBookshelfModel
         public static final String BKEY_SEARCH_TEXT_AUTHOR = TAG + ":author";
 
         /**
-         * List of book ids to display.
+         * Bundle key for Publisher search text
+         * (all DB KEY's and the ARRAY key is for publishers with verified names).
+         */
+        public static final String BKEY_SEARCH_TEXT_PUBLISHER = TAG + ":publisher";
+
+        /**
+         * List of book ID's to display.
          * The RESULT of a search with {@link FTSSearchActivity}
          * which can be re-used for the builder.
          */
@@ -999,6 +1016,13 @@ public class BooksOnBookshelfModel
          */
         @Nullable
         String ftsAuthor;
+
+        /**
+         * Publisher to use in FTS search query.
+         * Supported in the builder and {@link FTSSearchActivity}.
+         */
+        @Nullable
+        String ftsPublisher;
 
         /**
          * Title to use in FTS search query.
@@ -1028,11 +1052,12 @@ public class BooksOnBookshelfModel
          * Always use the setter as we need to intercept the "." character.
          */
         @Nullable
-        private String ftsKeywords;
+        String ftsKeywords;
 
         public void clear() {
             ftsKeywords = null;
             ftsAuthor = null;
+            ftsPublisher = null;
             ftsTitle = null;
 
             ftsSeries = null;
@@ -1052,6 +1077,9 @@ public class BooksOnBookshelfModel
 
             if (ftsAuthor != null && !ftsAuthor.isEmpty()) {
                 list.add(ftsAuthor);
+            }
+            if (ftsPublisher != null && !ftsPublisher.isEmpty()) {
+                list.add(ftsPublisher);
             }
             if (ftsTitle != null && !ftsTitle.isEmpty()) {
                 list.add(ftsTitle);
@@ -1097,6 +1125,10 @@ public class BooksOnBookshelfModel
                 ftsAuthor = bundle.getString(BKEY_SEARCH_TEXT_AUTHOR);
                 isSet = true;
             }
+            if (bundle.containsKey(BKEY_SEARCH_TEXT_PUBLISHER)) {
+                ftsPublisher = bundle.getString(BKEY_SEARCH_TEXT_PUBLISHER);
+                isSet = true;
+            }
             if (bundle.containsKey(DBDefinitions.KEY_TITLE)) {
                 ftsTitle = bundle.getString(DBDefinitions.KEY_TITLE);
                 isSet = true;
@@ -1127,6 +1159,7 @@ public class BooksOnBookshelfModel
         public void to(@NonNull final Intent intent) {
             intent.putExtra(BKEY_SEARCH_TEXT_KEYWORDS, ftsKeywords)
                   .putExtra(BKEY_SEARCH_TEXT_AUTHOR, ftsAuthor)
+                  .putExtra(BKEY_SEARCH_TEXT_PUBLISHER, ftsPublisher)
                   .putExtra(DBDefinitions.KEY_TITLE, ftsTitle)
                   .putExtra(DBDefinitions.KEY_SERIES_TITLE, ftsSeries)
 
@@ -1137,6 +1170,7 @@ public class BooksOnBookshelfModel
         public boolean isEmpty() {
             return (ftsKeywords == null || ftsKeywords.isEmpty())
                    && (ftsAuthor == null || ftsAuthor.isEmpty())
+                   && (ftsPublisher == null || ftsPublisher.isEmpty())
                    && (ftsTitle == null || ftsTitle.isEmpty())
                    && (ftsSeries == null || ftsSeries.isEmpty())
 
@@ -1155,6 +1189,7 @@ public class BooksOnBookshelfModel
                    + "ftsAuthor=`" + ftsAuthor + '`'
                    + ", ftsTitle=`" + ftsTitle + '`'
                    + ", ftsSeries=`" + ftsSeries + '`'
+                   + ", ftsPublisher=`" + ftsPublisher + '`'
                    + ", loanee=`" + loanee + '`'
                    + ", ftsKeywords=`" + ftsKeywords + '`'
                    + ", bookList=" + bookIdList

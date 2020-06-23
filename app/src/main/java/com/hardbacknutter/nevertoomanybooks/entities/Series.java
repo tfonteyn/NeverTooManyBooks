@@ -581,12 +581,12 @@ public class Series
     @NonNull
     public String getLabel(@NonNull final Context context) {
 
-        Locale locale = LocaleUtils.getUserLocale(context);
+        final Locale locale = LocaleUtils.getUserLocale(context);
         // overkill...  see the getLocale method for more comments
         // try (DAO db = new DAO(TAG)) {
         //     locale = getLocale(context, db, LocaleUtils.getUserLocale(context));
         // }
-        String title = reorderTitleForDisplaying(context, locale);
+        final String title = reorderTitleForDisplaying(context, locale);
 
         if (!mNumber.isEmpty()) {
             return title + " (" + mNumber + ')';

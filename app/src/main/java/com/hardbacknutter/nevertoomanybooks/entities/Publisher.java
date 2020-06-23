@@ -27,22 +27,28 @@
  */
 package com.hardbacknutter.nevertoomanybooks.entities;
 
+import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Locale;
 import java.util.Objects;
+
+import com.hardbacknutter.nevertoomanybooks.database.DAO;
+import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 
 /**
  * Represents a Publisher.
- * <p>
- * ENHANCE: use a dedicated table with the publishers
- * Any reference to 'id' in this class is meant for future implementation.
  */
 public class Publisher
-        implements Parcelable {
+        implements Parcelable, Entity, ItemWithTitle {
 
     /** {@link Parcelable}. */
     public static final Creator<Publisher> CREATOR =
@@ -57,9 +63,11 @@ public class Publisher
                     return new Publisher[size];
                 }
             };
-    public static final String DELIMITER = " - ";
 
+    /** Row ID. */
+    private long mId;
     /** Publisher name. */
+    @NonNull
     private String mName;
 
     /**
@@ -67,8 +75,20 @@ public class Publisher
      *
      * @param name of publisher.
      */
-    public Publisher(@NonNull final String name) {
+    private Publisher(@NonNull final String name) {
         mName = name.trim();
+    }
+
+    /**
+     * Full constructor.
+     *
+     * @param id      ID of the Publisher in the database.
+     * @param rowData with data
+     */
+    public Publisher(final long id,
+                     @NonNull final DataHolder rowData) {
+        mId = id;
+        mName = rowData.getString(DBDefinitions.KEY_PUBLISHER_NAME);
     }
 
     /**
@@ -77,6 +97,8 @@ public class Publisher
      * @param in Parcel to construct the object from
      */
     Publisher(@NonNull final Parcel in) {
+        mId = in.readLong();
+        //noinspection ConstantConditions
         mName = in.readString();
     }
 
@@ -91,6 +113,42 @@ public class Publisher
         return new Publisher(name);
     }
 
+    /**
+     * Passed a list of Objects, remove duplicates.
+     *
+     * @param list List to clean up
+     * @param db   Database Access
+     *
+     * @return {@code true} if the list was modified.
+     */
+    public static boolean pruneList(@NonNull final Iterable<Publisher> list,
+                                    @NonNull final Context context,
+                                    @NonNull final DAO db,
+                                    final boolean lookupLocale,
+                                    @NonNull final Locale bookLocale) {
+
+        boolean listModified = false;
+        final Iterator<Publisher> it;
+
+        // Keep track of hashCode
+        final Collection<Integer> hashCodes = new HashSet<>();
+        it = list.iterator();
+        while (it.hasNext()) {
+            final Publisher item = it.next();
+            item.fixId(context, db, lookupLocale, bookLocale);
+
+            final Integer hashCode = item.hashCode();
+            if (!hashCodes.contains(hashCode)) {
+                hashCodes.add(hashCode);
+            } else {
+                it.remove();
+                listModified = true;
+            }
+        }
+
+        return listModified;
+    }
+
     @SuppressWarnings("SameReturnValue")
     @Override
     public int describeContents() {
@@ -100,16 +158,54 @@ public class Publisher
     @Override
     public void writeToParcel(@NonNull final Parcel dest,
                               final int flags) {
+        dest.writeLong(mId);
         dest.writeString(mName);
     }
 
+    @Override
+    public long getId() {
+        return mId;
+    }
+
+    public void setId(final long id) {
+        mId = id;
+    }
+
     /**
-     * Get the name of the publisher.
+     * Get the user visible name.
+     *
+     * @param context Current context
+     *
+     * @return name
+     */
+    @NonNull
+    public String getLabel(@NonNull final Context context) {
+        final Locale locale = LocaleUtils.getUserLocale(context);
+        return reorderTitleForDisplaying(context, getLocale(context, locale));
+    }
+
+    /**
+     * Get the unformatted name.
      *
      * @return the name
      */
     @NonNull
     public String getName() {
+        return mName;
+    }
+
+    /**
+     * Set the unformatted name; as entered manually by the user.
+     *
+     * @param name to use
+     */
+    public void setName(@NonNull final String name) {
+        mName = name;
+    }
+
+    @NonNull
+    @Override
+    public String getTitle() {
         return mName;
     }
 
@@ -122,9 +218,37 @@ public class Publisher
         mName = source.mName;
     }
 
+    @NonNull
+    public Locale getLocale(@NonNull final Context context,
+                            @NonNull final Locale bookLocale) {
+        return bookLocale;
+    }
+
+    /**
+     * Try to find the Publisher. If found, update the id with the id as found in the database.
+     *
+     * @param context      Current context
+     * @param db           Database Access
+     * @param lookupLocale set to {@code true} to force a database lookup of the locale.
+     *                     This can be (relatively) slow, and hence should be {@code false}
+     *                     during for example an import.
+     * @param bookLocale   Locale to use if the item has none set,
+     *                     or if lookupLocale was {@code false}
+     *
+     * @return the item id (also set on the item).
+     */
+    public long fixId(@NonNull final Context context,
+                      @NonNull final DAO db,
+                      final boolean lookupLocale,
+                      @NonNull final Locale bookLocale) {
+
+        mId = db.getPublisherId(context, this, lookupLocale, bookLocale);
+        return mId;
+    }
+
     @Override
     public int hashCode() {
-        return Objects.hash(mName);
+        return Objects.hash(mId, mName);
     }
 
     /**
@@ -146,7 +270,10 @@ public class Publisher
             return false;
         }
         final Publisher that = (Publisher) obj;
-        // no id to compare...
+        // if both 'exist' but have different ID's -> different.
+        if (mId != 0 && that.mId != 0 && mId != that.mId) {
+            return false;
+        }
         return Objects.equals(mName, that.mName);
     }
 
@@ -154,6 +281,7 @@ public class Publisher
     @NonNull
     public String toString() {
         return "Publisher{"
+               + "mId=" + mId
                + "mName=`" + mName + '`'
                + '}';
     }

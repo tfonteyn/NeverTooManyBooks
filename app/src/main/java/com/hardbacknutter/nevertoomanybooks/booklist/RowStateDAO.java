@@ -377,7 +377,7 @@ public class RowStateDAO
         final String sql = "SELECT "
                            + Csv.join(listTable.getDomains(),
                                       domain -> listTable.dot(domain.getName()))
-                           + ',' + mTable.dotAs(KEY_PK_ID, KEY_BL_LIST_VIEW_NODE_ROW_ID)
+                           + ',' + (mTable.dot(KEY_PK_ID) + " AS " + KEY_BL_LIST_VIEW_NODE_ROW_ID)
                            + " FROM " + listTable.ref() + listTable.join(mTable)
                            + " WHERE " + mTable.dot(KEY_BL_NODE_VISIBLE) + "=1"
                            + " ORDER BY " + mTable.dot(KEY_PK_ID)

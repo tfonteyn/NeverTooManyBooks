@@ -132,6 +132,9 @@ public class MenuPicker {
                                       int position);
     }
 
+    /**
+     * Row ViewHolder for {@link MenuItemListAdapter}.
+     */
     private static class Holder
             extends RecyclerView.ViewHolder {
 

@@ -38,12 +38,18 @@ import java.util.List;
 import com.hardbacknutter.nevertoomanybooks.BookChangedListener;
 import com.hardbacknutter.nevertoomanybooks.R;
 
+/**
+ * Dialog to edit an <strong>in-line in Books table</strong> Format.
+ */
 public class EditFormatDialogFragment
         extends EditStringBaseDialogFragment {
 
     /** Fragment/Log tag. */
     public static final String TAG = "EditFormatDialogFrag";
 
+    /**
+     * No-arg constructor for OS use.
+     */
     public EditFormatDialogFragment() {
         super(R.string.lbl_format, R.string.lbl_format, BookChangedListener.FORMAT);
     }
@@ -74,7 +80,7 @@ public class EditFormatDialogFragment
     @Nullable
     Bundle onSave() {
         //noinspection ConstantConditions
-        mDb.updateFormat(mOriginalText, mCurrentText);
+        mDb.renameFormat(mOriginalText, mCurrentText);
         return null;
     }
 }

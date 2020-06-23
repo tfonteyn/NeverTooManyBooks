@@ -36,6 +36,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
 import java.lang.ref.WeakReference;
+import java.util.Locale;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.BookChangedListener;
@@ -46,13 +47,13 @@ import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditPublisherBinding;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
+import com.hardbacknutter.nevertoomanybooks.dialogs.BaseDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
+import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.widgets.DiacriticArrayAdapter;
 
 /**
- * Dialog to edit an existing publisher.
- * <p>
- * Calling point is a List.
+ * Dialog to edit an <strong>EXISTING or NEW</strong> {@link Publisher}.
  */
 public class EditPublisherDialogFragment
         extends BaseDialogFragment
@@ -75,6 +76,9 @@ public class EditPublisherDialogFragment
     /** Current edit. */
     private String mName;
 
+    /**
+     * No-arg constructor for OS use.
+     */
     public EditPublisherDialogFragment() {
         super(R.layout.dialog_edit_publisher);
     }
@@ -89,7 +93,7 @@ public class EditPublisherDialogFragment
     public static DialogFragment newInstance(@NonNull final Publisher publisher) {
         final DialogFragment frag = new EditPublisherDialogFragment();
         final Bundle args = new Bundle(1);
-        args.putParcelable(DBDefinitions.KEY_PUBLISHER, publisher);
+        args.putParcelable(DBDefinitions.KEY_FK_PUBLISHER, publisher);
         frag.setArguments(args);
         return frag;
     }
@@ -101,14 +105,13 @@ public class EditPublisherDialogFragment
         mDb = new DAO(TAG);
 
         final Bundle args = requireArguments();
-
-        mPublisher = args.getParcelable(DBDefinitions.KEY_PUBLISHER);
+        mPublisher = args.getParcelable(DBDefinitions.KEY_FK_PUBLISHER);
         Objects.requireNonNull(mPublisher, ErrorMsg.ARGS_MISSING_PUBLISHER);
 
         if (savedInstanceState == null) {
             mName = mPublisher.getName();
         } else {
-            mName = savedInstanceState.getString(DBDefinitions.KEY_PUBLISHER);
+            mName = savedInstanceState.getString(DBDefinitions.KEY_PUBLISHER_NAME);
         }
     }
 
@@ -116,6 +119,7 @@ public class EditPublisherDialogFragment
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
         mVb = DialogEditPublisherBinding.bind(view);
 
         mVb.toolbar.setNavigationOnClickListener(v -> dismiss());
@@ -132,13 +136,12 @@ public class EditPublisherDialogFragment
         //noinspection ConstantConditions
         final DiacriticArrayAdapter<String> adapter = new DiacriticArrayAdapter<>(
                 getContext(), R.layout.dropdown_menu_popup_item, mDb.getPublisherNames());
-
         mVb.publisher.setText(mName);
         mVb.publisher.setAdapter(adapter);
     }
 
     private boolean saveChanges() {
-        mName = mVb.publisher.getText().toString().trim();
+        viewToModel();
         if (mName.isEmpty()) {
             showError(mVb.lblPublisher, R.string.vldt_non_blank_required);
             return false;
@@ -149,24 +152,41 @@ public class EditPublisherDialogFragment
             return true;
         }
 
-        mDb.updatePublisher(mPublisher.getName(), mName);
+        // There is no book involved here, so use the users Locale instead
+        //noinspection ConstantConditions
+        final Locale bookLocale = LocaleUtils.getUserLocale(getContext());
 
-        if (mListener != null && mListener.get() != null) {
-            mListener.get().onChange(0, BookChangedListener.PUBLISHER, null);
+        // store changes
+        mPublisher.setName(mName);
+
+        final boolean success;
+        if (mPublisher.getId() == 0) {
+            success = mDb.insert(getContext(), mPublisher, bookLocale) > 0;
         } else {
-            if (BuildConfig.DEBUG /* always */) {
-                Log.w(TAG, "onBookChanged|"
-                           + (mListener == null ? ErrorMsg.LISTENER_WAS_NULL
-                                                : ErrorMsg.LISTENER_WAS_DEAD));
+            success = mDb.update(getContext(), mPublisher, bookLocale);
+        }
+        if (success) {
+            if (mListener != null && mListener.get() != null) {
+                mListener.get().onChange(0, BookChangedListener.PUBLISHER, null);
+            } else {
+                if (BuildConfig.DEBUG /* always */) {
+                    Log.w(TAG, "onBookChanged|"
+                               + (mListener == null ? ErrorMsg.LISTENER_WAS_NULL
+                                                    : ErrorMsg.LISTENER_WAS_DEAD));
+                }
             }
         }
         return true;
     }
 
+    private void viewToModel() {
+        mName = mVb.publisher.getText().toString().trim();
+    }
+
     @Override
     public void onSaveInstanceState(@NonNull final Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putString(DBDefinitions.KEY_PUBLISHER, mName);
+        outState.putString(DBDefinitions.KEY_PUBLISHER_NAME, mName);
     }
 
     /**
@@ -181,7 +201,7 @@ public class EditPublisherDialogFragment
 
     @Override
     public void onPause() {
-        mName = mVb.publisher.getText().toString().trim();
+        viewToModel();
         super.onPause();
     }
 

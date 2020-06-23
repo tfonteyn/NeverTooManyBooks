@@ -62,6 +62,7 @@ import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.VirtualDomain;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
+import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.UniqueMap;
 
@@ -69,6 +70,7 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_AU
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_AUTHOR_IS_COMPLETE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BL_AUTHOR_SORT;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BL_BOOK_NUM_IN_SERIES_AS_FLOAT;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BL_PUBLISHER_SORT;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BL_SERIES_SORT;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOKSHELF_NAME;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_COLOR;
@@ -80,14 +82,15 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BO
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_LANGUAGE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_LOCATION;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_NUM_IN_SERIES;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_PUBLISHER;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_RATING;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_READ;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_DATE_FIRST_PUBLICATION;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_DATE_PUBLISHED;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_FK_AUTHOR;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_FK_PUBLISHER;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_FK_SERIES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_LOANEE;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_PUBLISHER_NAME;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_SERIES_IS_COMPLETE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_SERIES_TITLE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_TITLE;
@@ -102,13 +105,15 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_DA
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_DATE_FIRST_PUBLICATION;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_DATE_PUBLISHED;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FK_AUTHOR;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FK_PUBLISHER;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FK_SERIES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FORMAT;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_GENRE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_LANGUAGE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_LOCATION;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_PK_ID;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_PUBLISHER;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_PUBLISHER_NAME;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_PUBLISHER_NAME_OB;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_RATING;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_READ;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_READ_END;
@@ -123,7 +128,9 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_AU
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKSHELF;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_AUTHOR;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_PUBLISHER;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_SERIES;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_PUBLISHERS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_SERIES;
 
 /**
@@ -161,7 +168,7 @@ public class BooklistGroup
             };
 
     /**
-     * The ids for the groups. <strong>Never change these ids</strong>,
+     * The ID's for the groups. <strong>Never change these</strong>,
      * they get stored in prefs and styles
      * <p>
      * Also: the code relies on BOOK being == 0
@@ -232,8 +239,8 @@ public class BooklistGroup
      * @param id    of group to create
      * @param style the style
      */
-    private BooklistGroup(@Id final int id,
-                          @NonNull final BooklistStyle style) {
+    BooklistGroup(@Id final int id,
+                  @NonNull final BooklistStyle style) {
         mId = id;
         mGroupKey = GroupKey.getGroupKey(mId);
         mUuid = style.getUuid();
@@ -245,7 +252,7 @@ public class BooklistGroup
      *
      * @param in Parcel to construct the object from
      */
-    private BooklistGroup(@NonNull final Parcel in) {
+    BooklistGroup(@NonNull final Parcel in) {
         mId = in.readInt();
         mGroupKey = GroupKey.getGroupKey(mId);
         //noinspection ConstantConditions
@@ -275,6 +282,8 @@ public class BooklistGroup
                 return new BooklistAuthorGroup(context, style);
             case SERIES:
                 return new BooklistSeriesGroup(style);
+            case PUBLISHER:
+                return new BooklistPublisherGroup(style);
 
             default:
                 return new BooklistGroup(id, style);
@@ -511,7 +520,205 @@ public class BooklistGroup
     }
 
     /**
-     * Specialized BooklistGroup representing a Series group.
+     * Specialized BooklistGroup representing an {@link Author} group.
+     * Includes extra attributes based on preferences.
+     * <p>
+     * {@link #getDisplayDomain()} returns a customized display domain
+     * {@link #getGroupDomains} adds the group/sorted domain based on the OB column.
+     */
+    public static class BooklistAuthorGroup
+            extends BooklistGroup
+            implements Parcelable {
+
+        /** {@link Parcelable}. */
+        @SuppressWarnings("InnerClassFieldHidesOuterClassField")
+        public static final Creator<BooklistAuthorGroup> CREATOR =
+                new Creator<BooklistAuthorGroup>() {
+                    @Override
+                    public BooklistAuthorGroup createFromParcel(@NonNull final Parcel source) {
+                        return new BooklistAuthorGroup(source);
+                    }
+
+                    @Override
+                    public BooklistAuthorGroup[] newArray(final int size) {
+                        return new BooklistAuthorGroup[size];
+                    }
+                };
+
+        /** Customized domain with display data. */
+        @NonNull
+        private final VirtualDomain mDisplayDomain;
+        /** Customized domain with sorted data. */
+        @NonNull
+        private final VirtualDomain mSortedDomain;
+        /** We cannot parcel the style here, so keep a local copy of this preference. */
+        private final boolean mShowAuthorWithGivenNameFirst;
+        /** We cannot parcel the style here, so keep a local copy of this preference. */
+        private final boolean mSortAuthorByGivenNameFirst;
+
+        /** Support for 'Show All Authors of Book' property. */
+        private PBoolean mAllAuthors;
+        /** The primary author type the user prefers. */
+        private PBitmask mPrimaryType;
+
+        /**
+         * Constructor.
+         *
+         * @param context Current context
+         * @param style   the style
+         */
+        BooklistAuthorGroup(@NonNull final Context context,
+                            @NonNull final BooklistStyle style) {
+            super(AUTHOR, style);
+            initPrefs();
+
+            mShowAuthorWithGivenNameFirst = style.isShowAuthorByGivenName(context);
+            mSortAuthorByGivenNameFirst = style.isSortAuthorByGivenName(context);
+            mDisplayDomain = createDisplayDomain();
+            mSortedDomain = createSortDomain();
+        }
+
+        /**
+         * {@link Parcelable} Constructor.
+         *
+         * @param in Parcel to construct the object from
+         */
+        BooklistAuthorGroup(@NonNull final Parcel in) {
+            super(in);
+            initPrefs();
+            mAllAuthors.set(in);
+
+            mShowAuthorWithGivenNameFirst = in.readInt() != 0;
+            mSortAuthorByGivenNameFirst = in.readInt() != 0;
+            mDisplayDomain = createDisplayDomain();
+            mSortedDomain = createSortDomain();
+        }
+
+        /**
+         * Get the global default for this preference.
+         *
+         * @param context Current context
+         *
+         * @return {@code true} if we want to show a book under each of its Authors.
+         */
+        static boolean showBooksUnderEachAuthorGlobalDefault(@NonNull final Context context) {
+            return PreferenceManager
+                    .getDefaultSharedPreferences(context)
+                    .getBoolean(Prefs.pk_style_group_author_show_books_under_each_author, false);
+        }
+
+        /**
+         * Get the global default for this preference.
+         *
+         * @param context Current context
+         *
+         * @return the type of author we consider the primary author
+         */
+        static int getPrimaryTypeGlobalDefault(@NonNull final Context context) {
+            return PreferenceManager
+                    .getDefaultSharedPreferences(context)
+                    .getInt(Prefs.pk_style_group_author_primary_type, Author.TYPE_UNKNOWN);
+        }
+
+        @NonNull
+        private VirtualDomain createDisplayDomain() {
+            // Not sorted; sort as defined in #createSortDomain
+            return new VirtualDomain(DOM_AUTHOR_FORMATTED, DAO.SqlColumns
+                    .getDisplayAuthor(TBL_AUTHORS.getAlias(), mShowAuthorWithGivenNameFirst));
+        }
+
+        @NonNull
+        private VirtualDomain createSortDomain() {
+            // Sorting depends on user preference
+            return new VirtualDomain(DOM_BL_AUTHOR_SORT,
+                                     DAO.SqlColumns.getSortAuthor(mSortAuthorByGivenNameFirst),
+                                     VirtualDomain.SORT_ASC);
+        }
+
+        @NonNull
+        @Override
+        VirtualDomain getDisplayDomain() {
+            return mDisplayDomain;
+        }
+
+        @NonNull
+        @Override
+        ArrayList<VirtualDomain> getGroupDomains() {
+            // We need to inject the mSortedDomain as first in the list.
+            final ArrayList<VirtualDomain> list = new ArrayList<>();
+            list.add(0, mSortedDomain);
+            list.addAll(super.getGroupDomains());
+            return list;
+        }
+
+        @Override
+        public void writeToParcel(@NonNull final Parcel dest,
+                                  final int flags) {
+            super.writeToParcel(dest, flags);
+            mAllAuthors.writeToParcel(dest);
+
+            dest.writeInt(mShowAuthorWithGivenNameFirst ? 1 : 0);
+            dest.writeInt(mSortAuthorByGivenNameFirst ? 1 : 0);
+        }
+
+        void initPrefs() {
+            mAllAuthors = new PBoolean(Prefs.pk_style_group_author_show_books_under_each_author,
+                                       mUuid, mIsUserDefinedStyle);
+
+            mPrimaryType = new PBitmask(Prefs.pk_style_group_author_primary_type,
+                                        mUuid, mIsUserDefinedStyle,
+                                        Author.TYPE_UNKNOWN, Author.TYPE_BITMASK_ALL);
+        }
+
+        @NonNull
+        @Override
+        @CallSuper
+        public Map<String, PPref> getPreferences() {
+            final Map<String, PPref> map = super.getPreferences();
+            map.put(mAllAuthors.getKey(), mAllAuthors);
+            map.put(mPrimaryType.getKey(), mPrimaryType);
+            return map;
+        }
+
+        @Override
+        public void setPreferencesVisible(@NonNull final PreferenceScreen screen,
+                                          final boolean visible) {
+
+            final PreferenceCategory category = screen.findPreference(Prefs.PSK_STYLE_AUTHOR);
+            if (category != null) {
+                final String[] keys = {Prefs.pk_style_group_author_show_books_under_each_author,
+                                       Prefs.pk_style_group_author_primary_type};
+
+                setPreferenceVisibility(category, keys, visible);
+            }
+        }
+
+        /**
+         * Get this preference.
+         *
+         * @param context Current context
+         *
+         * @return {@code true} if we want to show a book under each of its Authors.
+         */
+        boolean showBooksUnderEachAuthor(@NonNull final Context context) {
+            return mAllAuthors.isTrue(context);
+        }
+
+        /**
+         * Get this preference.
+         *
+         * @param context Current context
+         *
+         * @return the type of author we consider the primary author
+         */
+        @Author.Type
+        int getPrimaryType(@NonNull final Context context) {
+            return mPrimaryType.getValue(context);
+        }
+    }
+
+    /**
+     * Specialized BooklistGroup representing a {@link Series} group.
      * Includes extra attributes based on preferences.
      * <p>
      * {@link #getDisplayDomain()} returns a customized display domain
@@ -559,7 +766,7 @@ public class BooklistGroup
          *
          * @param in Parcel to construct the object from
          */
-        private BooklistSeriesGroup(@NonNull final Parcel in) {
+        BooklistSeriesGroup(@NonNull final Parcel in) {
             super(in);
             mDisplayDomain = createDisplayDomain();
 
@@ -638,62 +845,47 @@ public class BooklistGroup
     }
 
     /**
-     * Specialized BooklistGroup representing an Author group.
+     * Specialized BooklistGroup representing a Series group.
      * Includes extra attributes based on preferences.
      * <p>
      * {@link #getDisplayDomain()} returns a customized display domain
      * {@link #getGroupDomains} adds the group/sorted domain based on the OB column.
      */
-    public static class BooklistAuthorGroup
+    public static class BooklistPublisherGroup
             extends BooklistGroup
             implements Parcelable {
 
         /** {@link Parcelable}. */
         @SuppressWarnings("InnerClassFieldHidesOuterClassField")
-        public static final Creator<BooklistAuthorGroup> CREATOR =
-                new Creator<BooklistAuthorGroup>() {
+        public static final Creator<BooklistPublisherGroup> CREATOR =
+                new Creator<BooklistPublisherGroup>() {
                     @Override
-                    public BooklistAuthorGroup createFromParcel(@NonNull final Parcel source) {
-                        return new BooklistAuthorGroup(source);
+                    public BooklistPublisherGroup createFromParcel(@NonNull final Parcel source) {
+                        return new BooklistPublisherGroup(source);
                     }
 
                     @Override
-                    public BooklistAuthorGroup[] newArray(final int size) {
-                        return new BooklistAuthorGroup[size];
+                    public BooklistPublisherGroup[] newArray(final int size) {
+                        return new BooklistPublisherGroup[size];
                     }
                 };
 
         /** Customized domain with display data. */
         @NonNull
         private final VirtualDomain mDisplayDomain;
-        /** Customized domain with sorted data. */
-        @NonNull
-        private final VirtualDomain mSortedDomain;
-        /** We cannot parcel the style here, so keep a local copy of this preference. */
-        private final boolean mShowAuthorByGivenNameFirst;
-        /** We cannot parcel the style here, so keep a local copy of this preference. */
-        private final boolean mSortAuthorByGivenNameFirst;
-
-        /** Support for 'Show All Authors of Book' property. */
-        private PBoolean mAllAuthors;
-        /** The primary author type the user prefers. */
-        private PBitmask mPrimaryType;
+        /** Show a book under each Publisher it appears in. */
+        private PBoolean mAllPublishers;
 
         /**
          * Constructor.
          *
-         * @param context Current context
-         * @param style   the style
+         * @param style the style
          */
-        BooklistAuthorGroup(@NonNull final Context context,
-                            @NonNull final BooklistStyle style) {
-            super(AUTHOR, style);
-            initPrefs();
-
-            mShowAuthorByGivenNameFirst = style.isShowAuthorByGivenNameFirst(context);
-            mSortAuthorByGivenNameFirst = style.isSortAuthorByGivenNameFirst(context);
+        BooklistPublisherGroup(@NonNull final BooklistStyle style) {
+            super(PUBLISHER, style);
             mDisplayDomain = createDisplayDomain();
-            mSortedDomain = createSortDomain();
+
+            initPrefs();
         }
 
         /**
@@ -701,15 +893,12 @@ public class BooklistGroup
          *
          * @param in Parcel to construct the object from
          */
-        private BooklistAuthorGroup(@NonNull final Parcel in) {
+        BooklistPublisherGroup(@NonNull final Parcel in) {
             super(in);
-            initPrefs();
-            mAllAuthors.set(in);
-
-            mShowAuthorByGivenNameFirst = in.readInt() != 0;
-            mSortAuthorByGivenNameFirst = in.readInt() != 0;
             mDisplayDomain = createDisplayDomain();
-            mSortedDomain = createSortDomain();
+
+            initPrefs();
+            mAllPublishers.set(in);
         }
 
         /**
@@ -717,44 +906,25 @@ public class BooklistGroup
          *
          * @param context Current context
          *
-         * @return {@code true} if we want to show a book under each of its Authors.
+         * @return {@code true} if we want to show a book under each of its Publishers.
          */
-        static boolean showBooksUnderEachAuthorGlobalDefault(@NonNull final Context context) {
+        static boolean showBooksUnderEachPublisherGlobalDefault(@NonNull final Context context) {
             return PreferenceManager
                     .getDefaultSharedPreferences(context)
-                    .getBoolean(Prefs.pk_style_group_author_show_books_under_each_author, false);
+                    .getBoolean(Prefs.pk_style_group_publisher_show_books_under_each_publisher,
+                                false);
         }
 
-        /**
-         * Get the global default for this preference.
-         *
-         * @param context Current context
-         *
-         * @return the type of author we consider the primary author
-         */
-        static int getPrimaryTypeGlobalDefault(@NonNull final Context context) {
-            return PreferenceManager
-                    .getDefaultSharedPreferences(context)
-                    .getInt(Prefs.pk_style_group_author_primary_type, Author.TYPE_UNKNOWN);
+        private void initPrefs() {
+            mAllPublishers = new PBoolean(
+                    Prefs.pk_style_group_publisher_show_books_under_each_publisher,
+                    mUuid, mIsUserDefinedStyle);
         }
 
         @NonNull
         private VirtualDomain createDisplayDomain() {
-            // Not sorted; sort as defined in #createSortDomain
-            return new VirtualDomain(DOM_AUTHOR_FORMATTED,
-                                     mShowAuthorByGivenNameFirst
-                                     ? DAO.SqlColumns.EXP_AUTHOR_FORMATTED_GIVEN_SPACE_FAMILY
-                                     : DAO.SqlColumns.EXP_AUTHOR_FORMATTED_FAMILY_COMMA_GIVEN);
-        }
-
-        @NonNull
-        private VirtualDomain createSortDomain() {
-            // Sorting depends on user preference
-            return new VirtualDomain(DOM_BL_AUTHOR_SORT,
-                                     mSortAuthorByGivenNameFirst
-                                     ? DAO.SqlColumns.EXP_AUTHOR_SORT_FIRST_LAST
-                                     : DAO.SqlColumns.EXP_AUTHOR_SORT_LAST_FIRST,
-                                     VirtualDomain.SORT_ASC);
+            // Not sorted; we sort on the OB domain as defined in the GroupKey.
+            return new VirtualDomain(DOM_PUBLISHER_NAME, TBL_PUBLISHERS.dot(KEY_PUBLISHER_NAME));
         }
 
         @NonNull
@@ -763,42 +933,20 @@ public class BooklistGroup
             return mDisplayDomain;
         }
 
-        @NonNull
-        @Override
-        ArrayList<VirtualDomain> getGroupDomains() {
-            // We need to inject the mSortedDomain as first in the list.
-            final ArrayList<VirtualDomain> list = new ArrayList<>();
-            list.add(0, mSortedDomain);
-            list.addAll(super.getGroupDomains());
-            return list;
-        }
-
         @Override
         public void writeToParcel(@NonNull final Parcel dest,
                                   final int flags) {
             super.writeToParcel(dest, flags);
-            mAllAuthors.writeToParcel(dest);
-
-            dest.writeInt(mShowAuthorByGivenNameFirst ? 1 : 0);
-            dest.writeInt(mSortAuthorByGivenNameFirst ? 1 : 0);
+            mAllPublishers.writeToParcel(dest);
         }
 
-        void initPrefs() {
-            mAllAuthors = new PBoolean(Prefs.pk_style_group_author_show_books_under_each_author,
-                                       mUuid, mIsUserDefinedStyle);
-
-            mPrimaryType = new PBitmask(Prefs.pk_style_group_author_primary_type,
-                                        mUuid, mIsUserDefinedStyle,
-                                        Author.TYPE_UNKNOWN, Author.TYPE_BITMASK_ALL);
-        }
 
         @NonNull
         @Override
         @CallSuper
         public Map<String, PPref> getPreferences() {
             final Map<String, PPref> map = super.getPreferences();
-            map.put(mAllAuthors.getKey(), mAllAuthors);
-            map.put(mPrimaryType.getKey(), mPrimaryType);
+            map.put(mAllPublishers.getKey(), mAllPublishers);
             return map;
         }
 
@@ -806,11 +954,9 @@ public class BooklistGroup
         public void setPreferencesVisible(@NonNull final PreferenceScreen screen,
                                           final boolean visible) {
 
-            final PreferenceCategory category = screen.findPreference(Prefs.PSK_STYLE_AUTHOR);
+            final PreferenceCategory category = screen.findPreference(Prefs.PSK_STYLE_PUBLISHER);
             if (category != null) {
-                final String[] keys = {Prefs.pk_style_group_author_show_books_under_each_author,
-                                       Prefs.pk_style_group_author_primary_type};
-
+                final String[] keys = {Prefs.pk_style_group_publisher_show_books_under_each_publisher};
                 setPreferenceVisibility(category, keys, visible);
             }
         }
@@ -820,22 +966,10 @@ public class BooklistGroup
          *
          * @param context Current context
          *
-         * @return {@code true} if we want to show a book under each of its Authors.
+         * @return {@code true} if we want to show a book under each of its Publishers.
          */
-        boolean showBooksUnderEachAuthor(@NonNull final Context context) {
-            return mAllAuthors.isTrue(context);
-        }
-
-        /**
-         * Get this preference.
-         *
-         * @param context Current context
-         *
-         * @return the type of author we consider the primary author
-         */
-        @Author.Type
-        int getPrimaryType(@NonNull final Context context) {
-            return mPrimaryType.getValue(context);
+        boolean showBooksUnderEachPublisher(@NonNull final Context context) {
+            return mAllPublishers.isTrue(context);
         }
     }
 
@@ -930,9 +1064,10 @@ public class BooklistGroup
                     // We use the foreign ID to create the key.
                     // We override the display domain in the BooklistGroup.
                     // We do not sort on the key domain but add the OB column in the BooklistGroup.
-                    return new GroupKey(
-                            R.string.lbl_author, "a",
-                            DOM_FK_AUTHOR, TBL_AUTHORS.dot(KEY_PK_ID), VirtualDomain.SORT_UNSORTED)
+                    return new GroupKey(R.string.lbl_author, "a",
+                                        DOM_FK_AUTHOR, TBL_AUTHORS.dot(KEY_PK_ID),
+                                        VirtualDomain.SORT_UNSORTED)
+
                             .addGroupDomain(
                                     // Group by id (we want the id available and there is
                                     // a chance two Authors will have the same name)
@@ -947,15 +1082,15 @@ public class BooklistGroup
                     // We use the foreign ID to create the key.
                     // We override the display domain in the BooklistGroup.
                     // We do not sort on the key domain but add the OB column instead
-                    return new GroupKey(
-                            R.string.lbl_series, "s",
-                            DOM_FK_SERIES, TBL_SERIES.dot(KEY_PK_ID), VirtualDomain.SORT_UNSORTED)
+                    return new GroupKey(R.string.lbl_series, "s",
+                                        DOM_FK_SERIES, TBL_SERIES.dot(KEY_PK_ID),
+                                        VirtualDomain.SORT_UNSORTED)
+
                             .addGroupDomain(
                                     // Group and sort by the OB column
                                     new VirtualDomain(DOM_BL_SERIES_SORT,
                                                       TBL_SERIES.dot(KEY_SERIES_TITLE_OB),
-                                                      VirtualDomain.SORT_ASC)
-                                           )
+                                                      VirtualDomain.SORT_ASC))
                             .addGroupDomain(
                                     // Group by id (we want the id available and there is
                                     // a chance two Series will have the same name)
@@ -983,6 +1118,27 @@ public class BooklistGroup
                                                       TBL_BOOK_SERIES.dot(KEY_BOOK_NUM_IN_SERIES),
                                                       VirtualDomain.SORT_ASC));
 
+                }
+                case PUBLISHER: {
+                    // We do NOT use the foreign ID to create the key.
+                    // The linked data is used directly to display.
+                    // If we ever create a dedicated BooklistGroup for Publisher,
+                    // this can/should be changed.
+                    return new GroupKey(R.string.lbl_publisher, "p",
+                                        DOM_FK_PUBLISHER, TBL_PUBLISHERS.dot(KEY_PK_ID),
+                                        VirtualDomain.SORT_UNSORTED)
+
+                            .addGroupDomain(
+                                    // Group and sort by the OB column
+                                    new VirtualDomain(DOM_BL_PUBLISHER_SORT,
+                                                      TBL_PUBLISHERS.dot(KEY_PUBLISHER_NAME_OB),
+                                                      VirtualDomain.SORT_ASC)
+                                           )
+                            .addGroupDomain(
+                                    // Group by id (we want the id available and there is
+                                    // a chance two Publishers will have the same name)
+                                    new VirtualDomain(DOM_FK_PUBLISHER,
+                                                      TBL_BOOK_PUBLISHER.dot(KEY_FK_PUBLISHER)));
                 }
                 case BOOKSHELF: {
                     // We do NOT use the foreign ID to create the key.
@@ -1019,11 +1175,6 @@ public class BooklistGroup
                 case LOCATION: {
                     return new GroupKey(R.string.lbl_location, "loc",
                                         DOM_BOOK_LOCATION, TBL_BOOKS.dot(KEY_LOCATION),
-                                        VirtualDomain.SORT_ASC);
-                }
-                case PUBLISHER: {
-                    return new GroupKey(R.string.lbl_publisher, "p",
-                                        DOM_BOOK_PUBLISHER, TBL_BOOKS.dot(KEY_PUBLISHER),
                                         VirtualDomain.SORT_ASC);
                 }
                 case CONDITION: {

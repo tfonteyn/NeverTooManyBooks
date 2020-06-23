@@ -245,9 +245,9 @@ public class BooklistStyle
     private PInteger mThumbnailScale;
 
     /** Local override. */
-    private PBoolean mShowAuthorByGivenNameFirst;
+    private PBoolean mShowAuthorByGivenName;
     /** Local override. */
-    private PBoolean mSortAuthorByGivenNameFirst;
+    private PBoolean mSortAuthorByGivenName;
 
     /** All groups in this style. */
     private PStyleGroups mStyleGroups;
@@ -292,11 +292,11 @@ public class BooklistStyle
      * @param nameId   the resource id for the name
      * @param groupIds a list of groups to attach to this style
      */
-    private BooklistStyle(@NonNull final Context context,
-                          @IntRange(from = -100, to = -1) final long id,
-                          @NonNull final String uuid,
-                          @StringRes final int nameId,
-                          @NonNull final int... groupIds) {
+    BooklistStyle(@NonNull final Context context,
+                  @IntRange(from = -100, to = -1) final long id,
+                  @NonNull final String uuid,
+                  @StringRes final int nameId,
+                  @NonNull final int... groupIds) {
         mId = id;
         mUuid = uuid;
         mNameResId = nameId;
@@ -368,7 +368,7 @@ public class BooklistStyle
      *
      * @param in Parcel to construct the object from
      */
-    private BooklistStyle(@NonNull final Parcel in) {
+    BooklistStyle(@NonNull final Parcel in) {
         mId = in.readLong();
         // will be 0 for user defined styles
         mNameResId = in.readInt();
@@ -386,8 +386,8 @@ public class BooklistStyle
         mFontScale.set(in);
         mThumbnailScale.set(in);
         mShowHeaderInfo.set(in);
-        mShowAuthorByGivenNameFirst.set(in);
-        mSortAuthorByGivenNameFirst.set(in);
+        mShowAuthorByGivenName.set(in);
+        mSortAuthorByGivenName.set(in);
         mStyleGroups.set(in);
 
         // the collection is ordered, so we don't need the keys.
@@ -441,8 +441,8 @@ public class BooklistStyle
         mFontScale.set(in);
         mThumbnailScale.set(in);
         mShowHeaderInfo.set(in);
-        mShowAuthorByGivenNameFirst.set(in);
-        mSortAuthorByGivenNameFirst.set(in);
+        mShowAuthorByGivenName.set(in);
+        mSortAuthorByGivenName.set(in);
         mStyleGroups.set(in);
 
         // the collection is ordered, so we don't need the keys.
@@ -630,11 +630,11 @@ public class BooklistStyle
                                        isUserDefined, ImageScale.SCALE_MEDIUM);
 
 
-        mShowAuthorByGivenNameFirst = new PBoolean(Prefs.pk_show_author_name_given_first, mUuid,
-                                                   isUserDefined);
+        mShowAuthorByGivenName = new PBoolean(Prefs.pk_show_author_name_given_first, mUuid,
+                                              isUserDefined);
 
-        mSortAuthorByGivenNameFirst = new PBoolean(Prefs.pk_sort_author_name_given_first, mUuid,
-                                                   isUserDefined);
+        mSortAuthorByGivenName = new PBoolean(Prefs.pk_sort_author_name_given_first, mUuid,
+                                              isUserDefined);
 
         // all groups in this style
         mStyleGroups = new PStyleGroups(context, this);
@@ -642,7 +642,7 @@ public class BooklistStyle
         // all optional details for book-rows.
         mAllBookDetailFields = new LinkedHashMap<>();
 
-        mAllBookDetailFields.put(DBDefinitions.KEY_THUMBNAIL,
+        mAllBookDetailFields.put(DBDefinitions.PREFS_IS_USED_THUMBNAIL,
                                  new PBoolean(Prefs.pk_style_book_show_thumbnails,
                                               mUuid, isUserDefined,
                                               true));
@@ -659,7 +659,7 @@ public class BooklistStyle
                                  new PBoolean(Prefs.pk_style_book_show_author,
                                               mUuid, isUserDefined));
 
-        mAllBookDetailFields.put(DBDefinitions.KEY_PUBLISHER,
+        mAllBookDetailFields.put(DBDefinitions.KEY_PUBLISHER_NAME,
                                  new PBoolean(Prefs.pk_style_book_show_publisher,
                                               mUuid, isUserDefined));
 
@@ -746,8 +746,8 @@ public class BooklistStyle
         mFontScale.writeToParcel(dest);
         mThumbnailScale.writeToParcel(dest);
         mShowHeaderInfo.writeToParcel(dest);
-        mShowAuthorByGivenNameFirst.writeToParcel(dest);
-        mSortAuthorByGivenNameFirst.writeToParcel(dest);
+        mShowAuthorByGivenName.writeToParcel(dest);
+        mSortAuthorByGivenName.writeToParcel(dest);
         mStyleGroups.writeToParcel(dest);
 
         // the collection is ordered, so we don't write the keys.
@@ -869,8 +869,8 @@ public class BooklistStyle
         map.put(mThumbnailScale.getKey(), mThumbnailScale);
         map.put(mShowHeaderInfo.getKey(), mShowHeaderInfo);
 
-        map.put(mShowAuthorByGivenNameFirst.getKey(), mShowAuthorByGivenNameFirst);
-        map.put(mSortAuthorByGivenNameFirst.getKey(), mSortAuthorByGivenNameFirst);
+        map.put(mShowAuthorByGivenName.getKey(), mShowAuthorByGivenName);
+        map.put(mSortAuthorByGivenName.getKey(), mSortAuthorByGivenName);
 
         map.put(mStyleGroups.getKey(), mStyleGroups);
 
@@ -1009,7 +1009,7 @@ public class BooklistStyle
      * @param scale id
      */
     @SuppressWarnings("SameParameterValue")
-    private void setTextScale(@FontScale final int scale) {
+    void setTextScale(@FontScale final int scale) {
         mFontScale.set(scale);
     }
 
@@ -1023,7 +1023,7 @@ public class BooklistStyle
     @ImageScale.Scale
     public int getThumbnailScale(@NonNull final Context context) {
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        if (isBookDetailUsed(context, prefs, DBDefinitions.KEY_THUMBNAIL)) {
+        if (isBookDetailUsed(context, prefs, DBDefinitions.PREFS_IS_USED_THUMBNAIL)) {
             return mThumbnailScale.getValue(context);
         }
         return ImageScale.SCALE_NOT_DISPLAYED;
@@ -1035,8 +1035,8 @@ public class BooklistStyle
      * @param key  for the field
      * @param show value to set
      */
-    private void setShowBookDetailField(@NonNull final String key,
-                                        final boolean show) {
+    void setShowBookDetailField(@NonNull final String key,
+                                final boolean show) {
         //noinspection ConstantConditions
         mAllBookDetailFields.get(key).set(show);
     }
@@ -1138,8 +1138,8 @@ public class BooklistStyle
      * Used by built-in styles only. Set by user via preferences screen.
      */
     @SuppressWarnings("SameParameterValue")
-    private void setFilter(@NonNull final String key,
-                           final boolean value) {
+    void setFilter(@NonNull final String key,
+                   final boolean value) {
         //noinspection ConstantConditions
         ((BooleanFilter) mFilters.get(key)).set(value);
     }
@@ -1195,7 +1195,7 @@ public class BooklistStyle
         final List<String> labels = new ArrayList<>();
 
         //noinspection ConstantConditions
-        if (mAllBookDetailFields.get(DBDefinitions.KEY_THUMBNAIL).isTrue(context)) {
+        if (mAllBookDetailFields.get(DBDefinitions.PREFS_IS_USED_THUMBNAIL).isTrue(context)) {
             labels.add(context.getString(R.string.lbl_thumbnails));
         }
         //noinspection ConstantConditions
@@ -1203,7 +1203,7 @@ public class BooklistStyle
             labels.add(context.getString(R.string.lbl_author));
         }
         //noinspection ConstantConditions
-        if (mAllBookDetailFields.get(DBDefinitions.KEY_PUBLISHER).isTrue(context)) {
+        if (mAllBookDetailFields.get(DBDefinitions.KEY_PUBLISHER_NAME).isTrue(context)) {
             labels.add(context.getString(R.string.lbl_publisher));
         }
         //noinspection ConstantConditions
@@ -1276,8 +1276,8 @@ public class BooklistStyle
                + "\nmDefaultExpansionLevel=" + mDefaultExpansionLevel
                + "\nmFontScale=" + mFontScale
                + "\nmShowHeaderInfo=" + mShowHeaderInfo
-               + "\nmShowAuthorByGivenNameFirst=" + mShowAuthorByGivenNameFirst
-               + "\nmSortAuthorByGivenNameFirst=" + mSortAuthorByGivenNameFirst
+               + "\nmShowAuthorByGivenNameFirst=" + mShowAuthorByGivenName
+               + "\nmSortAuthorByGivenNameFirst=" + mSortAuthorByGivenName
                + "\nmThumbnailScale=" + mThumbnailScale
                + "\nmStyleGroups=" + mStyleGroups
 
@@ -1329,8 +1329,8 @@ public class BooklistStyle
     }
 
     /**
-     * Wrapper that gets the isShowBooksUnderEachAuthor flag from the
-     * {@link BooklistGroup.BooklistAuthorGroup} if we have it, or from the global default.
+     * Wrapper that gets the preference from {@link BooklistGroup.BooklistAuthorGroup}
+     * if we have it this group, or from the global default if not.
      *
      * @param context Current context
      *
@@ -1343,13 +1343,14 @@ public class BooklistStyle
             return group.showBooksUnderEachAuthor(context);
         } else {
             // return the global default.
-            return BooklistGroup.BooklistAuthorGroup.showBooksUnderEachAuthorGlobalDefault(context);
+            return BooklistGroup.BooklistAuthorGroup
+                    .showBooksUnderEachAuthorGlobalDefault(context);
         }
     }
 
     /**
-     * Wrapper that gets the isShowBooksUnderEachSeries flag from the
-     * {@link BooklistGroup.BooklistSeriesGroup} if we have it, or from the global default.
+     * Wrapper that gets the preference from {@link BooklistGroup.BooklistSeriesGroup}
+     * if we have it this group, or from the global default if not.
      *
      * @param context Current context
      *
@@ -1362,7 +1363,28 @@ public class BooklistStyle
             return group.showBooksUnderEachSeries(context);
         } else {
             // return the global default.
-            return BooklistGroup.BooklistSeriesGroup.showBooksUnderEachSeriesGlobalDefault(context);
+            return BooklistGroup.BooklistSeriesGroup
+                    .showBooksUnderEachSeriesGlobalDefault(context);
+        }
+    }
+
+    /**
+     * Wrapper that gets the preference from {@link BooklistGroup.BooklistPublisherGroup}
+     * if we have it this group, or from the global default if not.
+     *
+     * @param context Current context
+     *
+     * @return {@code true} if we want to show a book under each of its Publishers.
+     */
+    boolean isShowBooksUnderEachPublisher(@NonNull final Context context) {
+        final BooklistGroup.BooklistPublisherGroup group = (BooklistGroup.BooklistPublisherGroup)
+                (mStyleGroups.getGroupById(BooklistGroup.PUBLISHER));
+        if (group != null) {
+            return group.showBooksUnderEachPublisher(context);
+        } else {
+            // return the global default.
+            return BooklistGroup.BooklistPublisherGroup
+                    .showBooksUnderEachPublisherGlobalDefault(context);
         }
     }
 
@@ -1373,8 +1395,8 @@ public class BooklistStyle
      *
      * @return {@code true} when Given names should come first
      */
-    public boolean isShowAuthorByGivenNameFirst(@NonNull final Context context) {
-        return mShowAuthorByGivenNameFirst.isTrue(context);
+    public boolean isShowAuthorByGivenName(@NonNull final Context context) {
+        return mShowAuthorByGivenName.isTrue(context);
     }
 
     /**
@@ -1384,8 +1406,8 @@ public class BooklistStyle
      *
      * @return {@code true} when Given names should come first
      */
-    boolean isSortAuthorByGivenNameFirst(@NonNull final Context context) {
-        return mSortAuthorByGivenNameFirst.isTrue(context);
+    boolean isSortAuthorByGivenName(@NonNull final Context context) {
+        return mSortAuthorByGivenName.isTrue(context);
     }
 
     /**
@@ -1548,7 +1570,7 @@ public class BooklistStyle
             for (BooklistGroup group : list) {
                 mGroups.put(group.getId(), group);
             }
-            // storing the ids in SharedPreference.
+            // storing the ID's in SharedPreference.
             this.set(new ArrayList<>(mGroups.keySet()));
         }
 
@@ -1613,7 +1635,7 @@ public class BooklistStyle
                     S_USER_STYLES.put(style.getUuid(), style);
                 }
             } else {
-                style.mId = existingId;
+                style.setId(existingId);
                 S_USER_STYLES.put(style.getUuid(), style);
             }
         }
@@ -1946,7 +1968,7 @@ public class BooklistStyle
          */
         @SuppressWarnings("SameReturnValue")
         @NonNull
-        private static Map<String, BooklistStyle> getStyles(@NonNull final Context context) {
+        static Map<String, BooklistStyle> getStyles(@NonNull final Context context) {
 
             if (S_BUILTIN_STYLES.isEmpty()) {
                 create(context);
@@ -2007,7 +2029,7 @@ public class BooklistStyle
                                       BooklistGroup.AUTHOR);
             S_BUILTIN_STYLES.put(style.getUuid(), style);
             style.setTextScale(FONT_SCALE_SMALL);
-            style.setShowBookDetailField(DBDefinitions.KEY_THUMBNAIL, false);
+            style.setShowBookDetailField(DBDefinitions.PREFS_IS_USED_THUMBNAIL, false);
 
             // Title
             style = new BooklistStyle(context,

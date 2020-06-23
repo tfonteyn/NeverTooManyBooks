@@ -200,7 +200,7 @@
     <string name="confirm_registration_benefits">Deze functie profiteert van registratie bij %1$s.\nWil je meer informatie bekijken of dit bericht uitschakelen?\nJe vind deze informatie op een later tijdstip in de sectie „%2$s” in de instellingen.</string>
     <string name="confirm_registration_required">Deze functie vereist registratie bij %1$s.\n Wil je meer informatie zien?</string>
     <string name="txt_select_fields_to_update">De geselecteerde velden zullen worden bijgewerkt vanaf het internet. Niet geselecteerde velden blijven onveranderd.</string>
-    <string name="txt_share_book_im_reading">Ik lees %1$s door %2$s %3$s %4$s</string>
+    <string name="txt_share_book_im_reading">Ik lees %1$s %2$s door %3$s %4$s</string>
     <string name="txt_tap_on_image_to_select">Tik op de grote afbeelding om deze te selecteren</string>
     <string name="txt_tap_on_thumb">Tik op een miniatuur voor vergroting</string>
     <string name="txt_waiting_for_scanner">Wachten op scanner / camera</string>

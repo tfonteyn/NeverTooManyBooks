@@ -1,0 +1,98 @@
+/*
+ * @Copyright 2020 HardBackNutter
+ * @License GNU General Public License
+ *
+ * This file is part of NeverTooManyBooks.
+ *
+ * In August 2018, this project was forked from:
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
+ *
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
+ *
+ * NeverTooManyBooks is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * NeverTooManyBooks is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
+ */
+package com.hardbacknutter.nevertoomanybooks.backup.csv.coders;
+
+import androidx.annotation.NonNull;
+
+import java.util.List;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import com.hardbacknutter.nevertoomanybooks.entities.Series;
+import com.hardbacknutter.nevertoomanybooks.utils.StringList;
+
+/**
+ * StringList factory for a Series.
+ * <ul>Format:
+ *      <li>title (number) * {json}</li>
+ *      <li>title * {json}</li>
+ * </ul>
+ * number: alpha-numeric, a proposed format is "1","1.0","1a", "1|omnibus" etc.
+ * i.e. starting with a number (int or float) with optional alphanumeric characters trailing.
+ *
+ * <strong>Note:</strong> In the format definition, the " * {json}" suffix is optional
+ * and can be missing.
+ */
+public class SeriesCoder
+        implements StringList.Factory<Series> {
+
+    @NonNull
+    private final char[] escapeChars = {'(', ')'};
+
+    @Override
+    @NonNull
+    public Series decode(@NonNull final String element) {
+        final List<String> parts = StringList.newInstance().decodeElement(element);
+        final Series series = Series.from(parts.get(0));
+        if (parts.size() > 1) {
+            try {
+                final JSONObject details = new JSONObject(parts.get(1));
+                series.fromJson(details);
+            } catch (@NonNull final JSONException ignore) {
+                // ignore
+            }
+        }
+        return series;
+    }
+
+    @SuppressWarnings("ParameterNameDiffersFromOverriddenParameter")
+    @NonNull
+    @Override
+    public String encode(@NonNull final Series series) {
+        String result = escape(series.getTitle(), escapeChars);
+        if (!series.getNumber().isEmpty()) {
+            // start with a space for readability
+            // the surrounding () are NOT escaped as they are part of the format.
+            result += " (" + escape(series.getNumber(), escapeChars) + ')';
+        }
+
+        final JSONObject details = new JSONObject();
+        try {
+            series.toJson(details);
+        } catch (@NonNull final JSONException e) {
+            throw new IllegalStateException(e);
+        }
+
+        if (details.length() != 0) {
+            result += ' ' + String.valueOf(getObjectSeparator())
+                      + ' ' + details.toString();
+        }
+        return result;
+    }
+}

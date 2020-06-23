@@ -53,7 +53,7 @@ import com.hardbacknutter.nevertoomanybooks.database.definitions.TableInfo;
  * <p>
  * To enforce using the actual type, call {@link #setDb(SynchronizedDb, TableDefinition)} before
  * accessing anything.<br>
- * <strong>IMPORTANT:</strong> only gets the types from the table passed to {@link #getType}
+ * <strong>IMPORTANT:</strong> only gets the types from the table passed to {@link #setDb}
  */
 class ExtCursor
         extends SynchronizedCursor {

@@ -85,7 +85,7 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_publisher"
-            style="@style/Envelope.EditText"
+            style="@style/Envelope.AutoCompleteTextView"
             android:hint="@string/lbl_publisher"
             android:visibility="gone"
             app:helperText="@string/isfdb_warning_limited_to"
@@ -96,13 +96,13 @@
             tools:visibility="visible"
             >
 
-            <com.google.android.material.textfield.TextInputEditText
+            <AutoCompleteTextView
                 android:id="@+id/publisher"
                 style="@style/personalNameTextEntry"
-                android:imeOptions="actionSearch"
                 android:layout_width="match_parent"
+                android:imeOptions="actionSearch"
                 android:textAppearance="?android:attr/textAppearanceLarge"
-                tools:ignore="Autofill"
+                tools:ignore="LabelFor"
                 />
 
         </com.google.android.material.textfield.TextInputLayout>

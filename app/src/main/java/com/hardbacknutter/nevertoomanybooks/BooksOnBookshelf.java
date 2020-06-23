@@ -682,7 +682,7 @@ public class BooksOnBookshelf
                 break;
             }
             case BooklistGroup.PUBLISHER: {
-                if (!rowData.getString(DBDefinitions.KEY_PUBLISHER).isEmpty()) {
+                if (rowData.getLong(DBDefinitions.KEY_FK_PUBLISHER) != 0) {
                     getMenuInflater().inflate(R.menu.publisher, menu);
                 }
                 break;
@@ -792,8 +792,10 @@ public class BooksOnBookshelf
                 final String title = rowData.getString(DBDefinitions.KEY_TITLE);
                 final List<Author> authors = mModel.getDb().getAuthorsByBookId(bookId);
                 StandardDialogs.deleteBook(this, title, authors, () -> {
-                    mModel.getDb().deleteBook(this, bookId);
-                    mBookChangedListener.onChange(bookId, BookChangedListener.BOOK_DELETED, null);
+                    if (mModel.getDb().deleteBook(this, bookId)) {
+                        mBookChangedListener
+                                .onChange(bookId, BookChangedListener.BOOK_DELETED, null);
+                    }
                 });
                 return true;
             }
@@ -835,7 +837,7 @@ public class BooksOnBookshelf
 
             case R.id.MENU_SHARE: {
                 final Book book = mModel.getBook(rowData.getLong(DBDefinitions.KEY_FK_BOOK));
-                startActivity(book.getShareBookIntent(this));
+                startActivity(book.getShareIntent(this));
                 return true;
             }
             case R.id.MENU_BOOK_SEND_TO_GOODREADS: {
@@ -883,10 +885,11 @@ public class BooksOnBookshelf
                         break;
                     }
                     case BooklistGroup.PUBLISHER: {
-                        String publisher = rowData.getString(DBDefinitions.KEY_PUBLISHER);
-                        intent.putExtra(StandardDialogs.BKEY_DIALOG_TITLE, publisher)
+                        final long publisherId = rowData.getLong(DBDefinitions.KEY_FK_PUBLISHER);
+                        intent.putExtra(StandardDialogs.BKEY_DIALOG_TITLE,
+                                        rowData.getString(DBDefinitions.KEY_PUBLISHER_NAME))
                               .putExtra(Book.BKEY_BOOK_ID_ARRAY,
-                                        mModel.getDb().getBookIdsByPublisher(publisher));
+                                        mModel.getDb().getBookIdsByPublisher(publisherId));
                         break;
                     }
                     default: {
@@ -927,8 +930,8 @@ public class BooksOnBookshelf
                 return true;
             }
             case R.id.MENU_SERIES_DELETE: {
-                final Series series =
-                        mModel.getSeries(rowData.getLong(DBDefinitions.KEY_FK_SERIES));
+                final long seriesId = rowData.getLong(DBDefinitions.KEY_FK_SERIES);
+                final Series series = mModel.getSeries(seriesId);
                 if (series != null) {
                     StandardDialogs.deleteSeries(this, series, () -> {
                         mModel.getDb().deleteSeries(this, series.getId());
@@ -972,12 +975,24 @@ public class BooksOnBookshelf
             /* ********************************************************************************** */
 
             case R.id.MENU_PUBLISHER_EDIT: {
-                final Publisher publisher = new Publisher(
-                        rowData.getString(DBDefinitions.KEY_PUBLISHER));
-                EditPublisherDialogFragment
-                        .newInstance(publisher)
-                        .show(getSupportFragmentManager(), EditPublisherDialogFragment.TAG);
-
+                final long publisherId = rowData.getLong(DBDefinitions.KEY_FK_PUBLISHER);
+                final Publisher publisher = mModel.getPublisher(publisherId);
+                if (publisher != null) {
+                    EditPublisherDialogFragment
+                            .newInstance(publisher)
+                            .show(getSupportFragmentManager(), EditPublisherDialogFragment.TAG);
+                }
+                return true;
+            }
+            case R.id.MENU_PUBLISHER_DELETE: {
+                final long publisherId = rowData.getLong(DBDefinitions.KEY_FK_PUBLISHER);
+                final Publisher publisher = mModel.getPublisher(publisherId);
+                if (publisher != null) {
+                    StandardDialogs.deletePublisher(this, publisher, () -> {
+                        mModel.getDb().deletePublisher(this, publisher.getId());
+                        mBookChangedListener.onChange(0, BookChangedListener.PUBLISHER, null);
+                    });
+                }
                 return true;
             }
             /* ********************************************************************************** */

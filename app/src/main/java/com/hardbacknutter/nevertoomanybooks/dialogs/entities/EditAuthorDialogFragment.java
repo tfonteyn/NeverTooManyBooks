@@ -37,7 +37,6 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
 import java.lang.ref.WeakReference;
-import java.util.Locale;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.BookChangedListener;
@@ -48,14 +47,12 @@ import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditAuthorBinding;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
+import com.hardbacknutter.nevertoomanybooks.dialogs.BaseDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
-import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.widgets.DiacriticArrayAdapter;
 
 /**
- * Dialog to edit an existing single author.
- * <p>
- * Calling point is a List
+ * Dialog to edit an <strong>EXISTING or NEW</strong> {@link Author}.
  */
 public class EditAuthorDialogFragment
         extends BaseDialogFragment
@@ -82,8 +79,12 @@ public class EditAuthorDialogFragment
     /** Current edit. */
     private boolean mIsComplete;
 
+    /**
+     * No-arg constructor for OS use.
+     */
     public EditAuthorDialogFragment() {
-        super(R.layout.dialog_edit_author);
+        // Always force full screen as this dialog is to large/complicated.
+        super(R.layout.dialog_edit_author, true);
     }
 
     /**
@@ -152,10 +153,8 @@ public class EditAuthorDialogFragment
 
         mVb.familyName.setText(mFamilyName);
         mVb.familyName.setAdapter(familyNameAdapter);
-
         mVb.givenNames.setText(mGivenNames);
         mVb.givenNames.setAdapter(givenNameAdapter);
-
         mVb.cbxIsComplete.setChecked(mIsComplete);
     }
 
@@ -173,21 +172,27 @@ public class EditAuthorDialogFragment
             return true;
         }
 
-        // this is a global update, so just set and update.
+        // store changes
         mAuthor.setName(mFamilyName, mGivenNames);
         mAuthor.setComplete(mIsComplete);
-        // There is no book involved here, so use the users Locale instead
-        //noinspection ConstantConditions
-        final Locale bookLocale = LocaleUtils.getUserLocale(getContext());
-        mDb.updateOrInsertAuthor(getContext(), mAuthor, bookLocale);
 
-        if (mListener != null && mListener.get() != null) {
-            mListener.get().onChange(0, BookChangedListener.AUTHOR, null);
+        final boolean success;
+        if (mAuthor.getId() == 0) {
+            //noinspection ConstantConditions
+            success = mDb.insert(getContext(), mAuthor) > 0;
         } else {
-            if (BuildConfig.DEBUG /* always */) {
-                Log.w(TAG, "onBookChanged|"
-                           + (mListener == null ? ErrorMsg.LISTENER_WAS_NULL
-                                                : ErrorMsg.LISTENER_WAS_DEAD));
+            //noinspection ConstantConditions
+            success = mDb.update(getContext(), mAuthor);
+        }
+        if (success) {
+            if (mListener != null && mListener.get() != null) {
+                mListener.get().onChange(0, BookChangedListener.AUTHOR, null);
+            } else {
+                if (BuildConfig.DEBUG /* always */) {
+                    Log.w(TAG, "onBookChanged|"
+                               + (mListener == null ? ErrorMsg.LISTENER_WAS_NULL
+                                                    : ErrorMsg.LISTENER_WAS_DEAD));
+                }
             }
         }
         return true;

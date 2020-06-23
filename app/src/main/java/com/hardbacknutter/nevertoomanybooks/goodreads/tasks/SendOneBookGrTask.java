@@ -80,7 +80,7 @@ public class SendOneBookGrTask
                            @NonNull final GoodreadsHandler apiHandler) {
 
         try (DAO db = new DAO(TAG);
-             Cursor cursor = db.fetchBookForExportToGoodreads(mBookId)) {
+             Cursor cursor = db.fetchBookForGoodreadsExport(mBookId)) {
             final DataHolder bookData = new CursorRow(cursor);
             while (cursor.moveToNext()) {
                 if (!sendOneBook(queueManager, context, apiHandler, db, bookData)) {

@@ -65,6 +65,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
+import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
@@ -95,6 +96,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlUtils;
  *      <li>{@link Bookshelf}</li>
  *      <li>{@link Author}</li>
  *      <li>{@link Series}</li>
+ *      <li>{@link Publisher}</li>
  *      <li>{@link Book}</li>
  * </ul>
  * <ul>Reason:
@@ -102,6 +104,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlUtils;
  *      <li>meant for loading on a computer to create reports or whatever...</li>
  *      <li>not bound to the application itself.</li>
  *      <li>write (export) only.</li>
+ *      <li>NO LINK TABLES YET</li>
  * </ul>
  */
 public class XmlExporter
@@ -115,6 +118,7 @@ public class XmlExporter
     private static final int XML_EXPORTER_BOOKSHELVES_VERSION = 1;
     private static final int XML_EXPORTER_AUTHORS_VERSION = 1;
     private static final int XML_EXPORTER_SERIES_VERSION = 1;
+    private static final int XML_EXPORTER_PUBLISHER_VERSION = 1;
     private static final int XML_EXPORTER_BOOKS_VERSION = 1;
 
     /** individual format version of Preferences. */
@@ -187,9 +191,10 @@ public class XmlExporter
         final String xml = " (xml)";
 
         // ignore non-supported options
-        final boolean writeBooks = (mOptions & Options.BOOKS) != 0;
-        final boolean writePrefs = (mOptions & Options.PREFS) != 0;
         final boolean writeStyles = (mOptions & Options.STYLES) != 0;
+        final boolean writePrefs = (mOptions & Options.PREFS) != 0;
+
+        final boolean writeBooks = (mOptions & Options.BOOKS) != 0;
 
         // Write styles and prefs first.
 
@@ -216,6 +221,9 @@ public class XmlExporter
             progressListener.onProgressStep(1,
                                             context.getString(R.string.lbl_series_multiple) + xml);
             writeSeries(writer, progressListener);
+            progressListener.onProgressStep(1,
+                                            context.getString(R.string.lbl_publishers) + xml);
+            writePublishers(writer, progressListener);
             progressListener.onProgressStep(1,
                                             context.getString(R.string.lbl_books) + xml);
             writeBooks(writer, progressListener);
@@ -452,6 +460,37 @@ public class XmlExporter
     }
 
     /**
+     * Write out {@link DBDefinitions#TBL_SERIES}.
+     *
+     * @param writer           writer
+     * @param progressListener Progress and cancellation interface
+     *
+     * @throws IOException on failure
+     */
+    private void writePublishers(@NonNull final Writer writer,
+                                 @NonNull final ProgressListener progressListener)
+            throws IOException {
+
+        try (Cursor cursor = mDb.fetchPublishers()) {
+            writer.write('<' + XmlTags.TAG_PUBLISHER_LIST);
+            writer.write(XmlUtils.versionAttr(XML_EXPORTER_PUBLISHER_VERSION));
+            writer.write(XmlUtils.sizeAttr(cursor.getCount()));
+            writer.write(">\n");
+
+            final DataHolder rowData = new CursorRow(cursor);
+            while (cursor.moveToNext() && !progressListener.isCancelled()) {
+
+                writer.write('<' + XmlTags.TAG_PUBLISHER);
+                writer.write(XmlUtils.idAttr(rowData.getLong(DBDefinitions.KEY_PK_ID)));
+                writer.write(XmlUtils.attr(DBDefinitions.KEY_PUBLISHER_NAME,
+                                           rowData.getString(DBDefinitions.KEY_PUBLISHER_NAME)));
+                writer.write("/>\n");
+            }
+            writer.write("</" + XmlTags.TAG_PUBLISHER_LIST + ">\n");
+        }
+    }
+
+    /**
      * 'loan_to' is added to the books section here, this might be removed.
      *
      * @param writer           writer
@@ -502,8 +541,6 @@ public class XmlExporter
                 writer.write(XmlUtils.attr(DBDefinitions.KEY_READ_END,
                                            bookData.getString(DBDefinitions.KEY_READ_END)));
 
-                writer.write(XmlUtils.attr(DBDefinitions.KEY_PUBLISHER,
-                                           bookData.getString(DBDefinitions.KEY_PUBLISHER)));
                 writer.write(XmlUtils.attr(DBDefinitions.KEY_PRINT_RUN,
                                            bookData.getString(DBDefinitions.KEY_PRINT_RUN)));
                 writer.write(XmlUtils.attr(DBDefinitions.KEY_DATE_PUBLISHED,

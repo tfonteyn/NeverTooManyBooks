@@ -121,12 +121,33 @@
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/lbl_publisher"
+            style="@style/Envelope.EditText"
+            android:hint="@string/lbl_publisher"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/lbl_series"
+            >
+
+            <!-- no style used on purpose -->
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/publisher"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:imeOptions="actionDone"
+                android:inputType="textMultiLine"
+                tools:ignore="Autofill"
+                />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_keywords"
             style="@style/Envelope.EditText"
             android:hint="@string/lbl_keywords"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/lbl_series"
+            app:layout_constraintTop_toBottomOf="@id/lbl_publisher"
             >
 
             <!-- no style used on purpose -->

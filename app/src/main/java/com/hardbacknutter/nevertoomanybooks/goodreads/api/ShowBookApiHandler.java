@@ -47,6 +47,7 @@ import com.hardbacknutter.nevertoomanybooks.covers.ImageUtils;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.goodreads.AuthorTypeMapper;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsAuth;
@@ -413,6 +414,13 @@ public abstract class ShowBookApiHandler
             mBookData.putParcelableArrayList(Book.BKEY_SERIES_ARRAY, mSeries);
         }
 
+        final String publisher = mBookData.getString(ShowBookFieldName.PUBLISHER);
+        if (publisher != null && !publisher.isEmpty()) {
+            final ArrayList<Publisher> publishers = new ArrayList<>();
+            publishers.add(Publisher.from(publisher));
+            mBookData.putParcelableArrayList(Book.BKEY_PUBLISHER_ARRAY, publishers);
+        }
+
         // these are Goodreads shelves, not ours.
         if (mShelves != null && !mShelves.isEmpty()) {
             mBookData.putStringArrayList(ShowBookFieldName.SHELVES, mShelves);
@@ -706,7 +714,7 @@ public abstract class ShowBookApiHandler
                  .setEndAction(mHandleLong, ShowBookFieldName.PUBLICATION_DAY);
         XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XmlTags.XML_BOOK,
                               XmlTags.XML_PUBLISHER)
-                 .setEndAction(mHandleText, DBDefinitions.KEY_PUBLISHER);
+                 .setEndAction(mHandleText, ShowBookFieldName.PUBLISHER);
         XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XmlTags.XML_BOOK,
                               XmlTags.XML_COUNTRY_CODE)
                  .setEndAction(mHandleText, ShowBookFieldName.COUNTRY_CODE);
@@ -824,6 +832,8 @@ public abstract class ShowBookApiHandler
         static final String PUBLICATION_MONTH = "__pub_month";
         static final String PUBLICATION_DAY = "__pub_day";
         static final String COUNTRY_CODE = "__country_code";
+
+        static final String PUBLISHER = "__publisher";
 
         static final String IS_EBOOK = "__is_ebook";
         static final String WORK_ID = "__work_id";

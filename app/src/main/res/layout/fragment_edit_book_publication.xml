@@ -84,17 +84,17 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_publisher"
-            style="@style/Envelope.AutoCompleteTextView"
+            style="@style/Envelope.EditText"
             android:hint="@string/lbl_publisher"
-            android:imeOptions="actionNext"
+            app:endIconMode="none"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_color"
             >
 
-            <AutoCompleteTextView
+            <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/publisher"
-                style="@style/personalNameTextEntry"
+                style="@style/EditText.ReadOnly"
                 android:layout_width="match_parent"
                 tools:ignore="LabelFor"
                 tools:text="@sample/data.json/publisher/name"

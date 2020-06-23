@@ -99,12 +99,15 @@ public final class Prefs {
     public static final String pk_style_scale_thumbnail = "style.booklist.scale.thumbnails";
     /** Style group preferences. */
     public static final String pk_style_groups = "style.booklist.groups";
-    public static final String pk_style_group_series_show_books_under_each_series =
-            "style.booklist.group.series.show.all";
     public static final String pk_style_group_author_show_books_under_each_author =
             "style.booklist.group.authors.show.all";
     public static final String pk_style_group_author_primary_type =
             "style.booklist.group.authors.primary.type";
+    public static final String pk_style_group_series_show_books_under_each_series =
+            "style.booklist.group.series.show.all";
+    public static final String pk_style_group_publisher_show_books_under_each_publisher =
+            "style.booklist.group.publisher.show.all";
+
     /** Show the cover image for each book. */
     public static final String pk_style_book_show_thumbnails = "style.booklist.show.thumbnails";
     /** Show list of bookshelves for each book. */
@@ -143,12 +146,16 @@ public final class Prefs {
     /** Style - PreferenceScreen/PreferenceCategory Key. */
     public static final String PSK_STYLE_SERIES = "psk_style_series";
     /** Style - PreferenceScreen/PreferenceCategory Key. */
+    public static final String PSK_STYLE_PUBLISHER = "psk_style_publisher";
+
+    /** Style - PreferenceScreen/PreferenceCategory Key. */
     public static final String PSK_STYLE_SHOW_DETAILS = "psk_style_show_details";
     /** Style - PreferenceScreen/PreferenceCategory Key. */
     public static final String PSK_STYLE_FILTERS = "psk_style_filters";
 
     /** Global - PreferenceScreen/PreferenceCategory Key. */
     public static final String PSK_BARCODE_SCANNER = "psk_barcode_scanner";
+
 
     private static final String pk_edit_book_tabs_native_id = "edit.book.tab.nativeId";
     public static final String pk_edit_book_isbn_checks = "edit.book.isbn.checks";

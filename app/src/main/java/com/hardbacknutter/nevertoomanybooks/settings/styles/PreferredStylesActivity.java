@@ -68,8 +68,8 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.settings.SettingsActivity;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.PreferredStylesViewModel;
+import com.hardbacknutter.nevertoomanybooks.widgets.ItemTouchHelperViewHolderBase;
 import com.hardbacknutter.nevertoomanybooks.widgets.RecyclerViewAdapterBase;
-import com.hardbacknutter.nevertoomanybooks.widgets.RecyclerViewViewHolderBase;
 import com.hardbacknutter.nevertoomanybooks.widgets.SimpleAdapterDataObserver;
 import com.hardbacknutter.nevertoomanybooks.widgets.ddsupport.SimpleItemTouchHelperCallback;
 import com.hardbacknutter.nevertoomanybooks.widgets.ddsupport.StartDragListener;
@@ -365,10 +365,10 @@ public class PreferredStylesActivity
     }
 
     /**
-     * Holder pattern object for list items.
+     * Holder for each row.
      */
     private static class Holder
-            extends RecyclerViewViewHolderBase {
+            extends ItemTouchHelperViewHolderBase {
 
         @NonNull
         final TextView nameView;

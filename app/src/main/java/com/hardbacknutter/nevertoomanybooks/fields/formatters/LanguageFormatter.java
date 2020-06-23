@@ -64,7 +64,7 @@ public class LanguageFormatter
     @NonNull
     @Override
     public String extract(@NonNull final TextView view) {
-        String text = view.getText().toString().trim();
+        final String text = view.getText().toString().trim();
         return LanguageUtils.getISO3FromDisplayName(view.getContext(), text);
     }
 }

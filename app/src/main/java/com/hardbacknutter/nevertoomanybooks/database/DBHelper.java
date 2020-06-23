@@ -28,6 +28,7 @@
 package com.hardbacknutter.nevertoomanybooks.database;
 
 import android.annotation.SuppressLint;
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
@@ -45,6 +46,9 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
 
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
@@ -54,6 +58,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyle;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.Synchronizer;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition;
+import com.hardbacknutter.nevertoomanybooks.database.tasks.Scheduler;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
@@ -63,6 +68,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.UpgradeMessageManager;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_UTC_LAST_SYNC_DATE_GOODREADS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOKSHELF_NAME;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOK_PUBLISHER_POSITION;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_EID_GOODREADS_BOOK;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_EID_ISFDB;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_EID_LIBRARY_THING;
@@ -70,11 +76,14 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_EI
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_EID_STRIP_INFO_BE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FK_AUTHOR;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FK_BOOK;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FK_PUBLISHER;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FK_SERIES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FK_STYLE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FTS_BOOK_ID;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_ISBN;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_PK_ID;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_PUBLISHER_NAME;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_PUBLISHER_NAME_OB;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_STYLE_IS_BUILTIN;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_UTC_LAST_SYNC_DATE_GOODREADS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_UTC_LAST_UPDATED;
@@ -87,9 +96,11 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BO
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_BOOKSHELF;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_LIST_NODE_STATE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_LOANEE;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_PUBLISHER;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_SERIES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_TOC_ENTRIES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_FTS_BOOKS;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_PUBLISHERS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_SERIES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_TOC_ENTRIES;
 
@@ -102,7 +113,7 @@ public final class DBHelper
         extends SQLiteOpenHelper {
 
     /** Current version. */
-    public static final int DATABASE_VERSION = 6;
+    public static final int DATABASE_VERSION = 7;
 
     /**
      * Prefix for the filename of a database backup before doing an upgrade.
@@ -226,7 +237,7 @@ public final class DBHelper
 
             String s;
             try (Cursor c = db.rawQuery("SELECT t,i FROM collation_cs_check"
-                                        + " ORDER BY t " + DAO.COLLATION + ",i",
+                                        + " ORDER BY t " + DAO._COLLATION + ",i",
                                         null)) {
                 c.moveToFirst();
                 s = c.getString(0);
@@ -568,6 +579,7 @@ public final class DBHelper
                                      TBL_BOOKSHELF,
                                      TBL_AUTHORS,
                                      TBL_SERIES,
+                                     TBL_PUBLISHERS,
                                      TBL_BOOKS,
                                      TBL_TOC_ENTRIES,
                                      // link tables
@@ -575,6 +587,7 @@ public final class DBHelper
                                      TBL_BOOK_AUTHOR,
                                      TBL_BOOK_BOOKSHELF,
                                      TBL_BOOK_SERIES,
+                                     TBL_BOOK_PUBLISHER,
                                      TBL_BOOK_LOANEE,
                                      // permanent booklist management tables
                                      TBL_BOOK_LIST_NODE_STATE);
@@ -680,7 +693,6 @@ public final class DBHelper
             TBL_BOOK_LIST_NODE_STATE.recreate(syncedDb, true);
         }
         if (curVersion < newVersion && curVersion == 5) {
-            //noinspection UnusedAssignment
             curVersion = 6;
             TBL_BOOKSHELF.alterTableAddColumn(syncedDb, DBDefinitions.DOM_BOOKSHELF_BL_TOP_POS);
             TBL_BOOKSHELF.alterTableAddColumn(syncedDb, DBDefinitions.DOM_BOOKSHELF_BL_TOP_OFFSET);
@@ -696,6 +708,51 @@ public final class DBHelper
                              .remove("edit.book.tab.authSer")
                              .remove("compat.booklist.mode")
                              .apply();
+        }
+
+        if (curVersion < newVersion && curVersion == 6) {
+            //noinspection UnusedAssignment
+            curVersion = 7;
+            TBL_PUBLISHERS.create(syncedDb, true);
+            TBL_BOOK_PUBLISHER.create(syncedDb, true);
+
+            final ContentValues cv = new ContentValues();
+            final Map<String, Long> pubs = new HashMap<>();
+            try (Cursor cursor = syncedDb.rawQuery(
+                    "SELECT _id,publisher,language FROM books", null)) {
+                while (cursor.moveToNext()) {
+                    final long bookId = cursor.getLong(0);
+                    final String publisherName = cursor.getString(1).trim();
+                    final String lang = cursor.getString(2);
+                    final long pubId;
+                    if (!pubs.containsKey(publisherName)) {
+                        Locale locale = LocaleUtils.getLocale(context, lang);
+                        if (locale == null) {
+                            locale = LocaleUtils.getUserLocale(context);
+                        }
+                        cv.clear();
+                        cv.put(KEY_PUBLISHER_NAME, publisherName);
+                        cv.put(KEY_PUBLISHER_NAME_OB,
+                               DAO.encodeOrderByColumn(publisherName, locale));
+                        pubId = syncedDb.insert(TBL_PUBLISHERS.getName(), null, cv);
+                        pubs.put(publisherName, pubId);
+                    } else {
+                        //noinspection ConstantConditions
+                        pubId = pubs.get(publisherName);
+                    }
+
+                    cv.clear();
+                    cv.put(KEY_FK_BOOK, bookId);
+                    cv.put(KEY_FK_PUBLISHER, pubId);
+                    cv.put(KEY_BOOK_PUBLISHER_POSITION, 1);
+                    syncedDb.insert(TBL_BOOK_PUBLISHER.getName(), null, cv);
+                }
+            }
+
+            // we'll remove the column at a later version.
+            syncedDb.execSQL("UPDATE books SET publisher=''");
+
+            Scheduler.scheduleFtsRebuild(context, true);
         }
 
         // TODO: if at a future time we make a change that requires to copy/reload the books table,

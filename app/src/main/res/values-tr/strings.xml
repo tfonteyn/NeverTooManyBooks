@@ -194,7 +194,7 @@
     <string name="confirm_registration_benefits">Bu özellik %1$s kayıt işleminden faydalanır.\n Daha fazla bilgi görmek veya bu mesajı devre dışı bırakmak ister misiniz?\n Bu bilgiyi daha sonra ayarlarda “%2$s” bölümünün altında bulabilirsiniz.</string>
     <string name="confirm_registration_required">Bu özellik %1$s ile kayıt gerektiriyor.\nDaha fazla bilgi görmek ister misiniz?</string>
     <string name="txt_select_fields_to_update">Seçilen alanlar İnternet\'ten güncellenecektir. Seçilmeyen alanlar değiştirilmeden kalacaktır.</string>
-    <string name="txt_share_book_im_reading">“%1$s” yazısını %2$s %3$s %4$s okuyorum</string>
+    <string name="txt_share_book_im_reading">“%1$s” %2$s yazısını %3$s %4$s okuyorum</string>
     <string name="txt_tap_on_image_to_select">Seçmek için büyük resmin üzerine dokunun</string>
     <string name="txt_tap_on_thumb">Daha büyük görüntülemek için küçük resme dokunun</string>
     <string name="txt_waiting_for_scanner">Tarayıcı / kamera bekleniyor</string>

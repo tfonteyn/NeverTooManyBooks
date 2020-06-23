@@ -51,6 +51,7 @@ import com.hardbacknutter.nevertoomanybooks.fields.accessors.EntityListChipGroup
 import com.hardbacknutter.nevertoomanybooks.fields.accessors.RatingBarAccessor;
 import com.hardbacknutter.nevertoomanybooks.fields.accessors.TextViewAccessor;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.AuthorListFormatter;
+import com.hardbacknutter.nevertoomanybooks.fields.formatters.CsvFormatter;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.DateFieldFormatter;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.HtmlFormatter;
@@ -151,14 +152,12 @@ public class BookDetailsFragmentViewModel
 
         fields.add(R.id.author, new TextViewAccessor<>(
                            new AuthorListFormatter(Author.Details.Full, false, true)),
-                   Book.BKEY_AUTHOR_ARRAY,
-                   DBDefinitions.KEY_FK_AUTHOR)
+                   Book.BKEY_AUTHOR_ARRAY, DBDefinitions.KEY_FK_AUTHOR)
               .setRelatedFields(R.id.lbl_author);
 
         fields.add(R.id.series_title, new TextViewAccessor<>(
                            new SeriesListFormatter(Series.Details.Full, false, true)),
-                   Book.BKEY_SERIES_ARRAY,
-                   DBDefinitions.KEY_SERIES_TITLE)
+                   Book.BKEY_SERIES_ARRAY, DBDefinitions.KEY_SERIES_TITLE)
               .setRelatedFields(R.id.lbl_series);
 
         fields.add(R.id.isbn, new TextViewAccessor<>(), DBDefinitions.KEY_ISBN)
@@ -178,7 +177,8 @@ public class BookDetailsFragmentViewModel
                    DBDefinitions.KEY_PAGES);
         fields.add(R.id.format, new TextViewAccessor<>(), DBDefinitions.KEY_FORMAT);
         fields.add(R.id.color, new TextViewAccessor<>(), DBDefinitions.KEY_COLOR);
-        fields.add(R.id.publisher, new TextViewAccessor<>(), DBDefinitions.KEY_PUBLISHER);
+        fields.add(R.id.publisher, new TextViewAccessor<>(new CsvFormatter()),
+                   Book.BKEY_PUBLISHER_ARRAY, DBDefinitions.KEY_PUBLISHER_NAME);
 
         fields.add(R.id.date_published, new TextViewAccessor<>(dateFormatter),
                    DBDefinitions.KEY_DATE_PUBLISHED)
@@ -259,7 +259,7 @@ public class BookDetailsFragmentViewModel
             final long bookId = mFlattenedBooklist.getBookId();
             // reload if it's a different book
             if (bookId != book.getId()) {
-                book.reload(mDb, bookId);
+                book.load(bookId, mDb);
                 return true;
             }
         }

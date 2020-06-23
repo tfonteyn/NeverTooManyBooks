@@ -94,7 +94,7 @@ final class UpgradeDatabase {
 
     /**
      * Provide a safe table copy method that is insulated from risks associated with
-     * column reordering. This method will copy all columns from the source to the destination;
+     * column order. This method will copy all columns from the source to the destination;
      * if columns do not exist in the destination, an error will occur. Columns in the
      * destination that are not in the source will be defaulted or set to {@code null}
      * if no default is defined.

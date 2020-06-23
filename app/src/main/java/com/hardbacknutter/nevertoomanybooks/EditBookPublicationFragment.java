@@ -31,16 +31,23 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.util.List;
+
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.databinding.FragmentEditBookPublicationBinding;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
+import com.hardbacknutter.nevertoomanybooks.fields.Field;
 import com.hardbacknutter.nevertoomanybooks.fields.Fields;
 import com.hardbacknutter.nevertoomanybooks.fields.accessors.DecimalEditTextAccessor;
 import com.hardbacknutter.nevertoomanybooks.fields.accessors.EditTextAccessor;
 import com.hardbacknutter.nevertoomanybooks.fields.accessors.TextViewAccessor;
+import com.hardbacknutter.nevertoomanybooks.fields.formatters.CsvFormatter;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.DateFieldFormatter;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.DoubleNumberFormatter;
 
@@ -49,6 +56,9 @@ public class EditBookPublicationFragment
 
     /** Log tag. */
     private static final String TAG = "EditBookPublicationFrag";
+
+    /** View Binding. */
+    private FragmentEditBookPublicationBinding mVb;
 
     @NonNull
     @Override
@@ -61,7 +71,8 @@ public class EditBookPublicationFragment
     public View onCreateView(@NonNull final LayoutInflater inflater,
                              @Nullable final ViewGroup container,
                              @Nullable final Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_edit_book_publication, container, false);
+        mVb = FragmentEditBookPublicationBinding.inflate(inflater, container, false);
+        return mVb.getRoot();
     }
 
     @Override
@@ -69,17 +80,31 @@ public class EditBookPublicationFragment
                               @Nullable final Bundle savedInstanceState) {
         // setup common stuff and calls onInitFields()
         super.onViewCreated(view, savedInstanceState);
+
+        mBookViewModel.getPublisherList().observe(getViewLifecycleOwner(), publishers -> {
+            final Field<List<Publisher>, TextView> field = getField(R.id.publisher);
+            field.getAccessor().setValue(publishers);
+            field.validate();
+        });
+
+        //noinspection ConstantConditions
+        mVb.publisher.setOnClickListener(v -> EditBookPublisherListDialogFragment
+                // peer fragment. We share the book view model
+                .newInstance().show(getActivity().getSupportFragmentManager(),
+                                    EditBookPublisherListDialogFragment.TAG));
     }
 
     @Override
     public void onResume() {
+        //noinspection ConstantConditions
+        mBookViewModel.prunePublishers(getContext());
+
         // hook up the Views, and calls {@link #onPopulateViews}
         super.onResume();
         // With all Views populated, (re-)add the helpers which rely on fields having valid views
 
         addAutocomplete(R.id.format, mFragmentVM.getAllFormats());
         addAutocomplete(R.id.color, mFragmentVM.getAllColors());
-        addAutocomplete(R.id.publisher, mFragmentVM.getAllPublishers());
         addAutocomplete(R.id.price_listed_currency, mFragmentVM.getAllListPriceCurrencyCodes());
 
         addPartialDatePicker(getField(R.id.date_published),
@@ -102,7 +127,8 @@ public class EditBookPublicationFragment
         fields.add(R.id.color, new EditTextAccessor<>(), DBDefinitions.KEY_COLOR)
               .setRelatedFields(R.id.lbl_color);
 
-        fields.add(R.id.publisher, new EditTextAccessor<>(), DBDefinitions.KEY_PUBLISHER)
+        fields.add(R.id.publisher, new TextViewAccessor<>(new CsvFormatter()),
+                   Book.BKEY_PUBLISHER_ARRAY, DBDefinitions.KEY_PUBLISHER_NAME)
               .setRelatedFields(R.id.lbl_publisher);
 
         fields.add(R.id.print_run, new EditTextAccessor<>(), DBDefinitions.KEY_PRINT_RUN)

@@ -57,7 +57,6 @@ import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyle;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageUtils;
-import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
@@ -65,6 +64,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
+import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.goodreads.AuthorTypeMapper;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsAuth;
@@ -295,7 +295,7 @@ class ImportGrTask
 
     /**
      * Process one review (book).
-     * https://www.goodreads.com/book/show/64524.The_Crystal_City
+     * https://www.goodreads.com/book/show/8263282-the-end-of-eternity
      *
      * @param context Current context
      * @param db      Database Access
@@ -310,11 +310,11 @@ class ImportGrTask
             Logger.d(TAG, "processReview|grId=" + grBookId);
         }
 
-        // Find the book in our database - there may be more than one!
+        // Find the book in our local database - there may be more than one!
         // First look by Goodreads book ID
         Cursor cursor = db.fetchBooksByGoodreadsBookId(grBookId);
         try {
-            boolean found = cursor.moveToFirst();
+            boolean found = cursor.getCount() > 0;
             if (!found) {
                 // Not found by Goodreads id, try again using the ISBNs
                 cursor.close();
@@ -323,17 +323,17 @@ class ImportGrTask
                 final List<String> list = extractIsbnList(review);
                 if (!list.isEmpty()) {
                     cursor = db.fetchBooksByIsbnList(list);
-                    found = cursor.moveToFirst();
+                    found = cursor.getCount() > 0;
                 }
             }
 
             if (found) {
-                // If found, update all related books
-                final DataHolder bookData = new CursorRow(cursor);
-                // we're already at the first row, see above
-                do {
-                    updateBook(context, db, review, bookData);
-                } while (cursor.moveToNext());
+                final Book book = new Book();
+                while (cursor.moveToNext()) {
+                    book.load(cursor, db);
+                    updateBook(context, db, book, review);
+                }
+
             } else {
                 // it's a new book, add it
                 insertBook(context, db, review);
@@ -399,23 +399,23 @@ class ImportGrTask
      *
      * <strong>WARNING:</strong> a failed update is ignored (but logged).
      *
-     * @param context    Current context
-     * @param db         Database Access
-     * @param sourceData the source data from Goodreads
-     * @param bookData   the local book to update
+     * @param context Current context
+     * @param db      Database Access
+     * @param book    the local book to update
+     * @param review  the source data from Goodreads
      */
     private void updateBook(@NonNull final Context context,
                             @NonNull final DAO db,
-                            @NonNull final Bundle sourceData,
-                            @NonNull final DataHolder bookData) {
+                            @NonNull final DataHolder book,
+                            @NonNull final Bundle review) {
 
         // If the review has an 'updated' date, then check if we should update the book
-        if (sourceData.containsKey(Review.UPDATED)) {
+        if (review.containsKey(Review.UPDATED)) {
             // the incoming review
-            final LocalDateTime reviewUpd = Review.parseDate(sourceData.getString(Review.UPDATED));
+            final LocalDateTime reviewUpd = Review.parseDate(review.getString(Review.UPDATED));
             // Get last time the book was sent to Goodreads (may be null)
             final LocalDateTime lastSyncDate = DateParser.getInstance(context).parseISO(
-                    bookData.getString(DBDefinitions.KEY_UTC_LAST_SYNC_DATE_GOODREADS));
+                    book.getString(DBDefinitions.KEY_UTC_LAST_SYNC_DATE_GOODREADS));
 
             // If last update in Goodreads was before last Goodreads sync of book,
             // then don't bother updating book.
@@ -428,15 +428,15 @@ class ImportGrTask
 
         // We build a new book bundle each time since it will build on the existing
         // data for the given book (taken from the cursor), not just replace it.
-        final long bookId = bookData.getLong(DBDefinitions.KEY_PK_ID);
+        final long bookId = book.getLong(DBDefinitions.KEY_PK_ID);
         final Locale bookLocale = LocaleUtils
-                .getLocale(context, bookData.getString(DBDefinitions.KEY_LANGUAGE));
+                .getLocale(context, book.getString(DBDefinitions.KEY_LANGUAGE));
 
-        final Book book = new Book();
-        book.putAll(buildBundle(context, db, bookId, bookLocale, sourceData));
+        final Book combinedBook = Book.from(buildBundle(context, db, bookId, bookLocale, review));
         try {
-            db.updateBook(context, bookId, book, DAO.BOOK_FLAG_USE_UPDATE_DATE_IF_PRESENT
-                                                 | DAO.BOOK_FLAG_IS_BATCH_OPERATION);
+            db.update(context, bookId, combinedBook,
+                      DAO.BOOK_FLAG_USE_UPDATE_DATE_IF_PRESENT
+                      | DAO.BOOK_FLAG_IS_BATCH_OPERATION);
         } catch (@NonNull final DAO.DaoWriteException e) {
             // ignore, but log it.
             Logger.error(context, TAG, e);
@@ -448,18 +448,17 @@ class ImportGrTask
      *
      * <strong>WARNING:</strong> a failed insert is ignored (but logged).
      *
-     * @param context    Current context
-     * @param db         Database Access
-     * @param sourceData the source data from Goodreads
+     * @param context Current context
+     * @param db      Database Access
+     * @param review  the source data from Goodreads
      */
     private void insertBook(@NonNull final Context context,
                             @NonNull final DAO db,
-                            @NonNull final Bundle sourceData) {
+                            @NonNull final Bundle review) {
 
-        final Book book = new Book();
-        book.putAll(buildBundle(context, db, 0, null, sourceData));
+        final Book book = Book.from(buildBundle(context, db, 0, null, review));
         try {
-            final long id = db.insertBook(context, 0, book, DAO.BOOK_FLAG_IS_BATCH_OPERATION);
+            final long id = db.insert(context, 0, book, DAO.BOOK_FLAG_IS_BATCH_OPERATION);
             for (int cIdx = 0; cIdx < 2; cIdx++) {
                 final String fileSpec = book.getString(Book.BKEY_FILE_SPEC[cIdx]);
                 if (!fileSpec.isEmpty()) {
@@ -512,7 +511,6 @@ class ImportGrTask
         addStringIfNonBlank(sourceData, DBDefinitions.KEY_TITLE, bookData);
         addStringIfNonBlank(sourceData, DBDefinitions.KEY_DESCRIPTION, bookData);
         addStringIfNonBlank(sourceData, DBDefinitions.KEY_FORMAT, bookData);
-        addStringIfNonBlank(sourceData, DBDefinitions.KEY_PUBLISHER, bookData);
         addLongIfPresent(sourceData, DBDefinitions.KEY_EID_GOODREADS_BOOK, bookData);
 
         Review.copyDateIfValid(sourceData, DBDefinitions.KEY_READ_START,
@@ -595,6 +593,26 @@ class ImportGrTask
 
             Author.pruneList(authors, context, db, false, bookLocale);
             bookData.putParcelableArrayList(Book.BKEY_AUTHOR_ARRAY, authors);
+        }
+
+        /*
+         * process the Publisher
+         */
+        final String grPublisher = sourceData.getString(Review.PUBLISHER);
+        if (grPublisher != null && !grPublisher.isEmpty()) {
+            final ArrayList<Publisher> publishers;
+            if (bookId == 0) {
+                // It's a new book. Start a clean list.
+                publishers = new ArrayList<>();
+            } else {
+                // it's an update. Get current publishers.
+                publishers = db.getPublishersByBookId(bookId);
+            }
+
+            publishers.add(Publisher.from(grPublisher));
+
+            Publisher.pruneList(publishers, context, db, false, bookLocale);
+            bookData.putParcelableArrayList(Book.BKEY_PUBLISHER_ARRAY, publishers);
         }
 
         /*

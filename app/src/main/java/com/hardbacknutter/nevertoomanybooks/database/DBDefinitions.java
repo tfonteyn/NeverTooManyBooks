@@ -105,6 +105,8 @@ public final class DBDefinitions {
     /** Basic table definition. */
     public static final TableDefinition TBL_SERIES;
     /** Basic table definition. */
+    public static final TableDefinition TBL_PUBLISHERS;
+    /** Basic table definition. */
     public static final TableDefinition TBL_TOC_ENTRIES;
     /** Basic table definition. */
     public static final TableDefinition TBL_BOOKS;
@@ -114,6 +116,8 @@ public final class DBDefinitions {
     public static final TableDefinition TBL_BOOK_AUTHOR;
     /** link table. */
     public static final TableDefinition TBL_BOOK_SERIES;
+    /** link table. */
+    public static final TableDefinition TBL_BOOK_PUBLISHER;
     /** link table. */
     public static final TableDefinition TBL_BOOK_LOANEE;
     /** link table. */
@@ -160,6 +164,8 @@ public final class DBDefinitions {
     public static final Domain DOM_FK_BOOK;
     /** Foreign key. */
     public static final Domain DOM_FK_SERIES;
+    /** Foreign key. */
+    public static final Domain DOM_FK_PUBLISHER;
     /** Foreign key. */
     public static final Domain DOM_FK_TOC_ENTRY;
     /**
@@ -211,8 +217,14 @@ public final class DBDefinitions {
     public static final Domain DOM_SERIES_TITLE_OB;
     /** {@link #TBL_SERIES}. */
     public static final Domain DOM_SERIES_IS_COMPLETE;
-    /** Virtual: Series (nr). */
-    public static final Domain DOM_SERIES_FORMATTED;
+
+    /** {@link #TBL_PUBLISHERS}. */
+    public static final Domain DOM_PUBLISHER_NAME;
+    /** {@link #TBL_PUBLISHERS}. */
+    public static final Domain DOM_PUBLISHER_NAME_OB;
+    /** Virtual: build from "GROUP_CONCAT(" + TBL_PUBLISHERS.dot(KEY_PUBLISHER_NAME) + ",', ')". */
+    public static final Domain DOM_PUBLISHER_NAME_CSV;
+
 
     /** {@link #TBL_BOOKS} + {@link #TBL_TOC_ENTRIES}. */
     public static final Domain DOM_TITLE;
@@ -225,8 +237,6 @@ public final class DBDefinitions {
     public static final Domain DOM_BOOK_ISBN;
     /** {@link #TBL_BOOKS}  {@link #TBL_TOC_ENTRIES}. */
     public static final Domain DOM_DATE_FIRST_PUBLICATION;
-    /** {@link #TBL_BOOKS}. */
-    public static final Domain DOM_BOOK_PUBLISHER;
     /** {@link #TBL_BOOKS}. */
     public static final Domain DOM_DATE_PUBLISHED;
     /** {@link #TBL_BOOKS}. */
@@ -284,6 +294,7 @@ public final class DBDefinitions {
     public static final Domain DOM_BOOK_CONDITION;
     /** {@link #TBL_BOOKS}. */
     public static final Domain DOM_BOOK_CONDITION_DUST_COVER;
+
     /** {@link #TBL_BOOKS}. Book ID, not 'work' ID. */
     public static final Domain DOM_EID_GOODREADS_BOOK;
     /** {@link #TBL_BOOKS}. */
@@ -296,8 +307,7 @@ public final class DBDefinitions {
     public static final Domain DOM_EID_OPEN_LIBRARY;
     /** {@link #TBL_BOOKS}. */
     public static final Domain DOM_EID_STRIP_INFO_BE;
-    /** {@link #TBL_BOOK_SERIES}. */
-    public static final Domain DOM_BOOK_NUM_IN_SERIES;
+
 
     /** All native id keys supported for lookups. Also see {@link #NATIVE_ID_KEYS}. */
     public static final Collection<Domain> NATIVE_ID_DOMAINS = new ArrayList<>();
@@ -323,12 +333,24 @@ public final class DBDefinitions {
     /** {@link #TBL_BOOKLIST_STYLES}. */
     public static final Domain DOM_STYLE_IS_BUILTIN;
 
+    /** {@link #TBL_BOOK_SERIES}. */
+    public static final Domain DOM_BOOK_NUM_IN_SERIES;
     /**
      * {@link #TBL_BOOK_SERIES}.
-     * The Series position is the order the Series show up in a book. Particularly important
-     * for "primary series" and in lists where 'all' Series are shown.
+     * The Series position is the order the Series show up in a book.
+     * Particularly important for "primary series"
+     * and in lists where 'all' Series are shown.
      */
     public static final Domain DOM_BOOK_SERIES_POSITION;
+
+    /**
+     * {@link #TBL_BOOK_PUBLISHER}.
+     * The Publisher position is the order the Publishers show up in a book.
+     * Particularly important for "primary Publisher"
+     * and in lists where 'all' Publisher are shown.
+     */
+    public static final Domain DOM_BOOK_PUBLISHER_POSITION;
+
     /** {@link #TBL_BOOKLIST_STYLES} java.util.UUID value stored as a string. */
     public static final Domain DOM_UUID;
     /**
@@ -345,13 +367,18 @@ public final class DBDefinitions {
      * ====================================================================================== */
     /** For sorting in the {@link BooklistBuilder}. */
     public static final Domain DOM_BL_SERIES_SORT;
+    /** For sorting in the {@link BooklistBuilder}. */
+    public static final Domain DOM_BL_PUBLISHER_SORT;
+
     /**
      * Series number, cast()'d for sorting purposes in {@link BooklistBuilder}
      * so we can sort it numerically regardless of content.
      */
     public static final Domain DOM_BL_BOOK_NUM_IN_SERIES_AS_FLOAT;
+
     /** {@link #TMP_TBL_BOOK_LIST} {@link BooklistBuilder}. */
     public static final Domain DOM_BL_PRIMARY_SERIES_COUNT;
+
     /**
      * {@link #TBL_BOOK_LIST_NODE_STATE}
      * {@link #TMP_TBL_BOOK_LIST_ROW_STATE}
@@ -372,14 +399,17 @@ public final class DBDefinitions {
     public static final Domain DOM_BL_NODE_EXPANDED;
     /** {@link #TMP_TBL_BOOK_LIST_ROW_STATE} {@link BooklistBuilder}. */
     public static final Domain DOM_BL_NODE_VISIBLE;
-    /** Suffix added to a column name to create a specific 'order by' copy of that column. */
-    public static final String SUFFIX_KEY_ORDER_BY = "_ob";
 
     /* ======================================================================================
      *  Keys used as domain names / Bundle keys.
      * ====================================================================================== */
+    /** Suffix added to a column name to create a specific 'order by' copy of that column. */
+    public static final String SUFFIX_KEY_ORDER_BY = "_ob";
+
     /** Suffix added to a price column name to create a joined currency column. */
     public static final String SUFFIX_KEY_CURRENCY = "_currency";
+
+
     /** Primary key. */
     public static final String KEY_PK_ID = "_id";
     /** Primary key. */
@@ -390,6 +420,8 @@ public final class DBDefinitions {
     public static final String KEY_FK_AUTHOR = "author";
     /** Foreign key. */
     public static final String KEY_FK_SERIES = "series_id";
+    /** Foreign key. */
+    public static final String KEY_FK_PUBLISHER = "publisher_id";
     /** Foreign key. */
     public static final String KEY_FK_BOOKSHELF = "bookshelf";
     /** Foreign key. */
@@ -427,16 +459,18 @@ public final class DBDefinitions {
 //                DBDefinitions.KEY_EID_WORLDCAT,
 //                DBDefinitions.KEY_EID_LCCN
     };
+
+
     /** {@link #TBL_BOOKSHELF}. */
     public static final String KEY_BOOKSHELF_NAME = "bookshelf";
     public static final String KEY_BOOKSHELF_BL_TOP_POS = "bl_top_pos";
     public static final String KEY_BOOKSHELF_BL_TOP_OFFSET = "bl_top_offset";
     public static final String KEY_BOOKSHELF_BL_TOP_ROW_ID = "bl_top_row";
-
     /** Alias. */
     public static final String KEY_BOOKSHELF_NAME_CSV = "bs_name_csv";
     /** Alias. */
     public static final String KEY_BOOKSHELF_ID_CSV = "bs_id_csv";
+
 
     /** {@link #TBL_AUTHORS} {@link #TBL_BOOK_AUTHOR} */
     public static final String KEY_AUTHOR_FAMILY_NAME = "family_name";
@@ -450,15 +484,27 @@ public final class DBDefinitions {
     public static final String KEY_AUTHOR_FORMATTED_GIVEN_FIRST = "author_formatted_given_first";
     public static final String KEY_BOOK_AUTHOR_TYPE_BITMASK = "author_type";
     public static final String KEY_BOOK_AUTHOR_POSITION = "author_position";
+
+
     /** {@link #TBL_SERIES} {@link #TBL_BOOK_SERIES} */
     public static final String KEY_SERIES_TITLE = "series_name";
     public static final String KEY_SERIES_TITLE_OB = KEY_SERIES_TITLE + SUFFIX_KEY_ORDER_BY;
-    public static final String KEY_SERIES_FORMATTED = "series_formatted";
     public static final String KEY_SERIES_IS_COMPLETE = "series_complete";
     public static final String KEY_BOOK_NUM_IN_SERIES = "series_num";
     public static final String KEY_BOOK_SERIES_POSITION = "series_position";
+
+    /** {@link #TBL_PUBLISHERS} {@link #TBL_BOOK_PUBLISHER} */
+    public static final String KEY_PUBLISHER_NAME = "publisher_name";
+    public static final String KEY_PUBLISHER_NAME_OB = KEY_PUBLISHER_NAME + SUFFIX_KEY_ORDER_BY;
+    public static final String KEY_BOOK_PUBLISHER_POSITION = "publisher_position";
+    /** Alias. */
+    public static final String KEY_PUBLISHER_NAME_CSV = "pub_name_csv";
+
+
     /** {@link #TBL_TOC_ENTRIES}. */
     public static final String KEY_BOOK_TOC_ENTRY_POSITION = "toc_entry_position";
+
+
     /** {@link #TBL_BOOKS}. */
     public static final String KEY_UTC_ADDED = "date_added";
     public static final String KEY_UTC_LAST_UPDATED = "last_update_date";
@@ -467,7 +513,6 @@ public final class DBDefinitions {
     public static final String KEY_TITLE_OB = KEY_TITLE + SUFFIX_KEY_ORDER_BY;
     public static final String KEY_ISBN = "isbn";
     public static final String KEY_DATE_FIRST_PUBLICATION = "first_publication";
-    public static final String KEY_PUBLISHER = "publisher";
     public static final String KEY_DATE_PUBLISHED = "date_published";
     public static final String KEY_PRINT_RUN = "print_run";
     public static final String KEY_PRICE_LISTED = "list_price";
@@ -505,9 +550,12 @@ public final class DBDefinitions {
     /** {@link #TBL_FTS_BOOKS}. Semi-colon concatenated titles. */
     public static final String KEY_FTS_TOC_ENTRY_TITLE = "toc_title";
     public static final String KEY_BOOK_COUNT = "book_count";
+
     /** BooklistBuilder. Virtual domains. */
     public static final String KEY_BL_AUTHOR_SORT = "bl_aut_sort";
     public static final String KEY_BL_SERIES_SORT = "bl_ser_sort";
+    public static final String KEY_BL_PUBLISHER_SORT = "bl_pub_sort";
+
     public static final String KEY_BL_SERIES_NUM_FLOAT = "bl_ser_num_float";
     public static final String KEY_BL_PRIMARY_SERIES_COUNT = "bl_prim_ser_cnt";
     /**
@@ -522,11 +570,13 @@ public final class DBDefinitions {
     public static final String KEY_BL_NODE_GROUP = "node_group";
     public static final String KEY_BL_NODE_VISIBLE = "node_visible";
     public static final String KEY_BL_NODE_EXPANDED = "node_expanded";
+
     /**
      * All money keys.
      * Used with {@code MONEY_KEYS.contains(key)} to check if a key is about money.
      */
     public static final String MONEY_KEYS = KEY_PRICE_LISTED + ',' + KEY_PRICE_PAID;
+
     /**
      * Column alias.
      * <p>
@@ -548,14 +598,12 @@ public final class DBDefinitions {
      *     <li>{@link TocEntry#TYPE_TOC}</li>
      *     <li>{@link TocEntry#TYPE_BOOK}</li>
      * </ul>
-     * DOM_TOC_TYPE = new Domain.Builder(KEY_TOC_TYPE, ColumnInfo.TYPE_TEXT).build();
      */
     public static final String KEY_TOC_TYPE = "type";
-    /**
-     * This key is for the file-based thumbnail field. It's not in the actual database.
-     * But otherwise it's used just like other keys in this class.
-     */
-    public static final String KEY_THUMBNAIL = "thumbnail";
+
+    /** The "field is used" key for thumbnails. */
+    public static final String PREFS_IS_USED_THUMBNAIL = "thumbnail";
+
     /**
      * Users can select which fields they use / don't want to use.
      * Each field has an entry in the Preferences.
@@ -574,6 +622,8 @@ public final class DBDefinitions {
         TBL_BOOKS = new TableDefinition("books").setAlias("b");
         // never change the "series" "s" alias. It's hardcoded elsewhere.
         TBL_SERIES = new TableDefinition("series").setAlias("s");
+        // never change the "publishers" "p" alias. It's hardcoded elsewhere.
+        TBL_PUBLISHERS = new TableDefinition("publishers").setAlias("p");
 
         TBL_BOOKSHELF = new TableDefinition("bookshelf").setAlias("bsh");
         TBL_TOC_ENTRIES = new TableDefinition("anthology").setAlias("an");
@@ -581,6 +631,7 @@ public final class DBDefinitions {
         TBL_BOOK_BOOKSHELF = new TableDefinition("book_bookshelf").setAlias("bbsh");
         TBL_BOOK_AUTHOR = new TableDefinition("book_author").setAlias("ba");
         TBL_BOOK_SERIES = new TableDefinition("book_series").setAlias("bs");
+        TBL_BOOK_PUBLISHER = new TableDefinition("book_publisher").setAlias("bp");
         TBL_BOOK_LOANEE = new TableDefinition("loan").setAlias("l");
         TBL_BOOK_TOC_ENTRIES = new TableDefinition("book_anthology").setAlias("bat");
 
@@ -611,6 +662,11 @@ public final class DBDefinitions {
                 new Domain.Builder(KEY_FK_SERIES, ColumnInfo.TYPE_INTEGER)
                         .notNull()
                         .references(TBL_SERIES, "ON DELETE CASCADE ON UPDATE CASCADE")
+                        .build();
+        DOM_FK_PUBLISHER =
+                new Domain.Builder(KEY_FK_PUBLISHER, ColumnInfo.TYPE_INTEGER)
+                        .notNull()
+                        .references(TBL_PUBLISHERS, "ON DELETE CASCADE ON UPDATE CASCADE")
                         .build();
         DOM_FK_TOC_ENTRY =
                 new Domain.Builder(KEY_FK_TOC_ENTRY, ColumnInfo.TYPE_INTEGER)
@@ -754,11 +810,26 @@ public final class DBDefinitions {
                         .notNull()
                         .withDefault(0)
                         .build();
-        DOM_SERIES_FORMATTED =
-                new Domain.Builder(KEY_SERIES_FORMATTED, ColumnInfo.TYPE_TEXT)
+
+        /* ======================================================================================
+         *  Publisher domains
+         * ====================================================================================== */
+        DOM_PUBLISHER_NAME =
+                new Domain.Builder(KEY_PUBLISHER_NAME, ColumnInfo.TYPE_TEXT)
                         .notNull()
+                        .localized()
+                        .build();
+        DOM_PUBLISHER_NAME_OB =
+                new Domain.Builder(KEY_PUBLISHER_NAME_OB, ColumnInfo.TYPE_TEXT)
+                        .notNull()
+                        .withDefaultEmptyString()
+                        .prePreparedOrderBy()
                         .build();
 
+        DOM_PUBLISHER_NAME_CSV =
+                new Domain.Builder(KEY_PUBLISHER_NAME_CSV, ColumnInfo.TYPE_TEXT)
+                        .notNull()
+                        .build();
         /* ======================================================================================
          *  Book domains
          * ====================================================================================== */
@@ -767,13 +838,6 @@ public final class DBDefinitions {
                 new Domain.Builder(KEY_ISBN, ColumnInfo.TYPE_TEXT)
                         .notNull()
                         .withDefaultEmptyString()
-                        .build();
-
-        DOM_BOOK_PUBLISHER =
-                new Domain.Builder(KEY_PUBLISHER, ColumnInfo.TYPE_TEXT)
-                        .notNull()
-                        .withDefaultEmptyString()
-                        .localized()
                         .build();
 
         DOM_BOOK_PRINT_RUN =
@@ -965,6 +1029,10 @@ public final class DBDefinitions {
                         .localized()
                         .build();
 
+        DOM_BOOK_PUBLISHER_POSITION =
+                new Domain.Builder(KEY_BOOK_PUBLISHER_POSITION, ColumnInfo.TYPE_INTEGER)
+                        .notNull().build();
+
         DOM_BOOK_TOC_ENTRY_POSITION =
                 new Domain.Builder(KEY_BOOK_TOC_ENTRY_POSITION, ColumnInfo.TYPE_INTEGER)
                         .notNull().build();
@@ -989,6 +1057,9 @@ public final class DBDefinitions {
 
         DOM_BL_SERIES_SORT =
                 new Domain.Builder(KEY_BL_SERIES_SORT, ColumnInfo.TYPE_TEXT).build();
+
+        DOM_BL_PUBLISHER_SORT =
+                new Domain.Builder(KEY_BL_PUBLISHER_SORT, ColumnInfo.TYPE_TEXT).build();
 
         DOM_BL_BOOK_NUM_IN_SERIES_AS_FLOAT =
                 new Domain.Builder(KEY_BL_SERIES_NUM_FLOAT, ColumnInfo.TYPE_REAL).build();
@@ -1037,12 +1108,20 @@ public final class DBDefinitions {
                   .addIndex(KEY_SERIES_TITLE, false, DOM_SERIES_TITLE);
         ALL_TABLES.put(TBL_SERIES.getName(), TBL_SERIES);
 
+        TBL_PUBLISHERS.addDomains(DOM_PK_ID,
+                                  DOM_PUBLISHER_NAME,
+                                  DOM_PUBLISHER_NAME_OB)
+                      .setPrimaryKey(DOM_PK_ID)
+                      .addIndex("id", true, DOM_PK_ID)
+                      .addIndex(KEY_PUBLISHER_NAME_OB, false, DOM_PUBLISHER_NAME_OB)
+                      .addIndex(KEY_PUBLISHER_NAME, false, DOM_PUBLISHER_NAME);
+        ALL_TABLES.put(TBL_PUBLISHERS.getName(), TBL_PUBLISHERS);
+
         TBL_BOOKS.addDomains(DOM_PK_ID,
                              // book data
                              DOM_TITLE,
                              DOM_TITLE_OB,
                              DOM_BOOK_ISBN,
-                             DOM_BOOK_PUBLISHER,
                              DOM_DATE_PUBLISHED,
                              DOM_DATE_FIRST_PUBLICATION,
                              DOM_BOOK_PRINT_RUN,
@@ -1095,7 +1174,6 @@ public final class DBDefinitions {
                  .addIndex(KEY_TITLE_OB, false, DOM_TITLE_OB)
                  .addIndex(KEY_TITLE, false, DOM_TITLE)
                  .addIndex(KEY_ISBN, false, DOM_BOOK_ISBN)
-                 .addIndex(KEY_PUBLISHER, false, DOM_BOOK_PUBLISHER)
                  .addIndex(KEY_BOOK_UUID, true, DOM_BOOK_UUID)
                  //NEWTHINGS: add new site specific ID: add index as needed.
                  .addIndex(KEY_EID_GOODREADS_BOOK, false, DOM_EID_GOODREADS_BOOK)
@@ -1173,6 +1251,19 @@ public final class DBDefinitions {
                                  DOM_BOOK_NUM_IN_SERIES);
         ALL_TABLES.put(TBL_BOOK_SERIES.getName(), TBL_BOOK_SERIES);
 
+        TBL_BOOK_PUBLISHER.addDomains(DOM_FK_BOOK,
+                                      DOM_FK_PUBLISHER,
+                                      DOM_BOOK_PUBLISHER_POSITION)
+                          .setPrimaryKey(DOM_FK_BOOK, DOM_FK_PUBLISHER, DOM_BOOK_PUBLISHER_POSITION)
+                          .addReference(TBL_BOOKS, DOM_FK_BOOK)
+                          .addReference(TBL_PUBLISHERS, DOM_FK_PUBLISHER)
+                          .addIndex(KEY_FK_PUBLISHER, true,
+                                    DOM_FK_PUBLISHER,
+                                    DOM_FK_BOOK)
+                          .addIndex(KEY_FK_BOOK, true,
+                                    DOM_FK_BOOK,
+                                    DOM_FK_PUBLISHER);
+        ALL_TABLES.put(TBL_BOOK_PUBLISHER.getName(), TBL_BOOK_PUBLISHER);
 
         TBL_BOOK_LOANEE.addDomains(DOM_PK_ID,
                                    DOM_FK_BOOK,
@@ -1305,7 +1396,7 @@ public final class DBDefinitions {
          * FULL representation of TMP_TBL_BOOK_LIST_NAVIGATOR temp table.
          *
          * Get's populated after a new TMP_TBL_BOOK_LIST is created and populated.
-         * It provides the linear (flat) list of book ids to move back and forth when
+         * It provides the linear (flat) list of book ID's to move back and forth when
          * the user swipes left and right on the book details screen.
          *
          * This table should always be created without column constraints applied,
@@ -1335,10 +1426,10 @@ public final class DBDefinitions {
         TBL_FTS_BOOKS.addDomains(DOM_TITLE,
                                  DOM_FTS_AUTHOR_NAME,
                                  DOM_SERIES_TITLE,
+                                 DOM_PUBLISHER_NAME,
 
                                  DOM_BOOK_DESCRIPTION,
                                  DOM_BOOK_PRIVATE_NOTES,
-                                 DOM_BOOK_PUBLISHER,
                                  DOM_BOOK_GENRE,
                                  DOM_BOOK_LOCATION,
                                  DOM_BOOK_ISBN,
@@ -1381,21 +1472,23 @@ public final class DBDefinitions {
      * NEWTHINGS: new fields visibility.
      * Same set as on xml/preferences_field_visibility.xml
      */
-    @StringDef({KEY_ISBN,
-                KEY_THUMBNAIL,
-                KEY_BOOK_AUTHOR_TYPE_BITMASK,
-                KEY_SERIES_TITLE,
-                KEY_TOC_BITMASK,
-                KEY_DESCRIPTION,
-                KEY_PUBLISHER,
-                KEY_DATE_PUBLISHED,
-                KEY_DATE_FIRST_PUBLICATION,
-                KEY_FORMAT,
-                KEY_COLOR,
-                KEY_GENRE,
-                KEY_LANGUAGE,
-                KEY_PAGES,
-                KEY_PRICE_LISTED,
+    @StringDef({
+                       PREFS_IS_USED_THUMBNAIL,
+                       KEY_PUBLISHER_NAME,
+                       KEY_SERIES_TITLE,
+
+                       KEY_ISBN,
+                       KEY_BOOK_AUTHOR_TYPE_BITMASK,
+                       KEY_TOC_BITMASK,
+                       KEY_DESCRIPTION,
+                       KEY_DATE_PUBLISHED,
+                       KEY_DATE_FIRST_PUBLICATION,
+                       KEY_FORMAT,
+                       KEY_COLOR,
+                       KEY_GENRE,
+                       KEY_LANGUAGE,
+                       KEY_PAGES,
+                       KEY_PRICE_LISTED,
                 KEY_LOANEE,
                 KEY_PRIVATE_NOTES,
                 KEY_BOOK_CONDITION,

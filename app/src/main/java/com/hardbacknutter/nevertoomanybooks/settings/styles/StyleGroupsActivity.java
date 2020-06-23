@@ -54,8 +54,8 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyle;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
+import com.hardbacknutter.nevertoomanybooks.widgets.ItemTouchHelperViewHolderBase;
 import com.hardbacknutter.nevertoomanybooks.widgets.RecyclerViewAdapterBase;
-import com.hardbacknutter.nevertoomanybooks.widgets.RecyclerViewViewHolderBase;
 import com.hardbacknutter.nevertoomanybooks.widgets.ddsupport.SimpleItemTouchHelperCallback;
 import com.hardbacknutter.nevertoomanybooks.widgets.ddsupport.StartDragListener;
 
@@ -144,10 +144,10 @@ public class StyleGroupsActivity
     }
 
     /**
-     * Holder pattern for each row.
+     * Holder for each row.
      */
     private static class Holder
-            extends RecyclerViewViewHolderBase {
+            extends ItemTouchHelperViewHolderBase {
 
         @NonNull
         final TextView nameView;

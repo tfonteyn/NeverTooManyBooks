@@ -257,7 +257,7 @@
         please consider using the “%2$s” button first.
     </string>
 
-    <string name="txt_share_book_im_reading">I\'m reading “%1$s” by %2$s %3$s %4$s</string>
+    <string name="txt_share_book_im_reading">I\'m reading “%1$s” %2$s by %3$s %4$s</string>
     <string name="txt_tap_on_thumb">Tap on a thumbnail to display a larger image</string>
     <string name="txt_tap_on_image_to_select">Tap on the larger image to select</string>
 
@@ -322,6 +322,11 @@
         \nThe books themselves will not be deleted.\n
         \nConsider editing the series and changing the series name to that of another series to preserve this data.
     </string>
+    <string name="confirm_delete_publisher">
+        Really delete publisher “%1$s”?\n
+        \nThe books themselves will not be deleted.\n
+        \nConsider editing the publisher and changing the publisher name to that of another publisher to preserve this data.
+    </string>
     <string name="confirm_delete_toc_entry">Really delete the title “%1$s” by %2$s? It will be deleted from all books in which it is listed. The books themselves will not be deleted.</string>
 
     <string name="confirm_delete_book">This will completely delete the book entitled “%1$s” by %2$s.\nAre you sure you want to continue?</string>
@@ -354,7 +359,17 @@
         \nHow do you wish to apply this change?
         \nNote: The choice “%3$s” will be applied instantly.
     </string>
-
+    <!-- param 1: previous and param 2: new Publisher name.
+         param 3: the text on the button for making a global change. e.g. "All books" -->
+    <string name="confirm_apply_publisher_changed">
+        You have changed the publisher:
+        \n
+        \n from “%1$s”
+        \n to “%2$s”
+        \n
+        \nHow do you wish to apply this change?
+        \nNote: The choice “%3$s” will be applied instantly.
+    </string>
     <!-- offer to send the exported file as an email attachment -->
     <string name="confirm_email_export">Would you like to send this export as an email?</string>
 
@@ -875,6 +890,11 @@
     <string name="pv_bob_books_under_multiple_primary_series_only">under their primary series only</string>
     <string name="pv_bob_books_under_multiple_each_series">under each series</string>
 
+    <!-- Preference Category: Publisher -->
+    <!-- SwitchPreference -->
+    <string name="pt_bob_books_under_multiple_publisher">Show books with multiple publishers</string>
+    <string name="pv_bob_books_under_multiple_primary_publisher_only">under their primary publisher only</string>
+    <string name="pv_bob_books_under_multiple_each_publisher">under each publisher</string>
 
     <!-- ####################################################################################### -->
     <!-- == Dialog, Activity and other "window" titles == -->
@@ -915,6 +935,8 @@
     <string name="lbl_delete_book">Delete Book</string>
     <!-- Dialog title. -->
     <string name="lbl_delete_series">Delete Series</string>
+    <!-- Dialog title. -->
+    <string name="lbl_delete_publisher">Delete Publisher</string>
     <!-- Dialog title. -->
     <string name="lbl_delete_toc_entry">Delete entry</string>
 
@@ -1118,6 +1140,10 @@
 
     <!-- specific place holder text for Series rows. -->
     <string name="hint_empty_series">(No Series)</string>
+
+    <!-- specific place holder text for Publisher rows. -->
+    <string name="hint_empty_publisher">(No Publisher)</string>
+
     <!-- specific place holder text for Language rows. -->
     <string name="hint_empty_language">(Language not set)</string>
 
@@ -1391,6 +1417,7 @@
     <!-- Header for a screen section. -->
     <string name="lbl_publication">Publication</string>
     <string name="lbl_publisher">Publisher</string>
+    <string name="lbl_publishers">Publishers</string>
     <!-- First Publication Date for the content of the book. -->
     <string name="lbl_first_publication">First Publication</string>
     <!-- Publication Date for the book. -->

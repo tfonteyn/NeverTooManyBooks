@@ -38,35 +38,43 @@ import androidx.fragment.app.DialogFragment;
 import java.lang.ref.WeakReference;
 import java.util.Objects;
 
+import com.hardbacknutter.nevertoomanybooks.BookChangedListener;
+import com.hardbacknutter.nevertoomanybooks.BookChangedListenerOwner;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookTocBinding;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
+import com.hardbacknutter.nevertoomanybooks.dialogs.BaseDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
+import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.widgets.DiacriticArrayAdapter;
 
 /**
- * Dialog to add a new TOCEntry, or edit an existing one.
+ * Dialog to edit an <strong>EXISTING or NEW</strong> {@link TocEntry}.
  */
 public class EditTocEntryDialogFragment
-        extends BaseDialogFragment {
+        extends BaseDialogFragment
+        implements BookChangedListenerOwner {
 
     /** Log tag. */
     public static final String TAG = "EditTocEntryDialogFrag";
 
-    private static final String BKEY_HAS_MULTIPLE_AUTHORS = TAG + ":hasMultipleAuthors";
-    private static final String BKEY_TOC_ENTRY = TAG + ":tocEntry";
+    public static final String BKEY_HAS_MULTIPLE_AUTHORS = TAG + ":hasMultipleAuthors";
+    public static final String BKEY_TOC_ENTRY = TAG + ":tocEntry";
+    private static final String BKEY_BOOK_ID = TAG + ":bookId";
 
     /** Database Access. */
     private DAO mDb;
     /** Where to send the result. */
     @Nullable
-    private WeakReference<EditTocEntryResults> mListener;
+    private WeakReference<BookChangedListener> mListener;
     @Nullable
     private String mBookTitle;
+    private long mBookId;
+
     /** View Binding. */
     private DialogEditBookTocBinding mVb;
     private DiacriticArrayAdapter<String> mAuthorAdapter;
@@ -84,6 +92,9 @@ public class EditTocEntryDialogFragment
     /** Helper to show/hide the author edit field. */
     private boolean mHasMultipleAuthors;
 
+    /**
+     * No-arg constructor for OS use.
+     */
     public EditTocEntryDialogFragment() {
         super(R.layout.dialog_edit_book_toc);
     }
@@ -91,18 +102,19 @@ public class EditTocEntryDialogFragment
     /**
      * Constructor.
      *
-     * @param bookTitle          displayed for info only
+     * @param book               the entry belongs to
      * @param tocEntry           to edit.
      * @param hasMultipleAuthors Flag that will enable/disable the author edit field
      *
      * @return instance
      */
-    public static DialogFragment newInstance(@NonNull final String bookTitle,
+    public static DialogFragment newInstance(@NonNull final Book book,
                                              @NonNull final TocEntry tocEntry,
                                              final boolean hasMultipleAuthors) {
         final DialogFragment frag = new EditTocEntryDialogFragment();
-        final Bundle args = new Bundle(3);
-        args.putString(DBDefinitions.KEY_TITLE, bookTitle);
+        final Bundle args = new Bundle(4);
+        args.putString(DBDefinitions.KEY_TITLE, book.getTitle());
+        args.putLong(BKEY_BOOK_ID, book.getId());
         args.putBoolean(BKEY_HAS_MULTIPLE_AUTHORS, hasMultipleAuthors);
         args.putParcelable(BKEY_TOC_ENTRY, tocEntry);
         frag.setArguments(args);
@@ -117,7 +129,7 @@ public class EditTocEntryDialogFragment
 
         final Bundle args = requireArguments();
         mBookTitle = args.getString(DBDefinitions.KEY_TITLE);
-
+        mBookId = args.getLong(BKEY_BOOK_ID);
         mTocEntry = args.getParcelable(BKEY_TOC_ENTRY);
         Objects.requireNonNull(mTocEntry, ErrorMsg.ARGS_MISSING_TOC_ENTRIES);
 
@@ -200,15 +212,21 @@ public class EditTocEntryDialogFragment
             return true;
         }
 
-        // we don't update here, but just send the new data back; TOCs are updated in bulk/book
+        // store changes
         mTocEntry.setTitle(mTitle);
         mTocEntry.setFirstPublication(mFirstPublication);
         if (mHasMultipleAuthors) {
             mTocEntry.setAuthor(Author.from(mAuthorName));
         }
 
+        // We don't update/insert to the database here, but just send the data back.
+        // TOCs are updated in bulk/list per Book
+        final Bundle data = new Bundle();
+        data.putParcelable(BKEY_TOC_ENTRY, mTocEntry);
+        data.putBoolean(BKEY_HAS_MULTIPLE_AUTHORS, mHasMultipleAuthors);
+
         if (mListener != null && mListener.get() != null) {
-            mListener.get().addOrUpdateEntry(mTocEntry, mHasMultipleAuthors);
+            mListener.get().onChange(mBookId, BookChangedListener.TOC_ENTRY, data);
         } else {
             if (BuildConfig.DEBUG /* always */) {
                 Log.w(TAG, "addOrUpdateEntry|"
@@ -243,7 +261,7 @@ public class EditTocEntryDialogFragment
      *
      * @param listener the object to send the result to.
      */
-    public void setListener(@NonNull final EditTocEntryResults listener) {
+    public void setListener(@NonNull final BookChangedListener listener) {
         mListener = new WeakReference<>(listener);
     }
 
@@ -259,20 +277,5 @@ public class EditTocEntryDialogFragment
             mDb.close();
         }
         super.onDestroy();
-    }
-
-    /**
-     * Listener interface to receive notifications when dialog is confirmed.
-     */
-    public interface EditTocEntryResults {
-
-        /**
-         * Reports the results after this dialog was confirmed.
-         *
-         * @param tocEntry           with new data
-         * @param hasMultipleAuthors {@code true} if the author is used
-         */
-        void addOrUpdateEntry(@NonNull TocEntry tocEntry,
-                              boolean hasMultipleAuthors);
     }
 }

@@ -195,7 +195,7 @@
     <string name="confirm_registration_benefits">Αυτή η δυνατότητα επωφελείται από την εγγραφή με %1$s.\n Θα θέλατε να δείτε περισσότερες πληροφορίες ή να απενεργοποιήσετε αυτό το μήνυμα;\n Μπορείτε να βρείτε αυτές τις πληροφορίες σε μεταγενέστερη ημερομηνία κάτω από την ενότητα «%2$s» στις ρυθμίσεις.</string>
     <string name="confirm_registration_required">Αυτή η λειτουργία απαιτεί εγγραφή με %1$s.\n Θα θέλατε να δείτε περισσότερες πληροφορίες;</string>
     <string name="txt_select_fields_to_update">Τα επιλεγμένα πεδία θα ενημερωθούν από το διαδίκτυο. Τα μη επιλεγμένα θα μείνουν ως έχει.</string>
-    <string name="txt_share_book_im_reading">Διαβάζω «%1$s» από %2$s %3$s %4$s</string>
+    <string name="txt_share_book_im_reading">Διαβάζω «%1$s» %2$s από %3$s %4$s</string>
     <string name="txt_tap_on_image_to_select">Πατήστε τη μεγάλη εικόνα για να επιλέξετε</string>
     <string name="txt_tap_on_thumb">Πατήστε σε μια μικρογραφία για να εμφανιστεί μεγαλύτερη εικόνα.</string>
     <string name="txt_waiting_for_scanner">Αναμονή για σαρωτή / κάμερα</string>

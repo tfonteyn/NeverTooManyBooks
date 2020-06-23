@@ -199,7 +199,7 @@
     <string name="confirm_registration_benefits">Diese Funktion profitiert von der Registrierung bei %1$s.\nMöchten Sie weitere Informationen sehen oder diese Nachricht deaktivieren?\n Sie finden diese Informationen zu einem späteren Zeitpunkt in den Einstellungen unter „%2$s“.</string>
     <string name="confirm_registration_required">Diese Funktion erfordert eine Registrierung bei %1$s.\n Möchten Sie weitere Informationen sehen?</string>
     <string name="txt_select_fields_to_update">Die ausgewählten Felder werden aus dem Internet aktualisiert. Nicht ausgewählte Felder werden nicht geändert.</string>
-    <string name="txt_share_book_im_reading">Ich lese „%1$s“ von %2$s %3$s %4$s</string>
+    <string name="txt_share_book_im_reading">Ich lese „%1$s“ %2$s von %3$s %4$s</string>
     <string name="txt_tap_on_image_to_select">Tippen Sie auf das große Bild, um es auszuwählen</string>
     <string name="txt_tap_on_thumb">Klicke auf ein Cover-Bild, um ein größeres Bild angezeigt zu bekommen</string>
     <string name="txt_waiting_for_scanner">Warten auf Scanner / Kamera</string>

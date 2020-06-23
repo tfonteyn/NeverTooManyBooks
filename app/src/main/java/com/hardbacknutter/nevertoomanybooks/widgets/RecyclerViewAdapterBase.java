@@ -47,12 +47,12 @@ import com.hardbacknutter.nevertoomanybooks.widgets.ddsupport.StartDragListener;
  * Base class for implementing a RecyclerView with Drag&Drop support for re-arranging rows.
  * Supports an optional 'delete' button as well.
  * <p>
- * See {@link RecyclerViewViewHolderBase} for the matching base class for ViewHolder.
+ * See {@link ItemTouchHelperViewHolderBase} for the matching base class for the ViewHolder.
  *
  * @param <Item> list item type
  * @param <VHT>  ViewHolder type
  */
-public abstract class RecyclerViewAdapterBase<Item, VHT extends RecyclerViewViewHolderBase>
+public abstract class RecyclerViewAdapterBase<Item, VHT extends ItemTouchHelperViewHolderBase>
         extends RecyclerView.Adapter<VHT>
         implements ItemTouchHelperAdapter {
 

@@ -46,16 +46,19 @@ import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
+import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.utils.LanguageUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOK_AUTHOR_POSITION;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOK_PUBLISHER_POSITION;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOK_SERIES_POSITION;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FK_BOOK;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FK_BOOKSHELF;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_AUTHOR;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_BOOKSHELF;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_PUBLISHER;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_SERIES;
 
 /**
@@ -87,7 +90,7 @@ public class DBCleaner {
     }
 
     /**
-     * Do a mass update of any languages not yet converted to ISO codes.
+     * Do a bulk update of any languages not yet converted to ISO codes.
      * Special entries are left untouched; example "Dutch+French" a bilingual edition.
      *
      * @param context Current context
@@ -110,7 +113,7 @@ public class DBCleaner {
                                + "|to=" + iso);
                 }
                 if (!iso.equals(lang)) {
-                    mDb.updateLanguage(lang, iso);
+                    mDb.renameLanguage(lang, iso);
                 }
             }
         }
@@ -294,6 +297,56 @@ public class DBCleaner {
                 }
                 if (BuildConfig.DEBUG /* always */) {
                     Log.w(TAG, "bookSeries|done");
+                }
+            }
+        }
+    }
+
+    /**
+     * Check for books which do not have an Publisher at position 1.
+     * For those that don't, read their Publishers, and re-save them.
+     * <p>
+     * <strong>Transaction:</strong> participate, or runs in new.
+     *
+     * @param context Current context
+     */
+    public void bookPublishers(@NonNull final Context context) {
+        final String sql = "SELECT " + KEY_FK_BOOK + " FROM "
+                           + "(SELECT " + KEY_FK_BOOK + ", MIN(" + KEY_BOOK_PUBLISHER_POSITION
+                           + ") AS mp"
+                           + " FROM " + TBL_BOOK_PUBLISHER.getName() + " GROUP BY " + KEY_FK_BOOK
+                           + ") WHERE mp > 1";
+
+        final ArrayList<Long> bookIds = mDb.getIdList(sql);
+        if (!bookIds.isEmpty()) {
+            if (BuildConfig.DEBUG /* always */) {
+                Log.w(TAG, "bookPublishers|" + TBL_BOOK_PUBLISHER.getName()
+                           + ", rows=" + bookIds.size());
+            }
+            // ENHANCE: we really should fetch each book individually
+            final Locale bookLocale = LocaleUtils.getUserLocale(context);
+
+            Synchronizer.SyncLock txLock = null;
+            if (!mSyncedDb.inTransaction()) {
+                txLock = mSyncedDb.beginTransaction(true);
+            }
+            try {
+                for (long bookId : bookIds) {
+                    final ArrayList<Publisher> list = mDb.getPublishersByBookId(bookId);
+                    mDb.insertBookPublishers(context, bookId, list, false, bookLocale);
+                }
+                if (txLock != null) {
+                    mSyncedDb.setTransactionSuccessful();
+                }
+            } catch (@NonNull final RuntimeException e) {
+                Logger.error(context, TAG, e);
+
+            } finally {
+                if (txLock != null) {
+                    mSyncedDb.endTransaction(txLock);
+                }
+                if (BuildConfig.DEBUG /* always */) {
+                    Log.w(TAG, "bookPublishers|done");
                 }
             }
         }

@@ -160,7 +160,7 @@ public class BookDetailsFragment
         }
 
         // Covers
-        if (!DBDefinitions.isUsed(prefs, DBDefinitions.KEY_THUMBNAIL)) {
+        if (!DBDefinitions.isUsed(prefs, DBDefinitions.PREFS_IS_USED_THUMBNAIL)) {
             mVb.coverImage0.setVisibility(View.GONE);
             mVb.coverImage1.setVisibility(View.GONE);
         }
@@ -352,7 +352,7 @@ public class BookDetailsFragment
             populateToc(book);
         }
 
-        if (DBDefinitions.isUsed(prefs, DBDefinitions.KEY_THUMBNAIL)) {
+        if (DBDefinitions.isUsed(prefs, DBDefinitions.PREFS_IS_USED_THUMBNAIL)) {
             final int[] scale = getResources().getIntArray(R.array.cover_scale_details);
 
             mCoverHandler[0] = new CoverHandler(this, mProgressBar,
@@ -603,7 +603,7 @@ public class BookDetailsFragment
             }
             case R.id.MENU_SHARE: {
                 //noinspection ConstantConditions
-                startActivity(book.getShareBookIntent(getContext()));
+                startActivity(book.getShareIntent(getContext()));
                 return true;
             }
             case R.id.MENU_BOOK_SEND_TO_GOODREADS: {
@@ -645,7 +645,7 @@ public class BookDetailsFragment
     /**
      * Listener to handle 'fling' events to move to the next/previous book.
      */
-    private class FlingHandler
+    class FlingHandler
             extends GestureDetector.SimpleOnGestureListener {
 
         private static final float SENSITIVITY = 100;

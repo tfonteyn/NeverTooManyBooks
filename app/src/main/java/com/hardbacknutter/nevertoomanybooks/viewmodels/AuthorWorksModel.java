@@ -148,7 +148,7 @@ public class AuthorWorksModel
                 break;
 
             case TocEntry.TYPE_BOOK:
-                if (mDb.deleteBook(context, item.getId()) == 1) {
+                if (mDb.deleteBook(context, item.getId())) {
                     mTocEntries.remove(item);
                     putResultData(BookViewModel.BKEY_BOOK_DELETED, true);
                 }

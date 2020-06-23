@@ -34,6 +34,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
+import java.util.List;
 import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.BookChangedListener;
@@ -42,11 +43,11 @@ import com.hardbacknutter.nevertoomanybooks.utils.LanguageUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 
 /**
- * Edit the language field.
+ * Dialog to edit an <strong>in-line in Books table</strong> Language.
  * <p>
  * Will hardly ever be needed now that we use ISO code.
- * However, if a language was misspelled, auto-translation will fail, and manual edit *will*
- * be needed.
+ * However, if a language was misspelled, auto-translation will fail,
+ * and a manual edit *will* be needed.
  */
 public class EditLanguageDialogFragment
         extends EditStringBaseDialogFragment {
@@ -54,6 +55,9 @@ public class EditLanguageDialogFragment
     /** Fragment/Log tag. */
     public static final String TAG = "EditLanguageDialogFrag";
 
+    /**
+     * No-arg constructor for OS use.
+     */
     public EditLanguageDialogFragment() {
         super(R.string.lbl_language, R.string.lbl_language, BookChangedListener.LANGUAGE);
     }
@@ -68,11 +72,11 @@ public class EditLanguageDialogFragment
      */
     public static DialogFragment newInstance(@NonNull final Context context,
                                              @NonNull final String text) {
-        String editLang;
+        final String editLang;
         if (text.length() > 3) {
             editLang = text;
         } else {
-            Locale locale = LocaleUtils.getLocale(context, text);
+            final Locale locale = LocaleUtils.getLocale(context, text);
             if (locale == null) {
                 editLang = text;
             } else {
@@ -87,11 +91,18 @@ public class EditLanguageDialogFragment
         return frag;
     }
 
+    @NonNull
+    @Override
+    protected List<String> getList() {
+        //noinspection ConstantConditions
+        return mDb.getLanguages(getContext());
+    }
+
     @Override
     @Nullable
     Bundle onSave() {
         //noinspection ConstantConditions
-        mDb.updateLanguage(mOriginalText,
+        mDb.renameLanguage(mOriginalText,
                            LanguageUtils.getISO3FromDisplayName(getContext(), mCurrentText));
         return null;
     }

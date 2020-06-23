@@ -57,7 +57,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -71,7 +70,6 @@ import com.hardbacknutter.nevertoomanybooks.covers.ImageUtils;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
-import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.tasks.Canceller;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 import com.hardbacknutter.nevertoomanybooks.utils.Csv;
@@ -336,7 +334,8 @@ public class SearchCoordinator
             }
 
             if (args != null) {
-                boolean useThumbnails = DBDefinitions.isUsed(prefs, DBDefinitions.KEY_THUMBNAIL);
+                boolean useThumbnails = DBDefinitions
+                        .isUsed(prefs, DBDefinitions.PREFS_IS_USED_THUMBNAIL);
                 mFetchThumbnail = new boolean[2];
                 mFetchThumbnail[0] = useThumbnails;
                 mFetchThumbnail[1] = useThumbnails;
@@ -346,12 +345,13 @@ public class SearchCoordinator
                 //TODO: (maybe) implement native id as argument
                 // mNativeIdSearchText = args.get...(UniqueId.BKEY_NATIVE_ID_ARRAY);
 
-                mAuthorSearchText = args
-                        .getString(BooksOnBookshelfModel.SearchCriteria.BKEY_SEARCH_TEXT_AUTHOR,
-                                   "");
-
                 mTitleSearchText = args.getString(DBDefinitions.KEY_TITLE, "");
-                mPublisherSearchText = args.getString(DBDefinitions.KEY_PUBLISHER, "");
+
+                mAuthorSearchText = args.getString(
+                        BooksOnBookshelfModel.SearchCriteria.BKEY_SEARCH_TEXT_AUTHOR, "");
+
+                mPublisherSearchText = args.getString(
+                        BooksOnBookshelfModel.SearchCriteria.BKEY_SEARCH_TEXT_PUBLISHER, "");
 
                 // use global preference.
                 final Locale locale = LocaleUtils.getUserLocale(context);
@@ -488,7 +488,7 @@ public class SearchCoordinator
     /**
      * Search criteria.
      *
-     * @param nativeIdSearchText one or more native ids
+     * @param nativeIdSearchText one or more native ID's
      */
     @SuppressWarnings("WeakerAccess")
     public void setNativeIdSearchText(@Nullable final SparseArray<String> nativeIdSearchText) {
@@ -614,7 +614,7 @@ public class SearchCoordinator
     public boolean search(@NonNull final Context context) {
         prepareSearch(context);
 
-        // If we have one or more native ids
+        // If we have one or more native ID's
         if ((mNativeIdSearchText != null && mNativeIdSearchText.size() > 0)
             // or we have a valid code
             || mIsbn.isValid(mStrictIsbn)) {
@@ -892,20 +892,6 @@ public class SearchCoordinator
         // Merge the data we have in the order as decided upon above.
         for (Site site : sites) {
             accumulateSiteData(context, site);
-        }
-
-        //ENHANCE: for now, we concatenate the list of publishers into a single String.
-        if (mBookData.containsKey(Book.BKEY_PUBLISHER_ARRAY)) {
-            ArrayList<Publisher> publishers =
-                    mBookData.getParcelableArrayList(Book.BKEY_PUBLISHER_ARRAY);
-            if (publishers != null && !publishers.isEmpty()) {
-                // remove duplicates by turning the list into a set and back to a list
-                publishers = new ArrayList<>(new LinkedHashSet<>(publishers));
-                // and store as "pub1 - pub2 - ..."
-                mBookData.putString(DBDefinitions.KEY_PUBLISHER,
-                                    Csv.join(Publisher.DELIMITER, publishers, Publisher::getName));
-            }
-            mBookData.remove(Book.BKEY_PUBLISHER_ARRAY);
         }
 
         // run the mappers

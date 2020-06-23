@@ -46,8 +46,12 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditStringBinding;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
+import com.hardbacknutter.nevertoomanybooks.dialogs.BaseDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.widgets.DiacriticArrayAdapter;
 
+/**
+ * Base Dialog class to edit an <strong>in-line in Books table</strong> String field.
+ */
 public abstract class EditStringBaseDialogFragment
         extends BaseDialogFragment
         implements BookChangedListenerOwner {
@@ -145,7 +149,7 @@ public abstract class EditStringBaseDialogFragment
             return false;
         });
 
-        List<String> objects = getList();
+        final List<String> objects = getList();
         if (objects != null) {
             //noinspection ConstantConditions
             final DiacriticArrayAdapter<String> adapter = new DiacriticArrayAdapter<>(
@@ -163,7 +167,8 @@ public abstract class EditStringBaseDialogFragment
     }
 
     private boolean saveChanges() {
-        mCurrentText = mVb.editString.getText().toString().trim();
+        viewToModel();
+        //noinspection ConstantConditions
         if (mCurrentText.isEmpty()) {
             showError(mVb.lblEditString, R.string.vldt_non_blank_required);
             return false;
@@ -175,6 +180,7 @@ public abstract class EditStringBaseDialogFragment
         }
 
         final Bundle data = onSave();
+
         if (mListener != null && mListener.get() != null) {
             mListener.get().onChange(0, mChangeFlags, data);
         } else {
@@ -186,6 +192,10 @@ public abstract class EditStringBaseDialogFragment
         }
 
         return true;
+    }
+
+    private void viewToModel() {
+        mCurrentText = mVb.editString.getText().toString().trim();
     }
 
     /**
@@ -215,7 +225,7 @@ public abstract class EditStringBaseDialogFragment
 
     @Override
     public void onPause() {
-        mCurrentText = mVb.editString.getText().toString().trim();
+        viewToModel();
         super.onPause();
     }
 

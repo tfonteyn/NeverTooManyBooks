@@ -38,12 +38,18 @@ import java.util.List;
 import com.hardbacknutter.nevertoomanybooks.BookChangedListener;
 import com.hardbacknutter.nevertoomanybooks.R;
 
+/**
+ * Dialog to edit an <strong>in-line in Books table</strong> Genre.
+ */
 public class EditGenreDialogFragment
         extends EditStringBaseDialogFragment {
 
     /** Fragment/Log tag. */
     public static final String TAG = "EditGenreDialogFrag";
 
+    /**
+     * No-arg constructor for OS use.
+     */
     public EditGenreDialogFragment() {
         super(R.string.lbl_genre, R.string.lbl_genre, BookChangedListener.GENRE);
     }
@@ -74,7 +80,7 @@ public class EditGenreDialogFragment
     @Nullable
     Bundle onSave() {
         //noinspection ConstantConditions
-        mDb.updateGenre(mOriginalText, mCurrentText);
+        mDb.renameGenre(mOriginalText, mCurrentText);
         return null;
     }
 }

@@ -38,12 +38,18 @@ import java.util.List;
 import com.hardbacknutter.nevertoomanybooks.BookChangedListener;
 import com.hardbacknutter.nevertoomanybooks.R;
 
+/**
+ * Dialog to edit an <strong>in-line in Books table</strong> Color.
+ */
 public class EditColorDialogFragment
         extends EditStringBaseDialogFragment {
 
     /** Fragment/Log tag. */
     public static final String TAG = "EditColorDialogFragment";
 
+    /**
+     * No-arg constructor for OS use.
+     */
     public EditColorDialogFragment() {
         super(R.string.lbl_color, R.string.lbl_color, BookChangedListener.COLOR);
     }
@@ -74,7 +80,7 @@ public class EditColorDialogFragment
     @Nullable
     Bundle onSave() {
         //noinspection ConstantConditions
-        mDb.updateColor(mOriginalText, mCurrentText);
+        mDb.renameColor(mOriginalText, mCurrentText);
         return null;
     }
 }

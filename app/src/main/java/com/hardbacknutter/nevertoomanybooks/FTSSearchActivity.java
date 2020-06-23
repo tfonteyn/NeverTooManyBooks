@@ -88,6 +88,8 @@ public class FTSSearchActivity
     /** User entered search text. */
     private String mSeriesTitleSearchText;
     /** User entered search text. */
+    private String mPublisherNameSearchText;
+    /** User entered search text. */
     private String mKeywordsSearchText;
     /** Indicates user has changed something since the last search. */
     private boolean mSearchIsDirty;
@@ -118,6 +120,7 @@ public class FTSSearchActivity
             userIsActive(true);
         }
     };
+
     /** View Binding. */
     private ActivityAdvancedSearchBinding mVb;
 
@@ -137,22 +140,29 @@ public class FTSSearchActivity
         final Bundle args = savedInstanceState != null ? savedInstanceState
                                                        : getIntent().getExtras();
         if (args != null) {
-            mAuthorSearchText = args.getString(
-                    BooksOnBookshelfModel.SearchCriteria.BKEY_SEARCH_TEXT_AUTHOR);
             mTitleSearchText = args.getString(DBDefinitions.KEY_TITLE);
             mSeriesTitleSearchText = args.getString(DBDefinitions.KEY_SERIES_TITLE);
+
+            mAuthorSearchText = args.getString(
+                    BooksOnBookshelfModel.SearchCriteria.BKEY_SEARCH_TEXT_AUTHOR);
+            mPublisherNameSearchText = args.getString(
+                    BooksOnBookshelfModel.SearchCriteria.BKEY_SEARCH_TEXT_PUBLISHER);
             mKeywordsSearchText = args.getString(
                     BooksOnBookshelfModel.SearchCriteria.BKEY_SEARCH_TEXT_KEYWORDS);
         }
 
-        if (mAuthorSearchText != null) {
-            mVb.author.setText(mAuthorSearchText);
-        }
         if (mTitleSearchText != null) {
             mVb.title.setText(mTitleSearchText);
         }
         if (mSeriesTitleSearchText != null) {
             mVb.seriesTitle.setText(mSeriesTitleSearchText);
+        }
+
+        if (mAuthorSearchText != null) {
+            mVb.author.setText(mAuthorSearchText);
+        }
+        if (mPublisherNameSearchText != null) {
+            mVb.publisher.setText(mPublisherNameSearchText);
         }
         if (mKeywordsSearchText != null) {
             mVb.keywords.setText(mKeywordsSearchText);
@@ -165,19 +175,23 @@ public class FTSSearchActivity
         });
 
         // Detect when user types something.
-        mVb.author.addTextChangedListener(mTextWatcher);
         mVb.title.addTextChangedListener(mTextWatcher);
         mVb.seriesTitle.addTextChangedListener(mTextWatcher);
+        mVb.author.addTextChangedListener(mTextWatcher);
+        mVb.publisher.addTextChangedListener(mTextWatcher);
         mVb.keywords.addTextChangedListener(mTextWatcher);
 
         // When the show results buttons is tapped, go show the resulting booklist.
         mVb.btnSearch.setOnClickListener(v -> {
             Intent data = new Intent()
                     // pass these for displaying to the user
-                    .putExtra(BooksOnBookshelfModel.SearchCriteria.BKEY_SEARCH_TEXT_AUTHOR,
-                              mAuthorSearchText)
                     .putExtra(DBDefinitions.KEY_TITLE, mTitleSearchText)
                     .putExtra(DBDefinitions.KEY_SERIES_TITLE, mSeriesTitleSearchText)
+
+                    .putExtra(BooksOnBookshelfModel.SearchCriteria.BKEY_SEARCH_TEXT_AUTHOR,
+                              mAuthorSearchText)
+                    .putExtra(BooksOnBookshelfModel.SearchCriteria.BKEY_SEARCH_TEXT_PUBLISHER,
+                              mPublisherNameSearchText)
                     .putExtra(BooksOnBookshelfModel.SearchCriteria.BKEY_SEARCH_TEXT_KEYWORDS,
                               mKeywordsSearchText)
                     // pass the book ID's for the list
@@ -207,7 +221,7 @@ public class FTSSearchActivity
     protected void onPause() {
         stopIdleTimer();
         // Get search criteria
-        getTextFromFields();
+        viewToModel();
 
         super.onPause();
     }
@@ -217,13 +231,16 @@ public class FTSSearchActivity
         mVb.booksFound.setText(s);
     }
 
-    private void getTextFromFields() {
-        //noinspection ConstantConditions
-        mAuthorSearchText = mVb.author.getText().toString().trim();
+    private void viewToModel() {
+
         //noinspection ConstantConditions
         mTitleSearchText = mVb.title.getText().toString().trim();
         //noinspection ConstantConditions
         mSeriesTitleSearchText = mVb.seriesTitle.getText().toString().trim();
+        //noinspection ConstantConditions
+        mAuthorSearchText = mVb.author.getText().toString().trim();
+        //noinspection ConstantConditions
+        mPublisherNameSearchText = mVb.publisher.getText().toString().trim();
         //noinspection ConstantConditions
         mKeywordsSearchText = mVb.keywords.getText().toString().trim();
     }
@@ -233,7 +250,7 @@ public class FTSSearchActivity
      *
      * @param dirty Indicates the user action made the last search invalid
      */
-    private void userIsActive(final boolean dirty) {
+    void userIsActive(final boolean dirty) {
         synchronized (this) {
             // Mark search dirty if necessary
             mSearchIsDirty = mSearchIsDirty || dirty;
@@ -249,10 +266,13 @@ public class FTSSearchActivity
     @Override
     protected void onSaveInstanceState(@NonNull final Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putString(BooksOnBookshelfModel.SearchCriteria.BKEY_SEARCH_TEXT_AUTHOR,
-                           mAuthorSearchText);
+
         outState.putString(DBDefinitions.KEY_TITLE, mTitleSearchText);
         outState.putString(DBDefinitions.KEY_SERIES_TITLE, mSeriesTitleSearchText);
+        outState.putString(BooksOnBookshelfModel.SearchCriteria.BKEY_SEARCH_TEXT_AUTHOR,
+                           mAuthorSearchText);
+        outState.putString(BooksOnBookshelfModel.SearchCriteria.BKEY_SEARCH_TEXT_PUBLISHER,
+                           mPublisherNameSearchText);
         outState.putString(BooksOnBookshelfModel.SearchCriteria.BKEY_SEARCH_TEXT_KEYWORDS,
                            mKeywordsSearchText);
     }
@@ -304,7 +324,7 @@ public class FTSSearchActivity
      * <p>
      * If a search happens, we stop the idle timer.
      */
-    private class SearchUpdateTimer
+    class SearchUpdateTimer
             extends TimerTask {
 
         @Override
@@ -325,12 +345,13 @@ public class FTSSearchActivity
 
             if (doSearch) {
                 // we CAN actually read the Views here ?!
-                getTextFromFields();
+                viewToModel();
 
                 int count = 0;
                 try (Cursor cursor = mDb.fetchSearchSuggestionsAdv(mAuthorSearchText,
                                                                    mTitleSearchText,
                                                                    mSeriesTitleSearchText,
+                                                                   mPublisherNameSearchText,
                                                                    mKeywordsSearchText,
                                                                    20)) {
                     // Null return means searchFts thought the parameters were effectively blank.

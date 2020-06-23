@@ -31,6 +31,8 @@ public final class ErrorMsg {
 
     public static final String UNEXPECTED_VALUE = "Unexpected value: ";
 
+    public static final String BOOK_ID_IS_ZERO = "Book id==0";
+
     public static final String ISBN_MUST_BE_VALID = "isbn must be valid";
     public static final String NO_TARGET_FRAGMENT_SET = "no target fragment set";
 
@@ -39,7 +41,7 @@ public final class ErrorMsg {
     public static final String LISTENER_WAS_NULL = "Listener was NULL";
     public static final String LISTENER_WAS_DEAD = "Listener was dead";
 
-    public static final String EMPTY_ARRAY = "Empty array";
+    public static final String EMPTY_ARRAY_OR_LIST = "Empty array/list";
     public static final String EMPTY_KEY = "Empty key";
     public static final String EMPTY_UUID = "Empty UUID";
 

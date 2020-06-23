@@ -194,7 +194,7 @@
     <string name="confirm_registration_benefits">Tato funkce těží z registrace u %1$s.\nChcete zobrazit další informace nebo tuto zprávu deaktivovat?\nTyto informace najdete později v části „%2$s“ v nastavení.</string>
     <string name="confirm_registration_required">Tato funkce vyžaduje registraci s %1$s.\n Chtěli byste vidět více informací?</string>
     <string name="txt_select_fields_to_update">Vybraná pole budou aktualizována automaticky z internetu. Nevybraná pole zůstanou beze změny.</string>
-    <string name="txt_share_book_im_reading">Čtu „%1$s“ o %2$s %3$s %4$s</string>
+    <string name="txt_share_book_im_reading">Čtu „%1$s“ %2$s o %3$s %4$s</string>
     <string name="txt_tap_on_image_to_select">Klikněte na velký obrázek a vyberte jej</string>
     <string name="txt_tap_on_thumb">Pro zobrazení většího obrázku klikněte na náhled</string>
     <string name="txt_waiting_for_scanner">Čekání na skener / fotoaparát</string>

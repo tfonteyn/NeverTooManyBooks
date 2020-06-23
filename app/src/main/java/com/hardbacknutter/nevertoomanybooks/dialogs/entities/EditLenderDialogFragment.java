@@ -57,11 +57,15 @@ import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditLoanBinding;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
+import com.hardbacknutter.nevertoomanybooks.dialogs.BaseDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.widgets.DiacriticArrayAdapter;
 
 /**
- * Dialog to create a new loan, or edit an existing one.
+ * Dialog to create a new loan, edit an existing one or remove it (book is returned).
+ * <p>
+ * Note the special treatment of the Book's current/original loanee.
+ * This is done to minimize trips to the database.
  */
 public class EditLenderDialogFragment
         extends BaseDialogFragment
@@ -106,6 +110,9 @@ public class EditLenderDialogFragment
     @Nullable
     private String mLoanee;
 
+    /**
+     * No-arg constructor for OS use.
+     */
     public EditLenderDialogFragment() {
         super(R.layout.dialog_edit_loan);
     }
@@ -250,38 +257,50 @@ public class EditLenderDialogFragment
     }
 
     private boolean saveChanges() {
-        mLoanee = mVb.loanedTo.getText().toString().trim();
+        viewToModel();
 
+        // anything actually changed ?
+        //noinspection ConstantConditions
+        if (mLoanee.equalsIgnoreCase(mOriginalLoanee)) {
+            return true;
+        }
+
+        final boolean success;
         final Bundle data;
         if (!mLoanee.isEmpty()) {
             // lend book, reluctantly...
-            if (!mLoanee.equalsIgnoreCase(mOriginalLoanee)) {
-                mDb.lendBook(mBookId, mLoanee);
-            }
+            success = mDb.lendBook(mBookId, mLoanee);
             data = new Bundle();
             data.putString(DBDefinitions.KEY_LOANEE, mLoanee);
 
         } else {
             // return the book
-            mDb.lendBook(mBookId, null);
+            success = mDb.lendBook(mBookId, null);
             data = null;
         }
 
-        if (mListener != null && mListener.get() != null) {
-            mListener.get().onChange(mBookId, BookChangedListener.BOOK_LOANEE, data);
-        } else {
-            if (BuildConfig.DEBUG /* always */) {
-                Log.w(TAG, "onBookChanged|"
-                           + (mListener == null ? ErrorMsg.LISTENER_WAS_NULL
-                                                : ErrorMsg.LISTENER_WAS_DEAD));
+        if (success) {
+            if (mListener != null && mListener.get() != null) {
+                mListener.get().onChange(mBookId, BookChangedListener.BOOK_LOANEE, data);
+            } else {
+                if (BuildConfig.DEBUG /* always */) {
+                    Log.w(TAG, "onBookChanged|"
+                               + (mListener == null ? ErrorMsg.LISTENER_WAS_NULL
+                                                    : ErrorMsg.LISTENER_WAS_DEAD));
+                }
             }
         }
         return true;
     }
 
+    private void viewToModel() {
+        mLoanee = mVb.loanedTo.getText().toString().trim();
+    }
+
     @Override
     public void onSaveInstanceState(@NonNull final Bundle outState) {
         super.onSaveInstanceState(outState);
+        // store the original loanee to avoid a trip to the database
         outState.putString(DBDefinitions.KEY_LOANEE, mOriginalLoanee);
         outState.putString(BKEY_NEW_LOANEE, mLoanee);
     }
@@ -298,7 +317,7 @@ public class EditLenderDialogFragment
 
     @Override
     public void onPause() {
-        mLoanee = mVb.loanedTo.getText().toString().trim();
+        viewToModel();
         super.onPause();
     }
 

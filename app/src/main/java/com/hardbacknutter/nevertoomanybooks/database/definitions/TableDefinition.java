@@ -577,19 +577,19 @@ public class TableDefinition {
     /**
      * Return an aliased table name.
      * <p>
-     * format: [table-name] [table-alias]
+     * format: [table-name] AS [table-alias]
      * <p>
-     * e.g. 'books b'.
+     * e.g. 'books AS b'.
      *
      * @return SQL Fragment
      */
     @NonNull
     public String ref() {
-        return mName + ' ' + getAlias();
+        return mName + " AS " + getAlias();
     }
 
     /**
-     * Return an SQL fragment.
+     * Return an SQL fragment. Use this for columns in the where, join, order, etc... clause.
      * <p>
      * format: [table-alias].[domain-name]
      *
@@ -603,11 +603,12 @@ public class TableDefinition {
     }
 
     /**
-     * Return an SQL fragment.
+     * Return an SQL fragment. Use this for columns in the select-clause.
      * <p>
      * format: [table-alias].[domain-name] AS [domain_name]
      * <p>
-     * TEST: deprecated?... Older SQLite versions make the alias part of the output column name.
+     * Some SQLite versions make the alias part of the output column name which
+     * breaks the easy fetching by pure column name.
      *
      * @param domain Domain name
      *
@@ -616,25 +617,6 @@ public class TableDefinition {
     @NonNull
     public String dotAs(@NonNull final String domain) {
         return getAlias() + '.' + domain + " AS " + domain;
-    }
-
-    /**
-     * Return an SQL fragment.
-     * <p>
-     * format: [table-alias].[domain-name] AS [asName]
-     * <p>
-     * This is useful when multiple differing versions of a domain are retrieved.
-     * (i.e. same domain name, different table)
-     *
-     * @param domain   Domain name
-     * @param asDomain the alias to override the table alias
-     *
-     * @return SQL fragment
-     */
-    @NonNull
-    public String dotAs(@NonNull final String domain,
-                        @NonNull final String asDomain) {
-        return getAlias() + '.' + domain + " AS " + asDomain;
     }
 
     /**

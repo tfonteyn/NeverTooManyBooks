@@ -168,10 +168,10 @@ public class BooklistAdapter
      */
     @SuppressLint("SwitchIntDef")
     @NonNull
-    private String format(@NonNull final Context context,
-                          @BooklistGroup.Id final int groupKeyId,
-                          @Nullable final String text,
-                          @Nullable final Locale locale) {
+    String format(@NonNull final Context context,
+                  @BooklistGroup.Id final int groupKeyId,
+                  @Nullable final String text,
+                  @Nullable final Locale locale) {
         switch (groupKeyId) {
             case BooklistGroup.AUTHOR: {
                 if (text == null || text.isEmpty()) {
@@ -196,7 +196,22 @@ public class BooklistAdapter
                     return text;
                 }
             }
+            case BooklistGroup.PUBLISHER: {
+                if (text == null || text.isEmpty()) {
+                    return context.getString(R.string.hint_empty_publisher);
 
+                } else if (ItemWithTitle.isReorderTitleForDisplaying(context)) {
+                    Locale tmpLocale;
+                    if (locale != null) {
+                        tmpLocale = locale;
+                    } else {
+                        tmpLocale = mUserLocale;
+                    }
+                    return ItemWithTitle.reorder(context, text, tmpLocale);
+                } else {
+                    return text;
+                }
+            }
             case BooklistGroup.READ_STATUS: {
                 if (text == null || text.isEmpty()) {
                     return context.getString(R.string.hint_empty_read_status);
@@ -311,7 +326,6 @@ public class BooklistAdapter
 
             case BooklistGroup.FORMAT:
             case BooklistGroup.GENRE:
-            case BooklistGroup.PUBLISHER:
             case BooklistGroup.LOCATION:
             case BooklistGroup.BOOKSHELF:
             case BooklistGroup.COLOR:
@@ -691,11 +705,11 @@ public class BooklistAdapter
             lending = DBDefinitions.isUsed(prefs, DBDefinitions.KEY_LOANEE);
             series = DBDefinitions.isUsed(prefs, DBDefinitions.KEY_SERIES_TITLE);
 
-            cover = style.isBookDetailUsed(context, prefs, DBDefinitions.KEY_THUMBNAIL);
+            cover = style.isBookDetailUsed(context, prefs, DBDefinitions.PREFS_IS_USED_THUMBNAIL);
 
             rating = style.isBookDetailUsed(context, prefs, DBDefinitions.KEY_RATING);
             author = style.isBookDetailUsed(context, prefs, DBDefinitions.KEY_AUTHOR_FORMATTED);
-            publisher = style.isBookDetailUsed(context, prefs, DBDefinitions.KEY_PUBLISHER);
+            publisher = style.isBookDetailUsed(context, prefs, DBDefinitions.KEY_PUBLISHER_NAME);
             pubDate = style.isBookDetailUsed(context, prefs, DBDefinitions.KEY_DATE_PUBLISHED);
             isbn = style.isBookDetailUsed(context, prefs, DBDefinitions.KEY_ISBN);
             format = style.isBookDetailUsed(context, prefs, DBDefinitions.KEY_FORMAT);
@@ -728,13 +742,13 @@ public class BooklistAdapter
             format = format && rowData.contains(DBDefinitions.KEY_FORMAT);
             location = location && rowData.contains(DBDefinitions.KEY_LOCATION);
             rating = rating && rowData.contains(DBDefinitions.KEY_RATING);
-            publisher = publisher && rowData.contains(DBDefinitions.KEY_PUBLISHER);
+            publisher = publisher && rowData.contains(DBDefinitions.KEY_PUBLISHER_NAME);
             pubDate = pubDate && rowData.contains(DBDefinitions.KEY_DATE_PUBLISHED);
         }
     }
 
     /**
-     * Base for all row ViewHolder classes.
+     * Base for all {@link BooklistGroup} ViewHolder classes.
      */
     abstract static class RowViewHolder
             extends RecyclerView.ViewHolder {
@@ -1015,20 +1029,20 @@ public class BooklistAdapter
                 publicationDate = null;
             }
 
-            final String publisher;
+            final String publisherName;
             if (mInUse.publisher) {
-                publisher = rowData.getString(DBDefinitions.KEY_PUBLISHER);
+                publisherName = rowData.getString(DBDefinitions.KEY_PUBLISHER_NAME);
             } else {
-                publisher = null;
+                publisherName = null;
             }
 
-            if (publisher != null && !publisher.isEmpty()
+            if (publisherName != null && !publisherName.isEmpty()
                 && publicationDate != null && !publicationDate.isEmpty()) {
                 // Combine Publisher and date
-                return String.format(mX_bracket_Y_bracket, publisher, publicationDate);
-            } else if (publisher != null && !publisher.isEmpty()) {
+                return String.format(mX_bracket_Y_bracket, publisherName, publicationDate);
+            } else if (publisherName != null && !publisherName.isEmpty()) {
                 // there was no date, just use the publisher
-                return publisher;
+                return publisherName;
 
             } else if (publicationDate != null && !publicationDate.isEmpty()) {
                 // there was no publisher, just use the date

@@ -45,11 +45,12 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.widgets.ddsupport.ItemTouchHelperViewHolder;
 
 /**
- * Holder pattern for each row in a RecyclerView.
+ * Row ViewHolder for each row in a RecyclerView.
+ *
  * <ul>Extends the original with support for:
+ *      <li>{@link ItemTouchHelperViewHolder}</li>
  *      <li>a 'delete' button</li>
  *      <li>a 'checkable' button</li>
- *      <li>{@link ItemTouchHelperViewHolder}</li>
  * </ul>
  * <ul>Uses pre-defined ID's:
  *      <li>R.id.TLV_ROW_DETAILS</li>
@@ -58,7 +59,7 @@ import com.hardbacknutter.nevertoomanybooks.widgets.ddsupport.ItemTouchHelperVie
  *      <li>R.id.TLV_ROW_GRABBER</li>
  * </ul>
  */
-public class RecyclerViewViewHolderBase
+public abstract class ItemTouchHelperViewHolderBase
         extends RecyclerView.ViewHolder
         implements ItemTouchHelperViewHolder {
 
@@ -81,7 +82,7 @@ public class RecyclerViewViewHolderBase
     /** preserves the original background while dragging. */
     private Drawable mOriginalItemSelectedBackground;
 
-    protected RecyclerViewViewHolderBase(@NonNull final View itemView) {
+    protected ItemTouchHelperViewHolderBase(@NonNull final View itemView) {
         super(itemView);
 
         // Don't enable the whole row, so buttons keep working

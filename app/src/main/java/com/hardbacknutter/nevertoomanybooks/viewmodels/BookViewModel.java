@@ -47,6 +47,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
+import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
@@ -87,6 +88,7 @@ public class BookViewModel
 
     private final MutableLiveData<ArrayList<Author>> mAuthorList = new MutableLiveData<>();
     private final MutableLiveData<ArrayList<Series>> mSeriesList = new MutableLiveData<>();
+    private final MutableLiveData<ArrayList<Publisher>> mPublisherList = new MutableLiveData<>();
 
     /** key: fragmentTag. */
     private final Collection<String> mFragmentsWithUnfinishedEdits = new HashSet<>();
@@ -94,6 +96,7 @@ public class BookViewModel
     private DAO mDb;
     /** Flag to indicate we're dirty. */
     private boolean mIsDirty;
+
     /**
      * The Book this model represents. The only time this can be {@code null}
      * is when this model is just initialized, or when the Book was deleted.
@@ -128,16 +131,13 @@ public class BookViewModel
                 final Bundle bookData = args.getBundle(Book.BKEY_BOOK_DATA);
                 if (bookData != null) {
                     // if we have a populated bundle, e.g. after an internet search, use that.
-                    mBook = new Book();
-                    mBook.putAll(bookData);
+                    mBook = Book.from(bookData);
                     // a new book is always dirty
                     mIsDirty = true;
 
                 } else {
                     // 2. Do we have an id?, e.g. user clicked on a book in a list.
-                    final long bookId = args.getLong(DBDefinitions.KEY_PK_ID, 0);
-                    // Either load from database or create a new 'empty' book.
-                    mBook = new Book(bookId, mDb);
+                    loadBook(args.getLong(DBDefinitions.KEY_PK_ID, 0));
                 }
 
             } else {
@@ -169,11 +169,11 @@ public class BookViewModel
     public void addFieldsFromBundle(@NonNull final Context context,
                                     @Nullable final Bundle args) {
         if (args != null) {
-            final Bundle rawData = args.getBundle(Book.BKEY_BOOK_DATA);
-            if (rawData != null) {
-                for (String key : rawData.keySet()) {
+            final Bundle bookData = args.getBundle(Book.BKEY_BOOK_DATA);
+            if (bookData != null) {
+                for (String key : bookData.keySet()) {
                     if (!mBook.contains(key)) {
-                        mBook.put(key, rawData.get(key));
+                        mBook.put(key, bookData.get(key));
                     }
                 }
             }
@@ -244,7 +244,11 @@ public class BookViewModel
     }
 
     public void loadBook(final long bookId) {
-        mBook = new Book(bookId, mDb);
+        mBook = new Book();
+        if (bookId > 0) {
+            // for an existing book, load the data
+            mBook.load(bookId, mDb);
+        }
     }
 
     public void reload() {
@@ -271,11 +275,20 @@ public class BookViewModel
     /**
      * Get the current loanee.
      *
-     * @return the one who shall not be mentioned, or {@code null} if none
+     * @return the one who shall not be mentioned, or {@code ""} if none
      */
-    @Nullable
+    @NonNull
     public String getLoanee() {
         return mBook.getLoanee(mDb);
+    }
+
+    /**
+     * Check if this book available in our library; or if it was lend out.
+     *
+     * @return {@code true} if the book is available for lending.
+     */
+    public boolean isAvailable() {
+        return mBook.getLoanee(mDb).isEmpty();
     }
 
     /**
@@ -295,20 +308,12 @@ public class BookViewModel
      * @param context Current context
      */
     public void deleteBook(@NonNull final Context context) {
-        mDb.deleteBook(context, mBook.getId());
-        putResultData(BKEY_BOOK_DELETED, true);
-        mBook = null;
+        if (mDb.deleteBook(context, mBook.getId())) {
+            putResultData(BKEY_BOOK_DELETED, true);
+            mBook = null;
+        }
     }
 
-    /**
-     * Check if this book available in our library; or if it was lend out.
-     *
-     * @return {@code true} if the book is available for lending.
-     */
-    public boolean isAvailable() {
-        final String loanee = getLoanee();
-        return loanee == null || getLoanee().isEmpty();
-    }
 
     /**
      * Check if the passed Author is only used by this book.
@@ -337,7 +342,22 @@ public class BookViewModel
     public boolean isSingleUsage(@NonNull final Context context,
                                  @NonNull final Series series) {
         final Locale bookLocale = mBook.getLocale(context);
-        final long nrOfReferences = mDb.countBooksInSeries(context, series, bookLocale);
+        final long nrOfReferences = mDb.countBooksBySeries(context, series, bookLocale);
+        return nrOfReferences <= (mBook.isNew() ? 0 : 1);
+    }
+
+    /**
+     * Check if the passed Publisher is only used by this book.
+     *
+     * @param context   Current context
+     * @param publisher to check
+     *
+     * @return {@code true} if the Publisher is only used by this book
+     */
+    public boolean isSingleUsage(@NonNull final Context context,
+                                 @NonNull final Publisher publisher) {
+        final Locale bookLocale = mBook.getLocale(context);
+        final long nrOfReferences = mDb.countBooksByPublisher(context, publisher, bookLocale);
         return nrOfReferences <= (mBook.isNew() ? 0 : 1);
     }
 
@@ -372,7 +392,7 @@ public class BookViewModel
     public void saveBook(@NonNull final Context context)
             throws DAO.DaoWriteException {
         if (mBook.isNew()) {
-            final long id = mDb.insertBook(context, 0, mBook, 0);
+            final long id = mDb.insert(context, 0, mBook, 0);
             putResultData(BKEY_BOOK_CREATED, true);
 
             // if the user added a cover to the new book, make it permanent
@@ -389,7 +409,7 @@ public class BookViewModel
                 }
             }
         } else {
-            mDb.updateBook(context, mBook.getId(), mBook, 0);
+            mDb.update(context, mBook.getId(), mBook, 0);
             putResultData(BKEY_BOOK_MODIFIED, true);
         }
 
@@ -402,12 +422,16 @@ public class BookViewModel
         return mIsSaved;
     }
 
+    public void refreshAuthorList(@NonNull final Context context) {
+        mBook.refreshAuthorList(context, mDb);
+    }
+
     public void refreshSeriesList(@NonNull final Context context) {
         mBook.refreshSeriesList(context, mDb);
     }
 
-    public void refreshAuthorList(@NonNull final Context context) {
-        mBook.refreshAuthorList(context, mDb);
+    public void refreshPublishersList(@NonNull final Context context) {
+        mBook.refreshPublishersList(context, mDb);
     }
 
     public void pruneAuthors(@NonNull final Context context) {
@@ -435,6 +459,11 @@ public class BookViewModel
                                     context, mDb, true, mBook.getLocale(context));
     }
 
+    public void prunePublishers(@NonNull final Context context) {
+        mIsDirty = Publisher.pruneList(mBook.getParcelableArrayList(Book.BKEY_PUBLISHER_ARRAY),
+                                       context, mDb, true, mBook.getLocale(context));
+    }
+
     public MutableLiveData<ArrayList<Author>> getAuthorList() {
         return mAuthorList;
     }
@@ -451,5 +480,14 @@ public class BookViewModel
     public void updateSeries(final ArrayList<Series> list) {
         mBook.putParcelableArrayList(Book.BKEY_SERIES_ARRAY, list);
         mSeriesList.setValue(list);
+    }
+
+    public MutableLiveData<ArrayList<Publisher>> getPublisherList() {
+        return mPublisherList;
+    }
+
+    public void updatePublishers(final ArrayList<Publisher> list) {
+        mBook.putParcelableArrayList(Book.BKEY_PUBLISHER_ARRAY, list);
+        mPublisherList.setValue(list);
     }
 }

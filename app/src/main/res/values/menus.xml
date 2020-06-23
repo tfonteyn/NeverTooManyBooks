@@ -27,7 +27,7 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<!-- Menu order and ids. -->
+<!-- Menu order and ID's. -->
 <resources>
     <integer name="MENU_ORDER_SEARCH_SITES">5</integer>
 
@@ -193,6 +193,7 @@
     <!-- debug options for the SQLite shell activity. -->
     <item name="MENU_DEBUG_SQ_SHELL_RUN" type="id" />
     <item name="MENU_DEBUG_SQ_SHELL_LIST_TABLES" type="id" />
+    <item name="MENU_PUBLISHER_DELETE" type="id" />
 
 
 </resources>

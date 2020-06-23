@@ -47,14 +47,13 @@ import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditSeriesBinding;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
+import com.hardbacknutter.nevertoomanybooks.dialogs.BaseDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.widgets.DiacriticArrayAdapter;
 
 /**
- * Dialog to edit an existing single Series.
- * <p>
- * Calling point is a List
+ * Dialog to edit an <strong>EXISTING</strong> {@link Series}.
  */
 public class EditSeriesDialogFragment
         extends BaseDialogFragment
@@ -79,6 +78,9 @@ public class EditSeriesDialogFragment
     /** Current edit. */
     private boolean mIsComplete;
 
+    /**
+     * No-arg constructor for OS use.
+     */
     public EditSeriesDialogFragment() {
         super(R.layout.dialog_edit_series);
     }
@@ -141,7 +143,6 @@ public class EditSeriesDialogFragment
 
         mVb.seriesTitle.setText(mTitle);
         mVb.seriesTitle.setAdapter(adapter);
-
         mVb.cbxIsComplete.setChecked(mIsComplete);
     }
 
@@ -158,21 +159,29 @@ public class EditSeriesDialogFragment
             return true;
         }
 
-        // this is a global update, so just set and update.
-        mSeries.setTitle(mTitle);
-        mSeries.setComplete(mIsComplete);
         // There is no book involved here, so use the users Locale instead
         //noinspection ConstantConditions
         final Locale bookLocale = LocaleUtils.getUserLocale(getContext());
-        mDb.updateOrInsertSeries(getContext(), mSeries, bookLocale);
 
-        if (mListener != null && mListener.get() != null) {
-            mListener.get().onChange(0, BookChangedListener.SERIES, null);
+        // store changes
+        mSeries.setTitle(mTitle);
+        mSeries.setComplete(mIsComplete);
+
+        final boolean success;
+        if (mSeries.getId() == 0) {
+            success = mDb.insert(getContext(), mSeries, bookLocale) > 0;
         } else {
-            if (BuildConfig.DEBUG /* always */) {
-                Log.w(TAG, "onBookChanged|"
-                           + (mListener == null ? ErrorMsg.LISTENER_WAS_NULL
-                                                : ErrorMsg.LISTENER_WAS_DEAD));
+            success = mDb.update(getContext(), mSeries, bookLocale);
+        }
+        if (success) {
+            if (mListener != null && mListener.get() != null) {
+                mListener.get().onChange(0, BookChangedListener.SERIES, null);
+            } else {
+                if (BuildConfig.DEBUG /* always */) {
+                    Log.w(TAG, "onBookChanged|"
+                               + (mListener == null ? ErrorMsg.LISTENER_WAS_NULL
+                                                    : ErrorMsg.LISTENER_WAS_DEAD));
+                }
             }
         }
         return true;

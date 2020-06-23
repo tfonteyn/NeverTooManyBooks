@@ -125,9 +125,9 @@ public class ChecklistRecyclerAdapter<ID, CS extends CharSequence>
     }
 
     /**
-     * Get the set with the selected item ids.
+     * Get the set with the selected item ID's.
      *
-     * @return set of ids
+     * @return set of ID's
      */
     @NonNull
     public Set<ID> getSelection() {
@@ -146,7 +146,7 @@ public class ChecklistRecyclerAdapter<ID, CS extends CharSequence>
     }
 
     /**
-     * Holder pattern for {@link ChecklistRecyclerAdapter}.
+     * Row ViewHolder for {@link ChecklistRecyclerAdapter}.
      */
     static class Holder
             extends RecyclerView.ViewHolder {

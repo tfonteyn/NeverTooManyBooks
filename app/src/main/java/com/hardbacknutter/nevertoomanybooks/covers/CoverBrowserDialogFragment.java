@@ -350,7 +350,7 @@ public class CoverBrowserDialogFragment
     }
 
     /**
-     * Holder pattern for {@link GalleryAdapter}.
+     * Row ViewHolder for {@link GalleryAdapter}.
      */
     private static class Holder
             extends RecyclerView.ViewHolder {

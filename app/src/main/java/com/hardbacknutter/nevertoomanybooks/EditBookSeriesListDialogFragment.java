@@ -54,14 +54,14 @@ import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookSeriesBind
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookSeriesListBinding;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
+import com.hardbacknutter.nevertoomanybooks.dialogs.BaseDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
-import com.hardbacknutter.nevertoomanybooks.dialogs.entities.BaseDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.BookViewModel;
 import com.hardbacknutter.nevertoomanybooks.widgets.DiacriticArrayAdapter;
+import com.hardbacknutter.nevertoomanybooks.widgets.ItemTouchHelperViewHolderBase;
 import com.hardbacknutter.nevertoomanybooks.widgets.RecyclerViewAdapterBase;
-import com.hardbacknutter.nevertoomanybooks.widgets.RecyclerViewViewHolderBase;
 import com.hardbacknutter.nevertoomanybooks.widgets.SimpleAdapterDataObserver;
 import com.hardbacknutter.nevertoomanybooks.widgets.ddsupport.SimpleItemTouchHelperCallback;
 import com.hardbacknutter.nevertoomanybooks.widgets.ddsupport.StartDragListener;
@@ -104,11 +104,10 @@ public class EditBookSeriesListDialogFragment
     private ItemTouchHelper mItemTouchHelper;
 
     /**
-     * No-arg constructor.
-     * <p>
-     * Always force full screen as this dialog is to large/complicated.
+     * No-arg constructor for OS use.
      */
     public EditBookSeriesListDialogFragment() {
+        // Always force full screen as this dialog is to large/complicated.
         super(R.layout.dialog_edit_book_series_list, true);
     }
 
@@ -191,23 +190,6 @@ public class EditBookSeriesListDialogFragment
         mItemTouchHelper.attachToRecyclerView(mVb.seriesList);
     }
 
-    private boolean saveChanges() {
-        if (!mVb.seriesTitle.getText().toString().isEmpty()) {
-            // Discarding applies to the temp series edit box only. The list itself is still saved.
-            //noinspection ConstantConditions
-            StandardDialogs.unsavedEdits(getContext(), null, () -> {
-                mVb.seriesTitle.setText("");
-                if (saveChanges()) {
-                    dismiss();
-                }
-            });
-            return false;
-        }
-
-        mBookViewModel.updateSeries(mList);
-        return true;
-    }
-
     /**
      * Create a new entry.
      */
@@ -234,40 +216,57 @@ public class EditBookSeriesListDialogFragment
         if (mList.contains(newSeries)) {
             mVb.lblSeries.setError(getString(R.string.warning_already_in_list));
         } else {
+            // add and scroll to the new item
             mList.add(newSeries);
-            // clear the form for next entry and scroll to the new item
+            mListAdapter.notifyItemInserted(mList.size() - 1);
+            mVb.seriesList.scrollToPosition(mListAdapter.getItemCount() - 1);
+
+            // clear the form for next entry
             mVb.seriesTitle.setText("");
             mVb.seriesNum.setText("");
             mVb.seriesTitle.requestFocus();
-
-            mListAdapter.notifyItemInserted(mList.size() - 1);
-            mVb.seriesList.scrollToPosition(mListAdapter.getItemCount() - 1);
         }
+    }
+
+    private boolean saveChanges() {
+        if (!mVb.seriesTitle.getText().toString().isEmpty()) {
+            // Discarding applies to the edit field(s) only. The list itself is still saved.
+            //noinspection ConstantConditions
+            StandardDialogs.unsavedEdits(getContext(), null, () -> {
+                mVb.seriesTitle.setText("");
+                if (saveChanges()) {
+                    dismiss();
+                }
+            });
+            return false;
+        }
+
+        mBookViewModel.updateSeries(mList);
+        return true;
     }
 
     /**
      * Process the modified (if any) data.
      *
-     * @param series  the user was editing (with the original data)
-     * @param tmpData the modifications the user made in a placeholder object.
-     *                Non-modified data was copied here as well.
-     *                The id==0 will not be used/updated.
+     * @param original the original data the user was editing
+     * @param modified the modifications the user made in a placeholder object.
+     *                 Non-modified data was copied here as well.
      */
-    private void processChanges(@NonNull final Series series,
-                                @NonNull final Series tmpData) {
+    private void processChanges(@NonNull final Series original,
+                                @NonNull final Series modified) {
 
         //noinspection ConstantConditions
         final Locale bookLocale = mBookViewModel.getBook().getLocale(getContext());
 
         // name not changed ?
-        if (series.getTitle().equals(tmpData.getTitle())) {
+        if (original.getTitle().equals(modified.getTitle())) {
             // copy the completion state, we don't have to warn/ask the user about it.
-            series.setComplete(tmpData.isComplete());
+            original.setComplete(modified.isComplete());
 
             // Number is not part of the Series table, but of the book_series table.
-            if (!series.getNumber().equals(tmpData.getNumber())) {
+            if (!original.getNumber().equals(modified.getNumber())) {
                 // so if the number is different, just update it
-                series.setNumber(tmpData.getNumber());
+                original.setNumber(modified.getNumber());
                 //noinspection ConstantConditions
                 Series.pruneList(mList, getContext(), mDb, true, bookLocale);
                 mListAdapter.notifyDataSetChanged();
@@ -276,11 +275,11 @@ public class EditBookSeriesListDialogFragment
         }
 
         // The name was modified. Check if it's used by any other books.
-        if (mBookViewModel.isSingleUsage(getContext(), series)) {
+        if (mBookViewModel.isSingleUsage(getContext(), original)) {
             // If it's not, we can simply modify the old object and we're done here.
             // There is no need to consult the user.
             // Copy the new data into the original object that the user was changing.
-            series.copyFrom(tmpData, true);
+            original.copyFrom(modified, true);
             //noinspection ConstantConditions
             Series.pruneList(mList, getContext(), mDb, true, bookLocale);
             mListAdapter.notifyDataSetChanged();
@@ -291,8 +290,8 @@ public class EditBookSeriesListDialogFragment
         // We need to ask the user if they want to make the changes globally.
         final String allBooks = getString(R.string.bookshelf_all_books);
         final String message = getString(R.string.confirm_apply_series_changed,
-                                         series.getLabel(getContext()),
-                                         tmpData.getLabel(getContext()),
+                                         original.getLabel(getContext()),
+                                         modified.getLabel(getContext()),
                                          allBooks);
         new MaterialAlertDialogBuilder(getContext())
                 .setIcon(R.drawable.ic_warning)
@@ -301,17 +300,17 @@ public class EditBookSeriesListDialogFragment
                 .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
                 .setNeutralButton(allBooks, (d, w) -> {
                     // copy all new data
-                    series.copyFrom(tmpData, true);
+                    original.copyFrom(modified, true);
                     // This change is done in the database right NOW!
-                    if (mDb.updateSeries(getContext(), series, bookLocale)) {
+                    if (mDb.update(getContext(), original, bookLocale)) {
                         Series.pruneList(mList, getContext(), mDb, true, bookLocale);
                         mBookViewModel.refreshSeriesList(getContext());
                         mListAdapter.notifyDataSetChanged();
 
                     } else {
                         Logger.warnWithStackTrace(getContext(), TAG, "Could not update",
-                                                  "series=" + series,
-                                                  "tmpSeries=" + tmpData);
+                                                  "series=" + original,
+                                                  "tmpSeries=" + modified);
                         StandardDialogs.showError(getContext(), R.string.error_unexpected_error);
                     }
                 })
@@ -320,13 +319,13 @@ public class EditBookSeriesListDialogFragment
                     // Note that if the user abandons the entire book edit,
                     // we will orphan this new Series. That's ok, it will get
                     // garbage collected from the database sooner or later.
-                    mDb.updateOrInsertSeries(getContext(), tmpData, bookLocale);
+                    mDb.insert(getContext(), modified, bookLocale);
                     // unlink the old one (and unmodified), and link with the new one
                     // book/series positions will be fixed up when saving.
                     // Note that the old one *might* be orphaned at this time.
                     // Same remark as above.
-                    mList.remove(series);
-                    mList.add(tmpData);
+                    mList.remove(original);
+                    mList.add(modified);
                     Series.pruneList(mList, getContext(), mDb, true, bookLocale);
                     mListAdapter.notifyDataSetChanged();
                 })
@@ -343,10 +342,10 @@ public class EditBookSeriesListDialogFragment
     }
 
     /**
-     * Holder pattern for each row.
+     * Holder for each row.
      */
     private static class Holder
-            extends RecyclerViewViewHolderBase {
+            extends ItemTouchHelperViewHolderBase {
 
         @NonNull
         final TextView seriesView;
@@ -388,6 +387,9 @@ public class EditBookSeriesListDialogFragment
         /** Current edit. */
         private String mNumber;
 
+        /**
+         * No-arg constructor for OS use.
+         */
         public EditBookSeriesDialogFragment() {
             super(R.layout.dialog_edit_book_series);
         }
@@ -417,10 +419,10 @@ public class EditBookSeriesListDialogFragment
             mDb = new DAO(TAG);
 
             final Bundle args = requireArguments();
-            mBookTitle = args.getString(DBDefinitions.KEY_TITLE);
-
             mSeries = args.getParcelable(DBDefinitions.KEY_FK_SERIES);
             Objects.requireNonNull(mSeries, ErrorMsg.ARGS_MISSING_SERIES);
+
+            mBookTitle = args.getString(DBDefinitions.KEY_TITLE);
 
             if (savedInstanceState == null) {
                 mTitle = mSeries.getTitle();
@@ -458,12 +460,10 @@ public class EditBookSeriesListDialogFragment
             //noinspection ConstantConditions
             final DiacriticArrayAdapter<String> seriesNameAdapter = new DiacriticArrayAdapter<>(
                     getContext(), R.layout.dropdown_menu_popup_item, mDb.getSeriesTitles());
-
             mVb.seriesTitle.setText(mTitle);
             mVb.seriesTitle.setAdapter(seriesNameAdapter);
 
             mVb.cbxIsComplete.setChecked(mIsComplete);
-
             mVb.seriesNum.setText(mNumber);
         }
 
@@ -484,6 +484,7 @@ public class EditBookSeriesListDialogFragment
             //noinspection ConstantConditions
             ((EditBookSeriesListDialogFragment) getTargetFragment())
                     .processChanges(mSeries, tmpSeries);
+
             return true;
         }
 

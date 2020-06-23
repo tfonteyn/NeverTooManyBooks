@@ -34,6 +34,7 @@ import android.os.Bundle;
 import android.util.Log;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -46,7 +47,6 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
-import java.util.regex.Pattern;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -56,6 +56,7 @@ import com.hardbacknutter.nevertoomanybooks.database.definitions.ColumnInfo;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 import com.hardbacknutter.nevertoomanybooks.datamanager.validators.ValidatorException;
+import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.Money;
@@ -154,7 +155,7 @@ public class Book
     public static final String BKEY_BOOKSHELF_ARRAY = TAG + ":bookshelf_array";
 
     /**
-     * Bundle key for an {@code ArrayList<Long>} of book ids.
+     * Bundle key for an {@code ArrayList<Long>} of book ID's.
      * <p>
      * <br>type: {@code Serializable}
      */
@@ -167,9 +168,6 @@ public class Book
      * <br>type: {@code Bundle}
      */
     public static final String BKEY_BOOK_DATA = TAG + ":plainBundle";
-
-    /** Extracting a series/nr from the book title. */
-    private static final Pattern SERIES_NR_PATTERN = Pattern.compile("#", Pattern.LITERAL);
 
     static {
         // Single front cover
@@ -184,86 +182,93 @@ public class Book
     }
 
     /**
-     * Public Constructor.
+     * Constructor.
      */
     public Book() {
     }
 
+    /**
+     * Constructor for Mock tests. Loads the bundle <strong>without</strong> type checks.
+     */
     @VisibleForTesting
     public Book(@NonNull final Bundle rawData) {
         super(rawData);
     }
 
     /**
-     * Constructor.
-     * <p>
-     * If a valid bookId exists it will populate the Book from the database.
-     * Otherwise will leave the Book blank for new books.
+     * Constructor. Loads the bundle <strong>with</strong> type checks.
+     */
+    public static Book from(@NonNull final Bundle bookData) {
+        final Book book = new Book();
+        book.putAll(bookData);
+        return book;
+    }
+
+
+    /**
+     * Using the current id, reload *all* other data for this book.
      *
-     * @param bookId of book (may be 0 for new)
+     * @param db Database Access
+     */
+    public void reload(@NonNull final DAO db) {
+        load(getId(), db);
+    }
+
+    /**
+     * Load the book details from the database.
+     *
+     * @param bookId of book (may be 0 for new, in which case we do nothing)
      * @param db     Database Access
      */
-    public Book(final long bookId,
-                @NonNull final DAO db) {
-        if (bookId > 0) {
-            reload(db, bookId);
+    public void load(final long bookId,
+                     @NonNull final DAO db) {
+        if (bookId != 0) {
+            try (Cursor bookCursor = db.fetchBookById(bookId)) {
+                if (bookCursor.moveToFirst()) {
+                    load(bookId, bookCursor, db);
+                }
+            }
         }
     }
 
     /**
-     * Creates a chooser with matched apps for sharing some text.
-     * <b>"I'm reading " + title + " by " + author + series + " " + ratingString</b>
+     * Load the book details from the database.
+     * The current book data is cleared before loading.
      *
-     * @param context Current context
-     *
-     * @return the intent
+     * @param bookCursor an already positioned Cursor to read from
+     * @param db         to load linked array data from
      */
-    @NonNull
-    public Intent getShareBookIntent(@NonNull final Context context) {
-        final String title = getString(DBDefinitions.KEY_TITLE);
-        final double rating = getDouble(DBDefinitions.KEY_RATING);
-        final String author = getString(DBDefinitions.KEY_AUTHOR_FORMATTED_GIVEN_FIRST);
-        String series = getString(DBDefinitions.KEY_SERIES_FORMATTED);
-
-        if (!series.isEmpty()) {
-            series = " (" + SERIES_NR_PATTERN.matcher(series).replaceAll("%23 ") + ')';
+    public void load(@NonNull final Cursor bookCursor,
+                     @NonNull final DAO db) {
+        final int idCol = bookCursor.getColumnIndex(DBDefinitions.KEY_PK_ID);
+        final long id = bookCursor.getLong(idCol);
+        if (id <= 0) {
+            throw new IllegalArgumentException(ErrorMsg.UNEXPECTED_VALUE + id);
         }
-
-        //remove trailing 0's
-        String ratingString = "";
-        if (rating > 0) {
-            // force rounding
-            final int ratingTmp = (int) rating;
-            // get fraction
-            final double decimal = rating - ratingTmp;
-            if (decimal > 0) {
-                ratingString = String.valueOf(rating) + '/' + RATING_STARS;
-            } else {
-                ratingString = String.valueOf(ratingTmp) + '/' + RATING_STARS;
-            }
-        }
-
-        if (!ratingString.isEmpty()) {
-            ratingString = '(' + ratingString + ')';
-        }
-
-        // The share intent is limited to a single *type* of data.
-        // We cannot send the cover AND the text; for now we send the text only.
-//        String uuid = getString(DBDefinitions.KEY_BOOK_UUID);
-//        // prepare the front-cover to post
-//        File coverFile = AppDir.getCoverFile(context, uuid, 0);
-//        if (coverFile.exists()) {
-//            Uri uri = GenericFileProvider.getUriForFile(context, coverFile);
-//        }
-
-        final String text = context.getString(R.string.txt_share_book_im_reading,
-                                              title, author, series, ratingString);
-
-        return Intent.createChooser(new Intent(Intent.ACTION_SEND)
-                                            .setType("text/plain")
-                                            .putExtra(Intent.EXTRA_TEXT, text),
-                                    context.getString(R.string.menu_share_this));
+        load(id, bookCursor, db);
     }
+
+    /**
+     * Load the book details from the database.
+     * The current book data is cleared before loading.
+     *
+     * @param bookId     of book must be != 0
+     * @param bookCursor an already positioned Cursor to read from
+     * @param db         to load linked array data from
+     */
+    public void load(@IntRange(from = 1) final long bookId,
+                     @NonNull final Cursor bookCursor,
+                     @NonNull final DAO db) {
+        clear();
+        putAll(bookCursor);
+        // load lists (or init with empty lists)
+        putParcelableArrayList(BKEY_BOOKSHELF_ARRAY, db.getBookshelvesByBookId(bookId));
+        putParcelableArrayList(BKEY_AUTHOR_ARRAY, db.getAuthorsByBookId(bookId));
+        putParcelableArrayList(BKEY_SERIES_ARRAY, db.getSeriesByBookId(bookId));
+        putParcelableArrayList(BKEY_PUBLISHER_ARRAY, db.getPublishersByBookId(bookId));
+        putParcelableArrayList(BKEY_TOC_ARRAY, db.getTocEntryByBook(bookId));
+    }
+
 
     /**
      * Duplicate a book by putting APPLICABLE (not simply all of them) fields
@@ -308,12 +313,12 @@ public class Book
                                         getParcelableArrayList(BKEY_AUTHOR_ARRAY));
         bookData.putParcelableArrayList(BKEY_SERIES_ARRAY,
                                         getParcelableArrayList(BKEY_SERIES_ARRAY));
+        bookData.putParcelableArrayList(BKEY_PUBLISHER_ARRAY,
+                                        getParcelableArrayList(BKEY_PUBLISHER_ARRAY));
         bookData.putParcelableArrayList(BKEY_TOC_ARRAY,
                                         getParcelableArrayList(BKEY_TOC_ARRAY));
 
         // publication data
-        bookData.putString(DBDefinitions.KEY_PUBLISHER,
-                           getString(DBDefinitions.KEY_PUBLISHER));
         bookData.putString(DBDefinitions.KEY_PRINT_RUN,
                            getString(DBDefinitions.KEY_PRINT_RUN));
         bookData.putLong(DBDefinitions.KEY_TOC_BITMASK,
@@ -359,6 +364,7 @@ public class Book
 
         bookData.putString(DBDefinitions.KEY_PRIVATE_NOTES,
                            getString(DBDefinitions.KEY_PRIVATE_NOTES));
+
         bookData.putInt(DBDefinitions.KEY_BOOK_CONDITION,
                         getInt(DBDefinitions.KEY_BOOK_CONDITION));
         bookData.putInt(DBDefinitions.KEY_BOOK_CONDITION_COVER,
@@ -378,31 +384,14 @@ public class Book
         return bookData;
     }
 
+
     /**
-     * Update the 'read' status of a book in the database + sets the 'read end' to today.
-     * The book will have its 'read' status updated ONLY if the update went through.
+     * Check if this book has not been saved to the database yet.
      *
-     * @param db     Database Access
-     * @param isRead Flag for the 'read' status
-     *
-     * @return the new 'read' status. If the update failed, this will be the unchanged status.
+     * @return {@code true} if this is a new book
      */
-    private boolean setRead(@NonNull final DAO db,
-                            final boolean isRead) {
-        final boolean old = getBoolean(DBDefinitions.KEY_READ);
-
-        if (db.setBookRead(getId(), isRead)) {
-            putBoolean(DBDefinitions.KEY_READ, isRead);
-            if (isRead) {
-                putString(DBDefinitions.KEY_READ_END,
-                          LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE));
-            } else {
-                putString(DBDefinitions.KEY_READ_END, "");
-            }
-            return isRead;
-        }
-
-        return old;
+    public boolean isNew() {
+        return getId() == 0;
     }
 
     /**
@@ -415,108 +404,10 @@ public class Book
     }
 
     /**
-     * Check if this book has not been saved to the database yet.
+     * Get the unformatted title.
      *
-     * @return {@code true} if this is a new book
+     * @return title
      */
-    public boolean isNew() {
-        return getId() == 0;
-    }
-
-    /**
-     * Using the id, reload *all* other data for this book.
-     *
-     * @param db Database Access
-     *
-     * @return the book
-     */
-    @SuppressWarnings("UnusedReturnValue")
-    public Book reload(@NonNull final DAO db) {
-        return reload(db, getId());
-    }
-
-    /**
-     * Load the book details from the database.
-     *
-     * @param db     Database Access
-     * @param bookId of book (may be 0 for new, in which case we do nothing)
-     *
-     * @return the book
-     */
-    @NonNull
-    public Book reload(@NonNull final DAO db,
-                       final long bookId) {
-        // If id = 0, no details in DB
-        if (bookId == 0) {
-            return this;
-        }
-
-        try (Cursor bookCursor = db.fetchBookById(bookId)) {
-            if (bookCursor.moveToFirst()) {
-                clear();
-                putAll(bookCursor);
-                // load lists (or init with empty lists)
-                putParcelableArrayList(BKEY_BOOKSHELF_ARRAY, db.getBookshelvesByBookId(bookId));
-                putParcelableArrayList(BKEY_AUTHOR_ARRAY, db.getAuthorsByBookId(bookId));
-                putParcelableArrayList(BKEY_SERIES_ARRAY, db.getSeriesByBookId(bookId));
-                putParcelableArrayList(BKEY_TOC_ARRAY, db.getTocEntryByBook(bookId));
-            }
-        }
-        return this;
-    }
-
-    @NonNull
-    public Book reload(@NonNull final DAO db,
-                       final long bookId,
-                       @NonNull final Cursor bookCursor) {
-        clear();
-        putAll(bookCursor);
-        // load lists (or init with empty lists)
-        putParcelableArrayList(BKEY_BOOKSHELF_ARRAY, db.getBookshelvesByBookId(bookId));
-        putParcelableArrayList(BKEY_AUTHOR_ARRAY, db.getAuthorsByBookId(bookId));
-        putParcelableArrayList(BKEY_SERIES_ARRAY, db.getSeriesByBookId(bookId));
-        putParcelableArrayList(BKEY_TOC_ARRAY, db.getTocEntryByBook(bookId));
-        return this;
-    }
-
-    /**
-     * Get the first author in the list of authors for this book.
-     *
-     * @return the Author or {@code null} if none present
-     */
-    @Nullable
-    public Author getPrimaryAuthor() {
-        final ArrayList<Author> authors = getParcelableArrayList(BKEY_AUTHOR_ARRAY);
-        return authors.isEmpty() ? null : authors.get(0);
-    }
-
-    /**
-     * Update author details from DB.
-     *
-     * @param context Current context
-     * @param db      Database Access
-     */
-    public void refreshAuthorList(@NonNull final Context context,
-                                  @NonNull final DAO db) {
-
-        final Locale bookLocale = getLocale(context);
-        final ArrayList<Author> list = getParcelableArrayList(BKEY_AUTHOR_ARRAY);
-        for (Author author : list) {
-            db.refreshAuthor(context, author, bookLocale);
-        }
-    }
-
-    /**
-     * Get the the first Series in the list of Series for this book.
-     *
-     * @return the Series, or {@code null} if none present
-     */
-    @Nullable
-    public Series getPrimarySeries() {
-        final ArrayList<Series> list = getParcelableArrayList(BKEY_SERIES_ARRAY);
-        return list.isEmpty() ? null : list.get(0);
-    }
-
     @Override
     @NonNull
     public String getTitle() {
@@ -534,6 +425,7 @@ public class Book
     public String getLabel(@NonNull final Context context) {
         return reorderTitleForDisplaying(context, getLocale(context));
     }
+
 
     /**
      * Convenience method.
@@ -584,6 +476,45 @@ public class Book
         }
     }
 
+
+    /**
+     * Get the first author in the list of authors for this book.
+     *
+     * @return the Author or {@code null} if none present
+     */
+    @Nullable
+    public Author getPrimaryAuthor() {
+        final ArrayList<Author> authors = getParcelableArrayList(BKEY_AUTHOR_ARRAY);
+        return authors.isEmpty() ? null : authors.get(0);
+    }
+
+    /**
+     * Update author details from DB.
+     *
+     * @param context Current context
+     * @param db      Database Access
+     */
+    public void refreshAuthorList(@NonNull final Context context,
+                                  @NonNull final DAO db) {
+
+        final Locale bookLocale = getLocale(context);
+        final ArrayList<Author> list = getParcelableArrayList(BKEY_AUTHOR_ARRAY);
+        for (Author author : list) {
+            db.refresh(context, author, bookLocale);
+        }
+    }
+
+    /**
+     * Get the first Series in the list of Series for this book.
+     *
+     * @return the Series, or {@code null} if none present
+     */
+    @Nullable
+    public Series getPrimarySeries() {
+        final ArrayList<Series> list = getParcelableArrayList(BKEY_SERIES_ARRAY);
+        return list.isEmpty() ? null : list.get(0);
+    }
+
     /**
      * Update Series details from DB.
      *
@@ -596,9 +527,111 @@ public class Book
         final Locale bookLocale = getLocale(context);
         final ArrayList<Series> list = getParcelableArrayList(BKEY_SERIES_ARRAY);
         for (Series series : list) {
-            db.refreshSeries(context, series, bookLocale);
+            db.refresh(context, series, bookLocale);
         }
     }
+
+    /**
+     * Get the first Publisher in the list of Publishers for this book.
+     *
+     * @return the Publisher, or {@code null} if none present
+     */
+    @Nullable
+    public Publisher getPrimaryPublisher() {
+        final ArrayList<Publisher> list = getParcelableArrayList(BKEY_PUBLISHER_ARRAY);
+        return list.isEmpty() ? null : list.get(0);
+    }
+
+    /**
+     * Update Publisher details from DB.
+     *
+     * @param context Current context
+     * @param db      Database Access
+     */
+    public void refreshPublishersList(@NonNull final Context context,
+                                      @NonNull final DAO db) {
+
+        final Locale bookLocale = getLocale(context);
+        final ArrayList<Publisher> list = getParcelableArrayList(BKEY_PUBLISHER_ARRAY);
+        for (Publisher publisher : list) {
+            db.refresh(context, publisher, bookLocale);
+        }
+    }
+
+
+    /**
+     * Get the name of the loanee (if any).
+     *
+     * @param db Database Access
+     *
+     * @return name, or {@code ""} if none
+     */
+    @NonNull
+    public String getLoanee(@NonNull final DAO db) {
+        // We SHOULD have it...
+        if (contains(DBDefinitions.KEY_LOANEE)) {
+            return getString(DBDefinitions.KEY_LOANEE);
+
+        } else {
+            // but if not, go explicitly fetch it.
+            String loanee = db.getLoaneeByBookId(getId());
+            if (loanee == null) {
+                loanee = "";
+            }
+            putString(DBDefinitions.KEY_LOANEE, loanee);
+            return loanee;
+        }
+    }
+
+    public boolean isAvailable(@NonNull final DAO db) {
+        return getLoanee(db).isEmpty();
+    }
+
+    @SuppressWarnings("unused")
+    public void deleteLoan(@NonNull final DAO db) {
+        remove(DBDefinitions.KEY_LOANEE);
+        db.lendBook(getId(), null);
+    }
+
+
+    /**
+     * Toggle the read-status for this book.
+     *
+     * @param db Database Access
+     *
+     * @return the new 'read' status. If the update failed, this will be the unchanged status.
+     */
+    public boolean toggleRead(@NonNull final DAO db) {
+        return setRead(db, !getBoolean(DBDefinitions.KEY_READ));
+    }
+
+    /**
+     * Update the 'read' status of a book in the database + sets the 'read end' to today.
+     * The book will have its 'read' status updated ONLY if the update went through.
+     *
+     * @param db     Database Access
+     * @param isRead Flag for the 'read' status
+     *
+     * @return the new 'read' status. If the update failed, this will be the unchanged status.
+     */
+    private boolean setRead(@NonNull final DAO db,
+                            final boolean isRead) {
+        final boolean old = getBoolean(DBDefinitions.KEY_READ);
+
+        if (db.setBookRead(getId(), isRead)) {
+            putBoolean(DBDefinitions.KEY_READ, isRead);
+            if (isRead) {
+                putString(DBDefinitions.KEY_READ_END,
+                          LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE));
+            } else {
+                putString(DBDefinitions.KEY_READ_END, "");
+            }
+            return isRead;
+        }
+
+        return old;
+    }
+
 
     /**
      * Add validators.
@@ -641,26 +674,9 @@ public class Book
     }
 
     /**
-     * Get the name of the loanee (if any).
-     *
-     * @param db Database Access
-     *
-     * @return name, or {@code null} if none
-     */
-    @Nullable
-    public String getLoanee(@NonNull final DAO db) {
-        // Hopefully we have it in the last cursor we fetched.
-        if (contains(DBDefinitions.KEY_LOANEE)) {
-            return getString(DBDefinitions.KEY_LOANEE);
-        } else {
-            // if not, take the long road.
-            return db.getLoaneeByBookId(getId());
-        }
-    }
-
-    /**
      * Examine the values and make any changes necessary before writing the data.
-     * Called during {@link DAO#insertBook} and {@link DAO#updateBook}.
+     * Called during {@link DAO#insert(Context, long, Book, int)}
+     * and {@link DAO#update(Context, long, Book, int)}.
      *
      * @param context Current context
      * @param isNew   {@code true} if the book is new
@@ -848,26 +864,62 @@ public class Book
         }
     }
 
+
     /**
-     * Toggle the read-status for this book.
+     * Creates a chooser with matched apps for sharing some text.
+     * <b>"I'm reading " + title + series + " by " + author + ratingString</b>
      *
-     * @param db Database Access
+     * @param context Current context
      *
-     * @return the new 'read' status. If the update failed, this will be the unchanged status.
+     * @return the intent
      */
-    public boolean toggleRead(@NonNull final DAO db) {
-        return setRead(db, !getBoolean(DBDefinitions.KEY_READ));
-    }
+    @NonNull
+    public Intent getShareIntent(@NonNull final Context context) {
+        final String title = getString(DBDefinitions.KEY_TITLE);
+        final String author = getString(DBDefinitions.KEY_AUTHOR_FORMATTED_GIVEN_FIRST);
 
-    @SuppressWarnings("unused")
-    public void deleteLoan(@NonNull final DAO db) {
-        remove(DBDefinitions.KEY_LOANEE);
-        db.lendBook(getId(), null);
-    }
+        final Series series = getPrimarySeries();
+        final String seriesStr;
+        if (series != null) {
+            final String number = series.getNumber();
+            seriesStr = " (" + series.getTitle() + (number.isEmpty() ? "" : "%23" + number) + ')';
+        } else {
+            seriesStr = "";
+        }
 
-    public boolean isAvailable(@NonNull final DAO db) {
-        final String loanee = getLoanee(db);
-        return loanee == null || loanee.isEmpty();
+        //remove trailing 0's
+        final double rating = getDouble(DBDefinitions.KEY_RATING);
+        final String ratingStr;
+        if (rating > 0) {
+            // force rounding
+            final int ratingTmp = (int) rating;
+            // get fraction
+            final double decimal = rating - ratingTmp;
+            if (decimal > 0) {
+                ratingStr = '(' + String.valueOf(rating) + '/' + RATING_STARS + ')';
+            } else {
+                ratingStr = '(' + String.valueOf(ratingTmp) + '/' + RATING_STARS + ')';
+            }
+        } else {
+            ratingStr = "";
+        }
+
+        // The share intent is limited to a single *type* of data.
+        // We cannot send the cover AND the text; for now we send the text only.
+//        String uuid = getString(DBDefinitions.KEY_BOOK_UUID);
+//        // prepare the front-cover to post
+//        File coverFile = AppDir.getCoverFile(context, uuid, 0);
+//        if (coverFile.exists()) {
+//            Uri uri = GenericFileProvider.getUriForFile(context, coverFile);
+//        }
+
+        final String text = context.getString(R.string.txt_share_book_im_reading,
+                                              title, seriesStr, author, ratingStr);
+
+        return Intent.createChooser(new Intent(Intent.ACTION_SEND)
+                                            .setType("text/plain")
+                                            .putExtra(Intent.EXTRA_TEXT, text),
+                                    context.getString(R.string.menu_share_this));
     }
 
     @Retention(RetentionPolicy.SOURCE)

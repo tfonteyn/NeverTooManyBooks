@@ -270,7 +270,7 @@ public class EditBookshelvesFragment
     }
 
     /**
-     * Holder pattern for {@link BookshelfAdapter}.
+     * Row ViewHolder for {@link BookshelfAdapter}.
      */
     public static class Holder
             extends RecyclerView.ViewHolder {

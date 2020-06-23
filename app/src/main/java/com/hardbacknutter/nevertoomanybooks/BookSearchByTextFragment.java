@@ -53,6 +53,7 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.BooksOnBookshelfModel;
@@ -72,6 +73,14 @@ public class BookSearchByTextFragment
     private final Collection<String> mRecentAuthorNames = new ArrayList<>();
     /** adapter for the AutoCompleteTextView. */
     private DiacriticArrayAdapter<String> mAuthorAdapter;
+
+    /** A list of Publisher names we have already searched for in this session. */
+    @NonNull
+    private final Collection<String> mRecentPublisherNames = new ArrayList<>();
+    /** adapter for the AutoCompleteTextView. */
+    private DiacriticArrayAdapter<String> mPublisherAdapter;
+
+    private boolean mUsePublisher;
 
     /** View Binding. */
     private FragmentBooksearchByTextBinding mVb;
@@ -97,9 +106,10 @@ public class BookSearchByTextFragment
         super.onViewCreated(view, savedInstanceState);
 
         //noinspection ConstantConditions
-        final boolean usePublisher = SearchSites.usePublisher(getContext());
+        mUsePublisher = SearchSites.usePublisher(getContext());
+
         //TEST: do we need to set the ime options explicitly ?
-        if (usePublisher) {
+        if (mUsePublisher) {
             mVb.lblPublisher.setVisibility(View.VISIBLE);
 
             mVb.title.setImeOptions(EditorInfo.IME_ACTION_NEXT);
@@ -119,8 +129,11 @@ public class BookSearchByTextFragment
         //noinspection ConstantConditions
         getActivity().setTitle(R.string.lbl_search_for_books);
 
-        modelToView();
+        mVb.author.setText(mCoordinator.getAuthorSearchText());
+        mVb.title.setText(mCoordinator.getTitleSearchText());
+        mVb.publisher.setText(mCoordinator.getPublisherSearchText());
         populateAuthorList();
+        populatePublisherList();
 
         if (savedInstanceState == null) {
             mCoordinator.getSiteList().promptToRegister(getContext(), false, "search");
@@ -146,6 +159,7 @@ public class BookSearchByTextFragment
 
         final String authorSearchText = mCoordinator.getAuthorSearchText();
         final String titleSearchText = mCoordinator.getTitleSearchText();
+        final String publisherSearchText = mCoordinator.getPublisherSearchText();
 
         if (!authorSearchText.isEmpty()) {
             // Always add the current search text to the list of recent searches.
@@ -166,6 +180,26 @@ public class BookSearchByTextFragment
             }
         }
 
+        if (mUsePublisher && !publisherSearchText.isEmpty()) {
+            // Always add the current search text to the list of recent searches.
+            if (mPublisherAdapter.getPosition(publisherSearchText) < 0) {
+                boolean found = false;
+                for (String s : mRecentPublisherNames) {
+                    if (s.equalsIgnoreCase(publisherSearchText)) {
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found) {
+                    // Keep a list of names as typed to use when we recreate list
+                    mRecentPublisherNames.add(publisherSearchText);
+                    // Add to adapter, in case search produces no results
+                    mPublisherAdapter.add(publisherSearchText);
+                }
+            }
+        }
+
+
         //sanity check
         if (authorSearchText.isEmpty() && titleSearchText.isEmpty()) {
             Snackbar.make(mVb.getRoot(), R.string.warning_requires_at_least_one_field,
@@ -183,11 +217,11 @@ public class BookSearchByTextFragment
      */
     private void populateAuthorList() {
         // Get all known authors and build a Set of the names
-        final ArrayList<String> authors = getAuthorNames(mRecentAuthorNames);
+        final ArrayList<String> authorNames = getAuthorNames(mRecentAuthorNames);
         // Now get an adapter based on the combined names
         //noinspection ConstantConditions
         mAuthorAdapter = new DiacriticArrayAdapter<>(
-                getContext(), R.layout.dropdown_menu_popup_item, authors);
+                getContext(), R.layout.dropdown_menu_popup_item, authorNames);
         mVb.author.setAdapter(mAuthorAdapter);
     }
 
@@ -215,6 +249,42 @@ public class BookSearchByTextFragment
         return authors;
     }
 
+    /**
+     * Setup the adapter for the Publisher AutoCompleteTextView field.
+     */
+    private void populatePublisherList() {
+        // Get all known publishers and build a Set of the names
+        final ArrayList<String> publisherNames = getPublisherNames(mRecentPublisherNames);
+        // Now get an adapter based on the combined names
+        //noinspection ConstantConditions
+        mPublisherAdapter = new DiacriticArrayAdapter<>(
+                getContext(), R.layout.dropdown_menu_popup_item, publisherNames);
+        mVb.publisher.setAdapter(mPublisherAdapter);
+    }
+
+    @NonNull
+    private ArrayList<String> getPublisherNames(@NonNull final Iterable<String> publisherNames) {
+
+        //noinspection ConstantConditions
+        final Locale locale = LocaleUtils.getUserLocale(getContext());
+
+        final ArrayList<String> publishers = mDb.getPublisherNames();
+
+        final Collection<String> uniqueNames = new HashSet<>(publishers.size());
+        for (String s : publishers) {
+            uniqueNames.add(s.toLowerCase(locale));
+        }
+
+        // Add the names the user has already tried (to handle errors and mistakes)
+        for (String s : publisherNames) {
+            if (!uniqueNames.contains(s.toLowerCase(locale))) {
+                publishers.add(s);
+            }
+        }
+
+        return publishers;
+    }
+
     @Override
     void onSearchResults(@NonNull final Bundle bookData) {
         // Don't check on any results... just accept them and create a new book.
@@ -226,15 +296,20 @@ public class BookSearchByTextFragment
             bookData.putString(DBDefinitions.KEY_TITLE, mCoordinator.getTitleSearchText());
         }
 
-        final ArrayList<Author> authors = bookData.getParcelableArrayList(Book.BKEY_AUTHOR_ARRAY);
+        final ArrayList<Author> authors =
+                bookData.getParcelableArrayList(Book.BKEY_AUTHOR_ARRAY);
         if (authors == null || authors.isEmpty()) {
             // do NOT use the array, that's reserved for verified names.
             bookData.putString(BooksOnBookshelfModel.SearchCriteria.BKEY_SEARCH_TEXT_AUTHOR,
                                mCoordinator.getAuthorSearchText());
         }
 
-        if (!bookData.containsKey(DBDefinitions.KEY_PUBLISHER)) {
-            bookData.putString(DBDefinitions.KEY_PUBLISHER, mCoordinator.getPublisherSearchText());
+        final ArrayList<Publisher> publishers =
+                bookData.getParcelableArrayList(Book.BKEY_PUBLISHER_ARRAY);
+        if (publishers == null || publishers.isEmpty()) {
+            // do NOT use the array, that's reserved for verified names.
+            bookData.putString(BooksOnBookshelfModel.SearchCriteria.BKEY_SEARCH_TEXT_PUBLISHER,
+                               mCoordinator.getPublisherSearchText());
         }
 
         // edit book
@@ -255,17 +330,10 @@ public class BookSearchByTextFragment
         mVb.publisher.setText("");
     }
 
-    private void modelToView() {
-        mVb.author.setText(mCoordinator.getAuthorSearchText());
-        mVb.title.setText(mCoordinator.getTitleSearchText());
-        mVb.publisher.setText(mCoordinator.getPublisherSearchText());
-    }
-
     private void viewToModel() {
         mCoordinator.setAuthorSearchText(mVb.author.getText().toString().trim());
         //noinspection ConstantConditions
         mCoordinator.setTitleSearchText(mVb.title.getText().toString().trim());
-        //noinspection ConstantConditions
         mCoordinator.setPublisherSearchText(mVb.publisher.getText().toString().trim());
     }
 
@@ -277,10 +345,13 @@ public class BookSearchByTextFragment
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
             Logger.enterOnActivityResult(TAG, requestCode, resultCode, data);
         }
+
         // first do the common action when the user has saved the data for the book.
         super.onActivityResult(requestCode, resultCode, data);
-        // refresh, we could have modified/created Authors while editing
+
+        // refresh, we could have modified/created Authors/Publishers while editing
         // (even when the edit was cancelled )
         populateAuthorList();
+        populatePublisherList();
     }
 }

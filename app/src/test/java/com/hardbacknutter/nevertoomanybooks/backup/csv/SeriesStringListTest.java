@@ -33,6 +33,7 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import com.hardbacknutter.nevertoomanybooks.backup.csv.coders.SeriesCoder;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.utils.StringList;
 
@@ -82,7 +83,7 @@ class SeriesStringListTest {
         mSeries.get(1).setComplete(true);
         mSeries.get(2).setComplete(true);
 
-        mCoder = CsvCoder.getSeriesCoder();
+        mCoder = new StringList<>(new SeriesCoder());
     }
 
     @Test

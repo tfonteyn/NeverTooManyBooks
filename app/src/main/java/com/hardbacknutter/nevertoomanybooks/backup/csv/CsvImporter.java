@@ -57,6 +57,11 @@ import com.hardbacknutter.nevertoomanybooks.backup.base.ImportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.base.Importer;
 import com.hardbacknutter.nevertoomanybooks.backup.base.Options;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ReaderEntity;
+import com.hardbacknutter.nevertoomanybooks.backup.csv.coders.AuthorCoder;
+import com.hardbacknutter.nevertoomanybooks.backup.csv.coders.BookshelfCoder;
+import com.hardbacknutter.nevertoomanybooks.backup.csv.coders.PublisherCoder;
+import com.hardbacknutter.nevertoomanybooks.backup.csv.coders.SeriesCoder;
+import com.hardbacknutter.nevertoomanybooks.backup.csv.coders.TocEntryCoder;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyle;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
@@ -65,6 +70,7 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
+import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
@@ -153,9 +159,10 @@ public class CsvImporter
     @NonNull
     private final ImportResults mResults = new ImportResults();
 
-    private final StringList<Author> mAuthorCoder = CsvCoder.getAuthorCoder();
-    private final StringList<Series> mSeriesCoder = CsvCoder.getSeriesCoder();
-    private final StringList<TocEntry> mTocCoder = CsvCoder.getTocCoder();
+    private final StringList<Author> mAuthorCoder = new StringList<>(new AuthorCoder());
+    private final StringList<Series> mSeriesCoder = new StringList<>(new SeriesCoder());
+    private final StringList<Publisher> mPublisherCoder = new StringList<>(new PublisherCoder());
+    private final StringList<TocEntry> mTocCoder = new StringList<>(new TocEntryCoder());
     private final StringList<Bookshelf> mBookshelfCoder;
 
     /**
@@ -176,7 +183,8 @@ public class CsvImporter
         mOptions = options;
 
         mDb = new DAO(TAG);
-        mBookshelfCoder = CsvCoder.getBookshelfCoder(BooklistStyle.getDefault(context, mDb));
+        mBookshelfCoder = new StringList<>(
+                new BookshelfCoder(BooklistStyle.getDefault(context, mDb)));
         mUserLocale = LocaleUtils.getUserLocale(context);
     }
 
@@ -297,10 +305,13 @@ public class CsvImporter
                     // check we have a title
                     requireNonBlankOrThrow(book, row, DBDefinitions.KEY_TITLE);
 
-                    handleAuthors(context, mDb, book);
-                    handleSeries(context, mDb, book);
+                    final Locale bookLocale = book.getLocale(context);
+
+                    handleAuthors(context, mDb, book, bookLocale);
+                    handleSeries(context, mDb, book, bookLocale);
+                    handlePublishers(context, mDb, book, bookLocale);
+                    handleAnthology(context, mDb, book, bookLocale);
                     handleBookshelves(mDb, book);
-                    handleAnthology(context, mDb, book);
 
                     // The data is now ready to be send to the database
                     bids.bookId = importBook(context, book, bids, updateOnlyIfNewer);
@@ -395,7 +406,7 @@ public class CsvImporter
 
         // Always import empty ID's (we don't try and search/match)...even if they are duplicates.
         if (!hasUuid && !bids.hasNumericId) {
-            bids.bookId = mDb.insertBook(context, 0, book, DAO.BOOK_FLAG_IS_BATCH_OPERATION);
+            bids.bookId = mDb.insert(context, 0, book, DAO.BOOK_FLAG_IS_BATCH_OPERATION);
             mResults.booksCreated++;
             // inserted id
             return bids.bookId;
@@ -422,17 +433,17 @@ public class CsvImporter
         }
 
         if (!exists) {
-            bids.bookId = mDb.insertBook(context, bids.bookId, book,
-                                         DAO.BOOK_FLAG_IS_BATCH_OPERATION);
+            bids.bookId = mDb.insert(context, bids.bookId, book,
+                                     DAO.BOOK_FLAG_IS_BATCH_OPERATION);
             mResults.booksCreated++;
             // inserted id
             return bids.bookId;
 
         } else {
             if (!updateOnlyIfNewer || updateOnlyIfNewer(context, mDb, book, bids.bookId)) {
-                mDb.updateBook(context, bids.bookId, book,
-                               DAO.BOOK_FLAG_USE_UPDATE_DATE_IF_PRESENT
-                               | DAO.BOOK_FLAG_IS_BATCH_OPERATION);
+                mDb.update(context, bids.bookId, book,
+                           DAO.BOOK_FLAG_USE_UPDATE_DATE_IF_PRESENT
+                           | DAO.BOOK_FLAG_IS_BATCH_OPERATION);
                 mResults.booksUpdated++;
                 // (updated) id
                 return bids.bookId;
@@ -507,22 +518,24 @@ public class CsvImporter
      * Get the list of authors from whatever source is available.
      * If none found, we add an 'Unknown' author.
      *
-     * @param context Current context
-     * @param db      Database Access
-     * @param book    the book
+     * @param context    Current context
+     * @param db         Database Access
+     * @param book       the book
+     * @param bookLocale of the book, already resolved
      */
     private void handleAuthors(@NonNull final Context context,
                                @NonNull final DAO db,
-                               @NonNull final Book book) {
-        final ArrayList<Author> authors;
+                               @NonNull final Book book,
+                               @NonNull final Locale bookLocale) {
 
         // preferred format is a single CSV field
         final String encodedList = book.getString(CsvExporter.CSV_COLUMN_AUTHORS);
         book.remove(CsvExporter.CSV_COLUMN_AUTHORS);
 
+        final ArrayList<Author> authors;
         if (!encodedList.isEmpty()) {
             authors = mAuthorCoder.decodeList(encodedList);
-            Author.pruneList(authors, context, db, false, book.getLocale(context));
+            Author.pruneList(authors, context, db, false, bookLocale);
 
         } else {
             authors = new ArrayList<>();
@@ -565,25 +578,26 @@ public class CsvImporter
      * <p>
      * Get the list of series from whatever source is available.
      *
-     * @param context Current context
-     * @param db      Database Access
-     * @param book    the book
+     * @param context    Current context
+     * @param db         Database Access
+     * @param book       the book
+     * @param bookLocale of the book, already resolved
      */
     private void handleSeries(@NonNull final Context context,
                               @NonNull final DAO db,
-                              @NonNull final Book book) {
-
-        final ArrayList<Series> list;
+                              @NonNull final Book book,
+                              @NonNull final Locale bookLocale) {
 
         // preferred format is a single CSV field
         final String encodedList = book.getString(CsvExporter.CSV_COLUMN_SERIES);
         book.remove(CsvExporter.CSV_COLUMN_SERIES);
 
+        final ArrayList<Series> list;
         if (!encodedList.isEmpty()) {
             list = mSeriesCoder.decodeList(encodedList);
 
             // Force using the Book Locale, otherwise the import is far to slow.
-            Series.pruneList(list, context, db, false, book.getLocale(context));
+            Series.pruneList(list, context, db, false, bookLocale);
 
         } else {
             list = new ArrayList<>();
@@ -600,9 +614,41 @@ public class CsvImporter
                 book.remove(DBDefinitions.KEY_BOOK_NUM_IN_SERIES);
             }
         }
-
         if (!list.isEmpty()) {
             book.putParcelableArrayList(Book.BKEY_SERIES_ARRAY, list);
+        }
+    }
+
+    /**
+     * Database access is strictly limited to fetching ID's.
+     * <p>
+     * Get the list of Publishers.
+     *
+     * @param context    Current context
+     * @param db         Database Access
+     * @param book       the book
+     * @param bookLocale of the book, already resolved
+     */
+    private void handlePublishers(@NonNull final Context context,
+                                  @NonNull final DAO db,
+                                  @NonNull final Book book,
+                                  @NonNull final Locale bookLocale) {
+
+        final String encodedList = book.getString(CsvExporter.CSV_COLUMN_PUBLISHERS);
+        book.remove(CsvExporter.CSV_COLUMN_PUBLISHERS);
+
+        final ArrayList<Publisher> list;
+        if (!encodedList.isEmpty()) {
+            list = mPublisherCoder.decodeList(encodedList);
+
+            // Force using the Book Locale, otherwise the import is far to slow.
+            Publisher.pruneList(list, context, db, false, bookLocale);
+        } else {
+            list = null;
+        }
+
+        if (list != null && !list.isEmpty()) {
+            book.putParcelableArrayList(Book.BKEY_PUBLISHER_ARRAY, list);
         }
     }
 
@@ -612,13 +658,15 @@ public class CsvImporter
      * Ignore the actual value of the DBDefinitions.KEY_TOC_BITMASK! it will be
      * 'reset' to mirror what we actually have when storing the book data
      *
-     * @param context Current context
-     * @param db      Database Access
-     * @param book    the book
+     * @param context    Current context
+     * @param db         Database Access
+     * @param book       the book
+     * @param bookLocale of the book, already resolved
      */
     private void handleAnthology(@NonNull final Context context,
                                  @NonNull final DAO db,
-                                 @NonNull final Book book) {
+                                 @NonNull final Book book,
+                                 @NonNull final Locale bookLocale) {
 
         final String encodedList = book.getString(CsvExporter.CSV_COLUMN_TOC);
         book.remove(CsvExporter.CSV_COLUMN_TOC);
@@ -626,7 +674,7 @@ public class CsvImporter
         if (!encodedList.isEmpty()) {
             final ArrayList<TocEntry> toc = mTocCoder.decodeList(encodedList);
             if (!toc.isEmpty()) {
-                TocEntry.pruneList(toc, context, db, false, book.getLocale(context));
+                TocEntry.pruneList(toc, context, db, false, bookLocale);
                 book.putParcelableArrayList(Book.BKEY_TOC_ARRAY, toc);
             }
         }

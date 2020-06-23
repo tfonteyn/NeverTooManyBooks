@@ -362,7 +362,7 @@ public class MenuPickerDialogFragment
     }
 
     /**
-     * Holder pattern for {@link MenuItemListAdapter}.
+     * Row ViewHolder for {@link MenuItemListAdapter}.
      */
     private static class Holder
             extends RecyclerView.ViewHolder {

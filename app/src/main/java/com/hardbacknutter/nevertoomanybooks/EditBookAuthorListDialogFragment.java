@@ -57,8 +57,8 @@ import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookAuthorBind
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookAuthorListBinding;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
+import com.hardbacknutter.nevertoomanybooks.dialogs.BaseDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
-import com.hardbacknutter.nevertoomanybooks.dialogs.entities.BaseDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.AuthorFormatter;
@@ -66,8 +66,8 @@ import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
 import com.hardbacknutter.nevertoomanybooks.utils.AttrUtils;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.BookViewModel;
 import com.hardbacknutter.nevertoomanybooks.widgets.DiacriticArrayAdapter;
+import com.hardbacknutter.nevertoomanybooks.widgets.ItemTouchHelperViewHolderBase;
 import com.hardbacknutter.nevertoomanybooks.widgets.RecyclerViewAdapterBase;
-import com.hardbacknutter.nevertoomanybooks.widgets.RecyclerViewViewHolderBase;
 import com.hardbacknutter.nevertoomanybooks.widgets.SimpleAdapterDataObserver;
 import com.hardbacknutter.nevertoomanybooks.widgets.ddsupport.SimpleItemTouchHelperCallback;
 import com.hardbacknutter.nevertoomanybooks.widgets.ddsupport.StartDragListener;
@@ -112,11 +112,10 @@ public class EditBookAuthorListDialogFragment
     private ItemTouchHelper mItemTouchHelper;
 
     /**
-     * No-arg constructor.
-     * <p>
-     * Always force full screen as this dialog is to large/complicated.
+     * No-arg constructor for OS use.
      */
     public EditBookAuthorListDialogFragment() {
+        // Always force full screen as this dialog is to large/complicated.
         super(R.layout.dialog_edit_book_author_list, true);
     }
 
@@ -199,9 +198,46 @@ public class EditBookAuthorListDialogFragment
         mItemTouchHelper.attachToRecyclerView(mVb.authorList);
     }
 
+    /**
+     * Create a new entry.
+     */
+    private void onAdd() {
+        // clear any previous error
+        mVb.lblAuthor.setError(null);
+
+        final String name = mVb.author.getText().toString().trim();
+        if (name.isEmpty()) {
+            mVb.lblAuthor.setError(getString(R.string.vldt_non_blank_required));
+            return;
+        }
+
+        // Editing the Author type is not provided on the main screen.
+        // The user must open the detail dialog after creation of the entry.
+        final Author newAuthor = Author.from(name);
+
+        //noinspection ConstantConditions
+        final Locale bookLocale = mBookViewModel.getBook().getLocale(getContext());
+
+        // see if it already exists
+        newAuthor.fixId(getContext(), mDb, true, bookLocale);
+        // and check it's not already in the list.
+        if (mList.contains(newAuthor)) {
+            mVb.lblAuthor.setError(getString(R.string.warning_already_in_list));
+        } else {
+            // add and scroll to the new item
+            mList.add(newAuthor);
+            mListAdapter.notifyItemInserted(mList.size() - 1);
+            mVb.authorList.scrollToPosition(mListAdapter.getItemCount() - 1);
+
+            // clear the form for next entry
+            mVb.author.setText("");
+            mVb.author.requestFocus();
+        }
+    }
+
     private boolean saveChanges() {
         if (!mVb.author.getText().toString().isEmpty()) {
-            // Discarding applies to the temp author edit box only. The list itself is still saved.
+            // Discarding applies to the edit field(s) only. The list itself is still saved.
             //noinspection ConstantConditions
             StandardDialogs.unsavedEdits(getContext(), null, () -> {
                 mVb.author.setText("");
@@ -216,61 +252,29 @@ public class EditBookAuthorListDialogFragment
         return true;
     }
 
-    private void onAdd() {
-        // clear any previous error
-        mVb.lblAuthor.setError(null);
-
-        final String name = mVb.author.getText().toString().trim();
-        if (name.isEmpty()) {
-            mVb.lblAuthor.setError(getString(R.string.vldt_non_blank_required));
-            return;
-        }
-
-        final Author newAuthor = Author.from(name);
-        // type is not provided on the main screen; user must open detail dialog
-
-        //noinspection ConstantConditions
-        final Locale bookLocale = mBookViewModel.getBook().getLocale(getContext());
-
-        // see if it already exists
-        newAuthor.fixId(getContext(), mDb, true, bookLocale);
-        // and check it's not already in the list.
-        if (mList.contains(newAuthor)) {
-            mVb.lblAuthor.setError(getString(R.string.warning_already_in_list));
-        } else {
-            mList.add(newAuthor);
-            // clear the form for next entry and scroll to the new item
-            mVb.author.setText("");
-            mVb.author.requestFocus();
-            mListAdapter.notifyItemInserted(mList.size() - 1);
-            mVb.authorList.scrollToPosition(mListAdapter.getItemCount() - 1);
-        }
-    }
-
     /**
      * Process the modified (if any) data.
      *
-     * @param author  the user was editing (with the original data)
-     * @param tmpData the modifications the user made in a placeholder object.
-     *                Non-modified data was copied here as well.
-     *                The id==0 will not be used/updated.
+     * @param original the original data the user was editing
+     * @param modified the modifications the user made in a placeholder object.
+     *                 Non-modified data was copied here as well.
      */
-    private void processChanges(@NonNull final Author author,
-                                @NonNull final Author tmpData) {
+    private void processChanges(@NonNull final Author original,
+                                @NonNull final Author modified) {
 
         //noinspection ConstantConditions
         final Locale bookLocale = mBookViewModel.getBook().getLocale(getContext());
 
         // name not changed ?
-        if (author.getFamilyName().equals(tmpData.getFamilyName())
-            && author.getGivenNames().equals(tmpData.getGivenNames())) {
+        if (original.getFamilyName().equals(modified.getFamilyName())
+            && original.getGivenNames().equals(modified.getGivenNames())) {
             // copy the completion state, we don't have to warn/ask the user about it.
-            author.setComplete(tmpData.isComplete());
+            original.setComplete(modified.isComplete());
 
             // Type is not part of the Author table, but of the book_author table.
-            if (author.getType() != tmpData.getType()) {
+            if (original.getType() != modified.getType()) {
                 // so if the type is different, just update it
-                author.setType(tmpData.getType());
+                original.setType(modified.getType());
                 //noinspection ConstantConditions
                 Author.pruneList(mList, getContext(), mDb, true, bookLocale);
                 mListAdapter.notifyDataSetChanged();
@@ -279,11 +283,11 @@ public class EditBookAuthorListDialogFragment
         }
 
         // The name was modified. Check if it's used by any other books.
-        if (mBookViewModel.isSingleUsage(getContext(), author)) {
+        if (mBookViewModel.isSingleUsage(getContext(), original)) {
             // If it's not, we can simply modify the old object and we're done here.
             // There is no need to consult the user.
             // Copy the new data into the original object that the user was changing.
-            author.copyFrom(tmpData, true);
+            original.copyFrom(modified, true);
             //noinspection ConstantConditions
             Author.pruneList(mList, getContext(), mDb, true, bookLocale);
             mListAdapter.notifyDataSetChanged();
@@ -294,8 +298,8 @@ public class EditBookAuthorListDialogFragment
         // We need to ask the user if they want to make the changes globally.
         final String allBooks = getString(R.string.bookshelf_all_books);
         final String message = getString(R.string.confirm_apply_author_changed,
-                                         author.getLabel(getContext()),
-                                         tmpData.getLabel(getContext()),
+                                         original.getLabel(getContext()),
+                                         modified.getLabel(getContext()),
                                          allBooks);
         new MaterialAlertDialogBuilder(getContext())
                 .setIcon(R.drawable.ic_warning)
@@ -304,17 +308,17 @@ public class EditBookAuthorListDialogFragment
                 .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
                 .setNeutralButton(allBooks, (d, w) -> {
                     // copy all new data
-                    author.copyFrom(tmpData, true);
+                    original.copyFrom(modified, true);
                     // This change is done in the database right NOW!
-                    if (mDb.updateAuthor(getContext(), author)) {
+                    if (mDb.update(getContext(), original)) {
                         Author.pruneList(mList, getContext(), mDb, true, bookLocale);
                         mBookViewModel.refreshAuthorList(getContext());
                         mListAdapter.notifyDataSetChanged();
 
                     } else {
                         Logger.warnWithStackTrace(getContext(), TAG, "Could not update",
-                                                  "author=" + author,
-                                                  "tmpAuthor=" + tmpData);
+                                                  "author=" + original,
+                                                  "tmpAuthor=" + modified);
                         StandardDialogs.showError(getContext(), R.string.error_unexpected_error);
                     }
                 })
@@ -323,13 +327,13 @@ public class EditBookAuthorListDialogFragment
                     // Note that if the user abandons the entire book edit,
                     // we will orphan this new Author. That's ok, it will get
                     // garbage collected from the database sooner or later.
-                    mDb.updateOrInsertAuthor(getContext(), tmpData, bookLocale);
+                    mDb.insert(getContext(), modified);
                     // unlink the old one (and unmodified), and link with the new one
                     // book/author positions will be fixed up when saving.
                     // Note that the old one *might* be orphaned at this time.
                     // Same remark as above.
-                    mList.remove(author);
-                    mList.add(tmpData);
+                    mList.remove(original);
+                    mList.add(modified);
                     Author.pruneList(mList, getContext(), mDb, true, bookLocale);
                     mListAdapter.notifyDataSetChanged();
 
@@ -365,10 +369,10 @@ public class EditBookAuthorListDialogFragment
     }
 
     /**
-     * Holder pattern for each row.
+     * Holder for each row.
      */
     private static class Holder
-            extends RecyclerViewViewHolderBase {
+            extends ItemTouchHelperViewHolderBase {
 
         @NonNull
         final TextView authorView;
@@ -420,12 +424,11 @@ public class EditBookAuthorListDialogFragment
         private int mType;
 
         /**
-         * No-arg constructor.
-         * <p>
-         * Always force full screen as this dialog is to large/complicated.
+         * No-arg constructor for OS use.
          */
         public EditAuthorForBookDialogFragment() {
-            super(R.layout.dialog_edit_book_author);
+            // Always force full screen as this dialog is to large/complicated.
+            super(R.layout.dialog_edit_book_author, true);
         }
 
         /**
@@ -453,10 +456,10 @@ public class EditBookAuthorListDialogFragment
             mDb = new DAO(TAG);
 
             final Bundle args = requireArguments();
-            mBookTitle = args.getString(DBDefinitions.KEY_TITLE);
-
             mAuthor = args.getParcelable(DBDefinitions.KEY_FK_AUTHOR);
             Objects.requireNonNull(mAuthor, ErrorMsg.ARGS_MISSING_AUTHOR);
+
+            mBookTitle = args.getString(DBDefinitions.KEY_TITLE);
 
             if (savedInstanceState == null) {
                 mFamilyName = mAuthor.getFamilyName();
@@ -497,13 +500,12 @@ public class EditBookAuthorListDialogFragment
             final DiacriticArrayAdapter<String> mFamilyNameAdapter = new DiacriticArrayAdapter<>(
                     getContext(), R.layout.dropdown_menu_popup_item,
                     mDb.getAuthorNames(DBDefinitions.KEY_AUTHOR_FAMILY_NAME));
-            final DiacriticArrayAdapter<String> mGivenNameAdapter = new DiacriticArrayAdapter<>(
-                    getContext(), R.layout.dropdown_menu_popup_item,
-                    mDb.getAuthorNames(DBDefinitions.KEY_AUTHOR_GIVEN_NAMES));
-
             mVb.familyName.setText(mFamilyName);
             mVb.familyName.setAdapter(mFamilyNameAdapter);
 
+            final DiacriticArrayAdapter<String> mGivenNameAdapter = new DiacriticArrayAdapter<>(
+                    getContext(), R.layout.dropdown_menu_popup_item,
+                    mDb.getAuthorNames(DBDefinitions.KEY_AUTHOR_GIVEN_NAMES));
             mVb.givenNames.setText(mGivenNames);
             mVb.givenNames.setAdapter(mGivenNameAdapter);
 
@@ -605,6 +607,7 @@ public class EditBookAuthorListDialogFragment
             //noinspection ConstantConditions
             ((EditBookAuthorListDialogFragment) getTargetFragment())
                     .processChanges(mAuthor, tmpAuthor);
+
             return true;
         }
 

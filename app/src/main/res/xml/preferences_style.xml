@@ -185,4 +185,23 @@
 
     </PreferenceCategory>
 
+    <PreferenceCategory
+        android:key="psk_style_publisher"
+        android:title="@string/lbl_publisher"
+        app:isPreferenceVisible="false"
+        >
+
+        <!-- Enabled if Group 'Publisher' is present in this style. -->
+        <SwitchPreference
+            android:defaultValue="false"
+            android:icon="@drawable/ic_functions"
+            android:key="style.booklist.group.publisher.show.all"
+            android:summaryOff="@string/pv_bob_books_under_multiple_primary_publisher_only"
+            android:summaryOn="@string/pv_bob_books_under_multiple_each_publisher"
+            android:title="@string/pt_bob_books_under_multiple_publisher"
+            app:isPreferenceVisible="false"
+            />
+
+    </PreferenceCategory>
+
 </PreferenceScreen>

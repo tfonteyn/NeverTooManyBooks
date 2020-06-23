@@ -265,11 +265,11 @@ public class GoodreadsSearchActivity
 
                 mBookId = args.getLong(DBDefinitions.KEY_PK_ID);
                 if (mBookId > 0) {
-                    try (Cursor cursor = mDb.fetchBookById(mBookId)) {
+                    try (Cursor cursor = mDb.fetchBookColumnsForGoodreadsSearch(mBookId)) {
                         if (cursor.moveToFirst()) {
                             final DataHolder bookData = new CursorRow(cursor);
-                            mAuthorText = bookData.getString(
-                                    DBDefinitions.KEY_AUTHOR_FORMATTED_GIVEN_FIRST);
+                            mAuthorText = bookData
+                                    .getString(DBDefinitions.KEY_AUTHOR_FORMATTED_GIVEN_FIRST);
                             mTitleText = bookData.getString(DBDefinitions.KEY_TITLE);
                             mIsbnText = bookData.getString(DBDefinitions.KEY_ISBN);
                         } else {
@@ -322,7 +322,7 @@ public class GoodreadsSearchActivity
     }
 
     /**
-     * Holder pattern for search results.
+     * Row ViewHolder for {@link WorksAdapter}.
      */
     private static class Holder
             extends RecyclerView.ViewHolder {
@@ -338,7 +338,8 @@ public class GoodreadsSearchActivity
             super(itemView);
 
             coverView = itemView.findViewById(R.id.coverImage0);
-            if (!DBDefinitions.isUsed(itemView.getContext(), DBDefinitions.KEY_THUMBNAIL)) {
+            if (!DBDefinitions
+                    .isUsed(itemView.getContext(), DBDefinitions.PREFS_IS_USED_THUMBNAIL)) {
                 coverView.setVisibility(View.GONE);
             }
             authorView = itemView.findViewById(R.id.author);

@@ -248,7 +248,7 @@ public class SiteList
      * The site objects are the same as in the original list.
      * The actual (internal) list is NOT modified.
      *
-     * @param order CSV string with site ids
+     * @param order CSV string with site ID's
      *
      * @return ordered list
      */
@@ -293,7 +293,7 @@ public class SiteList
      */
     private void savePrefs(@NonNull final Context context,
                            @NonNull final Locale systemLocale) {
-        // Save the order of the given list (ids) and the individual site settings to preferences.
+        // Save the order of the given list (ID's) and the individual site settings to preferences.
         SharedPreferences.Editor ed = PreferenceManager.getDefaultSharedPreferences(context)
                                                        .edit();
         String order = Csv.join(SEP, mList, site -> {

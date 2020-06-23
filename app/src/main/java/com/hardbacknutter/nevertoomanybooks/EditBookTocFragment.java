@@ -59,6 +59,7 @@ import com.google.android.material.snackbar.Snackbar;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
@@ -87,8 +88,8 @@ import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.tasks.IsfdbEditionsTaskModel;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.tasks.IsfdbGetBookTaskModel;
 import com.hardbacknutter.nevertoomanybooks.widgets.DiacriticArrayAdapter;
+import com.hardbacknutter.nevertoomanybooks.widgets.ItemTouchHelperViewHolderBase;
 import com.hardbacknutter.nevertoomanybooks.widgets.RecyclerViewAdapterBase;
-import com.hardbacknutter.nevertoomanybooks.widgets.RecyclerViewViewHolderBase;
 import com.hardbacknutter.nevertoomanybooks.widgets.SimpleAdapterDataObserver;
 import com.hardbacknutter.nevertoomanybooks.widgets.ddsupport.SimpleItemTouchHelperCallback;
 import com.hardbacknutter.nevertoomanybooks.widgets.ddsupport.StartDragListener;
@@ -106,37 +107,6 @@ public class EditBookTocFragment
 
     /** Log tag. */
     private static final String TAG = "EditBookTocFragment";
-
-    /** Listen for the results (approval) to add the TOC to the list and refresh the screen. */
-    private final ConfirmTocDialogFragment.ConfirmTocResults mConfirmTocResultsListener =
-            new ConfirmTocDialogFragment.ConfirmTocResults() {
-                @Override
-                public void commitIsfdbData(@Book.TocBits final long tocBitMask,
-                                            @NonNull final List<TocEntry> tocEntries) {
-                    if (tocBitMask != 0) {
-                        final Book book = mBookViewModel.getBook();
-                        book.putLong(DBDefinitions.KEY_TOC_BITMASK, tocBitMask);
-                        populateTocBits(book);
-                    }
-
-                    // append the new data
-                    // theoretically we may create duplicates, practical chance is neglectable.
-                    // And if we did, they will get weeded out when saved to the DAO
-                    mList.addAll(tocEntries);
-                    mListAdapter.notifyDataSetChanged();
-                }
-
-                /**
-                 * Start a task to get the next edition of this book (that we know of).
-                 */
-                @Override
-                public void getNextEdition() {
-                    // remove the top one, and try again
-                    mIsfdbEditions.remove(0);
-                    searchIsfdb();
-                }
-            };
-
     /** If the list changes, the book is dirty. */
     private final SimpleAdapterDataObserver mAdapterDataObserver =
             new SimpleAdapterDataObserver() {
@@ -145,10 +115,8 @@ public class EditBookTocFragment
                     mBookViewModel.setDirty(true);
                 }
             };
-
     /** View Binding. */
     private FragmentEditBookTocBinding mVb;
-
     /** The book. */
     @Nullable
     private String mIsbn;
@@ -160,43 +128,56 @@ public class EditBookTocFragment
     private TocListEditAdapter mListAdapter;
     /** Drag and drop support for the list view. */
     private ItemTouchHelper mItemTouchHelper;
-
     /**
      * ISFDB editions of a book(isbn).
      * We'll try them one by one if the user asks for a re-try.
      */
     @Nullable
     private ArrayList<Edition> mIsfdbEditions;
-
     private IsfdbEditionsTaskModel mIsfdbEditionsTaskModel;
     private IsfdbGetBookTaskModel mIsfdbGetBookTaskModel;
+    /** Listen for the results (approval) to add the TOC to the list and refresh the screen. */
+    private final ConfirmTocDialogFragment.ConfirmTocResults mConfirmTocResultsListener =
+            new ConfirmTocDialogFragment.ConfirmTocResults() {
+                @Override
+                public void commitToc(@Book.TocBits final long tocBitMask,
+                                      @NonNull final List<TocEntry> tocEntries) {
+                    onIsfdbDataConfirmed(tocBitMask, tocEntries);
+                }
 
-    /** Hold the item position in the ist while we're editing an item. */
+                @Override
+                public void searchNextEdition() {
+                    onSearchNextEdition();
+                }
+            };
+    private DiacriticArrayAdapter<String> mAuthorAdapter;
+    /** Stores the item position in the list while we're editing that item. */
     @Nullable
     private Integer mEditPosition;
-    private DiacriticArrayAdapter<String> mAuthorAdapter;
+
     /** Database Access. */
     private DAO mDb;
     /** Listen for the results of the entry edit-dialog. */
-    private final EditTocEntryDialogFragment.EditTocEntryResults mEditTocEntryResultsListener =
-            new EditTocEntryDialogFragment.EditTocEntryResults() {
-                @Override
-                public void addOrUpdateEntry(@NonNull final TocEntry tocEntry,
-                                             final boolean hasMultipleAuthors) {
-                    updateMultiAuthor(hasMultipleAuthors);
+    private final BookChangedListener mOnBookChangedListener = (bookId, fieldsChanged, data) -> {
+        Objects.requireNonNull(data, ErrorMsg.NULL_INTENT_DATA);
 
-                    if (mEditPosition == null) {
-                        // It's a new entry for the list.
-                        addNewEntry(tocEntry);
+        if ((fieldsChanged & BookChangedListener.TOC_ENTRY) != 0) {
+            final TocEntry tocEntry = data
+                    .getParcelable(EditTocEntryDialogFragment.BKEY_TOC_ENTRY);
+            Objects.requireNonNull(tocEntry, ErrorMsg.ARGS_MISSING_TOC_ENTRIES);
+            final boolean multipleAuthors = data
+                    .getBoolean(EditTocEntryDialogFragment.BKEY_HAS_MULTIPLE_AUTHORS);
 
-                    } else {
-                        // It's an existing entry in the list, find it and update with the new data
-                        final TocEntry original = mList.get(mEditPosition);
-                        original.copyFrom(tocEntry);
-                        mListAdapter.notifyItemChanged(mEditPosition);
-                    }
-                }
-            };
+            onEntryUpdated(tocEntry, multipleAuthors);
+
+        } else {
+            // we don't expect/implement any others.
+            if (BuildConfig.DEBUG /* always */) {
+                Log.d(TAG, "bookId=" + bookId + "|fieldsChanged=" + fieldsChanged);
+            }
+        }
+
+    };
 
     @NonNull
     @Override
@@ -261,19 +242,46 @@ public class EditBookTocFragment
         } else if (childFragment instanceof ConfirmTocDialogFragment) {
             ((ConfirmTocDialogFragment) childFragment).setListener(mConfirmTocResultsListener);
 
-        } else if (childFragment instanceof EditTocEntryDialogFragment) {
-            ((EditTocEntryDialogFragment) childFragment).setListener(mEditTocEntryResultsListener);
+        } else if (childFragment instanceof BookChangedListenerOwner) {
+            ((BookChangedListenerOwner) childFragment).setListener(mOnBookChangedListener);
+        }
+    }
+
+    void onEntryUpdated(@NonNull final TocEntry tocEntry,
+                        final boolean hasMultipleAuthors) {
+        updateMultiAuthor(hasMultipleAuthors);
+
+        if (mEditPosition == null) {
+            // It's a new entry for the list.
+            addNewEntry(tocEntry);
+
+        } else {
+            // It's an existing entry in the list, find it and update with the new data
+            final TocEntry original = mList.get(mEditPosition);
+            original.copyFrom(tocEntry);
+            mListAdapter.notifyItemChanged(mEditPosition);
         }
     }
 
     /**
-     * we got one or more editions from ISFDB.
+     * We got one or more editions from ISFDB.
      * Stores the url's locally as the user might want to try the next in line
      */
     private void onIsfdbEditions(@NonNull final TaskListener.FinishMessage<ArrayList<Edition>>
                                          message) {
         mIsfdbEditions = message.result != null ? message.result : new ArrayList<>();
         searchIsfdb();
+    }
+
+    /**
+     * Start a task to get the next edition of this book (that we know of).
+     */
+    void onSearchNextEdition() {
+        if (mIsfdbEditions != null && !mIsfdbEditions.isEmpty()) {
+            // remove the top one, and try again
+            mIsfdbEditions.remove(0);
+            searchIsfdb();
+        }
     }
 
     private void onIsfdbBook(@NonNull final TaskListener.FinishMessage<Bundle> message) {
@@ -314,10 +322,25 @@ public class EditBookTocFragment
             }
         }
 
-        // finally the TOC itself;  only put on display for the user to approve
+        // finally the TOC itself:  display it for the user to approve
         final boolean hasOtherEditions = (mIsfdbEditions != null) && (mIsfdbEditions.size() > 1);
         ConfirmTocDialogFragment.newInstance(message.result, hasOtherEditions)
                                 .show(getChildFragmentManager(), ConfirmTocDialogFragment.TAG);
+    }
+
+    void onIsfdbDataConfirmed(@Book.TocBits final long tocBitMask,
+                              @NonNull final Collection<TocEntry> tocEntries) {
+        if (tocBitMask != 0) {
+            final Book book = mBookViewModel.getBook();
+            book.putLong(DBDefinitions.KEY_TOC_BITMASK, tocBitMask);
+            populateTocBits(book);
+        }
+
+        // append the new data
+        // theoretically we may create duplicates, practical chance is neglectable.
+        // And if we did, they will get weeded out when saved to the DAO
+        mList.addAll(tocEntries);
+        mListAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -428,7 +451,7 @@ public class EditBookTocFragment
         }
     }
 
-    private void onCreateContextMenu(final int position) {
+    void onCreateContextMenu(final int position) {
         final Resources res = getResources();
         final TocEntry item = mList.get(position);
 
@@ -497,16 +520,16 @@ public class EditBookTocFragment
      * @param position the item position which will be used to update the data after editing.
      * @param tocEntry to edit
      */
-    private void editEntry(@Nullable final Integer position,
-                           @NonNull final TocEntry tocEntry) {
+    void editEntry(@Nullable final Integer position,
+                   @NonNull final TocEntry tocEntry) {
         mEditPosition = position;
-        EditTocEntryDialogFragment.newInstance(mBookViewModel.getBook().getTitle(),
+        EditTocEntryDialogFragment.newInstance(mBookViewModel.getBook(),
                                                tocEntry, mVb.cbxMultipleAuthors.isChecked())
                                   .show(getChildFragmentManager(), EditTocEntryDialogFragment.TAG);
     }
 
-    private void deleteEntry(final int position,
-                             @NonNull final TocEntry tocEntry) {
+    void deleteEntry(final int position,
+                     @NonNull final TocEntry tocEntry) {
         //noinspection ConstantConditions
         StandardDialogs.deleteTocEntry(getContext(), tocEntry, () -> {
             if (mFragmentVM.deleteTocEntry(tocEntry.getId()) == 1) {
@@ -636,8 +659,6 @@ public class EditBookTocFragment
      * Dialog that shows the downloaded TOC titles for approval by the user.
      * <p>
      * Show with the {@link Fragment#getChildFragmentManager()}
-     * <p>
-     * Uses {@link Fragment#getParentFragment()} for sending results back.
      */
     public static class ConfirmTocDialogFragment
             extends DialogFragment {
@@ -728,7 +749,7 @@ public class EditBookTocFragment
             // if we found multiple editions, allow a re-try with the next edition
             if (mHasOtherEditions) {
                 dialog.setButton(AlertDialog.BUTTON_NEUTRAL, getString(R.string.action_retry),
-                                 this::onGetNext);
+                                 this::onSearchNextEdition);
             }
 
             return dialog;
@@ -737,7 +758,7 @@ public class EditBookTocFragment
         private void onCommitToc(@SuppressWarnings("unused") @NonNull final DialogInterface d,
                                  @SuppressWarnings("unused") final int which) {
             if (mListener != null && mListener.get() != null) {
-                mListener.get().commitIsfdbData(mTocBitMask, mTocEntries);
+                mListener.get().commitToc(mTocBitMask, mTocEntries);
             } else {
                 if (BuildConfig.DEBUG /* always */) {
                     Log.w(TAG, "onCommitToc|"
@@ -747,10 +768,11 @@ public class EditBookTocFragment
             }
         }
 
-        private void onGetNext(@SuppressWarnings("unused") @NonNull final DialogInterface d,
-                               @SuppressWarnings("unused") final int which) {
+        private void onSearchNextEdition(@SuppressWarnings("unused")
+                                         @NonNull final DialogInterface d,
+                                         @SuppressWarnings("unused") final int which) {
             if (mListener != null && mListener.get() != null) {
-                mListener.get().getNextEdition();
+                mListener.get().searchNextEdition();
             } else {
                 if (BuildConfig.DEBUG /* always */) {
                     Log.w(TAG, "onGetNext|"
@@ -762,18 +784,18 @@ public class EditBookTocFragment
 
         interface ConfirmTocResults {
 
-            void commitIsfdbData(@Book.TocBits long tocBitMask,
-                                 @NonNull List<TocEntry> tocEntries);
+            void commitToc(@Book.TocBits long tocBitMask,
+                           @NonNull List<TocEntry> tocEntries);
 
-            void getNextEdition();
+            void searchNextEdition();
         }
     }
 
     /**
-     * Holder pattern for each row.
+     * Holder for each row.
      */
     private static class Holder
-            extends RecyclerViewViewHolderBase {
+            extends ItemTouchHelperViewHolderBase {
 
         @NonNull
         final TextView titleView;

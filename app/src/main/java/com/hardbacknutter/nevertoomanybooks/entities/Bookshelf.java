@@ -322,7 +322,7 @@ public class Bookshelf
         if (style.getId() == 0) {
             throw new IllegalArgumentException(ErrorMsg.ARGS_MISSING_STYLE);
         }
-        db.updateOrInsertBookshelf(this, style.getId());
+        db.update(this, style.getId());
         mStyleUuid = style.getUuid();
     }
 
@@ -396,7 +396,7 @@ public class Bookshelf
         // not strictly needed to refresh the style id, but we might as well take
         // the opportunity to validate it.
         final long styleId = getStyle(context, db).getId();
-        db.updateOrInsertBookshelf(this, styleId);
+        db.update(this, styleId);
     }
 
     /**
@@ -410,7 +410,7 @@ public class Bookshelf
         final String uuid = mStyleUuid;
         final BooklistStyle style = getStyle(context, db);
         if (!uuid.equals(style.getUuid())) {
-            db.updateBookshelf(this, style.getId());
+            db.update(this, style.getId());
         }
     }
 

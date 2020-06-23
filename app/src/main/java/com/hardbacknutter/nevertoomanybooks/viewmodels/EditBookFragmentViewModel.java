@@ -47,21 +47,22 @@ public class EditBookFragmentViewModel
     /** Field drop down list. */
     private List<String> mLocations;
     /** Field drop down list. */
-    private List<String> mPricePaidCurrencies;
-    /** Field drop down list. */
     private List<String> mFormats;
     /** Field drop down list. */
     private List<String> mColors;
     /** Field drop down list. */
     private List<String> mLanguagesCodes;
     /** Field drop down list. */
-    private List<String> mPublishers;
+    private List<String> mPricePaidCurrencies;
     /** Field drop down list. */
     private List<String> mListPriceCurrencies;
+
+    /** Field drop down list. */
+    private List<Bookshelf> mBookshelves;
     /** Field drop down list. */
     private List<String> mAuthorNames;
     /** Field drop down list. */
-    private List<Bookshelf> mBookshelves;
+    private List<String> mPublisherNames;
 
     @IdRes
     private int[] mCurrentDialogFieldId;
@@ -98,10 +99,10 @@ public class EditBookFragmentViewModel
      */
     @NonNull
     public List<String> getAllPublishers() {
-        if (mPublishers == null) {
-            mPublishers = mDb.getPublisherNames();
+        if (mPublisherNames == null) {
+            mPublisherNames = mDb.getPublisherNames();
         }
-        return mPublishers;
+        return mPublisherNames;
     }
 
     /**

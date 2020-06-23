@@ -196,7 +196,7 @@
     <string name="confirm_registration_benefits">Esta característica se beneficia del registro con %1$s.\n¿Desea ver más información o deshabilitar este mensaje?\nPuede encontrar esta información más adelante en la sección «%2$s» en la configuración.</string>
     <string name="confirm_registration_required">Esta función requiere registro con %1$s.\n ¿Te gustaría ver más información?</string>
     <string name="txt_select_fields_to_update">Los campos seleccionados se actualizarán con datos de internet. Los campos no marcados no se modificarán.</string>
-    <string name="txt_share_book_im_reading">Estoy leyendo «%1$s» por %2$s %3$s %4$s</string>
+    <string name="txt_share_book_im_reading">Estoy leyendo «%1$s» %2$s por %3$s %4$s</string>
     <string name="txt_tap_on_image_to_select">Toque la imagen grande para seleccionar</string>
     <string name="txt_tap_on_thumb">Pinche sobre una portada para ver una imagen de mayor tamaño</string>
     <string name="txt_waiting_for_scanner">Esperando escáner / cámara</string>

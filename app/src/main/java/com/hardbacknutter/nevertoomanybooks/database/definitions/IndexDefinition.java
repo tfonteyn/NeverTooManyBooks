@@ -132,7 +132,7 @@ class IndexDefinition {
            .append(" ON ").append(mTable.getName())
            .append('(').append(Csv.join(mDomains, element -> {
             if (element.isCollationLocalized()) {
-                return element.getName() + DAO.COLLATION;
+                return element.getName() + DAO._COLLATION;
             } else {
                 return element.getName();
             }
