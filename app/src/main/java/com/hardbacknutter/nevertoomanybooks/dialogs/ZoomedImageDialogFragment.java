@@ -83,7 +83,7 @@ public class ZoomedImageDialogFragment
 
         final Bundle args = requireArguments();
         final String fileSpec = args.getString(BKEY_IMAGE_PATH);
-        Objects.requireNonNull(fileSpec, ErrorMsg.ARGS_MISSING_IMAGE_PATH);
+        Objects.requireNonNull(fileSpec, ErrorMsg.NULL_IMAGE_PATH);
         mImageFile = new File(fileSpec);
     }
 

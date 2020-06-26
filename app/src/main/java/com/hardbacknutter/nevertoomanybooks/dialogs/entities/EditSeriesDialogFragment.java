@@ -108,7 +108,7 @@ public class EditSeriesDialogFragment
 
         final Bundle args = requireArguments();
         mSeries = args.getParcelable(DBDefinitions.KEY_FK_SERIES);
-        Objects.requireNonNull(mSeries, ErrorMsg.ARGS_MISSING_SERIES);
+        Objects.requireNonNull(mSeries, ErrorMsg.NULL_SERIES);
 
         if (savedInstanceState == null) {
             mTitle = mSeries.getTitle();

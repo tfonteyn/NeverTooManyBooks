@@ -293,7 +293,7 @@ public class FileManager {
             // sanity check
             if (BuildConfig.DEBUG /* always */) {
                 if (!ISBN.isValidIsbn(validIsbn)) {
-                    throw new IllegalStateException(ErrorMsg.ISBN_MUST_BE_VALID);
+                    throw new IllegalStateException(ErrorMsg.INVALID_ISBN);
                 }
             }
 

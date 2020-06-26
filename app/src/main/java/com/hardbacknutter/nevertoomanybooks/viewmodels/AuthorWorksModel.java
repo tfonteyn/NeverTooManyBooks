@@ -85,7 +85,7 @@ public class AuthorWorksModel
 
             final long authorId = args.getLong(DBDefinitions.KEY_PK_ID, 0);
             if (authorId == 0) {
-                throw new IllegalArgumentException("Author id must be passed in args");
+                throw new IllegalArgumentException(ErrorMsg.ZERO_ID_FOR_AUTHOR);
             }
             mAuthor = Objects.requireNonNull(mDb.getAuthor(authorId));
 

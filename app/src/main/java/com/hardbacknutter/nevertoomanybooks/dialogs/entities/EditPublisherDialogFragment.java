@@ -106,7 +106,7 @@ public class EditPublisherDialogFragment
 
         final Bundle args = requireArguments();
         mPublisher = args.getParcelable(DBDefinitions.KEY_FK_PUBLISHER);
-        Objects.requireNonNull(mPublisher, ErrorMsg.ARGS_MISSING_PUBLISHER);
+        Objects.requireNonNull(mPublisher, ErrorMsg.NULL_PUBLISHER);
 
         if (savedInstanceState == null) {
             mName = mPublisher.getName();

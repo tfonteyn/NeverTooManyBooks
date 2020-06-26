@@ -64,7 +64,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.Money;
 import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 
 /**
- * Class to manage a version of a set of related data.
+ * Class to manage a set of related data.
  * It's basically an extended Bundle.
  *
  * <ul>
@@ -187,10 +187,12 @@ public class DataManager
     }
 
     /**
-     * Store a Object value. The object will be casted to one of the supported types.
+     * Store a Object value. The object will be cast to one of the supported types.
      *
      * @param key   Key of data object
      * @param value to store
+     *
+     * @throws IllegalArgumentException for unsupported types.
      */
     public void put(@NonNull final String key,
                     @Nullable final Object value) {
@@ -450,7 +452,7 @@ public class DataManager
     }
 
     /**
-     * Get a String value. Non-String values will be casted using toString().
+     * Get a String value. Non-String values will be cast using toString().
      *
      * @param key Key of data object
      *

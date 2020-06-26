@@ -107,7 +107,7 @@ public class FastScroller {
             }
 
             default:
-                throw new IllegalArgumentException();
+                throw new IllegalArgumentException("invalid OverlayProvider style");
         }
 
         fastScroller.setOverlayProvider(overlay);

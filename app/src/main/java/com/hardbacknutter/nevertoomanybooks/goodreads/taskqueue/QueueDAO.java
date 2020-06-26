@@ -45,7 +45,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.TransactionException;
-import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.utils.DateParser;
 
 import static com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.QueueDBHelper.KEY_EVENT;
@@ -592,11 +591,13 @@ class QueueDAO
     /**
      * Delete orphaned events and tasks.
      *
+     * <strong>Transaction:</strong> required
+     *
      * @param db with a TRANSACTION started.
      */
     private void cleanupOrphans(@NonNull final SQLiteDatabase db) {
         if (!db.inTransaction()) {
-            throw new TransactionException(ErrorMsg.TRANSACTION_REQUIRED);
+            throw new TransactionException(TransactionException.REQUIRED);
         }
         try (SQLiteStatement stmt = db.compileStatement(SQL_DELETE_ORPHANED_EVENTS)) {
             stmt.executeUpdateDelete();

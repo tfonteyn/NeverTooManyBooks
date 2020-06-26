@@ -126,7 +126,7 @@ public class GoodreadsSearchActivity
                            getString(R.string.site_goodreads)));
 
         mModel = new ViewModelProvider(this).get(GrSearchViewModel.class);
-        mModel.init(Objects.requireNonNull(getIntent().getExtras(), ErrorMsg.ARGS_MISSING_EXTRAS),
+        mModel.init(Objects.requireNonNull(getIntent().getExtras(), ErrorMsg.NULL_EXTRAS),
                     savedInstanceState);
 
         mModel.onWorksRetrieved().observe(this, goodreadsWorks -> {

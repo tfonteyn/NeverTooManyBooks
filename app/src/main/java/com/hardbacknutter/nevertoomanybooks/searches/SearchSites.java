@@ -292,7 +292,7 @@ public final class SearchSites {
             }
 
             default:
-                throw new IllegalStateException();
+                throw new IllegalArgumentException(ErrorMsg.UNEXPECTED_VALUE + type);
         }
 
         return list;

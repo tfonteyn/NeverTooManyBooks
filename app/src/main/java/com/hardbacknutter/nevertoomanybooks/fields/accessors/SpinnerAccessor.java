@@ -89,7 +89,7 @@ public class SpinnerAccessor
         }
         mAdapter = new ArrayAdapter<>(context, R.layout.dropdown_menu_popup_item, list);
         if (mAdapter.getCount() == 0) {
-            throw new IllegalStateException(ErrorMsg.EMPTY_ARRAY_OR_LIST);
+            throw new IllegalArgumentException(ErrorMsg.EMPTY_ARRAY_OR_LIST);
         }
     }
 

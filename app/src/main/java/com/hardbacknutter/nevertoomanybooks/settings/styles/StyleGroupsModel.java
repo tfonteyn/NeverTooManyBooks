@@ -62,7 +62,7 @@ public class StyleGroupsModel
                      @NonNull final Bundle args) {
         if (mStyle == null) {
             mStyle = args.getParcelable(BooklistStyle.BKEY_STYLE);
-            Objects.requireNonNull(mStyle, ErrorMsg.ARGS_MISSING_STYLE);
+            Objects.requireNonNull(mStyle, ErrorMsg.NULL_STYLE);
 
             // Build an array list with the groups from the style
             mList = new ArrayList<>(mStyle.getGroupCount());

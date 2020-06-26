@@ -32,7 +32,13 @@ import androidx.annotation.Nullable;
 public class TransactionException
         extends RuntimeException {
 
-    private static final long serialVersionUID = -3659088149611399296L;
+    public static final String REQUIRED = "TX required";
+    public static final String ALREADY_STARTED = "TX already started";
+    public static final String NOT_STARTED = "No TX started";
+    public static final String INSIDE_SHARED_TX = "Inside shared TX";
+    public static final String WRONG_LOCK = "Wrong lock";
+
+    private static final long serialVersionUID = 8342179163992505514L;
 
     public TransactionException(@Nullable final String message) {
         super(message);

@@ -110,7 +110,7 @@ public class EditAuthorDialogFragment
 
         final Bundle args = requireArguments();
         mAuthor = args.getParcelable(DBDefinitions.KEY_FK_AUTHOR);
-        Objects.requireNonNull(mAuthor, ErrorMsg.ARGS_MISSING_AUTHOR);
+        Objects.requireNonNull(mAuthor, ErrorMsg.NULL_AUTHOR);
 
         if (savedInstanceState == null) {
             mFamilyName = mAuthor.getFamilyName();

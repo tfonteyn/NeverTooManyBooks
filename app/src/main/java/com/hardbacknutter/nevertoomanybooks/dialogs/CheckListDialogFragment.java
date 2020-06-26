@@ -110,11 +110,11 @@ public class CheckListDialogFragment
                                       getString(R.string.action_edit));
 
         mAllItems = args.getParcelableArrayList(BKEY_ALL);
-        Objects.requireNonNull(mAllItems, ErrorMsg.ARGS_MISSING_CHECKLIST);
+        Objects.requireNonNull(mAllItems, ErrorMsg.NULL_CHECKLIST);
 
         args = savedInstanceState != null ? savedInstanceState : args;
         mSelectedItems = args.getParcelableArrayList(BKEY_SELECTED);
-        Objects.requireNonNull(mSelectedItems, ErrorMsg.ARGS_MISSING_CHECKLIST);
+        Objects.requireNonNull(mSelectedItems, ErrorMsg.NULL_CHECKLIST);
     }
 
     @NonNull

@@ -137,7 +137,7 @@ public class CoverBrowserViewModel
         if (mBaseIsbn == null) {
             mBaseIsbn = args.getString(DBDefinitions.KEY_ISBN);
             mCIdx = args.getInt(BKEY_FILE_INDEX);
-            Objects.requireNonNull(mBaseIsbn, ErrorMsg.ARGS_MISSING_ISBN);
+            Objects.requireNonNull(mBaseIsbn, ErrorMsg.NULL_ISBN);
             // optional
             SiteList siteList = args.getParcelable(SiteList.Type.Covers.getBundleKey());
             if (siteList == null) {

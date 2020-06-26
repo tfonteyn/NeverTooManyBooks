@@ -602,6 +602,8 @@ public class RowStateDAO
     /**
      * Expand or collapse <strong>all</strong> nodes.
      *
+     * <strong>Transaction:</strong> participate, or runs in new.
+     *
      * @param topLevel the desired top-level which must be kept visible
      * @param expand   the state to apply to levels 'below' the topLevel (level > topLevel),
      */
@@ -672,7 +674,7 @@ public class RowStateDAO
         if (BuildConfig.DEBUG /* always */) {
             // developer sanity check
             if (!"< = > <= >=".contains(levelOperand)) {
-                throw new IllegalArgumentException();
+                throw new IllegalArgumentException("levelOperand=`" + levelOperand + '`');
             }
         }
 
@@ -703,6 +705,8 @@ public class RowStateDAO
      * We only store visible nodes and their expansion state.
      *
      * <strong>Note:</strong> always use the current bookshelf/style
+     *
+     * <strong>Transaction:</strong> participate, or runs in new.
      */
     private void saveAllNodes() {
         Synchronizer.SyncLock txLock = null;
@@ -780,6 +784,8 @@ public class RowStateDAO
      * 'Expand': we set the children to the desired child state/visibility
      * (recurse up to the desired max child level)<br>
      * 'Collapse': all children will be set to Collapse/hidden
+     *
+     * <strong>Transaction:</strong> participate, or runs in new.
      *
      * @param nodeRowId          of the node in the list
      * @param nodeLevel          the level of the node
@@ -988,6 +994,8 @@ public class RowStateDAO
      * {@link #setNode} 4. Save the state for a single node to permanent storage.
      *
      * <strong>Note:</strong> always uses the current bookshelf/style
+     *
+     * <strong>Transaction:</strong> participate, or runs in new.
      *
      * @param fromLevel   from this level onwards
      * @param fromRowIncl between this row (inclusive)

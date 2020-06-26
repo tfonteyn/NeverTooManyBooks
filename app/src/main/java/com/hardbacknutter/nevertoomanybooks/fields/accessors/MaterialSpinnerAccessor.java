@@ -82,7 +82,7 @@ public class MaterialSpinnerAccessor
         mAdapter = ArrayAdapter.createFromResource(context, arrayResId,
                                                    R.layout.dropdown_menu_popup_item);
         if (mAdapter.getCount() == 0) {
-            throw new IllegalStateException(ErrorMsg.EMPTY_ARRAY_OR_LIST);
+            throw new IllegalArgumentException(ErrorMsg.EMPTY_ARRAY_OR_LIST);
         }
     }
 

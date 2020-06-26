@@ -118,7 +118,7 @@ public class StylePickerDialogFragment
 
         final Bundle args = requireArguments();
         mCurrentStyleUuid = args.getString(BooklistStyle.BKEY_STYLE_UUID);
-        Objects.requireNonNull(mCurrentStyleUuid, ErrorMsg.ARGS_MISSING_STYLE);
+        Objects.requireNonNull(mCurrentStyleUuid, ErrorMsg.NULL_STYLE);
         mShowAllStyles = args.getBoolean(BKEY_SHOW_ALL_STYLES, false);
     }
 

@@ -223,7 +223,7 @@ public class StyleFragment
                     // replace the current style with the edited copy;
                     // do NOT save to the database yet/here
                     mStyle = data.getParcelableExtra(BooklistStyle.BKEY_STYLE);
-                    Objects.requireNonNull(mStyle, ErrorMsg.ARGS_MISSING_STYLE);
+                    Objects.requireNonNull(mStyle, ErrorMsg.NULL_STYLE);
 
                     mResultData.putResultData(BooklistStyle.BKEY_STYLE_MODIFIED, true);
                     mResultData.putResultData(BooklistStyle.BKEY_STYLE, mStyle);

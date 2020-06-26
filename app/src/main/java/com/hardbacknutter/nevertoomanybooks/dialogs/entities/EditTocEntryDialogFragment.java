@@ -131,7 +131,7 @@ public class EditTocEntryDialogFragment
         mBookTitle = args.getString(DBDefinitions.KEY_TITLE);
         mBookId = args.getLong(BKEY_BOOK_ID);
         mTocEntry = args.getParcelable(BKEY_TOC_ENTRY);
-        Objects.requireNonNull(mTocEntry, ErrorMsg.ARGS_MISSING_TOC_ENTRIES);
+        Objects.requireNonNull(mTocEntry, ErrorMsg.NULL_TOC_ENTRY);
 
         if (savedInstanceState == null) {
             mTitle = mTocEntry.getTitle();

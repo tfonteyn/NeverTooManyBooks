@@ -45,6 +45,7 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
@@ -386,7 +387,7 @@ public class GoodreadsHandler {
             final ShowBookByIdApiHandler api = new ShowBookByIdApiHandler(context, mGoodreadsAuth);
             return api.get(context, grBookId, fetchThumbnail, bookData);
         } else {
-            throw new IllegalArgumentException("No bookId");
+            throw new IllegalArgumentException(ErrorMsg.ZERO_ID_FOR_BOOK);
         }
     }
 

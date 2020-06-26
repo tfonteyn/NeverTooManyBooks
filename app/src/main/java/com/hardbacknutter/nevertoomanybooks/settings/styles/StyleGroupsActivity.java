@@ -82,7 +82,7 @@ public class StyleGroupsActivity
         super.onCreate(savedInstanceState);
 
         mModel = new ViewModelProvider(this).get(StyleGroupsModel.class);
-        Objects.requireNonNull(getIntent().getExtras(), ErrorMsg.ARGS_MISSING_EXTRAS);
+        Objects.requireNonNull(getIntent().getExtras(), ErrorMsg.NULL_EXTRAS);
         mModel.init(this, getIntent().getExtras());
 
         // The View for the list.

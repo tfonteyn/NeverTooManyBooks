@@ -585,7 +585,7 @@ public class BooklistStyle
     public BooklistStyle clone(@NonNull final Context context) {
         // sanity check
         if (mUuid.isEmpty()) {
-            throw new IllegalStateException(ErrorMsg.EMPTY_UUID);
+            throw new IllegalArgumentException(ErrorMsg.EMPTY_UUID);
         }
 
         //TODO: revisit... this is to complicated/inefficient.
@@ -1688,7 +1688,7 @@ public class BooklistStyle
                                    @NonNull final BooklistStyle style) {
             // can ONLY discard a new style
             if (style.getId() != 0) {
-                throw new IllegalArgumentException("can only discard a new style");
+                throw new IllegalArgumentException("Can only discard a new style");
             }
             if (Build.VERSION.SDK_INT >= 24) {
                 context.deleteSharedPreferences(style.getUuid());
@@ -1991,9 +1991,6 @@ public class BooklistStyle
 
         @NonNull
         public static String getUuidById(final int id) {
-            if (id < 1 || id >= ID_UUID.length) {
-                throw new IllegalArgumentException();
-            }
             return ID_UUID[id];
         }
 

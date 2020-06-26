@@ -37,6 +37,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModel;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyle;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
@@ -80,9 +81,7 @@ public class PreferredStylesViewModel
             mList = new ArrayList<>(BooklistStyle.getStyles(context, mDb, true).values());
 
             mInitialStyleUuid = args.getString(BooklistStyle.BKEY_STYLE_UUID);
-            if (mInitialStyleUuid == null) {
-                throw new IllegalArgumentException(ErrorMsg.ARGS_MISSING_STYLE);
-            }
+            Objects.requireNonNull(mInitialStyleUuid, ErrorMsg.NULL_STYLE);
         }
     }
 
