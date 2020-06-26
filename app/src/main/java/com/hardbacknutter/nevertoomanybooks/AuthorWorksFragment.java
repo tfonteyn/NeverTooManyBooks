@@ -48,6 +48,8 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.MenuCompat;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentOnAttachListener;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -94,27 +96,35 @@ public class AuthorWorksFragment
     /** The Adapter. */
     private TocAdapter mAdapter;
 
+    /** (re)attach the result listener when a fragment gets started. */
+    private final FragmentOnAttachListener mFragmentOnAttachListener =
+            new FragmentOnAttachListener() {
+                @Override
+                public void onAttachFragment(@NonNull final FragmentManager fragmentManager,
+                                             @NonNull final Fragment fragment) {
+                    if (BuildConfig.DEBUG && DEBUG_SWITCHES.ATTACH_FRAGMENT) {
+                        Log.d(getClass().getName(), "onAttachFragment: " + fragment.getTag());
+                    }
+
+                    if (fragment instanceof MenuPickerDialogFragment) {
+                        ((MenuPickerDialogFragment) fragment).setListener(
+                                (menuItem, position) -> onContextItemSelected(menuItem, position));
+                    }
+                }
+            };
+
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        getParentFragmentManager().addFragmentOnAttachListener(mFragmentOnAttachListener);
+
         setHasOptionsMenu(true);
 
         //noinspection ConstantConditions
         mModel = new ViewModelProvider(getActivity()).get(AuthorWorksModel.class);
         //noinspection ConstantConditions
         mModel.init(getContext(), requireArguments());
-    }
-
-    @Override
-    public void onAttachFragment(@NonNull final Fragment childFragment) {
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.ATTACH_FRAGMENT) {
-            Log.d(getClass().getName(), "onAttachFragment: " + childFragment.getTag());
-        }
-        super.onAttachFragment(childFragment);
-
-        if (childFragment instanceof MenuPickerDialogFragment) {
-            ((MenuPickerDialogFragment) childFragment).setListener(this::onContextItemSelected);
-        }
     }
 
     @Nullable
@@ -298,8 +308,7 @@ public class AuthorWorksFragment
                         break;
                     }
                     default:
-                        throw new IllegalArgumentException(
-                                ErrorMsg.UNEXPECTED_VALUE + item.getType());
+                        throw new IllegalArgumentException(ErrorMsg.UNEXPECTED_VALUE + item);
                 }
                 return true;
 

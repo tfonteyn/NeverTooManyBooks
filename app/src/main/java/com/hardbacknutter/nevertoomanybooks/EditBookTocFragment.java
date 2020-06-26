@@ -48,6 +48,8 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentOnAttachListener;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.DividerItemDecoration;
@@ -164,7 +166,7 @@ public class EditBookTocFragment
         if ((fieldsChanged & BookChangedListener.TOC_ENTRY) != 0) {
             final TocEntry tocEntry = data
                     .getParcelable(EditTocEntryDialogFragment.BKEY_TOC_ENTRY);
-            Objects.requireNonNull(tocEntry, ErrorMsg.ARGS_MISSING_TOC_ENTRIES);
+            Objects.requireNonNull(tocEntry, ErrorMsg.NULL_TOC_ENTRY);
             final boolean multipleAuthors = data
                     .getBoolean(EditTocEntryDialogFragment.BKEY_HAS_MULTIPLE_AUTHORS);
 
@@ -179,6 +181,30 @@ public class EditBookTocFragment
 
     };
 
+    /** (re)attach the result listener when a fragment gets started. */
+    private final FragmentOnAttachListener mFragmentOnAttachListener =
+            new FragmentOnAttachListener() {
+                @Override
+                public void onAttachFragment(@NonNull final FragmentManager fragmentManager,
+                                             @NonNull final Fragment fragment) {
+                    if (BuildConfig.DEBUG && DEBUG_SWITCHES.ATTACH_FRAGMENT) {
+                        Log.d(getClass().getName(), "onAttachFragment: " + fragment.getTag());
+                    }
+
+                    if (fragment instanceof MenuPickerDialogFragment) {
+                        ((MenuPickerDialogFragment) fragment).setListener(
+                                (menuItem, position) -> onContextItemSelected(menuItem, position));
+
+                    } else if (fragment instanceof ConfirmTocDialogFragment) {
+                        ((ConfirmTocDialogFragment) fragment)
+                                .setListener(mConfirmTocResultsListener);
+
+                    } else if (fragment instanceof BookChangedListenerOwner) {
+                        ((BookChangedListenerOwner) fragment).setListener(mOnBookChangedListener);
+                    }
+                }
+            };
+
     @NonNull
     @Override
     Fields getFields() {
@@ -188,6 +214,8 @@ public class EditBookTocFragment
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        getParentFragmentManager().addFragmentOnAttachListener(mFragmentOnAttachListener);
 
         mDb = new DAO(TAG);
 
@@ -227,24 +255,6 @@ public class EditBookTocFragment
                 (v, isChecked) -> updateMultiAuthor(isChecked));
         // adding a new entry
         mVb.btnAdd.setOnClickListener(v -> onAdd());
-    }
-
-    @Override
-    public void onAttachFragment(@NonNull final Fragment childFragment) {
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.ATTACH_FRAGMENT) {
-            Log.d(getClass().getName(), "onAttachFragment: " + childFragment.getTag());
-        }
-        super.onAttachFragment(childFragment);
-
-        if (childFragment instanceof MenuPickerDialogFragment) {
-            ((MenuPickerDialogFragment) childFragment).setListener(this::onContextItemSelected);
-
-        } else if (childFragment instanceof ConfirmTocDialogFragment) {
-            ((ConfirmTocDialogFragment) childFragment).setListener(mConfirmTocResultsListener);
-
-        } else if (childFragment instanceof BookChangedListenerOwner) {
-            ((BookChangedListenerOwner) childFragment).setListener(mOnBookChangedListener);
-        }
     }
 
     void onEntryUpdated(@NonNull final TocEntry tocEntry,
@@ -708,7 +718,7 @@ public class EditBookTocFragment
 
             final Bundle args = requireArguments();
             mTocEntries = args.getParcelableArrayList(Book.BKEY_TOC_ARRAY);
-            Objects.requireNonNull(mTocEntries, ErrorMsg.ARGS_MISSING_TOC_ENTRIES);
+            Objects.requireNonNull(mTocEntries, ErrorMsg.NULL_TOC_ENTRY);
 
             mTocBitMask = args.getLong(DBDefinitions.KEY_TOC_BITMASK);
             mHasOtherEditions = args.getBoolean(BKEY_HAS_OTHER_EDITIONS, false);

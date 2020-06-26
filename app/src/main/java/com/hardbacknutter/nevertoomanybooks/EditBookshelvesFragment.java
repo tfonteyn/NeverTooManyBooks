@@ -43,6 +43,8 @@ import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentOnAttachListener;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -85,9 +87,32 @@ public class EditBookshelvesFragment
     /** View Binding. */
     private FragmentEditBookshelvesBinding mVb;
 
+    /** (re)attach the result listener when a fragment gets started. */
+    private final FragmentOnAttachListener mFragmentOnAttachListener =
+            new FragmentOnAttachListener() {
+                @Override
+                public void onAttachFragment(@NonNull final FragmentManager fragmentManager,
+                                             @NonNull final Fragment fragment) {
+                    if (BuildConfig.DEBUG && DEBUG_SWITCHES.ATTACH_FRAGMENT) {
+                        Log.d(getClass().getName(), "onAttachFragment: " + fragment.getTag());
+                    }
+
+                    if (fragment instanceof MenuPickerDialogFragment) {
+                        ((MenuPickerDialogFragment) fragment).setListener(
+                                (menuItem, position) -> onContextItemSelected(menuItem, position));
+
+                    } else if (fragment instanceof EditBookshelfDialogFragment) {
+                        ((EditBookshelfDialogFragment) fragment).setListener(mListener);
+                    }
+                }
+            };
+
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        getParentFragmentManager().addFragmentOnAttachListener(mFragmentOnAttachListener);
+
         setHasOptionsMenu(true);
 
         //noinspection ConstantConditions
@@ -130,21 +155,6 @@ public class EditBookshelvesFragment
                 new DividerItemDecoration(getContext(), linearLayoutManager.getOrientation()));
         mVb.bookshelfList.setHasFixedSize(true);
         mVb.bookshelfList.setAdapter(mAdapter);
-    }
-
-    @Override
-    public void onAttachFragment(@NonNull final Fragment childFragment) {
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.ATTACH_FRAGMENT) {
-            Log.d(getClass().getName(), "onAttachFragment: " + childFragment.getTag());
-        }
-        super.onAttachFragment(childFragment);
-
-        if (childFragment instanceof MenuPickerDialogFragment) {
-            ((MenuPickerDialogFragment) childFragment).setListener(this::onContextItemSelected);
-
-        } else if (childFragment instanceof EditBookshelfDialogFragment) {
-            ((EditBookshelfDialogFragment) childFragment).setListener(mListener);
-        }
     }
 
     @Override

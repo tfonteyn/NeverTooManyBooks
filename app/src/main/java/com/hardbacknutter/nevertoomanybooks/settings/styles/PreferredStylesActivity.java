@@ -44,6 +44,8 @@ import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentOnAttachListener;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.ItemTouchHelper;
@@ -100,12 +102,30 @@ public class PreferredStylesActivity
     private PreferredStylesViewModel mModel;
 
     /** Saves the order after each change. */
-    private final SimpleAdapterDataObserver mAdapterDataObserver = new SimpleAdapterDataObserver() {
-        @Override
-        public void onChanged() {
-            mModel.saveMenuOrder(PreferredStylesActivity.this);
-        }
-    };
+    private final SimpleAdapterDataObserver mAdapterDataObserver =
+            new SimpleAdapterDataObserver() {
+                @Override
+                public void onChanged() {
+                    mModel.saveMenuOrder(PreferredStylesActivity.this);
+                }
+            };
+
+    /** (re)attach the result listener when a fragment gets started. */
+    private final FragmentOnAttachListener mFragmentOnAttachListener =
+            new FragmentOnAttachListener() {
+                @Override
+                public void onAttachFragment(@NonNull final FragmentManager fragmentManager,
+                                             @NonNull final Fragment fragment) {
+                    if (BuildConfig.DEBUG && DEBUG_SWITCHES.ATTACH_FRAGMENT) {
+                        Log.d(getClass().getName(), "onAttachFragment: " + fragment.getTag());
+                    }
+
+                    if (fragment instanceof MenuPickerDialogFragment) {
+                        ((MenuPickerDialogFragment) fragment).setListener(
+                                (menuItem, position) -> onContextItemSelected(menuItem, position));
+                    }
+                }
+            };
 
     @Override
     protected void onSetContentView() {
@@ -116,9 +136,10 @@ public class PreferredStylesActivity
     protected void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        getSupportFragmentManager().addFragmentOnAttachListener(mFragmentOnAttachListener);
+
         mModel = new ViewModelProvider(this).get(PreferredStylesViewModel.class);
-        mModel.init(this, Objects.requireNonNull(getIntent().getExtras(),
-                                                 ErrorMsg.ARGS_MISSING_EXTRAS));
+        mModel.init(this, Objects.requireNonNull(getIntent().getExtras(), ErrorMsg.NULL_EXTRAS));
 
         mListView = findViewById(R.id.stylesList);
         final LinearLayoutManager layoutManager = new LinearLayoutManager(this);
@@ -141,18 +162,6 @@ public class PreferredStylesActivity
 
         if (savedInstanceState == null) {
             TipManager.display(this, R.string.tip_booklist_styles_editor, null);
-        }
-    }
-
-    @Override
-    public void onAttachFragment(@NonNull final Fragment fragment) {
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.ATTACH_FRAGMENT) {
-            Log.d(getClass().getName(), "onAttachFragment: " + fragment.getTag());
-        }
-        super.onAttachFragment(fragment);
-
-        if (fragment instanceof MenuPickerDialogFragment) {
-            ((MenuPickerDialogFragment) fragment).setListener(this::onContextItemSelected);
         }
     }
 
@@ -552,8 +561,10 @@ public class PreferredStylesActivity
          */
         @Nullable
         BooklistStyle getSelected() {
-            return mSelectedPosition != RecyclerView.NO_POSITION ? getItem(mSelectedPosition)
-                                                                 : null;
+            if (mSelectedPosition != RecyclerView.NO_POSITION) {
+                return getItem(mSelectedPosition);
+            }
+            return null;
         }
 
         @Override

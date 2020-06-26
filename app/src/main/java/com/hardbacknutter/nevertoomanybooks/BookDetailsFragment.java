@@ -54,6 +54,8 @@ import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentOnAttachListener;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.preference.PreferenceManager;
 
@@ -123,6 +125,22 @@ public class BookDetailsFragment
         }
     };
 
+    /** (re)attach the result listener when a fragment gets started. */
+    private final FragmentOnAttachListener mFragmentOnAttachListener =
+            new FragmentOnAttachListener() {
+                @Override
+                public void onAttachFragment(@NonNull final FragmentManager fragmentManager,
+                                             @NonNull final Fragment fragment) {
+                    if (BuildConfig.DEBUG && DEBUG_SWITCHES.ATTACH_FRAGMENT) {
+                        Log.d(getClass().getName(), "onAttachFragment: " + fragment.getTag());
+                    }
+
+                    if (fragment instanceof BookChangedListenerOwner) {
+                        ((BookChangedListenerOwner) fragment).setListener(mBookChangedListener);
+                    }
+                }
+            };
+
     @NonNull
     @Override
     Fields getFields() {
@@ -132,6 +150,8 @@ public class BookDetailsFragment
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        getParentFragmentManager().addFragmentOnAttachListener(mFragmentOnAttachListener);
 
         mFragmentVM = new ViewModelProvider(this).get(BookDetailsFragmentViewModel.class);
         //noinspection ConstantConditions
@@ -229,18 +249,6 @@ public class BookDetailsFragment
 
         //noinspection ConstantConditions
         ((BookDetailsActivity) getActivity()).registerOnTouchListener(mOnTouchListener);
-    }
-
-    @Override
-    public void onAttachFragment(@NonNull final Fragment childFragment) {
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.ATTACH_FRAGMENT) {
-            Log.d(getClass().getName(), "onAttachFragment: " + childFragment.getTag());
-        }
-        super.onAttachFragment(childFragment);
-
-        if (childFragment instanceof BookChangedListenerOwner) {
-            ((BookChangedListenerOwner) childFragment).setListener(mBookChangedListener);
-        }
     }
 
     @Override

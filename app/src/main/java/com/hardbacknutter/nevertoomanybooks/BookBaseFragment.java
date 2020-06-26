@@ -45,6 +45,8 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentOnAttachListener;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.snackbar.Snackbar;
@@ -101,6 +103,22 @@ public abstract class BookBaseFragment
     @NonNull
     abstract Fields getFields();
 
+    /** (re)attach the result listener when a fragment gets started. */
+    private final FragmentOnAttachListener mFragmentOnAttachListener =
+            new FragmentOnAttachListener() {
+                @Override
+                public void onAttachFragment(@NonNull final FragmentManager fragmentManager,
+                                             @NonNull final Fragment fragment) {
+                    if (BuildConfig.DEBUG && DEBUG_SWITCHES.ATTACH_FRAGMENT) {
+                        Log.d(getClass().getName(), "onAttachFragment: " + fragment.getTag());
+                    }
+
+                    if (fragment instanceof CoverBrowserDialogFragment) {
+                        ((CoverBrowserDialogFragment) fragment).setListener(mOnFileSelected);
+                    }
+                }
+            };
+
     @Override
     public void onRequestPermissionsResult(final int requestCode,
                                            @NonNull final String[] permissions,
@@ -112,6 +130,8 @@ public abstract class BookBaseFragment
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        getParentFragmentManager().addFragmentOnAttachListener(mFragmentOnAttachListener);
 
         //noinspection ConstantConditions
         mBookViewModel = new ViewModelProvider(getActivity()).get(BookViewModel.class);
@@ -127,18 +147,6 @@ public abstract class BookBaseFragment
 
         //noinspection ConstantConditions
         mProgressBar = getActivity().findViewById(R.id.progressBar);
-    }
-
-    @Override
-    public void onAttachFragment(@NonNull final Fragment childFragment) {
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.ATTACH_FRAGMENT) {
-            Log.d(getClass().getName(), "onAttachFragment: " + childFragment.getTag());
-        }
-        super.onAttachFragment(childFragment);
-
-        if (childFragment instanceof CoverBrowserDialogFragment) {
-            ((CoverBrowserDialogFragment) childFragment).setListener(mOnFileSelected);
-        }
     }
 
     /**

@@ -42,6 +42,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentOnAttachListener;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -87,9 +88,27 @@ public class ImportFragment
                 }
             };
 
+    /** (re)attach the result listener when a fragment gets started. */
+    private final FragmentOnAttachListener mFragmentOnAttachListener =
+            new FragmentOnAttachListener() {
+                @Override
+                public void onAttachFragment(@NonNull final FragmentManager fragmentManager,
+                                             @NonNull final Fragment fragment) {
+                    if (BuildConfig.DEBUG && DEBUG_SWITCHES.ATTACH_FRAGMENT) {
+                        Log.d(getClass().getName(), "onAttachFragment: " + fragment.getTag());
+                    }
+
+                    if (fragment instanceof ImportHelperDialogFragment) {
+                        ((ImportHelperDialogFragment) fragment).setListener(mImportOptionsListener);
+                    }
+                }
+            };
+
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        getParentFragmentManager().addFragmentOnAttachListener(mFragmentOnAttachListener);
 
         //noinspection ConstantConditions
         mResultData = new ViewModelProvider(getActivity()).get(ResultDataModel.class);
@@ -112,18 +131,6 @@ public class ImportFragment
         mImportModel.onTaskProgress().observe(getViewLifecycleOwner(), this::onTaskProgress);
         mImportModel.onTaskFinished().observe(getViewLifecycleOwner(), this::onImportFinished);
         importPickUri();
-    }
-
-    @Override
-    public void onAttachFragment(@NonNull final Fragment childFragment) {
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.ATTACH_FRAGMENT) {
-            Log.d(getClass().getName(), "onAttachFragment: " + childFragment.getTag());
-        }
-        super.onAttachFragment(childFragment);
-
-        if (childFragment instanceof ImportHelperDialogFragment) {
-            ((ImportHelperDialogFragment) childFragment).setListener(mImportOptionsListener);
-        }
     }
 
     @Override

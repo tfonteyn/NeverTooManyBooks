@@ -42,6 +42,8 @@ import androidx.annotation.StringRes;
 import androidx.core.util.Pair;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentOnAttachListener;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.datepicker.MaterialDatePicker;
@@ -104,6 +106,33 @@ public abstract class EditBookBaseFragment
         onDateSet(fieldIdEnd, selection.second);
     };
 
+    /** (re)attach the result listener when a fragment gets started. */
+    private final FragmentOnAttachListener mFragmentOnAttachListener =
+            new FragmentOnAttachListener() {
+                @Override
+                public void onAttachFragment(@NonNull final FragmentManager fragmentManager,
+                                             @NonNull final Fragment fragment) {
+                    if (BuildConfig.DEBUG && DEBUG_SWITCHES.ATTACH_FRAGMENT) {
+                        Log.d(getClass().getName(), "onAttachFragment: " + fragment.getTag());
+                    }
+
+                    if (fragment instanceof PartialDatePickerDialogFragment) {
+                        ((PartialDatePickerDialogFragment) fragment)
+                                .setListener(mPartialDatePickerListener);
+
+                    } else if (TAG_DATE_PICKER_SINGLE.equals(fragment.getTag())) {
+                        //noinspection unchecked
+                        ((MaterialDatePicker<Long>) fragment)
+                                .addOnPositiveButtonClickListener(mDatePickerListener);
+
+                    } else if (TAG_DATE_PICKER_RANGE.equals(fragment.getTag())) {
+                        //noinspection unchecked
+                        ((MaterialDatePicker<Pair<Long, Long>>) fragment)
+                                .addOnPositiveButtonClickListener(mDateRangePickerListener);
+                    }
+                }
+            };
+
     /**
      * Convert a LocalDate to an Instant in time.
      *
@@ -146,6 +175,8 @@ public abstract class EditBookBaseFragment
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        getParentFragmentManager().addFragmentOnAttachListener(mFragmentOnAttachListener);
 
         final String fragmentTag = getTag();
         Objects.requireNonNull(fragmentTag, ErrorMsg.NULL_FRAGMENT_TAG);
@@ -205,29 +236,6 @@ public abstract class EditBookBaseFragment
 
         // hook up the Views, and calls {@link #onPopulateViews}
         super.onResume();
-    }
-
-    @Override
-    public void onAttachFragment(@NonNull final Fragment childFragment) {
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.ATTACH_FRAGMENT) {
-            Log.d(getClass().getName(), "onAttachFragment: " + childFragment.getTag());
-        }
-        super.onAttachFragment(childFragment);
-
-        if (childFragment instanceof PartialDatePickerDialogFragment) {
-            ((PartialDatePickerDialogFragment) childFragment)
-                    .setListener(mPartialDatePickerListener);
-
-        } else if (TAG_DATE_PICKER_SINGLE.equals(childFragment.getTag())) {
-            //noinspection unchecked
-            ((MaterialDatePicker<Long>) childFragment)
-                    .addOnPositiveButtonClickListener(mDatePickerListener);
-
-        } else if (TAG_DATE_PICKER_RANGE.equals(childFragment.getTag())) {
-            //noinspection unchecked
-            ((MaterialDatePicker<Pair<Long, Long>>) childFragment)
-                    .addOnPositiveButtonClickListener(mDateRangePickerListener);
-        }
     }
 
     /**
