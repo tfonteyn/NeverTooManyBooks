@@ -41,8 +41,6 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -267,7 +265,6 @@ public class EditBookSeriesListDialogFragment
             if (!original.getNumber().equals(modified.getNumber())) {
                 // so if the number is different, just update it
                 original.setNumber(modified.getNumber());
-                //noinspection ConstantConditions
                 Series.pruneList(mList, getContext(), mDb, true, bookLocale);
                 mListAdapter.notifyDataSetChanged();
             }
@@ -280,7 +277,6 @@ public class EditBookSeriesListDialogFragment
             // There is no need to consult the user.
             // Copy the new data into the original object that the user was changing.
             original.copyFrom(modified, true);
-            //noinspection ConstantConditions
             Series.pruneList(mList, getContext(), mDb, true, bookLocale);
             mListAdapter.notifyDataSetChanged();
             return;
@@ -288,49 +284,48 @@ public class EditBookSeriesListDialogFragment
 
         // At this point, we know the object was modified and it's used in more than one place.
         // We need to ask the user if they want to make the changes globally.
-        final String allBooks = getString(R.string.bookshelf_all_books);
-        final String message = getString(R.string.confirm_apply_series_changed,
-                                         original.getLabel(getContext()),
-                                         modified.getLabel(getContext()),
-                                         allBooks);
-        new MaterialAlertDialogBuilder(getContext())
-                .setIcon(R.drawable.ic_warning)
-                .setTitle(R.string.lbl_scope_of_change)
-                .setMessage(message)
-                .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
-                .setNeutralButton(allBooks, (d, w) -> {
-                    // copy all new data
-                    original.copyFrom(modified, true);
-                    // This change is done in the database right NOW!
-                    if (mDb.update(getContext(), original, bookLocale)) {
-                        Series.pruneList(mList, getContext(), mDb, true, bookLocale);
-                        mBookViewModel.refreshSeriesList(getContext());
-                        mListAdapter.notifyDataSetChanged();
+        StandardDialogs.confirmScopeForChange(
+                getContext(), original, modified,
+                () -> changeForAllBooks(original, modified, bookLocale),
+                () -> changeForThisBook(original, modified, bookLocale));
+    }
 
-                    } else {
-                        Logger.warnWithStackTrace(getContext(), TAG, "Could not update",
-                                                  "series=" + original,
-                                                  "tmpSeries=" + modified);
-                        StandardDialogs.showError(getContext(), R.string.error_unexpected_error);
-                    }
-                })
-                .setPositiveButton(R.string.btn_this_book, (d, w) -> {
-                    // treat the new data as a new Series; save it so we have a valid id.
-                    // Note that if the user abandons the entire book edit,
-                    // we will orphan this new Series. That's ok, it will get
-                    // garbage collected from the database sooner or later.
-                    mDb.insert(getContext(), modified, bookLocale);
-                    // unlink the old one (and unmodified), and link with the new one
-                    // book/series positions will be fixed up when saving.
-                    // Note that the old one *might* be orphaned at this time.
-                    // Same remark as above.
-                    mList.remove(original);
-                    mList.add(modified);
-                    Series.pruneList(mList, getContext(), mDb, true, bookLocale);
-                    mListAdapter.notifyDataSetChanged();
-                })
-                .create()
-                .show();
+    private void changeForAllBooks(@NonNull final Series original,
+                                   @NonNull final Series modified,
+                                   @NonNull final Locale bookLocale) {
+        // copy all new data
+        original.copyFrom(modified, true);
+        // This change is done in the database right NOW!
+        //noinspection ConstantConditions
+        if (mDb.update(getContext(), original, bookLocale)) {
+            Series.pruneList(mList, getContext(), mDb, true, bookLocale);
+            mBookViewModel.refreshSeriesList(getContext());
+            mListAdapter.notifyDataSetChanged();
+
+        } else {
+            Logger.warnWithStackTrace(getContext(), TAG, "Could not update",
+                                      "original=" + original,
+                                      "modified=" + modified);
+            StandardDialogs.showError(getContext(), R.string.error_unexpected_error);
+        }
+    }
+
+    private void changeForThisBook(@NonNull final Series original,
+                                   @NonNull final Series modified,
+                                   @NonNull final Locale bookLocale) {
+        // treat the new data as a new Series; save it so we have a valid id.
+        // Note that if the user abandons the entire book edit,
+        // we will orphan this new Series. That's ok, it will get
+        // garbage collected from the database sooner or later.
+        //noinspection ConstantConditions
+        mDb.insert(getContext(), modified, bookLocale);
+        // unlink the original, and link with the new one
+        // Note that the original *might* be orphaned at this time.
+        // Same remark as above.
+        mList.remove(original);
+        mList.add(modified);
+        Series.pruneList(mList, getContext(), mDb, true, bookLocale);
+        mListAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -420,7 +415,7 @@ public class EditBookSeriesListDialogFragment
 
             final Bundle args = requireArguments();
             mSeries = args.getParcelable(DBDefinitions.KEY_FK_SERIES);
-            Objects.requireNonNull(mSeries, ErrorMsg.ARGS_MISSING_SERIES);
+            Objects.requireNonNull(mSeries, ErrorMsg.NULL_SERIES);
 
             mBookTitle = args.getString(DBDefinitions.KEY_TITLE);
 
@@ -443,7 +438,7 @@ public class EditBookSeriesListDialogFragment
 
             mVb = DialogEditBookSeriesBinding.bind(view);
 
-            Objects.requireNonNull(getTargetFragment(), ErrorMsg.NO_TARGET_FRAGMENT_SET);
+            Objects.requireNonNull(getTargetFragment(), ErrorMsg.NULL_TARGET_FRAGMENT);
 
             mVb.toolbar.setSubtitle(mBookTitle);
             mVb.toolbar.setNavigationOnClickListener(v -> dismiss());

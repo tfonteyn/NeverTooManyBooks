@@ -44,8 +44,6 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -275,7 +273,6 @@ public class EditBookAuthorListDialogFragment
             if (original.getType() != modified.getType()) {
                 // so if the type is different, just update it
                 original.setType(modified.getType());
-                //noinspection ConstantConditions
                 Author.pruneList(mList, getContext(), mDb, true, bookLocale);
                 mListAdapter.notifyDataSetChanged();
             }
@@ -288,7 +285,6 @@ public class EditBookAuthorListDialogFragment
             // There is no need to consult the user.
             // Copy the new data into the original object that the user was changing.
             original.copyFrom(modified, true);
-            //noinspection ConstantConditions
             Author.pruneList(mList, getContext(), mDb, true, bookLocale);
             mListAdapter.notifyDataSetChanged();
             return;
@@ -296,68 +292,67 @@ public class EditBookAuthorListDialogFragment
 
         // At this point, we know the object was modified and it's used in more than one place.
         // We need to ask the user if they want to make the changes globally.
-        final String allBooks = getString(R.string.bookshelf_all_books);
-        final String message = getString(R.string.confirm_apply_author_changed,
-                                         original.getLabel(getContext()),
-                                         modified.getLabel(getContext()),
-                                         allBooks);
-        new MaterialAlertDialogBuilder(getContext())
-                .setIcon(R.drawable.ic_warning)
-                .setTitle(R.string.lbl_scope_of_change)
-                .setMessage(message)
-                .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
-                .setNeutralButton(allBooks, (d, w) -> {
-                    // copy all new data
-                    original.copyFrom(modified, true);
-                    // This change is done in the database right NOW!
-                    if (mDb.update(getContext(), original)) {
-                        Author.pruneList(mList, getContext(), mDb, true, bookLocale);
-                        mBookViewModel.refreshAuthorList(getContext());
-                        mListAdapter.notifyDataSetChanged();
+        StandardDialogs.confirmScopeForChange(
+                getContext(), original, modified,
+                () -> changeForAllBooks(original, modified, bookLocale),
+                () -> changeForThisBook(original, modified, bookLocale));
+    }
 
-                    } else {
-                        Logger.warnWithStackTrace(getContext(), TAG, "Could not update",
-                                                  "author=" + original,
-                                                  "tmpAuthor=" + modified);
-                        StandardDialogs.showError(getContext(), R.string.error_unexpected_error);
-                    }
-                })
-                .setPositiveButton(R.string.btn_this_book, (d, w) -> {
-                    // treat the new data as a new Author; save it so we have a valid id.
-                    // Note that if the user abandons the entire book edit,
-                    // we will orphan this new Author. That's ok, it will get
-                    // garbage collected from the database sooner or later.
-                    mDb.insert(getContext(), modified);
-                    // unlink the old one (and unmodified), and link with the new one
-                    // book/author positions will be fixed up when saving.
-                    // Note that the old one *might* be orphaned at this time.
-                    // Same remark as above.
-                    mList.remove(original);
-                    mList.add(modified);
-                    Author.pruneList(mList, getContext(), mDb, true, bookLocale);
-                    mListAdapter.notifyDataSetChanged();
+    private void changeForAllBooks(@NonNull final Author original,
+                                   @NonNull final Author modified,
+                                   @NonNull final Locale bookLocale) {
+        // copy all new data
+        original.copyFrom(modified, true);
+        // This change is done in the database right NOW!
+        //noinspection ConstantConditions
+        if (mDb.update(getContext(), original)) {
+            Author.pruneList(mList, getContext(), mDb, true, bookLocale);
+            mBookViewModel.refreshAuthorList(getContext());
+            mListAdapter.notifyDataSetChanged();
 
-                    //URGENT: updated author(s): Book gets them, but TocEntries remain using old set
-                    //
-                    // A TocEntry is unique based on author and title_od.
-                    // Updating the in-memory TOC list and/or the TocEntries stored in the database
-                    // with the new author:
-                    // .
-                    // The problem is two-fold:
-                    // If we simply create a new TocEntry?
-                    // - old one not used anywhere else ? ok, just delete it
-                    // - old one present in other books ? replace ? leave as-is ?
-                    // but it's the SAME story (text), now existing with two different authors.
-                    // - update the TocEntry as-is... i.e. in the database?
-                    // .. more headaches....
-                    // .
-                    // SOLUTION one of:
-                    // - just ASK the user with a "mod toc" or "no"
-                    // - don't bother, assume this won't be needed very often and
-                    //   have the user will do it manually
-                })
-                .create()
-                .show();
+        } else {
+            Logger.warnWithStackTrace(getContext(), TAG, "Could not update",
+                                      "original=" + original,
+                                      "modified=" + modified);
+            StandardDialogs.showError(getContext(), R.string.error_unexpected_error);
+        }
+    }
+
+    private void changeForThisBook(@NonNull final Author original,
+                                   @NonNull final Author modified,
+                                   @NonNull final Locale bookLocale) {
+        // treat the new data as a new Author; save it so we have a valid id.
+        // Note that if the user abandons the entire book edit,
+        // we will orphan this new Author. That's ok, it will get
+        // garbage collected from the database sooner or later.
+        //noinspection ConstantConditions
+        mDb.insert(getContext(), modified);
+        // unlink the original, and link with the new one
+        // Note that the original *might* be orphaned at this time.
+        // Same remark as above.
+        mList.remove(original);
+        mList.add(modified);
+        Author.pruneList(mList, getContext(), mDb, true, bookLocale);
+        mListAdapter.notifyDataSetChanged();
+
+        //URGENT: updated author(s): Book gets them, but TocEntries remain using old set
+        //
+        // A TocEntry is unique based on author and title_od.
+        // Updating the in-memory TOC list and/or the TocEntries stored in the database
+        // with the new author:
+        // .
+        // The problem is two-fold:
+        // If we simply create a new TocEntry?
+        // - old one not used anywhere else ? ok, just delete it
+        // - old one present in other books ? replace ? leave as-is ?
+        // but it's the SAME story (text), now existing with two different authors.
+        // - update the TocEntry as-is... i.e. in the database?
+        // .. more headaches....
+        // .
+        // SOLUTION one of:
+        // - just ASK the user with a "mod toc" or "no"
+        // - don't bother, assume this won't be needed very often and
+        //   have the user will do it manually
     }
 
     @Override
@@ -457,7 +452,7 @@ public class EditBookAuthorListDialogFragment
 
             final Bundle args = requireArguments();
             mAuthor = args.getParcelable(DBDefinitions.KEY_FK_AUTHOR);
-            Objects.requireNonNull(mAuthor, ErrorMsg.ARGS_MISSING_AUTHOR);
+            Objects.requireNonNull(mAuthor, ErrorMsg.NULL_AUTHOR);
 
             mBookTitle = args.getString(DBDefinitions.KEY_TITLE);
 
@@ -482,7 +477,7 @@ public class EditBookAuthorListDialogFragment
 
             mVb = DialogEditBookAuthorBinding.bind(view);
 
-            Objects.requireNonNull(getTargetFragment(), ErrorMsg.NO_TARGET_FRAGMENT_SET);
+            Objects.requireNonNull(getTargetFragment(), ErrorMsg.NULL_TARGET_FRAGMENT);
 
             mVb.toolbar.setSubtitle(mBookTitle);
             mVb.toolbar.setNavigationOnClickListener(v -> dismiss());

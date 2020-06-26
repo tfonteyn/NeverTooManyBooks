@@ -81,6 +81,37 @@ public final class StandardDialogs {
     }
 
     /**
+     * Show a dialog asking if the indicated change should be applied to all books,
+     * or just the current book.
+     *
+     * @param context    Current context
+     * @param original   entity
+     * @param modified   entity
+     * @param onAllBooks Runnable to execute if the user 'all books''
+     * @param onThisBook Runnable to execute if the user 'this book''
+     */
+    public static void confirmScopeForChange(@NonNull final Context context,
+                                             @NonNull final Entity original,
+                                             @NonNull final Entity modified,
+                                             @NonNull final Runnable onAllBooks,
+                                             @NonNull final Runnable onThisBook) {
+        final String allBooks = context.getString(R.string.bookshelf_all_books);
+        final String message = context.getString(R.string.confirm_scope_for_change,
+                                                 original.getLabel(context),
+                                                 modified.getLabel(context),
+                                                 allBooks);
+        new MaterialAlertDialogBuilder(context)
+                .setIcon(R.drawable.ic_warning)
+                .setTitle(R.string.lbl_scope_of_change)
+                .setMessage(message)
+                .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
+                .setNeutralButton(allBooks, (d, w) -> onAllBooks.run())
+                .setPositiveButton(R.string.btn_this_book, (d, w) -> onThisBook.run())
+                .create()
+                .show();
+    }
+
+    /**
      * Show a dialog asking if unsaved edits should be ignored.
      * <p>
      * To show the Save and/or Exit button, you must provide a Runnable, even an empty one.
@@ -122,7 +153,7 @@ public final class StandardDialogs {
                                     @NonNull final Runnable onConfirm) {
         new MaterialAlertDialogBuilder(context)
                 .setIcon(R.drawable.ic_warning)
-                .setTitle(R.string.lbl_delete_series)
+                .setTitle(R.string.action_delete)
                 .setMessage(context.getString(R.string.confirm_delete_series,
                                               series.getLabel(context)))
                 .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
@@ -143,7 +174,7 @@ public final class StandardDialogs {
                                        @NonNull final Runnable onConfirm) {
         new MaterialAlertDialogBuilder(context)
                 .setIcon(R.drawable.ic_warning)
-                .setTitle(R.string.lbl_delete_publisher)
+                .setTitle(R.string.action_delete)
                 .setMessage(context.getString(R.string.confirm_delete_publisher,
                                               publisher.getLabel(context)))
                 .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
@@ -164,7 +195,7 @@ public final class StandardDialogs {
                                       @NonNull final Runnable onConfirm) {
         new MaterialAlertDialogBuilder(context)
                 .setIcon(R.drawable.ic_warning)
-                .setTitle(R.string.lbl_delete_toc_entry)
+                .setTitle(R.string.action_delete)
                 .setMessage(context.getString(R.string.confirm_delete_toc_entry,
                                               tocEntry.getLabel(context),
                                               tocEntry.getAuthor().getLabel(context)))
@@ -209,7 +240,7 @@ public final class StandardDialogs {
 
         new MaterialAlertDialogBuilder(context)
                 .setIcon(R.drawable.ic_warning)
-                .setTitle(R.string.lbl_delete_book)
+                .setTitle(R.string.action_delete)
                 .setMessage(context.getString(R.string.confirm_delete_book, title, authors))
                 .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
                 .setPositiveButton(android.R.string.ok, (d, w) -> onConfirm.run())
