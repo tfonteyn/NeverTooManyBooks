@@ -39,6 +39,7 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.io.Writer;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Locale;
@@ -504,6 +505,8 @@ public class XmlExporter
 
         long lastUpdate = 0;
 
+        final Book book = new Book();
+
         try (Cursor cursor = mDb.fetchBooksForExport(mUtcSinceDateTime)) {
             writer.write('<' + XmlTags.TAG_BOOK_LIST);
             writer.write(XmlUtils.versionAttr(XML_EXPORTER_BOOKS_VERSION));
@@ -513,10 +516,11 @@ public class XmlExporter
             int progressMaxCount = progressListener.getMax() + cursor.getCount();
             progressListener.setMax(progressMaxCount);
 
-            final DataHolder bookData = new CursorRow(cursor);
             while (cursor.moveToNext() && !progressListener.isCancelled()) {
 
-                String title = bookData.getString(DBDefinitions.KEY_TITLE);
+                book.load(cursor, mDb);
+
+                String title = book.getString(DBDefinitions.KEY_TITLE);
                 // Sanity check: ensure title is non-blank.
                 if (title.trim().isEmpty()) {
                     title = mUnknownString;
@@ -524,100 +528,155 @@ public class XmlExporter
 
                 // it's a buffered writer, no need to first StringBuilder the line.
                 writer.write('<' + XmlTags.TAG_BOOK);
-                writer.write(XmlUtils.idAttr(bookData.getLong(DBDefinitions.KEY_PK_ID)));
+                writer.write(XmlUtils.idAttr(book.getLong(DBDefinitions.KEY_PK_ID)));
                 writer.write(XmlUtils.attr(DBDefinitions.KEY_TITLE, title));
                 writer.write(XmlUtils.attr(DBDefinitions.KEY_ISBN,
-                                           bookData.getString(DBDefinitions.KEY_ISBN)));
+                                           book.getString(DBDefinitions.KEY_ISBN)));
                 writer.write(XmlUtils.attr(DBDefinitions.KEY_BOOK_UUID,
-                                           bookData.getString(DBDefinitions.KEY_BOOK_UUID)));
+                                           book.getString(DBDefinitions.KEY_BOOK_UUID)));
                 writer.write(XmlUtils.attr(DBDefinitions.KEY_UTC_ADDED,
-                                           bookData.getString(DBDefinitions.KEY_UTC_ADDED)));
+                                           book.getString(DBDefinitions.KEY_UTC_ADDED)));
                 writer.write(XmlUtils.attr(DBDefinitions.KEY_UTC_LAST_UPDATED,
-                                           bookData.getString(DBDefinitions.KEY_UTC_LAST_UPDATED)));
+                                           book.getString(DBDefinitions.KEY_UTC_LAST_UPDATED)));
                 writer.write(XmlUtils.attr(DBDefinitions.KEY_READ,
-                                           bookData.getBoolean(DBDefinitions.KEY_READ)));
+                                           book.getBoolean(DBDefinitions.KEY_READ)));
                 writer.write(XmlUtils.attr(DBDefinitions.KEY_READ_START,
-                                           bookData.getString(DBDefinitions.KEY_READ_START)));
+                                           book.getString(DBDefinitions.KEY_READ_START)));
                 writer.write(XmlUtils.attr(DBDefinitions.KEY_READ_END,
-                                           bookData.getString(DBDefinitions.KEY_READ_END)));
+                                           book.getString(DBDefinitions.KEY_READ_END)));
 
                 writer.write(XmlUtils.attr(DBDefinitions.KEY_PRINT_RUN,
-                                           bookData.getString(DBDefinitions.KEY_PRINT_RUN)));
+                                           book.getString(DBDefinitions.KEY_PRINT_RUN)));
                 writer.write(XmlUtils.attr(DBDefinitions.KEY_DATE_PUBLISHED,
-                                           bookData.getString(DBDefinitions.KEY_DATE_PUBLISHED)));
+                                           book.getString(DBDefinitions.KEY_DATE_PUBLISHED)));
                 writer.write(XmlUtils.attr(DBDefinitions.KEY_PRICE_LISTED,
-                                           bookData.getDouble(DBDefinitions.KEY_PRICE_LISTED)));
+                                           book.getDouble(DBDefinitions.KEY_PRICE_LISTED)));
                 writer.write(XmlUtils.attr(DBDefinitions.KEY_PRICE_LISTED_CURRENCY,
-                                           bookData.getString(
+                                           book.getString(
                                                    DBDefinitions.KEY_PRICE_LISTED_CURRENCY)));
                 writer.write(XmlUtils.attr(DBDefinitions.KEY_DATE_FIRST_PUBLICATION,
-                                           bookData.getString(
+                                           book.getString(
                                                    DBDefinitions.KEY_DATE_FIRST_PUBLICATION)));
                 writer.write(XmlUtils.attr(DBDefinitions.KEY_FORMAT,
-                                           bookData.getString(DBDefinitions.KEY_FORMAT)));
+                                           book.getString(DBDefinitions.KEY_FORMAT)));
                 writer.write(XmlUtils.attr(DBDefinitions.KEY_COLOR,
-                                           bookData.getString(DBDefinitions.KEY_COLOR)));
+                                           book.getString(DBDefinitions.KEY_COLOR)));
                 writer.write(XmlUtils.attr(DBDefinitions.KEY_PAGES,
-                                           bookData.getString(DBDefinitions.KEY_PAGES)));
+                                           book.getString(DBDefinitions.KEY_PAGES)));
                 writer.write(XmlUtils.attr(DBDefinitions.KEY_GENRE,
-                                           bookData.getString(DBDefinitions.KEY_GENRE)));
+                                           book.getString(DBDefinitions.KEY_GENRE)));
                 writer.write(XmlUtils.attr(DBDefinitions.KEY_LANGUAGE,
-                                           bookData.getString(DBDefinitions.KEY_LANGUAGE)));
+                                           book.getString(DBDefinitions.KEY_LANGUAGE)));
                 writer.write(XmlUtils.attr(DBDefinitions.KEY_TOC_BITMASK,
-                                           bookData.getLong(DBDefinitions.KEY_TOC_BITMASK)));
+                                           book.getLong(DBDefinitions.KEY_TOC_BITMASK)));
 
                 writer.write(XmlUtils.attr(DBDefinitions.KEY_BOOK_CONDITION,
-                                           bookData.getInt(DBDefinitions.KEY_BOOK_CONDITION)));
+                                           book.getInt(DBDefinitions.KEY_BOOK_CONDITION)));
                 writer.write(XmlUtils.attr(DBDefinitions.KEY_BOOK_CONDITION_COVER,
-                                           bookData.getInt(
+                                           book.getInt(
                                                    DBDefinitions.KEY_BOOK_CONDITION_COVER)));
 
                 writer.write(XmlUtils.attr(DBDefinitions.KEY_PRICE_PAID,
-                                           bookData.getDouble(DBDefinitions.KEY_PRICE_PAID)));
+                                           book.getDouble(DBDefinitions.KEY_PRICE_PAID)));
                 writer.write(XmlUtils.attr(DBDefinitions.KEY_PRICE_PAID_CURRENCY,
-                                           bookData.getString(
+                                           book.getString(
                                                    DBDefinitions.KEY_PRICE_PAID_CURRENCY)));
                 writer.write(XmlUtils.attr(DBDefinitions.KEY_DATE_ACQUIRED,
-                                           bookData.getString(DBDefinitions.KEY_DATE_ACQUIRED)));
+                                           book.getString(DBDefinitions.KEY_DATE_ACQUIRED)));
                 writer.write(XmlUtils.attr(DBDefinitions.KEY_LOCATION,
-                                           bookData.getString(DBDefinitions.KEY_LOCATION)));
+                                           book.getString(DBDefinitions.KEY_LOCATION)));
                 writer.write(XmlUtils.attr(DBDefinitions.KEY_RATING,
-                                           bookData.getDouble(DBDefinitions.KEY_RATING)));
+                                           book.getDouble(DBDefinitions.KEY_RATING)));
                 writer.write(XmlUtils.attr(DBDefinitions.KEY_SIGNED,
-                                           bookData.getBoolean(DBDefinitions.KEY_SIGNED)));
+                                           book.getBoolean(DBDefinitions.KEY_SIGNED)));
                 writer.write(XmlUtils.attr(DBDefinitions.KEY_EDITION_BITMASK,
-                                           bookData.getLong(DBDefinitions.KEY_EDITION_BITMASK)));
+                                           book.getLong(DBDefinitions.KEY_EDITION_BITMASK)));
 
                 // external ID's
                 //NEWTHINGS: add new site specific ID: add attribute
                 writer.write(XmlUtils.attr(DBDefinitions.KEY_EID_LIBRARY_THING,
-                                           bookData.getLong(DBDefinitions.KEY_EID_LIBRARY_THING)));
+                                           book.getLong(DBDefinitions.KEY_EID_LIBRARY_THING)));
                 writer.write(XmlUtils.attr(DBDefinitions.KEY_EID_STRIP_INFO_BE,
-                                           bookData.getLong(DBDefinitions.KEY_EID_STRIP_INFO_BE)));
+                                           book.getLong(DBDefinitions.KEY_EID_STRIP_INFO_BE)));
                 writer.write(XmlUtils.attr(DBDefinitions.KEY_EID_OPEN_LIBRARY,
-                                           bookData.getString(DBDefinitions.KEY_EID_OPEN_LIBRARY)));
+                                           book.getString(DBDefinitions.KEY_EID_OPEN_LIBRARY)));
                 writer.write(XmlUtils.attr(DBDefinitions.KEY_EID_ISFDB,
-                                           bookData.getLong(DBDefinitions.KEY_EID_ISFDB)));
+                                           book.getLong(DBDefinitions.KEY_EID_ISFDB)));
                 writer.write(XmlUtils.attr(DBDefinitions.KEY_EID_GOODREADS_BOOK,
-                                           bookData.getLong(DBDefinitions.KEY_EID_GOODREADS_BOOK)));
+                                           book.getLong(DBDefinitions.KEY_EID_GOODREADS_BOOK)));
                 writer.write(XmlUtils.attr(
                         DBDefinitions.KEY_UTC_LAST_SYNC_DATE_GOODREADS,
-                        bookData.getString(DBDefinitions.KEY_UTC_LAST_SYNC_DATE_GOODREADS)));
+                        book.getString(DBDefinitions.KEY_UTC_LAST_SYNC_DATE_GOODREADS)));
 
                 // cross-linked with the loanee table
                 writer.write(XmlUtils.attr(DBDefinitions.KEY_LOANEE,
-                                           bookData.getString(DBDefinitions.KEY_LOANEE)));
+                                           book.getString(DBDefinitions.KEY_LOANEE)));
 
-                // close the tag
+                // close the start tag
                 writer.write(">\n");
 
-                // last are the text field tags
-                writer.write(XmlUtils.tagWithCData(DBDefinitions.KEY_DESCRIPTION, null,
-                                                   bookData.getString(
-                                                           DBDefinitions.KEY_DESCRIPTION)));
-                writer.write(XmlUtils.tagWithCData(DBDefinitions.KEY_PRIVATE_NOTES, null,
-                                                   bookData.getString(
-                                                           DBDefinitions.KEY_PRIVATE_NOTES)));
+                // the text field tags
+                writer.write(XmlUtils.tagWithCData(
+                        DBDefinitions.KEY_DESCRIPTION, null,
+                        book.getString(DBDefinitions.KEY_DESCRIPTION)));
+                writer.write(XmlUtils.tagWithCData(
+                        DBDefinitions.KEY_PRIVATE_NOTES, null,
+                        book.getString(DBDefinitions.KEY_PRIVATE_NOTES)));
+
+
+                final ArrayList<Author> authors =
+                        book.getParcelableArrayList(Book.BKEY_AUTHOR_ARRAY);
+                writer.write('<' + XmlTags.TAG_AUTHOR_LIST);
+                writer.write(XmlUtils.sizeAttr(authors.size()));
+                writer.write(">\n");
+                for (Author author : authors) {
+                    writer.write('<' + XmlTags.TAG_AUTHOR);
+                    writer.write(XmlUtils.idAttr(author.getId()));
+                    writer.write("/>\n");
+                }
+                writer.write("</" + XmlTags.TAG_AUTHOR_LIST + ">\n");
+
+
+                final ArrayList<Series> seriesList =
+                        book.getParcelableArrayList(Book.BKEY_SERIES_ARRAY);
+                writer.write('<' + XmlTags.TAG_SERIES_LIST);
+                writer.write(XmlUtils.sizeAttr(seriesList.size()));
+                writer.write(">\n");
+                for (Series series : seriesList) {
+                    writer.write('<' + XmlTags.TAG_SERIES);
+                    writer.write(XmlUtils.idAttr(series.getId()));
+                    writer.write(XmlUtils.attr(DBDefinitions.KEY_BOOK_NUM_IN_SERIES,
+                                               series.getNumber()));
+                    writer.write("/>\n");
+                }
+                writer.write("</" + XmlTags.TAG_SERIES_LIST + ">\n");
+
+
+                final ArrayList<Publisher> publishers =
+                        book.getParcelableArrayList(Book.BKEY_PUBLISHER_ARRAY);
+                writer.write('<' + XmlTags.TAG_PUBLISHER_LIST);
+                writer.write(XmlUtils.sizeAttr(publishers.size()));
+                writer.write(">\n");
+                for (Publisher publisher : publishers) {
+                    writer.write('<' + XmlTags.TAG_PUBLISHER);
+                    writer.write(XmlUtils.idAttr(publisher.getId()));
+                    writer.write("/>\n");
+                }
+                writer.write("</" + XmlTags.TAG_PUBLISHER_LIST + ">\n");
+
+
+                final ArrayList<Bookshelf> bookshelves =
+                        book.getParcelableArrayList(Book.BKEY_BOOKSHELF_ARRAY);
+                writer.write('<' + XmlTags.TAG_BOOKSHELF_LIST);
+                writer.write(XmlUtils.sizeAttr(bookshelves.size()));
+                writer.write(">\n");
+                for (Bookshelf bookshelf : bookshelves) {
+                    writer.write('<' + XmlTags.TAG_BOOKSHELF);
+                    writer.write(XmlUtils.idAttr(bookshelf.getId()));
+                    writer.write("/>\n");
+                }
+                writer.write("</" + XmlTags.TAG_BOOKSHELF_LIST + ">\n");
+
 
                 writer.write("</" + XmlTags.TAG_BOOK + ">\n");
 
