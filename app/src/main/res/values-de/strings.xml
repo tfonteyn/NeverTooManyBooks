@@ -84,8 +84,7 @@
     <string name="btn_this_book">Dieses Buch</string>
     <string name="bytes">%.0fB</string>
     <string name="action_clear">Klar</string>
-    <string name="confirm_apply_author_changed">Der Autor wurde geändert\n\n von „%1$s“\n in „%2$s“\n \nWie wollen Sie diese Änderung übernehmen?\n\nHinweis: Die Auswahl „%3$s“ wird sofort übernommen.</string>
-    <string name="confirm_apply_series_changed">Die Serie wurde geändert\n\n von „%1$s“\n in „%2$s“\n \nWie wollen Sie diese Änderung übernehmen?\n\nHinweis: Die Auswahl „%3$s“ wird sofort übernommen.</string>
+    <string name="confirm_scope_for_change">Sie haben Folgendes geändert:\n „%1$s“\n in\n „%2$s“\n\nWie wollen Sie diese Änderung übernehmen?\n\nHinweis: Die Auswahl „%3$s“ wird sofort übernommen.</string>
     <string name="confirm_delete_book">Dieser Vorgang löscht das Buch mit dem Titel „%1$s“ von „%2$s“ vollständig. Wollen Sie das Buch löschen?</string>
     <string name="confirm_delete_series">Soll die Serie „%1$s“ gelöscht werden?\n\nDie Bücher werden nicht gelöscht.\n\n Berücksichtigen Sie, dass Sie ggf. den Namen der Serie ändern können, um die Daten der Serie zu behalten.</string>
     <string name="confirm_delete_toc_entry">Den Eintrag „%1$s“ (von %2$s) wirklich löschen? Es wird aus allen Büchern gelöscht, in denen es aufgeführt ist. Die Bücher selbst werden nicht gelöscht.</string>
@@ -583,9 +582,9 @@
     <string name="lbl_backing_up">Sichere…</string>
     <string name="lbl_clone_style">Stil klonen</string>
     <string name="lbl_cover_long">Cover-Bild</string>
-    <string name="lbl_delete_book">Buch löschen</string>
-    <string name="lbl_delete_series">Serie löschen</string>
-    <string name="lbl_delete_toc_entry">Titel löschen</string>
+    <string name="X_lbl_delete_book">Buch löschen</string>
+    <string name="X_lbl_delete_series">Serie löschen</string>
+    <string name="X_lbl_delete_toc_entry">Titel löschen</string>
     <string name="lbl_details_have_changed">Details wurden geändert</string>
     <string name="lbl_duplicate_book">Buch vervielfältigen</string>
     <string name="X_lbl_edit_author">Autor bearbeiten</string>
@@ -688,4 +687,11 @@
     <string name="info_filter_edition">Wählen Sie 0 oder mehr Optionen aus und tippen Sie auf „OK“, um sie anzuwenden, oder tippen Sie auf „Alle Bücher“, um alle zu ignorieren.</string>
     <string name="notification_channel_warn">Warnung</string>
     <string name="warning_already_in_list">Schon in der Liste!</string>
+    <string name="pe_bob_filter_isbn_no">Ohne ISBN</string>
+    <string name="pe_bob_filter_isbn_yes">Mit ISBN</string>
+    <string name="lbl_publishers">Verlag</string>
+    <string name="hint_empty_publisher">(Kein Verlag)</string>
+    <string name="pt_bob_books_under_multiple_publisher">Bücher mit mehreren Verlagen anzeigen.</string>
+    <string name="pv_bob_books_under_multiple_primary_publisher_only">nur unter ihrem Hauptverleger.</string>
+    <string name="pv_bob_books_under_multiple_each_publisher">unter jedem Verlag.</string>
 </resources>

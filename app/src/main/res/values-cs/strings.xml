@@ -81,8 +81,7 @@
     <string name="btn_this_book">Tato kniha</string>
     <string name="bytes">%.0fB</string>
     <string name="action_clear">Jasné</string>
-    <string name="confirm_apply_author_changed">Změnil jste autora\n\n z „%1$s“\n na „%2$s“\n \nJak si přejete aplikovat tuto změnu?\n\nUpozornění: Volba „%3$s“ bude aplikována okamžitě.</string>
-    <string name="confirm_apply_series_changed">Změnil jste sérii\n\n z „%1$s“\n na „%2$s“\n \nJak si přejete aplikovat tuto změnu?\n\nUpozornění: Volba „%3$s“ bude aplikována okamžitě.</string>
+    <string name="confirm_scope_for_change">Změnili jste:\n „%1$s“\n na\n „%2$s“\n\nJak si přejete aplikovat tuto změnu?\n\nUpozornění: Volba „%3$s“ bude aplikována okamžitě.</string>
     <string name="confirm_delete_book">Tímto kompletně odstraníte knihu „%1$s“ od %2$s. Určitě chcete pokračovat?</string>
     <string name="confirm_delete_series">Opravdu chcete smazat série „%1$s“?\n\nSamotná kniha nebude smazána.\n\nZvažte prosím úpravu série a změnu názvu série s ohledem na korektnost dat.</string>
     <string name="confirm_delete_toc_entry">Odstraňte název „%1$s“ (z %2$s)? Bude odstraněn ze všech knih, ve kterých je uveden. Samotné knihy nebudou smazány.</string>
@@ -575,9 +574,9 @@
     <string name="lbl_backing_up">Zálohování…</string>
     <string name="lbl_clone_style">Klonovat styl</string>
     <string name="lbl_cover_long">Náhled obálky</string>
-    <string name="lbl_delete_book">Smazat knihu</string>
-    <string name="lbl_delete_series">Smazat série</string>
-    <string name="lbl_delete_toc_entry">Smazat název</string>
+    <string name="X_lbl_delete_book">Smazat knihu</string>
+    <string name="X_lbl_delete_series">Smazat série</string>
+    <string name="X_lbl_delete_toc_entry">Smazat název</string>
     <string name="lbl_details_have_changed">Podrobnosti se změnily</string>
     <string name="lbl_duplicate_book">Duplicitní kniha</string>
     <string name="X_lbl_edit_author">Upravit autory</string>
@@ -681,5 +680,12 @@
     <string name="info_filter_edition">Vyberte 0 nebo více možností a klepnutím na „OK“ je použijete, nebo klepnutím na „Všechny knihy“ ignorujete všechny.</string>
     <string name="notification_channel_warn">Pozor</string>
     <string name="warning_already_in_list">Již v seznamu!</string>
+    <string name="pe_bob_filter_isbn_no">Bez ISBN</string>
+    <string name="pe_bob_filter_isbn_yes">S ISBN</string>
+    <string name="lbl_publishers">Vydavatelé</string>
+    <string name="hint_empty_publisher">(Žádný vydavatel)</string>
+    <string name="pt_bob_books_under_multiple_publisher">Zobrazit knihy s více vydavateli.</string>
+    <string name="pv_bob_books_under_multiple_primary_publisher_only">pouze pod jejich primárním vydavatelem.</string>
+    <string name="pv_bob_books_under_multiple_each_publisher">pod každým vydavatelem.</string>
 
 </resources>

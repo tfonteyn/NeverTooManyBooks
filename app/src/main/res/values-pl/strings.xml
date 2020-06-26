@@ -81,8 +81,7 @@
     <string name="btn_this_book">Ta książka</string>
     <string name="bytes">%.0fB</string>
     <string name="action_clear">Wyczyść</string>
-    <string name="confirm_apply_author_changed">Zmieniłeś autora\n\n z „%1$s”\n na „%2$s”\n \nJak chcesz zastosować tę zmianę?\n\nUwaga: Zmiana „%3$s” zostanie wykonana natychmiast.</string>
-    <string name="confirm_apply_series_changed">Zmieniłeś serię\n\n z „%1$s”\n na „%2$s”\n \nJak chcesz zastosować tę zmianę?\n\nUwaga: Zmiana „%3$s” zostanie wykonana natychmiast.</string>
+    <string name="confirm_scope_for_change">Zmieniłeś:\n „%1$s”\n na\n „%2$s”\n\nJak chcesz zastosować tę zmianę?\n\nUwaga: Zmiana „%3$s” zostanie wykonana natychmiast.</string>
     <string name="confirm_delete_book">Zamierzasz usunąć książkę o tytule „%1$s” autora %2$s. Czy chcesz kontynuować?</string>
     <string name="confirm_delete_series">Czy na pewno usunąć serię „%1$s”?\n\nKsiążki nie będą usuwane.\n\nRozważ zmianę nazwy serii by zachować te dane</string>
     <string name="confirm_delete_toc_entry">Naprawdę usuń wpis „%1$s” (przez %2$s)? Zostanie usunięty ze wszystkich książek, w których jest wymieniony. Same książki nie zostaną usunięte.</string>
@@ -574,9 +573,9 @@
     <string name="lbl_backing_up">Tworzenie kopii zapasowej…</string>
     <string name="lbl_clone_style">Duplikat stylu</string>
     <string name="lbl_cover_long">Okładka</string>
-    <string name="lbl_delete_book">Usuń książkę</string>
-    <string name="lbl_delete_series">Usuń serię</string>
-    <string name="lbl_delete_toc_entry">Usuń tytuł</string>
+    <string name="X_lbl_delete_book">Usuń książkę</string>
+    <string name="X_lbl_delete_series">Usuń serię</string>
+    <string name="X_lbl_delete_toc_entry">Usuń tytuł</string>
     <string name="lbl_details_have_changed">Szczegóły uległy zmianie</string>
     <string name="lbl_duplicate_book">Duplikuj książkę</string>
     <string name="X_lbl_edit_author">Edytuj autora</string>
@@ -680,4 +679,11 @@
     <string name="info_filter_edition">Wybierz 0 lub więcej opcji i dotknij „OK”, aby je zastosować, lub dotknij „Wszystkie książki”, aby je zignorować.</string>
     <string name="notification_channel_warn">Uwaga</string>
     <string name="warning_already_in_list">Już na liście!</string>
+    <string name="pe_bob_filter_isbn_no">Bez numeru ISBN</string>
+    <string name="pe_bob_filter_isbn_yes">Z ISBN</string>
+    <string name="lbl_publishers">Wydawcy</string>
+    <string name="hint_empty_publisher">(Brak wydawcy)</string>
+    <string name="pt_bob_books_under_multiple_publisher">Pokaż książki wielu wydawcom.</string>
+    <string name="pv_bob_books_under_multiple_primary_publisher_only">tylko u głównego wydawcy.</string>
+    <string name="pv_bob_books_under_multiple_each_publisher">pod każdym wydawcą.</string>
 </resources>

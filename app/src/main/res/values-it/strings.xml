@@ -82,8 +82,7 @@
     <string name="btn_this_book">Questo libro</string>
     <string name="bytes">%.0fB</string>
     <string name="action_clear">Pulire</string>
-    <string name="confirm_apply_author_changed">Hai modificato l\'autore\n\n da «%1$s»\n a «%2$s»\n \nCome desideri applicare questa modifica?\n\nNota: La scelta «%3$s» sarà applicata immediatamente.</string>
-    <string name="confirm_apply_series_changed">Hai modificato le serie\n\n da «%1$s»\n a «%2$s»\n \nCome desideri applicare questa modifica?\n\nNota: La scelta «%3$s» sarà applicata immediatamente.</string>
+    <string name="confirm_scope_for_change">Hai modificato:\n «%1$s»\n in\n «%2$s»\n\nCome desideri applicare questa modifica?\n\nNota: La scelta «%3$s» sarà applicata immediatamente.</string>
     <string name="confirm_delete_book">Il libro intitolato «%1$s» verrà completamente cancellato da %2$s. Procedere?</string>
     <string name="confirm_delete_series">Cancellare la serie «%1$s»?\n\nI libri non verranno cancellati.\n\nValuta se modificare la serie e cambiare il nome della serie in quello di un\'altra serie per preservare i dati</string>
     <string name="confirm_delete_toc_entry">Cancellare davvero il titolo «%1$s» (di %2$s)?\nSarà cancellato da tutti i libri in cui è elencato.\n libri stessi non saranno cancellati.</string>
@@ -579,9 +578,9 @@
     <string name="lbl_backing_up">Creazione backup in corso…</string>
     <string name="lbl_clone_style">Duplica stile</string>
     <string name="lbl_cover_long">Miniatura copertina</string>
-    <string name="lbl_delete_book">Cancella libro</string>
-    <string name="lbl_delete_series">Cancella serie</string>
-    <string name="lbl_delete_toc_entry">Elimina il titolo</string>
+    <string name="X_lbl_delete_book">Cancella libro</string>
+    <string name="X_lbl_delete_series">Cancella serie</string>
+    <string name="X_lbl_delete_toc_entry">Elimina il titolo</string>
     <string name="lbl_details_have_changed">Dettagli modificati</string>
     <string name="lbl_duplicate_book">Duplica titolo libro</string>
     <string name="X_lbl_edit_author">Modifica autore</string>
@@ -685,5 +684,12 @@
     <string name="info_filter_edition">Seleziona 0 o più opzioni e tocca “OK” per applicarle, oppure tocca “Tutti i libri” per ignorarle tutte.</string>
     <string name="notification_channel_warn">Attenzione</string>
     <string name="warning_already_in_list">Già nella lista!</string>
+    <string name="pe_bob_filter_isbn_no">Senza codice ISBN</string>
+    <string name="pe_bob_filter_isbn_yes">Con ISBN</string>
+    <string name="lbl_publishers">Editori</string>
+    <string name="hint_empty_publisher">(Nessun editore)</string>
+    <string name="pt_bob_books_under_multiple_publisher">Mostra libri con più editori.</string>
+    <string name="pv_bob_books_under_multiple_primary_publisher_only">solo con il loro editore principale.</string>
+    <string name="pv_bob_books_under_multiple_each_publisher">sotto ciascun editore.</string>
 
 </resources>

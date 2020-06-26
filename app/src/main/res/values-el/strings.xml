@@ -82,8 +82,7 @@
     <string name="btn_this_book">Αυτό το βιβλίο</string>
     <string name="bytes">%.0fB</string>
     <string name="action_clear">Καθαρίστε</string>
-    <string name="confirm_apply_author_changed">Αλλάξατε τον συγγραφέα\n από «%1$s»\n σε «%2$s»\n \nΠως επιθυμείτε να εφαρμοστεί αυτή η αλλαγή;\nΣημείωση: Η επιλογή «%3$s» θα εφαρμοστεί στιγμιαία.</string>
-    <string name="confirm_apply_series_changed">Αλλάξατε την σειρά\n από «%1$s»\n σε «%2$s»\n \nΠως επιθυμείτε να εφαρμοστεί αυτή η αλλαγή;\nΣημείωση: Η επιλογή «%3$s» θα εφαρμοστεί στιγμιαία.</string>
+    <string name="confirm_scope_for_change">Έχετε αλλάξει:\n «%1$s»\n σε\n «%2$s»\n\nΠως επιθυμείτε να εφαρμοστεί αυτή η αλλαγή;\nΣημείωση: Η επιλογή «%3$s» θα εφαρμοστεί στιγμιαία.</string>
     <string name="confirm_delete_book">Θα διαγραφεί ολοκληρωτικά το βίβλιο με τίτλο «%1$s» από %2$s. Είστε σίγουροι ότι επιθυμείτε να συνεχίσετε;</string>
     <string name="confirm_delete_series">Θέλετε να διαγραφεί η σειρά «%1$s»;\n\nΤα βιβλία της δε θα διαγραφούν.\n\nΣκεφτείτε να επεξεργαστείτε την σειρά και να αλλάξετε το όνομα της σε κάποιο άλλης σειράς για να διατηρήσετε τα δεδομένα.</string>
     <string name="confirm_delete_toc_entry">Πραγματικά διαγράψτε τον τίτλο «%1$s» (από το %2$s); Θα διαγραφεί από όλα τα βιβλία στα οποία αναφέρεται. Τα ίδια τα βιβλία δεν θα διαγραφούν.</string>
@@ -579,9 +578,9 @@
     <string name="lbl_backing_up">Δημιουργείται Αντίγραφο Ασφαλείας…</string>
     <string name="lbl_clone_style">Αντιγραφή στυλ</string>
     <string name="lbl_cover_long">Μικρογραφία Εξωφύλλου</string>
-    <string name="lbl_delete_book">Διαγραφή Βιβλίου</string>
-    <string name="lbl_delete_series">Διαγραφή Σειράς</string>
-    <string name="lbl_delete_toc_entry">Διαγράψτε τον τίτλο</string>
+    <string name="X_lbl_delete_book">Διαγραφή Βιβλίου</string>
+    <string name="X_lbl_delete_series">Διαγραφή Σειράς</string>
+    <string name="X_lbl_delete_toc_entry">Διαγράψτε τον τίτλο</string>
     <string name="lbl_details_have_changed">Κάποιες λεπτομέρειες έχουν αλλάξει</string>
     <string name="lbl_duplicate_book">Διπλοεγγραφή Βιβλίου</string>
     <string name="X_lbl_edit_author">Επεξεργασία Συγγραφέα</string>
@@ -685,5 +684,12 @@
     <string name="info_filter_edition">Επιλέξτε 0 ή περισσότερες επιλογές και πατήστε «OK» για να τις εφαρμόσετε ή πατήστε «Όλα τα βιβλία» για να τα αγνοήσετε όλα.</string>
     <string name="notification_channel_warn">Προσοχή</string>
     <string name="warning_already_in_list">Ήδη στη λίστα!</string>
+    <string name="pe_bob_filter_isbn_no">Χωρίς ISBN</string>
+    <string name="pe_bob_filter_isbn_yes">Με ISBN</string>
+    <string name="lbl_publishers">Εκδότες</string>
+    <string name="hint_empty_publisher">(Χωρίς εκδότη)</string>
+    <string name="pt_bob_books_under_multiple_publisher">Εμφάνιση βιβλίων με πολλούς εκδότες.</string>
+    <string name="pv_bob_books_under_multiple_primary_publisher_only">μόνο στον κύριο εκδότη τους.</string>
+    <string name="pv_bob_books_under_multiple_each_publisher">κάτω από κάθε εκδότη.</string>
 
 </resources>

@@ -83,8 +83,7 @@
     <string name="btn_this_book">Dit boek</string>
     <string name="bytes">%.0fB</string>
     <string name="action_clear">Wissen</string>
-    <string name="confirm_apply_author_changed">Je hebt de auteur veranderd:\n\n van „%1$s”\n naar „%2$s”\n \nHoe wil je deze verandering toepassen?\n\nNB: De keuze „%3$s” wordt onmiddelijk toegepast.</string>
-    <string name="confirm_apply_series_changed">Je hebt de reeks veranderd:\n\n van „%1$s”\n naar „%2$s”\n \nHoe wil je deze verandering toepassen?\n\nNB: De keuze „%3$s” wordt onmiddelijk toegepast.</string>
+    <string name="confirm_scope_for_change">Je wijzigde:\n „%1$s”\n naar\n „%2$s”\n\nHoe wil je deze verandering toepassen?\n\nNB: De keuze „%3$s” wordt onmiddelijk toegepast.</string>
     <string name="confirm_delete_book">Dit zal het boek met de titel „%1$s” door %2$s compleet verwijderen. Weet je zeker dat je door wilt gaan?</string>
     <string name="confirm_delete_series">Wilt je werkelijk de reeks „%1$s” verwijderen?\n\nDe boeken zelf worden niet verwijderd.\n\nOverweeg de reeks te bewerken en de reeksnaam te veranderen om deze gegevens te behouden</string>
     <string name="confirm_delete_toc_entry">De titel „%1$s” (door %2$s) echt verwijderen? Het wordt verwijderd uit alle boeken waarin het wordt vermeld. De boeken zelf worden niet verwijderd.</string>
@@ -584,9 +583,9 @@
     <string name="lbl_backing_up">Aan \'t Back-uppen…</string>
     <string name="lbl_clone_style">Stijl klonen</string>
     <string name="lbl_cover_long">Omslag miniatuur</string>
-    <string name="lbl_delete_book">Boek verwijderen</string>
-    <string name="lbl_delete_series">Verwijderen reeks</string>
-    <string name="lbl_delete_toc_entry">Titel verwijderen</string>
+    <string name="X_lbl_delete_book">Boek verwijderen</string>
+    <string name="X_lbl_delete_series">Verwijderen reeks</string>
+    <string name="X_lbl_delete_toc_entry">Titel verwijderen</string>
     <string name="lbl_details_have_changed">De details zijn veranderd</string>
     <string name="lbl_duplicate_book">Dupliceer Boek</string>
     <string name="X_lbl_edit_author">Auteur bewerken</string>
@@ -686,5 +685,12 @@
     <string name="info_filter_edition">Selecteer 0 of meer opties en tik op „OK” om ze toe te passen, of tik op „Alle boeken” om ze allemaal te negeren.</string>
     <string name="notification_channel_warn">Waarschuwing</string>
     <string name="warning_already_in_list">Al in de lijst!</string>
+    <string name="pe_bob_filter_isbn_no">Zonder ISBN</string>
+    <string name="pe_bob_filter_isbn_yes">Met ISBN</string>
+    <string name="lbl_publishers">Uitgevers</string>
+    <string name="hint_empty_publisher">(Geen uitgever)</string>
+    <string name="pt_bob_books_under_multiple_publisher">Toon boeken met meerdere uitgevers.</string>
+    <string name="pv_bob_books_under_multiple_primary_publisher_only">alleen onder hun primaire uitgever.</string>
+    <string name="pv_bob_books_under_multiple_each_publisher">onder elke uitgever.</string>
 
 </resources>

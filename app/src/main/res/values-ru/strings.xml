@@ -81,8 +81,7 @@
     <string name="btn_this_book">Эта книга</string>
     <string name="bytes">%.0f байт</string>
     <string name="action_clear">протирать</string>
-    <string name="confirm_apply_author_changed">Вы изменили автора\n\n с «%1$s»\n на «%2$s»\n \nКак вы хотите применить это изменение?\n\nЗамечание: выбор «%3$s» будет применён немедленно.</string>
-    <string name="confirm_apply_series_changed">Вы изменили серию\n\n из «%1$s»\n на «%2$s»\n \nКак вы хотите применить это изменение?\n\nЗамечание: выбор «%3$s» будет применён немедленно.</string>
+    <string name="confirm_scope_for_change">Вы изменили:\n «%1$s»\n на\n «%2$s»\n\nКак вы хотите применить это изменение?\n\nЗамечание: выбор «%3$s» будет применён немедленно.</string>
     <string name="confirm_delete_book">Книга с названием «%1$s» будет полностью удалена %2$s. Вы уверены?</string>
     <string name="confirm_delete_series">Действительно удалить серию «%1$s»?\n\nКниги этой серии не будут удалены.\n\nВместо удаления вы можете переименовать серию, чтобы сохранить существующую связь с книгами</string>
     <string name="confirm_delete_toc_entry">Действительно удалить запись «%1$s» (от %2$s)? Он будет удален из всех книг, в которых он указан. Сами книги не будут удалены.</string>
@@ -574,9 +573,9 @@
     <string name="lbl_backing_up">Делаю бэкап…</string>
     <string name="lbl_clone_style">Клонировать стиль</string>
     <string name="lbl_cover_long">Эскиз обложки</string>
-    <string name="lbl_delete_book">Удалить книгу</string>
-    <string name="lbl_delete_series">Удаление серии</string>
-    <string name="lbl_delete_toc_entry">Удалить заголовок</string>
+    <string name="X_lbl_delete_book">Удалить книгу</string>
+    <string name="X_lbl_delete_series">Удаление серии</string>
+    <string name="X_lbl_delete_toc_entry">Удалить заголовок</string>
     <string name="lbl_details_have_changed">Детали были измененны</string>
     <string name="lbl_duplicate_book">Копия книги</string>
     <string name="X_lbl_edit_author">Редактирование автора</string>
@@ -680,5 +679,12 @@
     <string name="info_filter_edition">Выберите 0 или более параметров и нажмите «ОК», чтобы применить их, или нажмите «Все книги», чтобы игнорировать все из них.</string>
     <string name="notification_channel_warn">Предупреждение</string>
     <string name="warning_already_in_list">Уже в списке!</string>
+    <string name="pe_bob_filter_isbn_no">Без ISBN</string>
+    <string name="pe_bob_filter_isbn_yes">С ISBN</string>
+    <string name="lbl_publishers">Издатели</string>
+    <string name="hint_empty_publisher">(Нет издателя)</string>
+    <string name="pt_bob_books_under_multiple_publisher">Показать книги с несколькими издателями.</string>
+    <string name="pv_bob_books_under_multiple_primary_publisher_only">только под своим основным издателем.</string>
+    <string name="pv_bob_books_under_multiple_each_publisher">под каждым издателем.</string>
 
 </resources>
