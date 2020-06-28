@@ -40,8 +40,7 @@ public class WrappedMap<K, V>
     @NonNull
     private final Map<K, V> m;
 
-    @SuppressWarnings("WeakerAccess")
-    public WrappedMap(@NonNull final Map<K, V> m) {
+    protected WrappedMap(@NonNull final Map<K, V> m) {
         this.m = m;
     }
 

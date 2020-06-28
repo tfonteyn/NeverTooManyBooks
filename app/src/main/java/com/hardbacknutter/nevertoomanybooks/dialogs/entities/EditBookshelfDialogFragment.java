@@ -103,7 +103,7 @@ public class EditBookshelfDialogFragment
 
         final Bundle args = requireArguments();
         mBookshelf = args.getParcelable(DBDefinitions.KEY_FK_BOOKSHELF);
-        Objects.requireNonNull(mBookshelf, ErrorMsg.ARGS_MISSING_BOOKSHELF);
+        Objects.requireNonNull(mBookshelf, ErrorMsg.NULL_BOOKSHELF);
 
         if (savedInstanceState == null) {
             mName = mBookshelf.getName();
@@ -163,14 +163,13 @@ public class EditBookshelfDialogFragment
             // It's a simple rename, store changes
             mBookshelf.setName(mName);
 
-            //noinspection ConstantConditions
-            final long styleId = mBookshelf.getStyle(getContext(), mDb).getId();
-
             final boolean success;
             if (mBookshelf.getId() == 0) {
-                success = mDb.insert(mBookshelf, styleId) > 0;
+                //noinspection ConstantConditions
+                success = mDb.insert(getContext(), mBookshelf) > 0;
             } else {
-                success = mDb.update(mBookshelf, styleId);
+                //noinspection ConstantConditions
+                success = mDb.update(getContext(), mBookshelf);
             }
             if (success) {
                 if (mListener != null && mListener.get() != null) {

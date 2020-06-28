@@ -209,11 +209,24 @@ public class DAO
         implements AutoCloseable {
 
     /**
-     * Flag indicating the UPDATE_DATE field from the bundle should be trusted.
+     * Book Insert/update flag.
+     * If set, relax some rules which would affect performance otherwise.
+     * This is/should only be used during imports.
+     */
+    public static final int BOOK_FLAG_IS_BATCH_OPERATION = 1;
+    /**
+     * Book Insert/update flag.
+     * If set, and the book bundle has an id !=0, force the id to be used.
+     * This is/should only be used during imports of new books
+     * i.e. during import of a backup archive/csv
+     */
+    public static final int BOOK_FLAG_USE_ID_IF_PRESENT = 1 << 1;
+    /**
+     * Book Insert/update flag.
+     * If set, the UPDATE_DATE field from the bundle should be trusted.
      * If this flag is not set, the UPDATE_DATE will be set based on the current time
      */
-    public static final int BOOK_FLAG_USE_UPDATE_DATE_IF_PRESENT = 1;
-    public static final int BOOK_FLAG_IS_BATCH_OPERATION = 1 << 1;
+    public static final int BOOK_FLAG_USE_UPDATE_DATE_IF_PRESENT = 1 << 2;
 
     /**
      * In addition to SQLite's default BINARY collator (others: NOCASE and RTRIM),
@@ -505,13 +518,11 @@ public class DAO
 
 
     /**
-     * Create a new book using the details provided.
+     * Create a new Book using the details provided.
      * <p>
      * <strong>Transaction:</strong> participate, or runs in new.
      *
      * @param context Current context
-     * @param bookId  <strong>must</strong> be {@code 0} for a new book.
-     *                Only an Import is allowed to pass non-zero: will override the autoIncrement.
      * @param book    A collection with the columns to be set. May contain extra data.
      *                The id will be updated.
      * @param flags   See {@link BookFlags} for flag definitions; {@code 0} for 'normal'.
@@ -522,7 +533,6 @@ public class DAO
      */
     @IntRange(from = 1, to = Integer.MAX_VALUE)
     public long insert(@NonNull final Context context,
-                       final long bookId,
                        @NonNull final Book /* in/out */ book,
                        @BookFlags final int flags)
             throws DaoWriteException {
@@ -538,47 +548,51 @@ public class DAO
             // Make sure we have at least one author
             final List<Author> authors = book.getParcelableArrayList(Book.BKEY_AUTHOR_ARRAY);
             if (authors.isEmpty()) {
-                throw new DaoWriteException("No authors for book=" + book);
+                throw new DaoWriteException(ErrorMsg.EMPTY_ARRAY_OR_LIST + "|authors|book=" + book);
             }
 
             // correct field types if needed, and filter out fields we don't have in the db table.
             final ContentValues cv = filterValues(TBL_BOOKS, book, book.getLocale(context));
 
-            // if we have an id, use it.
-            if (bookId > 0) {
-                cv.put(KEY_PK_ID, bookId);
-            }
+            final String utcNow = LocalDateTime
+                    .now(ZoneOffset.UTC).format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
 
-            final String utcNow = LocalDateTime.now(ZoneOffset.UTC)
-                                               .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
-
-            // if we do NOT have a date set, then use NOW
+            // if we do NOT have a date set, use 'now'
             if (!cv.containsKey(DBDefinitions.KEY_UTC_ADDED)) {
                 cv.put(DBDefinitions.KEY_UTC_ADDED, utcNow);
             }
-
-            // if we do NOT have a date set, then use NOW
+            // if we do NOT have a date set, use 'now'
             if (!cv.containsKey(KEY_UTC_LAST_UPDATED)) {
                 cv.put(KEY_UTC_LAST_UPDATED, utcNow);
             }
 
-            // the book itself
+            // if allowed, and we have an id, use it.
+            if ((flags & BOOK_FLAG_USE_ID_IF_PRESENT) != 0 && book.getId() > 0) {
+                cv.put(KEY_PK_ID, book.getId());
+            } else {
+                // in all other circumstances, make absolutely sure we DO NOT pass in an id.
+                cv.remove(KEY_PK_ID);
+            }
+
+            // go!
             final long newBookId = sSyncedDb.insert(TBL_BOOKS.getName(), null, cv);
+
             if (newBookId > 0) {
                 // set the new id/uuid on the Book itself
                 book.putLong(KEY_PK_ID, newBookId);
                 //noinspection ConstantConditions
                 book.putString(KEY_BOOK_UUID, getBookUuid(newBookId));
 
-                // the links to series, authors,...
-                final boolean isBatch = (flags & BOOK_FLAG_IS_BATCH_OPERATION) != 0;
-                insertBookLinks(context, book, !isBatch);
-                // and the search suggestions table
+                // next we add the links to series, authors,...
+                insertBookLinks(context, book, flags);
+
+                // and populate the search suggestions table
                 ftsInsert(context, newBookId);
+
                 if (txLock != null) {
                     sSyncedDb.setTransactionSuccessful();
                 }
-                // and return the id
+                // all done
                 return newBookId;
 
             } else {
@@ -597,18 +611,20 @@ public class DAO
     }
 
     /**
+     * Update the given {@link Book}.
+     * This will update <strong>ONLY</strong> the fields present in the passed in Book.
+     * Non-present fields will not be touched. i.e. this is a delta operation.
+     *
      * <strong>Transaction:</strong> participate, or runs in new.
      *
      * @param context Current context
-     * @param bookId  of the book; takes precedence over the id of the book itself.
-     * @param book    A collection with the columns to be set. May contain extra data.
-     *                Missing fields will NOT be touched in the database.
+     * @param book    A collection with the columns to be set.
+     *                May contain extra data which will be ignored.
      * @param flags   See {@link BookFlags} for flag definitions; {@code 0} for 'normal'.
      *
      * @throws DaoWriteException on failure
      */
     public void update(@NonNull final Context context,
-                       final long bookId,
                        @NonNull final Book book,
                        @BookFlags final int flags)
             throws DaoWriteException {
@@ -631,32 +647,27 @@ public class DAO
 
             // set the KEY_DATE_LAST_UPDATED to 'now' if we're allowed,
             // or if it's not already present.
-            final boolean useIfPresent = (flags & BOOK_FLAG_USE_UPDATE_DATE_IF_PRESENT) != 0;
-            if (!useIfPresent || !cv.containsKey(KEY_UTC_LAST_UPDATED)) {
-                cv.put(KEY_UTC_LAST_UPDATED,
-                       LocalDateTime.now(ZoneOffset.UTC)
-                                    .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
+            if ((flags & BOOK_FLAG_USE_UPDATE_DATE_IF_PRESENT) == 0
+                || !cv.containsKey(KEY_UTC_LAST_UPDATED)) {
+                cv.put(KEY_UTC_LAST_UPDATED, LocalDateTime
+                        .now(ZoneOffset.UTC).format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
             }
 
-            // go !
-            // We're updating ONLY the fields present in the ContentValues.
-            // Other fields in the database row are not affected.
-            final boolean success = 0 < sSyncedDb.update(TBL_BOOKS.getName(), cv,
-                                                         KEY_PK_ID + "=?",
-                                                         new String[]{String.valueOf(bookId)});
-            final long rollbackId = book.getId();
-            if (success) {
-                // make sure the Book has the correct id.
-                book.putLong(KEY_PK_ID, bookId);
 
-                final boolean isBatch = (flags & BOOK_FLAG_IS_BATCH_OPERATION) != 0;
-                insertBookLinks(context, book, !isBatch);
-                ftsUpdate(context, bookId);
+            // Reminder: We're updating ONLY the fields present in the ContentValues.
+            // Other fields in the database row are not affected.
+            // go !
+            final boolean success = 0 < sSyncedDb.update(
+                    TBL_BOOKS.getName(), cv, KEY_PK_ID + "=?",
+                    new String[]{String.valueOf(book.getId())});
+
+            if (success) {
+                insertBookLinks(context, book, flags);
+                ftsUpdate(context, book.getId());
                 if (txLock != null) {
                     sSyncedDb.setTransactionSuccessful();
                 }
             } else {
-                book.putLong(KEY_PK_ID, rollbackId);
                 throw new DaoWriteException(ERROR_FAILED_UPDATING_BOOK_FROM + book);
             }
         } catch (@NonNull final IllegalArgumentException e) {
@@ -852,19 +863,21 @@ public class DAO
     }
 
     /**
-     * shared between book insert & update.
-     * All of these will first delete all entries in the Book-[tableX] table for this bookId,
-     * and then insert the new rows.
+     * Called during book insert & update.
+     * Each step in this method will first delete all entries in the Book-[tableX] table
+     * for this bookId, and then insert the new links.
      *
-     * @param context      Current context
-     * @param book         A collection with the columns to be set. May contain extra data.
-     * @param lookupLocale set to {@code true} to force a database lookup of the locale.
-     *                     This can be (relatively) slow, and hence should be {@code false}
-     *                     during for example an import.
+     * @param context Current context
+     * @param book    A collection with the columns to be set. May contain extra data.
+     * @param flags   See {@link BookFlags} for flag definitions; {@code 0} for 'normal'.
      */
     private void insertBookLinks(@NonNull final Context context,
                                  @NonNull final Book book,
-                                 final boolean lookupLocale) {
+                                 final int flags) {
+
+        // Only lookup locales when we're NOT in batch mode (i.e. NOT doing an import)
+        final boolean lookupLocale = (flags & BOOK_FLAG_IS_BATCH_OPERATION) == 0;
+
         // unconditional lookup of the book locale!
         final Locale bookLocale = book.getLocale(context);
 
@@ -925,6 +938,8 @@ public class DAO
      * The list is pruned before storage.
      * New shelves are added, existing ones are NOT updated.
      *
+     * <strong>Transaction:</strong> required
+     *
      * @param context Current context
      * @param bookId  of the book
      * @param list    the list of bookshelves
@@ -934,7 +949,7 @@ public class DAO
                                      @NonNull final Collection<Bookshelf> list) {
 
         if (!sSyncedDb.inTransaction()) {
-            throw new TransactionException(ErrorMsg.TRANSACTION_REQUIRED);
+            throw new TransactionException(TransactionException.REQUIRED);
         }
 
         // fix id's and remove duplicates; shelves don't use a Locale, hence no lookup done.
@@ -956,9 +971,7 @@ public class DAO
         for (Bookshelf bookshelf : list) {
             // create if needed - do NOT do updates here
             if (bookshelf.getId() == 0) {
-                // validate the style first
-                final long styleId = bookshelf.getStyle(context, this).getId();
-                insert(bookshelf, styleId);
+                insert(context, bookshelf);
             }
 
             //noinspection SynchronizationOnLocalVariableOrMethodParameter
@@ -996,6 +1009,8 @@ public class DAO
      * The list is pruned before storage.
      * New authors are added, existing ones are NOT updated.
      *
+     * <strong>Transaction:</strong> required
+     *
      * @param context      Current context
      * @param bookId       of the book
      * @param list         the list of authors
@@ -1012,7 +1027,7 @@ public class DAO
                            @NonNull final Locale bookLocale) {
 
         if (!sSyncedDb.inTransaction()) {
-            throw new TransactionException(ErrorMsg.TRANSACTION_REQUIRED);
+            throw new TransactionException(TransactionException.REQUIRED);
         }
 
         // fix id's and remove duplicates
@@ -1076,6 +1091,8 @@ public class DAO
      * The list is pruned before storage.
      * New series are added, existing ones are NOT updated.
      *
+     * <strong>Transaction:</strong> required
+     *
      * @param context      Current context
      * @param bookId       of the book
      * @param list         the list of Series
@@ -1092,7 +1109,7 @@ public class DAO
                           @NonNull final Locale bookLocale) {
 
         if (!sSyncedDb.inTransaction()) {
-            throw new TransactionException(ErrorMsg.TRANSACTION_REQUIRED);
+            throw new TransactionException(TransactionException.REQUIRED);
         }
 
         // fix id's and remove duplicates
@@ -1156,6 +1173,8 @@ public class DAO
      * The list is pruned before storage.
      * New Publishers are added, existing ones are NOT updated.
      *
+     * <strong>Transaction:</strong> required
+     *
      * @param context      Current context
      * @param bookId       of the book
      * @param list         the list of Publishers
@@ -1172,7 +1191,7 @@ public class DAO
                               @NonNull final Locale bookLocale) {
 
         if (!sSyncedDb.inTransaction()) {
-            throw new TransactionException(ErrorMsg.TRANSACTION_REQUIRED);
+            throw new TransactionException(TransactionException.REQUIRED);
         }
 
         // fix id's and remove duplicates
@@ -1251,13 +1270,16 @@ public class DAO
     /**
      * Update a bookshelf.
      *
+     * @param context   Current context
      * @param bookshelf to update
-     * @param styleId   a valid style id, no checks are done in this method
      *
      * @return {@code true} for success.
      */
-    public boolean update(@NonNull final Bookshelf bookshelf,
-                          final long styleId) {
+    public boolean update(@NonNull final Context context,
+                          @NonNull final Bookshelf bookshelf) {
+
+        // validate the style first
+        final long styleId = bookshelf.getStyle(context, this).getId();
 
         final ContentValues cv = new ContentValues();
         cv.put(KEY_BOOKSHELF_NAME, bookshelf.getName());
@@ -1267,22 +1289,25 @@ public class DAO
 
         cv.put(KEY_FK_STYLE, styleId);
 
-        return 0 < sSyncedDb.update(TBL_BOOKSHELF.getName(), cv,
-                                    KEY_PK_ID + "=?",
-                                    new String[]{String.valueOf(bookshelf.getId())});
+        return 0 < sSyncedDb.update(
+                TBL_BOOKSHELF.getName(), cv, KEY_PK_ID + "=?",
+                new String[]{String.valueOf(bookshelf.getId())});
     }
 
     /**
      * Creates a new bookshelf in the database.
      *
+     * @param context   Current context
      * @param bookshelf object to insert. Will be updated with the id.
-     * @param styleId   the style this bookshelf uses by default
      *
      * @return the row id of the newly inserted row, or {@code -1} if an error occurred
      */
     @SuppressWarnings("UnusedReturnValue")
-    public long insert(@NonNull final Bookshelf /* in/out */ bookshelf,
-                       final long styleId) {
+    public long insert(@NonNull final Context context,
+                       @NonNull final Bookshelf /* in/out */ bookshelf) {
+
+        // validate the style first
+        final long styleId = bookshelf.getStyle(context, this).getId();
 
         try (SynchronizedStatement stmt = sSyncedDb.compileStatement(SqlInsert.BOOKSHELF)) {
             stmt.bindString(1, bookshelf.getName());
@@ -1351,9 +1376,9 @@ public class DAO
                encodeOrderByColumn(author.getGivenNames(), authorLocale));
         cv.put(KEY_AUTHOR_IS_COMPLETE, author.isComplete());
 
-        return 0 < sSyncedDb.update(TBL_AUTHORS.getName(), cv,
-                                    KEY_PK_ID + "=?",
-                                    new String[]{String.valueOf(author.getId())});
+        return 0 < sSyncedDb.update(
+                TBL_AUTHORS.getName(), cv, KEY_PK_ID + "=?",
+                new String[]{String.valueOf(author.getId())});
     }
 
     /**
@@ -1445,9 +1470,9 @@ public class DAO
         cv.put(KEY_SERIES_TITLE_OB, encodeOrderByColumn(obTitle, seriesLocale));
         cv.put(KEY_SERIES_IS_COMPLETE, series.isComplete());
 
-        return 0 < sSyncedDb.update(TBL_SERIES.getName(), cv,
-                                    KEY_PK_ID + "=?",
-                                    new String[]{String.valueOf(series.getId())});
+        return 0 < sSyncedDb.update(
+                TBL_SERIES.getName(), cv, KEY_PK_ID + "=?",
+                new String[]{String.valueOf(series.getId())});
     }
 
     /**
@@ -1566,9 +1591,9 @@ public class DAO
         cv.put(KEY_PUBLISHER_NAME, publisher.getName());
         cv.put(KEY_PUBLISHER_NAME_OB, encodeOrderByColumn(obTitle, publisherLocale));
 
-        return 0 < sSyncedDb.update(TBL_PUBLISHERS.getName(), cv,
-                                    KEY_PK_ID + "=?",
-                                    new String[]{String.valueOf(publisher.getId())});
+        return 0 < sSyncedDb.update(
+                TBL_PUBLISHERS.getName(), cv, KEY_PK_ID + "=?",
+                new String[]{String.valueOf(publisher.getId())});
     }
 
     /**
@@ -1675,6 +1700,8 @@ public class DAO
      *         in {@link DBDefinitions#TBL_BOOK_TOC_ENTRIES}</li>
      * </ol>
      *
+     * <strong>Transaction:</strong> required
+     *
      * @param context      Current context
      * @param bookId       of the book
      * @param list         the list of TocEntry
@@ -1691,7 +1718,7 @@ public class DAO
                              @NonNull final Locale bookLocale) {
 
         if (!sSyncedDb.inTransaction()) {
-            throw new TransactionException(ErrorMsg.TRANSACTION_REQUIRED);
+            throw new TransactionException(TransactionException.REQUIRED);
         }
 
         // fix id's and remove duplicates
@@ -1786,9 +1813,9 @@ public class DAO
         cv.put(KEY_TITLE_OB, encodeOrderByColumn(obTitle, tocLocale));
         cv.put(KEY_DATE_FIRST_PUBLICATION, tocEntry.getFirstPublication());
 
-        return 0 < sSyncedDb.update(TBL_TOC_ENTRIES.getName(), cv,
-                                    KEY_PK_ID + "=?",
-                                    new String[]{String.valueOf(tocEntry.getId())});
+        return 0 < sSyncedDb.update(
+                TBL_TOC_ENTRIES.getName(), cv, KEY_PK_ID + "=?",
+                new String[]{String.valueOf(tocEntry.getId())});
     }
 
     /**
@@ -1877,9 +1904,9 @@ public class DAO
         } else if (!loanee.equals(current)) {
             final ContentValues cv = new ContentValues();
             cv.put(KEY_LOANEE, loanee);
-            return 0 < sSyncedDb.update(TBL_BOOK_LOANEE.getName(), cv,
-                                        KEY_FK_BOOK + "=?",
-                                        new String[]{String.valueOf(bookId)});
+            return 0 < sSyncedDb.update(
+                    TBL_BOOK_LOANEE.getName(), cv, KEY_FK_BOOK + "=?",
+                    new String[]{String.valueOf(bookId)});
         }
 
         return true;
@@ -1950,7 +1977,7 @@ public class DAO
 
         final int rowsAffected;
 
-        SyncLock txLock = sSyncedDb.beginTransaction(true);
+        final SyncLock txLock = sSyncedDb.beginTransaction(true);
         try {
             purgeNodeStatesByStyle(id);
 
@@ -2205,7 +2232,7 @@ public class DAO
                 + ',' + TBL_BOOKS.dotAs(KEY_EID_GOODREADS_BOOK)
                 + ',' + TBL_BOOKS.dotAs(KEY_UTC_LAST_SYNC_DATE_GOODREADS)
 
-                // COALESCE nulls to ""/0 for the LEFT OUTER JOIN'ed tables
+                // COALESCE nulls to "" for the LEFT OUTER JOIN'ed tables
                 + ',' + "COALESCE(" + TBL_BOOK_LOANEE.dot(KEY_LOANEE) + ", '')" + _AS_ + KEY_LOANEE
 
                 + _FROM_ + TBL_BOOKS.ref() + TBL_BOOKS.leftOuterJoin(TBL_BOOK_LOANEE)
@@ -2402,6 +2429,15 @@ public class DAO
         return sSyncedDb.rawQuery(SqlSelectFullTable.PUBLISHERS, null);
     }
 
+    /**
+     * Get all TOC entries; mainly for the purpose of backups.
+     *
+     * @return Cursor over all TOC entries
+     */
+    @NonNull
+    public Cursor fetchTocs() {
+        return sSyncedDb.rawQuery(SqlSelectFullTable.TOC_ENTRIES, null);
+    }
 
     /**
      * Convenience method, fetch all shelves, and return them as a List.
@@ -3017,7 +3053,7 @@ public class DAO
     public String getBookUuid(final long bookId) {
         // sanity check
         if (bookId == 0) {
-            throw new IllegalArgumentException(ErrorMsg.BOOK_ID_IS_ZERO);
+            throw new IllegalArgumentException(ErrorMsg.ZERO_ID_FOR_BOOK);
         }
         SynchronizedStatement stmt = mSqlStatementManager.get(STMT_GET_BOOK_UUID);
         if (stmt == null) {
@@ -3351,12 +3387,12 @@ public class DAO
     /**
      * Update the 'read' status of the book.
      *
-     * @param id   book to update
-     * @param read the status to set
+     * @param bookId book to update
+     * @param read   the status to set
      *
      * @return {@code true} for success.
      */
-    public boolean setBookRead(final long id,
+    public boolean setBookRead(final long bookId,
                                final boolean read) {
         final ContentValues cv = new ContentValues();
         cv.put(KEY_READ, read);
@@ -3367,7 +3403,7 @@ public class DAO
         }
 
         return 0 < sSyncedDb.update(TBL_BOOKS.getName(), cv, KEY_PK_ID + "=?",
-                                    new String[]{String.valueOf(id)});
+                                    new String[]{String.valueOf(bookId)});
     }
 
     /**
@@ -3501,9 +3537,9 @@ public class DAO
 
         final SyncLock txLock = sSyncedDb.beginTransaction(true);
         try {
-            rowsAffected = sSyncedDb.update(TBL_BOOK_BOOKSHELF.getName(), cv,
-                                            KEY_FK_BOOKSHELF + "=?",
-                                            new String[]{String.valueOf(sourceId)});
+            rowsAffected = sSyncedDb.update(
+                    TBL_BOOK_BOOKSHELF.getName(), cv, KEY_FK_BOOKSHELF + "=?",
+                    new String[]{String.valueOf(sourceId)});
             // delete the now empty shelf.
             deleteBookshelf(sourceId);
 
@@ -3752,6 +3788,8 @@ public class DAO
      * <strong>Note:</strong> This assumes a specific order for query parameters.
      * If modified, then update {@link SqlFTS#INSERT_BODY}, {@link SqlFTS#UPDATE}
      *
+     * <strong>Transaction:</strong> required
+     *
      * @param cursor Cursor of books to update
      * @param stmt   Statement to execute (insert or update)
      */
@@ -3759,7 +3797,7 @@ public class DAO
                               @NonNull final SynchronizedStatement stmt) {
 
         if (!sSyncedDb.inTransaction()) {
-            throw new TransactionException(ErrorMsg.TRANSACTION_REQUIRED);
+            throw new TransactionException(TransactionException.REQUIRED);
         }
 
         // Accumulator for author names for each book
@@ -3881,7 +3919,7 @@ public class DAO
                            final long bookId) {
 
         if (!sSyncedDb.inTransaction()) {
-            throw new TransactionException(ErrorMsg.TRANSACTION_REQUIRED);
+            throw new TransactionException(TransactionException.REQUIRED);
         }
 
         try {
@@ -3912,7 +3950,7 @@ public class DAO
                            final long bookId) {
 
         if (!sSyncedDb.inTransaction()) {
-            throw new TransactionException(ErrorMsg.TRANSACTION_REQUIRED);
+            throw new TransactionException(TransactionException.REQUIRED);
         }
 
         try {
@@ -4102,8 +4140,9 @@ public class DAO
         sSyncedDb.optimize();
     }
 
-    @IntDef(flag = true, value = {BOOK_FLAG_USE_UPDATE_DATE_IF_PRESENT,
-                                  BOOK_FLAG_IS_BATCH_OPERATION})
+    @IntDef(flag = true, value = {BOOK_FLAG_IS_BATCH_OPERATION,
+                                  BOOK_FLAG_USE_ID_IF_PRESENT,
+                                  BOOK_FLAG_USE_UPDATE_DATE_IF_PRESENT})
     @Retention(RetentionPolicy.SOURCE)
     @interface BookFlags {
 
@@ -4573,6 +4612,9 @@ public class DAO
 
         /** {@link Publisher}, all columns. */
         static final String PUBLISHERS = "SELECT * FROM " + TBL_PUBLISHERS.getName();
+
+        /** {@link TocEntry}, all columns. */
+        static final String TOC_ENTRIES = "SELECT * FROM " + TBL_TOC_ENTRIES.getName();
 
         /** {@link BooklistStyle} all columns. */
         static final String BOOKLIST_STYLES =
@@ -5222,7 +5264,7 @@ public class DAO
 
         /** Used during insert of a book. Minimal column list. Ordered by position. */
         static final String GET_SERIES_BY_BOOK_ID =
-                SELECT_ + TBL_SERIES.dotAs(KEY_SERIES_TITLE) + "||' '||"
+                SELECT_ + TBL_SERIES.dot(KEY_SERIES_TITLE) + "||' '||"
                 + " COALESCE(" + TBL_BOOK_SERIES.dot(KEY_BOOK_NUM_IN_SERIES) + ",'')"
                 + _AS_ + KEY_SERIES_TITLE
                 + _FROM_ + TBL_BOOK_SERIES.ref() + TBL_BOOK_SERIES.join(TBL_SERIES)

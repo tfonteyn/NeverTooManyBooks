@@ -392,7 +392,7 @@ public class BookViewModel
     public void saveBook(@NonNull final Context context)
             throws DAO.DaoWriteException {
         if (mBook.isNew()) {
-            final long id = mDb.insert(context, 0, mBook, 0);
+            final long id = mDb.insert(context, mBook, 0);
             putResultData(BKEY_BOOK_CREATED, true);
 
             // if the user added a cover to the new book, make it permanent
@@ -409,7 +409,7 @@ public class BookViewModel
                 }
             }
         } else {
-            mDb.update(context, mBook.getId(), mBook, 0);
+            mDb.update(context, mBook, 0);
             putResultData(BKEY_BOOK_MODIFIED, true);
         }
 

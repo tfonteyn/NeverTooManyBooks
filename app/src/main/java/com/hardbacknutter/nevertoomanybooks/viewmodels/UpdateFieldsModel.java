@@ -540,9 +540,10 @@ public class UpdateFieldsModel
 
                 //IMPORTANT: note how we construct a NEW BOOK, with the DELTA-data which
                 // we want to commit to the existing book.
-                final Book book = Book.from(bookData);
+                final Book delta = Book.from(bookData);
+                delta.putLong(DBDefinitions.KEY_PK_ID, mCurrentBookId);
                 try {
-                    mDb.update(context, mCurrentBookId, book, 0);
+                    mDb.update(context, delta, 0);
                 } catch (@NonNull final DAO.DaoWriteException e) {
                     // ignore, but log it.
                     Logger.error(context, TAG, e);

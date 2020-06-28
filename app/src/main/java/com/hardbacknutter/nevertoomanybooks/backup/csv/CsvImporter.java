@@ -34,6 +34,7 @@ import android.util.Log;
 
 import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -127,8 +128,6 @@ public class CsvImporter
     /** Buffer for the Reader. */
     private static final int BUFFER_SIZE = 65535;
 
-    private static final String STRINGED_ID = DBDefinitions.KEY_PK_ID;
-
     /** as used in older versions, or from arbitrarily constructed CSV files. */
     private static final String OLD_STYLE_AUTHOR_NAME = "author_name";
     /** log error string. */
@@ -188,6 +187,18 @@ public class CsvImporter
         mUserLocale = LocaleUtils.getUserLocale(context);
     }
 
+    /**
+     * @param context          Current context
+     * @param entity           to read data from
+     * @param progressListener Progress and cancellation provider
+     *
+     * @return {@link ImportResults}
+     *
+     * @throws IndexOutOfBoundsException if the number of column headers != number of column data
+     * @throws IOException               on failure
+     * @throws ImportException           on failure. This is a user displayable Exception,
+     *                                   and must provide a localized message
+     */
     @Override
     public ImportResults read(@NonNull final Context context,
                               @NonNull final ReaderEntity entity,
@@ -219,6 +230,7 @@ public class CsvImporter
             progressListener.setMax(importedList.size());
         }
 
+        // reused during the loop
         final Book book = new Book();
         // first line in import must be the column names
         final String[] csvColumnNames = parseRow(importedList.get(0), true);
@@ -299,22 +311,14 @@ public class CsvImporter
                         book.putString(csvColumnNames[i], csvDataRow[i]);
                     }
 
-                    // Validate ID's
-                    BookIds bids = new BookIds(book);
-
                     // check we have a title
-                    requireNonBlankOrThrow(book, row, DBDefinitions.KEY_TITLE);
+                    if (book.getString(DBDefinitions.KEY_TITLE).isEmpty()) {
+                        throw new ImportException(R.string.error_column_is_blank,
+                                                  DBDefinitions.KEY_TITLE, row);
+                    }
 
-                    final Locale bookLocale = book.getLocale(context);
-
-                    handleAuthors(context, mDb, book, bookLocale);
-                    handleSeries(context, mDb, book, bookLocale);
-                    handlePublishers(context, mDb, book, bookLocale);
-                    handleAnthology(context, mDb, book, bookLocale);
-                    handleBookshelves(mDb, book);
-
-                    // The data is now ready to be send to the database
-                    bids.bookId = importBook(context, book, bids, updateOnlyIfNewer);
+                    // do the actual import.
+                    importBook(context, book, updateOnlyIfNewer);
 
                 } catch (@NonNull final DAO.DaoWriteException
                         | SQLiteDoneException
@@ -389,70 +393,104 @@ public class CsvImporter
      *
      * @param context           Current context
      * @param book              to import
-     * @param bids              the holder with all information about the book id/uuid
      * @param updateOnlyIfNewer flag
-     *
-     * @return the imported book ID
      *
      * @throws DAO.DaoWriteException on failure
      */
-    private long importBook(@NonNull final Context context,
+    private void importBook(@NonNull final Context context,
                             @NonNull final Book book,
-                            @NonNull final BookIds bids,
                             final boolean updateOnlyIfNewer)
             throws DAO.DaoWriteException {
 
-        final boolean hasUuid = !bids.uuid.isEmpty();
+        // check/fix the language
+        final Locale bookLocale = book.getLocale(context);
 
-        // Always import empty ID's (we don't try and search/match)...even if they are duplicates.
-        if (!hasUuid && !bids.hasNumericId) {
-            bids.bookId = mDb.insert(context, 0, book, DAO.BOOK_FLAG_IS_BATCH_OPERATION);
-            mResults.booksCreated++;
-            // inserted id
-            return bids.bookId;
+        // cleanup/handle the list elements.
+        // Database access is strictly limited to fetching ID's for the list elements.
+        handleAuthors(context, mDb, book, bookLocale);
+        handleSeries(context, mDb, book, bookLocale);
+        handlePublishers(context, mDb, book, bookLocale);
+        handleAnthology(context, mDb, book, bookLocale);
+        handleBookshelves(mDb, book);
+
+        // Do we have a UUID in the import ?
+        @Nullable
+        final String uuid = handleUuid(book);
+        final boolean hasUuid = uuid != null && !uuid.isEmpty();
+
+        // Do we have a numeric id in the import ?
+        long bookId = 0;
+        // why String ? See book init, we copied all fields we find in the import file as text.
+        final String idStr = book.getString(DBDefinitions.KEY_PK_ID);
+        // ALWAYS remove here to avoid type-issues further down
+        book.remove(DBDefinitions.KEY_PK_ID);
+        if (!idStr.isEmpty()) {
+            try {
+                bookId = Long.parseLong(idStr);
+            } catch (@NonNull final NumberFormatException ignore) {
+                // don't log, it's fine.
+            }
         }
 
-        // we have a UUID or ID. We'll check if we already have the book.
+        // Always import empty ID's even if the book is a potential duplicate.
+        // We don't try and search/match but leave it to the user.
+        if (!hasUuid && (bookId <= 0)) {
+            mDb.insert(context, book, DAO.BOOK_FLAG_IS_BATCH_OPERATION);
+            mResults.booksCreated++;
+            return;
+        }
+
+        // We have a UUID and/or a numeric ID. Check if we already have the book.
         boolean exists = false;
+
         // Let the UUID trump the ID; we may be importing someone else's list with bogus ID's
         if (hasUuid) {
-            long bookId = mDb.getBookIdFromUuid(bids.uuid);
-            if (bookId != 0) {
-                // use the id from the existing book, as found by UUID lookup
-                bids.bookId = bookId;
+            long existingBookId = mDb.getBookIdFromUuid(uuid);
+            if (existingBookId > 0) {
+                // We already have this book (matching UUID)
                 exists = true;
+                // Make sure to override whatever id (if any) the import had.
+                bookId = existingBookId;
+
             } else {
-                // We have a UUID, but book does not exist. We will create a book.
-                // Make sure the id (if present) is not already used.
-                if (bids.hasNumericId && mDb.bookExists(bids.bookId)) {
-                    bids.bookId = 0;
+                // The book does not exist in our database (no match for the UUID)
+                // We will create a book using the provided id if possible.
+                if (bookId > 0) {
+                    exists = mDb.bookExists(bookId);
+                    if (exists) {
+                        // the id is already in use, so we'll need to create a new id
+                        bookId = 0;
+                    }
                 }
             }
         } else {
-            exists = mDb.bookExists(bids.bookId);
-        }
-
-        if (!exists) {
-            bids.bookId = mDb.insert(context, bids.bookId, book,
-                                     DAO.BOOK_FLAG_IS_BATCH_OPERATION);
-            mResults.booksCreated++;
-            // inserted id
-            return bids.bookId;
-
-        } else {
-            if (!updateOnlyIfNewer || updateOnlyIfNewer(context, mDb, book, bids.bookId)) {
-                mDb.update(context, bids.bookId, book,
-                           DAO.BOOK_FLAG_USE_UPDATE_DATE_IF_PRESENT
-                           | DAO.BOOK_FLAG_IS_BATCH_OPERATION);
-                mResults.booksUpdated++;
-                // (updated) id
-                return bids.bookId;
-            } else {
-                // no update needed, just return the existing id
-                return bids.bookId;
+            exists = mDb.bookExists(bookId);
+            if (exists) {
+                // the id is already in use, so we'll need to create a new id
+                bookId = 0;
             }
         }
+
+        // If we have a valid id, assign it to the book.
+        if (bookId > 0) {
+            book.putLong(DBDefinitions.KEY_PK_ID, bookId);
+        }
+
+        // both UUID and ID is now set correctly or removed,
+        // so we know for certain if we want an insert or an update.
+        if (!exists) {
+            // Explicitly allow the id to be used.
+            mDb.insert(context, book, DAO.BOOK_FLAG_IS_BATCH_OPERATION
+                                      | DAO.BOOK_FLAG_USE_ID_IF_PRESENT);
+            mResults.booksCreated++;
+
+        } else if (!updateOnlyIfNewer || updateOnlyIfNewer(context, mDb, book, bookId)) {
+            mDb.update(context, book, DAO.BOOK_FLAG_IS_BATCH_OPERATION
+                                      | DAO.BOOK_FLAG_USE_UPDATE_DATE_IF_PRESENT);
+            mResults.booksUpdated++;
+        }
     }
+
 
     /**
      * Check if the incoming book is newer then the stored book data.
@@ -480,6 +518,41 @@ public class CsvImporter
     }
 
     /**
+     * Process the UUID if present.
+     *
+     * @param book the book
+     *
+     * @return the uuid, if any.
+     */
+    @Nullable
+    private String handleUuid(@NonNull final Book /* in/out */ book) {
+
+        final String uuid;
+
+        // Get the "book_uuid", and remove from book if null/blank
+        if (book.contains(DBDefinitions.KEY_BOOK_UUID)) {
+            uuid = book.getString(DBDefinitions.KEY_BOOK_UUID);
+            if (uuid.isEmpty()) {
+                book.remove(DBDefinitions.KEY_BOOK_UUID);
+            }
+
+        } else if (book.contains(DBDefinitions.KEY_UUID)) {
+            // second chance: see if we have a "uuid" column.
+            uuid = book.getString(DBDefinitions.KEY_UUID);
+            // ALWAYS remove as we won't use this key again.
+            book.remove(DBDefinitions.KEY_UUID);
+            // if we have a UUID, store it again, using the correct key
+            if (!uuid.isEmpty()) {
+                book.putString(DBDefinitions.KEY_BOOK_UUID, uuid);
+            }
+        } else {
+            uuid = null;
+        }
+
+        return uuid;
+    }
+
+    /**
      * Process the bookshelves.
      * Database access is strictly limited to fetching ID's.
      *
@@ -487,7 +560,7 @@ public class CsvImporter
      * @param book the book
      */
     private void handleBookshelves(@NonNull final DAO db,
-                                   @NonNull final Book book) {
+                                   @NonNull final Book /* in/out */ book) {
 
         // Current version uses/prefers KEY_BOOKSHELF,
         // but old files might contain LEGACY_BOOKSHELF_TEXT_COLUMN (and LEGACY_BOOKSHELF_ID)
@@ -525,7 +598,7 @@ public class CsvImporter
      */
     private void handleAuthors(@NonNull final Context context,
                                @NonNull final DAO db,
-                               @NonNull final Book book,
+                               @NonNull final Book /* in/out */ book,
                                @NonNull final Locale bookLocale) {
 
         // preferred format is a single CSV field
@@ -585,7 +658,7 @@ public class CsvImporter
      */
     private void handleSeries(@NonNull final Context context,
                               @NonNull final DAO db,
-                              @NonNull final Book book,
+                              @NonNull final Book /* in/out */ book,
                               @NonNull final Locale bookLocale) {
 
         // preferred format is a single CSV field
@@ -631,7 +704,7 @@ public class CsvImporter
      */
     private void handlePublishers(@NonNull final Context context,
                                   @NonNull final DAO db,
-                                  @NonNull final Book book,
+                                  @NonNull final Book /* in/out */ book,
                                   @NonNull final Locale bookLocale) {
 
         final String encodedList = book.getString(CsvExporter.CSV_COLUMN_PUBLISHERS);
@@ -665,7 +738,7 @@ public class CsvImporter
      */
     private void handleAnthology(@NonNull final Context context,
                                  @NonNull final DAO db,
-                                 @NonNull final Book book,
+                                 @NonNull final Book /* in/out */ book,
                                  @NonNull final Locale bookLocale) {
 
         final String encodedList = book.getString(CsvExporter.CSV_COLUMN_TOC);
@@ -849,26 +922,6 @@ public class CsvImporter
                                   TextUtils.join(",", names));
     }
 
-    /**
-     * Require a column to be present and non-blank.
-     *
-     * @param book to check
-     * @param name column which is required
-     *
-     * @throws ImportException if the required column is blank
-     */
-    private void requireNonBlankOrThrow(@SuppressWarnings("TypeMayBeWeakened")
-                                        @NonNull final Book book,
-                                        final int row,
-                                        @SuppressWarnings("SameParameterValue")
-                                        @NonNull final String name)
-            throws ImportException {
-        if (!book.getString(name).isEmpty()) {
-            return;
-        }
-        throw new ImportException(R.string.error_column_is_blank, name, row);
-    }
-
     /***
      * Require a column to be present and non-blank.
      *
@@ -891,58 +944,5 @@ public class CsvImporter
 
         throw new ImportException(R.string.error_columns_are_blank,
                                   TextUtils.join(",", names), row);
-    }
-
-    /**
-     * Holder class for identifiers of a book during import.
-     * (created to let lint work)
-     */
-    private static class BookIds {
-
-        String uuid;
-        long bookId;
-        boolean hasNumericId;
-
-        /**
-         * Constructor. All work is done here to populate the member variables.
-         *
-         * @param book the book, will be modified.
-         */
-        BookIds(@NonNull final Book /* in/out */ book) {
-            // why String ? See book init, we store all keys we find in the import
-            // file as text simple to see if they are present.
-            final String idStr = book.getString(STRINGED_ID);
-            hasNumericId = !idStr.isEmpty();
-
-            if (hasNumericId) {
-                try {
-                    bookId = Long.parseLong(idStr);
-                } catch (@NonNull final NumberFormatException e) {
-                    // don't log, it's fine.
-                    hasNumericId = false;
-                }
-            }
-
-            if (!hasNumericId) {
-                // yes, string, see above
-                book.putString(STRINGED_ID, "0");
-            }
-
-            // Get the UUID, and remove from collection if null/blank
-            if (book.contains(DBDefinitions.KEY_BOOK_UUID)) {
-                uuid = book.getString(DBDefinitions.KEY_BOOK_UUID);
-                if (uuid.isEmpty()) {
-                    // Remove any blank KEY_BOOK_UUID column
-                    book.remove(DBDefinitions.KEY_BOOK_UUID);
-                }
-            } else if (book.contains(DBDefinitions.KEY_UUID)) {
-                // read, remove and store (if not empty) as KEY_BOOK_UUID
-                uuid = book.getString(DBDefinitions.KEY_UUID);
-                book.remove(DBDefinitions.KEY_UUID);
-                if (!uuid.isEmpty()) {
-                    book.putString(DBDefinitions.KEY_BOOK_UUID, uuid);
-                }
-            }
-        }
     }
 }

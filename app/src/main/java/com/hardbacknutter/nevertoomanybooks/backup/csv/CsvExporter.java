@@ -51,12 +51,11 @@ import com.hardbacknutter.nevertoomanybooks.backup.csv.coders.PublisherCoder;
 import com.hardbacknutter.nevertoomanybooks.backup.csv.coders.SeriesCoder;
 import com.hardbacknutter.nevertoomanybooks.backup.csv.coders.TocEntryCoder;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyle;
-import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
+import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
-import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
@@ -78,6 +77,7 @@ public class CsvExporter
 
     /** The format version of this exporter. */
     public static final int VERSION = 1;
+
     /** column in CSV file - string-encoded - used in import/export, never change this string. */
     static final String CSV_COLUMN_TOC = "anthology_titles";
     /** column in CSV file - string-encoded - used in import/export, never change this string. */
@@ -86,66 +86,69 @@ public class CsvExporter
     static final String CSV_COLUMN_AUTHORS = "author_details";
     /** column in CSV file - string-encoded - used in import/export, never change this string. */
     static final String CSV_COLUMN_PUBLISHERS = "publisher";
-
     /** Log tag. */
     private static final String TAG = "CsvExporter";
     /** Only send progress updates every 200ms. */
     private static final int PROGRESS_UPDATE_INTERVAL = 200;
+
+    private static final String COMMA = ",";
+    private static final String EMPTY_QUOTED_STRING = "\"\"";
+
     /**
      * The order of the header MUST be the same as the order used to write the data (obvious eh?).
      * <p>
      * The fields CSV_COLUMN_* are {@link StringList} encoded
      */
     private static final String EXPORT_FIELD_HEADERS =
-            "\"" + DBDefinitions.KEY_PK_ID + "\","
-            + '"' + DBDefinitions.KEY_BOOK_UUID + "\","
-            + '"' + DBDefinitions.KEY_UTC_LAST_UPDATED + "\","
-            + '"' + CSV_COLUMN_AUTHORS + "\","
-            + '"' + DBDefinitions.KEY_TITLE + "\","
-            + '"' + DBDefinitions.KEY_ISBN + "\","
-            + '"' + CSV_COLUMN_PUBLISHERS + "\","
-            + '"' + DBDefinitions.KEY_PRINT_RUN + "\","
-            + '"' + DBDefinitions.KEY_DATE_PUBLISHED + "\","
-            + '"' + DBDefinitions.KEY_DATE_FIRST_PUBLICATION + "\","
-            + '"' + DBDefinitions.KEY_EDITION_BITMASK + "\","
-            + '"' + DBDefinitions.KEY_RATING + "\","
-            + '"' + DBDefinitions.KEY_BOOKSHELF_NAME + "\","
-            + '"' + DBDefinitions.KEY_READ + "\","
-            + '"' + CSV_COLUMN_SERIES + "\","
-            + '"' + DBDefinitions.KEY_PAGES + "\","
-            + '"' + DBDefinitions.KEY_PRIVATE_NOTES + "\","
-            + '"' + DBDefinitions.KEY_BOOK_CONDITION + "\","
-            + '"' + DBDefinitions.KEY_BOOK_CONDITION_COVER + "\","
+            '"' + DBDefinitions.KEY_PK_ID + '"'
+            + COMMA + '"' + DBDefinitions.KEY_BOOK_UUID + '"'
+            + COMMA + '"' + DBDefinitions.KEY_UTC_LAST_UPDATED + '"'
+            + COMMA + '"' + CSV_COLUMN_AUTHORS + '"'
+            + COMMA + '"' + DBDefinitions.KEY_TITLE + '"'
+            + COMMA + '"' + DBDefinitions.KEY_ISBN + '"'
+            + COMMA + '"' + CSV_COLUMN_PUBLISHERS + '"'
+            + COMMA + '"' + DBDefinitions.KEY_PRINT_RUN + '"'
+            + COMMA + '"' + DBDefinitions.KEY_DATE_PUBLISHED + '"'
+            + COMMA + '"' + DBDefinitions.KEY_DATE_FIRST_PUBLICATION + '"'
+            + COMMA + '"' + DBDefinitions.KEY_EDITION_BITMASK + '"'
+            + COMMA + '"' + DBDefinitions.KEY_RATING + '"'
+            + COMMA + '"' + DBDefinitions.KEY_BOOKSHELF_NAME + '"'
+            + COMMA + '"' + DBDefinitions.KEY_READ + '"'
+            + COMMA + '"' + CSV_COLUMN_SERIES + '"'
+            + COMMA + '"' + DBDefinitions.KEY_PAGES + '"'
+            + COMMA + '"' + DBDefinitions.KEY_PRIVATE_NOTES + '"'
+            + COMMA + '"' + DBDefinitions.KEY_BOOK_CONDITION + '"'
+            + COMMA + '"' + DBDefinitions.KEY_BOOK_CONDITION_COVER + '"'
 
-            + '"' + DBDefinitions.KEY_PRICE_LISTED + "\","
-            + '"' + DBDefinitions.KEY_PRICE_LISTED_CURRENCY + "\","
-            + '"' + DBDefinitions.KEY_PRICE_PAID + "\","
-            + '"' + DBDefinitions.KEY_PRICE_PAID_CURRENCY + "\","
-            + '"' + DBDefinitions.KEY_DATE_ACQUIRED + "\","
+            + COMMA + '"' + DBDefinitions.KEY_PRICE_LISTED + '"'
+            + COMMA + '"' + DBDefinitions.KEY_PRICE_LISTED_CURRENCY + '"'
+            + COMMA + '"' + DBDefinitions.KEY_PRICE_PAID + '"'
+            + COMMA + '"' + DBDefinitions.KEY_PRICE_PAID_CURRENCY + '"'
+            + COMMA + '"' + DBDefinitions.KEY_DATE_ACQUIRED + '"'
 
-            + '"' + DBDefinitions.KEY_TOC_BITMASK + "\","
-            + '"' + DBDefinitions.KEY_LOCATION + "\","
-            + '"' + DBDefinitions.KEY_READ_START + "\","
-            + '"' + DBDefinitions.KEY_READ_END + "\","
-            + '"' + DBDefinitions.KEY_FORMAT + "\","
-            + '"' + DBDefinitions.KEY_COLOR + "\","
-            + '"' + DBDefinitions.KEY_SIGNED + "\","
-            + '"' + DBDefinitions.KEY_LOANEE + "\","
-            + '"' + CSV_COLUMN_TOC + "\","
-            + '"' + DBDefinitions.KEY_DESCRIPTION + "\","
-            + '"' + DBDefinitions.KEY_GENRE + "\","
-            + '"' + DBDefinitions.KEY_LANGUAGE + "\","
-            + '"' + DBDefinitions.KEY_UTC_ADDED + "\","
+            + COMMA + '"' + DBDefinitions.KEY_TOC_BITMASK + '"'
+            + COMMA + '"' + DBDefinitions.KEY_LOCATION + '"'
+            + COMMA + '"' + DBDefinitions.KEY_READ_START + '"'
+            + COMMA + '"' + DBDefinitions.KEY_READ_END + '"'
+            + COMMA + '"' + DBDefinitions.KEY_FORMAT + '"'
+            + COMMA + '"' + DBDefinitions.KEY_COLOR + '"'
+            + COMMA + '"' + DBDefinitions.KEY_SIGNED + '"'
+            + COMMA + '"' + DBDefinitions.KEY_LOANEE + '"'
+            + COMMA + '"' + CSV_COLUMN_TOC + '"'
+            + COMMA + '"' + DBDefinitions.KEY_DESCRIPTION + '"'
+            + COMMA + '"' + DBDefinitions.KEY_GENRE + '"'
+            + COMMA + '"' + DBDefinitions.KEY_LANGUAGE + '"'
+            + COMMA + '"' + DBDefinitions.KEY_UTC_ADDED + '"'
             //NEWTHINGS: add new site specific ID: add column label
-            + '"' + DBDefinitions.KEY_EID_LIBRARY_THING + "\","
-            + '"' + DBDefinitions.KEY_EID_STRIP_INFO_BE + "\","
-            + '"' + DBDefinitions.KEY_EID_OPEN_LIBRARY + "\","
-            + '"' + DBDefinitions.KEY_EID_ISFDB + "\","
-            + '"' + DBDefinitions.KEY_EID_GOODREADS_BOOK + "\","
-            + '"' + DBDefinitions.KEY_UTC_LAST_SYNC_DATE_GOODREADS + "\""
+            + COMMA + '"' + DBDefinitions.KEY_EID_LIBRARY_THING + '"'
+            + COMMA + '"' + DBDefinitions.KEY_EID_STRIP_INFO_BE + '"'
+            + COMMA + '"' + DBDefinitions.KEY_EID_OPEN_LIBRARY + '"'
+            + COMMA + '"' + DBDefinitions.KEY_EID_ISFDB + '"'
+            + COMMA + '"' + DBDefinitions.KEY_EID_GOODREADS_BOOK + '"'
+            + COMMA + '"' + DBDefinitions.KEY_UTC_LAST_SYNC_DATE_GOODREADS + '"'
             + '\n';
 
-    private static final String EMPTY_QUOTED_STRING = "\"\"";
+
 
     /** Database Access. */
     @NonNull
@@ -214,121 +217,125 @@ public class CsvExporter
 
         long lastUpdate = 0;
 
+        final Book book = new Book();
+
         try (Cursor cursor = mDb.fetchBooksForExport(mUtcSinceDateTime)) {
-            // header: the top row with column labels
+            // row 0 with the column labels
             writer.write(EXPORT_FIELD_HEADERS);
 
             final int progressMaxCount = progressListener.getMax() + cursor.getCount();
             progressListener.setMax(progressMaxCount);
 
-            final DataHolder bookData = new CursorRow(cursor);
-
             while (cursor.moveToNext() && !progressListener.isCancelled()) {
 
-                final long bookId = bookData.getLong(DBDefinitions.KEY_PK_ID);
+                book.load(cursor, mDb);
 
-                String authors = mAuthorCoder.encodeList(mDb.getAuthorsByBookId(bookId));
-                // Sanity check: ensure author is non-blank.
-                if (authors.trim().isEmpty()) {
-                    authors = mUnknownString;
-                }
-
-                String title = bookData.getString(DBDefinitions.KEY_TITLE);
+                String title = book.getString(DBDefinitions.KEY_TITLE);
                 // Sanity check: ensure title is non-blank.
                 if (title.trim().isEmpty()) {
                     title = mUnknownString;
                 }
 
+                String authors = mAuthorCoder.encodeList(
+                        book.getParcelableArrayList(Book.BKEY_AUTHOR_ARRAY));
+                // Sanity check: ensure author is non-blank.
+                if (authors.trim().isEmpty()) {
+                    authors = mUnknownString;
+                }
+
                 // it's a buffered writer, no need to first StringBuilder the line.
-                writer.write(encode(bookId));
-                writer.write(",");
-                writer.write(encode(bookData.getString(DBDefinitions.KEY_BOOK_UUID)));
-                writer.write(",");
-                writer.write(encode(bookData.getString(DBDefinitions.KEY_UTC_LAST_UPDATED)));
-                writer.write(",");
+                writer.write(encode(book.getLong(DBDefinitions.KEY_PK_ID)));
+                writer.write(COMMA);
+                writer.write(encode(book.getString(DBDefinitions.KEY_BOOK_UUID)));
+                writer.write(COMMA);
+                writer.write(encode(book.getString(DBDefinitions.KEY_UTC_LAST_UPDATED)));
+                writer.write(COMMA);
                 writer.write(encode(authors));
-                writer.write(",");
+                writer.write(COMMA);
                 writer.write(encode(title));
-                writer.write(",");
-                writer.write(encode(bookData.getString(DBDefinitions.KEY_ISBN)));
-                writer.write(",");
-                writer.write(encode(mPublisherCoder.encodeList(mDb.getPublishersByBookId(bookId))));
-                writer.write(",");
-                writer.write(encode(bookData.getString(DBDefinitions.KEY_PRINT_RUN)));
-                writer.write(",");
-                writer.write(encode(bookData.getString(DBDefinitions.KEY_DATE_PUBLISHED)));
-                writer.write(",");
-                writer.write(encode(bookData.getString(DBDefinitions.KEY_DATE_FIRST_PUBLICATION)));
-                writer.write(",");
-                writer.write(encode(bookData.getLong(DBDefinitions.KEY_EDITION_BITMASK)));
-                writer.write(",");
-                writer.write(encode(bookData.getDouble(DBDefinitions.KEY_RATING)));
-                writer.write(",");
-                writer.write(
-                        encode(mBookshelfCoder.encodeList(mDb.getBookshelvesByBookId(bookId))));
-                writer.write(",");
-                writer.write(encode(bookData.getInt(DBDefinitions.KEY_READ)));
-                writer.write(",");
-                writer.write(encode(mSeriesCoder.encodeList(mDb.getSeriesByBookId(bookId))));
-                writer.write(",");
-                writer.write(encode(bookData.getString(DBDefinitions.KEY_PAGES)));
-                writer.write(",");
-                writer.write(encode(bookData.getString(DBDefinitions.KEY_PRIVATE_NOTES)));
-                writer.write(",");
-                writer.write(encode(bookData.getString(DBDefinitions.KEY_BOOK_CONDITION)));
-                writer.write(",");
-                writer.write(encode(bookData.getString(DBDefinitions.KEY_BOOK_CONDITION_COVER)));
-                writer.write(",");
-                writer.write(encode(bookData.getDouble(DBDefinitions.KEY_PRICE_LISTED)));
-                writer.write(",");
-                writer.write(encode(bookData.getString(DBDefinitions.KEY_PRICE_LISTED_CURRENCY)));
-                writer.write(",");
-                writer.write(encode(bookData.getDouble(DBDefinitions.KEY_PRICE_PAID)));
-                writer.write(",");
-                writer.write(encode(bookData.getString(DBDefinitions.KEY_PRICE_PAID_CURRENCY)));
-                writer.write(",");
-                writer.write(encode(bookData.getString(DBDefinitions.KEY_DATE_ACQUIRED)));
-                writer.write(",");
-                writer.write(encode(bookData.getLong(DBDefinitions.KEY_TOC_BITMASK)));
-                writer.write(",");
-                writer.write(encode(bookData.getString(DBDefinitions.KEY_LOCATION)));
-                writer.write(",");
-                writer.write(encode(bookData.getString(DBDefinitions.KEY_READ_START)));
-                writer.write(",");
-                writer.write(encode(bookData.getString(DBDefinitions.KEY_READ_END)));
-                writer.write(",");
-                writer.write(encode(bookData.getString(DBDefinitions.KEY_FORMAT)));
-                writer.write(",");
-                writer.write(encode(bookData.getString(DBDefinitions.KEY_COLOR)));
-                writer.write(",");
-                writer.write(encode(bookData.getInt(DBDefinitions.KEY_SIGNED)));
-                writer.write(",");
-                writer.write(encode(bookData.getString(DBDefinitions.KEY_LOANEE)));
-                writer.write(",");
-                writer.write(encode(mTocCoder.encodeList(mDb.getTocEntryByBook(bookId))));
-                writer.write(",");
-                writer.write(encode(bookData.getString(DBDefinitions.KEY_DESCRIPTION)));
-                writer.write(",");
-                writer.write(encode(bookData.getString(DBDefinitions.KEY_GENRE)));
-                writer.write(",");
-                writer.write(encode(bookData.getString(DBDefinitions.KEY_LANGUAGE)));
-                writer.write(",");
-                writer.write(encode(bookData.getString(DBDefinitions.KEY_UTC_ADDED)));
-                writer.write(",");
+                writer.write(COMMA);
+                writer.write(encode(book.getString(DBDefinitions.KEY_ISBN)));
+                writer.write(COMMA);
+                writer.write(encode(mPublisherCoder.encodeList(
+                        book.getParcelableArrayList(Book.BKEY_PUBLISHER_ARRAY))));
+                writer.write(COMMA);
+                writer.write(encode(book.getString(DBDefinitions.KEY_PRINT_RUN)));
+                writer.write(COMMA);
+                writer.write(encode(book.getString(DBDefinitions.KEY_DATE_PUBLISHED)));
+                writer.write(COMMA);
+                writer.write(encode(book.getString(DBDefinitions.KEY_DATE_FIRST_PUBLICATION)));
+                writer.write(COMMA);
+                writer.write(encode(book.getLong(DBDefinitions.KEY_EDITION_BITMASK)));
+                writer.write(COMMA);
+                writer.write(encode(book.getDouble(DBDefinitions.KEY_RATING)));
+                writer.write(COMMA);
+                writer.write(encode(mBookshelfCoder.encodeList(
+                        book.getParcelableArrayList(Book.BKEY_BOOKSHELF_ARRAY))));
+                writer.write(COMMA);
+                writer.write(encode(book.getInt(DBDefinitions.KEY_READ)));
+                writer.write(COMMA);
+                writer.write(encode(mSeriesCoder.encodeList(
+                        book.getParcelableArrayList(Book.BKEY_SERIES_ARRAY))));
+                writer.write(COMMA);
+                writer.write(encode(book.getString(DBDefinitions.KEY_PAGES)));
+                writer.write(COMMA);
+                writer.write(encode(book.getString(DBDefinitions.KEY_PRIVATE_NOTES)));
+                writer.write(COMMA);
+                writer.write(encode(book.getString(DBDefinitions.KEY_BOOK_CONDITION)));
+                writer.write(COMMA);
+                writer.write(encode(book.getString(DBDefinitions.KEY_BOOK_CONDITION_COVER)));
+                writer.write(COMMA);
+                writer.write(encode(book.getDouble(DBDefinitions.KEY_PRICE_LISTED)));
+                writer.write(COMMA);
+                writer.write(encode(book.getString(DBDefinitions.KEY_PRICE_LISTED_CURRENCY)));
+                writer.write(COMMA);
+                writer.write(encode(book.getDouble(DBDefinitions.KEY_PRICE_PAID)));
+                writer.write(COMMA);
+                writer.write(encode(book.getString(DBDefinitions.KEY_PRICE_PAID_CURRENCY)));
+                writer.write(COMMA);
+                writer.write(encode(book.getString(DBDefinitions.KEY_DATE_ACQUIRED)));
+                writer.write(COMMA);
+                writer.write(encode(book.getLong(DBDefinitions.KEY_TOC_BITMASK)));
+                writer.write(COMMA);
+                writer.write(encode(book.getString(DBDefinitions.KEY_LOCATION)));
+                writer.write(COMMA);
+                writer.write(encode(book.getString(DBDefinitions.KEY_READ_START)));
+                writer.write(COMMA);
+                writer.write(encode(book.getString(DBDefinitions.KEY_READ_END)));
+                writer.write(COMMA);
+                writer.write(encode(book.getString(DBDefinitions.KEY_FORMAT)));
+                writer.write(COMMA);
+                writer.write(encode(book.getString(DBDefinitions.KEY_COLOR)));
+                writer.write(COMMA);
+                writer.write(encode(book.getInt(DBDefinitions.KEY_SIGNED)));
+                writer.write(COMMA);
+                writer.write(encode(book.getString(DBDefinitions.KEY_LOANEE)));
+                writer.write(COMMA);
+                writer.write(encode(mTocCoder.encodeList(
+                        book.getParcelableArrayList(Book.BKEY_TOC_ARRAY))));
+                writer.write(COMMA);
+                writer.write(encode(book.getString(DBDefinitions.KEY_DESCRIPTION)));
+                writer.write(COMMA);
+                writer.write(encode(book.getString(DBDefinitions.KEY_GENRE)));
+                writer.write(COMMA);
+                writer.write(encode(book.getString(DBDefinitions.KEY_LANGUAGE)));
+                writer.write(COMMA);
+                writer.write(encode(book.getString(DBDefinitions.KEY_UTC_ADDED)));
+                writer.write(COMMA);
 
                 //NEWTHINGS: add new site specific ID: add column value
-                writer.write(encode(bookData.getLong(DBDefinitions.KEY_EID_LIBRARY_THING)));
-                writer.write(",");
-                writer.write(encode(bookData.getLong(DBDefinitions.KEY_EID_STRIP_INFO_BE)));
-                writer.write(",");
-                writer.write(encode(bookData.getString(DBDefinitions.KEY_EID_OPEN_LIBRARY)));
-                writer.write(",");
-                writer.write(encode(bookData.getLong(DBDefinitions.KEY_EID_ISFDB)));
-                writer.write(",");
-                writer.write(encode(bookData.getLong(DBDefinitions.KEY_EID_GOODREADS_BOOK)));
-                writer.write(",");
-                writer.write(
-                        encode(bookData.getString(DBDefinitions.KEY_UTC_LAST_SYNC_DATE_GOODREADS)));
+                writer.write(encode(book.getLong(DBDefinitions.KEY_EID_LIBRARY_THING)));
+                writer.write(COMMA);
+                writer.write(encode(book.getLong(DBDefinitions.KEY_EID_STRIP_INFO_BE)));
+                writer.write(COMMA);
+                writer.write(encode(book.getString(DBDefinitions.KEY_EID_OPEN_LIBRARY)));
+                writer.write(COMMA);
+                writer.write(encode(book.getLong(DBDefinitions.KEY_EID_ISFDB)));
+                writer.write(COMMA);
+                writer.write(encode(book.getLong(DBDefinitions.KEY_EID_GOODREADS_BOOK)));
+                writer.write(COMMA);
+                writer.write(encode(book.getString(
+                        DBDefinitions.KEY_UTC_LAST_SYNC_DATE_GOODREADS)));
                 writer.write("\n");
 
                 mResults.booksExported++;
@@ -398,7 +405,7 @@ public class CsvExporter
                 pos++;
 
             }
-            return sb.append("\"").toString();
+            return sb.append('"').toString();
         } catch (@NonNull final NullPointerException e) {
             return EMPTY_QUOTED_STRING;
         }

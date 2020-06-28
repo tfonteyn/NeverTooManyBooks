@@ -41,7 +41,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 
 /**
  * Validator to apply a default value and validate as Double.
- * Float, Integer, Long are casted to Double.
+ * Float, Integer, Long are cast to Double.
  * <p>
  * {@code null} or empty string become 0d.
  */

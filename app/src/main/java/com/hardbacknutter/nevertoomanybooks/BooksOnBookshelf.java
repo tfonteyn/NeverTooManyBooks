@@ -53,6 +53,7 @@ import androidx.annotation.StringRes;
 import androidx.core.util.Pair;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentOnAttachListener;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -160,7 +161,6 @@ public class BooksOnBookshelf
     /** Log tag. */
     private static final String TAG = "BooksOnBookshelf";
     public static final String BKEY_START_BACKUP = TAG + ":startBackup";
-
     /** simple indeterminate progress spinner to show while getting the list of books. */
     private ProgressBar mProgressBar;
     /** The dropdown button to select a Bookshelf. */
@@ -173,7 +173,30 @@ public class BooksOnBookshelf
     private TextView mHeaderBookCountView;
     /** The View for the list. */
     private RecyclerView mListView;
-    private LinearLayoutManager mLayoutManager;
+    /** (re)attach the result listener when a fragment gets started. */
+    private final FragmentOnAttachListener mFragmentOnAttachListener =
+            new FragmentOnAttachListener() {
+                @Override
+                public void onAttachFragment(@NonNull final FragmentManager fragmentManager,
+                                             @NonNull final Fragment fragment) {
+                    if (BuildConfig.DEBUG && DEBUG_SWITCHES.ATTACH_FRAGMENT) {
+                        Log.d(getClass().getName(), "onAttachFragment: " + fragment.getTag());
+                    }
+
+                    if (fragment instanceof BookChangedListenerOwner) {
+                        ((BookChangedListenerOwner) fragment).setListener(mBookChangedListener);
+
+                    } else if (fragment instanceof StylePickerDialogFragment) {
+                        ((StylePickerDialogFragment) fragment).setListener(mStyleChangedListener);
+
+                    } else if (fragment instanceof ExportHelperDialogFragment) {
+                        ((ExportHelperDialogFragment) fragment).setListener(mExportOptionsListener);
+
+                    } else if (fragment instanceof ImportHelperDialogFragment) {
+                        ((ImportHelperDialogFragment) fragment).setListener(mImportOptionsListener);
+                    }
+                }
+            };
     /** Multi-type adapter to manage list connection to cursor. */
     private BooklistAdapter mAdapter;
     /** The adapter used to fill the mBookshelfSpinner. */
@@ -208,43 +231,8 @@ public class BooksOnBookshelf
                     // Do Nothing
                 }
             };
-    // ENHANCE: update the modified row without a rebuild.
-    private final BookChangedListener mBookChangedListener = (bookId, fieldsChanged, data) -> {
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_INIT_BOOK_LIST) {
-            Log.d(TAG, "onBookChanged"
-                       + "|bookId=" + bookId
-                       + "|fieldsChanged=0b" + Integer.toBinaryString(fieldsChanged)
-                       + "|data=" + data);
-        }
-        saveListPosition();
-        // go create
-        mModel.buildBookList(this);
-
-        // changes were made to a single book
-//        if (bookId > 0) {
-//            if ((fieldsChanged & BookChangedListener.BOOK_READ) != 0) {
-//                saveListPosition();
-//                initBookList();
-//
-//          } else if ((fieldsChanged & BookChangedListener.BOOK_LOANEE) != 0) {
-//                if (data != null) {
-//                    String loanee = data.getString(DBDefinitions.KEY_LOANEE);
-//                }
-//                saveListPosition();
-//                initBookList();
-//
-//            } else if ((fieldsChanged & BookChangedListener.BOOK_DELETED) != 0) {
-//                saveListPosition();
-//                initBookList();
-//            }
-//        } else {
-//            // changes (Author, Series, ...) were made to (potentially) the whole list
-//            if (fieldsChanged != 0) {
-//                saveListPosition();
-//                initBookList();
-//            }
-//        }
-    };
+    /** List layout manager. */
+    private LinearLayoutManager mLayoutManager;
     /** Listener for clicks on the list. */
     private final BooklistAdapter.OnRowClickedListener mOnRowClickedListener =
             new BooklistAdapter.OnRowClickedListener() {
@@ -320,9 +308,63 @@ public class BooksOnBookshelf
                     return true;
                 }
             };
-    /**
-     * Called from {@link StylePickerDialogFragment} when the user selected a style to apply.
-     */
+    /** React to row changes made. ENHANCE: update the modified row without a rebuild. */
+    private final BookChangedListener mBookChangedListener =
+            new BookChangedListener() {
+                @Override
+                public void onChange(final long bookId,
+                                     final int fieldsChanged,
+                                     @Nullable final Bundle data) {
+                    if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_INIT_BOOK_LIST) {
+                        Log.d(TAG, "onBookChanged"
+                                   + "|bookId=" + bookId
+                                   + "|fieldsChanged=0b" + Integer.toBinaryString(fieldsChanged)
+                                   + "|data=" + data);
+                    }
+                    BooksOnBookshelf.this.saveListPosition();
+                    // go create
+                    mModel.buildBookList(BooksOnBookshelf.this);
+
+                    // changes were made to a single book
+//        if (bookId > 0) {
+//            if ((fieldsChanged & BookChangedListener.BOOK_READ) != 0) {
+//                saveListPosition();
+//                initBookList();
+//
+//          } else if ((fieldsChanged & BookChangedListener.BOOK_LOANEE) != 0) {
+//                if (data != null) {
+//                    String loanee = data.getString(DBDefinitions.KEY_LOANEE);
+//                }
+//                saveListPosition();
+//                initBookList();
+//
+//            } else if ((fieldsChanged & BookChangedListener.BOOK_DELETED) != 0) {
+//                saveListPosition();
+//                initBookList();
+//            }
+//        } else {
+//            // changes (Author, Series, ...) were made to (potentially) the whole list
+//            if (fieldsChanged != 0) {
+//                saveListPosition();
+//                initBookList();
+//            }
+//        }
+                }
+            };
+    /** Export. */
+    private ExportTaskModel mExportModel;
+    private final OptionsDialogBase.OptionsListener<ExportManager> mExportOptionsListener =
+            this::exportPickUri;
+    /** Import. */
+    private ImportTaskModel mImportModel;
+    private final OptionsDialogBase.OptionsListener<ImportManager> mImportOptionsListener =
+            new OptionsDialogBase.OptionsListener<ImportManager>() {
+                @Override
+                public void onOptionsSet(@NonNull final ImportManager options) {
+                    mImportModel.startArchiveImportTask(options);
+                }
+            };
+    /** React to the user selecting a style to apply. */
     private final StylePickerDialogFragment.StyleChangedListener mStyleChangedListener =
             new StylePickerDialogFragment.StyleChangedListener() {
                 public void onStyleChanged(@NonNull final String uuid) {
@@ -340,24 +382,10 @@ public class BooksOnBookshelf
     /** Full progress dialog to show while exporting/importing. */
     @Nullable
     private ProgressDialogFragment mProgressDialog;
-    /** Export. */
-    private ExportTaskModel mExportModel;
-    private final OptionsDialogBase.OptionsListener<ExportManager> mExportOptionsListener =
-            this::exportPickUri;
-    /** Import. */
-    private ImportTaskModel mImportModel;
-    //    private BooksonbookshelfBinding mVb;
-    private final OptionsDialogBase.OptionsListener<ImportManager> mImportOptionsListener =
-            new OptionsDialogBase.OptionsListener<ImportManager>() {
-                @Override
-                public void onOptionsSet(@NonNull final ImportManager options) {
-                    mImportModel.startArchiveImportTask(options);
-                }
-            };
     /** Encapsulates the FAB button/menu. */
     private FabMenu mFabMenu;
 
-
+    //    private BooksonbookshelfBinding mVb;
     @Override
     protected void onSetContentView() {
 //        mVb = BooksonbookshelfBinding.inflate(getLayoutInflater());
@@ -382,32 +410,13 @@ public class BooksOnBookshelf
     }
 
     @Override
-    public void onAttachFragment(@NonNull final Fragment fragment) {
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.ATTACH_FRAGMENT) {
-            Log.d(getClass().getName(), "onAttachFragment: " + fragment.getTag());
-        }
-        super.onAttachFragment(fragment);
-
-        if (fragment instanceof BookChangedListenerOwner) {
-            ((BookChangedListenerOwner) fragment).setListener(mBookChangedListener);
-
-        } else if (fragment instanceof StylePickerDialogFragment) {
-            ((StylePickerDialogFragment) fragment).setListener(mStyleChangedListener);
-
-        } else if (fragment instanceof ExportHelperDialogFragment) {
-            ((ExportHelperDialogFragment) fragment).setListener(mExportOptionsListener);
-
-        } else if (fragment instanceof ImportHelperDialogFragment) {
-            ((ImportHelperDialogFragment) fragment).setListener(mImportOptionsListener);
-        }
-    }
-
-    @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         // Create the Goodreads QueueManager. This (re)starts stored tasks.
         QueueManager.create(this);
 
         super.onCreate(savedInstanceState);
+
+        getSupportFragmentManager().addFragmentOnAttachListener(mFragmentOnAttachListener);
 
         mModel = new ViewModelProvider(this).get(BooksOnBookshelfModel.class);
         mModel.init(this, getIntent().getExtras(), savedInstanceState);
@@ -631,8 +640,8 @@ public class BooksOnBookshelf
      *
      * @return {@code true} if there is a menu to show
      */
-    private boolean onCreateContextMenu(@NonNull final Menu menu,
-                                        @NonNull final DataHolder rowData) {
+    boolean onCreateContextMenu(@NonNull final Menu menu,
+                                @NonNull final DataHolder rowData) {
         menu.clear();
 
         final int rowGroupId = rowData.getInt(DBDefinitions.KEY_BL_NODE_GROUP);
@@ -800,10 +809,12 @@ public class BooksOnBookshelf
                 return true;
             }
             case R.id.MENU_BOOK_DUPLICATE: {
-                final Book book = mModel.getBook(rowData.getLong(DBDefinitions.KEY_FK_BOOK));
-                final Intent intent = new Intent(this, EditBookActivity.class)
-                        .putExtra(Book.BKEY_BOOK_DATA, book.duplicate());
-                startActivityForResult(intent, RequestCode.BOOK_DUPLICATE);
+                final Book book = mModel.getBook(rowData);
+                if (book != null) {
+                    final Intent intent = new Intent(this, EditBookActivity.class)
+                            .putExtra(Book.BKEY_BOOK_DATA, book.duplicate());
+                    startActivityForResult(intent, RequestCode.BOOK_DUPLICATE);
+                }
                 return true;
             }
 
@@ -836,8 +847,10 @@ public class BooksOnBookshelf
             /* ********************************************************************************** */
 
             case R.id.MENU_SHARE: {
-                final Book book = mModel.getBook(rowData.getLong(DBDefinitions.KEY_FK_BOOK));
-                startActivity(book.getShareIntent(this));
+                final Book book = mModel.getBook(rowData);
+                if (book != null) {
+                    startActivity(book.getShareIntent(this));
+                }
                 return true;
             }
             case R.id.MENU_BOOK_SEND_TO_GOODREADS: {
@@ -910,8 +923,7 @@ public class BooksOnBookshelf
             /* ********************************************************************************** */
 
             case R.id.MENU_SERIES_EDIT: {
-                final long seriesId = rowData.getLong(DBDefinitions.KEY_FK_SERIES);
-                final Series series = mModel.getSeries(seriesId);
+                final Series series = mModel.getSeries(rowData);
                 if (series != null) {
                     EditSeriesDialogFragment
                             .newInstance(series)
@@ -930,8 +942,7 @@ public class BooksOnBookshelf
                 return true;
             }
             case R.id.MENU_SERIES_DELETE: {
-                final long seriesId = rowData.getLong(DBDefinitions.KEY_FK_SERIES);
-                final Series series = mModel.getSeries(seriesId);
+                final Series series = mModel.getSeries(rowData);
                 if (series != null) {
                     StandardDialogs.deleteSeries(this, series, () -> {
                         mModel.getDb().deleteSeries(this, series.getId());
@@ -953,8 +964,7 @@ public class BooksOnBookshelf
             }
 
             case R.id.MENU_AUTHOR_EDIT: {
-                final long authorId = rowData.getLong(DBDefinitions.KEY_FK_AUTHOR);
-                final Author author = mModel.getAuthor(authorId);
+                final Author author = mModel.getAuthor(rowData);
                 if (author != null) {
                     EditAuthorDialogFragment
                             .newInstance(author)
@@ -975,8 +985,7 @@ public class BooksOnBookshelf
             /* ********************************************************************************** */
 
             case R.id.MENU_PUBLISHER_EDIT: {
-                final long publisherId = rowData.getLong(DBDefinitions.KEY_FK_PUBLISHER);
-                final Publisher publisher = mModel.getPublisher(publisherId);
+                final Publisher publisher = mModel.getPublisher(rowData);
                 if (publisher != null) {
                     EditPublisherDialogFragment
                             .newInstance(publisher)
@@ -985,8 +994,7 @@ public class BooksOnBookshelf
                 return true;
             }
             case R.id.MENU_PUBLISHER_DELETE: {
-                final long publisherId = rowData.getLong(DBDefinitions.KEY_FK_PUBLISHER);
-                final Publisher publisher = mModel.getPublisher(publisherId);
+                final Publisher publisher = mModel.getPublisher(rowData);
                 if (publisher != null) {
                     StandardDialogs.deletePublisher(this, publisher, () -> {
                         mModel.getDb().deletePublisher(this, publisher.getId());
@@ -1030,21 +1038,25 @@ public class BooksOnBookshelf
 
             /* ********************************************************************************** */
             case R.id.MENU_AMAZON_BOOKS_BY_AUTHOR: {
-                AmazonSearchEngine.openWebsite(this,
-                                               mModel.getAuthorFromRow(this, rowData),
-                                               null);
+                final Author author = mModel.getAuthor(rowData);
+                if (author != null) {
+                    AmazonSearchEngine.openWebsite(this, author.getLabel(this), null);
+                }
                 return true;
             }
             case R.id.MENU_AMAZON_BOOKS_IN_SERIES: {
-                AmazonSearchEngine.openWebsite(this,
-                                               null,
-                                               mModel.getSeriesFromRow(rowData));
+                final Series series = mModel.getSeries(rowData);
+                if (series != null) {
+                    AmazonSearchEngine.openWebsite(this, null, series.getTitle());
+                }
                 return true;
             }
             case R.id.MENU_AMAZON_BOOKS_BY_AUTHOR_IN_SERIES: {
-                AmazonSearchEngine.openWebsite(this,
-                                               mModel.getAuthorFromRow(this, rowData),
-                                               mModel.getSeriesFromRow(rowData));
+                final Author author = mModel.getAuthor(rowData);
+                final Series series = mModel.getSeries(rowData);
+                if (author != null && series != null) {
+                    AmazonSearchEngine.openWebsite(this, author.getLabel(this), series.getTitle());
+                }
                 return true;
             }
 
@@ -1431,7 +1443,7 @@ public class BooksOnBookshelf
      * but we'd still need to do some manual stuff to keep the position in between
      * app restarts.
      */
-    private void saveListPosition() {
+    void saveListPosition() {
         if (!isDestroyed()) {
             final int position = mLayoutManager.findFirstVisibleItemPosition();
             if (position == RecyclerView.NO_POSITION) {
@@ -1807,10 +1819,10 @@ public class BooksOnBookshelf
     private void importPickUri() {
         // Import
         // This does not allow multiple saved files like "foo.tar (1)", "foo.tar (2)"
-//        String[] mimeTypes = {"application/x-tar", "text/csv"};
+        // String[] mimeTypes = {"application/x-tar", "text/csv"};
         final Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT)
                 .addCategory(Intent.CATEGORY_OPENABLE)
-//                .putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes)
+                // .putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes)
                 .setType("*/*");
         startActivityForResult(intent, RequestCode.IMPORT_PICK_URI);
     }

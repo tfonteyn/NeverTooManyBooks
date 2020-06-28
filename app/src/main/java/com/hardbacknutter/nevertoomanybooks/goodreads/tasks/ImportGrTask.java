@@ -63,7 +63,6 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
-import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.goodreads.AuthorTypeMapper;
@@ -389,9 +388,40 @@ class ImportGrTask
     private List<String> extractIsbnList(@NonNull final Bundle review) {
 
         final List<String> list = new ArrayList<>(5);
-        addIfHasValue(list, review.getString(Review.ISBN13));
-        addIfHasValue(list, review.getString(DBDefinitions.KEY_ISBN));
+        addIfHasValue(review.getString(Review.ISBN13), list);
+        addIfHasValue(review.getString(DBDefinitions.KEY_ISBN), list);
         return list;
+    }
+
+    /**
+     * Create a new book with the Goodreads data.
+     *
+     * <strong>WARNING:</strong> a failed insert is ignored (but logged).
+     *
+     * @param context Current context
+     * @param db      Database Access
+     * @param review  the source data from Goodreads
+     */
+    private void insertBook(@NonNull final Context context,
+                            @NonNull final DAO db,
+                            @NonNull final Bundle review) {
+
+        final Book book = buildBook(context, db, new Book(), review);
+        try {
+            db.insert(context, book, DAO.BOOK_FLAG_IS_BATCH_OPERATION);
+            for (int cIdx = 0; cIdx < 2; cIdx++) {
+                final String fileSpec = book.getString(Book.BKEY_FILE_SPEC[cIdx]);
+                if (!fileSpec.isEmpty()) {
+                    final File downloadedFile = new File(fileSpec);
+                    final String uuid = book.getString(DBDefinitions.KEY_BOOK_UUID);
+                    final File destination = AppDir.getCoverFile(context, uuid, cIdx);
+                    FileUtils.rename(downloadedFile, destination);
+                }
+            }
+        } catch (@NonNull final DAO.DaoWriteException e) {
+            // ignore, but log it.
+            Logger.error(context, TAG, e);
+        }
     }
 
     /**
@@ -406,7 +436,7 @@ class ImportGrTask
      */
     private void updateBook(@NonNull final Context context,
                             @NonNull final DAO db,
-                            @NonNull final DataHolder book,
+                            @NonNull final Book book,
                             @NonNull final Bundle review) {
 
         // If the review has an 'updated' date, then check if we should update the book
@@ -426,17 +456,12 @@ class ImportGrTask
             }
         }
 
-        // We build a new book bundle each time since it will build on the existing
-        // data for the given book (taken from the cursor), not just replace it.
-        final long bookId = book.getLong(DBDefinitions.KEY_PK_ID);
-        final Locale bookLocale = LocaleUtils
-                .getLocale(context, book.getString(DBDefinitions.KEY_LANGUAGE));
-
-        final Book combinedBook = Book.from(buildBundle(context, db, bookId, bookLocale, review));
+        //IMPORTANT: we will construct a NEW BOOK, with the DELTA-data which
+        // we want to commit to the existing book.
+        final Book delta = buildBook(context, db, book, review);
         try {
-            db.update(context, bookId, combinedBook,
-                      DAO.BOOK_FLAG_USE_UPDATE_DATE_IF_PRESENT
-                      | DAO.BOOK_FLAG_IS_BATCH_OPERATION);
+            db.update(context, delta, DAO.BOOK_FLAG_IS_BATCH_OPERATION
+                                      | DAO.BOOK_FLAG_USE_UPDATE_DATE_IF_PRESENT);
         } catch (@NonNull final DAO.DaoWriteException e) {
             // ignore, but log it.
             Logger.error(context, TAG, e);
@@ -444,100 +469,100 @@ class ImportGrTask
     }
 
     /**
-     * Create a new book with the Goodreads data.
+     * Build a {@link Book} based on the delta of the locally held data
+     * and the Goodreads 'review' data.
+     * i.e. for existing books, we copy the id and the language field to the result.
      *
-     * <strong>WARNING:</strong> a failed insert is ignored (but logged).
+     * @param context       Current context
+     * @param db            Database Access
+     * @param localData     the local Book; this can be an existing Book with local data
+     *                      when we're updating, or a new Book() when inserting.
+     * @param goodreadsData the source data from Goodreads
      *
-     * @param context Current context
-     * @param db      Database Access
-     * @param review  the source data from Goodreads
-     */
-    private void insertBook(@NonNull final Context context,
-                            @NonNull final DAO db,
-                            @NonNull final Bundle review) {
-
-        final Book book = Book.from(buildBundle(context, db, 0, null, review));
-        try {
-            final long id = db.insert(context, 0, book, DAO.BOOK_FLAG_IS_BATCH_OPERATION);
-            for (int cIdx = 0; cIdx < 2; cIdx++) {
-                final String fileSpec = book.getString(Book.BKEY_FILE_SPEC[cIdx]);
-                if (!fileSpec.isEmpty()) {
-                    final File downloadedFile = new File(fileSpec);
-                    final String uuid = book.getString(DBDefinitions.KEY_BOOK_UUID);
-                    final File destination = AppDir.getCoverFile(context, uuid, cIdx);
-                    FileUtils.rename(downloadedFile, destination);
-                }
-            }
-        } catch (@NonNull final DAO.DaoWriteException e) {
-            // ignore, but log it.
-            Logger.error(context, TAG, e);
-        }
-    }
-
-    /**
-     * Build a book bundle based on the locally held data and the Goodreads 'review' data.
-     *
-     * @param context    Current context
-     * @param db         Database Access
-     * @param bookId     the local book to update; will be {@code 0} when this is a new book
-     * @param locale     to use, the book locale if there is one available, otherwise {@code null}
-     * @param sourceData the source data from Goodreads
-     *
-     * @return bookData bundle
+     * @return a new Book object containing the delta data
      */
     @NonNull
-    private Bundle buildBundle(@NonNull final Context context,
-                               @NonNull final DAO db,
-                               final long bookId,
-                               @Nullable final Locale locale,
-                               @NonNull final Bundle sourceData) {
+    private Book buildBook(@NonNull final Context context,
+                           @NonNull final DAO db,
+                           @NonNull final Book localData,
+                           @NonNull final Bundle goodreadsData) {
 
-        final Locale userLocale = LocaleUtils.getUserLocale(context);
+        // The Book will'll populate with the delta data, and return from this method.
+        final Book delta = new Book();
+        final long bookId = localData.getLong(DBDefinitions.KEY_PK_ID);
+        // 0 for new, or the existing id for updates
+        delta.putLong(DBDefinitions.KEY_PK_ID, bookId);
 
         // The ListReviewsApi does not return the Book language.
         // So during an insert, the bookLocale will always be null.
         // During an update, we *might* get the the locale if the local book data
         // had the language set.
-        // Either way, if missing, use the default.
-        final Locale bookLocale = locale != null ? locale : userLocale;
+        final Locale bookLocale = localData.getLocale(context);
+        // Copy the book language from the original book to the delta book
+        final String language = localData.getString(DBDefinitions.KEY_LANGUAGE);
+        if (!language.isEmpty()) {
+            delta.putString(DBDefinitions.KEY_LANGUAGE, language);
+        }
 
-        final Bundle bookData = new Bundle();
+        String grTitle = goodreadsData.getString(DBDefinitions.KEY_TITLE);
+        // Cleanup the title by splitting off the Series (if present).
+        if (grTitle != null && !grTitle.isEmpty()) {
+            final Matcher matcher = Series.TEXT1_BR_TEXT2_BR_PATTERN.matcher(grTitle);
+            if (matcher.find()) {
+                grTitle = matcher.group(1);
+                // store the cleansed title
+                if (grTitle != null && !grTitle.isEmpty()) {
+                    delta.putString(DBDefinitions.KEY_TITLE, grTitle);
+                }
 
-        //ENHANCE: https://github.com/eleybourn/Book-Catalogue/issues/812 - syn Goodreads notes
+                final String seriesTitleWithNumber = matcher.group(2);
+                if (seriesTitleWithNumber != null && !seriesTitleWithNumber.isEmpty()) {
+                    final ArrayList<Series> seriesList =
+                            localData.getParcelableArrayList(Book.BKEY_SERIES_ARRAY);
+                    final Series grSeries = Series.from(seriesTitleWithNumber);
+                    seriesList.add(grSeries);
+                    Series.pruneList(seriesList, context, db, false, bookLocale);
+                    delta.putParcelableArrayList(Book.BKEY_SERIES_ARRAY, seriesList);
+                }
+            } else {
+                delta.putString(DBDefinitions.KEY_TITLE, grTitle);
+            }
+        }
+
+        //https://github.com/eleybourn/Book-Catalogue/issues/812 - syn Goodreads notes
         // Do not sync Notes<->Review. The review notes are public on the site,
         // while 'our' notes are meant to be private.
+        addStringIfNonBlank(goodreadsData, DBDefinitions.KEY_PRIVATE_NOTES, delta);
 
-        addStringIfNonBlank(sourceData, DBDefinitions.KEY_PRIVATE_NOTES, bookData);
-        addStringIfNonBlank(sourceData, DBDefinitions.KEY_TITLE, bookData);
-        addStringIfNonBlank(sourceData, DBDefinitions.KEY_DESCRIPTION, bookData);
-        addStringIfNonBlank(sourceData, DBDefinitions.KEY_FORMAT, bookData);
-        addLongIfPresent(sourceData, DBDefinitions.KEY_EID_GOODREADS_BOOK, bookData);
+        addStringIfNonBlank(goodreadsData, DBDefinitions.KEY_DESCRIPTION, delta);
+        addStringIfNonBlank(goodreadsData, DBDefinitions.KEY_FORMAT, delta);
+        addLongIfPresent(goodreadsData, DBDefinitions.KEY_EID_GOODREADS_BOOK, delta);
 
-        Review.copyDateIfValid(sourceData, DBDefinitions.KEY_READ_START,
-                               bookData, DBDefinitions.KEY_READ_START);
+        Review.copyDateIfValid(goodreadsData, DBDefinitions.KEY_READ_START,
+                               delta, DBDefinitions.KEY_READ_START);
 
-        final String readEnd = Review.copyDateIfValid(sourceData, DBDefinitions.KEY_READ_END,
-                                                      bookData, DBDefinitions.KEY_READ_END);
+        final String readEnd = Review.copyDateIfValid(goodreadsData, DBDefinitions.KEY_READ_END,
+                                                      delta, DBDefinitions.KEY_READ_END);
 
-        final Double rating = addDoubleIfPresent(sourceData, DBDefinitions.KEY_RATING,
-                                                 bookData, DBDefinitions.KEY_RATING);
+        final Double rating = addDoubleIfPresent(goodreadsData, DBDefinitions.KEY_RATING,
+                                                 delta, DBDefinitions.KEY_RATING);
 
         // If it has a rating or a 'read_end' date, assume it's read. If these are missing then
         // DO NOT overwrite existing data since it *may* be read even without these fields.
         if ((rating != null && rating > 0) || (readEnd != null && !readEnd.isEmpty())) {
-            bookData.putBoolean(DBDefinitions.KEY_READ, true);
+            delta.putBoolean(DBDefinitions.KEY_READ, true);
         }
 
         // Pages: convert long to String, but don't overwrite if we got none
-        final long pages = sourceData.getLong(Review.PAGES);
+        final long pages = goodreadsData.getLong(Review.PAGES);
         if (pages != 0) {
-            bookData.putString(DBDefinitions.KEY_PAGES, String.valueOf(pages));
+            delta.putString(DBDefinitions.KEY_PAGES, String.valueOf(pages));
         }
 
         /*
          * Find the best (longest) isbn.
          */
-        final List<String> list = extractIsbnList(sourceData);
+        final List<String> list = extractIsbnList(goodreadsData);
         if (!list.isEmpty()) {
             String bestIsbn = list.get(0);
             int bestLen = bestIsbn.length();
@@ -549,35 +574,27 @@ class ImportGrTask
             }
 
             if (bestLen > 0) {
-                bookData.putString(DBDefinitions.KEY_ISBN, bestIsbn);
+                delta.putString(DBDefinitions.KEY_ISBN, bestIsbn);
             }
         }
 
         /*
          * Build the publication date based on the components
          */
-        final String pubDate = GoodreadsHandler.buildDate(sourceData,
+        final String pubDate = GoodreadsHandler.buildDate(goodreadsData,
                                                           Review.PUBLICATION_YEAR,
                                                           Review.PUBLICATION_MONTH,
                                                           Review.PUBLICATION_DAY,
                                                           null);
         if (pubDate != null && !pubDate.isEmpty()) {
-            bookData.putString(DBDefinitions.KEY_DATE_PUBLISHED, pubDate);
+            delta.putString(DBDefinitions.KEY_DATE_PUBLISHED, pubDate);
         }
 
-        /*
-         * process the Authors
-         */
-        final ArrayList<Bundle> grAuthors = sourceData.getParcelableArrayList(Review.AUTHORS);
+
+        final ArrayList<Bundle> grAuthors = goodreadsData.getParcelableArrayList(Review.AUTHORS);
         if (grAuthors != null) {
-            final ArrayList<Author> authors;
-            if (bookId == 0) {
-                // It's a new book. Start a clean list.
-                authors = new ArrayList<>();
-            } else {
-                // it's an update. Get current Authors.
-                authors = db.getAuthorsByBookId(bookId);
-            }
+            final ArrayList<Author> authorList =
+                    localData.getParcelableArrayList(Book.BKEY_AUTHOR_ARRAY);
 
             for (Bundle grAuthor : grAuthors) {
                 final String name = grAuthor.getString(Review.AUTHOR_NAME_GF);
@@ -587,102 +604,54 @@ class ImportGrTask
                     if (role != null && !role.trim().isEmpty()) {
                         author.setType(AuthorTypeMapper.map(bookLocale, role));
                     }
-                    authors.add(author);
+                    authorList.add(author);
                 }
             }
 
-            Author.pruneList(authors, context, db, false, bookLocale);
-            bookData.putParcelableArrayList(Book.BKEY_AUTHOR_ARRAY, authors);
+            Author.pruneList(authorList, context, db, false, bookLocale);
+            delta.putParcelableArrayList(Book.BKEY_AUTHOR_ARRAY, authorList);
         }
 
-        /*
-         * process the Publisher
-         */
-        final String grPublisher = sourceData.getString(Review.PUBLISHER);
+
+        final String grPublisher = goodreadsData.getString(Review.PUBLISHER);
         if (grPublisher != null && !grPublisher.isEmpty()) {
-            final ArrayList<Publisher> publishers;
-            if (bookId == 0) {
-                // It's a new book. Start a clean list.
-                publishers = new ArrayList<>();
-            } else {
-                // it's an update. Get current publishers.
-                publishers = db.getPublishersByBookId(bookId);
-            }
+            final ArrayList<Publisher> publisherList =
+                    localData.getParcelableArrayList(Book.BKEY_PUBLISHER_ARRAY);
+            publisherList.add(Publisher.from(grPublisher));
 
-            publishers.add(Publisher.from(grPublisher));
-
-            Publisher.pruneList(publishers, context, db, false, bookLocale);
-            bookData.putParcelableArrayList(Book.BKEY_PUBLISHER_ARRAY, publishers);
+            Publisher.pruneList(publisherList, context, db, false, bookLocale);
+            delta.putParcelableArrayList(Book.BKEY_PUBLISHER_ARRAY, publisherList);
         }
 
-        /*
-         * Cleanup the title by splitting off the Series (if present).
-         */
-        final String fullTitle = bookData.getString(DBDefinitions.KEY_TITLE);
-        if (fullTitle != null && !fullTitle.isEmpty()) {
-            final Matcher matcher = Series.TEXT1_BR_TEXT2_BR_PATTERN.matcher(fullTitle);
-            if (matcher.find()) {
-                final String bookTitle = matcher.group(1);
-                final String seriesTitleWithNumber = matcher.group(2);
-                if (seriesTitleWithNumber != null && !seriesTitleWithNumber.isEmpty()) {
-                    final ArrayList<Series> seriesList;
-                    if (bookId == 0) {
-                        // It's a new book. Start a clean list.
-                        seriesList = new ArrayList<>();
-                    } else {
-                        // it's an update. Get current Series.
-                        seriesList = db.getSeriesByBookId(bookId);
-                    }
 
-                    // store the cleansed title
-                    bookData.putString(DBDefinitions.KEY_TITLE, bookTitle);
-
-                    final Series newSeries = Series.from(seriesTitleWithNumber);
-                    seriesList.add(newSeries);
-                    Series.pruneList(seriesList, context, db, false, bookLocale);
-                    bookData.putParcelableArrayList(Book.BKEY_SERIES_ARRAY, seriesList);
-                }
-            }
-        }
-
-        /*
-         * Process any bookshelves.
-         */
-        final ArrayList<Bundle> grShelves = sourceData.getParcelableArrayList(Review.SHELVES);
+        final ArrayList<Bundle> grShelves = goodreadsData.getParcelableArrayList(Review.SHELVES);
         if (grShelves != null) {
-            final ArrayList<Bookshelf> bookshelves;
-            if (bookId == 0) {
-                // It's a new book. Start a clean list.
-                bookshelves = new ArrayList<>();
-            } else {
-                // it's an update. Get current Bookshelves.
-                bookshelves = db.getBookshelvesByBookId(bookId);
-            }
-
             // Explicitly use the user locale to handle shelf names
+            final Locale userLocale = LocaleUtils.getUserLocale(context);
+
+            final ArrayList<Bookshelf> bookshelfList =
+                    localData.getParcelableArrayList(Book.BKEY_BOOKSHELF_ARRAY);
             for (Bundle shelfData : grShelves) {
                 final String name = mapShelf(userLocale, db, shelfData.getString(Review.SHELF));
                 if (name != null && !name.isEmpty()) {
-                    bookshelves.add(new Bookshelf(name, BooklistStyle.getDefault(context, db)));
+                    bookshelfList.add(new Bookshelf(name, BooklistStyle.getDefault(context, db)));
                 }
             }
-            Bookshelf.pruneList(bookshelves, db);
-            bookData.putParcelableArrayList(Book.BKEY_BOOKSHELF_ARRAY, bookshelves);
+            Bookshelf.pruneList(bookshelfList, db);
+            delta.putParcelableArrayList(Book.BKEY_BOOKSHELF_ARRAY, bookshelfList);
         }
 
-        /*
-         * New books only: use the Goodreads added date + get the thumbnail
-         */
+        // New books only: use the Goodreads added date + get the thumbnail
         if (bookId == 0) {
             // Use the Goodreads added date for new books
-            Review.copyDateIfValid(sourceData, Review.ADDED,
-                                   bookData, DBDefinitions.KEY_UTC_ADDED);
+            Review.copyDateIfValid(goodreadsData, Review.ADDED,
+                                   delta, DBDefinitions.KEY_UTC_ADDED);
 
             // fetch thumbnail
             final String coverUrl;
             final String sizeSuffix;
-            final String largeImage = sourceData.getString(Review.LARGE_IMAGE);
-            final String smallImage = sourceData.getString(Review.SMALL_IMAGE);
+            final String largeImage = goodreadsData.getString(Review.LARGE_IMAGE);
+            final String smallImage = goodreadsData.getString(Review.SMALL_IMAGE);
             if (GoodreadsHandler.hasCover(largeImage)) {
                 sizeSuffix = Review.LARGE_IMAGE;
                 coverUrl = largeImage;
@@ -695,40 +664,40 @@ class ImportGrTask
             }
 
             if (coverUrl != null) {
-                final String tmpName = bookData.getLong(DBDefinitions.KEY_EID_GOODREADS_BOOK)
+                final String tmpName = delta.getLong(DBDefinitions.KEY_EID_GOODREADS_BOOK)
                                        + GoodreadsSearchEngine.FILENAME_SUFFIX + "_" + sizeSuffix;
                 final String fileSpec =
                         ImageUtils.saveImage(context, coverUrl, tmpName,
                                              GoodreadsSearchEngine.CONNECT_TIMEOUT_MS,
                                              GoodreadsSearchEngine.THROTTLER);
                 if (fileSpec != null) {
-                    bookData.putString(Book.BKEY_FILE_SPEC[0], fileSpec);
+                    delta.putString(Book.BKEY_FILE_SPEC[0], fileSpec);
                 }
             }
         }
 
         // We need to set BOTH of these fields, otherwise the add/update method will set the
         // last_update_date for us, and that would be ahead of the Goodreads update date.
-        final String utcNow = LocalDateTime.now(ZoneOffset.UTC)
-                                           .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
-        bookData.putString(DBDefinitions.KEY_UTC_LAST_SYNC_DATE_GOODREADS, utcNow);
-        bookData.putString(DBDefinitions.KEY_UTC_LAST_UPDATED, utcNow);
+        final String utcNow = LocalDateTime
+                .now(ZoneOffset.UTC).format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+        delta.putString(DBDefinitions.KEY_UTC_LAST_SYNC_DATE_GOODREADS, utcNow);
+        delta.putString(DBDefinitions.KEY_UTC_LAST_UPDATED, utcNow);
 
-        return bookData;
+        return delta;
     }
 
     /**
      * Add the value to the list if the value is non-blank.
      *
-     * @param list  to add to
-     * @param value to add
+     * @param value    to add
+     * @param destList to add to
      */
-    private void addIfHasValue(@NonNull final Collection<String> list,
-                               @Nullable final String value) {
+    private void addIfHasValue(@Nullable final String value,
+                               @NonNull final Collection<String> destList) {
         if (value != null) {
             final String v = value.trim();
             if (!v.isEmpty()) {
-                list.add(v);
+                destList.add(v);
             }
         }
     }
@@ -738,7 +707,7 @@ class ImportGrTask
      */
     private void addStringIfNonBlank(@NonNull final Bundle sourceBundle,
                                      @NonNull final String key,
-                                     @NonNull final Bundle destBundle) {
+                                     @NonNull final Book destBundle) {
 
         if (sourceBundle.containsKey(key)) {
             final String value = sourceBundle.getString(key);
@@ -754,7 +723,7 @@ class ImportGrTask
     private void addLongIfPresent(@NonNull final Bundle sourceBundle,
                                   @SuppressWarnings("SameParameterValue")
                                   @NonNull final String key,
-                                  @NonNull final Bundle destBundle) {
+                                  @NonNull final Book destBundle) {
 
         if (sourceBundle.containsKey(key)) {
             final long value = sourceBundle.getLong(key);
@@ -769,9 +738,9 @@ class ImportGrTask
     private Double addDoubleIfPresent(@NonNull final Bundle sourceBundle,
                                       @SuppressWarnings("SameParameterValue")
                                       @NonNull final String sourceKey,
-                                      @NonNull final Bundle destBundle,
+                                      @NonNull final Book destBundle,
                                       @SuppressWarnings("SameParameterValue")
-                                      @NonNull final String destKey) {
+                                          @NonNull final String destKey) {
 
         if (sourceBundle.containsKey(sourceKey)) {
             final double value = sourceBundle.getDouble(sourceKey);

@@ -40,6 +40,7 @@ import java.time.format.DateTimeFormatter;
 import org.xml.sax.helpers.DefaultHandler;
 
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsAuth;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsHandler;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
@@ -511,7 +512,7 @@ public class ReviewsListApiHandler
         @Nullable
         public static String copyDateIfValid(@NonNull final Bundle sourceBundle,
                                              @NonNull final String sourceKey,
-                                             @NonNull final Bundle destBundle,
+                                             @NonNull final Book destBundle,
                                              @NonNull final String destKey) {
 
             final LocalDateTime date = parseDate(sourceBundle.getString(sourceKey));

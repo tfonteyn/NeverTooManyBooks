@@ -312,18 +312,21 @@ public class Bookshelf
     /**
      * Set the style for this bookshelf.
      *
-     * @param db    Database Access
-     * @param style to set; must already exist (id != 0)
+     * @param context Current context
+     * @param db      Database Access
+     * @param style   to set; must already exist (id != 0)
      *
      * @throws IllegalArgumentException if the style is 'new' (id==0)
      */
-    public void setStyle(@NonNull final DAO db,
+    public void setStyle(@NonNull final Context context,
+                         @NonNull final DAO db,
                          @NonNull final BooklistStyle style) {
         if (style.getId() == 0) {
-            throw new IllegalArgumentException(ErrorMsg.ARGS_MISSING_STYLE);
+            throw new IllegalArgumentException(ErrorMsg.ZERO_ID_FOR_STYLE);
         }
-        db.update(this, style.getId());
         mStyleUuid = style.getUuid();
+        db.update(context, this);
+
     }
 
     /**
@@ -393,10 +396,7 @@ public class Bookshelf
         mTopViewOffset = topViewOffset;
         mTopRowId = rowId;
 
-        // not strictly needed to refresh the style id, but we might as well take
-        // the opportunity to validate it.
-        final long styleId = getStyle(context, db).getId();
-        db.update(this, styleId);
+        db.update(context, this);
     }
 
     /**
@@ -410,7 +410,7 @@ public class Bookshelf
         final String uuid = mStyleUuid;
         final BooklistStyle style = getStyle(context, db);
         if (!uuid.equals(style.getUuid())) {
-            db.update(this, style.getId());
+            db.update(context, this);
         }
     }
 

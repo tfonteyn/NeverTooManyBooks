@@ -675,8 +675,8 @@ public class Book
 
     /**
      * Examine the values and make any changes necessary before writing the data.
-     * Called during {@link DAO#insert(Context, long, Book, int)}
-     * and {@link DAO#update(Context, long, Book, int)}.
+     * Called during {@link DAO#insert(Context, Book, int)}
+     * and {@link DAO#update(Context, Book, int)}.
      *
      * @param context Current context
      * @param isNew   {@code true} if the book is new
