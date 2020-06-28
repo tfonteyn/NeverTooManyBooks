@@ -65,8 +65,8 @@
             android:layout_marginStart="@dimen/indent_radio_button"
             android:checked="true"
             android:text="@string/bookshelf_all_books"
-            app:layout_constraintStart_toStartOf="@id/cbx_books"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@id/cbx_books"
             app:layout_constraintTop_toBottomOf="@id/cbx_books"
             />
 
@@ -76,8 +76,8 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/indent_radio_button"
             android:text="@string/lbl_export_option_books_since_last_full_backup"
-            app:layout_constraintStart_toStartOf="@id/cbx_books"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@id/cbx_books"
             app:layout_constraintTop_toBottomOf="@id/rb_books_all"
             />
 
@@ -103,12 +103,22 @@
             app:layout_constraintTop_toBottomOf="@id/cbx_covers"
             />
 
+        <View
+            android:id="@+id/formatDivider"
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:background="?attr/dividerHorizontal"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/cbx_prefs_and_styles"
+            />
+
         <TextView
             android:id="@+id/lbl_archive_format"
             style="@style/Label.Field"
             android:text="@string/lbl_archive_format"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/cbx_prefs_and_styles"
+            app:layout_constraintTop_toBottomOf="@id/formatDivider"
             />
 
         <Spinner

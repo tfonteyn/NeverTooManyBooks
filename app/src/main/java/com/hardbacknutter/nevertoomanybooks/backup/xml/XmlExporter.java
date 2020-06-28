@@ -68,6 +68,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
+import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlUtils;
@@ -120,6 +121,7 @@ public class XmlExporter
     private static final int XML_EXPORTER_AUTHORS_VERSION = 1;
     private static final int XML_EXPORTER_SERIES_VERSION = 1;
     private static final int XML_EXPORTER_PUBLISHER_VERSION = 1;
+    private static final int XML_EXPORTER_TOC_VERSION = 1;
     private static final int XML_EXPORTER_BOOKS_VERSION = 1;
 
     /** individual format version of Preferences. */
@@ -213,22 +215,27 @@ public class XmlExporter
 
         if (!progressListener.isCancelled() && writeBooks) {
             // parsing will be faster if these go in the order done here.
-            progressListener.onProgressStep(1,
-                                            context.getString(R.string.lbl_bookshelves) + xml);
+            progressListener.onProgressStep(1, context.getString(R.string.lbl_bookshelves) + xml);
             writeBookshelves(writer, progressListener);
-            progressListener.onProgressStep(1,
-                                            context.getString(R.string.lbl_authors) + xml);
+
+            progressListener.onProgressStep(1, context.getString(R.string.lbl_authors) + xml);
             writeAuthors(writer, progressListener);
-            progressListener.onProgressStep(1,
-                                            context.getString(R.string.lbl_series_multiple) + xml);
+
+            progressListener
+                    .onProgressStep(1, context.getString(R.string.lbl_series_multiple) + xml);
             writeSeries(writer, progressListener);
-            progressListener.onProgressStep(1,
-                                            context.getString(R.string.lbl_publishers) + xml);
+
+            progressListener.onProgressStep(1, context.getString(R.string.lbl_publishers) + xml);
             writePublishers(writer, progressListener);
-            progressListener.onProgressStep(1,
-                                            context.getString(R.string.lbl_books) + xml);
+
+            progressListener
+                    .onProgressStep(1, context.getString(R.string.lbl_table_of_content) + xml);
+            writeToc(writer, progressListener);
+
+            progressListener.onProgressStep(1, context.getString(R.string.lbl_books) + xml);
             writeBooks(writer, progressListener);
         }
+
         return mResults;
     }
 
@@ -492,6 +499,54 @@ public class XmlExporter
     }
 
     /**
+     * Write out {@link DBDefinitions#TBL_TOC_ENTRIES}.
+     *
+     * @param writer           writer
+     * @param progressListener Progress and cancellation interface
+     *
+     * @throws IOException on failure
+     */
+    private void writeToc(@NonNull final Writer writer,
+                          @NonNull final ProgressListener progressListener)
+            throws IOException {
+        try (Cursor cursor = mDb.fetchTocs()) {
+            writer.write('<' + XmlTags.TAG_TOC_ENTRY_LIST);
+            writer.write(XmlUtils.versionAttr(XML_EXPORTER_TOC_VERSION));
+            writer.write(XmlUtils.sizeAttr(cursor.getCount()));
+            writer.write(">\n");
+
+            final DataHolder rowData = new CursorRow(cursor);
+            while (cursor.moveToNext() && !progressListener.isCancelled()) {
+
+                // the tag is written as a single line (no line-feeds)
+                writer.write('<' + XmlTags.TAG_TOC_ENTRY);
+                writer.write(XmlUtils.idAttr(rowData.getLong(DBDefinitions.KEY_PK_ID)));
+                writer.write(XmlUtils.attr(
+                        DBDefinitions.KEY_TITLE,
+                        rowData.getString(DBDefinitions.KEY_TITLE)));
+                writer.write(XmlUtils.attr(
+                        DBDefinitions.KEY_DATE_FIRST_PUBLICATION,
+                        rowData.getString(DBDefinitions.KEY_DATE_FIRST_PUBLICATION)));
+
+                // close the start tag
+                writer.write(">");
+
+                // Write Authors as list, allowing for future expansion to multiple authors/toc
+                writer.write('<' + XmlTags.TAG_AUTHOR_LIST);
+                writer.write(XmlUtils.sizeAttr(1));
+                writer.write(">");
+                writer.write('<' + XmlTags.TAG_AUTHOR);
+                writer.write(XmlUtils.idAttr(rowData.getLong(DBDefinitions.KEY_FK_AUTHOR)));
+                writer.write("/>");
+                writer.write("</" + XmlTags.TAG_AUTHOR_LIST + ">");
+
+                writer.write("</" + XmlTags.TAG_TOC_ENTRY + ">\n");
+            }
+            writer.write("</" + XmlTags.TAG_TOC_ENTRY_LIST + ">\n");
+        }
+    }
+
+    /**
      * 'loan_to' is added to the books section here, this might be removed.
      *
      * @param writer           writer
@@ -626,57 +681,75 @@ public class XmlExporter
 
                 final ArrayList<Author> authors =
                         book.getParcelableArrayList(Book.BKEY_AUTHOR_ARRAY);
-                writer.write('<' + XmlTags.TAG_AUTHOR_LIST);
-                writer.write(XmlUtils.sizeAttr(authors.size()));
-                writer.write(">\n");
-                for (Author author : authors) {
-                    writer.write('<' + XmlTags.TAG_AUTHOR);
-                    writer.write(XmlUtils.idAttr(author.getId()));
-                    writer.write("/>\n");
+                if (!authors.isEmpty()) {
+                    writer.write('<' + XmlTags.TAG_AUTHOR_LIST);
+                    writer.write(XmlUtils.sizeAttr(authors.size()));
+                    writer.write(">");
+                    for (Author author : authors) {
+                        writer.write('<' + XmlTags.TAG_AUTHOR);
+                        writer.write(XmlUtils.idAttr(author.getId()));
+                        writer.write("/>");
+                    }
+                    writer.write("</" + XmlTags.TAG_AUTHOR_LIST + ">\n");
                 }
-                writer.write("</" + XmlTags.TAG_AUTHOR_LIST + ">\n");
-
 
                 final ArrayList<Series> seriesList =
                         book.getParcelableArrayList(Book.BKEY_SERIES_ARRAY);
-                writer.write('<' + XmlTags.TAG_SERIES_LIST);
-                writer.write(XmlUtils.sizeAttr(seriesList.size()));
-                writer.write(">\n");
-                for (Series series : seriesList) {
-                    writer.write('<' + XmlTags.TAG_SERIES);
-                    writer.write(XmlUtils.idAttr(series.getId()));
-                    writer.write(XmlUtils.attr(DBDefinitions.KEY_BOOK_NUM_IN_SERIES,
-                                               series.getNumber()));
-                    writer.write("/>\n");
+                if (!seriesList.isEmpty()) {
+                    writer.write('<' + XmlTags.TAG_SERIES_LIST);
+                    writer.write(XmlUtils.sizeAttr(seriesList.size()));
+                    writer.write(">");
+                    for (Series series : seriesList) {
+                        writer.write('<' + XmlTags.TAG_SERIES);
+                        writer.write(XmlUtils.idAttr(series.getId()));
+                        writer.write(XmlUtils.attr(DBDefinitions.KEY_BOOK_NUM_IN_SERIES,
+                                                   series.getNumber()));
+                        writer.write("/>");
+                    }
+                    writer.write("</" + XmlTags.TAG_SERIES_LIST + ">\n");
                 }
-                writer.write("</" + XmlTags.TAG_SERIES_LIST + ">\n");
-
 
                 final ArrayList<Publisher> publishers =
                         book.getParcelableArrayList(Book.BKEY_PUBLISHER_ARRAY);
-                writer.write('<' + XmlTags.TAG_PUBLISHER_LIST);
-                writer.write(XmlUtils.sizeAttr(publishers.size()));
-                writer.write(">\n");
-                for (Publisher publisher : publishers) {
-                    writer.write('<' + XmlTags.TAG_PUBLISHER);
-                    writer.write(XmlUtils.idAttr(publisher.getId()));
-                    writer.write("/>\n");
+                if (!publishers.isEmpty()) {
+                    writer.write('<' + XmlTags.TAG_PUBLISHER_LIST);
+                    writer.write(XmlUtils.sizeAttr(publishers.size()));
+                    writer.write(">");
+                    for (Publisher publisher : publishers) {
+                        writer.write('<' + XmlTags.TAG_PUBLISHER);
+                        writer.write(XmlUtils.idAttr(publisher.getId()));
+                        writer.write("/>");
+                    }
+                    writer.write("</" + XmlTags.TAG_PUBLISHER_LIST + ">\n");
                 }
-                writer.write("</" + XmlTags.TAG_PUBLISHER_LIST + ">\n");
-
 
                 final ArrayList<Bookshelf> bookshelves =
                         book.getParcelableArrayList(Book.BKEY_BOOKSHELF_ARRAY);
-                writer.write('<' + XmlTags.TAG_BOOKSHELF_LIST);
-                writer.write(XmlUtils.sizeAttr(bookshelves.size()));
-                writer.write(">\n");
-                for (Bookshelf bookshelf : bookshelves) {
-                    writer.write('<' + XmlTags.TAG_BOOKSHELF);
-                    writer.write(XmlUtils.idAttr(bookshelf.getId()));
-                    writer.write("/>\n");
+                if (!bookshelves.isEmpty()) {
+                    writer.write('<' + XmlTags.TAG_BOOKSHELF_LIST);
+                    writer.write(XmlUtils.sizeAttr(bookshelves.size()));
+                    writer.write(">");
+                    for (Bookshelf bookshelf : bookshelves) {
+                        writer.write('<' + XmlTags.TAG_BOOKSHELF);
+                        writer.write(XmlUtils.idAttr(bookshelf.getId()));
+                        writer.write("/>");
+                    }
+                    writer.write("</" + XmlTags.TAG_BOOKSHELF_LIST + ">\n");
                 }
-                writer.write("</" + XmlTags.TAG_BOOKSHELF_LIST + ">\n");
 
+                final ArrayList<TocEntry> tocEntries =
+                        book.getParcelableArrayList(Book.BKEY_TOC_ARRAY);
+                if (!tocEntries.isEmpty()) {
+                    writer.write('<' + XmlTags.TAG_TOC_ENTRY_LIST);
+                    writer.write(XmlUtils.sizeAttr(tocEntries.size()));
+                    writer.write(">");
+                    for (TocEntry tocEntry : tocEntries) {
+                        writer.write('<' + XmlTags.TAG_TOC_ENTRY);
+                        writer.write(XmlUtils.idAttr(tocEntry.getId()));
+                        writer.write("/>");
+                    }
+                    writer.write("</" + XmlTags.TAG_TOC_ENTRY_LIST + ">\n");
+                }
 
                 writer.write("</" + XmlTags.TAG_BOOK + ">\n");
 

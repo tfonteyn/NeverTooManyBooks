@@ -155,10 +155,10 @@ public class ExportHelperDialogFragment
                         mVb.archiveFormatInfo.setText(R.string.lbl_archive_type_backup_info);
                         mVb.cbxBooks.setChecked(true);
                         mVb.cbxBooks.setEnabled(true);
-                        mVb.cbxPrefsAndStyles.setChecked(true);
-                        mVb.cbxPrefsAndStyles.setEnabled(true);
                         mVb.cbxCovers.setChecked(true);
                         mVb.cbxCovers.setEnabled(true);
+                        mVb.cbxPrefsAndStyles.setChecked(true);
+                        mVb.cbxPrefsAndStyles.setEnabled(true);
                         break;
 
                     case 1:
@@ -166,10 +166,10 @@ public class ExportHelperDialogFragment
                         mVb.archiveFormatInfo.setText(R.string.lbl_archive_type_backup_info);
                         mVb.cbxBooks.setChecked(true);
                         mVb.cbxBooks.setEnabled(true);
-                        mVb.cbxPrefsAndStyles.setChecked(true);
-                        mVb.cbxPrefsAndStyles.setEnabled(true);
                         mVb.cbxCovers.setChecked(true);
                         mVb.cbxCovers.setEnabled(true);
+                        mVb.cbxPrefsAndStyles.setChecked(true);
+                        mVb.cbxPrefsAndStyles.setEnabled(true);
                         break;
 
                     case 2:
@@ -177,21 +177,21 @@ public class ExportHelperDialogFragment
                         mVb.archiveFormatInfo.setText(R.string.lbl_archive_type_csv_info);
                         mVb.cbxBooks.setChecked(true);
                         mVb.cbxBooks.setEnabled(false);
-                        mVb.cbxPrefsAndStyles.setChecked(false);
-                        mVb.cbxPrefsAndStyles.setEnabled(false);
                         mVb.cbxCovers.setChecked(false);
                         mVb.cbxCovers.setEnabled(false);
+                        mVb.cbxPrefsAndStyles.setChecked(false);
+                        mVb.cbxPrefsAndStyles.setEnabled(false);
                         break;
 
                     case 3:
                         helper.setArchiveContainer(ArchiveContainer.Xml);
                         mVb.archiveFormatInfo.setText(R.string.lbl_archive_format_xml_info);
                         mVb.cbxBooks.setChecked(true);
-                        mVb.cbxBooks.setEnabled(true);
-                        mVb.cbxPrefsAndStyles.setChecked(true);
-                        mVb.cbxPrefsAndStyles.setEnabled(true);
+                        mVb.cbxBooks.setEnabled(false);
                         mVb.cbxCovers.setChecked(false);
                         mVb.cbxCovers.setEnabled(false);
+                        mVb.cbxPrefsAndStyles.setChecked(false);
+                        mVb.cbxPrefsAndStyles.setEnabled(false);
                         break;
 
                     default:

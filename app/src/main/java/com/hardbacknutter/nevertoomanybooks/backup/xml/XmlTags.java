@@ -47,6 +47,9 @@ public final class XmlTags {
     static final String TAG_PUBLISHER_LIST = "publisher-list";
     static final String TAG_PUBLISHER = "publisher";
 
+    static final String TAG_TOC_ENTRY_LIST = "tocentry-list";
+    static final String TAG_TOC_ENTRY = "tocentry";
+
     static final String TAG_BOOK_LIST = "book-list";
     static final String TAG_BOOK = "book";
 
