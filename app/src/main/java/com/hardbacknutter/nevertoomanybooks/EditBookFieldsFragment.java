@@ -92,19 +92,6 @@ public class EditBookFieldsFragment
                 field.onChanged(true);
             };
 
-    /** manage the validation check next to the ISBN field. */
-    private ISBN.ValidationTextWatcher mIsbnValidationTextWatcher;
-    /** Watch and clean the text entered in the ISBN field. */
-    private ISBN.CleanupTextWatcher mIsbnCleanupTextWatcher;
-    /** The level of checking the ISBN code. */
-    @ISBN.Validity
-    private int mIsbnValidityCheck;
-    /** The scanner. Must be in the Activity scope. */
-    @Nullable
-    private ScannerViewModel mScannerModel;
-    /** View Binding. */
-    private FragmentEditBookFieldsBinding mVb;
-
     /** (re)attach the result listener when a fragment gets started. */
     private final FragmentOnAttachListener mFragmentOnAttachListener =
             new FragmentOnAttachListener() {
@@ -121,6 +108,19 @@ public class EditBookFieldsFragment
                 }
             };
 
+    /** manage the validation check next to the ISBN field. */
+    private ISBN.ValidationTextWatcher mIsbnValidationTextWatcher;
+    /** Watch and clean the text entered in the ISBN field. */
+    private ISBN.CleanupTextWatcher mIsbnCleanupTextWatcher;
+    /** The level of checking the ISBN code. */
+    @ISBN.Validity
+    private int mIsbnValidityCheck;
+    /** The scanner. Must be in the Activity scope. */
+    @Nullable
+    private ScannerViewModel mScannerModel;
+    /** View Binding. */
+    private FragmentEditBookFieldsBinding mVb;
+
     @NonNull
     @Override
     Fields getFields() {
@@ -131,7 +131,7 @@ public class EditBookFieldsFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        getParentFragmentManager().addFragmentOnAttachListener(mFragmentOnAttachListener);
+        getChildFragmentManager().addFragmentOnAttachListener(mFragmentOnAttachListener);
 
         //noinspection ConstantConditions
         mScannerModel = new ViewModelProvider(getActivity()).get(ScannerViewModel.class);
@@ -175,17 +175,15 @@ public class EditBookFieldsFragment
             mScannerModel.scan(this, RequestCode.SCAN_BARCODE);
         });
 
-        //noinspection ConstantConditions
         mVb.author.setOnClickListener(v -> EditBookAuthorListDialogFragment
-                // peer fragment. We share the book view model
-                .newInstance().show(getActivity().getSupportFragmentManager(),
+                // no listener/callback. We share the book view model in the Activity scope
+                .newInstance().show(getChildFragmentManager(),
                                     EditBookAuthorListDialogFragment.TAG));
 
         if (getField(R.id.series_title).isUsed(getContext())) {
-            //noinspection ConstantConditions
             mVb.seriesTitle.setOnClickListener(v -> EditBookSeriesListDialogFragment
-                    // peer fragment. We share the book view model
-                    .newInstance().show(getActivity().getSupportFragmentManager(),
+                    // no listener/callback. We share the book view model in the Activity scope
+                    .newInstance().show(getChildFragmentManager(),
                                         EditBookSeriesListDialogFragment.TAG));
         }
 

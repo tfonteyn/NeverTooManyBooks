@@ -39,7 +39,6 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
-import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.preference.EditTextPreference;
@@ -453,14 +452,17 @@ public abstract class BasePreferenceFragment
     public void onDisplayPreferenceDialog(@NonNull final Preference preference) {
         if (preference instanceof BitmaskPreference) {
             final String fragmentTag = "BitmaskPreferenceDialog";
+            // getParentFragmentManager required by PreferenceDialogFragmentCompat
+            // as the latter insists on using setTargetFragment to communicate back.
             final FragmentManager fm = getParentFragmentManager();
             // check if dialog is already showing
             if (fm.findFragmentByTag(fragmentTag) != null) {
                 return;
             }
-            final DialogFragment frag = BitmaskPreference.BitmaskPreferenceDialogFragment
-                    .newInstance(this, (BitmaskPreference) preference);
-            frag.show(fm, fragmentTag);
+
+            BitmaskPreference.BitmaskPreferenceDialogFragment
+                    .newInstance(this, (BitmaskPreference) preference)
+                    .show(fm, fragmentTag);
             return;
         }
 

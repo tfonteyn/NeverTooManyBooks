@@ -176,7 +176,7 @@ public abstract class EditBookBaseFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        getParentFragmentManager().addFragmentOnAttachListener(mFragmentOnAttachListener);
+        getChildFragmentManager().addFragmentOnAttachListener(mFragmentOnAttachListener);
 
         final String fragmentTag = getTag();
         Objects.requireNonNull(fragmentTag, ErrorMsg.NULL_FRAGMENT_TAG);

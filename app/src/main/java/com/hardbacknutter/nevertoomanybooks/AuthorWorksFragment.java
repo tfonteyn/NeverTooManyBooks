@@ -117,7 +117,7 @@ public class AuthorWorksFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        getParentFragmentManager().addFragmentOnAttachListener(mFragmentOnAttachListener);
+        getChildFragmentManager().addFragmentOnAttachListener(mFragmentOnAttachListener);
 
         setHasOptionsMenu(true);
 

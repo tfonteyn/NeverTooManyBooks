@@ -87,10 +87,9 @@ public class EditBookPublicationFragment
             field.validate();
         });
 
-        //noinspection ConstantConditions
         mVb.publisher.setOnClickListener(v -> EditBookPublisherListDialogFragment
-                // peer fragment. We share the book view model
-                .newInstance().show(getActivity().getSupportFragmentManager(),
+                // no listener/callback. We share the book view model in the Activity scope
+                .newInstance().show(getChildFragmentManager(),
                                     EditBookPublisherListDialogFragment.TAG));
     }
 

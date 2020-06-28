@@ -108,7 +108,7 @@ public class ImportFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        getParentFragmentManager().addFragmentOnAttachListener(mFragmentOnAttachListener);
+        getChildFragmentManager().addFragmentOnAttachListener(mFragmentOnAttachListener);
 
         //noinspection ConstantConditions
         mResultData = new ViewModelProvider(getActivity()).get(ResultDataModel.class);

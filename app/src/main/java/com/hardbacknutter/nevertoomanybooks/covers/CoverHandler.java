@@ -179,7 +179,7 @@ public class CoverHandler {
             if (srcFile.exists()) {
                 ZoomedImageDialogFragment
                         .newInstance(srcFile)
-                        .show(fragment.getParentFragmentManager(), ZoomedImageDialogFragment.TAG);
+                        .show(fragment.getChildFragmentManager(), ZoomedImageDialogFragment.TAG);
             } else {
                 onCreateContextMenu();
             }

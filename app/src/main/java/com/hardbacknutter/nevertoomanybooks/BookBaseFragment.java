@@ -131,7 +131,7 @@ public abstract class BookBaseFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        getParentFragmentManager().addFragmentOnAttachListener(mFragmentOnAttachListener);
+        getChildFragmentManager().addFragmentOnAttachListener(mFragmentOnAttachListener);
 
         //noinspection ConstantConditions
         mBookViewModel = new ViewModelProvider(getActivity()).get(BookViewModel.class);
