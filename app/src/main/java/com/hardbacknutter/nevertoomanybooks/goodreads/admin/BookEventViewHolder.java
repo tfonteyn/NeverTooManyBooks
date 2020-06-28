@@ -77,34 +77,39 @@ public class BookEventViewHolder
         final Context context = itemView.getContext();
         final Locale userLocale = LocaleUtils.getUserLocale(context);
 
-        final long bookId = event.getBookId();
-
-        String title = db.getBookTitle(bookId);
-        if (title == null) {
-            title = context.getString(R.string.warning_book_no_longer_exists);
-        }
-
-        final ArrayList<Author> authors = db.getAuthorsByBookId(bookId);
-        final String authorName;
-        if (!authors.isEmpty()) {
-            authorName = Author.getCondensedNames(context, authors);
-        } else {
-            authorName = context.getString(R.string.unknown).toUpperCase(userLocale);
-        }
-
-        titleView.setText(title);
-        authorView.setText(authorName);
         errorView.setText(event.getDescription(context));
         infoView.setText(infoView.getContext().getString(
                 R.string.gr_tq_occurred_at,
                 toPrettyDateTime(rowData.getEventDate(context), userLocale)));
 
-        final String isbn = db.getBookIsbn(bookId);
-        if (isbn != null && !isbn.isEmpty()) {
-            retryButton.setVisibility(View.VISIBLE);
-            retryButton.setOnClickListener(v -> event.retry(v.getContext()));
-        } else {
+        final long bookId = event.getBookId();
+        final String title = db.getBookTitle(bookId);
+
+        if (title == null) {
+            titleView.setText(R.string.warning_book_no_longer_exists);
+            authorView.setVisibility(View.GONE);
             retryButton.setVisibility(View.GONE);
+
+        } else {
+            titleView.setText(title);
+
+            final ArrayList<Author> authors = db.getAuthorsByBookId(bookId);
+            final String authorName;
+            if (!authors.isEmpty()) {
+                authorName = Author.getCondensedNames(context, authors);
+            } else {
+                authorName = context.getString(R.string.unknown).toUpperCase(userLocale);
+            }
+            authorView.setText(authorName);
+            authorView.setVisibility(View.VISIBLE);
+
+            final String isbn = db.getBookIsbn(bookId);
+            if (isbn != null && !isbn.isEmpty()) {
+                retryButton.setVisibility(View.VISIBLE);
+                retryButton.setOnClickListener(v -> event.retry(v.getContext()));
+            } else {
+                retryButton.setVisibility(View.GONE);
+            }
         }
     }
 }
