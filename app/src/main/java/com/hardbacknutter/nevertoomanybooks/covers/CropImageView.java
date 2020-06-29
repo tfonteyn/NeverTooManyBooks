@@ -558,7 +558,7 @@ public class CropImageView
         private static final int GROW_BOTTOM_EDGE = 1 << 4;
 
         /** Tolerance +- for determining a 'hit' of one or more of the edges. */
-        private static final float HYSTERESIS = 20f;
+        private static final float HYSTERESIS = 40f;
 
         /** in image space. */
         final RectF mCropRect;
