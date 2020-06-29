@@ -29,6 +29,7 @@ package com.hardbacknutter.nevertoomanybooks;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.util.SparseArray;
 import android.view.View;
 import android.view.ViewGroup;
@@ -40,10 +41,14 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentOnAttachListener;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -77,6 +82,18 @@ import com.hardbacknutter.nevertoomanybooks.widgets.ddsupport.StartDragListener;
  * This means that any observables in the ViewModel must be tested/used with care, as their
  * destination view might not be available at the moment of an update being triggered.
  * <p>
+ * <p>
+ * <p>
+ * Dev note: at first {@link #getChildFragmentManager()} was used to display the embedded
+ * {@link EditAuthorForBookDialogFragment} and for setting the {@link #mFragmentOnAttachListener}.
+ * This worked fine and {@link FragmentOnAttachListener#onAttachFragment} was called properly.
+ * However, when rotating the screen while {@link EditAuthorForBookDialogFragment} was showing,
+ * the {@link #onCreate} for the EditBookAuthorListDialogFragment was called as expected,
+ * BUT the onAttachFragment was NOT CALLED.
+ * Not really investigated, but a solution is to use {@link #getParentFragmentManager} instead.
+ * When doing so, screen rotation etc... works correctly.
+ * <p>
+ * <p>
  * Maybe TODO: cannot set author type when creating but only when editing existing author.
  */
 public class EditBookAuthorListDialogFragment
@@ -84,13 +101,10 @@ public class EditBookAuthorListDialogFragment
 
     /** Fragment/Log tag. */
     static final String TAG = "EditBookAuthorListDlg";
-
     /** Database Access. */
     private DAO mDb;
-
     /** The book. Must be in the Activity scope. */
     private BookViewModel mBookViewModel;
-
     /** If the list changes, the book is dirty. */
     private final SimpleAdapterDataObserver mAdapterDataObserver =
             new SimpleAdapterDataObserver() {
@@ -99,13 +113,30 @@ public class EditBookAuthorListDialogFragment
                     mBookViewModel.setDirty(true);
                 }
             };
-
     /** View Binding. */
     private DialogEditBookAuthorListBinding mVb;
     /** the rows. */
     private ArrayList<Author> mList;
     /** The adapter for the list itself. */
     private AuthorListAdapter mListAdapter;
+    private final EditAuthorForBookDialogFragment.OnProcessChangesListener
+            mOnProcessChangesListener = EditBookAuthorListDialogFragment.this::processChanges;
+    /** (re)attach the result listener when a fragment gets started. */
+    private final FragmentOnAttachListener mFragmentOnAttachListener =
+            new FragmentOnAttachListener() {
+                @Override
+                public void onAttachFragment(@NonNull final FragmentManager fragmentManager,
+                                             @NonNull final Fragment fragment) {
+                    if (BuildConfig.DEBUG && DEBUG_SWITCHES.ATTACH_FRAGMENT) {
+                        Log.d(getClass().getName(), "onAttachFragment: " + fragment.getTag());
+                    }
+
+                    if (fragment instanceof EditAuthorForBookDialogFragment) {
+                        ((EditAuthorForBookDialogFragment) fragment)
+                                .setListener(mOnProcessChangesListener);
+                    }
+                }
+            };
     /** Drag and drop support for the list view. */
     private ItemTouchHelper mItemTouchHelper;
 
@@ -129,7 +160,8 @@ public class EditBookAuthorListDialogFragment
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //setStyle(DialogFragment.STYLE_NO_FRAME, R.style.Theme_App_FullScreen);
+
+        getParentFragmentManager().addFragmentOnAttachListener(mFragmentOnAttachListener);
 
         mDb = new DAO(TAG);
     }
@@ -389,7 +421,7 @@ public class EditBookAuthorListDialogFragment
 
         /** Fragment/Log tag. */
         @SuppressWarnings("InnerClassFieldHidesOuterClassField")
-        static final String TAG = "EditBookAuthorDialogFrag";
+        private static final String TAG = "EditAuthorForBookDialog";
 
         /**
          * We create a list of all the Type checkboxes for easy handling.
@@ -417,6 +449,10 @@ public class EditBookAuthorListDialogFragment
         /** Current edit. */
         @Author.Type
         private int mType;
+
+        /** Where to send the result. */
+        @Nullable
+        private WeakReference<OnProcessChangesListener> mListener;
 
         /**
          * No-arg constructor for OS use.
@@ -476,8 +512,6 @@ public class EditBookAuthorListDialogFragment
             super.onViewCreated(view, savedInstanceState);
 
             mVb = DialogEditBookAuthorBinding.bind(view);
-
-            Objects.requireNonNull(getTargetFragment(), ErrorMsg.NULL_TARGET_FRAGMENT);
 
             mVb.toolbar.setSubtitle(mBookTitle);
             mVb.toolbar.setNavigationOnClickListener(v -> dismiss());
@@ -599,9 +633,15 @@ public class EditBookAuthorListDialogFragment
                 tmpAuthor.setType(Author.TYPE_UNKNOWN);
             }
 
-            //noinspection ConstantConditions
-            ((EditBookAuthorListDialogFragment) getTargetFragment())
-                    .processChanges(mAuthor, tmpAuthor);
+            if (mListener != null && mListener.get() != null) {
+                mListener.get().onProcessChanges(mAuthor, tmpAuthor);
+            } else {
+                if (BuildConfig.DEBUG /* always */) {
+                    Log.w(TAG, "saveChanges|"
+                               + (mListener == null ? ErrorMsg.LISTENER_WAS_NULL
+                                                    : ErrorMsg.LISTENER_WAS_DEAD));
+                }
+            }
 
             return true;
         }
@@ -639,6 +679,21 @@ public class EditBookAuthorListDialogFragment
                 mDb.close();
             }
             super.onDestroy();
+        }
+
+        /**
+         * Call this from {@link #onAttachFragment} in the parent.
+         *
+         * @param listener the object to send the result to.
+         */
+        public void setListener(@NonNull final OnProcessChangesListener listener) {
+            mListener = new WeakReference<>(listener);
+        }
+
+        interface OnProcessChangesListener {
+
+            void onProcessChanges(@NonNull Author original,
+                                  @NonNull Author modified);
         }
     }
 
@@ -685,7 +740,6 @@ public class EditBookAuthorListDialogFragment
             holder.rowDetailsView.setOnClickListener(v -> {
                 final DialogFragment frag = EditAuthorForBookDialogFragment
                         .newInstance(mBookViewModel.getBook().getTitle(), author);
-                frag.setTargetFragment(EditBookAuthorListDialogFragment.this, 0);
                 frag.show(getParentFragmentManager(), EditAuthorForBookDialogFragment.TAG);
             });
         }

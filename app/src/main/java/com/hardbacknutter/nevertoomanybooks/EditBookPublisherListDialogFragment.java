@@ -29,6 +29,7 @@ package com.hardbacknutter.nevertoomanybooks;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
@@ -37,10 +38,14 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentOnAttachListener;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -70,19 +75,19 @@ import com.hardbacknutter.nevertoomanybooks.widgets.ddsupport.StartDragListener;
  * <strong>Warning:</strong> By exception this DialogFragment uses the parents ViewModel directly.
  * This means that any observables in the ViewModel must be tested/used with care, as their
  * destination view might not be available at the moment of an update being triggered.
+ * <p>
+ * <p>
+ * Dev note: see class doc {@link EditBookAuthorListDialogFragment}.
  */
 public class EditBookPublisherListDialogFragment
         extends BaseDialogFragment {
 
     /** Fragment/Log tag. */
     static final String TAG = "EditBookPubListDlg";
-
     /** Database Access. */
     private DAO mDb;
-
     /** The book. Must be in the Activity scope. */
     private BookViewModel mBookViewModel;
-
     /** If the list changes, the book is dirty. */
     private final SimpleAdapterDataObserver mAdapterDataObserver =
             new SimpleAdapterDataObserver() {
@@ -91,13 +96,30 @@ public class EditBookPublisherListDialogFragment
                     mBookViewModel.setDirty(true);
                 }
             };
-
     /** View Binding. */
     private DialogEditBookPublisherListBinding mVb;
     /** the rows. */
     private ArrayList<Publisher> mList;
     /** The adapter for the list itself. */
     private PublisherListAdapter mListAdapter;
+    private final EditPublisherForBookDialogFragment.OnProcessChangesListener
+            mOnProcessChangesListener = EditBookPublisherListDialogFragment.this::processChanges;
+    /** (re)attach the result listener when a fragment gets started. */
+    private final FragmentOnAttachListener mFragmentOnAttachListener =
+            new FragmentOnAttachListener() {
+                @Override
+                public void onAttachFragment(@NonNull final FragmentManager fragmentManager,
+                                             @NonNull final Fragment fragment) {
+                    if (BuildConfig.DEBUG && DEBUG_SWITCHES.ATTACH_FRAGMENT) {
+                        Log.d(getClass().getName(), "onAttachFragment: " + fragment.getTag());
+                    }
+
+                    if (fragment instanceof EditPublisherForBookDialogFragment) {
+                        ((EditPublisherForBookDialogFragment) fragment)
+                                .setListener(mOnProcessChangesListener);
+                    }
+                }
+            };
     /** Drag and drop support for the list view. */
     private ItemTouchHelper mItemTouchHelper;
 
@@ -121,7 +143,8 @@ public class EditBookPublisherListDialogFragment
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //setStyle(DialogFragment.STYLE_NO_FRAME, R.style.Theme_App_FullScreen);
+
+        getParentFragmentManager().addFragmentOnAttachListener(mFragmentOnAttachListener);
 
         mDb = new DAO(TAG);
     }
@@ -349,7 +372,7 @@ public class EditBookPublisherListDialogFragment
 
         /** Fragment/Log tag. */
         @SuppressWarnings("InnerClassFieldHidesOuterClassField")
-        static final String TAG = "EditBookPublisherDialogFrag";
+        private static final String TAG = "EditPublisherForBookDlg";
 
         /** Database Access. */
         private DAO mDb;
@@ -364,6 +387,10 @@ public class EditBookPublisherListDialogFragment
 
         /** Current edit. */
         private String mName;
+
+        /** Where to send the result. */
+        @Nullable
+        private WeakReference<OnProcessChangesListener> mListener;
 
         /**
          * No-arg constructor for OS use.
@@ -416,8 +443,6 @@ public class EditBookPublisherListDialogFragment
 
             mVb = DialogEditBookPublisherBinding.bind(view);
 
-            Objects.requireNonNull(getTargetFragment(), ErrorMsg.NULL_TARGET_FRAGMENT);
-
             mVb.toolbar.setSubtitle(mBookTitle);
             mVb.toolbar.setNavigationOnClickListener(v -> dismiss());
             mVb.toolbar.setOnMenuItemClickListener(item -> {
@@ -449,9 +474,15 @@ public class EditBookPublisherListDialogFragment
             // Create a new Publisher as a holder for all changes.
             final Publisher tmpPublisher = Publisher.from(mName);
 
-            //noinspection ConstantConditions
-            ((EditBookPublisherListDialogFragment) getTargetFragment())
-                    .processChanges(mPublisher, tmpPublisher);
+            if (mListener != null && mListener.get() != null) {
+                mListener.get().onProcessChanges(mPublisher, tmpPublisher);
+            } else {
+                if (BuildConfig.DEBUG /* always */) {
+                    Log.w(TAG, "saveChanges|"
+                               + (mListener == null ? ErrorMsg.LISTENER_WAS_NULL
+                                                    : ErrorMsg.LISTENER_WAS_DEAD));
+                }
+            }
 
             return true;
         }
@@ -478,6 +509,21 @@ public class EditBookPublisherListDialogFragment
                 mDb.close();
             }
             super.onDestroy();
+        }
+
+        /**
+         * Call this from {@link #onAttachFragment} in the parent.
+         *
+         * @param listener the object to send the result to.
+         */
+        public void setListener(@NonNull final OnProcessChangesListener listener) {
+            mListener = new WeakReference<>(listener);
+        }
+
+        interface OnProcessChangesListener {
+
+            void onProcessChanges(@NonNull Publisher original,
+                                  @NonNull Publisher modified);
         }
     }
 
@@ -519,7 +565,6 @@ public class EditBookPublisherListDialogFragment
             holder.rowDetailsView.setOnClickListener(v -> {
                 final DialogFragment frag = EditPublisherForBookDialogFragment
                         .newInstance(mBookViewModel.getBook().getTitle(), publisher);
-                frag.setTargetFragment(EditBookPublisherListDialogFragment.this, 0);
                 frag.show(getParentFragmentManager(), EditPublisherForBookDialogFragment.TAG);
             });
         }
