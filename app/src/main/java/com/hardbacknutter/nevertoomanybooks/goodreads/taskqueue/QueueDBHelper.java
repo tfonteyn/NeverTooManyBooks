@@ -33,8 +33,6 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 import androidx.annotation.NonNull;
 
-import com.hardbacknutter.nevertoomanybooks.App;
-
 /**
  * Standard Android class to handle database open/creation/upgrade.
  */
@@ -132,9 +130,6 @@ class QueueDBHelper
 
     @Override
     public void onCreate(@NonNull final SQLiteDatabase db) {
-
-        // URGENT: remove before next beta
-        App.getAppContext().deleteDatabase("net.philipwarner.taskqueue.database.db");
 
         for (String table : TABLES) {
             db.execSQL(table);

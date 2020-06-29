@@ -191,11 +191,11 @@ public final class DBHelper
      */
     @SuppressLint("LogConditional")
     public static void dumpTempTableNames(@NonNull final SynchronizedDb db) {
-        String sql = "SELECT name FROM sqlite_temp_master WHERE type='table'";
-        Collection<String> names = new ArrayList<>();
+        final String sql = "SELECT name FROM sqlite_temp_master WHERE type='table'";
+        final Collection<String> names = new ArrayList<>();
         try (Cursor cursor = db.rawQuery(sql, null)) {
             while (cursor.moveToNext()) {
-                String name = cursor.getString(0);
+                final String name = cursor.getString(0);
                 if (!name.startsWith("sqlite")) {
                     names.add(name);
                 }
@@ -243,7 +243,7 @@ public final class DBHelper
                 s = c.getString(0);
             }
 
-            boolean cs = !"a".equals(s);
+            final boolean cs = !"a".equals(s);
             if (cs) {
                 Log.e(TAG, "\n=============================================="
                            + "\n========== CASE SENSITIVE COLLATION =========="
@@ -277,7 +277,7 @@ public final class DBHelper
         // indexes which were removed from the TableDefinition objects.
         try (Cursor current = db.rawQuery(SQL_GET_INDEX_NAMES, null)) {
             while (current.moveToNext()) {
-                String indexName = current.getString(0);
+                final String indexName = current.getString(0);
                 try {
                     db.execSQL("DROP INDEX " + indexName);
                 } catch (@NonNull final SQLException e) {
@@ -305,7 +305,7 @@ public final class DBHelper
      * @param db Database Access
      */
     private void prepareStylesTable(@NonNull final SQLiteDatabase db) {
-        String sqlInsertStyles =
+        final String sqlInsertStyles =
                 "INSERT INTO " + TBL_BOOKLIST_STYLES
                 + '(' + KEY_PK_ID
                 + ',' + KEY_STYLE_IS_BUILTIN
@@ -656,7 +656,7 @@ public final class DBHelper
 
         if (oldVersion != newVersion) {
 
-            String backup = DB_UPGRADE_FILE_PREFIX + "-" + oldVersion + '-' + newVersion;
+            final String backup = DB_UPGRADE_FILE_PREFIX + "-" + oldVersion + '-' + newVersion;
             try {
                 final File destFile = AppDir.Upgrades.getFile(context, backup);
                 // rename the existing file
