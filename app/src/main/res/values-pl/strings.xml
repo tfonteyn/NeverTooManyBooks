@@ -686,4 +686,5 @@
     <string name="pt_bob_books_under_multiple_publisher">Pokaż książki wielu wydawcom.</string>
     <string name="pv_bob_books_under_multiple_primary_publisher_only">tylko u głównego wydawcy.</string>
     <string name="pv_bob_books_under_multiple_each_publisher">pod każdym wydawcą.</string>
+    <string name="book_format_paperback_large">Miękki / duży</string>
 </resources>

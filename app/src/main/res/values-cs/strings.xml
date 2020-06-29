@@ -687,5 +687,6 @@
     <string name="pt_bob_books_under_multiple_publisher">Zobrazit knihy s více vydavateli.</string>
     <string name="pv_bob_books_under_multiple_primary_publisher_only">pouze pod jejich primárním vydavatelem.</string>
     <string name="pv_bob_books_under_multiple_each_publisher">pod každým vydavatelem.</string>
+    <string name="book_format_paperback_large">Velká brožovaná vazba</string>
 
 </resources>

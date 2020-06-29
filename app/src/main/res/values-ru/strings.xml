@@ -686,5 +686,6 @@
     <string name="pt_bob_books_under_multiple_publisher">Показать книги с несколькими издателями.</string>
     <string name="pv_bob_books_under_multiple_primary_publisher_only">только под своим основным издателем.</string>
     <string name="pv_bob_books_under_multiple_each_publisher">под каждым издателем.</string>
+    <string name="book_format_paperback_large">Большая мягкая обложка</string>
 
 </resources>
