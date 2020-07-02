@@ -30,6 +30,7 @@ package com.hardbacknutter.nevertoomanybooks.utils;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.util.Currency;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -60,18 +61,22 @@ import java.util.regex.Pattern;
 public class Money
         extends Number {
 
-    /**
-     * Prices are split into currency and actual amount.
-     * Split on first digit, but leave it in the second part.
-     */
-    private static final Pattern SPLIT_PRICE_CURRENCY_AMOUNT_PATTERN = Pattern.compile("(?=\\d)");
+    /** For prefixed currencies, split on first digit, but leave it in the second part. */
+    private static final Pattern CURRENCY_AS_PREFIX_PATTERN = Pattern.compile("(?=\\d)");
+
+    /** Suffixed currencies, do a normal match/find. */
+    private static final Pattern CURRENCY_AS_SUFFIX_PATTERN =
+            Pattern.compile("(\\d*[.,]?\\d*)(.*)");
+
     /** Specific for pre-decimal UK money. */
     private static final Pattern SHILLING_PENCE_PATTERN = Pattern.compile("(\\d*|-?)/(\\d*|-?)");
+    /** HTML cleaning. */
+    private static final Pattern NBSP_PATTERN = Pattern.compile("&nbsp;", Pattern.LITERAL);
 
     /** A Map to translate currency symbols to their official ISO code. */
     private static final Map<String, String> CURRENCY_MAP = new HashMap<>();
 
-    private static final long serialVersionUID = 880969785357045939L;
+    private static final long serialVersionUID = -2882175581162071769L;
 
     /** ISO code. */
     @Nullable
@@ -103,61 +108,12 @@ public class Money
      *
      * @param locale            <strong>Must</strong> be the Locale for the source data.
      *                          (and NOT simply the system/user).
-     * @param priceWithCurrency price to decode, e.g. "Bf459", "$9.99", "EUR 66", ...
-     *                          The currency part <strong>must</strong> be a prefix.
-     *                          We do not support it as a suffix.
+     * @param priceWithCurrency price to decode, e.g. "Bf459", "$9.99", "66 EUR", ...
      */
     public Money(@NonNull final Locale locale,
                  @NonNull final CharSequence priceWithCurrency) {
 
-        final String[] data = SPLIT_PRICE_CURRENCY_AMOUNT_PATTERN.split(priceWithCurrency, 2);
-        if (data.length > 1) {
-            String currencyCode = data[0].trim().toUpperCase(locale);
-            // if we don't have a normalized ISO3 code, see if we can convert it to one.
-            if (currencyCode.length() != 3) {
-                currencyCode = currencyToISO(data[0]);
-            }
-            // if we do have an ISO3 code, split the data as required.
-            if (currencyCode != null && currencyCode.length() == 3) {
-                try {
-                    // buffer just in case the getCurrencyCode() fails.
-                    final double tmpValue = ParseUtils.parseDouble(data[1], locale);
-                    // re-get the code just in case it used a recognised but non-standard string
-                    mCurrency = java.util.Currency.getInstance(currencyCode).getCurrencyCode();
-                    mValue = tmpValue;
-
-                } catch (@NonNull final IllegalArgumentException ignore) {
-                    // covers NumberFormatException
-                }
-            }
-        }
-
-        // let's see if this was UK shillings/pence
-        final Matcher m = SHILLING_PENCE_PATTERN.matcher(priceWithCurrency);
-        if (m.find()) {
-            try {
-                int shillings = 0;
-                int pence = 0;
-                String tmp;
-
-                tmp = m.group(1);
-                if (tmp != null && !tmp.isEmpty() && !"-".equals(tmp)) {
-                    shillings = Integer.parseInt(tmp);
-                }
-                tmp = m.group(2);
-                if (tmp != null && !tmp.isEmpty() && !"-".equals(tmp)) {
-                    pence = Integer.parseInt(tmp);
-                }
-
-                // the British pound was made up of 20 shillings, each of which was
-                // made up of 12 pence, a total of 240 pence. Madness...
-                mValue = ((shillings * 12) + pence) / 240f;
-                mCurrency = "GBP";
-
-            } catch (@NonNull final NumberFormatException ignore) {
-                // ignore
-            }
-        }
+        parse(locale, priceWithCurrency);
     }
 
     /**
@@ -206,6 +162,103 @@ public class Money
         CURRENCY_MAP.put("Ft", "HUF"); // Hungarian Forint
     }
 
+    public boolean parse(@NonNull final Locale locale,
+                         @NonNull final CharSequence priceWithCurrency) {
+
+        // website html cleaning
+        final String pc = NBSP_PATTERN.matcher(priceWithCurrency).replaceAll(" ");
+
+        final String[] data = CURRENCY_AS_PREFIX_PATTERN.split(pc, 2);
+        if (data.length > 1 && parse(locale, data[0], data[1])) {
+            return true;
+        }
+
+        Matcher matcher;
+
+        matcher = CURRENCY_AS_SUFFIX_PATTERN.matcher(pc);
+        if (matcher.find() && parse(locale, matcher.group(2), matcher.group(1))) {
+            return true;
+        }
+
+        // let's see if this was UK shillings/pence
+        matcher = SHILLING_PENCE_PATTERN.matcher(pc);
+        if (matcher.find()) {
+            try {
+                int shillings = 0;
+                int pence = 0;
+                String tmp;
+
+                tmp = matcher.group(1);
+                if (tmp != null && !tmp.isEmpty() && !"-".equals(tmp)) {
+                    shillings = Integer.parseInt(tmp);
+                }
+                tmp = matcher.group(2);
+                if (tmp != null && !tmp.isEmpty() && !"-".equals(tmp)) {
+                    pence = Integer.parseInt(tmp);
+                }
+
+                // the British pound was made up of 20 shillings, each of which was
+                // made up of 12 pence, a total of 240 pence. Madness...
+                mValue = ((shillings * 12) + pence) / 240f;
+                mCurrency = "GBP";
+                return true;
+
+            } catch (@NonNull final NumberFormatException ignore) {
+                // ignore
+            }
+        }
+
+        return false;
+    }
+
+    public boolean parse(@NonNull final Locale locale,
+                         @Nullable final String currencyStr,
+                         @Nullable final String valueStr) {
+
+        String currencyCode = null;
+        if (currencyStr != null && !currencyStr.isEmpty()) {
+            currencyCode = currencyStr.trim().toUpperCase(locale);
+            // if we don't have a normalized ISO3 code, see if we can convert it to one.
+            if (currencyCode.length() != 3) {
+                currencyCode = currencyToISO(currencyStr);
+            }
+        }
+
+        if (currencyCode != null && currencyCode.length() == 3) {
+            if (valueStr != null && !valueStr.isEmpty()) {
+                try {
+                    // buffer just in case the getCurrencyCode() throws.
+                    final double tmpValue = ParseUtils.parseDouble(valueStr, locale);
+                    // re-get the code just in case it used a recognised but non-standard string
+                    mCurrency = Currency.getInstance(currencyCode).getCurrencyCode();
+                    mValue = tmpValue;
+                    return true;
+
+                } catch (@NonNull final IllegalArgumentException ignore) {
+                    // covers NumberFormatException
+                }
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Convert the passed string with a (hopefully valid) currency unit, into the ISO code
+     * for that currency.
+     *
+     * @param currency to convert
+     *
+     * @return ISO code.
+     */
+    @Nullable
+    private String currencyToISO(@NonNull final String currency) {
+        if (CURRENCY_MAP.isEmpty()) {
+            createCurrencyMap();
+        }
+        final String key = currency.trim().toLowerCase(LocaleUtils.getSystemLocale());
+        return CURRENCY_MAP.get(key);
+    }
 
     @Override
     public double doubleValue() {
@@ -239,22 +292,4 @@ public class Money
     public String getCurrency() {
         return mCurrency;
     }
-
-    /**
-     * Convert the passed string with a (hopefully valid) currency unit, into the ISO code
-     * for that currency.
-     *
-     * @param currency to convert
-     *
-     * @return ISO code.
-     */
-    @Nullable
-    private String currencyToISO(@NonNull final String currency) {
-        if (CURRENCY_MAP.isEmpty()) {
-            createCurrencyMap();
-        }
-        final String key = currency.trim().toLowerCase(LocaleUtils.getSystemLocale());
-        return CURRENCY_MAP.get(key);
-    }
-
 }
