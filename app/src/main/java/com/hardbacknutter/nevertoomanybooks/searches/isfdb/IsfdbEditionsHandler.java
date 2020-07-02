@@ -42,6 +42,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
+import com.hardbacknutter.nevertoomanybooks.searches.JsoupBase;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 
@@ -51,7 +52,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
  * Uses JSoup screen scraping.
  */
 class IsfdbEditionsHandler
-        extends AbstractBase {
+        extends JsoupBase {
 
     /** Log tag. */
     private static final String TAG = "IsfdbEditionsHandler";
@@ -59,6 +60,9 @@ class IsfdbEditionsHandler
     /** Search URL template. */
     private static final String EDITIONS_URL = IsfdbSearchEngine.CGI_BIN
                                                + IsfdbSearchEngine.URL_SE_CGI + "?arg=%s&type=ISBN";
+
+    /** Currently (2019) the 4th column contains the ISBN/Catalog ID. */
+    public static final int ISBN_CATALOG_ID_COLUMN = 4;
 
     /** List of ISFDB native book id for all found editions. */
     private final ArrayList<Edition> mEditions = new ArrayList<>();
@@ -68,15 +72,19 @@ class IsfdbEditionsHandler
 
     /**
      * Constructor.
+     *
+     * @param searchEngine to use
      */
     IsfdbEditionsHandler(@NonNull final SearchEngine searchEngine) {
         super(searchEngine);
+        setCharSetName(IsfdbSearchEngine.CHARSET_DECODE_PAGE);
     }
 
     /**
      * Constructor used for testing.
      *
-     * @param doc the JSoup Document.
+     * @param searchEngine to use
+     * @param doc          the JSoup Document.
      */
     @VisibleForTesting
     IsfdbEditionsHandler(@NonNull final SearchEngine searchEngine,
@@ -102,7 +110,8 @@ class IsfdbEditionsHandler
             throws SocketTimeoutException {
         mIsbn = isbn;
 
-        String url = IsfdbSearchEngine.getBaseURL(context) + String.format(EDITIONS_URL, isbn);
+        final String url = IsfdbSearchEngine.getBaseURL(context)
+                           + String.format(EDITIONS_URL, isbn);
 
         if (loadPage(context, url) == null) {
             // null result, abort
@@ -155,7 +164,7 @@ class IsfdbEditionsHandler
     @NonNull
     @VisibleForTesting
     ArrayList<Edition> parseDoc(@NonNull final Context context) {
-        String pageUrl = mDoc.location();
+        final String pageUrl = mDoc.location();
 
         if (pageUrl.contains(IsfdbSearchEngine.URL_PL_CGI)) {
             // We got redirected to a book. Populate with the doc (web page) we got back.
@@ -214,8 +223,7 @@ class IsfdbEditionsHandler
                 final String url = edLink.attr("href");
                 if (url != null) {
                     String isbnStr = null;
-                    // 4th column: ISBN/Catalog ID
-                    final String catNr = tr.child(4).text();
+                    final String catNr = tr.child(ISBN_CATALOG_ID_COLUMN).text();
                     if (!catNr.isEmpty()) {
                         ISBN isbn = ISBN.createISBN(catNr);
                         if (isbn.isValid(true)) {
@@ -227,5 +235,23 @@ class IsfdbEditionsHandler
                 }
             }
         }
+    }
+
+    /**
+     * A url ends with 'last'123.  Strip and return the '123' part.
+     *
+     * @param url  to handle
+     * @param last character to look for as last-index
+     *
+     * @return the number
+     */
+    private long stripNumber(@NonNull final String url,
+                             @SuppressWarnings("SameParameterValue") final char last) {
+        final int index = url.lastIndexOf(last) + 1;
+        if (index == 0) {
+            return 0;
+        }
+
+        return Long.parseLong(url.substring(index));
     }
 }

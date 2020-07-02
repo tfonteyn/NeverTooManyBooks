@@ -64,7 +64,6 @@ public class IsfdbGetBookTask
     /** whether the TOC should get parsed for Series information. */
     private final boolean mAddSeriesFromToc;
 
-
     /**
      * Constructor. Initiate a single book lookup by edition.
      *

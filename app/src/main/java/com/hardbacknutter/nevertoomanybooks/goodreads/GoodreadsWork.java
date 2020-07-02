@@ -82,8 +82,6 @@ public class GoodreadsWork {
 
     /** {@link ByteArrayOutputStream} use. */
     private static final int BUFFER_SIZE = 65535;
-    /** network: if at first we don't succeed... */
-    private static final int NR_OF_TRIES = 2;
     public Long grBookId;
     public Long workId;
     public String title;
@@ -115,20 +113,18 @@ public class GoodreadsWork {
     private static byte[] getBytes(@NonNull final Context context,
                                    @NonNull final String url) {
 
-        try (TerminatorConnection con =
-                     TerminatorConnection.open(context, url,
-                                               GoodreadsSearchEngine.CONNECT_TIMEOUT_MS,
-                                               NR_OF_TRIES,
-                                               GoodreadsSearchEngine.THROTTLER);
+        try (TerminatorConnection con = new TerminatorConnection(
+                context, url,
+                GoodreadsSearchEngine.CONNECT_TIMEOUT_MS,
+                GoodreadsSearchEngine.READ_TIMEOUT_MS,
+                GoodreadsSearchEngine.THROTTLER);
              final ByteArrayOutputStream out = new ByteArrayOutputStream()) {
 
             // Save the output to a byte output stream
             final byte[] buffer = new byte[BUFFER_SIZE];
             int len;
+
             final InputStream is = con.getInputStream();
-            if (is == null) {
-                return null;
-            }
             while ((len = is.read(buffer)) >= 0) {
                 out.write(buffer, 0, len);
             }

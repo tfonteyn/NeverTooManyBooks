@@ -31,6 +31,7 @@ import android.content.Context;
 import android.util.Log;
 
 import androidx.annotation.CallSuper;
+import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
@@ -47,6 +48,7 @@ import java.net.UnknownHostException;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
+import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.utils.NetworkUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.Throttler;
 
@@ -56,13 +58,9 @@ import com.hardbacknutter.nevertoomanybooks.utils.Throttler;
  * There is a problem with failed timeouts:
  * http://thushw.blogspot.hu/2010/10/java-urlconnection-provides-no-fail.html
  * <p>
- * So...we are forced to use a background thread to be able to kill it.
+ * So...we will use a background thread to kill the connection after a set timeout.
  * <p>
- * This is the replacement for the old Terminator class. Uses a simple Thread/Runnable for closing
- * connections instead of the full-blown queue based system with 'SimpleTask'.
- * <p>
- * Note that the Goodreads classes and image download used to use the Apache Commons Http classes
- * instead. Apache is now removed, and they use the standard HttpURLConnection directly.
+ * Note that the Goodreads classes and image download use the standard HttpURLConnection directly.
  * TODO: either make all places use this class, or perhaps remove this class?
  */
 @WorkerThread
@@ -72,38 +70,50 @@ public final class TerminatorConnection
     /** Log tag. */
     private static final String TAG = "TerminatorConnection";
 
-    /** timeout for requests to  website. */
+    /** timeout for opening a connection to a website. */
+    private static final int CONNECT_TIMEOUT_MS = 10_000;
+    /** timeout for requests to website. */
     private static final int READ_TIMEOUT_MS = 10_000;
     /** kill connections after this delay. */
-    private static final int KILL_CONNECT_DELAY_MS = 60_000;
+    private static final int KILL_TIMEOUT_MS = 60_000;
+
     /** if at first we don't succeed... */
     private static final int NR_OF_TRIES = 2;
-    /** milliseconds to wait between retries. */
+    /** milliseconds to wait between retries. This is in ADDITION to the Throttler. */
     private static final int RETRY_AFTER_MS = 1_000;
 
     @NonNull
     private final HttpURLConnection mCon;
+
+    @Nullable
+    private final Throttler mThrottler;
+    private final int mConnectTimeout;
+    private final int mReadTimeout;
     private final int mKillDelayInMillis;
+
     @Nullable
-    private BufferedInputStream inputStream;
+    private BufferedInputStream mInputStream;
     @Nullable
-    private Thread closingThread;
+    private Thread mClosingThread;
+
     /** DEBUG: Indicates close() has been called. Also see {@link Closeable#close()}. */
     private boolean mCloseWasCalled;
+    private int mNrOfTries;
 
     /**
      * Constructor.
      *
-     * @param context        Application context
-     * @param urlStr         URL to retrieve
-     * @param connectTimeout in milliseconds
+     * @param context Application context
+     * @param urlStr  URL to retrieve
      *
      * @throws IOException on failure
      */
     @WorkerThread
     public TerminatorConnection(@NonNull final Context context,
                                 @NonNull final String urlStr,
-                                final int connectTimeout)
+                                @IntRange(from = 0) final int connectTimeout,
+                                @IntRange(from = 0) final int readTimeout,
+                                @Nullable final Throttler throttler)
             throws IOException {
 
         final URL url = new URL(urlStr);
@@ -115,8 +125,6 @@ public final class TerminatorConnection
             Log.d(TAG, "Constructor|url=\"" + url + '\"');
         }
 
-        mKillDelayInMillis = KILL_CONNECT_DELAY_MS;
-
         try {
             mCon = (HttpURLConnection) url.openConnection();
         } catch (@NonNull final IOException e) {
@@ -126,69 +134,148 @@ public final class TerminatorConnection
             throw e;
         }
 
+        mKillDelayInMillis = KILL_TIMEOUT_MS;
+
+        mConnectTimeout = connectTimeout;
+        mReadTimeout = readTimeout;
+        mThrottler = throttler;
 
         // redirect MUST BE SET TO TRUE here.
         mCon.setInstanceFollowRedirects(true);
         mCon.setUseCaches(false);
-
-        mCon.setConnectTimeout(connectTimeout);
-        mCon.setReadTimeout(READ_TIMEOUT_MS);
     }
 
     /**
-     * Convenience function. Get an open TerminatorConnection from a URL.
+     * Convenience constructor.
      *
-     * @param context        Application context
-     * @param urlStr         URL to retrieve
-     * @param connectTimeout in milliseconds
-     *
-     * @return the open connection
+     * @param context      Application context
+     * @param urlStr       URL to retrieve
+     * @param searchEngine to use
      *
      * @throws IOException on failure
      */
     @WorkerThread
-    @NonNull
-    public static TerminatorConnection open(@NonNull final Context context,
-                                            @NonNull final String urlStr,
-                                            final int connectTimeout)
+    public TerminatorConnection(@NonNull final Context context,
+                                @NonNull final String urlStr,
+                                @NonNull final SearchEngine searchEngine)
             throws IOException {
-        return open(context, urlStr, connectTimeout, NR_OF_TRIES, null);
+        this(context, urlStr,
+             searchEngine.getConnectTimeoutMs(),
+             searchEngine.getReadTimeoutMs(),
+             searchEngine.getThrottler());
     }
 
     /**
-     * Convenience function. Get an open TerminatorConnection from a URL.
+     * Open the actual connection and return the input stream.
      *
-     * @param context        Application context
-     * @param urlStr         URL to retrieve
-     * @param connectTimeout in milliseconds
-     * @param retries        If the site drops connection, we retry 'retries' times
-     * @param throttler      (optional) to use
-     *
-     * @return the open connection
+     * @return input stream
      *
      * @throws IOException on failure
      */
-    @WorkerThread
     @NonNull
-    public static TerminatorConnection open(@NonNull final Context context,
-                                            @NonNull final String urlStr,
-                                            final int connectTimeout,
-                                            final int retries,
-                                            @Nullable final Throttler throttler)
+    public BufferedInputStream getInputStream()
             throws IOException {
-        TerminatorConnection con = new TerminatorConnection(context, urlStr, connectTimeout);
-        con.open(retries, throttler);
-        return con;
+        if (mInputStream == null) {
+            mInputStream = open();
+        }
+        return mInputStream;
+    }
+
+    /**
+     * Perform the actual opening of the connection, initiate the InputStream
+     * and setup the killer-thread.
+     * <p>
+     * Called from {@link #getInputStream()}.
+     *
+     * @throws IOException on failure
+     */
+    @NonNull
+    private BufferedInputStream open()
+            throws IOException {
+
+        if (mConnectTimeout > 0) {
+            mCon.setConnectTimeout(mConnectTimeout);
+        } else {
+            mCon.setConnectTimeout(CONNECT_TIMEOUT_MS);
+        }
+
+        if (mReadTimeout > 0) {
+            mCon.setReadTimeout(mReadTimeout);
+        } else {
+            mCon.setReadTimeout(READ_TIMEOUT_MS);
+        }
+
+        // If the site drops connection, we retry.
+        int retry;
+        if (mNrOfTries > 0) {
+            retry = mNrOfTries;
+        } else {
+            retry = NR_OF_TRIES;
+        }
+
+        while (retry > 0) {
+            try {
+                if (mThrottler != null) {
+                    mThrottler.waitUntilRequestAllowed();
+                }
+
+                // make the actual connection
+                final BufferedInputStream is = new BufferedInputStream(mCon.getInputStream());
+                if (mCon.getResponseCode() < 400) {
+                    // we'll close the connection on a background task after a 'kill' timeout,
+                    // so that we can cancel any runaway timeouts.
+                    mClosingThread = new Thread(new TerminatorThread(this, mKillDelayInMillis));
+                    mClosingThread.start();
+                    return is;
+
+                } else {
+                    // throw any real error code without retrying.
+                    close();
+                    throw new IOException("response: " + mCon.getResponseCode()
+                                          + ' ' + mCon.getResponseMessage());
+                }
+
+                // these exceptions CAN be retried
+            } catch (@NonNull final InterruptedIOException
+                    | FileNotFoundException
+                    | UnknownHostException e) {
+                // InterruptedIOException / SocketTimeoutException: connection timeout
+                // UnknownHostException: DNS or other low-level network issue
+                // FileNotFoundException: seen on some sites. A retry and the site was ok.
+                if (BuildConfig.DEBUG /* always */) {
+                    Log.d(TAG, "open"
+                               + "|retry=" + retry
+                               + "|url=`" + mCon.getURL() + '`'
+                               + "|e=" + e);
+                }
+
+                retry--;
+                if (retry == 0) {
+                    close();
+                    throw e;
+                }
+            }
+
+            try {
+                Thread.sleep(RETRY_AFTER_MS);
+            } catch (@NonNull final InterruptedException ignore) {
+            }
+        }
+
+        if (BuildConfig.DEBUG /* always */) {
+            Log.d(TAG, "open|giving up|url=`" + mCon.getURL() + '`');
+        }
+        throw new IOException("Giving up");
+    }
+
+    @SuppressWarnings("unused")
+    public void setNrOfTries(@IntRange(from = 0) final int nrOfTries) {
+        mNrOfTries = nrOfTries;
     }
 
     /** wrapper to {@link HttpURLConnection}. */
     public void setInstanceFollowRedirects(final boolean followRedirects) {
         mCon.setInstanceFollowRedirects(followRedirects);
-    }
-
-    /** wrapper to {@link HttpURLConnection}. */
-    public void setReadTimeout(final int timeout) {
-        mCon.setReadTimeout(timeout);
     }
 
     /** wrapper to {@link HttpURLConnection}. */
@@ -209,103 +296,6 @@ public final class TerminatorConnection
         return mCon.getURL();
     }
 
-    @Nullable
-    public BufferedInputStream getInputStream() {
-        return inputStream;
-    }
-
-    public void open()
-            throws IOException {
-        open(NR_OF_TRIES, null);
-    }
-
-    /**
-     * Perform the actual opening of the connection, initiate the InputStream
-     * and setup the killer-thread.
-     * <p>
-     * The optional {@link Throttler} will be used before the first connect
-     * and before each retry.
-     * If no Throttler is set, then the first request is send immediately, and retries
-     * use a fixed {@link #RETRY_AFTER_MS} delay.
-     *
-     * @param retries   If the site drops connection, we retry 'retries' times
-     * @param throttler (optional) to use
-     *
-     * @throws IOException on failure
-     */
-    public void open(final int retries,
-                     @Nullable final Throttler throttler)
-            throws IOException {
-
-        try {
-
-            if (throttler != null) {
-                throttler.waitUntilRequestAllowed();
-            }
-
-            // If the site drops connection, we retry.
-            int retry = retries;
-
-            while (retry > 0) {
-                try {
-                    // make the actual connection
-                    inputStream = new BufferedInputStream(mCon.getInputStream());
-
-                    if (mCon.getResponseCode() < 400) {
-                        // we'll close the connection on a background task after a 'kill' timeout,
-                        // so that we can cancel any runaway timeouts.
-                        closingThread = new Thread(new TerminatorThread(this, mKillDelayInMillis));
-                        closingThread.start();
-                        return;
-
-                    } else {
-                        // throw any real error code without retrying.
-                        close();
-                        throw new IOException("response: " + mCon.getResponseCode()
-                                              + ' ' + mCon.getResponseMessage());
-                    }
-
-                    // these exceptions CAN be retried
-                } catch (@NonNull final InterruptedIOException
-                        | FileNotFoundException
-                        | UnknownHostException e) {
-                    // InterruptedIOException / SocketTimeoutException: connection timeout
-                    // UnknownHostException: DNS or other low-level network issue
-                    // FileNotFoundException: seen on some sites. A retry and the site was ok.
-                    if (BuildConfig.DEBUG /* always */) {
-                        Log.d(TAG, "open"
-                                   + "|retry=" + retry
-                                   + "|url=`" + mCon.getURL() + '`'
-                                   + "|e=" + e);
-                    }
-
-                    retry--;
-                    if (retry == 0) {
-                        close();
-                        throw e;
-                    }
-                }
-
-                if (throttler != null) {
-                    throttler.waitUntilRequestAllowed();
-                } else {
-                    try {
-                        Thread.sleep(RETRY_AFTER_MS);
-                    } catch (@NonNull final InterruptedException ignore) {
-                    }
-                }
-            }
-
-        } catch (@NonNull final IOException e) {
-            if (BuildConfig.DEBUG /* always */) {
-                Log.d(TAG, "open|giving up"
-                           + "|url=`" + mCon.getURL() + '`'
-                           + "|e=" + e);
-            }
-            throw e;
-        }
-    }
-
     /**
      * Close the inputStream/connection.
      * <p>
@@ -313,17 +303,18 @@ public final class TerminatorConnection
      */
     public void close() {
         mCloseWasCalled = true;
-        if (inputStream != null) {
+        if (mInputStream != null) {
             try {
-                inputStream.close();
+                mInputStream.close();
             } catch (@NonNull final IOException ignore) {
                 // ignore
             }
+            mInputStream = null;
         }
         mCon.disconnect();
-        if (closingThread != null) {
+        if (mClosingThread != null) {
             // dismiss the unneeded closing thread.
-            closingThread.interrupt();
+            mClosingThread.interrupt();
         }
     }
 
@@ -345,14 +336,15 @@ public final class TerminatorConnection
     }
 
     /**
-     * This is the replacement of the old SimpleTask to close a potential run-away connection.
-     * {@link TerminatorConnection} is always called from a background task, so we cannot
-     * start another background task from there. An old-fashioned Thread/Runnable is fine though.
+     * A Runnable which will close a potential run-away connection after a set timeout.
      */
     static class TerminatorThread
             implements Runnable {
 
+        /** Connection to kill. */
+        @NonNull
         private final TerminatorConnection mConnection;
+        /** Delay before killing. */
         private final int mKillDelayInMillis;
 
         /**

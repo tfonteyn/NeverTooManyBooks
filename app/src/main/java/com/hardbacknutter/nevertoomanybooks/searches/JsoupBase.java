@@ -37,6 +37,7 @@ import androidx.annotation.WorkerThread;
 import java.io.EOFException;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.SocketTimeoutException;
 
 import javax.net.ssl.SSLProtocolException;
@@ -78,8 +79,6 @@ public abstract class JsoupBase {
     private boolean mRetry = true;
     /** The user agent to send. */
     private String mUserAgent = USER_AGENT_VALUE;
-    /** Timeout for individual reads. */
-    private int mReadTimeout;
     /** {@code null} by default: for Jsoup to figure it out. */
     private String mCharSetName;
 
@@ -88,16 +87,6 @@ public abstract class JsoupBase {
      */
     protected JsoupBase(@NonNull final SearchEngine searchEngine) {
         mSearchEngine = searchEngine;
-    }
-
-    /**
-     * Optionally override the read timeout.
-     *
-     * @param readTimeout to use
-     */
-    protected void setReadTimeout(
-            @SuppressWarnings("SameParameterValue") final int readTimeout) {
-        mReadTimeout = readTimeout;
     }
 
     /**
@@ -149,19 +138,17 @@ public abstract class JsoupBase {
                 Logger.d(TAG, "loadPage|REQUESTED|url=\"" + url + '\"');
             }
 
-            try (TerminatorConnection con = new TerminatorConnection(
-                    context, url, mSearchEngine.getConnectTimeoutMs())) {
+            try (TerminatorConnection con = new TerminatorConnection(context, url, mSearchEngine)) {
                 // added due to https://github.com/square/okhttp/issues/1517
                 // it's a server issue, this is a workaround.
                 con.setRequestProperty("Connection", "close");
-                if (mReadTimeout > 0) {
-                    con.setReadTimeout(mReadTimeout);
-                }
+
                 if (mUserAgent != null) {
                     con.setRequestProperty("User-Agent", mUserAgent);
                 }
+
                 // GO!
-                con.open();
+                final InputStream inputStream = con.getInputStream();
 
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.JSOUP) {
                     Logger.d(TAG, "loadPage|AFTER open|con.getURL()=" + con.getURL());
@@ -197,7 +184,7 @@ public abstract class JsoupBase {
                 However that is WRONG (org.jsoup:jsoup:1.11.3)
                 It will NOT resolve the redirect itself and 'location' == 'baseUri'
                 */
-                mDoc = Jsoup.parse(con.getInputStream(), mCharSetName, locationHeader);
+                mDoc = Jsoup.parse(inputStream, mCharSetName, locationHeader);
 
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.JSOUP) {
                     Logger.d(TAG, "loadPage|AFTER parsing|mDoc.location()=" + mDoc.location());

@@ -79,6 +79,8 @@ public class GoodreadsSearchEngine
     public static final Throttler THROTTLER = new Throttler();
     /** Override connect-timeout for this site. See {@link SearchEngine#getConnectTimeoutMs()}. */
     public static final int CONNECT_TIMEOUT_MS = 10_000;
+    /** Override read-timeout for this site. See {@link SearchEngine#getReadTimeoutMs()}. */
+    public static final int READ_TIMEOUT_MS = 10_000;
 
     @NonNull
     private final GoodreadsHandler mApiHandler;
@@ -117,6 +119,12 @@ public class GoodreadsSearchEngine
     @Override
     public int getConnectTimeoutMs() {
         return CONNECT_TIMEOUT_MS;
+    }
+
+    @Nullable
+    @Override
+    public Throttler getThrottler() {
+        return THROTTLER;
     }
 
     @Override

@@ -138,12 +138,9 @@ public class KbNlSearchEngine
         final SAXParserFactory factory = SAXParserFactory.newInstance();
         final KbNlBookHandler handler = new KbNlBookHandler(new Bundle());
 
-        try (TerminatorConnection con = new TerminatorConnection(
-                context, url, getConnectTimeoutMs())) {
+        try (TerminatorConnection con = new TerminatorConnection(context, url, this)) {
             // needed so we get the XML instead of the rendered page
             con.setInstanceFollowRedirects(false);
-            // GO!
-            con.open();
 
             final SAXParser parser = factory.newSAXParser();
             parser.parse(con.getInputStream(), handler);
@@ -198,7 +195,7 @@ public class KbNlSearchEngine
 
         final String url = String.format(BASE_URL_COVERS, validIsbn, sizeSuffix);
         final String tmpName = validIsbn + FILENAME_SUFFIX + "_" + sizeSuffix;
-        return ImageUtils.saveImage(context, url, tmpName, getConnectTimeoutMs(), null);
+        return ImageUtils.saveImage(context, url, tmpName, this);
     }
 
     @Override

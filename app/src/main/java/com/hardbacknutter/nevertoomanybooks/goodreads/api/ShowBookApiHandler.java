@@ -49,9 +49,9 @@ import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
-import com.hardbacknutter.nevertoomanybooks.goodreads.AuthorTypeMapper;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsAuth;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsHandler;
+import com.hardbacknutter.nevertoomanybooks.searches.AuthorTypeMapper;
 import com.hardbacknutter.nevertoomanybooks.searches.goodreads.GoodreadsSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.utils.LanguageUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
@@ -454,6 +454,7 @@ public abstract class ShowBookApiHandler
                                    + GoodreadsSearchEngine.FILENAME_SUFFIX;
             final String fileSpec = ImageUtils.saveImage(appContext, coverUrl, tmpName,
                                                          GoodreadsSearchEngine.CONNECT_TIMEOUT_MS,
+                                                         GoodreadsSearchEngine.READ_TIMEOUT_MS,
                                                          GoodreadsSearchEngine.THROTTLER);
             if (fileSpec != null) {
                 ArrayList<String> list =

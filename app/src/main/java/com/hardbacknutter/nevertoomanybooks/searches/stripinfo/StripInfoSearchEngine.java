@@ -62,6 +62,10 @@ public class StripInfoSearchEngine
 
     /** Override connect-timeout for this site. See {@link SearchEngine#getConnectTimeoutMs()}. */
     private static final int CONNECT_TIMEOUT_MS = 7_000;
+
+    /** Override read-timeout for this site. See {@link SearchEngine#getReadTimeoutMs()} ()}. */
+    private static final int READ_TIMEOUT_MS = 60_000;
+
     @Nullable
     private Canceller mCaller;
 
@@ -73,13 +77,18 @@ public class StripInfoSearchEngine
      */
     public static void openWebsite(@NonNull final Context context,
                                    final long bookId) {
-        String url = BASE_URL + "/reeks/strip/" + bookId;
+        final String url = BASE_URL + "/reeks/strip/" + bookId;
         context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
     }
 
     @Override
     public int getConnectTimeoutMs() {
         return CONNECT_TIMEOUT_MS;
+    }
+
+    @Override
+    public int getReadTimeoutMs() {
+        return READ_TIMEOUT_MS;
     }
 
     @NonNull

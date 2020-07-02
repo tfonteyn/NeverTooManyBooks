@@ -58,6 +58,7 @@ import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.tasks.Canceller;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
+import com.hardbacknutter.nevertoomanybooks.utils.Throttler;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.FormattedMessageException;
 
@@ -117,12 +118,33 @@ public interface SearchEngine {
      * Tests with WiFi 5GHz indoor, optimal placement, show that the sites we use,
      * connect in less than 200ms.
      * <p>
-     * Defaults to 5 second. Override as needed.
-     * <p>
      * TODO: use different defaults depending on network capabilities?
+     *
+     * @return default of 5 second. Override as needed.
      */
     default int getConnectTimeoutMs() {
         return 5_000;
+    }
+
+    /**
+     * Default timeout we allow for a response to a request.
+     * <p>
+     * TODO: use different defaults depending on network capabilities?
+     *
+     * @return default 10 second. Override as needed.
+     */
+    default int getReadTimeoutMs() {
+        return 10_000;
+    }
+
+    /**
+     * Get the default throttler for regulating network access.
+     *
+     * @return {@code null} no Throttler by default. Override as needed.
+     */
+    @Nullable
+    default Throttler getThrottler() {
+        return null;
     }
 
     /**

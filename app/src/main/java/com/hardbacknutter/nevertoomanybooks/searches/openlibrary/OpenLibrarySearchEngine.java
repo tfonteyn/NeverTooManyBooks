@@ -226,12 +226,8 @@ public class OpenLibrarySearchEngine
             throws IOException {
         // get and store the result into a string.
         final String response;
-        try (TerminatorConnection con = TerminatorConnection.open(context, url,
-                                                                  getConnectTimeoutMs());
+        try (TerminatorConnection con = new TerminatorConnection(context, url, this);
              InputStream is = con.getInputStream()) {
-            if (is == null) {
-                throw new IOException("no InputStream");
-            }
             response = readResponseStream(is);
         }
 
@@ -303,7 +299,7 @@ public class OpenLibrarySearchEngine
 
         final String url = String.format(BASE_COVER_URL, "isbn", validIsbn, sizeParam);
         final String tmpName = validIsbn + FILENAME_SUFFIX + "_" + sizeParam;
-        return ImageUtils.saveImage(context, url, tmpName, getConnectTimeoutMs(), null);
+        return ImageUtils.saveImage(context, url, tmpName, this);
     }
 
     @NonNull
@@ -620,7 +616,7 @@ public class OpenLibrarySearchEngine
                 if (!coverUrl.isEmpty()) {
                     final String name = isbn + FILENAME_SUFFIX + "_" + sizeParam;
                     final String fileSpec = ImageUtils
-                            .saveImage(context, coverUrl, name, 666, null);
+                            .saveImage(context, coverUrl, name, this);
                     if (fileSpec != null) {
                         ArrayList<String> imageList =
                                 bookData.getStringArrayList(Book.BKEY_FILE_SPEC_ARRAY[0]);

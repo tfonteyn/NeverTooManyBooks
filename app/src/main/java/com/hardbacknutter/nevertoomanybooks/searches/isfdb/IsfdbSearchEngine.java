@@ -87,6 +87,9 @@ public class IsfdbSearchEngine
     /** Override connect-timeout for this site. See {@link SearchEngine#getConnectTimeoutMs()}. */
     private static final int CONNECT_TIMEOUT_MS = 20_000;
 
+    /** Override read-timeout for this site. See {@link SearchEngine#getReadTimeoutMs()} ()}. */
+    private static final int READ_TIMEOUT_MS = 60_000;
+
     /** Common CGI directory. */
     static final String CGI_BIN = "/cgi-bin/";
     /** bibliographic information for one title. */
@@ -146,6 +149,11 @@ public class IsfdbSearchEngine
     @Override
     public int getConnectTimeoutMs() {
         return CONNECT_TIMEOUT_MS;
+    }
+
+    @Override
+    public int getReadTimeoutMs() {
+        return READ_TIMEOUT_MS;
     }
 
     @NonNull

@@ -54,6 +54,7 @@ import org.jsoup.select.Elements;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
+import com.hardbacknutter.nevertoomanybooks.EditBookTocFragment;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageUtils;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
@@ -62,12 +63,13 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
+import com.hardbacknutter.nevertoomanybooks.searches.JsoupBase;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.utils.DateParser;
 import com.hardbacknutter.nevertoomanybooks.utils.Money;
 
 class IsfdbBookHandler
-        extends AbstractBase {
+        extends JsoupBase {
 
     /** Log tag. */
     private static final String TAG = "IsfdbBookHandler";
@@ -93,6 +95,26 @@ class IsfdbBookHandler
     private static final Pattern UNKNOWN_M_D_PATTERN = Pattern.compile("-00", Pattern.LITERAL);
     /** A CSS select query. */
     private static final String CSS_Q_DIV_CONTENTBOX = "div.contentbox";
+
+    /**
+     * Trim extraneous punctuation and whitespace from the titles and authors.
+     * <p>
+     * Original code in {@link EditBookTocFragment} had:
+     * {@code CLEANUP_REGEX = "[\\,\\.\\'\\:\\;\\`\\~\\@\\#\\$\\%\\^\\&\\*\\(\\)\\-\\=\\_\\+]*$";}
+     * <p>
+     * Note that inside the square brackets of a character class, many
+     * escapes are unnecessary that would be necessary outside of a character class.
+     * So that became:
+     * {@code private static final String CLEANUP_REGEX = "[,.':;`~@#$%^&*()\\-=_+]*$";}
+     * <p>
+     * But given a title like "Introduction (The Father-Thing)"
+     * you loose the ")" at the end, so remove that from the regex, see below
+     */
+    private static final Pattern CLEANUP_TITLE_PATTERN =
+            Pattern.compile("[,.':;`~@#$%^&*(\\-=_+]*$");
+
+    /** a CR is replaced with a space. */
+    private static final Pattern CR_PATTERN = Pattern.compile("\n", Pattern.LITERAL);
 
     /*
      * <a href="http://www.isfdb.org/wiki/index.php/Help:Screen:NewPub#Publication_Type">
@@ -170,15 +192,19 @@ class IsfdbBookHandler
 
     /**
      * Constructor.
+     *
+     * @param searchEngine to use
      */
     IsfdbBookHandler(@NonNull final SearchEngine searchEngine) {
         super(searchEngine);
+        setCharSetName(IsfdbSearchEngine.CHARSET_DECODE_PAGE);
     }
 
     /**
      * Constructor used for testing.
      *
-     * @param doc the JSoup Document.
+     * @param searchEngine to use
+     * @param doc          the JSoup Document.
      */
     @VisibleForTesting
     IsfdbBookHandler(@NonNull final SearchEngine searchEngine,
@@ -900,6 +926,16 @@ class IsfdbBookHandler
         }
     }
 
+    private String stripString(@NonNull final String url,
+                               @SuppressWarnings("SameParameterValue") final char last) {
+        final int index = url.lastIndexOf(last) + 1;
+        if (index == 0) {
+            return "";
+        }
+
+        return url.substring(index);
+    }
+
     /**
      * Filter a string of all non-digits. Used to clean isbn strings, years... etc.
      *
@@ -937,8 +973,7 @@ class IsfdbBookHandler
                             @NonNull final String coverUrl,
                             @NonNull final Bundle /* in/out */ bookData) {
         final String tmpName = createTempCoverFileName(bookData);
-        final String fileSpec = ImageUtils.saveImage(appContext, coverUrl, tmpName,
-                                                     mSearchEngine.getConnectTimeoutMs(), null);
+        final String fileSpec = ImageUtils.saveImage(appContext, coverUrl, tmpName, mSearchEngine);
 
         if (fileSpec != null) {
             ArrayList<String> imageList =
@@ -1150,6 +1185,12 @@ class IsfdbBookHandler
         }
 
         return results;
+    }
+
+    @NonNull
+    private String cleanUpName(@NonNull final String s) {
+        final String tmp = CR_PATTERN.matcher(s.trim()).replaceAll(" ");
+        return CLEANUP_TITLE_PATTERN.matcher(tmp).replaceAll("").trim();
     }
 
     /**

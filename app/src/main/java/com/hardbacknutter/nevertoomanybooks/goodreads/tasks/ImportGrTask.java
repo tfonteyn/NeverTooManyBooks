@@ -65,7 +65,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
-import com.hardbacknutter.nevertoomanybooks.goodreads.AuthorTypeMapper;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsAuth;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsHandler;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsShelf;
@@ -74,6 +73,7 @@ import com.hardbacknutter.nevertoomanybooks.goodreads.api.ReviewsListApiHandler;
 import com.hardbacknutter.nevertoomanybooks.goodreads.api.ReviewsListApiHandler.Review;
 import com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.QueueManager;
 import com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.TQTask;
+import com.hardbacknutter.nevertoomanybooks.searches.AuthorTypeMapper;
 import com.hardbacknutter.nevertoomanybooks.searches.goodreads.GoodreadsSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 import com.hardbacknutter.nevertoomanybooks.utils.DateParser;
@@ -669,6 +669,7 @@ class ImportGrTask
                 final String fileSpec =
                         ImageUtils.saveImage(context, coverUrl, tmpName,
                                              GoodreadsSearchEngine.CONNECT_TIMEOUT_MS,
+                                             GoodreadsSearchEngine.READ_TIMEOUT_MS,
                                              GoodreadsSearchEngine.THROTTLER);
                 if (fileSpec != null) {
                     delta.putString(Book.BKEY_FILE_SPEC[0], fileSpec);

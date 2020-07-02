@@ -55,6 +55,7 @@ import java.util.ArrayList;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.CoversDAO;
+import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.tasks.TerminatorConnection;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
@@ -74,8 +75,6 @@ public final class ImageUtils {
     private static final int MIN_VALID_IMAGE_SIDE = 10;
     /** The minimum size an image file on disk must be to be considered valid; in bytes. */
     private static final int MIN_VALID_IMAGE_FILE_SIZE = 2048;
-    /** network: if at first we don't succeed... */
-    private static final int NR_OF_TRIES = 2;
     /** The prefix an embedded image url will have. */
     private static final String DATA_IMAGE_JPEG_BASE_64 = "data:image/jpeg;base64,";
 
@@ -344,6 +343,18 @@ public final class ImageUtils {
         }
     }
 
+    @Nullable
+    @WorkerThread
+    public static String saveImage(@NonNull final Context context,
+                                   @NonNull final String url,
+                                   @NonNull final String name,
+                                   @NonNull final SearchEngine searchEngine) {
+        return saveImage(context, url, name,
+                         searchEngine.getConnectTimeoutMs(),
+                         searchEngine.getReadTimeoutMs(),
+                         searchEngine.getThrottler());
+    }
+
     /**
      * Given a URL, get an image and save to a file. Called/run in a background task.
      *
@@ -351,6 +362,7 @@ public final class ImageUtils {
      * @param url            Image file URL
      * @param name           for the file.
      * @param connectTimeout in milliseconds
+     * @param readTimeout    in milliseconds
      * @param throttler      (optional) {@link Throttler} to use
      *
      * @return Downloaded fileSpec, or {@code null} on failure
@@ -360,7 +372,8 @@ public final class ImageUtils {
     public static String saveImage(@NonNull final Context context,
                                    @NonNull final String url,
                                    @NonNull final String name,
-                                   final int connectTimeout,
+                                   @IntRange(from = 0) final int connectTimeout,
+                                   @IntRange(from = 0) final int readTimeout,
                                    @Nullable final Throttler throttler) {
 
         File file = AppDir.Cache.getFile(context, name + ".jpg");
@@ -373,9 +386,8 @@ public final class ImageUtils {
                     os.write(image);
                 }
             } else {
-                try (TerminatorConnection con =
-                             TerminatorConnection.open(context, url, connectTimeout,
-                                                       NR_OF_TRIES, throttler)) {
+                try (TerminatorConnection con = new TerminatorConnection(
+                        context, url, connectTimeout, readTimeout, throttler)) {
                     file = FileUtils.copyInputStream(context, con.getInputStream(), file);
                 }
             }

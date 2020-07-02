@@ -138,7 +138,7 @@ public final class GoogleBooksSearchEngine
         }
     }
 
-    private Bundle fetchBook(@NonNull final Context appContext,
+    private Bundle fetchBook(@NonNull final Context context,
                              @NonNull final String url,
                              @NonNull final boolean[] fetchThumbnail,
                              @NonNull final Bundle bookData)
@@ -151,8 +151,7 @@ public final class GoogleBooksSearchEngine
 
             // get the booklist, can return multiple books ('entry' elements)
             final GoogleBooksHandler booksHandler = new GoogleBooksHandler();
-            try (TerminatorConnection con = TerminatorConnection.open(appContext, url,
-                                                                      getConnectTimeoutMs())) {
+            try (TerminatorConnection con = new TerminatorConnection(context, url, this)) {
                 parser.parse(con.getInputStream(), booksHandler);
             }
             final List<String> urlList = booksHandler.getResult();
@@ -166,10 +165,10 @@ public final class GoogleBooksSearchEngine
                     new GoogleBooksEntryHandler(this, fetchThumbnail, bookData);
             if (!urlList.isEmpty()) {
                 // only using the first one found, maybe future enhancement?
-                String oneBookUrl = urlList.get(0);
+                final String oneBookUrl = urlList.get(0);
 
-                try (TerminatorConnection con = TerminatorConnection.open(appContext, oneBookUrl,
-                                                                          getConnectTimeoutMs())) {
+                try (TerminatorConnection con =
+                             new TerminatorConnection(context, oneBookUrl, this)) {
                     parser.parse(con.getInputStream(), handler);
                 }
             }

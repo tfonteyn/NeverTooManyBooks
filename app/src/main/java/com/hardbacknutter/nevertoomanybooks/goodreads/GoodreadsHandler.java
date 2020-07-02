@@ -418,7 +418,7 @@ public class GoodreadsHandler {
 
     /**
      * Wrapper to send an entire book, including shelves, to Goodreads.
-     * <ul>The book has to have:
+     * <ul>The bookData bundle has to have:
      *      <li>{@link DBDefinitions#KEY_PK_ID}</li>
      *      <li>{@link DBDefinitions#KEY_EID_GOODREADS_BOOK}</li>
      *      <li>{@link DBDefinitions#KEY_ISBN}</li>

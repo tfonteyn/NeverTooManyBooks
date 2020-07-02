@@ -333,9 +333,7 @@ class GoogleBooksEntryHandler
 
                 final String tmpName = createTempCoverFileName(mBookData);
                 final String fileSpec = ImageUtils.saveImage(App.getAppContext(),
-                                                             coverUrl, tmpName,
-                                                             mSearchEngine.getConnectTimeoutMs(),
-                                                             null);
+                                                             coverUrl, tmpName, mSearchEngine);
                 if (fileSpec != null) {
                     ArrayList<String> imageList =
                             mBookData.getStringArrayList(Book.BKEY_FILE_SPEC_ARRAY[0]);

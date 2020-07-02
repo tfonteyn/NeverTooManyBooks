@@ -81,8 +81,6 @@ class StripInfoBookHandler
     /** file suffix for cover files. */
     private static final String FILENAME_SUFFIX = "_SI";
 
-    /** read-timeout. Default is 10_000. */
-    private static final int READ_TIMEOUT = 60_000;
     /** Log tag. */
     private static final String TAG = "StripInfoBookHandler";
     /** Color string values as used on the site. Complete 2019-10-29. */
@@ -148,7 +146,6 @@ class StripInfoBookHandler
     StripInfoBookHandler(@NonNull final SearchEngine searchEngine,
                          @NonNull final Context localizedAppContext) {
         super(searchEngine);
-        setReadTimeout(READ_TIMEOUT);
         mLocalizedContext = localizedAppContext;
     }
 
@@ -285,7 +282,7 @@ class StripInfoBookHandler
                     @NonNull final boolean[] fetchThumbnail) {
 
         // extracted from the page header.
-        String primarySeriesTitle = extractPrimarySeriesTitle();
+        final String primarySeriesTitle = extractPrimarySeriesTitle();
         // extracted from the title section.
         String primarySeriesBookNr = null;
 
@@ -562,7 +559,7 @@ class StripInfoBookHandler
 
         final String tmpName = createTempCoverFileName(bookData) + '_' + cIdx;
         final String fileSpec = ImageUtils.saveImage(mLocalizedContext, url, tmpName,
-                                                     mSearchEngine.getConnectTimeoutMs(), null);
+                                                     mSearchEngine);
 
         if (fileSpec != null) {
             // Some back covers will return the "no cover available" image regardless.

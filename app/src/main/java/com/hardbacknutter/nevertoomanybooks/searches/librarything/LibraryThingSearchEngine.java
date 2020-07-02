@@ -211,6 +211,12 @@ public class LibraryThingSearchEngine
         return "";
     }
 
+    @NonNull
+    @Override
+    public Throttler getThrottler() {
+        return THROTTLER;
+    }
+
     @Override
     public void setCaller(@Nullable final Canceller caller) {
         mCaller = caller;
@@ -251,8 +257,7 @@ public class LibraryThingSearchEngine
 
         // Get it
         final String url = String.format(EDITIONS_URL, isbn);
-        try (TerminatorConnection con = TerminatorConnection.open(context, url,
-                                                                  getConnectTimeoutMs())) {
+        try (TerminatorConnection con = new TerminatorConnection(context, url, this)) {
             final SAXParser parser = factory.newSAXParser();
             parser.parse(con.getInputStream(), handler);
         } catch (@NonNull final ParserConfigurationException | SAXException | IOException e) {
@@ -329,7 +334,7 @@ public class LibraryThingSearchEngine
         return bookData;
     }
 
-    private Bundle fetchBook(@NonNull final Context localizedAppContext,
+    private Bundle fetchBook(@NonNull final Context context,
                              @NonNull final String url,
                              @NonNull final Bundle bookData)
             throws IOException, SearchException {
@@ -342,8 +347,7 @@ public class LibraryThingSearchEngine
         THROTTLER.waitUntilRequestAllowed();
 
         // Get it
-        try (TerminatorConnection con = TerminatorConnection.open(localizedAppContext, url,
-                                                                  getConnectTimeoutMs())) {
+        try (TerminatorConnection con = new TerminatorConnection(context, url, this)) {
             final SAXParser parser = factory.newSAXParser();
             parser.parse(con.getInputStream(), handler);
             return handler.getResult();
@@ -396,8 +400,7 @@ public class LibraryThingSearchEngine
         final String url = String.format(COVER_BY_ISBN_URL,
                                          getDevKey(context), sizeParam, validIsbn);
         final String tmpName = validIsbn + FILENAME_SUFFIX + "_" + sizeParam;
-        // Make sure we follow LibraryThing ToS (no more than 1 request/second).
-        return ImageUtils.saveImage(context, url, tmpName, getConnectTimeoutMs(), THROTTLER);
+        return ImageUtils.saveImage(context, url, tmpName, this);
     }
 
     @Override

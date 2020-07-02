@@ -31,6 +31,7 @@ import androidx.annotation.NonNull;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.Locale;
 
@@ -40,6 +41,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import com.hardbacknutter.nevertoomanybooks.CommonSetup;
+import com.hardbacknutter.nevertoomanybooks.searches.JsoupBase;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -52,6 +54,8 @@ import static org.junit.jupiter.api.Assertions.fail;
  */
 class IsfdbEditionsHandlerTest
         extends CommonSetup {
+
+    private static final String sBaseUrl = "http://www.isfdb.org";
 
     private SearchEngine mSearchEngine;
 
@@ -85,5 +89,58 @@ class IsfdbEditionsHandlerTest
         assertEquals(24, editions.size());
 
         System.out.println(editions);
+    }
+
+    /**
+     * Fairly simple test that does an active download, and checks if the resulting page
+     * has the right "location" URL afterwards.
+     * There have been some hick-ups from ISFDB with redirecting (Apache web server config issues);
+     * and the JSoup parser is not fully redirect proof either.
+     * <p>
+     * Search for 0-88733-160-2; which has a single edition, so should redirect to the book.
+     * Resulting url should have "pl.cgi".
+     */
+    @Test
+    void searchSingleEditionIsbn() {
+        final DummyLoader loader = new DummyLoader(mSearchEngine);
+
+        final String url = sBaseUrl + "/cgi-bin/se.cgi?arg=0887331602&type=ISBN";
+        String resultingUrl = null;
+        try {
+            resultingUrl = loader.loadPage(mContext, url);
+        } catch (@NonNull final SocketTimeoutException e) {
+            fail(e);
+        }
+        assertEquals(sBaseUrl + "/cgi-bin/pl.cgi?326539", resultingUrl);
+    }
+
+
+    /**
+     * Search for 978-1-4732-0892-6; which has two editions.
+     * Resulting url should have "se.cgi".
+     *
+     * @see #searchSingleEditionIsbn()
+     */
+    @Test
+    void searchMultiEditionIsbn() {
+        final DummyLoader loader = new DummyLoader(mSearchEngine);
+
+        final String url = sBaseUrl + "/cgi-bin/se.cgi?arg=9781473208926&type=ISBN";
+        String resultingUrl = null;
+        try {
+            resultingUrl = loader.loadPage(mContext, url);
+        } catch (@NonNull final SocketTimeoutException e) {
+            fail(e);
+        }
+        assertEquals(sBaseUrl + "/cgi-bin/se.cgi?arg=9781473208926&type=ISBN", resultingUrl);
+    }
+
+    private static class DummyLoader
+            extends JsoupBase {
+
+        DummyLoader(@NonNull final SearchEngine searchEngine) {
+            super(searchEngine);
+            setCharSetName(IsfdbSearchEngine.CHARSET_DECODE_PAGE);
+        }
     }
 }

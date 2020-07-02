@@ -66,6 +66,7 @@ public class SearchEditionsTask
     /**
      * Constructor.
      *
+     * @param taskId       identifier
      * @param isbnStr      to search for, <strong>must</strong> be valid.
      * @param taskListener to send results to
      */
