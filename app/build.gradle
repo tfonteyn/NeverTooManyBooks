@@ -206,7 +206,7 @@ android {
 
 // AndroidX release notes:  https://developer.android.com/jetpack/androidx/versions
 dependencies {
-    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:1.0.7'
+    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:1.0.9'
     //
     implementation 'androidx.activity:activity:1.2.0-alpha06'
     implementation 'androidx.annotation:annotation:1.1.0'
@@ -235,7 +235,8 @@ dependencies {
     implementation 'ch.acra:acra-toast:5.6.1'
     implementation 'ch.acra:acra-dialog:5.6.1'
     // OAuth for Goodreads secure access. https://github.com/mttkay/signpost
-    implementation 'oauth.signpost:signpost-core:1.2.1.2'
+//    implementation 'oauth.signpost:signpost-core:1.2.1.2'
+    implementation 'oauth.signpost:signpost-core:2.0.0'
     // Tar file support for backups
     // http://commons.apache.org/proper/commons-compress/
     implementation 'org.apache.commons:commons-compress:1.20'
