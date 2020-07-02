@@ -119,7 +119,7 @@ public final class AmazonSearchEngine
             }
         }
 
-        String url = getBaseURL(context) + SEARCH_SUFFIX + fields.trim();
+        final String url = getBaseURL(context) + SEARCH_SUFFIX + fields.trim();
         context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
     }
 
@@ -134,8 +134,8 @@ public final class AmazonSearchEngine
                                    @Nullable final String author,
                                    @Nullable final String series) {
 
-        String cAuthor = cleanupSearchString(author);
-        String cSeries = cleanupSearchString(series);
+        final String cAuthor = cleanupSearchString(author);
+        final String cSeries = cleanupSearchString(series);
 
         String fields = "";
         if (!cAuthor.isEmpty()) {
@@ -154,7 +154,7 @@ public final class AmazonSearchEngine
             }
         }
 
-        String url = getBaseURL(context) + SEARCH_SUFFIX + fields.trim();
+        final String url = getBaseURL(context) + SEARCH_SUFFIX + fields.trim();
         context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
     }
 
@@ -164,7 +164,7 @@ public final class AmazonSearchEngine
             return "";
         }
 
-        StringBuilder out = new StringBuilder(search.length());
+        final StringBuilder out = new StringBuilder(search.length());
         char prev = ' ';
         for (char curr : search.toCharArray()) {
             if (Character.isLetterOrDigit(curr)) {
@@ -183,8 +183,8 @@ public final class AmazonSearchEngine
     @NonNull
     @Override
     public Locale getLocale(@NonNull final Context context) {
-        String baseUrl = getBaseURL(context);
-        String root = baseUrl.substring(baseUrl.lastIndexOf('.') + 1);
+        final String baseUrl = getBaseURL(context);
+        final String root = baseUrl.substring(baseUrl.lastIndexOf('.') + 1);
         switch (root) {
             case "com":
                 return Locale.US;
@@ -194,12 +194,11 @@ public final class AmazonSearchEngine
 
             default:
                 // other amazon sites are (should be ?) just the country code.
-                Locale locale = LocaleUtils.getLocale(context, root);
+                final Locale locale = LocaleUtils.getLocale(context, root);
                 if (BuildConfig.DEBUG /* always */) {
                     Logger.d(TAG, "getLocale=" + locale);
                 }
                 return locale != null ? locale : Locale.US;
-
         }
     }
 
@@ -221,7 +220,7 @@ public final class AmazonSearchEngine
                                @NonNull final boolean[] fetchThumbnail)
             throws IOException {
 
-        ISBN tmp = new ISBN(validIsbn);
+        final ISBN tmp = new ISBN(validIsbn);
         if (tmp.isIsbn10Compat()) {
             return searchByNativeId(context, tmp.asText(ISBN.TYPE_ISBN10), fetchThumbnail);
         } else {

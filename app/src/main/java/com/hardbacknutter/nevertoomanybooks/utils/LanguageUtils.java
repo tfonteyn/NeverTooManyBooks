@@ -87,6 +87,13 @@ public final class LanguageUtils {
         return langLocale.getDisplayLanguage(LocaleUtils.getUserLocale(context));
     }
 
+
+    @NonNull
+    public static String getISO3FromDisplayName(@NonNull final Context context,
+                                                @NonNull final String displayName) {
+        return getISO3FromDisplayName(context, LocaleUtils.getUserLocale(context), displayName);
+    }
+
     /**
      * Try to convert a Language DisplayName to an ISO3 code.
      * At installation time we generated the users System Locale + Locale.ENGLISH
@@ -94,15 +101,17 @@ public final class LanguageUtils {
      * That probably covers a lot if not all.
      *
      * @param context     Current context
+     * @param locale      the locale of the displayName
      * @param displayName the string as normally produced by {@link Locale#getDisplayLanguage}
      *
      * @return the ISO code, or if conversion failed, the input string
      */
     @NonNull
     public static String getISO3FromDisplayName(@NonNull final Context context,
+                                                @NonNull final Locale locale,
                                                 @NonNull final String displayName) {
 
-        final String source = displayName.trim().toLowerCase(LocaleUtils.getUserLocale(context));
+        final String source = displayName.trim().toLowerCase(locale);
         if (source.isEmpty()) {
             return "";
         }

@@ -143,18 +143,49 @@ public class CommonSetup {
         when(mSharedPreferences.getString(eq(Prefs.pk_ui_locale), eq(LocaleUtils.SYSTEM_LANGUAGE)))
                 .thenReturn(LocaleUtils.SYSTEM_LANGUAGE);
 
-        when(mSharedPreferences.getString(eq("nederlands"), anyString())).thenReturn("nld");
-        when(mSharedPreferences.getString(eq("frans"), anyString())).thenReturn("fra");
-        when(mSharedPreferences.getString(eq("duits"), anyString())).thenReturn("ger");
-        when(mSharedPreferences.getString(eq("engels"), anyString())).thenReturn("eng");
         when(mSharedPreferences.getString(eq("english"), anyString())).thenReturn("eng");
+        when(mSharedPreferences.getString(eq("engels"), anyString())).thenReturn("eng");
+        when(mSharedPreferences.getString(eq("anglais"), anyString())).thenReturn("eng");
+        when(mSharedPreferences.getString(eq("englisch"), anyString())).thenReturn("eng");
 
-        when(mSharedPreferences.getString(eq(AmazonSearchEngine.PREFS_HOST_URL), anyString()))
-                .thenReturn("https://www.amazon.co.uk");
+        when(mSharedPreferences.getString(eq("french"), anyString())).thenReturn("fra");
+        when(mSharedPreferences.getString(eq("français"), anyString())).thenReturn("fra");
+        when(mSharedPreferences.getString(eq("französisch"), anyString())).thenReturn("fra");
+        when(mSharedPreferences.getString(eq("frans"), anyString())).thenReturn("fra");
+
+        when(mSharedPreferences.getString(eq("german"), anyString())).thenReturn("ger");
+        when(mSharedPreferences.getString(eq("allemand"), anyString())).thenReturn("ger");
+        when(mSharedPreferences.getString(eq("deutsch"), anyString())).thenReturn("ger");
+        when(mSharedPreferences.getString(eq("duits"), anyString())).thenReturn("ger");
+
+        when(mSharedPreferences.getString(eq("dutch"), anyString())).thenReturn("nld");
+        when(mSharedPreferences.getString(eq("néerlandais"), anyString())).thenReturn("nld");
+        when(mSharedPreferences.getString(eq("niederländisch"), anyString())).thenReturn("nld");
+        when(mSharedPreferences.getString(eq("nederlands"), anyString())).thenReturn("nld");
+
         when(mSharedPreferences.getString(eq(IsfdbSearchEngine.PREFS_HOST_URL), anyString()))
                 .thenReturn("http://www.isfdb.org");
         when(mSharedPreferences.getString(eq(KbNlSearchEngine.PREFS_HOST_URL), anyString()))
                 .thenReturn("http://opc4.kb.nl");
+
+        when(mSharedPreferences.getString(eq(AmazonSearchEngine.PREFS_HOST_URL), anyString()))
+                .thenAnswer((Answer<String>) invocation -> {
+                    if (mLocale0 != null) {
+                        final String iso3 = mLocale0.getISO3Language();
+                        if (Locale.UK.getISO3Language().equals(iso3)) {
+                            return "https://www.amazon.co.uk";
+                        } else if (Locale.FRANCE.getISO3Language().equals(iso3)) {
+                            return "https://www.amazon.fr";
+                        } else if (Locale.GERMANY.getISO3Language().equals(iso3)) {
+                            return "https://www.amazon.de";
+                        } else if (new Locale("nl").getISO3Language().equals(iso3)) {
+                            return "https://www.amazon.nl";
+                        }
+                        //TODO: add more sites, but then we should actually test more sites
+                        // which we currently don't do.
+                    }
+                    return "https://www.amazon.com";
+                });
     }
 
     public static class DummyCaller

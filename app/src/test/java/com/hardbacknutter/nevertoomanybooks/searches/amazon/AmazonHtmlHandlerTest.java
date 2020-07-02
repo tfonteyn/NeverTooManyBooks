@@ -64,13 +64,9 @@ class AmazonHtmlHandlerTest
         mSearchEngine.setCaller(new DummyCaller());
     }
 
-    @Test
-    void parse01() {
-        setLocale(Locale.UK);
-
-        final String locationHeader = "https://www.amazon.co.uk/gp/product/0575090677";
-        final String filename = "/amazon/0575090677.html";
-
+    /** Helper: Load the data from the given file, and populate {@link #mRawData} */
+    private void loadData(final String locationHeader,
+                          final String filename) {
         Document doc = null;
         try (InputStream is = this.getClass().getResourceAsStream(filename)) {
             assertNotNull(is);
@@ -89,6 +85,16 @@ class AmazonHtmlHandlerTest
         assertFalse(mRawData.isEmpty());
 
         System.out.println(mRawData);
+    }
+
+    @Test
+    void parse01() {
+        setLocale(Locale.UK);
+
+        final String locationHeader = "https://www.amazon.co.uk/gp/product/0575090677";
+        final String filename = "/amazon/0575090677.html";
+
+        loadData(locationHeader, filename);
 
         assertEquals("Bone Silence", mRawData.getString(DBDefinitions.KEY_TITLE));
         assertEquals("978-0575090675", mRawData.getString(DBDefinitions.KEY_ISBN));
@@ -120,25 +126,7 @@ class AmazonHtmlHandlerTest
         final String locationHeader = "https://www.amazon.co.uk/gp/product/1473210208";
         final String filename = "/amazon/1473210208.html";
 
-        Document doc = null;
-        try (InputStream is = this.getClass().getResourceAsStream(filename)) {
-            assertNotNull(is);
-            doc = Jsoup.parse(is, "UTF-8", locationHeader);
-        } catch (@NonNull final IOException e) {
-            fail(e);
-        }
-        assertNotNull(doc);
-        assertTrue(doc.hasText());
-
-        final AmazonHtmlHandler handler = new AmazonHtmlHandler(mSearchEngine, mContext, doc);
-
-        // we've set the doc, so no internet download will be done.
-        final boolean[] fetchThumbnails = {false, false};
-        mRawData = handler.parseDoc(fetchThumbnails, mRawData);
-
-        assertFalse(mRawData.isEmpty());
-
-        System.out.println(mRawData);
+        loadData(locationHeader, filename);
 
         assertEquals("The Medusa Chronicles", mRawData.getString(DBDefinitions.KEY_TITLE));
         assertEquals("978-1473210202", mRawData.getString(DBDefinitions.KEY_ISBN));
@@ -164,5 +152,36 @@ class AmazonHtmlHandlerTest
         assertEquals("Baxter", authors.get(1).getFamilyName());
         assertEquals("Stephen", authors.get(1).getGivenNames());
         assertEquals(Author.TYPE_WRITER, authors.get(1).getType());
+    }
+
+    @Test
+    void parse10() {
+        setLocale(Locale.FRANCE);
+        final String locationHeader = "https://www.amazon.fr/gp/product/2205057332";
+        final String filename = "/amazon/2205057332.html";
+
+        loadData(locationHeader, filename);
+
+        assertEquals("Le retour à la terre, 1 : La vraie vie",
+                     mRawData.getString(DBDefinitions.KEY_TITLE));
+        assertEquals("978-2205057331", mRawData.getString(DBDefinitions.KEY_ISBN));
+        assertEquals(12d, mRawData.getDouble(DBDefinitions.KEY_PRICE_LISTED));
+        assertEquals("EUR", mRawData.getString(DBDefinitions.KEY_PRICE_LISTED_CURRENCY));
+
+        final ArrayList<Publisher> allPublishers = mRawData
+                .getParcelableArrayList(Book.BKEY_PUBLISHER_ARRAY);
+        assertNotNull(allPublishers);
+        assertEquals(1, allPublishers.size());
+        assertEquals("Dargaud", allPublishers.get(0).getName());
+
+        final ArrayList<Author> authors = mRawData.getParcelableArrayList(Book.BKEY_AUTHOR_ARRAY);
+        assertNotNull(authors);
+        assertEquals(2, authors.size());
+        assertEquals("Jean-Yves", authors.get(0).getFamilyName());
+        assertEquals("Ferri", authors.get(0).getGivenNames());
+        assertEquals(Author.TYPE_WRITER, authors.get(0).getType());
+        assertEquals("Manu", authors.get(1).getFamilyName());
+        assertEquals("Larcenet", authors.get(1).getGivenNames());
+        assertEquals(Author.TYPE_ARTIST, authors.get(1).getType());
     }
 }

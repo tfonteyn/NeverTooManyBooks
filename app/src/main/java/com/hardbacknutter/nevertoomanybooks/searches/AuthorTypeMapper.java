@@ -25,7 +25,7 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.goodreads;
+package com.hardbacknutter.nevertoomanybooks.searches;
 
 import androidx.annotation.NonNull;
 
@@ -45,6 +45,7 @@ import static com.hardbacknutter.nevertoomanybooks.entities.Author.TYPE_COVER_IN
 import static com.hardbacknutter.nevertoomanybooks.entities.Author.TYPE_EDITOR;
 import static com.hardbacknutter.nevertoomanybooks.entities.Author.TYPE_FOREWORD;
 import static com.hardbacknutter.nevertoomanybooks.entities.Author.TYPE_INKING;
+import static com.hardbacknutter.nevertoomanybooks.entities.Author.TYPE_INTRODUCTION;
 import static com.hardbacknutter.nevertoomanybooks.entities.Author.TYPE_ORIGINAL_SCRIPT_WRITER;
 import static com.hardbacknutter.nevertoomanybooks.entities.Author.TYPE_PSEUDONYM;
 import static com.hardbacknutter.nevertoomanybooks.entities.Author.TYPE_TRANSLATOR;
@@ -68,16 +69,19 @@ public final class AuthorTypeMapper {
     static {
         // English
         MAPPER.put("author", TYPE_WRITER);
-        MAPPER.put("original script writer", TYPE_ORIGINAL_SCRIPT_WRITER);
         MAPPER.put("adapter", TYPE_WRITER);
+
+        MAPPER.put("original script writer", TYPE_ORIGINAL_SCRIPT_WRITER);
 
         MAPPER.put("illuminator", TYPE_ARTIST);
         MAPPER.put("illustrator", TYPE_ARTIST);
         MAPPER.put("illustrations", TYPE_ARTIST);
-        MAPPER.put("colorist", TYPE_COLORIST);
+
         MAPPER.put("coverart", TYPE_COVER_ARTIST);
         MAPPER.put("cover artist", TYPE_COVER_ARTIST);
         MAPPER.put("cover illustrator", TYPE_COVER_ARTIST);
+
+        MAPPER.put("colorist", TYPE_COLORIST);
 
         MAPPER.put("pseudonym", TYPE_PSEUDONYM);
         MAPPER.put("editor", TYPE_EDITOR);
@@ -90,17 +94,22 @@ public final class AuthorTypeMapper {
         MAPPER.put("foreword by", TYPE_FOREWORD);
         MAPPER.put("afterword", TYPE_AFTERWORD);
 
+        MAPPER.put("introduction", TYPE_INTRODUCTION);
+
         MAPPER.put("contributor", TYPE_CONTRIBUTOR);
         MAPPER.put("additional material", TYPE_CONTRIBUTOR);
 
         // French, unless listed above
         MAPPER.put("text", TYPE_WRITER);
+        MAPPER.put("auteur", TYPE_WRITER);
         MAPPER.put("scénario", TYPE_WRITER);
         MAPPER.put("dessins", TYPE_ARTIST);
         MAPPER.put("dessin", TYPE_ARTIST);
+        MAPPER.put("Inker", TYPE_INKING);
         MAPPER.put("avec la contribution de", TYPE_CONTRIBUTOR);
         MAPPER.put("contribution", TYPE_CONTRIBUTOR);
         MAPPER.put("couleurs", TYPE_COLORIST);
+        MAPPER.put("traduction", TYPE_TRANSLATOR);
 
         // Dutch, unless listed above
         MAPPER.put("scenario", TYPE_WRITER);
@@ -111,7 +120,9 @@ public final class AuthorTypeMapper {
         MAPPER.put("vertaler", TYPE_TRANSLATOR);
 
         // German, unless listed above
+        MAPPER.put("autor", TYPE_WRITER);
         MAPPER.put("Übersetzer", TYPE_TRANSLATOR);
+        MAPPER.put("übersetzer", TYPE_TRANSLATOR);
 
         // Italian, unless listed above
         MAPPER.put("testi", TYPE_WRITER);

@@ -46,6 +46,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
+import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.utils.LanguageUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.xml.SearchHandler;
 
@@ -324,6 +325,9 @@ class AmazonXmlHandler
     private boolean mInError;
     private String mError;
 
+    @NonNull
+    protected final SearchEngine mSearchEngine;
+
     /**
      * Constructor.
      *
@@ -332,9 +336,11 @@ class AmazonXmlHandler
      * @param bookData            Bundle to save results in (passed in to allow mocking)
      */
     AmazonXmlHandler(@NonNull final Context localizedAppContext,
+                     @NonNull final SearchEngine searchEngine,
                      @NonNull final boolean[] fetchThumbnail,
                      @NonNull final Bundle bookData) {
         mLocalizedAppContext = localizedAppContext;
+        mSearchEngine = searchEngine;
         mFetchThumbnail = fetchThumbnail;
         mBookData = bookData;
     }
@@ -408,7 +414,7 @@ class AmazonXmlHandler
             String name = mBookData.getString(DBDefinitions.KEY_EID_ASIN, "");
             name += FILENAME_SUFFIX;
             String fileSpec = ImageUtils
-                    .saveImage(mLocalizedAppContext, mCoverUrl, name, 666, null);
+                    .saveImage(mLocalizedAppContext, mCoverUrl, name, mSearchEngine);
             if (fileSpec != null) {
                 ArrayList<String> imageList =
                         mBookData.getStringArrayList(Book.BKEY_FILE_SPEC_ARRAY[0]);

@@ -36,6 +36,7 @@ import androidx.annotation.WorkerThread;
 
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
+import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -53,11 +54,29 @@ import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
+import com.hardbacknutter.nevertoomanybooks.searches.AuthorTypeMapper;
 import com.hardbacknutter.nevertoomanybooks.searches.JsoupBase;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.utils.LanguageUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.Money;
 
+/**
+ * This class supports parsing these Amazon websites:
+ * www.amazon.com
+ * www.amazon.co.uk
+ * www.amazon.fr
+ * www.amazon.de
+ * www.amazon.nl
+ * <p>
+ * Anything failing there is a bug.
+ * <p>
+ * Other Amazon sites should work for basic info (e.g. title) only.
+ *
+ * <strong>Warning:</strong> the french site lists author names in BOTH "given family"
+ * and "family given" formats (the latter without a comma). There does not seem to be a preference.
+ * So... we will incorrectly interpret the format "family given".
+ * FIXME: when trying to find an author.. search our database twice with f/g and g/f
+ */
 class AmazonHtmlHandler
         extends JsoupBase {
 
@@ -66,25 +85,29 @@ class AmazonHtmlHandler
     /** file suffix for cover files. */
     private static final String FILENAME_SUFFIX = "_AMZ";
     private static final String TAG = "AmazonHtmlHandler";
+
     /**
-     * Parse "some text (some more text)" into "some text" and "some more text".
+     * Parse "some text; more text (some more text)" into "some text" and "some more text".
      * <p>
-     * We want a "some text" that does not START with a bracket!
+     * Also: we want a "some text" that does not START with a '('.
      * <p>
      * Gollancz (18 Mar. 2010)
+     * ==> "Gollancz" and "18 Mar. 2010"
      * Gollancz; First Thus edition (18 Mar. 2010)
+     * ==> "Gollancz" and "18 Mar. 2010"
+     * Dargaud; <b>Édition&#160;:</b> Nouvelle (21 janvier 2005)
+     * ==> "Dargaud" and "21 janvier 2005"
      */
     private static final Pattern PUBLISHER_PATTERN =
-            Pattern.compile("([^(]+.*)"
-                            + "\\s*"
-                            + "\\("
-                            + /* */ "(.*)"
-                            + "\\).*",
+            Pattern.compile("([^(;]*).*\\((.*)\\).*",
                             Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
+
     private static final Pattern AUTHOR_TYPE_PATTERN =
             Pattern.compile("\\((.*)\\).*",
                             Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
-    private static final Pattern PAGES_PATTERN = Pattern.compile("pages", Pattern.LITERAL);
+
+    /** Parse the "x pages" string. */
+    private final Pattern mPagesPattern;
 
     /** accumulate all authors for this book. */
     @NonNull
@@ -108,6 +131,25 @@ class AmazonHtmlHandler
                       @NonNull final Context localizedAppContext) {
         super(searchEngine);
         mLocalizedAppContext = localizedAppContext;
+
+        final String baseUrl = AmazonSearchEngine.getBaseURL(localizedAppContext);
+        final String root = baseUrl.substring(baseUrl.lastIndexOf('.') + 1);
+        String pagesStr;
+        switch (root) {
+            case "de":
+                pagesStr = "Seiten";
+                break;
+
+            case "nl":
+                pagesStr = "pagina's";
+                break;
+
+            default:
+                // English, French
+                pagesStr = "pages";
+                break;
+        }
+        mPagesPattern = Pattern.compile(pagesStr, Pattern.LITERAL);
     }
 
     /**
@@ -161,6 +203,8 @@ class AmazonHtmlHandler
     Bundle parseDoc(@NonNull final boolean[] fetchThumbnail,
                     @NonNull final Bundle bookData) {
 
+        final Locale siteLocale = mSearchEngine.getLocale(mLocalizedAppContext);
+
         // This is WEIRD...
         // Unless we do this seemingly needless select, the next select (for the title)
         // will return null.
@@ -182,7 +226,7 @@ class AmazonHtmlHandler
 
         final Element price = mDoc.selectFirst("span.offer-price");
         if (price != null) {
-            Money money = new Money(mSearchEngine.getLocale(mLocalizedAppContext), price.text());
+            Money money = new Money(siteLocale, price.text());
             if (money.getCurrency() != null) {
                 bookData.putDouble(DBDefinitions.KEY_PRICE_LISTED, money.doubleValue());
                 bookData.putString(DBDefinitions.KEY_PRICE_LISTED_CURRENCY, money.getCurrency());
@@ -207,30 +251,13 @@ class AmazonHtmlHandler
                     final Element typeElement = span.selectFirst("span.contribution");
                     if (typeElement != null) {
                         String data = typeElement.text();
-                        Matcher matcher = AUTHOR_TYPE_PATTERN.matcher(data);
+                        final Matcher matcher = AUTHOR_TYPE_PATTERN.matcher(data);
                         if (matcher.find()) {
                             data = matcher.group(1);
                         }
+
                         if (data != null) {
-                            switch (data) {
-                                case "Author":
-                                    author.addType(Author.TYPE_WRITER);
-                                    break;
-
-                                case "Illustrator":
-                                    author.addType(Author.TYPE_ARTIST);
-                                    break;
-
-                                case "Introduction":
-                                    author.addType(Author.TYPE_INTRODUCTION);
-                                    break;
-
-                                default:
-                                    if (BuildConfig.DEBUG /* always */) {
-                                        Logger.d(TAG, "type=" + data);
-                                    }
-                                    break;
-                            }
+                            author.addType(AuthorTypeMapper.map(siteLocale, data));
                         }
                     }
                     mAuthors.add(author);
@@ -246,74 +273,102 @@ class AmazonHtmlHandler
                 .select("div#detail_bullets_id > table > tbody > tr > td > div > ul > li");
         for (Element li : lis) {
             String label = li.child(0).text().trim();
-            label = label.substring(0, label.length() - 1).trim();
+            if (label.endsWith(":")) {
+                label = label.substring(0, label.length() - 1).trim();
+            }
 
-            String data = li.childNode(1).toString().trim();
-            switch (label) {
-                case "ISBN-13":
+            // we used to do: String data = li.childNode(1).toString().trim();
+            // but that fails when the data is spread over multiple child nodes.
+            // so we now just cut out the label, and use the text itself.
+            li.child(0).remove();
+            String data = li.text().trim();
+            switch (label.toLowerCase(siteLocale)) {
+                case "isbn-13":
                     bookData.putString(DBDefinitions.KEY_ISBN, data);
                     break;
 
-                case "ISBN-10":
+                case "isbn-10":
                     if (!bookData.containsKey(DBDefinitions.KEY_ISBN)) {
                         bookData.putString(DBDefinitions.KEY_ISBN, data);
                     }
                     break;
 
-                case "Hardcover":
-                case "Paperback":
-                    // french
-                case "Broché":
+                case "hardcover":
+                case "paperback":
+                case "relié":
+                case "broché":
+                case "taschenbuch":
+                case "gebundene ausgabe":
                     bookData.putString(DBDefinitions.KEY_FORMAT, label);
                     bookData.putString(DBDefinitions.KEY_PAGES,
-                                       PAGES_PATTERN.matcher(data)
-                                                    .replaceAll(Matcher.quoteReplacement(""))
-                                                    .trim());
+                                       mPagesPattern.matcher(data).replaceAll("").trim());
                     break;
 
-                case "Language":
-                    // french
-                case "Langue":
+                case "language":
+                case "langue":
+                case "sprache":
+                case "taal":
                     // the language is a 'DisplayName' so convert to iso first.
-                    data = LanguageUtils.getISO3FromDisplayName(mLocalizedAppContext, data);
+                    data = LanguageUtils.getISO3FromDisplayName(mLocalizedAppContext,
+                                                                siteLocale, data);
                     bookData.putString(DBDefinitions.KEY_LANGUAGE, data);
                     break;
 
-                case "Publisher":
-                    // french
-                case "Editeur": {
-                    boolean addedPublisher = false;
-                    Matcher matcher = PUBLISHER_PATTERN.matcher(data);
+                case "publisher":
+                case "editeur":
+                case "verlag":
+                case "uitgever": {
+                    boolean publisherWasAdded = false;
+                    final Matcher matcher = PUBLISHER_PATTERN.matcher(data);
                     if (matcher.find()) {
-                        String pubName = matcher.group(1);
-                        String pubDate = matcher.group(2);
+                        final String pubName = matcher.group(1);
                         if (pubName != null) {
-                            if (pubName.contains(";")) {
-                                pubName = pubName.split(";")[0];
-                            }
-                            Publisher publisher = Publisher.from(pubName.trim());
+                            final Publisher publisher = Publisher.from(pubName.trim());
                             mPublishers.add(publisher);
-                            addedPublisher = true;
+                            publisherWasAdded = true;
                         }
+
+                        final String pubDate = matcher.group(2);
                         if (pubDate != null) {
                             bookData.putString(DBDefinitions.KEY_DATE_PUBLISHED, pubDate.trim());
                         }
                     }
 
-                    if (!addedPublisher) {
-                        Publisher publisher = Publisher.from(data);
+                    if (!publisherWasAdded) {
+                        final Publisher publisher = Publisher.from(data);
                         mPublishers.add(publisher);
                     }
                     break;
                 }
 
-                case "Product Dimensions":
-                case "Average Customer Review":
-                case "Amazon Bestsellers Rank":
+                case "series":
+                case "collection":
+                    mSeries.add(Series.from(data));
+                    break;
+
+                case "product dimensions":
+                case "shipping weight":
+                case "customer reviews":
+                case "average customer review":
+                case "amazon bestsellers rank":
                     // french
-                case "Dimensions du produit":
-                case "Moyenne des commentaires client":
-                case "Classement des meilleures ventes d'Amazon":
+                case "dimensions du produit":
+                case "commentaires client":
+                case "moyenne des commentaires client":
+                case "classement des meilleures ventes d'amazon":
+                    // german
+                case "größe und/oder gewicht":
+                case "kundenrezensionen":
+                case "amazon bestseller-rang":
+                case "vom hersteller empfohlenes alter":
+                case "originaltitel":
+                    // dutch
+                case "productafmetingen":
+                case "brutogewicht (incl. verpakking)":
+                case "klantenrecensies":
+                case "plaats op amazon-bestsellerlijst":
+
+                    // These labels are ignored, but listed as an indication we know them.
                     break;
 
                 default:
@@ -363,9 +418,7 @@ class AmazonHtmlHandler
             // Fetch the actual image
             final String tmpName = createTempCoverFileName(bookData);
             final String fileSpec = ImageUtils.saveImage(mLocalizedAppContext,
-                                                         imageUrl, tmpName,
-                                                         mSearchEngine.getConnectTimeoutMs(),
-                                                         null);
+                                                         imageUrl, tmpName, mSearchEngine);
             if (fileSpec != null) {
                 ArrayList<String> imageList =
                         bookData.getStringArrayList(Book.BKEY_FILE_SPEC_ARRAY[0]);
