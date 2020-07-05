@@ -29,6 +29,8 @@ package com.hardbacknutter.nevertoomanybooks.viewmodels.tasks;
 
 import android.os.Bundle;
 
+import com.hardbacknutter.nevertoomanybooks.searches.isfdb.IsfdbGetBookTask;
+
 /**
  * See parent class doc.
  *
@@ -39,4 +41,8 @@ import android.os.Bundle;
 public class IsfdbGetBookTaskModel
         extends TaskBaseModel<Bundle> {
 
+    public void search(final long isfdbId,
+                       final boolean addSeriesFromToc) {
+        execute(new IsfdbGetBookTask(isfdbId, addSeriesFromToc, getTaskListener()));
+    }
 }

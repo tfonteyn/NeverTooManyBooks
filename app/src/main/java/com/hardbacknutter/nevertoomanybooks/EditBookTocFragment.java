@@ -82,7 +82,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.fields.Fields;
 import com.hardbacknutter.nevertoomanybooks.searches.isfdb.Edition;
 import com.hardbacknutter.nevertoomanybooks.searches.isfdb.IsfdbGetBookTask;
-import com.hardbacknutter.nevertoomanybooks.searches.isfdb.IsfdbGetEditionsTask;
 import com.hardbacknutter.nevertoomanybooks.searches.isfdb.IsfdbSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 import com.hardbacknutter.nevertoomanybooks.utils.Csv;
@@ -138,6 +137,7 @@ public class EditBookTocFragment
     private ArrayList<Edition> mIsfdbEditions;
     private IsfdbEditionsTaskModel mIsfdbEditionsTaskModel;
     private IsfdbGetBookTaskModel mIsfdbGetBookTaskModel;
+    private DiacriticArrayAdapter<String> mAuthorAdapter;
     /** Listen for the results (approval) to add the TOC to the list and refresh the screen. */
     private final ConfirmTocDialogFragment.ConfirmTocResults mConfirmTocResultsListener =
             new ConfirmTocDialogFragment.ConfirmTocResults() {
@@ -152,11 +152,9 @@ public class EditBookTocFragment
                     onSearchNextEdition();
                 }
             };
-    private DiacriticArrayAdapter<String> mAuthorAdapter;
     /** Stores the item position in the list while we're editing that item. */
     @Nullable
     private Integer mEditPosition;
-
     /** Database Access. */
     private DAO mDb;
     /** Listen for the results of the entry edit-dialog. */
@@ -180,7 +178,6 @@ public class EditBookTocFragment
         }
 
     };
-
     /** (re)attach the result listener when a fragment gets started. */
     private final FragmentOnAttachListener mFragmentOnAttachListener =
             new FragmentOnAttachListener() {
@@ -432,10 +429,7 @@ public class EditBookTocFragment
                 if (isfdbId != 0) {
                     Snackbar.make(mVb.getRoot(), R.string.progress_msg_connecting,
                                   Snackbar.LENGTH_LONG).show();
-                    final IsfdbGetBookTask task =
-                            new IsfdbGetBookTask(isfdbId, isAddSeriesFromToc(),
-                                                 mIsfdbGetBookTaskModel.getTaskListener());
-                    mIsfdbGetBookTaskModel.execute(task);
+                    mIsfdbGetBookTaskModel.search(isfdbId, isAddSeriesFromToc());
                     return true;
                 }
 
@@ -444,10 +438,7 @@ public class EditBookTocFragment
                     if (isbn.isValid(true)) {
                         Snackbar.make(mVb.getRoot(), R.string.progress_msg_connecting,
                                       Snackbar.LENGTH_LONG).show();
-                        final IsfdbGetEditionsTask task =
-                                new IsfdbGetEditionsTask(isbn.asText(),
-                                                         mIsfdbEditionsTaskModel.getTaskListener());
-                        mIsfdbEditionsTaskModel.execute(task);
+                        mIsfdbEditionsTaskModel.search(isbn);
                         return true;
                     }
                 }
@@ -542,7 +533,7 @@ public class EditBookTocFragment
                      @NonNull final TocEntry tocEntry) {
         //noinspection ConstantConditions
         StandardDialogs.deleteTocEntry(getContext(), tocEntry, () -> {
-            if (mFragmentVM.deleteTocEntry(tocEntry.getId()) == 1) {
+            if (mFragmentVM.deleteTocEntry(getContext(), tocEntry.getId())) {
                 mList.remove(tocEntry);
                 mListAdapter.notifyItemRemoved(position);
             }

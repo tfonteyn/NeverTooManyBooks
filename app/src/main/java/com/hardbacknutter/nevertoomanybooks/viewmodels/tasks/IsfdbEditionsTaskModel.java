@@ -27,9 +27,13 @@
  */
 package com.hardbacknutter.nevertoomanybooks.viewmodels.tasks;
 
+import androidx.annotation.NonNull;
+
 import java.util.ArrayList;
 
 import com.hardbacknutter.nevertoomanybooks.searches.isfdb.Edition;
+import com.hardbacknutter.nevertoomanybooks.searches.isfdb.IsfdbGetEditionsTask;
+import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 
 /**
  * See parent class doc.
@@ -41,4 +45,10 @@ import com.hardbacknutter.nevertoomanybooks.searches.isfdb.Edition;
 public class IsfdbEditionsTaskModel
         extends TaskBaseModel<ArrayList<Edition>> {
 
+    /**
+     * Start the task.
+     */
+    public void search(@NonNull final ISBN isbn) {
+        execute(new IsfdbGetEditionsTask(isbn.asText(), getTaskListener()));
+    }
 }
