@@ -183,8 +183,9 @@ public class EditSeriesDialogFragment
                                                     : ErrorMsg.LISTENER_WAS_DEAD));
                 }
             }
+            return true;
         }
-        return true;
+        return false;
     }
 
     private void viewToModel() {

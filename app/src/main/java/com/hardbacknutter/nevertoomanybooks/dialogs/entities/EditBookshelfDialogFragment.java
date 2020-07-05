@@ -181,8 +181,9 @@ public class EditBookshelfDialogFragment
                                                         : ErrorMsg.LISTENER_WAS_DEAD));
                     }
                 }
+                return true;
             }
-            return true;
+            return false;
 
         } else {
             // Merge the 2 shelves
