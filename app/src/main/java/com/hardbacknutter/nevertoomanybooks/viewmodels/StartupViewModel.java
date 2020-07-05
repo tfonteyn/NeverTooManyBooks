@@ -266,7 +266,7 @@ public class StartupViewModel
 
         // on demand only
         if (prefs.getBoolean(Scheduler.PREF_REBUILD_INDEXES, false)) {
-            startTask(new RebuildIndexesTask(++taskId, mDb, mTaskListener), false);
+            startTask(new RebuildIndexesTask(++taskId, mTaskListener), false);
         }
 
         // on demand only
@@ -277,7 +277,7 @@ public class StartupViewModel
         // shouldn't be needed every single time.
         if (mDoMaintenance) {
             // optimize db should always be started as the last task.
-            startTask(new OptimizeDbTask(++taskId, mDb, ImageUtils.imagesAreCached(context),
+            startTask(new OptimizeDbTask(++taskId, ImageUtils.imagesAreCached(context),
                                          mTaskListener), false);
         }
 

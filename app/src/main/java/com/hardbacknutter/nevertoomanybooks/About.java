@@ -120,9 +120,7 @@ public class About
         mVb.debugPrefs.setOnClickListener(v -> Prefs.dumpPreferences(this, null));
 
         mVb.debugDumpTempTables.setOnClickListener(v -> {
-            try (DAO db = new DAO(TAG)) {
-                DBHelper.dumpTempTableNames(db.getSyncDb());
-            }
+            DBHelper.dumpTempTableNames(DAO.getSyncDb());
         });
 
 //        view = findViewById(R.id.contact1);

@@ -51,23 +51,13 @@ import com.hardbacknutter.nevertoomanybooks.BooksOnBookshelf;
  */
 public final class QueueManager {
 
-    /*
-     * Queues we need.
-     */
+    /* Queues we need: */
     /** main: long-running tasks, or tasks that can just wait. */
     public static final String Q_MAIN = "main";
     /** small_jobs: trivial background tasks that will only take a few seconds. */
     public static final String Q_SMALL_JOBS = "small_jobs";
 
-//    /** For internal message sending. */
-//    private static final String INTERNAL = "__internal";
-//    /** Type of INTERNAL message. */
-//    private static final String TOAST = "toast";
-//    /** Key for actual (text) message. */
-//    private static final String MESSAGE = "message";
-    /**
-     * Static reference to the active QueueManager - singleton.
-     */
+    /** Static reference to the active QueueManager - singleton. */
     private static QueueManager sInstance;
 
     /** Database access layer. */
@@ -75,9 +65,6 @@ public final class QueueManager {
     private final QueueDAO mQueueDAO;
     /** Collection of currently active queues. */
     private final Map<String, Queue> mActiveQueues = new HashMap<>();
-//    /** The UI thread. */
-//    @NonNull
-//    private final WeakReference<Thread> mUIThread;
 
     /** Objects listening for Event operations. */
     @NonNull
@@ -87,7 +74,6 @@ public final class QueueManager {
     private final List<WeakReference<OnChangeListener>> mTaskChangeListeners = new ArrayList<>();
 
     /** Handle inter-thread messages. */
-//    private final MessageHandler mMessageHandler;
     private final Handler mHandler = new Handler();
 
     /**
@@ -102,11 +88,6 @@ public final class QueueManager {
             throw new IllegalStateException("Only one QueueManager can be present");
         }
         sInstance = this;
-
-        // Save the thread ... it is the UI thread
-//        mUIThread = new WeakReference<>(Thread.currentThread());
-        // setup the handler with access to ourselves
-//        mMessageHandler = new MessageHandler(new WeakReference<>(this));
 
         mQueueDAO = new QueueDAO(context);
         // Revive active queues.
@@ -211,7 +192,6 @@ public final class QueueManager {
                 }
             } else {
                 try {
-//                    mMessageHandler.post(listener::onChange);
                     mHandler.post(listener::onChange);
                 } catch (@NonNull final RuntimeException ignore) {
                     // ignore
@@ -235,7 +215,6 @@ public final class QueueManager {
                 }
             } else {
                 try {
-//                    mMessageHandler.post(listener::onChange);
                     mHandler.post(listener::onChange);
                 } catch (@NonNull final RuntimeException ignore) {
                     // ignore
@@ -314,29 +293,6 @@ public final class QueueManager {
         mQueueDAO.updateTask(task);
         notifyTaskChange();
     }
-
-//    /**
-//     * Make a toast message for the caller. Queue in UI thread if necessary.
-//     * <p>
-//     * Hardwired to use {@link Toast} as there is no way to get an activity or view
-//     * for using SnackBar.
-//     */
-//    private void doToast(@NonNull final String message) {
-//        if (Thread.currentThread() == mUIThread.get()) {
-//            synchronized (this) {
-//                Toast.makeText(LocaleUtils.applyLocale(App.getAppContext()),
-//                               message, Toast.LENGTH_LONG).show();
-//            }
-//        } else {
-//            // Send message to the handler
-//            final Message msg = mMessageHandler.obtainMessage();
-//            final Bundle bundle = new Bundle();
-//            bundle.putString(INTERNAL, TOAST);
-//            bundle.putString(MESSAGE, message);
-//            msg.setData(bundle);
-//            mMessageHandler.sendMessage(msg);
-//        }
-//    }
 
     /**
      * Store an Event object for later retrieval after task has completed. This is
@@ -456,38 +412,4 @@ public final class QueueManager {
 
         void onChange();
     }
-
-//    /**
-//     * Handler for internal UI thread messages.
-//     */
-//    private static class MessageHandler
-//            extends Handler {
-//
-//        @NonNull
-//        private final WeakReference<QueueManager> mQueueManager;
-//
-//        /**
-//         * Constructor.
-//         *
-//         * @param queueManager the manager
-//         */
-//        MessageHandler(@NonNull final WeakReference<QueueManager> queueManager) {
-//            mQueueManager = queueManager;
-//        }
-//
-//        public void handleMessage(@NonNull final Message msg) {
-//            final Bundle bundle = msg.getData();
-//            if (bundle.containsKey(INTERNAL)) {
-//                final String type = bundle.getString(INTERNAL);
-//                if (TOAST.equals(type)) {
-//                    final String text = bundle.getString(MESSAGE);
-//                    if (text != null) {
-//                        mQueueManager.get().doToast(text);
-//                    }
-//                }
-//            } else {
-//                throw new IllegalArgumentException("Unknown message");
-//            }
-//        }
-//    }
 }

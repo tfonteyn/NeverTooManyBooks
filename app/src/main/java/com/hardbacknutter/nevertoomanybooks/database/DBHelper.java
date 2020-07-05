@@ -552,7 +552,7 @@ public final class DBHelper
     @Override
     public void onConfigure(@NonNull final SQLiteDatabase db) {
         // Turn ON foreign key support so that CASCADE etc. works.
-        //db.execSQL("PRAGMA foreign_keys = ON");
+        // This is the same as db.execSQL("PRAGMA foreign_keys = ON");
         db.setForeignKeyConstraintsEnabled(true);
 
         // Turn OFF recursive triggers;
@@ -562,7 +562,6 @@ public final class DBHelper
         //sSyncedDb.execSQL("PRAGMA temp_store = FILE");
     }
 
-    @SuppressWarnings("unused")
     @Override
     public void onCreate(@NonNull final SQLiteDatabase db) {
         final Context context = LocaleUtils.applyLocale(App.getAppContext());
@@ -623,31 +622,12 @@ public final class DBHelper
         createTriggers(syncedDb);
     }
 
-    /**
-     * Called when the database needs to be upgraded..
-     * <p>
-     * This method executes within a transaction. If an exception is thrown, all changes
-     * will automatically be rolled back.
-     *
-     * @param db         The SQLiteDatabase to be upgraded
-     * @param oldVersion The current version number of the SQLiteDatabase
-     * @param newVersion The new version number of the SQLiteDatabase
-     *
-     * @see #DATABASE_VERSION
-     */
-    @SuppressWarnings("unused")
     @Override
     public void onUpgrade(@NonNull final SQLiteDatabase db,
                           final int oldVersion,
                           final int newVersion) {
 
         final Context context = App.getAppContext();
-
-        if (BuildConfig.DEBUG /* always */) {
-            Log.d(TAG, "ENTER|onUpgrade"
-                       + "|Old database version: " + oldVersion
-                       + "|Upgrading database: " + db.getPath());
-        }
 
         final StartupActivity startup = StartupActivity.getActiveActivity();
         if (startup != null) {

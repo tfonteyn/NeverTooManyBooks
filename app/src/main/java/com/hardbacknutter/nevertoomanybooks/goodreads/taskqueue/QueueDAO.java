@@ -677,7 +677,7 @@ class QueueDAO
          */
         @Nullable
         TQTask getTask() {
-            TQTask task;
+            final TQTask task;
 
             try {
                 task = SerializationUtils.deserializeObject(mBlob);

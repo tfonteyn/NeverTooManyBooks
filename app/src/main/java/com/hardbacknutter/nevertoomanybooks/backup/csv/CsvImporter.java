@@ -294,7 +294,7 @@ public class CsvImporter
                     mDb.endTransaction(txLock);
                 }
                 if (!mDb.inTransaction()) {
-                    txLock = mDb.startTransaction(true);
+                    txLock = mDb.beginTransaction(true);
                     txRowCount = 0;
                 }
                 txRowCount++;

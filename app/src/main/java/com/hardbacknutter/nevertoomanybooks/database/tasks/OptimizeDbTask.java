@@ -52,9 +52,6 @@ public class OptimizeDbTask
     /** Log tag. */
     private static final String TAG = "OptimizeDbTask";
 
-    /** Database Access. */
-    @NonNull
-    private final DAO mDb;
     /** Flag: also do the covers database (or not). */
     private final boolean mDoCoversDb;
 
@@ -62,17 +59,14 @@ public class OptimizeDbTask
      * Constructor.
      *
      * @param taskId       a task identifier, will be returned in the task finished listener.
-     * @param db           Database Access
      * @param doCoversDb   Flag: also do the covers database (or not)
      * @param taskListener for sending progress and finish messages to.
      */
     @UiThread
     public OptimizeDbTask(final int taskId,
-                          @NonNull final DAO db,
                           final boolean doCoversDb,
                           @NonNull final TaskListener<Boolean> taskListener) {
         super(taskId, taskListener);
-        mDb = db;
         mDoCoversDb = doCoversDb;
     }
 
@@ -87,10 +81,10 @@ public class OptimizeDbTask
             // small hack to make sure we always update the triggers.
             // Makes creating/modifying triggers MUCH easier.
             if (BuildConfig.DEBUG /* always */) {
-                mDb.rebuildTriggers();
+                DAO.rebuildTriggers();
             }
 
-            mDb.optimize();
+            DAO.getSyncDb().optimize();
             if (mDoCoversDb) {
                 CoversDAO.optimize(context);
             }

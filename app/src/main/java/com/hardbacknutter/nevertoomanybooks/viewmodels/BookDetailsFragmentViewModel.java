@@ -113,7 +113,7 @@ public class BookDetailsFragmentViewModel
             // ok, we have a list, get the rowId we need to be on.
             final long rowId = args.getLong(BKEY_NAV_ROW_ID, 0);
             if (rowId > 0) {
-                mFlattenedBooklist = new FlattenedBooklist(mDb, navTableName);
+                mFlattenedBooklist = new FlattenedBooklist(navTableName);
                 // move to book.
                 if (!mFlattenedBooklist.moveTo(rowId)
                     // Paranoia: is it the book we wanted ?

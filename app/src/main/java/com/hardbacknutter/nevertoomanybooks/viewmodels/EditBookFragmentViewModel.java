@@ -27,6 +27,8 @@
  */
 package com.hardbacknutter.nevertoomanybooks.viewmodels;
 
+import android.content.Context;
+
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 
@@ -202,11 +204,13 @@ public class EditBookFragmentViewModel
     /**
      * Delete an individual TocEntry.
      *
-     * @param id to delete.
+     * @param context Current context
+     * @param id      to delete.
      *
-     * @return the number of rows affected
+     * @return {@code true} if a row was deleted
      */
-    public int deleteTocEntry(final long id) {
-        return mDb.deleteTocEntry(id);
+    public boolean deleteTocEntry(@NonNull final Context context,
+                                  final long id) {
+        return mDb.deleteTocEntry(context, id);
     }
 }

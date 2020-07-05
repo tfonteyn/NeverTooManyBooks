@@ -67,7 +67,6 @@ import java.util.regex.Pattern;
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
-import com.hardbacknutter.nevertoomanybooks.backup.csv.CsvImporter;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyle;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedCursor;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
@@ -195,12 +194,17 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_TO
  * We need to use this in background tasks and ViewModel classes.
  * Using {@link App#getAppContext} is however allowed.
  * <p>
+ * insert/update of a Book failures are handled with {@link DaoWriteException}
+ * which makes the deep nesting of calls easier to handle.
+ * <p>
+ * All others follow the pattern of:
  * insert: return new id, or {@code -1} for error.
- * <p>
  * update: return rows affected, can be 0; or boolean when appropriate.
- * TODO: some places ignore update failures. A storage full could trigger an update failure.
  * <p>
- * updateOrInsert: return true for success
+ * Individual deletes return boolean (i.e. 0 or 1 row affected)
+ * Multi-deletes return either void, or the number of rows deleted.
+ * <p>
+ * TODO: some places ignore insert/update failures. A storage full could trigger a failure.
  * <p>
  * TODO: caching of statements forces synchronisation ... is it worth it ?
  * There is an explicit warning that {@link SQLiteStatement} is not thread safe!
@@ -252,16 +256,22 @@ public class DAO
 
     /** Log tag. */
     private static final String TAG = "DAO";
+
     /** log error string. */
-    private static final String ERROR_FAILED_CREATING_BOOK_FROM = "Failed creating book from\n";
+    private static final String ERROR_CREATING_BOOK_FROM = "Failed creating book from\n";
     /** log error string. */
-    private static final String ERROR_FAILED_UPDATING_BOOK_FROM = "Failed updating book from\n";
-    /** Synchronizer to coordinate DB access. Must be STATIC so all instances share same sync. */
+    private static final String ERROR_UPDATING_BOOK_FROM = "Failed updating book from\n";
+
+    /**
+     * Static Synchronizer to coordinate access to <strong>this</strong> database.
+     */
     private static final Synchronizer SYNCHRONIZER = new Synchronizer();
+
     /** Static Factory object to create a {@link SynchronizedCursor} cursor. */
     @NonNull
     private static final SQLiteDatabase.CursorFactory CURSOR_FACTORY =
             (db, d, et, q) -> new SynchronizedCursor(d, et, q, SYNCHRONIZER);
+
     /** Static Factory object to create an {@link ExtCursor} cursor. */
     @NonNull
     private static final SQLiteDatabase.CursorFactory EXT_CURSOR_FACTORY =
@@ -347,31 +357,47 @@ public class DAO
             Log.d(TAG, mInstanceName + "|Constructor");
         }
 
-        // static SQLiteOpenHelper
-        if (sDbHelper == null) {
-            sDbHelper = DBHelper.getInstance(App.getAppContext(), CURSOR_FACTORY, SYNCHRONIZER);
-        }
-
-        // static DB wrapper
-        if (sSyncedDb == null) {
-            sSyncedDb = new SynchronizedDb(SYNCHRONIZER, sDbHelper);
-        }
+        // initialise the static members if needed
+        getSyncDb();
 
         // statements are instance based/managed
         mSqlStatementManager = new SqlStatementManager(sSyncedDb, TAG + "|" + mInstanceName);
     }
 
     /**
-     * Get the Synchronizer object for this database in case there is some other activity
-     * that needs to be synced.
-     * <p>
-     * <strong>Note:</strong> {@link Cursor#requery()} is the only thing found so far.
+     * Get the local database.
+     * DO NOT CALL THIS UNLESS YOU REALLY NEED TO. DATABASE ACCESS SHOULD GO THROUGH THIS CLASS.
      *
-     * @return the synchronizer
+     * @return Underlying database connection
      */
     @NonNull
-    public static Synchronizer getSynchronizer() {
-        return SYNCHRONIZER;
+    public static SynchronizedDb getSyncDb() {
+        if (sSyncedDb == null) {
+            sSyncedDb = new SynchronizedDb(SYNCHRONIZER, getDBHelper());
+        }
+        return sSyncedDb;
+    }
+
+    /** Convenience wrapper. */
+    public static void rebuildIndices() {
+        getDBHelper().recreateIndices(getSyncDb());
+    }
+
+    /** Convenience wrapper. */
+    public static void rebuildTriggers() {
+        getDBHelper().createTriggers(getSyncDb());
+    }
+
+    /**
+     * Create/get the static SQLiteOpenHelper.
+     *
+     * @return DBHelper
+     */
+    private static DBHelper getDBHelper() {
+        if (sDbHelper == null) {
+            sDbHelper = DBHelper.getInstance(App.getAppContext(), CURSOR_FACTORY, SYNCHRONIZER);
+        }
+        return sDbHelper;
     }
 
     /**
@@ -416,17 +442,6 @@ public class DAO
     static String toAscii(@NonNull final CharSequence text) {
         return ASCII_REGEX.matcher(Normalizer.normalize(text, Normalizer.Form.NFD))
                           .replaceAll("");
-    }
-
-    /**
-     * Get the local database.
-     * DO NOT CALL THIS UNLESS YOU REALLY NEED TO. DATABASE ACCESS SHOULD GO THROUGH THIS CLASS.
-     *
-     * @return Database connection
-     */
-    @NonNull
-    public SynchronizedDb getSyncDb() {
-        return sSyncedDb;
     }
 
     /**
@@ -480,19 +495,19 @@ public class DAO
 
 
     /**
-     * Used by {@link CsvImporter}.
+     * Wrapper to {@link SynchronizedDb#beginTransaction(boolean)}.
      *
      * @param isUpdate Indicates if updates will be done in TX
      *
      * @return the lock
      */
     @NonNull
-    public SyncLock startTransaction(final boolean isUpdate) {
+    public SyncLock beginTransaction(final boolean isUpdate) {
         return sSyncedDb.beginTransaction(isUpdate);
     }
 
     /**
-     * Used by {@link CsvImporter}.
+     * Wrapper to {@link SynchronizedDb#endTransaction}.
      *
      * @param txLock Lock returned from BeginTransaction().
      */
@@ -503,14 +518,14 @@ public class DAO
     }
 
     /**
-     * Used by {@link CsvImporter}.
+     * Wrapper to {@link SynchronizedDb#inTransaction}.
      */
     public boolean inTransaction() {
         return sSyncedDb.inTransaction();
     }
 
     /**
-     * Used by {@link CsvImporter}.
+     * Wrapper to {@link SynchronizedDb#setTransactionSuccessful}.
      */
     public void setTransactionSuccessful() {
         sSyncedDb.setTransactionSuccessful();
@@ -598,11 +613,12 @@ public class DAO
             } else {
                 book.putLong(KEY_PK_ID, 0);
                 book.remove(KEY_BOOK_UUID);
-                throw new DaoWriteException(ERROR_FAILED_CREATING_BOOK_FROM + book);
+                throw new DaoWriteException(ERROR_CREATING_BOOK_FROM + book);
             }
 
         } catch (@NonNull final IllegalArgumentException e) {
-            throw new DaoWriteException(ERROR_FAILED_CREATING_BOOK_FROM + book, e);
+            throw new DaoWriteException(ERROR_CREATING_BOOK_FROM + book, e);
+
         } finally {
             if (txLock != null) {
                 sSyncedDb.endTransaction(txLock);
@@ -668,10 +684,10 @@ public class DAO
                     sSyncedDb.setTransactionSuccessful();
                 }
             } else {
-                throw new DaoWriteException(ERROR_FAILED_UPDATING_BOOK_FROM + book);
+                throw new DaoWriteException(ERROR_UPDATING_BOOK_FROM + book);
             }
         } catch (@NonNull final IllegalArgumentException e) {
-            throw new DaoWriteException(ERROR_FAILED_UPDATING_BOOK_FROM + book);
+            throw new DaoWriteException(ERROR_UPDATING_BOOK_FROM + book, e);
 
         } finally {
             if (txLock != null) {
@@ -820,10 +836,10 @@ public class DAO
      * @param context Current context
      * @param bookId  of the book.
      *
-     * @return {@code true} on success
+     * @return {@code true} if a row was deleted
      */
     public boolean deleteBook(@NonNull final Context context,
-                              final long bookId) {
+                              @IntRange(from = 1) final long bookId) {
 
         final String uuid = getBookUuid(bookId);
 
@@ -870,10 +886,13 @@ public class DAO
      * @param context Current context
      * @param book    A collection with the columns to be set. May contain extra data.
      * @param flags   See {@link BookFlags} for flag definitions; {@code 0} for 'normal'.
+     *
+     * @throws DaoWriteException on failure
      */
     private void insertBookLinks(@NonNull final Context context,
                                  @NonNull final Book book,
-                                 final int flags) {
+                                 final int flags)
+            throws DaoWriteException {
 
         // Only lookup locales when we're NOT in batch mode (i.e. NOT doing an import)
         final boolean lookupLocale = (flags & BOOK_FLAG_IS_BATCH_OPERATION) == 0;
@@ -943,10 +962,13 @@ public class DAO
      * @param context Current context
      * @param bookId  of the book
      * @param list    the list of bookshelves
+     *
+     * @throws DaoWriteException on failure
      */
     private void insertBookBookshelf(@NonNull final Context context,
                                      @IntRange(from = 1) final long bookId,
-                                     @NonNull final Collection<Bookshelf> list) {
+                                     @NonNull final Collection<Bookshelf> list)
+            throws DaoWriteException {
 
         if (!sSyncedDb.inTransaction()) {
             throw new TransactionException(TransactionException.REQUIRED);
@@ -971,14 +993,18 @@ public class DAO
         for (Bookshelf bookshelf : list) {
             // create if needed - do NOT do updates here
             if (bookshelf.getId() == 0) {
-                insert(context, bookshelf);
+                if (insert(context, bookshelf) == -1) {
+                    throw new DaoWriteException("insert Bookshelf");
+                }
             }
 
             //noinspection SynchronizationOnLocalVariableOrMethodParameter
             synchronized (stmt) {
                 stmt.bindLong(1, bookId);
                 stmt.bindLong(2, bookshelf.getId());
-                stmt.executeInsert();
+                if (stmt.executeInsert() == -1) {
+                    throw new DaoWriteException("insert Book-Bookshelf");
+                }
             }
         }
     }
@@ -1019,12 +1045,15 @@ public class DAO
      *                     during for example an import.
      * @param bookLocale   Locale to use if the item has none set,
      *                     or if lookupLocale was {@code false}
+     *
+     * @throws DaoWriteException on failure
      */
     void insertBookAuthors(@NonNull final Context context,
                            final long bookId,
                            @NonNull final Collection<Author> list,
                            final boolean lookupLocale,
-                           @NonNull final Locale bookLocale) {
+                           @NonNull final Locale bookLocale)
+            throws DaoWriteException {
 
         if (!sSyncedDb.inTransaction()) {
             throw new TransactionException(TransactionException.REQUIRED);
@@ -1050,7 +1079,9 @@ public class DAO
         for (Author author : list) {
             // create if needed - do NOT do updates here
             if (author.getId() == 0) {
-                insert(context, author);
+                if (insert(context, author) == -1) {
+                    throw new DaoWriteException("insert Author");
+                }
             }
 
             position++;
@@ -1060,7 +1091,9 @@ public class DAO
                 stmt.bindLong(2, author.getId());
                 stmt.bindLong(3, position);
                 stmt.bindLong(4, author.getType());
-                stmt.executeInsert();
+                if (stmt.executeInsert() == -1) {
+                    throw new DaoWriteException("insert Book-Author");
+                }
             }
         }
     }
@@ -1071,7 +1104,7 @@ public class DAO
      *
      * @param bookId id of the book
      */
-    private void deleteBookAuthorByBookId(final long bookId) {
+    private void deleteBookAuthorByBookId(@IntRange(from = 1) final long bookId) {
         SynchronizedStatement stmt = mSqlStatementManager.get(STMT_DELETE_BOOK_AUTHORS);
         if (stmt == null) {
             stmt = mSqlStatementManager.add(STMT_DELETE_BOOK_AUTHORS,
@@ -1101,12 +1134,15 @@ public class DAO
      *                     during for example an import.
      * @param bookLocale   Locale to use if the item has none set,
      *                     or if lookupLocale was {@code false}
+     *
+     * @throws DaoWriteException on failure
      */
     void insertBookSeries(@NonNull final Context context,
                           final long bookId,
                           @NonNull final Collection<Series> list,
                           final boolean lookupLocale,
-                          @NonNull final Locale bookLocale) {
+                          @NonNull final Locale bookLocale)
+            throws DaoWriteException {
 
         if (!sSyncedDb.inTransaction()) {
             throw new TransactionException(TransactionException.REQUIRED);
@@ -1132,7 +1168,9 @@ public class DAO
         for (Series series : list) {
             // create if needed - do NOT do updates here
             if (series.getId() == 0) {
-                insert(context, series, bookLocale);
+                if (insert(context, series, bookLocale) == -1) {
+                    throw new DaoWriteException("insert Series");
+                }
             }
 
             position++;
@@ -1142,7 +1180,9 @@ public class DAO
                 stmt.bindLong(2, series.getId());
                 stmt.bindString(3, series.getNumber());
                 stmt.bindLong(4, position);
-                stmt.executeInsert();
+                if (stmt.executeInsert() == -1) {
+                    throw new DaoWriteException("insert Book-Series");
+                }
             }
         }
     }
@@ -1153,7 +1193,7 @@ public class DAO
      *
      * @param bookId id of the book
      */
-    private void deleteBookSeriesByBookId(final long bookId) {
+    private void deleteBookSeriesByBookId(@IntRange(from = 1) final long bookId) {
         SynchronizedStatement stmt = mSqlStatementManager.get(STMT_DELETE_BOOK_SERIES);
         if (stmt == null) {
             stmt = mSqlStatementManager.add(STMT_DELETE_BOOK_SERIES,
@@ -1183,12 +1223,15 @@ public class DAO
      *                     during for example an import.
      * @param bookLocale   Locale to use if the item has none set,
      *                     or if lookupLocale was {@code false}
+     *
+     * @throws DaoWriteException on failure
      */
     void insertBookPublishers(@NonNull final Context context,
                               final long bookId,
                               @NonNull final Collection<Publisher> list,
                               final boolean lookupLocale,
-                              @NonNull final Locale bookLocale) {
+                              @NonNull final Locale bookLocale)
+            throws DaoWriteException {
 
         if (!sSyncedDb.inTransaction()) {
             throw new TransactionException(TransactionException.REQUIRED);
@@ -1214,7 +1257,9 @@ public class DAO
         for (Publisher publisher : list) {
             // create if needed - do NOT do updates here
             if (publisher.getId() == 0) {
-                insert(context, publisher, bookLocale);
+                if (insert(context, publisher, bookLocale) == -1) {
+                    throw new DaoWriteException("insert Publisher");
+                }
             }
 
             position++;
@@ -1223,7 +1268,9 @@ public class DAO
                 stmt.bindLong(1, bookId);
                 stmt.bindLong(2, publisher.getId());
                 stmt.bindLong(3, position);
-                stmt.executeInsert();
+                if (stmt.executeInsert() == -1) {
+                    throw new DaoWriteException("insert Book-Publisher");
+                }
             }
         }
     }
@@ -1234,7 +1281,7 @@ public class DAO
      *
      * @param bookId id of the book
      */
-    private void deleteBookPublishersByBookId(final long bookId) {
+    private void deleteBookPublishersByBookId(@IntRange(from = 1) final long bookId) {
         SynchronizedStatement stmt = mSqlStatementManager.get(STMT_DELETE_BOOK_PUBLISHER);
         if (stmt == null) {
             stmt = mSqlStatementManager.add(STMT_DELETE_BOOK_PUBLISHER,
@@ -1253,7 +1300,7 @@ public class DAO
      *
      * @param bookId id of the book
      */
-    private void deleteBookTocEntryByBookId(final long bookId) {
+    private void deleteBookTocEntryByBookId(@IntRange(from = 1) final long bookId) {
         SynchronizedStatement stmt = mSqlStatementManager.get(STMT_DELETE_BOOK_TOC_ENTRIES);
         if (stmt == null) {
             stmt = mSqlStatementManager.add(STMT_DELETE_BOOK_TOC_ENTRIES,
@@ -1302,7 +1349,6 @@ public class DAO
      *
      * @return the row id of the newly inserted row, or {@code -1} if an error occurred
      */
-    @SuppressWarnings("UnusedReturnValue")
     public long insert(@NonNull final Context context,
                        @NonNull final Bookshelf /* in/out */ bookshelf) {
 
@@ -1329,10 +1375,10 @@ public class DAO
      *
      * @param id of bookshelf to delete
      *
-     * @return the number of rows affected
+     * @return {@code true} if a row was deleted
      */
     @SuppressWarnings("UnusedReturnValue")
-    public int deleteBookshelf(final long id) {
+    public boolean deleteBookshelf(@IntRange(from = 1) final long id) {
 
         final int rowsAffected;
 
@@ -1350,7 +1396,7 @@ public class DAO
             sSyncedDb.endTransaction(txLock);
         }
 
-        return rowsAffected;
+        return rowsAffected == 1;
     }
 
     /**
@@ -1389,7 +1435,6 @@ public class DAO
      *
      * @return the row id of the newly inserted Author, or {@code -1} if an error occurred
      */
-    @SuppressWarnings("UnusedReturnValue")
     public long insert(@NonNull final Context context,
                        @NonNull final Author /* in/out */ author) {
 
@@ -1549,11 +1594,11 @@ public class DAO
      * @param context Current context
      * @param id      of series to delete
      *
-     * @return the number of rows affected
+     * @return {@code true} if a row was deleted
      */
     @SuppressWarnings("UnusedReturnValue")
-    public int deleteSeries(@NonNull final Context context,
-                            final long id) {
+    public boolean deleteSeries(@NonNull final Context context,
+                                @IntRange(from = 1) final long id) {
 
         final int rowsAffected;
         try (SynchronizedStatement stmt = sSyncedDb
@@ -1566,7 +1611,7 @@ public class DAO
             // look for books affected by the delete, and re-position their book/series links.
             new DBCleaner(this).bookSeries(context);
         }
-        return rowsAffected;
+        return rowsAffected == 1;
     }
 
 
@@ -1669,11 +1714,11 @@ public class DAO
      * @param context Current context
      * @param id      of Publisher to delete
      *
-     * @return the number of rows affected
+     * @return {@code true} if a row was deleted
      */
     @SuppressWarnings("UnusedReturnValue")
-    public int deletePublisher(@NonNull final Context context,
-                               final long id) {
+    public boolean deletePublisher(@NonNull final Context context,
+                                   @IntRange(from = 1) final long id) {
 
         final int rowsAffected;
         try (SynchronizedStatement stmt = sSyncedDb
@@ -1684,9 +1729,9 @@ public class DAO
 
         if (rowsAffected > 0) {
             // look for books affected by the delete, and re-position their book/publisher links.
-            new DBCleaner(this).bookPublishers(context);
+            new DBCleaner(this).bookPublisher(context);
         }
-        return rowsAffected;
+        return rowsAffected == 1;
     }
 
 
@@ -1694,8 +1739,8 @@ public class DAO
      * Saves a list of {@link TocEntry} items.
      * <ol>
      *     <li>The list is pruned first.</li>
-     *     <li>New authors will be inserted.</li>
-     *     <li>Items existing in the database will be updated, new items inserted.</li>
+     *     <li>New authors will be inserted. No updates.</li>
+     *     <li>TocEntry's existing in the database will be updated, new ones inserted.</li>
      *     <li>Creates the links between {@link Book} and {@link TocEntry}
      *         in {@link DBDefinitions#TBL_BOOK_TOC_ENTRIES}</li>
      * </ol>
@@ -1710,12 +1755,15 @@ public class DAO
      *                     during for example an import.
      * @param bookLocale   Locale to use if the item has none set,
      *                     or if lookupLocale was {@code false}
+     *
+     * @throws DaoWriteException on failure
      */
-    private void saveTocList(@NonNull final Context context,
-                             final long bookId,
-                             @NonNull final Collection<TocEntry> list,
-                             final boolean lookupLocale,
-                             @NonNull final Locale bookLocale) {
+    void saveTocList(@NonNull final Context context,
+                     final long bookId,
+                     @NonNull final Collection<TocEntry> list,
+                     final boolean lookupLocale,
+                     @NonNull final Locale bookLocale)
+            throws DaoWriteException {
 
         if (!sSyncedDb.inTransaction()) {
             throw new TransactionException(TransactionException.REQUIRED);
@@ -1744,14 +1792,20 @@ public class DAO
             // Create if needed - do NOT do updates here
             final Author author = tocEntry.getAuthor();
             if (author.getId() == 0) {
-                insert(context, author);
+                if (insert(context, author) == -1) {
+                    throw new DaoWriteException("insert Author");
+                }
             }
 
             // See method doc, we do both inserts and updates
             if (tocEntry.getId() == 0) {
-                insert(context, tocEntry, bookLocale);
+                if (insert(context, tocEntry, bookLocale) == -1) {
+                    throw new DaoWriteException("insert TocEntry");
+                }
             } else {
-                update(context, tocEntry, bookLocale);
+                if (!update(context, tocEntry, bookLocale)) {
+                    throw new DaoWriteException("update TocEntry");
+                }
             }
 
             // create the book<->TocEntry link.
@@ -1772,7 +1826,9 @@ public class DAO
                     stmt.bindLong(1, tocEntry.getId());
                     stmt.bindLong(2, bookId);
                     stmt.bindLong(3, position);
-                    stmt.executeInsert();
+                    if (stmt.executeInsert() == -1) {
+                        throw new DaoWriteException("insert Book-TocEntry");
+                    }
                 }
             } catch (@NonNull final SQLiteConstraintException ignore) {
                 // ignore and reset the position counter.
@@ -1797,7 +1853,6 @@ public class DAO
      *
      * @return {@code true} for success.
      */
-    @SuppressWarnings("UnusedReturnValue")
     private boolean update(@NonNull final Context context,
                            @NonNull final TocEntry tocEntry,
                            @NonNull final Locale bookLocale) {
@@ -1827,7 +1882,6 @@ public class DAO
      *
      * @return the row id of the newly inserted row, or {@code -1} if an error occurred
      */
-    @SuppressWarnings("UnusedReturnValue")
     private long insert(@NonNull final Context context,
                         @NonNull final TocEntry /* in/out */ tocEntry,
                         @NonNull final Locale bookLocale) {
@@ -1858,11 +1912,15 @@ public class DAO
     /**
      * Delete an individual TocEntry.
      *
-     * @param id to delete.
+     * @param context Current context
+     * @param id      to delete.
      *
-     * @return the number of rows affected
+     * @return {@code true} if a row was deleted
      */
-    public int deleteTocEntry(final long id) {
+    public boolean deleteTocEntry(@NonNull final Context context,
+                                  @IntRange(from = 1) final long id) {
+
+        final int rowsAffected;
         SynchronizedStatement stmt = mSqlStatementManager.get(STMT_DELETE_TOC_ENTRY);
         if (stmt == null) {
             stmt = mSqlStatementManager.add(STMT_DELETE_TOC_ENTRY, SqlDelete.TOC_ENTRY);
@@ -1870,8 +1928,15 @@ public class DAO
         //noinspection SynchronizationOnLocalVariableOrMethodParameter
         synchronized (stmt) {
             stmt.bindLong(1, id);
-            return stmt.executeUpdateDelete();
+            rowsAffected = stmt.executeUpdateDelete();
         }
+
+        if (rowsAffected > 0) {
+            // look for books affected by the delete, and re-position their book/tocentry links.
+            new DBCleaner(this).bookTocEntry(context);
+        }
+
+        return rowsAffected == 1;
     }
 
 
@@ -1970,10 +2035,10 @@ public class DAO
      *
      * @param id of style to delete
      *
-     * @return the number of rows affected
+     * @return {@code true} if a row was deleted
      */
     @SuppressWarnings("UnusedReturnValue")
-    public int deleteStyle(final long id) {
+    public boolean deleteStyle(@IntRange(from = 1) final long id) {
 
         final int rowsAffected;
 
@@ -1990,7 +2055,7 @@ public class DAO
             sSyncedDb.endTransaction(txLock);
         }
 
-        return rowsAffected;
+        return rowsAffected == 1;
     }
 
 
@@ -2026,8 +2091,7 @@ public class DAO
             // i.e. a TocEntry is linked directly with authors;
             // and linked with books via a link table.
 
-
-            analyze();
+            sSyncedDb.analyze();
 
         } catch (@NonNull final RuntimeException e) {
             // log to file, this is bad.
@@ -4122,22 +4186,6 @@ public class DAO
         }
 
         return true;
-    }
-
-    public void rebuildIndices() {
-        sDbHelper.recreateIndices(sSyncedDb);
-    }
-
-    public void rebuildTriggers() {
-        sDbHelper.createTriggers(sSyncedDb);
-    }
-
-    public void analyze() {
-        sSyncedDb.analyze();
-    }
-
-    public void optimize() {
-        sSyncedDb.optimize();
     }
 
     @IntDef(flag = true, value = {BOOK_FLAG_IS_BATCH_OPERATION,

@@ -51,23 +51,16 @@ public class RebuildIndexesTask
     /** Log tag. */
     private static final String TAG = "RebuildIndexesTask";
 
-    /** Database Access. */
-    @NonNull
-    private final DAO mDb;
-
     /**
      * Constructor.
      *
      * @param taskId       a task identifier, will be returned in the task finished listener.
-     * @param db           Database Access
      * @param taskListener for sending progress and finish messages to.
      */
     @UiThread
     public RebuildIndexesTask(final int taskId,
-                              @NonNull final DAO db,
                               @NonNull final TaskListener<Boolean> taskListener) {
         super(taskId, taskListener);
-        mDb = db;
     }
 
     @Override
@@ -79,7 +72,7 @@ public class RebuildIndexesTask
         publishProgress(new TaskListener.ProgressMessage(getTaskId(), context.getString(
                 R.string.progress_msg_rebuilding_search_index)));
         try {
-            mDb.rebuildIndices();
+            DAO.rebuildIndices();
             return true;
 
         } catch (@NonNull final RuntimeException e) {

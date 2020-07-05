@@ -142,7 +142,7 @@ public class AuthorWorksModel
                             @NonNull final TocEntry item) {
         switch (item.getType()) {
             case TocEntry.TYPE_TOC:
-                if (mDb.deleteTocEntry(item.getId()) == 1) {
+                if (mDb.deleteTocEntry(context, item.getId())) {
                     mTocEntries.remove(item);
                 }
                 break;

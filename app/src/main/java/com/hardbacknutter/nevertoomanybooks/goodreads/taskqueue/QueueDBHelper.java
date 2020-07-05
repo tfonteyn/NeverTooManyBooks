@@ -129,23 +129,24 @@ class QueueDBHelper
     }
 
     @Override
+    public void onConfigure(@NonNull final SQLiteDatabase db) {
+        // Turn ON foreign key support so that CASCADE etc. works.
+        // This is the same as db.execSQL("PRAGMA foreign_keys = ON");
+        db.setForeignKeyConstraintsEnabled(true);
+    }
+
+    @Override
     public void onCreate(@NonNull final SQLiteDatabase db) {
 
         for (String table : TABLES) {
             db.execSQL(table);
         }
 
-        // Turn on foreign key support so that CASCADE works.
-        db.execSQL("PRAGMA foreign_keys = ON");
-
         for (String index : INDEXES) {
             db.execSQL(index);
         }
     }
 
-    /**
-     * Called to upgrade DB.
-     */
     @Override
     public void onUpgrade(@NonNull final SQLiteDatabase db,
                           final int oldVersion,
@@ -158,11 +159,4 @@ class QueueDBHelper
 //
 //        }
     }
-
-    @Override
-    public void onOpen(@NonNull final SQLiteDatabase db) {
-        // Turn on foreign key support so that CASCADE works.
-        db.execSQL("PRAGMA foreign_keys = ON");
-    }
-
 }

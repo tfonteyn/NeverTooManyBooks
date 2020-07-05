@@ -74,7 +74,7 @@ public class FlattenedBooklist
     private static final String STMT_PREV = "prev";
     /** Name for the 'move-to' statement. */
     private static final String STMT_MOVE = "move";
-    /** The underlying database. We need this to keep the table alive. */
+    /** The underlying database. We must keep a local reference to keep the table alive? */
     @NonNull
     private final SynchronizedDb mSyncedDb;
     /** Collection of statements pre-compiled for this object. */
@@ -94,12 +94,10 @@ public class FlattenedBooklist
     /**
      * Constructor.
      *
-     * @param db           Database Access
      * @param navTableName Name of underlying and <strong>existing</strong> table
      */
-    public FlattenedBooklist(@NonNull final DAO db,
-                             @NonNull final String navTableName) {
-        mSyncedDb = db.getSyncDb();
+    public FlattenedBooklist(@NonNull final String navTableName) {
+        mSyncedDb = DAO.getSyncDb();
         mTable = new TableDefinition(DBDefinitions.TMP_TBL_BOOK_LIST_NAVIGATOR);
         mTable.setName(navTableName);
 

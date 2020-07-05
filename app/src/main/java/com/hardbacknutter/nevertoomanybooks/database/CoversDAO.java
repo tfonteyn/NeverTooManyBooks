@@ -39,7 +39,6 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 import androidx.annotation.AnyThread;
-import androidx.annotation.CallSuper;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -98,7 +97,9 @@ public final class CoversDAO
      */
     private static final int COVERS_DATABASE_VERSION = 1;
 
-    /** Synchronizer to coordinate DB access. Must be STATIC so all instances share same sync. */
+    /**
+     * Static Synchronizer to coordinate access to <strong>this</strong> database.
+     */
     private static final Synchronizer SYNCHRONIZER = new Synchronizer();
 
     /** Static Factory object to create the custom cursor. */
@@ -483,27 +484,22 @@ public final class CoversDAO
             }
         }
 
-        /**
-         * As with SQLiteOpenHelper, routine called to create DB.
-         */
+        @Override
+        public void onConfigure(@NonNull final SQLiteDatabase db) {
+            // Turn ON foreign key support so that CASCADE etc. works.
+            // This is the same as db.execSQL("PRAGMA foreign_keys = ON");
+            db.setForeignKeyConstraintsEnabled(true);
+        }
+
         @Override
         public void onCreate(@NonNull final SQLiteDatabase db) {
             TableDefinition.createTables(db, TBL_IMAGE);
         }
 
-        /**
-         * As with SQLiteOpenHelper, routine called to upgrade DB.
-         */
         @Override
-        @CallSuper
         public void onUpgrade(@NonNull final SQLiteDatabase db,
                               final int oldVersion,
                               final int newVersion) {
-            if (BuildConfig.DEBUG /* always */) {
-                Log.d(TAG, "ENTER|onUpgrade"
-                           + "|Old database version: " + oldVersion
-                           + "|Upgrading database: " + db.getPath());
-            }
             // This is a cache, so no data needs preserving. Drop & recreate.
             db.execSQL("DROP TABLE IF EXISTS " + TBL_IMAGE.getName());
             onCreate(db);

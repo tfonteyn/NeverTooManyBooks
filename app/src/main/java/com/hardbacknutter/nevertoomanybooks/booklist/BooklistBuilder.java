@@ -128,6 +128,11 @@ public class BooklistBuilder
 
     /** divider to convert nanoseconds to milliseconds. */
     private static final int NANO_TO_MILLIS = 1_000_000;
+    public static final String SELECT_ = "SELECT ";
+    public static final String _FROM_ = " FROM ";
+    public static final String _WHERE_ = " WHERE ";
+    public static final String _AND_ = " AND ";
+    public static final String _ORDER_BY_ = " ORDER BY ";
 
     // not in use for now
     // List of columns for the group-by clause, including COLLATE clauses. Set by build() method.
@@ -136,11 +141,8 @@ public class BooklistBuilder
     /** Database Access. */
     @SuppressWarnings("FieldNotUsedInToString")
     @NonNull
-    private final DAO mDb;
-    /** The underlying database. */
-    @SuppressWarnings("FieldNotUsedInToString")
-    @NonNull
     private final SynchronizedDb mSyncedDb;
+
     /** Internal ID. Used to create unique names for the temporary tables. */
     private final int mInstanceId;
     /** Collection of 'extra' book level domains requested by caller. */
@@ -158,7 +160,9 @@ public class BooklistBuilder
     @NonNull
     private final Bookshelf mBookshelf;
     @SuppressWarnings("FieldNotUsedInToString")
+    @ListRebuildMode
     private int mRebuildState;
+
     /**
      * The temp table representing the booklist for the current bookshelf/style.
      * <p>
@@ -189,7 +193,7 @@ public class BooklistBuilder
      * @param style        Booklist style to use;
      *                     this is the resolved style as used by the passed bookshelf
      * @param bookshelf    the current bookshelf
-     * @param rebuildState Preferred booklist state in next rebuild.
+     * @param rebuildState booklist state to use in next rebuild.
      */
     public BooklistBuilder(@NonNull final BooklistStyle style,
                            @NonNull final Bookshelf bookshelf,
@@ -213,9 +217,7 @@ public class BooklistBuilder
             mFilters.add(c -> '(' + TBL_BOOKSHELF.dot(KEY_PK_ID) + '=' + bookshelf.getId() + ')');
         }
 
-        // Get the database and create a statements collection
-        mDb = new DAO(TAG);
-        mSyncedDb = mDb.getSyncDb();
+        mSyncedDb = DAO.getSyncDb();
     }
 
     /**
@@ -236,8 +238,12 @@ public class BooklistBuilder
         }
     }
 
-    /** Allows to override the build state set in the constructor. */
-    public void setRebuildState(final int rebuildState) {
+    /**
+     * Allows to override the build state set in the constructor.
+     *
+     * @param rebuildState booklist state to use in next rebuild.
+     */
+    public void setRebuildState(@ListRebuildMode final int rebuildState) {
         mRebuildState = rebuildState;
     }
 
@@ -291,9 +297,9 @@ public class BooklistBuilder
             mFilters.add(context ->
                                  '(' + TBL_BOOKS.dot(KEY_PK_ID) + " IN ("
                                  // fetch the ID's only
-                                 + "SELECT " + KEY_FTS_BOOK_ID
-                                 + " FROM " + TBL_FTS_BOOKS.getName()
-                                 + " WHERE " + TBL_FTS_BOOKS.getName() + " MATCH '" + query + "')"
+                                 + SELECT_ + KEY_FTS_BOOK_ID
+                                 + _FROM_ + TBL_FTS_BOOKS.getName()
+                                 + _WHERE_ + TBL_FTS_BOOKS.getName() + " MATCH '" + query + "')"
                                  + ')');
         }
     }
@@ -309,9 +315,9 @@ public class BooklistBuilder
         if (filter != null && !filter.trim().isEmpty()) {
             mFilters.add(context ->
                                  "EXISTS(SELECT NULL FROM " + TBL_BOOK_LOANEE.ref()
-                                 + " WHERE " + TBL_BOOK_LOANEE.dot(KEY_LOANEE)
+                                 + _WHERE_ + TBL_BOOK_LOANEE.dot(KEY_LOANEE)
                                  + "=`" + DAO.encodeString(filter) + '`'
-                                 + " AND " + TBL_BOOK_LOANEE.fkMatch(TBL_BOOKS)
+                                 + _AND_ + TBL_BOOK_LOANEE.fkMatch(TBL_BOOKS)
                                  + ')');
         }
     }
@@ -376,7 +382,7 @@ public class BooklistBuilder
         helper.addFilters(mFilters);
 
         // Construct the initial insert statement components.
-        final String initialInsertSql = helper.build();
+        final String initialInsertSql = helper.build(context);
 
         // We are good to go.
         long t0 = 0;
@@ -514,7 +520,7 @@ public class BooklistBuilder
                 // Only add to the where-clause if the group is part of the SORT list
                 if (sortedDomainNames.contains(groupDomain.getName())) {
                     if (whereClause.length() > 0) {
-                        whereClause.append(" AND ");
+                        whereClause.append(_AND_);
                     }
                     whereClause.append("COALESCE(")
                                .append(mTriggerHelperTable.dot(groupDomain.getName()))
@@ -533,7 +539,7 @@ public class BooklistBuilder
                     + " BEFORE INSERT ON " + mListTable.getName() + " FOR EACH ROW"
                     + "\n WHEN NEW." + KEY_BL_NODE_LEVEL + '=' + (level + 1)
                     + " AND NOT EXISTS("
-                    + /* */ "SELECT 1 FROM " + mTriggerHelperTable.ref() + " WHERE " + whereClause
+                    + /* */ "SELECT 1 FROM " + mTriggerHelperTable.ref() + _WHERE_ + whereClause
                     + /* */ ')'
                     + "\n BEGIN"
                     + "\n  INSERT INTO " + mListTable.getName() + " (" + listColumns + ")"
@@ -600,13 +606,13 @@ public class BooklistBuilder
      */
     @NonNull
     public ArrayList<Long> getCurrentBookIdList() {
-        final String sql = "SELECT " + KEY_FK_BOOK
-                           + " FROM " + mListTable.getName()
-                           + " WHERE " + KEY_BL_NODE_GROUP + "=?"
-                           + " ORDER BY " + KEY_FK_BOOK;
+        final String sql = SELECT_ + KEY_FK_BOOK
+                           + _FROM_ + mListTable.getName()
+                           + _WHERE_ + KEY_BL_NODE_GROUP + "=?"
+                           + _ORDER_BY_ + KEY_FK_BOOK;
 
-        try (Cursor cursor = mSyncedDb
-                .rawQuery(sql, new String[]{String.valueOf(BooklistGroup.BOOK)})) {
+        try (Cursor cursor = mSyncedDb.rawQuery(sql, new String[]{
+                String.valueOf(BooklistGroup.BOOK)})) {
             if (cursor.moveToFirst()) {
                 final ArrayList<Long> rows = new ArrayList<>(cursor.getCount());
                 do {
@@ -653,8 +659,8 @@ public class BooklistBuilder
     public int getDistinctBookCount() {
         try (SynchronizedStatement stmt = mSyncedDb.compileStatement(
                 "SELECT COUNT(DISTINCT " + KEY_FK_BOOK + ")"
-                + " FROM " + mListTable.getName()
-                + " WHERE " + KEY_BL_NODE_GROUP + "=?")) {
+                + _FROM_ + mListTable.getName()
+                + _WHERE_ + KEY_BL_NODE_GROUP + "=?")) {
             stmt.bindLong(1, BooklistGroup.BOOK);
             return (int) stmt.count();
         }
@@ -668,8 +674,8 @@ public class BooklistBuilder
     public int getBookCount() {
         try (SynchronizedStatement stmt = mSyncedDb.compileStatement(
                 "SELECT COUNT(*)"
-                + " FROM " + mListTable.getName()
-                + " WHERE " + KEY_BL_NODE_GROUP + "=?")) {
+                + _FROM_ + mListTable.getName()
+                + _WHERE_ + KEY_BL_NODE_GROUP + "=?")) {
             stmt.bindLong(1, BooklistGroup.BOOK);
             return (int) stmt.count();
         }
@@ -735,8 +741,6 @@ public class BooklistBuilder
         if (mTriggerHelperTable != null) {
             mSyncedDb.drop(mTriggerHelperTable.getName());
         }
-
-        mDb.close();
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_THE_BUILDER) {
             if (!mDebugReferenceDecremented) {
@@ -818,8 +822,6 @@ public class BooklistBuilder
         /** the list of Filters. */
         private final Collection<Filter<?>> mFilters = new ArrayList<>();
 
-        @NonNull
-        private final Context mContext;
         /** The table we'll be generating. */
         @NonNull
         private final TableDefinition mDestinationTable;
@@ -861,13 +863,12 @@ public class BooklistBuilder
                     @NonNull final TableDefinition destinationTable,
                     @NonNull final BooklistStyle style,
                     @NonNull final Bookshelf bookshelf) {
-            mContext = context;
             mDestinationTable = destinationTable;
             mStyle = style;
             mFilteredOnBookshelf = !bookshelf.isAllBooks();
             // copy filter references, but not the actual style filter list
             // as we'll be adding to the local list
-            mFilters.addAll(mStyle.getActiveFilters(mContext));
+            mFilters.addAll(mStyle.getActiveFilters(context));
         }
 
         void addDomains(@NonNull final Iterable<VirtualDomain> vDomains,
@@ -973,10 +974,12 @@ public class BooklistBuilder
          * Using the collected domain info, create the various SQL phrases used to build
          * the resulting flat list table and build the SQL that does the initial table load.
          *
+         * @param context Current context
+         *
          * @return initial insert statement
          */
         @NonNull
-        String build() {
+        String build(@NonNull final Context context) {
 
             // List of column names for the INSERT INTO... clause
             StringBuilder destColumns = new StringBuilder();
@@ -1006,8 +1009,8 @@ public class BooklistBuilder
 
             String sql = "INSERT INTO " + mDestinationTable.getName() + " (" + destColumns + ')'
                          + " SELECT " + sourceColumns
-                         + " FROM " + buildFrom(mContext) + buildWhere(mContext)
-                         + " ORDER BY " + buildOrderBy();
+                         + _FROM_ + buildFrom(context) + buildWhere(context)
+                         + _ORDER_BY_ + buildOrderBy();
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_THE_BUILDER) {
                 Log.d(TAG, "build|sql=" + sql);
@@ -1050,6 +1053,8 @@ public class BooklistBuilder
          * </ul>
          *
          * @param context Current context
+         *
+         * @return FROM clause
          */
         private String buildFrom(@NonNull final Context context) {
             // Text of join statement
@@ -1081,7 +1086,7 @@ public class BooklistBuilder
                 final int primaryAuthorType = mStyle.getPrimaryAuthorType(context);
                 if (primaryAuthorType == Author.TYPE_UNKNOWN) {
                     // don't care about Author type, so just grab the primary (i.e. pos==1)
-                    sql.append(" AND ")
+                    sql.append(_AND_)
                        .append(TBL_BOOK_AUTHOR.dot(KEY_BOOK_AUTHOR_POSITION)).append("=1");
                 } else {
                     // grab the desired type, or if no such type, grab the 1st
@@ -1092,7 +1097,7 @@ public class BooklistBuilder
                        .append(" OR (((")
                        .append(TBL_BOOK_AUTHOR.dot(KEY_BOOK_AUTHOR_TYPE_BITMASK))
                        .append(" &~ ").append(primaryAuthorType).append(")=0)")
-                       .append(" AND ")
+                       .append(_AND_)
                        .append(TBL_BOOK_AUTHOR.dot(KEY_BOOK_AUTHOR_POSITION)).append("=1))");
                 }
             }
@@ -1106,7 +1111,7 @@ public class BooklistBuilder
                 // Extend the join filtering on the primary Series unless
                 // the user wants the book to show under all its Series
                 if (!mStyle.isShowBooksUnderEachSeries(context)) {
-                    sql.append(" AND ")
+                    sql.append(_AND_)
                        .append(TBL_BOOK_SERIES.dot(KEY_BOOK_SERIES_POSITION)).append("=1");
                 }
                 // Join with Series to make the titles available
@@ -1120,7 +1125,7 @@ public class BooklistBuilder
                 // Extend the join filtering on the primary Publisher unless
                 // the user wants the book to show under all its Publishers
                 if (!mStyle.isShowBooksUnderEachPublisher(context)) {
-                    sql.append(" AND ")
+                    sql.append(_AND_)
                        .append(TBL_BOOK_PUBLISHER.dot(KEY_BOOK_PUBLISHER_POSITION)).append("=1");
                 }
                 // Join with Publishers to make the names available
@@ -1133,6 +1138,8 @@ public class BooklistBuilder
          * Create the WHERE clause based on all active filters (for in-use domains).
          *
          * @param context Current context
+         *
+         * @return WHERE clause, can be empty
          */
         private String buildWhere(@NonNull final Context context) {
             final StringBuilder where = new StringBuilder();
@@ -1141,14 +1148,14 @@ public class BooklistBuilder
                 // Theoretically all filters should be active here, but paranoia...
                 if (filter.isActive(context)) {
                     if (where.length() != 0) {
-                        where.append(" AND ");
+                        where.append(_AND_);
                     }
                     where.append(' ').append(filter.getExpression(context));
                 }
             }
 
             if (where.length() > 0) {
-                return " WHERE " + where;
+                return _WHERE_ + where;
             } else {
                 return "";
             }
@@ -1156,6 +1163,8 @@ public class BooklistBuilder
 
         /**
          * Process the 'sort-by' columns into a list suitable for an ORDER-BY statement.
+         *
+         * @return ORDER BY clause
          */
         private String buildOrderBy() {
             // List of column names appropriate for 'ORDER BY' clause

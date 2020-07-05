@@ -47,7 +47,6 @@ import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
-import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedStatement;
 
 /**
@@ -77,29 +76,23 @@ public class SqliteShellFragment
     private EditText mInputView;
     private WebView mOutputView;
 
-    private DAO mDb;
-    private SynchronizedDb mSyncDb;
-
     private boolean mAllowUpdates;
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Bundle args = getArguments();
+        final Bundle args = getArguments();
         if (args != null) {
             mAllowUpdates = args.getBoolean(BKEY_ALLOW_UPDATES);
         }
-
-        mDb = new DAO(TAG);
-        mSyncDb = mDb.getSyncDb();
     }
 
     @Override
     public View onCreateView(@NonNull final LayoutInflater inflater,
                              @Nullable final ViewGroup container,
                              @Nullable final Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_sqlite_shell, container, false);
+        final View view = inflater.inflate(R.layout.fragment_sqlite_shell, container, false);
         mInputView = view.findViewById(R.id.input);
         mOutputView = view.findViewById(R.id.output);
         return view;
@@ -128,14 +121,6 @@ public class SqliteShellFragment
     public void onResume() {
         super.onResume();
         setHasOptionsMenu(true);
-    }
-
-    @Override
-    public void onDestroy() {
-        if (mDb != null) {
-            mDb.close();
-        }
-        super.onDestroy();
     }
 
     @Override
@@ -171,16 +156,16 @@ public class SqliteShellFragment
     }
 
     private void executeSql(@NonNull final String sql) {
-        String lcSql = sql.toLowerCase(Locale.ROOT);
+        final String lcSql = sql.toLowerCase(Locale.ROOT);
         try {
             if (lcSql.startsWith("update") || lcSql.startsWith("delete")) {
                 //noinspection ConstantConditions
                 getActivity().setTitle("");
 
                 if (mAllowUpdates) {
-                    try (SynchronizedStatement stmt = mSyncDb.compileStatement(sql)) {
-                        int rowsAffected = stmt.executeUpdateDelete();
-                        String result = STR_ROWS_AFFECTED + rowsAffected;
+                    try (SynchronizedStatement stmt = DAO.getSyncDb().compileStatement(sql)) {
+                        final int rowsAffected = stmt.executeUpdateDelete();
+                        final String result = STR_ROWS_AFFECTED + rowsAffected;
                         mOutputView.loadDataWithBaseURL(null, result,
                                                         TEXT_HTML, UTF_8, null);
                     }
@@ -189,13 +174,13 @@ public class SqliteShellFragment
                                                     TEXT_HTML, UTF_8, null);
                 }
             } else {
-                try (Cursor cursor = mSyncDb.rawQuery(sql, null)) {
-                    String title = STR_LAST_COUNT + cursor.getCount();
+                try (Cursor cursor = DAO.getSyncDb().rawQuery(sql, null)) {
+                    final String title = STR_LAST_COUNT + cursor.getCount();
                     //noinspection ConstantConditions
                     getActivity().setTitle(title);
 
-                    StringBuilder sb = new StringBuilder("<table>");
-                    String[] columnNames = cursor.getColumnNames();
+                    final StringBuilder sb = new StringBuilder("<table>");
+                    final String[] columnNames = cursor.getColumnNames();
                     sb.append("<tr>");
                     for (String column : columnNames) {
                         sb.append("<td><i>").append(column).append("</i></td>");
@@ -204,7 +189,7 @@ public class SqliteShellFragment
 
                     int maxLines = MAX_LINES;
                     while (cursor.moveToNext() && maxLines > 0) {
-                        StringBuilder line = new StringBuilder();
+                        final StringBuilder line = new StringBuilder();
                         for (int c = 0; c < cursor.getColumnCount(); c++) {
                             line.append("<td>").append(cursor.getString(c)).append("</td>");
                         }
