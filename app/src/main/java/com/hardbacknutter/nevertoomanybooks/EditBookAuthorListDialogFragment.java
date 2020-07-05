@@ -581,7 +581,7 @@ public class EditBookAuthorListDialogFragment
                         screen -sw600: 0dp
                  */
                 final int marginBottom;
-                if (getResources().getBoolean(R.bool.isLargeScreen)) {
+                if (getResources().getBoolean(R.bool.useFloatingDialogs)) {
                     marginBottom = AttrUtils.getDimen(getContext(), R.attr.actionBarSize);
                 } else {
                     marginBottom = 0;

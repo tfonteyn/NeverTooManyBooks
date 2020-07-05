@@ -29,5 +29,5 @@
 
 <resources>
     <!-- DialogFrame's which might show the onscreen keyboard, are FULLSCREEN. -->
-    <bool name="isLargeScreen">false</bool>
+    <bool name="useFloatingDialogs">false</bool>
 </resources>

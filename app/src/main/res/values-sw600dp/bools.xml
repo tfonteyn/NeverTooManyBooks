@@ -34,5 +34,5 @@
  -->
 <resources>
     <!-- DialogFrame's which might show the onscreen keyboard, are FLOATING. -->
-    <bool name="isLargeScreen">true</bool>
+    <bool name="useFloatingDialogs">true</bool>
 </resources>

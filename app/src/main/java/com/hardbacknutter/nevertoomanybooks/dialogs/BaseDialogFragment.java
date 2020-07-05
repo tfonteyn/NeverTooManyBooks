@@ -99,7 +99,7 @@ public abstract class BaseDialogFragment
     @CallSuper
     public void onAttach(@NonNull final Context context) {
         super.onAttach(context);
-        mFullscreen = !getResources().getBoolean(R.bool.isLargeScreen) || mForceFullscreen;
+        mFullscreen = !getResources().getBoolean(R.bool.useFloatingDialogs) || mForceFullscreen;
         if (mFullscreen) {
             setStyle(DialogFragment.STYLE_NO_FRAME, R.style.Theme_App_FullScreen);
         }
