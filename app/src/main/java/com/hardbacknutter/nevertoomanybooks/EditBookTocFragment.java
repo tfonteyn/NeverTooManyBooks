@@ -118,11 +118,6 @@ public class EditBookTocFragment
             };
     /** View Binding. */
     private FragmentEditBookTocBinding mVb;
-    /** The book. */
-    @Nullable
-    private String mIsbn;
-    /** primary author of the book. */
-    private Author mBookAuthor;
     /** the rows. */
     private ArrayList<TocEntry> mList;
     /** The adapter for the list. */
@@ -252,6 +247,8 @@ public class EditBookTocFragment
                 (v, isChecked) -> updateMultiAuthor(isChecked));
         // adding a new entry
         mVb.btnAdd.setOnClickListener(v -> onAdd());
+        // ready for user input
+        mVb.author.requestFocus();
     }
 
     void onEntryUpdated(@NonNull final TocEntry tocEntry,
@@ -267,6 +264,22 @@ public class EditBookTocFragment
             final TocEntry original = mList.get(mEditPosition);
             original.copyFrom(tocEntry);
             mListAdapter.notifyItemChanged(mEditPosition);
+        }
+    }
+
+    /**
+     * Convenience method to get the primary book Author.
+     *
+     * @return primary book author (or 'unknown' if none)
+     */
+    private Author getBookAuthor() {
+        final List<Author> authorList = mBookViewModel
+                .getBook().getParcelableArrayList(Book.BKEY_AUTHOR_ARRAY);
+        if (!authorList.isEmpty()) {
+            return authorList.get(0);
+        } else {
+            //noinspection ConstantConditions
+            return Author.createUnknownAuthor(getContext());
         }
     }
 
@@ -355,18 +368,6 @@ public class EditBookTocFragment
                          @NonNull final Book book) {
         super.onPopulateViews(fields, book);
 
-        // used to call Search sites to populate the TOC
-        mIsbn = book.getString(DBDefinitions.KEY_ISBN);
-
-        // Author to use if mVb.cbxMultipleAuthors is set to false
-        final List<Author> authorList = book.getParcelableArrayList(Book.BKEY_AUTHOR_ARRAY);
-        if (!authorList.isEmpty()) {
-            mBookAuthor = authorList.get(0);
-        } else {
-            //noinspection ConstantConditions
-            mBookAuthor = Author.createUnknownAuthor(getContext());
-        }
-
         // Populate the list view with the book content table.
         mList = book.getParcelableArrayList(Book.BKEY_TOC_ARRAY);
 
@@ -425,7 +426,8 @@ public class EditBookTocFragment
         //noinspection SwitchStatementWithTooFewBranches
         switch (item.getItemId()) {
             case R.id.MENU_POPULATE_TOC_FROM_ISFDB: {
-                final long isfdbId = mBookViewModel.getBook().getLong(DBDefinitions.KEY_EID_ISFDB);
+                final Book book = mBookViewModel.getBook();
+                final long isfdbId = book.getLong(DBDefinitions.KEY_EID_ISFDB);
                 if (isfdbId != 0) {
                     Snackbar.make(mVb.getRoot(), R.string.progress_msg_connecting,
                                   Snackbar.LENGTH_LONG).show();
@@ -433,8 +435,9 @@ public class EditBookTocFragment
                     return true;
                 }
 
-                if (mIsbn != null && !mIsbn.isEmpty()) {
-                    final ISBN isbn = ISBN.createISBN(mIsbn);
+                final String isbnStr = book.getString(DBDefinitions.KEY_ISBN);
+                if (!isbnStr.isEmpty()) {
+                    final ISBN isbn = ISBN.createISBN(isbnStr);
                     if (isbn.isValid(true)) {
                         Snackbar.make(mVb.getRoot(), R.string.progress_msg_connecting,
                                       Snackbar.LENGTH_LONG).show();
@@ -559,7 +562,7 @@ public class EditBookTocFragment
             }
 
             //noinspection ConstantConditions
-            mVb.author.setText(mBookAuthor.getLabel(getContext()));
+            mVb.author.setText(getBookAuthor().getLabel(getContext()));
             mVb.author.selectAll();
             mVb.lblAuthor.setVisibility(View.VISIBLE);
             mVb.author.setVisibility(View.VISIBLE);
@@ -588,7 +591,7 @@ public class EditBookTocFragment
         if (mVb.cbxMultipleAuthors.isChecked()) {
             author = Author.from(mVb.author.getText().toString().trim());
         } else {
-            author = mBookAuthor;
+            author = getBookAuthor();
         }
         //noinspection ConstantConditions
         final TocEntry newTocEntry = new TocEntry(author,
@@ -616,7 +619,7 @@ public class EditBookTocFragment
             mList.add(tocEntry);
             // clear the form for next entry and scroll to the new item
             if (mVb.cbxMultipleAuthors.isChecked()) {
-                mVb.author.setText(mBookAuthor.getLabel(getContext()));
+                mVb.author.setText(getBookAuthor().getLabel(getContext()));
                 mVb.author.selectAll();
             }
             mVb.title.setText("");
