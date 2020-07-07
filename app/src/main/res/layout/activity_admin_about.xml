@@ -33,7 +33,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".About"
+    tools:context=".AboutActivity"
     >
 
     <com.google.android.material.appbar.AppBarLayout
@@ -45,7 +45,7 @@
         <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/toolbar"
             style="@style/Toolbar"
-            tools:title="NeverTooManyBooks"
+            app:title="@string/lbl_about"
             />
     </com.google.android.material.appbar.AppBarLayout>
 

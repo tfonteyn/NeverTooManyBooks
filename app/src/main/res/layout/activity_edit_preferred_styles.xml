@@ -45,7 +45,7 @@
         <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/toolbar"
             style="@style/Toolbar"
-            app:title="@string/lbl_preferred_styles"
+            app:title="@string/lbl_styles_long"
             />
     </com.google.android.material.appbar.AppBarLayout>
 

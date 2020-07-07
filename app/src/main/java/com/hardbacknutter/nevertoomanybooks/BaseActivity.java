@@ -385,10 +385,12 @@ public abstract class BaseActivity
                 return true;
             }
             case R.id.nav_manage_bookshelves: {
-                final Intent intent = new Intent(this, EditBookshelvesActivity.class);
+                final Intent intent = new Intent(this, AdminActivity.class)
+                        .putExtra(BKEY_FRAGMENT_TAG, EditBookshelvesFragment.TAG);
                 startActivityForResult(intent, RequestCode.NAV_PANEL_MANAGE_BOOKSHELVES);
                 return true;
             }
+
             // case R.id.nav_manage_list_styles: {
             //     // not reachable right now as we don't show the menu option unless
             //     // we're on the main BooksOnBookshelf activity.
@@ -412,7 +414,7 @@ public abstract class BaseActivity
                 return true;
             }
             case R.id.nav_about: {
-                startActivity(new Intent(this, About.class));
+                startActivity(new Intent(this, AboutActivity.class));
                 return true;
             }
 

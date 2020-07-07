@@ -50,9 +50,9 @@ import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.LinkifyUtils;
 
 /**
- * This is the About page.
+ * This is the About page, showing some info and giving (semi-hidden) access to debug options.
  */
-public class About
+public class AboutActivity
         extends BaseActivity {
 
     /**
@@ -119,9 +119,8 @@ public class About
 
         mVb.debugPrefs.setOnClickListener(v -> Prefs.dumpPreferences(this, null));
 
-        mVb.debugDumpTempTables.setOnClickListener(v -> {
-            DBHelper.dumpTempTableNames(DAO.getSyncDb());
-        });
+        mVb.debugDumpTempTables.setOnClickListener(
+                v -> DBHelper.dumpTempTableNames(DAO.getSyncDb()));
 
 //        view = findViewById(R.id.contact1);
 //        view.setOnClickListener(v -> sendContactEmail(R.string.email_contact1));

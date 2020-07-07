@@ -55,6 +55,7 @@ import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
 
+import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentEditBookshelvesBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.MenuPicker;
 import com.hardbacknutter.nevertoomanybooks.dialogs.MenuPickerDialogFragment;
@@ -62,6 +63,7 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditBookshelfDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.EditBookshelvesModel;
+import com.hardbacknutter.nevertoomanybooks.viewmodels.ResultDataModel;
 
 /**
  * Lists all bookshelves and can add/delete/edit them.
@@ -75,6 +77,8 @@ public class EditBookshelvesFragment
     /** The adapter for the list. */
     private BookshelfAdapter mAdapter;
     private EditBookshelvesModel mModel;
+    /** ViewModel. */
+    private ResultDataModel mResultData;
 
     private final EditBookshelfDialogFragment.BookshelfChangedListener mListener =
             new EditBookshelfDialogFragment.BookshelfChangedListener() {
@@ -116,7 +120,8 @@ public class EditBookshelvesFragment
         setHasOptionsMenu(true);
 
         //noinspection ConstantConditions
-        mModel = new ViewModelProvider(getActivity()).get(EditBookshelvesModel.class);
+        mResultData = new ViewModelProvider(getActivity()).get(ResultDataModel.class);
+        mModel = new ViewModelProvider(this).get(EditBookshelvesModel.class);
         mModel.init(getArguments());
     }
 
@@ -134,11 +139,12 @@ public class EditBookshelvesFragment
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        //noinspection ConstantConditions
+        getActivity().setTitle(R.string.lbl_bookshelves_long);
+
         mModel.getSelectedPosition().observe(getViewLifecycleOwner(), position ->
                 mAdapter.setSelectedPosition(position));
 
-        //noinspection ConstantConditions
-        getActivity().setTitle(R.string.lbl_edit_bookshelves);
         //noinspection ConstantConditions
         mAdapter = new BookshelfAdapter(getContext());
 
@@ -279,6 +285,14 @@ public class EditBookshelvesFragment
                 .show(getChildFragmentManager(), EditBookshelfDialogFragment.TAG);
     }
 
+    public void setSelectedBookshelf(final int selectedPosition) {
+        mModel.setSelectedBookshelf(selectedPosition);
+        final Bookshelf selectedBookshelf = mModel.getSelectedBookshelf();
+        if (selectedBookshelf != null) {
+            mResultData.putResultData(DBDefinitions.KEY_PK_ID, selectedBookshelf.getId());
+        }
+    }
+
     /**
      * Row ViewHolder for {@link BookshelfAdapter}.
      */
@@ -339,7 +353,7 @@ public class EditBookshelvesFragment
             if (mSelectedPosition == RecyclerView.NO_POSITION
                 && bookshelf.getId() == mModel.getInitialBookshelfId()) {
                 mSelectedPosition = position;
-                mModel.setSelectedBookshelf(mSelectedPosition);
+                setSelectedBookshelf(mSelectedPosition);
             }
 
             // update the current row
@@ -351,7 +365,7 @@ public class EditBookshelvesFragment
                 notifyItemChanged(mSelectedPosition);
                 // get/update the newly selected row.
                 mSelectedPosition = holder.getBindingAdapterPosition();
-                mModel.setSelectedBookshelf(mSelectedPosition);
+                setSelectedBookshelf(mSelectedPosition);
                 notifyItemChanged(mSelectedPosition);
             });
 

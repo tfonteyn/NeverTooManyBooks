@@ -50,7 +50,7 @@ public class AdminActivity
 
     @Override
     protected void onSetContentView() {
-        setContentView(R.layout.activity_main_nav);
+        setContentView(R.layout.activity_main);
     }
 
     @Override
@@ -72,9 +72,14 @@ public class AdminActivity
                                  @IdRes final int containerViewId,
                                  @NonNull final String tag) {
         switch (tag) {
+            case EditBookshelvesFragment.TAG:
+                replaceFragment(containerViewId, EditBookshelvesFragment.class, tag);
+                return;
+
             case ImportFragment.TAG:
                 replaceFragment(containerViewId, ImportFragment.class, tag);
                 return;
+
             case ExportFragment.TAG:
                 replaceFragment(containerViewId, ExportFragment.class, tag);
                 return;
