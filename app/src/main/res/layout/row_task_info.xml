@@ -118,7 +118,6 @@
         style="@style/Text.Small"
         android:focusable="false"
         android:textIsSelectable="false"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@id/description"
         app:layout_constraintTop_toBottomOf="@id/error"
         tools:text="Task ID 123, Queued at 20 Jul 2012 17:50:23 GMT"

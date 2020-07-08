@@ -40,7 +40,6 @@ import android.util.SparseLongArray;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
@@ -72,6 +71,8 @@ import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.tasks.Canceller;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
+import com.hardbacknutter.nevertoomanybooks.tasks.messages.FinishedMessage;
+import com.hardbacknutter.nevertoomanybooks.tasks.messages.ProgressMessage;
 import com.hardbacknutter.nevertoomanybooks.utils.Csv;
 import com.hardbacknutter.nevertoomanybooks.utils.DateParser;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
@@ -102,9 +103,8 @@ public class SearchCoordinator
 
     /** divider to convert nanoseconds to milliseconds. */
     private static final int NANO_TO_MILLIS = 1_000_000;
-    /** Using MutableLiveData as we actually want re-delivery after a device rotation. */
-    protected final MutableLiveData<TaskListener.ProgressMessage>
-            mSearchCoordinatorProgressMessage = new MutableLiveData<>();
+
+
     /** List of Tasks being managed by *this* object. */
     @NonNull
     private final Collection<SearchTask> mActiveTasks = new HashSet<>();
@@ -114,21 +114,12 @@ public class SearchCoordinator
     @NonNull
     private final Map<Integer, Bundle> mSearchResults = new HashMap<>();
 
-    /** Accumulates the last message from <strong>individual</strong> search tasks. */
-    @SuppressLint("UseSparseArrays")
-    @NonNull
-    private final Map<Integer, TaskListener.FinishMessage<Bundle>>
-            mSearchFinishedMessages = Collections.synchronizedMap(new HashMap<>());
-
-    /** Accumulates the results from <strong>individual</strong> search tasks. */
-    @SuppressLint("UseSparseArrays")
-    @NonNull
-    private final Map<Integer, TaskListener.ProgressMessage>
-            mSearchProgressMessages = new HashMap<>();
-
+    /** Using MutableLiveData as we actually want re-delivery after a device rotation. */
+    protected final MutableLiveData<ProgressMessage>
+            mSearchCoordinatorProgress = new MutableLiveData<>();
     /** Using SingleLiveEvent to prevent multiple delivery after for example a device rotation. */
-    private final MutableLiveData<TaskListener.FinishMessage<Bundle>>
-            mSearchCoordinatorFinishedMessage = new SingleLiveEvent<>();
+    protected final MutableLiveData<FinishedMessage<Bundle>>
+            mSearchCoordinatorCancelled = new SingleLiveEvent<>();
 
     /** Mappers to apply. */
     @NonNull
@@ -179,7 +170,19 @@ public class SearchCoordinator
     private SparseLongArray mSearchTasksStartTime;
     /** DEBUG timer. */
     private SparseLongArray mSearchTasksEndTime;
-
+    /** Accumulates the last message from <strong>individual</strong> search tasks. */
+    @SuppressLint("UseSparseArrays")
+    @NonNull
+    private final Map<Integer, Exception>
+            mSearchFinishedMessages = Collections.synchronizedMap(new HashMap<>());
+    /** Accumulates the results from <strong>individual</strong> search tasks. */
+    @SuppressLint("UseSparseArrays")
+    @NonNull
+    private final Map<Integer, ProgressMessage>
+            mSearchProgressMessages = new HashMap<>();
+    /** Using SingleLiveEvent to prevent multiple delivery after for example a device rotation. */
+    private final MutableLiveData<FinishedMessage<Bundle>>
+            mSearchCoordinatorFinished = new SingleLiveEvent<>();
     /** Listener for <strong>individual</strong> search tasks. */
     private final TaskListener<Bundle> mSearchTaskListener = new TaskListener<Bundle>() {
 
@@ -190,118 +193,56 @@ public class SearchCoordinator
             }
             final Context context = LocaleUtils.applyLocale(App.getAppContext());
             // forward the accumulated progress
-            mSearchCoordinatorProgressMessage.setValue(accumulateProgress(context));
+            mSearchCoordinatorProgress.setValue(accumulateProgress(context));
         }
 
         @Override
-        public void onFinished(@NonNull final FinishMessage<Bundle> message) {
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
-                mSearchTasksEndTime.put(message.taskId, System.nanoTime());
+        public void onFinished(@NonNull final FinishedMessage<Bundle> message) {
+            // sanity check
+            Objects.requireNonNull(message.result, ErrorMsg.NULL_TASK_RESULTS);
+            synchronized (mSearchResults) {
+                mSearchResults.put(message.taskId, message.result);
             }
-
-            final Context context = LocaleUtils.applyLocale(App.getAppContext());
-
-            // process the outcome and queue another task as needed.
-            onSearchTaskFinished(context, message);
-
-            final boolean allDone = removeTask(message.taskId);
-            if (allDone) {
-                // no more tasks ? Then send the results back to our creator.
-                sendAllDone(context);
-            }
+            onSearchTaskFinished(message.taskId, message.result);
         }
 
-        private boolean removeTask(final int taskId) {
-            synchronized (mActiveTasks) {
-                // Remove the finished task from our list
-                for (SearchTask searchTask : mActiveTasks) {
-                    if (searchTask.getTaskId() == taskId) {
-                        mActiveTasks.remove(searchTask);
-                        break;
-                    }
-                }
-
-                if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
-                    Log.d(TAG, "mSearchTaskListener.onFinished|finished="
-                               + SearchSites.getName(taskId));
-                    for (SearchTask searchTask : mActiveTasks) {
-                        Log.d(TAG, "mSearchTaskListener.onFinished|running="
-                                   + SearchSites.getName(searchTask.getTaskId()));
-                    }
-                }
-
-                return mActiveTasks.isEmpty();
+        @Override
+        public void onCancelled(@NonNull final FinishedMessage<Bundle> message) {
+            synchronized (mSearchFinishedMessages) {
+                mSearchFinishedMessages.put(message.taskId, null);
             }
+            onSearchTaskFinished(message.taskId, message.result);
         }
 
-        private void sendAllDone(@NonNull final Context context) {
-
-            final long processTime = System.nanoTime();
-
-            mIsSearchActive = false;
-            accumulateResults(context);
-            final String searchErrors = accumulateErrors(context);
-
-            if (searchErrors != null && !searchErrors.isEmpty()) {
-                mBookData.putString(BKEY_SEARCH_ERROR, searchErrors);
+        @Override
+        public void onFailure(@NonNull final FinishedMessage<Exception> message) {
+            synchronized (mSearchFinishedMessages) {
+                mSearchFinishedMessages.put(message.taskId, message.result);
             }
-            final FinishMessage<Bundle> scFinished = new FinishMessage<>(
-                    R.id.TASK_ID_SEARCH_COORDINATOR,
-                    mIsCancelled ? TaskStatus.Cancelled : TaskStatus.Success,
-                    mBookData, null);
-
-            mSearchCoordinatorFinishedMessage.setValue(scFinished);
-
-            if (BuildConfig.DEBUG /* always */) {
-                Log.d(TAG, "mSearchTaskListener.onFinished"
-                           + "|wasCancelled=" + mIsCancelled
-                           + "|searchErrors=" + searchErrors);
-
-                if (DEBUG_SWITCHES.TIMERS) {
-                    for (int i = 0; i < mSearchTasksStartTime.size(); i++) {
-                        final long start = mSearchTasksStartTime.valueAt(i);
-                        // use the key, not the index!
-                        final int key = mSearchTasksStartTime.keyAt(i);
-                        final long end = mSearchTasksEndTime.get(key);
-                        final String name = SearchSites.getName(key);
-                        if (end != 0) {
-                            Log.d(TAG, String.format(Locale.ENGLISH,
-                                                     "mSearchTaskListener.onFinished"
-                                                     + "|taskId=%20s:%10d ms",
-                                                     name, (end - start) / NANO_TO_MILLIS));
-                        } else {
-                            Log.d(TAG, String.format(Locale.ENGLISH,
-                                                     "mSearchTaskListener.onFinished"
-                                                     + "|task=%20s|never finished",
-                                                     name));
-                        }
-                    }
-
-                    Log.d(TAG, String.format(Locale.ENGLISH,
-                                             "mSearchTaskListener.onFinished"
-                                             + "|total search time: %10d ms",
-                                             (processTime - mSearchStartTime)
-                                             / NANO_TO_MILLIS));
-                    Log.d(TAG, String.format(Locale.ENGLISH,
-                                             "mSearchTaskListener.onFinished"
-                                             + "|processing time: %10d ms",
-                                             (System.nanoTime() - processTime)
-                                             / NANO_TO_MILLIS));
-                }
-            }
+            onSearchTaskFinished(message.taskId, null);
         }
     };
 
     /** Observable. */
     @NonNull
-    public MutableLiveData<TaskListener.ProgressMessage> onProgress() {
-        return mSearchCoordinatorProgressMessage;
+    public MutableLiveData<ProgressMessage> onProgress() {
+        return mSearchCoordinatorProgress;
+    }
+
+    /**
+     * Handles both Successful and Failed searches.
+     * <p>
+     * The Bundle will (optionally) contain {@link #BKEY_SEARCH_ERROR} with a list of errors.
+     */
+    @NonNull
+    public MutableLiveData<FinishedMessage<Bundle>> onSearchFinished() {
+        return mSearchCoordinatorFinished;
     }
 
     /** Observable. */
     @NonNull
-    public MutableLiveData<TaskListener.FinishMessage<Bundle>> onOneBookDone() {
-        return mSearchCoordinatorFinishedMessage;
+    public MutableLiveData<FinishedMessage<Bundle>> onSearchCancelled() {
+        return mSearchCoordinatorCancelled;
     }
 
     @Override
@@ -392,44 +333,29 @@ public class SearchCoordinator
     /**
      * Process the message and start another task if required.
      *
-     * @param context Localized context
-     * @param message to process
+     * @param taskId of task
+     * @param result of a search (can be null for failed/cancelled searches)
      */
-    private void onSearchTaskFinished(@NonNull final Context context,
-                                      @NonNull final TaskListener.FinishMessage<Bundle> message) {
-        switch (message.status) {
-            case Cancelled:
-            case Failed:
-                // Store for later
-                if (message.exception != null) {
-                    synchronized (mSearchFinishedMessages) {
-                        mSearchFinishedMessages.put(message.taskId, message);
-                    }
-                }
-                break;
-
-            case Success:
-                // sanity check
-                Objects.requireNonNull(message.result, ErrorMsg.NULL_TASK_RESULTS);
-                // Store for later
-                synchronized (mSearchResults) {
-                    mSearchResults.put(message.taskId, message.result);
-                }
-                break;
+    private void onSearchTaskFinished(final int taskId,
+                                      @Nullable final Bundle result) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
+            mSearchTasksEndTime.put(taskId, System.nanoTime());
         }
+
+        final Context context = LocaleUtils.applyLocale(App.getAppContext());
 
         // clear obsolete progress status
         synchronized (mSearchProgressMessages) {
-            mSearchProgressMessages.remove(message.taskId);
+            mSearchProgressMessages.remove(taskId);
         }
         // and update our listener.
-        mSearchCoordinatorProgressMessage.setValue(accumulateProgress(context));
+        mSearchCoordinatorProgress.setValue(accumulateProgress(context));
 
         if (mWaitingForExactCode) {
-            if (message.result != null && hasIsbn(message.result)) {
+            if (result != null && hasIsbn(result)) {
                 mWaitingForExactCode = false;
                 // replace the search text with the (we hope) exact isbn
-                mIsbnSearchText = message.result.getString(DBDefinitions.KEY_ISBN, "");
+                mIsbnSearchText = result.getString(DBDefinitions.KEY_ISBN, "");
 
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
                     Log.d(TAG, "onSearchTaskFinished|mWaitingForExactCode|isbn=" + mIsbnSearchText);
@@ -443,8 +369,89 @@ public class SearchCoordinator
                 startNextSearch(context);
             }
         }
-    }
 
+        boolean allDone;
+        synchronized (mActiveTasks) {
+            // Remove the finished task from our list
+            for (SearchTask searchTask : mActiveTasks) {
+                if (searchTask.getTaskId() == taskId) {
+                    mActiveTasks.remove(searchTask);
+                    break;
+                }
+            }
+
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
+                Log.d(TAG, "mSearchTaskListener.onFinished|finished="
+                           + SearchSites.getName(taskId));
+                for (SearchTask searchTask : mActiveTasks) {
+                    Log.d(TAG, "mSearchTaskListener.onFinished|running="
+                               + SearchSites.getName(searchTask.getTaskId()));
+                }
+            }
+
+            allDone = mActiveTasks.isEmpty();
+        }
+
+        if (allDone) {
+            // no more tasks ? Then send the results back to our creator.
+
+            final long processTime = System.nanoTime();
+
+            mIsSearchActive = false;
+            accumulateResults(context);
+            final String searchErrors = accumulateErrors(context);
+
+            if (searchErrors != null && !searchErrors.isEmpty()) {
+                mBookData.putString(BKEY_SEARCH_ERROR, searchErrors);
+            }
+
+            final FinishedMessage<Bundle> message =
+                    new FinishedMessage<>(R.id.TASK_ID_SEARCH_COORDINATOR, mBookData);
+            if (mIsCancelled) {
+                mSearchCoordinatorCancelled.setValue(message);
+            } else {
+                mSearchCoordinatorFinished.setValue(message);
+            }
+
+            if (BuildConfig.DEBUG /* always */) {
+                Log.d(TAG, "mSearchTaskListener.onFinished"
+                           + "|wasCancelled=" + mIsCancelled
+                           + "|searchErrors=" + searchErrors);
+
+                if (DEBUG_SWITCHES.TIMERS) {
+                    for (int i = 0; i < mSearchTasksStartTime.size(); i++) {
+                        final long start = mSearchTasksStartTime.valueAt(i);
+                        // use the key, not the index!
+                        final int key = mSearchTasksStartTime.keyAt(i);
+                        final long end = mSearchTasksEndTime.get(key);
+                        final String name = SearchSites.getName(key);
+                        if (end != 0) {
+                            Log.d(TAG, String.format(Locale.ENGLISH,
+                                                     "mSearchTaskListener.onFinished"
+                                                     + "|taskId=%20s:%10d ms",
+                                                     name, (end - start) / NANO_TO_MILLIS));
+                        } else {
+                            Log.d(TAG, String.format(Locale.ENGLISH,
+                                                     "mSearchTaskListener.onFinished"
+                                                     + "|task=%20s|never finished",
+                                                     name));
+                        }
+                    }
+
+                    Log.d(TAG, String.format(Locale.ENGLISH,
+                                             "mSearchTaskListener.onFinished"
+                                             + "|total search time: %10d ms",
+                                             (processTime - mSearchStartTime)
+                                             / NANO_TO_MILLIS));
+                    Log.d(TAG, String.format(Locale.ENGLISH,
+                                             "mSearchTaskListener.onFinished"
+                                             + "|processing time: %10d ms",
+                                             (System.nanoTime() - processTime)
+                                             / NANO_TO_MILLIS));
+                }
+            }
+        }
+    }
 
     /**
      * Get the <strong>current</strong> preferred search sites.
@@ -1096,10 +1103,20 @@ public class SearchCoordinator
         // no synchronized needed, at this point all other threads have finished.
         if (!mSearchFinishedMessages.isEmpty()) {
             final StringBuilder sb = new StringBuilder();
-            for (Map.Entry<Integer, TaskListener.FinishMessage<Bundle>>
+            for (Map.Entry<Integer, Exception>
                     entry : mSearchFinishedMessages.entrySet()) {
-                final String error = createSiteError(context, entry.getKey(), entry.getValue());
-                sb.append(error).append('\n');
+                final String siteName = SearchSites.getName(entry.getKey());
+                final Exception exception = entry.getValue();
+
+                final String error;
+                if (exception == null) {
+                    error = context.getString(R.string.cancelled);
+                } else {
+                    error = createSiteError(context, siteName, exception);
+                }
+
+                sb.append(context.getString(R.string.error_search_x_failed_y, siteName, error))
+                  .append('\n');
             }
             errorMessage = sb.toString();
         }
@@ -1111,79 +1128,56 @@ public class SearchCoordinator
     /**
      * Prepare an error message to show after the task finishes.
      *
-     * @param context Localized context
-     * @param siteId  the site id
-     * @param message to process
+     * @param context   Localized context
+     * @param exception to process
      *
      * @return user-friendly error message for the given site
      */
     private String createSiteError(@NonNull final Context context,
-                                   @StringRes final int siteId,
-                                   @NonNull final TaskListener.FinishMessage<Bundle> message) {
+                                   @NonNull final String siteName,
+                                   @NonNull final Exception exception) {
+        final String text;
+        if (exception instanceof CredentialsException) {
+            text = context.getString(R.string.error_site_authentication_failed, siteName);
+        } else if (exception instanceof SocketTimeoutException) {
+            text = context.getString(R.string.error_network_timeout);
+        } else if (exception instanceof MalformedURLException) {
+            text = context.getString(R.string.error_search_failed_network);
+        } else if (exception instanceof UnknownHostException) {
+            text = context.getString(R.string.error_search_failed_network);
+        } else if (exception instanceof IOException) {
+            //ENHANCE: if (exception.getCause() instanceof ErrnoException) {
+            //           int errno = ((ErrnoException) exception.getCause()).errno;
+            text = context.getString(R.string.error_search_failed_network);
+        } else if (exception instanceof FormattedMessageException) {
+            // by design a FormattedMessageException can be shown to the user
+            text = ((FormattedMessageException) exception).getLocalizedMessage(context);
 
-        final String siteName = SearchSites.getName(siteId);
-        String text;
-        switch (message.status) {
-            case Cancelled:
-                text = context.getString(R.string.progress_end_cancelled);
-                break;
-
-            case Failed: {
-                if (message.exception instanceof CredentialsException) {
-                    text = context.getString(R.string.error_site_authentication_failed, siteName);
-                } else if (message.exception instanceof SocketTimeoutException) {
-                    text = context.getString(R.string.error_network_timeout);
-                } else if (message.exception instanceof MalformedURLException) {
-                    text = context.getString(R.string.error_search_failed_network);
-                } else if (message.exception instanceof UnknownHostException) {
-                    text = context.getString(R.string.error_search_failed_network);
-                } else if (message.exception instanceof IOException) {
-                    //ENHANCE: if (message.exception.getCause() instanceof ErrnoException) {
-                    //           int errno = ((ErrnoException) message.exception.getCause()).errno;
-                    text = context.getString(R.string.error_search_failed_network);
-                } else {
-                    text = context.getString(R.string.error_unknown);
-                }
-
-                if (message.exception != null) {
-                    String eMsg;
-                    if (message.exception instanceof FormattedMessageException) {
-                        // by design a FormattedMessageException can be shown to the user
-                        eMsg = ((FormattedMessageException) message.exception)
-                                .getLocalizedMessage(context);
-                    } else if (BuildConfig.DEBUG /* always */) {
-                        // but a raw exception should only be shown in debug mode
-                        eMsg = message.exception.getLocalizedMessage();
-                    } else {
-                        // when not in debug, instead ask for feedback
-                        eMsg = context.getString(R.string.error_if_the_problem_persists,
-                                                 context.getString(R.string.lbl_send_debug));
-                    }
-
-                    if (eMsg != null) {
-                        text += "\n\n" + eMsg;
-                    }
-                }
-                break;
+        } else {
+            if (BuildConfig.DEBUG /* always */) {
+                // in debug mode we add the raw exception
+                text = context.getString(R.string.error_unknown)
+                       + "\n\n" + exception.getLocalizedMessage();
+            } else {
+                // when not in debug, ask for feedback
+                text = context.getString(R.string.error_unknown)
+                       + "\n\n" + context.getString(R.string.error_if_the_problem_persists,
+                                                    context.getString(R.string.lbl_send_debug));
             }
-            case Success:
-            default:
-                // we shouldn't get here
-                return "\n";
         }
 
-        return context.getString(R.string.error_search_x_failed_y, siteName, text);
+        return text;
     }
 
     /**
-     * Creates {@link TaskListener.ProgressMessage} with the global/total progress of all tasks.
+     * Creates {@link ProgressMessage} with the global/total progress of all tasks.
      *
      * @param context Current context
      *
      * @return instance
      */
     @NonNull
-    private TaskListener.ProgressMessage accumulateProgress(@NonNull final Context context) {
+    private ProgressMessage accumulateProgress(@NonNull final Context context) {
 
         // Sum the current & max values for each active task.
         int progressMax = 0;
@@ -1207,7 +1201,7 @@ public class SearchCoordinator
                 sb.append(Csv.textList(context, mSearchProgressMessages.values(),
                                        element -> element.text));
 
-                for (TaskListener.ProgressMessage progressMessage : mSearchProgressMessages
+                for (ProgressMessage progressMessage : mSearchProgressMessages
                         .values()) {
                     progressMax += progressMessage.maxPosition;
                     progressCount += progressMessage.position;
@@ -1216,7 +1210,8 @@ public class SearchCoordinator
             }
         }
 
-        return new TaskListener.ProgressMessage(R.id.TASK_ID_SEARCH_COORDINATOR, null,
-                                                progressCount, progressMax, sb.toString());
+        return new ProgressMessage(R.id.TASK_ID_SEARCH_COORDINATOR, sb.toString(), progressMax,
+                                   progressCount, null
+        );
     }
 }

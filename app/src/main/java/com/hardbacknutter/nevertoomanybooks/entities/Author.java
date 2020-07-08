@@ -101,8 +101,10 @@ public class Author
 
     /** WRITER: primary or only writer. i.e. in contrast to any of the below. */
     public static final int TYPE_WRITER = 1;
+
     /** WRITER: not distinguished for now. If we do, use TYPE_ORIGINAL_SCRIPT_WRITER = 1 << 1; */
     public static final int TYPE_ORIGINAL_SCRIPT_WRITER = TYPE_WRITER;
+
     /** WRITER: the foreword. */
     public static final int TYPE_FOREWORD = 1 << 2;
     /** WRITER: the afterword. */
@@ -124,8 +126,8 @@ public class Author
     /** ARTIST: cover inking (if different from above). */
     public static final int TYPE_COVER_INKING = 1 << 9;
 
-    // unused for now
-    // public static final int TYPE_ = 1 << 10;
+    // Audio books
+    public static final int TYPE_NARRATOR = 1 << 10;
 
     /** COLOR: cover. */
     public static final int TYPE_COVER_COLORIST = 1 << 11;
@@ -150,11 +152,16 @@ public class Author
 
     /** String encoding use: separator between family name and given-names. */
     public static final char NAME_SEPARATOR = ',';
-    /** All valid bits for the type. */
+    /**
+     * All valid bits for the type.
+     * NEWTHINGS: author type: add to the mask
+     */
     public static final int TYPE_BITMASK_ALL =
             TYPE_UNKNOWN
             | TYPE_WRITER
-            | TYPE_TRANSLATOR | TYPE_INTRODUCTION | TYPE_EDITOR | TYPE_CONTRIBUTOR
+            | TYPE_INTRODUCTION | TYPE_EDITOR | TYPE_CONTRIBUTOR
+            | TYPE_TRANSLATOR
+            | TYPE_NARRATOR
             | TYPE_COVER_ARTIST | TYPE_COVER_INKING | TYPE_COVER_COLORIST
             | TYPE_ARTIST | TYPE_INKING | TYPE_COLORIST;
     /** Maps the type-bit to a string resource for the type-label. */
@@ -206,6 +213,7 @@ public class Author
         TYPES.put(TYPE_INTRODUCTION, R.string.lbl_author_type_intro);
         TYPES.put(TYPE_EDITOR, R.string.lbl_author_type_editor);
         TYPES.put(TYPE_CONTRIBUTOR, R.string.lbl_author_type_contributor);
+        TYPES.put(TYPE_NARRATOR, R.string.lbl_author_type_narrator);
 
         TYPES.put(TYPE_ARTIST, R.string.lbl_author_type_artist);
         TYPES.put(TYPE_INKING, R.string.lbl_author_type_inking);
@@ -292,8 +300,8 @@ public class Author
 
     @NonNull
     public static Author createUnknownAuthor(@NonNull final Context context) {
-        String unknown = context.getString(R.string.unknown)
-                                .toUpperCase(LocaleUtils.getUserLocale(context));
+        final String unknown = context.getString(R.string.unknown)
+                                      .toUpperCase(LocaleUtils.getUserLocale(context));
         return new Author(unknown, "");
     }
 
@@ -320,9 +328,9 @@ public class Author
     public static Author from(@NonNull final String name) {
         String uName = ParseUtils.unEscape(name);
 
-        List<String> tmp = StringList.newInstance().decode(uName, NAME_SEPARATOR, true);
+        final List<String> tmp = StringList.newInstance().decode(uName, NAME_SEPARATOR, true);
         if (tmp.size() > 1) {
-            Matcher matchSuffix = FAMILY_NAME_SUFFIX.matcher(tmp.get(1));
+            final Matcher matchSuffix = FAMILY_NAME_SUFFIX.matcher(tmp.get(1));
             if (!matchSuffix.find()) {
                 // not a suffix, assume the names are already formatted.
                 return new Author(tmp.get(0), tmp.get(1));
@@ -332,7 +340,7 @@ public class Author
             }
         }
 
-        String[] names = uName.split(" ");
+        final String[] names = uName.split(" ");
         // two easy cases
         switch (names.length) {
             case 1:
@@ -344,11 +352,11 @@ public class Author
         }
 
         // we have 3 or more parts, check the family name for suffixes and prefixes
-        StringBuilder buildFamilyName = new StringBuilder();
+        final StringBuilder buildFamilyName = new StringBuilder();
         // the position to check, start at the end.
         int pos = names.length - 1;
 
-        Matcher matchSuffix = FAMILY_NAME_SUFFIX.matcher(names[pos]);
+        final Matcher matchSuffix = FAMILY_NAME_SUFFIX.matcher(names[pos]);
         if (!matchSuffix.find()) {
             // no suffix.
             buildFamilyName.append(names[pos]);
@@ -360,7 +368,7 @@ public class Author
         }
 
         // the last name could also have a prefix
-        Matcher matchMiddleName = FAMILY_NAME_PREFIX.matcher(names[pos]);
+        final Matcher matchMiddleName = FAMILY_NAME_PREFIX.matcher(names[pos]);
         if (matchMiddleName.find()) {
             // insert it at the front of the family name
             buildFamilyName.insert(0, names[pos] + ' ');
@@ -368,7 +376,7 @@ public class Author
         }
 
         // everything else are considered given names
-        StringBuilder buildGivenNames = new StringBuilder();
+        final StringBuilder buildGivenNames = new StringBuilder();
         for (int i = 0; i <= pos; i++) {
             buildGivenNames.append(names[i]).append(' ');
         }
@@ -403,7 +411,7 @@ public class Author
         if (authors.isEmpty()) {
             return "";
         } else {
-            String text = authors.get(0).getLabel(context);
+            final String text = authors.get(0).getLabel(context);
             if (authors.size() > 1) {
                 return context.getString(R.string.and_others, text);
             }
@@ -818,10 +826,13 @@ public class Author
         Full, Normal, Short
     }
 
+    // NEWTHINGS: author type: add to the IntDef
     @IntDef(flag = true,
             value = {TYPE_UNKNOWN,
                      TYPE_WRITER,
-                     TYPE_TRANSLATOR, TYPE_INTRODUCTION, TYPE_EDITOR, TYPE_CONTRIBUTOR,
+                     TYPE_INTRODUCTION, TYPE_EDITOR, TYPE_CONTRIBUTOR,
+                     TYPE_TRANSLATOR,
+                     TYPE_NARRATOR,
                      TYPE_COVER_ARTIST, TYPE_COVER_INKING, TYPE_COVER_COLORIST,
                      TYPE_ARTIST, TYPE_INKING, TYPE_COLORIST})
     @Retention(RetentionPolicy.SOURCE)

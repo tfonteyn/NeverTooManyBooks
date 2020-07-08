@@ -60,7 +60,6 @@
             android:id="@+id/b1"
             style="@style/Text.Blurb"
             android:text="@string/lt_info"
-            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             />
@@ -87,7 +86,6 @@
             android:id="@+id/b2"
             style="@style/Text.Blurb"
             android:text="@string/lt_lbl_key"
-            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/dev_key_url"
             />

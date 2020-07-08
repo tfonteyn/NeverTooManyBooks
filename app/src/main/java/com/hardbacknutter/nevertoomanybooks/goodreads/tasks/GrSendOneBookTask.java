@@ -31,7 +31,6 @@ import android.content.Context;
 import android.database.Cursor;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 
 import java.io.IOException;
@@ -47,8 +46,7 @@ import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsAuth;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsHandler;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GrStatus;
 import com.hardbacknutter.nevertoomanybooks.goodreads.api.Http404Exception;
-import com.hardbacknutter.nevertoomanybooks.tasks.TaskBase;
-import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
+import com.hardbacknutter.nevertoomanybooks.tasks.VMTask;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.NetworkUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
@@ -60,57 +58,53 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsExceptio
  * See also {@link SendOneBookGrTask} which is used internally by
  * {@link SendBooksGrTask}. The core of the task is (should be) identical.
  */
-public class SendOneBookTask
-        extends TaskBase<Integer> {
+public class GrSendOneBookTask
+        extends VMTask<GrStatus> {
 
     /** Log tag. */
     private static final String TAG = "GR.SendOneBook";
 
     /** The book to send. */
-    private final long mBookId;
+    private long mBookId;
 
     /**
      * Constructor.
      *
-     * @param bookId       the book to send
-     * @param taskListener for sending progress and finish messages to.
+     * @param bookId the book to send
      */
-    public SendOneBookTask(final long bookId,
-                           @NonNull final TaskListener<Integer> taskListener) {
-        super(R.id.TASK_ID_GR_SEND_ONE_BOOK, taskListener);
+    public void startTask(final long bookId) {
         mBookId = bookId;
+        execute(R.id.TASK_ID_GR_SEND_ONE_BOOK);
     }
 
     @Override
     @NonNull
     @WorkerThread
-    @GrStatus.Status
-    protected Integer doInBackground(@Nullable final Void... voids) {
+    protected GrStatus doWork() {
         Thread.currentThread().setName(TAG + mBookId);
         final Context context = LocaleUtils.applyLocale(App.getTaskContext());
 
         try {
             if (!NetworkUtils.isNetworkAvailable(context)) {
-                return GrStatus.FAILED_NETWORK_UNAVAILABLE;
+                return new GrStatus(GrStatus.FAILED_NETWORK_UNAVAILABLE);
             }
 
             final GoodreadsAuth grAuth = new GoodreadsAuth(context);
             if (!grAuth.hasValidCredentials(context)) {
-                return GrStatus.FAILED_CREDENTIALS;
+                return new GrStatus(GrStatus.FAILED_CREDENTIALS);
             }
 
             if (isCancelled()) {
-                return GrStatus.CANCELLED;
+                return new GrStatus(GrStatus.CANCELLED);
             }
 
             try (DAO db = new DAO(TAG);
                  Cursor cursor = db.fetchBookForGoodreadsExport(mBookId)) {
                 if (cursor.moveToFirst()) {
                     if (isCancelled()) {
-                        return GrStatus.CANCELLED;
+                        return new GrStatus(GrStatus.CANCELLED);
                     }
-                    publishProgress(new TaskListener.ProgressMessage(
-                            getTaskId(), context.getString(R.string.progress_msg_sending)));
+                    onProgressStep(0, context.getString(R.string.progress_msg_sending));
 
                     final GoodreadsHandler apiHandler = new GoodreadsHandler(grAuth);
                     final DataHolder bookData = new CursorRow(cursor);
@@ -120,7 +114,7 @@ public class SendOneBookTask
                         // Record the update
                         db.setGoodreadsSyncDate(mBookId);
                     }
-                    return status;
+                    return new GrStatus(status);
 
                 } else {
                     // THIS REALLY SHOULD NOT HAPPEN: we did not find the book
@@ -129,29 +123,19 @@ public class SendOneBookTask
                         throw new IllegalStateException("Book not found: bookId=" + mBookId);
                     }
                     // pretend it's Goodreads fault.
-                    return GrStatus.FAILED_BOOK_NOT_FOUND_LOCALLY;
+                    return new GrStatus(GrStatus.FAILED_BOOK_NOT_FOUND_LOCALLY);
                 }
             }
 
         } catch (@NonNull final CredentialsException e) {
-            mException = e;
-            Logger.error(context, TAG, e);
-            return GrStatus.FAILED_CREDENTIALS;
+            return new GrStatus(GrStatus.FAILED_CREDENTIALS);
 
         } catch (@NonNull final Http404Exception e) {
-            mException = e;
-            Logger.error(context, TAG, e, e.getUrl());
-            return GrStatus.FAILED_BOOK_NOT_FOUND_ON_GOODREADS;
+            return new GrStatus(GrStatus.FAILED_BOOK_NOT_FOUND_ON_GOODREADS);
 
         } catch (@NonNull final IOException e) {
-            mException = e;
             Logger.error(context, TAG, e);
-            return GrStatus.FAILED_IO_EXCEPTION;
-
-        } catch (@NonNull final RuntimeException e) {
-            mException = e;
-            Logger.error(context, TAG, e);
-            return GrStatus.FAILED_UNEXPECTED_EXCEPTION;
+            return new GrStatus(GrStatus.FAILED_IO_EXCEPTION, e);
         }
     }
 }

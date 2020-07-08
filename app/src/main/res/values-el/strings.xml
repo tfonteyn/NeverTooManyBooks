@@ -437,7 +437,7 @@
     <string name="pg_ui">Περιβάλλον Χρήστη</string>
     <string name="pg_ui_field_visibility">Διαχείρηση ορατότητας πεδίου</string>
     <string name="progress_end_backup_success">Αντίγραφο δημιουργήθηκε επιτυχώς</string>
-    <string name="progress_end_cancelled">Ακυρώθηκε</string>
+    <string name="cancelled">Ακυρώθηκε</string>
     <string name="progress_end_import_complete">Εισαγωγή Ολοκληρώθηκε</string>
     <string name="progress_end_import_partially_complete">Έγινε μερική εισαγωγή</string>
     <string name="progress_msg_connecting">Γίνεται σύνδεση με τη ιστοσελίδα…</string>

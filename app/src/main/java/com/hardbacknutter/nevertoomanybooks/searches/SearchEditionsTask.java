@@ -30,7 +30,6 @@ package com.hardbacknutter.nevertoomanybooks.searches;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
 
@@ -42,9 +41,9 @@ import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
+import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
-import com.hardbacknutter.nevertoomanybooks.tasks.TaskBase;
-import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
+import com.hardbacknutter.nevertoomanybooks.tasks.VMTask;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.NetworkUtils;
@@ -55,27 +54,20 @@ import com.hardbacknutter.nevertoomanybooks.utils.NetworkUtils;
  * The sites are contacted one by one, in the order as set in user preferences.
  */
 public class SearchEditionsTask
-        extends TaskBase<Collection<String>> {
+        extends VMTask<Collection<String>> {
 
     /** Log tag. */
     private static final String TAG = "SearchEditionsTask";
     /** the book to look up. */
-    @NonNull
-    private final String mIsbn;
+    private String mIsbn;
 
     /**
-     * Constructor.
+     * Start the task.
      *
-     * @param taskId       identifier
-     * @param isbnStr      to search for, <strong>must</strong> be valid.
-     * @param taskListener to send results to
+     * @param isbnStr to search for, <strong>must</strong> be valid.
      */
     @UiThread
-    public SearchEditionsTask(final int taskId,
-                              @NonNull final String isbnStr,
-                              @NonNull final TaskListener<Collection<String>> taskListener) {
-        super(taskId, taskListener);
-
+    public void startTask(@NonNull final String isbnStr) {
         // sanity check
         if (BuildConfig.DEBUG /* always */) {
             if (!ISBN.isValidIsbn(isbnStr)) {
@@ -84,12 +76,14 @@ public class SearchEditionsTask
         }
 
         mIsbn = isbnStr;
+
+        execute(R.id.TASK_ID_SEARCH_EDITIONS);
     }
 
     @Override
     @NonNull
     @WorkerThread
-    protected Collection<String> doInBackground(@Nullable final Void... voids) {
+    protected Collection<String> doWork() {
         Thread.currentThread().setName(TAG + mIsbn);
         final Context context = App.getTaskContext();
 
@@ -109,7 +103,6 @@ public class SearchEditionsTask
 
             } catch (@NonNull final IOException | RuntimeException e) {
                 Logger.error(context, TAG, e);
-                mException = e;
             }
         }
         return editions;

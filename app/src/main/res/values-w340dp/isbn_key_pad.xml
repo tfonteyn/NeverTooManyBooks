@@ -28,6 +28,5 @@
   -->
 
 <resources>
-    <!-- The ISBN keypad should not stretch beyond a reasonable width. -->
     <dimen name="isbn_key_pad_width">380dp</dimen>
 </resources>

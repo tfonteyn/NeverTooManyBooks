@@ -25,12 +25,37 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.viewmodels.tasks;
+package com.hardbacknutter.nevertoomanybooks.tasks.messages;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 /**
- * See parent class doc.
+ * Value class holding Result data.
  */
-public class GoodreadsTaskModel
-        extends TaskBaseModel<Integer> {
+public class FinishedMessage<Result> {
 
+    public final int taskId;
+
+    /**
+     * The result object from the task.
+     * It can be {@code null} regardless of the task implementation.
+     */
+    @Nullable
+    public final Result result;
+
+    public FinishedMessage(final int taskId,
+                           @Nullable final Result result) {
+        this.taskId = taskId;
+        this.result = result;
+    }
+
+    @Override
+    @NonNull
+    public String toString() {
+        return "FinishedMessage{"
+               + "taskId=" + taskId
+               + ", result=" + result
+               + '}';
+    }
 }

@@ -305,13 +305,13 @@ public class BooklistBuilder
     }
 
     /**
-     * Set the filter for only books loaned to the named person (exact name).
+     * Set the filter for only books lend to the named person (exact name).
      * <p>
      * An empty filter will silently be rejected.
      *
-     * @param filter the exact name of the person we loaned books to.
+     * @param filter the exact name of the person we lend books to.
      */
-    public void setFilterOnLoanedToPerson(@Nullable final String filter) {
+    public void setFilterOnLoanee(@Nullable final String filter) {
         if (filter != null && !filter.trim().isEmpty()) {
             mFilters.add(context ->
                                  "EXISTS(SELECT NULL FROM " + TBL_BOOK_LOANEE.ref()

@@ -70,6 +70,7 @@ public final class ErrorMsg {
     public static final String NULL_TOC_ENTRY = "TocEntry";
     public static final String NULL_URI = "uri";
     public static final String NULL_UUID = "UUID";
+    public static final String NULL_EXCEPTION = "Exception";
 
     private ErrorMsg() {
     }

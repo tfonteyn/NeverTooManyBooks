@@ -70,11 +70,17 @@ public class ExportHelperDialogFragment
         return new ExportHelperDialogFragment();
     }
 
+    @Override
+    public void onCreate(@Nullable final Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        mModel = new ViewModelProvider(this).get(ExportHelperViewModel.class);
+        mModel.init();
+    }
+
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
-
-        mModel = new ViewModelProvider(this).get(ExportHelperViewModel.class);
 
         mVb = DialogExportOptionsBinding.inflate(getLayoutInflater());
 
@@ -85,8 +91,7 @@ public class ExportHelperDialogFragment
                 .setView(mVb.getRoot())
                 .setTitle(R.string.lbl_export_options)
                 .setNegativeButton(android.R.string.cancel, (d, w) -> onCancelled())
-                .setPositiveButton(android.R.string.ok, (d, w) ->
-                        onOptionsSet(mModel.getHelper()))
+                .setPositiveButton(android.R.string.ok, (d, w) -> onOptionsSet(mModel.getHelper()))
                 .create();
     }
 
@@ -100,31 +105,28 @@ public class ExportHelperDialogFragment
      * Set the checkboxes/radio-buttons from the options.
      */
     private void setupOptions() {
-        ExportManager helper = mModel.getHelper();
+        final ExportManager helper = mModel.getHelper();
 
-        mVb.cbxBooks.setChecked((helper.getOptions() & Options.BOOKS) != 0);
+        mVb.cbxBooks.setChecked(helper.isSet(Options.BOOKS));
         mVb.cbxBooks.setOnCheckedChangeListener((buttonView, isChecked) -> {
             helper.setOption(Options.BOOKS, isChecked);
             mVb.rbBooksGroup.setEnabled(isChecked);
         });
 
-        final boolean allBooks =
-                (helper.getOptions() & ExportManager.EXPORT_SINCE_LAST_BACKUP) == 0;
+        final boolean allBooks = !helper.isSet(ExportManager.EXPORT_SINCE_LAST_BACKUP);
         mVb.rbBooksAll.setChecked(allBooks);
         mVb.rbBooksSinceLastBackup.setChecked(!allBooks);
-
         mVb.rbBooksGroup.setOnCheckedChangeListener((group, checkedId) -> {
             // We only have two buttons and one option, so just check the pertinent one.
             helper.setOption(ExportManager.EXPORT_SINCE_LAST_BACKUP,
                              checkedId == mVb.rbBooksSinceLastBackup.getId());
         });
 
-        mVb.cbxCovers.setChecked((helper.getOptions() & Options.COVERS) != 0);
+        mVb.cbxCovers.setChecked(helper.isSet(Options.COVERS));
         mVb.cbxCovers.setOnCheckedChangeListener(
                 (buttonView, isChecked) -> helper.setOption(Options.COVERS, isChecked));
 
-        mVb.cbxPrefsAndStyles.setChecked(
-                (helper.getOptions() & (Options.PREFS | Options.STYLES)) != 0);
+        mVb.cbxPrefsAndStyles.setChecked(helper.isSet(Options.PREFS | Options.STYLES));
         mVb.cbxPrefsAndStyles.setOnCheckedChangeListener((buttonView, isChecked) -> {
             helper.setOption(Options.PREFS, isChecked);
             helper.setOption(Options.STYLES, isChecked);
@@ -132,8 +134,8 @@ public class ExportHelperDialogFragment
 
         // Check options on position.
         final List<String> list = new ArrayList<>();
-        list.add(getString(R.string.lbl_archive_type_backup, ArchiveContainer.Tar.getFileExt()));
         list.add(getString(R.string.lbl_archive_type_backup, ArchiveContainer.Zip.getFileExt()));
+        list.add(getString(R.string.lbl_archive_type_backup, ArchiveContainer.Tar.getFileExt()));
         list.add(getString(R.string.lbl_archive_type_csv, ArchiveContainer.CsvBooks.getFileExt()));
         list.add(getString(R.string.lbl_archive_type_xml, ArchiveContainer.Xml.getFileExt()));
 
@@ -148,33 +150,37 @@ public class ExportHelperDialogFragment
                                        @NonNull final View view,
                                        final int position,
                                        final long id) {
-
                 switch (position) {
                     case 0:
-                        helper.setArchiveContainer(ArchiveContainer.Tar);
+                        helper.setArchiveContainer(ArchiveContainer.Zip);
                         mVb.archiveFormatInfo.setText(R.string.lbl_archive_type_backup_info);
-                        mVb.cbxBooks.setChecked(true);
+
+                        mVb.cbxBooks.setChecked(helper.isSet(Options.BOOKS));
                         mVb.cbxBooks.setEnabled(true);
-                        mVb.cbxCovers.setChecked(true);
+                        mVb.cbxCovers.setChecked(helper.isSet(Options.COVERS));
                         mVb.cbxCovers.setEnabled(true);
-                        mVb.cbxPrefsAndStyles.setChecked(true);
+                        mVb.cbxPrefsAndStyles.setChecked(
+                                helper.isSet(Options.PREFS | Options.STYLES));
                         mVb.cbxPrefsAndStyles.setEnabled(true);
                         break;
 
                     case 1:
-                        helper.setArchiveContainer(ArchiveContainer.Zip);
+                        helper.setArchiveContainer(ArchiveContainer.Tar);
                         mVb.archiveFormatInfo.setText(R.string.lbl_archive_type_backup_info);
-                        mVb.cbxBooks.setChecked(true);
+
+                        mVb.cbxBooks.setChecked(helper.isSet(Options.BOOKS));
                         mVb.cbxBooks.setEnabled(true);
-                        mVb.cbxCovers.setChecked(true);
+                        mVb.cbxCovers.setChecked(helper.isSet(Options.COVERS));
                         mVb.cbxCovers.setEnabled(true);
-                        mVb.cbxPrefsAndStyles.setChecked(true);
+                        mVb.cbxPrefsAndStyles.setChecked(
+                                helper.isSet(Options.PREFS | Options.STYLES));
                         mVb.cbxPrefsAndStyles.setEnabled(true);
                         break;
 
                     case 2:
                         helper.setArchiveContainer(ArchiveContainer.CsvBooks);
                         mVb.archiveFormatInfo.setText(R.string.lbl_archive_type_csv_info);
+
                         mVb.cbxBooks.setChecked(true);
                         mVb.cbxBooks.setEnabled(false);
                         mVb.cbxCovers.setChecked(false);
@@ -186,6 +192,7 @@ public class ExportHelperDialogFragment
                     case 3:
                         helper.setArchiveContainer(ArchiveContainer.Xml);
                         mVb.archiveFormatInfo.setText(R.string.lbl_archive_format_xml_info);
+
                         mVb.cbxBooks.setChecked(true);
                         mVb.cbxBooks.setEnabled(false);
                         mVb.cbxCovers.setChecked(false);
@@ -195,7 +202,8 @@ public class ExportHelperDialogFragment
                         break;
 
                     default:
-                        throw new IllegalArgumentException(ErrorMsg.UNEXPECTED_VALUE + position);
+                        throw new IllegalArgumentException(ErrorMsg.UNEXPECTED_VALUE
+                                                           + position);
                 }
             }
 
@@ -210,7 +218,13 @@ public class ExportHelperDialogFragment
             extends ViewModel {
 
         /** export configuration. */
-        private final ExportManager mHelper = new ExportManager(Options.ALL);
+        private ExportManager mHelper;
+
+        public void init() {
+            if (mHelper == null) {
+                mHelper = new ExportManager(Options.ALL);
+            }
+        }
 
         @NonNull
         ExportManager getHelper() {

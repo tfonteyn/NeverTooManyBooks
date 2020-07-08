@@ -41,5 +41,11 @@ public interface Canceller {
     @SuppressWarnings("SameReturnValue")
     boolean cancel(boolean mayInterruptIfRunning);
 
+    /**
+     * Check if the user wants to cancel the operation.
+     *
+     * @return {@code true} if operation was cancelled.
+     */
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     boolean isCancelled();
 }

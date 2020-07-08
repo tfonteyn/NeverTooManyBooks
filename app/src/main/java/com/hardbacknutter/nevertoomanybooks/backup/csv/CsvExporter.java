@@ -223,8 +223,8 @@ public class CsvExporter
             // row 0 with the column labels
             writer.write(EXPORT_FIELD_HEADERS);
 
-            final int progressMaxCount = progressListener.getMax() + cursor.getCount();
-            progressListener.setMax(progressMaxCount);
+            final int progressMaxCount = progressListener.getProgressMaxPos() + cursor.getCount();
+            progressListener.setProgressMaxPos(progressMaxCount);
 
             while (cursor.moveToNext() && !progressListener.isCancelled()) {
 

@@ -236,7 +236,7 @@ public class XmlImporter
             throws IOException {
 
         // we need an uber-root to hang our tree on.
-        XmlFilter rootFilter = new XmlFilter("");
+        final XmlFilter rootFilter = new XmlFilter("");
 
         // The filter are build for *all* entities we can read here.
         // Allow reading BookCatalogue archive data.
@@ -244,12 +244,12 @@ public class XmlImporter
         // Current version filters
         buildFilters(rootFilter, accessor);
 
-        SAXParserFactory factory = SAXParserFactory.newInstance();
-        DefaultHandler handler = new XmlResponseParser(rootFilter);
+        final SAXParserFactory factory = SAXParserFactory.newInstance();
+        final DefaultHandler handler = new XmlResponseParser(rootFilter);
 
         try {
-            SAXParser parser = factory.newSAXParser();
-            InputSource is = new InputSource(reader);
+            final SAXParser parser = factory.newSAXParser();
+            final InputSource is = new InputSource(reader);
             parser.parse(is, handler);
             // wrap parser exceptions in an IOException
         } catch (@NonNull final ParserConfigurationException | SAXException e) {
@@ -262,8 +262,8 @@ public class XmlImporter
 
     private void buildFilters(@NonNull final XmlFilter rootFilter,
                               @NonNull final EntityReader<String> accessor) {
-        String listRootElement = accessor.getListRoot();
-        String rootElement = accessor.getElementRoot();
+        final String listRootElement = accessor.getListRoot();
+        final String rootElement = accessor.getElementRoot();
         // used to read in Set/List data
         final Collection<String> currentStringList = new ArrayList<>();
 
@@ -273,8 +273,8 @@ public class XmlImporter
                      // use as top-tag
                      mTag = new TagInfo(elementContext);
                      // we only have a version on the top tag, not on every tag.
-                     String version = elementContext.getAttributes().getValue(
-                             XmlUtils.ATTR_VERSION);
+                     final String version = elementContext.getAttributes()
+                                                          .getValue(XmlUtils.ATTR_VERSION);
 
                      if (BuildConfig.DEBUG && DEBUG_SWITCHES.XML) {
                          Log.d(TAG, "fromXml|NEW-ELEMENT"
@@ -286,7 +286,7 @@ public class XmlImporter
                  .setEndAction(elementContext -> accessor.endElement());
 
         // typed tag starts. for both attribute and body based elements.
-        XmlFilter.XmlHandler startTypedTag = elementContext -> {
+        final XmlFilter.XmlHandler startTypedTag = elementContext -> {
             mTagStack.push(mTag);
             mTag = new TagInfo(elementContext);
 
@@ -334,7 +334,7 @@ public class XmlImporter
         };
 
         // the end of a typed tag with a body
-        XmlFilter.XmlHandler endTypedTag = elementContext -> {
+        final XmlFilter.XmlHandler endTypedTag = elementContext -> {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.XML) {
                 Log.d(TAG, "fromXml|endTypedTag"
                            + "|localName=" + elementContext.getLocalName()
@@ -440,7 +440,7 @@ public class XmlImporter
         };
 
         // set/list elements with bodies.
-        XmlFilter.XmlHandler endElementInCollection = elementContext -> {
+        final XmlFilter.XmlHandler endElementInCollection = elementContext -> {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.XML) {
                 Log.d(TAG, "fromXml|endElementInCollection"
                            + "|localName=`" + elementContext.getLocalName()

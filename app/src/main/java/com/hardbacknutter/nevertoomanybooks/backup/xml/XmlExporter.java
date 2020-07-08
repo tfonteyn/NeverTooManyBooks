@@ -568,8 +568,8 @@ public class XmlExporter
             writer.write(XmlUtils.sizeAttr(cursor.getCount()));
             writer.write(">\n");
 
-            int progressMaxCount = progressListener.getMax() + cursor.getCount();
-            progressListener.setMax(progressMaxCount);
+            int progressMaxCount = progressListener.getProgressMaxPos() + cursor.getCount();
+            progressListener.setProgressMaxPos(progressMaxCount);
 
             while (cursor.moveToNext() && !progressListener.isCancelled()) {
 

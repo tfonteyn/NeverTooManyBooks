@@ -65,9 +65,6 @@ public class StartupActivity
     /** Self reference for use by database upgrades. */
     private static WeakReference<StartupActivity> sStartupActivity;
 
-    /** stage the startup is at. */
-    private int mStartupStage;
-
     /** The ViewModel. */
     private StartupViewModel mModel;
     /** The View binding. */
@@ -119,6 +116,19 @@ public class StartupActivity
 
         mModel = new ViewModelProvider(this).get(StartupViewModel.class);
         mModel.init(this);
+        mModel.onTaskProgress().observe(this, message -> mVb.progressMessage.setText(message));
+        // when all tasks are done, move on to next startup-stage
+        mModel.onAllTasksFinished().observe(this, finished -> {
+            if (finished) {
+                nextStage();
+            }
+        });
+        // any error, notify the user and die.
+        mModel.onTaskException().observe(this, e -> {
+            if (e != null) {
+                showFatalErrorAndFinish(e.getLocalizedMessage());
+            }
+        });
 
         nextStage();
     }
@@ -128,9 +138,9 @@ public class StartupActivity
      */
     private void nextStage() {
         // onCreate being stage 0
-        mStartupStage++;
+        mModel.incStartupStage();
 
-        switch (mStartupStage) {
+        switch (mModel.getStartupStage()) {
             case 1:
                 startTasks();
                 break;
@@ -148,7 +158,8 @@ public class StartupActivity
                 break;
 
             default:
-                throw new IllegalArgumentException(ErrorMsg.UNEXPECTED_VALUE + mStartupStage);
+                throw new IllegalArgumentException(ErrorMsg.UNEXPECTED_VALUE
+                                                   + mModel.getStartupStage());
         }
     }
 
@@ -160,25 +171,7 @@ public class StartupActivity
      */
     private void startTasks() {
         if (mModel.isStartTasks()) {
-            mModel.onTaskProgress().observe(this, message ->
-                    mVb.progressMessage.setText(message));
-
-            // when all tasks are done, move on to next startup-stage
-            mModel.onAllTasksFinished().observe(this, finished -> {
-                if (finished) {
-                    nextStage();
-                }
-            });
-
-            // any error, notify user and die.
-            mModel.onTaskException().observe(this, e -> {
-                if (e != null) {
-                    showFatalErrorAndFinish(e.getLocalizedMessage());
-                }
-            });
-
             mModel.startTasks(this);
-
         } else {
             nextStage();
         }
@@ -218,7 +211,11 @@ public class StartupActivity
                     .setTitle(R.string.app_name)
                     .setMessage(R.string.warning_backup_request)
                     .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
-                    .setPositiveButton(android.R.string.ok, (d, w) -> mModel.setBackupRequired())
+                    .setPositiveButton(android.R.string.ok, (d, w) -> {
+                        Intent intent = new Intent(this, AdminActivity.class)
+                                .putExtra(BaseActivity.BKEY_FRAGMENT_TAG, ExportFragment.TAG);
+                        startActivityForResult(intent, RequestCode.NAV_PANEL_EXPORT);
+                    })
                     .setOnDismissListener(d -> nextStage())
                     .create()
                     .show();
@@ -227,24 +224,27 @@ public class StartupActivity
         }
     }
 
+    @Override
+    protected void onActivityResult(final int requestCode,
+                                    final int resultCode,
+                                    @Nullable final Intent data) {
+        //noinspection SwitchStatementWithTooFewBranches
+        switch (requestCode) {
+            case RequestCode.NAV_PANEL_EXPORT:
+                nextStage();
+                break;
+
+            default:
+                super.onActivityResult(requestCode, resultCode, data);
+        }
+    }
+
     /**
      * Last step: start the main user activity.
      * If requested earlier, run a backup now / tell the main activity to start a backup.
      */
     private void gotoMainScreen() {
-        final Intent main = new Intent(this, BooksOnBookshelf.class);
-
-        if (mModel.isBackupRequired()) {
-            main.putExtra(BooksOnBookshelf.BKEY_START_BACKUP, true);
-        }
-        startActivity(main);
-
-//        if (mModel.isBackupRequired()) {
-//            final Intent backupIntent = new Intent(this, AdminActivity.class)
-//                    .putExtra(UniqueId.BKEY_FRAGMENT_TAG, ExportFragment.TAG);
-//            startActivity(backupIntent);
-//        }
-
+        startActivity(new Intent(this, BooksOnBookshelf.class));
         // We are done here. Remove the weak self-reference and finish.
         sStartupActivity.clear();
         finish();

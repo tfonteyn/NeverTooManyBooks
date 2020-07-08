@@ -209,6 +209,16 @@
                 />
 
             <CheckBox
+                android:id="@+id/cbx_author_type_narrator"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="@string/lbl_author_type_narrator"
+                app:layout_constraintEnd_toStartOf="@id/typeColumnDiv"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/cbx_author_type_editor"
+                />
+
+            <CheckBox
                 android:id="@+id/cbx_author_type_artist"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"

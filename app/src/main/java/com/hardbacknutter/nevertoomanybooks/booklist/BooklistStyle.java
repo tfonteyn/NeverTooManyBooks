@@ -2054,7 +2054,7 @@ public class BooklistStyle
                                       BooklistGroup.SERIES);
             S_BUILTIN_STYLES.put(style.getUuid(), style);
 
-            // Loaned
+            // Lending
             style = new BooklistStyle(context,
                                       LENDING_ID,
                                       LENDING_UUID,

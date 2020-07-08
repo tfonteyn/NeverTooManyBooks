@@ -46,6 +46,7 @@ import static com.hardbacknutter.nevertoomanybooks.entities.Author.TYPE_EDITOR;
 import static com.hardbacknutter.nevertoomanybooks.entities.Author.TYPE_FOREWORD;
 import static com.hardbacknutter.nevertoomanybooks.entities.Author.TYPE_INKING;
 import static com.hardbacknutter.nevertoomanybooks.entities.Author.TYPE_INTRODUCTION;
+import static com.hardbacknutter.nevertoomanybooks.entities.Author.TYPE_NARRATOR;
 import static com.hardbacknutter.nevertoomanybooks.entities.Author.TYPE_ORIGINAL_SCRIPT_WRITER;
 import static com.hardbacknutter.nevertoomanybooks.entities.Author.TYPE_PSEUDONYM;
 import static com.hardbacknutter.nevertoomanybooks.entities.Author.TYPE_TRANSLATOR;
@@ -66,12 +67,16 @@ public final class AuthorTypeMapper {
     private static final Map<String, Integer> MAPPER = new HashMap<>();
 
     // use all lowercase keys (unless they are diacritic)
+    // NEWTHINGS: author type: add site-labels as needed
     static {
         // English
         MAPPER.put("author", TYPE_WRITER);
         MAPPER.put("adapter", TYPE_WRITER);
 
         MAPPER.put("original script writer", TYPE_ORIGINAL_SCRIPT_WRITER);
+
+        MAPPER.put("narrator", TYPE_NARRATOR);
+        MAPPER.put("reading", TYPE_NARRATOR);
 
         MAPPER.put("illuminator", TYPE_ARTIST);
         MAPPER.put("illustrator", TYPE_ARTIST);
@@ -84,6 +89,7 @@ public final class AuthorTypeMapper {
         MAPPER.put("colorist", TYPE_COLORIST);
 
         MAPPER.put("pseudonym", TYPE_PSEUDONYM);
+
         MAPPER.put("editor", TYPE_EDITOR);
 
         MAPPER.put("translator", TYPE_TRANSLATOR);
@@ -98,6 +104,7 @@ public final class AuthorTypeMapper {
 
         MAPPER.put("contributor", TYPE_CONTRIBUTOR);
         MAPPER.put("additional material", TYPE_CONTRIBUTOR);
+
 
         // French, unless listed above
         MAPPER.put("text", TYPE_WRITER);
@@ -128,7 +135,7 @@ public final class AuthorTypeMapper {
         MAPPER.put("testi", TYPE_WRITER);
         MAPPER.put("disegni", TYPE_ARTIST);
 
-        // Current (2020-01-30) strings have been seen on Goodreads.
+        // Current (2020-06-30) strings have been seen on Goodreads.
         // There are obviously MANY missing.... both for the listed languages above and for
         // other languages not even considered here.
         // Will need to add them when/as they show up.

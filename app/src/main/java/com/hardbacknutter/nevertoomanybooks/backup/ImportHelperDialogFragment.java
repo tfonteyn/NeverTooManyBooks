@@ -116,7 +116,7 @@ public class ImportHelperDialogFragment
      * Set the checkboxes/radio-buttons from the options.
      */
     private void setupOptions() {
-        ImportManager helper = mModel.getHelper();
+        final ImportManager helper = mModel.getHelper();
 
         if (mIsCsvBooks) {
             // CSV files don't have options other then the books.
@@ -124,19 +124,18 @@ public class ImportHelperDialogFragment
 
         } else {
             // Populate the options.
-            mVb.cbxBooks.setChecked((helper.getOptions() & Options.BOOKS) != 0);
+            mVb.cbxBooks.setChecked(helper.isSet(Options.BOOKS));
             mVb.cbxBooks.setOnCheckedChangeListener(
                     (buttonView, isChecked) -> {
                         helper.setOption(Options.BOOKS, isChecked);
                         mVb.rbBooksGroup.setEnabled(isChecked);
                     });
 
-            mVb.cbxCovers.setChecked((helper.getOptions() & Options.COVERS) != 0);
+            mVb.cbxCovers.setChecked(helper.isSet(Options.COVERS));
             mVb.cbxCovers.setOnCheckedChangeListener(
                     (buttonView, isChecked) -> helper.setOption(Options.COVERS, isChecked));
 
-            mVb.cbxPrefsAndStyles.setChecked(
-                    (helper.getOptions() & (Options.PREFS | Options.STYLES)) != 0);
+            mVb.cbxPrefsAndStyles.setChecked(helper.isSet(Options.PREFS | Options.STYLES));
             mVb.cbxPrefsAndStyles.setOnCheckedChangeListener(
                     (buttonView, isChecked) -> {
                         helper.setOption(Options.PREFS, isChecked);
@@ -147,8 +146,7 @@ public class ImportHelperDialogFragment
         // enable or disable the sync option
         //noinspection ConstantConditions
         if (mIsCsvBooks || mModel.getArchiveCreationDate(getContext()) != null) {
-            final boolean allBooks = (helper.getOptions()
-                                      & ImportManager.IMPORT_ONLY_NEW_OR_UPDATED) == 0;
+            final boolean allBooks = !helper.isSet(ImportManager.IMPORT_ONLY_NEW_OR_UPDATED);
             mVb.rbBooksAll.setChecked(allBooks);
             mVb.infoBtnRbBooksAll.setOnClickListener(StandardDialogs::infoPopup);
             mVb.rbBooksSync.setChecked(!allBooks);
@@ -166,7 +164,7 @@ public class ImportHelperDialogFragment
             mVb.rbBooksSync.setChecked(false);
             helper.setOption(ImportManager.IMPORT_ONLY_NEW_OR_UPDATED, false);
             mVb.infoBtnRbBooksSync.setContentDescription(
-                    getContext().getString(R.string.warning_import_old_archive));
+                    getString(R.string.warning_import_old_archive));
         }
     }
 

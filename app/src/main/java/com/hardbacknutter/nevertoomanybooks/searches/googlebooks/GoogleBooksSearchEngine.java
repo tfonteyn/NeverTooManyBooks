@@ -144,7 +144,7 @@ public final class GoogleBooksSearchEngine
                              @NonNull final Bundle bookData)
             throws IOException {
 
-        SAXParserFactory factory = SAXParserFactory.newInstance();
+        final SAXParserFactory factory = SAXParserFactory.newInstance();
 
         try {
             final SAXParser parser = factory.newSAXParser();

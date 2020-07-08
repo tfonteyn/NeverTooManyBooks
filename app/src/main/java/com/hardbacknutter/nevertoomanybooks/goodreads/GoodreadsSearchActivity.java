@@ -29,7 +29,6 @@ package com.hardbacknutter.nevertoomanybooks.goodreads;
 
 import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
@@ -38,9 +37,6 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -55,14 +51,9 @@ import java.util.Objects;
 import com.hardbacknutter.nevertoomanybooks.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageScale;
-import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
-import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.databinding.ActivityGoodreadsSearchBinding;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
-import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
-import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.FetchWorksTask;
-import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.BooksOnBookshelfModel;
 
 /**
@@ -88,7 +79,8 @@ public class GoodreadsSearchActivity
     private final List<GoodreadsWork> mWorks = new ArrayList<>();
 
     /** The ViewModel. */
-    private GrSearchViewModel mModel;
+    private GrSearchTask mGrSearchTask;
+
     private WorksAdapter mWorksAdapter;
 
     private ActivityGoodreadsSearchBinding mVb;
@@ -125,22 +117,33 @@ public class GoodreadsSearchActivity
         setTitle(getString(R.string.progress_msg_searching_site,
                            getString(R.string.site_goodreads)));
 
-        mModel = new ViewModelProvider(this).get(GrSearchViewModel.class);
-        mModel.init(Objects.requireNonNull(getIntent().getExtras(), ErrorMsg.NULL_EXTRAS),
-                    savedInstanceState);
-
-        mModel.onWorksRetrieved().observe(this, goodreadsWorks -> {
+        mGrSearchTask = new ViewModelProvider(this).get(GrSearchTask.class);
+        mGrSearchTask.init(Objects.requireNonNull(getIntent().getExtras(), ErrorMsg.NULL_EXTRAS),
+                           savedInstanceState);
+        mGrSearchTask.onProgressUpdate().observe(this, message -> {
+            if (message.text != null) {
+                Snackbar.make(mVb.getRoot(), message.text, Snackbar.LENGTH_LONG).show();
+            }
+        });
+        mGrSearchTask.onFailure().observe(this, message ->
+                Snackbar.make(mVb.getRoot(), GrStatus.getMessage(this, message.result),
+                              Snackbar.LENGTH_LONG).show());
+        mGrSearchTask.onCancelled().observe(this, message ->
+                Snackbar.make(mVb.getRoot(), R.string.cancelled, Snackbar.LENGTH_LONG).show());
+        mGrSearchTask.onFinished().observe(this, message -> {
             mWorks.clear();
-            if (!goodreadsWorks.isEmpty()) {
-                mWorks.addAll(goodreadsWorks);
+            if (message.result != null && !message.result.isEmpty()) {
+                mWorks.addAll(message.result);
             } else {
-                Snackbar.make(mVb.resultList, R.string.warning_no_matching_book_found,
+                // we don't get a status back, so treat null/empty list as "oops"
+                // Given this code is not actually used... it might be OOPS
+                Snackbar.make(mVb.getRoot(), R.string.warning_no_matching_book_found,
                               Snackbar.LENGTH_LONG).show();
             }
             mWorksAdapter.notifyDataSetChanged();
         });
 
-        mModel.onBookNoLongerExists().observe(this, flag -> {
+        mGrSearchTask.onBookNoLongerExists().observe(this, flag -> {
             if (flag) {
                 Snackbar.make(mVb.filterText, R.string.warning_book_no_longer_exists,
                               Snackbar.LENGTH_LONG).show();
@@ -160,29 +163,29 @@ public class GoodreadsSearchActivity
 
         if (savedInstanceState == null) {
             // On first start of the activity only: if we have a book, start a search
-            if (mModel.getBookId() > 0) {
+            if (mGrSearchTask.getBookId() > 0) {
                 doSearch();
             }
         }
     }
 
     private void updateViews() {
-        if (mModel.getBookId() > 0) {
-            mVb.author.setText(mModel.getAuthorText());
-            mVb.title.setText(mModel.getTitleText());
-            mVb.isbn.setText(mModel.getIsbnText());
+        if (mGrSearchTask.getBookId() > 0) {
+            mVb.author.setText(mGrSearchTask.getAuthorText());
+            mVb.title.setText(mGrSearchTask.getTitleText());
+            mVb.isbn.setText(mGrSearchTask.getIsbnText());
             mVb.originalDetails.setVisibility(View.VISIBLE);
         } else {
             mVb.originalDetails.setVisibility(View.GONE);
         }
 
-        mVb.filterText.setText(mModel.getSearchText());
+        mVb.filterText.setText(mGrSearchTask.getSearchText());
     }
 
     @Override
     protected void onPause() {
         //noinspection ConstantConditions
-        mModel.setSearchText(mVb.filterText.getText().toString().trim());
+        mGrSearchTask.setSearchText(mVb.filterText.getText().toString().trim());
         super.onPause();
     }
 
@@ -190,7 +193,7 @@ public class GoodreadsSearchActivity
     protected void onSaveInstanceState(@NonNull final Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putString(BooksOnBookshelfModel.SearchCriteria.BKEY_SEARCH_TEXT_KEYWORDS,
-                           mModel.getSearchText());
+                           mGrSearchTask.getSearchText());
     }
 
     /**
@@ -200,7 +203,7 @@ public class GoodreadsSearchActivity
         Snackbar.make(mVb.resultList, R.string.progress_msg_connecting,
                       Snackbar.LENGTH_LONG).show();
         //noinspection ConstantConditions
-        mModel.search(mVb.filterText.getText().toString().trim());
+        mGrSearchTask.search(mVb.filterText.getText().toString().trim());
     }
 
     /**
@@ -211,114 +214,6 @@ public class GoodreadsSearchActivity
     private void onWorkSelected(@NonNull final GoodreadsWork work) {
         String msg = "Not implemented: requires access to work.editions from Goodreads";
         Snackbar.make(mVb.resultList, msg, Snackbar.LENGTH_LONG).show();
-    }
-
-    public static class GrSearchViewModel
-            extends ViewModel {
-
-        private final MutableLiveData<List<GoodreadsWork>> mWorks = new MutableLiveData<>();
-        private final MutableLiveData<Boolean> mBookNoLongerExists = new MutableLiveData<>();
-
-        private final TaskListener<List<GoodreadsWork>> mTaskListener = message -> {
-            if (message.status == TaskListener.TaskStatus.Success && message.result != null) {
-                mWorks.setValue(message.result);
-            }
-        };
-
-        /** Database Access. */
-        private DAO mDb;
-        /** Data from the 'incoming' book. */
-        private long mBookId;
-        private String mIsbnText;
-        private String mAuthorText;
-        private String mTitleText;
-        private String mSearchText;
-
-        /** Observable. */
-        @NonNull
-        MutableLiveData<List<GoodreadsWork>> onWorksRetrieved() {
-            return mWorks;
-        }
-
-        /** Observable. */
-        @NonNull
-        MutableLiveData<Boolean> onBookNoLongerExists() {
-            return mBookNoLongerExists;
-        }
-
-        @Override
-        protected void onCleared() {
-            if (mDb != null) {
-                mDb.close();
-            }
-        }
-
-        /**
-         * Pseudo constructor.
-         *
-         * @param args {@link Intent#getExtras()} or {@link Fragment#getArguments()}
-         */
-        public void init(@NonNull final Bundle args,
-                         @Nullable final Bundle savedInstanceState) {
-            if (mDb == null) {
-                mDb = new DAO(TAG);
-
-                mBookId = args.getLong(DBDefinitions.KEY_PK_ID);
-                if (mBookId > 0) {
-                    try (Cursor cursor = mDb.fetchBookColumnsForGoodreadsSearch(mBookId)) {
-                        if (cursor.moveToFirst()) {
-                            final DataHolder bookData = new CursorRow(cursor);
-                            mAuthorText = bookData
-                                    .getString(DBDefinitions.KEY_AUTHOR_FORMATTED_GIVEN_FIRST);
-                            mTitleText = bookData.getString(DBDefinitions.KEY_TITLE);
-                            mIsbnText = bookData.getString(DBDefinitions.KEY_ISBN);
-                        } else {
-                            mBookNoLongerExists.setValue(true);
-                        }
-                    }
-                    mSearchText = mAuthorText + ' ' + mTitleText + ' ' + mIsbnText + ' ';
-                }
-            }
-            final Bundle currentArgs = savedInstanceState != null ? savedInstanceState : args;
-            mSearchText = currentArgs
-                    .getString(BooksOnBookshelfModel.SearchCriteria.BKEY_SEARCH_TEXT_KEYWORDS,
-                               mSearchText);
-        }
-
-        public long getBookId() {
-            return mBookId;
-        }
-
-        @Nullable
-        String getIsbnText() {
-            return mIsbnText;
-        }
-
-        @Nullable
-        String getAuthorText() {
-            return mAuthorText;
-        }
-
-        @Nullable
-        String getTitleText() {
-            return mTitleText;
-        }
-
-        @Nullable
-        String getSearchText() {
-            return mSearchText;
-        }
-
-        void setSearchText(@Nullable final String searchText) {
-            mSearchText = searchText;
-        }
-
-        public void search(@NonNull final String searchText) {
-            mSearchText = searchText;
-            if (!mSearchText.isEmpty()) {
-                new FetchWorksTask(mSearchText, mTaskListener).execute();
-            }
-        }
     }
 
     /**

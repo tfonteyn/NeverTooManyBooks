@@ -442,7 +442,7 @@
     <string name="pg_ui">Gebruikersinterface</string>
     <string name="pg_ui_field_visibility">Zichtbaarheid velden beheren</string>
     <string name="progress_end_backup_success">Back-up gelukt</string>
-    <string name="progress_end_cancelled">Geannuleerd</string>
+    <string name="cancelled">Geannuleerd</string>
     <string name="progress_end_import_complete">Import Compleet</string>
     <string name="progress_end_import_partially_complete">Gedeeltelijke import voltooid</string>
     <string name="progress_msg_connecting">Website contacteren…</string>

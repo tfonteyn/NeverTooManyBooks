@@ -438,7 +438,7 @@
     <string name="pg_ui">Interfaz de usuario</string>
     <string name="pg_ui_field_visibility">Visibilidad de campos</string>
     <string name="progress_end_backup_success">Copia de seguridad correcta</string>
-    <string name="progress_end_cancelled">Cancelado</string>
+    <string name="cancelled">Cancelado</string>
     <string name="progress_end_import_complete">Importación finalizada</string>
     <string name="progress_end_import_partially_complete">Importación parcial realizada</string>
     <string name="progress_msg_connecting">Conectando con el sitio web…</string>

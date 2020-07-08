@@ -56,7 +56,7 @@
     <!-- android:textIsSelectable="false" because we want to be able to click on the row -->
     <TextView
         android:id="@+id/title"
-        style="@style/Text"
+        style="@style/Field.BookTitle"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/indent_fields"
         app:layout_constraintTop_toTopOf="parent"
@@ -66,7 +66,7 @@
 
     <TextView
         android:id="@+id/year"
-        style="@style/Text.Small"
+        style="@style/Field.Generic.Small"
         app:layout_constraintBaseline_toBaselineOf="@id/author"
         app:layout_constraintStart_toEndOf="@id/indent_fields"
         app:layout_constraintTop_toBottomOf="@id/title"
@@ -76,7 +76,7 @@
 
     <TextView
         android:id="@+id/author"
-        style="@style/Text.Small"
+        style="@style/Field.Generic.Small"
         android:layout_marginStart="@dimen/indent2"
         app:layout_constraintStart_toEndOf="@id/year"
         app:layout_constraintTop_toBottomOf="@id/title"

@@ -30,11 +30,11 @@
  * Sending progress messages:
  *
  * <ol>
- *     <li>A class method which runs as part of a background task calls {@link com.hardbacknutter.nevertoomanybooks.tasks.TaskBase#getProgressListener()} to get a {@link com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener}</li>
+ *     <li>A class method which runs as part of a background task calls to get a {@link com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener}</li>
  *     <li>Calls one of the {@link com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener#onProgress} methods to send a counter + message String</li>
  *     <li>CRUCIAL: The listener (running in the background) uses {@link android.os.AsyncTask}#publishProgress to get the message to the foreground thread</li>
- *     <li>{@link com.hardbacknutter.nevertoomanybooks.tasks.TaskBase#onProgressUpdate(com.hardbacknutter.nevertoomanybooks.tasks.TaskListener.ProgressMessage...)} now forwards it to the {@link com.hardbacknutter.nevertoomanybooks.tasks.TaskListener}</li>
- *     <li>{@link com.hardbacknutter.nevertoomanybooks.tasks.TaskListener#onProgress(com.hardbacknutter.nevertoomanybooks.tasks.TaskListener.ProgressMessage)} takes the message and sets it on the ViewModel LiveData variable.</li>
+ *     <li>{@link com.hardbacknutter.nevertoomanybooks.tasks.TaskBase#onProgressUpdate(ProgressMessage...)} now forwards it to the {@link com.hardbacknutter.nevertoomanybooks.tasks.TaskListener}</li>
+ *     <li>{@link com.hardbacknutter.nevertoomanybooks.tasks.TaskListener#onProgress(ProgressMessage)} takes the message and sets it on the ViewModel LiveData variable.</li>
  *     <li>LiveData sends it to the observer, which in turn displays it.</li>
  * </ol>
  * <p>
@@ -46,3 +46,5 @@
  * In a nutshell: ProgressListener -> ASyncTask -> TaskListener -> LiveData -> User
  */
 package com.hardbacknutter.nevertoomanybooks.tasks;
+
+import com.hardbacknutter.nevertoomanybooks.tasks.messages.ProgressMessage;

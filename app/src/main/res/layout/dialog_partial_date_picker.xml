@@ -53,7 +53,7 @@ Note the viewBindingIgnore="true" as the adding/removing views will not play nic
 
         <TextView
             android:id="@+id/lbl_year"
-            style="@style/Label.Field"
+            style="@style/Field.Label"
             android:text="@string/lbl_year"
             app:layout_constraintStart_toStartOf="@id/year"
             app:layout_constraintTop_toTopOf="parent"
@@ -77,7 +77,7 @@ Note the viewBindingIgnore="true" as the adding/removing views will not play nic
 
         <TextView
             android:id="@+id/lbl_month"
-            style="@style/Label.Field"
+            style="@style/Field.Label"
             android:text="@string/lbl_month"
             app:layout_constraintStart_toStartOf="@id/month"
             app:layout_constraintTop_toTopOf="parent"
@@ -101,7 +101,7 @@ Note the viewBindingIgnore="true" as the adding/removing views will not play nic
 
         <TextView
             android:id="@+id/lbl_day"
-            style="@style/Label.Field"
+            style="@style/Field.Label"
             android:text="@string/lbl_day"
             app:layout_constraintStart_toStartOf="@id/day"
             app:layout_constraintTop_toTopOf="parent"

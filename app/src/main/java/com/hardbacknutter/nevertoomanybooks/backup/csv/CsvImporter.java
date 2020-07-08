@@ -226,8 +226,8 @@ public class CsvImporter
         }
 
         // not perfect, but good enough
-        if (progressListener.getMax() < importedList.size()) {
-            progressListener.setMax(importedList.size());
+        if (progressListener.getProgressMaxPos() < importedList.size()) {
+            progressListener.setProgressMaxPos(importedList.size());
         }
 
         // reused during the loop

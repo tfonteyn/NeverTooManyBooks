@@ -44,7 +44,6 @@ import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.view.MenuCompat;
-import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentOnAttachListener;
@@ -176,28 +175,29 @@ public class EditBookFieldsFragment
         });
 
         mVb.author.setOnClickListener(v -> EditBookAuthorListDialogFragment
+                .newInstance()
                 // no listener/callback. We share the book view model in the Activity scope
-                .newInstance().show(getChildFragmentManager(),
-                                    EditBookAuthorListDialogFragment.TAG));
+                .show(getChildFragmentManager(), EditBookAuthorListDialogFragment.TAG));
 
         if (getField(R.id.series_title).isUsed(getContext())) {
             mVb.seriesTitle.setOnClickListener(v -> EditBookSeriesListDialogFragment
+                    .newInstance()
                     // no listener/callback. We share the book view model in the Activity scope
-                    .newInstance().show(getChildFragmentManager(),
-                                        EditBookSeriesListDialogFragment.TAG));
+                    .show(getChildFragmentManager(), EditBookSeriesListDialogFragment.TAG));
         }
 
         // Bookshelves editor (dialog)
         if (getField(R.id.bookshelves).isUsed(getContext())) {
             mVb.bookshelves.setOnClickListener(v -> {
                 mFragmentVM.setCurrentDialogFieldId(R.id.bookshelves);
-                final DialogFragment picker = CheckListDialogFragment.newInstance(
-                        getString(R.string.lbl_bookshelves_long),
-                        new ArrayList<>(mFragmentVM.getAllBookshelves()),
-                        new ArrayList<>(mBookViewModel.getBook().getParcelableArrayList(
-                                Book.BKEY_BOOKSHELF_ARRAY)));
-                // child fragment. We use a listener, see onAttachFragment
-                picker.show(getChildFragmentManager(), CheckListDialogFragment.TAG);
+                CheckListDialogFragment
+                        .newInstance(
+                                getString(R.string.lbl_bookshelves_long),
+                                new ArrayList<>(mFragmentVM.getAllBookshelves()),
+                                new ArrayList<>(mBookViewModel.getBook().getParcelableArrayList(
+                                        Book.BKEY_BOOKSHELF_ARRAY)))
+                        // child fragment. We use a listener, see onAttachFragment
+                        .show(getChildFragmentManager(), CheckListDialogFragment.TAG);
             });
         }
 

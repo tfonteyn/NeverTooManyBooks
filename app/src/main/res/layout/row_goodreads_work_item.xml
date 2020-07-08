@@ -48,7 +48,7 @@
 
     <TextView
         android:id="@+id/title"
-        style="@style/Text"
+        style="@style/Field.BookTitle"
         android:layout_marginStart="4dp"
         app:layout_constraintStart_toEndOf="@id/coverImage0"
         app:layout_constraintTop_toTopOf="parent"
@@ -58,7 +58,7 @@
 
     <TextView
         android:id="@+id/author"
-        style="@style/Text"
+        style="@style/Field.Generic"
         android:layout_marginStart="8dp"
         app:layout_constraintStart_toEndOf="@id/coverImage0"
         app:layout_constraintTop_toBottomOf="@id/title"

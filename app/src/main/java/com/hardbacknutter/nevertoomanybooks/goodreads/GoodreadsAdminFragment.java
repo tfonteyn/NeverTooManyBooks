@@ -43,16 +43,20 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.snackbar.Snackbar;
 
+import java.util.Objects;
+
 import com.hardbacknutter.nevertoomanybooks.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentGoodreadsAdminBinding;
+import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.goodreads.admin.TasksAdminActivity;
+import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.GrAuthTask;
 import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.ImportTask;
-import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.RequestAuthTask;
 import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.SendBooksTask;
 import com.hardbacknutter.nevertoomanybooks.settings.SettingsActivity;
 import com.hardbacknutter.nevertoomanybooks.settings.sites.GoodreadsPreferencesFragment;
-import com.hardbacknutter.nevertoomanybooks.viewmodels.tasks.GoodreadsTaskModel;
+import com.hardbacknutter.nevertoomanybooks.tasks.messages.FinishedMessage;
+import com.hardbacknutter.nevertoomanybooks.tasks.messages.ProgressMessage;
 
 /**
  * Starting point for sending and importing books with Goodreads.
@@ -63,8 +67,10 @@ public class GoodreadsAdminFragment
     /** Fragment manager tag. */
     public static final String TAG = "GoodreadsAdminFragment";
 
-    /** ViewModel for task control. */
-    private GoodreadsTaskModel mGrTaskModel;
+    private GrAuthTask mGrAuthTask;
+    private ImportTask mImportTask;
+    private SendBooksTask mSendBooksTask;
+
     /** View binding. */
     private FragmentGoodreadsAdminBinding mVb;
 
@@ -74,7 +80,9 @@ public class GoodreadsAdminFragment
 
         setHasOptionsMenu(true);
 
-        mGrTaskModel = new ViewModelProvider(this).get(GoodreadsTaskModel.class);
+        mGrAuthTask = new ViewModelProvider(this).get(GrAuthTask.class);
+        mImportTask = new ViewModelProvider(this).get(ImportTask.class);
+        mSendBooksTask = new ViewModelProvider(this).get(SendBooksTask.class);
     }
 
     @Nullable
@@ -91,21 +99,57 @@ public class GoodreadsAdminFragment
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        mGrTaskModel.onTaskFinished().observe(getViewLifecycleOwner(), message -> {
-            if (message.result != null && message.result == GrStatus.FAILED_CREDENTIALS) {
-                //noinspection ConstantConditions
-                RequestAuthTask.prompt(getContext(), mGrTaskModel.getTaskListener());
-            } else {
-                //noinspection ConstantConditions
-                Snackbar.make(mVb.getRoot(), GoodreadsHandler.digest(getContext(), message),
-                              Snackbar.LENGTH_LONG).show();
-            }
-        });
+        //noinspection ConstantConditions
+        getActivity().setTitle(R.string.site_goodreads);
+
+        mGrAuthTask.onProgressUpdate().observe(getViewLifecycleOwner(), this::onProgress);
+        mGrAuthTask.onCancelled().observe(getViewLifecycleOwner(), this::onCancelled);
+        mGrAuthTask.onFailure().observe(getViewLifecycleOwner(), this::onGrFailure);
+        mGrAuthTask.onFinished().observe(getViewLifecycleOwner(), this::onGrFinished);
+
+        mImportTask.onProgressUpdate().observe(getViewLifecycleOwner(), this::onProgress);
+        mImportTask.onCancelled().observe(getViewLifecycleOwner(), this::onCancelled);
+        mImportTask.onFailure().observe(getViewLifecycleOwner(), this::onGrFailure);
+        mImportTask.onFinished().observe(getViewLifecycleOwner(), this::onGrFinished);
+
+        mSendBooksTask.onProgressUpdate().observe(getViewLifecycleOwner(), this::onProgress);
+        mSendBooksTask.onCancelled().observe(getViewLifecycleOwner(), this::onCancelled);
+        mSendBooksTask.onFailure().observe(getViewLifecycleOwner(), this::onGrFailure);
+        mSendBooksTask.onFinished().observe(getViewLifecycleOwner(), this::onGrFinished);
+
 
         mVb.btnSync.setOnClickListener(v -> importBooks(true));
         mVb.btnImport.setOnClickListener(v -> importBooks(false));
         mVb.btnSendUpdatedBooks.setOnClickListener(v -> sendBooks(true));
         mVb.btnSendAllBooks.setOnClickListener(v -> sendBooks(false));
+    }
+
+    private void onProgress(@NonNull final ProgressMessage message) {
+        if (message.text != null) {
+            Snackbar.make(mVb.getRoot(), message.text, Snackbar.LENGTH_LONG).show();
+        }
+    }
+
+    private void onCancelled(@NonNull final FinishedMessage<GrStatus> message) {
+        Snackbar.make(mVb.getRoot(), R.string.cancelled, Snackbar.LENGTH_LONG).show();
+    }
+
+    private void onGrFailure(@NonNull final FinishedMessage<Exception> message) {
+        //noinspection ConstantConditions
+        Snackbar.make(mVb.getRoot(), GrStatus.getMessage(getContext(), message.result),
+                      Snackbar.LENGTH_LONG).show();
+    }
+
+    private void onGrFinished(@NonNull final FinishedMessage<GrStatus> message) {
+        Objects.requireNonNull(message.result, ErrorMsg.NULL_TASK_RESULTS);
+        if (message.result.getStatus() == GrStatus.FAILED_CREDENTIALS) {
+            //noinspection ConstantConditions
+            mGrAuthTask.prompt(getContext());
+        } else {
+            //noinspection ConstantConditions
+            Snackbar.make(mVb.getRoot(), message.result.getMessage(getContext()),
+                          Snackbar.LENGTH_LONG).show();
+        }
     }
 
     @Override
@@ -145,11 +189,11 @@ public class GoodreadsAdminFragment
 
     private void importBooks(final boolean sync) {
         Snackbar.make(mVb.getRoot(), R.string.progress_msg_connecting, Snackbar.LENGTH_LONG).show();
-        mGrTaskModel.execute(new ImportTask(sync, mGrTaskModel.getTaskListener()));
+        mImportTask.startImportTask(sync);
     }
 
     private void sendBooks(final boolean updatesOnly) {
         Snackbar.make(mVb.getRoot(), R.string.progress_msg_connecting, Snackbar.LENGTH_LONG).show();
-        mGrTaskModel.execute(new SendBooksTask(false, updatesOnly, mGrTaskModel.getTaskListener()));
+        mSendBooksTask.startTask(false, updatesOnly);
     }
 }

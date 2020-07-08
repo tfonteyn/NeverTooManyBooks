@@ -33,9 +33,7 @@ import android.graphics.Matrix;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.view.Surface;
-import android.view.View;
 import android.view.WindowManager;
-import android.widget.ProgressBar;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -61,8 +59,7 @@ public class TransFormTask
     private final File mFile;
     @NonNull
     private final WeakReference<OnAfterTransformListener> mListener;
-    @NonNull
-    private final WeakReference<ProgressBar> mProgressBar;
+
     private int mMaxWidth = ImageUtils.MAX_IMAGE_WIDTH_PX;
     private int mMaxHeight = ImageUtils.MAX_IMAGE_HEIGHT_PX;
     private boolean mScale;
@@ -81,17 +78,14 @@ public class TransFormTask
      * </ol>
      * before executing this task.
      *
-     * @param srcFile     file to transform
-     * @param listener    where to send results
-     * @param progressBar (optional)
+     * @param srcFile  file to transform
+     * @param listener where to send results
      */
     TransFormTask(@NonNull final File srcFile,
-                  @Nullable final OnAfterTransformListener listener,
-                  @Nullable final ProgressBar progressBar) {
+                  @Nullable final OnAfterTransformListener listener) {
 
         mFile = srcFile;
         mListener = new WeakReference<>(listener);
-        mProgressBar = new WeakReference<>(progressBar);
     }
 
     /**
@@ -165,7 +159,7 @@ public class TransFormTask
 
     /**
      * Set an optional return code which will be passed back in
-     * {@link OnAfterTransformListener#onAfterTransform}.
+     * {@link OnAfterTransformListener#onFinished}.
      *
      * @param returnCode to pass back
      *
@@ -205,13 +199,6 @@ public class TransFormTask
         }
 
         return source;
-    }
-
-    @Override
-    protected void onPreExecute() {
-        if (mProgressBar.get() != null) {
-            mProgressBar.get().setVisibility(View.VISIBLE);
-        }
     }
 
     /**
@@ -310,13 +297,8 @@ public class TransFormTask
 
     @Override
     protected void onPostExecute(@Nullable final Bitmap bitmap) {
-        if (mProgressBar.get() != null) {
-            mProgressBar.get().setVisibility(View.GONE);
-        }
-
         if (mListener.get() != null) {
-            mListener.get().onAfterTransform(
-                    new TransformedData(bitmap, mFile, mReturnCode));
+            mListener.get().onFinished(new TransformedData(bitmap, mFile, mReturnCode));
         } else {
             if (BuildConfig.DEBUG /* always */) {
                 Log.w(TAG, "onAfterTransform|" + ErrorMsg.LISTENER_WAS_DEAD);
@@ -331,7 +313,7 @@ public class TransFormTask
          *
          * @param data to return
          */
-        void onAfterTransform(@NonNull TransformedData data);
+        void onFinished(@NonNull TransformedData data);
     }
 
     public static class TransformedData {

@@ -27,6 +27,10 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
+<!--
+     https://www.vogella.com/tutorials/AndroidStylesThemes/article.html
+     Section 1.2: w600, w800, w1000 can be seen as switching/margin points
+     -->
 <resources>
     <!-- The base size for cover images. Get's multiplied with the scale. -->
     <dimen name="cover_base_size">50dp</dimen>
@@ -51,6 +55,7 @@
         <item>3</item>
     </integer-array>
 
+    <!-- this is an INDEX to the SCALE_FACTOR array. -->
     <integer name="cover_scale_browser_gallery">2</integer>
     <integer name="cover_scale_browser_preview">4</integer>
 

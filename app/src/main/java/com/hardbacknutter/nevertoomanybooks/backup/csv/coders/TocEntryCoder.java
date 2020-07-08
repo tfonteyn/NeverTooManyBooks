@@ -89,9 +89,9 @@ public class TocEntryCoder
         String title = parts.get(0);
         final Author author = Author.from(parts.get(1));
 
-        Matcher matcher = DATE_PATTERN.matcher(title);
+        final Matcher matcher = DATE_PATTERN.matcher(title);
         if (matcher.find()) {
-            String g1 = matcher.group(0);
+            final String g1 = matcher.group(0);
             if (g1 != null) {
                 // strip out the found pattern (including the brackets)
                 title = title.replace(g1, "").trim();

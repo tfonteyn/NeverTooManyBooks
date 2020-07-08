@@ -131,6 +131,30 @@ public class ImportManager
         return mOptions;
     }
 
+    public static String createErrorReport(@NonNull final Context context,
+                                           @Nullable final Exception e) {
+        String msg = null;
+
+        if (e instanceof InvalidArchiveException) {
+            msg = context.getString(R.string.error_import_invalid_archive);
+
+        } else if (e instanceof IOException) {
+            //ENHANCE: if (message.exception.getCause() instanceof ErrnoException) {
+            //           int errno = ((ErrnoException) message.exception.getCause()).errno;
+            msg = StandardDialogs.createBadError(context, R.string.error_storage_not_readable);
+
+        } else if (e instanceof FormattedMessageException) {
+            msg = ((FormattedMessageException) e).getLocalizedMessage(context);
+        }
+
+        // generic unknown message
+        if (msg == null || msg.isEmpty()) {
+            msg = context.getString(R.string.error_unexpected_error);
+        }
+
+        return msg;
+    }
+
     /** Called <strong>after</strong> the export/import to report back what was handled. */
     public void setOptions(final int options) {
         mOptions = options;
@@ -281,27 +305,7 @@ public class ImportManager
                + '}';
     }
 
-    public String createErrorReport(@NonNull final Context context,
-                                    @Nullable final Exception e) {
-        String msg = null;
-
-        if (e instanceof InvalidArchiveException) {
-            msg = context.getString(R.string.error_import_invalid_archive);
-
-        } else if (e instanceof IOException) {
-            //ENHANCE: if (message.exception.getCause() instanceof ErrnoException) {
-            //           int errno = ((ErrnoException) message.exception.getCause()).errno;
-            msg = StandardDialogs.createBadError(context, R.string.error_storage_not_readable);
-
-        } else if (e instanceof FormattedMessageException) {
-            msg = ((FormattedMessageException) e).getLocalizedMessage(context);
-        }
-
-        // generic unknown message
-        if (msg == null || msg.isEmpty()) {
-            msg = context.getString(R.string.error_unexpected_error);
-        }
-
-        return msg;
+    public boolean isSet(final int optionBit) {
+        return (mOptions & optionBit) != 0;
     }
 }

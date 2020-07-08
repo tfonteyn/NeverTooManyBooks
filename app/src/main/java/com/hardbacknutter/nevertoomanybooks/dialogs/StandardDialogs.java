@@ -327,24 +327,16 @@ public final class StandardDialogs {
                 .show();
     }
 
-    public static void showBadError(@NonNull final Context context,
-                                    @StringRes final int msgId) {
-        final String msg = createBadError(context, msgId);
-        new MaterialAlertDialogBuilder(context)
-                .setIcon(R.drawable.ic_error)
-                .setMessage(msg)
-                .setPositiveButton(android.R.string.ok, (d, w) -> d.dismiss())
-                .create()
-                .show();
+    public static String createBadError(@NonNull final Context context,
+                                        @StringRes final int msgId) {
+        return createBadError(context, context.getString(msgId));
     }
 
     public static String createBadError(@NonNull final Context context,
-                                        @StringRes final int msgId) {
-        return context.getString(msgId) + "\n"
-               + context.getString(R.string.error_if_the_problem_persists,
-                                   context.getString(R.string.lbl_send_debug));
+                                        @NonNull final String msg) {
+        return msg + "\n" + context.getString(R.string.error_if_the_problem_persists,
+                                              context.getString(R.string.lbl_send_debug));
     }
-
 
     /**
      * Show a popup info text.

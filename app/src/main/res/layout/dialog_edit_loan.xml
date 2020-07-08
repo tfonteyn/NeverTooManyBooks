@@ -72,7 +72,7 @@
                 >
 
                 <AutoCompleteTextView
-                    android:id="@+id/loaned_to"
+                    android:id="@+id/lend_to"
                     style="@style/personalNameTextEntry"
                     android:layout_width="match_parent"
                     android:imeOptions="actionDone"

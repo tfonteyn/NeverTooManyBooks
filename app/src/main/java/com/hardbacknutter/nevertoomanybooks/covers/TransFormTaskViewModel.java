@@ -34,8 +34,7 @@ import androidx.lifecycle.ViewModel;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.LiveDataEvent;
 
 /**
- * Acts as a listener handover between a {@link TransFormTask} and
- * the intended destination.
+ * Acts as a listener handover between a {@link TransFormTask} and the {@link CoverHandler}.
  */
 public class TransFormTaskViewModel
         extends ViewModel
@@ -44,12 +43,12 @@ public class TransFormTaskViewModel
     private final MutableLiveData<LiveDataEvent<TransFormTask.TransformedData>>
             mData = new MutableLiveData<>();
 
-    MutableLiveData<LiveDataEvent<TransFormTask.TransformedData>> getTransformedData() {
+    MutableLiveData<LiveDataEvent<TransFormTask.TransformedData>> onFinished() {
         return mData;
     }
 
     @Override
-    public void onAfterTransform(@NonNull final TransFormTask.TransformedData data) {
+    public void onFinished(@NonNull final TransFormTask.TransformedData data) {
         mData.setValue(new LiveDataEvent<>(data));
     }
 }

@@ -437,7 +437,7 @@
     <string name="pg_ui">Kullanıcı arayüzü</string>
     <string name="pg_ui_field_visibility">Alan görünürlüğünü yönet</string>
     <string name="progress_end_backup_success">Yedekleme başarılı!</string>
-    <string name="progress_end_cancelled">İptal edildi</string>
+    <string name="cancelled">İptal edildi</string>
     <string name="progress_end_import_complete">İçe aktarma başarılı</string>
     <string name="progress_end_import_partially_complete">Kısmi ithalat yapıldı</string>
     <string name="progress_msg_connecting">Ağ sayfasına bağlanılıyor…</string>

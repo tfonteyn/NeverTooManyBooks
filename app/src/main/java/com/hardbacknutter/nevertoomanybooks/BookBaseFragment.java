@@ -63,7 +63,11 @@ import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.fields.Fields;
+import com.hardbacknutter.nevertoomanybooks.goodreads.GrStatus;
+import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.GrAuthTask;
 import com.hardbacknutter.nevertoomanybooks.searches.amazon.AmazonSearchEngine;
+import com.hardbacknutter.nevertoomanybooks.tasks.messages.FinishedMessage;
+import com.hardbacknutter.nevertoomanybooks.tasks.messages.ProgressMessage;
 import com.hardbacknutter.nevertoomanybooks.utils.PermissionsHelper;
 import com.hardbacknutter.nevertoomanybooks.utils.ViewFocusOrder;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.BookViewModel;
@@ -87,22 +91,6 @@ public abstract class BookBaseFragment
     private final CoverBrowserDialogFragment.OnFileSelected mOnFileSelected =
             (cIdx, fileSpec) -> mCoverHandler[cIdx].onFileSelected(fileSpec);
 
-    /** simple indeterminate progress spinner to show while doing lengthy work. */
-    ProgressBar mProgressBar;
-    /** The book. Must be in the Activity scope. */
-    BookViewModel mBookViewModel;
-    /** Listener for all field changes. Must keep strong reference. */
-    private final Fields.AfterChangeListener mAfterChangeListener =
-            new Fields.AfterChangeListener() {
-                @Override
-                public void afterFieldChange(@IdRes final int fieldId) {
-                    mBookViewModel.setDirty(true);
-                }
-            };
-
-    @NonNull
-    abstract Fields getFields();
-
     /** (re)attach the result listener when a fragment gets started. */
     private final FragmentOnAttachListener mFragmentOnAttachListener =
             new FragmentOnAttachListener() {
@@ -118,6 +106,22 @@ public abstract class BookBaseFragment
                     }
                 }
             };
+    protected GrAuthTask mGrAuthTask;
+    /** simple indeterminate progress spinner to show while doing lengthy work. */
+    ProgressBar mProgressBar;
+    /** The book. Must be in the Activity scope. */
+    BookViewModel mBookViewModel;
+    /** Listener for all field changes. Must keep strong reference. */
+    private final Fields.AfterChangeListener mAfterChangeListener =
+            new Fields.AfterChangeListener() {
+                @Override
+                public void afterFieldChange(@IdRes final int fieldId) {
+                    mBookViewModel.setDirty(true);
+                }
+            };
+
+    @NonNull
+    abstract Fields getFields();
 
     @Override
     public void onRequestPermissionsResult(final int requestCode,
@@ -137,6 +141,8 @@ public abstract class BookBaseFragment
         mBookViewModel = new ViewModelProvider(getActivity()).get(BookViewModel.class);
         //noinspection ConstantConditions
         mBookViewModel.init(getContext(), getArguments());
+
+        mGrAuthTask = new ViewModelProvider(this).get(GrAuthTask.class);
     }
 
     @Override
@@ -147,7 +153,43 @@ public abstract class BookBaseFragment
 
         //noinspection ConstantConditions
         mProgressBar = getActivity().findViewById(R.id.progressBar);
+
+        mGrAuthTask.onProgressUpdate().observe(getViewLifecycleOwner(), this::onProgress);
+        mGrAuthTask.onCancelled().observe(getViewLifecycleOwner(), this::onCancelled);
+        mGrAuthTask.onFailure().observe(getViewLifecycleOwner(), this::onGrFailure);
+        mGrAuthTask.onFinished().observe(getViewLifecycleOwner(), this::onGrFinished);
     }
+
+    private void onProgress(@NonNull final ProgressMessage message) {
+        if (message.text != null) {
+            //noinspection ConstantConditions
+            Snackbar.make(getView(), message.text, Snackbar.LENGTH_LONG).show();
+        }
+    }
+
+    private void onCancelled(@NonNull final FinishedMessage<GrStatus> message) {
+        //noinspection ConstantConditions
+        Snackbar.make(getView(), R.string.cancelled, Snackbar.LENGTH_LONG).show();
+    }
+
+    private void onGrFailure(@NonNull final FinishedMessage<Exception> message) {
+        //noinspection ConstantConditions
+        Snackbar.make(getView(), GrStatus.getMessage(getContext(), message.result),
+                      Snackbar.LENGTH_LONG).show();
+    }
+
+    private void onGrFinished(@NonNull final FinishedMessage<GrStatus> message) {
+        Objects.requireNonNull(message.result, ErrorMsg.NULL_TASK_RESULTS);
+        if (message.result.getStatus() == GrStatus.FAILED_CREDENTIALS) {
+            //noinspection ConstantConditions
+            mGrAuthTask.prompt(getContext());
+        } else {
+            //noinspection ConstantConditions
+            Snackbar.make(getView(), message.result.getMessage(getContext()),
+                          Snackbar.LENGTH_LONG).show();
+        }
+    }
+
 
     /**
      * Hook up the Views, and populate them with the book data.
@@ -313,18 +355,6 @@ public abstract class BookBaseFragment
                 }
                 return super.onOptionsItemSelected(item);
             }
-        }
-    }
-
-    /**
-     * Allows the ViewModel to send us a message to display to the user.
-     *
-     * @param message to display
-     */
-    void showUserMessage(@Nullable final String message) {
-        final View view = getView();
-        if (view != null && message != null && !message.isEmpty()) {
-            Snackbar.make(view, message, Snackbar.LENGTH_LONG).show();
         }
     }
 

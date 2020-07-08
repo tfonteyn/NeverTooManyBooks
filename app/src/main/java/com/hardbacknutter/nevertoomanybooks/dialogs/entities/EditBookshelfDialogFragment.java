@@ -183,8 +183,6 @@ public class EditBookshelfDialogFragment
                 }
                 return true;
             }
-            return false;
-
         } else {
             // Merge the 2 shelves
             //noinspection ConstantConditions
@@ -211,8 +209,9 @@ public class EditBookshelfDialogFragment
                     })
                     .create()
                     .show();
-            return false;
         }
+
+        return false;
     }
 
     private void viewToModel() {

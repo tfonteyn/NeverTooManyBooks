@@ -47,12 +47,12 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            app:layout_constraintGuide_begin="@dimen/indent_field_guideline"
+            app:layout_constraintGuide_begin="@dimen/indent_field"
             />
 
         <TextView
             android:id="@+id/lbl_site"
-            style="@style/Label.Field"
+            style="@style/Text.Header.Large"
             android:text="@string/lbl_select_website"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"

@@ -51,6 +51,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 
+import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
@@ -65,7 +66,8 @@ import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.searches.SiteList;
-import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
+import com.hardbacknutter.nevertoomanybooks.tasks.messages.FinishedMessage;
+import com.hardbacknutter.nevertoomanybooks.tasks.messages.ProgressMessage;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
@@ -83,9 +85,9 @@ public class UpdateFieldsModel
     @NonNull
     private final Map<String, FieldUsage> mFieldUsages = new LinkedHashMap<>();
 
-    /** Using SingleLiveEvent to prevent multiple delivery after for example a device rotation. */
-    private final MutableLiveData<TaskListener.FinishMessage<Bundle>>
-            mTaskFinishedMessage = new SingleLiveEvent<>();
+    private final MutableLiveData<FinishedMessage<Bundle>> mListFinished = new SingleLiveEvent<>();
+    private final MutableLiveData<FinishedMessage<Exception>> mListFailed = new SingleLiveEvent<>();
+
     /**
      * Current and original book data.
      * Tracks between {@link #startSearch(Context)}
@@ -123,8 +125,14 @@ public class UpdateFieldsModel
 
     /** Observable. */
     @NonNull
-    public MutableLiveData<TaskListener.FinishMessage<Bundle>> onAllDone() {
-        return mTaskFinishedMessage;
+    public MutableLiveData<FinishedMessage<Bundle>> onAllDone() {
+        return mListFinished;
+    }
+
+    /** Observable. */
+    @NonNull
+    public MutableLiveData<FinishedMessage<Exception>> onCatastrophe() {
+        return mListFailed;
     }
 
     @Override
@@ -552,9 +560,10 @@ public class UpdateFieldsModel
         }
 
         //update the counter, another one done.
-        mSearchCoordinatorProgressMessage.setValue(new TaskListener.ProgressMessage(
+        mSearchCoordinatorProgress.setValue(new ProgressMessage(
                 R.id.TASK_ID_UPDATE_FIELDS, null,
-                mCurrentCursorCount, mCurrentProgressCounter, null));
+                mCurrentProgressCounter, mCurrentCursorCount, null
+        ));
 
         // On to the next book in the list.
         return nextBook(context);
@@ -612,18 +621,11 @@ public class UpdateFieldsModel
         setBaseMessage(null);
         super.cancel(false);
 
-        // Prepare the task result.
-        final TaskListener.TaskStatus taskStatus;
-        if (mIsCancelled) {
-            taskStatus = TaskListener.TaskStatus.Cancelled;
-        } else if (e != null) {
-            taskStatus = TaskListener.TaskStatus.Failed;
-        } else {
-            taskStatus = TaskListener.TaskStatus.Success;
-        }
+        // the last book id which was handled; can be used to restart the update.
+        mFromBookIdOnwards = mCurrentBookId;
 
         final Bundle data = new Bundle();
-        data.putLong(BKEY_LAST_BOOK_ID, mCurrentBookId);
+        data.putLong(BKEY_LAST_BOOK_ID, mFromBookIdOnwards);
 
         // all books || a list of books || (single book && ) not cancelled
         if (mBookIdList == null || mBookIdList.size() > 1 || !mIsCancelled) {
@@ -638,16 +640,22 @@ public class UpdateFieldsModel
             }
         }
 
-        final TaskListener.FinishMessage<Bundle> message = new TaskListener.FinishMessage<>(
-                R.id.TASK_ID_UPDATE_FIELDS, taskStatus, data, e);
-        // the last book id which was handled; can be used to restart the update.
-        if (message.result != null) {
-            mFromBookIdOnwards = message.result.getLong(UpdateFieldsModel.BKEY_LAST_BOOK_ID);
+        if (e != null) {
+            Logger.error(App.getAppContext(), TAG, e);
+            final FinishedMessage<Exception> message = new FinishedMessage<>(
+                    R.id.TASK_ID_UPDATE_FIELDS, e);
+            mListFailed.setValue(message);
+
+        } else {
+            final FinishedMessage<Bundle> message = new FinishedMessage<>(
+                    R.id.TASK_ID_UPDATE_FIELDS, data);
+            if (mIsCancelled) {
+                mSearchCoordinatorCancelled.setValue(message);
+            } else {
+                mListFinished.setValue(message);
+            }
         }
-
-        mTaskFinishedMessage.setValue(message);
     }
-
 
     /**
      * Filter the fields we want versus the fields we actually need for the given book data.

@@ -828,16 +828,28 @@ class IsfdbBookHandler
          *       <tr class="scan">
          *         <td>
          *           <a href="http://www.isfdb.org/wiki/images/e/e6/THDSFPRKPT1991.jpg">
-         *           <img src="http://www.isfdb.org/wiki/images/e/e6/THDSFPRKPT1991.jpg"
-         *              alt="picture" class="scan"></a>
+         *              <img src="http://www.isfdb.org/wiki/images/e/e6/THDSFPRKPT1991.jpg"
+         *                  alt="picture" class="scan">
+         *           </a>
          *         </td>
          *         ...
+         *     }
+         * </pre>
+         *
+         * These can be external urls as well. Example:
+         * <pre>
+         *   {@code
+         *      <a href="http://ecx.images-amazon.com/images/I/51j867aTc0L.jpg">
+         *          <img src="http://ecx.images-amazon.com/images/I/51j867aTc0L.jpg"
+         *              alt="picture" class="scan">
+         *      </a>
          *     }
          * </pre>
          */
         final Element img = mDoc.selectFirst(CSS_Q_DIV_CONTENTBOX).selectFirst("img");
         if (img != null) {
-            fetchCover(context, img.attr("src"), bookData);
+            final String coverUrl = img.attr("src");
+            fetchCover(context, coverUrl, bookData);
         }
     }
 

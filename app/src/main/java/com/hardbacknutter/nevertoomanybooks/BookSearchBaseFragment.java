@@ -62,7 +62,8 @@ import com.hardbacknutter.nevertoomanybooks.searches.SiteList;
 import com.hardbacknutter.nevertoomanybooks.settings.SearchAdminActivity;
 import com.hardbacknutter.nevertoomanybooks.settings.SearchAdminModel;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDialogFragment;
-import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
+import com.hardbacknutter.nevertoomanybooks.tasks.messages.FinishedMessage;
+import com.hardbacknutter.nevertoomanybooks.tasks.messages.ProgressMessage;
 import com.hardbacknutter.nevertoomanybooks.utils.NetworkUtils;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.ResultDataModel;
 
@@ -97,8 +98,13 @@ public abstract class BookSearchBaseFragment
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        mCoordinator.onProgress().observe(getViewLifecycleOwner(), this::onSearchProgress);
-        mCoordinator.onOneBookDone().observe(getViewLifecycleOwner(), this::onSearchFinished);
+        mCoordinator.onProgress().observe(getViewLifecycleOwner(), this::onProgress);
+        // Handle both Success and Failed searches
+        mCoordinator.onSearchFinished().observe(getViewLifecycleOwner(), this::onSearchFinished);
+        mCoordinator.onSearchCancelled().observe(getViewLifecycleOwner(), message -> {
+            closeProgressDialog();
+            onSearchCancelled();
+        });
 
         //noinspection ConstantConditions
         mResultData = new ViewModelProvider(getActivity()).get(ResultDataModel.class);
@@ -153,16 +159,8 @@ public abstract class BookSearchBaseFragment
         }
     }
 
-    private void onSearchFinished(@NonNull final TaskListener.FinishMessage<Bundle> message) {
-        if (mProgressDialog != null) {
-            mProgressDialog.dismiss();
-            mProgressDialog = null;
-        }
-
-        if (message.status == TaskListener.TaskStatus.Cancelled) {
-            onSearchCancelled();
-            return;
-        }
+    private void onSearchFinished(@NonNull final FinishedMessage<Bundle> message) {
+        closeProgressDialog();
 
         // sanity check
         Objects.requireNonNull(message.result, ErrorMsg.NULL_TASK_RESULTS);
@@ -188,11 +186,24 @@ public abstract class BookSearchBaseFragment
         }
     }
 
-    private void onSearchProgress(@NonNull final TaskListener.ProgressMessage message) {
+    @CallSuper
+    void onSearchCancelled() {
+        //noinspection ConstantConditions
+        Snackbar.make(getView(), R.string.cancelled, Snackbar.LENGTH_LONG).show();
+    }
+
+    private void onProgress(@NonNull final ProgressMessage message) {
         if (mProgressDialog == null) {
             mProgressDialog = getOrCreateProgressDialog();
         }
         mProgressDialog.onProgress(message);
+    }
+
+    private void closeProgressDialog() {
+        if (mProgressDialog != null) {
+            mProgressDialog.dismiss();
+            mProgressDialog = null;
+        }
     }
 
     @NonNull
@@ -215,11 +226,6 @@ public abstract class BookSearchBaseFragment
         return dialog;
     }
 
-    @CallSuper
-    void onSearchCancelled() {
-        //noinspection ConstantConditions
-        Snackbar.make(getView(), R.string.progress_end_cancelled, Snackbar.LENGTH_LONG).show();
-    }
 
     /**
      * Clear the SearchCoordinator search criteria.

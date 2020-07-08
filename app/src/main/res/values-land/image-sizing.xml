@@ -38,4 +38,7 @@
         <item>2</item>
         <item>2</item>
     </integer-array>
+
+    <integer name="cover_scale_browser_preview">3</integer>
+
 </resources>

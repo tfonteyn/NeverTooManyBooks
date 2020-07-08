@@ -312,7 +312,7 @@ public class EditBookActivity
 
         } catch (@NonNull final DAO.DaoWriteException e) {
             Logger.error(this, TAG, e);
-            StandardDialogs.showError(this, R.string.error_unexpected_error);
+            StandardDialogs.showError(this, R.string.error_storage_not_writable);
         }
     }
 
@@ -376,8 +376,7 @@ public class EditBookActivity
             try {
                 return mTabs.get(position).clazz.newInstance();
 
-            } catch (@NonNull final IllegalAccessException
-                    | java.lang.InstantiationException ignore) {
+            } catch (@NonNull final IllegalAccessException | InstantiationException ignore) {
                 // ignore
             }
             // We'll never get here...

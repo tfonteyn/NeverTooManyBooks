@@ -49,8 +49,6 @@ import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.tasks.TaskBase;
-import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 import com.hardbacknutter.nevertoomanybooks.utils.CameraHelper;
 
 /**
@@ -166,7 +164,7 @@ public class GoogleBarcodeScanner
     }
 
     /**
-     * If the Google barcode scanner can be loaded, create a dummy instance to
+     * If the Google barcode scanner factory can be loaded, create a dummy instance to
      * force it to download the native library if not done already.
      * <p>
      * This can be seen in the device logs as:
@@ -178,27 +176,17 @@ public class GoogleBarcodeScanner
      * Request download for engine barcode
      */
     public static class PreloadGoogleScanner
-            extends TaskBase<Boolean> {
-
-        /** Log tag. */
-        private static final String TAG = "PreloadGoogleScanner";
-
-        public PreloadGoogleScanner(final int taskId,
-                                    @NonNull final TaskListener<Boolean> taskListener) {
-            super(taskId, taskListener);
-        }
+            implements Runnable {
 
         @Override
-        protected Boolean doInBackground(@Nullable final Void... voids) {
-            Thread.currentThread().setName(TAG);
+        public void run() {
+            Thread.currentThread().setName("PreloadGoogleScanner");
             final Context context = App.getTaskContext();
-
-            ScannerFactory factory = new GoogleBarcodeScannerFactory();
+            final ScannerFactory factory = new GoogleBarcodeScannerFactory();
             if (factory.isAvailable(context)) {
                 // trigger the download if needed.
                 factory.getScanner(context);
             }
-            return true;
         }
     }
 }

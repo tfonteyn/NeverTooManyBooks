@@ -122,6 +122,7 @@ public class BooklistAdapter
     /** The combined click and long-click listeners for a single row. */
     @Nullable
     private OnRowClickedListener mOnRowClickedListener;
+
     /**
      * Constructor.
      *
@@ -962,9 +963,10 @@ public class BooklistAdapter
                         final String currentUuid = (String) v.getTag(R.id.TAG_ITEM);
                         final File image = AppDir.getCoverFile(activity, currentUuid, 0);
                         if (image.exists()) {
-                            ZoomedImageDialogFragment.newInstance(image).show(
-                                    activity.getSupportFragmentManager(),
-                                    ZoomedImageDialogFragment.TAG);
+                            ZoomedImageDialogFragment
+                                    .newInstance(image)
+                                    .show(activity.getSupportFragmentManager(),
+                                          ZoomedImageDialogFragment.TAG);
                         }
                     });
                 }

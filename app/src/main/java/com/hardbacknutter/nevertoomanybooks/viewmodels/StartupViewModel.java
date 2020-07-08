@@ -51,9 +51,11 @@ import com.hardbacknutter.nevertoomanybooks.database.tasks.Scheduler;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.scanner.GoogleBarcodeScanner;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
+import com.hardbacknutter.nevertoomanybooks.tasks.BuildLanguageMappingsTask;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskBase;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
-import com.hardbacknutter.nevertoomanybooks.utils.LanguageUtils;
+import com.hardbacknutter.nevertoomanybooks.tasks.messages.FinishedMessage;
+import com.hardbacknutter.nevertoomanybooks.tasks.messages.ProgressMessage;
 import com.hardbacknutter.nevertoomanybooks.utils.UpgradeMessageManager;
 
 /**
@@ -86,10 +88,24 @@ public class StartupViewModel
          * Called when any startup task completes. If no more tasks, let the activity know.
          */
         @Override
-        public void onFinished(@NonNull final FinishMessage<Boolean> message) {
+        public void onFinished(@NonNull final FinishedMessage<Boolean> message) {
+            cleanup(message.taskId);
+        }
+
+        @Override
+        public void onCancelled(@NonNull final FinishedMessage<Boolean> message) {
+            cleanup(message.taskId);
+        }
+
+        @Override
+        public void onFailure(@NonNull final FinishedMessage<Exception> message) {
             // We don't care about the status.
+            cleanup(message.taskId);
+        }
+
+        private void cleanup(final int taskId) {
             synchronized (mAllTasks) {
-                mAllTasks.remove(message.taskId);
+                mAllTasks.remove(taskId);
                 if (mAllTasks.isEmpty()) {
                     mAllTasksFinished.setValue(true);
                 }
@@ -106,11 +122,11 @@ public class StartupViewModel
     private DAO mDb;
     /** Flag to ensure tasks are only ever started once. */
     private boolean mIsFirstStart = true;
+    /** stage the startup is at. */
+    private int mStartupStage;
 
     /** Flag we need to prompt the user to make a backup after startup. */
     private boolean mProposeBackup;
-    /** Flag indicating a backup is required after startup. */
-    private boolean mBackupRequired;
 
     /** Triggers periodic maintenance tasks. */
     private boolean mDoMaintenance;
@@ -197,12 +213,12 @@ public class StartupViewModel
         return mProposeBackup;
     }
 
-    public boolean isBackupRequired() {
-        return mBackupRequired;
+    public int getStartupStage() {
+        return mStartupStage;
     }
 
-    public void setBackupRequired() {
-        mBackupRequired = true;
+    public void incStartupStage() {
+        mStartupStage++;
     }
 
     /**
@@ -244,41 +260,48 @@ public class StartupViewModel
             return;
         }
 
-        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        // Start these as fire-and-forget runnable; no need to wait for them.
+        AsyncTask.THREAD_POOL_EXECUTOR.execute(new BuildLanguageMappingsTask());
 
-        int taskId = 0;
-        // start these unconditionally
-        startTask(new LanguageUtils.BuildLanguageMappingsTask(++taskId, mTaskListener), false);
         // perhaps delay this until the user selects the google scanner?
-        startTask(new GoogleBarcodeScanner.PreloadGoogleScanner(++taskId, mTaskListener), true);
+        AsyncTask.THREAD_POOL_EXECUTOR.execute(new GoogleBarcodeScanner.PreloadGoogleScanner());
+
+
+        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        int taskId = 0;
+        boolean optimizeDb = false;
 
         // this is not critical, once every so often is fine
         if (mDoMaintenance) {
             // cleaner must be started after the language mapper task,
             // but before the rebuild tasks.
-            startTask(new DBCleanerTask(++taskId, mDb, mTaskListener), false);
+            startTask(new DBCleanerTask(++taskId, mDb, mTaskListener));
+            optimizeDb = true;
         }
 
         // on demand only
         if (prefs.getBoolean(Scheduler.PREF_REBUILD_ORDERBY_COLUMNS, false)) {
-            startTask(new RebuildOrderByTitleColumnsTask(++taskId, mDb, mTaskListener), false);
+            startTask(new RebuildOrderByTitleColumnsTask(++taskId, mDb, mTaskListener));
+            optimizeDb = true;
         }
 
         // on demand only
         if (prefs.getBoolean(Scheduler.PREF_REBUILD_INDEXES, false)) {
-            startTask(new RebuildIndexesTask(++taskId, mTaskListener), false);
+            startTask(new RebuildIndexesTask(++taskId, mTaskListener));
+            optimizeDb = true;
         }
 
         // on demand only
         if (prefs.getBoolean(Scheduler.PREF_REBUILD_FTS, false)) {
-            startTask(new RebuildFtsTask(++taskId, mDb, mTaskListener), false);
+            startTask(new RebuildFtsTask(++taskId, mDb, mTaskListener));
+            optimizeDb = true;
         }
 
-        // shouldn't be needed every single time.
-        if (mDoMaintenance) {
+        // triggered by any of the above as needed
+        if (optimizeDb) {
             // optimize db should always be started as the last task.
             startTask(new OptimizeDbTask(++taskId, ImageUtils.imagesAreCached(context),
-                                         mTaskListener), false);
+                                         mTaskListener));
         }
 
         synchronized (mAllTasks) {
@@ -288,15 +311,10 @@ public class StartupViewModel
         }
     }
 
-    private void startTask(@NonNull final TaskBase<Boolean> task,
-                           final boolean inParallel) {
+    private void startTask(@NonNull final TaskBase<Boolean> task) {
         synchronized (mAllTasks) {
             mAllTasks.add(task.getTaskId());
-            if (inParallel) {
-                task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-            } else {
-                task.execute();
-            }
+            task.execute();
         }
     }
 }

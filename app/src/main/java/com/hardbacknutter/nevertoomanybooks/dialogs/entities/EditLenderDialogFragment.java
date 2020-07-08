@@ -189,7 +189,7 @@ public class EditLenderDialogFragment
             return false;
         });
 
-        mVb.loanedTo.setText(mLoanee);
+        mVb.lendTo.setText(mLoanee);
 
         final ArrayList<String> contacts = getContacts();
         if (contacts != null) {
@@ -253,7 +253,7 @@ public class EditLenderDialogFragment
         //noinspection ConstantConditions
         DiacriticArrayAdapter<String> adapter = new DiacriticArrayAdapter<>(
                 getContext(), R.layout.dropdown_menu_popup_item, people);
-        mVb.loanedTo.setAdapter(adapter);
+        mVb.lendTo.setAdapter(adapter);
     }
 
     private boolean saveChanges() {
@@ -295,7 +295,7 @@ public class EditLenderDialogFragment
     }
 
     private void viewToModel() {
-        mLoanee = mVb.loanedTo.getText().toString().trim();
+        mLoanee = mVb.lendTo.getText().toString().trim();
     }
 
     @Override

@@ -53,32 +53,33 @@ import java.util.Objects;
 import com.hardbacknutter.nevertoomanybooks.backup.ArchiveContainer;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportHelperDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportManager;
+import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveImportTask;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ImportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.base.Options;
 import com.hardbacknutter.nevertoomanybooks.backup.base.OptionsDialogBase;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDialogFragment;
-import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
+import com.hardbacknutter.nevertoomanybooks.tasks.messages.FinishedMessage;
+import com.hardbacknutter.nevertoomanybooks.tasks.messages.ProgressMessage;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.ResultDataModel;
-import com.hardbacknutter.nevertoomanybooks.viewmodels.tasks.ImportTaskModel;
 
 public class ImportFragment
         extends Fragment {
 
     /** Log tag. */
     public static final String TAG = "ImportFragment";
+    /** Import. */
+    private ArchiveImportTask mImportModel;
     @Nullable
     private ProgressDialogFragment mProgressDialog;
     /** ViewModel. */
     private ResultDataModel mResultData;
-    /** Import. */
-    private ImportTaskModel mImportModel;
     private final OptionsDialogBase.OptionsListener<ImportManager> mImportOptionsListener =
             new OptionsDialogBase.OptionsListener<ImportManager>() {
                 @Override
                 public void onOptionsSet(@NonNull final ImportManager options) {
-                    mImportModel.startArchiveImportTask(options);
+                    mImportModel.startImport(options);
                 }
 
                 @Override
@@ -87,7 +88,6 @@ public class ImportFragment
                     getActivity().finish();
                 }
             };
-
     /** (re)attach the result listener when a fragment gets started. */
     private final FragmentOnAttachListener mFragmentOnAttachListener =
             new FragmentOnAttachListener() {
@@ -112,7 +112,7 @@ public class ImportFragment
 
         //noinspection ConstantConditions
         mResultData = new ViewModelProvider(getActivity()).get(ResultDataModel.class);
-        mImportModel = new ViewModelProvider(this).get(ImportTaskModel.class);
+        mImportModel = new ViewModelProvider(this).get(ArchiveImportTask.class);
     }
 
     @Nullable
@@ -128,8 +128,14 @@ public class ImportFragment
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        mImportModel.onTaskProgress().observe(getViewLifecycleOwner(), this::onTaskProgress);
-        mImportModel.onTaskFinished().observe(getViewLifecycleOwner(), this::onImportFinished);
+        //noinspection ConstantConditions
+        getActivity().setTitle(R.string.lbl_import);
+
+        mImportModel.onProgressUpdate().observe(getViewLifecycleOwner(), this::onTaskProgress);
+        mImportModel.onCancelled().observe(getViewLifecycleOwner(), this::onImportCancelled);
+        mImportModel.onFailure().observe(getViewLifecycleOwner(), this::onImportFailure);
+        mImportModel.onFinished().observe(getViewLifecycleOwner(), this::onImportFinished);
+
         importPickUri();
     }
 
@@ -169,11 +175,18 @@ public class ImportFragment
         }
     }
 
-    private void onTaskProgress(@NonNull final TaskListener.ProgressMessage message) {
+    private void onTaskProgress(@NonNull final ProgressMessage message) {
         if (mProgressDialog == null) {
             mProgressDialog = getOrCreateProgressDialog();
         }
         mProgressDialog.onProgress(message);
+    }
+
+    private void closeProgressDialog() {
+        if (mProgressDialog != null) {
+            mProgressDialog.dismiss();
+            mProgressDialog = null;
+        }
     }
 
     @NonNull
@@ -190,7 +203,7 @@ public class ImportFragment
         }
 
         // hook the task up.
-        dialog.setCanceller(mImportModel.getTask());
+        dialog.setCanceller(mImportModel);
 
         return dialog;
     }
@@ -243,7 +256,6 @@ public class ImportFragment
                     .setNegativeButton(android.R.string.cancel, (d, w) -> getActivity().finish())
                     .setPositiveButton(android.R.string.ok, (d, w) -> ImportHelperDialogFragment
                             .newInstance(helper)
-                            //TEST: screen rotation
                             .show(getChildFragmentManager(), ImportHelperDialogFragment.TAG))
                     .create()
                     .show();
@@ -258,12 +270,37 @@ public class ImportFragment
                     .setNegativeButton(android.R.string.cancel, (d, w) -> getActivity().finish())
                     .setNeutralButton(R.string.btn_options, (d, w) -> ImportHelperDialogFragment
                             .newInstance(helper)
-                            //TEST: screen rotation
                             .show(getChildFragmentManager(), ImportHelperDialogFragment.TAG))
                     .setPositiveButton(android.R.string.ok, (d, w) -> mImportModel
-                            .startArchiveImportTask(helper))
+                            .startImport(helper))
                     .create()
                     .show();
+        }
+    }
+
+    private void onImportFailure(@NonNull final FinishedMessage<Exception> message) {
+        closeProgressDialog();
+
+        // sanity check
+        Objects.requireNonNull(message.result, ErrorMsg.NULL_EXCEPTION);
+        //noinspection ConstantConditions
+        new MaterialAlertDialogBuilder(getContext())
+                .setIcon(R.drawable.ic_error)
+                .setTitle(R.string.error_import_failed)
+                .setMessage(ImportManager.createErrorReport(getContext(), message.result))
+                .setPositiveButton(android.R.string.ok, (d, w) -> d.dismiss())
+                .create()
+                .show();
+    }
+
+    private void onImportCancelled(@NonNull final FinishedMessage<ImportManager> message) {
+        closeProgressDialog();
+
+        if (message.result != null) {
+            onImportFinished(R.string.progress_end_import_partially_complete, message.result);
+        } else {
+            //noinspection ConstantConditions
+            Snackbar.make(getView(), R.string.cancelled, Snackbar.LENGTH_LONG).show();
         }
     }
 
@@ -272,71 +309,31 @@ public class ImportFragment
      *
      * @param message to process
      */
-    private void onImportFinished(@NonNull final TaskListener.FinishMessage<ImportManager>
-                                          message) {
-        if (mProgressDialog != null) {
-            mProgressDialog.dismiss();
-            mProgressDialog = null;
-        }
+    private void onImportFinished(@NonNull final FinishedMessage<ImportManager> message) {
+        closeProgressDialog();
 
-        switch (message.status) {
-            case Success: {
-                // sanity check
-                Objects.requireNonNull(message.result, ErrorMsg.NULL_TASK_RESULTS);
-                onImportFinished(R.string.progress_end_import_complete,
-                                 message.result.getOptions(),
-                                 message.result.getResults());
-                break;
-            }
-            case Cancelled: {
-                if (message.result != null) {
-                    onImportFinished(R.string.progress_end_import_partially_complete,
-                                     message.result.getOptions(),
-                                     message.result.getResults());
-                } else {
-                    //noinspection ConstantConditions
-                    Snackbar.make(getView(), R.string.progress_end_cancelled,
-                                  Snackbar.LENGTH_LONG).show();
-                }
-                break;
-            }
-            case Failed: {
-                // sanity check
-                Objects.requireNonNull(message.result, ErrorMsg.NULL_TASK_RESULTS);
-                //noinspection ConstantConditions
-                final String msg = message.result
-                        .createErrorReport(getContext(), message.exception);
-                //noinspection ConstantConditions
-                new MaterialAlertDialogBuilder(getContext())
-                        .setIcon(R.drawable.ic_error)
-                        .setTitle(R.string.error_import_failed)
-                        .setMessage(msg)
-                        .setPositiveButton(android.R.string.ok, (d, w) -> getActivity().finish())
-                        .create()
-                        .show();
-                break;
-            }
-        }
+        // sanity check
+        Objects.requireNonNull(message.result, ErrorMsg.NULL_TASK_RESULTS);
+        onImportFinished(R.string.progress_end_import_complete, message.result);
     }
 
     /**
      * Import finished: Step 2: Inform the user.
      *
-     * @param titleId for the dialog title; reports success or cancelled.
-     * @param options what was actually imported
-     * @param results details of the import
+     * @param titleId       for the dialog title; reports success or cancelled.
+     * @param importManager details of the import
      */
     private void onImportFinished(@StringRes final int titleId,
-                                  final int options,
-                                  @NonNull final ImportResults results) {
+                                  @NonNull final ImportManager importManager) {
 
         //noinspection ConstantConditions
         new MaterialAlertDialogBuilder(getContext())
                 .setIcon(R.drawable.ic_info)
                 .setTitle(titleId)
-                .setMessage(results.createReport(getContext()))
+                .setMessage(importManager.getResults().createReport(getContext()))
                 .setPositiveButton(R.string.done, (d, w) -> {
-                    mResultData.putResultData(ImportResults.BKEY_IMPORT_RESULTS, options);
+                    mResultData.putResultData(ImportResults.BKEY_IMPORT_RESULTS,
+                                              importManager.getOptions());
                     //noinspection ConstantConditions
                     getActivity().setResult(Activity.RESULT_OK, mResultData.getResultIntent());
                     getActivity().finish();

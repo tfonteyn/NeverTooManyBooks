@@ -28,20 +28,19 @@
 package com.hardbacknutter.nevertoomanybooks.backup.base;
 
 import android.content.Context;
+import android.net.Uri;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
 
 import java.io.IOException;
+import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportManager;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
-import com.hardbacknutter.nevertoomanybooks.tasks.TaskBase;
-import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
+import com.hardbacknutter.nevertoomanybooks.tasks.VMTask;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 
 /**
@@ -49,54 +48,57 @@ import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
  * Output: the updated {@link ExportManager} with the {@link ExportResults}.
  */
 public class ArchiveExportTask
-        extends TaskBase<ExportManager> {
+        extends VMTask<ExportManager> {
 
     /** Log tag. */
     private static final String TAG = "ArchiveExportTask";
 
     /** export configuration. */
-    @NonNull
-    private final ExportManager mHelper;
+    @Nullable
+    private ExportManager mHelper;
+
+    public void setHelper(@NonNull final ExportManager helper) {
+        mHelper = helper;
+    }
+
+    public String getDefaultUriName(@NonNull final Context context) {
+        Objects.requireNonNull(mHelper);
+        return Exporter.getNamePrefix(context) + mHelper.getArchiveContainer().getFileExt();
+    }
 
     /**
-     * Constructor.
+     * Start the task.
+     * {@link #setHelper(ExportManager)} must have been called before.
      *
-     * @param context      Current context
-     * @param helper       export configuration
-     * @param taskListener for sending progress and finish messages to.
+     * @param context Current context
+     * @param uri     to write to
      */
-    @UiThread
-    public ArchiveExportTask(@NonNull final Context context,
-                             @NonNull final ExportManager helper,
-                             @NonNull final TaskListener<ExportManager> taskListener) {
-        super(R.id.TASK_ID_EXPORT, taskListener);
-        mHelper = helper;
-        mHelper.validate(context);
+    public void startExport(@NonNull final Context context,
+                            @NonNull final Uri uri) {
+        Objects.requireNonNull(mHelper);
+        mHelper.setUri(uri);
+        execute(R.id.TASK_ID_EXPORT);
     }
 
     @Override
     @NonNull
     @WorkerThread
-    protected ExportManager doInBackground(@Nullable final Void... voids) {
+    protected ExportManager doWork()
+            throws IOException {
         Thread.currentThread().setName(TAG);
         final Context context = LocaleUtils.applyLocale(App.getTaskContext());
 
+        //noinspection ConstantConditions
         try (ArchiveWriter exporter = mHelper.getArchiveWriter(context)) {
-            mHelper.setResults(exporter.write(context, getProgressListener()));
-        } catch (@NonNull final IOException e) {
-            Logger.error(context, TAG, e);
-            mException = e;
+            mHelper.setResults(exporter.write(context, this));
         }
 
         // The output file is now properly closed, export it to the user Uri
-        try {
-            if (mException == null && !isCancelled()) {
-                mHelper.onSuccess(context);
-                return mHelper;
-            }
-        } catch (@NonNull final IOException e) {
-            Logger.error(context, TAG, e);
+        if (!isCancelled()) {
+            mHelper.onSuccess(context);
+            return mHelper;
         }
+
         mHelper.onFail(context);
         return mHelper;
     }

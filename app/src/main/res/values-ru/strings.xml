@@ -435,7 +435,7 @@
     <string name="pg_ui">Пользовательский интерфейс</string>
     <string name="pg_ui_field_visibility">Видимость полей</string>
     <string name="progress_end_backup_success">Резервное копирование успешно</string>
-    <string name="progress_end_cancelled">Отменено</string>
+    <string name="cancelled">Отменено</string>
     <string name="progress_end_import_complete">Импорт завершен</string>
     <string name="progress_end_import_partially_complete">Частичный импорт выполнен</string>
     <string name="progress_msg_connecting">Соединение с сайтом…</string>

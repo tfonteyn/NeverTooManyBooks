@@ -54,7 +54,6 @@ import com.google.android.material.snackbar.Snackbar;
 
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentUpdateFromInternetBinding;
-import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
@@ -63,7 +62,8 @@ import com.hardbacknutter.nevertoomanybooks.searches.SiteList;
 import com.hardbacknutter.nevertoomanybooks.settings.SearchAdminActivity;
 import com.hardbacknutter.nevertoomanybooks.settings.SearchAdminModel;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDialogFragment;
-import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
+import com.hardbacknutter.nevertoomanybooks.tasks.messages.FinishedMessage;
+import com.hardbacknutter.nevertoomanybooks.tasks.messages.ProgressMessage;
 import com.hardbacknutter.nevertoomanybooks.utils.NetworkUtils;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.UpdateFieldsModel;
 
@@ -113,14 +113,28 @@ public class UpdateFieldsFragment
 
         final Activity activity = getActivity();
 
-        mUpdateFieldsModel.onProgress()
-                          .observe(getViewLifecycleOwner(), this::onTaskProgress);
-        // INDIVIDUAL searches; i.e. for each book.
-        mUpdateFieldsModel.onOneBookDone()
-                          .observe(getViewLifecycleOwner(), this::onTaskFinished);
-        // The update task itself; i.e. the end result.
-        mUpdateFieldsModel.onAllDone()
-                          .observe(getViewLifecycleOwner(), this::onTaskFinished);
+        // Progress from individual searches AND overall progress
+        mUpdateFieldsModel.onProgress().observe(getViewLifecycleOwner(), this::onProgress);
+
+        // An individual book search finished.
+        mUpdateFieldsModel.onSearchFinished().observe(getViewLifecycleOwner(), message -> {
+            //noinspection ConstantConditions
+            mUpdateFieldsModel.processSearchResults(getContext(), message.result);
+        });
+
+        // User cancelled the update
+        mUpdateFieldsModel.onSearchCancelled().observe(getViewLifecycleOwner(), message -> {
+            // Unlikely to be seen...
+            Snackbar.make(mVb.getRoot(), R.string.cancelled, Snackbar.LENGTH_LONG).show();
+            // report up what work did get done + the last book we did.
+            onAllDone(message);
+        });
+
+        // The full list was processed
+        mUpdateFieldsModel.onAllDone().observe(getViewLifecycleOwner(), this::onAllDone);
+
+        // Something really bad happened and we're aborting
+        mUpdateFieldsModel.onCatastrophe().observe(getViewLifecycleOwner(), this::onCatastrophe);
 
         // optional activity title
         if (getArguments() != null && getArguments()
@@ -329,51 +343,61 @@ public class UpdateFieldsFragment
         }
     }
 
-    private void onTaskFinished(@NonNull final TaskListener.FinishMessage<Bundle> message) {
-        switch (message.taskId) {
-            case R.id.TASK_ID_SEARCH_COORDINATOR: {
-                //noinspection ConstantConditions
-                mUpdateFieldsModel.processSearchResults(getContext(), message.result);
-                break;
-            }
+    private void onAllDone(@NonNull final FinishedMessage<Bundle> message) {
+        closeProgressDialog();
 
-            case R.id.TASK_ID_UPDATE_FIELDS: {
-                if (mProgressDialog != null) {
-                    mProgressDialog.dismiss();
-                    mProgressDialog = null;
-                }
-
-                if (message.status == TaskListener.TaskStatus.Cancelled) {
-                    // This message will likely not be seen as we'll finish after.
-                    Snackbar.make(mVb.getRoot(), R.string.progress_end_cancelled,
-                                  Snackbar.LENGTH_LONG).show();
-                }
-
-                if (message.result != null) {
-                    // The result will contain:
-                    // UpdateFieldsModel.BKEY_LAST_BOOK_ID, long
-                    // UniqueId.BKEY_BOOK_MODIFIED, boolean
-                    // DBDefinitions.KEY_PK_ID, long (can be absent)
-                    final Intent data = new Intent().putExtras(message.result);
-                    //noinspection ConstantConditions
-                    getActivity().setResult(Activity.RESULT_OK, data);
-                }
-
-                //noinspection ConstantConditions
-                getActivity().finish();
-                break;
-            }
-
-            default:
-                throw new IllegalArgumentException(ErrorMsg.UNEXPECTED_VALUE + message.taskId);
+        if (message.result != null) {
+            // The result will contain:
+            // UpdateFieldsModel.BKEY_LAST_BOOK_ID, long
+            // UniqueId.BKEY_BOOK_MODIFIED, boolean
+            // DBDefinitions.KEY_PK_ID, long (can be absent)
+            final Intent data = new Intent().putExtras(message.result);
+            //noinspection ConstantConditions
+            getActivity().setResult(Activity.RESULT_OK, data);
         }
+
+        //noinspection ConstantConditions
+        getActivity().finish();
     }
 
-    private void onTaskProgress(@NonNull final TaskListener.ProgressMessage message) {
+    private void onCatastrophe(@NonNull final FinishedMessage<Exception> message) {
+        closeProgressDialog();
+
+        String msg = null;
+        if (message.result != null) {
+            msg = message.result.getLocalizedMessage();
+        }
+        if (msg == null) {
+            msg = getString(R.string.error_unexpected_error);
+        }
+
+        //noinspection ConstantConditions
+        msg = StandardDialogs.createBadError(getContext(), msg);
+
+        new MaterialAlertDialogBuilder(getContext())
+                .setIcon(R.drawable.ic_error)
+                .setMessage(msg)
+                .setPositiveButton(android.R.string.ok, (d, w) -> {
+                    d.dismiss();
+                    //noinspection ConstantConditions
+                    getActivity().finish();
+                })
+                .create()
+                .show();
+    }
+
+    private void onProgress(@NonNull final ProgressMessage message) {
         if (mProgressDialog == null) {
             mProgressDialog = getOrCreateProgressDialog();
         }
         mProgressDialog.onProgress(message);
+    }
+
+    private void closeProgressDialog() {
+        if (mProgressDialog != null) {
+            mProgressDialog.dismiss();
+            mProgressDialog = null;
+        }
     }
 
     @NonNull

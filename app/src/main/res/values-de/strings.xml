@@ -441,7 +441,7 @@
     <string name="pg_ui">Benutzeroberfläche</string>
     <string name="pg_ui_field_visibility">Feld Sichtbarkeit bearbeiten</string>
     <string name="progress_end_backup_success">Sicherungskopie erfolgreich erstellt</string>
-    <string name="progress_end_cancelled">Abgebrochen</string>
+    <string name="cancelled">Abgebrochen</string>
     <string name="progress_end_import_complete">Import vollständig</string>
     <string name="progress_end_import_partially_complete">Teilweise importiert</string>
     <string name="progress_msg_connecting">Verbinde mit der Website…</string>

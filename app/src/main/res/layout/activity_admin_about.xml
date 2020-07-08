@@ -104,7 +104,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            app:layout_constraintGuide_begin="@dimen/indent_field_guideline"
+            app:layout_constraintGuide_begin="@dimen/indent_field"
             />
 
         <com.hardbacknutter.nevertoomanybooks.widgets.ExtGroup
@@ -118,7 +118,10 @@
 
         <TextView
             android:id="@+id/debug_section_lbl"
-            style="@style/Label.Header"
+            style="@style/Text.Header"
+            android:layout_marginTop="@dimen/border2"
+            android:textAllCaps="true"
+            android:textStyle="bold"
             android:text="@string/debug"
             app:layout_constraintStart_toEndOf="@id/indents"
             app:layout_constraintTop_toBottomOf="@id/sepBar"
@@ -159,7 +162,10 @@
 
         <TextView
             android:id="@+id/contacts"
-            style="@style/Label.Header"
+            style="@style/Text.Header"
+            android:layout_marginTop="@dimen/border2"
+            android:textAllCaps="true"
+            android:textStyle="bold"
             android:text="@string/lbl_about_contact"
             app:layout_constraintStart_toEndOf="@id/indents"
             app:layout_constraintTop_toBottomOf="@id/debug_dump_temp_tables"

@@ -101,6 +101,22 @@ public class EditBookAuthorListDialogFragment
 
     /** Fragment/Log tag. */
     static final String TAG = "EditBookAuthorListDlg";
+    /** (re)attach the result listener when a fragment gets started. */
+    private final FragmentOnAttachListener mFragmentOnAttachListener =
+            new FragmentOnAttachListener() {
+                @Override
+                public void onAttachFragment(@NonNull final FragmentManager fragmentManager,
+                                             @NonNull final Fragment fragment) {
+                    if (BuildConfig.DEBUG && DEBUG_SWITCHES.ATTACH_FRAGMENT) {
+                        Log.d(getClass().getName(), "onAttachFragment: " + fragment.getTag());
+                    }
+
+                    if (fragment instanceof EditAuthorForBookDialogFragment) {
+                        ((EditAuthorForBookDialogFragment) fragment)
+                                .setListener(mOnProcessChangesListener);
+                    }
+                }
+            };
     /** Database Access. */
     private DAO mDb;
     /** The book. Must be in the Activity scope. */
@@ -121,22 +137,6 @@ public class EditBookAuthorListDialogFragment
     private AuthorListAdapter mListAdapter;
     private final EditAuthorForBookDialogFragment.OnProcessChangesListener
             mOnProcessChangesListener = EditBookAuthorListDialogFragment.this::processChanges;
-    /** (re)attach the result listener when a fragment gets started. */
-    private final FragmentOnAttachListener mFragmentOnAttachListener =
-            new FragmentOnAttachListener() {
-                @Override
-                public void onAttachFragment(@NonNull final FragmentManager fragmentManager,
-                                             @NonNull final Fragment fragment) {
-                    if (BuildConfig.DEBUG && DEBUG_SWITCHES.ATTACH_FRAGMENT) {
-                        Log.d(getClass().getName(), "onAttachFragment: " + fragment.getTag());
-                    }
-
-                    if (fragment instanceof EditAuthorForBookDialogFragment) {
-                        ((EditAuthorForBookDialogFragment) fragment)
-                                .setListener(mOnProcessChangesListener);
-                    }
-                }
-            };
     /** Drag and drop support for the list view. */
     private ItemTouchHelper mItemTouchHelper;
 
@@ -346,7 +346,7 @@ public class EditBookAuthorListDialogFragment
             Logger.warnWithStackTrace(getContext(), TAG, "Could not update",
                                       "original=" + original,
                                       "modified=" + modified);
-            StandardDialogs.showError(getContext(), R.string.error_unexpected_error);
+            StandardDialogs.showError(getContext(), R.string.error_storage_not_writable);
         }
     }
 
@@ -547,11 +547,13 @@ public class EditBookAuthorListDialogFragment
                 mVb.btnUseAuthorType.setOnCheckedChangeListener(
                         (v, isChecked) -> setTypeEnabled(isChecked));
 
+                // NEWTHINGS: author type: add a button to the layout
                 mTypeButtons.put(Author.TYPE_WRITER, mVb.cbxAuthorTypeWriter);
                 mTypeButtons.put(Author.TYPE_CONTRIBUTOR, mVb.cbxAuthorTypeContributor);
                 mTypeButtons.put(Author.TYPE_INTRODUCTION, mVb.cbxAuthorTypeIntro);
                 mTypeButtons.put(Author.TYPE_TRANSLATOR, mVb.cbxAuthorTypeTranslator);
                 mTypeButtons.put(Author.TYPE_EDITOR, mVb.cbxAuthorTypeEditor);
+                mTypeButtons.put(Author.TYPE_NARRATOR, mVb.cbxAuthorTypeNarrator);
 
                 mTypeButtons.put(Author.TYPE_ARTIST, mVb.cbxAuthorTypeArtist);
                 mTypeButtons.put(Author.TYPE_INKING, mVb.cbxAuthorTypeInking);
@@ -737,11 +739,9 @@ public class EditBookAuthorListDialogFragment
             mFormatter.apply(author, holder.authorView);
 
             // click -> edit
-            holder.rowDetailsView.setOnClickListener(v -> {
-                final DialogFragment frag = EditAuthorForBookDialogFragment
-                        .newInstance(mBookViewModel.getBook().getTitle(), author);
-                frag.show(getParentFragmentManager(), EditAuthorForBookDialogFragment.TAG);
-            });
+            holder.rowDetailsView.setOnClickListener(v -> EditAuthorForBookDialogFragment
+                    .newInstance(mBookViewModel.getBook().getTitle(), author)
+                    .show(getParentFragmentManager(), EditAuthorForBookDialogFragment.TAG));
         }
     }
 }

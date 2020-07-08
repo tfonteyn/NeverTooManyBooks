@@ -54,8 +54,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * A lifecycle-aware observable that sends only new updates after subscription,
- * used for events like navigation, Snackbar messages and specifically
- * {@link com.hardbacknutter.nevertoomanybooks.tasks.TaskListener.FinishMessage}.
  * <p>
  * This avoids a common problem with events: on configuration change (like rotation) an update
  * can be emitted if the observer is active. This LiveData only calls the observable if there's an
@@ -65,7 +63,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  *
  * <a href="https://github.com/android/architecture-samples/tree/dev-todo-mvvm-live">
  * https://github.com/android/architecture-samples/tree/dev-todo-mvvm-live</a>
- *
+ * <p>
  * See {@link LiveDataEvent} for an alternative.
  */
 public class SingleLiveEvent<T>

@@ -33,7 +33,6 @@ import android.util.Log;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
 
 import java.io.File;
@@ -41,20 +40,14 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
-import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.searches.Site;
 import com.hardbacknutter.nevertoomanybooks.searches.SiteList;
 import com.hardbacknutter.nevertoomanybooks.tasks.Canceller;
-import com.hardbacknutter.nevertoomanybooks.tasks.TaskBase;
-import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
-import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 
 /**
  * Handles downloading, checking and cleanup of files.
@@ -250,73 +243,5 @@ public class FileManager {
             }
         }
         mFiles.clear();
-    }
-
-    /**
-     * Fetch a image from the file manager.
-     */
-    static class FetchImageTask
-            extends TaskBase<ImageFileInfo> {
-
-        @NonNull
-        private final String mIsbn;
-
-        @NonNull
-        private final FileManager mFileManager;
-        /** Image index we're handling. */
-        private final int mCIdx;
-        @NonNull
-        private final ImageFileInfo.Size[] mSizes;
-
-        /**
-         * Constructor.
-         *
-         * @param taskId       a task identifier, will be returned in the task listener.
-         * @param validIsbn    to search for, <strong>must</strong> be valid.
-         * @param cIdx         0..n image index
-         * @param fileManager  for downloads
-         * @param taskListener to send results to
-         * @param sizes        try to get a picture in this order of size.
-         *                     Stops at first one found.
-         */
-        @UiThread
-        FetchImageTask(final int taskId,
-                       @NonNull final String validIsbn,
-                       @IntRange(from = 0) final int cIdx,
-                       @NonNull final FileManager fileManager,
-                       @NonNull final TaskListener<ImageFileInfo> taskListener,
-                       @NonNull final ImageFileInfo.Size... sizes) {
-            super(taskId, taskListener);
-            mCIdx = cIdx;
-            mSizes = sizes;
-
-            // sanity check
-            if (BuildConfig.DEBUG /* always */) {
-                if (!ISBN.isValidIsbn(validIsbn)) {
-                    throw new IllegalStateException(ErrorMsg.INVALID_ISBN);
-                }
-            }
-
-            mIsbn = validIsbn;
-            mFileManager = fileManager;
-        }
-
-        @Override
-        @NonNull
-        @WorkerThread
-        protected ImageFileInfo doInBackground(@Nullable final Void... voids) {
-            Thread.currentThread().setName(TAG + mIsbn);
-            final Context context = LocaleUtils.applyLocale(App.getTaskContext());
-
-            try {
-                return mFileManager.search(this, context, mIsbn, mCIdx, mSizes);
-
-            } catch (@SuppressWarnings("OverlyBroadCatchBlock") @NonNull final Exception ignore) {
-                // tad annoying... java.io.InterruptedIOException: thread interrupted
-                // can be thrown, but for some reason javac does not think so.
-            }
-            // we failed, but we still need to return the isbn.
-            return new ImageFileInfo(mIsbn);
-        }
     }
 }

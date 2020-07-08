@@ -96,15 +96,12 @@ public abstract class ArchiveWriterAbstractBase
         int entitiesWritten = Options.NOTHING;
 
         // All writers must support books.
-        boolean writeBooks = (mHelper.getOptions() & Options.BOOKS) != 0;
+        boolean writeBooks = mHelper.isSet(Options.BOOKS);
 
         // these are optional.
-        boolean writeStyles = this instanceof SupportsStyles
-                              && (mHelper.getOptions() & Options.STYLES) != 0;
-        boolean writePrefs = this instanceof SupportsPreferences
-                             && (mHelper.getOptions() & Options.PREFS) != 0;
-        boolean writeCovers = this instanceof SupportsCovers
-                              && (mHelper.getOptions() & Options.COVERS) != 0;
+        boolean writeStyles = this instanceof SupportsStyles && mHelper.isSet(Options.STYLES);
+        boolean writePrefs = this instanceof SupportsPreferences && mHelper.isSet(Options.PREFS);
+        boolean writeCovers = this instanceof SupportsCovers && mHelper.isSet(Options.COVERS);
 
         try {
             // If we are doing covers, get the exact number by counting them.
@@ -112,13 +109,13 @@ public abstract class ArchiveWriterAbstractBase
             // Once you get beyond a 1000 covers this step is getting tedious/slow....
             if (!progressListener.isCancelled() && writeCovers) {
                 // set the progress bar temporarily in indeterminate mode.
-                progressListener.setIndeterminate(true);
+                progressListener.setProgressIsIndeterminate(true);
                 progressListener.onProgress(0, context.getString(R.string.progress_msg_searching));
                 ((SupportsCovers) this).prepareCovers(context, progressListener);
                 // reset; won't take effect until the next onProgress.
-                progressListener.setIndeterminate(null);
+                progressListener.setProgressIsIndeterminate(null);
                 // set as temporary max, but keep in mind the position itself is still == 0
-                progressListener.setMax(mResults.coversExported);
+                progressListener.setProgressMaxPos(mResults.coversExported);
             }
 
             // If we are doing books, generate the file first, so we have the #books
@@ -130,7 +127,7 @@ public abstract class ArchiveWriterAbstractBase
             // Calculate the new max value for the progress bar.
             int max = mResults.booksExported + mResults.coversExported;
             // arbitrarily add 10 for the other entities we might do.
-            progressListener.setMax(max + 10);
+            progressListener.setProgressMaxPos(max + 10);
 
             // Start with the INFO
             if (!progressListener.isCancelled()) {
@@ -179,11 +176,11 @@ public abstract class ArchiveWriterAbstractBase
             mHelper.setOptions(entitiesWritten);
 
             // closing a very large archive will take a while, so keep the progress dialog open
-            progressListener.setIndeterminate(true);
+            progressListener.setProgressIsIndeterminate(true);
             progressListener
                     .onProgress(0, context.getString(R.string.progress_msg_please_wait));
             // reset; won't take effect until the next onProgress.
-            progressListener.setIndeterminate(null);
+            progressListener.setProgressIsIndeterminate(null);
         }
 
         return mResults;

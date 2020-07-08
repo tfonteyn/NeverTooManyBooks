@@ -80,8 +80,10 @@ import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.fields.Field;
 import com.hardbacknutter.nevertoomanybooks.fields.Fields;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsHandler;
-import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.RequestAuthTask;
-import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.SendOneBookTask;
+import com.hardbacknutter.nevertoomanybooks.goodreads.GrStatus;
+import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.GrSendOneBookTask;
+import com.hardbacknutter.nevertoomanybooks.tasks.messages.FinishedMessage;
+import com.hardbacknutter.nevertoomanybooks.tasks.messages.ProgressMessage;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.BookDetailsFragmentViewModel;
 
 /**
@@ -98,7 +100,6 @@ public class BookDetailsFragment
 
     /** Log tag. */
     public static final String TAG = "BookDetailsFragment";
-
     /** Registered with the Activity to deliver us gestures. */
     private View.OnTouchListener mOnTouchListener;
     /** Handle next/previous paging in the flattened booklist; called by mOnTouchListener. */
@@ -115,7 +116,7 @@ public class BookDetailsFragment
                 Objects.requireNonNull(loanee, ErrorMsg.NULL_INTENT_DATA);
                 // the db was already updated, just update the book to avoid a reload.
                 mBookViewModel.getBook().putString(DBDefinitions.KEY_LOANEE, loanee);
-                populateLoanedToField(loanee);
+                populateLendToField(loanee);
             } else {
                 // we don't expect/implement any others.
                 if (BuildConfig.DEBUG /* always */) {
@@ -124,7 +125,6 @@ public class BookDetailsFragment
             }
         }
     };
-
     /** (re)attach the result listener when a fragment gets started. */
     private final FragmentOnAttachListener mFragmentOnAttachListener =
             new FragmentOnAttachListener() {
@@ -140,6 +140,7 @@ public class BookDetailsFragment
                     }
                 }
             };
+    private GrSendOneBookTask mGrSendOneBookTask;
 
     @NonNull
     @Override
@@ -156,6 +157,8 @@ public class BookDetailsFragment
         mFragmentVM = new ViewModelProvider(this).get(BookDetailsFragmentViewModel.class);
         //noinspection ConstantConditions
         mFragmentVM.init(getContext(), getArguments(), mBookViewModel.getBook());
+
+        mGrSendOneBookTask = new ViewModelProvider(this).get(GrSendOneBookTask.class);
     }
 
     @Override
@@ -167,8 +170,7 @@ public class BookDetailsFragment
         mVb = FragmentBookDetailsBinding.inflate(inflater, container, false);
 
         //noinspection ConstantConditions
-        final SharedPreferences prefs = PreferenceManager
-                .getDefaultSharedPreferences(getContext());
+        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
 
         // Anthology/TOC fields
         if (!DBDefinitions.isUsed(prefs, DBDefinitions.KEY_TOC_BITMASK)) {
@@ -186,7 +188,7 @@ public class BookDetailsFragment
         }
 
         if (!DBDefinitions.isUsed(prefs, DBDefinitions.KEY_LOANEE)) {
-            mVb.loanedTo.setVisibility(View.GONE);
+            mVb.lendTo.setVisibility(View.GONE);
         }
 
         return mVb.getRoot();
@@ -198,14 +200,10 @@ public class BookDetailsFragment
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        mFragmentVM.onUserMessage().observe(getViewLifecycleOwner(), this::showUserMessage);
-        mFragmentVM.onNeedsGoodreads().observe(getViewLifecycleOwner(), needs -> {
-            if (needs != null && needs) {
-                final Context context = getContext();
-                //noinspection ConstantConditions
-                RequestAuthTask.prompt(context, mFragmentVM.getGoodreadsTaskListener(context));
-            }
-        });
+        mGrSendOneBookTask.onProgressUpdate().observe(getViewLifecycleOwner(), this::onProgress);
+        mGrSendOneBookTask.onCancelled().observe(getViewLifecycleOwner(), this::onCancelled);
+        mGrSendOneBookTask.onFailure().observe(getViewLifecycleOwner(), this::onGrFailure);
+        mGrSendOneBookTask.onFinished().observe(getViewLifecycleOwner(), this::onGrFinished);
 
         // The FAB lives in the activity.
         //noinspection ConstantConditions
@@ -235,6 +233,36 @@ public class BookDetailsFragment
         if (savedInstanceState == null) {
             //noinspection ConstantConditions
             TipManager.display(getContext(), R.string.tip_view_only_help, null);
+        }
+    }
+
+    private void onProgress(@NonNull final ProgressMessage message) {
+        if (message.text != null) {
+            //noinspection ConstantConditions
+            Snackbar.make(getView(), message.text, Snackbar.LENGTH_LONG).show();
+        }
+    }
+
+    private void onCancelled(@NonNull final FinishedMessage<GrStatus> message) {
+        //noinspection ConstantConditions
+        Snackbar.make(getView(), R.string.cancelled, Snackbar.LENGTH_LONG).show();
+    }
+
+    private void onGrFailure(@NonNull final FinishedMessage<Exception> message) {
+        //noinspection ConstantConditions
+        Snackbar.make(getView(), GrStatus.getMessage(getContext(), message.result),
+                      Snackbar.LENGTH_LONG).show();
+    }
+
+    private void onGrFinished(@NonNull final FinishedMessage<GrStatus> message) {
+        Objects.requireNonNull(message.result, ErrorMsg.NULL_TASK_RESULTS);
+        if (message.result.getStatus() == GrStatus.FAILED_CREDENTIALS) {
+            //noinspection ConstantConditions
+            mGrAuthTask.prompt(getContext());
+        } else {
+            //noinspection ConstantConditions
+            Snackbar.make(getView(), message.result.getMessage(getContext()),
+                          Snackbar.LENGTH_LONG).show();
         }
     }
 
@@ -353,7 +381,7 @@ public class BookDetailsFragment
                 .getDefaultSharedPreferences(getContext());
 
         if (DBDefinitions.isUsed(prefs, DBDefinitions.KEY_LOANEE)) {
-            populateLoanedToField(mBookViewModel.getLoanee());
+            populateLendToField(mBookViewModel.getLoanee());
         }
 
         if (DBDefinitions.isUsed(prefs, DBDefinitions.KEY_TOC_BITMASK)) {
@@ -397,7 +425,7 @@ public class BookDetailsFragment
     }
 
     /**
-     * Inflates 'Loaned' field showing a person the book loaned to.
+     * Inflates 'lend-to' field showing a person the book was lend to.
      * Allows returning the book via a context menu.
      *
      * <strong>Note:</strong> we pass in the loanee and handle visibility local as this
@@ -405,11 +433,11 @@ public class BookDetailsFragment
      *
      * @param loanee the one who shall not be mentioned.
      */
-    private void populateLoanedToField(@Nullable final String loanee) {
+    private void populateLendToField(@Nullable final String loanee) {
         if (loanee != null && !loanee.isEmpty()) {
-            mVb.loanedTo.setText(getString(R.string.lbl_loaned_to_name, loanee));
-            mVb.loanedTo.setVisibility(View.VISIBLE);
-            mVb.loanedTo.setOnCreateContextMenuListener(new View.OnCreateContextMenuListener() {
+            mVb.lendTo.setText(getString(R.string.lbl_loaned_to_name, loanee));
+            mVb.lendTo.setVisibility(View.VISIBLE);
+            mVb.lendTo.setOnCreateContextMenuListener(new View.OnCreateContextMenuListener() {
                 /** TODO: convert to MenuPicker context menu.... if I can be bothered. */
                 @Override
                 @CallSuper
@@ -424,8 +452,8 @@ public class BookDetailsFragment
                 }
             });
         } else {
-            mVb.loanedTo.setVisibility(View.GONE);
-            mVb.loanedTo.setText("");
+            mVb.lendTo.setVisibility(View.GONE);
+            mVb.lendTo.setText("");
         }
     }
 
@@ -599,14 +627,14 @@ public class BookDetailsFragment
                 return true;
             }
             case R.id.MENU_BOOK_LOAN_ADD: {
-                EditLenderDialogFragment.newInstance(book)
-                                        .show(getChildFragmentManager(),
-                                              EditLenderDialogFragment.TAG);
+                EditLenderDialogFragment
+                        .newInstance(book)
+                        .show(getChildFragmentManager(), EditLenderDialogFragment.TAG);
                 return true;
             }
             case R.id.MENU_BOOK_LOAN_DELETE: {
                 mBookViewModel.deleteLoan();
-                populateLoanedToField(null);
+                populateLendToField(null);
                 return true;
             }
             case R.id.MENU_SHARE: {
@@ -617,10 +645,7 @@ public class BookDetailsFragment
             case R.id.MENU_BOOK_SEND_TO_GOODREADS: {
                 Snackbar.make(mVb.getRoot(), R.string.progress_msg_connecting,
                               Snackbar.LENGTH_LONG).show();
-                //noinspection ConstantConditions
-                new SendOneBookTask(book.getId(),
-                                    mFragmentVM.getGoodreadsTaskListener(getContext()))
-                        .execute();
+                mGrSendOneBookTask.startTask(book.getId());
                 return true;
             }
 
@@ -642,7 +667,7 @@ public class BookDetailsFragment
         switch (menuItem.getItemId()) {
             case R.id.MENU_BOOK_LOAN_DELETE:
                 mBookViewModel.deleteLoan();
-                populateLoanedToField(null);
+                populateLendToField(null);
                 return true;
 
             default:

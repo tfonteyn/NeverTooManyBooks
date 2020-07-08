@@ -71,7 +71,9 @@ import com.hardbacknutter.nevertoomanybooks.database.CoversDAO;
 class ImageLoaderWithCacheWrite
         extends ImageLoader {
 
+    /** UUID of the book. */
     private final String mUuid;
+    /** Image index we're handling. */
     private final int mCIdx;
 
     /**

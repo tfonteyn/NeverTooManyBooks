@@ -50,7 +50,6 @@ import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
-import androidx.core.util.Pair;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentOnAttachListener;
@@ -66,10 +65,9 @@ import java.util.List;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.backup.ArchiveContainer;
-import com.hardbacknutter.nevertoomanybooks.backup.ExportHelperDialogFragment;
-import com.hardbacknutter.nevertoomanybooks.backup.ExportManager;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportHelperDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportManager;
+import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveImportTask;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ImportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.base.Options;
 import com.hardbacknutter.nevertoomanybooks.backup.base.OptionsDialogBase;
@@ -103,21 +101,20 @@ import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsHandler;
+import com.hardbacknutter.nevertoomanybooks.goodreads.GrStatus;
 import com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.QueueManager;
-import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.RequestAuthTask;
-import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.SendOneBookTask;
+import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.GrAuthTask;
+import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.GrSendOneBookTask;
 import com.hardbacknutter.nevertoomanybooks.searches.amazon.AmazonSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.settings.styles.PreferredStylesActivity;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDialogFragment;
-import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
-import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
+import com.hardbacknutter.nevertoomanybooks.tasks.messages.FinishedMessage;
+import com.hardbacknutter.nevertoomanybooks.tasks.messages.ProgressMessage;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.BookDetailsFragmentViewModel;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.BookViewModel;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.BooksOnBookshelfModel;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.EditBookshelvesModel;
-import com.hardbacknutter.nevertoomanybooks.viewmodels.tasks.ExportTaskModel;
-import com.hardbacknutter.nevertoomanybooks.viewmodels.tasks.ImportTaskModel;
 import com.hardbacknutter.nevertoomanybooks.widgets.FabMenu;
 import com.hardbacknutter.nevertoomanybooks.widgets.fastscroller.FastScroller;
 
@@ -160,9 +157,6 @@ public class BooksOnBookshelf
 
     /** Log tag. */
     private static final String TAG = "BooksOnBookshelf";
-    public static final String BKEY_START_BACKUP = TAG + ":startBackup";
-    /** simple indeterminate progress spinner to show while getting the list of books. */
-    private ProgressBar mProgressBar;
     /** The dropdown button to select a Bookshelf. */
     private Spinner mBookshelfSpinner;
     /** List header. */
@@ -173,6 +167,12 @@ public class BooksOnBookshelf
     private TextView mHeaderBookCountView;
     /** The View for the list. */
     private RecyclerView mListView;
+    /** Multi-type adapter to manage list connection to cursor. */
+    private BooklistAdapter mAdapter;
+    /** The adapter used to fill the mBookshelfSpinner. */
+    private ArrayAdapter<BooksOnBookshelfModel.BookshelfSpinnerEntry> mBookshelfSpinnerAdapter;
+    /** The ViewModel. */
+    private BooksOnBookshelfModel mModel;
     /** (re)attach the result listener when a fragment gets started. */
     private final FragmentOnAttachListener mFragmentOnAttachListener =
             new FragmentOnAttachListener() {
@@ -189,20 +189,29 @@ public class BooksOnBookshelf
                     } else if (fragment instanceof StylePickerDialogFragment) {
                         ((StylePickerDialogFragment) fragment).setListener(mStyleChangedListener);
 
-                    } else if (fragment instanceof ExportHelperDialogFragment) {
-                        ((ExportHelperDialogFragment) fragment).setListener(mExportOptionsListener);
-
                     } else if (fragment instanceof ImportHelperDialogFragment) {
                         ((ImportHelperDialogFragment) fragment).setListener(mImportOptionsListener);
                     }
                 }
             };
-    /** Multi-type adapter to manage list connection to cursor. */
-    private BooklistAdapter mAdapter;
-    /** The adapter used to fill the mBookshelfSpinner. */
-    private ArrayAdapter<BooksOnBookshelfModel.BookshelfSpinnerEntry> mBookshelfSpinnerAdapter;
-    /** The ViewModel. */
-    private BooksOnBookshelfModel mModel;
+    private GrSendOneBookTask mGrSendOneBookTask;
+    private GrAuthTask mGrAuthTask;
+    /** List layout manager. */
+    private LinearLayoutManager mLayoutManager;
+    /** Import. */
+    private ArchiveImportTask mArchiveImportTask;
+    private final OptionsDialogBase.OptionsListener<ImportManager> mImportOptionsListener =
+            new OptionsDialogBase.OptionsListener<ImportManager>() {
+                @Override
+                public void onOptionsSet(@NonNull final ImportManager options) {
+                    mArchiveImportTask.startImport(options);
+                }
+            };
+    /** Full progress dialog to show while exporting/importing. */
+    @Nullable
+    private ProgressDialogFragment mProgressDialog;
+    /** simple indeterminate progress spinner to show while getting the list of books. */
+    private ProgressBar mProgressBar;
     /** Listener for the Bookshelf Spinner. */
     private final OnItemSelectedListener mOnBookshelfSelectionChanged =
             new OnItemSelectedListener() {
@@ -222,7 +231,7 @@ public class BooksOnBookshelf
                         // make the new shelf the current, and build the new list
                         mModel.setCurrentBookshelf(BooksOnBookshelf.this,
                                                    selected.getBookshelf());
-                        mModel.buildBookList(BooksOnBookshelf.this);
+                        buildBookList();
                     }
                 }
 
@@ -231,8 +240,6 @@ public class BooksOnBookshelf
                     // Do Nothing
                 }
             };
-    /** List layout manager. */
-    private LinearLayoutManager mLayoutManager;
     /** Listener for clicks on the list. */
     private final BooklistAdapter.OnRowClickedListener mOnRowClickedListener =
             new BooklistAdapter.OnRowClickedListener() {
@@ -323,7 +330,7 @@ public class BooksOnBookshelf
                     }
                     BooksOnBookshelf.this.saveListPosition();
                     // go create
-                    mModel.buildBookList(BooksOnBookshelf.this);
+                    buildBookList();
 
                     // changes were made to a single book
 //        if (bookId > 0) {
@@ -351,19 +358,6 @@ public class BooksOnBookshelf
 //        }
                 }
             };
-    /** Export. */
-    private ExportTaskModel mExportModel;
-    private final OptionsDialogBase.OptionsListener<ExportManager> mExportOptionsListener =
-            this::exportPickUri;
-    /** Import. */
-    private ImportTaskModel mImportModel;
-    private final OptionsDialogBase.OptionsListener<ImportManager> mImportOptionsListener =
-            new OptionsDialogBase.OptionsListener<ImportManager>() {
-                @Override
-                public void onOptionsSet(@NonNull final ImportManager options) {
-                    mImportModel.startArchiveImportTask(options);
-                }
-            };
     /** React to the user selecting a style to apply. */
     private final StylePickerDialogFragment.StyleChangedListener mStyleChangedListener =
             new StylePickerDialogFragment.StyleChangedListener() {
@@ -376,12 +370,9 @@ public class BooksOnBookshelf
                     // which it sort of is, given we are changing style.
                     mModel.setPreferredListRebuildState(BooksOnBookshelf.this);
                     // and do a rebuild
-                    mModel.buildBookList(BooksOnBookshelf.this);
+                    buildBookList();
                 }
             };
-    /** Full progress dialog to show while exporting/importing. */
-    @Nullable
-    private ProgressDialogFragment mProgressDialog;
     /** Encapsulates the FAB button/menu. */
     private FabMenu mFabMenu;
 
@@ -420,28 +411,27 @@ public class BooksOnBookshelf
 
         mModel = new ViewModelProvider(this).get(BooksOnBookshelfModel.class);
         mModel.init(this, getIntent().getExtras(), savedInstanceState);
-        mModel.onUserMessage().observe(this, message -> {
-            if (message != null) {
-                Snackbar.make(mListView, message, Snackbar.LENGTH_LONG).show();
-            }
-        });
-        mModel.onNeedsGoodreads().observe(this, needs -> {
-            if (needs != null && needs) {
-                RequestAuthTask.prompt(this, mModel.getGoodreadsTaskListener(this));
-            }
-        });
-        mModel.onBuilderSuccess().observe(this, this::displayList);
-        mModel.onBuilderFailed().observe(this, this::initAdapter);
-        mModel.onShowProgressBar().observe(this, show ->
-                mProgressBar.setVisibility(show ? View.VISIBLE : View.GONE));
+        mModel.onCancelled().observe(this, message -> onRestorePreviousList());
+        mModel.onFailure().observe(this, message -> onRestorePreviousList());
+        mModel.onFinished().observe(this, message -> onDisplayList(message.result));
 
-        mExportModel = new ViewModelProvider(this).get(ExportTaskModel.class);
-        mExportModel.onTaskProgress().observe(this, this::onTaskProgress);
-        mExportModel.onTaskFinished().observe(this, this::onExportFinished);
+        mArchiveImportTask = new ViewModelProvider(this).get(ArchiveImportTask.class);
+        mArchiveImportTask.onProgressUpdate().observe(this, this::onProgress);
+        mArchiveImportTask.onCancelled().observe(this, this::onImportCancelled);
+        mArchiveImportTask.onFailure().observe(this, this::onImportFailure);
+        mArchiveImportTask.onFinished().observe(this, this::onImportFinished);
 
-        mImportModel = new ViewModelProvider(this).get(ImportTaskModel.class);
-        mImportModel.onTaskProgress().observe(this, this::onTaskProgress);
-        mImportModel.onTaskFinished().observe(this, this::onImportFinished);
+        mGrAuthTask = new ViewModelProvider(this).get(GrAuthTask.class);
+        mGrAuthTask.onProgressUpdate().observe(this, this::onProgress);
+        mGrAuthTask.onCancelled().observe(this, this::onCancelled);
+        mGrAuthTask.onFailure().observe(this, this::onGrFailure);
+        mGrAuthTask.onFinished().observe(this, this::onGrFinished);
+
+        mGrSendOneBookTask = new ViewModelProvider(this).get(GrSendOneBookTask.class);
+        mGrSendOneBookTask.onProgressUpdate().observe(this, this::onProgress);
+        mGrSendOneBookTask.onCancelled().observe(this, this::onCancelled);
+        mGrSendOneBookTask.onFailure().observe(this, this::onGrFailure);
+        mGrSendOneBookTask.onFinished().observe(this, this::onGrFinished);
 
         // enable the navigation menu
         setNavigationItemVisibility(R.id.nav_manage_list_styles, true);
@@ -480,12 +470,19 @@ public class BooksOnBookshelf
         // check & get search text coming from a system search intent
         handleStandardSearchIntent(getIntent());
 
-        // auto-start a backup if required.
-        if (getIntent().getBooleanExtra(BKEY_START_BACKUP, false)) {
-            exportShowOptions();
-
-        } else if (savedInstanceState == null) {
+        if (savedInstanceState == null) {
             TipManager.display(this, R.string.tip_book_list, null);
+        }
+    }
+
+    public void onRestorePreviousList() {
+        mProgressBar.setVisibility(View.GONE);
+        // just restore the old list if we can
+        if (mModel.isListLoaded()) {
+            initAdapter(mModel.getListCursor());
+        } else {
+            // Something is REALLY BAD
+            throw new IllegalStateException();
         }
     }
 
@@ -501,7 +498,7 @@ public class BooksOnBookshelf
         setIntent(intent);
 
         handleStandardSearchIntent(intent);
-        mModel.buildBookList(this);
+        buildBookList();
     }
 
     /**
@@ -540,7 +537,8 @@ public class BooksOnBookshelf
             }
             case R.id.nav_manage_bookshelves: {
                 // overridden, so we can pass the current bookshelf id.
-                final Intent intent = new Intent(this, EditBookshelvesActivity.class)
+                final Intent intent = new Intent(this, AdminActivity.class)
+                        .putExtra(BKEY_FRAGMENT_TAG, EditBookshelvesFragment.TAG)
                         .putExtra(EditBookshelvesModel.BKEY_CURRENT_BOOKSHELF,
                                   mModel.getCurrentBookshelf().getId());
                 startActivityForResult(intent, RequestCode.NAV_PANEL_MANAGE_BOOKSHELVES);
@@ -556,16 +554,15 @@ public class BooksOnBookshelf
 
             case R.id.nav_import: {
 //                Intent intent = new Intent(this, AdminActivity.class)
-//                        .putExtra(UniqueId.BKEY_FRAGMENT_TAG, ImportFragment.TAG);
-//                startActivityForResult(intent, UniqueId.REQ_NAV_PANEL_IMPORT);
+//                        .putExtra(BaseActivity.BKEY_FRAGMENT_TAG, ImportFragment.TAG);
+//                startActivityForResult(intent, RequestCode.NAV_PANEL_IMPORT);
                 importPickUri();
                 return true;
             }
             case R.id.nav_export: {
-//                Intent intent = new Intent(this, AdminActivity.class)
-//                        .putExtra(UniqueId.BKEY_FRAGMENT_TAG, ExportFragment.TAG);
-//                startActivityForResult(intent, UniqueId.REQ_NAV_PANEL_EXPORT);
-                exportShowOptions();
+                Intent intent = new Intent(this, AdminActivity.class)
+                        .putExtra(BaseActivity.BKEY_FRAGMENT_TAG, ExportFragment.TAG);
+                startActivityForResult(intent, RequestCode.NAV_PANEL_EXPORT);
                 return true;
             }
 
@@ -857,8 +854,7 @@ public class BooksOnBookshelf
                 Snackbar.make(mListView, R.string.progress_msg_connecting,
                               Snackbar.LENGTH_LONG).show();
                 final long bookId = rowData.getLong(DBDefinitions.KEY_FK_BOOK);
-                new SendOneBookTask(bookId, mModel.getGoodreadsTaskListener(this))
-                        .execute();
+                mGrSendOneBookTask.startTask(bookId);
                 return true;
             }
 
@@ -1221,18 +1217,6 @@ public class BooksOnBookshelf
                 break;
             }
 
-            case RequestCode.EXPORT_PICK_URI: {
-                // The user selected a file to backup to. Next step starts the export task.
-                if (resultCode == Activity.RESULT_OK) {
-                    Objects.requireNonNull(data, ErrorMsg.NULL_INTENT_DATA);
-                    final Uri uri = data.getData();
-                    if (uri != null) {
-                        mExportModel.startArchiveExportTask(this, uri);
-                    }
-                }
-                break;
-            }
-
             case RequestCode.IMPORT_PICK_URI: {
                 // The user selected a file to import from. Next step asks for the options.
                 if (resultCode == Activity.RESULT_OK) {
@@ -1264,7 +1248,7 @@ public class BooksOnBookshelf
         if (isTaskRoot() && !mModel.getSearchCriteria().isEmpty()) {
             mModel.getSearchCriteria().clear();
             // go create
-            mModel.buildBookList(this);
+            buildBookList();
             return;
         }
 
@@ -1309,7 +1293,7 @@ public class BooksOnBookshelf
                 Log.d(TAG, "onResume|isForceRebuildInOnResume");
             }
             // go create
-            mModel.buildBookList(this);
+            buildBookList();
 
         } else if (!mModel.isListLoaded()) {
             //TEST: this branch is almost certainly never reached.
@@ -1317,7 +1301,7 @@ public class BooksOnBookshelf
                 Log.d(TAG, "onResume|initial build");
             }
             // go create
-            mModel.buildBookList(this);
+            buildBookList();
 
         } else {
             // no rebuild needed/done, just re-display
@@ -1325,7 +1309,7 @@ public class BooksOnBookshelf
                 Log.d(TAG, "onResume|reusing existing list");
             }
             mModel.createNewListCursor();
-            displayList(mModel.getTargetNodes());
+            onDisplayList(mModel.getTargetNodes());
         }
     }
 
@@ -1360,12 +1344,18 @@ public class BooksOnBookshelf
         startActivityForResult(intent, RequestCode.BOOK_EDIT);
     }
 
+    private void buildBookList() {
+        mProgressBar.setVisibility(View.VISIBLE);
+        mModel.buildBookList();
+    }
+
     /**
      * Display the current cursor in the ListView.
      *
      * @param targetNodes (optional) change the position to the 'best' of these nodes.
      */
-    private void displayList(@Nullable final List<RowStateDAO.Node> targetNodes) {
+    private void onDisplayList(@Nullable final List<RowStateDAO.Node> targetNodes) {
+        mProgressBar.setVisibility(View.GONE);
 
         // create and hookup the list adapter.
         initAdapter(mModel.getListCursor());
@@ -1481,7 +1471,7 @@ public class BooksOnBookshelf
             saveListPosition();
             // Finally pass in a new cursor and display the list.
             mModel.createNewListCursor();
-            displayList(null);
+            onDisplayList(null);
         }
     }
 
@@ -1516,7 +1506,7 @@ public class BooksOnBookshelf
      * Set the position once we know how many items appear in a typical
      * view and we can tell if it is already in the view.
      * <p>
-     * called from {@link #displayList}
+     * called from {@link #onDisplayList}
      *
      * @param targetNodes list of rows of which we want one to be visible to the user.
      */
@@ -1642,11 +1632,42 @@ public class BooksOnBookshelf
         mHeaderBookCountView.setVisibility(text != null ? View.VISIBLE : View.GONE);
     }
 
-    private void onTaskProgress(@NonNull final TaskListener.ProgressMessage message) {
+
+    private void onCancelled(@NonNull final FinishedMessage<GrStatus> message) {
+        closeProgressDialog();
+        Snackbar.make(mListView, R.string.cancelled, Snackbar.LENGTH_LONG).show();
+    }
+
+    private void onGrFailure(@NonNull final FinishedMessage<Exception> message) {
+        closeProgressDialog();
+        Snackbar.make(mListView, GrStatus.getMessage(this, message.result),
+                      Snackbar.LENGTH_LONG).show();
+    }
+
+    private void onGrFinished(@NonNull final FinishedMessage<GrStatus> message) {
+        closeProgressDialog();
+
+        Objects.requireNonNull(message.result, ErrorMsg.NULL_TASK_RESULTS);
+        if (message.result.getStatus() == GrStatus.FAILED_CREDENTIALS) {
+            mGrAuthTask.prompt(this);
+        } else {
+            Snackbar.make(mListView, message.result.getMessage(this),
+                          Snackbar.LENGTH_LONG).show();
+        }
+    }
+
+    private void onProgress(@NonNull final ProgressMessage message) {
         if (mProgressDialog == null) {
             mProgressDialog = getOrCreateProgressDialog(message.taskId);
         }
         mProgressDialog.onProgress(message);
+    }
+
+    private void closeProgressDialog() {
+        if (mProgressDialog != null) {
+            mProgressDialog.dismiss();
+            mProgressDialog = null;
+        }
     }
 
     @NonNull
@@ -1659,12 +1680,8 @@ public class BooksOnBookshelf
 
         // not found? create it
         if (dialog == null) {
+            //noinspection SwitchStatementWithTooFewBranches
             switch (taskId) {
-                case R.id.TASK_ID_EXPORT:
-                    dialog = ProgressDialogFragment
-                            .newInstance(R.string.lbl_backing_up, false, true, 0);
-                    break;
-
                 case R.id.TASK_ID_IMPORT:
                     dialog = ProgressDialogFragment
                             .newInstance(R.string.lbl_importing, false, true, 0);
@@ -1677,140 +1694,16 @@ public class BooksOnBookshelf
         }
 
         // hook the task up.
+        //noinspection SwitchStatementWithTooFewBranches
         switch (taskId) {
-            case R.id.TASK_ID_EXPORT:
-                dialog.setCanceller(mExportModel.getTask());
-                break;
-
             case R.id.TASK_ID_IMPORT:
-                dialog.setCanceller(mImportModel.getTask());
+                dialog.setCanceller(mArchiveImportTask);
                 break;
 
             default:
                 throw new IllegalArgumentException(ErrorMsg.UNEXPECTED_VALUE + "taskId=" + taskId);
         }
         return dialog;
-    }
-
-    /**
-     * Export Step 1: show the options to the user.
-     */
-    private void exportShowOptions() {
-        new MaterialAlertDialogBuilder(this)
-                .setTitle(R.string.lbl_backup)
-                .setMessage(R.string.txt_export_backup_all)
-                .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
-                .setNeutralButton(R.string.btn_options, (d, w) -> ExportHelperDialogFragment
-                        .newInstance()
-                        .show(getSupportFragmentManager(), ExportHelperDialogFragment.TAG))
-                .setPositiveButton(android.R.string.ok, (d, w) ->
-                        exportPickUri(new ExportManager(Options.ALL)))
-                .create()
-                .show();
-    }
-
-    /**
-     * Export Step 2: prompt the user for a uri to export to.
-     *
-     * @param helper export configuration
-     */
-    private void exportPickUri(@NonNull final ExportManager helper) {
-        // save the configured helper
-        mExportModel.setHelper(helper);
-        final Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT)
-                .addCategory(Intent.CATEGORY_OPENABLE)
-                .setType("*/*")
-                .putExtra(Intent.EXTRA_TITLE, mExportModel.getDefaultUriName(this));
-        startActivityForResult(intent, RequestCode.EXPORT_PICK_URI);
-    }
-
-    /**
-     * Export finished/failed: Process the result.
-     *
-     * @param message to process
-     */
-    private void onExportFinished(@NonNull final TaskListener.FinishMessage<ExportManager>
-                                          message) {
-        if (mProgressDialog != null) {
-            mProgressDialog.dismiss();
-            mProgressDialog = null;
-        }
-
-        switch (message.status) {
-            case Success: {
-                // sanity check
-                Objects.requireNonNull(message.result, ErrorMsg.NULL_TASK_RESULTS);
-
-                final MaterialAlertDialogBuilder dialogBuilder =
-                        new MaterialAlertDialogBuilder(this)
-                                .setIcon(R.drawable.ic_info)
-                                .setTitle(R.string.progress_end_backup_success)
-                                .setPositiveButton(R.string.done, (d, which) -> d.dismiss());
-
-                final Uri uri = message.result.getUri();
-                final Pair<String, Long> uriInfo = FileUtils.getUriInfo(this, uri);
-                String msg = message.result.getResults().createReport(this, uriInfo);
-                if (message.result.offerEmail(uriInfo)) {
-                    msg += "\n\n" + getString(R.string.confirm_email_export);
-                    dialogBuilder.setNeutralButton(R.string.btn_email,
-                                                   (d, which) -> onExportEmail(uri));
-                }
-
-                dialogBuilder
-                        .setMessage(msg)
-                        .create()
-                        .show();
-                break;
-            }
-            case Cancelled: {
-                Snackbar.make(mListView, R.string.progress_end_cancelled,
-                              Snackbar.LENGTH_LONG).show();
-                break;
-            }
-            case Failed: {
-                // sanity check
-                Objects.requireNonNull(message.result, ErrorMsg.NULL_TASK_RESULTS);
-                String msg = message.result.createExceptionReport(this, message.exception);
-                new MaterialAlertDialogBuilder(this)
-                        .setIcon(R.drawable.ic_error)
-                        .setTitle(R.string.error_backup_failed)
-                        .setMessage(msg)
-                        .setPositiveButton(android.R.string.ok, (d, w) -> d.dismiss())
-                        .create()
-                        .show();
-                break;
-            }
-        }
-    }
-
-    /**
-     * Create and send an email with the specified Uri.
-     *
-     * @param uri for the file to email
-     */
-    private void onExportEmail(@NonNull final Uri uri) {
-
-        final String subject = '[' + getString(R.string.app_name) + "] "
-                               + getString(R.string.lbl_books);
-
-        ArrayList<Uri> uris = new ArrayList<>();
-        uris.add(uri);
-        try {
-            final Intent intent = new Intent(Intent.ACTION_SEND_MULTIPLE)
-                    .setType("plain/text")
-                    .putExtra(Intent.EXTRA_SUBJECT, subject)
-                    .putParcelableArrayListExtra(Intent.EXTRA_STREAM, uris);
-            startActivity(Intent.createChooser(intent, getString(R.string.lbl_send_mail)));
-
-        } catch (@NonNull final NullPointerException e) {
-            Logger.error(this, TAG, e);
-            new MaterialAlertDialogBuilder(this)
-                    .setIcon(R.drawable.ic_error)
-                    .setMessage(R.string.error_email_failed)
-                    .setPositiveButton(android.R.string.ok, (d, w) -> d.dismiss())
-                    .create()
-                    .show();
-        }
     }
 
     /**
@@ -1875,10 +1768,35 @@ public class BooksOnBookshelf
                     .setNeutralButton(R.string.btn_options, (d, w) -> ImportHelperDialogFragment
                             .newInstance(helper)
                             .show(getSupportFragmentManager(), ImportHelperDialogFragment.TAG))
-                    .setPositiveButton(android.R.string.ok, (d, w) -> mImportModel
-                            .startArchiveImportTask(helper))
+                    .setPositiveButton(android.R.string.ok, (d, w) -> mArchiveImportTask
+                            .startImport(helper))
                     .create()
                     .show();
+        }
+    }
+
+    private void onImportFailure(@NonNull final FinishedMessage<Exception> message) {
+        closeProgressDialog();
+
+        // sanity check
+        Objects.requireNonNull(message.result, ErrorMsg.NULL_EXCEPTION);
+        String msg = ImportManager.createErrorReport(this, message.result);
+        new MaterialAlertDialogBuilder(this)
+                .setIcon(R.drawable.ic_error)
+                .setTitle(R.string.error_import_failed)
+                .setMessage(msg)
+                .setPositiveButton(android.R.string.ok, (d, w) -> d.dismiss())
+                .create()
+                .show();
+    }
+
+    private void onImportCancelled(@NonNull final FinishedMessage<ImportManager> message) {
+        closeProgressDialog();
+
+        if (message.result != null) {
+            onImportFinished(R.string.progress_end_import_partially_complete, message.result);
+        } else {
+            Snackbar.make(mListView, R.string.cancelled, Snackbar.LENGTH_LONG).show();
         }
     }
 
@@ -1887,82 +1805,42 @@ public class BooksOnBookshelf
      *
      * @param message to process
      */
-    private void onImportFinished(@NonNull final TaskListener.FinishMessage<ImportManager>
-                                          message) {
-        if (mProgressDialog != null) {
-            mProgressDialog.dismiss();
-            mProgressDialog = null;
-        }
+    private void onImportFinished(@NonNull final FinishedMessage<ImportManager> message) {
+        closeProgressDialog();
 
-        switch (message.status) {
-            case Success: {
-                // sanity check
-                Objects.requireNonNull(message.result, ErrorMsg.NULL_TASK_RESULTS);
-                onImportFinished(R.string.progress_end_import_complete,
-                                 message.result.getOptions(),
-                                 message.result.getResults());
-                break;
-            }
-            case Cancelled: {
-                if (message.result != null) {
-                    onImportFinished(R.string.progress_end_import_partially_complete,
-                                     message.result.getOptions(),
-                                     message.result.getResults());
-                } else {
-                    Snackbar.make(mListView, R.string.progress_end_cancelled,
-                                  Snackbar.LENGTH_LONG).show();
-                }
-                break;
-            }
-            case Failed: {
-                // sanity check
-                Objects.requireNonNull(message.result, ErrorMsg.NULL_TASK_RESULTS);
-                String msg = message.result.createErrorReport(this, message.exception);
-                new MaterialAlertDialogBuilder(this)
-                        .setIcon(R.drawable.ic_error)
-                        .setTitle(R.string.error_import_failed)
-                        .setMessage(msg)
-                        .setPositiveButton(android.R.string.ok, (d, w) -> d.dismiss())
-                        .create()
-                        .show();
-                break;
-            }
-        }
+        // sanity check
+        Objects.requireNonNull(message.result, ErrorMsg.NULL_TASK_RESULTS);
+        onImportFinished(R.string.progress_end_import_complete, message.result);
     }
 
     /**
      * Import finished: Step 2: Inform the user.
      *
-     * @param titleId for the dialog title; reports success or cancelled.
-     * @param options what was actually imported
-     * @param results details of the import
+     * @param titleId       for the dialog title; reports success or cancelled.
+     * @param importManager details of the import
      */
     private void onImportFinished(@StringRes final int titleId,
-                                  final int options,
-                                  @NonNull final ImportResults results) {
+                                  @NonNull final ImportManager importManager) {
 
         new MaterialAlertDialogBuilder(this)
                 .setIcon(R.drawable.ic_info)
                 .setTitle(titleId)
-                .setMessage(results.createReport(this))
+                .setMessage(importManager.getResults().createReport(this))
                 .setPositiveButton(R.string.done, (d, w) -> {
-                    if (options != 0) {
-                        if ((options & Options.STYLES) != 0) {
-                            // Force a refresh of the list of all user styles.
-                            BooklistStyle.StyleDAO.clear();
-                        }
-                        if ((options & Options.PREFS) != 0) {
-                            // Refresh the preferred bookshelf. This also refreshes its style.
-                            mModel.reloadCurrentBookshelf(this);
-                        }
-
-                        // styles, prefs, books, covers,... it all requires a rebuild.
-                        setBookShelfSpinner();
-                        mListView.setAdapter(null);
-                        mAdapter = null;
-                        mModel.buildBookList(this);
+                    if (importManager.isSet(Options.STYLES)) {
+                        // Force a refresh of the list of all user styles.
+                        BooklistStyle.StyleDAO.clear();
+                    }
+                    if (importManager.isSet(Options.PREFS)) {
+                        // Refresh the preferred bookshelf. This also refreshes its style.
+                        mModel.reloadCurrentBookshelf(this);
                     }
 
+                    // styles, prefs, books, covers,... it all requires a rebuild.
+                    setBookShelfSpinner();
+                    mListView.setAdapter(null);
+                    mAdapter = null;
+                    buildBookList();
                 })
                 .create()
                 .show();

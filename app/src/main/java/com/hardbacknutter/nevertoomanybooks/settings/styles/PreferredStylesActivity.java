@@ -290,9 +290,9 @@ public class PreferredStylesActivity
                     R.drawable.ic_content_copy));
 
             final String title = style.getLabel(this);
-            MenuPickerDialogFragment.newInstance(title, null, menu, position)
-                                    .show(getSupportFragmentManager(),
-                                          MenuPickerDialogFragment.TAG);
+            MenuPickerDialogFragment
+                    .newInstance(title, null, menu, position)
+                    .show(getSupportFragmentManager(), MenuPickerDialogFragment.TAG);
         } else {
             final Menu menu = MenuPicker.createMenu(this);
             if (style.isUserDefined()) {

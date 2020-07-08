@@ -40,6 +40,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -49,7 +50,6 @@ import androidx.annotation.IntDef;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -133,7 +133,7 @@ public class CoverHandler {
     private final ProgressBar mProgressBar;
     private final int mWidth;
     private final int mHeight;
-    private final TransFormTaskViewModel mModel;
+    private final TransFormTaskViewModel mTransFormTaskViewModel;
     /** Used to display a hint if user rotates a camera image. */
     private boolean mShowHintAboutRotating;
     @Nullable
@@ -190,9 +190,10 @@ public class CoverHandler {
             return true;
         });
 
-        mModel = new ViewModelProvider(fragment).get(String.valueOf(cIdx),
-                                                     TransFormTaskViewModel.class);
-        mModel.getTransformedData().observe(mFragment.getViewLifecycleOwner(), event -> {
+        mTransFormTaskViewModel = new ViewModelProvider(fragment)
+                .get(String.valueOf(cIdx), TransFormTaskViewModel.class);
+        mTransFormTaskViewModel.onFinished().observe(mFragment.getViewLifecycleOwner(), event -> {
+            showProgress(false);
             if (event.needsHandling()) {
                 // unwrap the event/data here to keep the receiving method unaware.
                 final TransFormTask.TransformedData data = event.getData();
@@ -249,6 +250,12 @@ public class CoverHandler {
                 .show();
     }
 
+    private void showProgress(final boolean show) {
+        if (mProgressBar != null) {
+            mProgressBar.setVisibility(show ? View.VISIBLE : View.GONE);
+        }
+    }
+
     /**
      * Using {@link MenuPicker} for context menus.
      *
@@ -281,22 +288,22 @@ public class CoverHandler {
                 return true;
             }
             case R.id.MENU_THUMB_ROTATE_CW: {
-                new TransFormTask(getCoverFile(), mModel, mProgressBar)
-                        .setScale(false)
+                showProgress(true);
+                new TransFormTask(getCoverFile(), mTransFormTaskViewModel)
                         .setRotate(90)
                         .execute();
                 return true;
             }
             case R.id.MENU_THUMB_ROTATE_CCW: {
-                new TransFormTask(getCoverFile(), mModel, mProgressBar)
-                        .setScale(false)
+                showProgress(true);
+                new TransFormTask(getCoverFile(), mTransFormTaskViewModel)
                         .setRotate(-90)
                         .execute();
                 return true;
             }
             case R.id.MENU_THUMB_ROTATE_180: {
-                new TransFormTask(getCoverFile(), mModel, mProgressBar)
-                        .setScale(false)
+                showProgress(true);
+                new TransFormTask(getCoverFile(), mTransFormTaskViewModel)
                         .setRotate(180)
                         .execute();
                 return true;
@@ -342,9 +349,11 @@ public class CoverHandler {
                     final Uri uri = data.getData();
                     if (uri != null) {
                         try (InputStream is = mContext.getContentResolver().openInputStream(uri)) {
-                            File dstFile = FileUtils.copyInputStream(mContext, is, getCoverFile());
+                            final File dstFile =
+                                    FileUtils.copyInputStream(mContext, is, getCoverFile());
                             if (dstFile != null) {
-                                new TransFormTask(dstFile, mModel, mProgressBar)
+                                showProgress(true);
+                                new TransFormTask(dstFile, mTransFormTaskViewModel)
                                         .setScale(true)
                                         .execute();
                                 return true;
@@ -372,14 +381,16 @@ public class CoverHandler {
                         // (which would overrule the setWindowManager call)
                         final int angle = Prefs
                                 .getListPreference(mContext, Prefs.pk_camera_image_autorotate, 0);
+
                         // What action should we take after we're done?
                         @NextAction
                         final int action = Prefs
                                 .getListPreference(mContext, Prefs.pk_camera_image_action,
                                                    ACTION_NOTHING);
 
+                        showProgress(true);
                         //noinspection ConstantConditions
-                        new TransFormTask(dstFile, mModel, mProgressBar)
+                        new TransFormTask(dstFile, mTransFormTaskViewModel)
                                 .setScale(true)
                                 .setWindowManager(mFragment.getActivity().getWindowManager())
                                 .setRotate(angle)
@@ -400,7 +411,8 @@ public class CoverHandler {
                     final File srcFile = AppDir.Cache.getFile(mContext, TEMP_COVER_FILENAME);
                     final File dstFile = getCoverFile();
                     FileUtils.rename(srcFile, dstFile);
-                    new TransFormTask(dstFile, mModel, mProgressBar)
+                    showProgress(true);
+                    new TransFormTask(dstFile, mTransFormTaskViewModel)
                             .setScale(true)
                             .execute();
                     return true;
@@ -531,9 +543,9 @@ public class CoverHandler {
         if (!isbnStr.isEmpty()) {
             final ISBN isbn = ISBN.createISBN(isbnStr);
             if (isbn.isValid(true)) {
-                final DialogFragment frag = CoverBrowserDialogFragment
-                        .newInstance(isbn.asText(), mCIdx);
-                frag.show(mFragment.getChildFragmentManager(), CoverBrowserDialogFragment.TAG);
+                CoverBrowserDialogFragment
+                        .newInstance(isbn.asText(), mCIdx)
+                        .show(mFragment.getChildFragmentManager(), CoverBrowserDialogFragment.TAG);
                 return;
             }
         }
@@ -614,7 +626,7 @@ public class CoverHandler {
         final Uri srcUri = GenericFileProvider.getUriForFile(mContext, srcFile);
         final Uri dstUri = GenericFileProvider.getUriForFile(mContext, dstFile);
 
-        Intent intent = new Intent(Intent.ACTION_EDIT)
+        final Intent intent = new Intent(Intent.ACTION_EDIT)
                 .setDataAndType(srcUri, IMAGE_MIME_TYPE)
                 // read access to the input uri
                 .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
@@ -627,7 +639,7 @@ public class CoverHandler {
         if (!resInfoList.isEmpty()) {
             // We do not know which app will be used, so need to grant permission to all.
             for (ResolveInfo resolveInfo : resInfoList) {
-                String packageName = resolveInfo.activityInfo.packageName;
+                final String packageName = resolveInfo.activityInfo.packageName;
                 mContext.grantUriPermission(packageName, dstUri,
                                             Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
             }

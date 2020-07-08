@@ -28,63 +28,45 @@
 package com.hardbacknutter.nevertoomanybooks.searches.isfdb;
 
 import android.content.Context;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
-import androidx.annotation.WorkerThread;
 
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 
 import com.hardbacknutter.nevertoomanybooks.App;
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
-import com.hardbacknutter.nevertoomanybooks.tasks.TaskBase;
-import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
+import com.hardbacknutter.nevertoomanybooks.tasks.VMTask;
+import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 
 public class IsfdbGetEditionsTask
-        extends TaskBase<ArrayList<Edition>> {
+        extends VMTask<ArrayList<Edition>> {
 
     /** Log tag. */
     private static final String TAG = "IsfdbGetEditionsTask";
 
     /** The isbn we're looking up. */
-    @NonNull
-    private final String mIsbn;
+    private String mIsbn;
 
-    /**
-     * Constructor.
-     *
-     * @param isbn         to search for
-     * @param taskListener to send results to
-     */
     @UiThread
-    public IsfdbGetEditionsTask(@NonNull final String isbn,
-                                @NonNull final TaskListener<ArrayList<Edition>> taskListener) {
-
-        super(R.id.TASK_ID_ISFDB_EDITIONS, taskListener);
-        mIsbn = isbn;
+    public void search(@NonNull final ISBN isbn) {
+        mIsbn = isbn.asText();
+        execute(R.id.TASK_ID_SEARCH_EDITIONS);
     }
 
-    @Override
     @Nullable
-    @WorkerThread
-    protected ArrayList<Edition> doInBackground(@Nullable final Void... voids) {
+    @Override
+    protected ArrayList<Edition> doWork()
+            throws SocketTimeoutException {
         Thread.currentThread().setName(TAG + mIsbn);
         final Context context = App.getTaskContext();
 
         final SearchEngine searchEngine = new IsfdbSearchEngine();
         searchEngine.setCaller(this);
-        try {
-            return new IsfdbEditionsHandler(searchEngine).fetch(context, mIsbn);
-        } catch (@NonNull final SocketTimeoutException e) {
-            if (BuildConfig.DEBUG /* always */) {
-                Log.d(TAG, "doInBackground", e);
-            }
-            return null;
-        }
+
+        return new IsfdbEditionsHandler(searchEngine).fetch(context, mIsbn);
     }
 }

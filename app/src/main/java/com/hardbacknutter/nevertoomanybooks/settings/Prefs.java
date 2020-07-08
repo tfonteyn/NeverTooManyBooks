@@ -99,13 +99,13 @@ public final class Prefs {
     public static final String pk_style_scale_thumbnail = "style.booklist.scale.thumbnails";
     /** Style group preferences. */
     public static final String pk_style_groups = "style.booklist.groups";
-    public static final String pk_style_group_author_show_books_under_each_author =
+    public static final String pk_style_group_author_show_books_under_each =
             "style.booklist.group.authors.show.all";
     public static final String pk_style_group_author_primary_type =
             "style.booklist.group.authors.primary.type";
-    public static final String pk_style_group_series_show_books_under_each_series =
+    public static final String pk_style_group_series_show_books_under_each =
             "style.booklist.group.series.show.all";
-    public static final String pk_style_group_publisher_show_books_under_each_publisher =
+    public static final String pk_style_group_publisher_show_books_under_each =
             "style.booklist.group.publisher.show.all";
 
     /** Show the cover image for each book. */

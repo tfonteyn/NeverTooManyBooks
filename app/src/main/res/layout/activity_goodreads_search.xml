@@ -60,7 +60,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            app:layout_constraintGuide_begin="@dimen/indent_field_guideline"
+            app:layout_constraintGuide_begin="@dimen/indent_field"
             />
 
         <com.hardbacknutter.nevertoomanybooks.widgets.ExtGroup
@@ -73,7 +73,7 @@
 
         <TextView
             android:id="@+id/lbl_author"
-            style="@style/Label.Field"
+            style="@style/Field.Label"
             android:labelFor="@id/author"
             android:text="@string/lbl_author"
             app:layout_constraintStart_toStartOf="parent"
@@ -82,16 +82,16 @@
 
         <TextView
             android:id="@+id/author"
-            style="@style/Text"
+            style="@style/Field.Generic"
             android:hint="@string/lbl_author"
-            android:textIsSelectable="true"
             app:layout_constraintStart_toEndOf="@id/indent_fields"
             app:layout_constraintTop_toBottomOf="@id/lbl_author"
+            tools:ignore="SelectableText"
             />
 
         <TextView
             android:id="@+id/lbl_title"
-            style="@style/Label.Field"
+            style="@style/Field.Label"
             android:labelFor="@id/title"
             android:text="@string/lbl_title"
             app:layout_constraintStart_toStartOf="parent"
@@ -100,16 +100,16 @@
 
         <TextView
             android:id="@+id/title"
-            style="@style/Text"
+            style="@style/Field.Generic"
             android:hint="@string/lbl_title"
-            android:textIsSelectable="true"
             app:layout_constraintStart_toEndOf="@id/indent_fields"
             app:layout_constraintTop_toBottomOf="@id/lbl_title"
+            tools:ignore="SelectableText"
             />
 
         <TextView
             android:id="@+id/lbl_isbn"
-            style="@style/Label.Field"
+            style="@style/Field.Label"
             android:labelFor="@id/isbn"
             android:text="@string/lbl_isbn"
             app:layout_constraintStart_toStartOf="parent"
@@ -118,11 +118,11 @@
 
         <TextView
             android:id="@+id/isbn"
-            style="@style/Text"
+            style="@style/Field.Generic"
             android:hint="@string/lbl_isbn"
-            android:textIsSelectable="true"
             app:layout_constraintStart_toEndOf="@id/indent_fields"
             app:layout_constraintTop_toBottomOf="@id/lbl_isbn"
+            tools:ignore="SelectableText"
             />
 
         <com.google.android.material.textfield.TextInputLayout

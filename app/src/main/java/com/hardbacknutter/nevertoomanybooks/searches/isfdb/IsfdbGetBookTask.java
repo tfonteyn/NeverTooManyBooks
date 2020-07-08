@@ -29,7 +29,6 @@ package com.hardbacknutter.nevertoomanybooks.searches.isfdb;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -40,98 +39,85 @@ import java.net.SocketTimeoutException;
 import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.App;
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
-import com.hardbacknutter.nevertoomanybooks.tasks.TaskBase;
-import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
+import com.hardbacknutter.nevertoomanybooks.tasks.VMTask;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 
 /**
  * Hard coded not to fetch any images.
  */
 public class IsfdbGetBookTask
-        extends TaskBase<Bundle> {
+        extends VMTask<Bundle> {
 
     /** Log tag. */
     private static final String TAG = "IsfdbGetBookTask";
 
     /** Native site book id to get. */
-    private final long mIsfdbId;
+    private long mIsfdbId;
     /** Native site book edition(s) to get. */
     @Nullable
-    private final List<Edition> mEditions;
+    private List<Edition> mEditions;
     /** whether the TOC should get parsed for Series information. */
-    private final boolean mAddSeriesFromToc;
+    private boolean mAddSeriesFromToc;
 
     /**
-     * Constructor. Initiate a single book lookup by edition.
+     * Initiate a single book lookup by edition.
      *
      * @param editions         List of ISFDB native ID's
      * @param addSeriesFromToc whether the TOC should get parsed for Series information
-     * @param taskListener     where to send the results to
      */
     @UiThread
-    public IsfdbGetBookTask(@NonNull final List<Edition> editions,
-                            final boolean addSeriesFromToc,
-                            @NonNull final TaskListener<Bundle> taskListener) {
-        super(R.id.TASK_ID_ISFDB_GET_BOOK, taskListener);
+    public void search(@NonNull final List<Edition> editions,
+                       final boolean addSeriesFromToc) {
         mAddSeriesFromToc = addSeriesFromToc;
-
         mIsfdbId = 0;
         mEditions = editions;
+
+        execute(R.id.TASK_ID_ISFDB_GET_BOOK);
     }
 
     /**
-     * Constructor. Initiate a single book lookup by ID.
+     * Initiate a single book lookup by ID.
      *
      * @param isfdbId          Single ISFDB native ID's
      * @param addSeriesFromToc whether the TOC should get parsed for Series information
-     * @param taskListener     where to send the results to
      */
     @UiThread
-    public IsfdbGetBookTask(final long isfdbId,
-                            final boolean addSeriesFromToc,
-                            @NonNull final TaskListener<Bundle> taskListener) {
-        super(R.id.TASK_ID_ISFDB_GET_BOOK, taskListener);
+    public void search(final long isfdbId,
+                       final boolean addSeriesFromToc) {
         mAddSeriesFromToc = addSeriesFromToc;
-
         mIsfdbId = isfdbId;
         mEditions = null;
+
+        execute(R.id.TASK_ID_ISFDB_GET_BOOK);
     }
 
     @Override
     @Nullable
     @WorkerThread
-    protected Bundle doInBackground(@Nullable final Void... voids) {
+    protected Bundle doWork()
+            throws SocketTimeoutException, InterruptedException {
         Thread.currentThread().setName(TAG);
         final Context context = LocaleUtils.applyLocale(App.getTaskContext());
         final SearchEngine searchEngine = new IsfdbSearchEngine();
         searchEngine.setCaller(this);
-        try {
-            final boolean[] fetchThumbnails = {false, false};
-            if (mEditions != null) {
-                return new IsfdbBookHandler(searchEngine).fetch(
-                        context, mEditions, mAddSeriesFromToc,
-                        fetchThumbnails, new Bundle());
 
-            } else if (mIsfdbId != 0) {
-                return new IsfdbBookHandler(searchEngine).fetchByNativeId(
-                        context, String.valueOf(mIsfdbId), mAddSeriesFromToc,
-                        fetchThumbnails, new Bundle());
+        Thread.sleep(3_000);
 
-            } else {
-                if (BuildConfig.DEBUG /* always */) {
-                    Log.d(TAG, "doInBackground|how did we get here?", new Throwable());
-                }
-            }
+        final boolean[] fetchThumbnails = {false, false};
+        if (mEditions != null) {
+            return new IsfdbBookHandler(searchEngine).fetch(
+                    context, mEditions, mAddSeriesFromToc,
+                    fetchThumbnails, new Bundle());
 
-        } catch (@NonNull final SocketTimeoutException e) {
-            if (BuildConfig.DEBUG /* always */) {
-                Log.d(TAG, "doInBackground|" + e.getLocalizedMessage());
-            }
+        } else if (mIsfdbId != 0) {
+            return new IsfdbBookHandler(searchEngine).fetchByNativeId(
+                    context, String.valueOf(mIsfdbId), mAddSeriesFromToc,
+                    fetchThumbnails, new Bundle());
+
+        } else {
+            throw new IllegalStateException("how did we get here?");
         }
-
-        return null;
     }
 }

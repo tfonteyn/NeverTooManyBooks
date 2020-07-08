@@ -60,7 +60,7 @@ public final class DEBUG_SWITCHES {
 
     /** {@link com.hardbacknutter.nevertoomanybooks.booklist.BooklistBuilder}. */
     public static final boolean BOB_THE_BUILDER = false;
-    /** {@link BooksOnBookshelfModel#buildBookList}. */
+    /** {@link BooksOnBookshelfModel}. */
     public static final boolean BOB_INIT_BOOK_LIST = false;
     /** {@link BooksOnBookshelfModel} Expand/Collapsing nodes. */
     public static final boolean BOB_NODE_STATE = false;

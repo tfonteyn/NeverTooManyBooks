@@ -181,10 +181,4 @@ public class App
                                                .build());
         }
     }
-
-//    @Override
-//    public void onCreate() {
-//        super.onCreate();
-//        Stetho.initializeWithDefaults(this);
-//    }
 }

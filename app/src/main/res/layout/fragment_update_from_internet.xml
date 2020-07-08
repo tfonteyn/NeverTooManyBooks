@@ -48,7 +48,6 @@
             style="@style/Text.Blurb.Small"
             android:layout_marginStart="@dimen/indent2"
             android:text="@string/txt_select_fields_to_update"
-            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             />

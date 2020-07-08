@@ -84,6 +84,22 @@ public class EditBookSeriesListDialogFragment
 
     /** Fragment/Log tag. */
     static final String TAG = "EditBookSeriesListDlg";
+    /** (re)attach the result listener when a fragment gets started. */
+    private final FragmentOnAttachListener mFragmentOnAttachListener =
+            new FragmentOnAttachListener() {
+                @Override
+                public void onAttachFragment(@NonNull final FragmentManager fragmentManager,
+                                             @NonNull final Fragment fragment) {
+                    if (BuildConfig.DEBUG && DEBUG_SWITCHES.ATTACH_FRAGMENT) {
+                        Log.d(getClass().getName(), "onAttachFragment: " + fragment.getTag());
+                    }
+
+                    if (fragment instanceof EditSeriesForBookDialogFragment) {
+                        ((EditSeriesForBookDialogFragment) fragment)
+                                .setListener(mOnProcessChangesListener);
+                    }
+                }
+            };
     /** Database Access. */
     private DAO mDb;
     /** The book. Must be in the Activity scope. */
@@ -104,22 +120,6 @@ public class EditBookSeriesListDialogFragment
     private SeriesListAdapter mListAdapter;
     private final EditSeriesForBookDialogFragment.OnProcessChangesListener
             mOnProcessChangesListener = EditBookSeriesListDialogFragment.this::processChanges;
-    /** (re)attach the result listener when a fragment gets started. */
-    private final FragmentOnAttachListener mFragmentOnAttachListener =
-            new FragmentOnAttachListener() {
-                @Override
-                public void onAttachFragment(@NonNull final FragmentManager fragmentManager,
-                                             @NonNull final Fragment fragment) {
-                    if (BuildConfig.DEBUG && DEBUG_SWITCHES.ATTACH_FRAGMENT) {
-                        Log.d(getClass().getName(), "onAttachFragment: " + fragment.getTag());
-                    }
-
-                    if (fragment instanceof EditSeriesForBookDialogFragment) {
-                        ((EditSeriesForBookDialogFragment) fragment)
-                                .setListener(mOnProcessChangesListener);
-                    }
-                }
-            };
     /** Drag and drop support for the list view. */
     private ItemTouchHelper mItemTouchHelper;
 
@@ -330,7 +330,7 @@ public class EditBookSeriesListDialogFragment
             Logger.warnWithStackTrace(getContext(), TAG, "Could not update",
                                       "original=" + original,
                                       "modified=" + modified);
-            StandardDialogs.showError(getContext(), R.string.error_unexpected_error);
+            StandardDialogs.showError(getContext(), R.string.error_storage_not_writable);
         }
     }
 
@@ -594,11 +594,9 @@ public class EditBookSeriesListDialogFragment
             holder.seriesView.setText(series.getLabel(getContext()));
 
             // click -> edit
-            holder.rowDetailsView.setOnClickListener(v -> {
-                final DialogFragment frag = EditSeriesForBookDialogFragment
-                        .newInstance(mBookViewModel.getBook().getTitle(), series);
-                frag.show(getParentFragmentManager(), EditSeriesForBookDialogFragment.TAG);
-            });
+            holder.rowDetailsView.setOnClickListener(v -> EditSeriesForBookDialogFragment
+                    .newInstance(mBookViewModel.getBook().getTitle(), series)
+                    .show(getParentFragmentManager(), EditSeriesForBookDialogFragment.TAG));
         }
     }
 }

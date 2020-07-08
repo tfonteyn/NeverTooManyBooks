@@ -28,4 +28,5 @@
   -->
 
 <resources>
+    <dimen name="isbn_key_pad_height">320dp</dimen>
 </resources>

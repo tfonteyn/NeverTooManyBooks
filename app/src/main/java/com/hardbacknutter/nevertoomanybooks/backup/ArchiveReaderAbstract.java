@@ -121,10 +121,10 @@ public abstract class ArchiveReaderAbstract
         // keep track of what we read from the archive
         int entitiesRead = Options.NOTHING;
 
-        boolean readStyles = (mHelper.getOptions() & Options.STYLES) != 0;
-        boolean readPrefs = (mHelper.getOptions() & Options.PREFS) != 0;
-        final boolean readBooks = (mHelper.getOptions() & Options.BOOKS) != 0;
-        final boolean readCovers = (mHelper.getOptions() & Options.COVERS) != 0;
+        boolean readStyles = mHelper.isSet(Options.STYLES);
+        boolean readPrefs = mHelper.isSet(Options.PREFS);
+        final boolean readBooks = mHelper.isSet(Options.BOOKS);
+        final boolean readCovers = mHelper.isSet(Options.COVERS);
 
         // progress counters
         int estimatedSteps = 1;
@@ -142,7 +142,7 @@ public abstract class ArchiveReaderAbstract
                     estimatedSteps *= 2;
                 }
             }
-            progressListener.setMax(estimatedSteps);
+            progressListener.setProgressMaxPos(estimatedSteps);
 
             // Seek the styles entity first.
             // We'll need them to resolve styles referenced in Preferences and Bookshelves.
@@ -295,7 +295,7 @@ public abstract class ArchiveReaderAbstract
             // see if we have this file already
             File file = AppDir.Covers.getFile(context, cover.getName());
             final boolean exists = file.exists();
-            if ((mHelper.getOptions() & ImportManager.IMPORT_ONLY_NEW_OR_UPDATED) != 0) {
+            if (mHelper.isSet(ImportManager.IMPORT_ONLY_NEW_OR_UPDATED)) {
                 if (exists) {
                     if (file.lastModified() > coverDate) {
                         return false;

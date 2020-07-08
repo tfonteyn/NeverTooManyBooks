@@ -27,7 +27,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -40,7 +39,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.core.util.Pair;
-import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentOnAttachListener;
@@ -67,7 +65,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.fields.Field;
 import com.hardbacknutter.nevertoomanybooks.fields.Fields;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
-import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.RequestAuthTask;
 import com.hardbacknutter.nevertoomanybooks.utils.DateParser;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.EditBookFragmentViewModel;
 
@@ -82,21 +79,17 @@ public abstract class EditBookBaseFragment
     private static final String TAG_DATE_PICKER_SINGLE = TAG + ":datePickerSingle";
     /** Tag for MaterialDatePicker. */
     private static final String TAG_DATE_PICKER_RANGE = TAG + ":datePickerRange";
-
     /** The view model. */
     EditBookFragmentViewModel mFragmentVM;
-
     /** Dialog listener (strong reference). */
     private final DatePickerResultsListener mPartialDatePickerListener = (year, month, day) ->
             onDateSet(mFragmentVM.getCurrentDialogFieldId()[0], year, month, day);
-
     /** Dialog listener (strong reference). */
     private final MaterialPickerOnPositiveButtonClickListener<Long>
             mDatePickerListener = selection -> {
         final int fieldId = mFragmentVM.getCurrentDialogFieldId()[0];
         onDateSet(fieldId, selection);
     };
-
     /** Dialog listener (strong reference). */
     private final MaterialPickerOnPositiveButtonClickListener<Pair<Long, Long>>
             mDateRangePickerListener = selection -> {
@@ -105,7 +98,6 @@ public abstract class EditBookBaseFragment
         final int fieldIdEnd = mFragmentVM.getCurrentDialogFieldId()[1];
         onDateSet(fieldIdEnd, selection.second);
     };
-
     /** (re)attach the result listener when a fragment gets started. */
     private final FragmentOnAttachListener mFragmentOnAttachListener =
             new FragmentOnAttachListener() {
@@ -192,15 +184,6 @@ public abstract class EditBookBaseFragment
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
-        mFragmentVM.onUserMessage().observe(getViewLifecycleOwner(), this::showUserMessage);
-        mFragmentVM.onNeedsGoodreads().observe(getViewLifecycleOwner(), needs -> {
-            if (needs != null && needs) {
-                final Context context = getContext();
-                //noinspection ConstantConditions
-                RequestAuthTask.prompt(context, mFragmentVM.getGoodreadsTaskListener(context));
-            }
-        });
 
         if (mFragmentVM.shouldInitFields()) {
             onInitFields(getFields());
@@ -402,10 +385,10 @@ public abstract class EditBookBaseFragment
         if (field.isUsed(getContext())) {
             //noinspection ConstantConditions
             field.getAccessor().getView().setOnClickListener(v -> {
-                final DialogFragment picker = PartialDatePickerDialogFragment.newInstance(
-                        dialogTitleId, field.getAccessor().getValue(), todayIfNone);
                 mFragmentVM.setCurrentDialogFieldId(field.getId());
-                picker.show(getChildFragmentManager(), PartialDatePickerDialogFragment.TAG);
+                PartialDatePickerDialogFragment
+                        .newInstance(dialogTitleId, field.getAccessor().getValue(), todayIfNone)
+                        .show(getChildFragmentManager(), PartialDatePickerDialogFragment.TAG);
             });
         }
     }

@@ -28,6 +28,5 @@
   -->
 
 <resources>
-    <!-- The ISBN keypad should not stretch beyond a reasonable height. -->
     <dimen name="isbn_key_pad_height">280dp</dimen>
 </resources>

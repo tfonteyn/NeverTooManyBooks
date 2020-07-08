@@ -27,13 +27,10 @@
  */
 package com.hardbacknutter.nevertoomanybooks.viewmodels;
 
-import android.content.Context;
-
 import androidx.annotation.CallSuper;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import java.util.HashMap;
@@ -41,16 +38,12 @@ import java.util.Map;
 
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.fields.Fields;
-import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsHandler;
-import com.hardbacknutter.nevertoomanybooks.goodreads.GrStatus;
-import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 
 /**
  * Used by the set of fragments that allow viewing and editing a Book.
  * <ul>
  *     <li>Hold the field lists</li>
  *     <li>Keep track of the currently in-action CoverHandler</li>
- *     <li>Holds a GoodreadsTaskListener with exposed observers for its messages</li>
  * </ul>
  */
 public abstract class BookBaseFragmentViewModel
@@ -58,9 +51,6 @@ public abstract class BookBaseFragmentViewModel
 
     /** Log tag. */
     private static final String TAG = "BookBaseFragmentVM";
-
-    private final MutableLiveData<String> mUserMessage = new MutableLiveData<>();
-    private final MutableLiveData<Boolean> mNeedsGoodreads = new MutableLiveData<>();
 
     /** The fields collection handled in this model. They key is the fragment tag. */
     private final Map<String, Fields> mFieldsMap = new HashMap<>();
@@ -71,9 +61,6 @@ public abstract class BookBaseFragmentViewModel
     /** Track on which cover view the context menu was used. */
     @IntRange(from = -1)
     private int mCurrentCoverHandlerIndex = -1;
-
-    /** Lazy init, always use {@link #getGoodreadsTaskListener(Context)}. */
-    private TaskListener<Integer> mGoodreadsTaskListener;
 
     @Override
     @CallSuper
@@ -139,50 +126,5 @@ public abstract class BookBaseFragmentViewModel
      */
     public void setCurrentCoverHandlerIndex(@IntRange(from = 0) final int index) {
         mCurrentCoverHandlerIndex = index;
-    }
-
-    /**
-     * Called when a task wants to display a user message.
-     *
-     * @return Observable: string to display
-     */
-    @NonNull
-    public MutableLiveData<String> onUserMessage() {
-        return mUserMessage;
-    }
-
-    /**
-     * Called when a task needs Goodreads access, and current has no access.
-     *
-     * @return Observable: {@code true} when access is needed
-     */
-    @NonNull
-    public MutableLiveData<Boolean> onNeedsGoodreads() {
-        return mNeedsGoodreads;
-    }
-
-    @NonNull
-    public TaskListener<Integer> getGoodreadsTaskListener(@NonNull final Context context) {
-        if (mGoodreadsTaskListener == null) {
-            mGoodreadsTaskListener = new TaskListener<Integer>() {
-
-                @Override
-                public void onFinished(@NonNull final FinishMessage<Integer> message) {
-                    if (message.result != null && message.result == GrStatus.FAILED_CREDENTIALS) {
-                        mNeedsGoodreads.setValue(true);
-                    } else {
-                        mUserMessage.setValue(GoodreadsHandler.digest(context, message));
-                    }
-                }
-
-                @Override
-                public void onProgress(@NonNull final ProgressMessage message) {
-                    if (message.text != null) {
-                        mUserMessage.setValue(message.text);
-                    }
-                }
-            };
-        }
-        return mGoodreadsTaskListener;
     }
 }

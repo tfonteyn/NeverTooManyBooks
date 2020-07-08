@@ -542,7 +542,7 @@ public abstract class BasePreferenceFragment
                 return text;
             } else {
                 // the preference has no values set, but that is a VALID setting and will be used.
-                return msp.getContext().getString(R.string.none);
+                return getString(R.string.none);
             }
         }
 

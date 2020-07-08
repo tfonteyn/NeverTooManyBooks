@@ -112,8 +112,7 @@ public class ZoomedImageDialogFragment
         // |screenHwRatio=1.711111068725586
         // |maxWidth=1026|maxHeight=1755
 
-        //noinspection ConstantConditions
-        final Resources resources = getContext().getResources();
+        final Resources resources = getResources();
         final Configuration configuration = resources.getConfiguration();
         final DisplayMetrics metrics = resources.getDisplayMetrics();
 

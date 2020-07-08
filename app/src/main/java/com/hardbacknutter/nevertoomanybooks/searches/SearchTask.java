@@ -45,6 +45,7 @@ import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskBase;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
+import com.hardbacknutter.nevertoomanybooks.tasks.messages.ProgressMessage;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.NetworkUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
@@ -190,7 +191,7 @@ public class SearchTask
         final Context context = LocaleUtils.applyLocale(App.getTaskContext());
         Thread.currentThread().setName(TAG + ' ' + mSearchEngine.getName(context));
 
-        publishProgress(new TaskListener.ProgressMessage(getTaskId(), mProgressTitle));
+        publishProgress(new ProgressMessage(getTaskId(), mProgressTitle));
 
         try {
             // can we reach the site at all ?

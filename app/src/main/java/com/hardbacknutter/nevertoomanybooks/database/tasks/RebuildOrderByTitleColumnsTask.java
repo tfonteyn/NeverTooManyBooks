@@ -41,6 +41,7 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.ItemWithTitle;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskBase;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
+import com.hardbacknutter.nevertoomanybooks.tasks.messages.ProgressMessage;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 
 /**
@@ -78,7 +79,7 @@ public class RebuildOrderByTitleColumnsTask
         final Context context = LocaleUtils.applyLocale(App.getTaskContext());
 
         // incorrect progress message, but it's half-true.
-        publishProgress(new TaskListener.ProgressMessage(getTaskId(), context.getString(
+        publishProgress(new ProgressMessage(getTaskId(), context.getString(
                 R.string.progress_msg_rebuilding_search_index)));
         try {
             final boolean reorder = ItemWithTitle.isReorderTitleForSorting(context);

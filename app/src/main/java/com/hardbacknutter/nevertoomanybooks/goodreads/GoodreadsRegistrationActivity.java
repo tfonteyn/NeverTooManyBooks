@@ -27,7 +27,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.goodreads;
 
-import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -35,14 +34,19 @@ import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.snackbar.Snackbar;
+
+import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.databinding.ActivityGoodreadsRegisterBinding;
-import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.RequestAuthTask;
-import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
+import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
+import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.GrAuthTask;
+import com.hardbacknutter.nevertoomanybooks.tasks.messages.FinishedMessage;
+import com.hardbacknutter.nevertoomanybooks.tasks.messages.ProgressMessage;
 
 /**
  * Allow the user to explain Goodreads and authorize this application to access their
@@ -53,25 +57,7 @@ public class GoodreadsRegistrationActivity
 
     private ActivityGoodreadsRegisterBinding mVb;
 
-    private final TaskListener<Integer> mTaskListener = new TaskListener<Integer>() {
-        @Override
-        public void onFinished(@NonNull final FinishMessage<Integer> message) {
-            final Context context = GoodreadsRegistrationActivity.this;
-            if (message.result != null && message.result == GrStatus.FAILED_CREDENTIALS) {
-                RequestAuthTask.prompt(context, mTaskListener);
-            } else {
-                Snackbar.make(mVb.btnAuthorize, GoodreadsHandler.digest(context, message),
-                              Snackbar.LENGTH_LONG).show();
-            }
-        }
-
-        @Override
-        public void onProgress(@NonNull final ProgressMessage message) {
-            if (message.text != null) {
-                Snackbar.make(mVb.btnAuthorize, message.text, Snackbar.LENGTH_LONG).show();
-            }
-        }
-    };
+    private GrAuthTask mGrAuthTask;
 
     @Override
     protected void onSetContentView() {
@@ -83,6 +69,12 @@ public class GoodreadsRegistrationActivity
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        mGrAuthTask = new ViewModelProvider(this).get(GrAuthTask.class);
+        mGrAuthTask.onProgressUpdate().observe(this, this::onProgress);
+        mGrAuthTask.onCancelled().observe(this, this::onCancelled);
+        mGrAuthTask.onFailure().observe(this, this::onGrFailure);
+        mGrAuthTask.onFinished().observe(this, this::onGrFinished);
+
         // Goodreads Reg Link
         mVb.goodreadsUrl.setText(GoodreadsHandler.BASE_URL);
         mVb.goodreadsUrl.setOnClickListener(v -> startActivity(
@@ -91,7 +83,7 @@ public class GoodreadsRegistrationActivity
         mVb.btnAuthorize.setOnClickListener(v -> {
             Snackbar.make(mVb.btnAuthorize, R.string.progress_msg_connecting,
                           Snackbar.LENGTH_LONG).show();
-            new RequestAuthTask(mTaskListener).execute();
+            mGrAuthTask.startTask();
         });
 
         final GoodreadsAuth grAuth = new GoodreadsAuth(this);
@@ -102,6 +94,31 @@ public class GoodreadsRegistrationActivity
         } else {
             mVb.lblDeleteCredentials.setVisibility(View.GONE);
             mVb.btnDeleteCredentials.setVisibility(View.GONE);
+        }
+    }
+
+    private void onProgress(@NonNull final ProgressMessage message) {
+        if (message.text != null) {
+            Snackbar.make(mVb.getRoot(), message.text, Snackbar.LENGTH_LONG).show();
+        }
+    }
+
+    private void onCancelled(@NonNull final FinishedMessage<GrStatus> message) {
+        Snackbar.make(mVb.getRoot(), R.string.cancelled, Snackbar.LENGTH_LONG).show();
+    }
+
+    private void onGrFailure(@NonNull final FinishedMessage<Exception> message) {
+        Snackbar.make(mVb.getRoot(), GrStatus.getMessage(this, message.result),
+                      Snackbar.LENGTH_LONG).show();
+    }
+
+    private void onGrFinished(@NonNull final FinishedMessage<GrStatus> message) {
+        Objects.requireNonNull(message.result, ErrorMsg.NULL_TASK_RESULTS);
+        if (message.result.getStatus() == GrStatus.FAILED_CREDENTIALS) {
+            mGrAuthTask.prompt(this);
+        } else {
+            Snackbar.make(mVb.getRoot(), message.result.getMessage(this),
+                          Snackbar.LENGTH_LONG).show();
         }
     }
 }

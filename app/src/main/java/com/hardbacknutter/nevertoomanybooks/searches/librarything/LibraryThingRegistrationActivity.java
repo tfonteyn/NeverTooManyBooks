@@ -27,31 +27,19 @@
  */
 package com.hardbacknutter.nevertoomanybooks.searches.librarything;
 
-import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.UiThread;
-import androidx.annotation.WorkerThread;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.preference.PreferenceManager;
 
 import com.google.android.material.snackbar.Snackbar;
 
-import java.io.File;
-
-import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.covers.ImageFileInfo;
-import com.hardbacknutter.nevertoomanybooks.covers.ImageUtils;
 import com.hardbacknutter.nevertoomanybooks.databinding.ActivityLibrarythingRegisterBinding;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
-import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
-import com.hardbacknutter.nevertoomanybooks.tasks.TaskBase;
-import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 
 /**
  * Contains details about LibraryThing links and how to register for a developer key.
@@ -63,14 +51,7 @@ public class LibraryThingRegistrationActivity
     /** View Binding. */
     private ActivityLibrarythingRegisterBinding mVb;
 
-    private final TaskListener<Integer> mListener = new TaskListener<Integer>() {
-        @Override
-        public void onFinished(@NonNull final FinishMessage<Integer> message) {
-            final int stringId =
-                    message.result != null ? message.result : R.string.progress_end_cancelled;
-            Snackbar.make(mVb.devKey, stringId, Snackbar.LENGTH_LONG).show();
-        }
-    };
+    private ValidateKeyTask mValidateKeyTask;
 
     @Override
     protected void onSetContentView() {
@@ -81,6 +62,21 @@ public class LibraryThingRegistrationActivity
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        mValidateKeyTask = new ViewModelProvider(this).get(ValidateKeyTask.class);
+        mValidateKeyTask.onFailure().observe(this, message ->
+                Snackbar.make(mVb.getRoot(), getString(R.string.error_site_access_failed,
+                                                       getString(R.string.site_library_thing)),
+                              Snackbar.LENGTH_LONG).show());
+        mValidateKeyTask.onCancelled().observe(this, message ->
+                Snackbar.make(mVb.getRoot(), R.string.cancelled, Snackbar.LENGTH_LONG).show());
+        mValidateKeyTask.onFinished().observe(this, message -> {
+            final String msg = message.result != null
+                               ? getString(message.result)
+                               : getString(R.string.error_site_access_failed,
+                                           getString(R.string.site_library_thing));
+            Snackbar.make(mVb.getRoot(), msg, Snackbar.LENGTH_LONG).show();
+        });
 
         mVb.registerUrl.setOnClickListener(
                 v -> startActivity(new Intent(Intent.ACTION_VIEW,
@@ -107,59 +103,8 @@ public class LibraryThingRegistrationActivity
             if (!devKey.isEmpty()) {
                 Snackbar.make(mVb.devKey, R.string.progress_msg_connecting,
                               Snackbar.LENGTH_LONG).show();
-                new ValidateKey(mListener).execute();
+                mValidateKeyTask.startTask();
             }
         });
-    }
-
-    /**
-     * Request a known valid ISBN from LT to see if the user key is valid.
-     */
-    private static class ValidateKey
-            extends TaskBase<Integer> {
-
-        /** Log tag. */
-        private static final String TAG = "LT.ValidateKey";
-
-        /**
-         * Constructor.
-         *
-         * @param taskListener for sending progress and finish messages to.
-         */
-        @UiThread
-        ValidateKey(@NonNull final TaskListener<Integer> taskListener) {
-            super(R.id.TASK_ID_LT_VALIDATE_KEY, taskListener);
-        }
-
-        @Override
-        @NonNull
-        @WorkerThread
-        protected Integer doInBackground(@Nullable final Void... voids) {
-            Thread.currentThread().setName(TAG);
-            final Context context = App.getTaskContext();
-
-            try {
-                final SearchEngine.CoverByIsbn ltm = new LibraryThingSearchEngine();
-                final String fileSpec = ltm.searchCoverImageByIsbn(context, "0451451783", 0,
-                                                                   ImageFileInfo.Size.Small);
-                if (fileSpec != null) {
-                    if (ImageUtils.isFileGood(new File(fileSpec))) {
-                        return R.string.lt_key_is_correct;
-                    } else {
-                        return R.string.lt_key_is_incorrect;
-                    }
-                }
-
-                if (isCancelled()) {
-                    return R.string.progress_end_cancelled;
-                }
-                return R.string.warning_image_not_found;
-
-            } catch (@NonNull final RuntimeException e) {
-                Logger.error(context, TAG, e);
-                mException = e;
-                return R.string.error_unexpected_error;
-            }
-        }
     }
 }

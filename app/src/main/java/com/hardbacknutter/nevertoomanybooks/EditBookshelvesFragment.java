@@ -77,9 +77,6 @@ public class EditBookshelvesFragment
     /** The adapter for the list. */
     private BookshelfAdapter mAdapter;
     private EditBookshelvesModel mModel;
-    /** ViewModel. */
-    private ResultDataModel mResultData;
-
     private final EditBookshelfDialogFragment.BookshelfChangedListener mListener =
             new EditBookshelfDialogFragment.BookshelfChangedListener() {
                 @Override
@@ -88,6 +85,8 @@ public class EditBookshelvesFragment
                     mModel.reloadList(bookshelfId);
                 }
             };
+    /** ViewModel. */
+    private ResultDataModel mResultData;
     /** View Binding. */
     private FragmentEditBookshelvesBinding mVb;
 
@@ -218,8 +217,9 @@ public class EditBookshelvesFragment
                     R.drawable.ic_delete));
 
             final String title = bookshelf.getName();
-            MenuPickerDialogFragment.newInstance(title, null, menu, position)
-                                    .show(getChildFragmentManager(), MenuPickerDialogFragment.TAG);
+            MenuPickerDialogFragment
+                    .newInstance(title, null, menu, position)
+                    .show(getChildFragmentManager(), MenuPickerDialogFragment.TAG);
         } else {
             //noinspection ConstantConditions
             final Menu menu = MenuPicker.createMenu(getContext());

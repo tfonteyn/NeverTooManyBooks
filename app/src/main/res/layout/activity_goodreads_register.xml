@@ -65,7 +65,6 @@
 
             <TextView
                 style="@style/Text.Blurb"
-                android:layout_width="match_parent"
                 android:text="@string/gr_auth_blurb_part1"
                 />
 
@@ -79,13 +78,11 @@
 
             <TextView
                 style="@style/Text.Blurb"
-                android:layout_width="match_parent"
                 android:text="@string/gr_auth_blurb_part2"
                 />
 
             <TextView
                 style="@style/Text.Blurb"
-                android:layout_width="match_parent"
                 android:text="@string/gr_auth_blurb_part3"
                 />
 
@@ -100,7 +97,6 @@
             <TextView
                 android:id="@+id/lbl_delete_credentials"
                 style="@style/Text.Blurb"
-                android:layout_width="match_parent"
                 android:text="@string/gr_auth_blurb_part4"
                 android:visibility="gone"
                 tools:visibility="visible"

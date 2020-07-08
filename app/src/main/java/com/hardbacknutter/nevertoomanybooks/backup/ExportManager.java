@@ -152,8 +152,37 @@ public class ExportManager
         }
     }
 
-    public int getOptions() {
-        return mOptions;
+    public static String createErrorReport(@NonNull final Context context,
+                                           @Nullable final Exception e) {
+        String msg = null;
+
+        if (e instanceof IOException) {
+            // see if we can find the exact cause
+            if (e.getCause() instanceof ErrnoException) {
+                final int errno = ((ErrnoException) e.getCause()).errno;
+                // write failed: ENOSPC (No space left on device)
+                if (errno == OsConstants.ENOSPC) {
+                    msg = context.getString(R.string.error_storage_no_space_left);
+                } else {
+                    // write to logfile for future reporting enhancements.
+                    Logger.warn(context, TAG, "onExportFailed|errno=" + errno);
+                }
+            }
+
+            // generic IOException message
+            if (msg == null) {
+                msg = StandardDialogs.createBadError(context, R.string.error_storage_not_writable);
+            }
+        } else if (e instanceof FormattedMessageException) {
+            msg = ((FormattedMessageException) e).getLocalizedMessage(context);
+        }
+
+        // generic unknown message
+        if (msg == null || msg.isEmpty()) {
+            msg = context.getString(R.string.error_unexpected_error);
+        }
+
+        return msg;
     }
 
     /** Called <strong>after</strong> the export/import to report back what was handled. */
@@ -395,36 +424,7 @@ public class ExportManager
         return fileSize > 0 && fileSize < MAX_FILE_SIZE_FOR_EMAIL;
     }
 
-    public String createExceptionReport(@NonNull final Context context,
-                                        @Nullable final Exception e) {
-        String msg = null;
-
-        if (e instanceof IOException) {
-            // see if we can find the exact cause
-            if (e.getCause() instanceof ErrnoException) {
-                final int errno = ((ErrnoException) e.getCause()).errno;
-                // write failed: ENOSPC (No space left on device)
-                if (errno == OsConstants.ENOSPC) {
-                    msg = context.getString(R.string.error_storage_no_space_left);
-                } else {
-                    // write to logfile for future reporting enhancements.
-                    Logger.warn(context, TAG, "onExportFailed|errno=" + errno);
-                }
-            }
-
-            // generic IOException message
-            if (msg == null) {
-                msg = StandardDialogs.createBadError(context, R.string.error_storage_not_writable);
-            }
-        } else if (e instanceof FormattedMessageException) {
-            msg = ((FormattedMessageException) e).getLocalizedMessage(context);
-        }
-
-        // generic unknown message
-        if (msg == null || msg.isEmpty()) {
-            msg = context.getString(R.string.error_unexpected_error);
-        }
-
-        return msg;
+    public boolean isSet(final int optionBit) {
+        return (mOptions & optionBit) != 0;
     }
 }

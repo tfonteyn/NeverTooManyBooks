@@ -53,25 +53,38 @@ import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.backup.ExportHelperDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportManager;
+import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveExportTask;
 import com.hardbacknutter.nevertoomanybooks.backup.base.Options;
 import com.hardbacknutter.nevertoomanybooks.backup.base.OptionsDialogBase;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDialogFragment;
-import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
+import com.hardbacknutter.nevertoomanybooks.tasks.messages.FinishedMessage;
+import com.hardbacknutter.nevertoomanybooks.tasks.messages.ProgressMessage;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
-import com.hardbacknutter.nevertoomanybooks.viewmodels.ResultDataModel;
-import com.hardbacknutter.nevertoomanybooks.viewmodels.tasks.ExportTaskModel;
 
 public class ExportFragment
         extends Fragment {
 
     /** Log tag. */
     public static final String TAG = "ExportFragment";
-    /** ViewModel. */
-    private ResultDataModel mResultData;
+    /** (re)attach the result listener when a fragment gets started. */
+    private final FragmentOnAttachListener mFragmentOnAttachListener =
+            new FragmentOnAttachListener() {
+                @Override
+                public void onAttachFragment(@NonNull final FragmentManager fragmentManager,
+                                             @NonNull final Fragment fragment) {
+                    if (BuildConfig.DEBUG && DEBUG_SWITCHES.ATTACH_FRAGMENT) {
+                        Log.d(getClass().getName(), "onAttachFragment: " + fragment.getTag());
+                    }
+
+                    if (fragment instanceof ExportHelperDialogFragment) {
+                        ((ExportHelperDialogFragment) fragment).setListener(mExportOptionsListener);
+                    }
+                }
+            };
     /** Export. */
-    private ExportTaskModel mExportModel;
+    private ArchiveExportTask mArchiveExportTask;
     private final OptionsDialogBase.OptionsListener<ExportManager> mExportOptionsListener =
             new OptionsDialogBase.OptionsListener<ExportManager>() {
                 @Override
@@ -88,32 +101,13 @@ public class ExportFragment
     @Nullable
     private ProgressDialogFragment mProgressDialog;
 
-    /** (re)attach the result listener when a fragment gets started. */
-    private final FragmentOnAttachListener mFragmentOnAttachListener =
-            new FragmentOnAttachListener() {
-                @Override
-                public void onAttachFragment(@NonNull final FragmentManager fragmentManager,
-                                             @NonNull final Fragment fragment) {
-                    if (BuildConfig.DEBUG && DEBUG_SWITCHES.ATTACH_FRAGMENT) {
-                        Log.d(getClass().getName(), "onAttachFragment: " + fragment.getTag());
-                    }
-
-                    if (fragment instanceof ExportHelperDialogFragment) {
-                        ((ExportHelperDialogFragment) fragment).setListener(mExportOptionsListener);
-                    }
-                }
-            };
-
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         getChildFragmentManager().addFragmentOnAttachListener(mFragmentOnAttachListener);
 
-        //noinspection ConstantConditions
-        mResultData = new ViewModelProvider(getActivity()).get(ResultDataModel.class);
-
-        mExportModel = new ViewModelProvider(this).get(ExportTaskModel.class);
+        mArchiveExportTask = new ViewModelProvider(this).get(ArchiveExportTask.class);
     }
 
     @Nullable
@@ -129,8 +123,14 @@ public class ExportFragment
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        mExportModel.onTaskProgress().observe(getViewLifecycleOwner(), this::onTaskProgress);
-        mExportModel.onTaskFinished().observe(getViewLifecycleOwner(), this::onExportFinished);
+        //noinspection ConstantConditions
+        getActivity().setTitle(R.string.lbl_backup);
+
+        mArchiveExportTask.onProgressUpdate().observe(getViewLifecycleOwner(), this::onProgress);
+        mArchiveExportTask.onCancelled().observe(getViewLifecycleOwner(), this::onExportCancelled);
+        mArchiveExportTask.onFailure().observe(getViewLifecycleOwner(), this::onExportFailure);
+        mArchiveExportTask.onFinished().observe(getViewLifecycleOwner(), this::onExportFinished);
+
         exportShowOptions();
     }
 
@@ -142,10 +142,6 @@ public class ExportFragment
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
             Logger.enterOnActivityResult(TAG, requestCode, resultCode, data);
         }
-        // collect all data for passing to the calling Activity
-        if (data != null) {
-            mResultData.putResultData(data);
-        }
 
         //noinspection SwitchStatementWithTooFewBranches
         switch (requestCode) {
@@ -156,7 +152,7 @@ public class ExportFragment
                     final Uri uri = data.getData();
                     if (uri != null) {
                         //noinspection ConstantConditions
-                        mExportModel.startArchiveExportTask(getContext(), uri);
+                        mArchiveExportTask.startExport(getContext(), uri);
                     }
                 } else {
                     //noinspection ConstantConditions
@@ -171,11 +167,18 @@ public class ExportFragment
         }
     }
 
-    private void onTaskProgress(@NonNull final TaskListener.ProgressMessage message) {
+    private void onProgress(@NonNull final ProgressMessage message) {
         if (mProgressDialog == null) {
             mProgressDialog = getOrCreateProgressDialog();
         }
         mProgressDialog.onProgress(message);
+    }
+
+    private void closeProgressDialog() {
+        if (mProgressDialog != null) {
+            mProgressDialog.dismiss();
+            mProgressDialog = null;
+        }
     }
 
     @NonNull
@@ -192,7 +195,7 @@ public class ExportFragment
         }
 
         // hook the task up.
-        dialog.setCanceller(mExportModel.getTask());
+        dialog.setCanceller(mArchiveExportTask);
         return dialog;
     }
 
@@ -204,14 +207,13 @@ public class ExportFragment
         new MaterialAlertDialogBuilder(getContext())
                 .setTitle(R.string.lbl_backup)
                 .setMessage(R.string.txt_export_backup_all)
-                .setNegativeButton(android.R.string.cancel, (d, w) -> {
-                    //noinspection ConstantConditions
-                    getActivity().finish();
+                .setNegativeButton(android.R.string.cancel, (d, w) -> getActivity().finish())
+                .setNeutralButton(R.string.btn_options, (d, w) -> {
+                    d.dismiss();
+                    ExportHelperDialogFragment
+                            .newInstance()
+                            .show(getChildFragmentManager(), ExportHelperDialogFragment.TAG);
                 })
-                .setNeutralButton(R.string.btn_options, (d, w) -> ExportHelperDialogFragment
-                        .newInstance()
-                        //TEST: screen rotation
-                        .show(getChildFragmentManager(), ExportHelperDialogFragment.TAG))
                 .setPositiveButton(android.R.string.ok, (d, w) ->
                         exportPickUri(new ExportManager(Options.ALL)))
                 .create()
@@ -225,13 +227,38 @@ public class ExportFragment
      */
     void exportPickUri(@NonNull final ExportManager helper) {
         // save the configured helper
-        mExportModel.setHelper(helper);
+        mArchiveExportTask.setHelper(helper);
         //noinspection ConstantConditions
         final Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT)
                 .addCategory(Intent.CATEGORY_OPENABLE)
                 .setType("*/*")
-                .putExtra(Intent.EXTRA_TITLE, mExportModel.getDefaultUriName(getContext()));
+                .putExtra(Intent.EXTRA_TITLE, mArchiveExportTask.getDefaultUriName(getContext()));
         startActivityForResult(intent, RequestCode.EXPORT_PICK_URI);
+    }
+
+    private void onExportFailure(@NonNull final FinishedMessage<Exception> message) {
+        closeProgressDialog();
+
+        // sanity check
+        Objects.requireNonNull(message.result, ErrorMsg.NULL_EXCEPTION);
+        //noinspection ConstantConditions
+        new MaterialAlertDialogBuilder(getContext())
+                .setIcon(R.drawable.ic_error)
+                .setTitle(R.string.error_backup_failed)
+                .setMessage(ExportManager.createErrorReport(getContext(), message.result))
+                .setPositiveButton(android.R.string.ok, (d, w) -> getActivity().finish())
+                .create()
+                .show();
+    }
+
+    private void onExportCancelled(@NonNull final FinishedMessage<ExportManager> message) {
+        closeProgressDialog();
+
+        // won't be seen
+        //noinspection ConstantConditions
+        Snackbar.make(getView(), R.string.cancelled, Snackbar.LENGTH_LONG).show();
+        //noinspection ConstantConditions
+        getActivity().finish();
     }
 
     /**
@@ -239,70 +266,30 @@ public class ExportFragment
      *
      * @param message to process
      */
-    private void onExportFinished(@NonNull final TaskListener.FinishMessage<ExportManager>
-                                          message) {
-        if (mProgressDialog != null) {
-            mProgressDialog.dismiss();
-            mProgressDialog = null;
-        }
+    private void onExportFinished(@NonNull final FinishedMessage<ExportManager> message) {
+        closeProgressDialog();
 
-        switch (message.status) {
-            case Success: {
-                // sanity check
-                Objects.requireNonNull(message.result, ErrorMsg.NULL_TASK_RESULTS);
+        // sanity check
+        Objects.requireNonNull(message.result, ErrorMsg.NULL_TASK_RESULTS);
 
-                //noinspection ConstantConditions
-                MaterialAlertDialogBuilder dialogBuilder =
-                        new MaterialAlertDialogBuilder(getContext())
-                                .setIcon(R.drawable.ic_info)
-                                .setTitle(R.string.progress_end_backup_success)
-                                .setPositiveButton(R.string.done, (d, which) -> {
-                                    //noinspection ConstantConditions
-                                    getActivity().finish();
-                                });
-
-                final Uri uri = message.result.getUri();
-                final Pair<String, Long> uriInfo = FileUtils.getUriInfo(getContext(), uri);
-                String msg = message.result.getResults().createReport(getContext(), uriInfo);
-                if (message.result.offerEmail(uriInfo)) {
-                    msg += "\n\n" + getString(R.string.confirm_email_export);
-                    dialogBuilder.setNeutralButton(R.string.btn_email,
-                                                   (d, which) -> onExportEmail(uri));
-                }
-
-                dialogBuilder.setMessage(msg)
-                             .create()
-                             .show();
-
-                //noinspection ConstantConditions
-                getActivity().setResult(Activity.RESULT_OK, mResultData.getResultIntent());
-                break;
-            }
-            case Cancelled: {
-                //noinspection ConstantConditions
-                Snackbar.make(getView(), R.string.progress_end_cancelled,
-                              Snackbar.LENGTH_LONG).show();
-                //noinspection ConstantConditions
-                getActivity().finish();
-                break;
-            }
-            case Failed: {
-                // sanity check
-                Objects.requireNonNull(message.result, ErrorMsg.NULL_TASK_RESULTS);
-                //noinspection ConstantConditions
-                final String msg = message.result
-                        .createExceptionReport(getContext(), message.exception);
-                //noinspection ConstantConditions
+        //noinspection ConstantConditions
+        MaterialAlertDialogBuilder dialogBuilder =
                 new MaterialAlertDialogBuilder(getContext())
-                        .setIcon(R.drawable.ic_error)
-                        .setTitle(R.string.error_backup_failed)
-                        .setMessage(msg)
-                        .setPositiveButton(android.R.string.ok, (d, w) -> getActivity().finish())
-                        .create()
-                        .show();
-                break;
-            }
+                        .setIcon(R.drawable.ic_info)
+                        .setTitle(R.string.progress_end_backup_success)
+                        .setPositiveButton(R.string.done, (d, which) -> getActivity().finish());
+
+        final Uri uri = message.result.getUri();
+        final Pair<String, Long> uriInfo = FileUtils.getUriInfo(getContext(), uri);
+        String msg = message.result.getResults().createReport(getContext(), uriInfo);
+        if (message.result.offerEmail(uriInfo)) {
+            msg += "\n\n" + getString(R.string.confirm_email_export);
+            dialogBuilder.setNeutralButton(R.string.btn_email, (d, which) -> onExportEmail(uri));
         }
+
+        dialogBuilder.setMessage(msg)
+                     .create()
+                     .show();
     }
 
     /**

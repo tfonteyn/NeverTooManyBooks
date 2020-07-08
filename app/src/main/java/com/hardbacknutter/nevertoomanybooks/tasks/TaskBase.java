@@ -39,17 +39,18 @@ import java.lang.ref.WeakReference;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
-import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener.TaskStatus;
+import com.hardbacknutter.nevertoomanybooks.tasks.messages.FinishedMessage;
+import com.hardbacknutter.nevertoomanybooks.tasks.messages.ProgressMessage;
 
 /**
- * The base for a task with an exposed {@link ProgressListener}.
+ * The base for a task.
  * <p>
- * The Progress parameter is always {@link TaskListener.ProgressMessage}, and Params always Void.
+ * The Progress parameter is always {@link ProgressMessage}, and Params always Void.
  *
  * @param <Result> the type of the result of the background computation.
  */
 public abstract class TaskBase<Result>
-        extends AsyncTask<Void, TaskListener.ProgressMessage, Result>
+        extends AsyncTask<Void, ProgressMessage, Result>
         implements Canceller {
 
     /** Log tag. */
@@ -58,50 +59,6 @@ public abstract class TaskBase<Result>
     /** id set at construction time, passed back in all messages. */
     private final int mTaskId;
 
-    /** A listener that will forward incoming messages to {@link AsyncTask#publishProgress}. */
-    private final ProgressListener mProgressListener = new ProgressListener() {
-
-        private int mPos;
-        private int mMaxPosition;
-        @Nullable
-        private Boolean mIndeterminate;
-
-        @Override
-        public void onProgress(final int pos,
-                               @Nullable final String message) {
-            mPos = pos;
-            publishProgress(new TaskListener.ProgressMessage(mTaskId, mIndeterminate,
-                                                             mMaxPosition, mPos, message));
-        }
-
-        @Override
-        public void onProgressStep(final int delta,
-                                   @Nullable final String message) {
-            mPos += delta;
-            publishProgress(new TaskListener.ProgressMessage(mTaskId, mIndeterminate,
-                                                             mMaxPosition, mPos, message));
-        }
-
-        @Override
-        public void setIndeterminate(@Nullable final Boolean indeterminate) {
-            mIndeterminate = indeterminate;
-        }
-
-        @Override
-        public int getMax() {
-            return mMaxPosition;
-        }
-
-        @Override
-        public void setMax(final int maxPosition) {
-            mMaxPosition = maxPosition;
-        }
-
-        @Override
-        public boolean isCancelled() {
-            return TaskBase.this.isCancelled();
-        }
-    };
     /** The client listener where to send our results to. */
     @NonNull
     private final WeakReference<TaskListener<Result>> mTaskListener;
@@ -133,19 +90,9 @@ public abstract class TaskBase<Result>
         return mTaskId;
     }
 
-    /**
-     * Access for other classes.
-     *
-     * @return ProgressListener
-     */
-    @NonNull
-    protected ProgressListener getProgressListener() {
-        return mProgressListener;
-    }
-
     @Override
     @UiThread
-    protected void onProgressUpdate(@NonNull final TaskListener.ProgressMessage... values) {
+    protected void onProgressUpdate(@NonNull final ProgressMessage... values) {
         if (mTaskListener.get() != null) {
             mTaskListener.get().onProgress(values[0]);
         } else {
@@ -167,8 +114,7 @@ public abstract class TaskBase<Result>
     @CallSuper
     protected void onCancelled(@Nullable final Result result) {
         if (mTaskListener.get() != null) {
-            mTaskListener.get().onFinished(new TaskListener.FinishMessage<>(
-                    mTaskId, TaskStatus.Cancelled, result, mException));
+            mTaskListener.get().onCancelled(new FinishedMessage<>(mTaskId, result));
         } else {
             if (BuildConfig.DEBUG /* always */) {
                 Log.d(TAG, "onCancelled|" + ErrorMsg.LISTENER_WAS_DEAD);
@@ -181,11 +127,9 @@ public abstract class TaskBase<Result>
     protected void onPostExecute(@NonNull final Result result) {
         if (mTaskListener.get() != null) {
             if (mException == null) {
-                mTaskListener.get().onFinished(new TaskListener.FinishMessage<>(
-                        mTaskId, TaskStatus.Success, result, null));
+                mTaskListener.get().onFinished(new FinishedMessage<>(mTaskId, result));
             } else {
-                mTaskListener.get().onFinished(new TaskListener.FinishMessage<>(
-                        mTaskId, TaskStatus.Failed, result, mException));
+                mTaskListener.get().onFailure(new FinishedMessage<>(mTaskId, mException));
             }
         } else {
             if (BuildConfig.DEBUG /* always */) {

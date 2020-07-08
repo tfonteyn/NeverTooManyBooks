@@ -47,6 +47,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
+import com.hardbacknutter.nevertoomanybooks.tasks.messages.ProgressMessage;
 
 /**
  * Progress support for a {@link Canceller}. There can only be one Canceller at a time.
@@ -222,7 +223,7 @@ public class ProgressDialogFragment
     }
 
     @UiThread
-    public void onProgress(@NonNull final TaskListener.ProgressMessage message) {
+    public void onProgress(@NonNull final ProgressMessage message) {
         @NonNull
         Boolean previousMode = mIsIndeterminate;
         // mode change requested ?
@@ -244,7 +245,6 @@ public class ProgressDialogFragment
         if (message.text != null) {
             setMessage(message.text);
         }
-
     }
 
     /**

@@ -27,7 +27,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.covers;
 
-import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.util.Log;
@@ -44,7 +43,6 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.io.File;
@@ -59,7 +57,11 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogCoverBrowserBinding;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
+import com.hardbacknutter.nevertoomanybooks.dialogs.BaseDialogFragment;
+import com.hardbacknutter.nevertoomanybooks.searches.SearchEditionsTask;
 import com.hardbacknutter.nevertoomanybooks.searches.SiteList;
+import com.hardbacknutter.nevertoomanybooks.tasks.messages.FinishedMessage;
+import com.hardbacknutter.nevertoomanybooks.viewmodels.BookViewModel;
 
 /**
  * Displays and manages a cover image browser in a dialog, allowing the user to select
@@ -67,16 +69,14 @@ import com.hardbacknutter.nevertoomanybooks.searches.SiteList;
  * <p>
  * Displays gallery images using {@link CoverBrowserViewModel#getGalleryDisplayExecutor()}.
  * Displays preview image on the UI thread.
- *
+ * <p>
+ * The progress bar is visible while fetching the edition list and the selected image.
+ * It's not visible while gallery pictures are loading.
  * <p>
  * ENHANCE: allow configuring search-sites on the fly
- * ENHANCE: currently supports only a front-cover. Add back-cover support
- * <p>
- * TODO: The current implementation of this class and related classes is far from optimal.
- * Something to do on a rainy day.
  */
 public class CoverBrowserDialogFragment
-        extends DialogFragment {
+        extends BaseDialogFragment {
 
     /** Log tag. */
     public static final String TAG = "CoverBrowserFragment";
@@ -95,8 +95,14 @@ public class CoverBrowserDialogFragment
     /** Indicates cancel has been requested. */
     private boolean mIsCancelled;
 
+    /** The book. Must be in the Activity scope. */
+    @SuppressWarnings("FieldCanBeLocal")
+    private BookViewModel mBookViewModel;
+
     /** The ViewModel. */
     private CoverBrowserViewModel mModel;
+    /** Editions. */
+    private SearchEditionsTask mSearchEditionsTask;
 
     /** View Binding. */
     private DialogCoverBrowserBinding mVb;
@@ -104,6 +110,13 @@ public class CoverBrowserDialogFragment
     /** Where to send the result. */
     @Nullable
     private WeakReference<OnFileSelected> mListener;
+
+    /**
+     * No-arg constructor for OS use.
+     */
+    public CoverBrowserDialogFragment() {
+        super(R.layout.dialog_cover_browser);
+    }
 
     /**
      * Constructor.
@@ -134,33 +147,46 @@ public class CoverBrowserDialogFragment
         final int scalePreview = getResources().getInteger(R.integer.cover_scale_browser_preview);
         //noinspection ConstantConditions
         mPreviewMaxSize = ImageScale.getSize(getContext(), scalePreview);
+    }
 
-        final int scaleGallery = getResources().getInteger(R.integer.cover_scale_browser_gallery);
-        mGalleryAdapter = new GalleryAdapter(scaleGallery);
+    @Override
+    public void onViewCreated(@NonNull final View view,
+                              @Nullable final Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        mVb = DialogCoverBrowserBinding.bind(view);
+
+        //noinspection ConstantConditions
+        mBookViewModel = new ViewModelProvider(getActivity()).get(BookViewModel.class);
+        //noinspection ConstantConditions
+        mBookViewModel.init(getContext(), getArguments());
+
+        mVb.toolbar.setSubtitle(mBookViewModel.getBook().getTitle());
+        mVb.toolbar.setNavigationOnClickListener(v -> dismiss());
+
+        mSearchEditionsTask = new ViewModelProvider(this).get(SearchEditionsTask.class);
+        // dismiss silently
+        mSearchEditionsTask.onCancelled().observe(this, message -> dismiss());
+        // the task (should not) throws no exceptions; but just in case... dismiss silently
+        mSearchEditionsTask.onFailure().observe(this, message -> dismiss());
+        mSearchEditionsTask.onFinished().observe(this, this::showGallery);
 
         mModel = new ViewModelProvider(this).get(CoverBrowserViewModel.class);
         mModel.init(getContext(), requireArguments());
-
-        mModel.onEditionsLoaded().observe(this, this::showGallery);
         mModel.onGalleryImage().observe(this, this::setGalleryImage);
         mModel.onSelectedImage().observe(this, imageFileInfo -> {
             final File file = imageFileInfo != null ? imageFileInfo.getFile() : null;
             setSelectedImage(file);
         });
-    }
-
-    @NonNull
-    @Override
-    public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
-        mVb = DialogCoverBrowserBinding.inflate(getLayoutInflater());
 
         // The gallery displays a list of images, one for each edition.
-        final LinearLayoutManager galleryLayoutManager = new LinearLayoutManager(getContext());
-        galleryLayoutManager.setOrientation(RecyclerView.HORIZONTAL);
-        mVb.gallery.setLayoutManager(galleryLayoutManager);
-        //noinspection ConstantConditions
+        final LinearLayoutManager galleryLM = new LinearLayoutManager(getContext());
+        galleryLM.setOrientation(RecyclerView.HORIZONTAL);
+        mVb.gallery.setLayoutManager(galleryLM);
         mVb.gallery.addItemDecoration(
-                new DividerItemDecoration(getContext(), galleryLayoutManager.getOrientation()));
+                new DividerItemDecoration(getContext(), galleryLM.getOrientation()));
+        final int scaleGallery = getResources().getInteger(R.integer.cover_scale_browser_gallery);
+        mGalleryAdapter = new GalleryAdapter(scaleGallery);
         mVb.gallery.setAdapter(mGalleryAdapter);
 
         // When the preview image is clicked, send the fileSpec back to the caller and terminate.
@@ -183,10 +209,6 @@ public class CoverBrowserDialogFragment
             // close the CoverBrowserFragment
             dismiss();
         });
-
-        return new MaterialAlertDialogBuilder(getContext())
-                .setView(mVb.getRoot())
-                .create();
     }
 
     @Override
@@ -215,23 +237,26 @@ public class CoverBrowserDialogFragment
         super.onResume();
         if (mEditions.isEmpty()) {
             mVb.statusMessage.setText(R.string.progress_msg_finding_editions);
-            mModel.fetchEditions();
+            mVb.progressBar.setVisibility(View.VISIBLE);
+
+            mSearchEditionsTask.startTask(mModel.getBaseIsbn());
         }
     }
 
     /**
-     * Called with the results from the edition search.
      * Show the user a selection of other covers and allow selection of a replacement.
      * <p>
      * Note that after e.g. a screen rotation, we get the full list again.
      * This will re-trigger the downloading of gallery images but
      * we'll only retry images we don't yet have.
      *
-     * @param isbnList the list to use.
+     * @param message the result of {@link SearchEditionsTask}
      */
-    private void showGallery(@Nullable final Collection<String> isbnList) {
-        mEditions.clear();
+    private void showGallery(@NonNull final FinishedMessage<Collection<String>> message) {
+        mVb.progressBar.setVisibility(View.INVISIBLE);
 
+        mEditions.clear();
+        Collection<String> isbnList = message.result;
         if (isbnList == null || isbnList.isEmpty()) {
             Snackbar.make(mVb.statusMessage, R.string.warning_no_editions,
                           Snackbar.LENGTH_LONG).show();
@@ -287,11 +312,13 @@ public class CoverBrowserDialogFragment
     }
 
     /**
-     * Display the given file in the preview View. Starts a task if needed.
+     * The user clicked an image in the gallery.
+     * Display the given file in the preview View.
+     * Starts a task to fetch a large(r) image if needed.
      *
      * @param imageFileInfo to use
      */
-    private void setSelectedImage(@NonNull final ImageFileInfo imageFileInfo) {
+    private void onGalleryImageSelected(@NonNull final ImageFileInfo imageFileInfo) {
         final File file = imageFileInfo.getFile();
         // sanity check
         if (file != null) {
@@ -302,6 +329,8 @@ public class CoverBrowserDialogFragment
             } else {
                 mVb.preview.setVisibility(View.INVISIBLE);
                 mVb.statusMessage.setText(R.string.progress_msg_loading);
+                mVb.progressBar.setVisibility(View.VISIBLE);
+
                 // start a task to fetch a larger image
                 mModel.fetchSelectedImage(imageFileInfo);
             }
@@ -317,6 +346,7 @@ public class CoverBrowserDialogFragment
         // Reset the preview
         mModel.setSelectedFilePath(null);
         mVb.preview.setVisibility(View.INVISIBLE);
+        mVb.progressBar.setVisibility(View.INVISIBLE);
 
         if (ImageUtils.isFileGood(file)) {
             new ImageLoader(mVb.preview, file, mPreviewMaxSize, mPreviewMaxSize, () -> {
@@ -427,7 +457,7 @@ public class CoverBrowserDialogFragment
                 mModel.fetchGalleryImage(isbn);
             }
 
-            holder.imageView.setOnClickListener(v -> setSelectedImage(imageFileInfo));
+            holder.imageView.setOnClickListener(v -> onGalleryImageSelected(imageFileInfo));
         }
 
         @Override

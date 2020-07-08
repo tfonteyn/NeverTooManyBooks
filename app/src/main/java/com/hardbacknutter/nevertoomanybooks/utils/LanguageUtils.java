@@ -32,19 +32,11 @@ import android.content.SharedPreferences;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.UiThread;
 
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.MissingResourceException;
-
-import com.hardbacknutter.nevertoomanybooks.App;
-import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
-import com.hardbacknutter.nevertoomanybooks.searches.stripinfo.StripInfoSearchEngine;
-import com.hardbacknutter.nevertoomanybooks.tasks.TaskBase;
-import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 
 /**
  * Languages.
@@ -377,89 +369,8 @@ public final class LanguageUtils {
      *
      * @return the SharedPreferences representing the language mapper
      */
-    private static SharedPreferences getLanguageCache(@NonNull final Context context) {
+    public static SharedPreferences getLanguageCache(@NonNull final Context context) {
         return context.getSharedPreferences(LANGUAGE_MAP, Context.MODE_PRIVATE);
     }
 
-    /**
-     * Build the dedicated SharedPreferences file with the language mappings.
-     * Only build once per Locale.
-     */
-    public static class BuildLanguageMappingsTask
-            extends TaskBase<Boolean> {
-
-        /** Log tag. */
-        private static final String TAG = "BuildLanguageMappings";
-        /** Prefix added to the iso code for the 'done' flag in the language cache. */
-        private static final String LANG_CREATED_PREFIX = "___";
-
-        /**
-         * Constructor.
-         *
-         * @param taskId       a task identifier, will be returned in the task listener.
-         * @param taskListener for sending progress and finish messages to.
-         */
-        @UiThread
-        public BuildLanguageMappingsTask(final int taskId,
-                                         @NonNull final TaskListener<Boolean> taskListener) {
-            super(taskId, taskListener);
-        }
-
-        @Override
-        protected Boolean doInBackground(@Nullable final Void... voids) {
-            Thread.currentThread().setName(TAG);
-            final Context context = LocaleUtils.applyLocale(App.getTaskContext());
-
-            publishProgress(new TaskListener.ProgressMessage(
-                    getTaskId(), context.getString(R.string.progress_msg_optimizing)));
-            try {
-
-                final SharedPreferences prefs = getLanguageCache(context);
-
-                // the one the user is using our app in (can be different from the system one)
-                createLanguageMappingCache(prefs, LocaleUtils.getUserLocale(context));
-
-                // the system default
-                createLanguageMappingCache(prefs, LocaleUtils.getSystemLocale());
-
-                //NEWTHINGS: add new site specific ID: sites using a specific language
-
-                // Dutch
-                createLanguageMappingCache(prefs, StripInfoSearchEngine.SITE_LOCALE);
-                // Dutch
-                //createLanguageMappingCache(prefs, KbNlSearchEngine.SITE_LOCALE);
-
-                // add English for compatibility with lots of websites.
-                createLanguageMappingCache(prefs, Locale.ENGLISH);
-                return true;
-
-            } catch (@NonNull final RuntimeException e) {
-                Logger.error(context, TAG, e);
-                mException = e;
-                return false;
-            }
-        }
-
-        /**
-         * Generate language mappings for a given Locale.
-         *
-         * @param prefs  the SharedPreferences used as our language names cache.
-         * @param locale the Locale for which to create a mapping
-         */
-        private void createLanguageMappingCache(@NonNull final SharedPreferences prefs,
-                                                @NonNull final Locale locale) {
-            // just return if already done for this Locale.
-            if (prefs.getBoolean(LANG_CREATED_PREFIX + locale.getISO3Language(), false)) {
-                return;
-            }
-            final SharedPreferences.Editor ed = prefs.edit();
-            for (Locale loc : Locale.getAvailableLocales()) {
-                ed.putString(loc.getDisplayLanguage(locale).toLowerCase(locale),
-                             loc.getISO3Language());
-            }
-            // signal this Locale was done
-            ed.putBoolean(LANG_CREATED_PREFIX + locale.getISO3Language(), true);
-            ed.apply();
-        }
-    }
 }

@@ -31,13 +31,14 @@ import android.content.Context;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 
-public final class GrStatus {
+public class GrStatus {
 
     public static final String BKEY = "GrStatus";
 
@@ -74,20 +75,44 @@ public final class GrStatus {
     /** There is network connectivity but something went wrong. */
     public static final int FAILED_IO_EXCEPTION = 201;
 
+    @Status
+    private final int mMessageId;
+    @Nullable
+    private final Exception mException;
 
-    private GrStatus() {
+    public GrStatus(@Status final int messageId) {
+        mMessageId = messageId;
+        mException = null;
+    }
+
+    public GrStatus(@Status final int messageId,
+                    @Nullable final Exception exception) {
+        mMessageId = messageId;
+        mException = exception;
     }
 
     @NonNull
-    public static String getString(@NonNull final Context context,
-                                   @Status final int errorCode) {
+    public static String getMessage(@NonNull final Context context,
+                                    @Nullable final Exception exception) {
+        if (exception == null) {
+            // the task was cancelled before it started.
+            return context.getString(R.string.cancelled);
+        } else {
+            return context.getString(R.string.error_unexpected_error)
+                   + ' ' + exception.getLocalizedMessage();
+        }
+    }
+
+    @NonNull
+    private static String getString(@NonNull final Context context,
+                                    @Status final int errorCode) {
         // We could have created an array or map... but we have a couple of special cases,
         // so just leaving this as a switch.
         switch (errorCode) {
             case SUCCESS:
                 return context.getString(R.string.gr_tq_completed);
             case CANCELLED:
-                return context.getString(R.string.progress_end_cancelled);
+                return context.getString(R.string.cancelled);
 
             case SUCCESS_AUTHORIZATION_ALREADY_GRANTED:
                 return context.getString(R.string.gr_authorization_already_granted);
@@ -130,6 +155,21 @@ public final class GrStatus {
             default:
                 return context.getString(R.string.error_unexpected_error);
 
+        }
+    }
+
+    @Status
+    public int getStatus() {
+        return mMessageId;
+    }
+
+    @NonNull
+    public String getMessage(@NonNull final Context context) {
+
+        if (mException != null) {
+            return getString(context, mMessageId) + ' ' + mException.getLocalizedMessage();
+        } else {
+            return getString(context, mMessageId);
         }
     }
 

@@ -119,22 +119,10 @@ public class TaskViewHolder
 
         @GrStatus.Status
         final int extStatus = task.getLastExtStatus();
-
         if (extStatus != GrStatus.SUCCESS) {
-            String msg;
-            final Exception lastException = task.getLastException();
-            if (extStatus == GrStatus.FAILED_UNEXPECTED_EXCEPTION && lastException != null) {
-                // UnexpectedError... display the exception
-                msg = lastException.getLocalizedMessage();
-                if (msg == null) {
-                    msg = lastException.getClass().getSimpleName();
-                }
-            } else {
-                // display a formatted clean status message
-                msg = GrStatus.getString(context, extStatus);
-            }
-
-            msg = context.getString(R.string.gr_tq_last_error_e, msg);
+            final GrStatus grStatus = new GrStatus(extStatus, task.getLastException());
+            final String msg = context.getString(R.string.gr_tq_last_error_e,
+                                                 grStatus.getMessage(context));
             errorView.setText(msg);
             errorView.setVisibility(View.VISIBLE);
 

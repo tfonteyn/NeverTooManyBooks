@@ -37,7 +37,7 @@
 
     <TextView
         android:id="@+id/title"
-        style="@style/Text.BookTitle"
+        style="@style/Field.BookTitle"
         android:drawableStart="@drawable/ic_book"
         android:drawablePadding="@dimen/drawable_padding1"
         android:textIsSelectable="false"
@@ -50,7 +50,7 @@
 
     <TextView
         android:id="@+id/year"
-        style="@style/Text.Small"
+        style="@style/Field.Generic.Small"
         android:layout_marginStart="@dimen/indent2"
         android:textIsSelectable="false"
         app:layout_constraintBaseline_toBaselineOf="@id/title"

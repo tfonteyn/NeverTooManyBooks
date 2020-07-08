@@ -82,12 +82,11 @@ import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.fields.Fields;
 import com.hardbacknutter.nevertoomanybooks.searches.isfdb.Edition;
 import com.hardbacknutter.nevertoomanybooks.searches.isfdb.IsfdbGetBookTask;
+import com.hardbacknutter.nevertoomanybooks.searches.isfdb.IsfdbGetEditionsTask;
 import com.hardbacknutter.nevertoomanybooks.searches.isfdb.IsfdbSearchEngine;
-import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
+import com.hardbacknutter.nevertoomanybooks.tasks.messages.FinishedMessage;
 import com.hardbacknutter.nevertoomanybooks.utils.Csv;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
-import com.hardbacknutter.nevertoomanybooks.viewmodels.tasks.IsfdbEditionsTaskModel;
-import com.hardbacknutter.nevertoomanybooks.viewmodels.tasks.IsfdbGetBookTaskModel;
 import com.hardbacknutter.nevertoomanybooks.widgets.DiacriticArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.widgets.ItemTouchHelperViewHolderBase;
 import com.hardbacknutter.nevertoomanybooks.widgets.RecyclerViewAdapterBase;
@@ -130,26 +129,11 @@ public class EditBookTocFragment
      */
     @Nullable
     private ArrayList<Edition> mIsfdbEditions;
-    private IsfdbEditionsTaskModel mIsfdbEditionsTaskModel;
-    private IsfdbGetBookTaskModel mIsfdbGetBookTaskModel;
     private DiacriticArrayAdapter<String> mAuthorAdapter;
-    /** Listen for the results (approval) to add the TOC to the list and refresh the screen. */
-    private final ConfirmTocDialogFragment.ConfirmTocResults mConfirmTocResultsListener =
-            new ConfirmTocDialogFragment.ConfirmTocResults() {
-                @Override
-                public void commitToc(@Book.TocBits final long tocBitMask,
-                                      @NonNull final List<TocEntry> tocEntries) {
-                    onIsfdbDataConfirmed(tocBitMask, tocEntries);
-                }
-
-                @Override
-                public void searchNextEdition() {
-                    onSearchNextEdition();
-                }
-            };
     /** Stores the item position in the list while we're editing that item. */
     @Nullable
     private Integer mEditPosition;
+    private IsfdbGetEditionsTask mIsfdbGetEditionsTask;
     /** Database Access. */
     private DAO mDb;
     /** Listen for the results of the entry edit-dialog. */
@@ -173,6 +157,21 @@ public class EditBookTocFragment
         }
 
     };
+    private IsfdbGetBookTask mIsfdbGetBookTask;
+    /** Listen for the results (approval) to add the TOC to the list and refresh the screen. */
+    private final ConfirmTocDialogFragment.ConfirmTocResults mConfirmTocResultsListener =
+            new ConfirmTocDialogFragment.ConfirmTocResults() {
+                @Override
+                public void commitToc(@Book.TocBits final long tocBitMask,
+                                      @NonNull final List<TocEntry> tocEntries) {
+                    onIsfdbDataConfirmed(tocBitMask, tocEntries);
+                }
+
+                @Override
+                public void searchNextEdition() {
+                    onSearchNextEdition();
+                }
+            };
     /** (re)attach the result listener when a fragment gets started. */
     private final FragmentOnAttachListener mFragmentOnAttachListener =
             new FragmentOnAttachListener() {
@@ -211,8 +210,8 @@ public class EditBookTocFragment
 
         mDb = new DAO(TAG);
 
-        mIsfdbEditionsTaskModel = new ViewModelProvider(this).get(IsfdbEditionsTaskModel.class);
-        mIsfdbGetBookTaskModel = new ViewModelProvider(this).get(IsfdbGetBookTaskModel.class);
+        mIsfdbGetEditionsTask = new ViewModelProvider(this).get(IsfdbGetEditionsTask.class);
+        mIsfdbGetBookTask = new ViewModelProvider(this).get(IsfdbGetBookTask.class);
     }
 
     @Override
@@ -230,10 +229,21 @@ public class EditBookTocFragment
         // setup common stuff and calls onInitFields()
         super.onViewCreated(view, savedInstanceState);
 
-        mIsfdbEditionsTaskModel.onTaskFinished().observe(getViewLifecycleOwner(),
-                                                         this::onIsfdbEditions);
-        mIsfdbGetBookTaskModel.onTaskFinished().observe(getViewLifecycleOwner(),
-                                                        this::onIsfdbBook);
+        mIsfdbGetEditionsTask.onCancelled().observe(getViewLifecycleOwner(), message ->
+                Snackbar.make(mVb.getRoot(), R.string.cancelled, Snackbar.LENGTH_LONG).show());
+        mIsfdbGetEditionsTask.onFailure().observe(getViewLifecycleOwner(), message ->
+                Snackbar.make(mVb.getRoot(), R.string.warning_no_editions,
+                              Snackbar.LENGTH_LONG).show());
+        mIsfdbGetEditionsTask.onFinished().observe(getViewLifecycleOwner(), this::onIsfdbEditions);
+
+
+        mIsfdbGetBookTask.onCancelled().observe(getViewLifecycleOwner(), message ->
+                Snackbar.make(mVb.getRoot(), R.string.cancelled, Snackbar.LENGTH_LONG).show());
+        mIsfdbGetBookTask.onFailure().observe(getViewLifecycleOwner(), message ->
+                Snackbar.make(mVb.getRoot(), R.string.warning_search_failed,
+                              Snackbar.LENGTH_LONG).show());
+        mIsfdbGetBookTask.onFinished().observe(getViewLifecycleOwner(), this::onIsfdbBook);
+
 
         // set up the list view. The adapter is setup in onPopulateViews
         final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
@@ -281,86 +291,6 @@ public class EditBookTocFragment
             //noinspection ConstantConditions
             return Author.createUnknownAuthor(getContext());
         }
-    }
-
-    /**
-     * We got one or more editions from ISFDB.
-     * Stores the url's locally as the user might want to try the next in line
-     */
-    private void onIsfdbEditions(@NonNull final TaskListener.FinishMessage<ArrayList<Edition>>
-                                         message) {
-        mIsfdbEditions = message.result != null ? message.result : new ArrayList<>();
-        searchIsfdb();
-    }
-
-    /**
-     * Start a task to get the next edition of this book (that we know of).
-     */
-    void onSearchNextEdition() {
-        if (mIsfdbEditions != null && !mIsfdbEditions.isEmpty()) {
-            // remove the top one, and try again
-            mIsfdbEditions.remove(0);
-            searchIsfdb();
-        }
-    }
-
-    private void onIsfdbBook(@NonNull final TaskListener.FinishMessage<Bundle> message) {
-        if (message.status == TaskListener.TaskStatus.Cancelled) {
-            Snackbar.make(mVb.getRoot(), R.string.progress_end_cancelled,
-                          Snackbar.LENGTH_LONG).show();
-            return;
-        } else if (message.status == TaskListener.TaskStatus.Failed) {
-            Snackbar.make(mVb.getRoot(), R.string.warning_search_failed,
-                          Snackbar.LENGTH_LONG).show();
-            return;
-        } else if (message.result == null) {
-            Snackbar.make(mVb.getRoot(), R.string.warning_book_not_found,
-                          Snackbar.LENGTH_LONG).show();
-            return;
-        }
-
-        final Book book = mBookViewModel.getBook();
-
-        // update the book with Series information that was gathered from the TOC
-        final List<Series> series = message.result.getParcelableArrayList(Book.BKEY_SERIES_ARRAY);
-        if (series != null && !series.isEmpty()) {
-            final ArrayList<Series> inBook = book.getParcelableArrayList(Book.BKEY_SERIES_ARRAY);
-            // add, weeding out duplicates
-            for (Series s : series) {
-                if (!inBook.contains(s)) {
-                    inBook.add(s);
-                }
-            }
-        }
-
-        // update the book with the first publication date that was gathered from the TOC
-        final String bookFirstPublication =
-                message.result.getString(DBDefinitions.KEY_DATE_FIRST_PUBLICATION);
-        if (bookFirstPublication != null) {
-            if (book.getString(DBDefinitions.KEY_DATE_FIRST_PUBLICATION).isEmpty()) {
-                book.putString(DBDefinitions.KEY_DATE_FIRST_PUBLICATION, bookFirstPublication);
-            }
-        }
-
-        // finally the TOC itself:  display it for the user to approve
-        final boolean hasOtherEditions = (mIsfdbEditions != null) && (mIsfdbEditions.size() > 1);
-        ConfirmTocDialogFragment.newInstance(message.result, hasOtherEditions)
-                                .show(getChildFragmentManager(), ConfirmTocDialogFragment.TAG);
-    }
-
-    void onIsfdbDataConfirmed(@Book.TocBits final long tocBitMask,
-                              @NonNull final Collection<TocEntry> tocEntries) {
-        if (tocBitMask != 0) {
-            final Book book = mBookViewModel.getBook();
-            book.putLong(DBDefinitions.KEY_TOC_BITMASK, tocBitMask);
-            populateTocBits(book);
-        }
-
-        // append the new data
-        // theoretically we may create duplicates, practical chance is neglectable.
-        // And if we did, they will get weeded out when saved to the DAO
-        mList.addAll(tocEntries);
-        mListAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -431,7 +361,7 @@ public class EditBookTocFragment
                 if (isfdbId != 0) {
                     Snackbar.make(mVb.getRoot(), R.string.progress_msg_connecting,
                                   Snackbar.LENGTH_LONG).show();
-                    mIsfdbGetBookTaskModel.search(isfdbId, isAddSeriesFromToc());
+                    mIsfdbGetBookTask.search(isfdbId, isAddSeriesFromToc());
                     return true;
                 }
 
@@ -441,7 +371,7 @@ public class EditBookTocFragment
                     if (isbn.isValid(true)) {
                         Snackbar.make(mVb.getRoot(), R.string.progress_msg_connecting,
                                       Snackbar.LENGTH_LONG).show();
-                        mIsfdbEditionsTaskModel.search(isbn);
+                        mIsfdbGetEditionsTask.search(isbn);
                         return true;
                     }
                 }
@@ -472,8 +402,9 @@ public class EditBookTocFragment
 
             //noinspection ConstantConditions
             final String title = item.getLabel(getContext());
-            MenuPickerDialogFragment.newInstance(title, null, menu, position)
-                                    .show(getChildFragmentManager(), MenuPickerDialogFragment.TAG);
+            MenuPickerDialogFragment
+                    .newInstance(title, null, menu, position)
+                    .show(getChildFragmentManager(), MenuPickerDialogFragment.TAG);
         } else {
             //noinspection ConstantConditions
             final Menu menu = MenuPicker.createMenu(getContext());
@@ -527,9 +458,9 @@ public class EditBookTocFragment
     void editEntry(@Nullable final Integer position,
                    @NonNull final TocEntry tocEntry) {
         mEditPosition = position;
-        EditTocEntryDialogFragment.newInstance(mBookViewModel.getBook(),
-                                               tocEntry, mVb.cbxMultipleAuthors.isChecked())
-                                  .show(getChildFragmentManager(), EditTocEntryDialogFragment.TAG);
+        EditTocEntryDialogFragment
+                .newInstance(mBookViewModel.getBook(), tocEntry, mVb.cbxMultipleAuthors.isChecked())
+                .show(getChildFragmentManager(), EditTocEntryDialogFragment.TAG);
     }
 
     void deleteEntry(final int position,
@@ -637,14 +568,83 @@ public class EditBookTocFragment
                                 .getBoolean(IsfdbSearchEngine.PREFS_SERIES_FROM_TOC, false);
     }
 
+    /**
+     * We got one or more editions from ISFDB.
+     * Stores the url's locally as the user might want to try the next in line
+     */
+    private void onIsfdbEditions(@NonNull final FinishedMessage<ArrayList<Edition>> message) {
+        mIsfdbEditions = message.result != null ? message.result : new ArrayList<>();
+        searchIsfdb();
+    }
+
+    /**
+     * Start a task to get the next edition of this book (that we know of).
+     */
+    void onSearchNextEdition() {
+        if (mIsfdbEditions != null && !mIsfdbEditions.isEmpty()) {
+            // remove the top one, and try again
+            mIsfdbEditions.remove(0);
+            searchIsfdb();
+        }
+    }
+
+    private void onIsfdbBook(@NonNull final FinishedMessage<Bundle> message) {
+        if (message.result == null) {
+            Snackbar.make(mVb.getRoot(), R.string.warning_book_not_found,
+                          Snackbar.LENGTH_LONG).show();
+            return;
+        }
+
+        final Book book = mBookViewModel.getBook();
+
+        // update the book with Series information that was gathered from the TOC
+        final List<Series> series = message.result.getParcelableArrayList(Book.BKEY_SERIES_ARRAY);
+        if (series != null && !series.isEmpty()) {
+            final ArrayList<Series> inBook = book.getParcelableArrayList(Book.BKEY_SERIES_ARRAY);
+            // add, weeding out duplicates
+            for (Series s : series) {
+                if (!inBook.contains(s)) {
+                    inBook.add(s);
+                }
+            }
+        }
+
+        // update the book with the first publication date that was gathered from the TOC
+        final String bookFirstPublication =
+                message.result.getString(DBDefinitions.KEY_DATE_FIRST_PUBLICATION);
+        if (bookFirstPublication != null) {
+            if (book.getString(DBDefinitions.KEY_DATE_FIRST_PUBLICATION).isEmpty()) {
+                book.putString(DBDefinitions.KEY_DATE_FIRST_PUBLICATION, bookFirstPublication);
+            }
+        }
+
+        // finally the TOC itself:  display it for the user to approve
+        final boolean hasOtherEditions = (mIsfdbEditions != null) && (mIsfdbEditions.size() > 1);
+        ConfirmTocDialogFragment
+                .newInstance(message.result, hasOtherEditions)
+                .show(getChildFragmentManager(), ConfirmTocDialogFragment.TAG);
+    }
+
+    void onIsfdbDataConfirmed(@Book.TocBits final long tocBitMask,
+                              @NonNull final Collection<TocEntry> tocEntries) {
+        if (tocBitMask != 0) {
+            final Book book = mBookViewModel.getBook();
+            book.putLong(DBDefinitions.KEY_TOC_BITMASK, tocBitMask);
+            populateTocBits(book);
+        }
+
+        // append the new data
+        // theoretically we may create duplicates, practical chance is neglectable.
+        // And if we did, they will get weeded out when saved to the DAO
+        mList.addAll(tocEntries);
+        mListAdapter.notifyDataSetChanged();
+    }
+
     private void searchIsfdb() {
         if (mIsfdbEditions != null && !mIsfdbEditions.isEmpty()) {
             Snackbar.make(mVb.getRoot(), R.string.progress_msg_connecting,
                           Snackbar.LENGTH_LONG).show();
-            final IsfdbGetBookTask task =
-                    new IsfdbGetBookTask(mIsfdbEditions, isAddSeriesFromToc(),
-                                         mIsfdbGetBookTaskModel.getTaskListener());
-            mIsfdbGetBookTaskModel.execute(task);
+            mIsfdbGetBookTask.search(mIsfdbEditions, isAddSeriesFromToc());
         } else {
             Snackbar.make(mVb.getRoot(), R.string.warning_no_editions,
                           Snackbar.LENGTH_LONG).show();

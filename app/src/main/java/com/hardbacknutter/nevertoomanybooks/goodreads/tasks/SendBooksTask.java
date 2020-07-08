@@ -30,18 +30,15 @@ package com.hardbacknutter.nevertoomanybooks.goodreads.tasks;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsAuth;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GrStatus;
 import com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.QueueManager;
 import com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.TQTask;
-import com.hardbacknutter.nevertoomanybooks.tasks.TaskBase;
-import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
+import com.hardbacknutter.nevertoomanybooks.tasks.VMTask;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.NetworkUtils;
 
@@ -54,15 +51,15 @@ import com.hardbacknutter.nevertoomanybooks.utils.NetworkUtils;
  * is kicked of to do the actual work.
  */
 public class SendBooksTask
-        extends TaskBase<Integer> {
+        extends VMTask<GrStatus> {
 
     /** Log tag. */
     private static final String TAG = "GR.SendBooksTask";
 
     /** Flag: send only starting from the last book we did earlier, or all books. */
-    private final boolean mFromLastBookId;
+    private boolean mFromLastBookId;
     /** Flag: send only the updated, or all books. */
-    private final boolean mUpdatesOnly;
+    private boolean mUpdatesOnly;
 
     /**
      * Constructor.
@@ -71,56 +68,47 @@ public class SendBooksTask
      *                       {@code false} for all books.
      * @param updatesOnly    {@code true} to send updated books only,
      *                       {@code false} for all books.
-     * @param taskListener   for sending progress and finish messages to.
      */
-    public SendBooksTask(final boolean fromLastBookId,
-                         final boolean updatesOnly,
-                         @NonNull final TaskListener<Integer> taskListener) {
-        super(R.id.TASK_ID_GR_SEND_BOOKS, taskListener);
+    public void startTask(final boolean fromLastBookId,
+                          final boolean updatesOnly) {
         mFromLastBookId = fromLastBookId;
         mUpdatesOnly = updatesOnly;
+
+        execute(R.id.TASK_ID_GR_SEND_BOOKS);
     }
 
     @Override
     @NonNull
     @WorkerThread
-    @GrStatus.Status
-    protected Integer doInBackground(@Nullable final Void... voids) {
+    protected GrStatus doWork() {
         Thread.currentThread().setName(TAG);
         final Context context = LocaleUtils.applyLocale(App.getTaskContext());
 
-        try {
-            if (!NetworkUtils.isNetworkAvailable(context)) {
-                return GrStatus.FAILED_NETWORK_UNAVAILABLE;
-            }
-
-            // Check that no other sync-related jobs are queued
-            if (QueueManager.getQueueManager().hasActiveTasks(TQTask.CAT_EXPORT)) {
-                return GrStatus.FAILED_EXPORT_TASK_ALREADY_QUEUED;
-            }
-            if (QueueManager.getQueueManager().hasActiveTasks(TQTask.CAT_IMPORT)) {
-                return GrStatus.FAILED_IMPORT_TASK_ALREADY_QUEUED;
-            }
-
-            final GoodreadsAuth grAuth = new GoodreadsAuth(context);
-            if (!grAuth.hasValidCredentials(context)) {
-                return GrStatus.FAILED_CREDENTIALS;
-            }
-
-            if (isCancelled()) {
-                return GrStatus.CANCELLED;
-            }
-
-            final String desc = context.getString(R.string.gr_title_send_book);
-            final TQTask task = new SendBooksGrTask(desc, mFromLastBookId, mUpdatesOnly);
-            QueueManager.getQueueManager().enqueueTask(QueueManager.Q_MAIN, task);
-
-            return GrStatus.SUCCESS_TASK_QUEUED;
-
-        } catch (@NonNull final RuntimeException e) {
-            Logger.error(context, TAG, e);
-            mException = e;
-            return GrStatus.FAILED_UNEXPECTED_EXCEPTION;
+        if (!NetworkUtils.isNetworkAvailable(context)) {
+            return new GrStatus(GrStatus.FAILED_NETWORK_UNAVAILABLE);
         }
+
+        // Check that no other sync-related jobs are queued
+        if (QueueManager.getQueueManager().hasActiveTasks(TQTask.CAT_EXPORT)) {
+            return new GrStatus(GrStatus.FAILED_EXPORT_TASK_ALREADY_QUEUED);
+        }
+        if (QueueManager.getQueueManager().hasActiveTasks(TQTask.CAT_IMPORT)) {
+            return new GrStatus(GrStatus.FAILED_IMPORT_TASK_ALREADY_QUEUED);
+        }
+
+        final GoodreadsAuth grAuth = new GoodreadsAuth(context);
+        if (!grAuth.hasValidCredentials(context)) {
+            return new GrStatus(GrStatus.FAILED_CREDENTIALS);
+        }
+
+        if (isCancelled()) {
+            return new GrStatus(GrStatus.CANCELLED);
+        }
+
+        final String desc = context.getString(R.string.gr_title_send_book);
+        final TQTask task = new SendBooksGrTask(desc, mFromLastBookId, mUpdatesOnly);
+        QueueManager.getQueueManager().enqueueTask(QueueManager.Q_MAIN, task);
+
+        return new GrStatus(GrStatus.SUCCESS_TASK_QUEUED);
     }
 }

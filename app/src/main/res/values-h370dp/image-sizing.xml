@@ -28,4 +28,5 @@
   -->
 
 <resources>
+    <integer name="cover_scale_browser_preview">5</integer>
 </resources>

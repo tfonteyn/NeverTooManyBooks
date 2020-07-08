@@ -44,7 +44,7 @@
 
         <TextView
             android:id="@+id/lbl_rating"
-            style="@style/Label.Field"
+            style="@style/Field.Label"
             android:labelFor="@id/rating"
             android:text="@string/lbl_rating"
             app:layout_constraintStart_toStartOf="parent"
@@ -241,7 +241,7 @@
 
         <TextView
             android:id="@+id/lbl_edition"
-            style="@style/Label.Field"
+            style="@style/Field.Label"
             android:text="@string/lbl_edition"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/barrier_condition_fields"

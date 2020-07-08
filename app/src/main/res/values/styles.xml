@@ -32,74 +32,84 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <!-- *************************************************************************************** -->
-    <!-- Field & Header labels -->
+    <!-- Fields. Read-only text. -->
     <!-- *************************************************************************************** -->
 
     <!-- Base style; not to be used directly in layouts. -->
-    <style name="Label">
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:textStyle">bold</item>
-    </style>
-
-    <!-- Generic field labels. -->
-    <style name="Label.Field">
-        <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
-    </style>
-
-    <!-- Header field labels. -->
-    <style name="Label.Header">
-        <item name="android:textAllCaps">true</item>
-        <item name="android:layout_marginTop">@dimen/border2</item>
-        <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
-    </style>
-
-    <!-- *************************************************************************************** -->
-    <!-- Read-only text -->
-    <!-- *************************************************************************************** -->
-
-    <!-- 'medium' detail text field; for example Series title, ... -->
-    <style name="Text">
+    <style name="Field">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textIsSelectable">true</item>
+    </style>
+
+    <!-- Field labels. -->
+    <style name="Field.Label">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
+    </style>
+
+    <!-- 'medium' detail field; for example Series title, ... -->
+    <style name="Field.Generic">
+        <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
+    </style>
+
+    <!-- 'minor' detail field; for example format, isbn,... -->
+    <style name="Field.Generic.Small">
+        <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
+    </style>
+
+
+    <!-- Book title (also used for TOC titles) gets a distinct style. -->
+    <style name="Field.BookTitle">
+        <item name="android:textStyle">italic</item>
         <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
     </style>
 
     <!-- Book title gets a distinct style. -->
-    <style name="Text.BookTitle">
-        <item name="android:textStyle">italic</item>
+    <style name="Field.BookTitle.Large">
+        <item name="android:textAppearance">?android:attr/textAppearanceLarge</item>
     </style>
 
     <!-- Book personal notes. -->
-    <style name="Text.Notes">
+    <style name="Field.Notes">
+        <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
     </style>
+
     <!-- Book Description. -->
-    <style name="Text.Description">
+    <style name="Field.Description">
+        <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
         <item name="android:background">@drawable/outline_rounded</item>
     </style>
 
     <!-- On loan to X. -->
-    <style name="Text.OnLoanBar">
+    <style name="Field.OnLoanBar">
         <item name="android:paddingStart">@dimen/indent2</item>
         <item name="android:paddingEnd">@dimen/indent2</item>
         <item name="android:background">?attr/colorOnBackground</item>
         <item name="android:textAppearance">?android:attr/textAppearanceLargeInverse</item>
     </style>
 
-    <!-- 'minor' detail text field; for example format, isbn,... -->
+    <!-- *************************************************************************************** -->
+    <!-- Read-only text -->
+    <!-- *************************************************************************************** -->
+
+    <!-- Base style; not to be used directly in layouts. -->
+    <style name="Text">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textIsSelectable">true</item>
+    </style>
+
     <style name="Text.Small">
         <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
     </style>
 
-    <!-- 'major' detail text field. -->
-    <style name="Text.Large">
-        <item name="android:textAppearance">?android:attr/textAppearanceLarge</item>
+    <style name="Text.Header">
     </style>
 
-    <!-- Book title gets a distinct style. -->
-    <style name="Text.Large.BookTitle">
-        <item name="android:textStyle">italic</item>
+    <style name="Text.Header.Large">
+        <item name="android:textAppearance">?android:attr/textAppearanceLarge</item>
     </style>
 
     <!-- informational piece of text -->

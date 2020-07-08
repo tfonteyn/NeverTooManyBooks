@@ -316,7 +316,7 @@ public class EditBookPublisherListDialogFragment
             Logger.warnWithStackTrace(getContext(), TAG, "Could not update",
                                       "original=" + original,
                                       "modified=" + modified);
-            StandardDialogs.showError(getContext(), R.string.error_unexpected_error);
+            StandardDialogs.showError(getContext(), R.string.error_storage_not_writable);
         }
     }
 
@@ -562,11 +562,9 @@ public class EditBookPublisherListDialogFragment
             holder.publisherView.setText(publisher.getLabel(getContext()));
 
             // click -> edit
-            holder.rowDetailsView.setOnClickListener(v -> {
-                final DialogFragment frag = EditPublisherForBookDialogFragment
-                        .newInstance(mBookViewModel.getBook().getTitle(), publisher);
-                frag.show(getParentFragmentManager(), EditPublisherForBookDialogFragment.TAG);
-            });
+            holder.rowDetailsView.setOnClickListener(v -> EditPublisherForBookDialogFragment
+                    .newInstance(mBookViewModel.getBook().getTitle(), publisher)
+                    .show(getParentFragmentManager(), EditPublisherForBookDialogFragment.TAG));
         }
     }
 }

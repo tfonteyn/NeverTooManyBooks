@@ -58,7 +58,6 @@ import com.hardbacknutter.nevertoomanybooks.goodreads.api.ShelvesListApiHandler;
 import com.hardbacknutter.nevertoomanybooks.goodreads.api.ShowBookApiHandler;
 import com.hardbacknutter.nevertoomanybooks.goodreads.api.ShowBookByIdApiHandler;
 import com.hardbacknutter.nevertoomanybooks.goodreads.api.ShowBookByIsbnApiHandler;
-import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
@@ -172,37 +171,6 @@ public class GoodreadsHandler {
             }
         }
         return date;
-    }
-
-    /**
-     * Digest the task outcome, and return a user displayable String message.
-     *
-     * @param context Current context
-     * @param message to process
-     *
-     * @return a String to display to the user
-     */
-    @NonNull
-    public static String digest(@NonNull final Context context,
-                                @NonNull final TaskListener.FinishMessage<Integer> message) {
-
-        // Regardless of the task status, we ONLY need to take the extended-status code
-        // as passed in message.result into account.
-
-        // the only time the result is null is when the task was cancelled before it started.
-        if (message.result == null) {
-            return GrStatus.getString(context, GrStatus.CANCELLED);
-        }
-
-        // If we have an unexpected exception, add the actual exception to the message.
-        if (message.exception != null && message.result == GrStatus.FAILED_UNEXPECTED_EXCEPTION) {
-            return GrStatus.getString(context, message.result)
-                   + ' ' + message.exception.getLocalizedMessage();
-        }
-
-        // Everything else
-        return GrStatus.getString(context, message.result);
-
     }
 
     /**

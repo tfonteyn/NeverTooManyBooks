@@ -59,11 +59,11 @@ public class AuthorCoder
     @Override
     @NonNull
     public Author decode(@NonNull final String element) {
-        List<String> parts = StringList.newInstance().decodeElement(element);
-        Author author = Author.from(parts.get(0));
+        final List<String> parts = StringList.newInstance().decodeElement(element);
+        final Author author = Author.from(parts.get(0));
         if (parts.size() > 1) {
             try {
-                JSONObject details = new JSONObject(parts.get(1));
+                final JSONObject details = new JSONObject(parts.get(1));
                 author.fromJson(details);
             } catch (@NonNull final JSONException ignore) {
                 // ignore
@@ -83,7 +83,7 @@ public class AuthorCoder
                 + Author.NAME_SEPARATOR + ' '
                 + escape(author.getGivenNames(), escapeChars);
 
-        JSONObject details = new JSONObject();
+        final JSONObject details = new JSONObject();
         try {
             author.toJson(details);
         } catch (@NonNull final JSONException e) {

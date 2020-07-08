@@ -59,9 +59,6 @@ import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.BooksOnBookshelfModel;
 import com.hardbacknutter.nevertoomanybooks.widgets.DiacriticArrayAdapter;
 
-/**
- * ENHANCE: perhaps add auto-completion for publishers.
- */
 public class BookSearchByTextFragment
         extends BookSearchBaseFragment {
 
@@ -79,7 +76,7 @@ public class BookSearchByTextFragment
     private final Collection<String> mRecentPublisherNames = new ArrayList<>();
     /** adapter for the AutoCompleteTextView. */
     private DiacriticArrayAdapter<String> mPublisherAdapter;
-
+    /** Flag: show the publisher field or not. */
     private boolean mUsePublisher;
 
     /** View Binding. */

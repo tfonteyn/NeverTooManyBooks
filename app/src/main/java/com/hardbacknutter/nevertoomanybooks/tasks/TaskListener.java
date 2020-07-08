@@ -28,7 +28,9 @@
 package com.hardbacknutter.nevertoomanybooks.tasks;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+
+import com.hardbacknutter.nevertoomanybooks.tasks.messages.FinishedMessage;
+import com.hardbacknutter.nevertoomanybooks.tasks.messages.ProgressMessage;
 
 /**
  * <strong>Warning:</strong> To prevent unintended garbage collection, you must store
@@ -46,129 +48,24 @@ import androidx.annotation.Nullable;
 public interface TaskListener<Result> {
 
     /**
-     * Called when a task finishes. The status is embedded in the message.
+     * Called when a task finishes.
      */
-    void onFinished(@NonNull FinishMessage<Result> message);
+    void onFinished(@NonNull FinishedMessage<Result> message);
+
+    /**
+     * Called when a task was cancelled.
+     */
+    void onCancelled(@NonNull FinishedMessage<Result> message);
+
+    /**
+     * Called when a task failed. The result is the Exception.
+     */
+    void onFailure(@NonNull FinishedMessage<Exception> message);
 
     /**
      * Progress messages.
      */
     default void onProgress(@NonNull final ProgressMessage message) {
         // ignore by default
-    }
-
-    /** Possible outcomes as passed in {@link FinishMessage}. */
-    enum TaskStatus {
-        Success, Cancelled, Failed
-    }
-
-    /**
-     * Value class holding task-finished value.
-     *
-     * @param <Result> type of the actual result of the task.
-     */
-    class FinishMessage<Result> {
-
-        /** ID for the task which was provided at construction time. */
-        public final int taskId;
-
-        /** Success, Failed, Cancelled. */
-        @NonNull
-        public final TaskStatus status;
-
-        /**
-         * The result object from the task.
-         * It can be {@code null} regardless of the task implementation.
-         * Only considered valid if the status is Success or Cancelled.
-         */
-        @Nullable
-        public final Result result;
-
-        /**
-         * Set if the task finished with an exception, or {@code null} for no-error.
-         * Only considered valid if the status is Failed.
-         */
-        @Nullable
-        public final Exception exception;
-
-        public FinishMessage(final int taskId,
-                             @NonNull final TaskStatus status,
-                             @Nullable final Result result,
-                             @Nullable final Exception exception) {
-            this.taskId = taskId;
-            this.status = status;
-            this.result = result;
-            this.exception = exception;
-        }
-
-        @Override
-        @NonNull
-        public String toString() {
-            return "FinishMessage{"
-                   + "taskId=" + taskId
-                   + ", status=" + status
-                   + ", result=" + result
-                   + ", exception=" + exception
-                   + '}';
-        }
-    }
-
-    /**
-     * Value class holding progress data.
-     */
-    class ProgressMessage {
-
-        public final int taskId;
-        /**
-         * The maximum position for the progressbar,
-         * should be ignored if a mode change was requested with indeterminate.
-         */
-        public final int maxPosition;
-        /**
-         * Absolute position for the progressbar,
-         * should be ignored if a mode change was requested with indeterminate.
-         */
-        public final int position;
-        /** Optional text to display. */
-        @Nullable
-        public final String text;
-        /** No-op if {@code null} otherwise change mode to the requested one. */
-        @Nullable
-        final Boolean indeterminate;
-
-        public ProgressMessage(final int taskId,
-                               @Nullable final Boolean indeterminate,
-                               final int maxPosition,
-                               final int position,
-                               @Nullable final String text) {
-            this.taskId = taskId;
-            this.text = text;
-
-            this.indeterminate = indeterminate;
-            this.maxPosition = maxPosition;
-            this.position = position;
-        }
-
-        public ProgressMessage(final int taskId,
-                               @Nullable final String text) {
-            this.taskId = taskId;
-            this.text = text;
-
-            this.indeterminate = null;
-            this.maxPosition = 0;
-            this.position = 0;
-        }
-
-        @Override
-        @NonNull
-        public String toString() {
-            return "ProgressMessage{"
-                   + "taskId=" + taskId
-                   + ", indeterminate=" + indeterminate
-                   + ", maxPosition=" + maxPosition
-                   + ", position=" + position
-                   + ", text=" + text
-                   + '}';
-        }
     }
 }

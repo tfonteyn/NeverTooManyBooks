@@ -160,7 +160,7 @@
 
     <!-- Displayed when any read operation from Shared Storage fails -->
     <string name="error_storage_not_readable">Please check that storage is accessible.</string>
-    <!-- Displayed when any write operation to Shared Storage fails -->
+    <!-- Displayed when any write operation to the database, or to Shared Storage fails -->
     <string name="error_storage_not_writable">Please check that storage is writable, and has sufficient space.</string>
     <!-- Shared Storage file system access fails for some reason -->
     <string name="error_storage_not_accessible">Storage not accessible.</string>
@@ -430,8 +430,6 @@
     <string name="progress_end_import_partially_complete">Partial import done</string>
     <!-- progress final message - all data was exported. -->
     <string name="progress_end_backup_success">Backup success</string>
-    <!-- The user probably canceled before we finished. -->
-    <string name="progress_end_cancelled">Cancelled</string>
     <!-- Progress message displayed when importing books -->
     <string name="progress_end_export_result_n_books_processed">%1$d books processed</string>
     <!-- Progress message displayed when exporting covers -->
@@ -1056,13 +1054,12 @@
     <!-- e.g. clearing a form. -->
     <string name="action_clear">Clear</string>
 
-
     <!-- when warned you have unsaved edits -->
     <string name="btn_continue_edit">Continue Editing</string>
 
     <!-- button text for import/export dialogs -->
     <string name="btn_options">Options</string>
-    <!-- Button text, to 'return' a loaned book -->
+    <!-- Button text, to 'return' a lend book -->
     <string name="btn_loan_returned">Returned</string>
 
     <!-- Button; where we can use a long text. Should also show icon: res/drawable/ic_barcode -->
@@ -1278,6 +1275,8 @@
 
     <string name="yes">Yes</string>
     <string name="no">No</string>
+
+    <string name="cancelled">Cancelled</string>
 
     <!-- Copy from android-29#unknownName -->
     <string name="unknown">Unknown</string>
@@ -1587,5 +1586,6 @@
     <string name="info_purge_blns_all">Purge all BLNS</string>
     <!-- param 1: type of item; param 2: item name.  Example: "Purge BLNS for Bookshelf ToRead" -->
     <string name="info_purge_blns_item_name">Purge BLNS for %1$s %2$s ?</string>
+    <string name="lbl_author_type_narrator">Narrator</string>
 
 </resources>

@@ -71,7 +71,7 @@ public interface ProgressListener {
      * @param indeterminate true/false to enable the indeterminate mode,
      *                      or {@code null} to tell the receiver to use its initial mode.
      */
-    void setIndeterminate(@Nullable Boolean indeterminate);
+    void setProgressIsIndeterminate(@Nullable Boolean indeterminate);
 
     /**
      * Get the max position. Useful if a routine wants to adjust the max only if the
@@ -79,12 +79,12 @@ public interface ProgressListener {
      *
      * @return max position
      */
-    int getMax();
+    int getProgressMaxPos();
 
     /**
      * Set the max value for the progress counter.
      *
      * @param maxPosition value
      */
-    void setMax(int maxPosition);
+    void setProgressMaxPos(int maxPosition);
 }
