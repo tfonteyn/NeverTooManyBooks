@@ -34,5 +34,19 @@
         <!-- but these domains don't yet support https. 2020-01-04. -->
         <domain includeSubdomains="true">isfdb.org</domain>
         <domain includeSubdomains="true">kb.nl</domain>
+
+        <!-- Added 2020-07-08.
+        http://ecx.images-amazon.com/images/I/41lQH44CfyL.jpg
+
+        Manually changing urls to https results in:
+
+         D/ImageUtils: saveImage|e=Hostname ecx.images-amazon.com not verified:
+        certificate: sha1/Q7se2uhRtdUO5KQJKV/3LI2dCl8=
+        DN: CN=*.cloudfront.net,O=Amazon.com\, Inc.,L=Seattle,ST=Washington,C=US
+        subjectAltNames: [cloudfront.net, *.cloudfront.net]
+
+        Allowing cleartext as a workaround.
+        -->
+        <domain includeSubdomains="true">images-amazon.com</domain>
     </domain-config>
 </network-security-config>
