@@ -49,7 +49,6 @@ import java.util.Collections;
 import java.util.LinkedHashSet;
 
 import com.hardbacknutter.nevertoomanybooks.BookChangedListener;
-import com.hardbacknutter.nevertoomanybooks.BookChangedListenerOwner;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.RequestCode;
@@ -69,7 +68,7 @@ import com.hardbacknutter.nevertoomanybooks.widgets.DiacriticArrayAdapter;
  */
 public class EditLenderDialogFragment
         extends BaseDialogFragment
-        implements BookChangedListenerOwner {
+        implements BookChangedListener.Owner {
 
     /** Fragment/Log tag. */
     public static final String TAG = "LendBookDialogFrag";

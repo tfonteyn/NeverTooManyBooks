@@ -40,7 +40,6 @@ import java.lang.ref.WeakReference;
 import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.BookChangedListener;
-import com.hardbacknutter.nevertoomanybooks.BookChangedListenerOwner;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
@@ -54,7 +53,7 @@ import com.hardbacknutter.nevertoomanybooks.widgets.DiacriticArrayAdapter;
  */
 public abstract class EditStringBaseDialogFragment
         extends BaseDialogFragment
-        implements BookChangedListenerOwner {
+        implements BookChangedListener.Owner {
 
     /** Fragment/Log tag. */
     private static final String TAG = "EditStringBaseDialog";

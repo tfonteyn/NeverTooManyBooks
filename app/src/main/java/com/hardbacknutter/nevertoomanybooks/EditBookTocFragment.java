@@ -133,6 +133,29 @@ public class EditBookTocFragment
     /** Stores the item position in the list while we're editing that item. */
     @Nullable
     private Integer mEditPosition;
+    /** (re)attach the result listener when a fragment gets started. */
+    private final FragmentOnAttachListener mFragmentOnAttachListener =
+            new FragmentOnAttachListener() {
+                @Override
+                public void onAttachFragment(@NonNull final FragmentManager fragmentManager,
+                                             @NonNull final Fragment fragment) {
+                    if (BuildConfig.DEBUG && DEBUG_SWITCHES.ATTACH_FRAGMENT) {
+                        Log.d(getClass().getName(), "onAttachFragment: " + fragment.getTag());
+                    }
+
+                    if (fragment instanceof MenuPickerDialogFragment) {
+                        ((MenuPickerDialogFragment) fragment).setListener(
+                                (menuItem, position) -> onContextItemSelected(menuItem, position));
+
+                    } else if (fragment instanceof ConfirmTocDialogFragment) {
+                        ((ConfirmTocDialogFragment) fragment)
+                                .setListener(mConfirmTocResultsListener);
+
+                    } else if (fragment instanceof BookChangedListener.Owner) {
+                        ((BookChangedListener.Owner) fragment).setListener(mOnBookChangedListener);
+                    }
+                }
+            };
     private IsfdbGetEditionsTask mIsfdbGetEditionsTask;
     /** Database Access. */
     private DAO mDb;
@@ -170,29 +193,6 @@ public class EditBookTocFragment
                 @Override
                 public void searchNextEdition() {
                     onSearchNextEdition();
-                }
-            };
-    /** (re)attach the result listener when a fragment gets started. */
-    private final FragmentOnAttachListener mFragmentOnAttachListener =
-            new FragmentOnAttachListener() {
-                @Override
-                public void onAttachFragment(@NonNull final FragmentManager fragmentManager,
-                                             @NonNull final Fragment fragment) {
-                    if (BuildConfig.DEBUG && DEBUG_SWITCHES.ATTACH_FRAGMENT) {
-                        Log.d(getClass().getName(), "onAttachFragment: " + fragment.getTag());
-                    }
-
-                    if (fragment instanceof MenuPickerDialogFragment) {
-                        ((MenuPickerDialogFragment) fragment).setListener(
-                                (menuItem, position) -> onContextItemSelected(menuItem, position));
-
-                    } else if (fragment instanceof ConfirmTocDialogFragment) {
-                        ((ConfirmTocDialogFragment) fragment)
-                                .setListener(mConfirmTocResultsListener);
-
-                    } else if (fragment instanceof BookChangedListenerOwner) {
-                        ((BookChangedListenerOwner) fragment).setListener(mOnBookChangedListener);
-                    }
                 }
             };
 

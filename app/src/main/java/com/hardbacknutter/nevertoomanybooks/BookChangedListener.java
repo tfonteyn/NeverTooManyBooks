@@ -30,6 +30,7 @@ package com.hardbacknutter.nevertoomanybooks;
 import android.os.Bundle;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.lang.annotation.Retention;
@@ -86,5 +87,15 @@ public interface BookChangedListener {
     @Retention(RetentionPolicy.SOURCE)
     @interface Flags {
 
+    }
+
+    interface Owner {
+
+        /**
+         * Call this from {@code onAttachFragment} in the caller.
+         *
+         * @param listener the object to send the result to.
+         */
+        void setListener(@NonNull BookChangedListener listener);
     }
 }
