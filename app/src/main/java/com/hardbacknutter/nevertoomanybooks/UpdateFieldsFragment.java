@@ -39,7 +39,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
-import android.widget.TextView;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
@@ -54,6 +53,7 @@ import com.google.android.material.snackbar.Snackbar;
 
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentUpdateFromInternetBinding;
+import com.hardbacknutter.nevertoomanybooks.databinding.RowUpdateFromInternetBinding;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
@@ -175,25 +175,23 @@ public class UpdateFieldsFragment
      */
     private void populateFields() {
         for (FieldUsage usage : mUpdateFieldsModel.getFieldUsages()) {
-            final View row = getLayoutInflater().inflate(R.layout.row_update_from_internet,
-                                                         mVb.fieldList, false);
+            final RowUpdateFromInternetBinding rowVb = RowUpdateFromInternetBinding
+                    .inflate(getLayoutInflater(), mVb.fieldList, false);
 
-            final TextView fieldLabel = row.findViewById(R.id.field);
             //noinspection ConstantConditions
-            fieldLabel.setText(usage.getLabel(getContext()));
+            rowVb.field.setText(usage.getLabel(getContext()));
 
-            final CompoundButton cb = row.findViewById(R.id.cbx_usage);
-            cb.setChecked(usage.isWanted());
-            cb.setText(usage.getUsageLabel(getContext()));
-            cb.setTag(R.id.TAG_FIELD_USAGE, usage);
-            cb.setOnClickListener(v -> {
-                final FieldUsage fieldUsage = (FieldUsage) cb.getTag(R.id.TAG_FIELD_USAGE);
-                fieldUsage.nextState();
-                cb.setChecked(fieldUsage.isWanted());
-                cb.setText(fieldUsage.getUsageLabel(getContext()));
+            rowVb.cbxUsage.setChecked(usage.isWanted());
+            rowVb.cbxUsage.setText(usage.getUsageLabel(getContext()));
+            rowVb.cbxUsage.setTag(R.id.TAG_FIELD_USAGE, usage);
+            rowVb.cbxUsage.setOnClickListener(v -> {
+                final FieldUsage fu = (FieldUsage) rowVb.cbxUsage.getTag(R.id.TAG_FIELD_USAGE);
+                fu.nextState();
+                rowVb.cbxUsage.setChecked(fu.isWanted());
+                rowVb.cbxUsage.setText(fu.getUsageLabel(getContext()));
             });
 
-            mVb.fieldList.addView(row);
+            mVb.fieldList.addView(rowVb.getRoot());
         }
     }
 

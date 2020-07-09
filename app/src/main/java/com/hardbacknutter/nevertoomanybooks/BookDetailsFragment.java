@@ -44,12 +44,9 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CheckBox;
 import android.widget.CompoundButton;
-import android.widget.TextView;
 
 import androidx.annotation.CallSuper;
-import androidx.annotation.IdRes;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -69,6 +66,7 @@ import java.util.Objects;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverHandler;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentBookDetailsBinding;
+import com.hardbacknutter.nevertoomanybooks.databinding.RowTocEntryWithAuthorBinding;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
@@ -135,8 +133,8 @@ public class BookDetailsFragment
                         Log.d(getClass().getName(), "onAttachFragment: " + fragment.getTag());
                     }
 
-                    if (fragment instanceof BookChangedListenerOwner) {
-                        ((BookChangedListenerOwner) fragment).setListener(mBookChangedListener);
+                    if (fragment instanceof BookChangedListener.Owner) {
+                        ((BookChangedListener.Owner) fragment).setListener(mBookChangedListener);
                     }
                 }
             };
@@ -392,11 +390,13 @@ public class BookDetailsFragment
             final int[] scale = getResources().getIntArray(R.array.cover_scale_details);
 
             mCoverHandler[0] = new CoverHandler(this, mProgressBar,
-                                                book, mVb.isbn, 0, mVb.coverImage0,
+                                                book, mVb.isbn,
+                                                0, mVb.coverImage0,
                                                 scale[0]);
 
             mCoverHandler[1] = new CoverHandler(this, mProgressBar,
-                                                book, mVb.isbn, 1, mVb.coverImage1,
+                                                book, mVb.isbn,
+                                                1, mVb.coverImage1,
                                                 scale[1]);
         }
 
@@ -405,23 +405,23 @@ public class BookDetailsFragment
         fields.setVisibility(getView(), true, false);
 
         // Hide the Publication section label if none of the publishing fields are shown.
-        setSectionLabelVisibility(R.id.lbl_publication,
-                                  R.id.publisher,
-                                  R.id.date_published,
-                                  R.id.price_listed,
-                                  R.id.format,
-                                  R.id.color,
-                                  R.id.language,
-                                  R.id.pages);
+        setSectionVisibility(mVb.lblPublication,
+                             mVb.publisher,
+                             mVb.datePublished,
+                             mVb.priceListed,
+                             mVb.format,
+                             mVb.color,
+                             mVb.language,
+                             mVb.pages);
         // Hide the "Personal notes" label if none of the notes fields are shown.
-        setSectionLabelVisibility(R.id.lbl_notes,
-                                  R.id.notes,
-                                  R.id.cbx_signed,
-                                  R.id.date_acquired,
-                                  R.id.price_paid,
-                                  R.id.read_start,
-                                  R.id.read_end,
-                                  R.id.location);
+        setSectionVisibility(mVb.lblNotes,
+                             mVb.notes,
+                             mVb.cbxSigned,
+                             mVb.dateAcquired,
+                             mVb.pricePaid,
+                             mVb.readStart,
+                             mVb.readEnd,
+                             mVb.location);
     }
 
     /**
@@ -481,37 +481,27 @@ public class BookDetailsFragment
             final Context context = getContext();
 
             for (TocEntry tocEntry : tocList) {
-                final View rowView = getLayoutInflater()
-                        .inflate(R.layout.row_toc_entry_with_author, mVb.toc, false);
-
-                final TextView titleView = rowView.findViewById(R.id.title);
-                final TextView authorView = rowView.findViewById(R.id.author);
-                final TextView firstPubView = rowView.findViewById(R.id.year);
-                final CheckBox multipleBooksView = rowView.findViewById(R.id.cbx_multiple_books);
+                final RowTocEntryWithAuthorBinding rowVb = RowTocEntryWithAuthorBinding
+                        .inflate(getLayoutInflater(), mVb.toc, false);
 
                 //noinspection ConstantConditions
-                titleView.setText(tocEntry.getLabel(context));
+                rowVb.title.setText(tocEntry.getLabel(context));
+                rowVb.author.setText(tocEntry.getAuthor().getLabel(context));
 
-                if (multipleBooksView != null) {
-                    final boolean isSet = tocEntry.getBookCount() > 1;
-                    multipleBooksView.setChecked(isSet);
-                    multipleBooksView.setVisibility(isSet ? View.VISIBLE : View.GONE);
+                final boolean isSet = tocEntry.getBookCount() > 1;
+                rowVb.cbxMultipleBooks.setChecked(isSet);
+                rowVb.cbxMultipleBooks.setVisibility(isSet ? View.VISIBLE : View.GONE);
+
+                final String date = tocEntry.getFirstPublication();
+                // "< 4" covers empty and illegal dates
+                if (date.length() < 4) {
+                    rowVb.year.setVisibility(View.GONE);
+                } else {
+                    rowVb.year.setVisibility(View.VISIBLE);
+                    // show full date string (if available)
+                    rowVb.year.setText(context.getString(R.string.brackets, date));
                 }
-                if (authorView != null) {
-                    authorView.setText(tocEntry.getAuthor().getLabel(context));
-                }
-                if (firstPubView != null) {
-                    final String date = tocEntry.getFirstPublication();
-                    // "< 4" covers empty and illegal dates
-                    if (date.length() < 4) {
-                        firstPubView.setVisibility(View.GONE);
-                    } else {
-                        firstPubView.setVisibility(View.VISIBLE);
-                        // show full date string (if available)
-                        firstPubView.setText(context.getString(R.string.brackets, date));
-                    }
-                }
-                mVb.toc.addView(rowView);
+                mVb.toc.addView(rowVb.getRoot());
             }
 
             mVb.lblToc.setVisibility(View.VISIBLE);
@@ -524,29 +514,23 @@ public class BookDetailsFragment
     }
 
     /**
-     * If all 'fields' are View.GONE, set 'sectionLabelId' to View.GONE as well.
-     * Otherwise, set 'sectionLabelId' to View.VISIBLE.
+     * If all field Views are View.GONE, set the section View to View.GONE as well.
+     * Otherwise, set the section View to View.VISIBLE.
      *
-     * @param sectionLabelId field to set
-     * @param fieldIds       to check
+     * @param sectionView field to set
+     * @param fieldViews  to check
      */
-    private void setSectionLabelVisibility(@IdRes final int sectionLabelId,
-                                           @IdRes final int... fieldIds) {
-        final View parent = getView();
-        //noinspection ConstantConditions
-        final View fieldView = parent.findViewById(sectionLabelId);
-        if (fieldView != null) {
-            for (int fieldId : fieldIds) {
-                final View view = parent.findViewById(fieldId);
-                if (view != null && view.getVisibility() != View.GONE) {
-                    // at least one field was visible
-                    fieldView.setVisibility(View.VISIBLE);
-                    return;
-                }
+    private void setSectionVisibility(@NonNull final View sectionView,
+                                      @NonNull final View... fieldViews) {
+        for (View view : fieldViews) {
+            if (view != null && view.getVisibility() != View.GONE) {
+                // at least one field was visible
+                sectionView.setVisibility(View.VISIBLE);
+                return;
             }
-            // all fields were gone.
-            fieldView.setVisibility(View.GONE);
         }
+        // all fields were gone.
+        sectionView.setVisibility(View.GONE);
     }
 
     @Override

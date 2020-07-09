@@ -142,6 +142,10 @@ public class CoverHandler {
     /**
      * Constructor.
      *
+     * <strong>Why isbnView</strong>: using the view will allow this code to work
+     * with both read-only screens (passing the isbn itself would be enough)
+     * AND with edit-screens (need the CURRENT code).
+     *
      * @param fragment    the hosting fragment, should implement {@link HostingFragment}
      * @param progressBar (optional) a progress bar
      * @param book        the book whose cover we're handling
@@ -606,10 +610,8 @@ public class CoverHandler {
         FileUtils.delete(dstFile);
 
         final Intent intent = new Intent(mContext, CropImageActivity.class)
-                .putExtra(CropImageActivity.BKEY_SOURCE,
-                          srcFile.getAbsolutePath())
-                .putExtra(CropImageActivity.BKEY_DESTINATION,
-                          dstFile.getAbsolutePath());
+                .putExtra(CropImageActivity.BKEY_SOURCE, srcFile.getAbsolutePath())
+                .putExtra(CropImageActivity.BKEY_DESTINATION, dstFile.getAbsolutePath());
 
         mFragment.startActivityForResult(intent, RequestCode.CROP_IMAGE);
     }

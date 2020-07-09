@@ -105,25 +105,40 @@ public class SearchCoordinator
     private static final int NANO_TO_MILLIS = 1_000_000;
 
 
-    /** List of Tasks being managed by *this* object. */
-    @NonNull
-    private final Collection<SearchTask> mActiveTasks = new HashSet<>();
-
-    /** Accumulates the results from <strong>individual</strong> search tasks. */
-    @SuppressLint("UseSparseArrays")
-    @NonNull
-    private final Map<Integer, Bundle> mSearchResults = new HashMap<>();
-
     /** Using MutableLiveData as we actually want re-delivery after a device rotation. */
     protected final MutableLiveData<ProgressMessage>
             mSearchCoordinatorProgress = new MutableLiveData<>();
     /** Using SingleLiveEvent to prevent multiple delivery after for example a device rotation. */
     protected final MutableLiveData<FinishedMessage<Bundle>>
             mSearchCoordinatorCancelled = new SingleLiveEvent<>();
+    /** Using SingleLiveEvent to prevent multiple delivery after for example a device rotation. */
+    private final MutableLiveData<FinishedMessage<Bundle>>
+            mSearchCoordinatorFinished = new SingleLiveEvent<>();
 
+
+    /** List of Tasks being managed by *this* object. */
+    @NonNull
+    private final Collection<SearchTask> mActiveTasks = new HashSet<>();
+    /** Accumulates the results from <strong>individual</strong> search tasks. */
+    @SuppressLint("UseSparseArrays")
+    @NonNull
+    private final Map<Integer, Bundle> mSearchResults = new HashMap<>();
     /** Mappers to apply. */
     @NonNull
     private final Collection<Mapper> mMappers = new ArrayList<>();
+
+
+    /** Accumulates the last message from <strong>individual</strong> search tasks. */
+    @SuppressLint("UseSparseArrays")
+    @NonNull
+    private final Map<Integer, Exception>
+            mSearchFinishedMessages = Collections.synchronizedMap(new HashMap<>());
+    /** Accumulates the results from <strong>individual</strong> search tasks. */
+    @SuppressLint("UseSparseArrays")
+    @NonNull
+    private final Map<Integer, ProgressMessage> mSearchProgressMessages = new HashMap<>();
+
+
     /** Sites to search on. If this list is empty, all searches will return {@code false}. */
     private SiteList mSiteList;
     /** Base message for progress updates. */
@@ -137,17 +152,13 @@ public class SearchCoordinator
     private boolean[] mFetchThumbnail;
     /** Flag indicating searches will be non-concurrent until an ISBN is found. */
     private boolean mWaitingForExactCode;
-
-
     /** Original ISBN text for search. */
     @NonNull
     private String mIsbnSearchText = "";
     /** {@code true} for strict ISBN checking, {@code false} for allowing generic codes. */
     private boolean mStrictIsbn = true;
-
     /** Created by {@link #prepareSearch(Context)}. NonNull afterwards. */
     private ISBN mIsbn;
-
     /** Site native id for search. */
     @Nullable
     private SparseArray<String> mNativeIdSearchText;
@@ -160,29 +171,14 @@ public class SearchCoordinator
     /** Original publisher for search. */
     @NonNull
     private String mPublisherSearchText = "";
-
     /** Accumulated book data. */
     private Bundle mBookData;
-
     /** DEBUG timer. */
     private long mSearchStartTime;
     /** DEBUG timer. */
     private SparseLongArray mSearchTasksStartTime;
     /** DEBUG timer. */
     private SparseLongArray mSearchTasksEndTime;
-    /** Accumulates the last message from <strong>individual</strong> search tasks. */
-    @SuppressLint("UseSparseArrays")
-    @NonNull
-    private final Map<Integer, Exception>
-            mSearchFinishedMessages = Collections.synchronizedMap(new HashMap<>());
-    /** Accumulates the results from <strong>individual</strong> search tasks. */
-    @SuppressLint("UseSparseArrays")
-    @NonNull
-    private final Map<Integer, ProgressMessage>
-            mSearchProgressMessages = new HashMap<>();
-    /** Using SingleLiveEvent to prevent multiple delivery after for example a device rotation. */
-    private final MutableLiveData<FinishedMessage<Bundle>>
-            mSearchCoordinatorFinished = new SingleLiveEvent<>();
     /** Listener for <strong>individual</strong> search tasks. */
     private final TaskListener<Bundle> mSearchTaskListener = new TaskListener<Bundle>() {
 
@@ -256,7 +252,6 @@ public class SearchCoordinator
      * @param context Localized context
      * @param args    {@link Intent#getExtras()} or {@link Fragment#getArguments()}
      */
-
     public void init(@NonNull final Context context,
                      @Nullable final Bundle args) {
 
@@ -266,7 +261,7 @@ public class SearchCoordinator
                 mSearchTasksEndTime = new SparseLongArray();
             }
 
-            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+            final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
             if (FormatMapper.isMappingAllowed(prefs)) {
                 mMappers.add(new FormatMapper());
             }
@@ -275,7 +270,7 @@ public class SearchCoordinator
             }
 
             if (args != null) {
-                boolean useThumbnails = DBDefinitions
+                final boolean useThumbnails = DBDefinitions
                         .isUsed(prefs, DBDefinitions.PREFS_IS_USED_THUMBNAIL);
                 mFetchThumbnail = new boolean[2];
                 mFetchThumbnail[0] = useThumbnails;
@@ -653,7 +648,7 @@ public class SearchCoordinator
      * @return Present/absent
      */
     private boolean hasIsbn(@NonNull final Bundle bundle) {
-        String s = bundle.getString(DBDefinitions.KEY_ISBN);
+        final String s = bundle.getString(DBDefinitions.KEY_ISBN);
         return s != null && !s.trim().isEmpty();
     }
 
@@ -864,7 +859,7 @@ public class SearchCoordinator
             // If an ISBN was passed, ignore entries with the wrong ISBN,
             // and put entries without ISBN at the end
             final Collection<Site> uncertain = new ArrayList<>();
-            List<Site> allSites = SiteList.getDataSitesByReliability(context);
+            final List<Site> allSites = SiteList.getDataSitesByReliability(context);
             for (Site site : allSites) {
                 if (mSearchResults.containsKey(site.id)) {
                     final Bundle bookData = mSearchResults.get(site.id);
@@ -1201,8 +1196,7 @@ public class SearchCoordinator
                 sb.append(Csv.textList(context, mSearchProgressMessages.values(),
                                        element -> element.text));
 
-                for (ProgressMessage progressMessage : mSearchProgressMessages
-                        .values()) {
+                for (ProgressMessage progressMessage : mSearchProgressMessages.values()) {
                     progressMax += progressMessage.maxPosition;
                     progressCount += progressMessage.position;
                 }
@@ -1210,8 +1204,8 @@ public class SearchCoordinator
             }
         }
 
-        return new ProgressMessage(R.id.TASK_ID_SEARCH_COORDINATOR, sb.toString(), progressMax,
-                                   progressCount, null
+        return new ProgressMessage(R.id.TASK_ID_SEARCH_COORDINATOR, sb.toString(),
+                                   progressMax, progressCount, null
         );
     }
 }

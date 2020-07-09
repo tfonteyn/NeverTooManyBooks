@@ -69,25 +69,6 @@ public class ImportFragment
 
     /** Log tag. */
     public static final String TAG = "ImportFragment";
-    /** Import. */
-    private ArchiveImportTask mImportModel;
-    @Nullable
-    private ProgressDialogFragment mProgressDialog;
-    /** ViewModel. */
-    private ResultDataModel mResultData;
-    private final OptionsDialogBase.OptionsListener<ImportManager> mImportOptionsListener =
-            new OptionsDialogBase.OptionsListener<ImportManager>() {
-                @Override
-                public void onOptionsSet(@NonNull final ImportManager options) {
-                    mImportModel.startImport(options);
-                }
-
-                @Override
-                public void onCancelled() {
-                    //noinspection ConstantConditions
-                    getActivity().finish();
-                }
-            };
     /** (re)attach the result listener when a fragment gets started. */
     private final FragmentOnAttachListener mFragmentOnAttachListener =
             new FragmentOnAttachListener() {
@@ -103,6 +84,25 @@ public class ImportFragment
                     }
                 }
             };
+    /** Import. */
+    private ArchiveImportTask mArchiveImportTask;
+    private final OptionsDialogBase.OptionsListener<ImportManager> mImportOptionsListener =
+            new OptionsDialogBase.OptionsListener<ImportManager>() {
+                @Override
+                public void onOptionsSet(@NonNull final ImportManager options) {
+                    mArchiveImportTask.startImport(options);
+                }
+
+                @Override
+                public void onCancelled() {
+                    //noinspection ConstantConditions
+                    getActivity().finish();
+                }
+            };
+    @Nullable
+    private ProgressDialogFragment mProgressDialog;
+    /** ViewModel. */
+    private ResultDataModel mResultData;
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -112,7 +112,7 @@ public class ImportFragment
 
         //noinspection ConstantConditions
         mResultData = new ViewModelProvider(getActivity()).get(ResultDataModel.class);
-        mImportModel = new ViewModelProvider(this).get(ArchiveImportTask.class);
+        mArchiveImportTask = new ViewModelProvider(this).get(ArchiveImportTask.class);
     }
 
     @Nullable
@@ -131,10 +131,10 @@ public class ImportFragment
         //noinspection ConstantConditions
         getActivity().setTitle(R.string.lbl_import);
 
-        mImportModel.onProgressUpdate().observe(getViewLifecycleOwner(), this::onTaskProgress);
-        mImportModel.onCancelled().observe(getViewLifecycleOwner(), this::onImportCancelled);
-        mImportModel.onFailure().observe(getViewLifecycleOwner(), this::onImportFailure);
-        mImportModel.onFinished().observe(getViewLifecycleOwner(), this::onImportFinished);
+        mArchiveImportTask.onProgressUpdate().observe(getViewLifecycleOwner(), this::onProgress);
+        mArchiveImportTask.onCancelled().observe(getViewLifecycleOwner(), this::onImportCancelled);
+        mArchiveImportTask.onFailure().observe(getViewLifecycleOwner(), this::onImportFailure);
+        mArchiveImportTask.onFinished().observe(getViewLifecycleOwner(), this::onImportFinished);
 
         importPickUri();
     }
@@ -146,10 +146,6 @@ public class ImportFragment
                                  @Nullable final Intent data) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
             Logger.enterOnActivityResult(TAG, requestCode, resultCode, data);
-        }
-        // collect all data for passing to the calling Activity
-        if (data != null) {
-            mResultData.putResultData(data);
         }
 
         //noinspection SwitchStatementWithTooFewBranches
@@ -175,7 +171,7 @@ public class ImportFragment
         }
     }
 
-    private void onTaskProgress(@NonNull final ProgressMessage message) {
+    private void onProgress(@NonNull final ProgressMessage message) {
         if (mProgressDialog == null) {
             mProgressDialog = getOrCreateProgressDialog();
         }
@@ -203,7 +199,7 @@ public class ImportFragment
         }
 
         // hook the task up.
-        dialog.setCanceller(mImportModel);
+        dialog.setCanceller(mArchiveImportTask);
 
         return dialog;
     }
@@ -247,6 +243,8 @@ public class ImportFragment
         if (ArchiveContainer.CsvBooks.equals(container)) {
             // use more prudent default options for Csv files.
             helper.setOptions(Options.BOOKS | ImportManager.IMPORT_ONLY_NEW_OR_UPDATED);
+
+            //URGENT: make a backup before ANY csv import!
             // Verify - this can be a dangerous operation
             //noinspection ConstantConditions
             new MaterialAlertDialogBuilder(getContext())
@@ -271,7 +269,7 @@ public class ImportFragment
                     .setNeutralButton(R.string.btn_options, (d, w) -> ImportHelperDialogFragment
                             .newInstance(helper)
                             .show(getChildFragmentManager(), ImportHelperDialogFragment.TAG))
-                    .setPositiveButton(android.R.string.ok, (d, w) -> mImportModel
+                    .setPositiveButton(android.R.string.ok, (d, w) -> mArchiveImportTask
                             .startImport(helper))
                     .create()
                     .show();
