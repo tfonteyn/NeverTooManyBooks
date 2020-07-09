@@ -1,175 +1,85 @@
 {
   "author": [
-    {
-      "full_name": "Lev Tolstoy"
-    },
-    {
-      "full_name": "Isaac Asimov"
-    },
-    {
-      "full_name": "J.K Rowling"
-    },
-    {
-      "full_name": "Philip J. Farmer"
-    }
+    {"full_name": "Charles Emerson Winchester III"},
+    {"full_name": "Isaac Asimov"},
+    {"full_name": "J.K Rowling"},
+    {"full_name": "Philip J. Farmer"}
   ],
   "book": [
-    {
-      "title": "War and Peace & Anna Karenina"
-    },
-    {
-      "title": "Foundation and Empire"
-    },
-    {
-      "title": "The prisoner of Azkaban"
-    },
-    {
-      "title": "Obscure Life and Hard Times of Kilgore Trout: A Skirmish in Biography, The"
-    }
+    {"title": "War and Peace & Anna Karenina"},
+    {"title": "Foundation and Empire"},
+    {"title": "The prisoner of Azkaban"},
+    {"title": "Obscure Life and Hard Times of Kilgore Trout: A Skirmish in Biography, The"}
   ],
   "series": [
-    {
-      "title_nr": "Russian Classics"
-    },
-    {
-      "title_nr": "Farmer collection"
-    }
+    {"title_nr": "Russian Classics"},
+    {"title_nr": "Farmer collection"}
   ],
-  "series_with_nr": [
-    {
-      "title_nr": "• Foundation (2)"
-    },
-    {
-      "title_nr": "• Harry Potter (3)"
-    }
+  "series_list": [
+    {"title_nr": "• Foundation (2)\n• Empire (7)\n• Robot (3)"},
+    {"title_nr": "• Harry Potter (3)"}
   ],
   "publisher": [
-    {
-      "name": "Printed paper Ltd."
-    },
-    {
-      "name": "Gnome Press"
-    },
-    {
-      "name": "Bloomsburry"
-    },
-    {
-      "name": "Subterranean"
-    }
+    {"name": "Printed paper Ltd."},
+    {"name": "Gnome Press"},
+    {"name": "Bloomsburry"},
+    {"name": "Subterranean"}
   ],
   "location": [
-    {
-      "name": "Library"
-    },
-    {
-      "name": "Under the stairs"
-    },
-    {
-      "name": "Box 10"
-    },
-    {
-      "name": "Office"
-    }
+    {"name": "Library"},
+    {"name": "Under the stairs"},
+    {"name": "Box 10"},
+    {"name": "Office"}
   ],
   "shelves": [
-    {
-      "name": "Literature"
-    },
-    {
-      "name": "Favourites"
-    },
-    {
-      "name": "British writers"
-    },
-    {
-      "name": "Top shelf"
-    }
+    {"name": "Literature"},
+    {"name": "Favourites"},
+    {"name": "British writers"},
+    {"name": "Top shelf"}
   ],
   "language": [
-    {
-      "name": "Quenya"
-    },
-    {
-      "name": "American"
-    },
-    {
-      "name": "English"
-    },
-    {
-      "name": "Esperanto"
-    }
+    {"name": "Quenya"},
+    {"name": "American"},
+    {"name": "English"},
+    {"name": "Esperanto"}
   ],
   "editions": [
-    {
-      "name": "First"
-    },
-    {
-      "name": "Bookclub"
-    }
+    {"name": "First"},
+    {"name": "Bookclub"}
+  ],
+  "isbn": [
+    {"d13": "9780123456789", "d10": "012345678X"}
+  ],
+  "date": [
+    {"long": "1 Apr 1969", "sql": "1969-04-01", "year": "1969"},
+    {"long": "10 Nov 2017", "sql": "2017-11-10", "year": "2017"},
+    {"long": "25 Nov 2018", "sql": "2018-11-25", "year": "2018"}
   ],
   "styles": [
-    {
-      "name": "Acquired"
-    },
-    {
-      "name": "Date added"
-    },
-    {
-      "name": "Author, Series"
-    },
-    {
-      "name": "Author,Year"
-    },
-    {
-      "name": "Bookshelf"
-    },
-    {
-      "name": "Compact"
-    },
-    {
-      "name": "Title 1st letter"
-    },
-    {
-      "name": "Series title 1st letter"
-    }
+    {"name": "Acquired"},
+    {"name": "Date added"},
+    {"name": "Author, Series"},
+    {"name": "Author,Year"},
+    {"name": "Bookshelf"},
+    {"name": "Compact"},
+    {"name": "Title 1st letter"},
+    {"name": "Series title 1st letter"}
   ],
   "style_groups": [
-    {
-      "name": "Author"
-    },
-    {
-      "name": "Series"
-    },
-    {
-      "name": "Language"
-    }
+    {"name": "Author"},
+    {"name": "Series"},
+    {"name": "Language"}
   ],
   "field": [
-    {
-      "name": "Table Of Content"
-    },
-    {
-      "name": "Publisher"
-    },
-    {
-      "name": "Location"
-    },
-    {
-      "name": "Date Acquired"
-    },
-    {
-      "name": "Genre"
-    }
+    {"name": "Table Of Content"},
+    {"name": "Publisher"},
+    {"name": "Location"},
+    {"name": "Date Acquired"},
+    {"name": "Genre"}
   ],
   "context_menu": [
-    {
-      "name": "Cut"
-    },
-    {
-      "name": "Copy"
-    },
-    {
-      "name": "Paste"
-    }
+    {"name": "Cut"},
+    {"name": "Copy"},
+    {"name": "Paste"}
   ]
 }
