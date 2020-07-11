@@ -35,8 +35,8 @@
     <corners
         android:radius="4dp" />
     <padding
-        android:bottom="@dimen/border1"
-        android:left="@dimen/border1"
-        android:right="@dimen/border1"
-        android:top="@dimen/border1" />
+        android:bottom="@dimen/outlineBorder"
+        android:left="@dimen/outlineBorder"
+        android:right="@dimen/outlineBorder"
+        android:top="@dimen/outlineBorder" />
 </shape>

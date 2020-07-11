@@ -74,7 +74,10 @@
             app:layout_behavior="@string/appbar_scrolling_view_behavior"
             >
 
-            <include layout="@layout/booksonbookshelf_inc_header" />
+            <include
+                android:id="@+id/list_header"
+                layout="@layout/booksonbookshelf_inc_header"
+                />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@android:id/list"
@@ -86,7 +89,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/list_header"
-                tools:listitem="@layout/booksonbookshelf_row_book"
+                tools:listitem="@layout/booksonbookshelf_row_book_scale_0_3"
                 />
 
         </androidx.constraintlayout.widget.ConstraintLayout>

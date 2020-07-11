@@ -55,14 +55,6 @@
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         >
 
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/indent_fields"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            app:layout_constraintGuide_begin="@dimen/indent_field"
-            />
-
         <com.hardbacknutter.nevertoomanybooks.widgets.ExtGroup
             android:id="@+id/original_details"
             android:layout_width="0dp"
@@ -84,7 +76,7 @@
             android:id="@+id/author"
             style="@style/Field.Generic"
             android:hint="@string/lbl_author"
-            app:layout_constraintStart_toEndOf="@id/indent_fields"
+            app:layout_constraintStart_toStartOf="@id/lbl_author"
             app:layout_constraintTop_toBottomOf="@id/lbl_author"
             tools:ignore="SelectableText"
             />
@@ -102,7 +94,7 @@
             android:id="@+id/title"
             style="@style/Field.Generic"
             android:hint="@string/lbl_title"
-            app:layout_constraintStart_toEndOf="@id/indent_fields"
+            app:layout_constraintStart_toStartOf="@id/lbl_title"
             app:layout_constraintTop_toBottomOf="@id/lbl_title"
             tools:ignore="SelectableText"
             />
@@ -120,7 +112,7 @@
             android:id="@+id/isbn"
             style="@style/Field.Generic"
             android:hint="@string/lbl_isbn"
-            app:layout_constraintStart_toEndOf="@id/indent_fields"
+            app:layout_constraintStart_toStartOf="@id/lbl_isbn"
             app:layout_constraintTop_toBottomOf="@id/lbl_isbn"
             tools:ignore="SelectableText"
             />

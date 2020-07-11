@@ -40,21 +40,21 @@
     Width is set at a ratio 0.64.
     (0.60 is common for paperbacks)
 -->
-    <dimen name="tools_cover_x_small_height">100dp</dimen>
-    <dimen name="tools_cover_x_small_width">64dp</dimen>
+    <dimen name="tools_cover_scale_1_height">100dp</dimen>
+    <dimen name="tools_cover_scale_1_width">64dp</dimen>
 
-    <dimen name="tools_cover_small_height">200dp</dimen>
-    <dimen name="tools_cover_small_width">128dp</dimen>
+    <dimen name="tools_cover_scale_2_height">200dp</dimen>
+    <dimen name="tools_cover_scale_2_width">128dp</dimen>
 
-    <dimen name="tools_cover_medium_height">300dp</dimen>
-    <dimen name="tools_cover_medium_width">192dp</dimen>
+    <dimen name="tools_cover_scale_3_height">300dp</dimen>
+    <dimen name="tools_cover_scale_3_width">192dp</dimen>
 
-    <dimen name="tools_cover_large_height">500dp</dimen>
-    <dimen name="tools_cover_large_width">320dp</dimen>
+    <dimen name="tools_cover_scale_4_height">500dp</dimen>
+    <dimen name="tools_cover_scale_4_width">320dp</dimen>
 
-    <dimen name="tools_cover_1x_large_height">800dp</dimen>
-    <dimen name="tools_cover_1x_large_width">512dp</dimen>
+    <dimen name="tools_cover_scale_5_height">800dp</dimen>
+    <dimen name="tools_cover_scale_5_width">512dp</dimen>
 
-    <dimen name="tools_cover_2x_large_height">1200dp</dimen>
-    <dimen name="tools_cover_2x_large_width">768dp</dimen>
+    <dimen name="tools_cover_scale_6_height">1200dp</dimen>
+    <dimen name="tools_cover_scale_6_width">768dp</dimen>
 </resources>

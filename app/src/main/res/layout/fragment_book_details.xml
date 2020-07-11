@@ -73,6 +73,7 @@
         <CheckBox
             android:id="@+id/cbx_read"
             style="@style/Flag.Read"
+            android:layout_marginStart="@dimen/indent_field"
             android:contentDescription="@string/lbl_read"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lend_to"
@@ -82,6 +83,7 @@
         <TextView
             android:id="@+id/title"
             style="@style/Field.BookTitle.Large"
+            android:layout_marginStart="@dimen/indent_field"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/cbx_read"
             app:layout_constraintTop_toBottomOf="@id/lend_to"
@@ -89,199 +91,220 @@
             tools:text="@sample/data.json/book/title"
             />
 
-        <RatingBar
-            android:id="@+id/rating"
-            style="?attr/ratingBarStyleSmall"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:numStars="5"
-            app:layout_constraintStart_toEndOf="@id/indent_fields"
-            app:layout_constraintTop_toBottomOf="@id/title"
-            />
-
         <ImageView
             android:id="@+id/coverImage0"
             style="@style/CoverImage"
             android:contentDescription="@string/lbl_cover"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/title"
-            tools:layout_height="@dimen/tools_cover_large_height"
-            tools:layout_width="@dimen/tools_cover_large_width"
+            tools:layout_height="@dimen/tools_cover_scale_4_height"
+            tools:layout_width="@dimen/tools_cover_scale_4_width"
             tools:src="@sample/covers"
             />
         <!--
-        Copy either of these 3 lines to coverImage0 to see how portrait/landscape images look
-                    tools:layout_height="@dimen/tools_cover_large_height"
-                    tools:layout_width="@dimen/tools_cover_large_width"
-                    tools:src="@sample/covers"
+            Copy either of these 3 lines to coverImage0 to see how portrait/landscape
+            images look:
 
-                    tools:layout_height="@dimen/tools_cover_large_width"
-                    tools:layout_width="@dimen/tools_cover_large_height"
-                    tools:src="@sample/landscape"
+            tools:layout_height="@dimen/tools_cover_scale_4_height"
+            tools:layout_width="@dimen/tools_cover_scale_4_width"
+            tools:src="@sample/covers"
+
+            tools:layout_height="@dimen/tools_cover_scale_4_width"
+            tools:layout_width="@dimen/tools_cover_scale_4_height"
+            tools:src="@sample/landscape"
         -->
         <ImageView
             android:id="@+id/coverImage1"
             style="@style/CoverImage"
             android:contentDescription="@string/lbl_cover"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/coverImage0"
             tools:background="@drawable/outline_rounded"
-            tools:layout_height="@dimen/tools_cover_small_height"
-            tools:layout_width="@dimen/tools_cover_small_width"
+            tools:layout_height="@dimen/tools_cover_scale_2_height"
+            tools:layout_width="@dimen/tools_cover_scale_2_width"
             tools:src="@drawable/ic_image"
+            />
+
+        <RatingBar
+            android:id="@+id/rating"
+            style="?attr/ratingBarStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/indent_field"
+            android:layout_marginTop="@dimen/border2"
+            android:numStars="5"
+            app:layout_constraintStart_toEndOf="@id/coverImage0"
+            app:layout_constraintTop_toBottomOf="@id/title"
             />
 
         <TextView
             android:id="@+id/author"
             style="@style/Field.Generic"
-            app:layout_constraintEnd_toStartOf="@id/barrier_covers"
-            app:layout_constraintStart_toEndOf="@id/indent_fields"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/coverImage0"
             app:layout_constraintTop_toBottomOf="@id/rating"
             tools:ignore="SelectableText"
             tools:text="@sample/data.json/author/full_name"
             />
 
-        <TextView
-            android:id="@+id/lbl_first_publication"
-            style="@style/Field.Label"
-            android:layout_marginTop="@dimen/border1"
-            android:text="@string/lbl_first_publication"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/author"
-            />
-
-        <TextView
-            android:id="@+id/first_publication"
-            style="@style/Field.Generic.Small"
-            app:layout_constraintEnd_toStartOf="@id/barrier_covers"
-            app:layout_constraintStart_toEndOf="@id/indent_fields"
-            app:layout_constraintTop_toBottomOf="@id/lbl_first_publication"
-            tools:ignore="SelectableText"
-            tools:text="1938"
-            />
-
-        <TextView
-            android:id="@+id/lbl_isbn"
-            style="@style/Field.Label"
-            android:text="@string/lbl_isbn"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/first_publication"
-            />
-
-        <TextView
-            android:id="@+id/isbn"
-            style="@style/Field.Generic.Small"
-            app:layout_constraintEnd_toStartOf="@id/barrier_covers"
-            app:layout_constraintStart_toEndOf="@id/indent_fields"
-            app:layout_constraintTop_toBottomOf="@id/lbl_isbn"
-            tools:ignore="SelectableText"
-            tools:text="97834579862"
-            />
-
-        <TextView
-            android:id="@+id/lbl_publication"
-            style="@style/Field.Label"
-            android:text="@string/lbl_publication"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/isbn"
-            />
-
-        <TextView
-            android:id="@+id/publisher"
-            style="@style/Field.Generic.Small"
-            app:layout_constraintEnd_toStartOf="@id/barrier_covers"
-            app:layout_constraintStart_toEndOf="@id/indent_fields"
-            app:layout_constraintTop_toBottomOf="@id/lbl_publication"
-            tools:ignore="SelectableText"
-            tools:text="@sample/data.json/publisher/name"
-            />
-
-        <TextView
-            android:id="@+id/date_published"
-            style="@style/Field.Generic.Small"
-            app:layout_constraintEnd_toStartOf="@id/barrier_covers"
-            app:layout_constraintStart_toEndOf="@id/indent_fields"
-            app:layout_constraintTop_toBottomOf="@id/publisher"
-            tools:ignore="SelectableText"
-            tools:text="25 Aug 2018"
-            />
-
-        <TextView
-            android:id="@+id/price_listed"
-            style="@style/Field.Generic.Small"
-            app:layout_constraintEnd_toStartOf="@id/barrier_covers"
-            app:layout_constraintStart_toEndOf="@id/indent_fields"
-            app:layout_constraintTop_toBottomOf="@id/date_published"
-            tools:ignore="SelectableText"
-            tools:text="$45"
-            />
-
-        <TextView
-            android:id="@+id/format"
-            style="@style/Field.Generic.Small"
-            app:layout_constraintEnd_toStartOf="@id/barrier_covers"
-            app:layout_constraintStart_toEndOf="@id/indent_fields"
-            app:layout_constraintTop_toBottomOf="@id/price_listed"
-            tools:ignore="SelectableText"
-            tools:text="@string/book_format_hardcover"
-            />
-
-        <TextView
-            android:id="@+id/color"
-            style="@style/Field.Generic.Small"
-            app:layout_constraintEnd_toStartOf="@id/barrier_covers"
-            app:layout_constraintStart_toEndOf="@id/indent_fields"
-            app:layout_constraintTop_toBottomOf="@id/format"
-            tools:ignore="SelectableText"
-            tools:text="color"
-            />
-
-        <TextView
-            android:id="@+id/language"
-            style="@style/Field.Generic.Small"
-            app:layout_constraintEnd_toStartOf="@id/barrier_covers"
-            app:layout_constraintStart_toEndOf="@id/indent_fields"
-            app:layout_constraintTop_toBottomOf="@id/color"
-            tools:ignore="SelectableText"
-            tools:text="@sample/data.json/language/name"
-            />
-
-        <TextView
-            android:id="@+id/pages"
-            style="@style/Field.Generic.Small"
-            app:layout_constraintEnd_toStartOf="@id/barrier_covers"
-            app:layout_constraintStart_toEndOf="@id/indent_fields"
-            app:layout_constraintTop_toBottomOf="@id/language"
-            tools:ignore="SelectableText"
-            tools:text="1073 pages"
-            />
-
-        <TextView
-            android:id="@+id/lbl_print_run"
-            style="@style/Field.Label"
-            android:text="@string/lbl_print_run"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/pages"
-            />
-
-        <TextView
-            android:id="@+id/print_run"
-            style="@style/Field.Generic.Small"
+        <!-- nested layout for now.. easier to experiment moving it around in bulk -->
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/publication_details"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/indent2"
+            android:layout_marginTop="@dimen/border2"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/barrier_covers"
-            app:layout_constraintStart_toEndOf="@id/indent_fields"
-            app:layout_constraintTop_toBottomOf="@id/lbl_print_run"
-            tools:ignore="SelectableText"
-            tools:text="limited to 150 copies"
-            />
+            app:layout_constraintStart_toEndOf="@id/coverImage0"
+            app:layout_constraintTop_toBottomOf="@id/author"
+            >
 
-        <!--suppress LongLine -->
+            <TextView
+                android:id="@+id/lbl_first_publication"
+                style="@style/Field.Label"
+                android:text="@string/lbl_first_publication"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                />
+
+            <TextView
+                android:id="@+id/first_publication"
+                style="@style/Field.Generic.Small"
+                app:layout_constraintStart_toStartOf="@id/lbl_first_publication"
+                app:layout_constraintTop_toBottomOf="@id/lbl_first_publication"
+                tools:ignore="SelectableText"
+                tools:text="@sample/data.json/date/year"
+                />
+
+            <TextView
+                android:id="@+id/lbl_isbn"
+                style="@style/Field.Label"
+                android:text="@string/lbl_isbn"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/first_publication"
+                />
+
+            <TextView
+                android:id="@+id/isbn"
+                style="@style/Field.Generic.Small"
+                app:layout_constraintStart_toStartOf="@id/lbl_isbn"
+                app:layout_constraintTop_toBottomOf="@id/lbl_isbn"
+                tools:ignore="SelectableText"
+                tools:text="@sample/data.json/isbn/d13"
+                />
+
+            <TextView
+                android:id="@+id/lbl_publication"
+                style="@style/Field.Label"
+                android:text="@string/lbl_publication"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/isbn"
+                />
+
+            <TextView
+                android:id="@+id/publisher"
+                style="@style/Field.Generic.Small"
+                app:layout_constraintStart_toStartOf="@id/lbl_publication"
+                app:layout_constraintTop_toBottomOf="@id/lbl_publication"
+                tools:ignore="SelectableText"
+                tools:text="@sample/data.json/publisher/name"
+                />
+
+            <TextView
+                android:id="@+id/date_published"
+                style="@style/Field.Generic.Small"
+                app:layout_constraintStart_toStartOf="@id/lbl_publication"
+                app:layout_constraintTop_toBottomOf="@id/publisher"
+                tools:ignore="SelectableText"
+                tools:text="@sample/data.json/date/long"
+                />
+
+            <TextView
+                android:id="@+id/price_listed"
+                style="@style/Field.Generic.Inline.Small"
+                app:layout_constraintStart_toEndOf="@id/date_published"
+                app:layout_constraintTop_toBottomOf="@id/publisher"
+                tools:ignore="SelectableText"
+                tools:text="$45"
+                />
+
+            <androidx.constraintlayout.widget.Barrier
+                android:id="@+id/barrier_format"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:barrierDirection="bottom"
+                app:constraint_referenced_ids="isbn,publisher,date_published,price_listed"
+                />
+
+            <TextView
+                android:id="@+id/format"
+                style="@style/Field.Generic.Small"
+                app:layout_constraintStart_toStartOf="@id/lbl_publication"
+                app:layout_constraintTop_toBottomOf="@id/barrier_format"
+                tools:ignore="SelectableText"
+                tools:text="@string/book_format_hardcover"
+                />
+
+            <TextView
+                android:id="@+id/color"
+                style="@style/Field.Generic.Inline.Small"
+                app:layout_constraintStart_toEndOf="@id/format"
+                app:layout_constraintTop_toBottomOf="@id/barrier_format"
+                tools:ignore="SelectableText"
+                tools:text="color"
+                />
+
+            <androidx.constraintlayout.widget.Barrier
+                android:id="@+id/barrier_language"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:barrierDirection="bottom"
+                app:constraint_referenced_ids="format,color,barrier_format"
+                />
+
+            <TextView
+                android:id="@+id/language"
+                style="@style/Field.Generic.Small"
+                app:layout_constraintStart_toStartOf="@id/lbl_publication"
+                app:layout_constraintTop_toBottomOf="@id/barrier_language"
+                tools:ignore="SelectableText"
+                tools:text="@sample/data.json/language/name"
+                />
+
+            <TextView
+                android:id="@+id/pages"
+                style="@style/Field.Generic.Small"
+                app:layout_constraintStart_toStartOf="@id/lbl_publication"
+                app:layout_constraintTop_toBottomOf="@id/language"
+                tools:ignore="SelectableText"
+                tools:text="1073 pages"
+                />
+
+            <TextView
+                android:id="@+id/lbl_print_run"
+                style="@style/Field.Label"
+                android:text="@string/lbl_print_run"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/pages"
+                />
+
+            <TextView
+                android:id="@+id/print_run"
+                style="@style/Field.Generic.Small"
+                app:layout_constraintStart_toStartOf="@id/lbl_print_run"
+                app:layout_constraintTop_toBottomOf="@id/lbl_print_run"
+                tools:ignore="SelectableText"
+                tools:text="limited to 150 copies"
+                />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
         <androidx.constraintlayout.widget.Barrier
             android:id="@+id/barrier_top_section"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:barrierDirection="bottom"
-            app:constraint_referenced_ids="coverImage0,print_run,pages,language,color,format,price_listed,date_published,publisher"
+            app:constraint_referenced_ids="coverImage0,coverImage1,publication_details"
             />
 
         <TextView
@@ -295,11 +318,10 @@
         <TextView
             android:id="@+id/series_title"
             style="@style/Field.Generic.Small"
-            app:layout_constraintEnd_toStartOf="@id/coverImage1"
-            app:layout_constraintStart_toEndOf="@id/indent_fields"
+            app:layout_constraintStart_toStartOf="@id/lbl_series"
             app:layout_constraintTop_toBottomOf="@id/lbl_series"
             tools:ignore="SelectableText"
-            tools:text="• Series name (1)\n• Another Series (X)"
+            tools:text="@sample/data.json/series_list/title_nr"
             />
 
         <TextView
@@ -313,7 +335,7 @@
         <CheckBox
             android:id="@+id/cbx_anthology"
             style="@style/Flag.Generic"
-            android:layout_marginStart="@dimen/border2"
+            android:layout_marginStart="@dimen/indent_field_inline"
             app:layout_constraintStart_toEndOf="@id/lbl_anthology"
             app:layout_constraintTop_toBottomOf="@id/series_title"
             tools:checked="true"
@@ -332,7 +354,7 @@
         <com.google.android.material.switchmaterial.SwitchMaterial
             android:id="@+id/btn_show_toc"
             style="@style/TocSwitch"
-            android:layout_marginStart="@dimen/border2"
+            android:layout_marginStart="@dimen/indent_field_inline"
             app:layout_constraintBaseline_toBaselineOf="@id/lbl_toc"
             app:layout_constraintStart_toEndOf="@id/lbl_toc"
             app:layout_constraintTop_toBottomOf="@id/series_title"
@@ -379,7 +401,7 @@
         <TextView
             android:id="@+id/genre"
             style="@style/Field.Generic"
-            app:layout_constraintStart_toEndOf="@id/indent_fields"
+            app:layout_constraintStart_toStartOf="@id/lbl_genre"
             app:layout_constraintTop_toBottomOf="@id/lbl_genre"
             tools:ignore="SelectableText"
             tools:text="Science Fiction"
@@ -397,8 +419,9 @@
             android:id="@+id/bookshelves"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/indent_field"
             app:chipSpacingVertical="@dimen/ro_vert_chip_spacing"
-            app:layout_constraintStart_toEndOf="@id/indent_fields"
+            app:layout_constraintStart_toStartOf="@id/lbl_bookshelves"
             app:layout_constraintTop_toBottomOf="@id/lbl_bookshelves"
             >
             <!-- chips will be added here dynamically -->
@@ -415,8 +438,9 @@
         <TextView
             android:id="@+id/notes"
             style="@style/Field.Notes"
+            android:layout_marginStart="@dimen/indent_field"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/indent_fields"
+            app:layout_constraintStart_toStartOf="@id/lbl_notes"
             app:layout_constraintTop_toBottomOf="@id/lbl_notes"
             tools:ignore="SelectableText"
             tools:text="The best book of all times."
@@ -439,7 +463,7 @@
         <CheckBox
             android:id="@+id/cbx_signed"
             style="@style/Flag.Generic"
-            android:layout_marginStart="@dimen/border2"
+            android:layout_marginStart="@dimen/indent_field_inline"
             app:layout_constraintStart_toEndOf="@id/lbl_signed"
             app:layout_constraintTop_toBottomOf="@id/notes"
             tools:checked="true"
@@ -455,12 +479,11 @@
 
         <TextView
             android:id="@+id/date_acquired"
-            style="@style/Field.Generic"
-            android:layout_marginStart="@dimen/border2"
+            style="@style/Field.Generic.Inline"
             app:layout_constraintStart_toEndOf="@id/lbl_date_acquired"
             app:layout_constraintTop_toBottomOf="@id/cbx_signed"
             tools:ignore="SelectableText"
-            tools:text="Nov 10, 2011"
+            tools:text="@sample/data.json/date/long"
             />
 
         <TextView
@@ -473,8 +496,7 @@
 
         <TextView
             android:id="@+id/price_paid"
-            style="@style/Field.Generic"
-            android:layout_marginStart="@dimen/border2"
+            style="@style/Field.Generic.Inline"
             app:layout_constraintStart_toEndOf="@id/lbl_price_paid"
             app:layout_constraintTop_toBottomOf="@id/date_acquired"
             tools:ignore="SelectableText"
@@ -491,8 +513,7 @@
 
         <TextView
             android:id="@+id/condition"
-            style="@style/Field.Generic"
-            android:layout_marginStart="@dimen/border2"
+            style="@style/Field.Generic.Inline"
             app:layout_constraintStart_toEndOf="@id/lbl_condition"
             app:layout_constraintTop_toBottomOf="@id/price_paid"
             tools:ignore="SelectableText"
@@ -509,8 +530,7 @@
 
         <TextView
             android:id="@+id/condition_cover"
-            style="@style/Field.Generic"
-            android:layout_marginStart="@dimen/border2"
+            style="@style/Field.Generic.Inline"
             app:layout_constraintStart_toEndOf="@id/lbl_condition_cover"
             app:layout_constraintTop_toBottomOf="@id/condition"
             tools:ignore="SelectableText"
@@ -527,12 +547,11 @@
 
         <TextView
             android:id="@+id/read_start"
-            style="@style/Field.Generic"
-            android:layout_marginStart="@dimen/border2"
+            style="@style/Field.Generic.Inline"
             app:layout_constraintStart_toEndOf="@id/lbl_read_start"
             app:layout_constraintTop_toBottomOf="@id/condition_cover"
             tools:ignore="SelectableText"
-            tools:text="Nov 10, 2011"
+            tools:text="@sample/data.json/date/long"
             />
 
         <TextView
@@ -545,12 +564,11 @@
 
         <TextView
             android:id="@+id/read_end"
-            style="@style/Field.Generic"
-            android:layout_marginStart="@dimen/border2"
+            style="@style/Field.Generic.Inline"
             app:layout_constraintStart_toEndOf="@id/lbl_read_end"
             app:layout_constraintTop_toBottomOf="@id/read_start"
             tools:ignore="SelectableText"
-            tools:text="Dec 15, 2011"
+            tools:text="@sample/data.json/date/long"
             />
 
         <TextView
@@ -563,8 +581,7 @@
 
         <TextView
             android:id="@+id/location"
-            style="@style/Field.Generic"
-            android:layout_marginStart="@dimen/border2"
+            style="@style/Field.Generic.Inline"
             app:layout_constraintStart_toEndOf="@id/lbl_location_long"
             app:layout_constraintTop_toBottomOf="@id/read_end"
             tools:ignore="SelectableText"
@@ -575,7 +592,6 @@
             android:id="@+id/description"
             style="@style/Field.Description"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/indent_fields"
             app:layout_constraintTop_toBottomOf="@id/location"
             tools:ignore="SelectableText"
             tools:text="@tools:sample/lorem/random"

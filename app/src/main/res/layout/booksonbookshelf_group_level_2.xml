@@ -32,12 +32,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@id/ROW_ONCLICK_TARGET"
-    style="@style/BooklistBook.Row.Level2"
+    style="@style/BoB.Group.Level2"
     >
 
     <ImageView
         android:id="@+id/bullet"
-        style="@style/BooklistBook.Bullet.Level2"
+        style="@style/BoB.Group.Bullet.Level2"
         app:layout_constraintBottom_toBottomOf="@id/name"
         app:layout_constraintStart_toStartOf="parent"
         tools:ignore="ContentDescription"
@@ -46,13 +46,13 @@
     <!--The 'drawableEnd' drawable itself is done from code. -->
     <TextView
         android:id="@+id/name"
-        style="@style/BooklistBook.Section"
+        style="@style/BoB.Group.Label.Level2"
         android:drawableTint="?attr/appIconTintCompleted"
-        android:textIsSelectable="false"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/bullet"
         app:layout_constraintTop_toTopOf="parent"
         tools:drawableEnd="@drawable/ic_lock"
+        tools:ignore="SelectableText"
         tools:text="Level 2 row"
         />
 

@@ -29,7 +29,7 @@
 
 <resources
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools">
+    >
 
     <!-- *************************************************************************************** -->
     <!-- Fields. Read-only text. -->
@@ -51,7 +51,13 @@
 
     <!-- 'medium' detail field; for example Series title, ... -->
     <style name="Field.Generic">
+        <item name="android:layout_marginStart">@dimen/indent_field</item>
         <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
+    </style>
+
+    <style name="Field.Generic.Inline">
+        <item name="layout_goneMarginStart">@dimen/indent_field</item>
+        <item name="android:layout_marginStart">@dimen/indent_field_inline</item>
     </style>
 
     <!-- 'minor' detail field; for example format, isbn,... -->
@@ -59,6 +65,9 @@
         <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
     </style>
 
+    <style name="Field.Generic.Inline.Small">
+        <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
+    </style>
 
     <!-- Book title (also used for TOC titles) gets a distinct style. -->
     <style name="Field.BookTitle">
@@ -114,8 +123,6 @@
 
     <!-- informational piece of text -->
     <style name="Text.Blurb">
-        <item name="android:layout_marginStart">@dimen/indent1</item>
-        <item name="android:layout_marginEnd">@dimen/indent2</item>
     </style>
 
     <!-- informational piece of text -->
@@ -400,119 +407,114 @@
     </style>
 
     <!-- *************************************************************************************** -->
-    <!-- BooklistBook various -->
+    <!-- BooksOnBookshelf. -->
     <!-- *************************************************************************************** -->
 
     <!-- Booklist; not to be used directly in layouts -->
-    <style name="BooklistBook">
-        <item name="android:layout_height">wrap_content</item>
-    </style>
-
-    <!-- Booklist; not to be used directly in layouts -->
-    <style name="BooklistBook.Header">
-        <item name="android:layout_width">0dp</item>
-        <item name="android:textIsSelectable">false</item>
-    </style>
+    <style name="BoB" />
 
     <!-- the header on the booklist activity -->
-    <style name="BooklistBook.Header.Text">
+    <style name="BoB.Header">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">0dp</item>
+        <item name="android:textIsSelectable">true</item>
         <item name="android:layout_marginStart">@dimen/indent2</item>
         <item name="android:layout_marginEnd">@dimen/indent2</item>
         <item name="android:singleLine">true</item>
         <item name="android:ellipsize">marquee</item>
-        <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
     </style>
 
-    <!-- the header on the booklist activity -->
-    <style name="BooklistBook.Header.Text.Small">
+    <style name="BoB.Header.Small">
         <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
     </style>
 
-    <!-- Booklist; not to be used directly in layouts -->
-    <style name="BooklistBook.Bullet">
+    <!-- The Group rows in the booklist. -->
+    <style name="BoB.Group">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">match_parent</item>
+    </style>
+
+    <style name="BoB.Group.Level1">
+        <item name="android:layout_marginTop">@dimen/bob_row_spacer</item>
+    </style>
+
+    <style name="BoB.Group.Level2">
+    </style>
+
+    <style name="BoB.Group.Level3">
+    </style>
+
+    <!-- The Group rows bullet in the booklist; not to be used directly in layouts -->
+    <style name="BoB.Group.Bullet">
+        <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_width">0dp</item>
         <item name="android:backgroundTint">?attr/colorOnBackground</item>
         <item name="android:src">@drawable/ic_lens</item>
     </style>
 
-    <style name="BooklistBook.Bullet.Level2">
+    <style name="BoB.Group.Bullet.Level2">
         <item name="android:scaleX">0.3</item>
         <item name="android:scaleY">0.3</item>
     </style>
 
-    <style name="BooklistBook.Bullet.Level3">
+    <style name="BoB.Group.Bullet.Level3">
         <item name="android:scaleX">0.2</item>
         <item name="android:scaleY">0.2</item>
     </style>
 
-    <!-- The top container (MaterialCardView) for a book in the booklist. -->
-    <style name="BooklistBook.BookContainer">
+    <!-- The Group rows label in the booklist; not to be used directly in layouts -->
+    <style name="BoB.Group.Label">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">0dp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textIsSelectable">false</item>
+    </style>
+
+    <style name="BoB.Group.Label.Level1">
+        <item name="android:paddingTop">@dimen/border1</item>
+        <item name="android:textAppearance">?android:attr/textAppearanceLarge</item>
+    </style>
+
+    <style name="BoB.Group.Label.Level2">
+    </style>
+
+    <style name="BoB.Group.Label.Level3">
+    </style>
+
+
+    <!-- The content container (MaterialCardView) for a book in the booklist. -->
+    <style name="BoB.BookContainer">
+        <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_margin">@dimen/border2</item>
         <item name="contentPadding">@dimen/bob_book_card_padding</item>
         <item name="cardBackgroundColor">?attr/appBookCardBackgroundColor</item>
     </style>
 
-    <!-- The content container for a book in the booklist; direct child of the BookContainer. -->
-    <style name="BooklistBook.Row">
+    <!-- A book in the booklist; direct child of the BookContainer. -->
+    <style name="BoB.Book">
+        <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_marginBottom">0dp</item>
-    </style>
-
-    <style name="BooklistBook.Row.Level1">
-        <item name="android:layout_marginTop">@dimen/bob_row_spacer</item>
-    </style>
-
-    <style name="BooklistBook.Row.Level2">
-    </style>
-
-    <style name="BooklistBook.Row.Level3">
-    </style>
-
-    <!-- Text element in a 'level' header row -->
-    <style name="BooklistBook.Section">
-        <item name="android:layout_width">0dp</item>
-        <item name="android:textStyle">bold</item>
-        <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
-    </style>
-
-    <!-- Text element in a 'level' header row -->
-    <style name="BooklistBook.Section.Large">
-        <item name="android:paddingTop">@dimen/border1</item>
-        <item name="android:textAppearance">?android:attr/textAppearanceLarge</item>
-    </style>
-
-    <!-- Text element in a 'level' header row -->
-    <style name="BooklistBook.Section.Small" tools:keep="@style/BooklistBook_Section_Small">
-        <item name="android:padding">@dimen/border1</item>
-        <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
     </style>
 
     <!-- Text element in a 'book' row -->
-    <style name="BooklistBook.BookInfo">
+    <style name="BoB.Book.Text">
         <item name="android:layout_width">0dp</item>
+        <item name="android:textIsSelectable">false</item>
+        <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
     </style>
 
-    <style name="BooklistBook.BookInfo.Title">
+    <!-- the number has to fit inline -->
+    <style name="BoB.Book.Text.SeriesNum">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:padding">@dimen/border1</item>
+    </style>
+
+    <!-- the title has its own style. -->
+    <style name="BoB.Book.Text.Title">
         <item name="android:padding">@dimen/border1</item>
         <item name="android:textStyle">italic</item>
         <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
-    </style>
-
-    <style name="BooklistBook.BookInfo.SeriesNum">
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:padding">@dimen/border1</item>
-        <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
-    </style>
-
-    <style name="BooklistBook.BookInfo.SeriesNumLong">
-        <item name="android:paddingStart">@dimen/indent1</item>
-        <item name="android:paddingEnd">@dimen/indent1</item>
-        <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
-    </style>
-
-    <style name="BooklistBook.BookInfo.Secondary">
-        <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
     </style>
 
     <!-- *************************************************************************************** -->
@@ -602,7 +604,7 @@
     <style name="InfoButton">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_marginStart">@dimen/indent1</item>
+        <item name="android:layout_marginStart">4dp</item>
         <item name="android:padding">4dp</item>
         <item name="android:background">@android:color/transparent</item>
         <item name="android:src">@drawable/ic_info_outline</item>

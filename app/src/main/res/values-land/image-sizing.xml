@@ -30,8 +30,8 @@
 <resources>
     <!-- displayed side by side. -->
     <integer-array name="cover_scale_details">
-        <item>4</item>
         <item>3</item>
+        <item>2</item>
     </integer-array>
     <!-- displayed side by side. -->
     <integer-array name="cover_scale_edit">

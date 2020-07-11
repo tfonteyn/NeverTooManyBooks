@@ -31,59 +31,29 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    style="@style/BooklistBook.BookContainer"
+    style="@style/BoB.BookContainer"
     >
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        style="@style/BooklistBook.Row"
+        android:id="@+id/row"
+        style="@style/BoB.Book"
         >
 
         <com.hardbacknutter.nevertoomanybooks.widgets.ExtGroup
             android:id="@id/ROW_ONCLICK_TARGET"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            app:constraint_referenced_ids="series_num,series_num_long,title,extras,spacerSide,spacerBottom"
+            app:constraint_referenced_ids="row,series_num_long,series_num,title,extras"
             app:applyVisibility="false"
             tools:ignore="MissingConstraints"
             />
 
-        <ImageView
-            android:id="@+id/coverImage0"
-            style="@style/CoverImage"
-            android:contentDescription="@string/lbl_cover"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:layout_height="@dimen/tools_cover_medium_height"
-            tools:layout_width="@dimen/tools_cover_medium_width"
-            tools:src="@sample/covers"
-            />
-
-        <!-- A View, and not a 'Space' as this must be clickable. -->
-        <View
-            android:id="@+id/spacerSide"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="@id/coverImage0"
-            app:layout_constraintStart_toStartOf="@id/coverImage0"
-            app:layout_constraintTop_toBottomOf="@id/coverImage0"
-            />
-
-        <include
-            android:id="@+id/icon_sidebar"
-            layout="@layout/booksonbookshelf_row_inc_iconbar"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            />
-
         <TextView
             android:id="@+id/series_num_long"
-            style="@style/BooklistBook.BookInfo.SeriesNumLong"
+            style="@style/BoB.Book.Text"
             android:visibility="gone"
             app:layout_constraintEnd_toStartOf="@id/icon_sidebar"
-            app:layout_constraintStart_toEndOf="@id/coverImage0"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:ignore="SelectableText"
             tools:text="series_num_long"
@@ -92,11 +62,11 @@
 
         <TextView
             android:id="@+id/series_num"
-            style="@style/BooklistBook.BookInfo.SeriesNum"
+            style="@style/BoB.Book.Text.SeriesNum"
             android:visibility="gone"
             app:layout_constraintBaseline_toBaselineOf="@id/title"
             app:layout_constraintEnd_toStartOf="@id/title"
-            app:layout_constraintStart_toEndOf="@id/coverImage0"
+            app:layout_constraintStart_toStartOf="parent"
             tools:ignore="SelectableText"
             tools:text="###"
             tools:visibility="visible"
@@ -104,7 +74,7 @@
 
         <TextView
             android:id="@+id/title"
-            style="@style/BooklistBook.BookInfo.Title"
+            style="@style/BoB.Book.Text.Title"
             app:layout_constraintEnd_toStartOf="@id/icon_sidebar"
             app:layout_constraintStart_toEndOf="@id/series_num"
             app:layout_constraintTop_toBottomOf="@id/series_num_long"
@@ -112,26 +82,35 @@
             tools:text="@sample/data.json/book/title"
             />
 
-        <!-- Provide clickable whitespace if there are no/little extras. -->
+        <include
+            android:id="@+id/icon_sidebar"
+            layout="@layout/booksonbookshelf_row_inc_iconbar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/title"
+            app:layout_constraintTop_toTopOf="parent"
+            />
+
+        <ImageView
+            android:id="@+id/coverImage0"
+            style="@style/CoverImage"
+            android:contentDescription="@string/lbl_cover"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/title"
+            tools:layout_height="@dimen/tools_cover_scale_4_height"
+            tools:layout_width="@dimen/tools_cover_scale_4_width"
+            tools:src="@sample/covers"
+            />
+
         <include
             android:id="@+id/extras"
             layout="@layout/booksonbookshelf_row_inc_extras"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            app:layout_constraintEnd_toStartOf="@id/icon_sidebar"
-            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/coverImage0"
-            app:layout_constraintTop_toBottomOf="@id/title"
-            />
-
-        <View
-            android:id="@+id/spacerBottom"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/icon_sidebar"
-            app:layout_constraintStart_toEndOf="@id/coverImage0"
-            app:layout_constraintTop_toBottomOf="@id/extras"
+            app:layout_constraintTop_toBottomOf="@+id/icon_sidebar"
             />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

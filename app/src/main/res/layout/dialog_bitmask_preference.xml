@@ -51,7 +51,7 @@
         android:id="@+id/multi_choice_items"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/border1"
+        android:layout_marginTop="@dimen/border2"
         android:layout_marginBottom="?attr/dialogPreferredPadding"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

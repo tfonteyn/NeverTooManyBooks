@@ -68,7 +68,7 @@
         android:id="@+id/year"
         style="@style/Field.Generic.Small"
         app:layout_constraintBaseline_toBaselineOf="@id/author"
-        app:layout_constraintStart_toEndOf="@id/indent_fields"
+        app:layout_constraintStart_toStartOf="@id/title"
         app:layout_constraintTop_toBottomOf="@id/title"
         tools:ignore="SelectableText"
         tools:text="(1971)"
@@ -76,8 +76,7 @@
 
     <TextView
         android:id="@+id/author"
-        style="@style/Field.Generic.Small"
-        android:layout_marginStart="@dimen/indent2"
+        style="@style/Field.Generic.Inline.Small"
         app:layout_constraintStart_toEndOf="@id/year"
         app:layout_constraintTop_toBottomOf="@id/title"
         tools:ignore="SelectableText"

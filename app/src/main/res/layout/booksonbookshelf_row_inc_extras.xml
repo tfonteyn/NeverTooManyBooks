@@ -52,7 +52,7 @@
 
     <TextView
         android:id="@+id/author"
-        style="@style/BooklistBook.BookInfo.Secondary"
+        style="@style/BoB.Book.Text"
         android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -64,7 +64,7 @@
 
     <TextView
         android:id="@+id/publisher"
-        style="@style/BooklistBook.BookInfo.Secondary"
+        style="@style/BoB.Book.Text"
         android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -76,19 +76,19 @@
 
     <TextView
         android:id="@+id/isbn"
-        style="@style/BooklistBook.BookInfo.Secondary"
+        style="@style/BoB.Book.Text"
         android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/publisher"
         tools:ignore="SelectableText"
-        tools:text="1234567890123"
+        tools:text="@sample/data.json/isbn/d13"
         tools:visibility="visible"
         />
 
     <TextView
         android:id="@+id/format"
-        style="@style/BooklistBook.BookInfo.Secondary"
+        style="@style/BoB.Book.Text"
         android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -100,7 +100,7 @@
 
     <TextView
         android:id="@+id/location"
-        style="@style/BooklistBook.BookInfo.Secondary"
+        style="@style/BoB.Book.Text"
         android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -112,7 +112,7 @@
 
     <TextView
         android:id="@+id/shelves"
-        style="@style/BooklistBook.BookInfo.Secondary"
+        style="@style/BoB.Book.Text"
         android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

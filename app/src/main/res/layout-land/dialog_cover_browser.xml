@@ -110,8 +110,8 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 tools:ignore="ContentDescription"
-                tools:layout_height="@dimen/tools_cover_large_height"
-                tools:layout_width="@dimen/tools_cover_large_width"
+                tools:layout_height="@dimen/tools_cover_scale_4_height"
+                tools:layout_width="@dimen/tools_cover_scale_4_width"
                 tools:src="@sample/covers"
                 tools:visibility="visible"
                 />

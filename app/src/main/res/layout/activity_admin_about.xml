@@ -88,7 +88,7 @@
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="@id/app_name"
             app:layout_constraintTop_toBottomOf="@id/app_name"
-            tools:text="1.0.1"
+            tools:text="1.1.0"
             />
 
         <androidx.constraintlayout.widget.Barrier
@@ -104,7 +104,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            app:layout_constraintGuide_begin="@dimen/indent_field"
+            app:layout_constraintGuide_begin="@dimen/indent2"
             />
 
         <com.hardbacknutter.nevertoomanybooks.widgets.ExtGroup

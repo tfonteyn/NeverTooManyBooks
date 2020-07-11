@@ -61,7 +61,7 @@
             style="@style/EditText.Isbn"
             android:layout_width="match_parent"
             tools:ignore="Autofill,LabelFor"
-            tools:text="123456789X123"
+            tools:text="@sample/data.json/isbn/d13"
             />
     </com.google.android.material.textfield.TextInputLayout>
 

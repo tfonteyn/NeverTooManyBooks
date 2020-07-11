@@ -50,8 +50,7 @@
 
     <TextView
         android:id="@+id/year"
-        style="@style/Field.Generic.Small"
-        android:layout_marginStart="@dimen/indent2"
+        style="@style/Field.Generic.Inline.Small"
         android:textIsSelectable="false"
         app:layout_constraintBaseline_toBaselineOf="@id/title"
         app:layout_constraintEnd_toEndOf="parent"

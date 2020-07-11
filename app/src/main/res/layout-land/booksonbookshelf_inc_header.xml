@@ -31,7 +31,6 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/list_header"
     android:layout_width="0dp"
     android:layout_height="wrap_content"
     android:background="?attr/appHeaderBackgroundColor"
@@ -44,27 +43,27 @@
 
     <TextView
         android:id="@+id/style_name"
-        style="@style/BooklistBook.Header.Text"
-        android:textIsSelectable="true"
+        style="@style/BoB.Header"
         app:layout_constraintEnd_toStartOf="@id/book_count"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:text="style name"
+        tools:ignore="SelectableText"
+        tools:text="@sample/data.json/styles/name"
         />
 
     <TextView
         android:id="@+id/book_count"
-        style="@style/BooklistBook.Header.Text.Small"
-        android:textIsSelectable="true"
+        style="@style/BoB.Header.Small"
         app:layout_constraintBottom_toBottomOf="@id/style_name"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/style_name"
         tools:text="@string/txt_displaying_n_books_in_m_entries"
+        tools:ignore="SelectableText"
         />
 
     <TextView
         android:id="@+id/filter_text"
-        style="@style/BooklistBook.Header.Text.Small"
+        style="@style/BoB.Header.Small"
         android:visibility="gone"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/style_name"

@@ -100,12 +100,14 @@
     <!-- layout_margin for top level layouts. -->
     <dimen name="screenBorder">4dp</dimen>
 
+    <!-- drawable outline -->
+    <dimen name="outlineBorder">4dp</dimen>
+
     <!-- Spacing either for all around, or for bottom/top. NOT for start/end, for the latter use 'indent' -->
     <dimen name="border1">4dp</dimen>
     <dimen name="border2">8dp</dimen>
 
     <!-- indent, usually start only, but can be used for end as well. -->
-    <dimen name="indent1">4dp</dimen>
     <dimen name="indent2">8dp</dimen>
 
     <!-- indent a radio button as a sub-list; e.g. radio buttons under a checkbox. -->
@@ -114,11 +116,10 @@
     <!-- indent an element so it matches up with the text of a standard size compound button. -->
     <dimen name="indent_compound_button">32dp</dimen>
 
-    <!-- Indent a field. Used for individual fields, or with a Guideline for a group of fields. -->
+    <!-- Start margin applied to a field. Used for individual fields, or with a Guideline for a group of fields. -->
     <dimen name="indent_field">8dp</dimen>
-
-    <!-- start margin applied to the 2nd, 3rd.. field on a line of fields. -->
-    <dimen name="inline_field_start_margin">16dp</dimen>
+    <!-- Start margin applied to the 2nd, 3rd.. field on a line of fields. -->
+    <dimen name="indent_field_inline">12dp</dimen>
 
     <!-- Margin applied around all TextInputLayout fields. -->
     <dimen name="envelope_edit_text_margin">2dp</dimen>
