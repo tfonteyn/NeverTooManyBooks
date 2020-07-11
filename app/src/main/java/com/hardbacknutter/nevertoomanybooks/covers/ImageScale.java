@@ -46,9 +46,6 @@ import com.hardbacknutter.nevertoomanybooks.R;
  * This INDEX is used to lookup the SCALE_FACTOR.
  * Lastly, the SCALE_FACTOR is multiplied by the DIMEN resource
  * that provides a base dp value which again depends on screen size.
- *
- * Dev. note: alternative implementation: a "dimen-array" (non-existent) or
- * an "integer-array" and then manually convert the int values to dp.
  * <p>
  * Must be kept in sync with res/values/strings-preferences.xml#pv_cover_scale_factor
  * <p>
@@ -57,19 +54,19 @@ import com.hardbacknutter.nevertoomanybooks.R;
 public final class ImageScale {
 
     /** Thumbnail Scaling. */
-    public static final int SCALE_NOT_DISPLAYED = 0;
+    public static final int SCALE_0_NOT_DISPLAYED = 0;
     /** Thumbnail Scaling. */
-    public static final int SCALE_X_SMALL = 1;
+    public static final int SCALE_1_VERY_SMALL = 1;
     /** Thumbnail Scaling. */
-    public static final int SCALE_SMALL = 2;
+    public static final int SCALE_2_SMALL = 2;
     /** Thumbnail Scaling. */
-    public static final int SCALE_MEDIUM = 3;
+    public static final int SCALE_3_MEDIUM = 3;
     /** Thumbnail Scaling. */
-    public static final int SCALE_LARGE = 4;
+    public static final int SCALE_4_LARGE = 4;
     /** Thumbnail Scaling. */
-    public static final int SCALE_X_LARGE = 5;
+    public static final int SCALE_5_VERY_LARGE = 5;
     /** Thumbnail Scaling. */
-    public static final int SCALE_2X_LARGE = 6;
+    public static final int SCALE_6_MAX = 6;
 
     /** scaling factor for each SCALE_* option. */
     private static final int[] SCALE_FACTOR = {0, 1, 2, 3, 5, 8, 12};
@@ -92,8 +89,8 @@ public final class ImageScale {
                * (int) context.getResources().getDimension(R.dimen.cover_base_size);
     }
 
-    @IntDef({SCALE_NOT_DISPLAYED, SCALE_X_SMALL, SCALE_SMALL, SCALE_MEDIUM,
-             SCALE_LARGE, SCALE_X_LARGE, SCALE_2X_LARGE})
+    @IntDef({SCALE_0_NOT_DISPLAYED, SCALE_1_VERY_SMALL, SCALE_2_SMALL, SCALE_3_MEDIUM,
+             SCALE_4_LARGE, SCALE_5_VERY_LARGE, SCALE_6_MAX})
     @Retention(RetentionPolicy.SOURCE)
     public @interface Scale {
 

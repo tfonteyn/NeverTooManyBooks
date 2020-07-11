@@ -206,6 +206,15 @@ public class BooklistGroup
     public static final int SERIES_TITLE_LETTER = 30;
     public static final int CONDITION = 31;
 
+    public static final String pk_author_primary_type =
+            "style.booklist.group.authors.primary.type";
+    public static final String pk_author_show_books_under_each =
+            "style.booklist.group.authors.show.all";
+    public static final String pk_series_show_books_under_each =
+            "style.booklist.group.series.show.all";
+    public static final String pk_publisher_show_books_under_each =
+            "style.booklist.group.publisher.show.all";
+
     /**
      * NEWTHINGS: GROUP_KEY_x
      * The highest valid index of GroupKey - ALWAYS to be updated after adding a group key.
@@ -604,7 +613,7 @@ public class BooklistGroup
         static boolean showBooksUnderEachAuthorGlobalDefault(@NonNull final Context context) {
             return PreferenceManager
                     .getDefaultSharedPreferences(context)
-                    .getBoolean(Prefs.pk_style_group_author_show_books_under_each, false);
+                    .getBoolean(pk_author_show_books_under_each, false);
         }
 
         /**
@@ -617,7 +626,7 @@ public class BooklistGroup
         static int getPrimaryTypeGlobalDefault(@NonNull final Context context) {
             return PreferenceManager
                     .getDefaultSharedPreferences(context)
-                    .getInt(Prefs.pk_style_group_author_primary_type, Author.TYPE_UNKNOWN);
+                    .getInt(pk_author_primary_type, Author.TYPE_UNKNOWN);
         }
 
         @NonNull
@@ -662,10 +671,10 @@ public class BooklistGroup
         }
 
         void initPrefs() {
-            mAllAuthors = new PBoolean(Prefs.pk_style_group_author_show_books_under_each,
+            mAllAuthors = new PBoolean(pk_author_show_books_under_each,
                                        mUuid, mIsUserDefinedStyle);
 
-            mPrimaryType = new PBitmask(Prefs.pk_style_group_author_primary_type,
+            mPrimaryType = new PBitmask(pk_author_primary_type,
                                         mUuid, mIsUserDefinedStyle,
                                         Author.TYPE_UNKNOWN, Author.TYPE_BITMASK_ALL);
         }
@@ -686,8 +695,8 @@ public class BooklistGroup
 
             final PreferenceCategory category = screen.findPreference(Prefs.PSK_STYLE_AUTHOR);
             if (category != null) {
-                final String[] keys = {Prefs.pk_style_group_author_show_books_under_each,
-                                       Prefs.pk_style_group_author_primary_type};
+                final String[] keys = {pk_author_show_books_under_each,
+                                       pk_author_primary_type};
 
                 setPreferenceVisibility(category, keys, visible);
             }
@@ -784,11 +793,11 @@ public class BooklistGroup
         static boolean showBooksUnderEachSeriesGlobalDefault(@NonNull final Context context) {
             return PreferenceManager
                     .getDefaultSharedPreferences(context)
-                    .getBoolean(Prefs.pk_style_group_series_show_books_under_each, false);
+                    .getBoolean(pk_series_show_books_under_each, false);
         }
 
         private void initPrefs() {
-            mAllSeries = new PBoolean(Prefs.pk_style_group_series_show_books_under_each,
+            mAllSeries = new PBoolean(pk_series_show_books_under_each,
                                       mUuid, mIsUserDefinedStyle);
         }
 
@@ -827,7 +836,7 @@ public class BooklistGroup
 
             final PreferenceCategory category = screen.findPreference(Prefs.PSK_STYLE_SERIES);
             if (category != null) {
-                final String[] keys = {Prefs.pk_style_group_series_show_books_under_each};
+                final String[] keys = {pk_series_show_books_under_each};
                 setPreferenceVisibility(category, keys, visible);
             }
         }
@@ -911,13 +920,13 @@ public class BooklistGroup
         static boolean showBooksUnderEachPublisherGlobalDefault(@NonNull final Context context) {
             return PreferenceManager
                     .getDefaultSharedPreferences(context)
-                    .getBoolean(Prefs.pk_style_group_publisher_show_books_under_each,
+                    .getBoolean(pk_publisher_show_books_under_each,
                                 false);
         }
 
         private void initPrefs() {
             mAllPublishers = new PBoolean(
-                    Prefs.pk_style_group_publisher_show_books_under_each,
+                    pk_publisher_show_books_under_each,
                     mUuid, mIsUserDefinedStyle);
         }
 
@@ -956,7 +965,7 @@ public class BooklistGroup
 
             final PreferenceCategory category = screen.findPreference(Prefs.PSK_STYLE_PUBLISHER);
             if (category != null) {
-                final String[] keys = {Prefs.pk_style_group_publisher_show_books_under_each};
+                final String[] keys = {pk_publisher_show_books_under_each};
                 setPreferenceVisibility(category, keys, visible);
             }
         }

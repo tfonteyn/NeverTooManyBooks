@@ -272,10 +272,10 @@ public class DAO
     private static final SQLiteDatabase.CursorFactory CURSOR_FACTORY =
             (db, d, et, q) -> new SynchronizedCursor(d, et, q, SYNCHRONIZER);
 
-    /** Static Factory object to create an {@link ExtCursor} cursor. */
+    /** Static Factory object to create an {@link TypedCursor} cursor. */
     @NonNull
     private static final SQLiteDatabase.CursorFactory EXT_CURSOR_FACTORY =
-            (db, d, et, q) -> new ExtCursor(d, et, q, SYNCHRONIZER);
+            (db, d, et, q) -> new TypedCursor(d, et, q, SYNCHRONIZER);
 
     /** statement names; keys into the cache map. */
     private static final String STMT_CHECK_BOOK_EXISTS = "CheckBookExists";
@@ -2240,9 +2240,9 @@ public class DAO
      *
      * @return A Book Cursor with 0..1 row
      */
-    private ExtCursor getBookCursor(@Nullable final CharSequence whereClause,
-                                    @Nullable final String[] selectionArgs,
-                                    @Nullable final CharSequence orderByClause) {
+    private TypedCursor getBookCursor(@Nullable final CharSequence whereClause,
+                                      @Nullable final String[] selectionArgs,
+                                      @Nullable final CharSequence orderByClause) {
 
         // Developer: adding fields ? Now is a good time to update {@link Book#duplicate}/
         // Note we could use TBL_BOOKS.dot("*")
@@ -2308,9 +2308,9 @@ public class DAO
 
                 + _COLLATION;
 
-        final ExtCursor cursor = (ExtCursor) sSyncedDb.rawQueryWithFactory(
+        final TypedCursor cursor = (TypedCursor) sSyncedDb.rawQueryWithFactory(
                 EXT_CURSOR_FACTORY, sql, selectionArgs, null);
-        // force the ExtCursor to retrieve the real column types.
+        // force the TypedCursor to retrieve the real column types.
         cursor.setDb(sSyncedDb, TBL_BOOKS);
         return cursor;
     }
@@ -2323,7 +2323,7 @@ public class DAO
      * @return A Book Cursor with 0..1 row
      */
     @NonNull
-    public ExtCursor fetchBookById(@IntRange(from = 1) final long bookId) {
+    public TypedCursor fetchBookById(@IntRange(from = 1) final long bookId) {
         return getBookCursor(TBL_BOOKS.dot(KEY_PK_ID) + "=?",
                              new String[]{String.valueOf(bookId)},
                              null);
@@ -2339,7 +2339,7 @@ public class DAO
      * @throws IllegalArgumentException if the list is empty
      */
     @NonNull
-    public ExtCursor fetchBooks(@NonNull final List<Long> idList) {
+    public TypedCursor fetchBooks(@NonNull final List<Long> idList) {
         if (idList.isEmpty()) {
             throw new IllegalArgumentException(ErrorMsg.EMPTY_ARRAY_OR_LIST);
         }
@@ -2367,7 +2367,7 @@ public class DAO
      * @return A Book Cursor with 0..n rows; ordered by book id
      */
     @NonNull
-    public ExtCursor fetchBooks(final long fromBookIdOnwards) {
+    public TypedCursor fetchBooks(final long fromBookIdOnwards) {
         return getBookCursor(TBL_BOOKS.dot(KEY_PK_ID) + ">=?",
                              new String[]{String.valueOf(fromBookIdOnwards)},
                              TBL_BOOKS.dot(KEY_PK_ID));
@@ -2382,7 +2382,7 @@ public class DAO
      * @return A Book Cursor with 0..n rows; ordered by book id
      */
     @NonNull
-    public ExtCursor fetchBooksForExport(@Nullable final LocalDateTime lastUpdateInUtc) {
+    public TypedCursor fetchBooksForExport(@Nullable final LocalDateTime lastUpdateInUtc) {
         if (lastUpdateInUtc == null) {
             return getBookCursor(null, null, TBL_BOOKS.dot(KEY_PK_ID));
         } else {
@@ -2403,7 +2403,7 @@ public class DAO
      * @throws IllegalArgumentException if the list is empty
      */
     @NonNull
-    public ExtCursor fetchBooksByIsbnList(@NonNull final List<String> isbnList) {
+    public TypedCursor fetchBooksByIsbnList(@NonNull final List<String> isbnList) {
         if (isbnList.isEmpty()) {
             throw new IllegalArgumentException(ErrorMsg.EMPTY_ARRAY_OR_LIST);
         }
@@ -2432,7 +2432,7 @@ public class DAO
      * @return A Book Cursor with 0..n rows; ordered by book id
      */
     @NonNull
-    public ExtCursor fetchBooksByGoodreadsBookId(final long grBookId) {
+    public TypedCursor fetchBooksByGoodreadsBookId(final long grBookId) {
         return getBookCursor(TBL_BOOKS.dot(KEY_EID_GOODREADS_BOOK) + "=?",
                              new String[]{String.valueOf(grBookId)},
                              TBL_BOOKS.dot(KEY_PK_ID));

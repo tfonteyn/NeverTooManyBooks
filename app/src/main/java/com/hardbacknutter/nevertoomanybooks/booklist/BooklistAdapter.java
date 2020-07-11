@@ -396,25 +396,22 @@ public class BooklistAdapter
 
         switch (groupKeyId) {
             case BooklistGroup.BOOK: {
-                @ImageScale.Scale
-                final int scale = mStyle.getThumbnailScale(context);
-                switch (scale) {
-                    case ImageScale.SCALE_2X_LARGE:
-                        layoutId = R.layout.booksonbookshelf_row_book_2x_large_image;
+                switch (mStyle.getThumbnailScale(context)) {
+                    case ImageScale.SCALE_6_MAX:
+                    case ImageScale.SCALE_5_VERY_LARGE:
+                        layoutId = R.layout.booksonbookshelf_row_book_scale_5;
                         break;
 
-                    case ImageScale.SCALE_X_LARGE:
-                        layoutId = R.layout.booksonbookshelf_row_book_1x_large_image;
+                    case ImageScale.SCALE_4_LARGE:
+                        layoutId = R.layout.booksonbookshelf_row_book_scale_4;
                         break;
 
-
-                    case ImageScale.SCALE_LARGE:
-                    case ImageScale.SCALE_MEDIUM:
-                    case ImageScale.SCALE_SMALL:
-                    case ImageScale.SCALE_X_SMALL:
-                    case ImageScale.SCALE_NOT_DISPLAYED:
+                    case ImageScale.SCALE_3_MEDIUM:
+                    case ImageScale.SCALE_2_SMALL:
+                    case ImageScale.SCALE_1_VERY_SMALL:
+                    case ImageScale.SCALE_0_NOT_DISPLAYED:
                     default:
-                        layoutId = R.layout.booksonbookshelf_row_book;
+                        layoutId = R.layout.booksonbookshelf_row_book_scale_0_3;
                         break;
                 }
 
@@ -706,17 +703,15 @@ public class BooklistAdapter
             lending = DBDefinitions.isUsed(prefs, DBDefinitions.KEY_LOANEE);
             series = DBDefinitions.isUsed(prefs, DBDefinitions.KEY_SERIES_TITLE);
 
-            cover = style.isBookDetailUsed(context, prefs, DBDefinitions.PREFS_IS_USED_THUMBNAIL);
-
-            rating = style.isBookDetailUsed(context, prefs, DBDefinitions.KEY_RATING);
-            author = style.isBookDetailUsed(context, prefs, DBDefinitions.KEY_AUTHOR_FORMATTED);
-            publisher = style.isBookDetailUsed(context, prefs, DBDefinitions.KEY_PUBLISHER_NAME);
-            pubDate = style.isBookDetailUsed(context, prefs, DBDefinitions.KEY_DATE_PUBLISHED);
-            isbn = style.isBookDetailUsed(context, prefs, DBDefinitions.KEY_ISBN);
-            format = style.isBookDetailUsed(context, prefs, DBDefinitions.KEY_FORMAT);
-            location = style.isBookDetailUsed(context, prefs, DBDefinitions.KEY_LOCATION);
-            bookshelf = style.isBookDetailUsed(context, prefs,
-                                               DBDefinitions.KEY_BOOKSHELF_NAME_CSV);
+            cover = style.useBookDetail(context, prefs, BooklistStyle.pk_book_show_thumbnails);
+            author = style.useBookDetail(context, prefs, BooklistStyle.pk_book_show_author);
+            publisher = style.useBookDetail(context, prefs, BooklistStyle.pk_book_show_publisher);
+            pubDate = style.useBookDetail(context, prefs, BooklistStyle.pk_book_show_pub_date);
+            isbn = style.useBookDetail(context, prefs, BooklistStyle.pk_book_show_isbn);
+            format = style.useBookDetail(context, prefs, BooklistStyle.pk_book_show_format);
+            location = style.useBookDetail(context, prefs, BooklistStyle.pk_book_show_location);
+            rating = style.useBookDetail(context, prefs, BooklistStyle.pk_book_show_rating);
+            bookshelf = style.useBookDetail(context, prefs, BooklistStyle.pk_book_show_bookshelves);
         }
 
         /**

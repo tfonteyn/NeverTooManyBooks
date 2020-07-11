@@ -78,37 +78,14 @@ public final class ImageUtils {
     /** The prefix an embedded image url will have. */
     private static final String DATA_IMAGE_JPEG_BASE_64 = "data:image/jpeg;base64,";
 
-    private ImageUtils() {
-    }
 
     /**
-     * Set a placeholder drawable in the view.
-     * The view will be resized as a portrait image with 'maxHeight' as the height,
-     * and the width set at 0.6 * maxHeight'.
      * 0.6 is based on a standard paperback 17.5cm x 10.6cm
-     *
-     * @param imageView  View to populate
-     * @param drawable   drawable to use
-     * @param background (optional) drawable to use for the background; use {@code 0} for none
-     * @param maxHeight  Maximum height of the ImageView
+     * -> width = 0.6 * maxHeight.
      */
-    @UiThread
-    static void setPlaceholder(@NonNull final ImageView imageView,
-                               @DrawableRes final int drawable,
-                               @SuppressWarnings("SameParameterValue")
-                               @DrawableRes final int background,
-                               final int maxHeight) {
-        final ViewGroup.LayoutParams lp = imageView.getLayoutParams();
-        lp.height = maxHeight;
-        lp.width = (int) (maxHeight * 0.6f);
-        imageView.setLayoutParams(lp);
+    public static final float HW_RATIO = 0.6f;
 
-        imageView.setScaleType(ImageView.ScaleType.CENTER);
-        imageView.setImageResource(drawable);
-
-        if (background != 0) {
-            imageView.setBackgroundResource(background);
-        }
+    private ImageUtils() {
     }
 
     /**
@@ -122,9 +99,29 @@ public final class ImageUtils {
     public static void setPlaceholder(@NonNull final ImageView imageView,
                                       @DrawableRes final int drawable,
                                       @DrawableRes final int background) {
+        setPlaceholder(imageView, drawable, background,
+                       ViewGroup.LayoutParams.WRAP_CONTENT,
+                       ViewGroup.LayoutParams.WRAP_CONTENT);
+    }
+
+    /**
+     * Set a placeholder drawable in the view.
+     *
+     * @param imageView    View to populate
+     * @param drawable     drawable to use
+     * @param background   (optional) drawable to use for the background; use {@code 0} for none
+     * @param layoutWidth  layout width parameter
+     * @param layoutHeight layout height parameter
+     */
+    @UiThread
+    public static void setPlaceholder(@NonNull final ImageView imageView,
+                                      @DrawableRes final int drawable,
+                                      @DrawableRes final int background,
+                                      final int layoutWidth,
+                                      final int layoutHeight) {
         final ViewGroup.LayoutParams lp = imageView.getLayoutParams();
-        lp.height = ViewGroup.LayoutParams.WRAP_CONTENT;
-        lp.width = ViewGroup.LayoutParams.WRAP_CONTENT;
+        lp.width = layoutWidth;
+        lp.height = layoutHeight;
         imageView.setLayoutParams(lp);
 
         imageView.setScaleType(ImageView.ScaleType.CENTER);
@@ -209,10 +206,12 @@ public final class ImageUtils {
         }
 
         // 2. Cache did not have it, or we were not allowed to check.
-        // Check if the file exists; if it does not, set the placeholder icon and exit.
         final File file = AppDir.getCoverFile(context, uuid, cIdx);
+        // Check if the file exists; if it does not...
         if (!isFileGood(file)) {
-            setPlaceholder(imageView, R.drawable.ic_image, 0, maxHeight);
+            // use a placeholder but preserve the available WIDTH. Set the height minimal
+            setPlaceholder(imageView, R.drawable.ic_image, 0,
+                           (int) (maxHeight * HW_RATIO), ViewGroup.LayoutParams.WRAP_CONTENT);
             return false;
         }
 

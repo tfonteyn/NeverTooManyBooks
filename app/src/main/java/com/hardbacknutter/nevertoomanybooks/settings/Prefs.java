@@ -60,12 +60,6 @@ public final class Prefs {
     public static final int STARTUP_BACKUP_COUNTDOWN = 5;
     /** Triggers prompting for a backup when the countdown reaches 0; then gets reset. */
     public static final String PREF_STARTUP_BACKUP_COUNTDOWN = "startup.backupCountdown";
-    /**
-     * Style unique name. This is a stored in our preference file (with the same name)
-     * and is used for backup/restore purposes as the 'ID'.
-     */
-    public static final String PK_STYLE_UUID = "style.booklist.uuid";
-
 
     /** User preference Key. */
     public static final String pk_ui_locale = "ui.locale";
@@ -90,55 +84,9 @@ public final class Prefs {
     public static final String pk_show_author_name_given_first = "show.author.name.given_first";
     public static final String pk_booklist_rebuild_state = "booklist.rebuild.state";
 
-    /** Main style preferences. */
-    public static final String pk_style_name = "style.booklist.name";
-    public static final String pk_style_is_preferred = "style.booklist.preferred";
-    public static final String pk_style_header = "style.booklist.header";
-    public static final String pk_style_levels_expansion = "style.booklist.levels.default";
-    public static final String pk_style_scale_font = "style.booklist.scale.font";
-    public static final String pk_style_scale_thumbnail = "style.booklist.scale.thumbnails";
+
     /** Style group preferences. */
     public static final String pk_style_groups = "style.booklist.groups";
-    public static final String pk_style_group_author_show_books_under_each =
-            "style.booklist.group.authors.show.all";
-    public static final String pk_style_group_author_primary_type =
-            "style.booklist.group.authors.primary.type";
-    public static final String pk_style_group_series_show_books_under_each =
-            "style.booklist.group.series.show.all";
-    public static final String pk_style_group_publisher_show_books_under_each =
-            "style.booklist.group.publisher.show.all";
-
-    /** Show the cover image for each book. */
-    public static final String pk_style_book_show_thumbnails = "style.booklist.show.thumbnails";
-    /** Show list of bookshelves for each book. */
-    public static final String pk_style_book_show_bookshelves = "style.booklist.show.bookshelves";
-    /** Show location for each book. */
-    public static final String pk_style_book_show_location = "style.booklist.show.location";
-    /** Show author for each book. */
-    public static final String pk_style_book_show_author = "style.booklist.show.author";
-    /** Show publisher for each book. */
-    public static final String pk_style_book_show_publisher = "style.booklist.show.publisher";
-    /** Show publication date for each book. */
-    public static final String pk_style_book_show_pub_date = "style.booklist.show.publication.date";
-    /** Show ISBN for each book. */
-    public static final String pk_style_book_show_isbn = "style.booklist.show.isbn";
-    /** Show format for each book. */
-    public static final String pk_style_book_show_format = "style.booklist.show.format";
-    /** Show rating for each book. */
-    public static final String pk_style_book_rating = "style.booklist.show.rating";
-
-    /** Booklist Filter - ListPreference. */
-    public static final String pk_style_filter_isbn = "style.booklist.filter.isbn";
-    /** Booklist Filter - ListPreference. */
-    public static final String pk_style_filter_read = "style.booklist.filter.read";
-    /** Booklist Filter - ListPreference. */
-    public static final String pk_style_filter_signed = "style.booklist.filter.signed";
-    /** Booklist Filter - ListPreference. */
-    public static final String pk_style_filter_loaned = "style.booklist.filter.loaned";
-    /** Booklist Filter - ListPreference. */
-    public static final String pk_style_filter_anthology = "style.booklist.filter.anthology";
-    /** Booklist Filter - MultiSelectListPreference. */
-    public static final String pk_style_filter_editions = "style.booklist.filter.editions";
 
 
     /** Style - PreferenceScreen/PreferenceCategory Key. */

@@ -223,6 +223,9 @@ public class TableDefinition {
         db.drop(mName);
         db.execSQL(def(mName, withConstraints, true, false));
 
+        if (BuildConfig.DEBUG) {
+            Log.d("recreate", "mName=" + mName);
+        }
         createIndices(db);
     }
 

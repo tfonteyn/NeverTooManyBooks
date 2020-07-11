@@ -55,7 +55,7 @@ import com.hardbacknutter.nevertoomanybooks.database.definitions.TableInfo;
  * accessing anything.<br>
  * <strong>IMPORTANT:</strong> only gets the types from the table passed to {@link #setDb}
  */
-class ExtCursor
+class TypedCursor
         extends SynchronizedCursor {
 
     /** database reference so we can get table/column info. */
@@ -76,10 +76,10 @@ class ExtCursor
      * @param query     Part of standard cursor constructor.
      * @param sync      Synchronizer object
      */
-    ExtCursor(@NonNull final SQLiteCursorDriver driver,
-              @NonNull final String editTable,
-              @NonNull final SQLiteQuery query,
-              @NonNull final Synchronizer sync) {
+    TypedCursor(@NonNull final SQLiteCursorDriver driver,
+                @NonNull final String editTable,
+                @NonNull final SQLiteQuery query,
+                @NonNull final Synchronizer sync) {
         super(driver, editTable, query, sync);
     }
 

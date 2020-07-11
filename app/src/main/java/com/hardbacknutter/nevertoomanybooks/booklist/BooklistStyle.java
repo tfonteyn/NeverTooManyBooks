@@ -38,6 +38,7 @@ import androidx.annotation.IntDef;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.StringDef;
 import androidx.annotation.StringRes;
 import androidx.preference.MultiSelectListPreference;
 import androidx.preference.PreferenceManager;
@@ -113,17 +114,70 @@ public class BooklistStyle
                     return new BooklistStyle[size];
                 }
             };
+
     /** default style when none is set yet. */
     public static final int DEFAULT_STYLE_ID = Builtin.AUTHOR_THEN_SERIES_ID;
+
     /**
      * the amount of details to show in the header.
      * NEVER change these values, they get stored in preferences.
+     * <p>
+     * not in use: 1 << 2
      */
     public static final int HEADER_SHOW_BOOK_COUNT = 1;
     /** the amount of details to show in the header. */
     public static final int HEADER_SHOW_STYLE_NAME = 1 << 3;
     /** the amount of details to show in the header. */
     public static final int HEADER_SHOW_FILTER = 1 << 4;
+
+    /** Show the cover image for each book. */
+    public static final String pk_book_show_thumbnails = "style.booklist.show.thumbnails";
+    /** Show author for each book. */
+    public static final String pk_book_show_author = "style.booklist.show.author";
+    /** Show publisher for each book. */
+    public static final String pk_book_show_publisher = "style.booklist.show.publisher";
+    /** Show publication date for each book. */
+    public static final String pk_book_show_pub_date = "style.booklist.show.publication.date";
+    /** Show ISBN for each book. */
+    public static final String pk_book_show_isbn = "style.booklist.show.isbn";
+    /** Show format for each book. */
+    public static final String pk_book_show_format = "style.booklist.show.format";
+    /** Show location for each book. */
+    public static final String pk_book_show_location = "style.booklist.show.location";
+    /** Show rating for each book. */
+    public static final String pk_book_show_rating = "style.booklist.show.rating";
+    /** Show list of bookshelves for each book. */
+    public static final String pk_book_show_bookshelves = "style.booklist.show.bookshelves";
+
+
+    /** Booklist Filter - ListPreference. */
+    public static final String pk_filter_isbn = "style.booklist.filter.isbn";
+    /** Booklist Filter - ListPreference. */
+    public static final String pk_filter_read = "style.booklist.filter.read";
+    /** Booklist Filter - ListPreference. */
+    public static final String pk_filter_signed = "style.booklist.filter.signed";
+    /** Booklist Filter - ListPreference. */
+    public static final String pk_filter_loaned = "style.booklist.filter.loaned";
+    /** Booklist Filter - ListPreference. */
+    public static final String pk_filter_anthology = "style.booklist.filter.anthology";
+    /** Booklist Filter - MultiSelectListPreference. */
+    public static final String pk_filter_editions = "style.booklist.filter.editions";
+
+
+    /** Main style preferences. */
+    public static final String pk_name = "style.booklist.name";
+    public static final String pk_is_preferred = "style.booklist.preferred";
+    public static final String pk_header = "style.booklist.header";
+    public static final String pk_levels_expansion = "style.booklist.levels.default";
+    public static final String pk_scale_font = "style.booklist.scale.font";
+    public static final String pk_scale_thumbnail = "style.booklist.scale.thumbnails";
+    /**
+     * Style unique name. This is a stored in our preference file (with the same name)
+     * and is used for backup/restore purposes as the 'ID'.
+     */
+    public static final String PK_STYLE_UUID = "style.booklist.uuid";
+
+
     /**
      * Text Scaling.
      * NEVER change these values, they get stored in preferences.
@@ -142,23 +196,21 @@ public class BooklistStyle
     static final int FONT_SCALE_MEDIUM = 1;
     /** Text Scaling. */
     static final int FONT_SCALE_LARGE = 2;
+
     /** log tag. */
     private static final String TAG = "BooklistStyle";
-
     /**
      * A BooklistStyle <strong>UUID</strong>. This is used during the USE of a style.
      * <p>
      * <br>type: {@code String}
      */
     public static final String BKEY_STYLE_UUID = TAG + ":uuid";
-
     /**
      * A parcelled BooklistStyle. This is used during the EDITING of a style.
      * <p>
      * <br>type: {@link BooklistStyle}
      */
     public static final String BKEY_STYLE = TAG + ":style";
-
     /**
      * Styles related data was modified (or not).
      * This includes a Style being modified or deleted,
@@ -171,23 +223,23 @@ public class BooklistStyle
      * setResult
      */
     public static final String BKEY_STYLE_MODIFIED = TAG + ":modified";
-
     /** the amount of details to show in the header. */
     private static final int HEADER_BITMASK_ALL =
             HEADER_SHOW_BOOK_COUNT
             | HEADER_SHOW_STYLE_NAME
             | HEADER_SHOW_FILTER;
 
-    /** Prefix for all style preferences. */
-    private static final String PREFS_PREFIX = "bookList.style.";
-    /** Preference for the current default style UUID to use. */
-    private static final String PREF_BL_STYLE_CURRENT_DEFAULT = PREFS_PREFIX + "current";
-
+    /**
+     * Preference for the current default style UUID to use.
+     * Stored in global shared preferences.
+     */
+    private static final String PREF_BL_STYLE_CURRENT_DEFAULT = "bookList.style.current";
     /**
      * Preferred styles / menu order.
      * Stored in global shared preferences as a CSV String of UUIDs.
      */
-    private static final String PREF_BL_PREFERRED_STYLES = PREFS_PREFIX + "preferred.order";
+    private static final String PREF_BL_PREFERRED_STYLES = "bookList.style.preferred.order";
+
     /**
      * The uuid based SharedPreference name.
      * <p>
@@ -208,14 +260,12 @@ public class BooklistStyle
      */
     @StringRes
     private int mNameResId;
-
     /**
      * Display name of this style.
      * Used for user-defined styles.
      * Encapsulated value is always {@code null} for a builtin style.
      */
     private PString mName;
-
     /**
      * Flag indicating this style was in the 'preferred' set when it was added to
      * its Styles collection.
@@ -224,47 +274,34 @@ public class BooklistStyle
      * in the app-preferences.
      */
     private PBoolean mIsPreferred;
-
     /** The default number of levels to expand the list tree to. */
     private PInteger mDefaultExpansionLevel;
-
     /**
      * Show list header info.
      * <p>
      * Ideally this would use a simple int, but {@link MultiSelectListPreference} insists on a Set.
      */
     private PBitmask mShowHeaderInfo;
-
     /**
      * Relative size of list text/images.
      * ==1 being 'normal' size
      */
     private PInteger mFontScale;
-
     /** Scale factor to apply for thumbnails. */
     private PInteger mThumbnailScale;
-
     /** Local override. */
     private PBoolean mShowAuthorByGivenName;
     /** Local override. */
     private PBoolean mSortAuthorByGivenName;
-
     /** All groups in this style. */
     private PStyleGroups mStyleGroups;
-
     /**
      * All fields(domains) that are optionally shown on the Book level,
      * in an <strong>ordered</strong> map.
-     * <p>
-     * <strong>IMPORTANT:</strong> The key in the Map is the DOMAIN name
-     * e.g. DBDefinitions.KEY_AUTHOR_FORMATTED, DBDefinitions.KEY_FORMAT ...
      */
     private Map<String, PBoolean> mAllBookDetailFields;
-
     /**
      * All filters in an <strong>ordered</strong> map.
-     * <p>
-     * <strong>IMPORTANT:</strong> The key in the Map is the actual preference key itself.
      */
     private Map<String, Filter<?>> mFilters;
 
@@ -323,45 +360,6 @@ public class BooklistStyle
         mUuid = uuid;
         initPrefs(context, true);
     }
-
-//    /**
-//     * Copy constructor.
-//     * The new style will have an id==0, and a new uuid.
-//     *
-//     * @param from object to copy
-//     */
-//    public BooklistStyle(@NonNull final Context context,
-//                         @NonNull final BooklistStyle from) {
-//        mId = 0;
-//        mNameResId = 0;
-//        mUuid = createUniqueName(context);
-//        initPrefs(mNameResId == 0);
-//        setName(from.getLabel(context));
-//
-//        mIsPreferred.set(from.mIsPreferred.get());
-//        mDefaultExpansionLevel.set(from.mDefaultExpansionLevel.get());
-//        mFontScale.set(from.mFontScale.get());
-//        mThumbnailScale.set(from.mThumbnailScale.get());
-//        mShowHeaderInfo.set(from.mShowHeaderInfo.get());
-//        mShowAuthorByGivenNameFirst.set(from.mShowAuthorByGivenNameFirst.get());
-//        mSortAuthorByGivenNameFirst.set(from.mSortAuthorByGivenNameFirst.get());
-//
-//        for (BooklistGroup group : from.getGroups()) {
-//            mStyleGroups.add(new BooklistGroup(group);
-//
-//        }
-//
-//        for (final Map.Entry<String, PBoolean> entry : from.mAllBookDetailFields.entrySet()) {
-//            //noinspection ConstantConditions
-//            mAllBookDetailFields.get(entry.getKey()).set(entry.getValue().get());
-//        }
-//
-//        //: copy filters
-////        for (final Map.Entry<String, Filter> entry : from.mFilters.entrySet()) {
-////            //noinspection ConstantConditions
-////            mFilters.get(entry.getKey()).
-////        }
-//    }
 
     /**
      * {@link Parcelable} Constructor.
@@ -426,7 +424,7 @@ public class BooklistStyle
 
         // manually store the new UUID (this will automatically initialise a new xml file)
         context.getSharedPreferences(mUuid, Context.MODE_PRIVATE)
-               .edit().putString(Prefs.PK_STYLE_UUID, mUuid).apply();
+               .edit().putString(PK_STYLE_UUID, mUuid).apply();
 
         // only init the prefs once we have a valid mId, mUuid and mNameResId
         initPrefs(context, true);
@@ -454,6 +452,45 @@ public class BooklistStyle
             filter.set(in);
         }
     }
+
+//    /**
+//     * Copy constructor.
+//     * The new style will have an id==0, and a new uuid.
+//     *
+//     * @param from object to copy
+//     */
+//    public BooklistStyle(@NonNull final Context context,
+//                         @NonNull final BooklistStyle from) {
+//        mId = 0;
+//        mNameResId = 0;
+//        mUuid = createUniqueName(context);
+//        initPrefs(mNameResId == 0);
+//        setName(from.getLabel(context));
+//
+//        mIsPreferred.set(from.mIsPreferred.get());
+//        mDefaultExpansionLevel.set(from.mDefaultExpansionLevel.get());
+//        mFontScale.set(from.mFontScale.get());
+//        mThumbnailScale.set(from.mThumbnailScale.get());
+//        mShowHeaderInfo.set(from.mShowHeaderInfo.get());
+//        mShowAuthorByGivenNameFirst.set(from.mShowAuthorByGivenNameFirst.get());
+//        mSortAuthorByGivenNameFirst.set(from.mSortAuthorByGivenNameFirst.get());
+//
+//        for (BooklistGroup group : from.getGroups()) {
+//            mStyleGroups.add(new BooklistGroup(group);
+//
+//        }
+//
+//        for (final Map.Entry<String, PBoolean> entry : from.mAllBookDetailFields.entrySet()) {
+//            //noinspection ConstantConditions
+//            mAllBookDetailFields.get(entry.getKey()).set(entry.getValue().get());
+//        }
+//
+//        //: copy filters
+////        for (final Map.Entry<String, Filter> entry : from.mFilters.entrySet()) {
+////            //noinspection ConstantConditions
+////            mFilters.get(entry.getKey()).
+////        }
+//    }
 
     /**
      * Get the specified style. If not found, the default style will be returned.
@@ -613,21 +650,21 @@ public class BooklistStyle
     private void initPrefs(@NonNull final Context context,
                            final boolean isUserDefined) {
 
-        mName = new PString(Prefs.pk_style_name, mUuid, isUserDefined);
+        mName = new PString(pk_name, mUuid, isUserDefined);
 
-        mIsPreferred = new PBoolean(Prefs.pk_style_is_preferred, mUuid, isUserDefined);
+        mIsPreferred = new PBoolean(pk_is_preferred, mUuid, isUserDefined);
 
-        mDefaultExpansionLevel = new PInteger(Prefs.pk_style_levels_expansion, mUuid,
+        mDefaultExpansionLevel = new PInteger(pk_levels_expansion, mUuid,
                                               isUserDefined, 1);
 
-        mShowHeaderInfo = new PBitmask(Prefs.pk_style_header, mUuid,
+        mShowHeaderInfo = new PBitmask(pk_header, mUuid,
                                        isUserDefined, HEADER_BITMASK_ALL, HEADER_BITMASK_ALL);
 
-        mFontScale = new PInteger(Prefs.pk_style_scale_font, mUuid,
+        mFontScale = new PInteger(pk_scale_font, mUuid,
                                   isUserDefined, FONT_SCALE_MEDIUM);
 
-        mThumbnailScale = new PInteger(Prefs.pk_style_scale_thumbnail, mUuid,
-                                       isUserDefined, ImageScale.SCALE_MEDIUM);
+        mThumbnailScale = new PInteger(pk_scale_thumbnail, mUuid,
+                                       isUserDefined, ImageScale.SCALE_3_MEDIUM);
 
 
         mShowAuthorByGivenName = new PBoolean(Prefs.pk_show_author_name_given_first, mUuid,
@@ -642,85 +679,84 @@ public class BooklistStyle
         // all optional details for book-rows.
         mAllBookDetailFields = new LinkedHashMap<>();
 
-        mAllBookDetailFields.put(DBDefinitions.PREFS_IS_USED_THUMBNAIL,
-                                 new PBoolean(Prefs.pk_style_book_show_thumbnails,
-                                              mUuid, isUserDefined,
-                                              true));
+        mAllBookDetailFields.put(pk_book_show_thumbnails,
+                                 new PBoolean(pk_book_show_thumbnails,
+                                              mUuid, isUserDefined, true));
 
-        mAllBookDetailFields.put(DBDefinitions.KEY_BOOKSHELF_NAME,
-                                 new PBoolean(Prefs.pk_style_book_show_bookshelves,
+        mAllBookDetailFields.put(pk_book_show_author,
+                                 new PBoolean(pk_book_show_author,
                                               mUuid, isUserDefined));
 
-        mAllBookDetailFields.put(DBDefinitions.KEY_LOCATION,
-                                 new PBoolean(Prefs.pk_style_book_show_location,
+        mAllBookDetailFields.put(pk_book_show_publisher,
+                                 new PBoolean(pk_book_show_publisher,
                                               mUuid, isUserDefined));
 
-        mAllBookDetailFields.put(DBDefinitions.KEY_AUTHOR_FORMATTED,
-                                 new PBoolean(Prefs.pk_style_book_show_author,
+        mAllBookDetailFields.put(pk_book_show_pub_date,
+                                 new PBoolean(pk_book_show_pub_date,
                                               mUuid, isUserDefined));
 
-        mAllBookDetailFields.put(DBDefinitions.KEY_PUBLISHER_NAME,
-                                 new PBoolean(Prefs.pk_style_book_show_publisher,
+        mAllBookDetailFields.put(pk_book_show_isbn,
+                                 new PBoolean(pk_book_show_isbn,
                                               mUuid, isUserDefined));
 
-        mAllBookDetailFields.put(DBDefinitions.KEY_DATE_PUBLISHED,
-                                 new PBoolean(Prefs.pk_style_book_show_pub_date,
+        mAllBookDetailFields.put(pk_book_show_format,
+                                 new PBoolean(pk_book_show_format,
                                               mUuid, isUserDefined));
 
-        mAllBookDetailFields.put(DBDefinitions.KEY_ISBN,
-                                 new PBoolean(Prefs.pk_style_book_show_isbn,
+        mAllBookDetailFields.put(pk_book_show_location,
+                                 new PBoolean(pk_book_show_location,
                                               mUuid, isUserDefined));
 
-        mAllBookDetailFields.put(DBDefinitions.KEY_FORMAT,
-                                 new PBoolean(Prefs.pk_style_book_show_format,
+        mAllBookDetailFields.put(pk_book_show_rating,
+                                 new PBoolean(pk_book_show_rating,
                                               mUuid, isUserDefined));
 
-        mAllBookDetailFields.put(DBDefinitions.KEY_RATING,
-                                 new PBoolean(Prefs.pk_style_book_rating,
+        mAllBookDetailFields.put(pk_book_show_bookshelves,
+                                 new PBoolean(pk_book_show_bookshelves,
                                               mUuid, isUserDefined));
 
         // all filters
         mFilters = new LinkedHashMap<>();
 
-        mFilters.put(Prefs.pk_style_filter_read,
+        mFilters.put(pk_filter_read,
                      new BooleanFilter(R.string.lbl_read,
-                                       Prefs.pk_style_filter_read,
+                                       pk_filter_read,
                                        mUuid, isUserDefined,
                                        DBDefinitions.TBL_BOOKS,
                                        DBDefinitions.KEY_READ));
 
-        mFilters.put(Prefs.pk_style_filter_signed,
+        mFilters.put(pk_filter_signed,
                      new BooleanFilter(R.string.lbl_signed,
-                                       Prefs.pk_style_filter_signed,
+                                       pk_filter_signed,
                                        mUuid, isUserDefined,
                                        DBDefinitions.TBL_BOOKS,
                                        DBDefinitions.KEY_SIGNED));
 
-        mFilters.put(Prefs.pk_style_filter_anthology,
+        mFilters.put(pk_filter_anthology,
                      new BooleanFilter(R.string.lbl_anthology,
-                                       Prefs.pk_style_filter_anthology,
+                                       pk_filter_anthology,
                                        mUuid, isUserDefined,
                                        DBDefinitions.TBL_BOOKS,
                                        DBDefinitions.KEY_TOC_BITMASK));
 
-        mFilters.put(Prefs.pk_style_filter_loaned,
+        mFilters.put(pk_filter_loaned,
                      new BooleanFilter(R.string.lbl_loaned,
-                                       Prefs.pk_style_filter_loaned,
+                                       pk_filter_loaned,
                                        mUuid, isUserDefined,
                                        DBDefinitions.TBL_BOOKS,
                                        DBDefinitions.KEY_LOANEE));
 
-        mFilters.put(Prefs.pk_style_filter_editions,
+        mFilters.put(pk_filter_editions,
                      new BitmaskFilter(R.string.lbl_edition,
-                                       Prefs.pk_style_filter_editions,
+                                       pk_filter_editions,
                                        mUuid, isUserDefined,
                                        0, Book.Edition.BITMASK_ALL,
                                        DBDefinitions.TBL_BOOKS,
                                        DBDefinitions.KEY_EDITION_BITMASK));
 
-        mFilters.put(Prefs.pk_style_filter_isbn,
+        mFilters.put(pk_filter_isbn,
                      new NotEmptyFilter(R.string.lbl_isbn,
-                                        Prefs.pk_style_filter_isbn,
+                                        pk_filter_isbn,
                                         mUuid, isUserDefined,
                                         DBDefinitions.TBL_BOOKS,
                                         DBDefinitions.KEY_ISBN));
@@ -1023,10 +1059,10 @@ public class BooklistStyle
     @ImageScale.Scale
     public int getThumbnailScale(@NonNull final Context context) {
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        if (isBookDetailUsed(context, prefs, DBDefinitions.PREFS_IS_USED_THUMBNAIL)) {
+        if (useBookDetail(context, prefs, pk_book_show_thumbnails)) {
             return mThumbnailScale.getValue(context);
         }
-        return ImageScale.SCALE_NOT_DISPLAYED;
+        return ImageScale.SCALE_0_NOT_DISPLAYED;
     }
 
     /**
@@ -1035,8 +1071,8 @@ public class BooklistStyle
      * @param key  for the field
      * @param show value to set
      */
-    void setShowBookDetailField(@NonNull final String key,
-                                final boolean show) {
+    void setUseBookDetail(@BookDetailKey @NonNull final String key,
+                          final boolean show) {
         //noinspection ConstantConditions
         mAllBookDetailFields.get(key).set(show);
     }
@@ -1062,7 +1098,6 @@ public class BooklistStyle
                             @NonNull final BooklistGroup group) {
         mStyleGroups.remove(context, group.getId());
     }
-
 
     /**
      * Get the number of groups in this style.
@@ -1138,7 +1173,7 @@ public class BooklistStyle
      * Used by built-in styles only. Set by user via preferences screen.
      */
     @SuppressWarnings("SameParameterValue")
-    void setFilter(@NonNull final String key,
+    void setFilter(@FilterKey @NonNull final String key,
                    final boolean value) {
         //noinspection ConstantConditions
         ((BooleanFilter) mFilters.get(key)).set(value);
@@ -1195,41 +1230,42 @@ public class BooklistStyle
         final List<String> labels = new ArrayList<>();
 
         //noinspection ConstantConditions
-        if (mAllBookDetailFields.get(DBDefinitions.PREFS_IS_USED_THUMBNAIL).isTrue(context)) {
+        if (mAllBookDetailFields.get(pk_book_show_thumbnails).isTrue(context)) {
             labels.add(context.getString(R.string.lbl_thumbnails));
         }
         //noinspection ConstantConditions
-        if (mAllBookDetailFields.get(DBDefinitions.KEY_AUTHOR_FORMATTED).isTrue(context)) {
+        if (mAllBookDetailFields.get(pk_book_show_author).isTrue(context)) {
             labels.add(context.getString(R.string.lbl_author));
         }
         //noinspection ConstantConditions
-        if (mAllBookDetailFields.get(DBDefinitions.KEY_PUBLISHER_NAME).isTrue(context)) {
+        if (mAllBookDetailFields.get(pk_book_show_publisher).isTrue(context)) {
             labels.add(context.getString(R.string.lbl_publisher));
         }
         //noinspection ConstantConditions
-        if (mAllBookDetailFields.get(DBDefinitions.KEY_DATE_PUBLISHED).isTrue(context)) {
+        if (mAllBookDetailFields.get(pk_book_show_pub_date).isTrue(context)) {
             labels.add(context.getString(R.string.lbl_date_published));
         }
         //noinspection ConstantConditions
-        if (mAllBookDetailFields.get(DBDefinitions.KEY_ISBN).isTrue(context)) {
+        if (mAllBookDetailFields.get(pk_book_show_isbn).isTrue(context)) {
             labels.add(context.getString(R.string.lbl_isbn));
         }
         //noinspection ConstantConditions
-        if (mAllBookDetailFields.get(DBDefinitions.KEY_FORMAT).isTrue(context)) {
+        if (mAllBookDetailFields.get(pk_book_show_format).isTrue(context)) {
             labels.add(context.getString(R.string.lbl_format));
         }
         //noinspection ConstantConditions
-        if (mAllBookDetailFields.get(DBDefinitions.KEY_LOCATION).isTrue(context)) {
+        if (mAllBookDetailFields.get(pk_book_show_location).isTrue(context)) {
             labels.add(context.getString(R.string.lbl_location));
         }
         //noinspection ConstantConditions
-        if (mAllBookDetailFields.get(DBDefinitions.KEY_BOOKSHELF_NAME).isTrue(context)) {
-            labels.add(context.getString(R.string.lbl_bookshelves));
-        }
-        //noinspection ConstantConditions
-        if (mAllBookDetailFields.get(DBDefinitions.KEY_RATING).isTrue(context)) {
+        if (mAllBookDetailFields.get(pk_book_show_rating).isTrue(context)) {
             labels.add(context.getString(R.string.lbl_rating));
         }
+        //noinspection ConstantConditions
+        if (mAllBookDetailFields.get(pk_book_show_bookshelves).isTrue(context)) {
+            labels.add(context.getString(R.string.lbl_bookshelves));
+        }
+
         Collections.sort(labels);
         return labels;
     }
@@ -1289,16 +1325,17 @@ public class BooklistStyle
     /**
      * Check if the given book-detail field is in use.
      *
-     * @param context Current context
-     * @param key     to check
+     * @param context           Current context
+     * @param sharedPreferences the <strong>GLOBAL</strong> preferences
+     * @param key               to check
      *
      * @return {@code true} if in use
      */
-    public boolean isBookDetailUsed(@NonNull final Context context,
-                                    @NonNull final SharedPreferences sharedPreferences,
-                                    @NonNull final String key) {
+    public boolean useBookDetail(@NonNull final Context context,
+                                 @NonNull final SharedPreferences sharedPreferences,
+                                 @BookDetailKey @NonNull final String key) {
         // global overrules local
-        if (!DBDefinitions.isUsed(sharedPreferences, key)) {
+        if (!sharedPreferences.getBoolean(key, true)) {
             return false;
         }
 
@@ -1428,6 +1465,31 @@ public class BooklistStyle
             level = mStyleGroups.size();
         }
         return level;
+    }
+
+    @StringDef({pk_book_show_thumbnails,
+                pk_book_show_author,
+                pk_book_show_publisher,
+                pk_book_show_pub_date,
+                pk_book_show_isbn,
+                pk_book_show_format,
+                pk_book_show_location,
+                pk_book_show_rating,
+                pk_book_show_bookshelves})
+    @Retention(RetentionPolicy.SOURCE)
+    @interface BookDetailKey {
+
+    }
+
+    @StringDef({pk_filter_isbn,
+                pk_filter_read,
+                pk_filter_signed,
+                pk_filter_loaned,
+                pk_filter_anthology,
+                pk_filter_editions})
+    @Retention(RetentionPolicy.SOURCE)
+    @interface FilterKey {
+
     }
 
     @IntDef(flag = true, value = {HEADER_SHOW_BOOK_COUNT,
@@ -2016,7 +2078,7 @@ public class BooklistStyle
                                       BooklistGroup.AUTHOR,
                                       BooklistGroup.SERIES);
             S_BUILTIN_STYLES.put(style.getUuid(), style);
-            style.setFilter(Prefs.pk_style_filter_read, false);
+            style.setFilter(pk_filter_read, false);
 
             // Compact
             style = new BooklistStyle(context,
@@ -2026,7 +2088,7 @@ public class BooklistStyle
                                       BooklistGroup.AUTHOR);
             S_BUILTIN_STYLES.put(style.getUuid(), style);
             style.setTextScale(FONT_SCALE_SMALL);
-            style.setShowBookDetailField(DBDefinitions.PREFS_IS_USED_THUMBNAIL, false);
+            style.setUseBookDetail(BooklistStyle.pk_book_show_thumbnails, false);
 
             // Title
             style = new BooklistStyle(context,
@@ -2134,7 +2196,7 @@ public class BooklistStyle
                                       BooklistGroup.DATE_READ_MONTH,
                                       BooklistGroup.AUTHOR);
             S_BUILTIN_STYLES.put(style.getUuid(), style);
-            style.setFilter(Prefs.pk_style_filter_read, true);
+            style.setFilter(pk_filter_read, true);
 
             // Location
             style = new BooklistStyle(context,
@@ -2185,7 +2247,7 @@ public class BooklistStyle
                                       BooklistGroup.DATE_LAST_UPDATE_MONTH,
                                       BooklistGroup.DATE_LAST_UPDATE_DAY);
             S_BUILTIN_STYLES.put(style.getUuid(), style);
-            style.setShowBookDetailField(DBDefinitions.KEY_AUTHOR_FORMATTED, true);
+            style.setUseBookDetail(BooklistStyle.pk_book_show_author, true);
 
             // NEWTHINGS: BooklistStyle: add a new builtin style
         }

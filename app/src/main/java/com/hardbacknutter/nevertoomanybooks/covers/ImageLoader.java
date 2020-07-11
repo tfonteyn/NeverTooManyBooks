@@ -100,7 +100,10 @@ public class ImageLoader
                     mOnSuccess.run();
                 }
             } else {
-                ImageUtils.setPlaceholder(imageView, R.drawable.ic_broken_image, 0, mMaxHeight);
+                // We only get here if we THOUGHT we had an image, but we failed to
+                // load/decode it. So use 'broken-image' icon and preserve the space
+                ImageUtils.setPlaceholder(imageView, R.drawable.ic_broken_image, 0,
+                                          (int) (mMaxHeight * ImageUtils.HW_RATIO), mMaxHeight);
             }
         }
     }

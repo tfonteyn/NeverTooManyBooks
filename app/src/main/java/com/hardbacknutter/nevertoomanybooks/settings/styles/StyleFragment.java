@@ -71,9 +71,9 @@ public class StyleFragment
 
         setPreferencesFromResource(R.xml.preferences_style, rootKey);
 
-        final Preference thumbScale = findPreference(Prefs.pk_style_scale_thumbnail);
+        final Preference thumbScale = findPreference(BooklistStyle.pk_scale_thumbnail);
         if (thumbScale != null) {
-            thumbScale.setDependency(Prefs.pk_style_book_show_thumbnails);
+            thumbScale.setDependency(BooklistStyle.pk_book_show_thumbnails);
         }
 
         if (savedInstanceState == null) {
@@ -128,7 +128,7 @@ public class StyleFragment
     protected void updateSummary(@NonNull final String key) {
 
         switch (key) {
-            case Prefs.pk_style_scale_font: {
+            case BooklistStyle.pk_scale_font: {
                 final SeekBarPreference preference = findPreference(key);
                 if (preference != null) {
                     //noinspection ConstantConditions
@@ -139,7 +139,7 @@ public class StyleFragment
                 }
                 break;
             }
-            case Prefs.pk_style_scale_thumbnail: {
+            case BooklistStyle.pk_scale_thumbnail: {
                 final SeekBarPreference preference = findPreference(key);
                 if (preference != null) {
                     //noinspection ConstantConditions
@@ -151,7 +151,7 @@ public class StyleFragment
                 break;
             }
 
-            case Prefs.pk_style_levels_expansion: {
+            case BooklistStyle.pk_levels_expansion: {
                 final SeekBarPreference preference = findPreference(key);
                 if (preference != null) {
                     preference.setMax(mStyle.getGroupCount());
@@ -171,7 +171,7 @@ public class StyleFragment
                 break;
             }
 
-            case Prefs.pk_style_book_show_thumbnails:
+            case BooklistStyle.pk_book_show_thumbnails:
             case Prefs.PSK_STYLE_SHOW_DETAILS: {
                 // the 'extra' fields in use.
                 final Preference preference = findPreference(Prefs.PSK_STYLE_SHOW_DETAILS);
