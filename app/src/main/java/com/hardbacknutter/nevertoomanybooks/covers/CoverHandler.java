@@ -198,12 +198,8 @@ public class CoverHandler {
                 .get(String.valueOf(cIdx), TransFormTaskViewModel.class);
         mTransFormTaskViewModel.onFinished().observe(mFragment.getViewLifecycleOwner(), event -> {
             showProgress(false);
-            if (event.needsHandling()) {
-                // unwrap the event/data here to keep the receiving method unaware.
-                final TransFormTask.TransformedData data = event.getData();
-                if (data != null) {
-                    onAfterTransform(data.bitmap, data.file, data.returnCode);
-                }
+            if (event.isNewEvent()) {
+                onAfterTransform(event.bitmap, event.file, event.returnCode);
             }
         });
 
@@ -595,8 +591,8 @@ public class CoverHandler {
         if (!uuid.isEmpty()) {
             CoversDAO.delete(context, uuid);
         }
-        ImageUtils
-                .setPlaceholder(mCoverView, R.drawable.ic_add_a_photo, R.drawable.outline_rounded);
+        ImageUtils.setPlaceholder(mCoverView, R.drawable.ic_add_a_photo,
+                                  R.drawable.outline_rounded);
     }
 
     /**

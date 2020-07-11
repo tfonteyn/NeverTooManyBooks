@@ -229,19 +229,31 @@ public class EditBookTocFragment
         // setup common stuff and calls onInitFields()
         super.onViewCreated(view, savedInstanceState);
 
-        mIsfdbGetEditionsTask.onCancelled().observe(getViewLifecycleOwner(), message ->
-                Snackbar.make(mVb.getRoot(), R.string.cancelled, Snackbar.LENGTH_LONG).show());
-        mIsfdbGetEditionsTask.onFailure().observe(getViewLifecycleOwner(), message ->
+        mIsfdbGetEditionsTask.onCancelled().observe(getViewLifecycleOwner(), message -> {
+            if (message.isNewEvent()) {
+                Snackbar.make(mVb.getRoot(), R.string.cancelled, Snackbar.LENGTH_LONG).show();
+            }
+        });
+        mIsfdbGetEditionsTask.onFailure().observe(getViewLifecycleOwner(), message -> {
+            if (message.isNewEvent()) {
                 Snackbar.make(mVb.getRoot(), R.string.warning_no_editions,
-                              Snackbar.LENGTH_LONG).show());
+                              Snackbar.LENGTH_LONG).show();
+            }
+        });
         mIsfdbGetEditionsTask.onFinished().observe(getViewLifecycleOwner(), this::onIsfdbEditions);
 
 
-        mIsfdbGetBookTask.onCancelled().observe(getViewLifecycleOwner(), message ->
-                Snackbar.make(mVb.getRoot(), R.string.cancelled, Snackbar.LENGTH_LONG).show());
-        mIsfdbGetBookTask.onFailure().observe(getViewLifecycleOwner(), message ->
+        mIsfdbGetBookTask.onCancelled().observe(getViewLifecycleOwner(), message -> {
+            if (message.isNewEvent()) {
+                Snackbar.make(mVb.getRoot(), R.string.cancelled, Snackbar.LENGTH_LONG).show();
+            }
+        });
+        mIsfdbGetBookTask.onFailure().observe(getViewLifecycleOwner(), message -> {
+            if (message.isNewEvent()) {
                 Snackbar.make(mVb.getRoot(), R.string.warning_search_failed,
-                              Snackbar.LENGTH_LONG).show());
+                              Snackbar.LENGTH_LONG).show();
+            }
+        });
         mIsfdbGetBookTask.onFinished().observe(getViewLifecycleOwner(), this::onIsfdbBook);
 
 
@@ -573,8 +585,10 @@ public class EditBookTocFragment
      * Stores the url's locally as the user might want to try the next in line
      */
     private void onIsfdbEditions(@NonNull final FinishedMessage<ArrayList<Edition>> message) {
-        mIsfdbEditions = message.result != null ? message.result : new ArrayList<>();
-        searchIsfdb();
+        if (message.isNewEvent()) {
+            mIsfdbEditions = message.result != null ? message.result : new ArrayList<>();
+            searchIsfdb();
+        }
     }
 
     /**
@@ -589,40 +603,45 @@ public class EditBookTocFragment
     }
 
     private void onIsfdbBook(@NonNull final FinishedMessage<Bundle> message) {
-        if (message.result == null) {
-            Snackbar.make(mVb.getRoot(), R.string.warning_book_not_found,
-                          Snackbar.LENGTH_LONG).show();
-            return;
-        }
+        if (message.isNewEvent()) {
+            if (message.result == null) {
+                Snackbar.make(mVb.getRoot(), R.string.warning_book_not_found,
+                              Snackbar.LENGTH_LONG).show();
+                return;
+            }
 
-        final Book book = mBookViewModel.getBook();
+            final Book book = mBookViewModel.getBook();
 
-        // update the book with Series information that was gathered from the TOC
-        final List<Series> series = message.result.getParcelableArrayList(Book.BKEY_SERIES_ARRAY);
-        if (series != null && !series.isEmpty()) {
-            final ArrayList<Series> inBook = book.getParcelableArrayList(Book.BKEY_SERIES_ARRAY);
-            // add, weeding out duplicates
-            for (Series s : series) {
-                if (!inBook.contains(s)) {
-                    inBook.add(s);
+            // update the book with Series information that was gathered from the TOC
+            final List<Series> series = message.result
+                    .getParcelableArrayList(Book.BKEY_SERIES_ARRAY);
+            if (series != null && !series.isEmpty()) {
+                final ArrayList<Series> inBook = book
+                        .getParcelableArrayList(Book.BKEY_SERIES_ARRAY);
+                // add, weeding out duplicates
+                for (Series s : series) {
+                    if (!inBook.contains(s)) {
+                        inBook.add(s);
+                    }
                 }
             }
-        }
 
-        // update the book with the first publication date that was gathered from the TOC
-        final String bookFirstPublication =
-                message.result.getString(DBDefinitions.KEY_DATE_FIRST_PUBLICATION);
-        if (bookFirstPublication != null) {
-            if (book.getString(DBDefinitions.KEY_DATE_FIRST_PUBLICATION).isEmpty()) {
-                book.putString(DBDefinitions.KEY_DATE_FIRST_PUBLICATION, bookFirstPublication);
+            // update the book with the first publication date that was gathered from the TOC
+            final String bookFirstPublication =
+                    message.result.getString(DBDefinitions.KEY_DATE_FIRST_PUBLICATION);
+            if (bookFirstPublication != null) {
+                if (book.getString(DBDefinitions.KEY_DATE_FIRST_PUBLICATION).isEmpty()) {
+                    book.putString(DBDefinitions.KEY_DATE_FIRST_PUBLICATION, bookFirstPublication);
+                }
             }
-        }
 
-        // finally the TOC itself:  display it for the user to approve
-        final boolean hasOtherEditions = (mIsfdbEditions != null) && (mIsfdbEditions.size() > 1);
-        ConfirmTocDialogFragment
-                .newInstance(message.result, hasOtherEditions)
-                .show(getChildFragmentManager(), ConfirmTocDialogFragment.TAG);
+            // finally the TOC itself:  display it for the user to approve
+            final boolean hasOtherEditions =
+                    (mIsfdbEditions != null) && (mIsfdbEditions.size() > 1);
+            ConfirmTocDialogFragment
+                    .newInstance(message.result, hasOtherEditions)
+                    .show(getChildFragmentManager(), ConfirmTocDialogFragment.TAG);
+        }
     }
 
     void onIsfdbDataConfirmed(@Book.TocBits final long tocBitMask,

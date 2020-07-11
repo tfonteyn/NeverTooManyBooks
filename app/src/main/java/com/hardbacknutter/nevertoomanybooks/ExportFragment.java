@@ -239,26 +239,30 @@ public class ExportFragment
     private void onExportFailure(@NonNull final FinishedMessage<Exception> message) {
         closeProgressDialog();
 
-        // sanity check
-        Objects.requireNonNull(message.result, ErrorMsg.NULL_EXCEPTION);
-        //noinspection ConstantConditions
-        new MaterialAlertDialogBuilder(getContext())
-                .setIcon(R.drawable.ic_error)
-                .setTitle(R.string.error_backup_failed)
-                .setMessage(ExportManager.createErrorReport(getContext(), message.result))
-                .setPositiveButton(android.R.string.ok, (d, w) -> getActivity().finish())
-                .create()
-                .show();
+        if (message.isNewEvent()) {
+            // sanity check
+            Objects.requireNonNull(message.result, ErrorMsg.NULL_EXCEPTION);
+            //noinspection ConstantConditions
+            new MaterialAlertDialogBuilder(getContext())
+                    .setIcon(R.drawable.ic_error)
+                    .setTitle(R.string.error_backup_failed)
+                    .setMessage(ExportManager.createErrorReport(getContext(), message.result))
+                    .setPositiveButton(android.R.string.ok, (d, w) -> getActivity().finish())
+                    .create()
+                    .show();
+        }
     }
 
     private void onExportCancelled(@NonNull final FinishedMessage<ExportManager> message) {
         closeProgressDialog();
 
-        // won't be seen
-        //noinspection ConstantConditions
-        Snackbar.make(getView(), R.string.cancelled, Snackbar.LENGTH_LONG).show();
-        //noinspection ConstantConditions
-        getActivity().finish();
+        if (message.isNewEvent()) {
+            // won't be seen
+            //noinspection ConstantConditions
+            Snackbar.make(getView(), R.string.cancelled, Snackbar.LENGTH_LONG).show();
+            //noinspection ConstantConditions
+            getActivity().finish();
+        }
     }
 
     /**
@@ -269,27 +273,30 @@ public class ExportFragment
     private void onExportFinished(@NonNull final FinishedMessage<ExportManager> message) {
         closeProgressDialog();
 
-        // sanity check
-        Objects.requireNonNull(message.result, ErrorMsg.NULL_TASK_RESULTS);
+        if (message.isNewEvent()) {
+            // sanity check
+            Objects.requireNonNull(message.result, ErrorMsg.NULL_TASK_RESULTS);
 
-        //noinspection ConstantConditions
-        MaterialAlertDialogBuilder dialogBuilder =
-                new MaterialAlertDialogBuilder(getContext())
-                        .setIcon(R.drawable.ic_info)
-                        .setTitle(R.string.progress_end_backup_success)
-                        .setPositiveButton(R.string.done, (d, which) -> getActivity().finish());
+            //noinspection ConstantConditions
+            MaterialAlertDialogBuilder dialogBuilder =
+                    new MaterialAlertDialogBuilder(getContext())
+                            .setIcon(R.drawable.ic_info)
+                            .setTitle(R.string.progress_end_backup_success)
+                            .setPositiveButton(R.string.done, (d, which) -> getActivity().finish());
 
-        final Uri uri = message.result.getUri();
-        final Pair<String, Long> uriInfo = FileUtils.getUriInfo(getContext(), uri);
-        String msg = message.result.getResults().createReport(getContext(), uriInfo);
-        if (message.result.offerEmail(uriInfo)) {
-            msg += "\n\n" + getString(R.string.confirm_email_export);
-            dialogBuilder.setNeutralButton(R.string.btn_email, (d, which) -> onExportEmail(uri));
+            final Uri uri = message.result.getUri();
+            final Pair<String, Long> uriInfo = FileUtils.getUriInfo(getContext(), uri);
+            String msg = message.result.getResults().createReport(getContext(), uriInfo);
+            if (message.result.offerEmail(uriInfo)) {
+                msg += "\n\n" + getString(R.string.confirm_email_export);
+                dialogBuilder
+                        .setNeutralButton(R.string.btn_email, (d, which) -> onExportEmail(uri));
+            }
+
+            dialogBuilder.setMessage(msg)
+                         .create()
+                         .show();
         }
-
-        dialogBuilder.setMessage(msg)
-                     .create()
-                     .show();
     }
 
     /**

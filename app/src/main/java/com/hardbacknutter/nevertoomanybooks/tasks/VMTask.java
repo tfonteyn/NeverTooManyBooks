@@ -43,7 +43,6 @@ import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.FinishedMessage;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.ProgressMessage;
-import com.hardbacknutter.nevertoomanybooks.viewmodels.SingleLiveEvent;
 
 public abstract class VMTask<Result>
         extends ViewModel
@@ -52,15 +51,10 @@ public abstract class VMTask<Result>
     private static final String TAG = "VMTask";
     private final AtomicBoolean mIsCancelled = new AtomicBoolean();
 
-    /** Using SingleLiveEvent to prevent multiple delivery after for example a device rotation. */
-    private final MutableLiveData<FinishedMessage<Result>> mFinished = new SingleLiveEvent<>();
-    /** Using SingleLiveEvent to prevent multiple delivery after for example a device rotation. */
-    private final MutableLiveData<FinishedMessage<Result>> mCancelled = new SingleLiveEvent<>();
+    private final MutableLiveData<FinishedMessage<Result>> mFinished = new MutableLiveData<>();
+    private final MutableLiveData<FinishedMessage<Result>> mCancelled = new MutableLiveData<>();
+    private final MutableLiveData<FinishedMessage<Exception>> mFailure = new MutableLiveData<>();
 
-    /** Using SingleLiveEvent to prevent multiple delivery after for example a device rotation. */
-    private final MutableLiveData<FinishedMessage<Exception>> mFailure = new SingleLiveEvent<>();
-
-    /** Using MutableLiveData as we actually want re-delivery after a device rotation. */
     private final MutableLiveData<ProgressMessage> mProgress = new MutableLiveData<>();
 
     /** id set at construction time, passed back in all messages. */

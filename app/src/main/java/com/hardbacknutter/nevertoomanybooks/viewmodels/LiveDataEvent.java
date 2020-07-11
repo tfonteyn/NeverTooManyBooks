@@ -27,44 +27,49 @@
  */
 package com.hardbacknutter.nevertoomanybooks.viewmodels;
 
-import androidx.annotation.Nullable;
+import androidx.lifecycle.LiveData;
 
 /**
- * Used as a wrapper for data that is exposed via a LiveData that represents an event.
+ * Prevent acting twice on a delivered {@link LiveData} event.
  * <p>
  * See <a href="https://medium.com/androiddevelopers/livedata-with-snackbar-navigation-and-other-events-the-singleliveevent-case-ac2622673150">
  * this Medium post</a>
  * <p>
- * Modified from the article: the client must call {@link #needsHandling()},
- * and we passing {@code null} as data is valid.
+ * Modified from the article: the client must call {@link #isNewEvent()},
+ * so we can pass {@code null} as valid data.
+ * <p>
+ * Example implementation:
+ * <pre>
+ *     {@code
+ *          private boolean mHasBeenHandled;
+ *
+ *          public boolean isNewEvent() {
+ *              boolean isNew = !mHasBeenHandled;
+ *              mHasBeenHandled = true;
+ *              return isNew;
+ *          }
+ *     }
+ * </pre>
+ * <p>
+ * Example usage:
+ * <pre>
+ *     {@code
+ *     }
+ * </pre>
  */
-public class LiveDataEvent<T> {
-
-    @Nullable
-    private final T mData;
-    private boolean mHasBeenHandled;
-
-    public LiveDataEvent(@Nullable final T data) {
-        mData = data;
-    }
+public interface LiveDataEvent {
 
     /**
      * Check if the data needs handling, or should be ignored.
+     * <p>
+     * By default, this method returns {@code true} ==> the client should handle
+     * the event even it this is a repeat.
+     * Implement and return {@code false} if the client should only handle it a single time.
      *
-     * @return flag
+     * @return {@code true} if this is a new event that needs handling.
+     * {@code false} if the client should not handle it.
      */
-    public boolean needsHandling() {
-        return !mHasBeenHandled;
-    }
-
-    /**
-     * Return the encapsulated data.
-     *
-     * @return data
-     */
-    @Nullable
-    public T getData() {
-        mHasBeenHandled = true;
-        return mData;
+    default boolean isNewEvent() {
+        return true;
     }
 }

@@ -81,7 +81,6 @@ import com.hardbacknutter.nevertoomanybooks.utils.NetworkUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.FormattedMessageException;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.BooksOnBookshelfModel;
-import com.hardbacknutter.nevertoomanybooks.viewmodels.SingleLiveEvent;
 
 /**
  * Class to co-ordinate multiple {@link SearchTask}.
@@ -104,17 +103,12 @@ public class SearchCoordinator
     /** divider to convert nanoseconds to milliseconds. */
     private static final int NANO_TO_MILLIS = 1_000_000;
 
-
-    /** Using MutableLiveData as we actually want re-delivery after a device rotation. */
     protected final MutableLiveData<ProgressMessage>
             mSearchCoordinatorProgress = new MutableLiveData<>();
-    /** Using SingleLiveEvent to prevent multiple delivery after for example a device rotation. */
     protected final MutableLiveData<FinishedMessage<Bundle>>
-            mSearchCoordinatorCancelled = new SingleLiveEvent<>();
-    /** Using SingleLiveEvent to prevent multiple delivery after for example a device rotation. */
+            mSearchCoordinatorCancelled = new MutableLiveData<>();
     private final MutableLiveData<FinishedMessage<Bundle>>
-            mSearchCoordinatorFinished = new SingleLiveEvent<>();
-
+            mSearchCoordinatorFinished = new MutableLiveData<>();
 
     /** List of Tasks being managed by *this* object. */
     @NonNull

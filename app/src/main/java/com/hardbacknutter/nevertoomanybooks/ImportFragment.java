@@ -279,26 +279,30 @@ public class ImportFragment
     private void onImportFailure(@NonNull final FinishedMessage<Exception> message) {
         closeProgressDialog();
 
-        // sanity check
-        Objects.requireNonNull(message.result, ErrorMsg.NULL_EXCEPTION);
-        //noinspection ConstantConditions
-        new MaterialAlertDialogBuilder(getContext())
-                .setIcon(R.drawable.ic_error)
-                .setTitle(R.string.error_import_failed)
-                .setMessage(ImportManager.createErrorReport(getContext(), message.result))
-                .setPositiveButton(android.R.string.ok, (d, w) -> d.dismiss())
-                .create()
-                .show();
+        if (message.isNewEvent()) {
+            // sanity check
+            Objects.requireNonNull(message.result, ErrorMsg.NULL_EXCEPTION);
+            //noinspection ConstantConditions
+            new MaterialAlertDialogBuilder(getContext())
+                    .setIcon(R.drawable.ic_error)
+                    .setTitle(R.string.error_import_failed)
+                    .setMessage(ImportManager.createErrorReport(getContext(), message.result))
+                    .setPositiveButton(android.R.string.ok, (d, w) -> d.dismiss())
+                    .create()
+                    .show();
+        }
     }
 
     private void onImportCancelled(@NonNull final FinishedMessage<ImportManager> message) {
         closeProgressDialog();
-
-        if (message.result != null) {
-            onImportFinished(R.string.progress_end_import_partially_complete, message.result);
-        } else {
-            //noinspection ConstantConditions
-            Snackbar.make(getView(), R.string.cancelled, Snackbar.LENGTH_LONG).show();
+        if (message.isNewEvent()) {
+            if (message.result != null) {
+                onImportFinished(R.string.progress_end_import_partially_complete,
+                                 message.result);
+            } else {
+                //noinspection ConstantConditions
+                Snackbar.make(getView(), R.string.cancelled, Snackbar.LENGTH_LONG).show();
+            }
         }
     }
 
@@ -310,9 +314,11 @@ public class ImportFragment
     private void onImportFinished(@NonNull final FinishedMessage<ImportManager> message) {
         closeProgressDialog();
 
-        // sanity check
-        Objects.requireNonNull(message.result, ErrorMsg.NULL_TASK_RESULTS);
-        onImportFinished(R.string.progress_end_import_complete, message.result);
+        if (message.isNewEvent()) {
+            // sanity check
+            Objects.requireNonNull(message.result, ErrorMsg.NULL_TASK_RESULTS);
+            onImportFinished(R.string.progress_end_import_complete, message.result);
+        }
     }
 
     /**

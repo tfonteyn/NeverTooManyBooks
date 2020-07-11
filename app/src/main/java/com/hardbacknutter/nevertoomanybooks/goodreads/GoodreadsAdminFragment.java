@@ -131,24 +131,30 @@ public class GoodreadsAdminFragment
     }
 
     private void onCancelled(@NonNull final FinishedMessage<GrStatus> message) {
-        Snackbar.make(mVb.getRoot(), R.string.cancelled, Snackbar.LENGTH_LONG).show();
+        if (message.isNewEvent()) {
+            Snackbar.make(mVb.getRoot(), R.string.cancelled, Snackbar.LENGTH_LONG).show();
+        }
     }
 
     private void onGrFailure(@NonNull final FinishedMessage<Exception> message) {
-        //noinspection ConstantConditions
-        Snackbar.make(mVb.getRoot(), GrStatus.getMessage(getContext(), message.result),
-                      Snackbar.LENGTH_LONG).show();
+        if (message.isNewEvent()) {
+            //noinspection ConstantConditions
+            Snackbar.make(mVb.getRoot(), GrStatus.getMessage(getContext(), message.result),
+                          Snackbar.LENGTH_LONG).show();
+        }
     }
 
     private void onGrFinished(@NonNull final FinishedMessage<GrStatus> message) {
-        Objects.requireNonNull(message.result, ErrorMsg.NULL_TASK_RESULTS);
-        if (message.result.getStatus() == GrStatus.FAILED_CREDENTIALS) {
-            //noinspection ConstantConditions
-            mGrAuthTask.prompt(getContext());
-        } else {
-            //noinspection ConstantConditions
-            Snackbar.make(mVb.getRoot(), message.result.getMessage(getContext()),
-                          Snackbar.LENGTH_LONG).show();
+        if (message.isNewEvent()) {
+            Objects.requireNonNull(message.result, ErrorMsg.NULL_TASK_RESULTS);
+            if (message.result.getStatus() == GrStatus.FAILED_CREDENTIALS) {
+                //noinspection ConstantConditions
+                mGrAuthTask.prompt(getContext());
+            } else {
+                //noinspection ConstantConditions
+                Snackbar.make(mVb.getRoot(), message.result.getMessage(getContext()),
+                              Snackbar.LENGTH_LONG).show();
+            }
         }
     }
 

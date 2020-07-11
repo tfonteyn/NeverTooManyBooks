@@ -48,6 +48,7 @@ import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
+import com.hardbacknutter.nevertoomanybooks.viewmodels.LiveDataEvent;
 
 public class TransFormTask
         extends AsyncTask<Void, Void, Bitmap> {
@@ -316,7 +317,11 @@ public class TransFormTask
         void onFinished(@NonNull TransformedData data);
     }
 
-    public static class TransformedData {
+    public static class TransformedData
+            implements LiveDataEvent {
+
+        /** {@link LiveDataEvent}. */
+        private boolean mHasBeenHandled;
 
         @Nullable
         public final Bitmap bitmap;
@@ -336,6 +341,13 @@ public class TransFormTask
             this.bitmap = bitmap;
             this.file = file;
             this.returnCode = returnCode;
+        }
+
+        @Override
+        public boolean isNewEvent() {
+            boolean isNew = !mHasBeenHandled;
+            mHasBeenHandled = true;
+            return isNew;
         }
     }
 

@@ -85,8 +85,8 @@ public class UpdateFieldsModel
     @NonNull
     private final Map<String, FieldUsage> mFieldUsages = new LinkedHashMap<>();
 
-    private final MutableLiveData<FinishedMessage<Bundle>> mListFinished = new SingleLiveEvent<>();
-    private final MutableLiveData<FinishedMessage<Exception>> mListFailed = new SingleLiveEvent<>();
+    private final MutableLiveData<FinishedMessage<Bundle>> mListFinished = new MutableLiveData<>();
+    private final MutableLiveData<FinishedMessage<Exception>> mListFailed = new MutableLiveData<>();
 
     /**
      * Current and original book data.

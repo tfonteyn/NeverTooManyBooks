@@ -30,10 +30,16 @@ package com.hardbacknutter.nevertoomanybooks.tasks.messages;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.hardbacknutter.nevertoomanybooks.viewmodels.LiveDataEvent;
+
 /**
  * Value class holding Result data.
  */
-public class FinishedMessage<Result> {
+public class FinishedMessage<Result>
+        implements LiveDataEvent {
+
+    /** {@link LiveDataEvent}. */
+    private boolean mHasBeenHandled;
 
     public final int taskId;
 
@@ -51,10 +57,18 @@ public class FinishedMessage<Result> {
     }
 
     @Override
+    public boolean isNewEvent() {
+        boolean isNew = !mHasBeenHandled;
+        mHasBeenHandled = true;
+        return isNew;
+    }
+
+    @Override
     @NonNull
     public String toString() {
         return "FinishedMessage{"
-               + "taskId=" + taskId
+               + "mHasBeenHandled=" + mHasBeenHandled
+               + ", taskId=" + taskId
                + ", result=" + result
                + '}';
     }

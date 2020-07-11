@@ -64,18 +64,26 @@ public class LibraryThingRegistrationActivity
         super.onCreate(savedInstanceState);
 
         mValidateKeyTask = new ViewModelProvider(this).get(ValidateKeyTask.class);
-        mValidateKeyTask.onFailure().observe(this, message ->
+        mValidateKeyTask.onFailure().observe(this, message -> {
+            if (message.isNewEvent()) {
                 Snackbar.make(mVb.getRoot(), getString(R.string.error_site_access_failed,
                                                        getString(R.string.site_library_thing)),
-                              Snackbar.LENGTH_LONG).show());
-        mValidateKeyTask.onCancelled().observe(this, message ->
-                Snackbar.make(mVb.getRoot(), R.string.cancelled, Snackbar.LENGTH_LONG).show());
+                              Snackbar.LENGTH_LONG).show();
+            }
+        });
+        mValidateKeyTask.onCancelled().observe(this, message -> {
+            if (message.isNewEvent()) {
+                Snackbar.make(mVb.getRoot(), R.string.cancelled, Snackbar.LENGTH_LONG).show();
+            }
+        });
         mValidateKeyTask.onFinished().observe(this, message -> {
-            final String msg = message.result != null
-                               ? getString(message.result)
-                               : getString(R.string.error_site_access_failed,
-                                           getString(R.string.site_library_thing));
-            Snackbar.make(mVb.getRoot(), msg, Snackbar.LENGTH_LONG).show();
+            if (message.isNewEvent()) {
+                final String msg = message.result != null
+                                   ? getString(message.result)
+                                   : getString(R.string.error_site_access_failed,
+                                               getString(R.string.site_library_thing));
+                Snackbar.make(mVb.getRoot(), msg, Snackbar.LENGTH_LONG).show();
+            }
         });
 
         mVb.registerUrl.setOnClickListener(

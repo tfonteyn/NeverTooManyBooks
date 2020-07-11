@@ -255,22 +255,24 @@ public class CoverBrowserDialogFragment
     private void showGallery(@NonNull final FinishedMessage<Collection<String>> message) {
         mVb.progressBar.setVisibility(View.INVISIBLE);
 
-        mEditions.clear();
-        Collection<String> isbnList = message.result;
-        if (isbnList == null || isbnList.isEmpty()) {
-            Snackbar.make(mVb.statusMessage, R.string.warning_no_editions,
-                          Snackbar.LENGTH_LONG).show();
-            dismiss();
-            return;
+        if (message.isNewEvent()) {
+            mEditions.clear();
+            Collection<String> isbnList = message.result;
+            if (isbnList == null || isbnList.isEmpty()) {
+                Snackbar.make(mVb.statusMessage, R.string.warning_no_editions,
+                              Snackbar.LENGTH_LONG).show();
+                dismiss();
+                return;
+            }
+
+            mEditions.addAll(isbnList);
+
+            Objects.requireNonNull(mGalleryAdapter, ErrorMsg.NULL_GALLERY_ADAPTER);
+            mGalleryAdapter.notifyDataSetChanged();
+
+            // Show help message
+            mVb.statusMessage.setText(R.string.txt_tap_on_thumb);
         }
-
-        mEditions.addAll(isbnList);
-
-        Objects.requireNonNull(mGalleryAdapter, ErrorMsg.NULL_GALLERY_ADAPTER);
-        mGalleryAdapter.notifyDataSetChanged();
-
-        // Show help message
-        mVb.statusMessage.setText(R.string.txt_tap_on_thumb);
     }
 
     /**
@@ -451,8 +453,9 @@ public class CoverBrowserDialogFragment
                         .executeOnExecutor(mModel.getGalleryDisplayExecutor());
 
             } else {
-                // No valid file available; use a placeholder.
-                ImageUtils.setPlaceholder(holder.imageView, R.drawable.ic_image, 0, mHeight);
+                // No valid file available; use a placeholder but preserve the available space
+                ImageUtils.setPlaceholder(holder.imageView, R.drawable.ic_image, 0,
+                                          (int) (mHeight * ImageUtils.HW_RATIO), mHeight);
                 // and queue a request for it.
                 mModel.fetchGalleryImage(isbn);
             }

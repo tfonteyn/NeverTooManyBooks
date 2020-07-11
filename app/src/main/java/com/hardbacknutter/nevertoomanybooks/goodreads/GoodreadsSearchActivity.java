@@ -125,22 +125,30 @@ public class GoodreadsSearchActivity
                 Snackbar.make(mVb.getRoot(), message.text, Snackbar.LENGTH_LONG).show();
             }
         });
-        mGrSearchTask.onFailure().observe(this, message ->
+        mGrSearchTask.onFailure().observe(this, message -> {
+            if (message.isNewEvent()) {
                 Snackbar.make(mVb.getRoot(), GrStatus.getMessage(this, message.result),
-                              Snackbar.LENGTH_LONG).show());
-        mGrSearchTask.onCancelled().observe(this, message ->
-                Snackbar.make(mVb.getRoot(), R.string.cancelled, Snackbar.LENGTH_LONG).show());
-        mGrSearchTask.onFinished().observe(this, message -> {
-            mWorks.clear();
-            if (message.result != null && !message.result.isEmpty()) {
-                mWorks.addAll(message.result);
-            } else {
-                // we don't get a status back, so treat null/empty list as "oops"
-                // Given this code is not actually used... it might be OOPS
-                Snackbar.make(mVb.getRoot(), R.string.warning_no_matching_book_found,
                               Snackbar.LENGTH_LONG).show();
             }
-            mWorksAdapter.notifyDataSetChanged();
+        });
+        mGrSearchTask.onCancelled().observe(this, message -> {
+            if (message.isNewEvent()) {
+                Snackbar.make(mVb.getRoot(), R.string.cancelled, Snackbar.LENGTH_LONG).show();
+            }
+        });
+        mGrSearchTask.onFinished().observe(this, message -> {
+            if (message.isNewEvent()) {
+                mWorks.clear();
+                if (message.result != null && !message.result.isEmpty()) {
+                    mWorks.addAll(message.result);
+                } else {
+                    // we don't get a status back, so treat null/empty list as "oops"
+                    // Given this code is not actually used... it might be OOPS
+                    Snackbar.make(mVb.getRoot(), R.string.warning_no_matching_book_found,
+                                  Snackbar.LENGTH_LONG).show();
+                }
+                mWorksAdapter.notifyDataSetChanged();
+            }
         });
 
         mGrSearchTask.onBookNoLongerExists().observe(this, flag -> {
@@ -262,7 +270,7 @@ public class GoodreadsSearchActivity
         WorksAdapter(@NonNull final Context context,
                      @NonNull final List<GoodreadsWork> items) {
             mItems = items;
-            mMaxSize = ImageScale.getSize(context, ImageScale.SCALE_MEDIUM);
+            mMaxSize = ImageScale.getSize(context, ImageScale.SCALE_3_MEDIUM);
         }
 
         @NonNull
