@@ -169,7 +169,7 @@ public class BooklistGroup
 
     /**
      * The ID's for the groups. <strong>Never change these</strong>,
-     * they get stored in prefs and styles
+     * they get stored in prefs and styles.
      * <p>
      * Also: the code relies on BOOK being == 0
      */
@@ -206,17 +206,8 @@ public class BooklistGroup
     public static final int SERIES_TITLE_LETTER = 30;
     public static final int CONDITION = 31;
 
-    public static final String pk_author_primary_type =
-            "style.booklist.group.authors.primary.type";
-    public static final String pk_author_show_books_under_each =
-            "style.booklist.group.authors.show.all";
-    public static final String pk_series_show_books_under_each =
-            "style.booklist.group.series.show.all";
-    public static final String pk_publisher_show_books_under_each =
-            "style.booklist.group.publisher.show.all";
-
     /**
-     * NEWTHINGS: GROUP_KEY_x
+     * NEWTHINGS: BooklistGroup.KEY
      * The highest valid index of GroupKey - ALWAYS to be updated after adding a group key.
      */
     @VisibleForTesting
@@ -288,11 +279,11 @@ public class BooklistGroup
                                             @NonNull final BooklistStyle style) {
         switch (id) {
             case AUTHOR:
-                return new BooklistAuthorGroup(context, style);
+                return new AuthorBooklistGroup(context, style);
             case SERIES:
-                return new BooklistSeriesGroup(style);
+                return new SeriesBooklistGroup(style);
             case PUBLISHER:
-                return new BooklistPublisherGroup(style);
+                return new PublisherBooklistGroup(style);
 
             default:
                 return new BooklistGroup(id, style);
@@ -535,24 +526,29 @@ public class BooklistGroup
      * {@link #getDisplayDomain()} returns a customized display domain
      * {@link #getGroupDomains} adds the group/sorted domain based on the OB column.
      */
-    public static class BooklistAuthorGroup
+    public static class AuthorBooklistGroup
             extends BooklistGroup
             implements Parcelable {
 
         /** {@link Parcelable}. */
         @SuppressWarnings("InnerClassFieldHidesOuterClassField")
-        public static final Creator<BooklistAuthorGroup> CREATOR =
-                new Creator<BooklistAuthorGroup>() {
+        public static final Creator<AuthorBooklistGroup> CREATOR =
+                new Creator<AuthorBooklistGroup>() {
                     @Override
-                    public BooklistAuthorGroup createFromParcel(@NonNull final Parcel source) {
-                        return new BooklistAuthorGroup(source);
+                    public AuthorBooklistGroup createFromParcel(@NonNull final Parcel source) {
+                        return new AuthorBooklistGroup(source);
                     }
 
                     @Override
-                    public BooklistAuthorGroup[] newArray(final int size) {
-                        return new BooklistAuthorGroup[size];
+                    public AuthorBooklistGroup[] newArray(final int size) {
+                        return new AuthorBooklistGroup[size];
                     }
                 };
+
+        private static final String PK_PRIMARY_TYPE =
+                "style.booklist.group.authors.primary.type";
+        private static final String PK_SHOW_BOOKS_UNDER_EACH =
+                "style.booklist.group.authors.show.all";
 
         /** Customized domain with display data. */
         @NonNull
@@ -576,7 +572,7 @@ public class BooklistGroup
          * @param context Current context
          * @param style   the style
          */
-        BooklistAuthorGroup(@NonNull final Context context,
+        AuthorBooklistGroup(@NonNull final Context context,
                             @NonNull final BooklistStyle style) {
             super(AUTHOR, style);
             initPrefs();
@@ -592,7 +588,7 @@ public class BooklistGroup
          *
          * @param in Parcel to construct the object from
          */
-        BooklistAuthorGroup(@NonNull final Parcel in) {
+        AuthorBooklistGroup(@NonNull final Parcel in) {
             super(in);
             initPrefs();
             mAllAuthors.set(in);
@@ -610,10 +606,10 @@ public class BooklistGroup
          *
          * @return {@code true} if we want to show a book under each of its Authors.
          */
-        static boolean showBooksUnderEachAuthorGlobalDefault(@NonNull final Context context) {
+        static boolean showBooksUnderEachDefault(@NonNull final Context context) {
             return PreferenceManager
                     .getDefaultSharedPreferences(context)
-                    .getBoolean(pk_author_show_books_under_each, false);
+                    .getBoolean(PK_SHOW_BOOKS_UNDER_EACH, false);
         }
 
         /**
@@ -626,7 +622,7 @@ public class BooklistGroup
         static int getPrimaryTypeGlobalDefault(@NonNull final Context context) {
             return PreferenceManager
                     .getDefaultSharedPreferences(context)
-                    .getInt(pk_author_primary_type, Author.TYPE_UNKNOWN);
+                    .getInt(PK_PRIMARY_TYPE, Author.TYPE_UNKNOWN);
         }
 
         @NonNull
@@ -671,10 +667,10 @@ public class BooklistGroup
         }
 
         void initPrefs() {
-            mAllAuthors = new PBoolean(pk_author_show_books_under_each,
+            mAllAuthors = new PBoolean(PK_SHOW_BOOKS_UNDER_EACH,
                                        mUuid, mIsUserDefinedStyle);
 
-            mPrimaryType = new PBitmask(pk_author_primary_type,
+            mPrimaryType = new PBitmask(PK_PRIMARY_TYPE,
                                         mUuid, mIsUserDefinedStyle,
                                         Author.TYPE_UNKNOWN, Author.TYPE_BITMASK_ALL);
         }
@@ -695,8 +691,8 @@ public class BooklistGroup
 
             final PreferenceCategory category = screen.findPreference(Prefs.PSK_STYLE_AUTHOR);
             if (category != null) {
-                final String[] keys = {pk_author_show_books_under_each,
-                                       pk_author_primary_type};
+                final String[] keys = {PK_SHOW_BOOKS_UNDER_EACH,
+                                       PK_PRIMARY_TYPE};
 
                 setPreferenceVisibility(category, keys, visible);
             }
@@ -709,7 +705,7 @@ public class BooklistGroup
          *
          * @return {@code true} if we want to show a book under each of its Authors.
          */
-        boolean showBooksUnderEachAuthor(@NonNull final Context context) {
+        boolean showBooksUnderEach(@NonNull final Context context) {
             return mAllAuthors.isTrue(context);
         }
 
@@ -733,24 +729,27 @@ public class BooklistGroup
      * {@link #getDisplayDomain()} returns a customized display domain
      * {@link #getGroupDomains} adds the group/sorted domain based on the OB column.
      */
-    public static class BooklistSeriesGroup
+    public static class SeriesBooklistGroup
             extends BooklistGroup
             implements Parcelable {
 
         /** {@link Parcelable}. */
         @SuppressWarnings("InnerClassFieldHidesOuterClassField")
-        public static final Creator<BooklistSeriesGroup> CREATOR =
-                new Creator<BooklistSeriesGroup>() {
+        public static final Creator<SeriesBooklistGroup> CREATOR =
+                new Creator<SeriesBooklistGroup>() {
                     @Override
-                    public BooklistSeriesGroup createFromParcel(@NonNull final Parcel source) {
-                        return new BooklistSeriesGroup(source);
+                    public SeriesBooklistGroup createFromParcel(@NonNull final Parcel source) {
+                        return new SeriesBooklistGroup(source);
                     }
 
                     @Override
-                    public BooklistSeriesGroup[] newArray(final int size) {
-                        return new BooklistSeriesGroup[size];
+                    public SeriesBooklistGroup[] newArray(final int size) {
+                        return new SeriesBooklistGroup[size];
                     }
                 };
+
+        private static final String PK_SHOW_BOOKS_UNDER_EACH =
+                "style.booklist.group.series.show.all";
 
         /** Customized domain with display data. */
         @NonNull
@@ -763,7 +762,7 @@ public class BooklistGroup
          *
          * @param style the style
          */
-        BooklistSeriesGroup(@NonNull final BooklistStyle style) {
+        SeriesBooklistGroup(@NonNull final BooklistStyle style) {
             super(SERIES, style);
             mDisplayDomain = createDisplayDomain();
 
@@ -775,7 +774,7 @@ public class BooklistGroup
          *
          * @param in Parcel to construct the object from
          */
-        BooklistSeriesGroup(@NonNull final Parcel in) {
+        SeriesBooklistGroup(@NonNull final Parcel in) {
             super(in);
             mDisplayDomain = createDisplayDomain();
 
@@ -790,14 +789,14 @@ public class BooklistGroup
          *
          * @return {@code true} if we want to show a book under each of its Series.
          */
-        static boolean showBooksUnderEachSeriesGlobalDefault(@NonNull final Context context) {
+        static boolean showBooksUnderEachDefault(@NonNull final Context context) {
             return PreferenceManager
                     .getDefaultSharedPreferences(context)
-                    .getBoolean(pk_series_show_books_under_each, false);
+                    .getBoolean(PK_SHOW_BOOKS_UNDER_EACH, false);
         }
 
         private void initPrefs() {
-            mAllSeries = new PBoolean(pk_series_show_books_under_each,
+            mAllSeries = new PBoolean(PK_SHOW_BOOKS_UNDER_EACH,
                                       mUuid, mIsUserDefinedStyle);
         }
 
@@ -836,7 +835,7 @@ public class BooklistGroup
 
             final PreferenceCategory category = screen.findPreference(Prefs.PSK_STYLE_SERIES);
             if (category != null) {
-                final String[] keys = {pk_series_show_books_under_each};
+                final String[] keys = {PK_SHOW_BOOKS_UNDER_EACH};
                 setPreferenceVisibility(category, keys, visible);
             }
         }
@@ -848,7 +847,7 @@ public class BooklistGroup
          *
          * @return {@code true} if we want to show a book under each of its Series.
          */
-        boolean showBooksUnderEachSeries(@NonNull final Context context) {
+        boolean showBooksUnderEach(@NonNull final Context context) {
             return mAllSeries.isTrue(context);
         }
     }
@@ -860,24 +859,27 @@ public class BooklistGroup
      * {@link #getDisplayDomain()} returns a customized display domain
      * {@link #getGroupDomains} adds the group/sorted domain based on the OB column.
      */
-    public static class BooklistPublisherGroup
+    public static class PublisherBooklistGroup
             extends BooklistGroup
             implements Parcelable {
 
         /** {@link Parcelable}. */
         @SuppressWarnings("InnerClassFieldHidesOuterClassField")
-        public static final Creator<BooklistPublisherGroup> CREATOR =
-                new Creator<BooklistPublisherGroup>() {
+        public static final Creator<PublisherBooklistGroup> CREATOR =
+                new Creator<PublisherBooklistGroup>() {
                     @Override
-                    public BooklistPublisherGroup createFromParcel(@NonNull final Parcel source) {
-                        return new BooklistPublisherGroup(source);
+                    public PublisherBooklistGroup createFromParcel(@NonNull final Parcel source) {
+                        return new PublisherBooklistGroup(source);
                     }
 
                     @Override
-                    public BooklistPublisherGroup[] newArray(final int size) {
-                        return new BooklistPublisherGroup[size];
+                    public PublisherBooklistGroup[] newArray(final int size) {
+                        return new PublisherBooklistGroup[size];
                     }
                 };
+
+        private static final String PK_SHOW_BOOKS_UNDER_EACH =
+                "style.booklist.group.publisher.show.all";
 
         /** Customized domain with display data. */
         @NonNull
@@ -890,7 +892,7 @@ public class BooklistGroup
          *
          * @param style the style
          */
-        BooklistPublisherGroup(@NonNull final BooklistStyle style) {
+        PublisherBooklistGroup(@NonNull final BooklistStyle style) {
             super(PUBLISHER, style);
             mDisplayDomain = createDisplayDomain();
 
@@ -902,7 +904,7 @@ public class BooklistGroup
          *
          * @param in Parcel to construct the object from
          */
-        BooklistPublisherGroup(@NonNull final Parcel in) {
+        PublisherBooklistGroup(@NonNull final Parcel in) {
             super(in);
             mDisplayDomain = createDisplayDomain();
 
@@ -917,16 +919,16 @@ public class BooklistGroup
          *
          * @return {@code true} if we want to show a book under each of its Publishers.
          */
-        static boolean showBooksUnderEachPublisherGlobalDefault(@NonNull final Context context) {
+        static boolean showBooksUnderEachDefault(@NonNull final Context context) {
             return PreferenceManager
                     .getDefaultSharedPreferences(context)
-                    .getBoolean(pk_publisher_show_books_under_each,
+                    .getBoolean(PK_SHOW_BOOKS_UNDER_EACH,
                                 false);
         }
 
         private void initPrefs() {
             mAllPublishers = new PBoolean(
-                    pk_publisher_show_books_under_each,
+                    PK_SHOW_BOOKS_UNDER_EACH,
                     mUuid, mIsUserDefinedStyle);
         }
 
@@ -965,7 +967,7 @@ public class BooklistGroup
 
             final PreferenceCategory category = screen.findPreference(Prefs.PSK_STYLE_PUBLISHER);
             if (category != null) {
-                final String[] keys = {pk_publisher_show_books_under_each};
+                final String[] keys = {PK_SHOW_BOOKS_UNDER_EACH};
                 setPreferenceVisibility(category, keys, visible);
             }
         }
@@ -977,7 +979,7 @@ public class BooklistGroup
          *
          * @return {@code true} if we want to show a book under each of its Publishers.
          */
-        boolean showBooksUnderEachPublisher(@NonNull final Context context) {
+        boolean showBooksUnderEach(@NonNull final Context context) {
             return mAllPublishers.isTrue(context);
         }
     }
@@ -1059,7 +1061,7 @@ public class BooklistGroup
          * @return new GroupKey instance
          */
         private static GroupKey createGroupKey(@Id final int id) {
-            // NEWTHINGS: GROUP_KEY_x
+            // NEWTHINGS: BooklistGroup.KEY
             switch (id) {
                 // The key domain for a book is not used for now, but using the title makes sense.
                 case BOOK: {
