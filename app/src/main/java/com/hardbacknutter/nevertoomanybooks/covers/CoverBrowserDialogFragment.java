@@ -146,7 +146,7 @@ public class CoverBrowserDialogFragment
 
         final int scalePreview = getResources().getInteger(R.integer.cover_scale_browser_preview);
         //noinspection ConstantConditions
-        mPreviewMaxSize = ImageScale.getSize(getContext(), scalePreview);
+        mPreviewMaxSize = ImageScale.getPixelSize(getContext(), scalePreview);
     }
 
     @Override
@@ -413,7 +413,7 @@ public class CoverBrowserDialogFragment
         @SuppressWarnings("SameParameterValue")
         GalleryAdapter(@ImageScale.Scale final int scale) {
             //noinspection ConstantConditions
-            final int maxSize = ImageScale.getSize(getContext(), scale);
+            final int maxSize = ImageScale.getPixelSize(getContext(), scale);
             mHeight = maxSize;
             mWidth = maxSize;
         }

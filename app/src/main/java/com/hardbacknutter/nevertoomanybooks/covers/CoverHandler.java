@@ -41,6 +41,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -172,7 +173,7 @@ public class CoverHandler {
         mCIdx = cIdx;
         mCoverView = coverView;
         //noinspection ConstantConditions
-        final int size = ImageScale.getSize(mContext, scale);
+        final int size = ImageScale.getPixelSize(mContext, scale);
         mHeight = size;
         mWidth = size;
 
@@ -466,7 +467,7 @@ public class CoverHandler {
             }
 
         } else {
-            clearImage(file);
+            setPlaceholder(file);
         }
     }
 
@@ -484,7 +485,7 @@ public class CoverHandler {
             mCoverView.setBackground(null);
 
         } else {
-            clearImage(file);
+            setPlaceholder(file);
         }
     }
 
@@ -493,15 +494,19 @@ public class CoverHandler {
      *
      * @param file to determine the type of placeholder to use
      */
-    private void clearImage(@Nullable final File file) {
+    private void setPlaceholder(@Nullable final File file) {
         mBook.remove(Book.BKEY_FILE_SPEC[mCIdx]);
 
         if (file == null || file.length() == 0) {
             ImageUtils.setPlaceholder(mCoverView, R.drawable.ic_add_a_photo,
-                                      R.drawable.outline_rounded);
+                                      R.drawable.outline_rounded,
+                                      ViewGroup.LayoutParams.WRAP_CONTENT,
+                                      ViewGroup.LayoutParams.WRAP_CONTENT);
         } else {
             ImageUtils.setPlaceholder(mCoverView, R.drawable.ic_broken_image,
-                                      R.drawable.outline_rounded);
+                                      R.drawable.outline_rounded,
+                                      ViewGroup.LayoutParams.WRAP_CONTENT,
+                                      ViewGroup.LayoutParams.WRAP_CONTENT);
         }
     }
 
@@ -591,8 +596,7 @@ public class CoverHandler {
         if (!uuid.isEmpty()) {
             CoversDAO.delete(context, uuid);
         }
-        ImageUtils.setPlaceholder(mCoverView, R.drawable.ic_add_a_photo,
-                                  R.drawable.outline_rounded);
+        setPlaceholder(null);
     }
 
     /**

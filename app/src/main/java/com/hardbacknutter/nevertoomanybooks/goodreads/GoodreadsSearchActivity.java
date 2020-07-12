@@ -270,7 +270,7 @@ public class GoodreadsSearchActivity
         WorksAdapter(@NonNull final Context context,
                      @NonNull final List<GoodreadsWork> items) {
             mItems = items;
-            mMaxSize = ImageScale.getSize(context, ImageScale.SCALE_3_MEDIUM);
+            mMaxSize = ImageScale.getPixelSize(context, ImageScale.SCALE_3_MEDIUM);
         }
 
         @NonNull
@@ -292,7 +292,7 @@ public class GoodreadsSearchActivity
             holder.itemView.setOnClickListener(v -> onWorkSelected(item));
 
             // get the cover (or start a background task to get it)
-            item.fillImageView(holder.coverView, mMaxSize, mMaxSize);
+            item.fillImageView(holder.coverView, mMaxSize);
 
             // Update the views based on the work
             holder.authorView.setText(item.authorName);

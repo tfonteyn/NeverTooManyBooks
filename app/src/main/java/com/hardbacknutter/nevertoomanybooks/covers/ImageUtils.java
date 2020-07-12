@@ -53,7 +53,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.CoversDAO;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
@@ -65,6 +64,11 @@ import com.hardbacknutter.nevertoomanybooks.utils.Throttler;
 
 public final class ImageUtils {
 
+    /**
+     * 0.6 is based on a standard paperback 17.5cm x 10.6cm
+     * -> width = 0.6 * maxHeight.
+     */
+    public static final float HW_RATIO = 0.6f;
     /** By default, covers will always be downsized to maximum 600 x 1000 pixels. */
     static final int MAX_IMAGE_WIDTH_PX = 600;
     static final int MAX_IMAGE_HEIGHT_PX = 1000;
@@ -78,30 +82,7 @@ public final class ImageUtils {
     /** The prefix an embedded image url will have. */
     private static final String DATA_IMAGE_JPEG_BASE_64 = "data:image/jpeg;base64,";
 
-
-    /**
-     * 0.6 is based on a standard paperback 17.5cm x 10.6cm
-     * -> width = 0.6 * maxHeight.
-     */
-    public static final float HW_RATIO = 0.6f;
-
     private ImageUtils() {
-    }
-
-    /**
-     * Set a placeholder drawable in the view. Resize the view to wrap around the placeholder.
-     *
-     * @param imageView  View to populate
-     * @param drawable   drawable to use
-     * @param background (optional) drawable to use for the background; use {@code 0} for none
-     */
-    @UiThread
-    public static void setPlaceholder(@NonNull final ImageView imageView,
-                                      @DrawableRes final int drawable,
-                                      @DrawableRes final int background) {
-        setPlaceholder(imageView, drawable, background,
-                       ViewGroup.LayoutParams.WRAP_CONTENT,
-                       ViewGroup.LayoutParams.WRAP_CONTENT);
     }
 
     /**
@@ -178,18 +159,16 @@ public final class ImageUtils {
      * <p>
      * Images and placeholder will always be scaled to a fixed size.
      *
-     * @param imageView View to populate
-     * @param maxWidth  Maximum width of the ImageView
-     * @param maxHeight Maximum height of the ImageView
-     * @param uuid      UUID of the book
-     * @param cIdx      0..n image index
+     * @param imageView   View to populate
+     * @param longestSide Maximum length of a side (height or width) of the ImageView
+     * @param uuid        UUID of the book
+     * @param cIdx        0..n image index
      *
      * @return {@code true} if the image was displayed. {@code false} if a place holder was used.
      */
     @UiThread
     public static boolean setImageView(@NonNull final ImageView imageView,
-                                       final int maxWidth,
-                                       final int maxHeight,
+                                       final int longestSide,
                                        @NonNull final String uuid,
                                        @IntRange(from = 0) final int cIdx) {
 
@@ -198,9 +177,9 @@ public final class ImageUtils {
 
         // 1. If caching is used, and we don't have cache building happening, check it.
         if (useCaching && !CoversDAO.ImageCacheWriterTask.hasActiveTasks()) {
-            final Bitmap bitmap = CoversDAO.getImage(context, uuid, cIdx, maxWidth, maxHeight);
+            final Bitmap bitmap = CoversDAO.getImage(context, uuid, cIdx, longestSide, longestSide);
             if (bitmap != null) {
-                setImageView(imageView, maxWidth, maxHeight, bitmap, 0);
+                setImageView(imageView, longestSide, longestSide, bitmap, 0);
                 return true;
             }
         }
@@ -209,9 +188,11 @@ public final class ImageUtils {
         final File file = AppDir.getCoverFile(context, uuid, cIdx);
         // Check if the file exists; if it does not...
         if (!isFileGood(file)) {
-            // use a placeholder but preserve the available WIDTH. Set the height minimal
-            setPlaceholder(imageView, R.drawable.ic_image, 0,
-                           (int) (maxHeight * HW_RATIO), ViewGroup.LayoutParams.WRAP_CONTENT);
+            // leave the space blank, but preserve the width.
+            final ViewGroup.LayoutParams lp = imageView.getLayoutParams();
+            lp.width = (int) (longestSide * HW_RATIO);
+            lp.height = 0;
+            imageView.setLayoutParams(lp);
             return false;
         }
 
@@ -220,12 +201,12 @@ public final class ImageUtils {
             // 1. Gets the image from the file system and display it.
             // 2. Start a subsequent task to send it to the cache.
             // This 2nd task uses the serial executor.
-            new ImageLoaderWithCacheWrite(imageView, file, maxWidth, maxHeight, null, uuid, cIdx)
+            new ImageLoaderWithCacheWrite(imageView, file, longestSide, null, uuid, cIdx)
                     .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
         } else {
             // Cache not used: Get the image from the file system and display it.
-            new ImageLoader(imageView, file, maxWidth, maxHeight, null)
+            new ImageLoader(imageView, file, longestSide, longestSide, null)
                     .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         }
         return true;

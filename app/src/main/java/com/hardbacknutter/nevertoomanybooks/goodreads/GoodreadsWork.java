@@ -141,19 +141,18 @@ public class GoodreadsWork {
      * the image becomes available.
      *
      * @param imageView ImageView to display cover image
-     * @param maxWidth  Maximum width of the image
-     * @param maxHeight Maximum height of the image
+     * @param maxSize   Maximum size of the image
      */
     @UiThread
     void fillImageView(@NonNull final ImageView imageView,
-                       final int maxWidth,
-                       final int maxHeight) {
-        mMaxWidth = maxWidth;
-        mMaxHeight = maxHeight;
+                       final int maxSize) {
+        mMaxWidth = maxSize;
+        mMaxHeight = maxSize;
         synchronized (this) {
             if (mImageBytes == null) {
                 // Image not retrieved yet, so clear any existing image
-                ImageUtils.setPlaceholder(imageView, R.drawable.ic_image, 0);
+                ImageUtils.setPlaceholder(imageView, R.drawable.ic_image, 0,
+                                          (int) (mMaxHeight * ImageUtils.HW_RATIO), mMaxHeight);
                 // Save the view so we know where the image is going to be displayed
                 mImageView = new WeakReference<>(imageView);
                 // run task to get the image. Use parallel executor.
@@ -168,9 +167,10 @@ public class GoodreadsWork {
                     final Bitmap bitmap = BitmapFactory
                             .decodeByteArray(mImageBytes, 0, mImageBytes.length,
                                              new BitmapFactory.Options());
-                    ImageUtils.setImageView(imageView, maxWidth, maxHeight, bitmap, 0);
+                    ImageUtils.setImageView(imageView, mMaxWidth, mMaxHeight, bitmap, 0);
                 } else {
-                    ImageUtils.setPlaceholder(imageView, R.drawable.ic_broken_image, 0);
+                    ImageUtils.setPlaceholder(imageView, R.drawable.ic_broken_image, 0,
+                                              (int) (mMaxHeight * ImageUtils.HW_RATIO), mMaxHeight);
                 }
 
                 // Clear the work in the View, in case some other job was running
@@ -209,7 +209,9 @@ public class GoodreadsWork {
                                                  new BitmapFactory.Options());
                         ImageUtils.setImageView(imageView, mMaxWidth, mMaxHeight, bitmap, 0);
                     } else {
-                        ImageUtils.setPlaceholder(imageView, R.drawable.ic_broken_image, 0);
+                        ImageUtils.setPlaceholder(imageView, R.drawable.ic_broken_image, 0,
+                                                  (int) (mMaxHeight * ImageUtils.HW_RATIO),
+                                                  mMaxHeight);
                     }
                 }
             }

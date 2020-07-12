@@ -83,8 +83,8 @@ public final class ImageScale {
      * @return amount in pixels
      */
     @AnyThread
-    public static int getSize(@NonNull final Context context,
-                              @Scale final int scale) {
+    public static int getPixelSize(@NonNull final Context context,
+                                   @Scale final int scale) {
         return SCALE_FACTOR[scale]
                * (int) context.getResources().getDimension(R.dimen.cover_base_size);
     }
