@@ -46,11 +46,13 @@ public final class ErrorMsg {
 
     // Objects.requireNonNull
     public static final String NULL_AUTHOR = "Author";
+    public static final String NULL_BUILDER = "Builder";
     public static final String NULL_CHECKLIST = "Checklist";
     public static final String NULL_BOOKSHELF = "Bookshelf";
     public static final String NULL_CURSOR = "Cursor";
     public static final String NULL_DRAWABLE = "Drawable";
     public static final String NULL_EXTRAS = "Extras";
+    public static final String NULL_EXCEPTION = "Exception";
     public static final String NULL_FRAGMENT_TAG = "Fragment Tag";
     public static final String NULL_GALLERY_ADAPTER = "GalleryAdapter";
     public static final String NULL_IMAGE_PATH = "ImagePath";
@@ -70,7 +72,6 @@ public final class ErrorMsg {
     public static final String NULL_TOC_ENTRY = "TocEntry";
     public static final String NULL_URI = "uri";
     public static final String NULL_UUID = "UUID";
-    public static final String NULL_EXCEPTION = "Exception";
 
     private ErrorMsg() {
     }
