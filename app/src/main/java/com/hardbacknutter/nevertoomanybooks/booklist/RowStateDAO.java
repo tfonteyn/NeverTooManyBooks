@@ -417,7 +417,7 @@ public class RowStateDAO
      *
      * @param node to set
      */
-    private void setListPosition(@NonNull final Node node) {
+    public void findAndSetListPosition(@NonNull final Node node) {
         SynchronizedStatement stmt = mStatementManager.get(STMT_COUNT_VIS_ROWS_BEFORE);
         if (stmt == null) {
             stmt = mStatementManager.add(STMT_COUNT_VIS_ROWS_BEFORE,
@@ -434,13 +434,16 @@ public class RowStateDAO
             stmt.bindLong(1, node.rowId);
             count = (int) stmt.count();
         }
+        int pos;
         if (node.isVisible) {
             // If the specified row is visible, then the count _is_ the position.
-            node.setListPosition(count);
+            pos = count;
         } else {
             // otherwise it's the previous visible row == count-1 (or the top row)
-            node.setListPosition(count > 0 ? count - 1 : 0);
+            pos = count > 0 ? count - 1 : 0;
         }
+
+        node.setListPosition(pos);
     }
 
     /**
@@ -507,7 +510,7 @@ public class RowStateDAO
                     // FIRST make the node visible
                     ensureNodeIsVisible(node);
                     // only now calculate the list position
-                    setListPosition(node);
+                    findAndSetListPosition(node);
                     return node;
                 }
             }
@@ -533,7 +536,7 @@ public class RowStateDAO
         try (Cursor cursor = mSyncedDb.rawQuery(sql, new String[]{String.valueOf(nodeId)})) {
             if (cursor.moveToFirst()) {
                 final Node node = new Node(cursor);
-                setListPosition(node);
+                findAndSetListPosition(node);
                 return node;
             } else {
                 throw new IllegalStateException("rowId not found: " + nodeId);
@@ -567,7 +570,7 @@ public class RowStateDAO
         try (Cursor cursor = mSyncedDb.rawQuery(sql, new String[]{String.valueOf(bookId)})) {
             while (cursor.moveToNext()) {
                 final Node node = new Node(cursor);
-                setListPosition(node);
+                findAndSetListPosition(node);
                 nodeList.add(node);
             }
         }
@@ -596,7 +599,7 @@ public class RowStateDAO
             }
             // Recalculate all positions
             for (Node node : nodeList) {
-                setListPosition(node);
+                findAndSetListPosition(node);
             }
 
             return nodeList;
