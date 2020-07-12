@@ -57,6 +57,7 @@ import com.hardbacknutter.nevertoomanybooks.settings.SettingsActivity;
 import com.hardbacknutter.nevertoomanybooks.settings.sites.GoodreadsPreferencesFragment;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.FinishedMessage;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.ProgressMessage;
+import com.hardbacknutter.nevertoomanybooks.viewmodels.LiveDataEvent;
 
 /**
  * Starting point for sending and importing books with Goodreads.
@@ -130,7 +131,7 @@ public class GoodreadsAdminFragment
         }
     }
 
-    private void onCancelled(@NonNull final FinishedMessage<GrStatus> message) {
+    private void onCancelled(@NonNull final LiveDataEvent message) {
         if (message.isNewEvent()) {
             Snackbar.make(mVb.getRoot(), R.string.cancelled, Snackbar.LENGTH_LONG).show();
         }

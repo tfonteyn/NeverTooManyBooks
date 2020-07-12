@@ -71,6 +71,7 @@ import com.hardbacknutter.nevertoomanybooks.tasks.messages.ProgressMessage;
 import com.hardbacknutter.nevertoomanybooks.utils.PermissionsHelper;
 import com.hardbacknutter.nevertoomanybooks.utils.ViewFocusOrder;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.BookViewModel;
+import com.hardbacknutter.nevertoomanybooks.viewmodels.LiveDataEvent;
 
 /**
  * Base class for {@link BookDetailsFragment} and {@link EditBookBaseFragment}.
@@ -167,7 +168,7 @@ public abstract class BookBaseFragment
         }
     }
 
-    private void onCancelled(@NonNull final FinishedMessage<GrStatus> message) {
+    private void onCancelled(@NonNull final LiveDataEvent message) {
         if (message.isNewEvent()) {
             //noinspection ConstantConditions
             Snackbar.make(getView(), R.string.cancelled, Snackbar.LENGTH_LONG).show();

@@ -62,6 +62,7 @@ import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.FinishedMessage;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.ProgressMessage;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
+import com.hardbacknutter.nevertoomanybooks.viewmodels.LiveDataEvent;
 
 public class ExportFragment
         extends Fragment {
@@ -253,7 +254,7 @@ public class ExportFragment
         }
     }
 
-    private void onExportCancelled(@NonNull final FinishedMessage<ExportManager> message) {
+    private void onExportCancelled(@NonNull final LiveDataEvent message) {
         closeProgressDialog();
 
         if (message.isNewEvent()) {

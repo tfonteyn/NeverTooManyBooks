@@ -83,6 +83,7 @@ import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.GrSendOneBookTask;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.FinishedMessage;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.ProgressMessage;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.BookDetailsFragmentViewModel;
+import com.hardbacknutter.nevertoomanybooks.viewmodels.LiveDataEvent;
 
 /**
  * Class for representing read-only book details.
@@ -241,7 +242,7 @@ public class BookDetailsFragment
         }
     }
 
-    private void onCancelled(@NonNull final FinishedMessage<GrStatus> message) {
+    private void onCancelled(@NonNull final LiveDataEvent message) {
         if (message.isNewEvent()) {
             //noinspection ConstantConditions
             Snackbar.make(getView(), R.string.cancelled, Snackbar.LENGTH_LONG).show();

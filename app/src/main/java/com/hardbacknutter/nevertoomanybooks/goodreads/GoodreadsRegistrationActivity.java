@@ -47,6 +47,7 @@ import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.GrAuthTask;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.FinishedMessage;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.ProgressMessage;
+import com.hardbacknutter.nevertoomanybooks.viewmodels.LiveDataEvent;
 
 /**
  * Allow the user to explain Goodreads and authorize this application to access their
@@ -103,7 +104,7 @@ public class GoodreadsRegistrationActivity
         }
     }
 
-    private void onCancelled(@NonNull final FinishedMessage<GrStatus> message) {
+    private void onCancelled(@NonNull final LiveDataEvent message) {
         if (message.isNewEvent()) {
             Snackbar.make(mVb.getRoot(), R.string.cancelled, Snackbar.LENGTH_LONG).show();
         }
