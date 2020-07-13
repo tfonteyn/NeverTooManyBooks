@@ -139,6 +139,7 @@ public class BookDetailsFragment
                     }
                 }
             };
+    /** Goodreads send-book task. */
     private GrSendOneBookTask mGrSendOneBookTask;
 
     @NonNull
@@ -156,8 +157,6 @@ public class BookDetailsFragment
         mFragmentVM = new ViewModelProvider(this).get(BookDetailsFragmentViewModel.class);
         //noinspection ConstantConditions
         mFragmentVM.init(getContext(), getArguments(), mBookViewModel.getBook());
-
-        mGrSendOneBookTask = new ViewModelProvider(this).get(GrSendOneBookTask.class);
     }
 
     @Override
@@ -199,6 +198,7 @@ public class BookDetailsFragment
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        mGrSendOneBookTask = new ViewModelProvider(this).get(GrSendOneBookTask.class);
         mGrSendOneBookTask.onProgressUpdate().observe(getViewLifecycleOwner(), this::onProgress);
         mGrSendOneBookTask.onCancelled().observe(getViewLifecycleOwner(), this::onCancelled);
         mGrSendOneBookTask.onFailure().observe(getViewLifecycleOwner(), this::onGrFailure);
@@ -396,20 +396,23 @@ public class BookDetailsFragment
         if (DBDefinitions.isUsed(prefs, DBDefinitions.PREFS_IS_USED_THUMBNAIL)) {
             final int[] scale = getResources().getIntArray(R.array.cover_scale_details);
 
-            mCoverHandler[0] = new CoverHandler(this, mProgressBar,
-                                                book, mVb.isbn,
-                                                0, mVb.coverImage0,
-                                                scale[0]);
+            mCoverHandler[0] = new CoverHandler(this, mProgressBar, book, mVb.isbn,
+                                                0, mVb.coverImage0, scale[0]);
 
-            mCoverHandler[1] = new CoverHandler(this, mProgressBar,
-                                                book, mVb.isbn,
-                                                1, mVb.coverImage1,
-                                                scale[1]);
+            mCoverHandler[1] = new CoverHandler(this, mProgressBar, book, mVb.isbn,
+                                                1, mVb.coverImage1, scale[1]);
         }
 
         // hide unwanted and empty fields
         //noinspection ConstantConditions
         fields.setVisibility(getView(), true, false);
+
+        //         <!-- 2020-07-13: setting visibility="gone" from code
+        //                but keeping/populating as normal for now.
+        //                The title is ALSO visible in the ToolBar,
+        //                AND (if present) the cover image. -->
+        mVb.title.setVisibility(View.GONE);
+
 
         // Hide the Publication section label if none of the publishing fields are shown.
         setSectionVisibility(mVb.lblPublication,

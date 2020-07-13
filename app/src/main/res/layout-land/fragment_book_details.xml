@@ -97,37 +97,44 @@
             tools:src="@drawable/ic_image"
             />
 
-        <CheckBox
-            android:id="@+id/cbx_read"
-            style="@style/Flag.Read"
-            android:layout_marginStart="@dimen/indent_field"
-            android:contentDescription="@string/lbl_read"
-            app:layout_constraintStart_toEndOf="@id/coverImage0"
-            app:layout_constraintTop_toBottomOf="@id/lend_to"
-            tools:checked="true"
-            />
-
-        <TextView
-            android:id="@+id/title"
-            style="@style/Field.BookTitle.Large"
-            android:layout_marginStart="@dimen/indent_field"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/cbx_read"
-            app:layout_constraintTop_toBottomOf="@id/lend_to"
-            tools:ignore="SelectableText"
-            tools:text="@sample/data.json/book/title"
-            />
-
         <RatingBar
             android:id="@+id/rating"
             style="?attr/ratingBarStyleSmall"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/indent_field"
-            android:layout_marginTop="@dimen/border2"
+            android:layout_marginTop="@dimen/border1"
+            android:layout_marginEnd="@dimen/indent_field"
             android:numStars="5"
-            app:layout_constraintStart_toEndOf="@id/coverImage0"
+            app:layout_constraintEnd_toStartOf="@id/cbx_read"
             app:layout_constraintTop_toBottomOf="@id/title"
+            />
+
+        <CheckBox
+            android:id="@+id/cbx_read"
+            style="@style/Flag.Read"
+            android:layout_marginStart="@dimen/indent_field"
+            android:layout_marginEnd="@dimen/indent_field"
+            android:contentDescription="@string/lbl_read"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/lend_to"
+            tools:checked="true"
+            />
+
+        <!-- 2020-07-13: setting visibility="gone" from code
+                but keeping/populating as normal for now.
+                The title is ALSO visible in the ToolBar,
+                AND (if present) the cover image. -->
+        <TextView
+            android:id="@+id/title"
+            style="@style/Field.BookTitle.Large"
+            android:visibility="gone"
+            android:layout_marginStart="@dimen/indent_field"
+            app:layout_constraintEnd_toStartOf="@id/cbx_read"
+            app:layout_constraintStart_toEndOf="@id/coverImage0"
+            app:layout_constraintTop_toBottomOf="@id/lend_to"
+            tools:ignore="SelectableText"
+            tools:text="@sample/data.json/book/title"
             />
 
         <TextView
