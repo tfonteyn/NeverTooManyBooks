@@ -114,7 +114,7 @@
         android:title="@string/lbl_sorting">
 
         <SwitchPreference
-            android:defaultValue="true"
+            android:defaultValue="false"
             android:icon="@drawable/ic_sort_by_alpha"
             android:key="sort.author.name.given_first"
             android:summaryOff="@string/pv_author_name_family_first"

@@ -122,7 +122,7 @@
         >
 
         <SwitchPreference
-            android:defaultValue="false"
+            android:defaultValue="true"
             android:icon="@drawable/ic_reorder"
             android:key="show.author.name.given_first"
             android:summaryOff="@string/pv_author_name_family_first"
