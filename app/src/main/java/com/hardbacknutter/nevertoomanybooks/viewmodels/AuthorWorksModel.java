@@ -34,6 +34,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModel;
 
 import java.util.ArrayList;
 import java.util.Objects;
@@ -48,7 +49,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 
 public class AuthorWorksModel
-        extends ResultDataModel {
+        extends ViewModel {
 
     /** Log tag. */
     private static final String TAG = "AuthorWorksModel";
@@ -150,7 +151,6 @@ public class AuthorWorksModel
             case TocEntry.TYPE_BOOK:
                 if (mDb.deleteBook(context, item.getId())) {
                     mTocEntries.remove(item);
-                    putResultData(BookViewModel.BKEY_BOOK_DELETED, true);
                 }
                 break;
 

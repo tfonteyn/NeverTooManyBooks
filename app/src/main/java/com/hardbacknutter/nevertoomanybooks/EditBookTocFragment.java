@@ -209,9 +209,6 @@ public class EditBookTocFragment
         getChildFragmentManager().addFragmentOnAttachListener(mFragmentOnAttachListener);
 
         mDb = new DAO(TAG);
-
-        mIsfdbGetEditionsTask = new ViewModelProvider(this).get(IsfdbGetEditionsTask.class);
-        mIsfdbGetBookTask = new ViewModelProvider(this).get(IsfdbGetBookTask.class);
     }
 
     @Override
@@ -229,6 +226,7 @@ public class EditBookTocFragment
         // setup common stuff and calls onInitFields()
         super.onViewCreated(view, savedInstanceState);
 
+        mIsfdbGetEditionsTask = new ViewModelProvider(this).get(IsfdbGetEditionsTask.class);
         mIsfdbGetEditionsTask.onCancelled().observe(getViewLifecycleOwner(), message -> {
             if (message.isNewEvent()) {
                 Snackbar.make(mVb.getRoot(), R.string.cancelled, Snackbar.LENGTH_LONG).show();
@@ -242,7 +240,7 @@ public class EditBookTocFragment
         });
         mIsfdbGetEditionsTask.onFinished().observe(getViewLifecycleOwner(), this::onIsfdbEditions);
 
-
+        mIsfdbGetBookTask = new ViewModelProvider(this).get(IsfdbGetBookTask.class);
         mIsfdbGetBookTask.onCancelled().observe(getViewLifecycleOwner(), message -> {
             if (message.isNewEvent()) {
                 Snackbar.make(mVb.getRoot(), R.string.cancelled, Snackbar.LENGTH_LONG).show();
@@ -255,7 +253,6 @@ public class EditBookTocFragment
             }
         });
         mIsfdbGetBookTask.onFinished().observe(getViewLifecycleOwner(), this::onIsfdbBook);
-
 
         // set up the list view. The adapter is setup in onPopulateViews
         final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());

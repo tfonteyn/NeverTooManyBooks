@@ -39,7 +39,6 @@ import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsAdminFragment;
-import com.hardbacknutter.nevertoomanybooks.viewmodels.ActivityResultDataModel;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.ResultDataModel;
 
 /**
@@ -95,8 +94,7 @@ public class AdminActivity
 
     @Override
     public void onBackPressed() {
-        final ActivityResultDataModel resultData = new ViewModelProvider(this)
-                .get(ResultDataModel.class);
+        final ResultDataModel resultData = new ViewModelProvider(this).get(ResultDataModel.class);
         setResult(Activity.RESULT_OK, resultData.getResultIntent());
         super.onBackPressed();
     }

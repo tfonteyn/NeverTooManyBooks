@@ -69,7 +69,9 @@ import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.utils.AttrUtils;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.AuthorWorksModel;
+import com.hardbacknutter.nevertoomanybooks.viewmodels.BookViewModel;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.BooksOnBookshelfModel;
+import com.hardbacknutter.nevertoomanybooks.viewmodels.ResultDataModel;
 import com.hardbacknutter.nevertoomanybooks.widgets.fastscroller.FastScroller;
 
 /**
@@ -91,6 +93,8 @@ public class AuthorWorksFragment
     /** Optional. Show the books. Defaults to {@code true}. */
     public static final String BKEY_WITH_BOOKS = TAG + ":books";
 
+    /** the ViewModel. */
+    private ResultDataModel mResultData;
     /** The ViewModel. */
     private AuthorWorksModel mModel;
     /** The Adapter. */
@@ -122,7 +126,9 @@ public class AuthorWorksFragment
         setHasOptionsMenu(true);
 
         //noinspection ConstantConditions
-        mModel = new ViewModelProvider(getActivity()).get(AuthorWorksModel.class);
+        mResultData = new ViewModelProvider(getActivity()).get(ResultDataModel.class);
+
+        mModel = new ViewModelProvider(this).get(AuthorWorksModel.class);
         //noinspection ConstantConditions
         mModel.init(getContext(), requireArguments());
     }
@@ -297,6 +303,8 @@ public class AuthorWorksFragment
                                                    item.getAuthors(), () -> {
                                     mModel.delTocEntry(getContext(), item);
                                     mAdapter.notifyItemRemoved(position);
+                                    mResultData.putResultData(BookViewModel.BKEY_BOOK_DELETED,
+                                                              true);
                                 });
                         break;
                     }

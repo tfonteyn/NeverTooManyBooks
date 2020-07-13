@@ -40,6 +40,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import com.hardbacknutter.nevertoomanybooks.viewmodels.BookViewModel;
+import com.hardbacknutter.nevertoomanybooks.viewmodels.ResultDataModel;
 
 /**
  * Hosting activity for showing a book.
@@ -69,9 +70,8 @@ public class BookDetailsActivity
 
     @Override
     public void onBackPressed() {
-        final BookViewModel model = new ViewModelProvider(this).get(BookViewModel.class);
-        // Set the current visible book id as the Activity result data.
-        setResult(Activity.RESULT_OK, model.getResultIntent());
+        final ResultDataModel resultData = new ViewModelProvider(this).get(BookViewModel.class);
+        setResult(Activity.RESULT_OK, resultData.getResultIntent());
         super.onBackPressed();
     }
 

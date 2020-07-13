@@ -120,6 +120,7 @@ public class EditBookshelvesFragment
 
         //noinspection ConstantConditions
         mResultData = new ViewModelProvider(getActivity()).get(ResultDataModel.class);
+
         mModel = new ViewModelProvider(this).get(EditBookshelvesModel.class);
         mModel.init(getArguments());
     }

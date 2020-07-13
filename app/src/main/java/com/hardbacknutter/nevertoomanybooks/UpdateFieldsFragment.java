@@ -91,10 +91,6 @@ public class UpdateFieldsFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-
-        mUpdateFieldsModel = new ViewModelProvider(this).get(UpdateFieldsModel.class);
-        //noinspection ConstantConditions
-        mUpdateFieldsModel.init(getContext(), getArguments());
     }
 
     @Nullable
@@ -113,15 +109,15 @@ public class UpdateFieldsFragment
 
         final Activity activity = getActivity();
 
+        mUpdateFieldsModel = new ViewModelProvider(this).get(UpdateFieldsModel.class);
+        //noinspection ConstantConditions
+        mUpdateFieldsModel.init(getContext(), getArguments());
         // Progress from individual searches AND overall progress
         mUpdateFieldsModel.onProgress().observe(getViewLifecycleOwner(), this::onProgress);
-
         // An individual book search finished.
         mUpdateFieldsModel.onSearchFinished().observe(getViewLifecycleOwner(), message -> {
-            //noinspection ConstantConditions
             mUpdateFieldsModel.processSearchResults(getContext(), message.result);
         });
-
         // User cancelled the update
         mUpdateFieldsModel.onSearchCancelled().observe(getViewLifecycleOwner(), message -> {
             // Unlikely to be seen...
@@ -129,10 +125,8 @@ public class UpdateFieldsFragment
             // report up what work did get done + the last book we did.
             onAllDone(message);
         });
-
         // The full list was processed
         mUpdateFieldsModel.onAllDone().observe(getViewLifecycleOwner(), this::onAllDone);
-
         // Something really bad happened and we're aborting
         mUpdateFieldsModel.onCatastrophe().observe(getViewLifecycleOwner(), this::onCatastrophe);
 

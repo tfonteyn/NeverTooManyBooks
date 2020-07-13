@@ -142,8 +142,6 @@ public abstract class BookBaseFragment
         mBookViewModel = new ViewModelProvider(getActivity()).get(BookViewModel.class);
         //noinspection ConstantConditions
         mBookViewModel.init(getContext(), getArguments());
-
-        mGrAuthTask = new ViewModelProvider(this).get(GrAuthTask.class);
     }
 
     @Override
@@ -155,6 +153,7 @@ public abstract class BookBaseFragment
         //noinspection ConstantConditions
         mProgressBar = getActivity().findViewById(R.id.progressBar);
 
+        mGrAuthTask = new ViewModelProvider(this).get(GrAuthTask.class);
         mGrAuthTask.onProgressUpdate().observe(getViewLifecycleOwner(), this::onProgress);
         mGrAuthTask.onCancelled().observe(getViewLifecycleOwner(), this::onCancelled);
         mGrAuthTask.onFailure().observe(getViewLifecycleOwner(), this::onGrFailure);

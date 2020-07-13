@@ -86,11 +86,8 @@ public abstract class BookSearchBaseFragment
 
         mDb = new DAO(TAG);
 
-        // Activity scope!
         //noinspection ConstantConditions
-        mCoordinator = new ViewModelProvider(getActivity()).get(SearchCoordinator.class);
-        //noinspection ConstantConditions
-        mCoordinator.init(getContext(), requireArguments());
+        mResultData = new ViewModelProvider(getActivity()).get(ResultDataModel.class);
     }
 
     @Override
@@ -98,6 +95,11 @@ public abstract class BookSearchBaseFragment
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        // Activity scope!
+        //noinspection ConstantConditions
+        mCoordinator = new ViewModelProvider(getActivity()).get(SearchCoordinator.class);
+        //noinspection ConstantConditions
+        mCoordinator.init(getContext(), requireArguments());
         mCoordinator.onProgress().observe(getViewLifecycleOwner(), this::onProgress);
         // Handle both Success and Failed searches
         mCoordinator.onSearchFinished().observe(getViewLifecycleOwner(), this::onSearchFinished);
@@ -106,11 +108,7 @@ public abstract class BookSearchBaseFragment
             onSearchCancelled();
         });
 
-        //noinspection ConstantConditions
-        mResultData = new ViewModelProvider(getActivity()).get(ResultDataModel.class);
-
         // Warn the user, but don't abort.
-        //noinspection ConstantConditions
         if (!NetworkUtils.isNetworkAvailable(getContext())) {
             Snackbar.make(view, R.string.error_network_no_connection,
                           Snackbar.LENGTH_LONG).show();

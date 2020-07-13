@@ -78,12 +78,7 @@ public class GoodreadsAdminFragment
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setHasOptionsMenu(true);
-
-        mGrAuthTask = new ViewModelProvider(this).get(GrAuthTask.class);
-        mImportTask = new ViewModelProvider(this).get(ImportTask.class);
-        mSendBooksTask = new ViewModelProvider(this).get(SendBooksTask.class);
     }
 
     @Nullable
@@ -103,21 +98,23 @@ public class GoodreadsAdminFragment
         //noinspection ConstantConditions
         getActivity().setTitle(R.string.site_goodreads);
 
+        mGrAuthTask = new ViewModelProvider(this).get(GrAuthTask.class);
         mGrAuthTask.onProgressUpdate().observe(getViewLifecycleOwner(), this::onProgress);
         mGrAuthTask.onCancelled().observe(getViewLifecycleOwner(), this::onCancelled);
         mGrAuthTask.onFailure().observe(getViewLifecycleOwner(), this::onGrFailure);
         mGrAuthTask.onFinished().observe(getViewLifecycleOwner(), this::onGrFinished);
 
+        mImportTask = new ViewModelProvider(this).get(ImportTask.class);
         mImportTask.onProgressUpdate().observe(getViewLifecycleOwner(), this::onProgress);
         mImportTask.onCancelled().observe(getViewLifecycleOwner(), this::onCancelled);
         mImportTask.onFailure().observe(getViewLifecycleOwner(), this::onGrFailure);
         mImportTask.onFinished().observe(getViewLifecycleOwner(), this::onGrFinished);
 
+        mSendBooksTask = new ViewModelProvider(this).get(SendBooksTask.class);
         mSendBooksTask.onProgressUpdate().observe(getViewLifecycleOwner(), this::onProgress);
         mSendBooksTask.onCancelled().observe(getViewLifecycleOwner(), this::onCancelled);
         mSendBooksTask.onFailure().observe(getViewLifecycleOwner(), this::onGrFailure);
         mSendBooksTask.onFinished().observe(getViewLifecycleOwner(), this::onGrFinished);
-
 
         mVb.btnSync.setOnClickListener(v -> importBooks(true));
         mVb.btnImport.setOnClickListener(v -> importBooks(false));

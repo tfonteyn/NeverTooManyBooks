@@ -33,8 +33,7 @@ import android.os.Bundle;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.hardbacknutter.nevertoomanybooks.viewmodels.ActivityResultDataModel;
-import com.hardbacknutter.nevertoomanybooks.viewmodels.AuthorWorksModel;
+import com.hardbacknutter.nevertoomanybooks.viewmodels.ResultDataModel;
 
 /**
  * Hosting activity for showing an author.
@@ -59,8 +58,7 @@ public class AuthorWorksActivity
 
     @Override
     public void onBackPressed() {
-        final ActivityResultDataModel resultData = new ViewModelProvider(this)
-                .get(AuthorWorksModel.class);
+        final ResultDataModel resultData = new ViewModelProvider(this).get(ResultDataModel.class);
         setResult(Activity.RESULT_OK, resultData.getResultIntent());
         super.onBackPressed();
     }
