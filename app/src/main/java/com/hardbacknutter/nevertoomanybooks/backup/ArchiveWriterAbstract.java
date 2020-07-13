@@ -303,7 +303,7 @@ public abstract class ArchiveWriterAbstract
                     delta++;
                     final long now = System.currentTimeMillis();
                     if ((now - lastUpdate) > PROGRESS_UPDATE_INTERVAL_IN_MS) {
-                        progressListener.onProgressStep(delta, message);
+                        progressListener.publishProgressStep(delta, message);
                         lastUpdate = now;
                         delta = 0;
                     }

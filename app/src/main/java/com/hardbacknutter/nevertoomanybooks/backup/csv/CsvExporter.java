@@ -342,7 +342,7 @@ public class CsvExporter
 
                 final long now = System.currentTimeMillis();
                 if ((now - lastUpdate) > PROGRESS_UPDATE_INTERVAL) {
-                    progressListener.onProgress(mResults.booksExported, title);
+                    progressListener.publishProgress(mResults.booksExported, title);
                     lastUpdate = now;
                 }
             }

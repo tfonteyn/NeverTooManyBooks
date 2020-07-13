@@ -41,8 +41,8 @@ public interface ProgressListener {
      * @param pos     absolute position for the progress counter
      * @param message optional message to display
      */
-    default void onProgress(final int pos,
-                            @Nullable final String message) {
+    default void publishProgress(final int pos,
+                                 @Nullable final String message) {
         throw new UnsupportedOperationException();
     }
 
@@ -52,8 +52,8 @@ public interface ProgressListener {
      * @param delta   increment/decrement value for the progress counter
      * @param message optional message to display
      */
-    default void onProgressStep(final int delta,
-                                @Nullable final String message) {
+    default void publishProgressStep(final int delta,
+                                     @Nullable final String message) {
         throw new UnsupportedOperationException();
     }
 

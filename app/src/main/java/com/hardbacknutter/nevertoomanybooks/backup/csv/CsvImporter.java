@@ -359,7 +359,7 @@ public class CsvImporter
                                                mResults.booksCreated,
                                                mResults.booksUpdated,
                                                mResults.booksSkipped);
-                    progressListener.onProgressStep(delta, msg);
+                    progressListener.publishProgressStep(delta, msg);
                     delta = 0;
                     lastUpdate = now;
                 }

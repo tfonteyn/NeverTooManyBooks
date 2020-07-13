@@ -110,7 +110,8 @@ public abstract class ArchiveWriterAbstractBase
             if (!progressListener.isCancelled() && writeCovers) {
                 // set the progress bar temporarily in indeterminate mode.
                 progressListener.setProgressIsIndeterminate(true);
-                progressListener.onProgress(0, context.getString(R.string.progress_msg_searching));
+                progressListener
+                        .publishProgress(0, context.getString(R.string.progress_msg_searching));
                 ((SupportsCovers) this).prepareCovers(context, progressListener);
                 // reset; won't take effect until the next onProgress.
                 progressListener.setProgressIsIndeterminate(null);
@@ -145,22 +146,22 @@ public abstract class ArchiveWriterAbstractBase
             // importing as we'll be seeking in the input archive for them first.
 
             if (!progressListener.isCancelled() && writeStyles) {
-                progressListener.onProgressStep(0, context.getString(R.string.lbl_styles));
+                progressListener.publishProgressStep(0, context.getString(R.string.lbl_styles));
                 ((SupportsStyles) this).writeStyles(context, progressListener);
-                progressListener.onProgressStep(mResults.styles, null);
+                progressListener.publishProgressStep(mResults.styles, null);
                 entitiesWritten |= Options.STYLES;
             }
 
             if (!progressListener.isCancelled() && writePrefs) {
-                progressListener.onProgressStep(0, context.getString(R.string.lbl_settings));
+                progressListener.publishProgressStep(0, context.getString(R.string.lbl_settings));
                 ((SupportsPreferences) this).writePreferences(context, progressListener);
-                progressListener.onProgressStep(1, null);
+                progressListener.publishProgressStep(1, null);
                 entitiesWritten |= Options.PREFS;
             }
 
             // Add the previously generated books file.
             if (!progressListener.isCancelled() && writeBooks) {
-                progressListener.onProgressStep(1, context.getString(R.string.lbl_books));
+                progressListener.publishProgressStep(1, context.getString(R.string.lbl_books));
                 writeBooks(context, progressListener);
                 entitiesWritten |= Options.BOOKS;
             }
@@ -178,7 +179,7 @@ public abstract class ArchiveWriterAbstractBase
             // closing a very large archive will take a while, so keep the progress dialog open
             progressListener.setProgressIsIndeterminate(true);
             progressListener
-                    .onProgress(0, context.getString(R.string.progress_msg_please_wait));
+                    .publishProgress(0, context.getString(R.string.progress_msg_please_wait));
             // reset; won't take effect until the next onProgress.
             progressListener.setProgressIsIndeterminate(null);
         }

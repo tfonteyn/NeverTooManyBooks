@@ -147,7 +147,7 @@ public abstract class ArchiveReaderAbstract
             // Seek the styles entity first.
             // We'll need them to resolve styles referenced in Preferences and Bookshelves.
             if (readStyles) {
-                progressListener.onProgressStep(1, mProcessBooklistStyles);
+                progressListener.publishProgressStep(1, mProcessBooklistStyles);
                 final ReaderEntity entity = seek(ArchiveContainerEntry.BooklistStylesXml);
                 if (entity != null) {
                     try (Importer importer = new XmlImporter(context, Options.STYLES)) {
@@ -161,7 +161,7 @@ public abstract class ArchiveReaderAbstract
 
             // Seek the preferences entity next, so we can apply any prefs while reading data.
             if (readPrefs) {
-                progressListener.onProgressStep(1, mProcessPreferences);
+                progressListener.publishProgressStep(1, mProcessPreferences);
                 final ReaderEntity entity = seek(ArchiveContainerEntry.PreferencesXml);
                 if (entity != null) {
                     try (Importer importer = new XmlImporter(context, Options.PREFS)) {
@@ -190,7 +190,7 @@ public abstract class ArchiveReaderAbstract
                                                 mResults.coversCreated,
                                                 mResults.coversUpdated,
                                                 mResults.coversSkipped);
-                            progressListener.onProgressStep(1, msg);
+                            progressListener.publishProgressStep(1, msg);
                             mResults.coversProcessed++;
                             // entitiesRead is set when all done
                         }
@@ -218,7 +218,7 @@ public abstract class ArchiveReaderAbstract
                         // yes, we have already read them at the start.
                         // Leaving the code as we might support multiple entries in the future.
                         if (readPrefs) {
-                            progressListener.onProgressStep(1, mProcessPreferences);
+                            progressListener.publishProgressStep(1, mProcessPreferences);
                             try (Importer importer = new XmlImporter(context, Options.PREFS)) {
                                 importer.read(context, entity, progressListener);
                             }
@@ -231,7 +231,7 @@ public abstract class ArchiveReaderAbstract
                         // yes, we have already read them at the start.
                         // Leaving the code as we might support multiple entries in the future.
                         if (readStyles) {
-                            progressListener.onProgressStep(1, mProcessBooklistStyles);
+                            progressListener.publishProgressStep(1, mProcessBooklistStyles);
                             try (Importer importer = new XmlImporter(context, Options.STYLES)) {
                                 mResults.add(importer.read(context, entity, progressListener));
                             }

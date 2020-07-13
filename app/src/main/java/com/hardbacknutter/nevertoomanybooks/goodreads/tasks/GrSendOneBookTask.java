@@ -104,7 +104,7 @@ public class GrSendOneBookTask
                     if (isCancelled()) {
                         return new GrStatus(GrStatus.CANCELLED);
                     }
-                    onProgressStep(0, context.getString(R.string.progress_msg_sending));
+                    publishProgressStep(0, context.getString(R.string.progress_msg_sending));
 
                     final GoodreadsHandler apiHandler = new GoodreadsHandler(grAuth);
                     final DataHolder bookData = new CursorRow(cursor);
@@ -122,7 +122,6 @@ public class GrSendOneBookTask
                     if (BuildConfig.DEBUG /* always */) {
                         throw new IllegalStateException("Book not found: bookId=" + mBookId);
                     }
-                    // pretend it's Goodreads fault.
                     return new GrStatus(GrStatus.FAILED_BOOK_NOT_FOUND_LOCALLY);
                 }
             }
