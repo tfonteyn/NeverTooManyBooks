@@ -43,6 +43,7 @@ import org.xml.sax.Locator;
 public class XmlDumpParser
         extends SearchHandler {
 
+    /** Log tag. */
     private static final String TAG = "XmlDumpParser";
 
     private boolean mNamespaceBegin;

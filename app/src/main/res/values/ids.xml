@@ -60,11 +60,14 @@
     <item name="TAG_FIELD_USAGE" type="id" />
     <!-- END View tags -->
 
-    <!-- BEGIN predefined AsyncTask IDs needed for TaskBase child classes. -->
+    <!-- BEGIN predefined Task IDs. -->
     <item name="TASK_ID_GET_BOOKLIST" type="id" />
 
     <item name="TASK_ID_IMPORT" type="id" />
     <item name="TASK_ID_EXPORT" type="id" />
+
+    <!-- Cover browser single/large preview image. -->
+    <item name="TASK_ID_PREVIEW_IMAGE" type="id" />
 
     <item name="TASK_ID_UPDATE_FIELDS" type="id" />
 
@@ -77,14 +80,15 @@
     <!-- not an actual task, but this serves to identify messages from the SearchCoordinator -->
     <item name="TASK_ID_SEARCH_COORDINATOR" type="id" />
 
+    <!-- LibraryThing key test. -->
     <item name="TASK_ID_LT_VALIDATE_KEY" type="id" />
 
+    <!-- Goodreads. -->
     <item name="TASK_ID_GR_REQUEST_AUTH" type="id" />
     <item name="TASK_ID_GR_SEND_ONE_BOOK" type="id" />
     <item name="TASK_ID_GR_SEND_BOOKS" type="id" />
     <item name="TASK_ID_GR_IMPORT" type="id" />
     <item name="TASK_ID_GR_GET_WORKS" type="id" />
-    <item name="TASK_ID_PREVIEW_IMAGE" type="id" />
     <!-- END predefined AsyncTask IDs -->
 
 </resources>

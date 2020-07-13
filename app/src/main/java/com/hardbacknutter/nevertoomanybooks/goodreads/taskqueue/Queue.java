@@ -46,6 +46,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 class Queue
         extends Thread {
 
+    /** Log tag. */
     private static final String TAG = "Queue";
 
     /** QueueManager that owns this Queue object. */

@@ -86,14 +86,15 @@ public class LibraryThingRegistrationActivity
             }
         });
 
-        mVb.registerUrl.setOnClickListener(
-                v -> startActivity(new Intent(Intent.ACTION_VIEW,
-                                              Uri.parse(LibraryThingSearchEngine.BASE_URL + '/'))));
+        mVb.registerUrl.setOnClickListener(v -> {
+            final Uri uri = Uri.parse(LibraryThingSearchEngine.BASE_URL + '/');
+            startActivity(new Intent(Intent.ACTION_VIEW, uri));
+        });
 
-        mVb.devKeyUrl.setOnClickListener(
-                v -> startActivity(new Intent(Intent.ACTION_VIEW,
-                                              Uri.parse(LibraryThingSearchEngine.BASE_URL
-                                                        + "/services/keys.php"))));
+        mVb.devKeyUrl.setOnClickListener(v -> {
+            final Uri uri = Uri.parse(LibraryThingSearchEngine.BASE_URL + "/services/keys.php");
+            startActivity(new Intent(Intent.ACTION_VIEW, uri));
+        });
 
         final String key = PreferenceManager.getDefaultSharedPreferences(this)
                                             .getString(LibraryThingSearchEngine.PREFS_DEV_KEY, "");

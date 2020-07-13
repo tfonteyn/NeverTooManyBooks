@@ -27,24 +27,22 @@
  */
 
 /**
- * Sending progress messages:
- *
- * <ol>
- *     <li>A class method which runs as part of a background task calls to get a {@link com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener}</li>
- *     <li>Calls one of the {@link com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener#onProgress} methods to send a counter + message String</li>
- *     <li>CRUCIAL: The listener (running in the background) uses {@link android.os.AsyncTask}#publishProgress to get the message to the foreground thread</li>
- *     <li>{@link com.hardbacknutter.nevertoomanybooks.tasks.TaskBase#onProgressUpdate(ProgressMessage...)} now forwards it to the {@link com.hardbacknutter.nevertoomanybooks.tasks.TaskListener}</li>
- *     <li>{@link com.hardbacknutter.nevertoomanybooks.tasks.TaskListener#onProgress(ProgressMessage)} takes the message and sets it on the ViewModel LiveData variable.</li>
- *     <li>LiveData sends it to the observer, which in turn displays it.</li>
- * </ol>
+ * July 2020: restructured tasks:
  * <p>
- * The progress state must be held in the {@link com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener}.
+ * {@link com.hardbacknutter.nevertoomanybooks.tasks.LTask}
+ * extends {@link android.os.AsyncTask}.
+ * They use an {@link com.hardbacknutter.nevertoomanybooks.tasks.TaskListener}.
  * <p>
- * The {@link com.hardbacknutter.nevertoomanybooks.tasks.TaskListener} could accumulate the progress state,
- * or could leave that up to the final destination object.
  * <p>
- * In a nutshell: ProgressListener -> ASyncTask -> TaskListener -> LiveData -> User
+ * {@link com.hardbacknutter.nevertoomanybooks.tasks.VMTask}
+ * extends {@link androidx.lifecycle.ViewModel}.
+ * They use {@link androidx.lifecycle.MutableLiveData} and
+ * {@link com.hardbacknutter.nevertoomanybooks.viewmodels.LiveDataEvent}.
+ * <p>
+ * <p>
+ * In some other places, we use {@link android.os.AsyncTask} when there is no feedback required.
+ * and the above is overkill.
+ * - fire-and-forget type of tasks
+ * - tasks that manage the result themselves
  */
 package com.hardbacknutter.nevertoomanybooks.tasks;
-
-import com.hardbacknutter.nevertoomanybooks.tasks.messages.ProgressMessage;

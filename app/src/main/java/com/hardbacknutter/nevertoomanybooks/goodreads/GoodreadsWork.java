@@ -225,6 +225,7 @@ public class GoodreadsWork {
     static class GetImageTask
             extends AsyncTask<Void, Void, byte[]> {
 
+        /** Log tag. */
         private static final String TAG = "GR.GetImageTask";
         /** URL of image to fetch. */
         @NonNull

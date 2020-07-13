@@ -27,6 +27,8 @@
  */
 package com.hardbacknutter.nevertoomanybooks.tasks;
 
+import android.os.AsyncTask;
+
 import com.hardbacknutter.nevertoomanybooks.searches.SearchCoordinator;
 
 /**
@@ -38,14 +40,26 @@ import com.hardbacknutter.nevertoomanybooks.searches.SearchCoordinator;
  */
 public interface Canceller {
 
-    @SuppressWarnings("SameReturnValue")
+    /**
+     * Request cancellation.
+     * Mimics {@link AsyncTask#cancel(boolean)}.
+     *
+     * @param mayInterruptIfRunning {@code true} if the thread executing this
+     *                              task should be interrupted; otherwise, in-progress tasks
+     *                              are allowed to complete.
+     *                              The task implementation is free to ignore this flag though.
+     *
+     * @return {@code false} if the task could not be cancelled,
+     * typically because it has already completed normally;
+     * {@code true} otherwise
+     */
     boolean cancel(boolean mayInterruptIfRunning);
 
     /**
      * Check if the user wants to cancel the operation.
+     * Mimics {@link AsyncTask#isCancelled()}.
      *
-     * @return {@code true} if operation was cancelled.
+     * @return {@code true} if task was cancelled before it completed
      */
-    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     boolean isCancelled();
 }
