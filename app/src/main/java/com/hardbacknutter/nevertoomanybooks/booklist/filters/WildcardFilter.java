@@ -39,7 +39,8 @@ import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition
  * An SQL WHERE clause  (column LIKE '%text%').
  * Note that the LIKE usage means this is case insensitive.
  * <p>
- * TODO: bad stopgap... use PreparedStatements instead !
+ * If we ever use this class... sql concat is a security issue.
+ * MUST use PreparedStatements instead !
  *
  * <pre>
  *  {@code
