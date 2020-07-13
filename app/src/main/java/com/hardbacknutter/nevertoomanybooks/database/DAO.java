@@ -3877,7 +3877,7 @@ public class DAO
         int colGivenNames = -2;
         int colFamilyName = -2;
         int colSeriesTitle = -2;
-        int colpublisherName = -2;
+        int colPublisherName = -2;
         int colTOCEntryTitle = -2;
 
         final DataHolder rowData = new CursorRow(cursor);
@@ -3926,12 +3926,12 @@ public class DAO
             try (Cursor publishers = sSyncedDb
                     .rawQuery(SqlFTS.GET_PUBLISHERS_BY_BOOK_ID, qpBookId)) {
                 // Get column indexes, if not already got
-                if (colpublisherName < 0) {
-                    colpublisherName = publishers.getColumnIndexOrThrow(KEY_PUBLISHER_NAME);
+                if (colPublisherName < 0) {
+                    colPublisherName = publishers.getColumnIndexOrThrow(KEY_PUBLISHER_NAME);
                 }
 
                 while (publishers.moveToNext()) {
-                    publisherText.append(publishers.getString(colpublisherName)).append(';');
+                    publisherText.append(publishers.getString(colPublisherName)).append(';');
                 }
             }
 
@@ -4262,13 +4262,14 @@ public class DAO
 
         /**
          * Single column, with the formatted name of the Author.
+         * Note how the 'otherwise' will always concatenate the names without white space.
          *
          * @param givenNameFirst {@code true}
          *                       If no given name -> "FamilyName"
-         *                       otherwise -> "GivenNames FamilyName"
+         *                       otherwise -> "GivenNamesFamilyName"
          *                       {@code false}
          *                       If no given name -> "FamilyName"
-         *                       otherwise -> "FamilyName, GivenNames"
+         *                       otherwise -> "FamilyNameGivenNames"
          *
          * @return column expression
          */
@@ -4277,15 +4278,17 @@ public class DAO
                 return "CASE"
                        + " WHEN " + TBL_AUTHORS.dot(KEY_AUTHOR_GIVEN_NAMES_OB) + "=''"
                        + " THEN " + TBL_AUTHORS.dot(KEY_AUTHOR_FAMILY_NAME_OB)
-                       + " ELSE " + TBL_AUTHORS.dot(KEY_AUTHOR_GIVEN_NAMES_OB) + "||"
-                       + /*      */ TBL_AUTHORS.dot(KEY_AUTHOR_FAMILY_NAME_OB)
+
+                       + " ELSE " + TBL_AUTHORS.dot(KEY_AUTHOR_GIVEN_NAMES_OB)
+                       + "||" + TBL_AUTHORS.dot(KEY_AUTHOR_FAMILY_NAME_OB)
                        + " END";
             } else {
                 return "CASE"
                        + " WHEN " + TBL_AUTHORS.dot(KEY_AUTHOR_GIVEN_NAMES_OB) + "=''"
                        + " THEN " + TBL_AUTHORS.dot(KEY_AUTHOR_FAMILY_NAME_OB)
-                       + " ELSE " + TBL_AUTHORS.dot(KEY_AUTHOR_FAMILY_NAME_OB) + "||"
-                       + /*      */ TBL_AUTHORS.dot(KEY_AUTHOR_GIVEN_NAMES_OB)
+
+                       + " ELSE " + TBL_AUTHORS.dot(KEY_AUTHOR_FAMILY_NAME_OB)
+                       + "||" + TBL_AUTHORS.dot(KEY_AUTHOR_GIVEN_NAMES_OB)
                        + " END";
             }
         }
