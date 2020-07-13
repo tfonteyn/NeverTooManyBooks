@@ -34,6 +34,10 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 
@@ -63,6 +67,12 @@ public class CursorRow
      */
     public CursorRow(@NonNull final Cursor cursor) {
         mCursor = cursor;
+    }
+
+    @NonNull
+    @Override
+    public Set<String> keySet() {
+        return new HashSet<>(Arrays.asList(mCursor.getColumnNames()));
     }
 
     /**

@@ -31,6 +31,8 @@ import android.database.Cursor;
 
 import androidx.annotation.NonNull;
 
+import java.util.Set;
+
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 
 /**
@@ -39,16 +41,74 @@ import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
  */
 public interface DataHolder {
 
+    /**
+     * Returns a Set containing the Strings used as keys in this DataHolder.
+     * Note: this method is not strictly needed.
+     *
+     * @return a Set of String keys
+     */
+    @NonNull
+    Set<String> keySet();
+
+    /**
+     * Returns {@code true} if the given key is contained in the mapping
+     * of this DataHolder.
+     *
+     * @param key a String key
+     *
+     * @return {@code true} if the key is part of the mapping, {@code false} otherwise
+     */
     boolean contains(@NonNull String key);
 
+    /**
+     * Returns the value associated with the given key, or {@code 0} if
+     * no mapping of the desired type exists for the given key.
+     *
+     * @param key a String
+     *
+     * @return an int value
+     */
     int getInt(@NonNull String key);
 
+    /**
+     * Returns the value associated with the given key, or {@code 0L} if
+     * no mapping of the desired type exists for the given key.
+     *
+     * @param key a String
+     *
+     * @return a long value
+     */
     long getLong(@NonNull String key);
 
+    /**
+     * Returns the value associated with the given key, or {@code 0.0} if
+     * no mapping of the desired type exists for the given key.
+     *
+     * @param key a String
+     *
+     * @return a double value
+     */
     double getDouble(@NonNull String key);
 
+    /**
+     * Returns the value associated with the given key, or {@code false} if
+     * no mapping of the desired type exists for the given key.
+     *
+     * @param key a String
+     *
+     * @return a boolean value
+     */
     boolean getBoolean(@NonNull String key);
 
+    /**
+     * Returns the value associated with the given key, or {@code null} if
+     * no mapping of the desired type exists for the given key or a {@code null}
+     * value is explicitly associated with the key.
+     *
+     * @param key a String, or {@code null}
+     *
+     * @return a String value, or {@code null}
+     */
     @NonNull
     String getString(@NonNull String key);
 }
