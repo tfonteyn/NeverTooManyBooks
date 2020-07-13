@@ -52,7 +52,7 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.scanner.GoogleBarcodeScanner;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.tasks.BuildLanguageMappingsTask;
-import com.hardbacknutter.nevertoomanybooks.tasks.TaskBase;
+import com.hardbacknutter.nevertoomanybooks.tasks.LTask;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.FinishedMessage;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.ProgressMessage;
@@ -311,7 +311,7 @@ public class StartupViewModel
         }
     }
 
-    private void startTask(@NonNull final TaskBase<Boolean> task) {
+    private void startTask(@NonNull final LTask<Boolean> task) {
         synchronized (mAllTasks) {
             mAllTasks.add(task.getTaskId());
             task.execute();

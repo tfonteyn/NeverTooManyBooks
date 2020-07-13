@@ -43,18 +43,18 @@ import com.hardbacknutter.nevertoomanybooks.tasks.messages.FinishedMessage;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.ProgressMessage;
 
 /**
- * The base for a task.
+ * The base for a task which uses a {@link TaskListener} for the results.
  * <p>
  * The Progress parameter is always {@link ProgressMessage}, and Params always Void.
  *
  * @param <Result> the type of the result of the background computation.
  */
-public abstract class TaskBase<Result>
+public abstract class LTask<Result>
         extends AsyncTask<Void, ProgressMessage, Result>
         implements Canceller {
 
     /** Log tag. */
-    private static final String TAG = "TaskBase";
+    private static final String TAG = "LTask";
 
     /** id set at construction time, passed back in all messages. */
     private final int mTaskId;
@@ -75,8 +75,8 @@ public abstract class TaskBase<Result>
      * @param taskId       a task identifier, will be returned in the task listener.
      * @param taskListener for sending progress and finish messages to.
      */
-    protected TaskBase(final int taskId,
-                       @NonNull final TaskListener<Result> taskListener) {
+    protected LTask(final int taskId,
+                    @NonNull final TaskListener<Result> taskListener) {
         mTaskId = taskId;
         mTaskListener = new WeakReference<>(taskListener);
     }

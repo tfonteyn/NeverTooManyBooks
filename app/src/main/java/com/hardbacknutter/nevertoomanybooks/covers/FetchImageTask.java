@@ -38,7 +38,7 @@ import androidx.annotation.WorkerThread;
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
-import com.hardbacknutter.nevertoomanybooks.tasks.TaskBase;
+import com.hardbacknutter.nevertoomanybooks.tasks.LTask;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
@@ -47,7 +47,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
  * Fetch an image from the {@link FileManager}.
  */
 class FetchImageTask
-        extends TaskBase<ImageFileInfo> {
+        extends LTask<ImageFileInfo> {
 
     /** Log tag. */
     private static final String TAG = "FetchImageTask";

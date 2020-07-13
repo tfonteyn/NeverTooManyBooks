@@ -40,7 +40,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBCleaner;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
-import com.hardbacknutter.nevertoomanybooks.tasks.TaskBase;
+import com.hardbacknutter.nevertoomanybooks.tasks.LTask;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.ProgressMessage;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
@@ -49,8 +49,9 @@ import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
  * Data cleaning. Done on each startup.
  */
 public class DBCleanerTask
-        extends TaskBase<Boolean> {
+        extends LTask<Boolean> {
 
+    /** Log tag. */
     private static final String TAG = "DBCleanerTask";
 
     /** Database Access. */

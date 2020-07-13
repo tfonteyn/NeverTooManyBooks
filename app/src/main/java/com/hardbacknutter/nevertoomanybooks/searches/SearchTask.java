@@ -43,7 +43,7 @@ import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
-import com.hardbacknutter.nevertoomanybooks.tasks.TaskBase;
+import com.hardbacknutter.nevertoomanybooks.tasks.LTask;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.ProgressMessage;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
@@ -54,7 +54,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsExceptio
  * Searches a single {@link SearchEngine}.
  */
 public class SearchTask
-        extends TaskBase<Bundle> {
+        extends LTask<Bundle> {
 
     static final int BY_NATIVE_ID = 0;
     static final int BY_ISBN = 1;

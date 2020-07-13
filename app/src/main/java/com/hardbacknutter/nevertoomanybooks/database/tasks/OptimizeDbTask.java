@@ -39,7 +39,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.CoversDAO;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
-import com.hardbacknutter.nevertoomanybooks.tasks.TaskBase;
+import com.hardbacknutter.nevertoomanybooks.tasks.LTask;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.ProgressMessage;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
@@ -48,7 +48,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
  * Run 'PRAGMA optimize' on our databases.
  */
 public class OptimizeDbTask
-        extends TaskBase<Boolean> {
+        extends LTask<Boolean> {
 
     /** Log tag. */
     private static final String TAG = "OptimizeDbTask";
