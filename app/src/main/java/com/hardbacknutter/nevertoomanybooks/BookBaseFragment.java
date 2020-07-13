@@ -255,6 +255,8 @@ public abstract class BookBaseFragment
                 actionBar.setTitle(R.string.lbl_add_book);
                 actionBar.setSubtitle(null);
             } else {
+                // Reminder: in BookDetailsFragment, we only display title + single author here!
+                // so never remove these unless BookDetailsFragment is updated as well.
                 // VIEW or EDIT existing book
                 actionBar.setTitle(book.getString(DBDefinitions.KEY_TITLE));
                 //noinspection ConstantConditions

@@ -2804,9 +2804,12 @@ public class DAO
      * <strong>IMPORTANT:</strong> the query can return more then one row if the
      * given-name of the author is empty. But we only return the id of the first row found.
      *
-     * @param context    Current context
-     * @param author     to find the id of
-     * @param bookLocale Locale to use if the item has none set
+     * @param context      Current context
+     * @param author       to find the id of
+     * @param lookupLocale set to {@code true} to force a database lookup of the locale.
+     *                     This can be (relatively) slow, and hence should be {@code false}
+     *                     during for example an import.
+     * @param bookLocale   Locale to use if the item has none set
      *
      * @return the id, or 0 (i.e. 'new') when not found
      */
@@ -2859,6 +2862,9 @@ public class DAO
      *
      * @param context    Current context
      * @param series     to find the id of
+     * @param lookupLocale set to {@code true} to force a database lookup of the locale.
+     *                     This can be (relatively) slow, and hence should be {@code false}
+     *                     during for example an import.
      * @param bookLocale Locale to use if the item has none set
      *
      * @return the id, or 0 (i.e. 'new') when not found
@@ -2915,6 +2921,9 @@ public class DAO
      *
      * @param context    Current context
      * @param publisher  to find the id of
+     * @param lookupLocale set to {@code true} to force a database lookup of the locale.
+     *                     This can be (relatively) slow, and hence should be {@code false}
+     *                     during for example an import.
      * @param bookLocale Locale to use if the item has none set
      *
      * @return the id, or 0 (i.e. 'new') when not found
@@ -3307,6 +3316,9 @@ public class DAO
      *
      * @param context    Current context
      * @param tocEntry   tocEntry to search for
+     * @param lookupLocale set to {@code true} to force a database lookup of the locale.
+     *                     This can be (relatively) slow, and hence should be {@code false}
+     *                     during for example an import.
      * @param bookLocale Locale to use if the item has none set
      *
      * @return the id, or 0 (i.e. 'new') when not found

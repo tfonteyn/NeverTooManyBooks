@@ -57,7 +57,6 @@ import java.util.Locale;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataEditor;
-import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.dialogs.date.DatePickerResultsListener;
 import com.hardbacknutter.nevertoomanybooks.dialogs.date.PartialDatePickerDialogFragment;
@@ -245,7 +244,7 @@ public abstract class EditBookBaseFragment
 
     /**
      * Default implementation of code to save existing data to the Book object.
-     * We simply copy all {@link Field} into the given {@link DataManager} e.g. the {@link Book}
+     * We simply copy all {@link Field} into the given {@link Book}.
      * <p>
      * Called from {@link #onPause()}.
      * Override as needed.

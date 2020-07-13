@@ -123,8 +123,8 @@
 
         <!-- 2020-07-13: setting visibility="gone" from code
                 but keeping/populating as normal for now.
-                The title is ALSO visible in the ToolBar,
-                AND (if present) the cover image. -->
+                The title is ALSO visible in the ToolBar (and usually on the cover image).
+        -->
         <TextView
             android:id="@+id/title"
             style="@style/Field.BookTitle.Large"
