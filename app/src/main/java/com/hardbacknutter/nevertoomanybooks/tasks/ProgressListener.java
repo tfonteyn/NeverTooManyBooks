@@ -31,7 +31,7 @@ import androidx.annotation.Nullable;
 
 /**
  * Listener interface for progress messages.
- * One of the onProgress should be implemented.
+ * One of the publishProgress should be implemented.
  */
 public interface ProgressListener {
 
@@ -62,14 +62,13 @@ public interface ProgressListener {
      *
      * @return {@code true} if operation was cancelled.
      */
-    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     boolean isCancelled();
 
     /**
      * Change the indeterminate mode for the progress bar.
      *
-     * @param indeterminate true/false to enable the indeterminate mode,
-     *                      or {@code null} to tell the receiver to use its initial mode.
+     * @param indeterminate true/false to enable/disable the indeterminate mode
+     *                      or {@code null} to tell the receiver to revert back to its initial mode.
      */
     void setProgressIsIndeterminate(@Nullable Boolean indeterminate);
 
