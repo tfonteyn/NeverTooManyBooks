@@ -101,15 +101,15 @@ public class SearchTask
      * </ol>
      *
      * @param context      Localized context
-     * @param taskId       identifier
+     * @param siteId       identifier
      * @param searchEngine the search site engine
      * @param taskListener for the results
      */
     SearchTask(@NonNull final Context context,
-               final int taskId,
+               @SearchSites.Id final int siteId,
                @NonNull final SearchEngine searchEngine,
                @NonNull final TaskListener<Bundle> taskListener) {
-        super(taskId, taskListener);
+        super(siteId, taskListener);
         mSearchEngine = searchEngine;
         mSearchEngine.setCaller(this);
 

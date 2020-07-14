@@ -77,8 +77,18 @@
     <!-- Fetch a list of alternative editions for a book. -->
     <item name="TASK_ID_SEARCH_EDITIONS" type="id" />
 
-    <!-- not an actual task, but this serves to identify messages from the SearchCoordinator -->
+    <!-- not an actual task, but this serves to identify messages from the SearchCoordinator. -->
     <item name="TASK_ID_SEARCH_COORDINATOR" type="id" />
+
+    <!-- not an actual task, but this serves to identify messages from the StartupViewModel. -->
+    <item name="TASK_ID_STARTUP_COORDINATOR" type="id" />
+
+    <!-- Database maintenance tasks. -->
+    <item name="TASK_ID_DB_CLEANER" type="id" />
+    <item name="TASK_ID_DB_OPTIMIZE" type="id" />
+    <item name="TASK_ID_DB_REBUILD_INDEXES" type="id" />
+    <item name="TASK_ID_DB_REBUILD_FTS" type="id" />
+    <item name="TASK_ID_DB_REBUILD_REORDER_TITLES" type="id" />
 
     <!-- LibraryThing key test. -->
     <item name="TASK_ID_LT_VALIDATE_KEY" type="id" />

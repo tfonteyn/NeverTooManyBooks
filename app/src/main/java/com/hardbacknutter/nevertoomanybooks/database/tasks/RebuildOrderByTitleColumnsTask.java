@@ -60,15 +60,13 @@ public class RebuildOrderByTitleColumnsTask
     /**
      * Constructor.
      *
-     * @param taskId       a task identifier, will be returned in the task finished listener.
      * @param db           Database Access
      * @param taskListener for sending progress and finish messages to.
      */
     @UiThread
-    public RebuildOrderByTitleColumnsTask(final int taskId,
-                                          @NonNull final DAO db,
+    public RebuildOrderByTitleColumnsTask(@NonNull final DAO db,
                                           @NonNull final TaskListener<Boolean> taskListener) {
-        super(taskId, taskListener);
+        super(R.id.TASK_ID_DB_REBUILD_REORDER_TITLES, taskListener);
         mDb = db;
     }
 

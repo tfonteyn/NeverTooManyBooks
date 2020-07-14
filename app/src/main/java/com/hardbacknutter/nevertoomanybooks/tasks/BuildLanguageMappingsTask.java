@@ -60,9 +60,10 @@ public class BuildLanguageMappingsTask
         try {
             // the one the user is using our app in (can be different from the system one)
             createLanguageMappingCache(prefs, LocaleUtils.getUserLocale(context));
-
             // the system default
             createLanguageMappingCache(prefs, LocaleUtils.getSystemLocale());
+            // Always add English
+            createLanguageMappingCache(prefs, Locale.ENGLISH);
 
             //NEWTHINGS: add new site specific ID: add mappings for site specific languages
 
@@ -70,9 +71,6 @@ public class BuildLanguageMappingsTask
             // StripInfoSearchEngine
             // KbNlSearchEngine
             createLanguageMappingCache(prefs, new Locale("nl"));
-
-            // Always add English for compatibility with lots of websites.
-            createLanguageMappingCache(prefs, Locale.ENGLISH);
 
         } catch (@NonNull final RuntimeException e) {
             Logger.error(context, TAG, e);

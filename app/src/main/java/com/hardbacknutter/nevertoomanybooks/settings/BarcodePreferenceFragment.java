@@ -27,11 +27,13 @@
  */
 package com.hardbacknutter.nevertoomanybooks.settings;
 
+import android.os.AsyncTask;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.scanner.GoogleBarcodeScanner;
 
 /**
  * Used/defined in xml/preferences.xml
@@ -55,5 +57,9 @@ public class BarcodePreferenceFragment
         super.onCreatePreferences(savedInstanceState, rootKey);
 
         setPreferencesFromResource(R.xml.preferences_barcodes, rootKey);
+
+        // Start this as fire-and-forget runnable
+        // perhaps delay this until the user selects the google scanner?
+        AsyncTask.THREAD_POOL_EXECUTOR.execute(new GoogleBarcodeScanner.PreloadGoogleScanner());
     }
 }

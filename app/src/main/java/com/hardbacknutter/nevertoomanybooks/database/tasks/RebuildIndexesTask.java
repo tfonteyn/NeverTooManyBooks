@@ -55,13 +55,11 @@ public class RebuildIndexesTask
     /**
      * Constructor.
      *
-     * @param taskId       a task identifier, will be returned in the task finished listener.
      * @param taskListener for sending progress and finish messages to.
      */
     @UiThread
-    public RebuildIndexesTask(final int taskId,
-                              @NonNull final TaskListener<Boolean> taskListener) {
-        super(taskId, taskListener);
+    public RebuildIndexesTask(@NonNull final TaskListener<Boolean> taskListener) {
+        super(R.id.TASK_ID_DB_REBUILD_INDEXES, taskListener);
     }
 
     @Override

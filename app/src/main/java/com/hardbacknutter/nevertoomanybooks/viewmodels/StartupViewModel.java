@@ -33,13 +33,12 @@ import android.os.AsyncTask;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.ViewModel;
 import androidx.preference.PreferenceManager;
 
 import java.util.Collection;
 import java.util.HashSet;
 
+import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.tasks.DBCleanerTask;
 import com.hardbacknutter.nevertoomanybooks.database.tasks.OptimizeDbTask;
@@ -48,20 +47,22 @@ import com.hardbacknutter.nevertoomanybooks.database.tasks.RebuildIndexesTask;
 import com.hardbacknutter.nevertoomanybooks.database.tasks.RebuildOrderByTitleColumnsTask;
 import com.hardbacknutter.nevertoomanybooks.database.tasks.Scheduler;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
-import com.hardbacknutter.nevertoomanybooks.scanner.GoogleBarcodeScanner;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.tasks.BuildLanguageMappingsTask;
 import com.hardbacknutter.nevertoomanybooks.tasks.LTask;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
+import com.hardbacknutter.nevertoomanybooks.tasks.VMTask;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.FinishedMessage;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.ProgressMessage;
 import com.hardbacknutter.nevertoomanybooks.utils.UpgradeMessageManager;
 
 /**
  * <strong>Note:</strong> yes, this is overkill for the startup. Call it an experiment.
+ * It's also an unhealthy mix of VMTask and LTask components.
+ * We're using VMTask MutableLiveData to report back, but our tasks are LTasks.
  */
 public class StartupViewModel
-        extends ViewModel {
+        extends VMTask<Void> {
 
     public static final String PREF_PREFIX = "startup.";
     /** Log tag. */
@@ -76,11 +77,6 @@ public class StartupViewModel
     /** TaskId holder. Added when started. Removed when stopped. */
     @NonNull
     private final Collection<Integer> mAllTasks = new HashSet<>(6);
-
-    private final MutableLiveData<Boolean> mAllTasksFinished = new MutableLiveData<>(false);
-    private final MutableLiveData<Exception> mTaskException = new MutableLiveData<>();
-    /** Using MutableLiveData as we actually want re-delivery after a device rotation. */
-    private final MutableLiveData<String> mTaskProgressMessage = new MutableLiveData<>();
 
     private final TaskListener<Boolean> mTaskListener = new TaskListener<Boolean>() {
         /**
@@ -105,15 +101,15 @@ public class StartupViewModel
         private void cleanup(final int taskId) {
             synchronized (mAllTasks) {
                 mAllTasks.remove(taskId);
-                if (mAllTasks.isEmpty()) {
-                    mAllTasksFinished.setValue(true);
+                if (!isRunning()) {
+                    mFinished.setValue(null);
                 }
             }
         }
 
         @Override
         public void onProgress(@NonNull final ProgressMessage message) {
-            mTaskProgressMessage.setValue(message.text);
+            mProgress.setValue(message);
         }
     };
 
@@ -133,41 +129,17 @@ public class StartupViewModel
     /** Indicates the upgrade message has been shown. */
     private boolean mUpgradeMessageShown;
 
-    /**
-     * Developer warning: this is not a UI update.
-     *
-     * @return {@code true} if all tasks are finished.
-     */
-    @NonNull
-    public MutableLiveData<Boolean> onAllTasksFinished() {
-        return mAllTasksFinished;
-    }
-
-    /**
-     * Updated after a (any) task finishes with an exception.
-     *
-     * @return exception, or {@code null} for none.
-     */
-    @NonNull
-    public MutableLiveData<Exception> onTaskException() {
-        return mTaskException;
-    }
-
-    /**
-     * Only provides the last message. There is no queue.
-     *
-     * @return message
-     */
-    @NonNull
-    public MutableLiveData<String> onTaskProgress() {
-        return mTaskProgressMessage;
-    }
-
     @Override
     protected void onCleared() {
+        super.onCleared();
         if (mDb != null) {
             mDb.close();
         }
+    }
+
+    @Override
+    public boolean isRunning() {
+        return !mAllTasks.isEmpty() || super.isRunning();
     }
 
     /**
@@ -251,61 +223,57 @@ public class StartupViewModel
         mIsFirstStart = false;
 
         try {
+            // this can trigger a database upgrade (or the initial creation)
+            // which is why we catch ALL exceptions here.
             mDb = new DAO(TAG);
 
         } catch (@NonNull final Exception e) {
             Logger.error(context, TAG, e, "startTasks");
-            mTaskException.setValue(e);
+            mFailure.setValue(new FinishedMessage<>(R.id.TASK_ID_STARTUP_COORDINATOR, e));
             return;
         }
 
-        // Start these as fire-and-forget runnable; no need to wait for them.
+        // Start this as fire-and-forget runnable; no need to wait for it.
         AsyncTask.THREAD_POOL_EXECUTOR.execute(new BuildLanguageMappingsTask());
 
-        // perhaps delay this until the user selects the google scanner?
-        AsyncTask.THREAD_POOL_EXECUTOR.execute(new GoogleBarcodeScanner.PreloadGoogleScanner());
-
-
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        int taskId = 0;
+
         boolean optimizeDb = false;
 
         // this is not critical, once every so often is fine
         if (mDoMaintenance) {
             // cleaner must be started after the language mapper task,
             // but before the rebuild tasks.
-            startTask(new DBCleanerTask(++taskId, mDb, mTaskListener));
+            startTask(new DBCleanerTask(mDb, mTaskListener));
             optimizeDb = true;
         }
 
         // on demand only
         if (prefs.getBoolean(Scheduler.PREF_REBUILD_ORDERBY_COLUMNS, false)) {
-            startTask(new RebuildOrderByTitleColumnsTask(++taskId, mDb, mTaskListener));
+            startTask(new RebuildOrderByTitleColumnsTask(mDb, mTaskListener));
             optimizeDb = true;
         }
 
         // on demand only
         if (prefs.getBoolean(Scheduler.PREF_REBUILD_INDEXES, false)) {
-            startTask(new RebuildIndexesTask(++taskId, mTaskListener));
+            startTask(new RebuildIndexesTask(mTaskListener));
             optimizeDb = true;
         }
 
         // on demand only
         if (prefs.getBoolean(Scheduler.PREF_REBUILD_FTS, false)) {
-            startTask(new RebuildFtsTask(++taskId, mDb, mTaskListener));
+            startTask(new RebuildFtsTask(mDb, mTaskListener));
             optimizeDb = true;
         }
 
         // triggered by any of the above as needed
         // This should always be the last task.
         if (optimizeDb) {
-            startTask(new OptimizeDbTask(++taskId, mTaskListener));
+            startTask(new OptimizeDbTask(mTaskListener));
         }
 
-        synchronized (mAllTasks) {
-            if (mAllTasks.isEmpty()) {
-                mAllTasksFinished.setValue(true);
-            }
+        if (!isRunning()) {
+            mFinished.setValue(null);
         }
     }
 

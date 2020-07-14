@@ -116,17 +116,14 @@ public class StartupActivity
 
         mModel = new ViewModelProvider(this).get(StartupViewModel.class);
         mModel.init(this);
-        mModel.onTaskProgress().observe(this, message -> mVb.progressMessage.setText(message));
+        mModel.onProgressUpdate().observe(this, message ->
+                mVb.progressMessage.setText(message.text));
         // when all tasks are done, move on to next startup-stage
-        mModel.onAllTasksFinished().observe(this, finished -> {
-            if (finished) {
-                nextStage();
-            }
-        });
+        mModel.onFinished().observe(this, aVoid -> nextStage());
         // any error, notify the user and die.
-        mModel.onTaskException().observe(this, e -> {
-            if (e != null) {
-                showFatalErrorAndFinish(e.getLocalizedMessage());
+        mModel.onFailure().observe(this, e -> {
+            if (e.result != null) {
+                showFatalErrorAndFinish(e.result.getLocalizedMessage());
             }
         });
 
