@@ -141,13 +141,15 @@ public class GoodreadsWork {
      * the image becomes available.
      *
      * @param imageView ImageView to display cover image
-     * @param maxSize   Maximum size of the image
+     * @param maxWidth  Maximum size of the image
+     * @param maxHeight Maximum size of the image
      */
     @UiThread
     void fillImageView(@NonNull final ImageView imageView,
-                       final int maxSize) {
-        mMaxWidth = maxSize;
-        mMaxHeight = maxSize;
+                       final int maxWidth,
+                       final int maxHeight) {
+        mMaxWidth = maxWidth;
+        mMaxHeight = maxHeight;
         synchronized (this) {
             if (mImageBytes == null) {
                 // Image not retrieved yet, so clear any existing image

@@ -89,8 +89,10 @@ public class CoverBrowserDialogFragment
     @Nullable
     private GalleryAdapter mGalleryAdapter;
 
-    /** The max height (and width) to be used for the preview image. */
-    private int mPreviewMaxSize;
+    /** The max width to be used for the preview image. */
+    private int mPreviewMaxWidth;
+    /** The max height to be used for the preview image. */
+    private int mPreviewMaxHeight;
 
     /** Indicates cancel has been requested. */
     private boolean mIsCancelled;
@@ -146,7 +148,9 @@ public class CoverBrowserDialogFragment
 
         final int scalePreview = getResources().getInteger(R.integer.cover_scale_browser_preview);
         //noinspection ConstantConditions
-        mPreviewMaxSize = ImageScale.getPixelSize(getContext(), scalePreview);
+        final int longestSide = ImageScale.toPixels(getContext(), scalePreview);
+        mPreviewMaxWidth = longestSide;
+        mPreviewMaxHeight = longestSide;
     }
 
     @Override
@@ -185,8 +189,7 @@ public class CoverBrowserDialogFragment
         mVb.gallery.setLayoutManager(galleryLM);
         mVb.gallery.addItemDecoration(
                 new DividerItemDecoration(getContext(), galleryLM.getOrientation()));
-        final int scaleGallery = getResources().getInteger(R.integer.cover_scale_browser_gallery);
-        mGalleryAdapter = new GalleryAdapter(scaleGallery);
+        mGalleryAdapter = new GalleryAdapter();
         mVb.gallery.setAdapter(mGalleryAdapter);
 
         // When the preview image is clicked, send the fileSpec back to the caller and terminate.
@@ -238,8 +241,9 @@ public class CoverBrowserDialogFragment
         if (mEditions.isEmpty()) {
             mVb.statusMessage.setText(R.string.progress_msg_finding_editions);
             mVb.progressBar.setVisibility(View.VISIBLE);
-
-            mSearchEditionsTask.startTask(mModel.getBaseIsbn());
+            if (mSearchEditionsTask.isRunning()) {
+                mSearchEditionsTask.startTask(mModel.getBaseIsbn());
+            }
         }
     }
 
@@ -351,7 +355,7 @@ public class CoverBrowserDialogFragment
         mVb.progressBar.setVisibility(View.INVISIBLE);
 
         if (ImageUtils.isFileGood(file)) {
-            new ImageLoader(mVb.preview, file, mPreviewMaxSize, mPreviewMaxSize, () -> {
+            new ImageLoader(mVb.preview, file, mPreviewMaxWidth, mPreviewMaxHeight, () -> {
                 mModel.setSelectedFilePath(file.getAbsolutePath());
                 mVb.preview.setVisibility(View.VISIBLE);
                 mVb.statusMessage.setText(R.string.txt_tap_on_image_to_select);
@@ -401,21 +405,20 @@ public class CoverBrowserDialogFragment
             extends RecyclerView.Adapter<Holder> {
 
         /** A single image fixed width. */
-        private final int mWidth;
+        private final int mMaxWidth;
         /** A single image fixed height. */
-        private final int mHeight;
+        private final int mMaxHeight;
 
         /**
          * Constructor.
-         *
-         * @param scale id
          */
         @SuppressWarnings("SameParameterValue")
-        GalleryAdapter(@ImageScale.Scale final int scale) {
+        GalleryAdapter() {
+            final int scale = getResources().getInteger(R.integer.cover_scale_browser_gallery);
             //noinspection ConstantConditions
-            final int maxSize = ImageScale.getPixelSize(getContext(), scale);
-            mHeight = maxSize;
-            mWidth = maxSize;
+            final int longestSide = ImageScale.toPixels(getContext(), scale);
+            mMaxWidth = longestSide;
+            mMaxHeight = longestSide;
         }
 
         @Override
@@ -424,8 +427,8 @@ public class CoverBrowserDialogFragment
                                          final int viewType) {
             final ImageView view = (ImageView) getLayoutInflater()
                     .inflate(R.layout.row_cover_browser_gallery, parent, false);
-            view.getLayoutParams().width = mWidth;
-            view.getLayoutParams().height = mHeight;
+            view.getLayoutParams().width = mMaxWidth;
+            view.getLayoutParams().height = mMaxHeight;
             return new Holder(view);
         }
 
@@ -449,13 +452,13 @@ public class CoverBrowserDialogFragment
             final File file = imageFileInfo.getFile();
             if (ImageUtils.isFileGood(file)) {
                 // we have a file, load it into the view.
-                new ImageLoader(holder.imageView, file, mWidth, mHeight, null)
+                new ImageLoader(holder.imageView, file, mMaxWidth, mMaxHeight, null)
                         .executeOnExecutor(mModel.getGalleryDisplayExecutor());
 
             } else {
                 // No valid file available; use a placeholder but preserve the available space
                 ImageUtils.setPlaceholder(holder.imageView, R.drawable.ic_image, 0,
-                                          (int) (mHeight * ImageUtils.HW_RATIO), mHeight);
+                                          (int) (mMaxHeight * ImageUtils.HW_RATIO), mMaxHeight);
                 // and queue a request for it.
                 mModel.fetchGalleryImage(isbn);
             }

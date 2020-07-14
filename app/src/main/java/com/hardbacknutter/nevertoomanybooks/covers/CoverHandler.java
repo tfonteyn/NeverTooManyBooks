@@ -132,8 +132,8 @@ public class CoverHandler {
     private final TextView mIsbnView;
     @Nullable
     private final ProgressBar mProgressBar;
-    private final int mWidth;
-    private final int mHeight;
+    private final int mMaxWidth;
+    private final int mMaxHeight;
     private final TransFormTaskViewModel mTransFormTaskViewModel;
     /** Used to display a hint if user rotates a camera image. */
     private boolean mShowHintAboutRotating;
@@ -173,9 +173,9 @@ public class CoverHandler {
         mCIdx = cIdx;
         mCoverView = coverView;
         //noinspection ConstantConditions
-        final int size = ImageScale.getPixelSize(mContext, scale);
-        mHeight = size;
-        mWidth = size;
+        final int longestSide = ImageScale.toPixels(mContext, scale);
+        mMaxWidth = longestSide;
+        mMaxHeight = longestSide;
 
         // Allow zooming by clicking on the image;
         // If there is no actual image, bring up the context menu instead.
@@ -449,7 +449,7 @@ public class CoverHandler {
         if (bitmap != null && file != null) {
             mBook.putString(Book.BKEY_FILE_SPEC[mCIdx], file.getAbsolutePath());
 
-            ImageUtils.setImageView(mCoverView, mWidth, mHeight, bitmap, 0);
+            ImageUtils.setImageView(mCoverView, mMaxWidth, mMaxHeight, bitmap, 0);
             mCoverView.setBackground(null);
 
             switch (returnCode) {
@@ -480,7 +480,7 @@ public class CoverHandler {
         if (ImageUtils.isFileGood(file)) {
             mBook.putString(Book.BKEY_FILE_SPEC[mCIdx], file.getAbsolutePath());
 
-            new ImageLoader(mCoverView, file, mWidth, mHeight, null)
+            new ImageLoader(mCoverView, file, mMaxWidth, mMaxHeight, null)
                     .execute();
             mCoverView.setBackground(null);
 

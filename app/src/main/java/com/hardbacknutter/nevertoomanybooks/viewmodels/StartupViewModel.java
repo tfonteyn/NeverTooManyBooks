@@ -40,7 +40,6 @@ import androidx.preference.PreferenceManager;
 import java.util.Collection;
 import java.util.HashSet;
 
-import com.hardbacknutter.nevertoomanybooks.covers.ImageUtils;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.tasks.DBCleanerTask;
 import com.hardbacknutter.nevertoomanybooks.database.tasks.OptimizeDbTask;
@@ -298,10 +297,9 @@ public class StartupViewModel
         }
 
         // triggered by any of the above as needed
+        // This should always be the last task.
         if (optimizeDb) {
-            // optimize db should always be started as the last task.
-            startTask(new OptimizeDbTask(++taskId, ImageUtils.imagesAreCached(context),
-                                         mTaskListener));
+            startTask(new OptimizeDbTask(++taskId, mTaskListener));
         }
 
         synchronized (mAllTasks) {

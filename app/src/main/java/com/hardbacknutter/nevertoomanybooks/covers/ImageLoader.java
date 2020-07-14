@@ -47,10 +47,12 @@ public class ImageLoader
 
     /** Log tag. */
     private static final String TAG = "ImageLoader";
-    final int mMaxWidth;
-    final int mMaxHeight;
+
     @NonNull
     private final WeakReference<ImageView> mImageView;
+    protected final int mMaxWidth;
+    protected final int mMaxHeight;
+
     @NonNull
     private final File mFile;
     @Nullable

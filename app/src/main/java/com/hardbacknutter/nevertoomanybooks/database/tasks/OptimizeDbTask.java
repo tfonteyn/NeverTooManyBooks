@@ -36,6 +36,7 @@ import androidx.annotation.UiThread;
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.covers.ImageUtils;
 import com.hardbacknutter.nevertoomanybooks.database.CoversDAO;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
@@ -53,22 +54,17 @@ public class OptimizeDbTask
     /** Log tag. */
     private static final String TAG = "OptimizeDbTask";
 
-    /** Flag: also do the covers database (or not). */
-    private final boolean mDoCoversDb;
 
     /**
      * Constructor.
      *
      * @param taskId       a task identifier, will be returned in the task finished listener.
-     * @param doCoversDb   Flag: also do the covers database (or not)
      * @param taskListener for sending progress and finish messages to.
      */
     @UiThread
     public OptimizeDbTask(final int taskId,
-                          final boolean doCoversDb,
                           @NonNull final TaskListener<Boolean> taskListener) {
         super(taskId, taskListener);
-        mDoCoversDb = doCoversDb;
     }
 
     @Override
@@ -86,7 +82,7 @@ public class OptimizeDbTask
             }
 
             DAO.getSyncDb().optimize();
-            if (mDoCoversDb) {
+            if (ImageUtils.isImageCachingEnabled(context)) {
                 CoversDAO.optimize(context);
             }
             return true;

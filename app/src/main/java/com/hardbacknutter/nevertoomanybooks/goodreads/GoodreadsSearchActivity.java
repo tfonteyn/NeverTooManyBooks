@@ -169,10 +169,12 @@ public class GoodreadsSearchActivity
 
         mVb.btnSearch.setOnClickListener(v -> doSearch());
 
-        if (savedInstanceState == null) {
-            // On first start of the activity only: if we have a book, start a search
-            if (mGrSearchTask.getBookId() > 0) {
-                doSearch();
+        if (!mGrSearchTask.isRunning()) {
+            if (savedInstanceState == null) {
+                // On first start of the activity only: if we have a book, start a search
+                if (mGrSearchTask.getBookId() > 0) {
+                    doSearch();
+                }
             }
         }
     }
@@ -257,7 +259,8 @@ public class GoodreadsSearchActivity
     private class WorksAdapter
             extends RecyclerView.Adapter<Holder> {
 
-        private final int mMaxSize;
+        private final int mMaxWidth;
+        private final int mMaxHeight;
 
         private final List<GoodreadsWork> mItems;
 
@@ -270,7 +273,9 @@ public class GoodreadsSearchActivity
         WorksAdapter(@NonNull final Context context,
                      @NonNull final List<GoodreadsWork> items) {
             mItems = items;
-            mMaxSize = ImageScale.getPixelSize(context, ImageScale.SCALE_3_MEDIUM);
+            final int longestSide = ImageScale.toPixels(context, ImageScale.SCALE_3_MEDIUM);
+            mMaxWidth = longestSide;
+            mMaxHeight = longestSide;
         }
 
         @NonNull
@@ -292,7 +297,7 @@ public class GoodreadsSearchActivity
             holder.itemView.setOnClickListener(v -> onWorkSelected(item));
 
             // get the cover (or start a background task to get it)
-            item.fillImageView(holder.coverView, mMaxSize);
+            item.fillImageView(holder.coverView, mMaxWidth, mMaxHeight);
 
             // Update the views based on the work
             holder.authorView.setText(item.authorName);

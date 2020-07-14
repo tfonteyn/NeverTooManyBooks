@@ -189,6 +189,8 @@ public class Book
 
     /**
      * Constructor for Mock tests. Loads the bundle <strong>without</strong> type checks.
+     *
+     * @param rawData raw data bundle to use for the Book
      */
     @VisibleForTesting
     public Book(@NonNull final Bundle rawData) {
@@ -197,6 +199,10 @@ public class Book
 
     /**
      * Constructor. Loads the bundle <strong>with</strong> type checks.
+     *
+     * @param bookData data bundle to use for the Book
+     *
+     * @return new instance
      */
     public static Book from(@NonNull final Bundle bookData) {
         final Book book = new Book();
@@ -486,6 +492,15 @@ public class Book
     public Author getPrimaryAuthor() {
         final ArrayList<Author> authors = getParcelableArrayList(BKEY_AUTHOR_ARRAY);
         return authors.isEmpty() ? null : authors.get(0);
+    }
+
+    /**
+     * Check if this Book has just a single Author.
+     *
+     * @return {@code true} if exactly 1 Author
+     */
+    public boolean isSingleAuthor() {
+        return getParcelableArrayList(BKEY_AUTHOR_ARRAY).size() == 1;
     }
 
     /**
@@ -958,7 +973,7 @@ public class Book
         private static final int SIGNED = 1 << 4;
         /** It's a bookclub edition. */
         private static final int BOOK_CLUB = 1 << 7;
-        /** Bitmask for all editions. */
+        /** Bitmask for all editions. Bit 5/6 not in use for now. */
         public static final int BITMASK_ALL = FIRST
                                               | FIRST_IMPRESSION
                                               | LIMITED

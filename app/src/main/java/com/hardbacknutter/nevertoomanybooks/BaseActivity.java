@@ -488,42 +488,42 @@ public abstract class BaseActivity
                         sActivityRecreateStatus = ACTIVITY_REQUIRES_RECREATE;
                     }
                 }
-                return;
+                break;
 
             // logging only
             case RequestCode.NAV_PANEL_MANAGE_BOOKSHELVES:
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
                     Log.d(TAG, "BaseActivity.onActivityResult|REQ_NAV_PANEL_EDIT_BOOKSHELVES");
                 }
-                return;
+                break;
 
             // logging only
             case RequestCode.NAV_PANEL_MANAGE_STYLES:
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
                     Log.d(TAG, "BaseActivity.onActivityResult|REQ_NAV_PANEL_EDIT_STYLES");
                 }
-                return;
+                break;
 
             // logging only
             case RequestCode.NAV_PANEL_IMPORT:
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
                     Log.d(TAG, "BaseActivity.onActivityResult|REQ_NAV_PANEL_IMPORT");
                 }
-                return;
+                break;
 
             // logging only
             case RequestCode.NAV_PANEL_EXPORT:
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
                     Log.d(TAG, "BaseActivity.onActivityResult|REQ_NAV_PANEL_EXPORT");
                 }
-                return;
+                break;
 
             // logging only
             case RequestCode.NAV_PANEL_GOODREADS:
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
                     Log.d(TAG, "BaseActivity.onActivityResult|REQ_NAV_PANEL_GOODREADS");
                 }
-                return;
+                break;
 
             // logging only
             default:

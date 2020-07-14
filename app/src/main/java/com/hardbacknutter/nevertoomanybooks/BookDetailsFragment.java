@@ -407,12 +407,15 @@ public class BookDetailsFragment
         //noinspection ConstantConditions
         fields.setVisibility(getView(), true, false);
 
-        //         <!-- 2020-07-13: setting visibility="gone" from code
-        //                but keeping/populating as normal for now.
-        //                The title is ALSO visible in the ToolBar,
-        //                AND (if present) the cover image. -->
+        // 2020-07-13: setting visibility="gone" from code
+        // but keeping/populating as normal for now.
+        // The title is ALSO visible in the ToolBar (and usually on the cover image).
         mVb.title.setVisibility(View.GONE);
 
+        // 2020-07-13: if we only have a single Author, hide the field.
+        // A single Author is ALSO visible in the ToolBar.
+        mVb.author.setVisibility(mBookViewModel.getBook().isSingleAuthor() ? View.GONE
+                                                                           : View.VISIBLE);
 
         // Hide the Publication section label if none of the publishing fields are shown.
         setSectionVisibility(mVb.lblPublication,

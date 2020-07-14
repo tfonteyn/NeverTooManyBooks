@@ -31,6 +31,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Parcelable;
@@ -38,6 +39,7 @@ import android.util.Log;
 import android.util.SparseArray;
 import android.util.SparseLongArray;
 
+import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -45,6 +47,7 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 import androidx.preference.PreferenceManager;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
@@ -65,7 +68,6 @@ import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.covers.ImageUtils;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -75,6 +77,7 @@ import com.hardbacknutter.nevertoomanybooks.tasks.messages.FinishedMessage;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.ProgressMessage;
 import com.hardbacknutter.nevertoomanybooks.utils.Csv;
 import com.hardbacknutter.nevertoomanybooks.utils.DateParser;
+import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.NetworkUtils;
@@ -900,7 +903,7 @@ public class SearchCoordinator
             final ArrayList<String> imageList = mBookData
                     .getStringArrayList(Book.BKEY_FILE_SPEC_ARRAY[cIdx]);
             if (imageList != null && !imageList.isEmpty()) {
-                final String coverName = ImageUtils.getBestImage(imageList);
+                final String coverName = getBestImage(imageList);
                 if (coverName != null) {
                     mBookData.putString(Book.BKEY_FILE_SPEC[cIdx], coverName);
                 }
@@ -919,6 +922,57 @@ public class SearchCoordinator
         if (title == null || title.isEmpty()) {
             mBookData.putString(DBDefinitions.KEY_TITLE, mTitleSearchText);
         }
+    }
+
+    /**
+     * Pick the largest image from the given list, and delete all others.
+     *
+     * @param imageList a list of images
+     *
+     * @return name of cover found, or {@code null} for none.
+     */
+    @AnyThread
+    @Nullable
+    public String getBestImage(@NonNull final ArrayList<String> imageList) {
+
+        // biggest size based on height * width
+        long bestImageSize = -1;
+        // index of the file which is the biggest
+        int bestFileIndex = -1;
+
+        // Just read the image files to get file size
+        final BitmapFactory.Options opt = new BitmapFactory.Options();
+        opt.inJustDecodeBounds = true;
+
+        // Loop, finding biggest image
+        for (int i = 0; i < imageList.size(); i++) {
+            final String fileSpec = imageList.get(i);
+            if (new File(fileSpec).exists()) {
+                BitmapFactory.decodeFile(fileSpec, opt);
+                // If no size info, assume file bad and skip
+                if (opt.outHeight > 0 && opt.outWidth > 0) {
+                    final long size = opt.outHeight * opt.outWidth;
+                    if (size > bestImageSize) {
+                        bestImageSize = size;
+                        bestFileIndex = i;
+                    }
+                }
+            }
+        }
+
+        // Delete all but the best one.
+        // Note there *may* be no best one, so all would be deleted. This is fine.
+        for (int i = 0; i < imageList.size(); i++) {
+            if (i != bestFileIndex) {
+                FileUtils.delete(new File(imageList.get(i)));
+            }
+        }
+
+        if (bestFileIndex >= 0) {
+            return imageList.get(bestFileIndex);
+        }
+
+        return null;
     }
 
     /**

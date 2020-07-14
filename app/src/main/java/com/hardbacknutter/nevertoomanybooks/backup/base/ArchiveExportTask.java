@@ -70,11 +70,9 @@ public class ArchiveExportTask
      * Start the task.
      * {@link #setHelper(ExportManager)} must have been called before.
      *
-     * @param context Current context
-     * @param uri     to write to
+     * @param uri to write to
      */
-    public void startExport(@NonNull final Context context,
-                            @NonNull final Uri uri) {
+    public void startExport(@NonNull final Uri uri) {
         Objects.requireNonNull(mHelper);
         mHelper.setUri(uri);
         execute(R.id.TASK_ID_EXPORT);

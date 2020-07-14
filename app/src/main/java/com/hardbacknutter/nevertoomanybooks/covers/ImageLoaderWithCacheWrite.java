@@ -68,7 +68,7 @@ import com.hardbacknutter.nevertoomanybooks.database.CoversDAO;
  * This behaves exactly the same as {@link ImageLoader} but when done,
  * it starts a new task to send the image to the image database cache.
  */
-class ImageLoaderWithCacheWrite
+public class ImageLoaderWithCacheWrite
         extends ImageLoader {
 
     /** UUID of the book. */
@@ -79,21 +79,22 @@ class ImageLoaderWithCacheWrite
     /**
      * Constructor.
      *
-     * @param imageView   to populate
-     * @param file        to load, must be valid
-     * @param longestSide Maximum length of a side (height or width) of the ImageView
-     * @param onSuccess   (optional) Runnable to execute after successfully displaying the image
-     * @param uuid        UUID of the book
-     * @param cIdx        0..n image index
+     * @param imageView to populate
+     * @param file      to load, must be valid
+     * @param maxWidth  Maximum desired width of the image
+     * @param maxHeight Maximum desired height of the image
+     * @param onSuccess (optional) Runnable to execute after successfully displaying the image
+     * @param uuid      UUID of the book
+     * @param cIdx      0..n image index
      */
-    ImageLoaderWithCacheWrite(@NonNull final ImageView imageView,
-                              @NonNull final File file,
-                              final int longestSide,
-                              @Nullable final Runnable onSuccess,
-
-                              final String uuid,
-                              @IntRange(from = 0) final int cIdx) {
-        super(imageView, file, longestSide, longestSide, onSuccess);
+    public ImageLoaderWithCacheWrite(@NonNull final ImageView imageView,
+                                     @NonNull final File file,
+                                     final int maxWidth,
+                                     final int maxHeight,
+                                     @Nullable final Runnable onSuccess,
+                                     @NonNull final String uuid,
+                                     @IntRange(from = 0) final int cIdx) {
+        super(imageView, file, maxWidth, maxHeight, onSuccess);
 
         mUuid = uuid;
         mCIdx = cIdx;
