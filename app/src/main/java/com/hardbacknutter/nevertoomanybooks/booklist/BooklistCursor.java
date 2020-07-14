@@ -38,7 +38,6 @@ import androidx.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Objects;
 
 /**
  * TODO: https://developer.android.com/topic/libraries/architecture/paging.html
@@ -130,7 +129,7 @@ public class BooklistCursor
     }
 
     private void clearCursors() {
-        // Synchronize cursor adjustments!
+        // Synchronize mCursors AND mMruList!
         synchronized (this) {
             for (int i = 0; i < mCursors.size(); i++) {
                 mCursors.valueAt(i).close();
@@ -152,7 +151,7 @@ public class BooklistCursor
      *
      * @return {@code true} if cursor is in list
      */
-    private boolean checkMru(@NonNull final Integer id) {
+    private boolean checkMru(final int id) {
         for (int i : mMruList) {
             if (id == i) {
                 return true;
@@ -183,51 +182,50 @@ public class BooklistCursor
 
     @Override
     public String getString(final int column) {
-        //noinspection ConstantConditions
-        return mActiveCursor.getString(column);
+        return getActiveCursor().getString(column);
     }
 
     @Override
     public short getShort(final int column) {
-        //noinspection ConstantConditions
-        return mActiveCursor.getShort(column);
+        return getActiveCursor().getShort(column);
     }
 
     @Override
     public int getInt(final int column) {
-        //noinspection ConstantConditions
-        return mActiveCursor.getInt(column);
+        return getActiveCursor().getInt(column);
     }
 
     @Override
     public long getLong(final int column) {
-        //noinspection ConstantConditions
-        return mActiveCursor.getLong(column);
+        return getActiveCursor().getLong(column);
     }
 
     @Override
     public float getFloat(final int column) {
-        //noinspection ConstantConditions
-        return mActiveCursor.getFloat(column);
+        return getActiveCursor().getFloat(column);
     }
 
     @Override
     public double getDouble(final int column) {
-        //noinspection ConstantConditions
-        return mActiveCursor.getDouble(column);
+        return getActiveCursor().getDouble(column);
     }
 
     @Override
     public boolean isNull(final int column) {
-        //noinspection ConstantConditions
-        return mActiveCursor.isNull(column);
+        return getActiveCursor().isNull(column);
+    }
+
+    @NonNull
+    private Cursor getActiveCursor() {
+        if (mActiveCursor == null) {
+            onMove(getPosition(), getPosition());
+        }
+        return mActiveCursor;
     }
 
     /**
-     * Implement re-query; this invalidate our existing cursors, update the position,
-     * and call the superclass.
-     *
-     * @return {@code true} if the move and the requery was successful
+     * Not called by our own code any more. But leaving here for now.
+     * This implementation actually just clears/closes all cursors.
      */
     @Override
     @CallSuper
@@ -235,6 +233,7 @@ public class BooklistCursor
         clearCursors();
         mPseudoCount = null;
 
+        // create our new cursor, reposition, and call the super
         return onMove(getPosition(), getPosition()) && super.requery();
     }
 
@@ -250,7 +249,7 @@ public class BooklistCursor
 
     /**
      * Handle a position change. Manage cursor based on new position.
-     *
+     * <p>
      * {@inheritDoc}
      */
     @Override
@@ -259,11 +258,11 @@ public class BooklistCursor
         // Note that the super class will already have checked the newPosition.
 
         // Get the id we use for the cursor at the new position
-        Integer cursorId = newPosition / PAGE_SIZE;
+        int cursorId = newPosition / PAGE_SIZE;
         // Determine the actual start position offset
         int offset = cursorId * PAGE_SIZE;
 
-        // Synchronize cursor adjustments!
+        // Synchronize mCursors AND mMruList!
         synchronized (this) {
             if (mCursors.get(cursorId) == null) {
                 // Create a new cursor
@@ -274,9 +273,9 @@ public class BooklistCursor
                 mMruList[mMruListPos] = cursorId;
 
                 // Build a list of stale cursors to purge
-                Collection<Integer> toPurge = new ArrayList<>();
+                final Collection<Integer> toPurge = new ArrayList<>();
                 for (int i = 0; i < mCursors.size(); i++) {
-                    Integer key = mCursors.keyAt(i);
+                    final int key = mCursors.keyAt(i);
                     // If it is more than 3 'pages' from the current position, it's a candidate
                     if (Math.abs(key) > PAGES_AWAY_FOR_PURGE) {
                         // Must not be in the MRU list
@@ -288,9 +287,9 @@ public class BooklistCursor
 
                 // Purge them
                 for (Integer i : toPurge) {
-                    Cursor c = mCursors.get(i);
-                    if (c != null) {
-                        c.close();
+                    final Cursor cursor = mCursors.get(i);
+                    if (cursor != null) {
+                        cursor.close();
                         mCursors.remove(i);
                     }
                 }
@@ -343,10 +342,6 @@ public class BooklistCursor
 
             // Set as the active cursor
             mActiveCursor = mCursors.get(cursorId);
-            Objects.requireNonNull(mActiveCursor, "onMove"
-                                                  + "|cursorId=" + cursorId
-                                                  + "|mActiveCursor is NULL");
-
             // and finally set its position correctly
             return mActiveCursor.moveToPosition(newPosition - offset);
         }

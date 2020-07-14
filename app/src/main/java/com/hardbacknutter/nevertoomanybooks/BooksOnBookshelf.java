@@ -105,6 +105,7 @@ import com.hardbacknutter.nevertoomanybooks.viewmodels.BookDetailsFragmentViewMo
 import com.hardbacknutter.nevertoomanybooks.viewmodels.BookViewModel;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.BooksOnBookshelfModel;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.EditBookshelvesModel;
+import com.hardbacknutter.nevertoomanybooks.viewmodels.LiveDataEvent;
 import com.hardbacknutter.nevertoomanybooks.widgets.FabMenu;
 import com.hardbacknutter.nevertoomanybooks.widgets.fastscroller.FastScroller;
 
@@ -142,22 +143,29 @@ public class BooksOnBookshelf
 
     /** Log tag. */
     private static final String TAG = "BooksOnBookshelf";
+    /** Goodreads authorization task. */
+    private GrAuthTask mGrAuthTask;
     /** Multi-type adapter to manage list connection to cursor. */
     private BooklistAdapter mAdapter;
     /** The adapter used to fill the mBookshelfSpinner. */
     private ArrayAdapter<BooksOnBookshelfModel.BookshelfSpinnerEntry> mBookshelfSpinnerAdapter;
     /** The ViewModel. */
     private BooksOnBookshelfModel mModel;
-    /** Full progress dialog to show while importing. */
+    /** Goodreads send-book task. */
+    private GrSendOneBookTask mGrSendOneBookTask;
+    /**
+     * Full progress dialog to show while running a task.
+     * Note that the {@link #mModel} does not use this dialog (i.e. never sends progress messages)
+     * but just the light weight ProgressBar.
+     */
     @Nullable
     private ProgressDialogFragment mProgressDialog;
-    private GrSendOneBookTask mGrSendOneBookTask;
-    private GrAuthTask mGrAuthTask;
+    /** View binding. */
+    private BooksonbookshelfBinding mVb;
     /** List layout manager. */
     private LinearLayoutManager mLayoutManager;
     /** Encapsulates the FAB button/menu. */
     private FabMenu mFabMenu;
-    private BooksonbookshelfBinding mVb;
     /** React to row changes made. ENHANCE: update the modified row without a rebuild. */
     private final BookChangedListener mBookChangedListener =
             new BookChangedListener() {
@@ -171,32 +179,32 @@ public class BooksOnBookshelf
                                    + "|fieldsChanged=0b" + Integer.toBinaryString(fieldsChanged)
                                    + "|data=" + data);
                     }
-                    BooksOnBookshelf.this.saveListPosition();
-                    // go create
+
+                    saveListPosition();
                     buildBookList();
 
                     // changes were made to a single book
 //        if (bookId > 0) {
 //            if ((fieldsChanged & BookChangedListener.BOOK_READ) != 0) {
 //                saveListPosition();
-//                initBookList();
+//                buildBookList();
 //
 //          } else if ((fieldsChanged & BookChangedListener.BOOK_LOANEE) != 0) {
 //                if (data != null) {
 //                    String loanee = data.getString(DBDefinitions.KEY_LOANEE);
 //                }
 //                saveListPosition();
-//                initBookList();
+//                buildBookList();
 //
 //            } else if ((fieldsChanged & BookChangedListener.BOOK_DELETED) != 0) {
 //                saveListPosition();
-//                initBookList();
+//                buildBookList();
 //            }
 //        } else {
 //            // changes (Author, Series, ...) were made to (potentially) the whole list
 //            if (fieldsChanged != 0) {
 //                saveListPosition();
-//                initBookList();
+//                buildBookList();
 //            }
 //        }
                 }
@@ -215,11 +223,11 @@ public class BooksOnBookshelf
                                     parent.getItemAtPosition(position);
 
                     if (selected != null) {
-                        saveListPosition();
-
                         // make the new shelf the current, and build the new list
-                        mModel.setCurrentBookshelf(BooksOnBookshelf.this,
-                                                   selected.getBookshelf());
+                        mModel.setBookshelf(BooksOnBookshelf.this,
+                                            selected.getBookshelf());
+
+                        saveListPosition();
                         buildBookList();
                     }
                 }
@@ -227,24 +235,6 @@ public class BooksOnBookshelf
                 @Override
                 public void onNothingSelected(@NonNull final AdapterView<?> parent) {
                     // Do Nothing
-                }
-            };
-    /** (re)attach the result listener when a fragment gets started. */
-    private final FragmentOnAttachListener mFragmentOnAttachListener =
-            new FragmentOnAttachListener() {
-                @Override
-                public void onAttachFragment(@NonNull final FragmentManager fragmentManager,
-                                             @NonNull final Fragment fragment) {
-                    if (BuildConfig.DEBUG && DEBUG_SWITCHES.ATTACH_FRAGMENT) {
-                        Log.d(getClass().getName(), "onAttachFragment: " + fragment.getTag());
-                    }
-
-                    if (fragment instanceof BookChangedListener.Owner) {
-                        ((BookChangedListener.Owner) fragment).setListener(mBookChangedListener);
-
-                    } else if (fragment instanceof StylePickerDialogFragment) {
-                        ((StylePickerDialogFragment) fragment).setListener(mStyleChangedListener);
-                    }
                 }
             };
     /** Listener for clicks on the list. */
@@ -260,7 +250,7 @@ public class BooksOnBookshelf
                  */
                 @Override
                 public void onItemClick(final int position) {
-                    final Cursor cursor = mModel.getListCursor();
+                    final Cursor cursor = mAdapter.getCursor();
                     // Move the cursor, so we can read the data for this row.
                     // Paranoia: if the user can click it, then this move should be fine.
                     if (!cursor.moveToPosition(position)) {
@@ -286,11 +276,7 @@ public class BooksOnBookshelf
 
                     } else {
                         // it's a level, expand/collapse.
-                        final int nodeRowId =
-                                rowData.getInt(DBDefinitions.KEY_BL_LIST_VIEW_NODE_ROW_ID);
-                        final RowStateDAO.Node node = mModel.toggleNode(
-                                nodeRowId, RowStateDAO.Node.NEXT_STATE_TOGGLE, 1);
-                        refreshNodePosition(node);
+                        toggleNode(rowData, RowStateDAO.Node.NEXT_STATE_TOGGLE, 1);
                     }
                 }
 
@@ -299,7 +285,7 @@ public class BooksOnBookshelf
                  */
                 @Override
                 public boolean onItemLongClick(final int position) {
-                    final Cursor cursor = mModel.getListCursor();
+                    final Cursor cursor = mAdapter.getCursor();
                     // Move the cursor, so we can read the data for this row.
                     // Paranoia: if the user can click it, then this move should be fine.
                     if (!cursor.moveToPosition(position)) {
@@ -326,7 +312,7 @@ public class BooksOnBookshelf
     private final StylePickerDialogFragment.StyleChangedListener mStyleChangedListener =
             new StylePickerDialogFragment.StyleChangedListener() {
                 public void onStyleChanged(@NonNull final String uuid) {
-                    // preserve position for current bookshelf/style combination
+                    // preserve position for CURRENT bookshelf/style combination
                     saveListPosition();
                     // apply the new style
                     mModel.onStyleChanged(BooksOnBookshelf.this, uuid);
@@ -335,6 +321,24 @@ public class BooksOnBookshelf
                     mModel.setPreferredListRebuildState(BooksOnBookshelf.this);
                     // and do a rebuild
                     buildBookList();
+                }
+            };
+    /** (re)attach the result listener when a fragment gets started. */
+    private final FragmentOnAttachListener mFragmentOnAttachListener =
+            new FragmentOnAttachListener() {
+                @Override
+                public void onAttachFragment(@NonNull final FragmentManager fragmentManager,
+                                             @NonNull final Fragment fragment) {
+                    if (BuildConfig.DEBUG && DEBUG_SWITCHES.ATTACH_FRAGMENT) {
+                        Log.d(getClass().getName(), "onAttachFragment: " + fragment.getTag());
+                    }
+
+                    if (fragment instanceof BookChangedListener.Owner) {
+                        ((BookChangedListener.Owner) fragment).setListener(mBookChangedListener);
+
+                    } else if (fragment instanceof StylePickerDialogFragment) {
+                        ((StylePickerDialogFragment) fragment).setListener(mStyleChangedListener);
+                    }
                 }
             };
 
@@ -359,9 +363,9 @@ public class BooksOnBookshelf
         // Does not use the full progress dialog. Instead uses the overlay progress bar.
         mModel = new ViewModelProvider(this).get(BooksOnBookshelfModel.class);
         mModel.init(this, getIntent().getExtras(), savedInstanceState);
-        mModel.onCancelled().observe(this, message -> onRestorePreviousList());
-        mModel.onFailure().observe(this, message -> onRestorePreviousList());
-        mModel.onFinished().observe(this, message -> onDisplayList(message.result));
+        mModel.onCancelled().observe(this, this::onBuildFailed);
+        mModel.onFailure().observe(this, this::onBuildFailed);
+        mModel.onFinished().observe(this, this::onBuildFinished);
 
         mGrAuthTask = new ViewModelProvider(this).get(GrAuthTask.class);
         mGrAuthTask.onProgressUpdate().observe(this, this::onProgress);
@@ -382,13 +386,13 @@ public class BooksOnBookshelf
         setNavigationItemVisibility(R.id.nav_import, true);
         setNavigationItemVisibility(R.id.nav_goodreads, GoodreadsHandler.isShowSyncMenus(this));
 
-        // initialize but do not populate the list; the latter is done in onResume
         mLayoutManager = new LinearLayoutManager(this);
         mVb.list.setLayoutManager(mLayoutManager);
         mVb.list.addItemDecoration(new TopLevelItemDecoration(this));
         FastScroller.attach(mVb.list);
 
-        // initialize but do not populate the list;  the latter is done in setBookShelfSpinner
+        initAdapter();
+
         mBookshelfSpinnerAdapter = new ArrayAdapter<>(
                 this, R.layout.bookshelf_spinner_selected, mModel.getBookshelfSpinnerList());
         mBookshelfSpinnerAdapter.setDropDownViewResource(R.layout.dropdown_menu_popup_item);
@@ -417,15 +421,11 @@ public class BooksOnBookshelf
         }
     }
 
-    public void onRestorePreviousList() {
-        mVb.progressBar.setVisibility(View.GONE);
-        // just restore the old list if we can
-        if (mModel.isListLoaded()) {
-            initAdapter(mModel.getListCursor());
-        } else {
-            // Something is REALLY BAD
-            throw new IllegalStateException();
-        }
+    public void initAdapter() {
+        // the cursor will be set at a later time!
+        mAdapter = new BooklistAdapter(this, mModel.getCurrentStyle(this));
+        mAdapter.setOnRowClickedListener(mOnRowClickedListener);
+        mVb.list.setAdapter(mAdapter);
     }
 
     /**
@@ -482,7 +482,7 @@ public class BooksOnBookshelf
                 final Intent intent = new Intent(this, AdminActivity.class)
                         .putExtra(BKEY_FRAGMENT_TAG, EditBookshelvesFragment.TAG)
                         .putExtra(EditBookshelvesModel.BKEY_CURRENT_BOOKSHELF,
-                                  mModel.getCurrentBookshelf().getId());
+                                  mModel.getBookshelf().getId());
                 startActivityForResult(intent, RequestCode.NAV_PANEL_MANAGE_BOOKSHELVES);
                 return true;
             }
@@ -715,7 +715,7 @@ public class BooksOnBookshelf
     private boolean onContextItemSelected(@IdRes final int menuItem,
                                           final int position) {
 
-        final Cursor cursor = mModel.getListCursor();
+        final Cursor cursor = mAdapter.getCursor();
         // Move the cursor, so we can read the data for this row.
         // The majority of the time this is not needed, but a fringe case (toggle node)
         // showed it should indeed be done.
@@ -895,7 +895,7 @@ public class BooksOnBookshelf
                         .putExtra(DBDefinitions.KEY_PK_ID,
                                   rowData.getLong(DBDefinitions.KEY_FK_AUTHOR))
                         .putExtra(DBDefinitions.KEY_FK_BOOKSHELF,
-                                  mModel.getCurrentBookshelf().getId());
+                                  mModel.getBookshelf().getId());
                 startActivityForResult(intent, RequestCode.AUTHOR_WORKS);
                 return true;
             }
@@ -998,11 +998,8 @@ public class BooksOnBookshelf
             }
 
             case R.id.MENU_LEVEL_EXPAND: {
-                final long nodeRowId = rowData.getLong(DBDefinitions.KEY_BL_LIST_VIEW_NODE_ROW_ID);
-                final int relativeChildLevel = mModel.getCurrentStyle(this).getGroupCount();
-                final RowStateDAO.Node node = mModel.toggleNode(
-                        nodeRowId, RowStateDAO.Node.NEXT_STATE_EXPANDED, relativeChildLevel);
-                refreshNodePosition(node);
+                toggleNode(rowData, RowStateDAO.Node.NEXT_STATE_EXPANDED,
+                           mModel.getCurrentStyle(this).getGroupCount());
                 return true;
             }
 
@@ -1011,7 +1008,6 @@ public class BooksOnBookshelf
                 final RowStateDAO.Node node = mModel.getNextBookWithoutCover(this, nodeRowId);
                 if (node != null) {
                     scrollTo(node);
-                    refreshNodePosition(node);
                 }
                 return true;
             }
@@ -1086,8 +1082,8 @@ public class BooksOnBookshelf
                     // the last edited/inserted shelf
                     final long bookshelfId = data.getLongExtra(DBDefinitions.KEY_PK_ID,
                                                                Bookshelf.DEFAULT);
-                    if (bookshelfId != mModel.getCurrentBookshelf().getId()) {
-                        mModel.setCurrentBookshelf(this, bookshelfId);
+                    if (bookshelfId != mModel.getBookshelf().getId()) {
+                        mModel.setBookshelf(this, bookshelfId);
                         mModel.setForceRebuildInOnResume(true);
                     }
                 }
@@ -1104,6 +1100,11 @@ public class BooksOnBookshelf
                     }
 
                     if (data.getBooleanExtra(BooklistStyle.BKEY_STYLE_MODIFIED, false)) {
+                        // Recreate the adapter to force the new style.
+                        // If we just replace the style on it, it will still
+                        // preserve cached views using the old style.
+                        // Several tests done trying to clear that cache have failed.
+                        initAdapter();
                         mModel.setForceRebuildInOnResume(true);
                     }
                 }
@@ -1124,6 +1125,11 @@ public class BooksOnBookshelf
                     }
 
                     if (data.getBooleanExtra(BooklistStyle.BKEY_STYLE_MODIFIED, false)) {
+                        // Recreate the adapter to force the new style.
+                        // If we just replace the style on it, it will still
+                        // preserve cached views using the old style.
+                        // Several tests done trying to clear that cache have failed.
+                        initAdapter();
                         mModel.setForceRebuildInOnResume(true);
                     }
                 }
@@ -1147,7 +1153,7 @@ public class BooksOnBookshelf
                             }
                             if ((options & Options.PREFS) != 0) {
                                 // Refresh the preferred bookshelf. This also refreshes its style.
-                                mModel.reloadCurrentBookshelf(this);
+                                mModel.reloadBookshelf(this);
                             }
 
                             // styles, prefs, books, covers,... it all requires a rebuild.
@@ -1176,7 +1182,6 @@ public class BooksOnBookshelf
         // If the current list is has any search criteria enabled, clear them and rebuild the list.
         if (isTaskRoot() && !mModel.getSearchCriteria().isEmpty()) {
             mModel.getSearchCriteria().clear();
-            // go create
             buildBookList();
             return;
         }
@@ -1192,14 +1197,11 @@ public class BooksOnBookshelf
 
         // don't build the list needlessly
         if (isRecreating() || isFinishing() || isDestroyed()) {
+            if (BuildConfig.DEBUG) {
+                Log.d(TAG, "onResume|don't build the list needlessly");
+            }
             return;
         }
-
-        // clear the adapter; we'll prepare a new one and meanwhile the view/adapter
-        // should obviously NOT try to display the old list.
-        // We don't clear the cursor on the model, so we have the option of re-using it.
-        mVb.list.setAdapter(null);
-        mAdapter = null;
 
         // Update the list of bookshelves + set the current bookshelf.
         // If the shelf was changed, it will have triggered a rebuild.
@@ -1212,33 +1214,28 @@ public class BooksOnBookshelf
 
         // This if/else is to be able to debug/log *why* we're rebuilding
         if (bookshelfChanged) {
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_INIT_BOOK_LIST) {
+            if (BuildConfig.DEBUG) {
                 Log.d(TAG, "onResume|bookshelfChanged");
             }
             // DO NOTHING. THE CHANGE IN BOOKSHELF ALREADY TRIGGERED A REBUILD.
 
         } else if (forceRebuildInOnResume) {
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_INIT_BOOK_LIST) {
+            if (BuildConfig.DEBUG) {
                 Log.d(TAG, "onResume|isForceRebuildInOnResume");
             }
-            // go create
             buildBookList();
 
         } else if (!mModel.isListLoaded()) {
-            //TEST: this branch is almost certainly never reached.
             if (BuildConfig.DEBUG) {
-                Log.d(TAG, "onResume|initial build");
+                Log.d(TAG, "onResume|!mModel.isListLoaded()");
             }
-            // go create
             buildBookList();
 
         } else {
-            // no rebuild needed/done, just re-display
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_INIT_BOOK_LIST) {
+            if (BuildConfig.DEBUG) {
                 Log.d(TAG, "onResume|reusing existing list");
             }
-            mModel.createNewListCursor();
-            onDisplayList(mModel.getTargetNodes());
+            // no rebuild needed/done, just let the system redisplay the list state
         }
     }
 
@@ -1254,6 +1251,7 @@ public class BooksOnBookshelf
         saveListPosition();
         super.onPause();
     }
+
 
     private void addBySearch(@NonNull final String tag) {
         final Intent intent = new Intent(this, BookSearchActivity.class)
@@ -1273,86 +1271,119 @@ public class BooksOnBookshelf
         startActivityForResult(intent, RequestCode.BOOK_EDIT);
     }
 
+
+    /**
+     * Start the list builder.
+     */
     private void buildBookList() {
-        mVb.progressBar.setVisibility(View.VISIBLE);
-        mModel.buildBookList();
+        if (BuildConfig.DEBUG) {
+            Log.d(TAG, "buildBookList"
+                       + "|already running=" + mModel.isRunning()
+                       + "|called from:", new Throwable());
+        }
+
+        if (!mModel.isRunning()) {
+            mVb.progressBar.setVisibility(View.VISIBLE);
+            mAdapter.setCursor(null);
+            mModel.buildBookList();
+        }
     }
 
     /**
-     * Display the current cursor in the ListView.
+     * Called when the list build succeeded.
      *
-     * @param targetNodes (optional) change the position to the 'best' of these nodes.
+     * @param message from the task; contains the (optional) target rows.
      */
-    private void onDisplayList(@Nullable final List<RowStateDAO.Node> targetNodes) {
+    private void onBuildFinished(@NonNull final FinishedMessage<List<RowStateDAO.Node>> message) {
         mVb.progressBar.setVisibility(View.GONE);
+        if (message.isNewEvent()) {
+            // Pass in the current cursor (which we just build).
+            mAdapter.setCursor(mModel.getListCursor());
+            scrollToSavedPosition();
 
-        // create and hookup the list adapter.
-        initAdapter(mModel.getListCursor());
-        final int count = mModel.getListCursor().getCount();
-
-        final Bookshelf currentBookshelf = mModel.getCurrentBookshelf();
-        int position = currentBookshelf.getTopItemPosition();
-
-        // Scroll to the saved position
-        if (position >= count) {
-            // the list is shorter than it used to be, just scroll to the end
-            mLayoutManager.scrollToPosition(position);
-
-        } else if (position != RecyclerView.NO_POSITION) {
-            // need to map the row id to the new adapter/cursor. Ideally they will be the same.
-            final long actualRowId = mAdapter.getItemId(position);
-
-            // but if they are not equal,
-            final long desiredRowId = currentBookshelf.getTopRowId();
-            if (actualRowId != desiredRowId) {
-                if (BuildConfig.DEBUG /* always */) {
-                    Log.d(TAG, "position=" + position
-                               + "|desiredRowId=" + desiredRowId
-                               + "|actualRowId=" + actualRowId);
-                }
-//                // TODO: the intention is to TRY to FIND the correct position obviously;
-//                //  --/++ are placeholders and do not work
-//                if (actualRowId < desiredRowId) {
-//                    position++;
-//                } else {
-//                    position--;
-//                }
+            // If a target position array is set,...
+            if (message.result != null) {
+                // Using a runnable, as we need to postpone until we know how many items
+                // appear in the list and we can tell if it is already visible to the user.
+                mVb.list.post(() -> scrollTo(message.result));
             }
 
-            if (position < 0) {
-                position = 0;
-            }
-            mLayoutManager.scrollToPositionWithOffset(position,
-                                                      currentBookshelf.getTopViewOffset());
+            // Prepare the list header fields.
+            setHeaders();
+
+            // If we have search criteria enabled (i.e. we're filtering the current list)
+            // then we should display the 'up' indicator. See #onBackPressed.
+            updateActionBar(mModel.getSearchCriteria().isEmpty());
         }
-
-        // If a target position array is set, then queue a runnable to scroll to the target
-        if (targetNodes != null) {
-            mVb.list.post(() -> scrollTo(targetNodes));
-
-        } else {
-            // we're at the final position, save it.
-            saveListPosition();
-        }
-
-        // Prepare the list header fields.
-        setHeaders();
-
-        // If we have search criteria enabled (i.e. we're filtering the current list)
-        // then we should display the 'up' indicator. See #onBackPressed.
-        updateActionBar(mModel.getSearchCriteria().isEmpty());
     }
 
     /**
-     * A new adapter is created each time the list is prepared,
-     * as the underlying data can be very different from list to list.
+     * Called when the list build failed or was cancelled.
      *
-     * @param cursor with list of items
+     * @param message from the task
      */
-    private void initAdapter(@NonNull final Cursor cursor) {
-        mAdapter = new BooklistAdapter(this, mModel.getCurrentStyle(this), cursor);
-        mAdapter.setOnRowClickedListener(mOnRowClickedListener);
-        mVb.list.setAdapter(mAdapter);
+    public void onBuildFailed(@NonNull final LiveDataEvent message) {
+        mVb.progressBar.setVisibility(View.GONE);
+        if (message.isNewEvent()) {
+            if (mModel.isListLoaded()) {
+                // Restore the old list/cursor
+                mAdapter.setCursor(mModel.getListCursor());
+                scrollToSavedPosition();
+            } else {
+                // Something is REALLY BAD
+                throw new IllegalStateException();
+            }
+        }
+    }
+
+
+    private void toggleNode(@NonNull final DataHolder rowData,
+                            @RowStateDAO.Node.NodeNextState final int nextState,
+                            final int relativeChildLevel) {
+        final long nodeRowId = rowData.getLong(DBDefinitions.KEY_BL_LIST_VIEW_NODE_ROW_ID);
+        final RowStateDAO.Node node = mModel.toggleNode(nodeRowId, nextState, relativeChildLevel);
+        // pass in a NEW cursor!
+        mAdapter.setCursor(mModel.newListCursor());
+
+        scrollTo(node);
+    }
+
+    /**
+     * Expand/Collapse the current position in the list.
+     *
+     * @param topLevel the desired top-level which must be kept visible
+     * @param expand   desired state
+     */
+    private void expandAllNodes(@IntRange(from = 1) final int topLevel,
+                                final boolean expand) {
+        // It is possible that the list will be empty, if so, ignore
+        if (mLayoutManager.findFirstCompletelyVisibleItemPosition() != RecyclerView.NO_POSITION) {
+            // save current position.
+            saveListPosition();
+            // set new states
+            mModel.expandAllNodes(topLevel, expand);
+            // pass in a NEW cursor!
+            mAdapter.setCursor(mModel.newListCursor());
+            scrollToSavedPosition();
+        }
+    }
+
+    /**
+     * Refresh the cursor/adapter as needed to make the node visible to the user.
+     *
+     * @param node to put into view.
+     */
+    public void handleExpandedBottomPosition(@NonNull final RowStateDAO.Node node) {
+        if (node.isExpanded) {
+            int position = node.getListPosition();
+            // if the user expanded the line at the bottom of the screen,
+            final int lastPos = mLayoutManager.findLastCompletelyVisibleItemPosition();
+            if ((position + 1 == lastPos) || (position == lastPos)) {
+                // then we move the list a minimum of 2 positions upwards
+                // to make the expanded rows visible. Using 3 for comfort.
+                mLayoutManager.scrollToPosition(position + 3);
+            }
+        }
     }
 
     /**
@@ -1383,59 +1414,48 @@ public class BooksOnBookshelf
     }
 
     /**
-     * Expand/Collapse the current position in the list.
-     *
-     * @param topLevel the desired top-level which must be kept visible
-     * @param expand   desired state
+     * Scroll to the saved position for the current Bookshelf.
      */
-    private void expandAllNodes(@IntRange(from = 1) final int topLevel,
-                                final boolean expand) {
-        // It is possible that the list will be empty, if so, ignore
-        if (mLayoutManager.findFirstCompletelyVisibleItemPosition() != RecyclerView.NO_POSITION) {
-            // save current position in case anything goes wrong during expanding
-            saveListPosition();
-            // set new states
-            mModel.expandAllNodes(topLevel, expand);
-            // Save the new top row position.
-            saveListPosition();
-            // Finally pass in a new cursor and display the list.
-            mModel.createNewListCursor();
-            onDisplayList(null);
-        }
-    }
+    private void scrollToSavedPosition() {
+        final Bookshelf bookshelf = mModel.getBookshelf();
+        int position = bookshelf.getTopItemPosition();
 
-    /**
-     * Refresh the cursor/adapter as needed to make the node visible to the user.
-     *
-     * @param node to put into view.
-     */
-    public void refreshNodePosition(@NonNull final RowStateDAO.Node node) {
-        // make sure the cursor has valid rows for the new position.
-        final Cursor cursor = mModel.getListCursor();
-        if (cursor.requery()) {
-            mAdapter.notifyDataSetChanged();
-            if (node.isExpanded) {
-                int position = node.getListPosition();
-                // if the user expanded the line at the bottom of the screen,
-                final int lastPos = mLayoutManager.findLastCompletelyVisibleItemPosition();
-                if ((position + 1 == lastPos) || (position == lastPos)) {
-                    // then we move the list a minimum of 2 positions upwards
-                    // to make the expanded rows visible. Using 3 for comfort.
-                    mLayoutManager.scrollToPosition(position + 3);
+        if (position >= mAdapter.getItemCount()) {
+            // the list is shorter than it used to be, just scroll to the end
+            mLayoutManager.scrollToPosition(position);
+
+        } else if (position != RecyclerView.NO_POSITION) {
+            // need to map the row id to the new adapter/cursor. Ideally they will be the same.
+            final long actualRowId = mAdapter.getItemId(position);
+            final long desiredRowId = bookshelf.getTopRowId();
+            // but if they are not equal, TODO: TRY to FIND the correct position
+            if (actualRowId != desiredRowId) {
+                if (BuildConfig.DEBUG /* always */) {
+                    Log.d(TAG, "position=" + position
+                               + "|desiredRowId=" + desiredRowId
+                               + "|actualRowId=" + actualRowId);
                 }
+                // --/++ are placeholders only / do not work
+                // if (actualRowId < desiredRowId) {
+                //      position++;
+                // } else {
+                //      position--;
+                // }
             }
-        } else {
-            if (BuildConfig.DEBUG /* always */) {
-                throw new IllegalStateException("requery() failed");
+
+            // sanity check
+            if (position < 0) {
+                position = 0;
             }
+            mLayoutManager.scrollToPositionWithOffset(position, bookshelf.getTopViewOffset());
         }
+
+        // re-save as it might have changed
+        saveListPosition();
     }
 
     /**
-     * Set the position once we know how many items appear in a typical
-     * view and we can tell if it is already in the view.
-     * <p>
-     * called from {@link #onDisplayList}
+     * Scroll to the 'best' position in the given list of targets.
      *
      * @param targetNodes list of rows of which we want one to be visible to the user.
      */
@@ -1474,7 +1494,7 @@ public class BooksOnBookshelf
     }
 
     /**
-     * Scroll the given node into view.
+     * Scroll the given node into user view.
      *
      * @param node to scroll to
      */
@@ -1486,24 +1506,18 @@ public class BooksOnBookshelf
         }
 
         final int pos = node.getListPosition();
-        // We always scroll 1 more then needed for comfort.
         if (pos <= firstVisibleItemPosition) {
+            // We always scroll up 1 more then needed for comfort.
             mLayoutManager.scrollToPosition(pos - 1);
-        } else if (pos >= mLayoutManager.findLastVisibleItemPosition()) {
-            mLayoutManager.scrollToPosition(pos + 1);
-        }
-        saveListPosition();
 
-        //   // Without this call some positioning may be off by one row.
-        //   final int newPos = pos;
-        //   mVb.list.post(() -> {
-        //     mVb.list.smoothScrollToPosition(newPos);
-        //     // not entirely sure this is needed
-        //     mModel.saveAllNodes();
-        //     // but this is
-        //     saveListPosition();
-        //   });
+        } else if (pos >= mLayoutManager.findLastVisibleItemPosition()) {
+            mLayoutManager.scrollToPosition(pos);
+            handleExpandedBottomPosition(node);
+        }
+
+        saveListPosition();
     }
+
 
     /**
      * Populate the BookShelf list in the Spinner and set the current bookshelf/style.
@@ -1519,7 +1533,7 @@ public class BooksOnBookshelf
         // disable the listener while we add the list.
         mVb.bookshelfSpinner.setOnItemSelectedListener(null);
         // (re)load the list of names
-        final int currentPos = mModel.initBookshelfNameList(this);
+        final int currentPos = mModel.reloadBookshelfSpinnerList(this);
         // and tell the adapter about it.
         mBookshelfSpinnerAdapter.notifyDataSetChanged();
         // Set the current bookshelf.
@@ -1528,7 +1542,7 @@ public class BooksOnBookshelf
         // (re-)enable the listener
         mVb.bookshelfSpinner.setOnItemSelectedListener(mOnBookshelfSelectionChanged);
 
-        final long selected = mModel.getCurrentBookshelf().getId();
+        final long selected = mModel.getBookshelf().getId();
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_INIT_BOOK_LIST) {
             Log.d(TAG, "populateBookShelfSpinner"
@@ -1563,26 +1577,31 @@ public class BooksOnBookshelf
     }
 
 
-    private void onCancelled(@NonNull final FinishedMessage<GrStatus> message) {
+    private void onCancelled(@NonNull final LiveDataEvent message) {
         closeProgressDialog();
-        Snackbar.make(mVb.list, R.string.cancelled, Snackbar.LENGTH_LONG).show();
+        if (message.isNewEvent()) {
+            Snackbar.make(mVb.list, R.string.cancelled, Snackbar.LENGTH_LONG).show();
+        }
     }
 
     private void onGrFailure(@NonNull final FinishedMessage<Exception> message) {
         closeProgressDialog();
-        Snackbar.make(mVb.list, GrStatus.getMessage(this, message.result),
-                      Snackbar.LENGTH_LONG).show();
+        if (message.isNewEvent()) {
+            Snackbar.make(mVb.list, GrStatus.getMessage(this, message.result),
+                          Snackbar.LENGTH_LONG).show();
+        }
     }
 
     private void onGrFinished(@NonNull final FinishedMessage<GrStatus> message) {
         closeProgressDialog();
-
-        Objects.requireNonNull(message.result, ErrorMsg.NULL_TASK_RESULTS);
-        if (message.result.getStatus() == GrStatus.FAILED_CREDENTIALS) {
-            mGrAuthTask.prompt(this);
-        } else {
-            Snackbar.make(mVb.list, message.result.getMessage(this),
-                          Snackbar.LENGTH_LONG).show();
+        if (message.isNewEvent()) {
+            Objects.requireNonNull(message.result, ErrorMsg.NULL_TASK_RESULTS);
+            if (message.result.getStatus() == GrStatus.FAILED_CREDENTIALS) {
+                mGrAuthTask.prompt(this);
+            } else {
+                Snackbar.make(mVb.list, message.result.getMessage(this),
+                              Snackbar.LENGTH_LONG).show();
+            }
         }
     }
 

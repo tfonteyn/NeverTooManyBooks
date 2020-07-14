@@ -30,7 +30,6 @@ package com.hardbacknutter.nevertoomanybooks.covers;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.os.AsyncTask;
 import android.util.Base64;
 import android.util.Log;
 import android.view.ViewGroup;
@@ -50,10 +49,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.database.CoversDAO;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.tasks.TerminatorConnection;
@@ -151,65 +148,6 @@ public final class ImageUtils {
         if (background != 0) {
             imageView.setBackgroundResource(background);
         }
-    }
-
-    /**
-     * Load the image owned by the UUID/cIdx into the destination ImageView.
-     * Handles checking & storing in the cache.
-     * <p>
-     * Images and placeholder will always be scaled to a fixed size.
-     *
-     * @param imageView   View to populate
-     * @param longestSide Maximum length of a side (height or width) of the ImageView
-     * @param uuid        UUID of the book
-     * @param cIdx        0..n image index
-     *
-     * @return {@code true} if the image was displayed. {@code false} if a place holder was used.
-     */
-    @UiThread
-    public static boolean setImageView(@NonNull final ImageView imageView,
-                                       final int longestSide,
-                                       @NonNull final String uuid,
-                                       @IntRange(from = 0) final int cIdx) {
-
-        final Context context = imageView.getContext();
-        final boolean useCaching = imagesAreCached(context);
-
-        // 1. If caching is used, and we don't have cache building happening, check it.
-        if (useCaching && !CoversDAO.ImageCacheWriterTask.hasActiveTasks()) {
-            final Bitmap bitmap = CoversDAO.getImage(context, uuid, cIdx, longestSide, longestSide);
-            if (bitmap != null) {
-                setImageView(imageView, longestSide, longestSide, bitmap, 0);
-                return true;
-            }
-        }
-
-        // 2. Cache did not have it, or we were not allowed to check.
-        final File file = AppDir.getCoverFile(context, uuid, cIdx);
-        // Check if the file exists; if it does not...
-        if (!isFileGood(file)) {
-            // leave the space blank, but preserve the width.
-            final ViewGroup.LayoutParams lp = imageView.getLayoutParams();
-            lp.width = (int) (longestSide * HW_RATIO);
-            lp.height = 0;
-            imageView.setLayoutParams(lp);
-            return false;
-        }
-
-        // Once we get here, we know the file is valid
-        if (useCaching) {
-            // 1. Gets the image from the file system and display it.
-            // 2. Start a subsequent task to send it to the cache.
-            // This 2nd task uses the serial executor.
-            new ImageLoaderWithCacheWrite(imageView, file, longestSide, null, uuid, cIdx)
-                    .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-
-        } else {
-            // Cache not used: Get the image from the file system and display it.
-            new ImageLoader(imageView, file, longestSide, longestSide, null)
-                    .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-        }
-        return true;
     }
 
     /**
@@ -389,57 +327,6 @@ public final class ImageUtils {
     }
 
     /**
-     * Pick the largest image from the given list, and delete all others.
-     *
-     * @param imageList a list of images
-     *
-     * @return name of cover found, or {@code null} for none.
-     */
-    @AnyThread
-    @Nullable
-    public static String getBestImage(@NonNull final ArrayList<String> imageList) {
-
-        // biggest size based on height * width
-        long bestImageSize = -1;
-        // index of the file which is the biggest
-        int bestFileIndex = -1;
-
-        // Just read the image files to get file size
-        final BitmapFactory.Options opt = new BitmapFactory.Options();
-        opt.inJustDecodeBounds = true;
-
-        // Loop, finding biggest image
-        for (int i = 0; i < imageList.size(); i++) {
-            final String fileSpec = imageList.get(i);
-            if (new File(fileSpec).exists()) {
-                BitmapFactory.decodeFile(fileSpec, opt);
-                // If no size info, assume file bad and skip
-                if (opt.outHeight > 0 && opt.outWidth > 0) {
-                    final long size = opt.outHeight * opt.outWidth;
-                    if (size > bestImageSize) {
-                        bestImageSize = size;
-                        bestFileIndex = i;
-                    }
-                }
-            }
-        }
-
-        // Delete all but the best one.
-        // Note there *may* be no best one, so all would be deleted. This is fine.
-        for (int i = 0; i < imageList.size(); i++) {
-            if (i != bestFileIndex) {
-                FileUtils.delete(new File(imageList.get(i)));
-            }
-        }
-
-        if (bestFileIndex >= 0) {
-            return imageList.get(bestFileIndex);
-        }
-
-        return null;
-    }
-
-    /**
      * Check if caching is enabled.
      *
      * @param context Current context
@@ -447,7 +334,7 @@ public final class ImageUtils {
      * @return {@code true} if resized images are cached in a database.
      */
     @AnyThread
-    public static boolean imagesAreCached(@NonNull final Context context) {
+    public static boolean isImageCachingEnabled(@NonNull final Context context) {
         return PreferenceManager.getDefaultSharedPreferences(context)
                                 .getBoolean(Prefs.pk_image_cache_resized, false);
     }

@@ -32,8 +32,10 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.CursorIndexOutOfBoundsException;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.os.AsyncTask;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -44,6 +46,7 @@ import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
+import androidx.annotation.DrawableRes;
 import androidx.annotation.IdRes;
 import androidx.annotation.IntRange;
 import androidx.annotation.LayoutRes;
@@ -63,8 +66,11 @@ import java.util.Objects;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.covers.ImageLoader;
+import com.hardbacknutter.nevertoomanybooks.covers.ImageLoaderWithCacheWrite;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageScale;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageUtils;
+import com.hardbacknutter.nevertoomanybooks.database.CoversDAO;
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
@@ -102,9 +108,6 @@ public class BooklistAdapter
     /** Cached locale. */
     @NonNull
     private final Locale mUserLocale;
-    /** The cursor is the equivalent of the 'list of items'. */
-    @NonNull
-    private final Cursor mCursor;
     /** The padding indent (in pixels) added for each level: padding = (level-1) * mLevelIndent. */
     private final int mLevelIndent;
     /** Cached inflater. */
@@ -113,12 +116,17 @@ public class BooklistAdapter
     /** List style to apply. */
     @NonNull
     private final BooklistStyle mStyle;
-    /** provides read only access to the row data. */
-    @NonNull
-    private final DataHolder mNodeData;
     /** A collection of 'in-use' flags for the fields we might display. */
     @NonNull
     private final FieldsInUse mFieldsInUse;
+    /** Whether to use the covers DAO caching. */
+    private final boolean mImageCachingEnabled;
+    /** The cursor is the equivalent of the 'list of items'. */
+    @Nullable
+    private Cursor mCursor;
+    /** provides read only access to the row data. */
+    @Nullable
+    private DataHolder mNodeData;
     /** The combined click and long-click listeners for a single row. */
     @Nullable
     private OnRowClickedListener mOnRowClickedListener;
@@ -128,21 +136,37 @@ public class BooklistAdapter
      *
      * @param context Current context
      * @param style   The style is used by (some) individual rows.
-     * @param cursor  cursor with the 'list of items'.
      */
     public BooklistAdapter(@NonNull final Context context,
-                           @NonNull final BooklistStyle style,
-                           @NonNull final Cursor cursor) {
+                           @NonNull final BooklistStyle style) {
         mInflater = LayoutInflater.from(context);
         mUserLocale = LocaleUtils.getUserLocale(context);
         mStyle = style;
-        mCursor = cursor;
-        mNodeData = new CursorRow(mCursor);
-        mLevelIndent = context.getResources().getDimensionPixelSize(R.dimen.bob_level_indent);
-
         mFieldsInUse = new FieldsInUse(context, style);
+        mImageCachingEnabled = ImageUtils.isImageCachingEnabled(context);
 
-        setHasStableIds(true);
+        mLevelIndent = context.getResources().getDimensionPixelSize(R.dimen.bob_level_indent);
+    }
+
+    @NonNull
+    public Cursor getCursor() {
+        Objects.requireNonNull(mCursor, ErrorMsg.NULL_CURSOR);
+        return mCursor;
+    }
+
+    /**
+     * Set the data list.
+     *
+     * @param cursor cursor with the 'list of items'.
+     */
+    public void setCursor(@Nullable final Cursor cursor) {
+        mCursor = cursor;
+        if (mCursor != null) {
+            mNodeData = new CursorRow(mCursor);
+        } else {
+            mNodeData = null;
+        }
+        notifyDataSetChanged();
     }
 
     @NonNull
@@ -150,9 +174,8 @@ public class BooklistAdapter
         return mUserLocale;
     }
 
-    @NonNull
-    public Cursor getCursor() {
-        return mCursor;
+    public boolean isImageCachingEnabled() {
+        return mImageCachingEnabled;
     }
 
     /**
@@ -348,27 +371,26 @@ public class BooklistAdapter
     @NonNull
     @Override
     public RowViewHolder onCreateViewHolder(@NonNull final ViewGroup parent,
-                                            @BooklistGroup.Id final int groupKeyId) {
+                                            @BooklistGroup.Id final int groupId) {
 
-        final View itemView = createView(parent, groupKeyId);
+        final View itemView = createView(parent, groupId);
 
-        // NEWTHINGS: GROUP_KEY_x add a new holder type if needed
-        switch (groupKeyId) {
+        // NEWTHINGS: BooklistGroup.KEY add a new holder type if needed
+        switch (groupId) {
             case BooklistGroup.BOOK:
-                return new BookHolder(itemView, mUserLocale, mStyle, mFieldsInUse);
+                return new BookHolder(this, itemView, mStyle, mFieldsInUse);
 
             case BooklistGroup.AUTHOR:
-                return new CheckableStringHolder(this, itemView, mStyle.getGroupById(groupKeyId),
-                                                 DBDefinitions.KEY_AUTHOR_IS_COMPLETE);
+                return new AuthorHolder(this, itemView, mStyle.getGroupById(groupId));
 
             case BooklistGroup.SERIES:
-                return new SeriesHolder(this, itemView, mStyle.getGroupById(groupKeyId));
+                return new SeriesHolder(this, itemView, mStyle.getGroupById(groupId));
 
             case BooklistGroup.RATING:
-                return new RatingHolder(itemView, mStyle.getGroupById(groupKeyId));
+                return new RatingHolder(itemView, mStyle.getGroupById(groupId));
 
             default:
-                return new GenericStringHolder(this, itemView, mStyle.getGroupById(groupKeyId));
+                return new GenericStringHolder(this, itemView, mStyle.getGroupById(groupId));
         }
     }
 
@@ -387,6 +409,7 @@ public class BooklistAdapter
 
         final Context context = parent.getContext();
 
+        //noinspection ConstantConditions
         final int level = mNodeData.getInt(DBDefinitions.KEY_BL_NODE_LEVEL);
         // Indent (0..) based on level (1..)
         int indent = level - 1;
@@ -445,7 +468,7 @@ public class BooklistAdapter
         final View view = mInflater.inflate(layoutId, parent, false);
         view.setPaddingRelative(indent * mLevelIndent, 0, 0, 0);
 
-        // Scale text/padding if required
+        // Scale text/padding (recursively) if required
         if (mStyle.getTextScale(context) != BooklistStyle.FONT_SCALE_MEDIUM) {
             scaleTextViews(view, mStyle.getTextSpUnits(context),
                            mStyle.getTextPaddingFactor(context));
@@ -457,6 +480,7 @@ public class BooklistAdapter
     public void onBindViewHolder(@NonNull final RowViewHolder holder,
                                  final int position) {
 
+        //noinspection ConstantConditions
         mCursor.moveToPosition(position);
 
         holder.onClickTargetView.setTag(R.id.TAG_BL_POSITION, position);
@@ -479,6 +503,7 @@ public class BooklistAdapter
         });
 
         // further binding depends on the type of row (i.e. holder).
+        //noinspection ConstantConditions
         holder.onBindViewHolder(mNodeData, mStyle);
     }
 
@@ -492,7 +517,8 @@ public class BooklistAdapter
     @Override
     @BooklistGroup.Id
     public int getItemViewType(final int position) {
-        if (mCursor.moveToPosition(position)) {
+        if (mCursor != null && mCursor.moveToPosition(position)) {
+            //noinspection ConstantConditions
             return mNodeData.getInt(DBDefinitions.KEY_BL_NODE_GROUP);
         } else {
             // bogus, should not happen
@@ -502,12 +528,13 @@ public class BooklistAdapter
 
     @Override
     public int getItemCount() {
-        return mCursor.getCount();
+        return mCursor != null ? mCursor.getCount() : -1;
     }
 
     @Override
     public long getItemId(final int position) {
-        if (hasStableIds() && mCursor.moveToPosition(position)) {
+        if (hasStableIds() && mCursor != null && mCursor.moveToPosition(position)) {
+            //noinspection ConstantConditions
             return mNodeData.getLong(DBDefinitions.KEY_PK_ID);
         } else {
             return RecyclerView.NO_ID;
@@ -520,7 +547,9 @@ public class BooklistAdapter
      * @return the level, or {@code 0} if unknown
      */
     int getLevel(final int position) {
+        //noinspection ConstantConditions
         if (mCursor.moveToPosition(position)) {
+            //noinspection ConstantConditions
             return mNodeData.getInt(DBDefinitions.KEY_BL_NODE_LEVEL);
         } else {
             return 0;
@@ -597,6 +626,7 @@ public class BooklistAdapter
 
         // make sure it's still in range.
         final int clampedPosition = MathUtils.clamp(position, 0, getItemCount() - 1);
+        //noinspection ConstantConditions
         if (!mCursor.moveToPosition(clampedPosition)) {
             return null;
         }
@@ -604,11 +634,13 @@ public class BooklistAdapter
         try {
             if (level > (mStyle.getGroupCount())) {
                 // it's a book; use the title (no need to take the group.format round-trip).
+                //noinspection ConstantConditions
                 return mNodeData.getString(DBDefinitions.KEY_TITLE);
 
             } else {
                 // it's a group; use the display domain as the text
                 final BooklistGroup group = mStyle.getGroupByLevel(level);
+                //noinspection ConstantConditions
                 final String value = mNodeData.getString(group.getDisplayDomain().getName());
                 if (!value.isEmpty()) {
                     return format(mInflater.getContext(), group.getId(), value, null);
@@ -786,16 +818,24 @@ public class BooklistAdapter
     static class BookHolder
             extends RowViewHolder {
 
+        /** The parent adapter. */
+        @NonNull
+        final BooklistAdapter mAdapter;
         /** Format string. */
         @NonNull
         private final String mX_bracket_Y_bracket;
 
-        /** Extras - Based on style. */
-        private final int mMaxCoverSize;
+        private final int mMaxWidth;
+        private final int mMaxHeight;
+
+        /** Whether to re-order the title as per global preference. */
+        private final boolean mReorderTitle;
+        /** A collection of 'in-use' flags for the fields we might display. */
+        private final FieldsInUse mInUse;
+
 
         /** View that stores the related book field. */
         private final TextView mTitleView;
-
         /** The "I've read it" checkbox. */
         private final CompoundButton mReadView;
         /** The "signed" checkbox. */
@@ -804,15 +844,12 @@ public class BooklistAdapter
         private final CompoundButton mEditionView;
         /** The "on loan" checkbox. */
         private final CompoundButton mOnLoanView;
-
         /** View that stores the related book field. */
         private final ImageView mCoverView;
-
         /** View that stores the Series number when it is a short piece of text. */
         private final TextView mSeriesNumView;
         /** View that stores the Series number when it is a long piece of text. */
         private final TextView mSeriesNumLongView;
-
         /** View that stores the related book field. */
         private final RatingBar mRatingBar;
         /** View that stores the related book field. */
@@ -828,41 +865,32 @@ public class BooklistAdapter
         /** View that stores the related book field. */
         private final TextView mBookshelvesView;
 
-        /** Cache the locale. */
-        @NonNull
-        private final Locale mLocale;
-
-        /** Whether to re-order the title as per global preference. */
-        private final boolean mReorderTitle;
-
-        /** A collection of 'in-use' flags for the fields we might display. */
-        private final FieldsInUse mInUse;
-
         /**
          * Constructor.
          *
          * <strong>Note:</strong> the itemView can be re-used.
          * Hence make sure to explicitly set visibility.
          *
+         * @param adapter     the hosting adapter
          * @param itemView    the view specific for this holder
-         * @param userLocale  to use
          * @param style       to use
          * @param fieldsInUse which fields are used
          */
-        BookHolder(@NonNull final View itemView,
-                   @NonNull final Locale userLocale,
+        BookHolder(@NonNull final BooklistAdapter adapter,
+                   @NonNull final View itemView,
                    @NonNull final BooklistStyle style,
                    @NonNull final FieldsInUse fieldsInUse) {
             super(itemView);
+            final Context context = itemView.getContext();
+
+            mAdapter = adapter;
 
             // disabled (for now?) as it makes less sense in this particular view/holder,
             // and slows down scrolling.
-            // mReorderTitle = ItemWithTitle.isReorderTitleForDisplaying(itemView.getContext());
+            // mReorderTitle = ItemWithTitle.isReorderTitleForDisplaying(context);
             mReorderTitle = false;
 
             mInUse = fieldsInUse;
-            final Context context = itemView.getContext();
-            mLocale = userLocale;
 
             mX_bracket_Y_bracket = context.getString(R.string.a_bracket_b_bracket);
 
@@ -886,7 +914,9 @@ public class BooklistAdapter
             mBookshelvesView = itemView.findViewById(R.id.shelves);
 
             // We use a square space for the image so both portrait/landscape images work out.
-            mMaxCoverSize = ImageScale.getSize(context, style.getThumbnailScale(context));
+            final int longestSide = ImageScale.toPixels(context, style.getThumbnailScale(context));
+            mMaxWidth = longestSide;
+            mMaxHeight = longestSide;
             mCoverView = itemView.findViewById(R.id.coverImage0);
             if (!mInUse.cover) {
                 // shown by default, so hide it if not in use.
@@ -912,7 +942,7 @@ public class BooklistAdapter
                 } else {
                     title = ItemWithTitle.reorder(itemView.getContext(),
                                                   rowData.getString(DBDefinitions.KEY_TITLE),
-                                                  mLocale);
+                                                  mAdapter.getUserLocale());
                 }
             } else {
                 title = rowData.getString(DBDefinitions.KEY_TITLE);
@@ -948,8 +978,7 @@ public class BooklistAdapter
                 final String uuid = rowData.getString(DBDefinitions.KEY_BOOK_UUID);
                 // store the uuid for use in the OnClickListener
                 mCoverView.setTag(R.id.TAG_ITEM, uuid);
-                final boolean isSet = ImageUtils.setImageView(mCoverView, mMaxCoverSize,
-                                                              mMaxCoverSize, uuid, 0);
+                final boolean isSet = setImageView(uuid);
                 if (isSet) {
                     // We do not go overkill here by adding a CoverHandler
                     // but only provide zooming by clicking on the image
@@ -1063,6 +1092,61 @@ public class BooklistAdapter
                 view.setVisibility(View.GONE);
             }
         }
+
+        /**
+         * Load the image owned by the UUID/cIdx into the destination ImageView.
+         * Handles checking & storing in the cache.
+         * <p>
+         * Images and placeholder will always be scaled to a fixed size.
+         *
+         * @param uuid UUID of the book
+         *
+         * @return {@code true} if the image was displayed.
+         * {@code false} if a place holder was used.
+         */
+        public boolean setImageView(@NonNull final String uuid) {
+
+            final Context context = mCoverView.getContext();
+
+            // 1. If caching is used, and we don't have cache building happening, check it.
+            if (mAdapter.isImageCachingEnabled()
+                && !CoversDAO.ImageCacheWriterTask.hasActiveTasks()) {
+                final Bitmap bitmap = CoversDAO.getImage(context, uuid, 0, mMaxWidth, mMaxHeight);
+                if (bitmap != null) {
+                    ImageUtils.setImageView(mCoverView, mMaxWidth, mMaxHeight, bitmap, 0);
+                    return true;
+                }
+            }
+
+            // 2. Cache did not have it, or we were not allowed to check.
+            final File file = AppDir.getCoverFile(context, uuid, 0);
+            // Check if the file exists; if it does not...
+            if (!ImageUtils.isFileGood(file)) {
+                // leave the space blank, but preserve the width BASED on the mMaxHeight!
+                final ViewGroup.LayoutParams lp = mCoverView.getLayoutParams();
+                lp.width = (int) (mMaxHeight * ImageUtils.HW_RATIO);
+                lp.height = 0;
+                mCoverView.setLayoutParams(lp);
+                return false;
+            }
+
+            // Once we get here, we know the file is valid
+            if (mAdapter.isImageCachingEnabled()) {
+                // 1. Gets the image from the file system and display it.
+                // 2. Start a subsequent task to send it to the cache.
+                // This 2nd task uses the serial executor.
+                new ImageLoaderWithCacheWrite(mCoverView, file, mMaxWidth, mMaxHeight, null,
+                                              uuid, 0)
+                        .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+
+            } else {
+                // Cache not used: Get the image from the file system and display it.
+                new ImageLoader(mCoverView, file, mMaxWidth, mMaxHeight, null)
+                        .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+            }
+            return true;
+        }
+
     }
 
     static class RatingHolder
@@ -1171,35 +1255,37 @@ public class BooklistAdapter
     }
 
     /**
-     * ViewHolder for a row that displays a generic string, but with a 'lock' icon at the 'end'.
+     * ViewHolder for a row that displays a generic string with a checkable icon at the 'end'.
      */
     static class CheckableStringHolder
             extends GenericStringHolder {
 
         /** Column name of related boolean column. */
-        private final String mCheckableColumnKey;
-        /** The 'lock' aka 'is complete' icon drawable. */
+        private final String mColumnKey;
+        /** The icon drawable. */
         @NonNull
-        private final Drawable mLock;
+        private final Drawable mIcon;
 
         /**
          * Constructor.
          *
-         * @param adapter            the hosting adapter
-         * @param itemView           the view specific for this holder
-         * @param group              the group this holder represents
-         * @param checkableColumnKey Column name to use for the boolean 'lock' status
+         * @param adapter   the hosting adapter
+         * @param itemView  the view specific for this holder
+         * @param group     the group this holder represents
+         * @param columnKey Column name to use for the boolean status
+         * @param icon      to use for the checkable column
          */
         CheckableStringHolder(@NonNull final BooklistAdapter adapter,
                               @NonNull final View itemView,
                               @NonNull final BooklistGroup group,
-                              @NonNull final String checkableColumnKey) {
+                              @NonNull final String columnKey,
+                              @DrawableRes final int icon) {
             super(adapter, itemView, group);
-            mCheckableColumnKey = checkableColumnKey;
+            mColumnKey = columnKey;
             //noinspection ConstantConditions
-            mLock = itemView.getContext().getDrawable(R.drawable.ic_lock);
+            mIcon = itemView.getContext().getDrawable(icon);
             //noinspection ConstantConditions
-            mLock.setBounds(0, 0, mLock.getIntrinsicWidth(), mLock.getIntrinsicHeight());
+            mIcon.setBounds(0, 0, mIcon.getIntrinsicWidth(), mIcon.getIntrinsicHeight());
         }
 
         @Override
@@ -1208,9 +1294,31 @@ public class BooklistAdapter
             // do the text part first
             super.onBindViewHolder(rowData, style);
 
-            final Drawable lock = rowData.getBoolean(mCheckableColumnKey) ? mLock : null;
+            final Drawable icon = rowData.getBoolean(mColumnKey) ? mIcon : null;
             final Drawable[] drawables = mTextView.getCompoundDrawablesRelative();
-            mTextView.setCompoundDrawablesRelative(drawables[0], drawables[1], lock, drawables[3]);
+            // show it (or not) at the 'end'
+            mTextView.setCompoundDrawablesRelative(drawables[0], drawables[1], icon, drawables[3]);
+        }
+    }
+
+    /**
+     * ViewHolder for an Author.
+     */
+    static class AuthorHolder
+            extends CheckableStringHolder {
+
+        /**
+         * Constructor.
+         *
+         * @param adapter  the hosting adapter
+         * @param itemView the view specific for this holder
+         * @param group    the group this holder represents
+         */
+        AuthorHolder(@NonNull final BooklistAdapter adapter,
+                     @NonNull final View itemView,
+                     @NonNull final BooklistGroup group) {
+            super(adapter, itemView, group,
+                  DBDefinitions.KEY_AUTHOR_IS_COMPLETE, R.drawable.ic_lock);
         }
     }
 
@@ -1233,7 +1341,8 @@ public class BooklistAdapter
         SeriesHolder(@NonNull final BooklistAdapter adapter,
                      @NonNull final View itemView,
                      @NonNull final BooklistGroup group) {
-            super(adapter, itemView, group, DBDefinitions.KEY_SERIES_IS_COMPLETE);
+            super(adapter, itemView, group,
+                  DBDefinitions.KEY_SERIES_IS_COMPLETE, R.drawable.ic_lock);
         }
 
         @Override

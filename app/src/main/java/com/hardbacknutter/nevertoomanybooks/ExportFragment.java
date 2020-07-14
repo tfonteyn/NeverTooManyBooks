@@ -107,8 +107,6 @@ public class ExportFragment
         super.onCreate(savedInstanceState);
 
         getChildFragmentManager().addFragmentOnAttachListener(mFragmentOnAttachListener);
-
-        mArchiveExportTask = new ViewModelProvider(this).get(ArchiveExportTask.class);
     }
 
     @Nullable
@@ -127,12 +125,15 @@ public class ExportFragment
         //noinspection ConstantConditions
         getActivity().setTitle(R.string.lbl_backup);
 
+        mArchiveExportTask = new ViewModelProvider(this).get(ArchiveExportTask.class);
         mArchiveExportTask.onProgressUpdate().observe(getViewLifecycleOwner(), this::onProgress);
         mArchiveExportTask.onCancelled().observe(getViewLifecycleOwner(), this::onExportCancelled);
         mArchiveExportTask.onFailure().observe(getViewLifecycleOwner(), this::onExportFailure);
         mArchiveExportTask.onFinished().observe(getViewLifecycleOwner(), this::onExportFinished);
 
-        exportShowOptions();
+        if (!mArchiveExportTask.isRunning()) {
+            exportShowOptions();
+        }
     }
 
     @Override
@@ -152,8 +153,7 @@ public class ExportFragment
                     Objects.requireNonNull(data, ErrorMsg.NULL_INTENT_DATA);
                     final Uri uri = data.getData();
                     if (uri != null) {
-                        //noinspection ConstantConditions
-                        mArchiveExportTask.startExport(getContext(), uri);
+                        mArchiveExportTask.startExport(uri);
                     }
                 } else {
                     //noinspection ConstantConditions

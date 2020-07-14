@@ -112,7 +112,6 @@ public class ImportFragment
 
         //noinspection ConstantConditions
         mResultData = new ViewModelProvider(getActivity()).get(ResultDataModel.class);
-        mArchiveImportTask = new ViewModelProvider(this).get(ArchiveImportTask.class);
     }
 
     @Nullable
@@ -131,12 +130,15 @@ public class ImportFragment
         //noinspection ConstantConditions
         getActivity().setTitle(R.string.lbl_import);
 
+        mArchiveImportTask = new ViewModelProvider(this).get(ArchiveImportTask.class);
         mArchiveImportTask.onProgressUpdate().observe(getViewLifecycleOwner(), this::onProgress);
         mArchiveImportTask.onCancelled().observe(getViewLifecycleOwner(), this::onImportCancelled);
         mArchiveImportTask.onFailure().observe(getViewLifecycleOwner(), this::onImportFailure);
         mArchiveImportTask.onFinished().observe(getViewLifecycleOwner(), this::onImportFinished);
 
-        importPickUri();
+        if (!mArchiveImportTask.isRunning()) {
+            importPickUri();
+        }
     }
 
     @Override

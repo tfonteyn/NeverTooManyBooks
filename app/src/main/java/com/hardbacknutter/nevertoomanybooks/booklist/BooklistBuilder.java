@@ -96,15 +96,14 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_SE
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TMP_TBL_BOOK_LIST;
 
 /**
- * Class used to build and populate temporary tables with details of a flattened book
- * list used to display books in a list control and perform operation like
+ * Build and populate temporary tables with details of "flattened" books.
+ * The generated list is used to display books in a list control and perform operation like
  * 'expand/collapse' on nodes in the list.
  * <p>
- * A BooklistBuilder has a 1:n relation to {@link BooklistCursor} objects.
- * Right now (2020-01-16) it's a 1:2 relation,
- * i.e. two cursors with the same builder can exist: the current cursor, and a new cursor
- * which is going to replace the old cursor. See {@link #closeCursor}.
- * Cursors hold a reference to the BooklistBuilder.
+ * The BooklistBuilder "owns" the temporary database tables.
+ * They get deleted when {@link #close()} is called.
+ * A BooklistBuilder has a 1:1 relation to {@link BooklistCursor} objects.
+ * The BooklistCursor holds a reference to the BooklistBuilder.
  */
 public class BooklistBuilder
         implements AutoCloseable {
@@ -112,32 +111,32 @@ public class BooklistBuilder
     /** id values for state preservation property. See {@link ListRebuildMode}. */
     public static final int PREF_REBUILD_SAVED_STATE = 0;
     public static final int PREF_REBUILD_ALWAYS_EXPANDED = 1;
-    @SuppressWarnings("WeakerAccess")
     public static final int PREF_REBUILD_ALWAYS_COLLAPSED = 2;
-    @SuppressWarnings("WeakerAccess")
     public static final int PREF_REBUILD_PREFERRED_STATE = 3;
-    /** Log tag. */
-    private static final String TAG = "BooklistBuilder";
-    /** Counter for BooklistBuilder ID's. Used to create unique table names etc... */
-    @NonNull
-    private static final AtomicInteger ID_COUNTER = new AtomicInteger();
 
-    /** DEBUG Instance counter. */
-    @NonNull
-    private static final AtomicInteger DEBUG_INSTANCE_COUNTER = new AtomicInteger();
-
-    /** divider to convert nanoseconds to milliseconds. */
-    private static final int NANO_TO_MILLIS = 1_000_000;
     public static final String SELECT_ = "SELECT ";
     public static final String _FROM_ = " FROM ";
     public static final String _WHERE_ = " WHERE ";
     public static final String _AND_ = " AND ";
     public static final String _ORDER_BY_ = " ORDER BY ";
 
+    /** Log tag. */
+    private static final String TAG = "BooklistBuilder";
+    /**
+     * Counter for BooklistBuilder ID's. Only increment.
+     * Used to create unique table names etc... see {@link #mInstanceId}.
+     */
+    @NonNull
+    private static final AtomicInteger ID_COUNTER = new AtomicInteger();
+    /** DEBUG Instance counter. Increment and decrements to check leaks. */
+    @NonNull
+    private static final AtomicInteger DEBUG_INSTANCE_COUNTER = new AtomicInteger();
+    /** divider to convert nanoseconds to milliseconds. */
+    private static final int NANO_TO_MILLIS = 1_000_000;
+
     // not in use for now
     // List of columns for the group-by clause, including COLLATE clauses. Set by build() method.
     //private String mGroupColumnList;
-
     /** Database Access. */
     @SuppressWarnings("FieldNotUsedInToString")
     @NonNull
@@ -181,11 +180,21 @@ public class BooklistBuilder
     /** Table used by the triggers to store the snapshot of the most recent/current row headings. */
     @SuppressWarnings("FieldNotUsedInToString")
     private TableDefinition mTriggerHelperTable;
-    /** used in debug. */
+    /** DEBUG: double check on mCloseWasCalled to control {@link #DEBUG_INSTANCE_COUNTER}. */
     @SuppressWarnings("FieldNotUsedInToString")
     private boolean mDebugReferenceDecremented;
-    /** DEBUG: Indicates close() has been called. Also see {@link Closeable#close()}. */
+    /** DEBUG: Indicates close() has been called. See {@link Closeable#close()}. */
     private boolean mCloseWasCalled;
+
+
+    /** Total number of books in current list. e.g. a book can be listed under 2 authors. */
+    private int mTotalBooks = -1;
+    /** Total number of unique books in current list. */
+    private int mDistinctBooks = -1;
+    /** The current list cursor. */
+    @SuppressWarnings("FieldNotUsedInToString")
+    @Nullable
+    private BooklistCursor mCursor;
 
     /**
      * Constructor.
@@ -218,24 +227,6 @@ public class BooklistBuilder
         }
 
         mSyncedDb = DAO.getSyncDb();
-    }
-
-    /**
-     * Close the 'cursorToClose' in a safe way, checking the BooklistBuilder is not used
-     * by the 'currentCursor'.
-     *
-     * @param cursorToClose the one to close
-     * @param currentCursor the one to check
-     */
-    public static void closeCursor(@Nullable final BooklistCursor cursorToClose,
-                                   @Nullable final BooklistCursor currentCursor) {
-        if (cursorToClose != null && cursorToClose != currentCursor) {
-            final BooklistBuilder blbToClose = cursorToClose.getBooklistBuilder();
-            if (currentCursor == null || !blbToClose.equals(currentCursor.getBooklistBuilder())) {
-                blbToClose.close();
-            }
-            cursorToClose.close();
-        }
     }
 
     /**
@@ -437,6 +428,18 @@ public class BooklistBuilder
                            + ((t1_insert - t0) / NANO_TO_MILLIS) + " ms");
             }
         }
+
+        // Create the initial cursor, and run a pre-count.
+        // When calling setAdapter() with our cursor, it will do a count() and potentially
+        // block the UI thread while it pages through the entire cursor.
+        // Doing it here makes subsequent calls faster.
+        //
+        newListCursor().getCount();
+
+        // pre-count and cache these values. They are used for the header, and will not
+        // change even if the list cursor changes.
+        getBookCount();
+        getDistinctBookCount();
     }
 
     /**
@@ -585,13 +588,28 @@ public class BooklistBuilder
     }
 
     /**
-     * Get a new list cursor.
+     * Get the list cursor. Will be created if needed.
+     * <p>
+     * Note this is a {@link BooklistCursor}
      *
-     * @return a {@link BooklistCursor} instead of a real cursor.
+     * @return cursor
      */
     @NonNull
-    public BooklistCursor getNewListCursor() {
-        return new BooklistCursor(this);
+    public BooklistCursor getListCursor() {
+        if (mCursor == null) {
+            mCursor = new BooklistCursor(this);
+        }
+        return mCursor;
+    }
+
+    @NonNull
+    public BooklistCursor newListCursor() {
+        if (mCursor != null) {
+            mCursor.close();
+        }
+
+        mCursor = new BooklistCursor(this);
+        return mCursor;
     }
 
     @Nullable
@@ -657,13 +675,16 @@ public class BooklistBuilder
      * @return count
      */
     public int getDistinctBookCount() {
-        try (SynchronizedStatement stmt = mSyncedDb.compileStatement(
-                "SELECT COUNT(DISTINCT " + KEY_FK_BOOK + ")"
-                + _FROM_ + mListTable.getName()
-                + _WHERE_ + KEY_BL_NODE_GROUP + "=?")) {
-            stmt.bindLong(1, BooklistGroup.BOOK);
-            return (int) stmt.count();
+        if (mDistinctBooks == -1) {
+            try (SynchronizedStatement stmt = mSyncedDb.compileStatement(
+                    "SELECT COUNT(DISTINCT " + KEY_FK_BOOK + ")"
+                    + _FROM_ + mListTable.getName()
+                    + _WHERE_ + KEY_BL_NODE_GROUP + "=?")) {
+                stmt.bindLong(1, BooklistGroup.BOOK);
+                mDistinctBooks = (int) stmt.count();
+            }
         }
+        return mDistinctBooks;
     }
 
     /**
@@ -672,13 +693,16 @@ public class BooklistBuilder
      * @return count
      */
     public int getBookCount() {
-        try (SynchronizedStatement stmt = mSyncedDb.compileStatement(
-                "SELECT COUNT(*)"
-                + _FROM_ + mListTable.getName()
-                + _WHERE_ + KEY_BL_NODE_GROUP + "=?")) {
-            stmt.bindLong(1, BooklistGroup.BOOK);
-            return (int) stmt.count();
+        if (mTotalBooks == -1) {
+            try (SynchronizedStatement stmt = mSyncedDb.compileStatement(
+                    "SELECT COUNT(*)"
+                    + _FROM_ + mListTable.getName()
+                    + _WHERE_ + KEY_BL_NODE_GROUP + "=?")) {
+                stmt.bindLong(1, BooklistGroup.BOOK);
+                mTotalBooks = (int) stmt.count();
+            }
         }
+        return mTotalBooks;
     }
 
     /**
@@ -690,10 +714,18 @@ public class BooklistBuilder
         return mRowStateDAO.countVisibleRows();
     }
 
-    /** Wrapper for {@link RowStateDAO}. */
+    /**
+     * Expand or collapse <strong>all</strong> nodes.
+     * The internal cursor will be null'd but it's still the clients responsibility
+     * to refresh their adapter.
+     *
+     * @param topLevel the desired top-level which must be kept visible
+     * @param expand   the state to apply to levels 'below' the topLevel (level > topLevel),
+     */
     public void expandAllNodes(@IntRange(from = 1) final int topLevel,
                                final boolean expand) {
         mRowStateDAO.expandAllNodes(topLevel, expand);
+        mCursor = null;
     }
 
     /** Wrapper for {@link RowStateDAO}. */
@@ -718,6 +750,7 @@ public class BooklistBuilder
         final RowStateDAO.Node node = mRowStateDAO.getNodeByNodeId(nodeRowId);
         node.setNextState(nextState);
         mRowStateDAO.setNode(node.rowId, node.level, node.isExpanded, relativeChildLevel);
+        mRowStateDAO.findAndSetListPosition(node);
         return node;
     }
 
@@ -735,7 +768,13 @@ public class BooklistBuilder
         if (mRowStateDAO != null) {
             mRowStateDAO.close();
         }
+        if (mCursor != null) {
+            mCursor.close();
+        }
         if (mListTable != null) {
+            if (BuildConfig.DEBUG) {
+                Log.d(TAG, "close|dropping=" + mListTable.getName());
+            }
             mSyncedDb.drop(mListTable.getName());
         }
         if (mTriggerHelperTable != null) {
@@ -778,6 +817,8 @@ public class BooklistBuilder
         return "BooklistBuilder{"
                + "mInstanceId=" + mInstanceId
                + ", mCloseWasCalled=" + mCloseWasCalled
+               + ", mTotalBooks=" + mTotalBooks
+               + ", mDistinctBooks=" + mDistinctBooks
                + ", mFilters=" + mFilters
                + ", mBookshelf=" + mBookshelf
                + '}';
@@ -1200,6 +1241,8 @@ public class BooklistBuilder
 
         /**
          * Process the 'sort-by' columns into a list suitable for an CREATE-INDEX statement.
+         *
+         * @return column list clause
          */
         String getSortedDomainsIndexColumns() {
             final StringBuilder indexCols = new StringBuilder();

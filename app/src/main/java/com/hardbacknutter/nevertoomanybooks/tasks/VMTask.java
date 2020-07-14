@@ -44,17 +44,22 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.FinishedMessage;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.ProgressMessage;
 
+/**
+ * The base for a task which uses {@link MutableLiveData} for the results.
+ *
+ * @param <Result> the type of the result of the background computation.
+ */
 public abstract class VMTask<Result>
         extends ViewModel
         implements Canceller, ProgressListener {
 
+    /** Log tag. */
     private static final String TAG = "VMTask";
     private final AtomicBoolean mIsCancelled = new AtomicBoolean();
 
     private final MutableLiveData<FinishedMessage<Result>> mFinished = new MutableLiveData<>();
     private final MutableLiveData<FinishedMessage<Result>> mCancelled = new MutableLiveData<>();
     private final MutableLiveData<FinishedMessage<Exception>> mFailure = new MutableLiveData<>();
-
     private final MutableLiveData<ProgressMessage> mProgress = new MutableLiveData<>();
 
     /** id set at construction time, passed back in all messages. */
@@ -66,25 +71,47 @@ public abstract class VMTask<Result>
 
     private Executor mExecutor;
 
+    /**
+     * Called when the task successfully finishes.
+     *
+     * @return the {@link Result} which can be considered to be complete and correct.
+     */
     @NonNull
     public MutableLiveData<FinishedMessage<Result>> onFinished() {
         return mFinished;
     }
 
+    /**
+     * Called when the task was cancelled.
+     *
+     * @return the {@link Result}. It will depend on the implementation how
+     * complete/correct (if at all) this result is.
+     */
     @NonNull
     public MutableLiveData<FinishedMessage<Result>> onCancelled() {
         return mCancelled;
     }
 
+    /**
+     * Called when the task fails with an Exception.
+     *
+     * @return the result is the Exception
+     */
     @NonNull
     public MutableLiveData<FinishedMessage<Exception>> onFailure() {
         return mFailure;
     }
 
+    /**
+     * Forwards progress messages for the client to display.
+     *
+     * @return a {@link ProgressMessage} with the progress counter, a text message, ...
+     */
     @NonNull
     public MutableLiveData<ProgressMessage> onProgressUpdate() {
         return mProgress;
     }
+
 
     @Override
     @CallSuper
@@ -92,19 +119,40 @@ public abstract class VMTask<Result>
         cancel(true);
     }
 
+
     @SuppressWarnings("unused")
     @MainThread
     public void setExecutor(@Nullable final Executor executor) {
         mExecutor = executor;
     }
 
+    /**
+     * @param taskId identifier, must be unique
+     *
+     * @return {@code true} if the task was started;
+     * {@code false} if a task with the same taskId is already running.
+     *
+     * @throws IllegalStateException if an attempt is made to start a new task (with a new id)
+     *                               while a previous task is still running.
+     */
     @MainThread
-    public void execute(final int taskId) {
-        if (mTaskId != 0) {
-            throw new IllegalStateException("task already running");
-        }
+    public boolean execute(final int taskId) {
+        synchronized (this) {
+            if (mTaskId == taskId) {
+                // Duplicate request to start the same task..
+                // Probably due to a fragment/activity restart.
+                // Reject re-execution gracefully.
+                // The client should not call execute without checking isRunning() first really.
+                return false;
+            }
 
-        mTaskId = taskId;
+            if (mTaskId != 0) {
+                // Can't start a new task while the previous one is still running. BUG.
+                throw new IllegalStateException("task already running");
+            }
+
+            mTaskId = taskId;
+        }
 
         if (mExecutor == null) {
             mExecutor = ASyncExecutor.SERIAL;
@@ -124,31 +172,80 @@ public abstract class VMTask<Result>
             }
             mTaskId = 0;
         });
+
+        return true;
     }
+
 
     @WorkerThread
     @Nullable
     protected abstract Result doWork()
             throws Exception;
 
+    public boolean isRunning() {
+        return mTaskId != 0;
+    }
+
+    /**
+     * Allows an external/client to <strong>request</strong> cancellation.
+     *
+     * @param mayInterruptIfRunning IGNORED (here for compatibility with an ASyncTask)
+     *
+     * @return {@code true}
+     */
+    @Override
+    @AnyThread
+    public boolean cancel(final boolean mayInterruptIfRunning) {
+        mIsCancelled.set(true);
+        return true;
+    }
+
+    @Override
+    @AnyThread
+    public boolean isCancelled() {
+        return mIsCancelled.get();
+    }
+
+    /**
+     * Can be called from the Callable.
+     * Forwards the progress info to the MutableLiveData.
+     *
+     * @param position the absolute position of the overall progress count.
+     * @param text     (optional) text message
+     */
     @WorkerThread
-    public final void onProgress(final int position,
-                                 @Nullable final String text) {
+    @Override
+    public final void publishProgress(final int position,
+                                      @Nullable final String text) {
         mProgressCurrentPos = position;
         mProgress.postValue(new ProgressMessage(mTaskId, text,
                                                 mProgressCurrentPos, mProgressMaxPos,
                                                 mIndeterminate));
     }
 
+    /**
+     * Can be called from the Callable.
+     * Forwards the progress info to the MutableLiveData.
+     *
+     * @param step the relative step in the overall progress count.
+     * @param text (optional) text message
+     */
     @WorkerThread
-    public final void onProgressStep(final int step,
-                                     @Nullable final String text) {
+    @Override
+    public final void publishProgressStep(final int step,
+                                          @Nullable final String text) {
         mProgressCurrentPos += step;
         mProgress.postValue(new ProgressMessage(mTaskId, text,
                                                 mProgressCurrentPos, mProgressMaxPos,
                                                 mIndeterminate));
     }
 
+    /**
+     * Only takes effect when the next ProgressMessage is send to the client.
+     *
+     * @param indeterminate true/false to enable/disable the indeterminate mode
+     *                      or {@code null} to tell the receiver to revert back to its initial mode.
+     */
     @AnyThread
     @Override
     public void setProgressIsIndeterminate(@Nullable final Boolean indeterminate) {
@@ -161,23 +258,15 @@ public abstract class VMTask<Result>
         return mProgressMaxPos;
     }
 
+    /**
+     * Only takes effect when the next ProgressMessage is send to the client.
+     *
+     * @param maxPosition value
+     */
     @AnyThread
     @Override
-    public void setProgressMaxPos(final int progressMaxPos) {
-        mProgressMaxPos = progressMaxPos;
-    }
-
-    @Override
-    @AnyThread
-    public boolean cancel(final boolean mayInterruptIfRunning) {
-        mIsCancelled.set(true);
-        return true;
-    }
-
-    @Override
-    @AnyThread
-    public boolean isCancelled() {
-        return mIsCancelled.get();
+    public void setProgressMaxPos(final int maxPosition) {
+        mProgressMaxPos = maxPosition;
     }
 
 }
