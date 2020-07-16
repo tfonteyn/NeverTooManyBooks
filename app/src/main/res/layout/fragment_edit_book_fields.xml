@@ -190,7 +190,7 @@
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_bookshelves"
             style="@style/Envelope.EditText"
-            android:hint="@string/lbl_bookshelves"
+            android:hint="@string/lbl_bookshelves_long"
             app:endIconMode="none"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

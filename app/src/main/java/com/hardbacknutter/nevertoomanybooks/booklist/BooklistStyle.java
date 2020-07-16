@@ -1263,7 +1263,7 @@ public class BooklistStyle
         }
         //noinspection ConstantConditions
         if (mAllBookDetailFields.get(pk_book_show_bookshelves).isTrue(context)) {
-            labels.add(context.getString(R.string.lbl_bookshelves));
+            labels.add(context.getString(R.string.lbl_bookshelves_long));
         }
 
         Collections.sort(labels);
@@ -1306,8 +1306,9 @@ public class BooklistStyle
         return "\nBooklistStyle{"
                + "id=" + mId
                + "\nuuid=`" + mUuid + '`'
-               + "\nmNameResId=" + mNameResId
-               + "\nmName=" + mName
+               + "\nmNameResId=`" + (mNameResId != 0 ? App.getAppContext().getString(mNameResId)
+                                                     : 0) + '`'
+               + "\nmName=`" + mName + '`'
                + "\nmIsPreferred=" + mIsPreferred
                + "\nmDefaultExpansionLevel=" + mDefaultExpansionLevel
                + "\nmFontScale=" + mFontScale

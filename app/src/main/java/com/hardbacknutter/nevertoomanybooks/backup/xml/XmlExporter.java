@@ -216,7 +216,7 @@ public class XmlExporter
         if (!progressListener.isCancelled() && writeBooks) {
             // parsing will be faster if these go in the order done here.
             progressListener
-                    .publishProgressStep(1, context.getString(R.string.lbl_bookshelves) + xml);
+                    .publishProgressStep(1, context.getString(R.string.lbl_bookshelves_long) + xml);
             writeBookshelves(writer, progressListener);
 
             progressListener.publishProgressStep(1, context.getString(R.string.lbl_authors) + xml);
