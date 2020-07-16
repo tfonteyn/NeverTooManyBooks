@@ -113,14 +113,14 @@ public class BooklistAdapter
     /** Cached inflater. */
     @NonNull
     private final LayoutInflater mInflater;
-    /** List style to apply. */
-    @NonNull
-    private final BooklistStyle mStyle;
     /** A collection of 'in-use' flags for the fields we might display. */
     @NonNull
     private final FieldsInUse mFieldsInUse;
     /** Whether to use the covers DAO caching. */
     private final boolean mImageCachingEnabled;
+    /** List style to apply. */
+    @NonNull
+    private final BooklistStyle mStyle;
     /** The cursor is the equivalent of the 'list of items'. */
     @Nullable
     private Cursor mCursor;
@@ -135,7 +135,7 @@ public class BooklistAdapter
      * Constructor.
      *
      * @param context Current context
-     * @param style   The style is used by (some) individual rows.
+     * @param style   to use
      */
     public BooklistAdapter(@NonNull final Context context,
                            @NonNull final BooklistStyle style) {
@@ -155,9 +155,9 @@ public class BooklistAdapter
     }
 
     /**
-     * Set the data list.
+     * Set or clear the cursor.
      *
-     * @param cursor cursor with the 'list of items'.
+     * @param cursor cursor with the 'list of items', or {@code null} to clear
      */
     public void setCursor(@Nullable final Cursor cursor) {
         mCursor = cursor;
@@ -196,6 +196,13 @@ public class BooklistAdapter
                   @BooklistGroup.Id final int groupKeyId,
                   @Nullable final String text,
                   @Nullable final Locale locale) {
+        final Locale tmpLocale;
+        if (locale != null) {
+            tmpLocale = locale;
+        } else {
+            tmpLocale = mUserLocale;
+        }
+
         switch (groupKeyId) {
             case BooklistGroup.AUTHOR: {
                 if (text == null || text.isEmpty()) {
@@ -209,12 +216,6 @@ public class BooklistAdapter
                     return context.getString(R.string.hint_empty_series);
 
                 } else if (ItemWithTitle.isReorderTitleForDisplaying(context)) {
-                    Locale tmpLocale;
-                    if (locale != null) {
-                        tmpLocale = locale;
-                    } else {
-                        tmpLocale = mUserLocale;
-                    }
                     return ItemWithTitle.reorder(context, text, tmpLocale);
                 } else {
                     return text;
@@ -225,12 +226,6 @@ public class BooklistAdapter
                     return context.getString(R.string.hint_empty_publisher);
 
                 } else if (ItemWithTitle.isReorderTitleForDisplaying(context)) {
-                    Locale tmpLocale;
-                    if (locale != null) {
-                        tmpLocale = locale;
-                    } else {
-                        tmpLocale = mUserLocale;
-                    }
                     return ItemWithTitle.reorder(context, text, tmpLocale);
                 } else {
                     return text;
@@ -320,12 +315,6 @@ public class BooklistAdapter
                         int m = Integer.parseInt(text);
                         // If valid, get the short name
                         if (m > 0 && m <= 12) {
-                            Locale tmpLocale;
-                            if (locale != null) {
-                                tmpLocale = locale;
-                            } else {
-                                tmpLocale = mUserLocale;
-                            }
                             return Month.of(m).getDisplayName(TextStyle.FULL_STANDALONE, tmpLocale);
                         }
                     } catch (@NonNull final NumberFormatException e) {
@@ -504,7 +493,7 @@ public class BooklistAdapter
 
         // further binding depends on the type of row (i.e. holder).
         //noinspection ConstantConditions
-        holder.onBindViewHolder(mNodeData, mStyle);
+        holder.onBindViewHolder(position, mNodeData, mStyle);
     }
 
     /**
@@ -543,6 +532,8 @@ public class BooklistAdapter
 
     /**
      * Get the level for the given position.
+     *
+     * @param position Adapter position to query
      *
      * @return the level, or {@code 0} if unknown
      */
@@ -805,10 +796,12 @@ public class BooklistAdapter
         /**
          * Bind the data to the views in the holder.
          *
-         * @param rowData with data to bind
-         * @param style   to use
+         * @param position The position of the item within the adapter's data set.
+         * @param rowData  with data to bind
+         * @param style    to use
          */
-        abstract void onBindViewHolder(@NonNull DataHolder rowData,
+        abstract void onBindViewHolder(final int position,
+                                       @NonNull DataHolder rowData,
                                        @NonNull BooklistStyle style);
     }
 
@@ -864,6 +857,10 @@ public class BooklistAdapter
         private final TextView mLocationView;
         /** View that stores the related book field. */
         private final TextView mBookshelvesView;
+
+        /** Only active when running in debug mode; displays the "position/nodeId" for a book. */
+        @Nullable
+        private TextView mDbgRowIdView;
 
         /**
          * Constructor.
@@ -922,10 +919,18 @@ public class BooklistAdapter
                 // shown by default, so hide it if not in use.
                 mCoverView.setVisibility(View.GONE);
             }
+
+            if (BuildConfig.DEBUG /* always */) {
+                mDbgRowIdView = itemView.findViewById(R.id.dbg_pos);
+                if (mDbgRowIdView != null) {
+                    mDbgRowIdView.setVisibility(View.VISIBLE);
+                }
+            }
         }
 
         @Override
-        void onBindViewHolder(@NonNull final DataHolder rowData,
+        void onBindViewHolder(final int position,
+                              @NonNull final DataHolder rowData,
                               @NonNull final BooklistStyle style) {
             // update the in-use flags with row-data available fields. Do this once only.
             if (!mInUse.isSet) {
@@ -1043,6 +1048,15 @@ public class BooklistAdapter
                 showOrHide(mBookshelvesView,
                            rowData.getString(DBDefinitions.KEY_BOOKSHELF_NAME_CSV));
             }
+
+            if (BuildConfig.DEBUG /* always */) {
+                if (mDbgRowIdView != null) {
+                    final String txt =
+                            "" + position + '/'
+                            + rowData.getLong(DBDefinitions.KEY_BL_LIST_VIEW_NODE_ROW_ID);
+                    mDbgRowIdView.setText(txt);
+                }
+            }
         }
 
         @Nullable
@@ -1127,6 +1141,7 @@ public class BooklistAdapter
                 lp.width = (int) (mMaxHeight * ImageUtils.HW_RATIO);
                 lp.height = 0;
                 mCoverView.setLayoutParams(lp);
+                mCoverView.setImageDrawable(null);
                 return false;
             }
 
@@ -1146,7 +1161,6 @@ public class BooklistAdapter
             }
             return true;
         }
-
     }
 
     static class RatingHolder
@@ -1171,7 +1185,8 @@ public class BooklistAdapter
         }
 
         @Override
-        void onBindViewHolder(@NonNull final DataHolder rowData,
+        void onBindViewHolder(final int position,
+                              @NonNull final DataHolder rowData,
                               @NonNull final BooklistStyle style) {
             final int rating = rowData.getInt(mKey);
             mRatingBar.setRating(rating);
@@ -1226,10 +1241,12 @@ public class BooklistAdapter
         }
 
         @Override
-        void onBindViewHolder(@NonNull final DataHolder rowData,
+        void onBindViewHolder(final int position,
+                              @NonNull final DataHolder rowData,
                               @NonNull final BooklistStyle style) {
             mTextView.setText(format(rowData.getString(mKey)));
 
+            // Debugger help: color the row according to state
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_NODE_STATE) {
                 final int rowId = rowData.getInt(DBDefinitions.KEY_PK_ID);
                 final RowStateDAO.Node node = ((BooklistCursor) mAdapter.getCursor())
@@ -1289,10 +1306,11 @@ public class BooklistAdapter
         }
 
         @Override
-        void onBindViewHolder(@NonNull final DataHolder rowData,
+        void onBindViewHolder(final int position,
+                              @NonNull final DataHolder rowData,
                               @NonNull final BooklistStyle style) {
             // do the text part first
-            super.onBindViewHolder(rowData, style);
+            super.onBindViewHolder(position, rowData, style);
 
             final Drawable icon = rowData.getBoolean(mColumnKey) ? mIcon : null;
             final Drawable[] drawables = mTextView.getCompoundDrawablesRelative();
@@ -1328,7 +1346,7 @@ public class BooklistAdapter
     static class SeriesHolder
             extends CheckableStringHolder {
 
-        /** Stores this value in between the #onBindViewHolder and the #setText methods. */
+        /** Stores this value in between the #onBindViewHolder and the #format methods. */
         private String mBookLanguage;
 
         /**
@@ -1346,12 +1364,13 @@ public class BooklistAdapter
         }
 
         @Override
-        void onBindViewHolder(@NonNull final DataHolder rowData,
+        void onBindViewHolder(final int position,
+                              @NonNull final DataHolder rowData,
                               @NonNull final BooklistStyle style) {
             // grab the book language first
             mBookLanguage = rowData.getString(DBDefinitions.KEY_LANGUAGE);
 
-            super.onBindViewHolder(rowData, style);
+            super.onBindViewHolder(position, rowData, style);
         }
 
         @Override
@@ -1360,10 +1379,8 @@ public class BooklistAdapter
             // FIXME: translated series are reordered in the book's language
             // It should be done using the Series language
             // but as long as we don't store the Series language there is no point
+            @Nullable
             Locale bookLocale = LocaleUtils.getLocale(context, mBookLanguage);
-            if (bookLocale == null) {
-                bookLocale = mAdapter.getUserLocale();
-            }
             return mAdapter.format(context, mGroupKeyId, text, bookLocale);
         }
     }
