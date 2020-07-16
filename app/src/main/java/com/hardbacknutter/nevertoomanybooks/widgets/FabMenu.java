@@ -95,9 +95,10 @@ public class FabMenu {
         }
     }
 
-    public void setFabMenuItems(@NonNull final ExtendedFloatingActionButton... items) {
-        mFabMenuItems = new ExtendedFloatingActionButton[items.length];
-        System.arraycopy(items, 0, mFabMenuItems, 0, items.length);
+    public void setOnClickListener(@NonNull final View.OnClickListener listener) {
+        for (ExtendedFloatingActionButton fabMenuItem : mFabMenuItems) {
+            fabMenuItem.setOnClickListener(listener);
+        }
     }
 
     public ExtendedFloatingActionButton getItem(final int index) {
