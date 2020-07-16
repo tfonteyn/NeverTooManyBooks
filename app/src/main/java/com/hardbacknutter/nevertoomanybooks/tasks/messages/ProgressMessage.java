@@ -88,7 +88,7 @@ public class ProgressMessage {
                + ", indeterminate=" + indeterminate
                + ", maxPosition=" + maxPosition
                + ", position=" + position
-               + ", text=" + text
+               + ", text=`" + text + '`'
                + '}';
     }
 }

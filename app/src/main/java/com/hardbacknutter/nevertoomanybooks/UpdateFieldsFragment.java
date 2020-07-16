@@ -402,7 +402,7 @@ public class UpdateFieldsFragment
         // not found? create it
         if (dialog == null) {
             dialog = ProgressDialogFragment
-                    .newInstance(R.string.progress_msg_searching, true, true, 0);
+                    .newInstance(R.string.progress_msg_searching, true, true);
             dialog.show(fm, ProgressDialogFragment.TAG);
         }
 

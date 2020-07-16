@@ -214,7 +214,7 @@ public abstract class BookSearchBaseFragment
         // not found? create it
         if (dialog == null) {
             dialog = ProgressDialogFragment
-                    .newInstance(R.string.progress_msg_searching, true, false, 0);
+                    .newInstance(R.string.progress_msg_searching, true, false);
             dialog.show(fm, ProgressDialogFragment.TAG);
         }
 

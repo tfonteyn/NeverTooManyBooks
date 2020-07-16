@@ -175,13 +175,6 @@ public class ExportFragment
         mProgressDialog.onProgress(message);
     }
 
-    private void closeProgressDialog() {
-        if (mProgressDialog != null) {
-            mProgressDialog.dismiss();
-            mProgressDialog = null;
-        }
-    }
-
     @NonNull
     private ProgressDialogFragment getOrCreateProgressDialog() {
         final FragmentManager fm = getChildFragmentManager();
@@ -191,13 +184,20 @@ public class ExportFragment
                 fm.findFragmentByTag(ProgressDialogFragment.TAG);
         // not found? create it
         if (dialog == null) {
-            dialog = ProgressDialogFragment.newInstance(R.string.lbl_backing_up, false, true, 0);
+            dialog = ProgressDialogFragment.newInstance(R.string.lbl_backing_up, false, true);
             dialog.show(fm, ProgressDialogFragment.TAG);
         }
 
         // hook the task up.
         dialog.setCanceller(mArchiveExportTask);
         return dialog;
+    }
+
+    private void closeProgressDialog() {
+        if (mProgressDialog != null) {
+            mProgressDialog.dismiss();
+            mProgressDialog = null;
+        }
     }
 
     /**

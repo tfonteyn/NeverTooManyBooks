@@ -196,7 +196,7 @@ public class ImportFragment
                 fm.findFragmentByTag(ProgressDialogFragment.TAG);
         // not found? create it
         if (dialog == null) {
-            dialog = ProgressDialogFragment.newInstance(R.string.lbl_importing, false, true, 0);
+            dialog = ProgressDialogFragment.newInstance(R.string.lbl_importing, false, true);
             dialog.show(fm, ProgressDialogFragment.TAG);
         }
 
