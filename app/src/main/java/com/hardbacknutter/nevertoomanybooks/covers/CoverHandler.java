@@ -227,10 +227,11 @@ public class CoverHandler {
         new MenuInflater(mContext).inflate(R.menu.image, menu);
 
         final CharSequence title;
-        File file = getCoverFile();
+        final File file = getCoverFile();
         if (file.exists()) {
-            if (BuildConfig.DEBUG) {
-                BitmapFactory.Options opts = new BitmapFactory.Options();
+            if (BuildConfig.DEBUG /* always */) {
+                // show the size of the image in the title bar
+                final BitmapFactory.Options opts = new BitmapFactory.Options();
                 opts.inJustDecodeBounds = true;
                 BitmapFactory.decodeFile(file.getAbsolutePath(), opts);
                 title = "w=" + opts.outWidth + ", h=" + opts.outHeight;

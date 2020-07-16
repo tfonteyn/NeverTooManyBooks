@@ -772,9 +772,6 @@ public class BooklistBuilder
             mCursor.close();
         }
         if (mListTable != null) {
-            if (BuildConfig.DEBUG) {
-                Log.d(TAG, "close|dropping=" + mListTable.getName());
-            }
             mSyncedDb.drop(mListTable.getName());
         }
         if (mTriggerHelperTable != null) {

@@ -31,7 +31,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
 import android.util.SparseArray;
 
 import androidx.annotation.NonNull;
@@ -45,7 +44,6 @@ import java.util.Objects;
 import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
@@ -119,9 +117,6 @@ public class CoverBrowserViewModel
 
     @Override
     protected void onCleared() {
-        if (BuildConfig.DEBUG) {
-            Log.d(TAG, "onCleared");
-        }
         cancelAllTasks();
 
         if (mFileManager != null) {

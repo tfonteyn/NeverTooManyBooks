@@ -60,10 +60,13 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.Objects;
 
+import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyle;
+import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsAdminFragment;
 import com.hardbacknutter.nevertoomanybooks.settings.SettingsActivity;
+import com.hardbacknutter.nevertoomanybooks.settings.styles.PreferredStylesActivity;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.NightModeUtils;
 
@@ -377,13 +380,14 @@ public abstract class BaseActivity
     @CallSuper
     boolean onNavigationItemSelected(@NonNull final MenuItem item) {
         closeNavigationDrawer();
-
         switch (item.getItemId()) {
+
             case R.id.nav_advanced_search: {
                 final Intent searchIntent = new Intent(this, FTSSearchActivity.class);
                 startActivityForResult(searchIntent, RequestCode.ADVANCED_LOCAL_SEARCH);
                 return true;
             }
+
             case R.id.nav_manage_bookshelves: {
                 final Intent intent = new Intent(this, AdminActivity.class)
                         .putExtra(BKEY_FRAGMENT_TAG, EditBookshelvesFragment.TAG);
@@ -391,16 +395,30 @@ public abstract class BaseActivity
                 return true;
             }
 
-            // case R.id.nav_manage_list_styles: {
-            //     // not reachable right now as we don't show the menu option unless
-            //     // we're on the main BooksOnBookshelf activity.
-            //     // Enabling it elsewhere means we'd need to get a DAO to pass in.
-            //     final Intent intent = new Intent(this, PreferredStylesActivity.class)
-            //         .putExtra(BooklistStyle.BKEY_STYLE_ID,
-            //                   BooklistStyle.getDefaultStyle(this, mDb));
-            //     startActivityForResult(intent, UniqueId.REQ_NAV_PANEL_EDIT_STYLES);
-            //     return true;
-            // }
+            case R.id.nav_manage_list_styles: {
+                // Child classes should override if they have a 'current' style
+                // and/or a database to pass instead of the default and new instance here.
+                final Intent intent = new Intent(this, PreferredStylesActivity.class);
+                try (DAO db = new DAO(TAG)) {
+                    intent.putExtra(BooklistStyle.BKEY_STYLE_UUID,
+                                    BooklistStyle.getDefault(this, db).getUuid());
+                }
+                startActivityForResult(intent, RequestCode.NAV_PANEL_MANAGE_STYLES);
+                return true;
+            }
+
+            case R.id.nav_import: {
+                final Intent intent = new Intent(this, AdminActivity.class)
+                        .putExtra(BaseActivity.BKEY_FRAGMENT_TAG, ImportFragment.TAG);
+                startActivityForResult(intent, RequestCode.NAV_PANEL_IMPORT);
+                return true;
+            }
+            case R.id.nav_export: {
+                final Intent intent = new Intent(this, AdminActivity.class)
+                        .putExtra(BaseActivity.BKEY_FRAGMENT_TAG, ExportFragment.TAG);
+                startActivityForResult(intent, RequestCode.NAV_PANEL_EXPORT);
+                return true;
+            }
 
             case R.id.nav_goodreads: {
                 final Intent intent = new Intent(this, AdminActivity.class)

@@ -77,6 +77,16 @@ public abstract class ArchiveWriterAbstractBase
 
     /**
      * Do a full backup.
+     * <ol>
+     *     <li>{@link SupportsCovers#prepareCovers}</li>
+     *     <li>{@link #prepareBooks}</li>
+     *     <li>{@link #writeArchiveHeader}</li>
+     *     <li>{@link SupportsStyles#writeStyles}</li>
+     *     <li>{@link SupportsPreferences#writePreferences}</li>
+     *     <li>{@link #writeBooks}</li>
+     *     <li>{@link SupportsCovers#writeCovers}</li>
+     *
+     * </ol>
      *
      * @param context          Current context
      * @param progressListener to send progress updates to
@@ -96,12 +106,15 @@ public abstract class ArchiveWriterAbstractBase
         int entitiesWritten = Options.NOTHING;
 
         // All writers must support books.
-        boolean writeBooks = mHelper.isSet(Options.BOOKS);
+        final boolean writeBooks = mHelper.isSet(Options.BOOKS);
 
         // these are optional.
-        boolean writeStyles = this instanceof SupportsStyles && mHelper.isSet(Options.STYLES);
-        boolean writePrefs = this instanceof SupportsPreferences && mHelper.isSet(Options.PREFS);
-        boolean writeCovers = this instanceof SupportsCovers && mHelper.isSet(Options.COVERS);
+        final boolean writeStyles = this instanceof SupportsStyles
+                                    && mHelper.isSet(Options.STYLES);
+        final boolean writePrefs = this instanceof SupportsPreferences
+                                   && mHelper.isSet(Options.PREFS);
+        final boolean writeCovers = this instanceof SupportsCovers
+                                    && mHelper.isSet(Options.COVERS);
 
         try {
             // If we are doing covers, get the exact number by counting them.
@@ -122,17 +135,18 @@ public abstract class ArchiveWriterAbstractBase
             // If we are doing books, generate the file first, so we have the #books
             // which we want to put into the INFO block, and use with the progress listener.
             if (!progressListener.isCancelled() && writeBooks) {
+                // This counts the books and updates progress.
                 prepareBooks(context, progressListener);
             }
 
             // Calculate the new max value for the progress bar.
-            int max = mResults.booksExported + mResults.coversExported;
+            final int max = mResults.booksExported + mResults.coversExported;
             // arbitrarily add 10 for the other entities we might do.
             progressListener.setProgressMaxPos(max + 10);
 
             // Start with the INFO
             if (!progressListener.isCancelled()) {
-                ArchiveInfo info = new ArchiveInfo(context, getVersion());
+                final ArchiveInfo info = new ArchiveInfo(context, getVersion());
                 if (mResults.booksExported > 0) {
                     info.setBookCount(mResults.booksExported);
                 }
@@ -161,13 +175,15 @@ public abstract class ArchiveWriterAbstractBase
 
             // Add the previously generated books file.
             if (!progressListener.isCancelled() && writeBooks) {
-                progressListener.publishProgressStep(1, context.getString(R.string.lbl_books));
+                progressListener.publishProgressStep(0, context.getString(R.string.lbl_books));
                 writeBooks(context, progressListener);
+                progressListener.publishProgressStep(1, null);
                 entitiesWritten |= Options.BOOKS;
             }
 
             // do covers last
             if (!progressListener.isCancelled() && writeCovers) {
+                progressListener.publishProgressStep(0, context.getString(R.string.lbl_covers));
                 ((SupportsCovers) this).writeCovers(context, progressListener);
                 entitiesWritten |= Options.COVERS;
             }

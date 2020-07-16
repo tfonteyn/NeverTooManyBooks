@@ -262,7 +262,7 @@ public class TransFormTask
         if (mExplicitAngle != 0) {
             // use explicit value, ignore device and input
             angle = mExplicitAngle;
-            if (BuildConfig.DEBUG) {
+            if (BuildConfig.DEBUG /* always */) {
                 Log.d(TAG, "angle=" + angle);
             }
 
@@ -272,7 +272,7 @@ public class TransFormTask
 
             angle = compensateExif + mSurfaceRotation;
 
-            if (BuildConfig.DEBUG) {
+            if (BuildConfig.DEBUG /* always */) {
                 Log.d(TAG, "exif=" + compensateExif
                            + "|mSurfaceRotation=" + mSurfaceRotation
                            + "|angle=" + angle

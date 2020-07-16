@@ -211,12 +211,12 @@ public class CsvImporter
         }
 
         // Don't close this stream!
-        InputStream is = entity.getInputStream();
-        Reader isr = new InputStreamReader(is, StandardCharsets.UTF_8);
-        BufferedReader reader = new BufferedReader(isr, BUFFER_SIZE);
+        final InputStream is = entity.getInputStream();
+        final Reader isr = new InputStreamReader(is, StandardCharsets.UTF_8);
+        final BufferedReader reader = new BufferedReader(isr, BUFFER_SIZE);
 
         // We read the whole file/list into memory.
-        List<String> importedList = new ArrayList<>();
+        final List<String> importedList = new ArrayList<>();
         String line;
         while ((line = reader.readLine()) != null) {
             importedList.add(line);
@@ -273,8 +273,8 @@ public class CsvImporter
         // BC Version 1->3.3 export with family_name and author_id.
         // BC Version 3.4+ do not; latest versions make an attempt at escaping
         // characters etc to preserve formatting.
-        boolean fullEscaping = !book.contains(DBDefinitions.KEY_FK_AUTHOR)
-                               || !book.contains(DBDefinitions.KEY_AUTHOR_FAMILY_NAME);
+        final boolean fullEscaping = !book.contains(DBDefinitions.KEY_FK_AUTHOR)
+                                     || !book.contains(DBDefinitions.KEY_AUTHOR_FAMILY_NAME);
 
         // Start after headings.
         int row = 1;
@@ -351,14 +351,14 @@ public class CsvImporter
                 }
 
                 // limit the amount of progress updates, otherwise this will cause a slowdown.
-                long now = System.currentTimeMillis();
+                final long now = System.currentTimeMillis();
                 if ((now - lastUpdate) > PROGRESS_UPDATE_INTERVAL
                     && !progressListener.isCancelled()) {
-                    String msg = String.format(mProgressMessage,
-                                               mBooksString,
-                                               mResults.booksCreated,
-                                               mResults.booksUpdated,
-                                               mResults.booksSkipped);
+                    final String msg = String.format(mProgressMessage,
+                                                     mBooksString,
+                                                     mResults.booksCreated,
+                                                     mResults.booksUpdated,
+                                                     mResults.booksSkipped);
                     progressListener.publishProgressStep(delta, msg);
                     delta = 0;
                     lastUpdate = now;
@@ -445,7 +445,7 @@ public class CsvImporter
 
         // Let the UUID trump the ID; we may be importing someone else's list with bogus ID's
         if (hasUuid) {
-            long existingBookId = mDb.getBookIdFromUuid(uuid);
+            final long existingBookId = mDb.getBookIdFromUuid(uuid);
             if (existingBookId > 0) {
                 // We already have this book (matching UUID)
                 exists = true;

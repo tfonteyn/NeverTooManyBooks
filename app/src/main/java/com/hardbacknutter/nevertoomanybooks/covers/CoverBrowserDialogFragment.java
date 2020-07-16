@@ -216,18 +216,12 @@ public class CoverBrowserDialogFragment
 
     @Override
     public void onDismiss(@NonNull final DialogInterface dialog) {
-        if (BuildConfig.DEBUG) {
-            Log.d(TAG, "onDismiss");
-        }
         mModel.cancelAllTasks();
         super.onDismiss(dialog);
     }
 
     @Override
     public void onCancel(@NonNull final DialogInterface dialog) {
-        if (BuildConfig.DEBUG) {
-            Log.d(TAG, "onCancel");
-        }
         // is having this in onDismiss not enough?
         mModel.cancelAllTasks();
         // prevent new tasks being started.

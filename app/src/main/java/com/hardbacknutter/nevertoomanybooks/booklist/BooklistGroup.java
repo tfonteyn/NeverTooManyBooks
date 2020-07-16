@@ -471,6 +471,18 @@ public class BooklistGroup
         // now the prefs for this class (none on this level for now)
     }
 
+    @Override
+    @NonNull
+    public String toString() {
+        return "BooklistGroup{"
+               + "mUuid=`'`" + mUuid + '`'
+               + ", mIsUserDefinedStyle=" + mIsUserDefinedStyle
+               + ", mId=" + mId
+               + ", mGroupKey=" + mGroupKey
+               + ", mAccumulatedDomains=" + mAccumulatedDomains
+               + '}';
+    }
+
     @IntDef({BOOK,
 
              AUTHOR,
@@ -720,6 +732,20 @@ public class BooklistGroup
         int getPrimaryType(@NonNull final Context context) {
             return mPrimaryType.getValue(context);
         }
+
+        @Override
+        @NonNull
+        public String toString() {
+            return "AuthorBooklistGroup{"
+                   + super.toString()
+                   + ", mDisplayDomain=" + mDisplayDomain
+                   + ", mSortedDomain=" + mSortedDomain
+                   + ", mShowAuthorWithGivenNameFirst=" + mShowAuthorWithGivenNameFirst
+                   + ", mSortAuthorByGivenNameFirst=" + mSortAuthorByGivenNameFirst
+                   + ", mAllAuthors=" + mAllAuthors
+                   + ", mPrimaryType=" + mPrimaryType
+                   + '}';
+        }
     }
 
     /**
@@ -849,6 +875,16 @@ public class BooklistGroup
          */
         boolean showBooksUnderEach(@NonNull final Context context) {
             return mAllSeries.isTrue(context);
+        }
+
+        @Override
+        @NonNull
+        public String toString() {
+            return "SeriesBooklistGroup{"
+                   + super.toString()
+                   + ", mDisplayDomain=" + mDisplayDomain
+                   + ", mAllSeries=" + mAllSeries
+                   + '}';
         }
     }
 
@@ -981,6 +1017,16 @@ public class BooklistGroup
          */
         boolean showBooksUnderEach(@NonNull final Context context) {
             return mAllPublishers.isTrue(context);
+        }
+
+        @Override
+        @NonNull
+        public String toString() {
+            return "PublisherBooklistGroup{"
+                   + super.toString()
+                   + ", mDisplayDomain=" + mDisplayDomain
+                   + ", mAllPublishers=" + mAllPublishers
+                   + '}';
         }
     }
 

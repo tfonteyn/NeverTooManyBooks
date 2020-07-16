@@ -178,6 +178,8 @@ public abstract class ArchiveWriterAbstract
     /**
      * Default implementation: write as a temporary CSV file,
      * to be added to the archive in {@link #writeBooks}.
+     * <p>
+     * Updates progress.
      *
      * <br><br>{@inheritDoc}
      */

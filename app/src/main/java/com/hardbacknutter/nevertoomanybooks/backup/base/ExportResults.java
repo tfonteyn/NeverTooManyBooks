@@ -121,7 +121,7 @@ public class ExportResults
         final StringBuilder msg = new StringBuilder();
 
         //TODO: RTL
-        // slightly misleading. The text currently says "processed" but it's really "exported".
+        // slightly misleading. The text currently says "processed" but it should say "exported".
         if (booksExported > 0) {
             msg.append(BULLET)
                .append(context.getString(R.string.progress_end_export_result_n_books_processed,

@@ -375,7 +375,7 @@ public class CropImageView
      * of the bitmap, reset the supplementary matrix and calculate the maximum zoom allowed.
      */
     private void setBitmapMatrix(@NonNull final Bitmap bitmap) {
-        // postpone to run during layout phase if the View has not been measured yet.
+        // postpone to run during layout pass if the View has not been measured yet.
         if (getWidth() <= 0) {
             mOnLayoutRunnable = () -> setBitmapMatrix(bitmap);
             return;
