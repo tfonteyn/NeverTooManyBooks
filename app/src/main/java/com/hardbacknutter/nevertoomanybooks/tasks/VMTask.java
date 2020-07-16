@@ -29,6 +29,7 @@ package com.hardbacknutter.nevertoomanybooks.tasks;
 
 import androidx.annotation.AnyThread;
 import androidx.annotation.CallSuper;
+import androidx.annotation.IdRes;
 import androidx.annotation.MainThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -47,6 +48,8 @@ import com.hardbacknutter.nevertoomanybooks.tasks.messages.ProgressMessage;
 /**
  * The base for a task which uses {@link MutableLiveData} for the results.
  *
+ * <strong>Limited to executing a SINGLE task at a time.</strong>
+ *
  * @param <Result> the type of the result of the background computation.
  */
 public abstract class VMTask<Result>
@@ -55,14 +58,13 @@ public abstract class VMTask<Result>
 
     /** Log tag. */
     private static final String TAG = "VMTask";
+    protected final MutableLiveData<FinishedMessage<Result>> mFinished = new MutableLiveData<>();
+    protected final MutableLiveData<FinishedMessage<Result>> mCancelled = new MutableLiveData<>();
+    protected final MutableLiveData<FinishedMessage<Exception>> mFailure = new MutableLiveData<>();
+    protected final MutableLiveData<ProgressMessage> mProgress = new MutableLiveData<>();
     private final AtomicBoolean mIsCancelled = new AtomicBoolean();
-
-    private final MutableLiveData<FinishedMessage<Result>> mFinished = new MutableLiveData<>();
-    private final MutableLiveData<FinishedMessage<Result>> mCancelled = new MutableLiveData<>();
-    private final MutableLiveData<FinishedMessage<Exception>> mFailure = new MutableLiveData<>();
-    private final MutableLiveData<ProgressMessage> mProgress = new MutableLiveData<>();
-
     /** id set at construction time, passed back in all messages. */
+    @IdRes
     private int mTaskId;
     private int mProgressCurrentPos;
     private int mProgressMaxPos;
@@ -136,7 +138,8 @@ public abstract class VMTask<Result>
      *                               while a previous task is still running.
      */
     @MainThread
-    public boolean execute(final int taskId) {
+    public boolean execute(@IdRes final int taskId) {
+//        @Nullable final Callable<Result> callable) {
         synchronized (this) {
             if (mTaskId == taskId) {
                 // Duplicate request to start the same task..
@@ -159,7 +162,9 @@ public abstract class VMTask<Result>
         }
         mExecutor.execute(() -> {
             try {
+//                final Result result = callable != null ? callable.call() : doWork();
                 final Result result = doWork();
+
                 final FinishedMessage<Result> message = new FinishedMessage<>(mTaskId, result);
                 if (mIsCancelled.get()) {
                     mCancelled.postValue(message);
@@ -179,8 +184,10 @@ public abstract class VMTask<Result>
 
     @WorkerThread
     @Nullable
-    protected abstract Result doWork()
-            throws Exception;
+    protected Result doWork()
+            throws Exception {
+        return null;
+    }
 
     public boolean isRunning() {
         return mTaskId != 0;
