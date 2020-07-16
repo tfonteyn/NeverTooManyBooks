@@ -169,9 +169,9 @@ public class ImportManager
     public boolean isSupported(@NonNull final ArchiveContainer type) {
 
         switch (type) {
-            case Tar:
             case CsvBooks:
             case Zip:
+            case Tar:
                 return true;
 
             case Xml:
@@ -238,16 +238,16 @@ public class ImportManager
 
         final ArchiveReader reader;
         switch (getContainer(context)) {
+            case Zip:
+                reader = new ZipArchiveReader(context, this);
+                break;
+
             case Tar:
                 reader = new TarArchiveReader(context, this);
                 break;
 
             case CsvBooks:
                 reader = new CsvArchiveReader(this);
-                break;
-
-            case Zip:
-                reader = new ZipArchiveReader(context, this);
                 break;
 
             case Xml:

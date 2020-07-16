@@ -45,10 +45,9 @@ import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
  * Archive formats (partially) supported.
  */
 public enum ArchiveContainer {
-    /** The default/legacy full backup/restore support. NOT compressed. */
-    Tar,
-    /** Full backup/restore support. Text files are compressed, images are not. */
+    /** The default full backup/restore support. Text files are compressed, images are not. */
     Zip,
+
     /** Books as a CSV file; full support for export/import. */
     CsvBooks,
 
@@ -56,6 +55,9 @@ public enum ArchiveContainer {
     Xml,
     /** Database. <strong>Export only</strong>. */
     SqLiteDb,
+
+    /** The legacy full backup/restore support. NOT compressed. */
+    Tar,
 
     /** The archive we tried to read from was not identified. */
     Unknown;
@@ -77,12 +79,12 @@ public enum ArchiveContainer {
                 byte[] b = new byte[0x200];
                 int len = is.read(b);
 
-                // tar file: offset 0x101, the string "ustar"
-                if (len > 0x110
-                    && b[0x101] == 0x75 && b[0x102] == 0x73 && b[0x103] == 0x74
-                    && b[0x104] == 0x61 && b[0x105] == 0x72) {
-                    return Tar;
+                // zip file, offset 0, "PK{3}{4}"
+                if (len > 4
+                    && b[0] == 0x50 && b[1] == 0x4B && b[2] == 0x03 && b[3] == 0x04) {
+                    return Zip;
                 }
+
                 // xml file, offset 0, the string "<?xml "
                 if (len > 5
                     && b[0] == 0x3c && b[1] == 0x3f && b[2] == 0x78 && b[3] == 0x6d
@@ -90,10 +92,11 @@ public enum ArchiveContainer {
                     return Xml;
                 }
 
-                // zip file, offset 0, "PK{3}{4}"
-                if (len > 4
-                    && b[0] == 0x50 && b[1] == 0x4B && b[2] == 0x03 && b[3] == 0x04) {
-                    return Zip;
+                // tar file: offset 0x101, the string "ustar"
+                if (len > 0x110
+                    && b[0x101] == 0x75 && b[0x102] == 0x73 && b[0x103] == 0x74
+                    && b[0x104] == 0x61 && b[0x105] == 0x72) {
+                    return Tar;
                 }
 
                 // sqlite v3, offset 0, 53 51 4c 69 74 65 20 66 6f 72 6d 61 74 20 33 00
@@ -133,8 +136,6 @@ public enum ArchiveContainer {
      */
     public String getFileExt() {
         switch (this) {
-            case Tar:
-                return ".tar";
             case Zip:
                 return ".zip";
             case Xml:
@@ -143,6 +144,8 @@ public enum ArchiveContainer {
                 return ".csv";
             case SqLiteDb:
                 return ".db";
+            case Tar:
+                return ".tar";
             case Unknown:
             default:
                 throw new IllegalArgumentException(ErrorMsg.UNEXPECTED_VALUE + name());

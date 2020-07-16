@@ -194,7 +194,7 @@ public class ExportManager
     public ArchiveContainer getArchiveContainer() {
         if (mArchiveContainer == null) {
             // use the default
-            return ArchiveContainer.Tar;
+            return ArchiveContainer.Zip;
         }
         return mArchiveContainer;
     }
@@ -265,13 +265,14 @@ public class ExportManager
             case CsvBooks:
                 return new CsvArchiveWriter(this);
 
-            case Zip:
-                return new ZipArchiveWriter(context, this);
-
             case Tar:
+                return new TarArchiveWriter(context, this);
+
+            case Zip:
             default:
                 // the default
-                return new TarArchiveWriter(context, this);
+                return new ZipArchiveWriter(context, this);
+
         }
     }
 
