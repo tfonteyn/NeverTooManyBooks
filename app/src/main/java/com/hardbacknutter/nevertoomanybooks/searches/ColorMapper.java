@@ -47,6 +47,10 @@ public final class ColorMapper
         MAPPER.put("kleur", R.string.book_color_full_color);
         MAPPER.put("zwart/wit", R.string.book_color_uncolored);
         MAPPER.put("Zwart/wit met steunkleur", R.string.book_color_support_color);
+
+        // lastdodo.nl
+        MAPPER.put("gekleurd", R.string.book_color_full_color);
+        MAPPER.put("ongekleurd", R.string.book_color_uncolored);
     }
 
     @Override
