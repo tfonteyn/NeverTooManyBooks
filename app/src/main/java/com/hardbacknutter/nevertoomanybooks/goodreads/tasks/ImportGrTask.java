@@ -650,13 +650,13 @@ class ImportGrTask
             // fetch thumbnail
             final String coverUrl;
             final String sizeSuffix;
-            final String largeImage = goodreadsData.getString(Review.LARGE_IMAGE);
-            final String smallImage = goodreadsData.getString(Review.SMALL_IMAGE);
+            final String largeImage = goodreadsData.getString(Review.LARGE_IMAGE_URL);
+            final String smallImage = goodreadsData.getString(Review.SMALL_IMAGE_URL);
             if (GoodreadsHandler.hasCover(largeImage)) {
-                sizeSuffix = Review.LARGE_IMAGE;
+                sizeSuffix = Review.LARGE_IMAGE_URL;
                 coverUrl = largeImage;
             } else if (GoodreadsHandler.hasCover(smallImage)) {
-                sizeSuffix = Review.SMALL_IMAGE;
+                sizeSuffix = Review.SMALL_IMAGE_URL;
                 coverUrl = smallImage;
             } else {
                 sizeSuffix = "";

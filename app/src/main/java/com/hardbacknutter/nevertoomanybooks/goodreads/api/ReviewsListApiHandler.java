@@ -358,10 +358,10 @@ public class ReviewsListApiHandler
                 .stringBody(XmlTags.XML_TITLE, DBDefinitions.KEY_TITLE)
                 //              <image_url>
                 //      http://photo.goodreads.com/books/1294108593m/951750.jpg</image_url>
-                .stringBody(XmlTags.XML_IMAGE_URL, Review.LARGE_IMAGE)
+                .stringBody(XmlTags.XML_IMAGE_URL, Review.LARGE_IMAGE_URL)
                 //              <small_image_url>
                 //      http://photo.goodreads.com/books/1294108593s/951750.jpg</small_image_url>
-                .stringBody(XmlTags.XML_SMALL_IMAGE_URL, Review.SMALL_IMAGE)
+                .stringBody(XmlTags.XML_SMALL_IMAGE_URL, Review.SMALL_IMAGE_URL)
                 //              ...
                 //              <num_pages>159</num_pages>
                 // Note we get this as a LONG to be consistent with the Goodreads type,
@@ -435,35 +435,36 @@ public class ReviewsListApiHandler
      */
     public static final class Review {
 
-        public static final String TOTAL = "__total";
-        public static final String ISBN13 = "__isbn13";
+        public static final String TOTAL = "__r_total";
+        public static final String ISBN13 = "__r_isbn13";
 
-        public static final String SMALL_IMAGE = "__smallImage";
-        public static final String LARGE_IMAGE = "__largeImage";
+        public static final String LARGE_IMAGE_URL = "__r_largeImage";
+        public static final String SMALL_IMAGE_URL = "__r_smallImage";
 
-        public static final String PUBLICATION_DAY = "__pubDay";
-        public static final String PUBLICATION_YEAR = "__pubYear";
-        public static final String PUBLICATION_MONTH = "__pubMonth";
+        public static final String PUBLICATION_YEAR = "__r_pub_year";
+        public static final String PUBLICATION_MONTH = "__r_pub_month";
+        public static final String PUBLICATION_DAY = "__r_pub_day";
 
         /** <date_added>Mon Feb 13 05:32:30 -0800 2012</date_added> */
-        public static final String ADDED = "__added";
+        public static final String ADDED = "__r_added";
         /** <date_updated>Mon Feb 13 05:32:31 -0800 2012</date_updated> */
-        public static final String UPDATED = "__updated";
+        public static final String UPDATED = "__r_updated";
 
-        public static final String REVIEWS = "__reviews";
-        public static final String AUTHORS = "__authors";
-        public static final String AUTHOR_NAME_GF = "__author_name";
-        public static final String AUTHOR_ROLE = "__author_role";
-        public static final String SHELF = "__shelf";
-        public static final String SHELVES = "__shelves";
-        public static final String PUBLISHER = "__publisher";
+        public static final String REVIEWS = "__r_reviews";
+        public static final String AUTHORS = "__r_authors";
+        public static final String AUTHOR_NAME_GF = "__r_author_name";
+        public static final String AUTHOR_ROLE = "__r_author_role";
+        public static final String SHELF = "__r_shelf";
+        public static final String SHELVES = "__r_shelves";
+        public static final String PUBLISHER = "__r_publisher";
 
         /** Type: long. */
-        public static final String PAGES = "__pages";
-        static final String BODY = "__body";
-        static final String REVIEW_ID = "__review_id";
-        static final String START = "__start";
-        static final String END = "__end";
+        public static final String PAGES = "__r_pages";
+
+        static final String BODY = "__r_body";
+        static final String REVIEW_ID = "__r_review_id";
+        static final String START = "__r_start";
+        static final String END = "__r_end";
 
         /** Date format used for parsing the date fields. */
         private static final DateTimeFormatter DATE_PARSER = DateTimeFormatter

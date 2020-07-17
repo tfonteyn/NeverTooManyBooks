@@ -467,7 +467,7 @@ public class GoodreadsHandler {
 
         // We found a Goodreads book.
         // Get the review id if we have the book details. For new books, it will not be present.
-        long reviewId = grBook.getLong(ShowBookApiHandler.ShowBookFieldName.REVIEW_ID);
+        long reviewId = grBook.getLong(ShowBookApiHandler.SiteField.REVIEW_ID);
 
         // Lists of shelf names and our best guess at the Goodreads canonical name
         final Collection<String> shelves = new ArrayList<>();
@@ -508,8 +508,8 @@ public class GoodreadsHandler {
 
         // Get the names of the shelves the book is currently on at Goodreads
         List<String> grShelves = null;
-        if (grBook.containsKey(ShowBookApiHandler.ShowBookFieldName.SHELVES)) {
-            grShelves = grBook.getStringArrayList(ShowBookApiHandler.ShowBookFieldName.SHELVES);
+        if (grBook.containsKey(ShowBookApiHandler.SiteField.SHELVES)) {
+            grShelves = grBook.getStringArrayList(ShowBookApiHandler.SiteField.SHELVES);
         }
         // not in info, or failed to get
         if (grShelves == null) {

@@ -314,44 +314,44 @@ public abstract class ShowBookApiHandler
         // When we get here, the data has been collected but needs processing into standard form.
 
         // Use ISBN13 by preference
-        if (mBookData.containsKey(ShowBookFieldName.ISBN13)) {
-            final String s = mBookData.getString(ShowBookFieldName.ISBN13);
+        if (mBookData.containsKey(SiteField.ISBN13)) {
+            final String s = mBookData.getString(SiteField.ISBN13);
             if (s != null && s.length() == 13) {
                 mBookData.putString(DBDefinitions.KEY_ISBN, s);
             }
         }
 
-        // TODO: Evaluate if ShowBook should store ShowBookFieldName.BOOK_ID.
+        // TODO: Evaluate if ShowBook should store SiteField.BOOK_ID.
         // Pros: easier sync
         // Cons: Overwrite Goodreads id when it should not
-//        if (mBookData.containsKey(ShowBookFieldName.BOOK_ID)) {
+//        if (mBookData.containsKey(SiteField.BOOK_ID)) {
 //            mBookData.putLong(DBDefinitions.KEY_EID_GOODREADS_BOOK,
-//                              mBookData.getLong(ShowBookFieldName.BOOK_ID));
+//                              mBookData.getLong(SiteField.BOOK_ID));
 //        }
 
-        // TODO: Evaluate if ShowBook should store ShowBookFieldName.WORK_ID.
-//        if (mBookData.containsKey(ShowBookFieldName.WORK_ID)) {
+        // TODO: Evaluate if ShowBook should store SiteField.WORK_ID.
+//        if (mBookData.containsKey(SiteField.WORK_ID)) {
 //            mBookData.putLong(DBDefinitions.KEY_GOODREADS_WORK_ID,
-//                              mBookData.getLong(ShowBookFieldName.WORK_ID));
+//                              mBookData.getLong(SiteField.WORK_ID));
 //        }
 
         // Build the FIRST publication date based on the components
         GoodreadsHandler.buildDate(mBookData,
-                                   ShowBookFieldName.ORIG_PUBLICATION_YEAR,
-                                   ShowBookFieldName.ORIG_PUBLICATION_MONTH,
-                                   ShowBookFieldName.ORIG_PUBLICATION_DAY,
+                                   SiteField.ORIG_PUBLICATION_YEAR,
+                                   SiteField.ORIG_PUBLICATION_MONTH,
+                                   SiteField.ORIG_PUBLICATION_DAY,
                                    DBDefinitions.KEY_DATE_FIRST_PUBLICATION);
 
         // Build the publication date based on the components
         GoodreadsHandler.buildDate(mBookData,
-                                   ShowBookFieldName.PUBLICATION_YEAR,
-                                   ShowBookFieldName.PUBLICATION_MONTH,
-                                   ShowBookFieldName.PUBLICATION_DAY,
+                                   SiteField.PUBLICATION_YEAR,
+                                   SiteField.PUBLICATION_MONTH,
+                                   SiteField.PUBLICATION_DAY,
                                    DBDefinitions.KEY_DATE_PUBLISHED);
 
         // is it an eBook ? Overwrite the format key
-        if (mBookData.containsKey(ShowBookFieldName.IS_EBOOK)
-            && mBookData.getBoolean(ShowBookFieldName.IS_EBOOK)) {
+        if (mBookData.containsKey(SiteField.IS_EBOOK)
+            && mBookData.getBoolean(SiteField.IS_EBOOK)) {
             mBookData.putString(DBDefinitions.KEY_FORMAT, mEBookString);
         }
 
@@ -386,9 +386,9 @@ public abstract class ShowBookApiHandler
                         // It's tempting to replace KEY_TITLE with ORIG_TITLE, but that does
                         // bad things to translations (it uses the original language)
                         mBookData.putString(DBDefinitions.KEY_TITLE, bookTitle);
-//                        if (mBookData.containsKey(ShowBookFieldName.ORIG_TITLE)) {
+//                        if (mBookData.containsKey(SiteField.ORIG_TITLE)) {
 //                            mBookData.putString(DBDefinitions.KEY_TITLE,
-//                                              mBookData.getString(ShowBookFieldName.ORIG_TITLE));
+//                                              mBookData.getString(SiteField.ORIG_TITLE));
 //                        } else {
 //                            mBookData.putString(DBDefinitions.KEY_TITLE, bookTitle);
 //                        }
@@ -396,10 +396,10 @@ public abstract class ShowBookApiHandler
                 }
             }
 
-        } else if (mBookData.containsKey(ShowBookFieldName.ORIG_TITLE)) {
+        } else if (mBookData.containsKey(SiteField.ORIG_TITLE)) {
             // if we did not get a title at all, but there is an original title, use that.
             mBookData.putString(DBDefinitions.KEY_TITLE,
-                                mBookData.getString(ShowBookFieldName.ORIG_TITLE));
+                                mBookData.getString(SiteField.ORIG_TITLE));
         }
 
         if (mGenre != null) {
@@ -414,7 +414,7 @@ public abstract class ShowBookApiHandler
             mBookData.putParcelableArrayList(Book.BKEY_SERIES_ARRAY, mSeries);
         }
 
-        final String publisher = mBookData.getString(ShowBookFieldName.PUBLISHER);
+        final String publisher = mBookData.getString(SiteField.PUBLISHER);
         if (publisher != null && !publisher.isEmpty()) {
             final ArrayList<Publisher> publishers = new ArrayList<>();
             publishers.add(Publisher.from(publisher));
@@ -423,7 +423,7 @@ public abstract class ShowBookApiHandler
 
         // these are Goodreads shelves, not ours.
         if (mShelves != null && !mShelves.isEmpty()) {
-            mBookData.putStringArrayList(ShowBookFieldName.SHELVES, mShelves);
+            mBookData.putStringArrayList(SiteField.SHELVES, mShelves);
         }
 
         if (fetchThumbnail[0]) {
@@ -437,11 +437,11 @@ public abstract class ShowBookApiHandler
 
         // first check what the "best" image is that we have.
         String coverUrl = null;
-        if (mBookData.containsKey(ShowBookFieldName.IMAGE_URL)) {
-            coverUrl = mBookData.getString(ShowBookFieldName.IMAGE_URL);
+        if (mBookData.containsKey(SiteField.IMAGE_URL)) {
+            coverUrl = mBookData.getString(SiteField.IMAGE_URL);
             if (!GoodreadsHandler.hasCover(coverUrl)
-                && mBookData.containsKey(ShowBookFieldName.SMALL_IMAGE_URL)) {
-                coverUrl = mBookData.getString(ShowBookFieldName.SMALL_IMAGE_URL);
+                && mBookData.containsKey(SiteField.SMALL_IMAGE_URL)) {
+                coverUrl = mBookData.getString(SiteField.SMALL_IMAGE_URL);
                 if (!GoodreadsHandler.hasCover(coverUrl)) {
                     coverUrl = null;
                 }
@@ -693,38 +693,38 @@ public abstract class ShowBookApiHandler
                  .setEndAction(mHandleText, DBDefinitions.KEY_ISBN);
         XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XmlTags.XML_BOOK,
                               XmlTags.XML_ISBN_13)
-                 .setEndAction(mHandleText, ShowBookFieldName.ISBN13);
+                 .setEndAction(mHandleText, SiteField.ISBN13);
         XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XmlTags.XML_BOOK,
                               XmlTags.XML_ASIN)
                  .setEndAction(mHandleText, DBDefinitions.KEY_EID_ASIN);
 
         XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XmlTags.XML_BOOK,
                               XmlTags.XML_IMAGE_URL)
-                 .setEndAction(mHandleText, ShowBookFieldName.IMAGE_URL);
+                 .setEndAction(mHandleText, SiteField.IMAGE_URL);
         XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XmlTags.XML_BOOK,
                               XmlTags.XML_SMALL_IMAGE_URL)
-                 .setEndAction(mHandleText, ShowBookFieldName.SMALL_IMAGE_URL);
+                 .setEndAction(mHandleText, SiteField.SMALL_IMAGE_URL);
         XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XmlTags.XML_BOOK,
                               XmlTags.XML_PUBLICATION_YEAR)
-                 .setEndAction(mHandleLong, ShowBookFieldName.PUBLICATION_YEAR);
+                 .setEndAction(mHandleLong, SiteField.PUBLICATION_YEAR);
         XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XmlTags.XML_BOOK,
                               XmlTags.XML_PUBLICATION_MONTH)
-                 .setEndAction(mHandleLong, ShowBookFieldName.PUBLICATION_MONTH);
+                 .setEndAction(mHandleLong, SiteField.PUBLICATION_MONTH);
         XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XmlTags.XML_BOOK,
                               XmlTags.XML_PUBLICATION_DAY)
-                 .setEndAction(mHandleLong, ShowBookFieldName.PUBLICATION_DAY);
+                 .setEndAction(mHandleLong, SiteField.PUBLICATION_DAY);
         XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XmlTags.XML_BOOK,
                               XmlTags.XML_PUBLISHER)
-                 .setEndAction(mHandleText, ShowBookFieldName.PUBLISHER);
+                 .setEndAction(mHandleText, SiteField.PUBLISHER);
         XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XmlTags.XML_BOOK,
                               XmlTags.XML_COUNTRY_CODE)
-                 .setEndAction(mHandleText, ShowBookFieldName.COUNTRY_CODE);
+                 .setEndAction(mHandleText, SiteField.COUNTRY_CODE);
         XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XmlTags.XML_BOOK,
                               XmlTags.XML_LANGUAGE)
                  .setEndAction(mHandleText, DBDefinitions.KEY_LANGUAGE);
         XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XmlTags.XML_BOOK,
                               XmlTags.XML_IS_EBOOK)
-                 .setEndAction(mHandleBoolean, ShowBookFieldName.IS_EBOOK);
+                 .setEndAction(mHandleBoolean, SiteField.IS_EBOOK);
         XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XmlTags.XML_BOOK,
                               XmlTags.XML_DESCRIPTION)
                  .setEndAction(mHandleText, DBDefinitions.KEY_DESCRIPTION);
@@ -732,27 +732,27 @@ public abstract class ShowBookApiHandler
         XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XmlTags.XML_BOOK,
                               XmlTags.XML_WORK,
                               XmlTags.XML_ID)
-                 .setEndAction(mHandleLong, ShowBookFieldName.WORK_ID);
+                 .setEndAction(mHandleLong, SiteField.WORK_ID);
         XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XmlTags.XML_BOOK,
                               XmlTags.XML_WORK,
                               XmlTags.XML_ORIGINAL_PUBLICATION_DAY)
-                 .setEndAction(mHandleLong, ShowBookFieldName.ORIG_PUBLICATION_DAY);
+                 .setEndAction(mHandleLong, SiteField.ORIG_PUBLICATION_DAY);
         XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XmlTags.XML_BOOK,
                               XmlTags.XML_WORK,
                               XmlTags.XML_ORIGINAL_PUBLICATION_MONTH)
-                 .setEndAction(mHandleLong, ShowBookFieldName.ORIG_PUBLICATION_MONTH);
+                 .setEndAction(mHandleLong, SiteField.ORIG_PUBLICATION_MONTH);
         XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XmlTags.XML_BOOK,
                               XmlTags.XML_WORK,
                               XmlTags.XML_ORIGINAL_PUBLICATION_YEAR)
-                 .setEndAction(mHandleLong, ShowBookFieldName.ORIG_PUBLICATION_YEAR);
+                 .setEndAction(mHandleLong, SiteField.ORIG_PUBLICATION_YEAR);
         XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XmlTags.XML_BOOK,
                               XmlTags.XML_WORK,
                               XmlTags.XML_ORIGINAL_TITLE)
-                 .setEndAction(mHandleText, ShowBookFieldName.ORIG_TITLE);
+                 .setEndAction(mHandleText, SiteField.ORIG_TITLE);
 
         XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XmlTags.XML_BOOK,
                               XmlTags.XML_AVERAGE_RATING)
-                 .setEndAction(mHandleDouble, ShowBookFieldName.RATING);
+                 .setEndAction(mHandleDouble, SiteField.RATING);
         XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XmlTags.XML_BOOK,
                               XmlTags.XML_NUM_PAGES)
                  .setEndAction(mHandleLong, DBDefinitions.KEY_PAGES);
@@ -761,7 +761,7 @@ public abstract class ShowBookApiHandler
                  .setEndAction(mHandleText, DBDefinitions.KEY_FORMAT);
         XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XmlTags.XML_BOOK,
                               XmlTags.XML_URL)
-                 .setEndAction(mHandleText, ShowBookFieldName.BOOK_URL);
+                 .setEndAction(mHandleText, SiteField.BOOK_URL);
 
         XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XmlTags.XML_BOOK,
                               XmlTags.XML_AUTHORS,
@@ -786,7 +786,7 @@ public abstract class ShowBookApiHandler
         XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XmlTags.XML_BOOK,
                               XmlTags.XML_MY_REVIEW,
                               XmlTags.XML_ID)
-                 .setEndAction(mHandleLong, ShowBookFieldName.REVIEW_ID);
+                 .setEndAction(mHandleLong, SiteField.REVIEW_ID);
         XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XmlTags.XML_BOOK,
                               XmlTags.XML_MY_REVIEW,
                               XmlTags.XML_SHELVES)
@@ -814,16 +814,22 @@ public abstract class ShowBookApiHandler
     /**
      * Goodreads specific field names we add to the bundle based on parsed XML data.
      */
-    public static final class ShowBookFieldName {
+    public static final class SiteField {
 
-        public static final String SHELVES = "__shelves";
         public static final String REVIEW_ID = "__review_id";
+        public static final String SHELVES = "__shelves";
+
+        static final String WORK_ID = "__work_id";
+        static final String BOOK_URL = "__url";
 
         static final String ISBN13 = "__isbn13";
+        static final String COUNTRY_CODE = "__country_code";
+        static final String IS_EBOOK = "__is_ebook";
+        static final String ORIG_TITLE = "__orig_title";
+        static final String RATING = "__rating";
 
         static final String IMAGE_URL = "__image";
         static final String SMALL_IMAGE_URL = "__smallImage";
-        static final String BOOK_URL = "__url";
 
         static final String ORIG_PUBLICATION_YEAR = "__orig_pub_year";
         static final String ORIG_PUBLICATION_MONTH = "__orig_pub_month";
@@ -832,16 +838,9 @@ public abstract class ShowBookApiHandler
         static final String PUBLICATION_YEAR = "__pub_year";
         static final String PUBLICATION_MONTH = "__pub_month";
         static final String PUBLICATION_DAY = "__pub_day";
-        static final String COUNTRY_CODE = "__country_code";
-
         static final String PUBLISHER = "__publisher";
 
-        static final String IS_EBOOK = "__is_ebook";
-        static final String WORK_ID = "__work_id";
-        static final String ORIG_TITLE = "__orig_title";
-        static final String RATING = "__rating";
-
-        private ShowBookFieldName() {
+        private SiteField() {
         }
     }
 }
