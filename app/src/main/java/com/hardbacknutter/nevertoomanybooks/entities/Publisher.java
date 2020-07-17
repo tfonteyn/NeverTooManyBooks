@@ -282,7 +282,7 @@ public class Publisher
     public String toString() {
         return "Publisher{"
                + "mId=" + mId
-               + "mName=`" + mName + '`'
+               + ", mName=`" + mName + '`'
                + '}';
     }
 }
