@@ -36,7 +36,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
-import java.io.IOException;
+import java.net.SocketTimeoutException;
 import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -123,9 +123,9 @@ public class StripInfoSearchEngine
     public Bundle searchByIsbn(@NonNull final Context context,
                                @NonNull final String validIsbn,
                                @NonNull final boolean[] fetchThumbnail)
-            throws IOException {
-        return new StripInfoBookHandler(this, context)
-                .fetch(validIsbn, fetchThumbnail, new Bundle());
+            throws SocketTimeoutException {
+        return new StripInfoBookHandler(context, this)
+                .fetchByIsbn(validIsbn, fetchThumbnail, new Bundle());
     }
 
     @NonNull
@@ -133,8 +133,8 @@ public class StripInfoSearchEngine
     public Bundle searchByNativeId(@NonNull final Context context,
                                    @NonNull final String nativeId,
                                    @NonNull final boolean[] fetchThumbnail)
-            throws IOException {
-        return new StripInfoBookHandler(this, context)
+            throws SocketTimeoutException {
+        return new StripInfoBookHandler(context, this)
                 .fetchByNativeId(nativeId, fetchThumbnail, new Bundle());
     }
 

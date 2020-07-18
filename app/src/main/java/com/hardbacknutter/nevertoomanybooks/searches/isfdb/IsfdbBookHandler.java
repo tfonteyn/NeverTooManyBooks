@@ -55,7 +55,6 @@ import org.jsoup.select.Elements;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.EditBookTocFragment;
-import com.hardbacknutter.nevertoomanybooks.covers.ImageUtils;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -63,13 +62,13 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
-import com.hardbacknutter.nevertoomanybooks.searches.JsoupBase;
+import com.hardbacknutter.nevertoomanybooks.searches.JsoupBookHandlerBase;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.utils.DateParser;
 import com.hardbacknutter.nevertoomanybooks.utils.Money;
 
 class IsfdbBookHandler
-        extends JsoupBase {
+        extends JsoupBookHandlerBase {
 
     /** Log tag. */
     private static final String TAG = "IsfdbBookHandler";
@@ -77,10 +76,11 @@ class IsfdbBookHandler
     /** file suffix for cover files. */
     private static final String FILENAME_SUFFIX = "_ISFDB";
 
-    /** Param 1: ISFDB native book ID. */
-    private static final String BOOK_URL = IsfdbSearchEngine.CGI_BIN
-                                           + IsfdbSearchEngine.URL_PL_CGI + "?%1$s";
+    /** Param 1: native book ID. */
+    private static final String BY_NATIVE_ID = IsfdbSearchEngine.CGI_BIN
+                                               + IsfdbSearchEngine.URL_PL_CGI + "?%1$s";
 
+    /** Map ISFDB book types to {@link Book.TocBits}. */
     private static final Map<String, Integer> TYPE_MAP = new HashMap<>();
 
     /**
@@ -113,9 +113,6 @@ class IsfdbBookHandler
     private static final Pattern CLEANUP_TITLE_PATTERN =
             Pattern.compile("[,.':;`~@#$%^&*(\\-=_+]*$");
 
-    /** a CR is replaced with a space. */
-    private static final Pattern CR_PATTERN = Pattern.compile("\n", Pattern.LITERAL);
-
     /*
      * <a href="http://www.isfdb.org/wiki/index.php/Help:Screen:NewPub#Publication_Type">
      Publication_Type</a>
@@ -145,16 +142,12 @@ class IsfdbBookHandler
         TYPE_MAP.put("COLLECTION", Book.TOC_MULTIPLE_WORKS);
 
         // multiple works, multiple authors
-        TYPE_MAP.put("anth",
-                     Book.TOC_MULTIPLE_WORKS | Book.TOC_MULTIPLE_AUTHORS);
-        TYPE_MAP.put("ANTHOLOGY",
-                     Book.TOC_MULTIPLE_WORKS | Book.TOC_MULTIPLE_AUTHORS);
+        TYPE_MAP.put("anth", Book.TOC_MULTIPLE_WORKS | Book.TOC_MULTIPLE_AUTHORS);
+        TYPE_MAP.put("ANTHOLOGY", Book.TOC_MULTIPLE_WORKS | Book.TOC_MULTIPLE_AUTHORS);
 
         // multiple works that have previously been published independently
-        TYPE_MAP.put("omni",
-                     Book.TOC_MULTIPLE_WORKS | Book.TOC_MULTIPLE_AUTHORS);
-        TYPE_MAP.put("OMNIBUS",
-                     Book.TOC_MULTIPLE_WORKS | Book.TOC_MULTIPLE_AUTHORS);
+        TYPE_MAP.put("omni", Book.TOC_MULTIPLE_WORKS | Book.TOC_MULTIPLE_AUTHORS);
+        TYPE_MAP.put("OMNIBUS", Book.TOC_MULTIPLE_WORKS | Book.TOC_MULTIPLE_AUTHORS);
 
         // we assume magazines have multiple authors.
         TYPE_MAP.put("MAGAZINE", Book.TOC_MULTIPLE_WORKS | Book.TOC_MULTIPLE_AUTHORS);
@@ -170,15 +163,6 @@ class IsfdbBookHandler
         // TYPE_MAP.put("NONFICTION", 0);
     }
 
-    /** accumulate all authors for this book. */
-    @NonNull
-    private final ArrayList<Author> mAuthors = new ArrayList<>();
-    /** accumulate all Series for this book. */
-    @NonNull
-    private final ArrayList<Series> mSeries = new ArrayList<>();
-    /** accumulate all Publishers for this book. */
-    private final ArrayList<Publisher> mPublishers = new ArrayList<>();
-
     /** The fully qualified ISFDB search url. */
     private String mPath;
     /** List of all editions (ISFDB 'publicationRecord') of this book. */
@@ -193,178 +177,50 @@ class IsfdbBookHandler
     /**
      * Constructor.
      *
+     * @param context      Current context
      * @param searchEngine to use
      */
-    IsfdbBookHandler(@NonNull final SearchEngine searchEngine) {
-        super(searchEngine);
+    IsfdbBookHandler(@NonNull final Context context,
+                     @NonNull final SearchEngine searchEngine) {
+        super(context, searchEngine);
         setCharSetName(IsfdbSearchEngine.CHARSET_DECODE_PAGE);
     }
 
     /**
-     * Constructor used for testing.
+     * Constructor for mocking.
      *
+     * @param context      Current context
      * @param searchEngine to use
-     * @param doc          the JSoup Document.
+     * @param doc          the pre-loaded Jsoup document.
      */
     @VisibleForTesting
-    IsfdbBookHandler(@NonNull final SearchEngine searchEngine,
+    IsfdbBookHandler(@NonNull final Context context,
+                     @NonNull final SearchEngine searchEngine,
                      @NonNull final Document doc) {
-        this(searchEngine);
+        this(context, searchEngine);
         mDoc = doc;
     }
 
-    @Nullable
-    public List<Edition> getEditions() {
-        return mEditions;
+    @NonNull
+    public Bundle fetchByNativeId(@NonNull final String nativeId,
+                                  @NonNull final boolean[] fetchThumbnail,
+                                  @NonNull final Bundle bookData)
+            throws SocketTimeoutException {
+
+        final String url = mSearchEngine.getUrl(mContext) + String.format(BY_NATIVE_ID, nativeId);
+
+        return fetchUrl(url, fetchThumbnail, bookData);
     }
 
-    /**
-     * Fetch a book.
-     *
-     * @param context          Current context
-     * @param isfdbId          ISFDB native book ID (as a String)
-     * @param addSeriesFromToc whether the TOC should get parsed for Series information
-     * @param fetchThumbnail   Set to {@code true} if we want to get thumbnails
-     * @param bookData         Bundle to save results in (passed in to allow mocking)
-     *
-     * @return Bundle with book data
-     *
-     * @throws SocketTimeoutException if the connection times out
-     */
     @NonNull
-    Bundle fetchByNativeId(@NonNull final Context context,
-                           @NonNull final String isfdbId,
-                           final boolean addSeriesFromToc,
+    @WorkerThread
+    public Bundle fetchUrl(@NonNull final String url,
                            @NonNull final boolean[] fetchThumbnail,
                            @NonNull final Bundle bookData)
             throws SocketTimeoutException {
 
-        return fetch(context,
-                     IsfdbSearchEngine.getBaseURL(context) + String.format(BOOK_URL, isfdbId),
-                     addSeriesFromToc, fetchThumbnail, bookData);
-    }
-
-    /**
-     * Fetch a book.
-     *
-     * @param context          Current context
-     * @param path             A fully qualified ISFDB search url
-     * @param addSeriesFromToc whether the TOC should get parsed for Series information
-     * @param fetchThumbnail   Set to {@code true} if we want to get thumbnails
-     * @param bookData         Bundle to save results in (passed in to allow mocking)
-     *
-     * @return Bundle with book data
-     *
-     * @throws SocketTimeoutException if the connection times out
-     */
-    @NonNull
-    @WorkerThread
-    private Bundle fetch(@NonNull final Context context,
-                         @NonNull final String path,
-                         final boolean addSeriesFromToc,
-                         @NonNull final boolean[] fetchThumbnail,
-                         @NonNull final Bundle bookData)
-            throws SocketTimeoutException {
-
-        mPath = path;
-
-        if (loadPage(context, mPath) == null) {
-            // null result, abort
-            return bookData;
-        }
-
-        if (mSearchEngine.isCancelled()) {
-            return bookData;
-        }
-
-        return parseDoc(context, addSeriesFromToc, fetchThumbnail, bookData);
-    }
-
-    /**
-     * Fetch a book.
-     *
-     * @param context          Current context
-     * @param editions         List of ISFDB Editions with native book ID
-     * @param addSeriesFromToc whether the TOC should get parsed for Series information
-     * @param fetchThumbnail   Set to {@code true} if we want to get thumbnails
-     * @param bookData         Bundle to save results in (passed in to allow mocking)
-     *
-     * @return Bundle with book data
-     *
-     * @throws SocketTimeoutException if the connection times out
-     */
-    @NonNull
-    @WorkerThread
-    public Bundle fetch(@NonNull final Context context,
-                        @Size(min = 1) @NonNull final List<Edition> editions,
-                        final boolean addSeriesFromToc,
-                        @NonNull final boolean[] fetchThumbnail,
-                        @NonNull final Bundle bookData)
-            throws SocketTimeoutException {
-
-        mEditions = editions;
-
-        final Edition edition = editions.get(0);
-        mPath = IsfdbSearchEngine.getBaseURL(context) + String.format(BOOK_URL, edition.isfdbId);
-
-        // check if we already got the book
-        if (edition.doc != null) {
-            mDoc = edition.doc;
-        } else {
-            // nop, go get it.
-            if (loadPage(context, mPath) == null) {
-                // null result, abort
-                return bookData;
-            }
-        }
-
-        if (mSearchEngine.isCancelled()) {
-            return bookData;
-        }
-
-        return parseDoc(context, addSeriesFromToc, fetchThumbnail, bookData);
-    }
-
-    /**
-     * Fetch a cover.
-     *
-     * @param context  Current context
-     * @param editions List of ISFDB Editions with native book ID
-     * @param bookData Bundle to save results in (passed in to allow mocking)
-     *
-     * @return Bundle with book data
-     *
-     * @throws SocketTimeoutException if the connection times out
-     */
-    @NonNull
-    @WorkerThread
-    Bundle fetchCover(@NonNull final Context context,
-                      @Size(min = 1) @NonNull final List<Edition> editions,
-                      @NonNull final Bundle bookData)
-            throws SocketTimeoutException {
-        mEditions = editions;
-
-        final Edition edition = editions.get(0);
-        mPath = IsfdbSearchEngine.getBaseURL(context) + String.format(BOOK_URL, edition.isfdbId);
-
-        // check if we already got the book
-        if (edition.doc != null) {
-            mDoc = edition.doc;
-        } else {
-            // nop, go get it.
-            if (loadPage(context, mPath) == null) {
-                // null result, abort
-                return bookData;
-            }
-        }
-
-        if (mSearchEngine.isCancelled()) {
-            return bookData;
-        }
-
-        parseDocForCover(context, bookData);
-
-        return bookData;
+        mPath = url;
+        return super.fetchUrl(url, fetchThumbnail, bookData);
     }
 
     /**
@@ -525,24 +381,16 @@ class IsfdbBookHandler
      * </div>
      * }
      * </pre>
-     *
-     * @param context          Current context
-     * @param addSeriesFromToc whether the TOC should get parsed for Series information
-     * @param fetchThumbnail   Set to {@code true} if we want to get thumbnails
-     * @param bookData         Bundle to save results in (passed in to allow mocking)
-     *
-     * @return Bundle with book data, can be empty, but never {@code null}
-     *
-     * @throws SocketTimeoutException if the connection times out while fetching the TOC
+     * <p>
+     * {@inheritDoc}
      */
     @NonNull
-    @VisibleForTesting
-    Bundle parseDoc(@NonNull final Context context,
-                    final boolean addSeriesFromToc,
-                    @NonNull final boolean[] fetchThumbnail,
-                    @NonNull final Bundle bookData)
+    @Override
+    public Bundle parseDoc(@NonNull final boolean[] fetchThumbnail,
+                           @NonNull final Bundle bookData)
             throws SocketTimeoutException {
 
+        //noinspection ConstantConditions
         final Elements allContentBoxes = mDoc.select(CSS_Q_DIV_CONTENTBOX);
         // sanity check
         if (allContentBoxes == null) {
@@ -552,7 +400,7 @@ class IsfdbBookHandler
             return bookData;
         }
 
-        final DateParser dateParser = DateParser.getInstance(context);
+        final DateParser dateParser = DateParser.getInstance(mContext);
 
         final Element contentBox = allContentBoxes.first();
         final Element ul = contentBox.selectFirst("ul");
@@ -628,7 +476,7 @@ class IsfdbBookHandler
                     tmpString = fieldLabelElement.nextElementSibling().text();
                     tmpString = digits(tmpString, true);
                     if (!tmpString.isEmpty()) {
-                        bookData.putString(BookField.ISBN_2, tmpString);
+                        bookData.putString(SiteField.ISBN_2, tmpString);
                     }
 
                 } else if ("Publisher:".equalsIgnoreCase(fieldName)) {
@@ -680,7 +528,7 @@ class IsfdbBookHandler
                 } else if ("Type:".equalsIgnoreCase(fieldName)) {
                     // <li><b>Type:</b> COLLECTION
                     tmpString = fieldLabelElement.nextSibling().toString().trim();
-                    bookData.putString(BookField.BOOK_TYPE, tmpString);
+                    bookData.putString(SiteField.BOOK_TYPE, tmpString);
                     final Integer type = TYPE_MAP.get(tmpString);
                     if (type != null) {
                         bookData.putLong(DBDefinitions.KEY_TOC_BITMASK, type);
@@ -690,7 +538,7 @@ class IsfdbBookHandler
                     final Elements as = li.select("a");
                     if (as != null) {
                         //TODO: if there are multiple art/artists... will this barf ?
-                        // bookData.putString(BookField.BOOK_COVER_ART_TXT, as.text());
+                        // bookData.putString(SiteField.BOOK_COVER_ART_TXT, as.text());
 
                         if (as.size() > 1) {
                             // Cover artist
@@ -704,7 +552,7 @@ class IsfdbBookHandler
 
                 } else if ("External IDs:".equalsIgnoreCase(fieldName)) {
                     // send the <ul> children
-                    handleExternalIdElements(li.select("ul li"), bookData);
+                    processExternalIdElements(li.select("ul li"), bookData);
 
                 } else if ("Editors:".equalsIgnoreCase(fieldName)) {
                     final Elements as = li.select("a");
@@ -720,7 +568,7 @@ class IsfdbBookHandler
             } catch (@NonNull final IndexOutOfBoundsException e) {
                 // does not happen now, but could happen if we come about non-standard entries,
                 // or if ISFDB website changes
-                Logger.error(context, TAG, e,
+                Logger.error(mContext, TAG, e,
                              "path: " + mPath + "\n\nLI: " + li.toString());
             }
         }
@@ -758,13 +606,15 @@ class IsfdbBookHandler
         // For now, default to a localised 'English" as ISFDB is after all (I presume) 95% english
         bookData.putString(DBDefinitions.KEY_LANGUAGE, "eng");
 
-        // the table of content
-        final ArrayList<TocEntry> tocEntries = getTocList(context, bookData, addSeriesFromToc);
-        if (!tocEntries.isEmpty()) {
-            bookData.putParcelableArrayList(Book.BKEY_TOC_ARRAY, tocEntries);
+        final ArrayList<TocEntry> toc = getTocList(bookData);
+        if (toc != null && !toc.isEmpty()) {
+            bookData.putParcelableArrayList(Book.BKEY_TOC_ARRAY, toc);
+            if (toc.size() > 1) {
+                bookData.putLong(DBDefinitions.KEY_TOC_BITMASK, Book.TOC_MULTIPLE_WORKS);
+            }
         }
 
-        // store accumulated ArrayList's, do this *after* we got the TOC
+        // store accumulated ArrayList's *after* we got the TOC
         if (!mAuthors.isEmpty()) {
             bookData.putParcelableArrayList(Book.BKEY_AUTHOR_ARRAY, mAuthors);
         }
@@ -775,51 +625,53 @@ class IsfdbBookHandler
             bookData.putParcelableArrayList(Book.BKEY_PUBLISHER_ARRAY, mPublishers);
         }
 
+        if (mSearchEngine.isCancelled()) {
+            return bookData;
+        }
+
         // Anthology type: make sure TOC_MULTIPLE_AUTHORS is correct.
-        if (!tocEntries.isEmpty()) {
+        if (toc != null && !toc.isEmpty()) {
             @Book.TocBits
             long type = bookData.getLong(DBDefinitions.KEY_TOC_BITMASK);
-            if (TocEntry.hasMultipleAuthors(tocEntries)) {
+            if (TocEntry.hasMultipleAuthors(toc)) {
                 type |= Book.TOC_MULTIPLE_AUTHORS;
             }
             bookData.putLong(DBDefinitions.KEY_TOC_BITMASK, type);
         }
 
-        // try to deduce the first publication date
-        if (tocEntries.size() == 1) {
-            // if the content table has only one entry,
-            // then this will have the first publication year for sure
-            tmpString = digits(tocEntries.get(0).getFirstPublication(), false);
-            if (!tmpString.isEmpty()) {
-                bookData.putString(DBDefinitions.KEY_DATE_FIRST_PUBLICATION, tmpString);
+        if (toc != null) {
+            // try to deduce the first publication date from the TOC
+            if (toc.size() == 1) {
+                // if the content table has only one entry,
+                // then this will have the first publication year for sure
+                tmpString = digits(toc.get(0).getFirstPublication(), false);
+                if (!tmpString.isEmpty()) {
+                    bookData.putString(DBDefinitions.KEY_DATE_FIRST_PUBLICATION, tmpString);
+                }
+            } else if (toc.size() > 1) {
+                // we gamble and take what we found in the TOC
+                if (mFirstPublication != null) {
+                    bookData.putString(DBDefinitions.KEY_DATE_FIRST_PUBLICATION, mFirstPublication);
+                }
             }
-        } else if (tocEntries.size() > 1) {
-            // we gamble and take what we found in the TOC
-            if (mFirstPublication != null) {
-                bookData.putString(DBDefinitions.KEY_DATE_FIRST_PUBLICATION, mFirstPublication);
-            } // else take the book pub date? ... but that might be wrong....
-        }
+        } // else take the book pub date? ... but that might be wrong....
 
         if (mSearchEngine.isCancelled()) {
             return bookData;
         }
 
-        // optional fetch of the cover.
         if (fetchThumbnail[0]) {
-            parseDocForCover(context, bookData);
+            parseDocForCover(bookData);
         }
-
         return bookData;
     }
 
     /**
      * Parses the downloaded {@link #mDoc} for the cover and fetches it when present.
      *
-     * @param context  Current context
-     * @param bookData Bundle to save results in (passed in to allow mocking)
+     * @param bookData Bundle to update
      */
-    private void parseDocForCover(@NonNull final Context context,
-                                  @NonNull final Bundle bookData) {
+    private void parseDocForCover(@NonNull final Bundle bookData) {
         /* First "ContentBox" contains all basic details.
          * <pre>
          *   {@code
@@ -846,169 +698,98 @@ class IsfdbBookHandler
          *     }
          * </pre>
          */
+        //noinspection ConstantConditions
         final Element img = mDoc.selectFirst(CSS_Q_DIV_CONTENTBOX).selectFirst("img");
         if (img != null) {
             final String coverUrl = img.attr("src");
-            fetchCover(context, coverUrl, bookData);
+            fetchCover(coverUrl, bookData, FILENAME_SUFFIX, 0);
         }
     }
+
+
+    @Nullable
+    public List<Edition> getEditions() {
+        return mEditions;
+    }
+
 
     /**
-     * All lines are normally.
-     * {@code
-     * <li> <abbr class="template" title="Online Computer Library Center">OCLC/WorldCat</abbr>:
-     * <a href="http://www.worldcat.org/oclc/963112443" target="_blank">963112443</a>
-     * }
-     * Except for Amazon:
-     * {@code
-     * <li><abbr class="template" ... >ASIN</abbr>:  B003ODIWEG
-     * (<a href="https://www.amazon.com.au/dp/B003ODIWEG" target="_blank">AU</a>
-     * <a href="https://www.amazon.com.br/dp/B003ODIWEG" target="_blank">BR</a>
-     * <a href="https://www.amazon.ca/dp/B003ODIWEG" target="_blank">CA</a>
-     * <a href="https://www.amazon.cn/dp/B003ODIWEG" target="_blank">CN</a>
-     * <a href="https://www.amazon.de/dp/B003ODIWEG" target="_blank">DE</a>
-     * <a href="https://www.amazon.es/dp/B003ODIWEG" target="_blank">ES</a>
-     * <a href="https://www.amazon.fr/dp/B003ODIWEG" target="_blank">FR</a>
-     * <a href="https://www.amazon.in/dp/B003ODIWEG" target="_blank">IN</a>
-     * <a href="https://www.amazon.it/dp/B003ODIWEG" target="_blank">IT</a>
-     * <a href="https://www.amazon.co.jp/dp/B003ODIWEG" target="_blank">JP</a>
-     * <a href="https://www.amazon.com.mx/dp/B003ODIWEG" target="_blank">MX</a>
-     * <a href="https://www.amazon.nl/dp/B003ODIWEG" target="_blank">NL</a>
-     * <a href="https://www.amazon.co.uk/dp/B003ODIWEG?ie=UTF8&amp;tag=isfdb-21"
-     * target="_blank">UK</a>
-     * <a href="https://www.amazon.com/dp/B003ODIWEG?ie=UTF8&amp;tag=isfdb-20&amp;
-     * linkCode=as2&amp;camp=1789&amp;creative=9325" target="_blank">US</a>)
-     * }
-     * <p>
-     * So for Amazon we only get a single link which is ok as the ASIN is the same in all.
+     * Fetch a book.
      *
-     * @param elements LI elements
-     * @param bookData Bundle to populate
-     */
-    private void handleExternalIdElements(@NonNull final Iterable<Element> elements,
-                                          @NonNull final Bundle bookData) {
-        final Collection<String> externalIdUrls = new ArrayList<>();
-        for (Element extIdLi : elements) {
-            final Element extIdLink = extIdLi.select("a").first();
-            externalIdUrls.add(extIdLink.attr("href"));
-        }
-        if (!externalIdUrls.isEmpty()) {
-            for (String url : externalIdUrls) {
-                if (url.contains("www.worldcat.org")) {
-                    // http://www.worldcat.org/oclc/60560136
-                    bookData.putString(DBDefinitions.KEY_EID_WORLDCAT, stripString(url, '/'));
-
-                } else if (url.contains("amazon")) {
-                    int start = url.lastIndexOf('/');
-                    if (start != -1) {
-                        int end = url.indexOf('?', start);
-                        if (end == -1) {
-                            end = url.length();
-                        }
-                        final String asin = url.substring(start + 1, end);
-                        bookData.putString(DBDefinitions.KEY_EID_ASIN, asin);
-                    }
-                } else if (url.contains("lccn.loc.gov")) {
-                    // Library of Congress (USA)
-                    // http://lccn.loc.gov/2008299472
-                    // http://lccn.loc.gov/95-22691
-                    bookData.putString(DBDefinitions.KEY_EID_LCCN, stripString(url, '/'));
-
-                    //            } else if (url.contains("explore.bl.uk")) {
-                    // http://explore.bl.uk/primo_library/libweb/action/dlDisplay.do?
-                    // vid=BLVU1&docId=BLL01014057142
-                    // British Library
-
-                    //            } else if (url.contains("d-nb.info")) {
-                    // http://d-nb.info/986851329
-                    // DEUTSCHEN NATIONALBIBLIOTHEK
-
-                    //            } else if (url.contains("picarta.pica.nl")) {
-                    // http://picarta.pica.nl/xslt/DB=3.9/XMLPRS=Y/PPN?PPN=802041833
-                    // Nederlandse Bibliografie
-
-
-                    //           } else if (url.contains("tercerafundacion.net")) {
-                    // Spanish
-                    // https://tercerafundacion.net/biblioteca/ver/libro/2329
-
-
-                }
-            }
-        }
-    }
-
-    private String stripString(@NonNull final String url,
-                               @SuppressWarnings("SameParameterValue") final char last) {
-        final int index = url.lastIndexOf(last) + 1;
-        if (index == 0) {
-            return "";
-        }
-
-        return url.substring(index);
-    }
-
-    /**
-     * Filter a string of all non-digits. Used to clean isbn strings, years... etc.
+     * @param editions       List of ISFDB Editions with native book ID
+     * @param fetchThumbnail Set to {@code true} if we want to get thumbnails
+     * @param bookData       Bundle to update <em>(passed in to allow mocking)</em>
      *
-     * @param s      string to parse
-     * @param isIsbn When set will also allow 'X' and 'x'
+     * @return Bundle with book data, can be empty, but never {@code null}
      *
-     * @return stripped string
+     * @throws SocketTimeoutException if the connection times out
      */
     @NonNull
-    private String digits(@Nullable final String s,
-                          final boolean isIsbn) {
-        if (s == null || s.isEmpty()) {
-            return "";
-        }
-        final StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < s.length(); i++) {
-            final char c = s.charAt(i);
-            // allows an X anywhere instead of just at the end; doesn't really matter.
-            if (Character.isDigit(c) || (isIsbn && Character.toUpperCase(c) == 'X')) {
-                sb.append(c);
+    @WorkerThread
+    public Bundle fetchByEdition(@Size(min = 1) @NonNull final List<Edition> editions,
+                                 @NonNull final boolean[] fetchThumbnail,
+                                 @NonNull final Bundle bookData)
+            throws SocketTimeoutException {
+
+        mEditions = editions;
+
+        final Edition edition = editions.get(0);
+        mPath = mSearchEngine.getUrl(mContext) + String.format(BY_NATIVE_ID, edition.getIsfdbId());
+
+        // check if we already got the book
+        if (edition.getDoc() != null) {
+            mDoc = edition.getDoc();
+        } else {
+            // go get it.
+            if (loadPage(mPath) == null || mDoc == null) {
+                return bookData;
             }
         }
-        // ... but let empty Strings here just return.
-        return sb.toString();
+
+        if (mSearchEngine.isCancelled()) {
+            return bookData;
+        }
+
+        return parseDoc(fetchThumbnail, bookData);
     }
 
     /**
-     * Fetch the cover from the url.
+     * Fetch a cover.
      *
-     * @param appContext Application context
-     * @param coverUrl   fully qualified url
-     * @param bookData   Bundle to populate
+     * @param editions List of ISFDB Editions with native book ID
+     * @param bookData Bundle to update <em>(passed in to allow mocking)</em>
+     *
+     * @return Bundle with book data
+     *
+     * @throws SocketTimeoutException if the connection times out
      */
-    private void fetchCover(@NonNull final Context appContext,
-                            @NonNull final String coverUrl,
-                            @NonNull final Bundle /* in/out */ bookData) {
-        final String tmpName = createTempCoverFileName(bookData);
-        final String fileSpec = ImageUtils.saveImage(appContext, coverUrl, tmpName, mSearchEngine);
-
-        if (fileSpec != null) {
-            ArrayList<String> imageList =
-                    bookData.getStringArrayList(Book.BKEY_FILE_SPEC_ARRAY[0]);
-            if (imageList == null) {
-                imageList = new ArrayList<>();
-            }
-            imageList.add(fileSpec);
-            bookData.putStringArrayList(Book.BKEY_FILE_SPEC_ARRAY[0], imageList);
-        }
-    }
-
     @NonNull
-    private String createTempCoverFileName(@NonNull final Bundle bookData) {
-        String name = bookData.getString(DBDefinitions.KEY_ISBN, "");
-        if (name.isEmpty()) {
-            name = bookData.getString(DBDefinitions.KEY_EID_ISFDB, "");
+    @WorkerThread
+    Bundle fetchCoverByEdition(@Size(min = 1) @NonNull final List<Edition> editions,
+                               @NonNull final Bundle bookData)
+            throws SocketTimeoutException {
+        mEditions = editions;
+
+        final Edition edition = editions.get(0);
+        mPath = mSearchEngine.getUrl(mContext) + String.format(BY_NATIVE_ID, edition.getIsfdbId());
+
+        // check if we already got the book
+        if (edition.getDoc() != null) {
+            mDoc = edition.getDoc();
+        } else {
+            // nop, go get it.
+            if (loadPage(mPath) == null || mDoc == null) {
+                return bookData;
+            }
         }
-        if (name.isEmpty()) {
-            // just use something...
-            name = String.valueOf(System.currentTimeMillis());
+
+        if (mSearchEngine.isCancelled()) {
+            return bookData;
         }
-        return name + FILENAME_SUFFIX;
+
+        parseDocForCover(bookData);
+
+        return bookData;
     }
 
     /**
@@ -1034,26 +815,23 @@ class IsfdbBookHandler
      * }
      * </pre>
      *
-     * @param context          Current context
-     * @param addSeriesFromToc whether the TOC should get parsed for Series information
+     * @param bookData Bundle to update
      *
      * @return the TOC
      *
      * @throws SocketTimeoutException if the connection times out
      */
-    @NonNull
+    @Nullable
     @WorkerThread
-    private ArrayList<TocEntry> getTocList(@NonNull final Context context,
-                                           @NonNull final Bundle bookData,
-                                           final boolean addSeriesFromToc)
+    private ArrayList<TocEntry> getTocList(@NonNull final Bundle bookData)
             throws SocketTimeoutException {
 
-        final ArrayList<TocEntry> results = new ArrayList<>();
-
-        if (loadPage(context, mPath) == null) {
-            // null result, abort
-            return results;
+        if (loadPage(mPath) == null || mDoc == null) {
+            return null;
         }
+
+        final boolean addSeriesFromToc = IsfdbSearchEngine.isAddSeriesFromToc(mContext);
+        final ArrayList<TocEntry> results = new ArrayList<>();
 
         // <div class="ContentBox"> but there are two, so get last one
         final Element contentBox = mDoc.select(CSS_Q_DIV_CONTENTBOX).last();
@@ -1172,14 +950,14 @@ class IsfdbBookHandler
             //      Appendixes (Dune)</a> • essay by uncredited
             // </li>
             if (author == null) {
-                author = Author.createUnknownAuthor(context);
+                author = Author.createUnknownAuthor(mContext);
             }
             // very unlikely
             if (title == null) {
                 title = "";
-                Logger.warn(context, TAG, "getTocList"
-                                          + "|ISBN=" + bookData.getString(DBDefinitions.KEY_ISBN)
-                                          + "|no title for li=" + li);
+                Logger.warn(mContext, TAG, "getTocList"
+                                           + "|ISBN=" + bookData.getString(DBDefinitions.KEY_ISBN)
+                                           + "|no title for li=" + li);
             }
 
             // scan for first occurrence of "• (1234)"
@@ -1199,16 +977,113 @@ class IsfdbBookHandler
         return results;
     }
 
+
+    /**
+     * All lines are normally.
+     * {@code
+     * <li> <abbr class="template" title="Online Computer Library Center">OCLC/WorldCat</abbr>:
+     * <a href="http://www.worldcat.org/oclc/963112443" target="_blank">963112443</a>
+     * }
+     * Except for Amazon:
+     * {@code
+     * <li><abbr class="template" ... >ASIN</abbr>:  B003ODIWEG
+     * (<a href="https://www.amazon.com.au/dp/B003ODIWEG" target="_blank">AU</a>
+     * <a href="https://www.amazon.com.br/dp/B003ODIWEG" target="_blank">BR</a>
+     * <a href="https://www.amazon.ca/dp/B003ODIWEG" target="_blank">CA</a>
+     * <a href="https://www.amazon.cn/dp/B003ODIWEG" target="_blank">CN</a>
+     * <a href="https://www.amazon.de/dp/B003ODIWEG" target="_blank">DE</a>
+     * <a href="https://www.amazon.es/dp/B003ODIWEG" target="_blank">ES</a>
+     * <a href="https://www.amazon.fr/dp/B003ODIWEG" target="_blank">FR</a>
+     * <a href="https://www.amazon.in/dp/B003ODIWEG" target="_blank">IN</a>
+     * <a href="https://www.amazon.it/dp/B003ODIWEG" target="_blank">IT</a>
+     * <a href="https://www.amazon.co.jp/dp/B003ODIWEG" target="_blank">JP</a>
+     * <a href="https://www.amazon.com.mx/dp/B003ODIWEG" target="_blank">MX</a>
+     * <a href="https://www.amazon.nl/dp/B003ODIWEG" target="_blank">NL</a>
+     * <a href="https://www.amazon.co.uk/dp/B003ODIWEG?ie=UTF8&amp;tag=isfdb-21"
+     * target="_blank">UK</a>
+     * <a href="https://www.amazon.com/dp/B003ODIWEG?ie=UTF8&amp;tag=isfdb-20&amp;
+     * linkCode=as2&amp;camp=1789&amp;creative=9325" target="_blank">US</a>)
+     * }
+     * <p>
+     * So for Amazon we only get a single link which is ok as the ASIN is the same in all.
+     *
+     * @param elements LI elements
+     * @param bookData Bundle to update
+     */
+    private void processExternalIdElements(@NonNull final Iterable<Element> elements,
+                                           @NonNull final Bundle bookData) {
+        final Collection<String> externalIdUrls = new ArrayList<>();
+        for (Element extIdLi : elements) {
+            final Element extIdLink = extIdLi.select("a").first();
+            externalIdUrls.add(extIdLink.attr("href"));
+        }
+        if (!externalIdUrls.isEmpty()) {
+            for (String url : externalIdUrls) {
+                if (url.contains("www.worldcat.org")) {
+                    // http://www.worldcat.org/oclc/60560136
+                    bookData.putString(DBDefinitions.KEY_EID_WORLDCAT, stripString(url, '/'));
+
+                } else if (url.contains("amazon")) {
+                    int start = url.lastIndexOf('/');
+                    if (start != -1) {
+                        int end = url.indexOf('?', start);
+                        if (end == -1) {
+                            end = url.length();
+                        }
+                        final String asin = url.substring(start + 1, end);
+                        bookData.putString(DBDefinitions.KEY_EID_ASIN, asin);
+                    }
+                } else if (url.contains("lccn.loc.gov")) {
+                    // Library of Congress (USA)
+                    // http://lccn.loc.gov/2008299472
+                    // http://lccn.loc.gov/95-22691
+                    bookData.putString(DBDefinitions.KEY_EID_LCCN, stripString(url, '/'));
+
+                    //            } else if (url.contains("explore.bl.uk")) {
+                    // http://explore.bl.uk/primo_library/libweb/action/dlDisplay.do?
+                    // vid=BLVU1&docId=BLL01014057142
+                    // British Library
+
+                    //            } else if (url.contains("d-nb.info")) {
+                    // http://d-nb.info/986851329
+                    // DEUTSCHEN NATIONALBIBLIOTHEK
+
+                    //            } else if (url.contains("picarta.pica.nl")) {
+                    // http://picarta.pica.nl/xslt/DB=3.9/XMLPRS=Y/PPN?PPN=802041833
+                    // Nederlandse Bibliografie
+
+
+                    //           } else if (url.contains("tercerafundacion.net")) {
+                    // Spanish
+                    // https://tercerafundacion.net/biblioteca/ver/libro/2329
+
+
+                }
+            }
+        }
+    }
+
+    @NonNull
+    private String stripString(@NonNull final String url,
+                               @SuppressWarnings("SameParameterValue") final char last) {
+        final int index = url.lastIndexOf(last) + 1;
+        if (index == 0) {
+            return "";
+        }
+
+        return url.substring(index);
+    }
+
     @NonNull
     private String cleanUpName(@NonNull final String s) {
-        final String tmp = CR_PATTERN.matcher(s.trim()).replaceAll(" ");
+        final String tmp = cleanText(s.trim());
         return CLEANUP_TITLE_PATTERN.matcher(tmp).replaceAll("").trim();
     }
 
     /**
      * ISFDB specific field names we add to the bundle based on parsed XML data.
      */
-    static class BookField {
+    static class SiteField {
         // private static final String AUTHOR_ID = "__ISFDB_AUTHORS_ID";
         // private static final String SERIES_ID = "__ISFDB_SERIES_ID";
         // private static final String PUBLISHER_ID = "__ISFDB_PUBLISHER_ID";

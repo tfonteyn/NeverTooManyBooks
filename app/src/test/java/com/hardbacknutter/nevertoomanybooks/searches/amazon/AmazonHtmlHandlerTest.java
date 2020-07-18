@@ -77,7 +77,7 @@ class AmazonHtmlHandlerTest
         assertNotNull(doc);
         assertTrue(doc.hasText());
 
-        final AmazonHtmlHandler handler = new AmazonHtmlHandler(mSearchEngine, mContext, doc);
+        final AmazonHtmlHandler handler = new AmazonHtmlHandler(mContext, mSearchEngine, doc);
         // we've set the doc, so no internet download will be done.
         final boolean[] fetchThumbnails = {false, false};
         mRawData = handler.parseDoc(fetchThumbnails, mRawData);

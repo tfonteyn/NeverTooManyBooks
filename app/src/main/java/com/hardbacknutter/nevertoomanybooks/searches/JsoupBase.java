@@ -59,7 +59,7 @@ import com.hardbacknutter.nevertoomanybooks.tasks.TerminatorConnection;
 public abstract class JsoupBase {
 
     /**
-     * RELEASE: Chrome 2020-03-31. Continuously update to latest version.
+     * RELEASE: Chrome 2020-07-17. Continuously update to latest version.
      * - KBNL site does not return full data unless the user agent is set to a valid browser.
      * <p>
      * Set by default. Call {@link #setUserAgent(String)} to override.
@@ -67,14 +67,18 @@ public abstract class JsoupBase {
     private static final String USER_AGENT_VALUE =
             "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
             + " AppleWebKit/537.36 (KHTML, like Gecko)"
-            + " Chrome/80.0.3987.149 Safari/537.36";
+            + " Chrome/84.0.4147.89 Safari/537.36";
 
     /** Log tag. */
     private static final String TAG = "JsoupBase";
     @NonNull
     protected final SearchEngine mSearchEngine;
+    @NonNull
+    protected final Context mContext;
     /** The parsed downloaded web page. */
+    @Nullable
     protected Document mDoc;
+
     /** If the site drops connection, we retry once. */
     private boolean mRetry = true;
     /** The user agent to send. */
@@ -84,9 +88,14 @@ public abstract class JsoupBase {
 
     /**
      * Constructor.
+     *
+     * @param context      current context
+     * @param searchEngine to use
      */
-    protected JsoupBase(@NonNull final SearchEngine searchEngine) {
+    protected JsoupBase(@NonNull final Context context,
+                        @NonNull final SearchEngine searchEngine) {
         mSearchEngine = searchEngine;
+        mContext = context;
     }
 
     /**
@@ -105,8 +114,8 @@ public abstract class JsoupBase {
      *
      * @param charSetName to use
      */
-    protected void setCharSetName(
-            @SuppressWarnings("SameParameterValue") final String charSetName) {
+    protected void setCharSetName(@SuppressWarnings("SameParameterValue")
+                                  @NonNull final String charSetName) {
         mCharSetName = charSetName;
     }
 
@@ -118,8 +127,7 @@ public abstract class JsoupBase {
      * <p>
      * The content encoding by default is: "Accept-Encoding", "gzip"
      *
-     * @param context Application context
-     * @param url     to fetch
+     * @param url to fetch
      *
      * @return the actual URL for the page we got (after redirects etc), or {@code null}
      * on failure to load.
@@ -129,8 +137,7 @@ public abstract class JsoupBase {
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
     @WorkerThread
     @Nullable
-    public String loadPage(@NonNull final Context context,
-                           @NonNull final String url)
+    public String loadPage(@NonNull final String url)
             throws SocketTimeoutException {
 
         if (mDoc == null) {
@@ -138,7 +145,8 @@ public abstract class JsoupBase {
                 Logger.d(TAG, "loadPage|REQUESTED|url=\"" + url + '\"');
             }
 
-            try (TerminatorConnection con = new TerminatorConnection(context, url, mSearchEngine)) {
+            try (TerminatorConnection con = new TerminatorConnection(mContext, url,
+                                                                     mSearchEngine)) {
                 // added due to https://github.com/square/okhttp/issues/1517
                 // it's a server issue, this is a workaround.
                 con.setRequestProperty("Connection", "close");
@@ -192,7 +200,7 @@ public abstract class JsoupBase {
 
             } catch (@NonNull final HttpStatusException e) {
                 if (BuildConfig.DEBUG) {
-                    Logger.error(context, TAG, e, "url=" + url);
+                    Logger.error(mContext, TAG, e, "url=" + url);
                 }
                 return null;
 
@@ -216,14 +224,14 @@ public abstract class JsoupBase {
                 // at com.hardbacknutter.nevertoomanybooks.tasks.TerminatorConnection.open
                 // at com.hardbacknutter.nevertoomanybooks.searches.JsoupBase.loadPage
 
-                Logger.warn(context, TAG, "loadPage"
-                                          + "|e=" + e.getLocalizedMessage()
-                                          + "|url=\"" + url + '\"');
+                Logger.warn(mContext, TAG, "loadPage"
+                                           + "|e=" + e.getLocalizedMessage()
+                                           + "|url=\"" + url + '\"');
                 // retry once. TODO: unify this with TerminatorConnection retries
                 if (mRetry) {
                     mRetry = false;
                     mDoc = null;
-                    return loadPage(context, url);
+                    return loadPage(url);
                 } else {
                     return null;
                 }
@@ -237,7 +245,7 @@ public abstract class JsoupBase {
                 }
 
             } catch (@NonNull final IOException e) {
-                Logger.error(context, TAG, e, url);
+                Logger.error(mContext, TAG, e, url);
                 return null;
             }
             // reset the flag.

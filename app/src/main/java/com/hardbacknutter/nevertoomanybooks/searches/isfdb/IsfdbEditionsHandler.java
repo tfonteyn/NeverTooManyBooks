@@ -36,6 +36,7 @@ import androidx.annotation.WorkerThread;
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -56,16 +57,11 @@ class IsfdbEditionsHandler
 
     /** Log tag. */
     private static final String TAG = "IsfdbEditionsHandler";
-
     /** Search URL template. */
     private static final String EDITIONS_URL = IsfdbSearchEngine.CGI_BIN
                                                + IsfdbSearchEngine.URL_SE_CGI + "?arg=%s&type=ISBN";
-
-    /** Currently (2019) the 4th column contains the ISBN/Catalog ID. */
-    public static final int ISBN_CATALOG_ID_COLUMN = 4;
-
     /** List of ISFDB native book id for all found editions. */
-    private final ArrayList<Edition> mEditions = new ArrayList<>();
+    private final List<Edition> mEditions = new ArrayList<>();
 
     /** The ISBN we searched for. Not guaranteed to be identical to the book we find. */
     private String mIsbn;
@@ -73,31 +69,34 @@ class IsfdbEditionsHandler
     /**
      * Constructor.
      *
+     * @param context      current context
      * @param searchEngine to use
      */
-    IsfdbEditionsHandler(@NonNull final SearchEngine searchEngine) {
-        super(searchEngine);
+    IsfdbEditionsHandler(@NonNull final Context context,
+                         @NonNull final SearchEngine searchEngine) {
+        super(context, searchEngine);
         setCharSetName(IsfdbSearchEngine.CHARSET_DECODE_PAGE);
     }
 
     /**
      * Constructor used for testing.
      *
+     * @param context      current context
      * @param searchEngine to use
-     * @param doc          the JSoup Document.
+     * @param doc          the pre-loaded Jsoup document.
      */
     @VisibleForTesting
-    IsfdbEditionsHandler(@NonNull final SearchEngine searchEngine,
+    IsfdbEditionsHandler(@NonNull final Context context,
+                         @NonNull final SearchEngine searchEngine,
                          @NonNull final Document doc) {
-        this(searchEngine);
+        this(context, searchEngine);
         mDoc = doc;
     }
 
     /**
      * Fails silently, returning an empty list.
      *
-     * @param context Current context
-     * @param isbn    to get editions for. MUST be valid.
+     * @param validIsbn to get editions for. MUST be valid.
      *
      * @return a list with native ISFDB book ID's pointing to individual editions
      *
@@ -105,16 +104,12 @@ class IsfdbEditionsHandler
      */
     @WorkerThread
     @NonNull
-    public ArrayList<Edition> fetch(@NonNull final Context context,
-                                    @NonNull final String isbn)
+    public List<Edition> fetch(@NonNull final String validIsbn)
             throws SocketTimeoutException {
-        mIsbn = isbn;
+        mIsbn = validIsbn;
 
-        final String url = IsfdbSearchEngine.getBaseURL(context)
-                           + String.format(EDITIONS_URL, isbn);
-
-        if (loadPage(context, url) == null) {
-            // null result, abort
+        final String url = mSearchEngine.getUrl(mContext) + String.format(EDITIONS_URL, validIsbn);
+        if (loadPage(url) == null || mDoc == null) {
             return mEditions;
         }
 
@@ -122,14 +117,13 @@ class IsfdbEditionsHandler
             return mEditions;
         }
 
-        return parseDoc(context);
+        return parseDoc();
     }
 
     /**
      * Get the list with native ISFDB book ID's pointing to individual editions.
      *
-     * @param context Current context
-     * @param url     A fully qualified ISFDB search url
+     * @param url A fully qualified ISFDB search url
      *
      * @return list
      *
@@ -138,12 +132,10 @@ class IsfdbEditionsHandler
     @SuppressWarnings("WeakerAccess")
     @WorkerThread
     @NonNull
-    public ArrayList<Edition> fetchPath(@NonNull final Context context,
-                                        @NonNull final String url)
+    public List<Edition> fetchUrl(@NonNull final String url)
             throws SocketTimeoutException {
 
-        if (loadPage(context, url) == null) {
-            // null result, abort
+        if (loadPage(url) == null || mDoc == null) {
             return mEditions;
         }
 
@@ -151,19 +143,18 @@ class IsfdbEditionsHandler
             return mEditions;
         }
 
-        return parseDoc(context);
+        return parseDoc();
     }
 
     /**
      * Do the parsing of the Document.
      *
-     * @param context Current context
-     *
      * @return list of editions found, can be empty, but never {@code null}
      */
     @NonNull
     @VisibleForTesting
-    ArrayList<Edition> parseDoc(@NonNull final Context context) {
+    List<Edition> parseDoc() {
+        //noinspection ConstantConditions
         final String pageUrl = mDoc.location();
 
         if (pageUrl.contains(IsfdbSearchEngine.URL_PL_CGI)) {
@@ -178,63 +169,56 @@ class IsfdbEditionsHandler
             // - direct link to the "title" of the publication; i.e. 'show the editions'
             // - search or advanced-search for the title.
 
-            findEntries(mDoc);
+            final Element publications = mDoc.selectFirst("table.publications");
+            if (publications != null) {
+                // first edition line is a "tr.table1", 2nd "tr.table0", 3rd "tr.table1" etc...
+                final Elements oddEntries = publications.select("tr.table1");
+                final Elements evenEntries = publications.select("tr.table0");
+
+                // combine them in a sorted list
+                final Collection<Element> entries = new Elements();
+                int i = 0;
+                while (i < oddEntries.size() && i < evenEntries.size()) {
+                    entries.add(oddEntries.get(i));
+                    entries.add(evenEntries.get(i));
+                    i++;
+                }
+
+                // either odd or even list might have another element.
+                if (i < oddEntries.size()) {
+                    entries.add(oddEntries.get(i));
+                } else if (i < evenEntries.size()) {
+                    entries.add(evenEntries.get(i));
+                }
+
+                for (Element tr : entries) {
+                    // 1st column: Title == the book link
+                    final Element edLink = tr.child(0).select("a").first();
+                    if (edLink != null) {
+                        final String url = edLink.attr("href");
+                        if (url != null) {
+                            String isbnStr = null;
+                            // 4th column: the ISBN/Catalog ID.
+                            final String catNr = tr.child(4).text();
+                            if (!catNr.isEmpty()) {
+                                final ISBN isbn = ISBN.createISBN(catNr);
+                                if (isbn.isValid(true)) {
+                                    isbnStr = isbn.asText();
+                                }
+                            }
+
+                            mEditions.add(new Edition(stripNumber(url, '?'), isbnStr));
+                        }
+                    }
+                }
+            }
+
         } else {
             // dunno, let's log it
-            Logger.warn(context, TAG, "parseDoc|pageUrl=" + pageUrl);
+            Logger.warn(mContext, TAG, "parseDoc|pageUrl=" + pageUrl);
         }
 
         return mEditions;
-    }
-
-    /**
-     * Search/scrape for the selectors to build the edition list.
-     *
-     * @param doc to parse
-     */
-    private void findEntries(@NonNull final Document doc) {
-        final Element publications = doc.selectFirst("table.publications");
-        if (publications == null) {
-            return;
-        }
-
-        // first edition line is a "tr.table1", 2nd "tr.table0", 3rd "tr.table1" etc...
-        final Elements oddEntries = publications.select("tr.table1");
-        final Elements evenEntries = publications.select("tr.table0");
-        // combine them in a sorted list
-        final Collection<Element> entries = new Elements();
-        int i = 0;
-        while (i < oddEntries.size() && i < evenEntries.size()) {
-            entries.add(oddEntries.get(i));
-            entries.add(evenEntries.get(i));
-            i++;
-        }
-        // either odd or even list might have another element.
-        if (i < oddEntries.size()) {
-            entries.add(oddEntries.get(i));
-        } else if (i < evenEntries.size()) {
-            entries.add(evenEntries.get(i));
-        }
-
-        for (Element tr : entries) {
-            // 1th column: Title ==the book link
-            final Element edLink = tr.child(0).select("a").first();
-            if (edLink != null) {
-                final String url = edLink.attr("href");
-                if (url != null) {
-                    String isbnStr = null;
-                    final String catNr = tr.child(ISBN_CATALOG_ID_COLUMN).text();
-                    if (!catNr.isEmpty()) {
-                        ISBN isbn = ISBN.createISBN(catNr);
-                        if (isbn.isValid(true)) {
-                            isbnStr = isbn.asText();
-                        }
-                    }
-
-                    mEditions.add(new Edition(stripNumber(url, '?'), isbnStr));
-                }
-            }
-        }
     }
 
     /**

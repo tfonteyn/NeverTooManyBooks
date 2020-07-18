@@ -223,7 +223,7 @@ public interface SearchEngine {
      * <p>
      * This default implementation is fine for most engines, but override when needed.
      *
-     * @param bookData to read/write data
+     * @param bookData Bundle to update
      */
     default void checkForSeriesNameInTitle(@NonNull final Bundle bookData) {
         final String fullTitle = bookData.getString(DBDefinitions.KEY_TITLE);
@@ -264,7 +264,7 @@ public interface SearchEngine {
         /**
          * Called by the {@link SearchCoordinator#search}.
          *
-         * @param context        Localised application context
+         * @param context        Current context
          * @param nativeId       the native id (as a String) for this particular search site.
          * @param fetchThumbnail Set to {@code true} if we want to get thumbnails
          *                       The array is guaranteed to have at least one element.
@@ -301,7 +301,7 @@ public interface SearchEngine {
         /**
          * Called by the {@link SearchCoordinator#search}.
          *
-         * @param context        Localised application context
+         * @param context        Current context
          * @param validIsbn      to search for, <strong>will</strong> be valid.
          * @param fetchThumbnail Set to {@code true} if we want to get thumbnails
          *                       The array is guaranteed to have at least one element.
@@ -328,6 +328,8 @@ public interface SearchEngine {
          * <p>
          * This default implementation returns the global setting.
          *
+         * @param context Current context
+         *
          * @return {@code true} if ISBN10 should be preferred.
          */
         default boolean isPreferIsbn10(@NonNull final Context context) {
@@ -349,7 +351,7 @@ public interface SearchEngine {
         /**
          * Called by the {@link SearchCoordinator#search}.
          *
-         * @param context        Localised application context
+         * @param context        Current context
          * @param barcode        to search for, <strong>will</strong> be valid.
          * @param fetchThumbnail Set to {@code true} if we want to get thumbnails
          *                       The array is guaranteed to have at least one element.
@@ -380,7 +382,7 @@ public interface SearchEngine {
          * Checking the arguments <strong>MUST</strong> be done inside the implementation,
          * as they generally will depend on what the engine can do with them.
          *
-         * @param context        Localised application context
+         * @param context        Current context
          * @param code           isbn, barcode or generic code to search for
          * @param author         to search for
          * @param title          to search for
@@ -419,7 +421,7 @@ public interface SearchEngine {
          * Helper method.
          * Get the resolved file path for the first cover file found (for the given index).
          *
-         * @param bookData to read from
+         * @param bookData with file-spec data
          * @param cIdx     0..n image index
          *
          * @return resolved path, or {@code null} if none found
@@ -427,7 +429,7 @@ public interface SearchEngine {
         @Nullable
         static String getFirstCoverFileFoundPath(@NonNull final Bundle bookData,
                                                  @IntRange(from = 0) final int cIdx) {
-            ArrayList<String> imageList =
+            final ArrayList<String> imageList =
                     bookData.getStringArrayList(Book.BKEY_FILE_SPEC_ARRAY[cIdx]);
             if (imageList != null && !imageList.isEmpty()) {
                 File downloadedFile = new File(imageList.get(0));
@@ -450,7 +452,7 @@ public interface SearchEngine {
          * Any {@link IOException} or {@link CredentialsException} thrown are ignored and
          * {@code null} returned.
          *
-         * @param context Application context
+         * @param context Current context
          * @param isbnStr to search for, <strong>must</strong> be valid.
          * @param cIdx    0..n image index
          *
@@ -459,7 +461,7 @@ public interface SearchEngine {
         @Nullable
         @WorkerThread
         static String getCoverImageFallback(@NonNull final Context context,
-                                            @NonNull final SearchEngine engine,
+                                            @NonNull final SearchEngine searchEngine,
                                             @NonNull final String isbnStr,
                                             @IntRange(from = 0) final int cIdx) {
 
@@ -469,19 +471,22 @@ public interface SearchEngine {
             try {
                 final Bundle bookData;
                 // If we have a valid ISBN, and the engine supports it, search.
-                if (ISBN.isValidIsbn(isbnStr) && engine instanceof SearchEngine.ByIsbn) {
-                    bookData = ((SearchEngine.ByIsbn) engine)
+                if (ISBN.isValidIsbn(isbnStr)
+                    && searchEngine instanceof SearchEngine.ByIsbn) {
+                    bookData = ((SearchEngine.ByIsbn) searchEngine)
                             .searchByIsbn(context, isbnStr, fetchThumbnail);
 
                     // If we have a generic barcode, ...
-                } else if (ISBN.isValid(isbnStr) && engine instanceof SearchEngine.ByBarcode) {
-                    bookData = ((SearchEngine.ByBarcode) engine)
+                } else if (ISBN.isValid(isbnStr)
+                           && searchEngine instanceof SearchEngine.ByBarcode) {
+                    bookData = ((SearchEngine.ByBarcode) searchEngine)
                             .searchByBarcode(context, isbnStr, fetchThumbnail);
 
                     // otherwise we pass a non-empty (but invalid) code on regardless.
                     // if the engine supports text mode.
-                } else if (!isbnStr.isEmpty() && engine instanceof SearchEngine.ByText) {
-                    bookData = ((SearchEngine.ByText) engine)
+                } else if (!isbnStr.isEmpty()
+                           && searchEngine instanceof SearchEngine.ByText) {
+                    bookData = ((SearchEngine.ByText) searchEngine)
                             .search(context, isbnStr, "", "", "", fetchThumbnail);
 
                 } else {
@@ -505,28 +510,29 @@ public interface SearchEngine {
          * Will try in order of large, medium, small depending on the site
          * supporting multiple sizes.
          *
-         * @param appContext Application context
-         * @param isbn       to search for, <strong>must</strong> be valid.
-         * @param cIdx       0..n image index
-         * @param bookData   Bundle to populate
+         * @param context  Current context
+         * @param isbn     to search for, <strong>must</strong> be valid.
+         * @param cIdx     0..n image index
+         * @param bookData Bundle to update
          */
         @WorkerThread
-        static void getCoverImage(@NonNull final Context appContext,
-                                  @NonNull final SearchEngine.CoverByIsbn engine,
+        static void getCoverImage(@NonNull final Context context,
+                                  @NonNull final SearchEngine.CoverByIsbn searchEngine,
                                   @NonNull final String isbn,
                                   @IntRange(from = 0) final int cIdx,
                                   @NonNull final Bundle bookData) {
 
-            String fileSpec = engine.searchCoverImageByIsbn(appContext,
-                                                            isbn, cIdx, ImageFileInfo.Size.Large);
-            if (engine.supportsMultipleSizes()) {
+            String fileSpec = searchEngine.searchCoverImageByIsbn(context,
+                                                                  isbn, cIdx,
+                                                                  ImageFileInfo.Size.Large);
+            if (searchEngine.supportsMultipleSizes()) {
                 if (fileSpec == null) {
-                    fileSpec = engine
-                            .searchCoverImageByIsbn(appContext, isbn, cIdx,
+                    fileSpec = searchEngine
+                            .searchCoverImageByIsbn(context, isbn, cIdx,
                                                     ImageFileInfo.Size.Medium);
                     if (fileSpec == null) {
-                        fileSpec = engine
-                                .searchCoverImageByIsbn(appContext, isbn, cIdx,
+                        fileSpec = searchEngine
+                                .searchCoverImageByIsbn(context, isbn, cIdx,
                                                         ImageFileInfo.Size.Small);
                     }
                 }
@@ -556,10 +562,10 @@ public interface SearchEngine {
          */
         @Nullable
         @WorkerThread
-        String searchCoverImageByIsbn(@NonNull final Context context,
-                                      @NonNull final String validIsbn,
-                                      @IntRange(from = 0) final int cIdx,
-                                      @Nullable final ImageFileInfo.Size size);
+        String searchCoverImageByIsbn(@NonNull Context context,
+                                      @NonNull String validIsbn,
+                                      @IntRange(from = 0) int cIdx,
+                                      @Nullable ImageFileInfo.Size size);
 
         /**
          * A site can support a single (default) or multiple sizes.
@@ -580,7 +586,7 @@ public interface SearchEngine {
          *
          * <strong>Note:</strong> all exceptions will be ignored.
          *
-         * @param context Application context
+         * @param context Current context
          * @param isbn    to search for, <strong>must</strong> be valid.
          *
          * @return a list of isbn's of alternative editions of our original isbn, can be empty.

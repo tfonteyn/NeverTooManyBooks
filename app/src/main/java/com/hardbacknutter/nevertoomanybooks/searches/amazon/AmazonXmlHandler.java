@@ -235,8 +235,8 @@ class AmazonXmlHandler
     @SuppressWarnings("unused")
     private static final String XML_CODE_RequestThrottled = "RequestThrottled";
 
-    //    private static final String XML_ID = "id";
-//    private static final String XML_TOTAL_RESULTS = "TotalResults";
+    //  private static final String XML_ID = "id";
+    //  private static final String XML_TOTAL_RESULTS = "TotalResults";
     private static final String XML_ITEM = "Item";
 
     private static final String XML_AUTHOR = "Author";
@@ -259,22 +259,21 @@ class AmazonXmlHandler
     private static final String XML_LIST_PRICE = "ListPrice";
     private static final String XML_CURRENCY_CODE = "CurrencyCode";
     private static final String XML_AMOUNT = "Amount";
-
+    @NonNull
+    protected final SearchEngine mSearchEngine;
     /** flag if we should fetch a thumbnail. */
     @NonNull
     private final boolean[] mFetchThumbnail;
     @NonNull
-    private final Context mLocalizedAppContext;
+    private final Context mContext;
     /** Bundle to save results in. */
     @NonNull
     private final Bundle mBookData;
-
     /** accumulate all authors for this book. */
     @NonNull
     private final ArrayList<Author> mAuthors = new ArrayList<>();
     /** accumulate all Publishers for this book. */
     private final ArrayList<Publisher> mPublishers = new ArrayList<>();
-
     /** XML content. */
     private final StringBuilder mBuilder = new StringBuilder();
     /** mCurrencyCode + mCurrencyAmount will form the list-price. */
@@ -282,23 +281,20 @@ class AmazonXmlHandler
     private String mCurrencyCode = "";
     @NonNull
     private String mCurrencyAmount = "";
-
     @NonNull
     private String mCoverUrl = "";
-    /** max size found, -1 for no images found. */
-    private int mThumbnailSize = -1;
 
     /*
      * flags to identify if we are in the correct node
      * We need these for nodes in need of special handling (e.g. XML_LIST_PRICE)
      * or which are composite (e.g. XML_LANGUAGE)
      */
-
+    /** max size found, -1 for no images found. */
+    private int mThumbnailSize = -1;
     /**
      * XML_LANGUAGE.
      */
     private boolean mInLanguage;
-
     /**
      * XML_LIST_PRICE.
      * Not shown in the example XML, but contains two sub-elements we use:
@@ -306,7 +302,6 @@ class AmazonXmlHandler
      * * Amount
      */
     private boolean mInListPrice;
-
     /**
      * XML_THUMBNAIL.
      * There are multiple, we try to get the largest available
@@ -315,31 +310,27 @@ class AmazonXmlHandler
      * * LargeImage
      */
     private boolean mInImage;
-
     /** starting an entry. */
     private boolean mInItem;
     /** and finishing an entry. */
     private boolean mEntryDone;
-
     /** error instead of entry. */
     private boolean mInError;
+    @Nullable
     private String mError;
-
-    @NonNull
-    protected final SearchEngine mSearchEngine;
 
     /**
      * Constructor.
      *
-     * @param localizedAppContext Localised application context
-     * @param fetchThumbnail      Set to {@code true} if we want to get a thumbnail
-     * @param bookData            Bundle to save results in (passed in to allow mocking)
+     * @param context        Current context
+     * @param fetchThumbnail Set to {@code true} if we want to get a thumbnails
+     * @param bookData       Bundle to update <em>(passed in to allow mocking)</em>
      */
-    AmazonXmlHandler(@NonNull final Context localizedAppContext,
+    AmazonXmlHandler(@NonNull final Context context,
                      @NonNull final SearchEngine searchEngine,
                      @NonNull final boolean[] fetchThumbnail,
                      @NonNull final Bundle bookData) {
-        mLocalizedAppContext = localizedAppContext;
+        mContext = context;
         mSearchEngine = searchEngine;
         mFetchThumbnail = fetchThumbnail;
         mBookData = bookData;
@@ -414,7 +405,7 @@ class AmazonXmlHandler
             String name = mBookData.getString(DBDefinitions.KEY_EID_ASIN, "");
             name += FILENAME_SUFFIX;
             String fileSpec = ImageUtils
-                    .saveImage(mLocalizedAppContext, mCoverUrl, name, mSearchEngine);
+                    .saveImage(mContext, mCoverUrl, name, mSearchEngine);
             if (fileSpec != null) {
                 ArrayList<String> imageList =
                         mBookData.getStringArrayList(Book.BKEY_FILE_SPEC_ARRAY[0]);
@@ -543,7 +534,7 @@ class AmazonXmlHandler
             } else if (mInLanguage && localName.equalsIgnoreCase(XML_NAME)) {
                 // the language is a 'DisplayName' so convert to iso first.
                 addIfNotPresent(mBookData, DBDefinitions.KEY_LANGUAGE,
-                                LanguageUtils.getISO3FromDisplayName(mLocalizedAppContext,
+                                LanguageUtils.getISO3FromDisplayName(mContext,
                                                                      mBuilder.toString()));
 
             } else if (mInListPrice && localName.equalsIgnoreCase(XML_AMOUNT)) {

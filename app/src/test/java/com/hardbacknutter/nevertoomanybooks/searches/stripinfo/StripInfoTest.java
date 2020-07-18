@@ -87,10 +87,10 @@ class StripInfoTest
         assertNotNull(doc);
         assertTrue(doc.hasText());
 
-        final StripInfoBookHandler handler = new StripInfoBookHandler(mSearchEngine, mContext, doc);
+        final StripInfoBookHandler handler = new StripInfoBookHandler(mContext, mSearchEngine, doc);
         // we've set the doc, so no internet download will be done.
         final boolean[] fetchThumbnails = {false, false};
-        final Bundle bookData = handler.parseDoc(mRawData, fetchThumbnails);
+        final Bundle bookData = handler.parseDoc(fetchThumbnails, mRawData);
 
         assertFalse(bookData.isEmpty());
         System.out.println(bookData);
@@ -156,11 +156,11 @@ class StripInfoTest
         assertNotNull(doc);
         assertTrue(doc.hasText());
 
-        final StripInfoBookHandler handler = new StripInfoBookHandler(mSearchEngine, mContext, doc);
+        final StripInfoBookHandler handler = new StripInfoBookHandler(mContext, mSearchEngine, doc);
 
         // we've set the doc, so no internet download will be done.
         final boolean[] fetchThumbnails = {false, false};
-        final Bundle bookData = handler.parseDoc(mRawData, fetchThumbnails);
+        final Bundle bookData = handler.parseDoc(fetchThumbnails, mRawData);
 
         assertFalse(bookData.isEmpty());
         System.out.println(bookData);
@@ -224,11 +224,11 @@ class StripInfoTest
         assertNotNull(doc);
         assertTrue(doc.hasText());
 
-        final StripInfoBookHandler handler = new StripInfoBookHandler(mSearchEngine, mContext, doc);
+        final StripInfoBookHandler handler = new StripInfoBookHandler(mContext, mSearchEngine, doc);
 
         // we've set the doc, so no internet download will be done.
         final boolean[] fetchThumbnails = {false, false};
-        final Bundle bookData = handler.parseDoc(mRawData, fetchThumbnails);
+        final Bundle bookData = handler.parseDoc(fetchThumbnails, mRawData);
 
         assertFalse(bookData.isEmpty());
         System.out.println(bookData);
@@ -299,11 +299,11 @@ class StripInfoTest
         assertNotNull(doc);
         assertTrue(doc.hasText());
 
-        final StripInfoBookHandler handler = new StripInfoBookHandler(mSearchEngine, mContext, doc);
+        final StripInfoBookHandler handler = new StripInfoBookHandler(mContext, mSearchEngine, doc);
 
         // we've set the doc, so no internet download will be done.
         final boolean[] fetchThumbnails = {false, false};
-        final Bundle bookData = handler.parseDoc(mRawData, fetchThumbnails);
+        final Bundle bookData = handler.parseDoc(fetchThumbnails, mRawData);
 
         assertFalse(bookData.isEmpty());
         System.out.println(bookData);
@@ -371,11 +371,11 @@ class StripInfoTest
         assertNotNull(doc);
         assertTrue(doc.hasText());
 
-        final StripInfoBookHandler handler = new StripInfoBookHandler(mSearchEngine, mContext, doc);
+        final StripInfoBookHandler handler = new StripInfoBookHandler(mContext, mSearchEngine, doc);
 
         // we've set the doc, so no internet download will be done.
         final boolean[] fetchThumbnails = {false, false};
-        final Bundle bookData = handler.parseDoc(mRawData, fetchThumbnails);
+        final Bundle bookData = handler.parseDoc(fetchThumbnails, mRawData);
 
         assertFalse(bookData.isEmpty());
         System.out.println(bookData);
@@ -439,13 +439,13 @@ class StripInfoTest
         assertNotNull(doc);
         assertTrue(doc.hasText());
 
-        final StripInfoBookHandler handler = new StripInfoBookHandler(mSearchEngine, mContext, doc);
+        final StripInfoBookHandler handler = new StripInfoBookHandler(mContext, mSearchEngine, doc);
 
         // we've set the doc, but will redirect.. so an internet download WILL be done.
         Bundle bookData = null;
         try {
             final boolean[] fetchThumbnails = {false, false};
-            bookData = handler.parseMultiResult(mRawData, fetchThumbnails);
+            bookData = handler.parseMultiResult(fetchThumbnails, mRawData);
         } catch (@NonNull final SocketTimeoutException e) {
             fail(e);
         }

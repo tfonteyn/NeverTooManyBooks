@@ -38,8 +38,8 @@ import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.preference.PreferenceManager;
 
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.SocketTimeoutException;
 import java.net.URLEncoder;
 import java.util.Locale;
 
@@ -59,6 +59,7 @@ public final class AmazonSearchEngine
         implements SearchEngine,
                    SearchEngine.ByNativeId,
                    SearchEngine.ByIsbn {
+
     /** Log tag. */
     private static final String TAG = "AmazonSearchEngine";
 
@@ -85,16 +86,6 @@ public final class AmazonSearchEngine
 
     @Nullable
     private Canceller mCaller;
-
-    @Override
-    public void setCaller(@Nullable final Canceller caller) {
-        mCaller = caller;
-    }
-
-    @Override
-    public boolean isCancelled() {
-        return mCaller == null || mCaller.isCancelled();
-    }
 
     @NonNull
     public static String getBaseURL(@NonNull final Context context) {
@@ -180,10 +171,20 @@ public final class AmazonSearchEngine
         return out.toString().trim();
     }
 
+    @Override
+    public void setCaller(@Nullable final Canceller caller) {
+        mCaller = caller;
+    }
+
+    @Override
+    public boolean isCancelled() {
+        return mCaller == null || mCaller.isCancelled();
+    }
+
     @NonNull
     @Override
     public Locale getLocale(@NonNull final Context context) {
-        final String baseUrl = getBaseURL(context);
+        final String baseUrl = getUrl(context);
         final String root = baseUrl.substring(baseUrl.lastIndexOf('.') + 1);
         switch (root) {
             case "com":
@@ -207,9 +208,9 @@ public final class AmazonSearchEngine
     public Bundle searchByNativeId(@NonNull final Context context,
                                    @NonNull final String nativeId,
                                    @NonNull final boolean[] fetchThumbnail)
-            throws IOException {
+            throws SocketTimeoutException {
 
-        return new AmazonHtmlHandler(this, context)
+        return new AmazonHtmlHandler(context, this)
                 .fetchByNativeId(nativeId, fetchThumbnail, new Bundle());
     }
 
@@ -218,7 +219,7 @@ public final class AmazonSearchEngine
     public Bundle searchByIsbn(@NonNull final Context context,
                                @NonNull final String validIsbn,
                                @NonNull final boolean[] fetchThumbnail)
-            throws IOException {
+            throws SocketTimeoutException {
 
         final ISBN tmp = new ISBN(validIsbn);
         if (tmp.isIsbn10Compat()) {

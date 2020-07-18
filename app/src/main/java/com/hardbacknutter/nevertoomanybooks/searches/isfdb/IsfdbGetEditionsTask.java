@@ -34,7 +34,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 
 import java.net.SocketTimeoutException;
-import java.util.ArrayList;
+import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -43,7 +43,7 @@ import com.hardbacknutter.nevertoomanybooks.tasks.VMTask;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 
 public class IsfdbGetEditionsTask
-        extends VMTask<ArrayList<Edition>> {
+        extends VMTask<List<Edition>> {
 
     /** Log tag. */
     private static final String TAG = "IsfdbGetEditionsTask";
@@ -59,14 +59,13 @@ public class IsfdbGetEditionsTask
 
     @Nullable
     @Override
-    protected ArrayList<Edition> doWork()
+    protected List<Edition> doWork()
             throws SocketTimeoutException {
         Thread.currentThread().setName(TAG + mIsbn);
         final Context context = App.getTaskContext();
-
         final SearchEngine searchEngine = new IsfdbSearchEngine();
         searchEngine.setCaller(this);
 
-        return new IsfdbEditionsHandler(searchEngine).fetch(context, mIsbn);
+        return new IsfdbEditionsHandler(context, searchEngine).fetch(mIsbn);
     }
 }

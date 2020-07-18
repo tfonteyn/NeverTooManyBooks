@@ -58,19 +58,14 @@ public class IsfdbGetBookTask
     /** Native site book edition(s) to get. */
     @Nullable
     private List<Edition> mEditions;
-    /** whether the TOC should get parsed for Series information. */
-    private boolean mAddSeriesFromToc;
 
     /**
      * Initiate a single book lookup by edition.
      *
-     * @param editions         List of ISFDB native ID's
-     * @param addSeriesFromToc whether the TOC should get parsed for Series information
+     * @param editions List of ISFDB native ID's
      */
     @UiThread
-    public void search(@NonNull final List<Edition> editions,
-                       final boolean addSeriesFromToc) {
-        mAddSeriesFromToc = addSeriesFromToc;
+    public void search(@NonNull final List<Edition> editions) {
         mIsfdbId = 0;
         mEditions = editions;
 
@@ -80,13 +75,10 @@ public class IsfdbGetBookTask
     /**
      * Initiate a single book lookup by ID.
      *
-     * @param isfdbId          Single ISFDB native ID's
-     * @param addSeriesFromToc whether the TOC should get parsed for Series information
+     * @param isfdbId Single ISFDB native ID's
      */
     @UiThread
-    public void search(final long isfdbId,
-                       final boolean addSeriesFromToc) {
-        mAddSeriesFromToc = addSeriesFromToc;
+    public void search(final long isfdbId) {
         mIsfdbId = isfdbId;
         mEditions = null;
 
@@ -97,24 +89,20 @@ public class IsfdbGetBookTask
     @Nullable
     @WorkerThread
     protected Bundle doWork()
-            throws SocketTimeoutException, InterruptedException {
+            throws SocketTimeoutException {
         Thread.currentThread().setName(TAG);
         final Context context = LocaleUtils.applyLocale(App.getTaskContext());
         final SearchEngine searchEngine = new IsfdbSearchEngine();
         searchEngine.setCaller(this);
 
-        Thread.sleep(3_000);
-
         final boolean[] fetchThumbnails = {false, false};
         if (mEditions != null) {
-            return new IsfdbBookHandler(searchEngine).fetch(
-                    context, mEditions, mAddSeriesFromToc,
-                    fetchThumbnails, new Bundle());
+            return new IsfdbBookHandler(context, searchEngine)
+                    .fetchByEdition(mEditions, fetchThumbnails, new Bundle());
 
         } else if (mIsfdbId != 0) {
-            return new IsfdbBookHandler(searchEngine).fetchByNativeId(
-                    context, String.valueOf(mIsfdbId), mAddSeriesFromToc,
-                    fetchThumbnails, new Bundle());
+            return new IsfdbBookHandler(context, searchEngine)
+                    .fetchByNativeId(String.valueOf(mIsfdbId), fetchThumbnails, new Bundle());
 
         } else {
             throw new IllegalStateException("how did we get here?");

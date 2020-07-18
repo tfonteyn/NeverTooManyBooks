@@ -272,6 +272,7 @@
     </style>
 
     <style name="IsbnKeyPad.SearchButton">
+        <item name="android:textStyle">bold</item>
     </style>
 
     <style name="IsbnKeyPad.BackspaceButton">

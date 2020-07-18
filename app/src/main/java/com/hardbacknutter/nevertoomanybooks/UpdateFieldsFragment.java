@@ -115,9 +115,8 @@ public class UpdateFieldsFragment
         // Progress from individual searches AND overall progress
         mUpdateFieldsModel.onProgress().observe(getViewLifecycleOwner(), this::onProgress);
         // An individual book search finished.
-        mUpdateFieldsModel.onSearchFinished().observe(getViewLifecycleOwner(), message -> {
-            mUpdateFieldsModel.processSearchResults(getContext(), message.result);
-        });
+        mUpdateFieldsModel.onSearchFinished().observe(getViewLifecycleOwner(), message ->
+                mUpdateFieldsModel.processSearchResults(getContext(), message.result));
         // User cancelled the update
         mUpdateFieldsModel.onSearchCancelled().observe(getViewLifecycleOwner(), message -> {
             // Unlikely to be seen...

@@ -64,7 +64,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
-import com.hardbacknutter.nevertoomanybooks.searches.JsoupBase;
+import com.hardbacknutter.nevertoomanybooks.searches.JsoupBookHandlerBase;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.utils.LanguageUtils;
 
@@ -76,7 +76,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.LanguageUtils;
  * </ul>
  */
 class StripInfoBookHandler
-        extends JsoupBase {
+        extends JsoupBookHandlerBase {
 
     /** file suffix for cover files. */
     private static final String FILENAME_SUFFIX = "_SI";
@@ -86,18 +86,15 @@ class StripInfoBookHandler
     /** Color string values as used on the site. Complete 2019-10-29. */
     private static final String COLOR_STRINGS = "Kleur|Zwart/wit|Zwart/wit met steunkleur";
 
-    /** Param 1: search criteria. */
-    private static final String BOOK_SEARCH_URL = "/zoek/zoek?zoekstring=%1$s";
+    /** Param 1: native book ID; really a 'long'. */
+    private static final String BY_NATIVE_ID = "/reeks/strip/%1$s";
 
-    /** Param 1: the native id; really a 'long'. */
-    private static final String BOOK_BY_NATIVE_ID = "/reeks/strip/%1$s";
+    /** Param 1: ISBN. */
+    private static final String BY_ISBN = "/zoek/zoek?zoekstring=%1$s";
 
-
-    /** The description contains h4 and div tags which we remove to make the text shorter. */
+    /** The description contains h4 tags which we remove to make the text shorter. */
     private static final Pattern H4_OPEN_PATTERN = Pattern.compile("<h4>\\s*");
     private static final Pattern H4_CLOSE_PATTERN = Pattern.compile("\\s*</h4>");
-    private static final Pattern DIV_PATTERN = Pattern.compile("(\n*\\s*<div>\\s*|\\s*</div>)");
-    private static final Pattern AMPERSAND_PATTERN = Pattern.compile("&amp;", Pattern.LITERAL);
     /**
      * When a multi-result page is returned, its title will start with this text.
      * (dutch for: Searching for...)
@@ -125,42 +122,72 @@ class StripInfoBookHandler
     /** JSoup selector to get book url tags. */
     private static final String A_HREF_STRIP = "a[href*=/strip/]";
 
-    /** accumulate all Authors for this book. */
-    private final ArrayList<Author> mAuthors = new ArrayList<>();
-    /** accumulate all Series for this book. */
-    private final ArrayList<Series> mSeries = new ArrayList<>();
-    /** accumulate all Publishers for this book. */
-    private final ArrayList<Publisher> mPublishers = new ArrayList<>();
-    /** cached ApplicationContext. */
-    @NonNull
-    private final Context mLocalizedContext;
     /** ISBN of the book we want. Only kept for logging reference. */
     private String mIsbn;
 
     /**
      * Constructor.
      *
-     * @param searchEngine        the SearchEngine
-     * @param localizedAppContext Localised application context
+     * @param context      Current context
+     * @param searchEngine to use
      */
-    StripInfoBookHandler(@NonNull final SearchEngine searchEngine,
-                         @NonNull final Context localizedAppContext) {
-        super(searchEngine);
-        mLocalizedContext = localizedAppContext;
+    StripInfoBookHandler(@NonNull final Context context,
+                         @NonNull final SearchEngine searchEngine) {
+        super(context, searchEngine);
     }
 
     /**
      * Constructor for mocking.
-     *  @param searchEngine        the SearchEngine
-     * @param localizedAppContext Localised application context
-     * @param doc                 the pre-loaded Jsoup document.
+     *
+     * @param context      Current context
+     * @param searchEngine to use
+     * @param doc          the pre-loaded Jsoup document.
      */
     @VisibleForTesting
-    StripInfoBookHandler(@NonNull final SearchEngine searchEngine,
-                         @NonNull final Context localizedAppContext,
+    StripInfoBookHandler(@NonNull final Context context,
+                         @NonNull final SearchEngine searchEngine,
                          @NonNull final Document doc) {
-        this(searchEngine, localizedAppContext);
+        this(context, searchEngine);
         mDoc = doc;
+    }
+
+    /**
+     * Calculate the MD5 sum.
+     *
+     * @param file to check
+     *
+     * @return md5, or {@code null} on failure
+     */
+    @Nullable
+    private static byte[] md5(@NonNull final File file) {
+        byte[] digest = null;
+        try {
+            final MessageDigest md = MessageDigest.getInstance("MD5");
+            try (InputStream is = new FileInputStream(file)) {
+                try (DigestInputStream dis = new DigestInputStream(is, md)) {
+                    // read and discard. The images are small enough to always read in one go.
+                    //noinspection ResultOfMethodCallIgnored
+                    dis.read(new byte[(int) file.length() + 1]);
+                }
+            }
+            digest = md.digest();
+
+        } catch (@NonNull final NoSuchAlgorithmException | IOException ignore) {
+            // ignore
+        }
+        return digest;
+    }
+
+    @NonNull
+    @WorkerThread
+    public Bundle fetchByNativeId(@NonNull final String nativeId,
+                                  @NonNull final boolean[] fetchThumbnail,
+                                  @NonNull final Bundle bookData)
+            throws SocketTimeoutException {
+
+        final String url = mSearchEngine.getUrl(mContext) + String.format(BY_NATIVE_ID, nativeId);
+
+        return fetchUrl(url, fetchThumbnail, bookData);
     }
 
     /**
@@ -168,24 +195,23 @@ class StripInfoBookHandler
      *
      * @param isbn           to search
      * @param fetchThumbnail Set to {@code true} if we want to get thumbnails
-     * @param bookData       Bundle to populate
+     * @param bookData       Bundle to update <em>(passed in to allow mocking)</em>
      *
-     * @return Bundle with book data
+     * @return Bundle with book data, can be empty, but never {@code null}
      *
      * @throws SocketTimeoutException if the connection times out
      */
     @NonNull
     @WorkerThread
-    public Bundle fetch(@NonNull final String isbn,
-                        @NonNull final boolean[] fetchThumbnail,
-                        @NonNull final Bundle bookData)
+    public Bundle fetchByIsbn(@NonNull final String isbn,
+                              @NonNull final boolean[] fetchThumbnail,
+                              @NonNull final Bundle bookData)
             throws SocketTimeoutException {
         // keep for reference
         mIsbn = isbn;
 
-        final String path = StripInfoSearchEngine.BASE_URL + String.format(BOOK_SEARCH_URL, isbn);
-        if (loadPage(mLocalizedContext, path) == null) {
-            // null result, abort
+        final String url = mSearchEngine.getUrl(mContext) + String.format(BY_ISBN, isbn);
+        if (loadPage(url) == null || mDoc == null) {
             return bookData;
         }
 
@@ -193,99 +219,80 @@ class StripInfoBookHandler
             return bookData;
         }
 
-        if (mDoc.title().startsWith(MULTI_RESULT_PAGE_TITLE)) {
+        if (isMultiResult()) {
             // handle multi-results page.
-            return parseMultiResult(bookData, fetchThumbnail);
+            return parseMultiResult(fetchThumbnail, bookData);
         }
 
-        return parseDoc(bookData, fetchThumbnail);
+        return parseDoc(fetchThumbnail, bookData);
+    }
+
+    public boolean isMultiResult() {
+        //noinspection ConstantConditions
+        return mDoc.title().startsWith(MULTI_RESULT_PAGE_TITLE);
     }
 
     /**
-     * Get the book using the site native book id.
+     * A multi result page was returned. Try and parse it.
+     * The <strong>first book</strong> link will be extracted and retries.
      *
-     * @param nativeId       to search
      * @param fetchThumbnail Set to {@code true} if we want to get thumbnails
-     * @param bookData       Bundle to populate
-     *
-     * @return Bundle with book data
-     *
-     * @throws SocketTimeoutException if the connection times out
-     */
-    @NonNull
-    @WorkerThread
-    Bundle fetchByNativeId(@NonNull final String nativeId,
-                           @NonNull final boolean[] fetchThumbnail,
-                           @NonNull final Bundle bookData)
-            throws SocketTimeoutException {
-
-        final String path = StripInfoSearchEngine.BASE_URL
-                            + String.format(BOOK_BY_NATIVE_ID, nativeId);
-        if (loadPage(mLocalizedContext, path) == null) {
-            // null result, abort
-            return bookData;
-        }
-
-        if (mSearchEngine.isCancelled()) {
-            return bookData;
-        }
-
-        return parseDoc(bookData, fetchThumbnail);
-    }
-
-    /**
-     * Fetch a book.
-     *
-     * @param path           to load
-     * @param bookData       Bundle to populate
-     * @param fetchThumbnail Set to {@code true} if we want to get thumbnails
-     *
-     * @return Bundle with book data
-     *
-     * @throws SocketTimeoutException if the connection times out
-     */
-    @SuppressWarnings("WeakerAccess")
-    @NonNull
-    @WorkerThread
-    Bundle fetchByPath(@NonNull final String path,
-                       @NonNull final Bundle bookData,
-                       @NonNull final boolean[] fetchThumbnail)
-            throws SocketTimeoutException {
-
-        if (loadPage(mLocalizedContext, path) == null) {
-            // null result, abort
-            return bookData;
-        }
-
-        if (mSearchEngine.isCancelled()) {
-            return bookData;
-        }
-
-        if (mDoc.title().startsWith(MULTI_RESULT_PAGE_TITLE)) {
-            // prevent looping.
-            return bookData;
-        }
-
-        return parseDoc(bookData, fetchThumbnail);
-    }
-
-    /**
-     * Parses the downloaded {@link #mDoc}.
-     * We only parse the <strong>first book</strong> found.
-     *
-     * @param bookData       Bundle to populate
-     * @param fetchThumbnail Set to {@code true} if we want to get thumbnails
+     * @param bookData       Bundle to update
      *
      * @return Bundle with book data, can be empty, but never {@code null}
+     *
+     * @throws SocketTimeoutException if the connection times out
      */
-    Bundle parseDoc(@NonNull final Bundle bookData,
-                    @NonNull final boolean[] fetchThumbnail) {
+    @NonNull
+    @WorkerThread
+    Bundle parseMultiResult(@NonNull final boolean[] fetchThumbnail,
+                            @NonNull final Bundle bookData)
+            throws SocketTimeoutException {
+
+        //noinspection ConstantConditions
+        final Elements sections = mDoc.select("section.c6");
+        if (sections != null) {
+            for (Element section : sections) {
+                // A series:
+                // <a href="https://stripinfo.be/reeks/index/481
+                //      _Het_narrenschip">Het narrenschip</a>
+                // The book:
+                // <a href="https://stripinfo.be/reeks/strip/1652
+                //      _Het_narrenschip_2_Pluvior_627">Pluvior 627</a>
+                final Element urlElement = section.selectFirst(A_HREF_STRIP);
+                if (urlElement != null) {
+                    final String url = urlElement.attr("href");
+                    mDoc = null;
+                    return fetchUrl(url, fetchThumbnail, bookData);
+                }
+
+                // <section class="c6 fullInMediumScreens bottomMargin">
+                // <h4 class="title"></h4>
+                // <table>
+                //  <tbody>
+                //   <tr>
+                //    <td>Er werden geen resultaten gevonden voor uw zoekopdracht</td>
+                //   </tr>
+                //  </tbody>
+                // </table>
+                //</section>
+            }
+        }
+
+        return bookData;
+    }
+
+    @NonNull
+    @Override
+    public Bundle parseDoc(@NonNull final boolean[] fetchThumbnail,
+                           @NonNull final Bundle bookData) {
 
         // extracted from the page header.
         final String primarySeriesTitle = extractPrimarySeriesTitle();
         // extracted from the title section.
         String primarySeriesBookNr = null;
 
+        //noinspection ConstantConditions
         final Elements rows = mDoc.select("div.row");
         for (Element row : rows) {
 
@@ -361,14 +368,7 @@ class StripInfoBookHandler
                                 break;
 
                             case "Taal":
-                                i += processText(td, DBDefinitions.KEY_LANGUAGE, bookData);
-                                String lang = bookData.getString(DBDefinitions.KEY_LANGUAGE);
-                                if (lang != null && !lang.isEmpty()) {
-                                    // the language is a 'DisplayName' so convert to iso first.
-                                    lang = LanguageUtils
-                                            .getISO3FromDisplayName(mLocalizedContext, lang);
-                                    bookData.putString(DBDefinitions.KEY_LANGUAGE, lang);
-                                }
+                                i += processLanguage(td, bookData);
                                 break;
 
                             case "Collectie":
@@ -380,7 +380,7 @@ class StripInfoBookHandler
                                 break;
 
                             case "Barcode":
-                                i += processText(td, StripInfoField.BARCODE, bookData);
+                                i += processText(td, SiteField.BARCODE, bookData);
                                 break;
 
                             case "":
@@ -432,12 +432,15 @@ class StripInfoBookHandler
             mSeries.add(0, series);
         }
 
-        final ArrayList<TocEntry> toc = processAnthology();
+        final ArrayList<TocEntry> toc = getTocList();
         if (toc != null && !toc.isEmpty()) {
             bookData.putParcelableArrayList(Book.BKEY_TOC_ARRAY, toc);
-            bookData.putLong(DBDefinitions.KEY_TOC_BITMASK, Book.TOC_MULTIPLE_WORKS);
+            if (toc.size() > 1) {
+                bookData.putLong(DBDefinitions.KEY_TOC_BITMASK, Book.TOC_MULTIPLE_WORKS);
+            }
         }
 
+        // store accumulated ArrayList's *after* we got the TOC
         if (!mAuthors.isEmpty()) {
             bookData.putParcelableArrayList(Book.BKEY_AUTHOR_ARRAY, mAuthors);
         }
@@ -452,9 +455,23 @@ class StripInfoBookHandler
             return bookData;
         }
 
+        // Anthology type: make sure TOC_MULTIPLE_AUTHORS is correct.
+        if (toc != null && !toc.isEmpty()) {
+            @Book.TocBits
+            long type = bookData.getLong(DBDefinitions.KEY_TOC_BITMASK);
+            if (TocEntry.hasMultipleAuthors(toc)) {
+                type |= Book.TOC_MULTIPLE_AUTHORS;
+            }
+            bookData.putLong(DBDefinitions.KEY_TOC_BITMASK, type);
+        }
+
+        if (mSearchEngine.isCancelled()) {
+            return bookData;
+        }
+
         if (fetchThumbnail[0]) {
             // front cover
-            fetchCoverFromElement("a.stripThumb", 0, bookData);
+            parseDocForCover("a.stripThumb", 0, bookData);
         }
 
         if (mSearchEngine.isCancelled()) {
@@ -463,61 +480,21 @@ class StripInfoBookHandler
 
         if (fetchThumbnail.length > 1 && fetchThumbnail[1]) {
             // back cover
-            fetchCoverFromElement("a.belowImage", 1, bookData);
+            parseDocForCover("a.belowImage", 1, bookData);
         }
         return bookData;
     }
 
     /**
-     * A multi result page was returned. Try and parse it.
-     * The <strong>first book</strong> link will be extracted and retries.
+     * Parses the downloaded {@link #mDoc} for the cover and fetches it when present.
      *
-     * @param bookData       Bundle to populate
-     * @param fetchThumbnail Set to {@code true} if we want to get thumbnails
-     *
-     * @return Bundle with book data, can be empty, but never {@code null}
-     *
-     * @throws SocketTimeoutException if the connection times out
+     * @param cIdx     0..n image index
+     * @param bookData Bundle to update
      */
-    Bundle parseMultiResult(@NonNull final Bundle bookData,
-                            @NonNull final boolean[] fetchThumbnail)
-            throws SocketTimeoutException {
-
-        final Elements sections = mDoc.select("section.c6");
-        if (sections != null) {
-            for (Element section : sections) {
-                // A series:
-                // <a href="https://stripinfo.be/reeks/index/481
-                //      _Het_narrenschip">Het narrenschip</a>
-                // The book:
-                // <a href="https://stripinfo.be/reeks/strip/1652
-                //      _Het_narrenschip_2_Pluvior_627">Pluvior 627</a>
-                final Element url = section.selectFirst(A_HREF_STRIP);
-                if (url != null) {
-                    final String href = url.attr("href");
-                    mDoc = null;
-                    return fetchByPath(href, bookData, fetchThumbnail);
-                }
-
-                // <section class="c6 fullInMediumScreens bottomMargin">
-                // <h4 class="title"></h4>
-                // <table>
-                //  <tbody>
-                //   <tr>
-                //    <td>Er werden geen resultaten gevonden voor uw zoekopdracht</td>
-                //   </tr>
-                //  </tbody>
-                // </table>
-                //</section>
-            }
-        }
-
-        return bookData;
-    }
-
-    private void fetchCoverFromElement(@NonNull final String elementQuery,
-                                       @IntRange(from = 0) final int cIdx,
-                                       @NonNull final Bundle bookData) {
+    private void parseDocForCover(@NonNull final String elementQuery,
+                                  @IntRange(from = 0) final int cIdx,
+                                  @NonNull final Bundle bookData) {
+        //noinspection ConstantConditions
         final Element coverElement = mDoc.selectFirst(elementQuery);
         if (coverElement != null) {
             final String coverUrl = coverElement.attr("data-ajax-url");
@@ -527,7 +504,7 @@ class StripInfoBookHandler
                 && !coverUrl.endsWith("i=0")
                 && !coverUrl.endsWith("mature.png")
             ) {
-                fetchCover(coverUrl, bookData, cIdx);
+                fetchCover(coverUrl, bookData, FILENAME_SUFFIX, cIdx);
             }
         }
     }
@@ -550,16 +527,16 @@ class StripInfoBookHandler
      * This means we cannot implement {@link SearchEngine.CoverByIsbn}.
      *
      * @param url      fully qualified url
-     * @param bookData Bundle to populate
+     * @param bookData Bundle to update
      * @param cIdx     0..n image index
      */
-    private void fetchCover(@NonNull final String url,
-                            @NonNull final Bundle /* in/out */ bookData,
-                            @IntRange(from = 0) final int cIdx) {
+    protected void fetchCover(@NonNull final String url,
+                              @NonNull final Bundle bookData,
+                              @NonNull final String suffix,
+                              @IntRange(from = 0) final int cIdx) {
 
-        final String tmpName = createTempCoverFileName(bookData) + '_' + cIdx;
-        final String fileSpec = ImageUtils.saveImage(mLocalizedContext, url, tmpName,
-                                                     mSearchEngine);
+        final String tmpName = createTempCoverFileName(bookData, suffix, cIdx);
+        final String fileSpec = ImageUtils.saveImage(mContext, url, tmpName, mSearchEngine);
 
         if (fileSpec != null) {
             // Some back covers will return the "no cover available" image regardless.
@@ -578,110 +555,8 @@ class StripInfoBookHandler
                 }
             }
 
-            final String key = Book.BKEY_FILE_SPEC_ARRAY[cIdx];
-            ArrayList<String> imageList = bookData.getStringArrayList(key);
-            if (imageList == null) {
-                imageList = new ArrayList<>();
-            }
-            imageList.add(fileSpec);
-            bookData.putStringArrayList(key, imageList);
+            addCover(bookData, Book.BKEY_FILE_SPEC_ARRAY[cIdx], fileSpec);
         }
-    }
-
-    @NonNull
-    private String createTempCoverFileName(@NonNull final Bundle bookData) {
-        String name = bookData.getString(DBDefinitions.KEY_ISBN, "");
-        if (name.isEmpty()) {
-            // just use something...
-            name = String.valueOf(System.currentTimeMillis());
-        }
-        return name + FILENAME_SUFFIX;
-    }
-
-    /**
-     * Calculate the MD5 sum.
-     *
-     * @param file to check
-     *
-     * @return md5, or {@code null} on failure
-     */
-    @Nullable
-    private byte[] md5(@NonNull final File file) {
-        byte[] digest = null;
-        try {
-            final MessageDigest md = MessageDigest.getInstance("MD5");
-            try (InputStream is = new FileInputStream(file)) {
-                try (DigestInputStream dis = new DigestInputStream(is, md)) {
-                    // read and discard. The images are small enough to always read in one go.
-                    //noinspection ResultOfMethodCallIgnored
-                    dis.read(new byte[(int) file.length() + 1]);
-                }
-            }
-            digest = md.digest();
-
-        } catch (@NonNull final NoSuchAlgorithmException | IOException ignore) {
-            // ignore
-        }
-        return digest;
-    }
-
-    /**
-     * Extract the site native id from the url.
-     *
-     * @param titleUrlElement element containing the book url
-     * @param bookData        Bundle to populate
-     */
-    private void processSiteNativeId(@NonNull final Element titleUrlElement,
-                                     @NonNull final Bundle bookData) {
-        try {
-            final String titleUrl = titleUrlElement.attr("href");
-            // https://www.stripinfo.be/reeks/strip/336348
-            // _Hauteville_House_14_De_37ste_parallel
-            final String idString = titleUrl.substring(titleUrl.lastIndexOf('/') + 1)
-                                            .split("_")[0];
-            final long bookId = Long.parseLong(idString);
-            if (bookId > 0) {
-                bookData.putLong(DBDefinitions.KEY_EID_STRIP_INFO_BE, bookId);
-            }
-        } catch (@NonNull final NumberFormatException ignore) {
-            // ignore
-        }
-    }
-
-    /**
-     * Extract the series title from the header.
-     *
-     * @return title, or {@code null} for none
-     */
-    @Nullable
-    private String extractPrimarySeriesTitle() {
-        final Element seriesElement = mDoc.selectFirst("h1.c12");
-        // Two possibilities:
-        // <h1 class="c12">
-        // <a href="https://www.stripinfo.be/reeks/index/831_Capricornus">
-        // <img src="https://www.stripinfo.be/images/images/380000/381645.gif"
-        //      alt="Capricornus">
-        // </a>
-        // </h1>
-        // or:
-        // <h1 class="c12">
-        // <a href="https://www.stripinfo.be/reeks/index/632_Coutoo">
-        //    Coutoo
-        // </a>
-        // </h1>
-        if (seriesElement != null) {
-            final Element img = seriesElement.selectFirst("img");
-            if (img != null) {
-                return img.attr("alt");
-            } else {
-                final Element a = seriesElement.selectFirst("a");
-                if (a != null) {
-                    return a.text();
-                }
-            }
-        }
-
-        return null;
     }
 
     /**
@@ -702,7 +577,8 @@ class StripInfoBookHandler
      * @return toc list
      */
     @Nullable
-    private ArrayList<TocEntry> processAnthology() {
+    private ArrayList<TocEntry> getTocList() {
+        //noinspection ConstantConditions
         final Elements sections = mDoc.select("div.c12");
         if (sections != null) {
             for (Element section : sections) {
@@ -743,7 +619,7 @@ class StripInfoBookHandler
                                     if (!mAuthors.isEmpty()) {
                                         author = mAuthors.get(0);
                                     } else {
-                                        author = Author.createUnknownAuthor(mLocalizedContext);
+                                        author = Author.createUnknownAuthor(mContext);
                                     }
                                     TocEntry tocEntry = new TocEntry(author, title, "");
                                     tocEntries.add(tocEntry);
@@ -758,12 +634,74 @@ class StripInfoBookHandler
         return null;
     }
 
+
+    /**
+     * Extract the site native id from the url.
+     *
+     * @param titleUrlElement element containing the book url
+     * @param bookData        Bundle to update
+     */
+    private void processSiteNativeId(@NonNull final Element titleUrlElement,
+                                     @NonNull final Bundle bookData) {
+        try {
+            final String titleUrl = titleUrlElement.attr("href");
+            // https://www.stripinfo.be/reeks/strip/336348
+            // _Hauteville_House_14_De_37ste_parallel
+            final String idString = titleUrl.substring(titleUrl.lastIndexOf('/') + 1)
+                                            .split("_")[0];
+            final long bookId = Long.parseLong(idString);
+            if (bookId > 0) {
+                bookData.putLong(DBDefinitions.KEY_EID_STRIP_INFO_BE, bookId);
+            }
+        } catch (@NonNull final NumberFormatException ignore) {
+            // ignore
+        }
+    }
+
+    /**
+     * Extract the series title from the header.
+     *
+     * @return title, or {@code null} for none
+     */
+    @Nullable
+    private String extractPrimarySeriesTitle() {
+        //noinspection ConstantConditions
+        final Element seriesElement = mDoc.selectFirst("h1.c12");
+        // Two possibilities:
+        // <h1 class="c12">
+        // <a href="https://www.stripinfo.be/reeks/index/831_Capricornus">
+        // <img src="https://www.stripinfo.be/images/images/380000/381645.gif"
+        //      alt="Capricornus">
+        // </a>
+        // </h1>
+        // or:
+        // <h1 class="c12">
+        // <a href="https://www.stripinfo.be/reeks/index/632_Coutoo">
+        //    Coutoo
+        // </a>
+        // </h1>
+        if (seriesElement != null) {
+            final Element img = seriesElement.selectFirst("img");
+            if (img != null) {
+                return img.attr("alt");
+            } else {
+                final Element a = seriesElement.selectFirst("a");
+                if (a != null) {
+                    return a.text();
+                }
+            }
+        }
+
+        return null;
+    }
+
+
     /**
      * Process a td which is pure text.
      *
      * @param td       label td
      * @param key      for this field
-     * @param bookData bundle to populate
+     * @param bookData Bundle to update
      *
      * @return 1 if we found a value td; 0 otherwise.
      */
@@ -786,7 +724,7 @@ class StripInfoBookHandler
      * - the color scheme of the comic.
      *
      * @param td       label td
-     * @param bookData bundle to populate
+     * @param bookData Bundle to update
      *
      * @return 1 if we found a value td; 0 otherwise.
      */
@@ -803,6 +741,18 @@ class StripInfoBookHandler
             return 1;
         }
         return 0;
+    }
+
+    public int processLanguage(@NonNull final Element td,
+                               @NonNull final Bundle bookData) {
+        int found = processText(td, DBDefinitions.KEY_LANGUAGE, bookData);
+        String lang = bookData.getString(DBDefinitions.KEY_LANGUAGE);
+        if (lang != null && !lang.isEmpty()) {
+            // the language is a 'DisplayName' so convert to iso first.
+            lang = LanguageUtils.getISO3FromDisplayName(mContext, lang);
+            bookData.putString(DBDefinitions.KEY_LANGUAGE, lang);
+        }
+        return found;
     }
 
     /**
@@ -910,7 +860,7 @@ class StripInfoBookHandler
      * capture it.
      *
      * @param item     description element, containing 1+ sections
-     * @param bookData bundle to populate
+     * @param bookData Bundle to update
      */
     private void processDescription(@NonNull final Element item,
                                     @NonNull final Bundle bookData) {
@@ -939,29 +889,15 @@ class StripInfoBookHandler
         }
     }
 
-
-    private String cleanText(@NonNull final String textToClean) {
-        String text = textToClean.trim();
-        // add more rules when needed.
-        if (text.contains("&")) {
-            text = AMPERSAND_PATTERN.matcher(text).replaceAll(Matcher.quoteReplacement("&"));
-        }
-        if (text.contains("<div>")) {
-            // the div elements only create empty lines, we remove them to save screen space
-            text = DIV_PATTERN.matcher(text).replaceAll("");
-        }
-        return text;
-    }
-
     /**
      * StripInfo specific field names we add to the bundle based on parsed XML data.
      */
-    public static final class StripInfoField {
+    public static final class SiteField {
 
         /** The barcode (e.g. the EAN code) is not always an ISBN. */
         public static final String BARCODE = "__barcode";
 
-        private StripInfoField() {
+        private SiteField() {
         }
     }
 

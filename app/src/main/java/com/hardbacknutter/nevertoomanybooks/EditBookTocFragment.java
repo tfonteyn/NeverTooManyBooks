@@ -51,7 +51,6 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentOnAttachListener;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -83,7 +82,6 @@ import com.hardbacknutter.nevertoomanybooks.fields.Fields;
 import com.hardbacknutter.nevertoomanybooks.searches.isfdb.Edition;
 import com.hardbacknutter.nevertoomanybooks.searches.isfdb.IsfdbGetBookTask;
 import com.hardbacknutter.nevertoomanybooks.searches.isfdb.IsfdbGetEditionsTask;
-import com.hardbacknutter.nevertoomanybooks.searches.isfdb.IsfdbSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.FinishedMessage;
 import com.hardbacknutter.nevertoomanybooks.utils.Csv;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
@@ -128,7 +126,7 @@ public class EditBookTocFragment
      * We'll try them one by one if the user asks for a re-try.
      */
     @Nullable
-    private ArrayList<Edition> mIsfdbEditions;
+    private List<Edition> mIsfdbEditions;
     private DiacriticArrayAdapter<String> mAuthorAdapter;
     /** Stores the item position in the list while we're editing that item. */
     @Nullable
@@ -370,7 +368,7 @@ public class EditBookTocFragment
                 if (isfdbId != 0) {
                     Snackbar.make(mVb.getRoot(), R.string.progress_msg_connecting,
                                   Snackbar.LENGTH_LONG).show();
-                    mIsfdbGetBookTask.search(isfdbId, isAddSeriesFromToc());
+                    mIsfdbGetBookTask.search(isfdbId);
                     return true;
                 }
 
@@ -571,17 +569,11 @@ public class EditBookTocFragment
         }
     }
 
-    private boolean isAddSeriesFromToc() {
-        //noinspection ConstantConditions
-        return PreferenceManager.getDefaultSharedPreferences(getContext())
-                                .getBoolean(IsfdbSearchEngine.PREFS_SERIES_FROM_TOC, false);
-    }
-
     /**
      * We got one or more editions from ISFDB.
      * Stores the url's locally as the user might want to try the next in line
      */
-    private void onIsfdbEditions(@NonNull final FinishedMessage<ArrayList<Edition>> message) {
+    private void onIsfdbEditions(@NonNull final FinishedMessage<List<Edition>> message) {
         if (message.isNewEvent()) {
             mIsfdbEditions = message.result != null ? message.result : new ArrayList<>();
             searchIsfdb();
@@ -660,7 +652,7 @@ public class EditBookTocFragment
         if (mIsfdbEditions != null && !mIsfdbEditions.isEmpty()) {
             Snackbar.make(mVb.getRoot(), R.string.progress_msg_connecting,
                           Snackbar.LENGTH_LONG).show();
-            mIsfdbGetBookTask.search(mIsfdbEditions, isAddSeriesFromToc());
+            mIsfdbGetBookTask.search(mIsfdbEditions);
         } else {
             Snackbar.make(mVb.getRoot(), R.string.warning_no_editions,
                           Snackbar.LENGTH_LONG).show();

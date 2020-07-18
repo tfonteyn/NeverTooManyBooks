@@ -35,7 +35,6 @@ import androidx.annotation.VisibleForTesting;
 import androidx.annotation.WorkerThread;
 
 import java.net.SocketTimeoutException;
-import java.util.ArrayList;
 import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -47,7 +46,6 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.covers.ImageUtils;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -55,7 +53,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.searches.AuthorTypeMapper;
-import com.hardbacknutter.nevertoomanybooks.searches.JsoupBase;
+import com.hardbacknutter.nevertoomanybooks.searches.JsoupBookHandlerBase;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.utils.LanguageUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.Money;
@@ -78,13 +76,16 @@ import com.hardbacknutter.nevertoomanybooks.utils.Money;
  * FIXME: when trying to find an author.. search our database twice with f/g and g/f
  */
 class AmazonHtmlHandler
-        extends JsoupBase {
+        extends JsoupBookHandlerBase {
 
-    private static final String PRODUCT_SUFFIX_URL = "/gp/product/%1$s";
+    /** Log tag. */
+    private static final String TAG = "AmazonHtmlHandler";
+
+    /** Param 1: native book ID; the ASIN/ISBN. */
+    private static final String BY_NATIVE_ID = "/gp/product/%1$s";
 
     /** file suffix for cover files. */
     private static final String FILENAME_SUFFIX = "_AMZ";
-    private static final String TAG = "AmazonHtmlHandler";
 
     /**
      * Parse "some text; more text (some more text)" into "some text" and "some more text".
@@ -109,32 +110,20 @@ class AmazonHtmlHandler
     /** Parse the "x pages" string. */
     private final Pattern mPagesPattern;
 
-    /** accumulate all authors for this book. */
-    @NonNull
-    private final ArrayList<Author> mAuthors = new ArrayList<>();
-    /** accumulate all Series for this book. */
-    @NonNull
-    private final ArrayList<Series> mSeries = new ArrayList<>();
-    /** accumulate all Publishers for this book. */
-    private final ArrayList<Publisher> mPublishers = new ArrayList<>();
-
-    @NonNull
-    private final Context mLocalizedAppContext;
-
     /**
      * Constructor.
      *
-     * @param searchEngine        the SearchEngine
-     * @param localizedAppContext Localised application context
+     * @param context      Current context
+     * @param searchEngine to use
      */
-    AmazonHtmlHandler(@NonNull final SearchEngine searchEngine,
-                      @NonNull final Context localizedAppContext) {
-        super(searchEngine);
-        mLocalizedAppContext = localizedAppContext;
+    AmazonHtmlHandler(@NonNull final Context context,
+                      @NonNull final SearchEngine searchEngine) {
+        super(context, searchEngine);
 
-        final String baseUrl = AmazonSearchEngine.getBaseURL(localizedAppContext);
+        final String baseUrl = mSearchEngine.getUrl(mContext);
+        // check the domain name to determine the language of the site
         final String root = baseUrl.substring(baseUrl.lastIndexOf('.') + 1);
-        String pagesStr;
+        final String pagesStr;
         switch (root) {
             case "de":
                 pagesStr = "Seiten";
@@ -153,64 +142,46 @@ class AmazonHtmlHandler
     }
 
     /**
-     * Constructor used for testing.
+     * Constructor for mocking.
      *
-     * @param searchEngine        the SearchEngine
-     * @param localizedAppContext Localised application context
-     * @param doc                 the JSoup Document.
+     * @param context      Current context
+     * @param searchEngine to use
+     * @param doc          the pre-loaded Jsoup document.
      */
     @VisibleForTesting
-    AmazonHtmlHandler(@NonNull final SearchEngine searchEngine,
-                      @NonNull final Context localizedAppContext,
+    AmazonHtmlHandler(@NonNull final Context context,
+                      @NonNull final SearchEngine searchEngine,
                       @NonNull final Document doc) {
-        this(searchEngine, localizedAppContext);
+        this(context, searchEngine);
         mDoc = doc;
     }
 
     @NonNull
     @WorkerThread
-    Bundle fetchByNativeId(@NonNull final String nativeId,
-                           final boolean[] fetchThumbnail,
-                           @NonNull final Bundle bookData)
+    public Bundle fetchByNativeId(@NonNull final String nativeId,
+                                  @NonNull final boolean[] fetchThumbnail,
+                                  @NonNull final Bundle bookData)
             throws SocketTimeoutException {
 
-        return fetch(AmazonSearchEngine.getBaseURL(mLocalizedAppContext)
-                     + String.format(PRODUCT_SUFFIX_URL, nativeId),
-                     fetchThumbnail, bookData);
+        final String url = mSearchEngine.getUrl(mContext) + String.format(BY_NATIVE_ID, nativeId);
+
+        return fetchUrl(url, fetchThumbnail, bookData);
     }
 
     @NonNull
-    @WorkerThread
-    private Bundle fetch(@NonNull final String path,
-                         @NonNull final boolean[] fetchThumbnail,
-                         @NonNull final Bundle bookData)
-            throws SocketTimeoutException {
-
-        if (loadPage(mLocalizedAppContext, path) == null) {
-            // null result, abort
-            return bookData;
-        }
-
-        if (mSearchEngine.isCancelled()) {
-            return bookData;
-        }
-
-        return parseDoc(fetchThumbnail, bookData);
-    }
-
-    @NonNull
+    @Override
     @VisibleForTesting
-    Bundle parseDoc(@NonNull final boolean[] fetchThumbnail,
-                    @NonNull final Bundle bookData) {
+    public Bundle parseDoc(@NonNull final boolean[] fetchThumbnail,
+                           @NonNull final Bundle bookData) {
 
-        final Locale siteLocale = mSearchEngine.getLocale(mLocalizedAppContext);
+        final Locale siteLocale = mSearchEngine.getLocale(mContext);
 
         // This is WEIRD...
         // Unless we do this seemingly needless select, the next select (for the title)
         // will return null.
         // When run in JUnit, this call is NOT needed.
         // Whats different? -> the Java JDK!
-        //noinspection unused
+        //noinspection unused,ConstantConditions
         final Element dummy = mDoc.selectFirst("div#booksTitle");
 
         final Element titleElement = mDoc.selectFirst("span#productTitle");
@@ -309,7 +280,7 @@ class AmazonHtmlHandler
                 case "sprache":
                 case "taal":
                     // the language is a 'DisplayName' so convert to iso first.
-                    data = LanguageUtils.getISO3FromDisplayName(mLocalizedAppContext,
+                    data = LanguageUtils.getISO3FromDisplayName(mContext,
                                                                 siteLocale, data);
                     bookData.putString(DBDefinitions.KEY_LANGUAGE, data);
                     break;
@@ -393,52 +364,39 @@ class AmazonHtmlHandler
             return bookData;
         }
 
-        // optional fetch of the cover.
         if (fetchThumbnail[0]) {
-            final Element coverElement = mDoc.selectFirst("img#imgBlkFront");
-
-            String imageUrl;
-            try {
-                // data-a-dynamic-image = {"https://...":[327,499],"https://...":[227,346]}
-                final String tmp = coverElement.attr("data-a-dynamic-image");
-                final JSONObject json = new JSONObject(tmp);
-                // just grab the first key
-                imageUrl = json.keys().next();
-
-            } catch (@NonNull final JSONException e) {
-                // the src attribute contains a low quality picture in base64 format.
-                String srcUrl = coverElement.attr("src");
-                // annoying... the url seems to start with a \n. Cut it off.
-                if (srcUrl.startsWith("\n")) {
-                    srcUrl = srcUrl.substring(1);
-                }
-                imageUrl = srcUrl;
-            }
-
-            // Fetch the actual image
-            final String tmpName = createTempCoverFileName(bookData);
-            final String fileSpec = ImageUtils.saveImage(mLocalizedAppContext,
-                                                         imageUrl, tmpName, mSearchEngine);
-            if (fileSpec != null) {
-                ArrayList<String> imageList =
-                        bookData.getStringArrayList(Book.BKEY_FILE_SPEC_ARRAY[0]);
-                if (imageList == null) {
-                    imageList = new ArrayList<>();
-                }
-                imageList.add(fileSpec);
-                bookData.putStringArrayList(Book.BKEY_FILE_SPEC_ARRAY[0], imageList);
-            }
+            parseDocForCover(bookData);
         }
         return bookData;
     }
 
-    @NonNull
-    private String createTempCoverFileName(@NonNull final Bundle bookData) {
-        String name = bookData.getString(DBDefinitions.KEY_ISBN, "");
-        if (name.isEmpty()) {
-            // just use something...
-            name = String.valueOf(System.currentTimeMillis());
+    /**
+     * Parses the downloaded {@link #mDoc} for the cover and fetches it when present.
+     *
+     * @param bookData Bundle to update
+     */
+    public void parseDocForCover(@NonNull final Bundle bookData) {
+        //noinspection ConstantConditions
+        final Element coverElement = mDoc.selectFirst("img#imgBlkFront");
+
+        String url;
+        try {
+            // data-a-dynamic-image = {"https://...":[327,499],"https://...":[227,346]}
+            final String tmp = coverElement.attr("data-a-dynamic-image");
+            final JSONObject json = new JSONObject(tmp);
+            // just grab the first key
+            url = json.keys().next();
+
+        } catch (@NonNull final JSONException e) {
+            // the src attribute contains a low quality picture in base64 format.
+            String srcUrl = coverElement.attr("src");
+            // annoying... the url seems to start with a \n. Cut it off.
+            if (srcUrl.startsWith("\n")) {
+                srcUrl = srcUrl.substring(1);
+            }
+            url = srcUrl;
         }
-        return name + FILENAME_SUFFIX;
+
+        fetchCover(url, bookData, FILENAME_SUFFIX, 0);
     }
 }

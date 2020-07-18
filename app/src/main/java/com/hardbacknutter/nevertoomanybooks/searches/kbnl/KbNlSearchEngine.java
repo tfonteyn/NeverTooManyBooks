@@ -65,7 +65,8 @@ public class KbNlSearchEngine
                    SearchEngine.ByIsbn,
                    SearchEngine.CoverByIsbn {
 
-    private static final Locale SITE_LOCALE = new Locale("nl", "NL");
+    /** This is a Dutch/NL language website. */
+    public static final Locale SITE_LOCALE = new Locale("nl", "NL");
 
     /** Preferences prefix. */
     private static final String PREF_PREFIX = "kbnl.";
@@ -133,7 +134,7 @@ public class KbNlSearchEngine
                                @NonNull final boolean[] fetchThumbnail)
             throws IOException {
 
-        final String url = getBaseURL(context) + String.format(BOOK_URL, validIsbn);
+        final String url = getUrl(context) + String.format(BOOK_URL, validIsbn);
 
         final SAXParserFactory factory = SAXParserFactory.newInstance();
         final KbNlBookHandler handler = new KbNlBookHandler(new Bundle());

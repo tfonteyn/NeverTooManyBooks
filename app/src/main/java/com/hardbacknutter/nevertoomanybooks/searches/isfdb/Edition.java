@@ -38,16 +38,18 @@ import org.jsoup.nodes.Document;
 public class Edition {
 
     @Nullable
-    public final String isbn;
+    private final String mIsbn;
+
     /** The ISFDB native book ID. */
-    final long isfdbId;
+    private final long mIsfdbId;
+
     /**
      * If a fetch of editions resulted in a single book returned (via redirects),
      * then the doc is kept here for immediate processing.
      * If we get (at least) 2 editions, then this will always be {@code null}.
      */
     @Nullable
-    final Document doc;
+    private final Document mDoc;
 
     /**
      * Constructor: we found a link to a book.
@@ -57,33 +59,47 @@ public class Edition {
      */
     Edition(final long isfdbId,
             @Nullable final String isbn) {
-        this.isfdbId = isfdbId;
-        this.isbn = isbn;
-        doc = null;
+        mIsfdbId = isfdbId;
+        mIsbn = isbn;
+        mDoc = null;
     }
 
     /**
      * Constructor: we found a single edition, the doc contains the book for further processing.
      *
      * @param isfdbId of the book we found
-     * @param isbn    of the book we found (as searched for, not yet read from the 'doc')
-     * @param doc     of the book we found
+     * @param isbn    of the book we <strong>searched</strong>
+     * @param doc     the JSoup document of the book we found
      */
     Edition(final long isfdbId,
             @Nullable final String isbn,
             @Nullable final Document doc) {
-        this.isfdbId = isfdbId;
-        this.isbn = isbn;
-        this.doc = doc;
+        mIsfdbId = isfdbId;
+        mIsbn = isbn;
+        mDoc = doc;
+    }
+
+    @Nullable
+    public Document getDoc() {
+        return mDoc;
+    }
+
+    @Nullable
+    public String getIsbn() {
+        return mIsbn;
+    }
+
+    public long getIsfdbId() {
+        return mIsfdbId;
     }
 
     @Override
     @NonNull
     public String toString() {
         return "Edition{"
-               + "isfdbId=" + isfdbId
-               + ", isbn=`" + isbn + '`'
-               + ", doc? =" + (doc != null)
+               + "isfdbId=" + mIsfdbId
+               + ", isbn=`" + mIsbn + '`'
+               + ", doc? =" + (mDoc != null)
                + '}';
     }
 }

@@ -27,12 +27,14 @@
  */
 package com.hardbacknutter.nevertoomanybooks.searches.isfdb;
 
+import android.content.Context;
+
 import androidx.annotation.NonNull;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.SocketTimeoutException;
-import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 import org.jsoup.Jsoup;
@@ -82,9 +84,9 @@ class IsfdbEditionsHandlerTest
         assertNotNull(doc);
         assertTrue(doc.hasText());
 
-        final IsfdbEditionsHandler handler = new IsfdbEditionsHandler(mSearchEngine, doc);
+        final IsfdbEditionsHandler handler = new IsfdbEditionsHandler(mContext, mSearchEngine, doc);
         // we've set the doc, so no internet download will be done.
-        final ArrayList<Edition> editions = handler.parseDoc(mContext);
+        final List<Edition> editions = handler.parseDoc();
 
         assertEquals(24, editions.size());
 
@@ -102,12 +104,12 @@ class IsfdbEditionsHandlerTest
      */
     @Test
     void searchSingleEditionIsbn() {
-        final DummyLoader loader = new DummyLoader(mSearchEngine);
+        final DummyLoader loader = new DummyLoader(mContext, mSearchEngine);
 
-        final String url = sBaseUrl + "/cgi-bin/se.cgi?arg=0887331602&type=ISBN";
+        final String path = sBaseUrl + "/cgi-bin/se.cgi?arg=0887331602&type=ISBN";
         String resultingUrl = null;
         try {
-            resultingUrl = loader.loadPage(mContext, url);
+            resultingUrl = loader.loadPage(path);
         } catch (@NonNull final SocketTimeoutException e) {
             fail(e);
         }
@@ -123,12 +125,12 @@ class IsfdbEditionsHandlerTest
      */
     @Test
     void searchMultiEditionIsbn() {
-        final DummyLoader loader = new DummyLoader(mSearchEngine);
+        final DummyLoader loader = new DummyLoader(mContext, mSearchEngine);
 
-        final String url = sBaseUrl + "/cgi-bin/se.cgi?arg=9781473208926&type=ISBN";
+        final String path = sBaseUrl + "/cgi-bin/se.cgi?arg=9781473208926&type=ISBN";
         String resultingUrl = null;
         try {
-            resultingUrl = loader.loadPage(mContext, url);
+            resultingUrl = loader.loadPage(path);
         } catch (@NonNull final SocketTimeoutException e) {
             fail(e);
         }
@@ -138,8 +140,9 @@ class IsfdbEditionsHandlerTest
     private static class DummyLoader
             extends JsoupBase {
 
-        DummyLoader(@NonNull final SearchEngine searchEngine) {
-            super(searchEngine);
+        DummyLoader(@NonNull final Context context,
+                    @NonNull final SearchEngine searchEngine) {
+            super(context, searchEngine);
             setCharSetName(IsfdbSearchEngine.CHARSET_DECODE_PAGE);
         }
     }

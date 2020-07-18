@@ -62,6 +62,7 @@ class LibraryThingEditionHandler
     private static final String XML_ISBN = "isbn";
 
     private final StringBuilder mBuilder = new StringBuilder();
+    /** List of ISBN numbers for all found editions. */
     private final List<String> mEditions = new ArrayList<>();
 
     /**
