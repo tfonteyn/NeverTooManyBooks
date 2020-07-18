@@ -297,7 +297,7 @@ public abstract class BookSearchBaseFragment
      * Process the search results.
      * The default implementation starts the book-edit activity.
      *
-     * @param bookData a Bundle with the results
+     * @param bookData Bundle with the results
      */
     void onSearchResults(@NonNull final Bundle bookData) {
         final Intent intent = new Intent(getContext(), EditBookActivity.class)

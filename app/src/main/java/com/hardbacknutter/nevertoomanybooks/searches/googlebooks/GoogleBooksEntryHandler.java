@@ -258,9 +258,9 @@ class GoogleBooksEntryHandler
     /**
      * Constructor.
      *
-     * @param searchEngine to use
+     * @param searchEngine   to use
      * @param fetchThumbnail Set to {@code true} if we want to get thumbnails
-     * @param bookData       Bundle to save results in (passed in to allow mocking)
+     * @param bookData       Bundle to update <em>(passed in to allow mocking)</em>
      */
     GoogleBooksEntryHandler(@NonNull final SearchEngine searchEngine,
                             @NonNull final boolean[] fetchThumbnail,

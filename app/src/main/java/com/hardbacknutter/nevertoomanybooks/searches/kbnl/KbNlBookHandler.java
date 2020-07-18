@@ -58,7 +58,7 @@ class KbNlBookHandler
     /**
      * Constructor.
      *
-     * @param bookData Bundle to save results in (passed in to allow mocking)
+     * @param bookData Bundle to update <em>(passed in to allow mocking)</em>
      */
     KbNlBookHandler(@NonNull final Bundle bookData) {
         mBookData = bookData;

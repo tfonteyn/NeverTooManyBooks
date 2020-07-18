@@ -290,7 +290,7 @@ public abstract class ShowBookApiHandler
      * @param context        Current context
      * @param url            url to get
      * @param fetchThumbnail Set to {@code true} if we want to get thumbnails
-     * @param bookData       Bundle to save results in (passed in to allow mocking)
+     * @param bookData       Bundle to update <em>(passed in to allow mocking)</em>
      *
      * @return the Bundle of book data.
      *

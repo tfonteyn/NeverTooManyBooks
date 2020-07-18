@@ -448,7 +448,7 @@ public class OpenLibrarySearchEngine
      * @param context        Current context
      * @param jsonObject     the complete book record.
      * @param fetchThumbnail Set to {@code true} if we want to get thumbnails
-     * @param bookData       Bundle to populate
+     * @param bookData       Bundle to update
      *
      * @return bookData
      *
@@ -486,7 +486,7 @@ public class OpenLibrarySearchEngine
      * @param isbn           of the book
      * @param result         JSON result data
      * @param fetchThumbnail Set to {@code true} if we want to get thumbnails
-     * @param bookData       Bundle to populate
+     * @param bookData       Bundle to update
      *
      * @return bookData object
      *

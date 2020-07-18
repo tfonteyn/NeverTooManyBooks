@@ -336,7 +336,7 @@ public class GoodreadsHandler {
      * @param context        Current context
      * @param grBookId       Goodreads book id to get
      * @param fetchThumbnail Set to {@code true} if we want to get thumbnails
-     * @param bookData       Bundle to save results in (passed in to allow mocking)
+     * @param bookData       Bundle to update <em>(passed in to allow mocking)</em>
      *
      * @return Bundle of GoodreadsWork objects
      *
@@ -365,7 +365,7 @@ public class GoodreadsHandler {
      * @param context        Current context
      * @param validIsbn      ISBN to use, must be valid
      * @param fetchThumbnail Set to {@code true} if we want to get thumbnails
-     * @param bookData       Bundle to save results in (passed in to allow mocking)
+     * @param bookData       Bundle to update <em>(passed in to allow mocking)</em>
      *
      * @return Bundle of GoodreadsWork objects
      *
