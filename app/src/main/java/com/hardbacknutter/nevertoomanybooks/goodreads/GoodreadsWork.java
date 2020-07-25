@@ -115,8 +115,8 @@ public class GoodreadsWork {
 
         try (TerminatorConnection con = new TerminatorConnection(
                 context, url,
-                GoodreadsSearchEngine.CONNECT_TIMEOUT_MS,
-                GoodreadsSearchEngine.READ_TIMEOUT_MS,
+                GoodreadsManager.CONNECTION_TIMEOUT_MS,
+                GoodreadsManager.READ_TIMEOUT_MS,
                 GoodreadsSearchEngine.THROTTLER);
              final ByteArrayOutputStream out = new ByteArrayOutputStream()) {
 

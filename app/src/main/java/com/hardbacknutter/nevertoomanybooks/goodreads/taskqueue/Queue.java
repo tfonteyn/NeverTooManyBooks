@@ -51,7 +51,7 @@ class Queue
 
     /** QueueManager that owns this Queue object. */
     @NonNull
-    private final QueueManager mManager;
+    private final QueueManager mQueueManager;
     /** Name of this Queue. */
     @NonNull
     private final String mName;
@@ -65,18 +65,18 @@ class Queue
     /**
      * Constructor. Nothing to see here, move along. Just save the properties and start the thread.
      */
-    Queue(@NonNull final QueueManager manager,
+    Queue(@NonNull final QueueManager queueManager,
           @NonNull final String queueName) {
 
         mName = queueName;
-        mManager = manager;
+        mQueueManager = queueManager;
         // Set the thread name to something helpful. This is distinct from the Queue name.
         setName("Queue " + queueName);
 
         // Add this object to the active queues list in the manager. It is important
         // that this is done in the constructor AND that new queues are created inside
         // code synchronized on the manager.
-        mManager.onQueueStarting(this);
+        mQueueManager.onQueueStarting(this);
 
         start();
     }
@@ -108,12 +108,12 @@ class Queue
                 final TQTask task;
                 // All queue manipulation needs to be synchronized on the manager, as does
                 // assignments of 'active' tasks in queues.
-                synchronized (mManager) {
+                synchronized (mQueueManager) {
                     scheduledTask = queueDAO.getNextTask(context, mName);
                     if (scheduledTask == null) {
                         // No more tasks. Remove from manager and terminate.
                         mTerminate = true;
-                        mManager.onQueueTerminating(this);
+                        mQueueManager.onQueueTerminating(this);
                         return;
                     }
                     if (scheduledTask.getMillisUntilRunnable() == 0) {
@@ -143,8 +143,8 @@ class Queue
         } finally {
             try {
                 // Just in case (the queue manager does check the queue before doing the delete).
-                synchronized (mManager) {
-                    mManager.onQueueTerminating(this);
+                synchronized (mQueueManager) {
+                    mQueueManager.onQueueTerminating(this);
                 }
             } catch (@NonNull final RuntimeException ignore) {
                 // ignore
@@ -162,10 +162,10 @@ class Queue
         boolean requeue = false;
         try {
             task.setLastException(null);
-            mManager.notifyTaskChange();
+            mQueueManager.notifyTaskChange();
 
             if (task instanceof BaseTQTask) {
-                success = ((BaseTQTask) task).run(mManager, context);
+                success = ((BaseTQTask) task).run(mQueueManager);
             } else {
                 // Either extend Task, or override QueueManager.runTask()
                 throw new IllegalStateException("Can not handle tasks that are not BaseTQTask");
@@ -181,7 +181,7 @@ class Queue
         }
 
         // Update the related database record to process the task correctly.
-        synchronized (mManager) {
+        synchronized (mQueueManager) {
             if (task.isCancelled()) {
                 queueDAO.deleteTask(task.getId());
             } else if (success) {
@@ -199,7 +199,7 @@ class Queue
             mTask.clear();
             mTask = null;
         }
-        mManager.notifyTaskChange();
+        mQueueManager.notifyTaskChange();
     }
 
     @Nullable

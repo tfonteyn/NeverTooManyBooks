@@ -48,9 +48,8 @@ public interface Importer
      *
      * @return {@link ImportResults}
      *
-     * @throws IOException             on failure
-     * @throws ImportException         on failure. This is a user displayable Exception,
-     *                                 and must provide a localized message
+     * @throws IOException     on failure
+     * @throws ImportException on failure
      */
     ImportResults read(@NonNull Context context,
                        @NonNull ReaderEntity entity,

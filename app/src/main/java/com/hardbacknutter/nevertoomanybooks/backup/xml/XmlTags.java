@@ -30,7 +30,7 @@ package com.hardbacknutter.nevertoomanybooks.backup.xml;
 /**
  * Tag names for xml import and export.
  */
-public final class XmlTags {
+final class XmlTags {
 
     /** root element, used to recognise 'our' files during import. */
     static final String XML_ROOT = "NeverTooManyBooks";

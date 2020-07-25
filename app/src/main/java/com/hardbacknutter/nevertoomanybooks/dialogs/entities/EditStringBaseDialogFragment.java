@@ -70,11 +70,9 @@ public abstract class EditStringBaseDialogFragment
     @Nullable
     DAO mDb;
     /** The text we're editing. */
-    @Nullable
-    String mOriginalText;
+    private String mOriginalText;
     /** Current edit. */
-    @Nullable
-    String mCurrentText;
+    private String mCurrentText;
     /** Where to send the result. */
     @Nullable
     private WeakReference<BookChangedListener> mListener;
@@ -104,8 +102,7 @@ public abstract class EditStringBaseDialogFragment
 
         mDb = new DAO(TAG);
 
-        final Bundle args = requireArguments();
-        mOriginalText = args.getString(BKEY_TEXT, "");
+        mOriginalText = requireArguments().getString(BKEY_TEXT, "");
 
         if (savedInstanceState == null) {
             mCurrentText = mOriginalText;
@@ -167,7 +164,6 @@ public abstract class EditStringBaseDialogFragment
 
     private boolean saveChanges() {
         viewToModel();
-        //noinspection ConstantConditions
         if (mCurrentText.isEmpty()) {
             showError(mVb.lblEditString, R.string.vldt_non_blank_required);
             return false;
@@ -178,7 +174,7 @@ public abstract class EditStringBaseDialogFragment
             return true;
         }
 
-        final Bundle data = onSave();
+        final Bundle data = onSave(mOriginalText, mCurrentText);
 
         if (mListener != null && mListener.get() != null) {
             mListener.get().onChange(0, mChangeFlags, data);
@@ -204,7 +200,8 @@ public abstract class EditStringBaseDialogFragment
      * {@link BookChangedListener#onChange(long, int, Bundle)}
      */
     @Nullable
-    abstract Bundle onSave();
+    abstract Bundle onSave(final String originalText,
+                           final String currentText);
 
     @Override
     public void onSaveInstanceState(@NonNull final Bundle outState) {

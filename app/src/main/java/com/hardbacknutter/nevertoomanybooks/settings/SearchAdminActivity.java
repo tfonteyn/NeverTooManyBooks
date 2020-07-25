@@ -104,7 +104,7 @@ public class SearchAdminActivity
             final Intent resultData = new Intent()
                     .putExtra(mModel.getType().getBundleKey(), siteList);
             setResult(Activity.RESULT_OK, resultData);
-            hasSites = siteList.getEnabledSites() != 0;
+            hasSites = !siteList.getEnabledSites().isEmpty();
         }
 
         if (hasSites) {

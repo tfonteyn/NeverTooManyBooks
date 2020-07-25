@@ -117,7 +117,7 @@
         <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
             android:id="@+id/fab4"
             style="@style/FABMenu"
-            android:text="@string/fab_add_book_by_native_id"
+            android:text="@string/fab_add_book_by_external_id"
             app:icon="@drawable/ic_find_in_page"
             tools:translationX="@dimen/fab_menu_translationX"
             tools:translationY="-310dp"

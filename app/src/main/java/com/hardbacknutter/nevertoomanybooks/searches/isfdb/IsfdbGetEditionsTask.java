@@ -41,7 +41,12 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.tasks.VMTask;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
+import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 
+/**
+ * This task is bypassing {@link SearchEngine.AlternativeEditions}
+ * as in this particular circumstance it's faster.
+ */
 public class IsfdbGetEditionsTask
         extends VMTask<List<Edition>> {
 
@@ -62,10 +67,11 @@ public class IsfdbGetEditionsTask
     protected List<Edition> doWork()
             throws SocketTimeoutException {
         Thread.currentThread().setName(TAG + mIsbn);
-        final Context context = App.getTaskContext();
-        final SearchEngine searchEngine = new IsfdbSearchEngine();
+        final Context context = LocaleUtils.applyLocale(App.getTaskContext());
+
+        final IsfdbSearchEngine searchEngine = new IsfdbSearchEngine(context);
         searchEngine.setCaller(this);
 
-        return new IsfdbEditionsHandler(context, searchEngine).fetch(mIsbn);
+        return searchEngine.fetchEditionsByIsbn(mIsbn);
     }
 }

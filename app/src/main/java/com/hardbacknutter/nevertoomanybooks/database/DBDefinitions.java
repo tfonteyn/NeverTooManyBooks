@@ -36,8 +36,6 @@ import androidx.preference.PreferenceManager;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -307,10 +305,8 @@ public final class DBDefinitions {
     public static final Domain DOM_EID_OPEN_LIBRARY;
     /** {@link #TBL_BOOKS}. */
     public static final Domain DOM_EID_STRIP_INFO_BE;
-
-
-    /** All native id keys supported for lookups. Also see {@link #NATIVE_ID_KEYS}. */
-    public static final Collection<Domain> NATIVE_ID_DOMAINS = new ArrayList<>();
+    /** {@link #TBL_BOOKS}. */
+    public static final Domain DOM_EID_LAST_DODO_NL;
 
     /** {@link #TBL_BOOK_LOANEE}. */
     public static final Domain DOM_LOANEE;
@@ -428,6 +424,7 @@ public final class DBDefinitions {
     public static final String KEY_FK_TOC_ENTRY = "anthology";
     /** Foreign key. */
     public static final String KEY_FK_STYLE = "style";
+
     /** External id. - Long. */
     public static final String KEY_EID_GOODREADS_BOOK = "goodreads_book_id";
     public static final String KEY_UTC_LAST_SYNC_DATE_GOODREADS = "last_goodreads_sync_date";
@@ -439,27 +436,16 @@ public final class DBDefinitions {
     public static final String KEY_EID_OPEN_LIBRARY = "ol_book_id";
     /** External id. - Long. */
     public static final String KEY_EID_STRIP_INFO_BE = "si_book_id";
-    /** External id. - String. */
+    /** External id. - Long. */
+    public static final String KEY_EID_LAST_DODO_NL = "ld_book_id";
+    //NEWTHINGS: adding a new search engine: optional: add external id KEY
+
+    /** External id. - String. ENHANCE: set by search engines when found, but not stored yet. */
     public static final String KEY_EID_ASIN = "asin";
-    /** External id. - String. */
+    /** External id. - String. ENHANCE: set by search engines when found, but not stored yet. */
     public static final String KEY_EID_WORLDCAT = "worldcat_oclc_book_id";
-
-    //NEWTHINGS: add new site specific ID: add a KEY
-    // ENHANCE: the search engines already use these when found, but not stored yet.
-    /** External id. - String. */
+    /** External id. - String. ENHANCE: set by search engines when found, but not stored yet. */
     public static final String KEY_EID_LCCN = "lccn_book_id";
-    /** All native id keys supported for lookups. Also see {@link #NATIVE_ID_DOMAINS}. */
-    public static final String[] NATIVE_ID_KEYS = {
-            DBDefinitions.KEY_EID_GOODREADS_BOOK,
-            DBDefinitions.KEY_EID_ISFDB,
-            DBDefinitions.KEY_EID_LIBRARY_THING,
-            DBDefinitions.KEY_EID_OPEN_LIBRARY,
-            DBDefinitions.KEY_EID_STRIP_INFO_BE,
-//                DBDefinitions.KEY_EID_ASIN,
-//                DBDefinitions.KEY_EID_WORLDCAT,
-//                DBDefinitions.KEY_EID_LCCN
-    };
-
 
     /** {@link #TBL_BOOKSHELF}. */
     public static final String KEY_BOOKSHELF_NAME = "bookshelf";
@@ -968,34 +954,42 @@ public final class DBDefinitions {
         /* ======================================================================================
          *  Book external website id domains
          * ====================================================================================== */
-        //NEWTHINGS: add new site specific ID: add a DOM and add it to NATIVE_ID_DOMAINS
+        //NEWTHINGS: adding a new search engine: optional: add external id / specific DOM
         DOM_EID_GOODREADS_BOOK =
                 new Domain.Builder(KEY_EID_GOODREADS_BOOK, ColumnInfo.TYPE_INTEGER).build();
-        NATIVE_ID_DOMAINS.add(DOM_EID_GOODREADS_BOOK);
 
         // Stores dates in UTC format!
-        // The default of 0000-00-00 is not needed, and an empty string should
-        // have been used. As modifying the schema requires copying the entire books
-        // table, we just leave it as is for now.
         DOM_UTC_LAST_SYNC_DATE_GOODREADS =
+                // The default of 0000-00-00 is not needed.
                 new Domain.Builder(KEY_UTC_LAST_SYNC_DATE_GOODREADS, ColumnInfo.TYPE_DATETIME)
                         .notNull().withDefault("'0000-00-00'").build();
+        // It SHOULD be:
+        //      new Domain.Builder(KEY_UTC_LAST_SYNC_DATE_GOODREADS, ColumnInfo.TYPE_DATETIME)
+        //              .build();
+        // As modifying the schema requires copying the entire books table,
+        // we just leave it as is for now until we have a more urgent need to recreate that table.
+        // In addition to the above, DBHelper where the triggers are created also should be
+        // modified to:
+        //      KEY_UTC_LAST_SYNC_DATE_GOODREADS + "=null"
+        //
+        // For now this has been partially corrected there and we now set it to an empty string:
+        //      KEY_UTC_LAST_SYNC_DATE_GOODREADS + "=''"
+
 
         DOM_EID_ISFDB =
                 new Domain.Builder(KEY_EID_ISFDB, ColumnInfo.TYPE_INTEGER).build();
-        NATIVE_ID_DOMAINS.add(DOM_EID_ISFDB);
 
         DOM_EID_LIBRARY_THING =
                 new Domain.Builder(KEY_EID_LIBRARY_THING, ColumnInfo.TYPE_INTEGER).build();
-        NATIVE_ID_DOMAINS.add(DOM_EID_LIBRARY_THING);
 
         DOM_EID_OPEN_LIBRARY =
                 new Domain.Builder(KEY_EID_OPEN_LIBRARY, ColumnInfo.TYPE_TEXT).build();
-        NATIVE_ID_DOMAINS.add(DOM_EID_OPEN_LIBRARY);
 
         DOM_EID_STRIP_INFO_BE =
                 new Domain.Builder(KEY_EID_STRIP_INFO_BE, ColumnInfo.TYPE_INTEGER).build();
-        NATIVE_ID_DOMAINS.add(DOM_EID_STRIP_INFO_BE);
+
+        DOM_EID_LAST_DODO_NL =
+                new Domain.Builder(KEY_EID_LAST_DODO_NL, ColumnInfo.TYPE_INTEGER).build();
 
         /* ======================================================================================
          *  Loanee domains
@@ -1157,12 +1151,15 @@ public final class DBDefinitions {
                              DOM_BOOK_CONDITION_DUST_COVER,
 
                              // external id/data
-                             //NEWTHINGS: add new site specific ID: add DOM to table
+                             //NEWTHINGS: adding a new search engine: optional: add external id DOM
+                             DOM_EID_GOODREADS_BOOK,
                              DOM_EID_ISFDB,
                              DOM_EID_LIBRARY_THING,
                              DOM_EID_OPEN_LIBRARY,
                              DOM_EID_STRIP_INFO_BE,
-                             DOM_EID_GOODREADS_BOOK,
+                             DOM_EID_LAST_DODO_NL,
+                             //NEWTHINGS: adding a new search engine:
+                             // optional: add engine specific DOM
                              DOM_UTC_LAST_SYNC_DATE_GOODREADS,
 
                              // internal data
@@ -1175,11 +1172,19 @@ public final class DBDefinitions {
                  .addIndex(KEY_TITLE, false, DOM_TITLE)
                  .addIndex(KEY_ISBN, false, DOM_BOOK_ISBN)
                  .addIndex(KEY_BOOK_UUID, true, DOM_BOOK_UUID)
-                 //NEWTHINGS: add new site specific ID: add index as needed.
+                 //NEWTHINGS: adding a new search engine: optional: add indexes as needed.
+
+                 // needed.
                  .addIndex(KEY_EID_GOODREADS_BOOK, false, DOM_EID_GOODREADS_BOOK)
+                 // do we need this one?
+                 .addIndex(KEY_EID_ISFDB, false, DOM_EID_ISFDB)
+                 // we probably do not need this one (and have not created it)
+                 //.addIndex(KEY_EID_LIBRARY_THING, false, DOM_EID_LIBRARY_THING)
+                 // do we need this one?
                  .addIndex(KEY_EID_OPEN_LIBRARY, false, DOM_EID_OPEN_LIBRARY)
+                 // do we need this one?
                  .addIndex(KEY_EID_STRIP_INFO_BE, false, DOM_EID_STRIP_INFO_BE)
-                 .addIndex(KEY_EID_ISFDB, false, DOM_EID_ISFDB);
+        ;
         ALL_TABLES.put(TBL_BOOKS.getName(), TBL_BOOKS);
 
 

@@ -42,7 +42,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.xml.sax.SAXException;
 
-import com.hardbacknutter.nevertoomanybooks.CommonSetup;
+import com.hardbacknutter.nevertoomanybooks.CommonMocks;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -55,7 +55,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.fail;
 
 class KbNlBookHandlerTest
-        extends CommonSetup {
+        extends CommonMocks {
 
     private static final String bookFilename = "/kbnl/kbnl-book-1.xml";
     private static final String comicFilename = "/kbnl/kbnl-comic-1.xml";

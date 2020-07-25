@@ -127,7 +127,7 @@
     <string name="fab_add_book_by_barcode_scan">Сканировать штрих-код</string>
     <string name="fab_add_book_by_internet_search">Поиск в Интернете</string>
     <string name="fab_add_book_by_isbn">Ввести ISBN</string>
-    <string name="fab_add_book_by_native_id">Идентификатор книги сайта</string>
+    <string name="fab_add_book_by_external_id">Идентификатор книги сайта</string>
     <string name="fab_add_book_manually">Добавить вручную</string>
     <string name="fallback_currency_format">%2$.2f %1$s</string>
     <string name="gr_auth_blurb_part1">Goodreads это сайт, чья основная миссия это «помогать людям находить и делиться книгами, которые они любят». У них есть обширная база данных с книгами и отзывами на них. И если Вы зарегистрированный пользователь Goodreads, наше приложение может экспортировать и импортировать ваши книги, полки и обзоры. Наше приложение полностью автономно и не требует Goodreads, но если Вам интересно, вы можете зарегистрироваться здесь:</string>
@@ -457,7 +457,7 @@
     <string name="progress_msg_skip_s">Пропустить - %1$s</string>
     <string name="progress_msg_starting_up">Запуск…</string>
     <string name="progress_msg_upgrading">Обновление…</string>
-    <string name="pt_allow_edit_native_id">Разрешить редактировать родной идентификатор книги сайта.</string>
+    <string name="pt_allow_edit_external_id">Разрешить редактировать родной идентификатор книги сайта.</string>
     <string name="pt_allow_mobile_data">Разрешить использование мобильных данных</string>
     <string name="pt_bob_books_under_multiple_authors">Книги с множеством авторов</string>
     <string name="pt_bob_books_under_multiple_series">Книги в множестве серий</string>

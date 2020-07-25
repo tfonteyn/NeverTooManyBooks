@@ -60,9 +60,9 @@ public class ValidateKeyTask
         Thread.currentThread().setName(TAG);
         final Context context = App.getTaskContext();
 
-        final SearchEngine.CoverByIsbn ltm = new LibraryThingSearchEngine();
-        final String fileSpec = ltm.searchCoverImageByIsbn(context, "0451451783", 0,
-                                                           ImageFileInfo.Size.Small);
+        final SearchEngine.CoverByIsbn ltm = new LibraryThingSearchEngine(context);
+        final String fileSpec = ltm
+                .searchCoverImageByIsbn("0451451783", 0, ImageFileInfo.Size.Small);
         if (fileSpec != null) {
             if (ImageUtils.isFileGood(new File(fileSpec))) {
                 return R.string.lt_key_is_correct;

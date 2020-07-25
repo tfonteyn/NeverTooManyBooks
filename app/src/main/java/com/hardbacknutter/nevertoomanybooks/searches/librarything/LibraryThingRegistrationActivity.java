@@ -40,6 +40,8 @@ import com.google.android.material.snackbar.Snackbar;
 import com.hardbacknutter.nevertoomanybooks.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.databinding.ActivityLibrarythingRegisterBinding;
+import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
+import com.hardbacknutter.nevertoomanybooks.searches.Site;
 
 /**
  * Contains details about LibraryThing links and how to register for a developer key.
@@ -86,13 +88,18 @@ public class LibraryThingRegistrationActivity
             }
         });
 
+        // for the purist: we should call SearchEngine#getSiteUrl()
+        // but it's extremely unlikely that LibraryThing would ever get a configurable url
+        //noinspection ConstantConditions
+        final String siteUrl = Site.getConfig(SearchSites.LIBRARY_THING).getSiteUrl();
+
         mVb.registerUrl.setOnClickListener(v -> {
-            final Uri uri = Uri.parse(LibraryThingSearchEngine.BASE_URL + '/');
+            final Uri uri = Uri.parse(siteUrl + '/');
             startActivity(new Intent(Intent.ACTION_VIEW, uri));
         });
 
         mVb.devKeyUrl.setOnClickListener(v -> {
-            final Uri uri = Uri.parse(LibraryThingSearchEngine.BASE_URL + "/services/keys.php");
+            final Uri uri = Uri.parse(siteUrl + "/services/keys.php");
             startActivity(new Intent(Intent.ACTION_VIEW, uri));
         });
 
@@ -103,7 +110,7 @@ public class LibraryThingRegistrationActivity
         // Saves first, then TESTS the key.
         mVb.fab.setOnClickListener(v -> {
             //noinspection ConstantConditions
-            String devKey = mVb.devKey.getText().toString().trim();
+            final String devKey = mVb.devKey.getText().toString().trim();
             PreferenceManager.getDefaultSharedPreferences(this)
                              .edit()
                              .putString(LibraryThingSearchEngine.PREFS_DEV_KEY, devKey)

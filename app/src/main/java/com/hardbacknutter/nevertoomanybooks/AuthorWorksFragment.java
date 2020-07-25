@@ -99,7 +99,6 @@ public class AuthorWorksFragment
     private AuthorWorksModel mModel;
     /** The Adapter. */
     private TocAdapter mAdapter;
-
     /** (re)attach the result listener when a fragment gets started. */
     private final FragmentOnAttachListener mFragmentOnAttachListener =
             new FragmentOnAttachListener() {
@@ -116,21 +115,14 @@ public class AuthorWorksFragment
                     }
                 }
             };
+    private ActionBar mActionBar;
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        getChildFragmentManager().addFragmentOnAttachListener(mFragmentOnAttachListener);
-
         setHasOptionsMenu(true);
 
-        //noinspection ConstantConditions
-        mResultData = new ViewModelProvider(getActivity()).get(ResultDataModel.class);
-
-        mModel = new ViewModelProvider(this).get(AuthorWorksModel.class);
-        //noinspection ConstantConditions
-        mModel.init(getContext(), requireArguments());
+        getChildFragmentManager().addFragmentOnAttachListener(mFragmentOnAttachListener);
     }
 
     @Nullable
@@ -148,13 +140,22 @@ public class AuthorWorksFragment
 
         final Context context = getContext();
 
-        updateScreenTitle();
+        //noinspection ConstantConditions
+        mResultData = new ViewModelProvider(getActivity()).get(ResultDataModel.class);
+
+        mModel = new ViewModelProvider(this).get(AuthorWorksModel.class);
+        //noinspection ConstantConditions
+        mModel.init(context, requireArguments());
+
+        mActionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
+        //noinspection ConstantConditions
+        mActionBar.setTitle(mModel.getScreenTitle(getContext()));
+        mActionBar.setSubtitle(mModel.getScreenSubtitle());
 
         final RecyclerView listView = view.findViewById(R.id.author_works);
         listView.setHasFixedSize(true);
         final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context);
         listView.setLayoutManager(linearLayoutManager);
-        //noinspection ConstantConditions
         listView.addItemDecoration(
                 new DividerItemDecoration(context, linearLayoutManager.getOrientation()));
 
@@ -168,17 +169,7 @@ public class AuthorWorksFragment
         }
     }
 
-    private void updateScreenTitle() {
-        //noinspection ConstantConditions
-        final ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
-        if (actionBar != null) {
-            //noinspection ConstantConditions
-            actionBar.setTitle(mModel.getScreenTitle(getContext()));
-            actionBar.setSubtitle(mModel.getScreenSubtitle());
-        }
-    }
-
-//    @Override
+    //    @Override
 //    @CallSuper
 //    public void onResume() {
 //        if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACK) {
@@ -211,6 +202,7 @@ public class AuthorWorksFragment
         all.setVisible(mModel.getBookshelfId() != Bookshelf.ALL_BOOKS);
         // check if the user overrules the initial
         all.setChecked(mModel.isAllBookshelves());
+
         super.onPrepareOptionsMenu(menu);
     }
 
@@ -242,7 +234,9 @@ public class AuthorWorksFragment
                 mModel.setAllBookshelves(checked);
                 mModel.reloadTocEntries();
                 mAdapter.notifyDataSetChanged();
-                updateScreenTitle();
+                //noinspection ConstantConditions
+                mActionBar.setTitle(mModel.getScreenTitle(getContext()));
+                mActionBar.setSubtitle(mModel.getScreenSubtitle());
                 return true;
             }
 

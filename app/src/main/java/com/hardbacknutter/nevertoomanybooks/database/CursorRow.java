@@ -209,28 +209,28 @@ public class CursorRow
     @SuppressWarnings("unused")
     @NonNull
     public Bundle getAll(@NonNull final Context context) {
-        final Bundle bundle = new Bundle();
+        final Bundle result = new Bundle();
 
         for (String columnName : mCursor.getColumnNames()) {
             int col = mCursor.getColumnIndex(columnName);
             if (col != -1) {
                 switch (mCursor.getType(col)) {
                     case Cursor.FIELD_TYPE_STRING:
-                        bundle.putString(columnName, mCursor.getString(col));
+                        result.putString(columnName, mCursor.getString(col));
                         break;
 
                     case Cursor.FIELD_TYPE_INTEGER:
                         // mCursor.getInt is really a (int)mCursor.getLong
-                        bundle.putLong(columnName, mCursor.getLong(col));
+                        result.putLong(columnName, mCursor.getLong(col));
                         break;
 
                     case Cursor.FIELD_TYPE_FLOAT:
                         // mCursor.getFloat is really a (float)mCursor.getDouble
-                        bundle.putDouble(columnName, mCursor.getDouble(col));
+                        result.putDouble(columnName, mCursor.getDouble(col));
                         break;
 
                     case Cursor.FIELD_TYPE_BLOB:
-                        bundle.putByteArray(columnName, mCursor.getBlob(col));
+                        result.putByteArray(columnName, mCursor.getBlob(col));
                         break;
 
                     case Cursor.FIELD_TYPE_NULL:
@@ -247,6 +247,6 @@ public class CursorRow
             }
         }
 
-        return bundle;
+        return result;
     }
 }

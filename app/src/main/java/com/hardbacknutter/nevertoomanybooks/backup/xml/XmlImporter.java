@@ -89,7 +89,6 @@ import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.xml.ElementContext;
 import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlFilter;
 import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlResponseParser;
-import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlUtils;
 
 /**
  * <ul>Supports:

@@ -395,6 +395,23 @@ public class TableDefinition {
     }
 
     /**
+     * Get the named domain.
+     *
+     * @param key name of domain to get
+     *
+     * @return the domain, or {@code null} if not found
+     */
+    @Nullable
+    public Domain getDomain(@NonNull final String key) {
+        for (Domain domain : mDomains) {
+            if (domain.getName().equals(key)) {
+                return domain;
+            }
+        }
+        return null;
+    }
+
+    /**
      * Get the domains forming the PK of this table.
      *
      * @return Domain List

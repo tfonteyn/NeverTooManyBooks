@@ -109,9 +109,6 @@ public class ImportFragment
         super.onCreate(savedInstanceState);
 
         getChildFragmentManager().addFragmentOnAttachListener(mFragmentOnAttachListener);
-
-        //noinspection ConstantConditions
-        mResultData = new ViewModelProvider(getActivity()).get(ResultDataModel.class);
     }
 
     @Nullable
@@ -129,6 +126,8 @@ public class ImportFragment
 
         //noinspection ConstantConditions
         getActivity().setTitle(R.string.lbl_import);
+
+        mResultData = new ViewModelProvider(getActivity()).get(ResultDataModel.class);
 
         mArchiveImportTask = new ViewModelProvider(this).get(ArchiveImportTask.class);
         mArchiveImportTask.onProgressUpdate().observe(getViewLifecycleOwner(), this::onProgress);

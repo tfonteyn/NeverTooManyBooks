@@ -265,22 +265,22 @@ public class EditLenderDialogFragment
         }
 
         final boolean success;
-        final Bundle data;
+        final Bundle result;
         if (!mLoanee.isEmpty()) {
             // lend book, reluctantly...
             success = mDb.lendBook(mBookId, mLoanee);
-            data = new Bundle();
-            data.putString(DBDefinitions.KEY_LOANEE, mLoanee);
+            result = new Bundle();
+            result.putString(DBDefinitions.KEY_LOANEE, mLoanee);
 
         } else {
             // return the book
             success = mDb.lendBook(mBookId, null);
-            data = null;
+            result = null;
         }
 
         if (success) {
             if (mListener != null && mListener.get() != null) {
-                mListener.get().onChange(mBookId, BookChangedListener.BOOK_LOANEE, data);
+                mListener.get().onChange(mBookId, BookChangedListener.BOOK_LOANEE, result);
             } else {
                 if (BuildConfig.DEBUG /* always */) {
                     Log.w(TAG, "onBookChanged|"

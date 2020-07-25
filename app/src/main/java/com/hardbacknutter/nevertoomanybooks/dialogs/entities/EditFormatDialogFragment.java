@@ -78,9 +78,10 @@ public class EditFormatDialogFragment
 
     @Override
     @Nullable
-    Bundle onSave() {
+    Bundle onSave(@NonNull final String originalText,
+                  @NonNull final String currentText) {
         //noinspection ConstantConditions
-        mDb.renameFormat(mOriginalText, mCurrentText);
+        mDb.renameFormat(originalText, currentText);
         return null;
     }
 }

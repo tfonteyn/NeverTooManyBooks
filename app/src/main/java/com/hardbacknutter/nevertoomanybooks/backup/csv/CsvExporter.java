@@ -37,6 +37,7 @@ import androidx.annotation.Nullable;
 import java.io.IOException;
 import java.io.Writer;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
@@ -53,12 +54,14 @@ import com.hardbacknutter.nevertoomanybooks.backup.csv.coders.TocEntryCoder;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyle;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
+import com.hardbacknutter.nevertoomanybooks.searches.Site;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.StringList;
@@ -98,8 +101,10 @@ public class CsvExporter
      * The order of the header MUST be the same as the order used to write the data (obvious eh?).
      * <p>
      * The fields CSV_COLUMN_* are {@link StringList} encoded
+     * <p>
+     * External id columns will be added to the end in {@link #getFieldHeaders(List)}.
      */
-    private static final String EXPORT_FIELD_HEADERS =
+    private static final String EXPORT_FIELD_HEADERS_BASE =
             '"' + DBDefinitions.KEY_PK_ID + '"'
             + COMMA + '"' + DBDefinitions.KEY_BOOK_UUID + '"'
             + COMMA + '"' + DBDefinitions.KEY_UTC_LAST_UPDATED + '"'
@@ -138,17 +143,7 @@ public class CsvExporter
             + COMMA + '"' + DBDefinitions.KEY_DESCRIPTION + '"'
             + COMMA + '"' + DBDefinitions.KEY_GENRE + '"'
             + COMMA + '"' + DBDefinitions.KEY_LANGUAGE + '"'
-            + COMMA + '"' + DBDefinitions.KEY_UTC_ADDED + '"'
-            //NEWTHINGS: add new site specific ID: add column label
-            + COMMA + '"' + DBDefinitions.KEY_EID_LIBRARY_THING + '"'
-            + COMMA + '"' + DBDefinitions.KEY_EID_STRIP_INFO_BE + '"'
-            + COMMA + '"' + DBDefinitions.KEY_EID_OPEN_LIBRARY + '"'
-            + COMMA + '"' + DBDefinitions.KEY_EID_ISFDB + '"'
-            + COMMA + '"' + DBDefinitions.KEY_EID_GOODREADS_BOOK + '"'
-            + COMMA + '"' + DBDefinitions.KEY_UTC_LAST_SYNC_DATE_GOODREADS + '"'
-            + '\n';
-
-
+            + COMMA + '"' + DBDefinitions.KEY_UTC_ADDED + '"';
 
     /** Database Access. */
     @NonNull
@@ -188,8 +183,8 @@ public class CsvExporter
             }
         }
 
-        Locale locale = LocaleUtils.getUserLocale(context);
-        mUnknownString = context.getString(R.string.unknown).toUpperCase(locale);
+        final Locale userLocale = LocaleUtils.getUserLocale(context);
+        mUnknownString = context.getString(R.string.unknown).toUpperCase(userLocale);
 
         mOptions = options;
         mUtcSinceDateTime = utcSinceDateTime;
@@ -219,9 +214,11 @@ public class CsvExporter
 
         final Book book = new Book();
 
+        final List<Domain> externalIdDomains = Site.getExternalIdDomains();
+
         try (Cursor cursor = mDb.fetchBooksForExport(mUtcSinceDateTime)) {
             // row 0 with the column labels
-            writer.write(EXPORT_FIELD_HEADERS);
+            writer.write(getFieldHeaders(externalIdDomains));
 
             final int progressMaxCount = progressListener.getProgressMaxPos() + cursor.getCount();
             progressListener.setProgressMaxPos(progressMaxCount);
@@ -321,21 +318,17 @@ public class CsvExporter
                 writer.write(encode(book.getString(DBDefinitions.KEY_LANGUAGE)));
                 writer.write(COMMA);
                 writer.write(encode(book.getString(DBDefinitions.KEY_UTC_ADDED)));
-                writer.write(COMMA);
 
-                //NEWTHINGS: add new site specific ID: add column value
-                writer.write(encode(book.getLong(DBDefinitions.KEY_EID_LIBRARY_THING)));
+                // external ID's
+                for (Domain domain : externalIdDomains) {
+                    writer.write(COMMA);
+                    writer.write(encode(book.getString(domain.getName())));
+                }
+                //NEWTHINGS: adding a new search engine: optional: add engine specific keys
                 writer.write(COMMA);
-                writer.write(encode(book.getLong(DBDefinitions.KEY_EID_STRIP_INFO_BE)));
-                writer.write(COMMA);
-                writer.write(encode(book.getString(DBDefinitions.KEY_EID_OPEN_LIBRARY)));
-                writer.write(COMMA);
-                writer.write(encode(book.getLong(DBDefinitions.KEY_EID_ISFDB)));
-                writer.write(COMMA);
-                writer.write(encode(book.getLong(DBDefinitions.KEY_EID_GOODREADS_BOOK)));
-                writer.write(COMMA);
-                writer.write(encode(book.getString(
-                        DBDefinitions.KEY_UTC_LAST_SYNC_DATE_GOODREADS)));
+                writer.write(encode(
+                        book.getString(DBDefinitions.KEY_UTC_LAST_SYNC_DATE_GOODREADS)));
+
                 writer.write("\n");
 
                 mResults.booksExported++;
@@ -349,6 +342,18 @@ public class CsvExporter
         }
 
         return mResults;
+    }
+
+    private String getFieldHeaders(final Iterable<Domain> externalIdDomains) {
+        final StringBuilder sb = new StringBuilder(EXPORT_FIELD_HEADERS_BASE);
+        for (Domain domain : externalIdDomains) {
+            sb.append(COMMA)
+              .append('"').append(domain.getName()).append('"');
+        }
+        //NEWTHINGS: adding a new search engine: optional: add engine specific keys
+        sb.append(COMMA).append('"')
+          .append(DBDefinitions.KEY_UTC_LAST_SYNC_DATE_GOODREADS).append('"');
+        return sb.append('\n').toString();
     }
 
     @NonNull

@@ -1,9 +1,9 @@
-TODO: usage "profile": comics versus fiction books versus non-fiction books.
+ENHANCE: usage "profile": comics versus fiction books versus non-fiction books.
  * optimize all search engines
  * optimize visible fields.
- * optimize maybe different author types.
+ * show/hide only certain author types.
 
-TODO: move Publisher, Location, Format ... to separate tables ?
+TODO: move Location, Format ... to separate tables ?
 
 ENHANCE: database using 'lower()' in WHERE and ORDER BY clauses.
  * check indexes for using all lower case, then eliminate the lower() for all that uses

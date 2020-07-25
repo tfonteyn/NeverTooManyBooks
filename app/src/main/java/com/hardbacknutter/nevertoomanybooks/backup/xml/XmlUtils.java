@@ -25,7 +25,7 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.utils.xml;
+package com.hardbacknutter.nevertoomanybooks.backup.xml;
 
 import android.util.Base64;
 
@@ -47,7 +47,7 @@ import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 /**
  * Minimalist builder for XML tags and attributes.
  */
-public final class XmlUtils {
+final class XmlUtils {
 
     /** File header. */
     public static final String XML_VERSION_1_0_ENCODING_UTF_8 =

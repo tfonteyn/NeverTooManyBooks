@@ -45,14 +45,15 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.databinding.FragmentEditSearchOrderBinding;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searches.Site;
 import com.hardbacknutter.nevertoomanybooks.searches.SiteList;
@@ -71,14 +72,15 @@ public class SearchOrderFragment
         extends Fragment {
 
     private SearchSiteListAdapter mListAdapter;
-    private RecyclerView mListView;
     private ItemTouchHelper mItemTouchHelper;
 
     /** The list we're handling in this fragment (tab). */
-    @Nullable
     private SiteList.Type mOurType;
 
     private SearchAdminModel mModel;
+
+    /** View binding. */
+    private FragmentEditSearchOrderBinding mVb;
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -87,9 +89,6 @@ public class SearchOrderFragment
 
         mOurType = requireArguments().getParcelable(SearchAdminModel.BKEY_LIST_TYPE);
         Objects.requireNonNull(mOurType);
-
-        //noinspection ConstantConditions
-        mModel = new ViewModelProvider(getActivity()).get(SearchAdminModel.class);
     }
 
     @Override
@@ -97,9 +96,8 @@ public class SearchOrderFragment
     public View onCreateView(@NonNull final LayoutInflater inflater,
                              @Nullable final ViewGroup container,
                              @Nullable final Bundle savedInstanceState) {
-        final View view = inflater.inflate(R.layout.fragment_edit_search_order, container, false);
-        mListView = view.findViewById(R.id.siteList);
-        return view;
+        mVb = FragmentEditSearchOrderBinding.inflate(inflater, container, false);
+        return mVb.getRoot();
     }
 
     @Override
@@ -107,24 +105,25 @@ public class SearchOrderFragment
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
-        mListView.setLayoutManager(linearLayoutManager);
         //noinspection ConstantConditions
-        mListView.addItemDecoration(
-                new DividerItemDecoration(getContext(), linearLayoutManager.getOrientation()));
-        mListView.setHasFixedSize(true);
+        mModel = new ViewModelProvider(getActivity()).get(SearchAdminModel.class);
 
-        // Get all sites; enabled AND disabled.
+        final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
+        mVb.siteList.setLayoutManager(linearLayoutManager);
         //noinspection ConstantConditions
-        final List<Site> list = mModel.getList(getContext(), mOurType).getSites(false);
+        mVb.siteList.addItemDecoration(
+                new DividerItemDecoration(getContext(), linearLayoutManager.getOrientation()));
+        mVb.siteList.setHasFixedSize(true);
+
+        final List<Site> list = mModel.getList(getContext(), mOurType).getSites();
         mListAdapter = new SearchSiteListAdapter(getContext(), mOurType, list,
                                                  vh -> mItemTouchHelper.startDrag(vh));
-        mListView.setAdapter(mListAdapter);
+        mVb.siteList.setAdapter(mListAdapter);
 
         final SimpleItemTouchHelperCallback sitHelperCallback =
                 new SimpleItemTouchHelperCallback(mListAdapter);
         mItemTouchHelper = new ItemTouchHelper(sitHelperCallback);
-        mItemTouchHelper.attachToRecyclerView(mListView);
+        mItemTouchHelper.attachToRecyclerView(mVb.siteList);
     }
 
     @Override
@@ -144,8 +143,10 @@ public class SearchOrderFragment
         //noinspection SwitchStatementWithTooFewBranches
         switch (item.getItemId()) {
             case R.id.MENU_RESET: {
+                final Locale systemLocale = LocaleUtils.getSystemLocale();
                 //noinspection ConstantConditions
-                mModel.resetList(getContext(), LocaleUtils.getUserLocale(getContext()), mOurType);
+                final Locale userLocale = LocaleUtils.getUserLocale(getContext());
+                mModel.resetList(getContext(), systemLocale, userLocale, mOurType);
                 mListAdapter.notifyDataSetChanged();
                 return true;
             }
@@ -195,10 +196,11 @@ public class SearchOrderFragment
             final Context context = getContext();
 
             final Site site = getItem(position);
-            holder.nameView.setText(site.getName());
+            final SearchEngine searchEngine = site.getSearchEngine();
+
+            holder.nameView.setText(searchEngine.getName());
 
             if (mShowInfo) {
-                final SearchEngine searchEngine = site.getSearchEngine();
                 // do not list SearchEngine.CoverByIsbn, it's irrelevant to the user.
                 final Collection<String> info = new ArrayList<>();
                 if (searchEngine instanceof SearchEngine.ByIsbn) {
@@ -207,7 +209,7 @@ public class SearchOrderFragment
                 if (searchEngine instanceof SearchEngine.ByBarcode) {
                     info.add(context.getString(R.string.lbl_barcode));
                 }
-                if (searchEngine instanceof SearchEngine.ByNativeId) {
+                if (searchEngine instanceof SearchEngine.ByExternalId) {
                     info.add(context.getString(R.string.tab_lbl_ext_id));
                 }
                 if (searchEngine instanceof SearchEngine.ByText) {
@@ -216,6 +218,7 @@ public class SearchOrderFragment
                 holder.infoView.setText(context.getString(R.string.brackets,
                                                           TextUtils.join(", ", info)));
             }
+
             //noinspection ConstantConditions
             holder.mCheckableButton.setChecked(site.isEnabled());
 

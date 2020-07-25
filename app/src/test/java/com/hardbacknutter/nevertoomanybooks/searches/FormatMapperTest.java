@@ -31,12 +31,12 @@ import java.util.Locale;
 
 import org.junit.jupiter.api.Test;
 
-import com.hardbacknutter.nevertoomanybooks.CommonSetup;
+import com.hardbacknutter.nevertoomanybooks.CommonMocks;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class FormatMapperTest
-        extends CommonSetup {
+        extends CommonMocks {
 
     @Test
     void basic() {

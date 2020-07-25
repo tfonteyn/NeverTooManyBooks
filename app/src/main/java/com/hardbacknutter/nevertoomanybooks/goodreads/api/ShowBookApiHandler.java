@@ -43,16 +43,14 @@ import java.util.regex.Matcher;
 import org.xml.sax.helpers.DefaultHandler;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.covers.ImageUtils;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsAuth;
-import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsHandler;
+import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsManager;
 import com.hardbacknutter.nevertoomanybooks.searches.AuthorTypeMapper;
-import com.hardbacknutter.nevertoomanybooks.searches.goodreads.GoodreadsSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.utils.LanguageUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
@@ -106,7 +104,7 @@ public abstract class ShowBookApiHandler
     };
     @NonNull
     private final String mEBookString;
-    private final Locale mLocale;
+    private final Locale mBookLocale;
     /** Global data for the <b>current work</b> in search results. */
     private Bundle mBookData;
     private final XmlHandler mHandleText = elementContext -> {
@@ -126,7 +124,7 @@ public abstract class ShowBookApiHandler
         final String name = (String) elementContext.getUserArg();
         try {
             double d = ParseUtils.parseDouble(elementContext.getBody(),
-                                              GoodreadsHandler.SITE_LOCALE);
+                                              GoodreadsManager.SITE_LOCALE);
             mBookData.putDouble(name, d);
         } catch (@NonNull final NumberFormatException ignore) {
             // Ignore but don't add
@@ -214,7 +212,7 @@ public abstract class ShowBookApiHandler
             }
             Author author = Author.from(mCurrAuthorName);
             if (mCurrAuthorRole != null && !mCurrAuthorRole.isEmpty()) {
-                author.setType(AuthorTypeMapper.map(getLocale(), mCurrAuthorRole));
+                author.setType(AuthorTypeMapper.map(getBookLocale(), mCurrAuthorRole));
             }
             mAuthors.add(author);
             mCurrAuthorName = null;
@@ -255,39 +253,37 @@ public abstract class ShowBookApiHandler
     /**
      * Constructor.
      *
-     * @param context Current context
-     * @param grAuth  Authentication handler
+     * @param appContext Application context
+     * @param grAuth     Authentication handler
      *
      * @throws CredentialsException with GoodReads
      */
-    ShowBookApiHandler(@NonNull final Context context,
+    ShowBookApiHandler(@NonNull final Context appContext,
                        @NonNull final GoodreadsAuth grAuth)
             throws CredentialsException {
-        super(grAuth);
+        super(appContext, grAuth);
         if (sGenreExclusions == null) {
             sGenreExclusions = Arrays.asList(
-                    context.getResources().getStringArray(R.array.goodreads_genre_exclusions));
+                    appContext.getResources().getStringArray(R.array.goodreads_genre_exclusions));
         }
 
-        mGoodreadsAuth.hasValidCredentialsOrThrow(context);
+        mGrAuth.hasValidCredentialsOrThrow(appContext);
 
-        mEBookString = context.getString(R.string.book_format_ebook);
+        mEBookString = appContext.getString(R.string.book_format_ebook);
 
         // Ideally we should use the Book locale
-        mLocale = LocaleUtils.getUserLocale(context);
+        mBookLocale = LocaleUtils.getUserLocale(appContext);
 
-        buildFilters(context);
+        buildFilters();
     }
 
-    private Locale getLocale() {
-        // Ideally we should use the Book locale
-        return mLocale;
+    private Locale getBookLocale() {
+        return mBookLocale;
     }
 
     /**
      * Perform a search and handle the results.
      *
-     * @param context        Current context
      * @param url            url to get
      * @param fetchThumbnail Set to {@code true} if we want to get thumbnails
      * @param bookData       Bundle to update <em>(passed in to allow mocking)</em>
@@ -299,8 +295,7 @@ public abstract class ShowBookApiHandler
      * @throws IOException          on other failures
      */
     @NonNull
-    Bundle getBookData(@NonNull final Context context,
-                       @NonNull final String url,
+    Bundle getBookData(@NonNull final String url,
                        @NonNull final boolean[] fetchThumbnail,
                        @NonNull final Bundle bookData)
             throws CredentialsException, Http404Exception, IOException {
@@ -336,18 +331,18 @@ public abstract class ShowBookApiHandler
 //        }
 
         // Build the FIRST publication date based on the components
-        GoodreadsHandler.buildDate(mBookData,
-                                   SiteField.ORIG_PUBLICATION_YEAR,
-                                   SiteField.ORIG_PUBLICATION_MONTH,
-                                   SiteField.ORIG_PUBLICATION_DAY,
-                                   DBDefinitions.KEY_DATE_FIRST_PUBLICATION);
+        ApiUtils.buildDate(mBookData,
+                           SiteField.ORIG_PUBLICATION_YEAR,
+                           SiteField.ORIG_PUBLICATION_MONTH,
+                           SiteField.ORIG_PUBLICATION_DAY,
+                           DBDefinitions.KEY_DATE_FIRST_PUBLICATION);
 
         // Build the publication date based on the components
-        GoodreadsHandler.buildDate(mBookData,
-                                   SiteField.PUBLICATION_YEAR,
-                                   SiteField.PUBLICATION_MONTH,
-                                   SiteField.PUBLICATION_DAY,
-                                   DBDefinitions.KEY_DATE_PUBLISHED);
+        ApiUtils.buildDate(mBookData,
+                           SiteField.PUBLICATION_YEAR,
+                           SiteField.PUBLICATION_MONTH,
+                           SiteField.PUBLICATION_DAY,
+                           DBDefinitions.KEY_DATE_PUBLISHED);
 
         // is it an eBook ? Overwrite the format key
         if (mBookData.containsKey(SiteField.IS_EBOOK)
@@ -358,11 +353,11 @@ public abstract class ShowBookApiHandler
         if (mBookData.containsKey(DBDefinitions.KEY_LANGUAGE)) {
             String source = mBookData.getString(DBDefinitions.KEY_LANGUAGE);
             if (source != null && !source.isEmpty()) {
-                Locale locale = LocaleUtils.getUserLocale(context);
+                final Locale userLocale = LocaleUtils.getUserLocale(mAppContext);
                 // Goodreads sometimes uses the 2-char code with region code (e.g. "en_GB")
                 source = LanguageUtils.getISO3FromCode(source);
                 // and sometimes the alternative 3-char code for specific languages.
-                source = LanguageUtils.toBibliographic(locale, source);
+                source = LanguageUtils.toBibliographic(userLocale, source);
                 // store the iso3
                 mBookData.putString(DBDefinitions.KEY_LANGUAGE, source);
             }
@@ -427,38 +422,12 @@ public abstract class ShowBookApiHandler
         }
 
         if (fetchThumbnail[0]) {
-            handleThumbnail(context);
-        }
-
-        return mBookData;
-    }
-
-    private void handleThumbnail(@NonNull final Context appContext) {
-
-        // first check what the "best" image is that we have.
-        String coverUrl = null;
-        if (mBookData.containsKey(SiteField.IMAGE_URL)) {
-            coverUrl = mBookData.getString(SiteField.IMAGE_URL);
-            if (!GoodreadsHandler.hasCover(coverUrl)
-                && mBookData.containsKey(SiteField.SMALL_IMAGE_URL)) {
-                coverUrl = mBookData.getString(SiteField.SMALL_IMAGE_URL);
-                if (!GoodreadsHandler.hasCover(coverUrl)) {
-                    coverUrl = null;
-                }
-            }
-        }
-
-        // and if we do have an image, save it using the Goodreads book id as base name.
-        if (coverUrl != null) {
-            final String tmpName = mBookData.getLong(DBDefinitions.KEY_EID_GOODREADS_BOOK)
-                                   + GoodreadsSearchEngine.FILENAME_SUFFIX;
-            final String fileSpec = ImageUtils.saveImage(appContext, coverUrl, tmpName,
-                                                         GoodreadsSearchEngine.CONNECT_TIMEOUT_MS,
-                                                         GoodreadsSearchEngine.READ_TIMEOUT_MS,
-                                                         GoodreadsSearchEngine.THROTTLER);
+            final String fileSpec = ApiUtils.handleThumbnail(mAppContext,
+                                                             mBookData,
+                                                             SiteField.LARGE_IMAGE_URL,
+                                                             SiteField.SMALL_IMAGE_URL);
             if (fileSpec != null) {
-                ArrayList<String> list =
-                        mBookData.getStringArrayList(Book.BKEY_FILE_SPEC_ARRAY[0]);
+                ArrayList<String> list = mBookData.getStringArrayList(Book.BKEY_FILE_SPEC_ARRAY[0]);
                 if (list == null) {
                     list = new ArrayList<>();
                 }
@@ -466,6 +435,8 @@ public abstract class ShowBookApiHandler
                 mBookData.putStringArrayList(Book.BKEY_FILE_SPEC_ARRAY[0], list);
             }
         }
+
+        return mBookData;
     }
 
     /**
@@ -665,9 +636,8 @@ public abstract class ShowBookApiHandler
      * }
      * </pre>
      *
-     * @param context Current context
      */
-    private void buildFilters(@NonNull final Context context) {
+    private void buildFilters() {
         XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XmlTags.XML_BOOK,
                               XmlTags.XML_ID)
                  .setEndAction(mHandleLong, DBDefinitions.KEY_EID_GOODREADS_BOOK);
@@ -700,7 +670,7 @@ public abstract class ShowBookApiHandler
 
         XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XmlTags.XML_BOOK,
                               XmlTags.XML_IMAGE_URL)
-                 .setEndAction(mHandleText, SiteField.IMAGE_URL);
+                 .setEndAction(mHandleText, SiteField.LARGE_IMAGE_URL);
         XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XmlTags.XML_BOOK,
                               XmlTags.XML_SMALL_IMAGE_URL)
                  .setEndAction(mHandleText, SiteField.SMALL_IMAGE_URL);
@@ -776,7 +746,7 @@ public abstract class ShowBookApiHandler
                               XmlTags.XML_AUTHOR, XmlTags.XML_ROLE)
                  .setEndAction(mHandleAuthorRole);
 
-        if (GoodreadsHandler.isCollectGenre(context)) {
+        if (GoodreadsManager.isCollectGenre(mAppContext)) {
             XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XmlTags.XML_BOOK,
                                   XmlTags.XML_POPULAR_SHELVES,
                                   XmlTags.XML_SHELF)
@@ -828,7 +798,7 @@ public abstract class ShowBookApiHandler
         static final String ORIG_TITLE = "__orig_title";
         static final String RATING = "__rating";
 
-        static final String IMAGE_URL = "__image";
+        static final String LARGE_IMAGE_URL = "__image";
         static final String SMALL_IMAGE_URL = "__smallImage";
 
         static final String ORIG_PUBLICATION_YEAR = "__orig_pub_year";

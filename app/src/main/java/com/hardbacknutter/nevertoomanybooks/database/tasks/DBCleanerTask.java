@@ -34,6 +34,8 @@ import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
 
+import java.util.Locale;
+
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
@@ -76,6 +78,7 @@ public class DBCleanerTask
     protected Boolean doInBackground(@Nullable final Void... voids) {
         Thread.currentThread().setName(TAG);
         final Context context = LocaleUtils.applyLocale(App.getTaskContext());
+        final Locale userLocale = LocaleUtils.getUserLocale(context);
 
         publishProgress(new ProgressMessage(getTaskId(), context.getString(
                 R.string.progress_msg_optimizing)));
@@ -83,7 +86,7 @@ public class DBCleanerTask
             final DBCleaner cleaner = new DBCleaner(mDb);
 
             // do a mass update of any languages not yet converted to ISO 639-2 codes
-            cleaner.languages(context);
+            cleaner.languages(context, userLocale);
 
             // validate booleans to have 0/1 content (could do just ALL_TABLES)
             cleaner.booleanColumns(DBDefinitions.TBL_BOOKS,

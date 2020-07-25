@@ -33,7 +33,6 @@ import android.database.Cursor;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
-import androidx.preference.PreferenceManager;
 
 import com.hardbacknutter.nevertoomanybooks.BooksOnBookshelf;
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -41,7 +40,7 @@ import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
-import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsHandler;
+import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsManager;
 import com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.QueueManager;
 import com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.TQTask;
 import com.hardbacknutter.nevertoomanybooks.utils.Notifier;
@@ -86,23 +85,18 @@ class SendBooksGrTask
     /**
      * Perform the main task. Called from within {@link BaseTQTask#run}
      * <p>
-     * Deal with restarts by using mLastId as starting point.
+     * Deals with restarts by using mLastId as starting point.
      * (Remember: the task gets serialized to the taskqueue database.)
-     *
-     * @param context    Current context
-     * @param apiHandler the Goodreads Manager
-     *
-     * @return {@code true} on success.
+     * <p>
+     * {@inheritDoc}
      */
     @Override
     protected boolean send(@NonNull final QueueManager queueManager,
-                           @NonNull final Context context,
-                           @NonNull final GoodreadsHandler apiHandler) {
+                           @NonNull final GoodreadsManager grManager) {
 
         long lastBookSend;
         if (mFromLastBookId) {
-            lastBookSend = PreferenceManager.getDefaultSharedPreferences(context)
-                                            .getLong(GoodreadsHandler.PREFS_LAST_BOOK_SEND, 0);
+            lastBookSend = grManager.getLastBookIdSend();
         } else {
             lastBookSend = 0;
         }
@@ -114,7 +108,7 @@ class SendBooksGrTask
 
             boolean needsRetryReset = true;
             while (cursor.moveToNext()) {
-                if (!sendOneBook(queueManager, context, apiHandler, db, bookData)) {
+                if (!sendOneBook(queueManager, grManager, db, bookData)) {
                     // quit on error
                     return false;
                 }
@@ -139,20 +133,19 @@ class SendBooksGrTask
         }
 
         // store the last book id we updated; used to reduce future (needless) checks.
-        PreferenceManager.getDefaultSharedPreferences(context)
-                         .edit().putLong(GoodreadsHandler.PREFS_LAST_BOOK_SEND, lastBookSend)
-                         .apply();
+        grManager.putLastBookIdSend(lastBookSend);
 
         final PendingIntent pendingIntent = Notifier
-                .createPendingIntent(context, BooksOnBookshelf.class);
-        Notifier.getInstance(context)
-                .sendInfo(context, Notifier.ID_GOODREADS, pendingIntent,
+                .createPendingIntent(grManager.getAppContext(), BooksOnBookshelf.class);
+        Notifier.getInstance(grManager.getAppContext())
+                .sendInfo(grManager.getAppContext(), Notifier.ID_GOODREADS, pendingIntent,
                           R.string.gr_send_to_goodreads,
-                          context.getString(R.string.gr_info_send_all_books_results,
-                                            mCount,
-                                            getNumberOfBooksSent(),
-                                            getNumberOfBooksWithoutIsbn(),
-                                            getNumberOfBooksNotFound()));
+                          grManager.getAppContext()
+                                   .getString(R.string.gr_info_send_all_books_results,
+                                              mCount,
+                                              getNumberOfBooksSent(),
+                                              getNumberOfBooksWithoutIsbn(),
+                                              getNumberOfBooksNotFound()));
         return true;
     }
 

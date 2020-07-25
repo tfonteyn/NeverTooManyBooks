@@ -126,7 +126,7 @@
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_site_strip_info_be"
             style="@style/Envelope.EditText"
-            android:hint="@string/site_stripinfo"
+            android:hint="@string/site_stripinfo_be"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_site_open_library"

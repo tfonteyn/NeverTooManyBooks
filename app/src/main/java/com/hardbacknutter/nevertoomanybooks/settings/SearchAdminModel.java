@@ -106,7 +106,9 @@ public class SearchAdminModel
 
         SiteList list = mListMap.get(type);
         if (list == null) {
-            list = SiteList.getList(context, LocaleUtils.getUserLocale(context), type);
+            final Locale systemLocale = LocaleUtils.getSystemLocale();
+            final Locale userLocale = LocaleUtils.getUserLocale(context);
+            list = SiteList.getList(context, systemLocale, userLocale, type);
             mListMap.put(type, list);
         }
         return list;
@@ -122,27 +124,28 @@ public class SearchAdminModel
     public boolean persist(@NonNull final Context context) {
         int shouldHave = 0;
         int has = 0;
-        final Locale systemLocale = LocaleUtils.getSystemLocale();
         for (SiteList list : mListMap.values()) {
-            list.update(context, systemLocale);
+            list.update(context);
             shouldHave++;
-            has += list.getEnabledSites() > 0 ? 1 : 0;
+            has += list.getEnabledSites().isEmpty() ? 0 : 1;
         }
 
         return (has > 0) && (shouldHave == has);
     }
 
     void resetList(@NonNull final Context context,
+                   @NonNull final Locale systemLocale,
                    @NonNull final Locale locale,
                    @NonNull final SiteList.Type type) {
 
-        final SiteList newList = SiteList.resetList(context, locale, type);
+        final SiteList newList = SiteList.resetList(context, systemLocale, locale, type);
 
-        SiteList currentList = mListMap.get(type);
+        final SiteList currentList = mListMap.get(type);
         if (currentList == null) {
             mListMap.put(type, newList);
         } else {
-            currentList.clearAndAddAll(newList);
+            currentList.clear();
+            currentList.addAll(newList);
         }
     }
 }

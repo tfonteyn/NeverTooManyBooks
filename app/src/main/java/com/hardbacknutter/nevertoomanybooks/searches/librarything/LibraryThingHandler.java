@@ -40,12 +40,12 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.xml.sax.Attributes;
+import org.xml.sax.helpers.DefaultHandler;
 
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
-import com.hardbacknutter.nevertoomanybooks.utils.xml.SearchHandler;
 
 /**
  * Parser Handler to collect the book data.
@@ -394,7 +394,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.xml.SearchHandler;
  * but in both cases, it should be noted that the covers are still available.
  */
 class LibraryThingHandler
-        extends SearchHandler {
+        extends DefaultHandler {
 
     /** some common XML attributes. */
     private static final String XML_ATTR_ID = "id";
@@ -437,6 +437,10 @@ class LibraryThingHandler
     private static final int FT_ORIGINAL_TITLE = 8;
     private static final int FT_ALT_TITLE = 9;
 
+    /** XML content. */
+    @SuppressWarnings("StringBufferField")
+    private final StringBuilder mBuilder = new StringBuilder();
+
     /**
      * Extracting the year from field "originalpublicationdate".
      * {@code
@@ -461,10 +465,6 @@ class LibraryThingHandler
     /** accumulate all series for this book. */
     @NonNull
     private final ArrayList<Series> mSeries = new ArrayList<>();
-
-    /** XML content. */
-    private final StringBuilder mBuilder = new StringBuilder();
-
     /** Current Field we're in. We need this because the actual data is always in a 'fact' tag. */
     @FieldType
     private int mFieldType = FT_OTHER;
@@ -479,37 +479,11 @@ class LibraryThingHandler
     }
 
     /**
-     * Add the value to the Bundle if not present.
-     *
-     * @param bundle to check
-     * @param key    for data to add
-     * @param value  to use
-     */
-    private static void addIfNotPresent(@NonNull final Bundle bundle,
-                                        @NonNull final String key,
-                                        @NonNull final String value) {
-        final String test = bundle.getString(key);
-        if (test == null || test.isEmpty()) {
-            String v = value.trim();
-            if (v.startsWith("![CDATA[")) {
-                v = v.substring(8);
-                // paranoia test
-                if (v.endsWith("]]>")) {
-                    v = v.substring(0, v.length() - 3);
-                }
-                v = v.trim();
-            }
-            bundle.putString(key, v);
-        }
-    }
-
-    /**
      * Get the results.
      *
      * @return Bundle with book data
      */
     @NonNull
-    @Override
     public Bundle getResult() {
         return mBookData;
     }
@@ -602,12 +576,12 @@ class LibraryThingHandler
             mAuthors.add(Author.from(mBuilder.toString()));
 
         } else if (localName.equalsIgnoreCase(XML_TITLE)) {
-            addIfNotPresent(mBookData, DBDefinitions.KEY_TITLE, mBuilder.toString());
+            addIfNotPresent(DBDefinitions.KEY_TITLE, mBuilder.toString());
 
         } else if (localName.equalsIgnoreCase(XML_FACT)) {
             switch (mFieldType) {
                 case FT_TITLE:
-                    addIfNotPresent(mBookData, DBDefinitions.KEY_TITLE, mBuilder.toString());
+                    addIfNotPresent(DBDefinitions.KEY_TITLE, mBuilder.toString());
                     break;
 
                 case FT_SERIES:
@@ -621,7 +595,7 @@ class LibraryThingHandler
                     break;
 
                 case FT_DESCRIPTION:
-                    addIfNotPresent(mBookData, DBDefinitions.KEY_DESCRIPTION, mBuilder.toString());
+                    addIfNotPresent(DBDefinitions.KEY_DESCRIPTION, mBuilder.toString());
                     break;
 
                 case FT_ORIGINAL_PUB_DATE:
@@ -659,6 +633,29 @@ class LibraryThingHandler
                            final int start,
                            final int length) {
         mBuilder.append(ch, start, length);
+    }
+
+    /**
+     * Add the value to the Bundle if not present or empty.
+     *
+     * @param key   to use
+     * @param value to store
+     */
+    private void addIfNotPresent(@NonNull final String key,
+                                 @NonNull final String value) {
+        final String test = mBookData.getString(key);
+        if (test == null || test.isEmpty()) {
+            String v = value.trim();
+            if (v.startsWith("![CDATA[")) {
+                v = v.substring(8);
+                // sanity test
+                if (v.endsWith("]]>")) {
+                    v = v.substring(0, v.length() - 3);
+                }
+                v = v.trim();
+            }
+            mBookData.putString(key, v);
+        }
     }
 
     @IntDef({FT_NONE, FT_OTHER, FT_TITLE, FT_SERIES,

@@ -40,7 +40,7 @@ import java.util.Map;
 import org.xml.sax.helpers.DefaultHandler;
 
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsAuth;
-import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsHandler;
+import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsManager;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsShelf;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.utils.xml.SimpleXmlFilter;
@@ -54,7 +54,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlResponseParser;
 public class ShelvesListApiHandler
         extends ApiHandler {
 
-    private static final String URL = GoodreadsHandler.BASE_URL + "/shelf/list.xml?"
+    private static final String URL = GoodreadsManager.BASE_URL + "/shelf/list.xml?"
                                       + "key=%1$s&page=%2$s&user_id=%3$s";
 
     private SimpleXmlFilter mFilters;
@@ -62,16 +62,16 @@ public class ShelvesListApiHandler
     /**
      * Constructor.
      *
-     * @param context          Current context
-     * @param grAuth  Authentication handler
+     * @param appContext Application context
+     * @param grAuth     Authentication handler
      *
      * @throws CredentialsException with GoodReads
      */
-    public ShelvesListApiHandler(@NonNull final Context context,
+    public ShelvesListApiHandler(@NonNull final Context appContext,
                                  @NonNull final GoodreadsAuth grAuth)
             throws CredentialsException {
-        super(grAuth);
-        mGoodreadsAuth.hasValidCredentialsOrThrow(context);
+        super(appContext, grAuth);
+        mGrAuth.hasValidCredentialsOrThrow(appContext);
 
         buildFilters();
     }
@@ -79,17 +79,17 @@ public class ShelvesListApiHandler
     public Map<String, GoodreadsShelf> getAll()
             throws CredentialsException, Http404Exception, IOException {
 
-        Map<String, GoodreadsShelf> map = new HashMap<>();
+        final Map<String, GoodreadsShelf> map = new HashMap<>();
         int page = 1;
         while (true) {
-            Bundle result = get(page);
-            List<Bundle> shelves = result.getParcelableArrayList(ShelvesField.SHELVES);
+            final Bundle result = get(page);
+            final List<Bundle> shelves = result.getParcelableArrayList(ShelvesField.SHELVES);
             if (shelves == null || shelves.isEmpty()) {
                 break;
             }
 
             for (Bundle shelf : shelves) {
-                GoodreadsShelf grShelf = new GoodreadsShelf(shelf);
+                final GoodreadsShelf grShelf = new GoodreadsShelf(shelf);
                 map.put(grShelf.getName(), grShelf);
             }
 
@@ -117,10 +117,9 @@ public class ShelvesListApiHandler
     private Bundle get(final int page)
             throws CredentialsException, Http404Exception, IOException {
 
-        String url = String.format(URL, mGoodreadsAuth.getDevKey(), page,
-                                   mGoodreadsAuth.getUserId());
+        final String url = String.format(URL, mGrAuth.getDevKey(), page, mGrAuth.getUserId());
 
-        DefaultHandler handler = new XmlResponseParser(mRootFilter);
+        final DefaultHandler handler = new XmlResponseParser(mRootFilter);
         executeGet(url, null, true, handler);
 
         return mFilters.getData();
@@ -176,7 +175,7 @@ public class ShelvesListApiHandler
      * </pre>
      */
     private void buildFilters() {
-        mFilters = new SimpleXmlFilter(mRootFilter, GoodreadsHandler.SITE_LOCALE);
+        mFilters = new SimpleXmlFilter(mRootFilter, GoodreadsManager.SITE_LOCALE);
 
         mFilters
                 //<GoodreadsResponse>

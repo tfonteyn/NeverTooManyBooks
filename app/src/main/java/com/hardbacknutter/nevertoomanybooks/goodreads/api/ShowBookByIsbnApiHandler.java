@@ -35,7 +35,7 @@ import androidx.annotation.NonNull;
 import java.io.IOException;
 
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsAuth;
-import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsHandler;
+import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsManager;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 
 /**
@@ -47,27 +47,26 @@ public class ShowBookByIsbnApiHandler
         extends ShowBookApiHandler {
 
     /** Page url. */
-    private static final String URL = GoodreadsHandler.BASE_URL + "/book/isbn?"
+    private static final String URL = GoodreadsManager.BASE_URL + "/book/isbn?"
                                       + "format=xml&isbn=%1$s&key=%2$s";
 
     /**
      * Constructor.
      *
-     * @param context Current context
-     * @param grAuth  Authentication handler
+     * @param appContext Application context
+     * @param grAuth     Authentication handler
      *
      * @throws CredentialsException with GoodReads
      */
-    public ShowBookByIsbnApiHandler(@NonNull final Context context,
+    public ShowBookByIsbnApiHandler(@NonNull final Context appContext,
                                     @NonNull final GoodreadsAuth grAuth)
             throws CredentialsException {
-        super(context, grAuth);
+        super(appContext, grAuth);
     }
 
     /**
      * Perform a search and handle the results.
      *
-     * @param context        Current context
      * @param validIsbn      ISBN to use, must be valid
      * @param fetchThumbnail Set to {@code true} if we want to get thumbnails
      * @param bookData       Bundle to update <em>(passed in to allow mocking)</em>
@@ -79,13 +78,12 @@ public class ShowBookByIsbnApiHandler
      * @throws IOException          on other failures
      */
     @NonNull
-    public Bundle get(@NonNull final Context context,
-                      @NonNull final String validIsbn,
+    public Bundle get(@NonNull final String validIsbn,
                       @NonNull final boolean[] fetchThumbnail,
                       @NonNull final Bundle bookData)
             throws CredentialsException, Http404Exception, IOException {
 
-        final String url = String.format(URL, validIsbn, mGoodreadsAuth.getDevKey());
-        return getBookData(context, url, fetchThumbnail, bookData);
+        final String url = String.format(URL, validIsbn, mGrAuth.getDevKey());
+        return getBookData(url, fetchThumbnail, bookData);
     }
 }

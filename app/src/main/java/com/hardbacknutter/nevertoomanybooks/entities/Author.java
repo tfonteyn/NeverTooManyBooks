@@ -616,7 +616,7 @@ public class Author
     public String getExtLabel(@NonNull final Context context) {
         String authorLabel = getLabel(context);
         if (DBDefinitions.isUsed(context, DBDefinitions.KEY_BOOK_AUTHOR_TYPE_BITMASK)) {
-            String type = getTypeLabels(context);
+            final String type = getTypeLabels(context);
             if (!type.isEmpty()) {
                 authorLabel += " <small><i>" + type + "</i></small>";
             }
@@ -635,7 +635,7 @@ public class Author
     @NonNull
     private String getTypeLabels(@NonNull final Context context) {
         if (mType != TYPE_UNKNOWN) {
-            List<String> list = BitUtils.toListOfStrings(context, TYPES, mType);
+            final List<String> list = BitUtils.toListOfStrings(context, TYPES, mType);
             if (!list.isEmpty()) {
                 return context.getString(R.string.brackets, TextUtils.join(", ", list));
             }

@@ -30,6 +30,7 @@ package com.hardbacknutter.nevertoomanybooks.datamanager.validators;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.StringRes;
 
 import java.util.ArrayList;
 
@@ -46,19 +47,21 @@ public class NonBlankValidator
     public void validate(@NonNull final Context context,
                          @NonNull final DataManager dataManager,
                          @NonNull final String key,
-                         final int errorLabelId)
+                         @StringRes final int errorLabelId)
             throws ValidatorException {
 
         Object o = dataManager.get(key);
         if (o == null) {
-            throw new ValidatorException(R.string.vldt_non_blank_required_for_x, errorLabelId);
+            throw new ValidatorException(context.getString(R.string.vldt_non_blank_required_for_x,
+                                                           context.getString(errorLabelId)));
 
         } else if ((o instanceof String) && (dataManager.getString(key).trim().isEmpty())) {
-            throw new ValidatorException(R.string.vldt_non_blank_required_for_x, errorLabelId);
-
+            throw new ValidatorException(context.getString(R.string.vldt_non_blank_required_for_x,
+                                                           context.getString(errorLabelId)));
         } else if ((o instanceof ArrayList)
                    && (dataManager.getParcelableArrayList(key).isEmpty())) {
-            throw new ValidatorException(R.string.vldt_non_blank_required_for_x, errorLabelId);
+            throw new ValidatorException(context.getString(R.string.vldt_non_blank_required_for_x,
+                                                           context.getString(errorLabelId)));
         }
     }
 }

@@ -43,7 +43,7 @@ public class SearchSuggestionProvider
     /**
      * The authority value must match:
      * - AndroidManifest.xml/provider/android:authorities
-     * - res/xml/searchable.xml/searchSuggestAuthority
+     * - src/main/res/xml/searchable.xml/searchSuggestAuthority
      * - SearchSuggestionProvider.java/AUTHORITY
      */
     private static final String AUTHORITY = ".SearchSuggestionProvider";

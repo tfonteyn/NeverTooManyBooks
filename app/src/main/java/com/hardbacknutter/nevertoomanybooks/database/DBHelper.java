@@ -30,6 +30,7 @@ package com.hardbacknutter.nevertoomanybooks.database;
 import android.annotation.SuppressLint;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
@@ -49,6 +50,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
@@ -57,23 +59,19 @@ import com.hardbacknutter.nevertoomanybooks.StartupActivity;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyle;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.Synchronizer;
+import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition;
 import com.hardbacknutter.nevertoomanybooks.database.tasks.Scheduler;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
+import com.hardbacknutter.nevertoomanybooks.searches.Site;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.UpgradeMessageManager;
 
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_UTC_LAST_SYNC_DATE_GOODREADS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOKSHELF_NAME;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOK_PUBLISHER_POSITION;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_EID_GOODREADS_BOOK;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_EID_ISFDB;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_EID_LIBRARY_THING;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_EID_OPEN_LIBRARY;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_EID_STRIP_INFO_BE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FK_AUTHOR;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FK_BOOK;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FK_PUBLISHER;
@@ -113,7 +111,7 @@ public final class DBHelper
         extends SQLiteOpenHelper {
 
     /** Current version. */
-    public static final int DATABASE_VERSION = 7;
+    public static final int DATABASE_VERSION = 8;
 
     /**
      * Prefix for the filename of a database backup before doing an upgrade.
@@ -530,20 +528,22 @@ public final class DBHelper
         body = " AFTER UPDATE OF " + KEY_ISBN + " ON " + TBL_BOOKS.getName() + " FOR EACH ROW\n"
                + " WHEN NEW." + KEY_ISBN + " <> OLD." + KEY_ISBN + '\n'
                + " BEGIN\n"
-               + "  UPDATE " + TBL_BOOKS.getName() + " SET "
-               //NEWTHINGS: add new site specific ID: add a reset value (0 or '')
-               + /* */ KEY_EID_GOODREADS_BOOK + "=0"
-               + ',' + KEY_EID_ISFDB + "=0"
-               + ',' + KEY_EID_LIBRARY_THING + "=0"
-               + ',' + KEY_EID_STRIP_INFO_BE + "=0"
+               + "  UPDATE " + TBL_BOOKS.getName() + " SET ";
 
-               + ',' + KEY_EID_OPEN_LIBRARY + "=''"
+        final StringBuilder eidSb = new StringBuilder();
+        for (Site.Config config : Site.getConfigs()) {
+            final Domain domain = config.getExternalIdDomain();
+            if (domain != null) {
+                eidSb.append(domain.getName()).append("=null,");
+            }
+        }
+        body += eidSb.toString();
 
-               + ',' + KEY_UTC_LAST_SYNC_DATE_GOODREADS + "="
-               + DOM_UTC_LAST_SYNC_DATE_GOODREADS.getDefault()
+        //NEWTHINGS: adding a new search engine: optional: add engine specific keys
+        body += KEY_UTC_LAST_SYNC_DATE_GOODREADS + "=''";
 
-               + /* */ " WHERE " + KEY_PK_ID + "=NEW." + KEY_PK_ID + ";\n"
-               + " END";
+        body += " WHERE " + KEY_PK_ID + "=NEW." + KEY_PK_ID + ";\n"
+                + " END";
 
         db.execSQL("DROP TRIGGER IF EXISTS " + name);
         db.execSQL("\nCREATE TRIGGER " + name + body);
@@ -691,7 +691,6 @@ public final class DBHelper
         }
 
         if (curVersion < newVersion && curVersion == 6) {
-            //noinspection UnusedAssignment
             curVersion = 7;
             TBL_PUBLISHERS.create(syncedDb, true);
             TBL_BOOK_PUBLISHER.create(syncedDb, true);
@@ -735,9 +734,30 @@ public final class DBHelper
             Scheduler.scheduleFtsRebuild(context, true);
         }
 
+        if (curVersion < newVersion && curVersion == 7) {
+            //noinspection UnusedAssignment
+            curVersion = 8;
+            // pref key name changes
+            final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+            final Set<String> all = prefs.getAll().keySet();
+            final SharedPreferences.Editor editor = prefs.edit();
+            for (String key : all) {
+                if (key.startsWith("search.site")) {
+                    editor.remove(key);
+                }
+            }
+            editor.remove("edit.book.tab.nativeId");
+            editor.apply();
+
+            TBL_BOOKS.alterTableAddColumn(syncedDb, DBDefinitions.DOM_EID_LAST_DODO_NL);
+        }
+
         // TODO: if at a future time we make a change that requires to copy/reload the books table,
         // we should at the same time change DOM_UTC_LAST_SYNC_DATE_GOODREADS
         // See note in the DBDefinitions class.
+
+        //NEWTHINGS: adding a new search engine: optional: add external id DOM
+        //TBL_BOOKS.alterTableAddColumn(syncedDb, DBDefinitions.DOM_your_engine_external_id);
 
         // Rebuild all indices
         recreateIndices(syncedDb);

@@ -46,6 +46,7 @@ abstract class KbNlHandlerBase
     private static final String XML_TEXT = "psi:text";
 
     /** XML content. */
+    @SuppressWarnings("StringBufferField")
     private final StringBuilder mBuilder = new StringBuilder();
     private final List<String> mCurrentData = new ArrayList<>();
     private boolean inLabel;

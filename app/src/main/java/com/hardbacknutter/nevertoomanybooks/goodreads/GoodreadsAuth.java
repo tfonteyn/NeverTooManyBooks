@@ -53,10 +53,10 @@ import oauth.signpost.exception.OAuthNotAuthorizedException;
 import oauth.signpost.http.HttpParameters;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
+import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.goodreads.api.AuthUserApiHandler;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
-import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.searches.goodreads.GoodreadsSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 
@@ -124,7 +124,10 @@ public class GoodreadsAuth {
     private static final String AUTHORIZATION_CALLBACK =
             "com.hardbacknutter.nevertoomanybooks://goodreadsauth";
 
-    /** Set to {@code true} when the credentials have been successfully validated. */
+    /**
+     * Set to {@code true} when the credentials have been successfully validated.
+     * Can be reset to force a new validation.
+     */
     private static boolean sCredentialsValidated;
 
     /** Cached when credentials have been verified. */
@@ -150,19 +153,14 @@ public class GoodreadsAuth {
      *
      * @param context Current context
      */
+    @AnyThread
     public GoodreadsAuth(@NonNull final Context context) {
 
-        // Native
         mConsumer = new DefaultOAuthConsumer(BuildConfig.GOODREADS_PUBLIC_KEY,
                                              BuildConfig.GOODREADS_PRIVATE_KEY);
         mProvider = new DefaultOAuthProvider(REQUEST_TOKEN_ENDPOINT_URL,
                                              ACCESS_TOKEN_ENDPOINT_URL,
                                              AUTHORIZATION_WEBSITE_URL);
-        // Apache Commons HTTP
-//        mConsumer = new DefaultOAuthConsumer(keys[0], keys[1]);
-//        mProvider = new DefaultOAuthProvider(REQUEST_TOKEN_ENDPOINT_URL,
-//                                             ACCESS_TOKEN_ENDPOINT_URL,
-//                                             AUTHORIZATION_WEBSITE_URL);
 
         // load the credentials
         hasCredentials(context);
@@ -268,7 +266,7 @@ public class GoodreadsAuth {
     public void hasValidCredentialsOrThrow(@NonNull final Context context)
             throws CredentialsException {
         if (!hasValidCredentials(context)) {
-            throw new CredentialsException(SearchSites.GOODREADS);
+            throw new CredentialsException(context.getString(R.string.site_goodreads));
         }
     }
 
@@ -278,7 +276,7 @@ public class GoodreadsAuth {
      * <p>
      * Network access if credentials need to be checked.
      * <p>
-     * It is assumed that {@link SearchEngine#isAvailable(Context)} has already been called.
+     * It is assumed that {@link SearchEngine#isAvailable()} has already been called.
      * Developer reminder: do NOT throw Exceptions from here; fail with returning {@code false}.
      * (unless we don't have a developer key installed)
      *
@@ -306,7 +304,7 @@ public class GoodreadsAuth {
         // should not be needed:
         //sCredentialsValidated = false;
         try {
-            final AuthUserApiHandler authUserApi = new AuthUserApiHandler(this);
+            final AuthUserApiHandler authUserApi = new AuthUserApiHandler(context, this);
             if (authUserApi.getAuthUser() != 0) {
                 // Cache the results to avoid network calls later
                 sUsername = authUserApi.getUsername();

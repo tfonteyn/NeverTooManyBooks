@@ -107,11 +107,20 @@ public class UpdateFieldsFragment
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        final Activity activity = getActivity();
+        final Bundle args = getArguments();
+
+        // optional activity title
+        if (args != null && args.containsKey(StandardDialogs.BKEY_DIALOG_TITLE)) {
+            //noinspection ConstantConditions
+            getActivity().setTitle(args.getString(StandardDialogs.BKEY_DIALOG_TITLE));
+        } else {
+            //noinspection ConstantConditions
+            getActivity().setTitle(R.string.lbl_select_fields);
+        }
 
         mUpdateFieldsModel = new ViewModelProvider(this).get(UpdateFieldsModel.class);
         //noinspection ConstantConditions
-        mUpdateFieldsModel.init(getContext(), getArguments());
+        mUpdateFieldsModel.init(getContext(), args);
         // Progress from individual searches AND overall progress
         mUpdateFieldsModel.onProgress().observe(getViewLifecycleOwner(), this::onProgress);
         // An individual book search finished.
@@ -129,18 +138,8 @@ public class UpdateFieldsFragment
         // Something really bad happened and we're aborting
         mUpdateFieldsModel.onCatastrophe().observe(getViewLifecycleOwner(), this::onCatastrophe);
 
-        // optional activity title
-        if (getArguments() != null && getArguments()
-                .containsKey(StandardDialogs.BKEY_DIALOG_TITLE)) {
-            //noinspection ConstantConditions
-            activity.setTitle(getArguments().getString(StandardDialogs.BKEY_DIALOG_TITLE));
-        } else {
-            //noinspection ConstantConditions
-            activity.setTitle(R.string.lbl_select_fields);
-        }
-
         // The FAB lives in the activity.
-        final FloatingActionButton fab = activity.findViewById(R.id.fab);
+        final FloatingActionButton fab = getActivity().findViewById(R.id.fab);
         fab.setImageResource(R.drawable.ic_cloud_download);
         fab.setVisibility(View.VISIBLE);
         fab.setOnClickListener(v -> prepareUpdate());
@@ -149,9 +148,8 @@ public class UpdateFieldsFragment
 
         if (savedInstanceState == null) {
             //noinspection ConstantConditions
-            mUpdateFieldsModel.getSiteList()
-                              .promptToRegister(getContext(), false, "update_from_internet");
-
+            mUpdateFieldsModel.getSiteList().promptToRegister(getContext(), false,
+                                                              "update_from_internet");
             TipManager.display(getContext(), R.string.tip_update_fields_from_internet, null);
         }
 

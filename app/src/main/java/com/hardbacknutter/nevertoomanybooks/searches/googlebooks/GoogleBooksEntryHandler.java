@@ -40,18 +40,15 @@ import java.util.regex.Pattern;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
+import org.xml.sax.helpers.DefaultHandler;
 
-import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
-import com.hardbacknutter.nevertoomanybooks.covers.ImageUtils;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
-import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.xml.SearchHandler;
 
 /**
  * 2019-11: this needs scrapping. See {@link GoogleBooksSearchEngine} class doc.
@@ -167,15 +164,14 @@ import com.hardbacknutter.nevertoomanybooks.utils.xml.SearchHandler;
  * 0340198273
  */
 class GoogleBooksEntryHandler
-        extends SearchHandler {
+        extends DefaultHandler {
 
     /** Log tag. */
     private static final String TAG = "GoogleBooksEntryHandler";
 
+    /* XML tags/attrs we look for. */
     /** file suffix for cover files. */
     private static final String FILENAME_SUFFIX = "_GB";
-
-    /* XML tags/attrs we look for. */
     /**
      * Contains a direct link to this entry.
      * <id>http://www.google.com/books/feeds/volumes/IVnpNAAACAAJ</id>
@@ -206,7 +202,6 @@ class GoogleBooksEntryHandler
      * <dc:format>book</dc:format>
      */
     private static final String XML_FORMAT = "format";
-
     private static final String XML_LINK = "link";
     /** <dc:subject>English fiction</dc:subject>. */
     private static final String XML_GENRE = "subject";
@@ -214,7 +209,6 @@ class GoogleBooksEntryHandler
     private static final String XML_DESCRIPTION = "description";
     /** <dc:language>en</dc:language>. */
     private static final String XML_LANGUAGE = "language";
-
     //  *      <gbs:price type='SuggestedRetailPrice'>
     // *        <gd:money amount='3.99' currencyCode='GBP'/>
     // *      </gbs:price>
@@ -227,6 +221,9 @@ class GoogleBooksEntryHandler
     private static final String XML_MONEY = "money";
     private static final Pattern HTTP_PATTERN = Pattern.compile("http:", Pattern.LITERAL);
 
+    /** Schema for thumbnails. http, as it is a schema and not an actual website url. */
+    private static final String SCHEMAS_GOOGLE_COM_BOOKS_2008_THUMBNAIL
+            = "http://schemas.google.com/books/2008/thumbnail";
 
     /** flag if we should fetch a thumbnail. */
     @NonNull
@@ -243,17 +240,16 @@ class GoogleBooksEntryHandler
     private final ArrayList<Publisher> mPublishers = new ArrayList<>();
 
     /** XML content. */
+    @SuppressWarnings("StringBufferField")
     @NonNull
     private final StringBuilder mBuilder = new StringBuilder();
 
     @NonNull
     private final Locale mLocale;
-
-    private boolean mInSuggestedRetailPriceTag;
-    private boolean mInRetailPriceTag;
-
     @NonNull
     private final SearchEngine mSearchEngine;
+    private boolean mInSuggestedRetailPriceTag;
+    private boolean mInRetailPriceTag;
 
     /**
      * Constructor.
@@ -268,7 +264,8 @@ class GoogleBooksEntryHandler
         mSearchEngine = searchEngine;
         mFetchThumbnail = fetchThumbnail;
         mBookData = bookData;
-        mLocale = LocaleUtils.getSystemLocale();
+
+        mLocale = mSearchEngine.getLocale();
     }
 
     /**
@@ -277,23 +274,8 @@ class GoogleBooksEntryHandler
      * @return Bundle with book data
      */
     @NonNull
-    @Override
     public Bundle getResult() {
         return mBookData;
-    }
-
-    /**
-     * Not present means either "not there" or "there, but empty".
-     *
-     * @param key   to use
-     * @param value to store
-     */
-    private void addIfNotPresent(@NonNull final String key,
-                                 @NonNull final String value) {
-        String test = mBookData.getString(key);
-        if (test == null || test.isEmpty()) {
-            mBookData.putString(key, value);
-        }
     }
 
     /**
@@ -301,7 +283,6 @@ class GoogleBooksEntryHandler
      */
     @Override
     public void endDocument() {
-
         if (!mAuthors.isEmpty()) {
             mBookData.putParcelableArrayList(Book.BKEY_AUTHOR_ARRAY, mAuthors);
         }
@@ -324,16 +305,14 @@ class GoogleBooksEntryHandler
 
         // the url is an attribute of the xml element; not the content
         if (mFetchThumbnail[0] && XML_LINK.equalsIgnoreCase(localName)) {
-            // http; this is a schema and not an actual website url
-            if ("http://schemas.google.com/books/2008/thumbnail"
-                    .equals(attributes.getValue("", "rel"))) {
-                // This url comes back as http, and we must use https... so replace it.
-                String coverUrl = HTTP_PATTERN.matcher(attributes.getValue("", "href"))
-                                              .replaceAll(Matcher.quoteReplacement("https:"));
 
-                final String tmpName = createTempCoverFileName(mBookData);
-                final String fileSpec = ImageUtils.saveImage(App.getAppContext(),
-                                                             coverUrl, tmpName, mSearchEngine);
+            if (SCHEMAS_GOOGLE_COM_BOOKS_2008_THUMBNAIL.equals(attributes.getValue("", "rel"))) {
+                // This url comes back as http, and we must use https... so replace it.
+                final String url = HTTP_PATTERN.matcher(attributes.getValue("", "href"))
+                                               .replaceAll(Matcher.quoteReplacement("https:"));
+                final String prefix = mBookData.getString(DBDefinitions.KEY_ISBN, "");
+                final String fileSpec = mSearchEngine.saveImage(url, prefix, FILENAME_SUFFIX, 0);
+
                 if (fileSpec != null) {
                     ArrayList<String> imageList =
                             mBookData.getStringArrayList(Book.BKEY_FILE_SPEC_ARRAY[0]);
@@ -366,6 +345,7 @@ class GoogleBooksEntryHandler
 
                     final String currencyCode = attributes.getValue("", "currencyCode");
                     mBookData.putString(DBDefinitions.KEY_PRICE_LISTED_CURRENCY, currencyCode);
+
                 } catch (@NonNull final NumberFormatException ignore) {
                     // ignore
                 }
@@ -376,16 +356,6 @@ class GoogleBooksEntryHandler
                 mInRetailPriceTag = false;
             }
         }
-    }
-
-    @NonNull
-    private String createTempCoverFileName(@NonNull final Bundle bookData) {
-        String name = bookData.getString(DBDefinitions.KEY_ISBN, "");
-        if (name.isEmpty()) {
-            // just use something...
-            name = String.valueOf(System.currentTimeMillis());
-        }
-        return name + FILENAME_SUFFIX;
     }
 
     /**
@@ -408,7 +378,7 @@ class GoogleBooksEntryHandler
                 String tmpIsbn = mBuilder.toString();
                 if (tmpIsbn.indexOf("ISBN:") == 0) {
                     tmpIsbn = tmpIsbn.substring(5);
-                    String isbn = mBookData.getString(DBDefinitions.KEY_ISBN);
+                    final String isbn = mBookData.getString(DBDefinitions.KEY_ISBN);
                     // store the 'longest' isbn
                     if (isbn == null || tmpIsbn.length() > isbn.length()) {
                         mBookData.putString(DBDefinitions.KEY_ISBN, tmpIsbn);
@@ -417,7 +387,7 @@ class GoogleBooksEntryHandler
                 break;
 
             case XML_LANGUAGE:
-                // the language field can be empty, so check before storing it
+                // the language field can be empty, check before storing it
                 String iso = mBuilder.toString();
                 if (!iso.isEmpty()) {
                     // the language is a proper iso code, just store.
@@ -443,7 +413,7 @@ class GoogleBooksEntryHandler
                  * <dc:format>288 pages</dc:format>
                  * <dc:format>book</dc:format>
                  *
-                 * crude check for 'pages'
+                 * crude check for 'pages' and 'Dimensions'
                  */
                 String tmpFormat = mBuilder.toString();
                 int index = tmpFormat.indexOf(" pages");
@@ -460,7 +430,6 @@ class GoogleBooksEntryHandler
 
             case XML_GENRE:
                 // there can be multiple listed, we only take the first one found
-                // 2019-07-17: previously, we took the last one listed.
                 addIfNotPresent(DBDefinitions.KEY_GENRE, mBuilder.toString());
                 break;
 
@@ -490,5 +459,19 @@ class GoogleBooksEntryHandler
                            final int start,
                            final int length) {
         mBuilder.append(ch, start, length);
+    }
+
+    /**
+     * Add the value to the Bundle if not present or empty.
+     *
+     * @param key   to use
+     * @param value to store
+     */
+    private void addIfNotPresent(@NonNull final String key,
+                                 @NonNull final String value) {
+        final String test = mBookData.getString(key);
+        if (test == null || test.isEmpty()) {
+            mBookData.putString(key, value);
+        }
     }
 }

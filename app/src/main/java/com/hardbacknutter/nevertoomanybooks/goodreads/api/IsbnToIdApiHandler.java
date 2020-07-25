@@ -34,7 +34,7 @@ import androidx.annotation.NonNull;
 import java.io.IOException;
 
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsAuth;
-import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsHandler;
+import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsManager;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 
 /**
@@ -48,21 +48,21 @@ public class IsbnToIdApiHandler
         extends ApiHandler {
 
     /** Param 1: isbn; param 2: dev key. */
-    private static final String URL = GoodreadsHandler.BASE_URL + "/book/isbn_to_id/%1$s?key=%2$s";
+    private static final String URL = GoodreadsManager.BASE_URL + "/book/isbn_to_id/%1$s?key=%2$s";
 
     /**
      * Constructor.
      *
-     * @param context Current context
-     * @param grAuth  Authentication handler
+     * @param appContext Application context
+     * @param grAuth     Authentication handler
      *
      * @throws CredentialsException with GoodReads
      */
-    public IsbnToIdApiHandler(@NonNull final Context context,
+    public IsbnToIdApiHandler(@NonNull final Context appContext,
                               @NonNull final GoodreadsAuth grAuth)
             throws CredentialsException {
-        super(grAuth);
-        mGoodreadsAuth.hasValidCredentialsOrThrow(context);
+        super(appContext, grAuth);
+        mGrAuth.hasValidCredentialsOrThrow(appContext);
     }
 
     /**
@@ -79,8 +79,8 @@ public class IsbnToIdApiHandler
     public long isbnToId(@NonNull final String isbn)
             throws CredentialsException, Http404Exception, IOException {
 
-        String url = String.format(URL, isbn, mGoodreadsAuth.getDevKey());
-        String id = executeRawGet(url, true);
+        final String url = String.format(URL, isbn, mGrAuth.getDevKey());
+        final String id = executeRawGet(url, true);
         return Long.parseLong(id);
     }
 }

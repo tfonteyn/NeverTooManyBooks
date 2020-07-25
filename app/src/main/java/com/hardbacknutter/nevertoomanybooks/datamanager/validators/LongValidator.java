@@ -84,8 +84,9 @@ public class LongValidator
                 try {
                     value = Long.parseLong(stringValue);
                 } catch (@NonNull final NumberFormatException e) {
-                    throw new ValidatorException(R.string.vldt_integer_expected_for_x,
-                                                 errorLabelId);
+                    throw new ValidatorException(
+                            context.getString(R.string.vldt_integer_expected_for_x,
+                                              context.getString(errorLabelId)));
                 }
             }
         }

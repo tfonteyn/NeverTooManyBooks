@@ -70,7 +70,8 @@ public class BooleanValidator
         try {
             ParseUtils.toBoolean(o);
         } catch (@NonNull final NumberFormatException e) {
-            throw new ValidatorException(R.string.vldt_boolean_expected_for_x, errorLabelId);
+            throw new ValidatorException(context.getString(R.string.vldt_boolean_expected_for_x,
+                                                           context.getString(errorLabelId)));
         }
     }
 }

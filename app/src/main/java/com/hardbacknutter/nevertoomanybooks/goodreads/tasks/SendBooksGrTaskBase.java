@@ -33,16 +33,18 @@ import androidx.annotation.NonNull;
 
 import java.io.IOException;
 
+import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsAuth;
-import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsHandler;
+import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsManager;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GrStatus;
 import com.hardbacknutter.nevertoomanybooks.goodreads.api.Http404Exception;
 import com.hardbacknutter.nevertoomanybooks.goodreads.events.GrNoIsbnEvent;
 import com.hardbacknutter.nevertoomanybooks.goodreads.events.GrNoMatchEvent;
 import com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.QueueManager;
+import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.NetworkUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 
@@ -88,16 +90,16 @@ public abstract class SendBooksGrTaskBase
      * @return {@code false} to requeue, {@code true} for success
      */
     @Override
-    public boolean run(@NonNull final QueueManager queueManager,
-                       @NonNull final Context context) {
+    public boolean run(@NonNull final QueueManager queueManager) {
+        final Context context = LocaleUtils.applyLocale(App.getTaskContext());
         try {
             // can we reach the site at all ?
-            NetworkUtils.ping(context, GoodreadsHandler.BASE_URL);
+            NetworkUtils.ping(context, GoodreadsManager.BASE_URL);
 
             final GoodreadsAuth grAuth = new GoodreadsAuth(context);
-            final GoodreadsHandler apiHandler = new GoodreadsHandler(grAuth);
+            final GoodreadsManager grManager = new GoodreadsManager(context, grAuth);
             if (grAuth.hasValidCredentials(context)) {
-                return send(queueManager, context, apiHandler);
+                return send(queueManager, grManager);
             }
         } catch (@NonNull final IOException ignore) {
             // Only wait 5 minutes max on network errors.
@@ -112,20 +114,18 @@ public abstract class SendBooksGrTaskBase
     /**
      * Start the send process.
      *
-     * @param context    Current context
-     * @param apiHandler the Goodreads Manager
+     * @param queueManager the QueueManager
+     * @param grManager    the Goodreads Manager
      *
      * @return {@code false} to requeue, {@code true} for success
      */
     protected abstract boolean send(@NonNull QueueManager queueManager,
-                                    @NonNull Context context,
-                                    @NonNull GoodreadsHandler apiHandler);
+                                    @NonNull GoodreadsManager grManager);
 
     /**
      * Try to export one book.
      *
-     * @param context    Current context
-     * @param apiHandler the Goodreads Manager
+     * @param grManager the Goodreads Manager
      * @param db         Database Access
      * @param bookData   the book data to send
      *
@@ -133,8 +133,7 @@ public abstract class SendBooksGrTaskBase
      */
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     boolean sendOneBook(@NonNull final QueueManager queueManager,
-                        @NonNull final Context context,
-                        @NonNull final GoodreadsHandler apiHandler,
+                        @NonNull final GoodreadsManager grManager,
                         @NonNull final DAO db,
                         @NonNull final DataHolder bookData) {
 
@@ -142,7 +141,7 @@ public abstract class SendBooksGrTaskBase
 
         try {
             @GrStatus.Status
-            final int status = apiHandler.sendOneBook(context, db, bookData);
+            final int status = grManager.sendOneBook(db, bookData);
             setLastExtStatus(status);
             if (status == GrStatus.SUCCESS) {
                 mSent++;
@@ -152,7 +151,7 @@ public abstract class SendBooksGrTaskBase
             } else if (status == GrStatus.FAILED_BOOK_HAS_NO_ISBN) {
                 // not a success, but don't try again until the user acts on the stored event
                 mNoIsbn++;
-                storeEvent(new GrNoIsbnEvent(context, bookId));
+                storeEvent(new GrNoIsbnEvent(grManager.getAppContext(), bookId));
                 return true;
             }
             // any other status is a non fatal error
@@ -162,7 +161,7 @@ public abstract class SendBooksGrTaskBase
 
         } catch (@NonNull final Http404Exception e) {
             setLastExtStatus(GrStatus.FAILED_BOOK_NOT_FOUND_ON_GOODREADS, e);
-            storeEvent(new GrNoMatchEvent(context, bookId));
+            storeEvent(new GrNoMatchEvent(grManager.getAppContext(), bookId));
             mNotFound++;
             // not a success, but don't try again until the user acts on the stored event
             return true;

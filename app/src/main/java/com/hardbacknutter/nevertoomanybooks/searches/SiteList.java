@@ -43,7 +43,6 @@ import java.util.Locale;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.settings.SearchAdminActivity;
 import com.hardbacknutter.nevertoomanybooks.utils.Csv;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
@@ -69,11 +68,14 @@ public class SiteList
     };
 
     private static final String SEP = ",";
-    /** Cached copy of the users preferred site order. */
+
+    /** Cached copy of the users preferred site order; one entry for each type of list. */
     private static final EnumMap<Type, SiteList> SITE_LIST_MAP = new EnumMap<>(Type.class);
+
     /** Type of this list. */
     @NonNull
     private final Type mType;
+
     /** The list. */
     @NonNull
     private ArrayList<Site> mList;
@@ -116,6 +118,9 @@ public class SiteList
     /**
      * Get the (cached) list with user preferences for the data sites, ordered by reliability.
      * Includes enabled <strong>AND</strong> disabled sites.
+     * <p>
+     * This list will be a re-ordered clone/copy of the {@link Type#Data} list,
+     * with the SAME Site objects
      *
      * @param context Current context
      *
@@ -123,26 +128,21 @@ public class SiteList
      */
     @NonNull
     static List<Site> getDataSitesByReliability(@NonNull final Context context) {
-        Locale locale = LocaleUtils.getUserLocale(context);
-        return getList(context, locale, Type.Data)
+        final Locale systemLocale = LocaleUtils.getSystemLocale();
+        final Locale userLocale = LocaleUtils.getUserLocale(context);
+        return getList(context, systemLocale, userLocale, Type.Data)
                 .reorder(SearchSites.DATA_RELIABILITY_ORDER)
-                .getSites(false);
-    }
-
-    @NonNull
-    public static SiteList getList(@NonNull final Context context,
-                                   @NonNull final Locale locale,
-                                   @NonNull final Type type) {
-        Locale systemLocale = LocaleUtils.getSystemLocale();
-        return getList(context, systemLocale, locale, type);
+                .getSites();
     }
 
     /**
      * Get the global search site list in the preferred order.
      * Includes enabled <strong>AND</strong> disabled sites.
      *
-     * @param context Current context
-     * @param type    type
+     * @param context      Current context
+     * @param systemLocale device Locale <em>(passed in to allow mocking)</em>
+     * @param userLocale   user locale <em>(passed in to allow mocking)</em>
+     * @param type         type
      *
      * @return the list
      */
@@ -152,14 +152,14 @@ public class SiteList
                                    @NonNull final Locale userLocale,
                                    @NonNull final Type type) {
         // already loaded ?
-        SiteList list = SITE_LIST_MAP.get(type);
+        final SiteList list = SITE_LIST_MAP.get(type);
         if (list != null) {
             return new SiteList(list);
         }
 
         // create the list according to user preferences.
-        SiteList newList = SearchSites.createSiteList(systemLocale, userLocale, type);
-        newList.loadPrefs(context, systemLocale);
+        final SiteList newList = SearchSites.createSiteList(systemLocale, userLocale, type);
+        newList.loadPrefs(context);
 
         // cache the list for reuse
         SITE_LIST_MAP.put(type, newList);
@@ -170,51 +170,27 @@ public class SiteList
     /**
      * Reset a list back to the hardcoded defaults.
      *
-     * @param context    Current context
-     * @param userLocale user Locale
-     * @param type       type
+     * @param context      Current context
+     * @param systemLocale device Locale <em>(passed in to allow mocking)</em>
+     * @param userLocale   user locale <em>(passed in to allow mocking)</em>
+     * @param type         type
      *
      * @return the new list
      */
     public static SiteList resetList(@NonNull final Context context,
+                                     @NonNull final Locale systemLocale,
                                      @NonNull final Locale userLocale,
                                      @NonNull final Type type) {
 
-        Locale systemLocale = LocaleUtils.getSystemLocale();
-
-        // create the list with all defaults applied.
-        SiteList newList = SearchSites.createSiteList(systemLocale, userLocale, type);
+        // recreate the list with all defaults applied.
+        final SiteList newList = SearchSites.createSiteList(systemLocale, userLocale, type);
         // overwrite stored user preferences
-        newList.update(context, systemLocale);
+        newList.update(context);
 
-        // cache the list for reuse
+        // cache the list for reuse; thereby overwriting the previously stored copy
         SITE_LIST_MAP.put(type, newList);
 
         return new SiteList(newList);
-    }
-
-    /**
-     * Update the list.
-     *
-     * @param context      Current context
-     * @param systemLocale device Locale
-     */
-    public void update(@NonNull final Context context,
-                       @NonNull final Locale systemLocale) {
-        SITE_LIST_MAP.put(mType, this);
-        savePrefs(context, systemLocale);
-    }
-
-    @Override
-    public void writeToParcel(@NonNull final Parcel dest,
-                              final int flags) {
-        dest.writeParcelable(mType, flags);
-        dest.writeTypedList(mList);
-    }
-
-    @Override
-    public int describeContents() {
-        return 0;
     }
 
     /**
@@ -243,6 +219,48 @@ public class SiteList
         return showingAlert;
     }
 
+
+    public void clear() {
+        mList.clear();
+    }
+
+    public void add(@NonNull final Site site) {
+        mList.add(site);
+    }
+
+    public void add(@SearchSites.EngineId final int id) {
+        add(id, true);
+    }
+
+    public void add(@SearchSites.EngineId final int id,
+                    final boolean enabled) {
+        mList.add(new Site(id, mType, enabled));
+    }
+
+    public void addAll(@NonNull final SiteList newList) {
+        mList.addAll(newList.mList);
+    }
+
+    /**
+     * Get the sites (both enabled and disabled) in the preferred order.
+     *
+     * @return the list
+     */
+    @NonNull
+    public List<Site> getSites() {
+        return mList;
+    }
+
+    /**
+     * Get the enabled sites list in the preferred order.
+     *
+     * @return the list
+     */
+    @NonNull
+    public List<Site> getEnabledSites() {
+        return mList.stream().filter(Site::isEnabled).collect(Collectors.toList());
+    }
+
     /**
      * Reorder the given list based on user preferences.
      * The site objects are the same as in the original list.
@@ -253,11 +271,11 @@ public class SiteList
      * @return ordered list
      */
     private SiteList reorder(@NonNull final String order) {
-        SiteList orderedList = new SiteList(mType);
+        final SiteList orderedList = new SiteList(mType);
         for (String idStr : order.split(SEP)) {
-            int id = Integer.parseInt(idStr);
+            final int id = Integer.parseInt(idStr);
             for (Site site : mList) {
-                if (site.id == id) {
+                if (site.engineId == id) {
                     orderedList.add(site);
                     break;
                 }
@@ -266,24 +284,14 @@ public class SiteList
         return orderedList;
     }
 
-    public void add(@NonNull final Site site) {
-        mList.add(site);
-    }
-
     /**
-     * Get a bitmask with the enabled sites.
+     * Update the list.
      *
-     * @return bitmask containing only the enables sites
+     * @param context Current context
      */
-    public int getEnabledSites() {
-        int enabled = 0;
-        for (Site site : mList) {
-            if (site.isEnabled()) {
-                // add the site
-                enabled = enabled | site.id;
-            }
-        }
-        return enabled;
+    public void update(@NonNull final Context context) {
+        SITE_LIST_MAP.put(mType, this);
+        savePrefs(context);
     }
 
     /**
@@ -291,30 +299,28 @@ public class SiteList
      *
      * @param context Current context
      */
-    private void savePrefs(@NonNull final Context context,
-                           @NonNull final Locale systemLocale) {
+    private void savePrefs(@NonNull final Context context) {
         // Save the order of the given list (ID's) and the individual site settings to preferences.
-        SharedPreferences.Editor ed = PreferenceManager.getDefaultSharedPreferences(context)
-                                                       .edit();
-        String order = Csv.join(SEP, mList, site -> {
+        final SharedPreferences.Editor ed = PreferenceManager.getDefaultSharedPreferences(context)
+                                                             .edit();
+        final String order = Csv.join(SEP, mList, site -> {
             // store individual site settings
-            site.saveToPrefs(ed, systemLocale);
+            site.saveToPrefs(ed);
             // and collect the id for the order string
-            return String.valueOf(site.id);
+            return String.valueOf(site.engineId);
         });
-        ed.putString(mType.getListOrderPreferenceKey(), order);
+        ed.putString(mType.getOrderPreferenceKey(), order);
         ed.apply();
     }
 
-    private void loadPrefs(@NonNull final Context context,
-                           @NonNull final Locale systemLocale) {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+    private void loadPrefs(@NonNull final Context context) {
+        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         for (Site site : mList) {
-            site.loadFromPrefs(prefs, systemLocale);
+            site.loadFromPrefs(prefs);
         }
-        String order = prefs.getString(mType.getListOrderPreferenceKey(), null);
+        final String order = prefs.getString(mType.getOrderPreferenceKey(), null);
         if (order != null) {
-            ArrayList<Site> oldList = mList;
+            final ArrayList<Site> oldList = mList;
             // replace with the new order.
             mList = reorder(order).mList;
             if (mList.size() < oldList.size()) {
@@ -326,40 +332,21 @@ public class SiteList
                         mList.add(site);
                     }
                 }
-                savePrefs(context, systemLocale);
+                savePrefs(context);
             }
         }
     }
 
-    /**
-     * Get the sites list in the preferred order.
-     *
-     * @param enabledOnly Flag to indicate we want enabled sites only
-     *
-     * @return the list
-     */
-    @NonNull
-    public List<Site> getSites(final boolean enabledOnly) {
-        if (!enabledOnly) {
-            return mList;
-        }
-        // Studio 4 support
-//        if (Build.VERSION.SDK_INT >= 24) {
-        return mList.stream().filter(Site::isEnabled).collect(Collectors.toList());
-//        } else {
-//            List<Site> filteredList = new ArrayList<>();
-//            for (Site site : mList) {
-//                if (site.isEnabled()) {
-//                    filteredList.add(site);
-//                }
-//            }
-//            return filteredList;
-//        }
+    @Override
+    public void writeToParcel(@NonNull final Parcel dest,
+                              final int flags) {
+        dest.writeParcelable(mType, flags);
+        dest.writeTypedList(mList);
     }
 
-    public void clearAndAddAll(@NonNull final SiteList newList) {
-        mList.clear();
-        mList.addAll(newList.mList);
+    @Override
+    public int describeContents() {
+        return 0;
     }
 
     /**
@@ -372,11 +359,11 @@ public class SiteList
             implements Parcelable {
 
         /** generic searches. */
-        Data,
+        Data(R.string.lbl_books, "data"),
         /** Covers. */
-        Covers,
+        Covers(R.string.lbl_covers, "covers"),
         /** Alternative editions for a given isbn. */
-        AltEditions;
+        AltEditions(R.string.tab_lbl_alternative_editions, "alted");
 
         @SuppressWarnings("InnerClassFieldHidesOuterClassField")
         public static final Creator<Type> CREATOR =
@@ -393,8 +380,29 @@ public class SiteList
                         return new Type[size];
                     }
                 };
+
+        /** Preferences prefix. */
+        private static final String PREF_PREFIX = "search.site.";
         private static final String PREFS_ORDER_PREFIX = "search.siteOrder.";
-        private static final String TAG = "Type";
+
+        /** Log tag. */
+        private static final String TAG = "SiteList.Type";
+
+        @StringRes
+        private final int mNameResId;
+        private final String mTypeName;
+
+        /**
+         * Constructor.
+         *
+         * @param stringId for displaying the type name to the user
+         * @param typeName for internal usage
+         */
+        Type(@StringRes final int stringId,
+             @NonNull final String typeName) {
+            mNameResId = stringId;
+            mTypeName = typeName;
+        }
 
         @Override
         public int describeContents() {
@@ -409,45 +417,23 @@ public class SiteList
 
         @StringRes
         public int getLabelId() {
-            switch (this) {
-                case Data:
-                    return R.string.lbl_books;
-                case Covers:
-                    return R.string.lbl_covers;
-                case AltEditions:
-                    return R.string.tab_lbl_alternative_editions;
-
-                default:
-                    throw new IllegalArgumentException(ErrorMsg.UNEXPECTED_VALUE + this);
-            }
+            return mNameResId;
         }
 
+        @NonNull
         public String getBundleKey() {
-            switch (this) {
-                case Data:
-                    return TAG + ":data";
-                case Covers:
-                    return TAG + ":covers";
-                case AltEditions:
-                    return TAG + ":alt_ed";
-
-                default:
-                    throw new IllegalArgumentException(ErrorMsg.UNEXPECTED_VALUE + this);
-            }
+            return TAG + ":" + mTypeName;
         }
 
-        String getListOrderPreferenceKey() {
-            switch (this) {
-                case Data:
-                    return PREFS_ORDER_PREFIX + "data";
-                case Covers:
-                    return PREFS_ORDER_PREFIX + "covers";
-                case AltEditions:
-                    return PREFS_ORDER_PREFIX + "alt_ed";
+        @NonNull
+        String getSitePreferenceKey(@SearchSites.EngineId final int engineId) {
+            //noinspection ConstantConditions
+            return PREF_PREFIX + Site.getConfig(engineId).getPreferenceKey() + '.' + mTypeName;
+        }
 
-                default:
-                    throw new IllegalArgumentException(ErrorMsg.UNEXPECTED_VALUE + this);
-            }
+        @NonNull
+        String getOrderPreferenceKey() {
+            return PREFS_ORDER_PREFIX + mTypeName;
         }
     }
 }

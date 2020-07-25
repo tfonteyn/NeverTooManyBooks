@@ -78,9 +78,10 @@ public class EditGenreDialogFragment
 
     @Override
     @Nullable
-    Bundle onSave() {
+    Bundle onSave(@NonNull final String originalText,
+                  @NonNull final String currentText) {
         //noinspection ConstantConditions
-        mDb.renameGenre(mOriginalText, mCurrentText);
+        mDb.renameGenre(originalText, currentText);
         return null;
     }
 }

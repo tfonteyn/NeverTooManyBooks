@@ -92,13 +92,14 @@ public class DBCleaner {
      *
      * @param context Current context
      */
-    public void languages(@NonNull final Context context) {
+    public void languages(@NonNull final Context context,
+                          @NonNull final Locale userLocale) {
         for (String lang : mDb.getLanguageCodes()) {
             if (lang != null && !lang.isEmpty()) {
                 final String iso;
                 if (lang.length() > 3) {
                     // It's likely a 'display' name of a language.
-                    iso = LanguageUtils.getISO3FromDisplayName(context, lang);
+                    iso = LanguageUtils.getISO3FromDisplayName(context, userLocale, lang);
                 } else {
                     // It's almost certainly a language code
                     iso = LanguageUtils.getISO3FromCode(lang);
@@ -126,22 +127,6 @@ public class DBCleaner {
             bookshelf.validateStyle(context, mDb);
         }
     }
-
-//    public void nativeIds(@NonNull final Context context) {
-//        for (Domain domain : DBDefinitions.NATIVE_ID_DOMAINS) {
-//            switch (domain.getType()) {
-//                case ColumnInfo.TYPE_INTEGER:
-//                    break;
-//
-//                case ColumnInfo.TYPE_TEXT:
-//                    break;
-//
-//                default:
-//                    Logger.warnWithStackTrace(context, TAG, "type=" + domain.getType());
-//                    break;
-//            }
-//        }
-//    }
 
     /**
      * Validates all boolean columns to contain '0' or '1'.

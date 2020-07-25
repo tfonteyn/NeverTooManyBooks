@@ -33,16 +33,16 @@ import java.util.Locale;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import com.hardbacknutter.nevertoomanybooks.CommonSetup;
-import com.hardbacknutter.nevertoomanybooks.searches.goodreads.GoodreadsSearchEngine;
+import com.hardbacknutter.nevertoomanybooks.CommonMocks;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 class SearchSitesTest
-        extends CommonSetup {
+        extends CommonMocks {
 
     @BeforeEach
     public void setUp() {
@@ -96,18 +96,17 @@ class SearchSitesTest
 
         for (SiteList.Type type : SiteList.Type.values()) {
 
-            List<Site> sites = SiteList.getList(mContext, systemLocale, userLocale, type)
-                                       .getSites(false);
-            System.out.println("type=" + type);
+            final List<Site> sites = SiteList.getList(mContext, systemLocale, userLocale, type)
+                                             .getSites();
+            System.out.println("\n--------------------------------------------------\n" + type);
 
             for (Site site : sites) {
-                SearchEngine searchEngine;
-                if (site.id == SearchSites.GOODREADS) {
-                    searchEngine = new GoodreadsSearchEngine(mContext);
-                } else {
-                    searchEngine = site.getSearchEngine();
-                }
-                System.out.println(site + ", locale=" + searchEngine.getLocale(mContext));
+                final Site.Config config = Site.getConfig(site.engineId);
+                assertNotNull(config);
+                final SearchEngine searchEngine = config.createSearchEngine(mContext);
+                assertNotNull(searchEngine);
+
+                System.out.println("\n" + site + "\n" + searchEngine);
             }
         }
     }

@@ -28,11 +28,11 @@
 package com.hardbacknutter.nevertoomanybooks.searches;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 
 import androidx.annotation.AnyThread;
+import androidx.annotation.IdRes;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -43,6 +43,11 @@ import androidx.preference.PreferenceManager;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -51,22 +56,27 @@ import java.util.regex.Matcher;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverBrowserDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageFileInfo;
+import com.hardbacknutter.nevertoomanybooks.covers.ImageUtils;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
+import com.hardbacknutter.nevertoomanybooks.searches.amazon.AmazonSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.tasks.Canceller;
+import com.hardbacknutter.nevertoomanybooks.tasks.TerminatorConnection;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.Throttler;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.FormattedMessageException;
 
 /**
  * The interface a search engine for a {@link Site} needs to implement.
+ * <p>
+ * More details in {@link SearchSites}.
+ * <p>
  * At least one of the sub-interfaces needs to be implemented:
  * <ul>
- *      <li>{@link ByNativeId}</li>
+ *      <li>{@link ByExternalId}</li>
  *      <li>{@link ByIsbn}</li>
  *      <li>{@link ByText}</li>
  * </ul>
@@ -81,84 +91,66 @@ public interface SearchEngine {
     String TAG = "SearchEngine";
 
     /**
-     * Get the resource id for the human-readable name of the site.
-     * Only to be used for displaying!
+     * Get the engine id.
+     * <p>
+     * Default implementation in {@link SearchEngineBase}.
      *
-     * @return the resource id of the name
+     * @return engine id
      */
     @AnyThread
-    @StringRes
-    int getNameResId();
+    @SearchSites.EngineId
+    int getId();
 
     /**
-     * Get the root/website url.
-     * This will be used e.g. for checking if the site is up.
+     * The <strong>Application</strong> context. Should not be used for UI interactions.
+     * <p>
+     * Default implementation in {@link SearchEngineBase}.
      *
-     * @param context Current context
+     * @return <strong>Application</strong> context.
+     */
+    @AnyThread
+    @NonNull
+    Context getAppContext();
+
+    /**
+     * Get the name for this engine.
+     *
+     * @return name
+     */
+    @AnyThread
+    @NonNull
+    default String getName() {
+        //noinspection ConstantConditions
+        return getAppContext().getString(Site.getConfig(getId()).getNameResId());
+    }
+
+    /**
+     * Get the site url.
+     * <p>
+     * Override if the URL needs to be user configurable.
      *
      * @return url, including scheme.
      */
     @AnyThread
     @NonNull
-    String getUrl(@NonNull Context context);
+    default String getSiteUrl() {
+        //noinspection ConstantConditions
+        return Site.getConfig(getId()).getSiteUrl();
+    }
 
     /**
-     * Get the current/standard Locale for this engine.
-     *
-     * @param context Current context
+     * Get the Locale for this engine.
+     * <p>
+     * Override if the Locale needs to be user configurable.
+     * (Presumably depending on the site url: see {@link AmazonSearchEngine} for an example)
      *
      * @return site locale
      */
-    @NonNull
-    Locale getLocale(@NonNull Context context);
-
-    /**
-     * Default timeout we allow for a connection to work.
-     * <p>
-     * Tests with WiFi 5GHz indoor, optimal placement, show that the sites we use,
-     * connect in less than 200ms.
-     * <p>
-     * TODO: use different defaults depending on network capabilities?
-     *
-     * @return default of 5 second. Override as needed.
-     */
-    default int getConnectTimeoutMs() {
-        return 5_000;
-    }
-
-    /**
-     * Default timeout we allow for a response to a request.
-     * <p>
-     * TODO: use different defaults depending on network capabilities?
-     *
-     * @return default 10 second. Override as needed.
-     */
-    default int getReadTimeoutMs() {
-        return 10_000;
-    }
-
-    /**
-     * Get the default throttler for regulating network access.
-     *
-     * @return {@code null} no Throttler by default. Override as needed.
-     */
-    @Nullable
-    default Throttler getThrottler() {
-        return null;
-    }
-
-    /**
-     * Get the human-readable name of the site.
-     * Only used for displaying to the user.
-     *
-     * @param context Current context
-     *
-     * @return name of this engine
-     */
     @AnyThread
     @NonNull
-    default String getName(@NonNull final Context context) {
-        return context.getString(getNameResId());
+    default Locale getLocale() {
+        //noinspection ConstantConditions
+        return Site.getConfig(getId()).getLocale();
     }
 
     /**
@@ -166,15 +158,12 @@ public interface SearchEngine {
      * this site can be consider for searching.
      * <p>
      * Implementations can for example check for developer keys, ...
-     * It's not supposed to to check credentials.
      * <strong>Should not run network code.</strong>
-     *
-     * @param context Current context
      *
      * @return {@code true} if we can consider this site for searching.
      */
     @AnyThread
-    default boolean isAvailable(@NonNull final Context context) {
+    default boolean isAvailable() {
         return true;
     }
 
@@ -203,7 +192,8 @@ public interface SearchEngine {
      * <p>
      * Check if we have a key; if not alert the user.
      *
-     * @param context    Current context
+     * @param context    Current context; <strong>MUST</strong> be passed in
+     *                   as this call might do UI interaction.
      * @param required   {@code true} if we <strong>must</strong> have access to the site.
      *                   {@code false} if it would be beneficial but not mandatory.
      * @param prefSuffix String used to flag in preferences if we showed the alert from
@@ -219,12 +209,15 @@ public interface SearchEngine {
     }
 
     /**
+     * Helper method.
+     * <p>
      * Look for a book title; if present try to get a Series from it and clean the book title.
      * <p>
      * This default implementation is fine for most engines, but override when needed.
      *
      * @param bookData Bundle to update
      */
+    @AnyThread
     default void checkForSeriesNameInTitle(@NonNull final Bundle bookData) {
         final String fullTitle = bookData.getString(DBDefinitions.KEY_TITLE);
         if (fullTitle != null) {
@@ -257,15 +250,83 @@ public interface SearchEngine {
         }
     }
 
+    /**
+     * Get the throttler for regulating network access.
+     *
+     * @return {@code null} no Throttler by default. Override as needed.
+     */
+    @Nullable
+    default Throttler getThrottler() {
+        return null;
+    }
+
+    /**
+     * Convenience method to create a connection using the engines specific network configuration.
+     *
+     * @param url to connect to
+     *
+     * @return the connection
+     *
+     * @throws IOException on failure
+     */
+    @WorkerThread
+    @NonNull
+    default TerminatorConnection createConnection(@NonNull final String url,
+                                                  final boolean followRedirects)
+            throws IOException {
+        final Site.Config config = Site.getConfig(getId());
+        //noinspection ConstantConditions
+        final TerminatorConnection con = new TerminatorConnection(getAppContext(), url,
+                                                                  config.getConnectTimeoutMs(),
+                                                                  config.getReadTimeoutMs(),
+                                                                  getThrottler());
+        con.setInstanceFollowRedirects(followRedirects);
+        return con;
+    }
+
+    /**
+     * Convenience method to save an image using the engines specific network configuration.
+     *
+     * @param url    Image file URL
+     * @param prefix for the filename
+     * @param suffix for the filename
+     * @param cIdx   0..n image index
+     *
+     * @return Downloaded fileSpec, or {@code null} on failure
+     */
+    @WorkerThread
+    @Nullable
+    default String saveImage(@NonNull final String url,
+                             @NonNull final String prefix,
+                             @NonNull final String suffix,
+                             @IntRange(from = 0) final int cIdx) {
+        final Site.Config config = Site.getConfig(getId());
+        //noinspection ConstantConditions
+        return ImageUtils.saveImage(getAppContext(), url, prefix, suffix, cIdx,
+                                    config.getConnectTimeoutMs(),
+                                    config.getReadTimeoutMs(),
+                                    getThrottler());
+    }
+
     /** Optional. */
-    interface ByNativeId
+    interface ByExternalId
             extends SearchEngine {
+
+        /**
+         * Create a url to search the website with the external id.
+         *
+         * @param externalId to search for
+         *
+         * @return url
+         */
+        @AnyThread
+        @NonNull
+        String createUrl(@NonNull String externalId);
 
         /**
          * Called by the {@link SearchCoordinator#search}.
          *
-         * @param context        Current context
-         * @param nativeId       the native id (as a String) for this particular search site.
+         * @param externalId     the external id (as a String) for this particular search site.
          * @param fetchThumbnail Set to {@code true} if we want to get thumbnails
          *                       The array is guaranteed to have at least one element.
          *
@@ -276,22 +337,9 @@ public interface SearchEngine {
          */
         @WorkerThread
         @NonNull
-        Bundle searchByNativeId(@NonNull Context context,
-                                @NonNull String nativeId,
-                                @NonNull boolean[] fetchThumbnail)
-                throws CredentialsException, IOException, SearchException;
-
-
-        /**
-         * By default we assume the native id is {@code long}.
-         * Override this method, and return {@code true} if this engine uses
-         * {@code String} based identifiers.
-         *
-         * @return {code false} for numeric ID's, {@code true} for string ID's
-         */
-        default boolean hasStringId() {
-            return false;
-        }
+        Bundle searchByExternalId(@NonNull String externalId,
+                                  @NonNull boolean[] fetchThumbnail)
+                throws CredentialsException, IOException;
     }
 
     /** Optional. */
@@ -301,7 +349,6 @@ public interface SearchEngine {
         /**
          * Called by the {@link SearchCoordinator#search}.
          *
-         * @param context        Current context
          * @param validIsbn      to search for, <strong>will</strong> be valid.
          * @param fetchThumbnail Set to {@code true} if we want to get thumbnails
          *                       The array is guaranteed to have at least one element.
@@ -313,10 +360,9 @@ public interface SearchEngine {
          */
         @WorkerThread
         @NonNull
-        Bundle searchByIsbn(@NonNull Context context,
-                            @NonNull String validIsbn,
+        Bundle searchByIsbn(@NonNull String validIsbn,
                             @NonNull boolean[] fetchThumbnail)
-                throws CredentialsException, IOException, SearchException;
+                throws CredentialsException, IOException;
 
         /**
          * Indicates if ISBN code should be forced down to ISBN10 (if possible) before a search.
@@ -328,13 +374,12 @@ public interface SearchEngine {
          * <p>
          * This default implementation returns the global setting.
          *
-         * @param context Current context
-         *
          * @return {@code true} if ISBN10 should be preferred.
          */
-        default boolean isPreferIsbn10(@NonNull final Context context) {
-            final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-            return prefs.getBoolean(Prefs.pk_search_isbn_prefer_10, false);
+        @AnyThread
+        default boolean isPreferIsbn10() {
+            return PreferenceManager.getDefaultSharedPreferences(getAppContext())
+                                    .getBoolean(Prefs.pk_search_isbn_prefer_10, false);
         }
     }
 
@@ -342,7 +387,7 @@ public interface SearchEngine {
      * Optional.
      * The engine can search generic bar codes, aside of strict ISBN only.
      * <p>
-     * The default implementation provided uses the {@link #searchByIsbn}.
+     * The default implementation provided redirects to {@link #searchByIsbn}.
      * Override when needed.
      */
     interface ByBarcode
@@ -351,7 +396,6 @@ public interface SearchEngine {
         /**
          * Called by the {@link SearchCoordinator#search}.
          *
-         * @param context        Current context
          * @param barcode        to search for, <strong>will</strong> be valid.
          * @param fetchThumbnail Set to {@code true} if we want to get thumbnails
          *                       The array is guaranteed to have at least one element.
@@ -363,15 +407,17 @@ public interface SearchEngine {
          */
         @WorkerThread
         @NonNull
-        default Bundle searchByBarcode(@NonNull Context context,
-                                       @NonNull String barcode,
+        default Bundle searchByBarcode(@NonNull String barcode,
                                        @NonNull boolean[] fetchThumbnail)
-                throws CredentialsException, IOException, SearchException {
-            return searchByIsbn(context, barcode, fetchThumbnail);
+                throws CredentialsException, IOException {
+            return searchByIsbn(barcode, fetchThumbnail);
         }
     }
 
-    /** Optional. */
+    /**
+     * Optional.
+     * The engine can search by author/title/... without a valid ISBN.
+     */
     interface ByText
             extends SearchEngine {
 
@@ -382,7 +428,6 @@ public interface SearchEngine {
          * Checking the arguments <strong>MUST</strong> be done inside the implementation,
          * as they generally will depend on what the engine can do with them.
          *
-         * @param context        Current context
          * @param code           isbn, barcode or generic code to search for
          * @param author         to search for
          * @param title          to search for
@@ -399,144 +444,73 @@ public interface SearchEngine {
          */
         @WorkerThread
         @NonNull
-        Bundle search(@NonNull Context context,
-                      @Nullable String code,
+        Bundle search(@Nullable String code,
                       @Nullable String author,
                       @Nullable String title,
                       @Nullable String publisher,
                       @NonNull boolean[] fetchThumbnail)
-                throws CredentialsException, IOException, SearchException;
+                throws CredentialsException, IOException;
     }
 
-    /**
-     * Optional.
-     * <p>
-     * ENHANCE: CoverByIsbn Return a struct with file name AND size.
-     * ENHANCE: if a site only supports 1 image size, it should be assumed to be Large.
-     */
+    /** Optional. */
     interface CoverByIsbn
             extends SearchEngine {
 
         /**
-         * Helper method.
-         * Get the resolved file path for the first cover file found (for the given index).
+         * Get a single cover image of the specified size.
+         * <p>
+         * <strong>Important</strong> this method should never throw any Exceptions.
+         * Simply return {@code null} when an error occurs (but log the error).
          *
-         * @param bookData with file-spec data
-         * @param cIdx     0..n image index
-         *
-         * @return resolved path, or {@code null} if none found
-         */
-        @Nullable
-        static String getFirstCoverFileFoundPath(@NonNull final Bundle bookData,
-                                                 @IntRange(from = 0) final int cIdx) {
-            final ArrayList<String> imageList =
-                    bookData.getStringArrayList(Book.BKEY_FILE_SPEC_ARRAY[cIdx]);
-            if (imageList != null && !imageList.isEmpty()) {
-                File downloadedFile = new File(imageList.get(0));
-                // let the system resolve any path variations
-                File destination = new File(downloadedFile.getAbsolutePath());
-                FileUtils.rename(downloadedFile, destination);
-                return destination.getAbsolutePath();
-            }
-            return null;
-        }
-
-        /**
-         * Helper method.
-         * There is normally no need to call this method directly, except when you
-         * override {@link #searchCoverImageByIsbn}.
-         * <br><br>
-         * Do NOT use if the site either does not support returning images during search.
-         * <br><br>
-         * A search for the book is done, with the 'fetchThumbnail' flag set to true.
-         * Any {@link IOException} or {@link CredentialsException} thrown are ignored and
-         * {@code null} returned.
-         *
-         * @param context Current context
-         * @param isbnStr to search for, <strong>must</strong> be valid.
-         * @param cIdx    0..n image index
+         * @param validIsbn to search for, <strong>must</strong> be valid.
+         * @param cIdx      0..n image index
+         * @param size      of image to get.
          *
          * @return fileSpec, or {@code null} when none found (or any other failure)
          */
-        @Nullable
         @WorkerThread
-        static String getCoverImageFallback(@NonNull final Context context,
-                                            @NonNull final SearchEngine searchEngine,
-                                            @NonNull final String isbnStr,
-                                            @IntRange(from = 0) final int cIdx) {
+        @Nullable
+        String searchCoverImageByIsbn(@NonNull String validIsbn,
+                                      @IntRange(from = 0) int cIdx,
+                                      @Nullable ImageFileInfo.Size size);
 
-            final boolean[] fetchThumbnail = new boolean[2];
-            fetchThumbnail[cIdx] = true;
-
-            try {
-                final Bundle bookData;
-                // If we have a valid ISBN, and the engine supports it, search.
-                if (ISBN.isValidIsbn(isbnStr)
-                    && searchEngine instanceof SearchEngine.ByIsbn) {
-                    bookData = ((SearchEngine.ByIsbn) searchEngine)
-                            .searchByIsbn(context, isbnStr, fetchThumbnail);
-
-                    // If we have a generic barcode, ...
-                } else if (ISBN.isValid(isbnStr)
-                           && searchEngine instanceof SearchEngine.ByBarcode) {
-                    bookData = ((SearchEngine.ByBarcode) searchEngine)
-                            .searchByBarcode(context, isbnStr, fetchThumbnail);
-
-                    // otherwise we pass a non-empty (but invalid) code on regardless.
-                    // if the engine supports text mode.
-                } else if (!isbnStr.isEmpty()
-                           && searchEngine instanceof SearchEngine.ByText) {
-                    bookData = ((SearchEngine.ByText) searchEngine)
-                            .search(context, isbnStr, "", "", "", fetchThumbnail);
-
-                } else {
-                    // don't throw here; this is a fallback method allowed to fail.
-                    return null;
-                }
-
-                return getFirstCoverFileFoundPath(bookData, cIdx);
-
-            } catch (@NonNull final CredentialsException | IOException | SearchException e) {
-                if (BuildConfig.DEBUG /* always */) {
-                    Log.d(TAG, "getCoverImageFallback", e);
-                }
-            }
-
-            return null;
+        /**
+         * A site can support a single (default) or multiple sizes.
+         *
+         * @return {@code true} if multiple sizes are supported.
+         */
+        @AnyThread
+        default boolean supportsMultipleCoverSizes() {
+            //noinspection ConstantConditions
+            return Site.getConfig(getId()).supportsMultipleCoverSizes();
         }
 
         /**
          * Helper method. A wrapper around {@link #searchCoverImageByIsbn}.
          * Will try in order of large, medium, small depending on the site
-         * supporting multiple sizes.
+         * supporting multiple sizes. i.e. the 'best' image being the largest we can find.
+         * If successful, the image will be added to the given bookData Bundle
          *
-         * @param context  Current context
-         * @param isbn     to search for, <strong>must</strong> be valid.
-         * @param cIdx     0..n image index
-         * @param bookData Bundle to update
+         * @param validIsbn to search for, <strong>must</strong> be valid.
+         * @param cIdx      0..n image index
+         * @param bookData  Bundle to update
          */
         @WorkerThread
-        static void getCoverImage(@NonNull final Context context,
-                                  @NonNull final SearchEngine.CoverByIsbn searchEngine,
-                                  @NonNull final String isbn,
-                                  @IntRange(from = 0) final int cIdx,
-                                  @NonNull final Bundle bookData) {
+        default void searchBestCoverImageByIsbn(@NonNull final String validIsbn,
+                                                @IntRange(from = 0) final int cIdx,
+                                                @NonNull final Bundle bookData) {
 
-            String fileSpec = searchEngine.searchCoverImageByIsbn(context,
-                                                                  isbn, cIdx,
-                                                                  ImageFileInfo.Size.Large);
-            if (searchEngine.supportsMultipleSizes()) {
+            String fileSpec = searchCoverImageByIsbn(validIsbn, cIdx, ImageFileInfo.Size.Large);
+            if (supportsMultipleCoverSizes()) {
                 if (fileSpec == null) {
-                    fileSpec = searchEngine
-                            .searchCoverImageByIsbn(context, isbn, cIdx,
-                                                    ImageFileInfo.Size.Medium);
+                    fileSpec = searchCoverImageByIsbn(validIsbn, cIdx, ImageFileInfo.Size.Medium);
                     if (fileSpec == null) {
-                        fileSpec = searchEngine
-                                .searchCoverImageByIsbn(context, isbn, cIdx,
-                                                        ImageFileInfo.Size.Small);
+                        fileSpec = searchCoverImageByIsbn(validIsbn, cIdx,
+                                                          ImageFileInfo.Size.Small);
                     }
                 }
             }
+
             if (fileSpec != null) {
                 ArrayList<String> imageList =
                         bookData.getStringArrayList(Book.BKEY_FILE_SPEC_ARRAY[cIdx]);
@@ -549,32 +523,88 @@ public interface SearchEngine {
         }
 
         /**
-         * Get a single cover image of the specified size.
-         * <br><br>
-         * <strong>Override</strong> this method if the site support a specific/faster api.
+         * Helper method.
+         * Get the resolved file path for the first cover file found (for the given index).
          *
-         * @param context   Application context
-         * @param validIsbn to search for, <strong>must</strong> be valid.
-         * @param cIdx      0..n image index
-         * @param size      of image to get.
+         * @param bookData with file-spec data
+         * @param cIdx     0..n image index
+         *
+         * @return resolved path, or {@code null} if none found
+         */
+        @AnyThread
+        @Nullable
+        default String getFirstCoverFileFoundPath(@NonNull final Bundle bookData,
+                                                  @IntRange(from = 0) final int cIdx) {
+            final ArrayList<String> imageList =
+                    bookData.getStringArrayList(Book.BKEY_FILE_SPEC_ARRAY[cIdx]);
+            if (imageList != null && !imageList.isEmpty()) {
+                final File downloadedFile = new File(imageList.get(0));
+                // let the system resolve any path variations
+                final File destination = new File(downloadedFile.getAbsolutePath());
+                FileUtils.rename(downloadedFile, destination);
+                return destination.getAbsolutePath();
+            }
+            return null;
+        }
+
+        /**
+         * Helper method you can call from {@link #searchCoverImageByIsbn} if needed.
+         * See the Goodreads SearchEngine for an example.
+         * <p>
+         * A search for the book is done, with the 'fetchThumbnail' flag set to true.
+         * Any {@link IOException} or {@link CredentialsException}
+         * thrown are ignored and {@code null} returned instead.
+         * <p>
+         * Do NOT use if the site does not support returning images during searches.
+         *
+         * @param isbn to search for
+         * @param cIdx 0..n image index
          *
          * @return fileSpec, or {@code null} when none found (or any other failure)
          */
-        @Nullable
         @WorkerThread
-        String searchCoverImageByIsbn(@NonNull Context context,
-                                      @NonNull String validIsbn,
-                                      @IntRange(from = 0) int cIdx,
-                                      @Nullable ImageFileInfo.Size size);
+        @Nullable
+        default String searchCoverImageByIsbnFallback(@NonNull final String isbn,
+                                                      @IntRange(from = 0) final int cIdx) {
 
-        /**
-         * A site can support a single (default) or multiple sizes.
-         *
-         * @return {@code true} if multiple sizes are supported.
-         */
-        @AnyThread
-        default boolean supportsMultipleSizes() {
-            return false;
+            final boolean[] fetchThumbnail = new boolean[2];
+            fetchThumbnail[cIdx] = true;
+
+            try {
+                final Bundle bookData;
+                // If we have a valid ISBN, and the engine supports it, search.
+                if (ISBN.isValidIsbn(isbn)
+                    && this instanceof SearchEngine.ByIsbn) {
+                    bookData = ((SearchEngine.ByIsbn) this)
+                            .searchByIsbn(isbn, fetchThumbnail);
+
+                    // If we have a generic barcode, ...
+                } else if (ISBN.isValid(isbn)
+                           && this instanceof SearchEngine.ByBarcode) {
+                    bookData = ((SearchEngine.ByBarcode) this)
+                            .searchByBarcode(isbn, fetchThumbnail);
+
+                    // otherwise we pass a non-empty (but invalid) code on regardless.
+                    // if the engine supports text mode.
+                } else if (!isbn.isEmpty()
+                           && this instanceof SearchEngine.ByText) {
+                    bookData = ((SearchEngine.ByText) this)
+                            .search(isbn, "", "", "", fetchThumbnail);
+
+                } else {
+                    // don't throw here; this is a fallback method allowed to fail.
+                    return null;
+                }
+
+                return getFirstCoverFileFoundPath(bookData, cIdx);
+
+            } catch (@NonNull final CredentialsException | IOException e) {
+                if (BuildConfig.DEBUG /* always */) {
+                    Log.d(TAG, "getCoverImageFallback", e);
+                }
+            }
+
+            return null;
         }
     }
 
@@ -584,31 +614,47 @@ public interface SearchEngine {
         /**
          * Find alternative editions (their ISBN) for the given ISBN.
          *
-         * <strong>Note:</strong> all exceptions will be ignored.
-         *
-         * @param context Current context
-         * @param isbn    to search for, <strong>must</strong> be valid.
+         * @param validIsbn to search for, <strong>must</strong> be valid.
          *
          * @return a list of isbn's of alternative editions of our original isbn, can be empty.
+         *
+         * @throws CredentialsException for sites which require credentials
+         * @throws IOException          on other failures
          */
         @WorkerThread
         @NonNull
-        List<String> getAlternativeEditions(@NonNull Context context,
-                                            @NonNull String isbn);
+        List<String> searchAlternativeEditions(@NonNull String validIsbn)
+                throws CredentialsException, IOException;
     }
 
-    /**
-     * If possible, an engine should mask a recognised exception with this
-     * user friendly SearchException with a message suited for displaying to the user .
-     */
-    class SearchException
-            extends FormattedMessageException {
+    @Target(ElementType.TYPE)
+    @Retention(RetentionPolicy.RUNTIME)
+    @Documented
+    @interface Configuration {
 
-        private static final long serialVersionUID = 915010765930247859L;
+        @SearchSites.EngineId int id();
 
-        public SearchException(@StringRes final int stringId,
-                               @Nullable final Object... args) {
-            super(stringId, args);
-        }
+        @StringRes int nameResId();
+
+        String prefKey();
+
+        String url();
+
+        String lang() default "en";
+
+        String country() default "";
+
+        String domainKey() default "";
+
+        @IdRes int domainViewId() default 0;
+
+        @IdRes int domainMenuId() default 0;
+
+        int connectTimeoutMs() default 5_000;
+
+        int readTimeoutMs() default 10_000;
+
+        /** {@link CoverByIsbn} only. */
+        boolean supportsMultipleCoverSizes() default false;
     }
 }

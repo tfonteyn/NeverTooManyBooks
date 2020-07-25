@@ -27,8 +27,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.goodreads.tasks;
 
-import android.content.Context;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -77,6 +75,5 @@ public abstract class BaseTQTask
      *
      * @return {@code false} to requeue, {@code true} for success
      */
-    public abstract boolean run(@NonNull QueueManager queueManager,
-                                @NonNull final Context context);
+    public abstract boolean run(@NonNull QueueManager queueManager);
 }

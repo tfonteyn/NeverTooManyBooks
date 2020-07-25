@@ -62,7 +62,6 @@ import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 import com.hardbacknutter.nevertoomanybooks.utils.DateParser;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.FormattedMessageException;
 
 public class ExportManager
         implements Parcelable {
@@ -142,16 +141,6 @@ public class ExportManager
         mResults = in.readParcelable(getClass().getClassLoader());
     }
 
-    /** Called from the dialog via its View listeners. */
-    void setOption(final int optionBit,
-                   final boolean isSet) {
-        if (isSet) {
-            mOptions |= optionBit;
-        } else {
-            mOptions &= ~optionBit;
-        }
-    }
-
     public static String createErrorReport(@NonNull final Context context,
                                            @Nullable final Exception e) {
         String msg = null;
@@ -173,8 +162,6 @@ public class ExportManager
             if (msg == null) {
                 msg = StandardDialogs.createBadError(context, R.string.error_storage_not_writable);
             }
-        } else if (e instanceof FormattedMessageException) {
-            msg = ((FormattedMessageException) e).getLocalizedMessage(context);
         }
 
         // generic unknown message
@@ -183,6 +170,16 @@ public class ExportManager
         }
 
         return msg;
+    }
+
+    /** Called from the dialog via its View listeners. */
+    void setOption(final int optionBit,
+                   final boolean isSet) {
+        if (isSet) {
+            mOptions |= optionBit;
+        } else {
+            mOptions &= ~optionBit;
+        }
     }
 
     /** Called <strong>after</strong> the export/import to report back what was handled. */

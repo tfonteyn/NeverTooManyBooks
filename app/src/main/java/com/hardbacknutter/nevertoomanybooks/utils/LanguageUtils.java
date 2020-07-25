@@ -79,13 +79,6 @@ public final class LanguageUtils {
         return langLocale.getDisplayLanguage(LocaleUtils.getUserLocale(context));
     }
 
-
-    @NonNull
-    public static String getISO3FromDisplayName(@NonNull final Context context,
-                                                @NonNull final String displayName) {
-        return getISO3FromDisplayName(context, LocaleUtils.getUserLocale(context), displayName);
-    }
-
     /**
      * Try to convert a Language DisplayName to an ISO3 code.
      * At installation time we generated the users System Locale + Locale.ENGLISH
@@ -373,4 +366,24 @@ public final class LanguageUtils {
         return context.getSharedPreferences(LANGUAGE_MAP, Context.MODE_PRIVATE);
     }
 
+    /**
+     * Check if the device or user locale matches the given language.
+     * <p>
+     * Non-english sites are by default only enabled if either the device or
+     * this app is running in the specified language.
+     * The user can still enable/disable them at will of course.
+     *
+     * @param systemLocale device Locale <em>(passed in to allow mocking)</em>
+     * @param userLocale   user Locale <em>(passed in to allow mocking)</em>
+     * @param iso          language code to check
+     *
+     * @return {@code true} if sites should be enabled by default.
+     */
+    public static boolean isLang(@NonNull final Locale systemLocale,
+                                 @NonNull final Locale userLocale,
+                                 @SuppressWarnings("SameParameterValue")
+                                 @NonNull final String iso) {
+        return iso.equals(systemLocale.getISO3Language())
+               || iso.equals(userLocale.getISO3Language());
+    }
 }

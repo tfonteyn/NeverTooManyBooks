@@ -42,11 +42,11 @@ import com.hardbacknutter.nevertoomanybooks.fields.accessors.EditTextAccessor;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.LongNumberFormatter;
 
-public class EditBookNativeIdFragment
+public class EditBookExternalIdFragment
         extends EditBookBaseFragment {
 
     /** Log tag. */
-    private static final String TAG = "EditBookNativeIdFrag";
+    private static final String TAG = "EditBookExternalIdFrag";
 
     @NonNull
     @Override
@@ -59,7 +59,7 @@ public class EditBookNativeIdFragment
     public View onCreateView(@NonNull final LayoutInflater inflater,
                              @Nullable final ViewGroup container,
                              @Nullable final Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_edit_book_native_id, container, false);
+        return inflater.inflate(R.layout.fragment_edit_book_external_id, container, false);
     }
 
     @Override

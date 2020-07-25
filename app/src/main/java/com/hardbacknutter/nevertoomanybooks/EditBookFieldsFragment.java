@@ -310,7 +310,6 @@ public class EditBookFieldsFragment
 
     @Override
     public void onPrepareOptionsMenu(@NonNull final Menu menu) {
-        super.onPrepareOptionsMenu(menu);
         switch (mIsbnValidityCheck) {
             case ISBN.VALIDITY_STRICT:
                 menu.findItem(R.id.MENU_ISBN_VALIDITY_STRICT).setChecked(true);
@@ -325,6 +324,8 @@ public class EditBookFieldsFragment
                 menu.findItem(R.id.MENU_ISBN_VALIDITY_NONE).setChecked(true);
                 break;
         }
+
+        super.onPrepareOptionsMenu(menu);
     }
 
     @Override

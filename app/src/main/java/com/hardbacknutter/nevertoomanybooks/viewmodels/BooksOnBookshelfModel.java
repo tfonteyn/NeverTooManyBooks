@@ -42,7 +42,6 @@ import androidx.fragment.app.Fragment;
 import androidx.preference.PreferenceManager;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
@@ -61,6 +60,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.RowStateDAO;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.Filter;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.VirtualDomain;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -69,6 +69,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
+import com.hardbacknutter.nevertoomanybooks.searches.Site;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.tasks.VMTask;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
@@ -82,56 +83,57 @@ public class BooksOnBookshelfModel
     public static final String BKEY_LIST_STATE = TAG + ":list.state";
 
     /** The fixed list of domains we always need for building the book list. */
-    private static final List<VirtualDomain> FIXED_DOMAIN_LIST = Arrays.asList(
-            // Title for displaying; do NOT sort on it
-            new VirtualDomain(
-                    DBDefinitions.DOM_TITLE,
-                    DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_TITLE)),
-            // Title for sorting
-            new VirtualDomain(
-                    DBDefinitions.DOM_TITLE_OB,
-                    DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_TITLE_OB),
-                    VirtualDomain.SORT_ASC),
+    private static final Collection<VirtualDomain> FIXED_DOMAIN_LIST = new ArrayList<>();
 
-            // the book language is needed for reordering titles
-            new VirtualDomain(
-                    DBDefinitions.DOM_BOOK_LANGUAGE,
-                    DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_LANGUAGE)),
-            // Always get the read flag
-            new VirtualDomain(
-                    DBDefinitions.DOM_BOOK_READ,
-                    DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_READ)),
-            // Always get the Author ID (the need for the actual name is depending on the style).
-            new VirtualDomain(
-                    DBDefinitions.DOM_FK_AUTHOR,
-                    DBDefinitions.TBL_BOOK_AUTHOR.dot(DBDefinitions.KEY_FK_AUTHOR)),
+    static {
+        FIXED_DOMAIN_LIST.add(
+                // Title for displaying; do NOT sort on it
+                new VirtualDomain(
+                        DBDefinitions.DOM_TITLE,
+                        DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_TITLE)));
+        FIXED_DOMAIN_LIST.add(
+                // Title for sorting
+                new VirtualDomain(
+                        DBDefinitions.DOM_TITLE_OB,
+                        DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_TITLE_OB),
+                        VirtualDomain.SORT_ASC));
 
-            // Always get the ISBN
-            new VirtualDomain(
-                    DBDefinitions.DOM_BOOK_ISBN,
-                    DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_ISBN)),
-            // We want the UUID for the book so we can get thumbnails
-            new VirtualDomain(
-                    DBDefinitions.DOM_BOOK_UUID,
-                    DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_BOOK_UUID)),
+        FIXED_DOMAIN_LIST.add(
+                // the book language is needed for reordering titles
+                new VirtualDomain(
+                        DBDefinitions.DOM_BOOK_LANGUAGE,
+                        DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_LANGUAGE)));
 
-            // external site ID's
-            //NEWTHINGS: add new site specific ID: add VirtualDomain
-            new VirtualDomain(
-                    DBDefinitions.DOM_EID_ISFDB,
-                    DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_EID_ISFDB)),
-            new VirtualDomain(
-                    DBDefinitions.DOM_EID_GOODREADS_BOOK,
-                    DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_EID_GOODREADS_BOOK)),
-            new VirtualDomain(
-                    DBDefinitions.DOM_EID_LIBRARY_THING,
-                    DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_EID_LIBRARY_THING)),
-            new VirtualDomain(
-                    DBDefinitions.DOM_EID_STRIP_INFO_BE,
-                    DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_EID_STRIP_INFO_BE)),
-            new VirtualDomain(
-                    DBDefinitions.DOM_EID_OPEN_LIBRARY,
-                    DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_EID_OPEN_LIBRARY)));
+        FIXED_DOMAIN_LIST.add(
+                // Always get the read flag
+                new VirtualDomain(
+                        DBDefinitions.DOM_BOOK_READ,
+                        DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_READ)));
+
+        FIXED_DOMAIN_LIST.add(
+                // Always get the Author ID (the need for the actual name is depending on the style).
+                new VirtualDomain(
+                        DBDefinitions.DOM_FK_AUTHOR,
+                        DBDefinitions.TBL_BOOK_AUTHOR.dot(DBDefinitions.KEY_FK_AUTHOR)));
+
+        FIXED_DOMAIN_LIST.add(
+                // Always get the ISBN
+                new VirtualDomain(
+                        DBDefinitions.DOM_BOOK_ISBN,
+                        DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_ISBN)));
+
+        FIXED_DOMAIN_LIST.add(
+                // We want the UUID for the book so we can get thumbnails
+                new VirtualDomain(
+                        DBDefinitions.DOM_BOOK_UUID,
+                        DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_BOOK_UUID)));
+
+        // external site ID's
+        for (Domain domain : Site.getExternalIdDomains()) {
+            FIXED_DOMAIN_LIST.add(
+                    new VirtualDomain(domain, DBDefinitions.TBL_BOOKS.dot(domain.getName())));
+        }
+    }
 
     /** Holder for all search criteria. See {@link SearchCriteria} for more info. */
     private final SearchCriteria mSearchCriteria = new SearchCriteria();

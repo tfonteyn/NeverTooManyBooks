@@ -36,7 +36,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.stubbing.Answer;
 
-import com.hardbacknutter.nevertoomanybooks.CommonSetup;
+import com.hardbacknutter.nevertoomanybooks.CommonMocks;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -45,11 +45,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 class PruneListTest
-        extends CommonSetup {
+        extends CommonMocks {
 
     private static final long ISAAC_ASIMOV_ID = 100;
     private static final String ISAAC_ASIMOV = "Isaac Asimov";
@@ -64,8 +63,6 @@ class PruneListTest
     @BeforeEach
     public void setUp() {
         super.setUp();
-
-        mDb = mock(DAO.class);
 
         when(mDb.getAuthorId(eq(mContext), any(Author.class), anyBoolean(), any(Locale.class)))
                 .thenAnswer((Answer<Long>) invocation -> {

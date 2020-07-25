@@ -180,8 +180,8 @@ public class Publisher
      */
     @NonNull
     public String getLabel(@NonNull final Context context) {
-        final Locale locale = LocaleUtils.getUserLocale(context);
-        return reorderTitleForDisplaying(context, getLocale(context, locale));
+        final Locale userLocale = LocaleUtils.getUserLocale(context);
+        return reorderTitleForDisplaying(context, getLocale(context, userLocale));
     }
 
     /**

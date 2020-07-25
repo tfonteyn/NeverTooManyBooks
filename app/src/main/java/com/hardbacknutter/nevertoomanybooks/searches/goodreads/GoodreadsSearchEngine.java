@@ -29,46 +29,53 @@ package com.hardbacknutter.nevertoomanybooks.searches.goodreads;
 
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
-import androidx.annotation.VisibleForTesting;
 import androidx.annotation.WorkerThread;
 import androidx.preference.PreferenceManager;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Locale;
 
-import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageFileInfo;
+import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsAuth;
-import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsHandler;
+import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsManager;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsRegistrationActivity;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsWork;
 import com.hardbacknutter.nevertoomanybooks.goodreads.api.Http404Exception;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
-import com.hardbacknutter.nevertoomanybooks.tasks.Canceller;
+import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineBase;
+import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.utils.Throttler;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 
 /**
  * <a href="https://www.goodreads.com">https://www.goodreads.com</a>
  * <p>
- * Uses {@link SearchEngine.CoverByIsbn#getCoverImageFallback} because the API
+ * Uses {@link SearchEngine.CoverByIsbn#searchCoverImageByIsbnFallback} because the API
  * has no specific cover access methods, but the site has very good covers making the overhead
  * worth it.
  */
+@SearchEngine.Configuration(
+        id = SearchSites.GOODREADS,
+        nameResId = R.string.site_goodreads,
+        url = GoodreadsManager.BASE_URL,
+        prefKey = GoodreadsManager.PREF_KEY,
+        domainKey = DBDefinitions.KEY_EID_GOODREADS_BOOK,
+        domainViewId = R.id.site_goodreads,
+        domainMenuId = R.id.MENU_VIEW_BOOK_AT_GOODREADS,
+        connectTimeoutMs = GoodreadsManager.CONNECTION_TIMEOUT_MS
+)
 public class GoodreadsSearchEngine
-        implements SearchEngine,
-                   SearchEngine.ByIsbn,
-                   SearchEngine.ByNativeId,
+        extends SearchEngineBase
+        implements SearchEngine.ByIsbn,
+                   SearchEngine.ByExternalId,
                    SearchEngine.ByText,
                    SearchEngine.CoverByIsbn {
 
@@ -77,48 +84,33 @@ public class GoodreadsSearchEngine
     /** Can only send requests at a throttled speed. */
     @NonNull
     public static final Throttler THROTTLER = new Throttler();
-    /** Override connect-timeout for this site. See {@link SearchEngine#getConnectTimeoutMs()}. */
-    public static final int CONNECT_TIMEOUT_MS = 10_000;
-    /** Override read-timeout for this site. See {@link SearchEngine#getReadTimeoutMs()}. */
-    public static final int READ_TIMEOUT_MS = 10_000;
 
     @NonNull
-    private final GoodreadsHandler mApiHandler;
+    private final GoodreadsManager mGoodreadsManager;
     @NonNull
     private final GoodreadsAuth mGoodreadsAuth;
 
-    @Nullable
-    private Canceller mCaller;
-
     /**
      * Constructor.
-     */
-    public GoodreadsSearchEngine() {
-        mGoodreadsAuth = new GoodreadsAuth(App.getAppContext());
-        mApiHandler = new GoodreadsHandler(mGoodreadsAuth);
-    }
-
-    @VisibleForTesting
-    public GoodreadsSearchEngine(@NonNull final Context context) {
-        mGoodreadsAuth = new GoodreadsAuth(context);
-        mApiHandler = new GoodreadsHandler(mGoodreadsAuth);
-    }
-
-    /**
-     * View a Book on the web site.
      *
-     * @param context Current context
-     * @param bookId  site native book id to show
+     * @param appContext Application context
      */
-    public static void openWebsite(@NonNull final Context context,
-                                   final long bookId) {
-        final String url = GoodreadsHandler.BASE_URL + "/book/show/" + bookId;
-        context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+    public GoodreadsSearchEngine(@NonNull final Context appContext) {
+        super(appContext);
+        mGoodreadsAuth = new GoodreadsAuth(mAppContext);
+        mGoodreadsManager = new GoodreadsManager(mAppContext, mGoodreadsAuth);
+    }
+
+    @NonNull
+    @Override
+    public String createUrl(@NonNull final String externalId) {
+        return getSiteUrl() + "/book/show/" + externalId;
     }
 
     @Override
-    public int getConnectTimeoutMs() {
-        return CONNECT_TIMEOUT_MS;
+    public boolean isAvailable() {
+        // makes sure we *have* credentials, but does not check them.
+        return !mGoodreadsAuth.getDevKey().isEmpty() && mGoodreadsAuth.hasCredentials(mAppContext);
     }
 
     @Nullable
@@ -127,21 +119,6 @@ public class GoodreadsSearchEngine
         return THROTTLER;
     }
 
-    @Override
-    public void setCaller(@Nullable final Canceller caller) {
-        mCaller = caller;
-    }
-
-    @Override
-    public boolean isCancelled() {
-        return mCaller == null || mCaller.isCancelled();
-    }
-
-    @NonNull
-    @Override
-    public Locale getLocale(@NonNull final Context context) {
-        return GoodreadsHandler.SITE_LOCALE;
-    }
 
     @Override
     public boolean promptToRegister(@NonNull final Context context,
@@ -151,47 +128,49 @@ public class GoodreadsSearchEngine
             return false;
         }
 
-        final String key = GoodreadsHandler.PREFS_HIDE_ALERT + prefSuffix;
+        final String key = GoodreadsManager.PREFS_HIDE_ALERT + prefSuffix;
         final boolean show = required || !PreferenceManager.getDefaultSharedPreferences(context)
                                                            .getBoolean(key, false);
 
         if (show) {
             final Intent intent = new Intent(context, GoodreadsRegistrationActivity.class);
-            StandardDialogs.registerOnSite(context, R.string.site_goodreads,
-                                           intent, required, key);
+            StandardDialogs.registerOnSite(context, R.string.site_goodreads, intent, required, key);
         }
         return show;
     }
 
-    @NonNull
-    @Override
-    public Bundle searchByIsbn(@NonNull final Context context,
-                               @NonNull final String validIsbn,
-                               @NonNull final boolean[] fetchThumbnail)
-            throws CredentialsException, IOException {
-        try {
-            return mApiHandler.getBookByIsbn(context, validIsbn, fetchThumbnail, new Bundle());
-
-        } catch (@NonNull final Http404Exception ignore) {
-            // ignore
-        }
-        return new Bundle();
-    }
 
     @NonNull
     @Override
-    public Bundle searchByNativeId(@NonNull final Context context,
-                                   @NonNull final String nativeId,
-                                   @NonNull final boolean[] fetchThumbnail)
+    public Bundle searchByExternalId(@NonNull final String externalId,
+                                     @NonNull final boolean[] fetchThumbnail)
             throws CredentialsException, IOException {
+
+        final Bundle bookData = new Bundle();
         try {
-            final long grBookId = Long.parseLong(nativeId);
-            return mApiHandler.getBookById(context, grBookId, fetchThumbnail, new Bundle());
+            final long grBookId = Long.parseLong(externalId);
+            return mGoodreadsManager.getBookById(grBookId, fetchThumbnail, bookData);
 
         } catch (@NonNull final Http404Exception | NumberFormatException e) {
             // ignore
         }
-        return new Bundle();
+        return bookData;
+    }
+
+    @NonNull
+    @Override
+    public Bundle searchByIsbn(@NonNull final String validIsbn,
+                               @NonNull final boolean[] fetchThumbnail)
+            throws CredentialsException, IOException {
+
+        final Bundle bookData = new Bundle();
+        try {
+            return mGoodreadsManager.getBookByIsbn(validIsbn, fetchThumbnail, bookData);
+
+        } catch (@NonNull final Http404Exception ignore) {
+            // ignore
+        }
+        return bookData;
     }
 
     /**
@@ -204,8 +183,7 @@ public class GoodreadsSearchEngine
     @NonNull
     @Override
     @WorkerThread
-    public Bundle search(@NonNull final Context context,
-                         @Nullable final String code,
+    public Bundle search(@Nullable final String code,
                          @Nullable final String author,
                          @Nullable final String title,
                          @Nullable final /* not supported */ String publisher,
@@ -213,50 +191,33 @@ public class GoodreadsSearchEngine
             throws CredentialsException,
                    IOException {
 
+        final Bundle bookData = new Bundle();
         if (author != null && !author.isEmpty() && title != null && !title.isEmpty()) {
             try {
-                final List<GoodreadsWork> works = mApiHandler.search(context, author + ' ' + title);
+                final List<GoodreadsWork> works =
+                        mGoodreadsManager.search(author + ' ' + title);
                 // only return the first one found
                 if (!works.isEmpty()) {
-                    return mApiHandler.getBookById(context, works.get(0).grBookId,
-                                                   fetchThumbnail, new Bundle());
+                    return mGoodreadsManager.getBookById(works.get(0).grBookId,
+                                                         fetchThumbnail, bookData);
                 }
             } catch (@NonNull final Http404Exception ignore) {
                 // ignore
             }
         }
-        return new Bundle();
+        return bookData;
     }
 
     @Nullable
     @Override
     @WorkerThread
-    public String searchCoverImageByIsbn(@NonNull final Context context,
-                                         @NonNull final String validIsbn,
+    public String searchCoverImageByIsbn(@NonNull final String validIsbn,
                                          @IntRange(from = 0) final int cIdx,
                                          @Nullable final ImageFileInfo.Size size) {
-        if (!mGoodreadsAuth.hasValidCredentials(context)) {
+        if (!mGoodreadsAuth.hasValidCredentials(mAppContext)) {
             return null;
         }
-        return CoverByIsbn.getCoverImageFallback(context, this, validIsbn, cIdx);
-    }
-
-    @Override
-    public boolean isAvailable(@NonNull final Context context) {
-        // makes sure we *have* credentials, but does not check them.
-        return !mGoodreadsAuth.getDevKey().isEmpty() && mGoodreadsAuth.hasCredentials(context);
-    }
-
-    @NonNull
-    @Override
-    public String getUrl(@NonNull final Context context) {
-        return GoodreadsHandler.BASE_URL;
-    }
-
-    @StringRes
-    @Override
-    public int getNameResId() {
-        return R.string.site_goodreads;
+        return searchCoverImageByIsbnFallback(validIsbn, cIdx);
     }
 }
 

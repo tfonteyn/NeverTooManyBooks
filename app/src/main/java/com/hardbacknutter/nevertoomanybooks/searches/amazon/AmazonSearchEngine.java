@@ -28,49 +28,90 @@
 package com.hardbacknutter.nevertoomanybooks.searches.amazon;
 
 import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
+import androidx.annotation.WorkerThread;
 import androidx.preference.PreferenceManager;
 
 import java.io.UnsupportedEncodingException;
 import java.net.SocketTimeoutException;
 import java.net.URLEncoder;
 import java.util.Locale;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
+import com.hardbacknutter.nevertoomanybooks.entities.Author;
+import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
+import com.hardbacknutter.nevertoomanybooks.entities.Series;
+import com.hardbacknutter.nevertoomanybooks.searches.AuthorTypeMapper;
+import com.hardbacknutter.nevertoomanybooks.searches.JsoupSearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
-import com.hardbacknutter.nevertoomanybooks.tasks.Canceller;
+import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
+import com.hardbacknutter.nevertoomanybooks.searches.Site;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
+import com.hardbacknutter.nevertoomanybooks.utils.LanguageUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.Money;
 
 /**
+ * This class supports parsing these Amazon websites:
+ * www.amazon.com
+ * www.amazon.co.uk
+ * www.amazon.fr
+ * www.amazon.de
+ * www.amazon.nl
+ * <p>
+ * Anything failing there is a bug.
+ * <p>
+ * Other Amazon sites should work for basic info (e.g. title) only.
+ *
+ * <strong>Warning:</strong> the french site lists author names in BOTH "given family"
+ * and "family given" formats (the latter without a comma). There does not seem to be a preference.
+ * So... we will incorrectly interpret the format "family given".
+ * FIXME: when trying to find an author.. search our database twice with f/g and g/f
+ * <p>
  * Should really implement the Amazon API.
  * https://docs.aws.amazon.com/en_pv/AWSECommerceService/latest/DG/becomingAssociate.html
  */
+@SearchEngine.Configuration(
+        id = SearchSites.AMAZON,
+        nameResId = R.string.site_amazon,
+        url = "https://www.amazon.com",
+        prefKey = AmazonSearchEngine.PREF_KEY,
+        // The ASIN is not yet fully implemented
+        domainKey = DBDefinitions.KEY_ISBN,
+        domainViewId = R.id.site_amazon,
+        domainMenuId = R.id.MENU_VIEW_BOOK_AT_AMAZON
+)
 public final class AmazonSearchEngine
-        implements SearchEngine,
-                   SearchEngine.ByNativeId,
+        extends JsoupSearchEngineBase
+        implements SearchEngine.ByExternalId,
                    SearchEngine.ByIsbn {
+
+    /** Preferences prefix. */
+    public static final String PREF_KEY = "amazon";
+    /** Type: {@code String}. */
+    @VisibleForTesting
+    public static final String PREFS_HOST_URL = PREF_KEY + ".host.url";
 
     /** Log tag. */
     private static final String TAG = "AmazonSearchEngine";
-
     /** Website character encoding. */
     private static final String UTF_8 = "UTF-8";
-    /** Preferences prefix. */
-    private static final String PREF_PREFIX = "amazon.";
-    /** Type: {@code String}. */
-    @VisibleForTesting
-    public static final String PREFS_HOST_URL = PREF_PREFIX + "host.url";
-
     /**
      * The search url.
      *
@@ -83,35 +124,67 @@ public final class AmazonSearchEngine
      * </ul>
      */
     private static final String SEARCH_SUFFIX = "/gp/search?index=books";
-
-    @Nullable
-    private Canceller mCaller;
-
-    @NonNull
-    public static String getBaseURL(@NonNull final Context context) {
-        return PreferenceManager.getDefaultSharedPreferences(context)
-                                .getString(PREFS_HOST_URL, "https://www.amazon.com");
-    }
+    /** Param 1: external book ID; the ASIN/ISBN. */
+    private static final String BY_EXTERNAL_ID = "/gp/product/%1$s";
+    /** file suffix for cover files. */
+    private static final String FILENAME_SUFFIX = "_AMZ";
+    /**
+     * Parse "some text; more text (some more text)" into "some text" and "some more text".
+     * <p>
+     * Also: we want a "some text" that does not START with a '('.
+     * <p>
+     * Gollancz (18 Mar. 2010)
+     * ==> "Gollancz" and "18 Mar. 2010"
+     * Gollancz; First Thus edition (18 Mar. 2010)
+     * ==> "Gollancz" and "18 Mar. 2010"
+     * Dargaud; <b>Édition&#160;:</b> Nouvelle (21 janvier 2005)
+     * ==> "Dargaud" and "21 janvier 2005"
+     */
+    private static final Pattern PUBLISHER_PATTERN =
+            Pattern.compile("([^(;]*).*\\((.*)\\).*",
+                            Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
+    private static final Pattern AUTHOR_TYPE_PATTERN =
+            Pattern.compile("\\((.*)\\).*",
+                            Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
+    /** Parse the "x pages" string. */
+    private final Pattern mPagesPattern;
 
     /**
-     * Start an intent to search for an ISBN on the Amazon website.
+     * Constructor.
      *
-     * @param context Application context
-     * @param isbn    to search for
+     * @param appContext Application context
      */
-    public static void openWebsite(@NonNull final Context context,
-                                   @NonNull final String isbn) {
-        String fields = "";
-        if (!isbn.isEmpty()) {
-            try {
-                fields += "&field-isbn=" + URLEncoder.encode(isbn, UTF_8);
-            } catch (@NonNull final UnsupportedEncodingException e) {
-                Logger.error(context, TAG, e, "Unable to add isbn to URL");
-            }
-        }
+    public AmazonSearchEngine(@NonNull final Context appContext) {
+        super(appContext);
 
-        final String url = getBaseURL(context) + SEARCH_SUFFIX + fields.trim();
-        context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+        final String baseUrl = getSiteUrl();
+        // check the domain name to determine the language of the site
+        final String root = baseUrl.substring(baseUrl.lastIndexOf('.') + 1);
+        final String pagesStr;
+        switch (root) {
+            case "de":
+                pagesStr = "Seiten";
+                break;
+
+            case "nl":
+                pagesStr = "pagina's";
+                break;
+
+            default:
+                // English, French
+                pagesStr = "pages";
+                break;
+        }
+        mPagesPattern = Pattern.compile(pagesStr, Pattern.LITERAL);
+    }
+
+    @NonNull
+    public static String getSiteUrl(@NonNull final Context context) {
+        //noinspection ConstantConditions
+        return PreferenceManager
+                .getDefaultSharedPreferences(context)
+                .getString(PREFS_HOST_URL, Site.getConfig(SearchSites.AMAZON)
+                                               .getSiteUrl());
     }
 
     /**
@@ -120,13 +193,15 @@ public final class AmazonSearchEngine
      * @param context Application context
      * @param author  to search for
      * @param series  to search for
+     *
+     * @return url
      */
-    public static void openWebsite(@NonNull final Context context,
+    public static String createUrl(@NonNull final Context context,
                                    @Nullable final String author,
                                    @Nullable final String series) {
 
-        final String cAuthor = cleanupSearchString(author);
-        final String cSeries = cleanupSearchString(series);
+        final String cAuthor = cleanupOpenWebsiteString(author);
+        final String cSeries = cleanupOpenWebsiteString(series);
 
         String fields = "";
         if (!cAuthor.isEmpty()) {
@@ -145,12 +220,11 @@ public final class AmazonSearchEngine
             }
         }
 
-        final String url = getBaseURL(context) + SEARCH_SUFFIX + fields.trim();
-        context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+        return getSiteUrl(context) + SEARCH_SUFFIX + fields.trim();
     }
 
     @NonNull
-    private static String cleanupSearchString(@Nullable final String search) {
+    private static String cleanupOpenWebsiteString(@Nullable final String search) {
         if (search == null || search.isEmpty()) {
             return "";
         }
@@ -171,31 +245,51 @@ public final class AmazonSearchEngine
         return out.toString().trim();
     }
 
+    /**
+     * The external id for Amazon is the isbn.
+     *
+     * @param isbn to search for
+     *
+     * @return url
+     */
+    @NonNull
     @Override
-    public void setCaller(@Nullable final Canceller caller) {
-        mCaller = caller;
-    }
+    public String createUrl(@NonNull final String isbn) {
+        String fields = "";
+        if (!isbn.isEmpty()) {
+            try {
+                fields += "&field-isbn=" + URLEncoder.encode(isbn, UTF_8);
+            } catch (@NonNull final UnsupportedEncodingException e) {
+                Logger.error(mAppContext, TAG, e, "Unable to add isbn to URL");
+            }
+        }
 
-    @Override
-    public boolean isCancelled() {
-        return mCaller == null || mCaller.isCancelled();
+        return getSiteUrl() + SEARCH_SUFFIX + fields.trim();
     }
 
     @NonNull
     @Override
-    public Locale getLocale(@NonNull final Context context) {
-        final String baseUrl = getUrl(context);
+    public String getSiteUrl() {
+        return getSiteUrl(mAppContext);
+    }
+
+    @NonNull
+    @Override
+    public Locale getLocale() {
+        // The Locale depends on the actual website url as configured by the user.
+        final String baseUrl = getSiteUrl();
         final String root = baseUrl.substring(baseUrl.lastIndexOf('.') + 1);
         switch (root) {
             case "com":
                 return Locale.US;
 
             case "uk":
+                // country code is GB (july 2020: for now...)
                 return Locale.UK;
 
             default:
                 // other amazon sites are (should be ?) just the country code.
-                final Locale locale = LocaleUtils.getLocale(context, root);
+                final Locale locale = LocaleUtils.getLocale(mAppContext, root);
                 if (BuildConfig.DEBUG /* always */) {
                     Logger.d(TAG, "getLocale=" + locale);
                 }
@@ -205,44 +299,263 @@ public final class AmazonSearchEngine
 
     @NonNull
     @Override
-    public Bundle searchByNativeId(@NonNull final Context context,
-                                   @NonNull final String nativeId,
-                                   @NonNull final boolean[] fetchThumbnail)
+    public Bundle searchByExternalId(@NonNull final String externalId,
+                                     @NonNull final boolean[] fetchThumbnail)
             throws SocketTimeoutException {
 
-        return new AmazonHtmlHandler(context, this)
-                .fetchByNativeId(nativeId, fetchThumbnail, new Bundle());
+        final Bundle bookData = new Bundle();
+        final String url = getSiteUrl() + String.format(BY_EXTERNAL_ID, externalId);
+        final Document document = loadDocument(url);
+        if (document != null && !isCancelled()) {
+            parse(document, fetchThumbnail, bookData);
+        }
+        return bookData;
     }
 
     @NonNull
     @Override
-    public Bundle searchByIsbn(@NonNull final Context context,
-                               @NonNull final String validIsbn,
+    public Bundle searchByIsbn(@NonNull final String validIsbn,
                                @NonNull final boolean[] fetchThumbnail)
             throws SocketTimeoutException {
 
         final ISBN tmp = new ISBN(validIsbn);
         if (tmp.isIsbn10Compat()) {
-            return searchByNativeId(context, tmp.asText(ISBN.TYPE_ISBN10), fetchThumbnail);
+            return searchByExternalId(tmp.asText(ISBN.TYPE_ISBN10), fetchThumbnail);
         } else {
-            return searchByNativeId(context, validIsbn, fetchThumbnail);
+            return searchByExternalId(validIsbn, fetchThumbnail);
         }
     }
 
-    @NonNull
-    @Override
-    public String getUrl(@NonNull final Context context) {
-        return getBaseURL(context);
-    }
 
     @Override
-    public boolean hasStringId() {
-        return true;
+    @VisibleForTesting
+    public void parse(@NonNull final Document document,
+                      @NonNull final boolean[] fetchThumbnail,
+                      @NonNull final Bundle bookData) {
+
+        final Locale siteLocale = getLocale();
+
+        // This is WEIRD...
+        // Unless we do this seemingly needless select, the next select (for the title)
+        // will return null.
+        // When run in JUnit, this call is NOT needed.
+        // Whats different? -> the Java JDK!
+        //noinspection unused
+        final Element dummy = document.selectFirst("div#booksTitle");
+
+        final Element titleElement = document.selectFirst("span#productTitle");
+        if (titleElement == null) {
+            if (BuildConfig.DEBUG /* always */) {
+                Logger.d(TAG, "no title?");
+            }
+            return;
+        }
+
+        final String title = titleElement.text().trim();
+        bookData.putString(DBDefinitions.KEY_TITLE, title);
+
+        final Element price = document.selectFirst("span.offer-price");
+        if (price != null) {
+            Money money = new Money(siteLocale, price.text());
+            if (money.getCurrency() != null) {
+                bookData.putDouble(DBDefinitions.KEY_PRICE_LISTED, money.doubleValue());
+                bookData.putString(DBDefinitions.KEY_PRICE_LISTED_CURRENCY, money.getCurrency());
+            } else {
+                bookData.putString(DBDefinitions.KEY_PRICE_LISTED, price.text());
+            }
+        }
+
+        final Elements authorSpans = document.select("div#bylineInfo > span.author");
+        for (Element span : authorSpans) {
+            // If an author has a popup dialog linked, then it has an id with contributorNameID
+            Element a = span.selectFirst("a.contributorNameID");
+            if (a == null) {
+                // If there is no popup, then it's a simple link
+                a = span.selectFirst("a.a-link-normal");
+            }
+            if (a != null) {
+                String href = a.attr("href");
+                if (href != null && href.contains("byline")) {
+                    final Author author = Author.from(a.text());
+
+                    final Element typeElement = span.selectFirst("span.contribution");
+                    if (typeElement != null) {
+                        String data = typeElement.text();
+                        final Matcher matcher = AUTHOR_TYPE_PATTERN.matcher(data);
+                        if (matcher.find()) {
+                            data = matcher.group(1);
+                        }
+
+                        if (data != null) {
+                            author.addType(AuthorTypeMapper.map(siteLocale, data));
+                        }
+                    }
+                    mAuthors.add(author);
+                }
+            }
+        }
+
+        if (isCancelled()) {
+            return;
+        }
+
+        final Elements lis = document
+                .select("div#detail_bullets_id > table > tbody > tr > td > div > ul > li");
+        for (Element li : lis) {
+            String label = li.child(0).text().trim();
+            if (label.endsWith(":")) {
+                label = label.substring(0, label.length() - 1).trim();
+            }
+
+            // we used to do: String data = li.childNode(1).toString().trim();
+            // but that fails when the data is spread over multiple child nodes.
+            // so we now just cut out the label, and use the text itself.
+            li.child(0).remove();
+            String data = li.text().trim();
+            switch (label.toLowerCase(siteLocale)) {
+                case "isbn-13":
+                    bookData.putString(DBDefinitions.KEY_ISBN, data);
+                    break;
+
+                case "isbn-10":
+                    if (!bookData.containsKey(DBDefinitions.KEY_ISBN)) {
+                        bookData.putString(DBDefinitions.KEY_ISBN, data);
+                    }
+                    break;
+
+                case "hardcover":
+                case "paperback":
+                case "relié":
+                case "broché":
+                case "taschenbuch":
+                case "gebundene ausgabe":
+                    bookData.putString(DBDefinitions.KEY_FORMAT, label);
+                    bookData.putString(DBDefinitions.KEY_PAGES,
+                                       mPagesPattern.matcher(data).replaceAll("").trim());
+                    break;
+
+                case "language":
+                case "langue":
+                case "sprache":
+                case "taal":
+                    // the language is a 'DisplayName' so convert to iso first.
+                    data = LanguageUtils.getISO3FromDisplayName(mAppContext, siteLocale, data);
+                    bookData.putString(DBDefinitions.KEY_LANGUAGE, data);
+                    break;
+
+                case "publisher":
+                case "editeur":
+                case "verlag":
+                case "uitgever": {
+                    boolean publisherWasAdded = false;
+                    final Matcher matcher = PUBLISHER_PATTERN.matcher(data);
+                    if (matcher.find()) {
+                        final String pubName = matcher.group(1);
+                        if (pubName != null) {
+                            final Publisher publisher = Publisher.from(pubName.trim());
+                            mPublishers.add(publisher);
+                            publisherWasAdded = true;
+                        }
+
+                        final String pubDate = matcher.group(2);
+                        if (pubDate != null) {
+                            bookData.putString(DBDefinitions.KEY_DATE_PUBLISHED, pubDate.trim());
+                        }
+                    }
+
+                    if (!publisherWasAdded) {
+                        final Publisher publisher = Publisher.from(data);
+                        mPublishers.add(publisher);
+                    }
+                    break;
+                }
+
+                case "series":
+                case "collection":
+                    mSeries.add(Series.from(data));
+                    break;
+
+                case "product dimensions":
+                case "shipping weight":
+                case "customer reviews":
+                case "average customer review":
+                case "amazon bestsellers rank":
+                    // french
+                case "dimensions du produit":
+                case "commentaires client":
+                case "moyenne des commentaires client":
+                case "classement des meilleures ventes d'amazon":
+                    // german
+                case "größe und/oder gewicht":
+                case "kundenrezensionen":
+                case "amazon bestseller-rang":
+                case "vom hersteller empfohlenes alter":
+                case "originaltitel":
+                    // dutch
+                case "productafmetingen":
+                case "brutogewicht (incl. verpakking)":
+                case "klantenrecensies":
+                case "plaats op amazon-bestsellerlijst":
+
+                    // These labels are ignored, but listed as an indication we know them.
+                    break;
+
+                default:
+                    if (BuildConfig.DEBUG /* always */) {
+                        Logger.d(TAG, "label=" + label);
+                    }
+                    break;
+            }
+        }
+
+        if (!mAuthors.isEmpty()) {
+            bookData.putParcelableArrayList(Book.BKEY_AUTHOR_ARRAY, mAuthors);
+        }
+        if (!mPublishers.isEmpty()) {
+            bookData.putParcelableArrayList(Book.BKEY_PUBLISHER_ARRAY, mPublishers);
+        }
+        if (!mSeries.isEmpty()) {
+            bookData.putParcelableArrayList(Book.BKEY_SERIES_ARRAY, mSeries);
+        }
+
+        if (isCancelled()) {
+            return;
+        }
+
+        if (fetchThumbnail[0]) {
+            parseCovers(document, bookData);
+        }
     }
 
-    @StringRes
-    @Override
-    public int getNameResId() {
-        return R.string.site_amazon;
+    /**
+     * Parses the downloaded {@link Document} for the cover and fetches it when present.
+     *
+     * @param coverRoot to parse
+     * @param bookData  Bundle to update
+     */
+    @WorkerThread
+    private void parseCovers(@NonNull final Element coverRoot,
+                             @NonNull final Bundle bookData) {
+        final Element coverElement = coverRoot.selectFirst("img#imgBlkFront");
+
+        String url;
+        try {
+            // data-a-dynamic-image = {"https://...":[327,499],"https://...":[227,346]}
+            final String tmp = coverElement.attr("data-a-dynamic-image");
+            final JSONObject json = new JSONObject(tmp);
+            // just grab the first key
+            url = json.keys().next();
+
+        } catch (@NonNull final JSONException e) {
+            // the src attribute contains a low quality picture in base64 format.
+            String srcUrl = coverElement.attr("src");
+            // annoying... the url seems to start with a \n. Cut it off.
+            if (srcUrl.startsWith("\n")) {
+                srcUrl = srcUrl.substring(1);
+            }
+            url = srcUrl;
+        }
+
+        fetchCover(url, bookData, FILENAME_SUFFIX, 0);
     }
 }

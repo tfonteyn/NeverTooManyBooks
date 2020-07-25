@@ -56,7 +56,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
  * </ul>
  * on all views referenced by this group.
  * <p>
- * /res/values/attrs.xml:
+ * /src/main/res/values/attrs.xml:
  * <pre>
  *     <declare-styleable name="ExtGroup">
  *         <attr name="applyVisibility" format="boolean" />

@@ -81,7 +81,6 @@ public class Money
     /** ISO code. */
     @Nullable
     private String mCurrency;
-
     private double mValue;
 
     public Money() {

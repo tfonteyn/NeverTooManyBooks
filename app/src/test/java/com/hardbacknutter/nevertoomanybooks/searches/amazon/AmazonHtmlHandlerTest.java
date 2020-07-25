@@ -27,64 +27,31 @@
  */
 package com.hardbacknutter.nevertoomanybooks.searches.amazon;
 
-import androidx.annotation.NonNull;
-
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Locale;
 
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import com.hardbacknutter.nevertoomanybooks.CommonSetup;
+import com.hardbacknutter.nevertoomanybooks.JSoupCommonMocks;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
-import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 
 class AmazonHtmlHandlerTest
-        extends CommonSetup {
+        extends JSoupCommonMocks {
 
-    private SearchEngine mSearchEngine;
+    private AmazonSearchEngine mSearchEngine;
 
     @BeforeEach
     public void setUp() {
         super.setUp();
-        mSearchEngine = new AmazonSearchEngine();
+        mSearchEngine = new AmazonSearchEngine(mContext);
         mSearchEngine.setCaller(new DummyCaller());
-    }
-
-    /** Helper: Load the data from the given file, and populate {@link #mRawData} */
-    private void loadData(final String locationHeader,
-                          final String filename) {
-        Document doc = null;
-        try (InputStream is = this.getClass().getResourceAsStream(filename)) {
-            assertNotNull(is);
-            doc = Jsoup.parse(is, "UTF-8", locationHeader);
-        } catch (@NonNull final IOException e) {
-            fail(e);
-        }
-        assertNotNull(doc);
-        assertTrue(doc.hasText());
-
-        final AmazonHtmlHandler handler = new AmazonHtmlHandler(mContext, mSearchEngine, doc);
-        // we've set the doc, so no internet download will be done.
-        final boolean[] fetchThumbnails = {false, false};
-        mRawData = handler.parseDoc(fetchThumbnails, mRawData);
-
-        assertFalse(mRawData.isEmpty());
-
-        System.out.println(mRawData);
     }
 
     @Test
@@ -94,7 +61,7 @@ class AmazonHtmlHandlerTest
         final String locationHeader = "https://www.amazon.co.uk/gp/product/0575090677";
         final String filename = "/amazon/0575090677.html";
 
-        loadData(locationHeader, filename);
+        loadData(mSearchEngine, "UTF-8", locationHeader, filename);
 
         assertEquals("Bone Silence", mRawData.getString(DBDefinitions.KEY_TITLE));
         assertEquals("978-0575090675", mRawData.getString(DBDefinitions.KEY_ISBN));
@@ -126,7 +93,7 @@ class AmazonHtmlHandlerTest
         final String locationHeader = "https://www.amazon.co.uk/gp/product/1473210208";
         final String filename = "/amazon/1473210208.html";
 
-        loadData(locationHeader, filename);
+        loadData(mSearchEngine, "UTF-8", locationHeader, filename);
 
         assertEquals("The Medusa Chronicles", mRawData.getString(DBDefinitions.KEY_TITLE));
         assertEquals("978-1473210202", mRawData.getString(DBDefinitions.KEY_ISBN));
@@ -160,7 +127,7 @@ class AmazonHtmlHandlerTest
         final String locationHeader = "https://www.amazon.fr/gp/product/2205057332";
         final String filename = "/amazon/2205057332.html";
 
-        loadData(locationHeader, filename);
+        loadData(mSearchEngine, "UTF-8", locationHeader, filename);
 
         assertEquals("Le retour à la terre, 1 : La vraie vie",
                      mRawData.getString(DBDefinitions.KEY_TITLE));

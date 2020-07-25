@@ -37,7 +37,6 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.ActionBar;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.ItemTouchHelper;
@@ -106,12 +105,10 @@ public class StyleGroupsActivity
         mItemTouchHelper = new ItemTouchHelper(sitHelperCallback);
         mItemTouchHelper.attachToRecyclerView(listView);
 
-        final ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null) {
-            actionBar.setSubtitle(getString(R.string.name_colon_value,
-                                            getString(R.string.pg_style_groups),
-                                            mModel.getStyle().getLabel(this)));
-        }
+        //noinspection ConstantConditions
+        getSupportActionBar().setSubtitle(getString(R.string.name_colon_value,
+                                                    getString(R.string.pg_style_groups),
+                                                    mModel.getStyle().getLabel(this)));
 
         if (savedInstanceState == null) {
             TipManager.display(this, R.string.tip_booklist_style_groups, null);

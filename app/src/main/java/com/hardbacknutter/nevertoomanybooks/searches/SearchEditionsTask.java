@@ -36,7 +36,6 @@ import androidx.annotation.WorkerThread;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.App;
@@ -47,6 +46,7 @@ import com.hardbacknutter.nevertoomanybooks.tasks.VMTask;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.NetworkUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 
 /**
  * Fetch alternative edition isbn's.
@@ -85,26 +85,33 @@ public class SearchEditionsTask
     @WorkerThread
     protected Collection<String> doWork() {
         Thread.currentThread().setName(TAG + mIsbn);
-        final Context context = App.getTaskContext();
+        final Context context = LocaleUtils.applyLocale(App.getTaskContext());
+        final Locale systemLocale = LocaleUtils.getSystemLocale();
+        final Locale userLocale = LocaleUtils.getUserLocale(context);
 
-        final Locale locale = LocaleUtils.getUserLocale(context);
         // keep the order, but eliminate duplicates.
-        final Collection<String> editions = new LinkedHashSet<>();
-        final List<Site> sites = SiteList.getList(context, locale, SiteList.Type.AltEditions)
-                                         .getSites(true);
-        for (Site site : sites) {
+        final Collection<String> isbnList = new LinkedHashSet<>();
+        // Always add the original isbn!
+        isbnList.add(mIsbn);
+
+        final SiteList siteList = SiteList.getList(context, systemLocale, userLocale,
+                                                   SiteList.Type.AltEditions);
+        for (Site site : siteList.getEnabledSites()) {
             final SearchEngine searchEngine = site.getSearchEngine(this);
             try {
                 // can we reach the site at all ?
-                NetworkUtils.ping(context, searchEngine.getUrl(context));
+                NetworkUtils.ping(context, searchEngine.getSiteUrl());
 
-                editions.addAll(((SearchEngine.AlternativeEditions) searchEngine)
-                                        .getAlternativeEditions(context, mIsbn));
+                isbnList.addAll(((SearchEngine.AlternativeEditions) searchEngine)
+                                        .searchAlternativeEditions(mIsbn));
 
-            } catch (@NonNull final IOException | RuntimeException e) {
+            } catch (@NonNull final CredentialsException | IOException | RuntimeException e) {
+                // Silently ignore individual failures, we'll return what we get from
+                // the sites that worked.
                 Logger.error(context, TAG, e);
+
             }
         }
-        return editions;
+        return isbnList;
     }
 }

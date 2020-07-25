@@ -53,6 +53,7 @@ public class BlankValidator
             dataManager.putString(key, s);
             return;
         }
-        throw new ValidatorException(R.string.vldt_blank_required_for_x, errorLabelId);
+        throw new ValidatorException(context.getString(R.string.vldt_blank_required_for_x,
+                                                       context.getString(errorLabelId)));
     }
 }

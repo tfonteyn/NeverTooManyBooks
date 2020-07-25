@@ -37,7 +37,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsAuth;
-import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsHandler;
+import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsManager;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 
@@ -52,28 +52,27 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsExceptio
 class OwnedBookCreateApiHandler
         extends ApiHandler {
 
-    private static final String URL = GoodreadsHandler.BASE_URL + "/owned_books.xml";
+    private static final String URL = GoodreadsManager.BASE_URL + "/owned_books.xml";
 
     /**
      * Constructor.
      *
-     * @param context Current context
-     * @param grAuth  Authentication handler
+     * @param appContext Application context
+     * @param grAuth     Authentication handler
      *
      * @throws CredentialsException with GoodReads
      */
-    public OwnedBookCreateApiHandler(@NonNull final Context context,
+    public OwnedBookCreateApiHandler(@NonNull final Context appContext,
                                      @NonNull final GoodreadsAuth grAuth)
             throws CredentialsException {
-        super(grAuth);
-        mGoodreadsAuth.hasValidCredentialsOrThrow(context);
+        super(appContext, grAuth);
+        mGrAuth.hasValidCredentialsOrThrow(appContext);
 
         // buildFilters();
     }
 
 
     /**
-     * @param context      Current context
      * @param isbn         ISBN to use, must be valid
      * @param dateAcquired (optional)
      *
@@ -83,13 +82,12 @@ class OwnedBookCreateApiHandler
      * @throws Http404Exception     the requested item was not found
      * @throws IOException          on other failures
      */
-    public long create(@NonNull final Context context,
-                       @NonNull final ISBN isbn,
+    public long create(@NonNull final ISBN isbn,
                        @Nullable final String dateAcquired)
             throws CredentialsException, Http404Exception, IOException {
 
-        IsbnToIdApiHandler isbnToIdApiHandler = new IsbnToIdApiHandler(context, mGoodreadsAuth);
-        long grBookId = isbnToIdApiHandler.isbnToId(isbn.asText());
+        final IsbnToIdApiHandler isbnToIdApiHandler = new IsbnToIdApiHandler(mAppContext, mGrAuth);
+        final long grBookId = isbnToIdApiHandler.isbnToId(isbn.asText());
         create(grBookId, dateAcquired);
         return grBookId;
     }
@@ -118,7 +116,7 @@ class OwnedBookCreateApiHandler
                        @Nullable final String dateAcquired)
             throws CredentialsException, Http404Exception, IOException {
 
-        Map<String, String> parameters = new HashMap<>();
+        final Map<String, String> parameters = new HashMap<>();
         parameters.put("owned_book[book_id]", String.valueOf(grBookId));
         if (dateAcquired != null) {
             parameters.put("owned_book[original_purchase_date]", dateAcquired);

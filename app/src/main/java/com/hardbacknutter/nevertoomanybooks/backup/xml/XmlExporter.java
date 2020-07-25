@@ -42,6 +42,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
@@ -62,6 +63,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PPref;
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
@@ -69,9 +71,9 @@ import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
+import com.hardbacknutter.nevertoomanybooks.searches.Site;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlUtils;
 
 /**
  * <ul>Supports:
@@ -166,8 +168,8 @@ public class XmlExporter
             }
         }
 
-        final Locale locale = LocaleUtils.getUserLocale(context);
-        mUnknownString = context.getString(R.string.unknown).toUpperCase(locale);
+        final Locale userLocale = LocaleUtils.getUserLocale(context);
+        mUnknownString = context.getString(R.string.unknown).toUpperCase(userLocale);
 
         mOptions = options;
         mUtcSinceDateTime = utcSinceDateTime;
@@ -573,6 +575,8 @@ public class XmlExporter
             int progressMaxCount = progressListener.getProgressMaxPos() + cursor.getCount();
             progressListener.setProgressMaxPos(progressMaxCount);
 
+            final List<Domain> externalIdDomains = Site.getExternalIdDomains();
+
             while (cursor.moveToNext() && !progressListener.isCancelled()) {
 
                 book.load(cursor, mDb);
@@ -649,21 +653,17 @@ public class XmlExporter
                 writer.write(XmlUtils.attr(DBDefinitions.KEY_EDITION_BITMASK,
                                            book.getLong(DBDefinitions.KEY_EDITION_BITMASK)));
 
+
                 // external ID's
-                //NEWTHINGS: add new site specific ID: add attribute
-                writer.write(XmlUtils.attr(DBDefinitions.KEY_EID_LIBRARY_THING,
-                                           book.getLong(DBDefinitions.KEY_EID_LIBRARY_THING)));
-                writer.write(XmlUtils.attr(DBDefinitions.KEY_EID_STRIP_INFO_BE,
-                                           book.getLong(DBDefinitions.KEY_EID_STRIP_INFO_BE)));
-                writer.write(XmlUtils.attr(DBDefinitions.KEY_EID_OPEN_LIBRARY,
-                                           book.getString(DBDefinitions.KEY_EID_OPEN_LIBRARY)));
-                writer.write(XmlUtils.attr(DBDefinitions.KEY_EID_ISFDB,
-                                           book.getLong(DBDefinitions.KEY_EID_ISFDB)));
-                writer.write(XmlUtils.attr(DBDefinitions.KEY_EID_GOODREADS_BOOK,
-                                           book.getLong(DBDefinitions.KEY_EID_GOODREADS_BOOK)));
+                for (Domain domain : externalIdDomains) {
+                    final String key = domain.getName();
+                    writer.write(XmlUtils.attr(key, book.getString(key)));
+                }
+                //NEWTHINGS: adding a new search engine: optional: add engine specific keys
                 writer.write(XmlUtils.attr(
                         DBDefinitions.KEY_UTC_LAST_SYNC_DATE_GOODREADS,
                         book.getString(DBDefinitions.KEY_UTC_LAST_SYNC_DATE_GOODREADS)));
+
 
                 // cross-linked with the loanee table
                 writer.write(XmlUtils.attr(DBDefinitions.KEY_LOANEE,

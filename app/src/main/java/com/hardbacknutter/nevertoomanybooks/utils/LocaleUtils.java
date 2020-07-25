@@ -393,10 +393,11 @@ public final class LocaleUtils {
             return null;
         }
 
-        String lang = inputLang.trim().toLowerCase(LocaleUtils.getUserLocale(context));
+        final Locale userLocale = LocaleUtils.getUserLocale(context);
+        String lang = inputLang.trim().toLowerCase(userLocale);
         final int len = lang.length();
         if (len > 3) {
-            lang = LanguageUtils.getISO3FromDisplayName(context, lang);
+            lang = LanguageUtils.getISO3FromDisplayName(context, userLocale, lang);
         }
 
         // THIS IS A MUST

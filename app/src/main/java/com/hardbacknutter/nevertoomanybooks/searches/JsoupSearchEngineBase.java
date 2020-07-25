@@ -41,15 +41,16 @@ import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.hardbacknutter.nevertoomanybooks.covers.ImageUtils;
+import org.jsoup.nodes.Document;
+
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 
-public abstract class JsoupBookHandlerBase
-        extends JsoupBase {
+public abstract class JsoupSearchEngineBase
+        extends SearchEngineBase {
 
     /** The description contains div tags which we remove to make the text shorter. */
     private static final Pattern DIV_PATTERN = Pattern.compile("(\n*\\s*<div>\\s*|\\s*</div>)");
@@ -57,6 +58,8 @@ public abstract class JsoupBookHandlerBase
     private static final Pattern AMPERSAND_PATTERN = Pattern.compile("&amp;", Pattern.LITERAL);
     /** a CR is replaced with a space. */
     private static final Pattern CR_PATTERN = Pattern.compile("\n", Pattern.LITERAL);
+
+
     /** accumulate all Authors for this book. */
     protected final ArrayList<Author> mAuthors = new ArrayList<>();
     /** accumulate all Series for this book. */
@@ -64,89 +67,62 @@ public abstract class JsoupBookHandlerBase
     /** accumulate all Publishers for this book. */
     protected final ArrayList<Publisher> mPublishers = new ArrayList<>();
 
+    @NonNull
+    private final JsoupLoader mJsoupLoader;
+
     /**
      * Constructor.
      *
-     * @param context      current context
-     * @param searchEngine to use
+     * @param appContext Application context
      */
-    protected JsoupBookHandlerBase(@NonNull final Context context,
-                                   @NonNull final SearchEngine searchEngine) {
-        super(context, searchEngine);
-    }
-
-    public boolean isMultiResult() {
-        return false;
+    protected JsoupSearchEngineBase(@NonNull final Context appContext) {
+        super(appContext);
+        mJsoupLoader = new JsoupLoader();
     }
 
     /**
-     * Fetch a book.
+     * Constructor.
      *
-     * @param nativeId       native book ID (as a String)
-     * @param fetchThumbnail Set to {@code true} if we want to get thumbnails
-     * @param bookData       Bundle to update <em>(passed in to allow mocking)</em>
-     *
-     * @return Bundle with book data, can be empty, but never {@code null}
-     *
-     * @throws SocketTimeoutException if the connection times out
+     * @param appContext Application context
      */
-    @NonNull
-    @WorkerThread
-    public abstract Bundle fetchByNativeId(@NonNull String nativeId,
-                                           @NonNull boolean[] fetchThumbnail,
-                                           @NonNull Bundle bookData)
-            throws SocketTimeoutException;
+    protected JsoupSearchEngineBase(@NonNull final Context appContext,
+                                    @NonNull final String charSetName) {
+        this(appContext);
+        mJsoupLoader.setCharSetName(charSetName);
+    }
 
-    /**
-     * Fetch a book.
-     *
-     * @param url            A fully qualified search url
-     * @param fetchThumbnail Set to {@code true} if we want to get thumbnails
-     * @param bookData       Bundle to update
-     *
-     * @return Bundle with book data, can be empty, but never {@code null}
-     *
-     * @throws SocketTimeoutException if the connection times out
-     */
-    @NonNull
     @WorkerThread
-    @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
-    public Bundle fetchUrl(@NonNull final String url,
-                           @NonNull final boolean[] fetchThumbnail,
-                           @NonNull final Bundle bookData)
+    @Nullable
+    public Document loadDocument(@NonNull final String url)
             throws SocketTimeoutException {
+        return mJsoupLoader.loadDocument(mAppContext, url, this);
+    }
 
-        if (loadPage(url) == null || mDoc == null) {
-            return bookData;
-        }
-
-        if (mSearchEngine.isCancelled()) {
-            return bookData;
-        }
-
-        if (isMultiResult()) {
-            // prevent looping.
-            return bookData;
-        }
-
-        return parseDoc(fetchThumbnail, bookData);
+    @WorkerThread
+    @Nullable
+    public Document redirect(@NonNull final String url)
+            throws SocketTimeoutException {
+        mJsoupLoader.reset();
+        return mJsoupLoader.loadDocument(mAppContext, url, this);
     }
 
     /**
-     * Parses the downloaded {@link #mDoc}.
+     * Parses the downloaded {@link org.jsoup.nodes.Document}.
      * We only parse the <strong>first book</strong> found.
      *
+     * @param document       to parse
      * @param fetchThumbnail Set to {@code true} if we want to get thumbnails
      * @param bookData       Bundle to update
      *
-     * @return Bundle with book data, can be empty, but never {@code null}
-     *
      * @throws SocketTimeoutException if the connection times out while fetching additional data
+     *                                <p>
+     *                                This is here as an abstract to make testing easier.
      */
-    @NonNull
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
-    public abstract Bundle parseDoc(@NonNull boolean[] fetchThumbnail,
-                                    @NonNull Bundle bookData)
+    @WorkerThread
+    public abstract void parse(@NonNull final Document document,
+                               @NonNull boolean[] fetchThumbnail,
+                               @NonNull Bundle bookData)
             throws SocketTimeoutException;
 
     /**
@@ -156,13 +132,14 @@ public abstract class JsoupBookHandlerBase
      * @param bookData Bundle to update
      * @param cIdx     0..n image index
      */
+    @WorkerThread
     protected void fetchCover(@NonNull final String url,
                               @NonNull final Bundle bookData,
                               @NonNull final String suffix,
                               @IntRange(from = 0) final int cIdx) {
 
-        final String tmpName = createTempCoverFileName(bookData, suffix, cIdx);
-        final String fileSpec = ImageUtils.saveImage(mContext, url, tmpName, mSearchEngine);
+        final String prefix = bookData.getString(DBDefinitions.KEY_ISBN, "");
+        final String fileSpec = saveImage(url, prefix, suffix, cIdx);
 
         if (fileSpec != null) {
             addCover(bookData, Book.BKEY_FILE_SPEC_ARRAY[cIdx], fileSpec);
@@ -178,18 +155,6 @@ public abstract class JsoupBookHandlerBase
         }
         imageList.add(fileSpec);
         bookData.putStringArrayList(key, imageList);
-    }
-
-    @NonNull
-    protected String createTempCoverFileName(@NonNull final Bundle bookData,
-                                             @NonNull final String suffix,
-                                             @IntRange(from = 0) final int cIdx) {
-        String name = bookData.getString(DBDefinitions.KEY_ISBN, "");
-        if (name.isEmpty()) {
-            // just use something...
-            name = String.valueOf(System.currentTimeMillis());
-        }
-        return name + suffix + '_' + cIdx;
     }
 
     /**
@@ -218,8 +183,8 @@ public abstract class JsoupBookHandlerBase
         return sb.toString();
     }
 
-    protected String cleanText(@NonNull final String textToClean) {
-        String text = textToClean.trim();
+    protected String cleanText(@NonNull final String s) {
+        String text = s.trim();
         // add more rules when needed.
         if (text.contains("&")) {
             text = AMPERSAND_PATTERN.matcher(text).replaceAll(Matcher.quoteReplacement("&"));

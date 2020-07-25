@@ -56,6 +56,7 @@ public class XmlResponseParser
     private static final String TAG = "XmlResponseParser";
 
     /** Temporary storage for inter-tag text. */
+    @SuppressWarnings("StringBufferField")
     private final StringBuilder mBuilder = new StringBuilder();
     /** Stack of parsed tags giving context to the XML parser. */
     private final List<ElementContext> mParents = new ArrayList<>();

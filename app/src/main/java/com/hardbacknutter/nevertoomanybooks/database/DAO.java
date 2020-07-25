@@ -75,6 +75,7 @@ import com.hardbacknutter.nevertoomanybooks.database.dbsync.Synchronizer;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.Synchronizer.SyncLock;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.TransactionException;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.ColumnInfo;
+import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.TableInfo;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
@@ -88,7 +89,8 @@ import com.hardbacknutter.nevertoomanybooks.entities.ItemWithTitle;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
-import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsHandler;
+import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsManager;
+import com.hardbacknutter.nevertoomanybooks.searches.Site;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 import com.hardbacknutter.nevertoomanybooks.utils.Csv;
 import com.hardbacknutter.nevertoomanybooks.utils.DateParser;
@@ -125,10 +127,6 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_DA
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_DESCRIPTION;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_EDITION_BITMASK;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_EID_GOODREADS_BOOK;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_EID_ISFDB;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_EID_LIBRARY_THING;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_EID_OPEN_LIBRARY;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_EID_STRIP_INFO_BE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FK_AUTHOR;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FK_BOOK;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FK_BOOKSHELF;
@@ -493,7 +491,6 @@ public class DAO
         super.finalize();
     }
 
-
     /**
      * Wrapper to {@link SynchronizedDb#beginTransaction(boolean)}.
      *
@@ -530,7 +527,6 @@ public class DAO
     public void setTransactionSuccessful() {
         sSyncedDb.setTransactionSuccessful();
     }
-
 
     /**
      * Create a new Book using the details provided.
@@ -1313,7 +1309,6 @@ public class DAO
         }
     }
 
-
     /**
      * Update a bookshelf.
      *
@@ -1492,7 +1487,6 @@ public class DAO
         }
     }
 
-
     /**
      * Update a Series.
      *
@@ -1614,7 +1608,6 @@ public class DAO
         return rowsAffected == 1;
     }
 
-
     /**
      * Update a Publisher.
      *
@@ -1733,7 +1726,6 @@ public class DAO
         }
         return rowsAffected == 1;
     }
-
 
     /**
      * Saves a list of {@link TocEntry} items.
@@ -1939,7 +1931,6 @@ public class DAO
         return rowsAffected == 1;
     }
 
-
     /**
      * Lend out a book / return a book.
      *
@@ -2010,7 +2001,6 @@ public class DAO
         }
     }
 
-
     /**
      * Create a new {@link BooklistStyle}.
      *
@@ -2057,7 +2047,6 @@ public class DAO
 
         return rowsAffected == 1;
     }
-
 
     /**
      * Purge anything that is no longer in use.
@@ -2126,7 +2115,6 @@ public class DAO
             stmt.executeUpdateDelete();
         }
     }
-
 
     /**
      * Count all books.
@@ -2228,7 +2216,6 @@ public class DAO
         }
     }
 
-
     /**
      * Return an Cursor with all Books selected by the passed arguments.
      *
@@ -2244,69 +2231,13 @@ public class DAO
                                       @Nullable final String[] selectionArgs,
                                       @Nullable final CharSequence orderByClause) {
 
-        // Developer: adding fields ? Now is a good time to update {@link Book#duplicate}/
-        // Note we could use TBL_BOOKS.dot("*")
-        // We'ld fetch the unneeded TITLE_OB field, but that would be ok.
-        // Nevertheless, listing the fields here gives a better understanding
-        final String sql =
-                SELECT_
-                + TBL_BOOKS.dotAs(KEY_PK_ID)
-                + ',' + TBL_BOOKS.dotAs(KEY_BOOK_UUID)
-                + ',' + TBL_BOOKS.dotAs(KEY_TITLE)
-                // publication data
-                + ',' + TBL_BOOKS.dotAs(KEY_ISBN)
-                + ',' + TBL_BOOKS.dotAs(KEY_TOC_BITMASK)
-                + ',' + TBL_BOOKS.dotAs(KEY_DATE_PUBLISHED)
-                + ',' + TBL_BOOKS.dotAs(KEY_PRINT_RUN)
-                + ',' + TBL_BOOKS.dotAs(KEY_PRICE_LISTED)
-                + ',' + TBL_BOOKS.dotAs(KEY_PRICE_LISTED_CURRENCY)
-                + ',' + TBL_BOOKS.dotAs(KEY_DATE_FIRST_PUBLICATION)
-                + ',' + TBL_BOOKS.dotAs(KEY_FORMAT)
-                + ',' + TBL_BOOKS.dotAs(KEY_COLOR)
-                + ',' + TBL_BOOKS.dotAs(KEY_GENRE)
-                + ',' + TBL_BOOKS.dotAs(KEY_LANGUAGE)
-                + ',' + TBL_BOOKS.dotAs(KEY_PAGES)
-                // Main/public description about the content/publication
-                + ',' + TBL_BOOKS.dotAs(KEY_DESCRIPTION)
+        final String sql = SqlSelectFullTable.SQL_BOOK
+                           + (whereClause != null && whereClause.length() > 0
+                              ? _WHERE_ + whereClause : "")
+                           + (orderByClause != null && orderByClause.length() > 0
+                              ? _ORDER_BY_ + orderByClause : "")
 
-                // partially edition info, partially user-owned info.
-                + ',' + TBL_BOOKS.dotAs(KEY_EDITION_BITMASK)
-                // user notes
-                + ',' + TBL_BOOKS.dotAs(KEY_PRIVATE_NOTES)
-                + ',' + TBL_BOOKS.dotAs(KEY_BOOK_CONDITION)
-                + ',' + TBL_BOOKS.dotAs(KEY_BOOK_CONDITION_COVER)
-                + ',' + TBL_BOOKS.dotAs(KEY_LOCATION)
-                + ',' + TBL_BOOKS.dotAs(KEY_SIGNED)
-                + ',' + TBL_BOOKS.dotAs(KEY_RATING)
-                + ',' + TBL_BOOKS.dotAs(KEY_READ)
-                + ',' + TBL_BOOKS.dotAs(KEY_READ_START)
-                + ',' + TBL_BOOKS.dotAs(KEY_READ_END)
-                + ',' + TBL_BOOKS.dotAs(KEY_DATE_ACQUIRED)
-                + ',' + TBL_BOOKS.dotAs(KEY_PRICE_PAID)
-                + ',' + TBL_BOOKS.dotAs(KEY_PRICE_PAID_CURRENCY)
-                // added/updated
-                + ',' + TBL_BOOKS.dotAs(KEY_UTC_ADDED)
-                + ',' + TBL_BOOKS.dotAs(KEY_UTC_LAST_UPDATED)
-                // external links
-                //NEWTHINGS: add new site specific ID: add column
-                + ',' + TBL_BOOKS.dotAs(KEY_EID_LIBRARY_THING)
-                + ',' + TBL_BOOKS.dotAs(KEY_EID_STRIP_INFO_BE)
-                + ',' + TBL_BOOKS.dotAs(KEY_EID_OPEN_LIBRARY)
-                + ',' + TBL_BOOKS.dotAs(KEY_EID_ISFDB)
-                + ',' + TBL_BOOKS.dotAs(KEY_EID_GOODREADS_BOOK)
-                + ',' + TBL_BOOKS.dotAs(KEY_UTC_LAST_SYNC_DATE_GOODREADS)
-
-                // COALESCE nulls to "" for the LEFT OUTER JOIN'ed tables
-                + ',' + "COALESCE(" + TBL_BOOK_LOANEE.dot(KEY_LOANEE) + ", '')" + _AS_ + KEY_LOANEE
-
-                + _FROM_ + TBL_BOOKS.ref() + TBL_BOOKS.leftOuterJoin(TBL_BOOK_LOANEE)
-
-                + (whereClause != null && whereClause.length() > 0
-                   ? _WHERE_ + whereClause : "")
-                + (orderByClause != null && orderByClause.length() > 0
-                   ? _ORDER_BY_ + orderByClause : "")
-
-                + _COLLATION;
+                           + _COLLATION;
 
         final TypedCursor cursor = (TypedCursor) sSyncedDb.rawQueryWithFactory(
                 EXT_CURSOR_FACTORY, sql, selectionArgs, null);
@@ -2424,7 +2355,7 @@ public class DAO
     }
 
     /**
-     * Return an Cursor with all Books for the given Goodreads book Id.
+     * Return an Cursor with all Books for the given Goodreads book ID.
      * <strong>Note:</strong> MAY RETURN MORE THAN ONE BOOK
      *
      * @param grBookId to retrieve
@@ -2860,12 +2791,12 @@ public class DAO
     /**
      * Find a {@link Series}, and return its ID. The incoming object is not modified.
      *
-     * @param context    Current context
-     * @param series     to find the id of
+     * @param context      Current context
+     * @param series       to find the id of
      * @param lookupLocale set to {@code true} to force a database lookup of the locale.
      *                     This can be (relatively) slow, and hence should be {@code false}
      *                     during for example an import.
-     * @param bookLocale Locale to use if the item has none set
+     * @param bookLocale   Locale to use if the item has none set
      *
      * @return the id, or 0 (i.e. 'new') when not found
      */
@@ -2919,12 +2850,12 @@ public class DAO
     /**
      * Find a {@link Publisher}, and return its ID. The incoming object is not modified.
      *
-     * @param context    Current context
-     * @param publisher  to find the id of
+     * @param context      Current context
+     * @param publisher    to find the id of
      * @param lookupLocale set to {@code true} to force a database lookup of the locale.
      *                     This can be (relatively) slow, and hence should be {@code false}
      *                     during for example an import.
-     * @param bookLocale Locale to use if the item has none set
+     * @param bookLocale   Locale to use if the item has none set
      *
      * @return the id, or 0 (i.e. 'new') when not found
      */
@@ -3314,12 +3245,12 @@ public class DAO
      * Note that the publication year is NOT used for comparing, under the assumption that
      * two search-sources can give different dates by mistake.
      *
-     * @param context    Current context
-     * @param tocEntry   tocEntry to search for
+     * @param context      Current context
+     * @param tocEntry     tocEntry to search for
      * @param lookupLocale set to {@code true} to force a database lookup of the locale.
      *                     This can be (relatively) slow, and hence should be {@code false}
      *                     during for example an import.
-     * @param bookLocale Locale to use if the item has none set
+     * @param bookLocale   Locale to use if the item has none set
      *
      * @return the id, or 0 (i.e. 'new') when not found
      */
@@ -3504,7 +3435,7 @@ public class DAO
      * Set the Goodreads book id for this book.
      *
      * @param bookId          the/our book id
-     * @param goodreadsBookId the Goodreads native book id
+     * @param goodreadsBookId the Goodreads book id
      */
     public void setGoodreadsBookId(final long bookId,
                                    final long goodreadsBookId) {
@@ -4132,7 +4063,7 @@ public class DAO
         }
 
         // Series and TOC Entries use the user Locale.
-        Locale userLocale = LocaleUtils.getUserLocale(context);
+        final Locale userLocale = LocaleUtils.getUserLocale(context);
 
         // We should use the locale from the 1st book in the series... but that is a huge overhead.
         try (Cursor cursor = sSyncedDb.rawQuery(SqlSelectFullTable.SERIES_TITLES, null)) {
@@ -4732,6 +4663,71 @@ public class DAO
                 // The index of KEY_PK_ID, KEY_TITLE, KEY_TITLE_OB is hardcoded - don't change!
                 SELECT_ + KEY_PK_ID + ',' + KEY_TITLE + ',' + KEY_TITLE_OB
                 + _FROM_ + TBL_TOC_ENTRIES.getName();
+
+        /**
+         * The SELECT and FROM clause for getting a book (list).
+         * <p>
+         */
+        private static final String SQL_BOOK;
+
+        static {
+            // Developer: adding fields ? Now is a good time to update {@link Book#duplicate}/
+            // Note we could use TBL_BOOKS.dot("*")
+            // We'ld fetch the unneeded TITLE_OB field, but that would be ok.
+            // Nevertheless, listing the fields here gives a better understanding
+            final StringBuilder sqlBookTmp = new StringBuilder(
+                    SELECT_ + TBL_BOOKS.dotAs(KEY_PK_ID)
+                    + ',' + TBL_BOOKS.dotAs(KEY_BOOK_UUID)
+                    + ',' + TBL_BOOKS.dotAs(KEY_TITLE)
+                    // publication data
+                    + ',' + TBL_BOOKS.dotAs(KEY_ISBN)
+                    + ',' + TBL_BOOKS.dotAs(KEY_TOC_BITMASK)
+                    + ',' + TBL_BOOKS.dotAs(KEY_DATE_PUBLISHED)
+                    + ',' + TBL_BOOKS.dotAs(KEY_PRINT_RUN)
+                    + ',' + TBL_BOOKS.dotAs(KEY_PRICE_LISTED)
+                    + ',' + TBL_BOOKS.dotAs(KEY_PRICE_LISTED_CURRENCY)
+                    + ',' + TBL_BOOKS.dotAs(KEY_DATE_FIRST_PUBLICATION)
+                    + ',' + TBL_BOOKS.dotAs(KEY_FORMAT)
+                    + ',' + TBL_BOOKS.dotAs(KEY_COLOR)
+                    + ',' + TBL_BOOKS.dotAs(KEY_GENRE)
+                    + ',' + TBL_BOOKS.dotAs(KEY_LANGUAGE)
+                    + ',' + TBL_BOOKS.dotAs(KEY_PAGES)
+                    // Main/public description about the content/publication
+                    + ',' + TBL_BOOKS.dotAs(KEY_DESCRIPTION)
+
+                    // partially edition info, partially user-owned info.
+                    + ',' + TBL_BOOKS.dotAs(KEY_EDITION_BITMASK)
+                    // user notes
+                    + ',' + TBL_BOOKS.dotAs(KEY_PRIVATE_NOTES)
+                    + ',' + TBL_BOOKS.dotAs(KEY_BOOK_CONDITION)
+                    + ',' + TBL_BOOKS.dotAs(KEY_BOOK_CONDITION_COVER)
+                    + ',' + TBL_BOOKS.dotAs(KEY_LOCATION)
+                    + ',' + TBL_BOOKS.dotAs(KEY_SIGNED)
+                    + ',' + TBL_BOOKS.dotAs(KEY_RATING)
+                    + ',' + TBL_BOOKS.dotAs(KEY_READ)
+                    + ',' + TBL_BOOKS.dotAs(KEY_READ_START)
+                    + ',' + TBL_BOOKS.dotAs(KEY_READ_END)
+                    + ',' + TBL_BOOKS.dotAs(KEY_DATE_ACQUIRED)
+                    + ',' + TBL_BOOKS.dotAs(KEY_PRICE_PAID)
+                    + ',' + TBL_BOOKS.dotAs(KEY_PRICE_PAID_CURRENCY)
+                    // added/updated
+                    + ',' + TBL_BOOKS.dotAs(KEY_UTC_ADDED)
+                    + ',' + TBL_BOOKS.dotAs(KEY_UTC_LAST_UPDATED));
+
+            for (Domain domain : Site.getExternalIdDomains()) {
+                sqlBookTmp.append(',').append(TBL_BOOKS.dotAs(domain.getName()));
+            }
+
+            //NEWTHINGS: adding a new search engine: optional: add engine specific keys
+            sqlBookTmp.append(',').append(TBL_BOOKS.dotAs(KEY_UTC_LAST_SYNC_DATE_GOODREADS));
+
+            SQL_BOOK = sqlBookTmp.toString()
+                       // COALESCE nulls to "" for the LEFT OUTER JOIN'ed tables
+                       + ',' + "COALESCE(" + TBL_BOOK_LOANEE.dot(KEY_LOANEE) + ", '')" + _AS_
+                       + KEY_LOANEE
+
+                       + _FROM_ + TBL_BOOKS.ref() + TBL_BOOKS.leftOuterJoin(TBL_BOOK_LOANEE);
+        }
     }
 
     /**
@@ -5006,7 +5002,7 @@ public class DAO
          * Base SELECT from {@link DBDefinitions#TBL_BOOKS} for the fields
          * we need to send a Book to Goodreads.
          * <p>
-         * Must be kept in sync with {@link GoodreadsHandler#sendOneBook}
+         * Must be kept in sync with {@link GoodreadsManager#sendOneBook}
          */
         private static final String BASE_SELECT =
                 SELECT_ + KEY_PK_ID

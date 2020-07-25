@@ -168,11 +168,11 @@ public final class TipManager {
      */
     public static void reset(@NonNull final Context context,
                              @NonNull final String prefix) {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        SharedPreferences.Editor ed = prefs.edit();
-        Locale locale = LocaleUtils.getSystemLocale();
+        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        final SharedPreferences.Editor ed = prefs.edit();
+        final Locale systemLocale = LocaleUtils.getSystemLocale();
         for (String key : prefs.getAll().keySet()) {
-            if (key.toLowerCase(locale).startsWith(prefix.toLowerCase(locale))) {
+            if (key.toLowerCase(systemLocale).startsWith(prefix.toLowerCase(systemLocale))) {
                 ed.remove(key);
             }
         }
@@ -362,7 +362,7 @@ public final class TipManager {
             // Setup the message; this is an optional View but present in the default layout.
             final TextView messageView = root.findViewById(R.id.content);
             if (messageView != null) {
-                String tipText = context.getString(stringId, args);
+                final String tipText = context.getString(stringId, args);
                 // allow links, start a browser (or whatever)
                 messageView.setText(LinkifyUtils.fromHtml(tipText));
                 messageView.setMovementMethod(LinkMovementMethod.getInstance());

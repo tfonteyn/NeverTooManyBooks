@@ -42,7 +42,7 @@ import java.util.Map;
 import org.xml.sax.helpers.DefaultHandler;
 
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsAuth;
-import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsHandler;
+import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsManager;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsWork;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlFilter;
@@ -57,7 +57,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlResponseParser;
 public class SearchBooksApiHandler
         extends ApiHandler {
 
-    private static final String URL = GoodreadsHandler.BASE_URL + "/search/index.xml";
+    private static final String URL = GoodreadsManager.BASE_URL + "/search/index.xml";
 
     /** List of GoodreadsWork objects that result from a search. */
     @NonNull
@@ -137,17 +137,17 @@ public class SearchBooksApiHandler
     /**
      * Constructor.
      *
-     * @param context Current context
-     * @param grAuth  Authentication handler
+     * @param appContext Application context
+     * @param grAuth     Authentication handler
      *
      * @throws CredentialsException with GoodReads
      */
     @WorkerThread
-    public SearchBooksApiHandler(@NonNull final Context context,
+    public SearchBooksApiHandler(@NonNull final Context appContext,
                                  @NonNull final GoodreadsAuth grAuth)
             throws CredentialsException {
-        super(grAuth);
-        mGoodreadsAuth.hasValidCredentialsOrThrow(context);
+        super(appContext, grAuth);
+        mGrAuth.hasValidCredentialsOrThrow(appContext);
 
         buildFilters();
     }
@@ -168,14 +168,14 @@ public class SearchBooksApiHandler
     public List<GoodreadsWork> search(@NonNull final String query)
             throws CredentialsException, Http404Exception, IOException {
 
-        Map<String, String> parameters = new HashMap<>();
+        final Map<String, String> parameters = new HashMap<>();
         parameters.put("q", query.trim());
-        parameters.put("key", mGoodreadsAuth.getDevKey());
+        parameters.put("key", mGrAuth.getDevKey());
 
         // where the handlers will add data
         mWorks.clear();
 
-        DefaultHandler handler = new XmlResponseParser(mRootFilter);
+        final DefaultHandler handler = new XmlResponseParser(mRootFilter);
         executeGet(URL, parameters, false, handler);
 
         // Return parsed results.
@@ -184,19 +184,16 @@ public class SearchBooksApiHandler
 
     @SuppressWarnings("unused")
     public long getResultsStart() {
-
         return mResultsStart;
     }
 
     @SuppressWarnings("unused")
     public long getTotalResults() {
-
         return mTotalResults;
     }
 
     @SuppressWarnings("unused")
     public long getResultsEnd() {
-
         return mResultsEnd;
     }
 

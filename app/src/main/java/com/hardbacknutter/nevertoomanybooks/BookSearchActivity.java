@@ -88,8 +88,8 @@ public class BookSearchActivity
                 replaceFragment(containerViewId, BookSearchByTextFragment.class, tag);
                 return;
 
-            case BookSearchByNativeIdFragment.TAG:
-                replaceFragment(containerViewId, BookSearchByNativeIdFragment.class, tag);
+            case BookSearchByExternalIdFragment.TAG:
+                replaceFragment(containerViewId, BookSearchByExternalIdFragment.class, tag);
                 return;
 
             case UpdateFieldsFragment.TAG:

@@ -43,7 +43,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsAuth;
-import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsHandler;
+import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsManager;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GrStatus;
 import com.hardbacknutter.nevertoomanybooks.goodreads.api.Http404Exception;
 import com.hardbacknutter.nevertoomanybooks.tasks.VMTask;
@@ -106,10 +106,10 @@ public class GrSendOneBookTask
                     }
                     publishProgressStep(0, context.getString(R.string.progress_msg_sending));
 
-                    final GoodreadsHandler apiHandler = new GoodreadsHandler(grAuth);
+                    final GoodreadsManager grManager = new GoodreadsManager(context, grAuth);
                     final DataHolder bookData = new CursorRow(cursor);
                     @GrStatus.Status
-                    final int status = apiHandler.sendOneBook(context, db, bookData);
+                    final int status = grManager.sendOneBook(db, bookData);
                     if (status == GrStatus.SUCCESS) {
                         // Record the update
                         db.setGoodreadsSyncDate(mBookId);

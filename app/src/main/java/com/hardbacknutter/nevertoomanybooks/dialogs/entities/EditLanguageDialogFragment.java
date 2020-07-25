@@ -100,10 +100,14 @@ public class EditLanguageDialogFragment
 
     @Override
     @Nullable
-    Bundle onSave() {
+    Bundle onSave(@NonNull final String originalText,
+                  @NonNull final String currentText) {
         //noinspection ConstantConditions
-        mDb.renameLanguage(mOriginalText,
-                           LanguageUtils.getISO3FromDisplayName(getContext(), mCurrentText));
+        final Locale userLocale = LocaleUtils.getUserLocale(getContext());
+        final String iso = LanguageUtils
+                .getISO3FromDisplayName(getContext(), userLocale, currentText);
+        //noinspection ConstantConditions
+        mDb.renameLanguage(originalText, iso);
         return null;
     }
 }

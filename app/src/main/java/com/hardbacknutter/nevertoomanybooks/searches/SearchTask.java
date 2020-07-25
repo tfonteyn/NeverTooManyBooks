@@ -39,24 +39,25 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.Objects;
 
-import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.tasks.LTask;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.ProgressMessage;
-import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.NetworkUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 
 /**
  * Searches a single {@link SearchEngine}.
+ * <p>
+ * When a context is needed, this class should call {@link SearchEngine#getAppContext()}
+ * to ensure it runs/uses in the same context as the engine it is using.
  */
 public class SearchTask
         extends LTask<Bundle> {
 
-    static final int BY_NATIVE_ID = 0;
+    static final int BY_EXTERNAL_ID = 0;
     static final int BY_ISBN = 1;
     static final int BY_BARCODE = 2;
     static final int BY_TEXT = 3;
@@ -77,7 +78,7 @@ public class SearchTask
     private int mBy;
     /** Search criteria. Usage depends on {@link #mBy}. */
     @Nullable
-    private String mNativeId;
+    private String mExternalId;
     /** Search criteria. Usage depends on {@link #mBy}. */
     @Nullable
     private String mIsbnStr;
@@ -94,27 +95,28 @@ public class SearchTask
     /**
      * Constructor. Will search according to passed parameters.
      * <ol>
-     *      <li>native id</li>
+     *      <li>external id</li>
      *      <li>valid ISBN</li>
      *      <li>valid barcode</li>
      *      <li>text</li>
      * </ol>
      *
-     * @param context      Localized context
-     * @param siteId       identifier
      * @param searchEngine the search site engine
      * @param taskListener for the results
      */
-    SearchTask(@NonNull final Context context,
-               @SearchSites.Id final int siteId,
-               @NonNull final SearchEngine searchEngine,
+    SearchTask(@NonNull final SearchEngine searchEngine,
                @NonNull final TaskListener<Bundle> taskListener) {
-        super(siteId, taskListener);
+        super(searchEngine.getId(), taskListener);
         mSearchEngine = searchEngine;
         mSearchEngine.setCaller(this);
 
-        String name = mSearchEngine.getName(context);
-        mProgressTitle = context.getString(R.string.progress_msg_searching_site, name);
+        mProgressTitle = mSearchEngine.getAppContext().getString(
+                R.string.progress_msg_searching_site, searchEngine.getName());
+    }
+
+    @NonNull
+    public SearchEngine getSearchEngine() {
+        return mSearchEngine;
     }
 
     void setSearchBy(@By final int by) {
@@ -124,10 +126,10 @@ public class SearchTask
     /**
      * Set/reset the criteria.
      *
-     * @param nativeId to search for
+     * @param externalId to search for
      */
-    void setNativeId(@Nullable final String nativeId) {
-        mNativeId = nativeId;
+    void setExternalId(@Nullable final String externalId) {
+        mExternalId = externalId;
     }
 
     /**
@@ -188,14 +190,14 @@ public class SearchTask
     @Override
     @NonNull
     protected Bundle doInBackground(@Nullable final Void... voids) {
-        final Context context = LocaleUtils.applyLocale(App.getTaskContext());
-        Thread.currentThread().setName(TAG + ' ' + mSearchEngine.getName(context));
+        final Context context = mSearchEngine.getAppContext();
+        Thread.currentThread().setName(TAG + ' ' + mSearchEngine.getName());
 
         publishProgress(new ProgressMessage(getTaskId(), mProgressTitle));
 
         try {
             // can we reach the site at all ?
-            NetworkUtils.ping(context, mSearchEngine.getUrl(context));
+            NetworkUtils.ping(context, mSearchEngine.getSiteUrl());
 
             // sanity check, see #setFetchThumbnail
             if (mFetchThumbnail == null) {
@@ -204,34 +206,32 @@ public class SearchTask
 
             final Bundle bookData;
             switch (mBy) {
-                case BY_NATIVE_ID:
-                    Objects.requireNonNull(mNativeId, ErrorMsg.NULL_NATIVE_ID);
-                    bookData = ((SearchEngine.ByNativeId) mSearchEngine)
-                            .searchByNativeId(context, mNativeId, mFetchThumbnail);
+                case BY_EXTERNAL_ID:
+                    Objects.requireNonNull(mExternalId, ErrorMsg.NULL_EXTERNAL_ID);
+                    bookData = ((SearchEngine.ByExternalId) mSearchEngine)
+                            .searchByExternalId(mExternalId, mFetchThumbnail);
                     break;
 
                 case BY_ISBN:
                     Objects.requireNonNull(mIsbnStr, ErrorMsg.NULL_ISBN_STR);
                     bookData = ((SearchEngine.ByIsbn) mSearchEngine)
-                            .searchByIsbn(context, mIsbnStr, mFetchThumbnail);
+                            .searchByIsbn(mIsbnStr, mFetchThumbnail);
                     break;
 
                 case BY_BARCODE:
                     Objects.requireNonNull(mIsbnStr, ErrorMsg.NULL_ISBN_STR);
                     bookData = ((SearchEngine.ByBarcode) mSearchEngine)
-                            .searchByBarcode(context, mIsbnStr, mFetchThumbnail);
+                            .searchByBarcode(mIsbnStr, mFetchThumbnail);
                     break;
 
                 case BY_TEXT:
                     bookData = ((SearchEngine.ByText) mSearchEngine)
-                            .search(context, mIsbnStr, mAuthor, mTitle, mPublisher,
-                                    mFetchThumbnail);
+                            .search(mIsbnStr, mAuthor, mTitle, mPublisher, mFetchThumbnail);
                     break;
 
                 default:
                     // we should never get here...
-                    String name = mSearchEngine.getName(context);
-                    throw new IllegalStateException("SearchEngine " + name
+                    throw new IllegalStateException("SearchEngine " + mSearchEngine.getName()
                                                     + " does not implement By=" + mBy);
             }
 
@@ -241,15 +241,14 @@ public class SearchTask
             }
             return bookData;
 
-        } catch (@NonNull final CredentialsException | IOException
-                | SearchEngine.SearchException | RuntimeException e) {
+        } catch (@NonNull final CredentialsException | IOException | RuntimeException e) {
             Logger.error(context, TAG, e);
             mException = e;
             return new Bundle();
         }
     }
 
-    @IntDef({BY_NATIVE_ID, BY_ISBN, BY_BARCODE, BY_TEXT})
+    @IntDef({BY_EXTERNAL_ID, BY_ISBN, BY_BARCODE, BY_TEXT})
     @Retention(RetentionPolicy.SOURCE)
     @interface By {
 

@@ -784,9 +784,9 @@
     <string name="pt_edit_book_authors_series_popup">on popup screens</string>
 
 
-    <!-- SwitchPreference - Some web sites expose their native website book id.
+    <!-- SwitchPreference - Some web sites expose their website book id.
          Allow the user to lookup books using such an ID, and manually modify them. -->
-    <string name="pt_allow_edit_native_id">Allow editing native website book id</string>
+    <string name="pt_allow_edit_external_id">Allow editing website book id</string>
 
 
     <string name="pt_primary_author_type">Primary author type</string>
@@ -938,7 +938,7 @@
     <!-- Booklist FAB menu option -->
     <string name="fab_add_book_manually">Add Manually</string>
     <!-- Booklist FAB menu option / screen title -->
-    <string name="fab_add_book_by_native_id">Website book id</string>
+    <string name="fab_add_book_by_external_id">Website book id</string>
 
     <!-- ####################################################################################### -->
     <!-- == Menu strings. Some of these are re-used for Dialog titles. == -->

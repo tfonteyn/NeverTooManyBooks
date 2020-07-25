@@ -101,9 +101,13 @@ public class FileManager {
                                 @IntRange(from = 0) final int cIdx,
                                 @NonNull final ImageFileInfo.Size... sizes) {
 
-        // we will disable sites on the fly for the *current* search without modifying the list.
-        @SearchSites.Id
-        int currentSearchSites = mSiteList.getEnabledSites();
+        // We will disable sites on the fly for the *current* search without
+        // modifying the list by using a simple bitmask.
+        @SearchSites.EngineId
+        int currentSearchSites = 0;
+        for (Site site : mSiteList.getEnabledSites()) {
+            currentSearchSites = currentSearchSites | site.engineId;
+        }
 
         // We need to use the size as the outer loop.
         // The idea is to check all sites for the same size first.
@@ -131,9 +135,9 @@ public class FileManager {
                 mFiles.remove(key);
             }
 
-            for (Site site : mSiteList.getSites(true)) {
+            for (Site site : mSiteList.getEnabledSites()) {
                 // Should we search this site ?
-                if ((currentSearchSites & site.id) != 0) {
+                if ((currentSearchSites & site.engineId) != 0) {
 
                     if (caller.isCancelled()) {
                         return new ImageFileInfo(isbn);
@@ -141,18 +145,17 @@ public class FileManager {
 
                     final SearchEngine searchEngine = site.getSearchEngine(caller);
                     if (searchEngine instanceof SearchEngine.CoverByIsbn
-                        && searchEngine.isAvailable(context)) {
+                        && searchEngine.isAvailable()) {
                         if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVER_BROWSER_DOWNLOADS) {
                             Log.d(TAG, "download|TRYING"
                                        + "|isbn=" + isbn
                                        + "|size=" + size
-                                       + "|engine=" + searchEngine.getName(context)
-                                 );
+                                       + "|searchEngine=" + searchEngine.getName());
                         }
 
                         @Nullable
                         final String fileSpec = ((SearchEngine.CoverByIsbn) searchEngine)
-                                .searchCoverImageByIsbn(context, isbn, cIdx, size);
+                                .searchCoverImageByIsbn(isbn, cIdx, size);
 
                         imageFileInfo = new ImageFileInfo(isbn, fileSpec, size);
 
@@ -161,32 +164,28 @@ public class FileManager {
 
                             if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVER_BROWSER_DOWNLOADS) {
                                 Log.d(TAG, "download|SUCCESS"
-                                           + "|isbn=" + isbn
-                                           + "|size=" + size
-                                           + "|engine=" + searchEngine.getName(context)
-                                           + "|fileSpec=" + fileSpec);
+                                           + "|searchEngine=" + searchEngine.getName()
+                                           + "|imageFileInfo=" + imageFileInfo);
                             }
                             // abort search, we got an image
                             return imageFileInfo;
 
-                        } else if (BuildConfig.DEBUG
-                                   && DEBUG_SWITCHES.COVER_BROWSER_DOWNLOADS) {
+                        } else if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVER_BROWSER_DOWNLOADS) {
                             Log.d(TAG, "download|NO GOOD"
-                                       + "|isbn=" + isbn
-                                       + "|size=" + size
-                                       + "|engine=" + searchEngine.getName(context)
-                                 );
+                                       + "|searchEngine=" + searchEngine.getName()
+                                       + "|imageFileInfo=" + imageFileInfo);
                         }
 
                         // if the site we just searched only supports one image,
                         // disable it for THIS search
-                        if (!((SearchEngine.CoverByIsbn) searchEngine).supportsMultipleSizes()) {
-                            currentSearchSites &= ~site.id;
+                        if (!((SearchEngine.CoverByIsbn) searchEngine)
+                                .supportsMultipleCoverSizes()) {
+                            currentSearchSites &= ~site.engineId;
                         }
                     } else {
                         // if the site we just searched was not available,
                         // disable it for THIS search
-                        currentSearchSites &= ~site.id;
+                        currentSearchSites &= ~site.engineId;
                     }
                 }
                 // loop for next site

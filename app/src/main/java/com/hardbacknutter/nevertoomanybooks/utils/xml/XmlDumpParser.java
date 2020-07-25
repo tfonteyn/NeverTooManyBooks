@@ -35,13 +35,14 @@ import androidx.annotation.NonNull;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.Locator;
+import org.xml.sax.helpers.DefaultHandler;
 
 /**
  * DEBUG only.
  */
 @SuppressLint("LogConditional")
 public class XmlDumpParser
-        extends SearchHandler {
+        extends DefaultHandler {
 
     /** Log tag. */
     private static final String TAG = "XmlDumpParser";
@@ -137,7 +138,6 @@ public class XmlDumpParser
      * @return new empty bundle
      */
     @NonNull
-    @Override
     public Bundle getResult() {
         return new Bundle();
     }

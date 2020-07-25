@@ -31,7 +31,7 @@ import java.util.Locale;
 
 import org.junit.jupiter.api.Test;
 
-import com.hardbacknutter.nevertoomanybooks.CommonSetup;
+import com.hardbacknutter.nevertoomanybooks.CommonMocks;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.MoneyFormatter;
 import com.hardbacknutter.nevertoomanybooks.utils.Money;
@@ -43,7 +43,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  * decimal separator and thousands separator.
  */
 class MoneyFormatterTest
-        extends CommonSetup {
+        extends CommonMocks {
 
     @Test
     void format00() {

@@ -42,7 +42,7 @@ import org.xml.sax.helpers.DefaultHandler;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsAuth;
-import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsHandler;
+import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsManager;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsShelf;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlDumpParser;
@@ -62,21 +62,21 @@ public class ReviewEditApiHandler
      * <p>
      * 1: review id
      */
-    private static final String URL = GoodreadsHandler.BASE_URL + "/review/%1$s.xml";
+    private static final String URL = GoodreadsManager.BASE_URL + "/review/%1$s.xml";
 
     /**
      * Constructor.
      *
-     * @param context Current context
-     * @param grAuth  Authentication handler
+     * @param appContext Application context
+     * @param grAuth     Authentication handler
      *
      * @throws CredentialsException with GoodReads
      */
-    public ReviewEditApiHandler(@NonNull final Context context,
+    public ReviewEditApiHandler(@NonNull final Context appContext,
                                 @NonNull final GoodreadsAuth grAuth)
             throws CredentialsException {
-        super(grAuth);
-        mGoodreadsAuth.hasValidCredentialsOrThrow(context);
+        super(appContext, grAuth);
+        mGrAuth.hasValidCredentialsOrThrow(appContext);
 
         // buildFilters();
     }

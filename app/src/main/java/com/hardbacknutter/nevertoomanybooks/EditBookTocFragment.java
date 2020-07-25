@@ -125,8 +125,8 @@ public class EditBookTocFragment
      * ISFDB editions of a book(isbn).
      * We'll try them one by one if the user asks for a re-try.
      */
-    @Nullable
-    private List<Edition> mIsfdbEditions;
+    @NonNull
+    private final List<Edition> mIsfdbEditions = new ArrayList<>();
     private DiacriticArrayAdapter<String> mAuthorAdapter;
     /** Stores the item position in the list while we're editing that item. */
     @Nullable
@@ -190,7 +190,7 @@ public class EditBookTocFragment
 
                 @Override
                 public void searchNextEdition() {
-                    onSearchNextEdition();
+                    searchIsfdb();
                 }
             };
 
@@ -571,22 +571,14 @@ public class EditBookTocFragment
 
     /**
      * We got one or more editions from ISFDB.
-     * Stores the url's locally as the user might want to try the next in line
      */
     private void onIsfdbEditions(@NonNull final FinishedMessage<List<Edition>> message) {
         if (message.isNewEvent()) {
-            mIsfdbEditions = message.result != null ? message.result : new ArrayList<>();
-            searchIsfdb();
-        }
-    }
-
-    /**
-     * Start a task to get the next edition of this book (that we know of).
-     */
-    void onSearchNextEdition() {
-        if (mIsfdbEditions != null && !mIsfdbEditions.isEmpty()) {
-            // remove the top one, and try again
-            mIsfdbEditions.remove(0);
+            // Stores the url's locally as the user might want to try the next in line
+            mIsfdbEditions.clear();
+            if (message.result != null) {
+                mIsfdbEditions.addAll(message.result);
+            }
             searchIsfdb();
         }
     }
@@ -625,10 +617,9 @@ public class EditBookTocFragment
             }
 
             // finally the TOC itself:  display it for the user to approve
-            final boolean hasOtherEditions =
-                    (mIsfdbEditions != null) && (mIsfdbEditions.size() > 1);
+            // If there are more editions, the neutral button will allow to fetch the next one.
             ConfirmTocDialogFragment
-                    .newInstance(message.result, hasOtherEditions)
+                    .newInstance(message.result, !mIsfdbEditions.isEmpty())
                     .show(getChildFragmentManager(), ConfirmTocDialogFragment.TAG);
         }
     }
@@ -642,17 +633,18 @@ public class EditBookTocFragment
         }
 
         // append the new data
-        // theoretically we may create duplicates, practical chance is neglectable.
-        // And if we did, they will get weeded out when saved to the DAO
+        // can create duplicates if the user mixes manual input with automatic (or 2 x automatic...)
+        // They will get weeded out when saved to the DAO
         mList.addAll(tocEntries);
         mListAdapter.notifyDataSetChanged();
     }
 
     private void searchIsfdb() {
-        if (mIsfdbEditions != null && !mIsfdbEditions.isEmpty()) {
+        if (!mIsfdbEditions.isEmpty()) {
             Snackbar.make(mVb.getRoot(), R.string.progress_msg_connecting,
                           Snackbar.LENGTH_LONG).show();
-            mIsfdbGetBookTask.search(mIsfdbEditions);
+            mIsfdbGetBookTask.search(mIsfdbEditions.get(0));
+            mIsfdbEditions.remove(0);
         } else {
             Snackbar.make(mVb.getRoot(), R.string.warning_no_editions,
                           Snackbar.LENGTH_LONG).show();

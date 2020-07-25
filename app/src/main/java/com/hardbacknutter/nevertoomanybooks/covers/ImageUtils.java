@@ -51,7 +51,6 @@ import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.tasks.TerminatorConnection;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
@@ -261,24 +260,14 @@ public final class ImageUtils {
         }
     }
 
-    @Nullable
-    @WorkerThread
-    public static String saveImage(@NonNull final Context context,
-                                   @NonNull final String url,
-                                   @NonNull final String name,
-                                   @NonNull final SearchEngine searchEngine) {
-        return saveImage(context, url, name,
-                         searchEngine.getConnectTimeoutMs(),
-                         searchEngine.getReadTimeoutMs(),
-                         searchEngine.getThrottler());
-    }
-
     /**
      * Given a URL, get an image and save to a file. Called/run in a background task.
      *
      * @param context        Application context
      * @param url            Image file URL
-     * @param name           for the file.
+     * @param prefix         for the filename
+     * @param suffix         for the filename
+     * @param cIdx           0..n image index
      * @param connectTimeout in milliseconds
      * @param readTimeout    in milliseconds
      * @param throttler      (optional) {@link Throttler} to use
@@ -289,12 +278,26 @@ public final class ImageUtils {
     @WorkerThread
     public static String saveImage(@NonNull final Context context,
                                    @NonNull final String url,
-                                   @NonNull final String name,
+                                   @NonNull final String prefix,
+                                   @NonNull final String suffix,
+                                   @IntRange(from = 0) final int cIdx,
                                    @IntRange(from = 0) final int connectTimeout,
                                    @IntRange(from = 0) final int readTimeout,
                                    @Nullable final Throttler throttler) {
 
-        File file = AppDir.Cache.getFile(context, name + ".jpg");
+
+        // We don't use {@code File.createTempFile(prefix, suffix);} because we
+        // want a NAME (not a file). The actual file will be in a fixed directory,
+        // and not in the system temp folder.
+        final String tmpName;
+        if (!prefix.isEmpty()) {
+            tmpName = prefix + suffix + '_' + cIdx;
+        } else {
+            // just use something...
+            tmpName = System.currentTimeMillis() + suffix + '_' + cIdx;
+        }
+
+        File file = AppDir.Cache.getFile(context, tmpName + ".jpg");
         try {
             if (url.startsWith(DATA_IMAGE_JPEG_BASE_64)) {
                 try (OutputStream os = new FileOutputStream(file)) {

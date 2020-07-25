@@ -36,8 +36,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebSettings;
-import android.webkit.WebView;
-import android.widget.EditText;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -48,6 +46,7 @@ import java.util.Locale;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedStatement;
+import com.hardbacknutter.nevertoomanybooks.databinding.FragmentSqliteShellBinding;
 
 /**
  * A crude sql shell.
@@ -73,14 +72,15 @@ public class SqliteShellFragment
             + "SELECT 'T' AS T, tbl_name FROM sqlite_temp_master WHERE type='table'"
             + " ORDER BY tbl_name";
 
-    private EditText mInputView;
-    private WebView mOutputView;
-
     private boolean mAllowUpdates;
+
+    /** View binding. */
+    private FragmentSqliteShellBinding mVb;
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
 
         final Bundle args = getArguments();
         if (args != null) {
@@ -92,10 +92,8 @@ public class SqliteShellFragment
     public View onCreateView(@NonNull final LayoutInflater inflater,
                              @Nullable final ViewGroup container,
                              @Nullable final Bundle savedInstanceState) {
-        final View view = inflater.inflate(R.layout.fragment_sqlite_shell, container, false);
-        mInputView = view.findViewById(R.id.input);
-        mOutputView = view.findViewById(R.id.output);
-        return view;
+        mVb = FragmentSqliteShellBinding.inflate(inflater, container, false);
+        return mVb.getRoot();
     }
 
     @Override
@@ -103,8 +101,8 @@ public class SqliteShellFragment
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        final WebSettings settings = mOutputView.getSettings();
-        settings.setTextZoom(50);
+        final WebSettings settings = mVb.output.getSettings();
+        settings.setTextZoom(75);
     }
 
 //    private void textSmaller() {
@@ -116,12 +114,6 @@ public class SqliteShellFragment
 //        final WebSettings settings = outputView.getSettings();
 //        settings.setTextZoom(settings.getTextZoom() + 10);
 //    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        setHasOptionsMenu(true);
-    }
 
     @Override
     public void onCreateOptionsMenu(@NonNull final Menu menu,
@@ -142,7 +134,7 @@ public class SqliteShellFragment
     public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
         switch (item.getItemId()) {
             case R.id.MENU_DEBUG_SQ_SHELL_RUN: {
-                executeSql(mInputView.getText().toString().trim());
+                executeSql(mVb.input.getText().toString().trim());
                 return true;
             }
             case R.id.MENU_DEBUG_SQ_SHELL_LIST_TABLES: {
@@ -166,12 +158,12 @@ public class SqliteShellFragment
                     try (SynchronizedStatement stmt = DAO.getSyncDb().compileStatement(sql)) {
                         final int rowsAffected = stmt.executeUpdateDelete();
                         final String result = STR_ROWS_AFFECTED + rowsAffected;
-                        mOutputView.loadDataWithBaseURL(null, result,
-                                                        TEXT_HTML, UTF_8, null);
+                        mVb.output.loadDataWithBaseURL(null, result,
+                                                       TEXT_HTML, UTF_8, null);
                     }
                 } else {
-                    mOutputView.loadDataWithBaseURL(null, STR_UPDATES_NOT_ALLOWED,
-                                                    TEXT_HTML, UTF_8, null);
+                    mVb.output.loadDataWithBaseURL(null, STR_UPDATES_NOT_ALLOWED,
+                                                   TEXT_HTML, UTF_8, null);
                 }
             } else {
                 try (Cursor cursor = DAO.getSyncDb().rawQuery(sql, null)) {
@@ -198,15 +190,15 @@ public class SqliteShellFragment
                     }
                     sb.append("</table>");
 
-                    mOutputView.loadDataWithBaseURL(null, sb.toString(),
-                                                    TEXT_HTML, UTF_8, null);
+                    mVb.output.loadDataWithBaseURL(null, sb.toString(),
+                                                   TEXT_HTML, UTF_8, null);
                 }
             }
         } catch (@NonNull final Exception e) {
             //noinspection ConstantConditions
             getActivity().setTitle("");
-            mOutputView.loadDataWithBaseURL(null, e.getLocalizedMessage(),
-                                            TEXT_HTML, UTF_8, null);
+            mVb.output.loadDataWithBaseURL(null, e.getLocalizedMessage(),
+                                           TEXT_HTML, UTF_8, null);
         }
     }
 }

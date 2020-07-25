@@ -28,14 +28,11 @@
 package com.hardbacknutter.nevertoomanybooks.searches.openlibrary;
 
 import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.annotation.WorkerThread;
 
@@ -48,7 +45,6 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.Locale;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -56,14 +52,14 @@ import org.json.JSONObject;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageFileInfo;
-import com.hardbacknutter.nevertoomanybooks.covers.ImageUtils;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
-import com.hardbacknutter.nevertoomanybooks.tasks.Canceller;
+import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineBase;
+import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.tasks.TerminatorConnection;
 import com.hardbacknutter.nevertoomanybooks.utils.DateParser;
 
@@ -97,17 +93,21 @@ import com.hardbacknutter.nevertoomanybooks.utils.DateParser;
  * </ul>
  * Below is a rudimentary "data" implementation. "details" was tested with curl.
  */
+@SearchEngine.Configuration
+        (id = SearchSites.OPEN_LIBRARY,
+         nameResId = R.string.site_open_library,
+         url = "https://openlibrary.org",
+         prefKey = "openlibrary",
+         domainKey = DBDefinitions.KEY_EID_OPEN_LIBRARY,
+         domainViewId = R.id.site_open_library,
+         domainMenuId = R.id.MENU_VIEW_BOOK_AT_OPEN_LIBRARY,
+         supportsMultipleCoverSizes = true
+        )
 public class OpenLibrarySearchEngine
-        implements SearchEngine,
-                   SearchEngine.ByIsbn,
-                   SearchEngine.ByNativeId,
+        extends SearchEngineBase
+        implements SearchEngine.ByIsbn,
+                   SearchEngine.ByExternalId,
                    SearchEngine.CoverByIsbn {
-
-    /** base urls. */
-    private static final String BASE_URL = "https://openlibrary.org";
-
-    /** Log tag. */
-    private static final String TAG = "OpenLibrarySearchEngine";
 
     /**
      * bibkeys
@@ -133,7 +133,7 @@ public class OpenLibrarySearchEngine
      * TODO: {@link #handleResponse} only tested with ISBN and OLID for now.
      */
     private static final String BASE_BOOK_URL =
-            BASE_URL + "/api/books?jscmd=data&format=json&bibkeys=%1$s:%2$s";
+            "/api/books?jscmd=data&format=json&bibkeys=%1$s:%2$s";
     /**
      * The covers are available in 3 sizes:
      * <p>
@@ -154,52 +154,36 @@ public class OpenLibrarySearchEngine
      */
     private static final String BASE_COVER_URL
             = "https://covers.openlibrary.org/b/%1$s/%2$s-%3$s.jpg?default=false";
-
     /** file suffix for cover files. */
     private static final String FILENAME_SUFFIX = "_OL";
-    /** The search keys in the json object we support: ISBN, native id. */
+    /** The search keys in the json object we support: ISBN, external id. */
     private static final String SUPPORTED_KEYS = "ISBN,OLID";
 
-    @Nullable
-    private Canceller mCaller;
-
     /**
-     * View a Book on the web site.
+     * Constructor.
      *
-     * @param context Current context
-     * @param bookId  site native book id to show
+     * @param appContext Application context
      */
-    public static void openWebsite(@NonNull final Context context,
-                                   @NonNull final String bookId) {
-        final String url = BASE_URL + "/books/" + bookId;
-        context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
-    }
-
-    @Override
-    public void setCaller(@Nullable final Canceller caller) {
-        mCaller = caller;
-    }
-
-    @Override
-    public boolean isCancelled() {
-        return mCaller == null || mCaller.isCancelled();
+    public OpenLibrarySearchEngine(@NonNull final Context appContext) {
+        super(appContext);
     }
 
     @NonNull
     @Override
-    public Locale getLocale(@NonNull final Context context) {
-        return Locale.US;
+    public String createUrl(@NonNull final String externalId) {
+        return getSiteUrl() + "/books/" + externalId;
     }
 
     @NonNull
     @Override
-    public Bundle searchByNativeId(@NonNull final Context context,
-                                   @NonNull final String nativeId,
-                                   @NonNull final boolean[] fetchThumbnail)
+    public Bundle searchByExternalId(@NonNull final String externalId,
+                                     @NonNull final boolean[] fetchThumbnail)
             throws IOException {
 
-        final String url = String.format(BASE_BOOK_URL, "OLID", nativeId);
-        return fetchBook(context, url, fetchThumbnail, new Bundle());
+        final String url = getSiteUrl() + String.format(BASE_BOOK_URL, "OLID", externalId);
+        final Bundle bookData = new Bundle();
+        fetchBook(url, fetchThumbnail, bookData);
+        return bookData;
     }
 
     /**
@@ -209,56 +193,14 @@ public class OpenLibrarySearchEngine
      */
     @NonNull
     @Override
-    public Bundle searchByIsbn(@NonNull final Context context,
-                               @NonNull final String validIsbn,
+    public Bundle searchByIsbn(@NonNull final String validIsbn,
                                @NonNull final boolean[] fetchThumbnail)
             throws IOException {
 
-        final String url = String.format(BASE_BOOK_URL, "ISBN", validIsbn);
-        return fetchBook(context, url, fetchThumbnail, new Bundle());
-    }
-
-    @NonNull
-    private Bundle fetchBook(@NonNull final Context context,
-                             @NonNull final String url,
-                             @NonNull final boolean[] fetchThumbnail,
-                             @NonNull final Bundle bookData)
-            throws IOException {
-        // get and store the result into a string.
-        final String response;
-        try (TerminatorConnection con = new TerminatorConnection(context, url, this);
-             InputStream is = con.getInputStream()) {
-            response = readResponseStream(is);
-        }
-
-        if (isCancelled()) {
-            return new Bundle();
-        }
-
-        // json-ify and handle.
-        try {
-            return handleResponse(context, new JSONObject(response), fetchThumbnail, bookData);
-
-        } catch (@NonNull final JSONException e) {
-            // wrap parser exceptions in an IOException
-            throw new IOException(e);
-        }
-    }
-
-    @VisibleForTesting
-    @NonNull
-    String readResponseStream(@NonNull final InputStream is)
-            throws IOException {
-        final StringBuilder response = new StringBuilder();
-        // Don't close this stream!
-        final InputStreamReader isr = new InputStreamReader(is, StandardCharsets.UTF_8);
-        final BufferedReader reader = new BufferedReader(isr);
-        String line;
-
-        while ((line = reader.readLine()) != null) {
-            response.append(line);
-        }
-        return response.toString();
+        final String url = getSiteUrl() + String.format(BASE_BOOK_URL, "ISBN", validIsbn);
+        final Bundle bookData = new Bundle();
+        fetchBook(url, fetchThumbnail, bookData);
+        return bookData;
     }
 
     /**
@@ -275,8 +217,7 @@ public class OpenLibrarySearchEngine
     @Nullable
     @Override
     @WorkerThread
-    public String searchCoverImageByIsbn(@NonNull final Context context,
-                                         @NonNull final String validIsbn,
+    public String searchCoverImageByIsbn(@NonNull final String validIsbn,
                                          @IntRange(from = 0) final int cIdx,
                                          @Nullable final ImageFileInfo.Size size) {
         final String sizeParam;
@@ -298,31 +239,60 @@ public class OpenLibrarySearchEngine
         }
 
         final String url = String.format(BASE_COVER_URL, "isbn", validIsbn, sizeParam);
-        final String tmpName = validIsbn + FILENAME_SUFFIX + "_" + sizeParam;
-        return ImageUtils.saveImage(context, url, tmpName, this);
+        return saveImage(url, validIsbn, FILENAME_SUFFIX + "_" + sizeParam, 0);
     }
 
+
+    private void fetchBook(@NonNull final String url,
+                           @NonNull final boolean[] fetchThumbnail,
+                           @NonNull final Bundle bookData)
+            throws IOException {
+        // get and store the result into a string.
+        final String response;
+        try (TerminatorConnection con = createConnection(url, true);
+             InputStream is = con.getInputStream()) {
+            response = readResponseStream(is);
+        }
+
+        if (isCancelled()) {
+            return;
+        }
+
+        // json-ify and handle.
+        try {
+            handleResponse(new JSONObject(response), fetchThumbnail, bookData);
+
+        } catch (@NonNull final JSONException e) {
+            // wrap parser exceptions in an IOException
+            throw new IOException(e);
+        }
+    }
+
+    /**
+     * Read the entire InputStream into a String.
+     *
+     * @param is to read
+     *
+     * @return the entire content
+     *
+     * @throws IOException on any failure
+     */
+    @VisibleForTesting
     @NonNull
-    @Override
-    public String getUrl(@NonNull final Context context) {
-        return BASE_URL;
+    String readResponseStream(@NonNull final InputStream is)
+            throws IOException {
+        final StringBuilder response = new StringBuilder();
+        // Don't close this stream!
+        final InputStreamReader isr = new InputStreamReader(is, StandardCharsets.UTF_8);
+        final BufferedReader reader = new BufferedReader(isr);
+        String line;
+
+        while ((line = reader.readLine()) != null) {
+            response.append(line);
+        }
+        return response.toString();
     }
 
-    @Override
-    public boolean supportsMultipleSizes() {
-        return true;
-    }
-
-    @Override
-    public boolean hasStringId() {
-        return true;
-    }
-
-    @StringRes
-    @Override
-    public int getNameResId() {
-        return R.string.site_open_library;
-    }
 
     /**
      * A search on ISBN returns:
@@ -445,21 +415,16 @@ public class OpenLibrarySearchEngine
      * The keys (jsonObject.keys()) are:
      * "ISBN:9780980200447"
      *
-     * @param context        Current context
      * @param jsonObject     the complete book record.
      * @param fetchThumbnail Set to {@code true} if we want to get thumbnails
      * @param bookData       Bundle to update
      *
-     * @return bookData
-     *
      * @throws JSONException upon any error
      */
     @VisibleForTesting
-    @NonNull
-    Bundle handleResponse(@NonNull final Context context,
-                          @NonNull final JSONObject jsonObject,
-                          @NonNull final boolean[] fetchThumbnail,
-                          @NonNull final Bundle bookData)
+    void handleResponse(@NonNull final JSONObject jsonObject,
+                        @NonNull final boolean[] fetchThumbnail,
+                        @NonNull final Bundle bookData)
             throws JSONException {
 
         final Iterator<String> it = jsonObject.keys();
@@ -468,36 +433,28 @@ public class OpenLibrarySearchEngine
             final String topLevelKey = it.next();
             final String[] data = topLevelKey.split(":");
             if (data.length == 2 && SUPPORTED_KEYS.contains(data[0])) {
-                return handleBook(context,
-                                  data[1],
-                                  jsonObject.getJSONObject(topLevelKey),
-                                  fetchThumbnail,
-                                  bookData);
+                handleBook(data[1],
+                           jsonObject.getJSONObject(topLevelKey),
+                           fetchThumbnail,
+                           bookData);
             }
         }
-
-        return bookData;
     }
 
     /**
      * Parse the results, and build the bookData bundle.
      *
-     * @param context        Current context
      * @param isbn           of the book
      * @param result         JSON result data
      * @param fetchThumbnail Set to {@code true} if we want to get thumbnails
      * @param bookData       Bundle to update
      *
-     * @return bookData object
-     *
      * @throws JSONException upon any error
      */
-    @NonNull
-    private Bundle handleBook(@NonNull final Context context,
-                              @NonNull final String isbn,
-                              @NonNull final JSONObject result,
-                              @NonNull final boolean[] fetchThumbnail,
-                              @NonNull final Bundle bookData)
+    private void handleBook(@NonNull final String isbn,
+                            @NonNull final JSONObject result,
+                            @NonNull final boolean[] fetchThumbnail,
+                            @NonNull final Bundle bookData)
             throws JSONException {
 
         JSONObject o;
@@ -539,7 +496,7 @@ public class OpenLibrarySearchEngine
 
         s = result.optString("publish_date");
         if (!s.isEmpty()) {
-            final LocalDateTime date = DateParser.getInstance(context).parse(s);
+            final LocalDateTime date = DateParser.getInstance(mAppContext).parse(s);
             if (date != null) {
                 bookData.putString(DBDefinitions.KEY_DATE_PUBLISHED,
                                    date.format(DateTimeFormatter.ISO_LOCAL_DATE));
@@ -595,7 +552,7 @@ public class OpenLibrarySearchEngine
         }
 
         if (isCancelled()) {
-            return bookData;
+            return;
         }
 
         if (fetchThumbnail[0]) {
@@ -614,9 +571,8 @@ public class OpenLibrarySearchEngine
                 }
                 // we assume that the download will work if there is a url.
                 if (!coverUrl.isEmpty()) {
-                    final String name = isbn + FILENAME_SUFFIX + "_" + sizeParam;
-                    final String fileSpec = ImageUtils
-                            .saveImage(context, coverUrl, name, this);
+                    final String fileSpec = saveImage(coverUrl, isbn,
+                                                      FILENAME_SUFFIX + "_" + sizeParam, 0);
                     if (fileSpec != null) {
                         ArrayList<String> imageList =
                                 bookData.getStringArrayList(Book.BKEY_FILE_SPEC_ARRAY[0]);
@@ -631,7 +587,7 @@ public class OpenLibrarySearchEngine
         }
 
         if (isCancelled()) {
-            return bookData;
+            return;
         }
 
         final ArrayList<Publisher> publishers = new ArrayList<>();
@@ -664,7 +620,5 @@ public class OpenLibrarySearchEngine
         if (!toc.isEmpty()) {
             bookData.putParcelableArrayList(Book.BKEY_TOC_ARRAY, toc);
         }
-
-        return bookData;
     }
 }

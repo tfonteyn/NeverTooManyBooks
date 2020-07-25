@@ -65,11 +65,9 @@ public class BuildLanguageMappingsTask
             // Always add English
             createLanguageMappingCache(prefs, Locale.ENGLISH);
 
-            //NEWTHINGS: add new site specific ID: add mappings for site specific languages
+            //NEWTHINGS: adding a new search engine: add mappings for site specific languages
 
-            // Dutch:
-            // StripInfoSearchEngine
-            // KbNlSearchEngine
+            // Dutch: StripInfoSearchEngine, KbNlSearchEngine
             createLanguageMappingCache(prefs, new Locale("nl"));
 
         } catch (@NonNull final RuntimeException e) {

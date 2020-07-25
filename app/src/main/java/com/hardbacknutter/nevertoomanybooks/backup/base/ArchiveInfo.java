@@ -68,13 +68,13 @@ public class ArchiveInfo {
 
     /** Bundle retrieved from the archive for this instance. */
     @NonNull
-    private final Bundle mBundle;
+    private final Bundle mInfo;
 
     /**
      * Constructor. Used when reading info from an archive.
      */
     public ArchiveInfo() {
-        mBundle = new Bundle();
+        mInfo = new Bundle();
     }
 
     /**
@@ -85,23 +85,23 @@ public class ArchiveInfo {
      */
     public ArchiveInfo(@NonNull final Context context,
                        final int version) {
-        mBundle = new Bundle();
-        mBundle.putInt(INFO_ARCHIVER_VERSION, version);
+        mInfo = new Bundle();
+        mInfo.putInt(INFO_ARCHIVER_VERSION, version);
 
-        mBundle.putInt(INFO_SDK, Build.VERSION.SDK_INT);
-        mBundle.putInt(INFO_DATABASE_VERSION, DBHelper.DATABASE_VERSION);
-        mBundle.putString(INFO_CREATION_DATE,
-                          LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
+        mInfo.putInt(INFO_SDK, Build.VERSION.SDK_INT);
+        mInfo.putInt(INFO_DATABASE_VERSION, DBHelper.DATABASE_VERSION);
+        mInfo.putString(INFO_CREATION_DATE,
+                        LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
 
         try {
             PackageInfo info =
                     context.getPackageManager().getPackageInfo(context.getPackageName(), 0);
-            mBundle.putString(INFO_APP_PACKAGE, info.packageName);
-            mBundle.putString(INFO_APP_VERSION_NAME, info.versionName);
+            mInfo.putString(INFO_APP_PACKAGE, info.packageName);
+            mInfo.putString(INFO_APP_VERSION_NAME, info.versionName);
             if (Build.VERSION.SDK_INT >= 28) {
-                mBundle.putLong(INFO_APP_VERSION_CODE, info.getLongVersionCode());
+                mInfo.putLong(INFO_APP_VERSION_CODE, info.getLongVersionCode());
             } else {
-                mBundle.putLong(INFO_APP_VERSION_CODE, info.versionCode);
+                mInfo.putLong(INFO_APP_VERSION_CODE, info.versionCode);
             }
         } catch (@NonNull final PackageManager.NameNotFoundException ignore) {
             // ignore
@@ -115,7 +115,7 @@ public class ArchiveInfo {
      */
     @NonNull
     public Bundle getBundle() {
-        return mBundle;
+        return mInfo;
     }
 
     /**
@@ -124,7 +124,7 @@ public class ArchiveInfo {
      * @return archive version
      */
     public int getArchiveVersion() {
-        return mBundle.getInt(INFO_ARCHIVER_VERSION);
+        return mInfo.getInt(INFO_ARCHIVER_VERSION);
     }
 
     /**
@@ -136,7 +136,7 @@ public class ArchiveInfo {
      */
     @Nullable
     public LocalDateTime getCreationDate(@NonNull final Context context) {
-        return DateParser.getInstance(context).parseISO(mBundle.getString(INFO_CREATION_DATE));
+        return DateParser.getInstance(context).parseISO(mInfo.getString(INFO_CREATION_DATE));
     }
 
     /**
@@ -146,7 +146,7 @@ public class ArchiveInfo {
      */
     private long getAppVersionCode() {
         // old archives used an Integer, newer use Long.
-        Object version = mBundle.get(INFO_APP_VERSION_CODE);
+        Object version = mInfo.get(INFO_APP_VERSION_CODE);
         if (version == null) {
             return 0;
         } else {
@@ -164,7 +164,7 @@ public class ArchiveInfo {
      * @return version
      */
     public int getDatabaseVersionCode() {
-        return mBundle.getInt(INFO_DATABASE_VERSION, 0);
+        return mInfo.getInt(INFO_DATABASE_VERSION, 0);
     }
 
     /**
@@ -173,7 +173,7 @@ public class ArchiveInfo {
      * @return {@code true} if books are present
      */
     public boolean hasBooks() {
-        return mBundle.getBoolean(INFO_HAS_BOOKS) || hasBookCount();
+        return mInfo.getBoolean(INFO_HAS_BOOKS) || hasBookCount();
     }
 
     /**
@@ -184,16 +184,16 @@ public class ArchiveInfo {
      * @return {@code true} if the number of books are known
      */
     public boolean hasBookCount() {
-        return mBundle.containsKey(INFO_NUMBER_OF_BOOKS)
-               && mBundle.getInt(INFO_NUMBER_OF_BOOKS) > 0;
+        return mInfo.containsKey(INFO_NUMBER_OF_BOOKS)
+               && mInfo.getInt(INFO_NUMBER_OF_BOOKS) > 0;
     }
 
     public int getBookCount() {
-        return mBundle.getInt(INFO_NUMBER_OF_BOOKS);
+        return mInfo.getInt(INFO_NUMBER_OF_BOOKS);
     }
 
     public void setBookCount(final int count) {
-        mBundle.putInt(INFO_NUMBER_OF_BOOKS, count);
+        mInfo.putInt(INFO_NUMBER_OF_BOOKS, count);
     }
 
     /**
@@ -202,7 +202,7 @@ public class ArchiveInfo {
      * @return {@code true} if covers are present
      */
     public boolean hasCovers() {
-        return mBundle.getBoolean(INFO_HAS_COVERS) || hasCoverCount();
+        return mInfo.getBoolean(INFO_HAS_COVERS) || hasCoverCount();
     }
 
     /**
@@ -213,16 +213,16 @@ public class ArchiveInfo {
      * @return {@code true} if the number of books are known
      */
     public boolean hasCoverCount() {
-        return mBundle.containsKey(INFO_NUMBER_OF_COVERS)
-               && mBundle.getInt(INFO_NUMBER_OF_COVERS) > 0;
+        return mInfo.containsKey(INFO_NUMBER_OF_COVERS)
+               && mInfo.getInt(INFO_NUMBER_OF_COVERS) > 0;
     }
 
     public int getCoverCount() {
-        return mBundle.getInt(INFO_NUMBER_OF_COVERS);
+        return mInfo.getInt(INFO_NUMBER_OF_COVERS);
     }
 
     public void setCoverCount(final int count) {
-        mBundle.putInt(INFO_NUMBER_OF_COVERS, count);
+        mInfo.putInt(INFO_NUMBER_OF_COVERS, count);
     }
 
     /**
@@ -234,7 +234,7 @@ public class ArchiveInfo {
     public void validate()
             throws InvalidArchiveException {
         // extremely simple check: the archiver version field must be present
-        if (!mBundle.containsKey(INFO_ARCHIVER_VERSION)) {
+        if (!mInfo.containsKey(INFO_ARCHIVER_VERSION)) {
             throw new InvalidArchiveException("info block lacks version field");
         }
     }

@@ -27,7 +27,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.searches.amazon;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -38,17 +37,16 @@ import androidx.annotation.Nullable;
 import java.util.ArrayList;
 
 import org.xml.sax.Attributes;
+import org.xml.sax.helpers.DefaultHandler;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
-import com.hardbacknutter.nevertoomanybooks.covers.ImageUtils;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.utils.LanguageUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.xml.SearchHandler;
 
 /**
  * An XML handler for the Amazon return.
@@ -218,7 +216,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.xml.SearchHandler;
  */
 @SuppressWarnings("HtmlTagCanBeJavadocTag")
 class AmazonXmlHandler
-        extends SearchHandler {
+        extends DefaultHandler {
 
     /** Log tag. */
     private static final String TAG = "AmazonXmlHandler";
@@ -264,8 +262,6 @@ class AmazonXmlHandler
     /** flag if we should fetch a thumbnail. */
     @NonNull
     private final boolean[] mFetchThumbnail;
-    @NonNull
-    private final Context mContext;
     /** Bundle to save results in. */
     @NonNull
     private final Bundle mBookData;
@@ -275,6 +271,7 @@ class AmazonXmlHandler
     /** accumulate all Publishers for this book. */
     private final ArrayList<Publisher> mPublishers = new ArrayList<>();
     /** XML content. */
+    @SuppressWarnings("StringBufferField")
     private final StringBuilder mBuilder = new StringBuilder();
     /** mCurrencyCode + mCurrencyAmount will form the list-price. */
     @NonNull
@@ -322,15 +319,12 @@ class AmazonXmlHandler
     /**
      * Constructor.
      *
-     * @param context        Current context
      * @param fetchThumbnail Set to {@code true} if we want to get a thumbnails
      * @param bookData       Bundle to update <em>(passed in to allow mocking)</em>
      */
-    AmazonXmlHandler(@NonNull final Context context,
-                     @NonNull final SearchEngine searchEngine,
+    AmazonXmlHandler(@NonNull final SearchEngine searchEngine,
                      @NonNull final boolean[] fetchThumbnail,
                      @NonNull final Bundle bookData) {
-        mContext = context;
         mSearchEngine = searchEngine;
         mFetchThumbnail = fetchThumbnail;
         mBookData = bookData;
@@ -342,7 +336,6 @@ class AmazonXmlHandler
      * @return Bundle with book data
      */
     @NonNull
-    @Override
     public Bundle getResult() {
         return mBookData;
     }
@@ -352,48 +345,6 @@ class AmazonXmlHandler
         return mError;
     }
 
-    /**
-     * Add the value to the Bundle if not present.
-     *
-     * @param bundle to check
-     * @param key    for data to add
-     * @param value  to use
-     */
-    private void addIfNotPresent(@NonNull final Bundle bundle,
-                                 @NonNull final String key,
-                                 @NonNull final String value) {
-        String test = bundle.getString(key);
-        if (test == null || test.isEmpty()) {
-            bundle.putString(key, value.trim());
-        }
-    }
-
-    /**
-     * Amount is in the lowest denomination, so for USD, cents, GBP pennies.. etc.
-     * {@code
-     * <Amount>1234</Amount>
-     * <CurrencyCode>USD</CurrencyCode>
-     * }
-     * is $12.34
-     */
-    private void handleListPrice() {
-        if (!mBookData.containsKey(DBDefinitions.KEY_PRICE_LISTED)) {
-            try {
-                int decDigits = java.util.Currency.getInstance(mCurrencyCode)
-                                                  .getDefaultFractionDigits();
-                // move the decimal point 'digits' up
-                double price = Double.parseDouble(mCurrencyAmount) / Math.pow(10, decDigits);
-                mBookData.putDouble(DBDefinitions.KEY_PRICE_LISTED, price);
-                mBookData.putString(DBDefinitions.KEY_PRICE_LISTED_CURRENCY, mCurrencyCode);
-            } catch (@NonNull final NumberFormatException ignore) {
-                if (BuildConfig.DEBUG /* always */) {
-                    Log.d(TAG, "handleListPrice"
-                               + "|mCurrencyCode=" + mCurrencyCode
-                               + "|mCurrencyAmount=" + mCurrencyAmount);
-                }
-            }
-        }
-    }
 
     /**
      * Store the accumulated data in the results.
@@ -402,10 +353,8 @@ class AmazonXmlHandler
     @CallSuper
     public void endDocument() {
         if (mFetchThumbnail[0] && !mCoverUrl.isEmpty()) {
-            String name = mBookData.getString(DBDefinitions.KEY_EID_ASIN, "");
-            name += FILENAME_SUFFIX;
-            String fileSpec = ImageUtils
-                    .saveImage(mContext, mCoverUrl, name, mSearchEngine);
+            final String prefix = mBookData.getString(DBDefinitions.KEY_EID_ASIN, "");
+            final String fileSpec = mSearchEngine.saveImage(mCoverUrl, prefix, FILENAME_SUFFIX, 0);
             if (fileSpec != null) {
                 ArrayList<String> imageList =
                         mBookData.getStringArrayList(Book.BKEY_FILE_SPEC_ARRAY[0]);
@@ -510,31 +459,28 @@ class AmazonXmlHandler
                 mAuthors.add(Author.from(mBuilder.toString()));
 
             } else if (localName.equalsIgnoreCase(XML_TITLE)) {
-                addIfNotPresent(mBookData, DBDefinitions.KEY_TITLE, mBuilder.toString());
+                addIfNotPresent(DBDefinitions.KEY_TITLE, mBuilder.toString());
 
             } else if (localName.equalsIgnoreCase(XML_PUBLISHER)) {
                 mPublishers.add(Publisher.from(mBuilder.toString()));
 
             } else if (localName.equalsIgnoreCase(XML_DATE_PUBLISHED)) {
-                addIfNotPresent(mBookData, DBDefinitions.KEY_DATE_PUBLISHED,
-                                mBuilder.toString());
+                addIfNotPresent(DBDefinitions.KEY_DATE_PUBLISHED, mBuilder.toString());
 
             } else if (localName.equalsIgnoreCase(XML_PAGES)) {
-                addIfNotPresent(mBookData, DBDefinitions.KEY_PAGES,
-                                mBuilder.toString());
+                addIfNotPresent(DBDefinitions.KEY_PAGES, mBuilder.toString());
 
             } else if (localName.equalsIgnoreCase(XML_DESCRIPTION)) {
-                addIfNotPresent(mBookData, DBDefinitions.KEY_DESCRIPTION,
-                                mBuilder.toString());
+                addIfNotPresent(DBDefinitions.KEY_DESCRIPTION, mBuilder.toString());
 
             } else if (localName.equalsIgnoreCase(XML_BINDING)) {
-                addIfNotPresent(mBookData, DBDefinitions.KEY_FORMAT,
-                                mBuilder.toString());
+                addIfNotPresent(DBDefinitions.KEY_FORMAT, mBuilder.toString());
 
             } else if (mInLanguage && localName.equalsIgnoreCase(XML_NAME)) {
                 // the language is a 'DisplayName' so convert to iso first.
-                addIfNotPresent(mBookData, DBDefinitions.KEY_LANGUAGE,
-                                LanguageUtils.getISO3FromDisplayName(mContext,
+                addIfNotPresent(DBDefinitions.KEY_LANGUAGE,
+                                LanguageUtils.getISO3FromDisplayName(mSearchEngine.getAppContext(),
+                                                                     mSearchEngine.getLocale(),
                                                                      mBuilder.toString()));
 
             } else if (mInListPrice && localName.equalsIgnoreCase(XML_AMOUNT)) {
@@ -554,7 +500,7 @@ class AmazonXmlHandler
                 }
 
             } else if (localName.equalsIgnoreCase(XML_ASIN)) {
-                addIfNotPresent(mBookData, DBDefinitions.KEY_EID_ASIN, mBuilder.toString());
+                addIfNotPresent(DBDefinitions.KEY_EID_ASIN, mBuilder.toString());
 
             } else {
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.XML) {
@@ -579,6 +525,47 @@ class AmazonXmlHandler
                            final int start,
                            final int length) {
         mBuilder.append(ch, start, length);
+    }
+
+    /**
+     * Add the value to the Bundle if not present or empty.
+     *
+     * @param key   to use
+     * @param value to store
+     */
+    private void addIfNotPresent(@NonNull final String key,
+                                 @NonNull final String value) {
+        final String test = mBookData.getString(key);
+        if (test == null || test.isEmpty()) {
+            mBookData.putString(key, value.trim());
+        }
+    }
+
+    /**
+     * Amount is in the lowest denomination, so for USD, cents, GBP pennies.. etc.
+     * {@code
+     * <Amount>1234</Amount>
+     * <CurrencyCode>USD</CurrencyCode>
+     * }
+     * is $12.34
+     */
+    private void handleListPrice() {
+        if (!mBookData.containsKey(DBDefinitions.KEY_PRICE_LISTED)) {
+            try {
+                int decDigits = java.util.Currency.getInstance(mCurrencyCode)
+                                                  .getDefaultFractionDigits();
+                // move the decimal point 'digits' up
+                double price = Double.parseDouble(mCurrencyAmount) / Math.pow(10, decDigits);
+                mBookData.putDouble(DBDefinitions.KEY_PRICE_LISTED, price);
+                mBookData.putString(DBDefinitions.KEY_PRICE_LISTED_CURRENCY, mCurrencyCode);
+            } catch (@NonNull final NumberFormatException ignore) {
+                if (BuildConfig.DEBUG /* always */) {
+                    Log.d(TAG, "handleListPrice"
+                               + "|mCurrencyCode=" + mCurrencyCode
+                               + "|mCurrencyAmount=" + mCurrencyAmount);
+                }
+            }
+        }
     }
 }
 

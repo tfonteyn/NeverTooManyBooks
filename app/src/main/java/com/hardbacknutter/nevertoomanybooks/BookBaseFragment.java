@@ -30,6 +30,7 @@ package com.hardbacknutter.nevertoomanybooks;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -135,13 +136,9 @@ public abstract class BookBaseFragment
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
 
         getChildFragmentManager().addFragmentOnAttachListener(mFragmentOnAttachListener);
-
-        //noinspection ConstantConditions
-        mBookViewModel = new ViewModelProvider(getActivity()).get(BookViewModel.class);
-        //noinspection ConstantConditions
-        mBookViewModel.init(getContext(), getArguments());
     }
 
     @Override
@@ -151,6 +148,10 @@ public abstract class BookBaseFragment
         super.onViewCreated(view, savedInstanceState);
 
         //noinspection ConstantConditions
+        mBookViewModel = new ViewModelProvider(getActivity()).get(BookViewModel.class);
+        //noinspection ConstantConditions
+        mBookViewModel.init(getContext(), getArguments());
+
         mProgressBar = getActivity().findViewById(R.id.progressBar);
 
         mGrAuthTask = new ViewModelProvider(this).get(GrAuthTask.class);
@@ -197,25 +198,11 @@ public abstract class BookBaseFragment
     }
 
 
-    /**
-     * Hook up the Views, and populate them with the book data.
-     *
-     * <br><br>{@inheritDoc}
-     */
     @Override
     @CallSuper
     public void onResume() {
         super.onResume();
-
-        // This is done here using isVisible() due to ViewPager2
-        // It ensures fragments in a ViewPager2 will refresh their individual option menus.
-        // Children NOT running in a ViewPager2 must override this in their onResume()
-        // with a simple setHasOptionsMenu(true);
-        // https://issuetracker.google.com/issues/144442240
-        // TEST: supposedly fixed in viewpager2:1.1.0-alpha01
-        setHasOptionsMenu(isVisible());
-
-        // load the book data into the views
+        // hook up the Views, and calls {@link #onPopulateViews}
         populateViews(getFields());
     }
 
@@ -302,6 +289,14 @@ public abstract class BookBaseFragment
     }
 
     @Override
+    public void onPrepareOptionsMenu(@NonNull final Menu menu) {
+        final Book book = mBookViewModel.getBook();
+        MenuHandler.prepareOptionalMenus(menu, book);
+
+        super.onPrepareOptionsMenu(menu);
+    }
+
+    @Override
     @CallSuper
     public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
 
@@ -328,9 +323,9 @@ public abstract class BookBaseFragment
                 final Author primAuthor = book.getPrimaryAuthor();
                 if (primAuthor != null) {
                     //noinspection ConstantConditions
-                    AmazonSearchEngine.openWebsite(context,
-                                                   primAuthor.getFormattedName(true),
-                                                   null);
+                    final String url = AmazonSearchEngine.createUrl(
+                            context, primAuthor.getFormattedName(true), null);
+                    context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
                 }
                 return true;
             }
@@ -338,9 +333,9 @@ public abstract class BookBaseFragment
                 final Series primSeries = book.getPrimarySeries();
                 if (primSeries != null) {
                     //noinspection ConstantConditions
-                    AmazonSearchEngine.openWebsite(context,
-                                                   null,
-                                                   primSeries.getTitle());
+                    final String url = AmazonSearchEngine.createUrl(
+                            context, null, primSeries.getTitle());
+                    context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
                 }
                 return true;
             }
@@ -349,9 +344,9 @@ public abstract class BookBaseFragment
                 final Series primSeries = book.getPrimarySeries();
                 if (primAuthor != null && primSeries != null) {
                     //noinspection ConstantConditions
-                    AmazonSearchEngine.openWebsite(context,
-                                                   primAuthor.getFormattedName(true),
-                                                   primSeries.getTitle());
+                    final String url = AmazonSearchEngine.createUrl(
+                            context, primAuthor.getFormattedName(true), primSeries.getTitle());
+                    context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
                 }
                 return true;
             }

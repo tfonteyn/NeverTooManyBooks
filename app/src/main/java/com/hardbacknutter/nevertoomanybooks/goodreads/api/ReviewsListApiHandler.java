@@ -42,7 +42,7 @@ import org.xml.sax.helpers.DefaultHandler;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsAuth;
-import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsHandler;
+import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsManager;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.utils.xml.SimpleXmlFilter;
@@ -69,7 +69,7 @@ public class ReviewsListApiHandler
      * 4: user id
      */
     private static final String URL =
-            GoodreadsHandler.BASE_URL + "/review/list/%4$s.xml?"
+            GoodreadsManager.BASE_URL + "/review/list/%4$s.xml?"
             + "key=%1$s"
             + "&v=2"
             + "&page=%2$s"
@@ -94,16 +94,16 @@ public class ReviewsListApiHandler
     /**
      * Constructor.
      *
-     * @param context Current context
-     * @param grAuth  Authentication handler
+     * @param appContext Application context
+     * @param grAuth     Authentication handler
      *
      * @throws CredentialsException with GoodReads
      */
-    public ReviewsListApiHandler(@NonNull final Context context,
+    public ReviewsListApiHandler(@NonNull final Context appContext,
                                  @NonNull final GoodreadsAuth grAuth)
             throws CredentialsException {
-        super(grAuth);
-        mGoodreadsAuth.hasValidCredentialsOrThrow(context);
+        super(appContext, grAuth);
+        mGrAuth.hasValidCredentialsOrThrow(appContext);
 
         buildFilters();
     }
@@ -130,8 +130,8 @@ public class ReviewsListApiHandler
                       final int perPage)
             throws CredentialsException, Http404Exception, IOException {
 
-        final String url = String.format(URL, mGoodreadsAuth.getDevKey(), page, perPage,
-                                         mGoodreadsAuth.getUserId());
+        final String url = String.format(URL, mGrAuth.getDevKey(), page, perPage,
+                                         mGrAuth.getUserId());
         DefaultHandler handler = new XmlResponseParser(mRootFilter);
 //        DefaultHandler handler = new XmlDumpParser();
         executeGet(url, null, true, handler);
@@ -329,7 +329,7 @@ public class ReviewsListApiHandler
      */
     private void buildFilters() {
 
-        mFilters = new SimpleXmlFilter(mRootFilter, GoodreadsHandler.SITE_LOCALE);
+        mFilters = new SimpleXmlFilter(mRootFilter, GoodreadsManager.SITE_LOCALE);
         mFilters
                 //<GoodreadsResponse>
                 .s(XmlTags.XML_GOODREADS_RESPONSE)

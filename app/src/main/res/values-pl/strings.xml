@@ -127,7 +127,7 @@
     <string name="fab_add_book_by_barcode_scan">Skanowanie kodów kreskowych</string>
     <string name="fab_add_book_by_internet_search">Szukaj w Internecie</string>
     <string name="fab_add_book_by_isbn">Wpisz ISBN</string>
-    <string name="fab_add_book_by_native_id">Identyfikator książki internetowej</string>
+    <string name="fab_add_book_by_external_id">Identyfikator książki internetowej</string>
     <string name="fab_add_book_manually">Dodaj ręcznie</string>
     <string name="fallback_currency_format">%2$.2f %1$s</string>
     <string name="gr_auth_blurb_part1">Goodreads to strona internetowa, której misją jest „pomaganie ludziom w znajdowaniu i dzieleniu się książkami, które kochają”. Posiadają obszerną bazę książek i recenzji, a jeśli jesteś zarejestrowanym użytkownikiem Goodreads, możesz eksportować swoje książki, półki i recenzje do Goodreads i importować swoje książki, półki i recenzje z Goodreads. jest samodzielną aplikacją i nie wymaga Goodreads, ale jeśli jesteś zainteresowany, możesz zarejestrować się na:</string>
@@ -457,7 +457,7 @@
     <string name="progress_msg_skip_s">Pomiń - %1$s</string>
     <string name="progress_msg_starting_up">Rozpoczęcie…</string>
     <string name="progress_msg_upgrading">Aktualizacja…</string>
-    <string name="pt_allow_edit_native_id">Zezwalaj na edycję natywnego identyfikatora książki w witrynie.</string>
+    <string name="pt_allow_edit_external_id">Zezwalaj na edycję natywnego identyfikatora książki w witrynie.</string>
     <string name="pt_allow_mobile_data">Włącz mobilne korzystanie z danych</string>
     <string name="pt_bob_books_under_multiple_authors">Książki z wieloma autorami</string>
     <string name="pt_bob_books_under_multiple_series">Książki w wielu seriach</string>

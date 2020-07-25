@@ -61,18 +61,11 @@ class LibraryThingEditionHandler
     /** isbn tag in an editions xml response. */
     private static final String XML_ISBN = "isbn";
 
+    /** XML content. */
+    @SuppressWarnings("StringBufferField")
     private final StringBuilder mBuilder = new StringBuilder();
     /** List of ISBN numbers for all found editions. */
-    private final List<String> mEditions = new ArrayList<>();
-
-    /**
-     * Constructor.
-     *
-     * @param isbn the original isbn
-     */
-    LibraryThingEditionHandler(@NonNull final String isbn) {
-        mEditions.add(isbn);
-    }
+    private final List<String> mIsbnList = new ArrayList<>();
 
     /**
      * Get the results.
@@ -81,7 +74,7 @@ class LibraryThingEditionHandler
      */
     @NonNull
     public List<String> getResult() {
-        return mEditions;
+        return mIsbnList;
     }
 
     @Override
@@ -91,7 +84,7 @@ class LibraryThingEditionHandler
                            @NonNull final String qName) {
 
         if (localName.equalsIgnoreCase(XML_ISBN)) {
-            mEditions.add(mBuilder.toString());
+            mIsbnList.add(mBuilder.toString());
         }
 
         // Always reset the length. This is not entirely the right thing to do, but works
@@ -108,5 +101,4 @@ class LibraryThingEditionHandler
                            final int length) {
         mBuilder.append(ch, start, length);
     }
-
 }

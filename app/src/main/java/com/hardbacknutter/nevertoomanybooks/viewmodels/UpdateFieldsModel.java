@@ -55,6 +55,7 @@ import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -64,7 +65,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchCoordinator;
-import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
+import com.hardbacknutter.nevertoomanybooks.searches.Site;
 import com.hardbacknutter.nevertoomanybooks.searches.SiteList;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.FinishedMessage;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.ProgressMessage;
@@ -161,9 +162,11 @@ public class UpdateFieldsModel
         if (mDb == null) {
 
             mDb = new DAO(TAG);
+
             // use global preference.
-            final Locale locale = LocaleUtils.getUserLocale(context);
-            setSiteList(SiteList.getList(context, locale, SiteList.Type.Data));
+            final Locale systemLocale = LocaleUtils.getSystemLocale();
+            final Locale userLocale = LocaleUtils.getUserLocale(context);
+            setSiteList(SiteList.getList(context, systemLocale, userLocale, SiteList.Type.Data));
 
             if (args != null) {
                 //noinspection unchecked
@@ -215,13 +218,12 @@ public class UpdateFieldsModel
         addField(prefs, DBDefinitions.KEY_LANGUAGE, R.string.lbl_language, CopyIfBlank);
         addField(prefs, DBDefinitions.KEY_GENRE, R.string.lbl_genre, CopyIfBlank);
 
-        //NEWTHINGS: add new site specific ID: add a field
-        addField(prefs, DBDefinitions.KEY_EID_ISFDB, R.string.site_isfdb, Overwrite);
-        addField(prefs, DBDefinitions.KEY_EID_GOODREADS_BOOK, R.string.site_goodreads, Overwrite);
-        addField(prefs, DBDefinitions.KEY_EID_LIBRARY_THING, R.string.site_library_thing,
-                 Overwrite);
-        addField(prefs, DBDefinitions.KEY_EID_OPEN_LIBRARY, R.string.site_open_library, Overwrite);
-        addField(prefs, DBDefinitions.KEY_EID_STRIP_INFO_BE, R.string.site_stripinfo, Overwrite);
+        for (Site.Config config : Site.getConfigs()) {
+            final Domain domain = config.getExternalIdDomain();
+            if (domain != null) {
+                addField(prefs, domain.getName(), config.getNameResId(), Overwrite);
+            }
+        }
     }
 
     @NonNull
@@ -417,20 +419,20 @@ public class UpdateFieldsModel
                         }
                     }
 
-                    // Collect native ID's we can use
-                    final SparseArray<String> nativeIds = new SparseArray<>();
-                    for (String key : DBDefinitions.NATIVE_ID_KEYS) {
-                        // values can be Long and String, get as Object
-                        final Object o = mCurrentBook.get(key);
-                        if (o != null) {
-                            final String value = o.toString().trim();
+                    // Collect external ID's we can use
+                    final SparseArray<String> externalIds = new SparseArray<>();
+                    for (Site.Config config : Site.getConfigs()) {
+                        final Domain domain = config.getExternalIdDomain();
+                        if (domain != null) {
+                            final String value = mCurrentBook.getString(domain.getName());
                             if (!value.isEmpty() && !"0".equals(value)) {
-                                nativeIds.put(SearchSites.getSiteIdFromDBDefinitions(key), value);
+                                externalIds.put(config.getEngineId(), value);
                             }
                         }
                     }
-                    if (nativeIds.size() > 0) {
-                        setNativeIdSearchText(nativeIds);
+
+                    if (externalIds.size() > 0) {
+                        setExternalIds(externalIds);
                         canSearch = true;
                     }
 
@@ -624,31 +626,31 @@ public class UpdateFieldsModel
         // the last book id which was handled; can be used to restart the update.
         mFromBookIdOnwards = mCurrentBookId;
 
-        final Bundle data = new Bundle();
-        data.putLong(BKEY_LAST_BOOK_ID, mFromBookIdOnwards);
+        final Bundle results = new Bundle();
+        results.putLong(BKEY_LAST_BOOK_ID, mFromBookIdOnwards);
 
         // all books || a list of books || (single book && ) not cancelled
         if (mBookIdList == null || mBookIdList.size() > 1 || !mIsCancelled) {
             // One or more books were changed.
             // Technically speaking when doing a list of books, the task might have been
             // cancelled before the first book was done. We disregard this fringe case.
-            data.putBoolean(BookViewModel.BKEY_BOOK_MODIFIED, true);
+            results.putBoolean(BookViewModel.BKEY_BOOK_MODIFIED, true);
 
-            // if applicable, pass the first book for reposition the list on screen
+            // if applicable, pass the first book for repositioning the list on screen
             if (mBookIdList != null && !mBookIdList.isEmpty()) {
-                data.putLong(DBDefinitions.KEY_PK_ID, mBookIdList.get(0));
+                results.putLong(DBDefinitions.KEY_PK_ID, mBookIdList.get(0));
             }
         }
 
         if (e != null) {
             Logger.error(App.getAppContext(), TAG, e);
-            final FinishedMessage<Exception> message = new FinishedMessage<>(
-                    R.id.TASK_ID_UPDATE_FIELDS, e);
+            final FinishedMessage<Exception> message =
+                    new FinishedMessage<>(R.id.TASK_ID_UPDATE_FIELDS, e);
             mListFailed.setValue(message);
 
         } else {
-            final FinishedMessage<Bundle> message = new FinishedMessage<>(
-                    R.id.TASK_ID_UPDATE_FIELDS, data);
+            final FinishedMessage<Bundle> message =
+                    new FinishedMessage<>(R.id.TASK_ID_UPDATE_FIELDS, results);
             if (mIsCancelled) {
                 mSearchCoordinatorCancelled.setValue(message);
             } else {

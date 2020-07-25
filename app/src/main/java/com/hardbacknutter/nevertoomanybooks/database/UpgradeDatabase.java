@@ -168,11 +168,11 @@ final class UpgradeDatabase {
                                          + ',' + source.getName() + " FROM " + table.getName(),
                                          null)) {
 
-            Locale locale = LocaleUtils.getUserLocale(context);
+            final Locale userLocale = LocaleUtils.getUserLocale(context);
             while (cursor.moveToNext()) {
                 final long id = cursor.getLong(0);
                 final String in = cursor.getString(1);
-                update.bindString(1, DAO.encodeOrderByColumn(in, locale));
+                update.bindString(1, DAO.encodeOrderByColumn(in, userLocale));
                 update.bindLong(2, id);
                 update.executeUpdateDelete();
             }

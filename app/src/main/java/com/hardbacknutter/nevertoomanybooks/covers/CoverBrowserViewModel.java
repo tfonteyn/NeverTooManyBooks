@@ -139,8 +139,10 @@ public class CoverBrowserViewModel
             // optional
             SiteList siteList = args.getParcelable(SiteList.Type.Covers.getBundleKey());
             if (siteList == null) {
-                final Locale locale = LocaleUtils.getUserLocale(context);
-                siteList = SiteList.getList(context, locale, SiteList.Type.Covers);
+                final Locale systemLocale = LocaleUtils.getSystemLocale();
+                final Locale userLocale = LocaleUtils.getUserLocale(context);
+                siteList = SiteList.getList(context, systemLocale, userLocale,
+                                            SiteList.Type.Covers);
             }
             mFileManager = new FileManager(siteList);
         }

@@ -54,7 +54,7 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
-import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
+import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.BooksOnBookshelfModel;
 import com.hardbacknutter.nevertoomanybooks.widgets.DiacriticArrayAdapter;
@@ -103,7 +103,7 @@ public class BookSearchByTextFragment
         super.onViewCreated(view, savedInstanceState);
 
         //noinspection ConstantConditions
-        mUsePublisher = SearchSites.usePublisher(getContext());
+        mUsePublisher = Prefs.usePublisher(getContext());
 
         //TEST: do we need to set the ime options explicitly ?
         if (mUsePublisher) {
@@ -226,19 +226,19 @@ public class BookSearchByTextFragment
     private ArrayList<String> getAuthorNames(@NonNull final Iterable<String> authorNames) {
 
         //noinspection ConstantConditions
-        final Locale locale = LocaleUtils.getUserLocale(getContext());
+        final Locale userLocale = LocaleUtils.getUserLocale(getContext());
 
         final ArrayList<String> authors =
                 mDb.getAuthorNames(DBDefinitions.KEY_AUTHOR_FORMATTED_GIVEN_FIRST);
 
         final Collection<String> uniqueNames = new HashSet<>(authors.size());
         for (String s : authors) {
-            uniqueNames.add(s.toLowerCase(locale));
+            uniqueNames.add(s.toLowerCase(userLocale));
         }
 
         // Add the names the user has already tried (to handle errors and mistakes)
         for (String s : authorNames) {
-            if (!uniqueNames.contains(s.toLowerCase(locale))) {
+            if (!uniqueNames.contains(s.toLowerCase(userLocale))) {
                 authors.add(s);
             }
         }
@@ -263,18 +263,18 @@ public class BookSearchByTextFragment
     private ArrayList<String> getPublisherNames(@NonNull final Iterable<String> publisherNames) {
 
         //noinspection ConstantConditions
-        final Locale locale = LocaleUtils.getUserLocale(getContext());
+        final Locale userLocale = LocaleUtils.getUserLocale(getContext());
 
         final ArrayList<String> publishers = mDb.getPublisherNames();
 
         final Collection<String> uniqueNames = new HashSet<>(publishers.size());
         for (String s : publishers) {
-            uniqueNames.add(s.toLowerCase(locale));
+            uniqueNames.add(s.toLowerCase(userLocale));
         }
 
         // Add the names the user has already tried (to handle errors and mistakes)
         for (String s : publisherNames) {
-            if (!uniqueNames.contains(s.toLowerCase(locale))) {
+            if (!uniqueNames.contains(s.toLowerCase(userLocale))) {
                 publishers.add(s);
             }
         }

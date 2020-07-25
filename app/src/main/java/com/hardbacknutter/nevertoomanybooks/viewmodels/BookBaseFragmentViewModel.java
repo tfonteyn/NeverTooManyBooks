@@ -36,6 +36,7 @@ import androidx.lifecycle.ViewModel;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.fields.Fields;
 
@@ -115,6 +116,12 @@ public abstract class BookBaseFragmentViewModel
     public int getAndClearCurrentCoverHandlerIndex() {
         final int current = mCurrentCoverHandlerIndex;
         mCurrentCoverHandlerIndex = -1;
+        if (BuildConfig.DEBUG /* always */) {
+            if (current == -1) {
+                throw new IllegalStateException("getAndClearCurrentCoverHandlerIndex"
+                                                + " would return -1");
+            }
+        }
         return current;
     }
 

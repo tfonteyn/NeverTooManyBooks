@@ -42,8 +42,11 @@ import java.util.Locale;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import org.mockito.stubbing.Answer;
 
 import com.hardbacknutter.nevertoomanybooks.searches.amazon.AmazonSearchEngine;
@@ -58,11 +61,17 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class CommonSetup {
+/**
+ * Strictness.LENIENT: this setup is shared + provides answers/returns for future additions.
+ */
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
+public class CommonMocks {
 
+    @Mock
+    protected App mApp;
     @Mock
     protected Context mContext;
     @Mock
@@ -96,29 +105,24 @@ public class CommonSetup {
         DateParser.createForTesting(mLocale0);
     }
 
-    /**
-     * Each test <strong>MUST</strong> call {@link #setLocale(Locale)} as needed.
-     */
+
     @AfterEach
     void tearDown() {
         mLocale0 = null;
         Locale.setDefault(mJdkLocale);
     }
 
+    /**
+     * Each test <strong>MUST</strong> call {@link #setLocale(Locale)} as needed.
+     */
     @BeforeEach
     @CallSuper
     public void setUp() {
         mJdkLocale = Locale.getDefault();
 
-        MockitoAnnotations.initMocks(this);
-
         mRawData = BundleMock.mock();
 
-        mContext = mock(Context.class);
-        mResources = mock(Resources.class);
-        mSharedPreferences = mock(SharedPreferences.class);
-        mConfiguration = mock(Configuration.class);
-        mLocaleList = mock(LocaleList.class);
+        when(mApp.getApplicationContext()).thenReturn(mContext);
 
         when(mContext.getApplicationContext()).thenReturn(mContext);
         when(mContext.getResources()).thenReturn(mResources);
@@ -172,7 +176,9 @@ public class CommonSetup {
                 .thenAnswer((Answer<String>) invocation -> {
                     if (mLocale0 != null) {
                         final String iso3 = mLocale0.getISO3Language();
-                        if (Locale.UK.getISO3Language().equals(iso3)) {
+                        if (Locale.US.getISO3Language().equals(iso3)) {
+                            return "https://www.amazon.com";
+                        } else if (Locale.UK.getISO3Language().equals(iso3)) {
                             return "https://www.amazon.co.uk";
                         } else if (Locale.FRANCE.getISO3Language().equals(iso3)) {
                             return "https://www.amazon.fr";
@@ -181,8 +187,6 @@ public class CommonSetup {
                         } else if (new Locale("nl").getISO3Language().equals(iso3)) {
                             return "https://www.amazon.nl";
                         }
-                        //TODO: add more sites, but then we should actually test more sites
-                        // which we currently don't do.
                     }
                     return "https://www.amazon.com";
                 });

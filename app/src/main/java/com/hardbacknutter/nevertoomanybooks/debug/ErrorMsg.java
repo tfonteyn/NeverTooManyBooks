@@ -53,6 +53,7 @@ public final class ErrorMsg {
     public static final String NULL_DRAWABLE = "Drawable";
     public static final String NULL_EXTRAS = "Extras";
     public static final String NULL_EXCEPTION = "Exception";
+    public static final String NULL_EXTERNAL_ID = "externalId";
     public static final String NULL_FRAGMENT_TAG = "Fragment Tag";
     public static final String NULL_GALLERY_ADAPTER = "GalleryAdapter";
     public static final String NULL_IMAGE_PATH = "ImagePath";
@@ -60,14 +61,13 @@ public final class ErrorMsg {
     public static final String NULL_ISBN = "ISBN";
     public static final String NULL_ISBN_STR = "IsbnStr";
     public static final String NULL_MENU = "Menu";
-    public static final String NULL_NATIVE_ID = "nativeId";
     public static final String NULL_NON_PERSISTED_VALUE = "NonPersistedValue";
     public static final String NULL_PUBLISHER = "Publisher";
     public static final String NULL_ROW_POS = "rowPos";
     public static final String NULL_SCANNER_MODEL = "ScannerModel";
+    public static final String NULL_SEARCH_ENGINE_CONFIG = "Config";
     public static final String NULL_SERIES = "Series";
     public static final String NULL_STYLE = "Style";
-    public static final String NULL_TARGET_FRAGMENT = "Target Fragment";
     public static final String NULL_TASK_RESULTS = "Task result";
     public static final String NULL_TOC_ENTRY = "TocEntry";
     public static final String NULL_URI = "uri";

@@ -47,9 +47,9 @@ import com.hardbacknutter.nevertoomanybooks.R;
  * Lastly, the SCALE_FACTOR is multiplied by the DIMEN resource
  * that provides a base dp value which again depends on screen size.
  * <p>
- * Must be kept in sync with res/values/strings-preferences.xml#pv_cover_scale_factor
+ * Must be kept in sync with src/main/res/values/strings-preferences.xml#pv_cover_scale_factor
  * <p>
- * res/xml/preferences_styles.xml contains the default set to SCALE_MEDIUM
+ * src/main/res/xml/preferences_styles.xml contains the default set to SCALE_MEDIUM
  */
 public final class ImageScale {
 

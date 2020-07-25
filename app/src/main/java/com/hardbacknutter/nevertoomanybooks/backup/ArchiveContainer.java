@@ -39,7 +39,6 @@ import java.util.regex.Pattern;
 
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 
 /**
  * Archive formats (partially) supported.
@@ -117,11 +116,10 @@ public enum ArchiveContainer {
         // Allow some name variations:"file.csv", "file.csv (1)" etc
         final Pair<String, Long> uriInfo = FileUtils.getUriInfo(context, uri);
         if (uriInfo != null && uriInfo.first != null) {
-            final String name = uriInfo.first.toLowerCase(LocaleUtils.getSystemLocale());
             final Pattern csvFilePattern =
                     Pattern.compile("^.*\\.csv( \\(\\d+\\))?$",
                                     Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
-            if (csvFilePattern.matcher(name).find()) {
+            if (csvFilePattern.matcher(uriInfo.first).find()) {
                 return CsvBooks;
             }
         }

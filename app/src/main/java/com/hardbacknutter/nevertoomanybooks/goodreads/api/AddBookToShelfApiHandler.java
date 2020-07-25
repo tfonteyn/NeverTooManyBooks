@@ -39,7 +39,7 @@ import java.util.Map;
 import org.xml.sax.helpers.DefaultHandler;
 
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsAuth;
-import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsHandler;
+import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsManager;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlFilter;
 import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlFilter.XmlHandler;
@@ -68,11 +68,11 @@ public class AddBookToShelfApiHandler
 
     /** Add one book to one shelf (or remove it). */
     private static final String URL_1_1 =
-            GoodreadsHandler.BASE_URL + "/shelf/add_to_shelf.xml";
+            GoodreadsManager.BASE_URL + "/shelf/add_to_shelf.xml";
 
     /** Add multiple books to multiple shelves. */
     private static final String URL_X_X =
-            GoodreadsHandler.BASE_URL + "/shelf/add_books_to_shelves.xml";
+            GoodreadsManager.BASE_URL + "/shelf/add_books_to_shelves.xml";
 
     /** Resulting review-id after the request. */
     private long mReviewId;
@@ -88,16 +88,16 @@ public class AddBookToShelfApiHandler
     /**
      * Constructor.
      *
-     * @param context Current context
-     * @param grAuth  Authentication handler
+     * @param appContext Application context
+     * @param grAuth     Authentication handler
      *
      * @throws CredentialsException with GoodReads
      */
-    public AddBookToShelfApiHandler(@NonNull final Context context,
+    public AddBookToShelfApiHandler(@NonNull final Context appContext,
                                     @NonNull final GoodreadsAuth grAuth)
             throws CredentialsException {
-        super(grAuth);
-        mGoodreadsAuth.hasValidCredentialsOrThrow(context);
+        super(appContext, grAuth);
+        mGrAuth.hasValidCredentialsOrThrow(appContext);
 
         buildFilters();
     }
@@ -120,14 +120,14 @@ public class AddBookToShelfApiHandler
                     @NonNull final Iterable<String> shelfNames)
             throws CredentialsException, Http404Exception, IOException {
 
-        String shelves = TextUtils.join(",", shelfNames);
+        final String shelves = TextUtils.join(",", shelfNames);
 
         mReviewId = 0;
-        Map<String, String> parameters = new HashMap<>();
+        final Map<String, String> parameters = new HashMap<>();
         parameters.put("bookids", String.valueOf(grBookId));
         parameters.put("shelves", shelves);
 
-        DefaultHandler handler = new XmlResponseParser(mRootFilter);
+        final DefaultHandler handler = new XmlResponseParser(mRootFilter);
         executePost(URL_X_X, parameters, true, handler);
 
         return mReviewId;
@@ -202,7 +202,7 @@ public class AddBookToShelfApiHandler
             parameters.put("a", "remove");
         }
 
-        DefaultHandler handler = new XmlResponseParser(mRootFilter);
+        final DefaultHandler handler = new XmlResponseParser(mRootFilter);
         executePost(URL_1_1, parameters, true, handler);
 
         return mReviewId;

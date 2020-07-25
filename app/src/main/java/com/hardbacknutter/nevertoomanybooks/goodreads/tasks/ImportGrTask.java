@@ -34,7 +34,6 @@ import android.os.Bundle;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.preference.PreferenceManager;
 
 import java.io.File;
 import java.io.IOException;
@@ -52,11 +51,11 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Matcher;
 
+import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyle;
-import com.hardbacknutter.nevertoomanybooks.covers.ImageUtils;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
@@ -66,15 +65,15 @@ import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsAuth;
-import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsHandler;
+import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsManager;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsShelf;
+import com.hardbacknutter.nevertoomanybooks.goodreads.api.ApiUtils;
 import com.hardbacknutter.nevertoomanybooks.goodreads.api.Http404Exception;
 import com.hardbacknutter.nevertoomanybooks.goodreads.api.ReviewsListApiHandler;
 import com.hardbacknutter.nevertoomanybooks.goodreads.api.ReviewsListApiHandler.Review;
 import com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.QueueManager;
 import com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.TQTask;
 import com.hardbacknutter.nevertoomanybooks.searches.AuthorTypeMapper;
-import com.hardbacknutter.nevertoomanybooks.searches.goodreads.GoodreadsSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 import com.hardbacknutter.nevertoomanybooks.utils.DateParser;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
@@ -146,9 +145,7 @@ class ImportGrTask
         // If it's a sync job, then find date of last successful sync and only apply
         // records from after that date. If no other job, then get all.
         if (mIsSync) {
-            final String lastSyncDateStr = PreferenceManager
-                    .getDefaultSharedPreferences(context)
-                    .getString(GoodreadsHandler.PREFS_LAST_SYNC_DATE, null);
+            final String lastSyncDateStr = GoodreadsManager.getLastSyncDate(context);
             mLastSyncDate = DateParser.getInstance(context).parseISO(lastSyncDateStr);
         } else {
             mLastSyncDate = null;
@@ -161,8 +158,8 @@ class ImportGrTask
      * @return {@code false} to requeue, {@code true} for success
      */
     @Override
-    public boolean run(@NonNull final QueueManager queueManager,
-                       @NonNull final Context context) {
+    public boolean run(@NonNull final QueueManager queueManager) {
+        final Context context = LocaleUtils.applyLocale(App.getTaskContext());
         try (DAO db = new DAO(TAG)) {
             // Load the Goodreads reviews
             final boolean ok = importReviews(context, db, queueManager);
@@ -173,14 +170,13 @@ class ImportGrTask
                 final TQTask task = new SendBooksGrTask(desc, false, true);
                 QueueManager.getQueueManager().enqueueTask(QueueManager.Q_MAIN, task);
 
-                final String lastSyncDateStr =
-                        mStartDate != null
-                        ? mStartDate.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
-                        : null;
-                PreferenceManager.getDefaultSharedPreferences(context)
-                                 .edit()
-                                 .putString(GoodreadsHandler.PREFS_LAST_SYNC_DATE, lastSyncDateStr)
-                                 .apply();
+                final String lastSyncDateStr;
+                if (mStartDate != null) {
+                    lastSyncDateStr = mStartDate.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+                } else {
+                    lastSyncDateStr = null;
+                }
+                GoodreadsManager.putLastSyncDate(context, lastSyncDateStr);
             }
 
             return ok;
@@ -493,6 +489,8 @@ class ImportGrTask
         // 0 for new, or the existing id for updates
         delta.putLong(DBDefinitions.KEY_PK_ID, bookId);
 
+        addLongIfPresent(goodreadsData, DBDefinitions.KEY_EID_GOODREADS_BOOK, delta);
+
         // The ListReviewsApi does not return the Book language.
         // So during an insert, the bookLocale will always be null.
         // During an update, we *might* get the the locale if the local book data
@@ -536,7 +534,6 @@ class ImportGrTask
 
         addStringIfNonBlank(goodreadsData, DBDefinitions.KEY_DESCRIPTION, delta);
         addStringIfNonBlank(goodreadsData, DBDefinitions.KEY_FORMAT, delta);
-        addLongIfPresent(goodreadsData, DBDefinitions.KEY_EID_GOODREADS_BOOK, delta);
 
         Review.copyDateIfValid(goodreadsData, DBDefinitions.KEY_READ_START,
                                delta, DBDefinitions.KEY_READ_START);
@@ -581,11 +578,11 @@ class ImportGrTask
         /*
          * Build the publication date based on the components
          */
-        final String pubDate = GoodreadsHandler.buildDate(goodreadsData,
-                                                          Review.PUBLICATION_YEAR,
-                                                          Review.PUBLICATION_MONTH,
-                                                          Review.PUBLICATION_DAY,
-                                                          null);
+        final String pubDate = ApiUtils.buildDate(goodreadsData,
+                                                  Review.PUBLICATION_YEAR,
+                                                  Review.PUBLICATION_MONTH,
+                                                  Review.PUBLICATION_DAY,
+                                                  null);
         if (pubDate != null && !pubDate.isEmpty()) {
             delta.putString(DBDefinitions.KEY_DATE_PUBLISHED, pubDate);
         }
@@ -647,33 +644,12 @@ class ImportGrTask
             Review.copyDateIfValid(goodreadsData, Review.ADDED,
                                    delta, DBDefinitions.KEY_UTC_ADDED);
 
-            // fetch thumbnail
-            final String coverUrl;
-            final String sizeSuffix;
-            final String largeImage = goodreadsData.getString(Review.LARGE_IMAGE_URL);
-            final String smallImage = goodreadsData.getString(Review.SMALL_IMAGE_URL);
-            if (GoodreadsHandler.hasCover(largeImage)) {
-                sizeSuffix = Review.LARGE_IMAGE_URL;
-                coverUrl = largeImage;
-            } else if (GoodreadsHandler.hasCover(smallImage)) {
-                sizeSuffix = Review.SMALL_IMAGE_URL;
-                coverUrl = smallImage;
-            } else {
-                sizeSuffix = "";
-                coverUrl = null;
-            }
-
-            if (coverUrl != null) {
-                final String tmpName = delta.getLong(DBDefinitions.KEY_EID_GOODREADS_BOOK)
-                                       + GoodreadsSearchEngine.FILENAME_SUFFIX + "_" + sizeSuffix;
-                final String fileSpec =
-                        ImageUtils.saveImage(context, coverUrl, tmpName,
-                                             GoodreadsSearchEngine.CONNECT_TIMEOUT_MS,
-                                             GoodreadsSearchEngine.READ_TIMEOUT_MS,
-                                             GoodreadsSearchEngine.THROTTLER);
-                if (fileSpec != null) {
-                    delta.putString(Book.BKEY_FILE_SPEC[0], fileSpec);
-                }
+            final String fileSpec = ApiUtils.handleThumbnail(context,
+                                                             goodreadsData,
+                                                             Review.LARGE_IMAGE_URL,
+                                                             Review.SMALL_IMAGE_URL);
+            if (fileSpec != null) {
+                delta.putString(Book.BKEY_FILE_SPEC[0], fileSpec);
             }
         }
 
@@ -741,7 +717,7 @@ class ImportGrTask
                                       @NonNull final String sourceKey,
                                       @NonNull final Book destBundle,
                                       @SuppressWarnings("SameParameterValue")
-                                          @NonNull final String destKey) {
+                                      @NonNull final String destKey) {
 
         if (sourceBundle.containsKey(sourceKey)) {
             final double value = sourceBundle.getDouble(sourceKey);

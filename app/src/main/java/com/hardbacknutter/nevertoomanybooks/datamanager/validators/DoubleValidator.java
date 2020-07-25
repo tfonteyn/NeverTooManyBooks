@@ -51,16 +51,16 @@ public class DoubleValidator
     /** Default to apply if the field is {@code null} or empty. */
     private final double mDefaultValue;
     /** Cached system locale. */
-    private final Locale mLocale;
+    private final Locale mSystemLocale;
 
     /**
      * Constructor; default value is 0d.
-     *
+     * <p>
      * getSystemLocale: the user types it in (or it came from an external source)
      */
     public DoubleValidator() {
         mDefaultValue = 0d;
-        mLocale = LocaleUtils.getSystemLocale();
+        mSystemLocale = LocaleUtils.getSystemLocale();
     }
 
     @Override
@@ -71,22 +71,24 @@ public class DoubleValidator
                          final int errorLabelId)
             throws ValidatorException {
 
-        double value;
-        Object obj = dataManager.get(key);
+        final double value;
+        final Object obj = dataManager.get(key);
         if (obj == null) {
             value = mDefaultValue;
         } else if (obj instanceof Number) {
             value = ((Number) obj).doubleValue();
         } else {
-            String stringValue = obj.toString().trim();
+            final String stringValue = obj.toString().trim();
             if (stringValue.isEmpty()) {
                 value = mDefaultValue;
             } else {
                 try {
-                    value = ParseUtils.parseDouble(stringValue, mLocale);
+                    value = ParseUtils.parseDouble(stringValue, mSystemLocale);
 
                 } catch (@NonNull final NumberFormatException e) {
-                    throw new ValidatorException(R.string.vldt_real_expected_for_x, errorLabelId);
+                    throw new ValidatorException(
+                            context.getString(R.string.vldt_real_expected_for_x,
+                                              context.getString(errorLabelId)));
                 }
             }
         }

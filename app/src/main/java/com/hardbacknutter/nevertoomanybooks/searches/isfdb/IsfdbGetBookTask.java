@@ -36,11 +36,9 @@ import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
 
 import java.net.SocketTimeoutException;
-import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.tasks.VMTask;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 
@@ -53,21 +51,21 @@ public class IsfdbGetBookTask
     /** Log tag. */
     private static final String TAG = "IsfdbGetBookTask";
 
-    /** Native site book id to get. */
+    /** ISFDB book id to get. */
     private long mIsfdbId;
-    /** Native site book edition(s) to get. */
+    /** ISFDB book edition to get. */
     @Nullable
-    private List<Edition> mEditions;
+    private Edition mEdition;
 
     /**
      * Initiate a single book lookup by edition.
      *
-     * @param editions List of ISFDB native ID's
+     * @param edition to get
      */
     @UiThread
-    public void search(@NonNull final List<Edition> editions) {
+    public void search(@NonNull final Edition edition) {
         mIsfdbId = 0;
-        mEditions = editions;
+        mEdition = edition;
 
         execute(R.id.TASK_ID_ISFDB_GET_BOOK);
     }
@@ -75,12 +73,12 @@ public class IsfdbGetBookTask
     /**
      * Initiate a single book lookup by ID.
      *
-     * @param isfdbId Single ISFDB native ID's
+     * @param isfdbId Single ISFDB book ID's
      */
     @UiThread
     public void search(final long isfdbId) {
         mIsfdbId = isfdbId;
-        mEditions = null;
+        mEdition = null;
 
         execute(R.id.TASK_ID_ISFDB_GET_BOOK);
     }
@@ -92,17 +90,19 @@ public class IsfdbGetBookTask
             throws SocketTimeoutException {
         Thread.currentThread().setName(TAG);
         final Context context = LocaleUtils.applyLocale(App.getTaskContext());
-        final SearchEngine searchEngine = new IsfdbSearchEngine();
+
+        final IsfdbSearchEngine searchEngine = new IsfdbSearchEngine(context);
+
         searchEngine.setCaller(this);
 
+        final Bundle bookData = new Bundle();
         final boolean[] fetchThumbnails = {false, false};
-        if (mEditions != null) {
-            return new IsfdbBookHandler(context, searchEngine)
-                    .fetchByEdition(mEditions, fetchThumbnails, new Bundle());
+        if (mEdition != null) {
+            searchEngine.fetchByEdition(mEdition, fetchThumbnails, bookData);
+            return bookData;
 
         } else if (mIsfdbId != 0) {
-            return new IsfdbBookHandler(context, searchEngine)
-                    .fetchByNativeId(String.valueOf(mIsfdbId), fetchThumbnails, new Bundle());
+            return searchEngine.searchByExternalId(String.valueOf(mIsfdbId), fetchThumbnails);
 
         } else {
             throw new IllegalStateException("how did we get here?");

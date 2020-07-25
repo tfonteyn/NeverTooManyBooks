@@ -29,16 +29,14 @@ package com.hardbacknutter.nevertoomanybooks.searches.kbnl;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
-import androidx.preference.PreferenceManager;
 
 import java.io.IOException;
-import java.util.Locale;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
@@ -46,11 +44,12 @@ import javax.xml.parsers.SAXParserFactory;
 
 import org.xml.sax.SAXException;
 
+import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageFileInfo;
-import com.hardbacknutter.nevertoomanybooks.covers.ImageUtils;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
-import com.hardbacknutter.nevertoomanybooks.tasks.Canceller;
+import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineBase;
+import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.tasks.TerminatorConnection;
 
 /**
@@ -58,21 +57,27 @@ import com.hardbacknutter.nevertoomanybooks.tasks.TerminatorConnection;
  * <a href="https://www.kb.nl/">Royal Library, The Netherlands.</a>
  * <p>
  * 2020-01-04: "http://opc4.kb.nl" is not available on https.
- * see "res/xml/network_security_config.xml"
+ * see "src/main/res/xml/network_security_config.xml"
  */
+@SearchEngine.Configuration(
+        id = SearchSites.KB_NL,
+        nameResId = R.string.site_kb_nl,
+        url = "http://opc4.kb.nl",
+        prefKey = KbNlSearchEngine.PREF_KEY,
+        lang = "nl",
+        country = "NL",
+        supportsMultipleCoverSizes = true
+)
 public class KbNlSearchEngine
-        implements SearchEngine,
-                   SearchEngine.ByIsbn,
+        extends SearchEngineBase
+        implements SearchEngine.ByIsbn,
                    SearchEngine.CoverByIsbn {
 
-    /** This is a Dutch/NL language website. */
-    public static final Locale SITE_LOCALE = new Locale("nl", "NL");
-
     /** Preferences prefix. */
-    private static final String PREF_PREFIX = "kbnl.";
+    public static final String PREF_KEY = "kbnl";
     /** Type: {@code String}. */
     @VisibleForTesting
-    public static final String PREFS_HOST_URL = PREF_PREFIX + "host.url";
+    public static final String PREFS_HOST_URL = PREF_KEY + ".host.url";
 
     /**
      * <strong>Note:</strong> This is not the same site as the search site itself.
@@ -82,10 +87,15 @@ public class KbNlSearchEngine
      */
     private static final String BASE_URL_COVERS =
             "https://webservices.bibliotheek.be/index.php?func=cover&ISBN=%1$s&coversize=%2$s";
-
     /** file suffix for cover files. */
     private static final String FILENAME_SUFFIX = "_KB";
 
+    /* Response with English labels. */
+    //private static final String BOOK_URL =
+    //      "/DB=1/SET=1/TTL=1/LNG=EN/CMD?ACT=SRCHA&IKT=1007&SRT=YOP&TRM=%1$s";
+    /* param 1: site specific author id. */
+//    private static final String AUTHOR_URL = getBaseURL(context)
+//    + "/DB=1/SET=1/TTL=1/REL?PPN=%1$s";
     /**
      * Response with Dutch labels.
      * <p>
@@ -94,60 +104,34 @@ public class KbNlSearchEngine
     private static final String BOOK_URL =
             "/DB=1/SET=1/TTL=1/LNG=NE/CMD?ACT=SRCHA&IKT=1007&SRT=YOP&TRM=%1$s";
 
-    /* Response with English labels. */
-    //private static final String BOOK_URL =
-    //      "/DB=1/SET=1/TTL=1/LNG=EN/CMD?ACT=SRCHA&IKT=1007&SRT=YOP&TRM=%1$s";
-    /* param 1: site specific author id. */
-//    private static final String AUTHOR_URL = getBaseURL(context)
-//    + "/DB=1/SET=1/TTL=1/REL?PPN=%1$s";
-
-
-    @Nullable
-    private Canceller mCaller;
-
-    @NonNull
-    public static String getBaseURL(@NonNull final Context context) {
-        return PreferenceManager.getDefaultSharedPreferences(context)
-                                .getString(PREFS_HOST_URL, "http://opc4.kb.nl");
-    }
-
-    @Override
-    public void setCaller(@Nullable final Canceller caller) {
-        mCaller = caller;
-    }
-
-    @Override
-    public boolean isCancelled() {
-        return mCaller == null || mCaller.isCancelled();
+    /**
+     * Constructor.
+     *
+     * @param appContext Application context
+     */
+    public KbNlSearchEngine(@NonNull final Context appContext) {
+        super(appContext);
     }
 
     @NonNull
     @Override
-    public Locale getLocale(@NonNull final Context context) {
-        return SITE_LOCALE;
-    }
-
-    @NonNull
-    @Override
-    public Bundle searchByIsbn(@NonNull final Context context,
-                               @NonNull final String validIsbn,
+    public Bundle searchByIsbn(@NonNull final String validIsbn,
                                @NonNull final boolean[] fetchThumbnail)
             throws IOException {
 
-        final String url = getUrl(context) + String.format(BOOK_URL, validIsbn);
+        final String url = getSiteUrl() + String.format(BOOK_URL, validIsbn);
 
         final SAXParserFactory factory = SAXParserFactory.newInstance();
         final KbNlBookHandler handler = new KbNlBookHandler(new Bundle());
 
-        try (TerminatorConnection con = new TerminatorConnection(context, url, this)) {
-            // needed so we get the XML instead of the rendered page
-            con.setInstanceFollowRedirects(false);
-
+        // Don't follow redirects, so we get the XML instead of the rendered page
+        try (TerminatorConnection con = createConnection(url, false)) {
             final SAXParser parser = factory.newSAXParser();
             parser.parse(con.getInputStream(), handler);
-
-            // wrap parser exceptions in an IOException
         } catch (@NonNull final ParserConfigurationException | SAXException e) {
+            if (BuildConfig.DEBUG /* always */) {
+                Log.d(TAG, "searchByIsbn", e);
+            }
             throw new IOException(e);
         }
 
@@ -158,7 +142,7 @@ public class KbNlSearchEngine
         }
 
         if (fetchThumbnail[0]) {
-            CoverByIsbn.getCoverImage(context, this, validIsbn, 0, bookData);
+            searchBestCoverImageByIsbn(validIsbn, 0, bookData);
         }
         return bookData;
     }
@@ -172,8 +156,7 @@ public class KbNlSearchEngine
      */
     @Nullable
     @Override
-    public String searchCoverImageByIsbn(@NonNull final Context context,
-                                         @NonNull final String validIsbn,
+    public String searchCoverImageByIsbn(@NonNull final String validIsbn,
                                          @IntRange(from = 0) final int cIdx,
                                          @Nullable final ImageFileInfo.Size size) {
         final String sizeSuffix;
@@ -195,24 +178,6 @@ public class KbNlSearchEngine
         }
 
         final String url = String.format(BASE_URL_COVERS, validIsbn, sizeSuffix);
-        final String tmpName = validIsbn + FILENAME_SUFFIX + "_" + sizeSuffix;
-        return ImageUtils.saveImage(context, url, tmpName, this);
-    }
-
-    @Override
-    public boolean supportsMultipleSizes() {
-        return true;
-    }
-
-    @NonNull
-    @Override
-    public String getUrl(@NonNull final Context context) {
-        return getBaseURL(context);
-    }
-
-    @StringRes
-    @Override
-    public int getNameResId() {
-        return R.string.site_KBNL;
+        return saveImage(url, validIsbn, FILENAME_SUFFIX + "_" + sizeSuffix, 0);
     }
 }

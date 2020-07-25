@@ -32,6 +32,7 @@ import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -95,7 +96,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
-import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsHandler;
+import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsManager;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GrStatus;
 import com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.QueueManager;
 import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.GrAuthTask;
@@ -145,6 +146,8 @@ import com.hardbacknutter.nevertoomanybooks.widgets.fastscroller.FastScroller;
  */
 public class BooksOnBookshelf
         extends BaseActivity {
+
+    RecyclerView.Adapter.StateRestorationPolicy f;
 
     /** Log tag. */
     private static final String TAG = "BooksOnBookshelf";
@@ -400,7 +403,7 @@ public class BooksOnBookshelf
         setNavigationItemVisibility(R.id.nav_manage_bookshelves, true);
         setNavigationItemVisibility(R.id.nav_export, true);
         setNavigationItemVisibility(R.id.nav_import, true);
-        setNavigationItemVisibility(R.id.nav_goodreads, GoodreadsHandler.isShowSyncMenus(this));
+        setNavigationItemVisibility(R.id.nav_goodreads, GoodreadsManager.isShowSyncMenus(this));
 
         mLayoutManager = new LinearLayoutManager(this);
         mVb.list.setLayoutManager(mLayoutManager);
@@ -417,7 +420,7 @@ public class BooksOnBookshelf
         mFabMenu.attach(mVb.list);
         mFabMenu.setOnClickListener(this::onFabMenuItemSelected);
         // mVb.fab4
-        mFabMenu.getItem(4).setEnabled(Prefs.showEditBookTabNativeId(this));
+        mFabMenu.getItem(4).setEnabled(Prefs.showEditBookTabExternalId(this));
 
         // Popup the search widget when the user starts to type.
         setDefaultKeyMode(Activity.DEFAULT_KEYS_SEARCH_LOCAL);
@@ -482,7 +485,7 @@ public class BooksOnBookshelf
 
         } else if (Intent.ACTION_VIEW.equals(intent.getAction())) {
             // Handle a suggestions click.
-            // The ACTION_VIEW as set in res/xml/searchable.xml/searchSuggestIntentAction
+            // The ACTION_VIEW as set in src/main/res/xml/searchable.xml/searchSuggestIntentAction
             query = intent.getDataString();
         } else {
             query = null;
@@ -547,7 +550,7 @@ public class BooksOnBookshelf
                 break;
 
             case R.id.fab4:
-                addBySearch(BookSearchByNativeIdFragment.TAG);
+                addBySearch(BookSearchByExternalIdFragment.TAG);
                 break;
 
             default:
@@ -643,7 +646,7 @@ public class BooksOnBookshelf
                 menu.findItem(R.id.MENU_BOOK_LOAN_DELETE).setVisible(useLending && !isAvailable);
 
                 menu.findItem(R.id.MENU_BOOK_SEND_TO_GOODREADS)
-                    .setVisible(GoodreadsHandler.isShowSyncMenus(this));
+                    .setVisible(GoodreadsManager.isShowSyncMenus(this));
 
                 MenuHandler.prepareOptionalMenus(menu, rowData);
                 break;
@@ -727,7 +730,7 @@ public class BooksOnBookshelf
             }
         }
 
-        int menuOrder = getResources().getInteger(R.integer.MENU_NEXT_MISSING_COVER);
+        int menuOrder = getResources().getInteger(R.integer.MENU_ORDER_NEXT_MISSING_COVER);
         if (menu.size() > 0) {
             menu.add(Menu.NONE, R.id.MENU_DIVIDER, menuOrder++, "")
                 .setEnabled(false);
@@ -1020,14 +1023,18 @@ public class BooksOnBookshelf
             case R.id.MENU_AMAZON_BOOKS_BY_AUTHOR: {
                 final Author author = mModel.getAuthor(rowData);
                 if (author != null) {
-                    AmazonSearchEngine.openWebsite(this, author.getLabel(this), null);
+                    final String url = AmazonSearchEngine.createUrl(
+                            this, author.getLabel(this), null);
+                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
                 }
                 return true;
             }
             case R.id.MENU_AMAZON_BOOKS_IN_SERIES: {
                 final Series series = mModel.getSeries(rowData);
                 if (series != null) {
-                    AmazonSearchEngine.openWebsite(this, null, series.getTitle());
+                    final String url = AmazonSearchEngine.createUrl(
+                            this, null, series.getTitle());
+                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
                 }
                 return true;
             }
@@ -1035,7 +1042,9 @@ public class BooksOnBookshelf
                 final Author author = mModel.getAuthor(rowData);
                 final Series series = mModel.getSeries(rowData);
                 if (author != null && series != null) {
-                    AmazonSearchEngine.openWebsite(this, author.getLabel(this), series.getTitle());
+                    final String url = AmazonSearchEngine.createUrl(
+                            this, author.getLabel(this), series.getTitle());
+                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
                 }
                 return true;
             }

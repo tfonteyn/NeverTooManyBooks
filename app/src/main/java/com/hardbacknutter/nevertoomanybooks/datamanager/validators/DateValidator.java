@@ -74,7 +74,8 @@ public class DateValidator
             if (date != null) {
                 value = date.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
             } else {
-                throw new ValidatorException(R.string.vldt_date_expected_for_x, errorLabelId);
+                throw new ValidatorException(context.getString(R.string.vldt_date_expected_for_x,
+                                                               context.getString(errorLabelId)));
             }
         }
         dataManager.putString(key, value);

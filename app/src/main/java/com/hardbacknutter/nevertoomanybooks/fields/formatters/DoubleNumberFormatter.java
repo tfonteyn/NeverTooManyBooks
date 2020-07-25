@@ -58,12 +58,12 @@ public class DoubleNumberFormatter
             return "";
         }
 
-        double value = rawValue.doubleValue();
+        final double value = rawValue.doubleValue();
         if (value == 0.0d) {
             return "";
         }
 
-        String formatted = String.valueOf(value);
+        final String formatted = String.valueOf(value);
         if (formatted.endsWith(".0")) {
             return formatted.substring(0, formatted.length() - 2);
         } else {
@@ -74,7 +74,7 @@ public class DoubleNumberFormatter
     @NonNull
     @Override
     public Number extract(@NonNull final TextView view) {
-        String sv = view.getText().toString().trim();
+        final String sv = view.getText().toString().trim();
         if (sv.isEmpty()) {
             return 0;
         }

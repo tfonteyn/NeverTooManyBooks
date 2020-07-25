@@ -36,7 +36,7 @@
         android:title="@string/menu_view_book_at"
         >
         <menu>
-            <!-- //NEWTHINGS: add new site specific ID: add menu item. -->
+            <!-- //NEWTHINGS: adding a new search engine: optional: add menu item. -->
             <item
                 android:id="@id/MENU_VIEW_BOOK_AT_GOODREADS"
                 android:icon="@drawable/ic_link"
@@ -61,7 +61,12 @@
                 android:id="@id/MENU_VIEW_BOOK_AT_STRIP_INFO_BE"
                 android:icon="@drawable/ic_link"
                 android:orderInCategory="@integer/MENU_ORDER_VIEW_BOOK_AT_STRIPINFO_BE"
-                android:title="@string/site_stripinfo" />
+                android:title="@string/site_stripinfo_be" />
+            <item
+                android:id="@id/MENU_VIEW_BOOK_AT_LAST_DODO_NL"
+                android:icon="@drawable/ic_link"
+                android:orderInCategory="@integer/MENU_ORDER_VIEW_BOOK_AT_LAST_DODO_NL"
+                android:title="@string/site_lastdodo_nl" />
             <item
                 android:id="@id/MENU_VIEW_BOOK_AT_AMAZON"
                 android:icon="@drawable/ic_link"

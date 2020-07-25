@@ -30,6 +30,7 @@ package com.hardbacknutter.nevertoomanybooks.goodreads;
 import android.content.Context;
 import android.os.Bundle;
 
+import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
@@ -65,31 +66,40 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsExceptio
 /**
  * Manages connections and interfaces between the {@code SearchEngine} and the actual
  * Goodreads API classes.
+ * <p>
+ * Is cached by the {@code SearchEngine}, and in turn caches the various ApiHandler as and when
+ * they get created.
+ * <p>
+ * Also keeps a cache of the Goodreads shelves list.
  *
  * <p>
  * <a href="https://www.goodreads.com/api/documentation">api documentation</a>
  */
-public class GoodreadsHandler {
+public class GoodreadsManager {
 
     public static final String BASE_URL = "https://www.goodreads.com";
     public static final Locale SITE_LOCALE = Locale.US;
+    public static final int CONNECTION_TIMEOUT_MS = 10_000;
+    public static final int READ_TIMEOUT_MS = 10_000;
+
     /** Preferences prefix. */
-    private static final String PREF_PREFIX = "goodreads.";
+    public static final String PREF_KEY = "goodreads";
 
     /** Preference that controls display of alert about Goodreads. */
-    public static final String PREFS_HIDE_ALERT = PREF_PREFIX + "hide_alert.";
-    /** last time we synced with Goodreads. */
-    public static final String PREFS_LAST_SYNC_DATE = PREF_PREFIX + "last.sync.date";
-    /** last id we send to Goodreads. */
-    public static final String PREFS_LAST_BOOK_SEND = PREF_PREFIX + "last.send.id";
+    public static final String PREFS_HIDE_ALERT = PREF_KEY + ".hide_alert.";
 
     /** Log tag. */
-    private static final String TAG = "GoodreadsHandler";
+    private static final String TAG = "GoodreadsManager";
     /** Whether to show any Goodreads sync menus at all. */
-    private static final String PREFS_SHOW_MENUS = PREF_PREFIX + "showMenu";
+    private static final String PREFS_SHOW_MENUS = PREF_KEY + ".showMenu";
     /** Whether to collect genre string from the popular bookshelves. */
-    private static final String PREFS_COLLECT_GENRE = PREF_PREFIX + "search.collect.genre";
-
+    private static final String PREFS_COLLECT_GENRE = PREF_KEY + ".search.collect.genre";
+    /** last id we send to Goodreads. */
+    private static final String PREFS_LAST_BOOK_SEND = PREF_KEY + ".last.send.id";
+    /** last time we synced with Goodreads. */
+    private static final String PREFS_LAST_SYNC_DATE = PREF_KEY + ".last.sync.date";
+    @NonNull
+    protected final Context mAppContext;
 
     /** Authentication handler. */
     @NonNull
@@ -107,6 +117,13 @@ public class GoodreadsHandler {
     /** Cache this handler. */
     @Nullable
     private ReviewEditApiHandler mReviewEditApiHandler;
+    /** Cache this handler. */
+    @Nullable
+    private ShowBookByIdApiHandler mShowBookByIdApiHandler;
+    /** Cache this handler. */
+    @Nullable
+    private ShowBookByIsbnApiHandler mShowBookByIsbnApiHandler;
+
 
     /** Cached list of shelves. */
     @Nullable
@@ -115,9 +132,13 @@ public class GoodreadsHandler {
     /**
      * Constructor.
      *
-     * @param grAuth Authentication handler
+     * @param appContext Application context
+     * @param grAuth     Authentication handler
      */
-    public GoodreadsHandler(@NonNull final GoodreadsAuth grAuth) {
+    @WorkerThread
+    public GoodreadsManager(@NonNull final Context appContext,
+                            @NonNull final GoodreadsAuth grAuth) {
+        mAppContext = appContext;
         mGoodreadsAuth = grAuth;
     }
 
@@ -139,61 +160,39 @@ public class GoodreadsHandler {
                                 .getBoolean(PREFS_COLLECT_GENRE, true);
     }
 
-    /**
-     * Construct a full or partial date string based on the y/m/d fields.
-     *
-     * @param source    Bundle to use
-     * @param yearKey   bundle key
-     * @param monthKey  bundle key
-     * @param dayKey    bundle key
-     * @param resultKey key to write to formatted date to
-     *
-     * @return the date string, or {@code null} if invalid
-     */
     @Nullable
-    public static String buildDate(@NonNull final Bundle source,
-                                   @NonNull final String yearKey,
-                                   @NonNull final String monthKey,
-                                   @NonNull final String dayKey,
-                                   @Nullable final String resultKey) {
-
-        String date = null;
-        if (source.containsKey(yearKey)) {
-            date = String.format(Locale.ENGLISH, "%04d", source.getLong(yearKey));
-            if (source.containsKey(monthKey)) {
-                date += '-' + String.format(Locale.ENGLISH, "%02d", source.getLong(monthKey));
-                if (source.containsKey(dayKey)) {
-                    date += '-' + String.format(Locale.ENGLISH, "%02d", source.getLong(dayKey));
-                }
-            }
-            if (resultKey != null && !date.isEmpty()) {
-                source.putString(resultKey, date);
-            }
-        }
-        return date;
+    public static String getLastSyncDate(@NonNull final Context context) {
+        return PreferenceManager.getDefaultSharedPreferences(context)
+                                .getString(PREFS_LAST_SYNC_DATE, null);
     }
 
-    /**
-     * Check the url for certain keywords that would indicate a cover is, or is not, present.
-     *
-     * @param url to check
-     *
-     * @return {@code true} if the url indicates there is an actual image.
-     */
-    public static boolean hasCover(@Nullable final String url) {
-        if (url == null) {
-            return false;
-        }
-        final String name = url.toLowerCase(LocaleUtils.getSystemLocale());
-        // these string can be part of an image 'name' indicating there is no cover image.
-        return !name.contains("nophoto") && !name.contains("nocover");
+    public static void putLastSyncDate(@NonNull final Context context,
+                                       @Nullable final String lastSyncDate) {
+        PreferenceManager.getDefaultSharedPreferences(context)
+                         .edit().putString(PREFS_LAST_SYNC_DATE, lastSyncDate)
+                         .apply();
+    }
+
+    public long getLastBookIdSend() {
+        return PreferenceManager.getDefaultSharedPreferences(mAppContext)
+                                .getLong(PREFS_LAST_BOOK_SEND, 0);
+    }
+
+    public void putLastBookIdSend(final long lastBookSend) {
+        PreferenceManager.getDefaultSharedPreferences(mAppContext)
+                         .edit().putLong(PREFS_LAST_BOOK_SEND, lastBookSend)
+                         .apply();
+    }
+
+    @NonNull
+    public Context getAppContext() {
+        return mAppContext;
     }
 
     /**
      * Wrapper to search for a book based on the given query.
      *
-     * @param context Current context
-     * @param query   to search
+     * @param query to search
      *
      * @return the array of GoodreadsWork objects.
      *
@@ -202,12 +201,11 @@ public class GoodreadsHandler {
      * @throws IOException          on other failures
      */
     @NonNull
-    public List<GoodreadsWork> search(@NonNull final Context context,
-                                      @NonNull final String query)
+    public List<GoodreadsWork> search(@NonNull final String query)
             throws CredentialsException, Http404Exception, IOException {
 
         if (mSearchBooksApiHandler == null) {
-            mSearchBooksApiHandler = new SearchBooksApiHandler(context, mGoodreadsAuth);
+            mSearchBooksApiHandler = new SearchBooksApiHandler(mAppContext, mGoodreadsAuth);
         }
         return mSearchBooksApiHandler.search(query);
     }
@@ -215,8 +213,7 @@ public class GoodreadsHandler {
     /**
      * Wrapper to call ISBN->ID.
      *
-     * @param context Current context
-     * @param isbn    to search for
+     * @param isbn to search for
      *
      * @return Goodreads book ID
      *
@@ -225,12 +222,11 @@ public class GoodreadsHandler {
      * @throws IOException          on other failures
      */
     @SuppressWarnings("unused")
-    public long isbnToId(@NonNull final Context context,
-                         @NonNull final String isbn)
+    public long isbnToId(@NonNull final String isbn)
             throws CredentialsException, Http404Exception, IOException {
 
         if (mIsbnToIdApiHandler == null) {
-            mIsbnToIdApiHandler = new IsbnToIdApiHandler(context, mGoodreadsAuth);
+            mIsbnToIdApiHandler = new IsbnToIdApiHandler(mAppContext, mGoodreadsAuth);
         }
         return mIsbnToIdApiHandler.isbnToId(isbn);
     }
@@ -239,8 +235,6 @@ public class GoodreadsHandler {
      * Fetch all our shelves from Goodreads.
      * We only fetch them once and cache them.
      *
-     * @param context Current context
-     *
      * @return the Goodreads shelves
      *
      * @throws CredentialsException with GoodReads
@@ -248,12 +242,12 @@ public class GoodreadsHandler {
      * @throws IOException          on other failures
      */
     @NonNull
-    private GoodreadsShelves getShelves(@NonNull final Context context)
+    private GoodreadsShelves getShelves()
             throws CredentialsException, Http404Exception, IOException {
 
         if (mShelvesList == null) {
             final ShelvesListApiHandler handler =
-                    new ShelvesListApiHandler(context, mGoodreadsAuth);
+                    new ShelvesListApiHandler(mAppContext, mGoodreadsAuth);
             mShelvesList = new GoodreadsShelves(handler.getAll());
         }
         return mShelvesList;
@@ -262,7 +256,6 @@ public class GoodreadsHandler {
     /**
      * Wrapper to add book to shelf.
      *
-     * @param context   Current context
      * @param grBookId  GoodReads book id
      * @param shelfName GoodReads shelf name
      *
@@ -272,14 +265,13 @@ public class GoodreadsHandler {
      * @throws Http404Exception     the requested item was not found
      * @throws IOException          on other failures
      */
-    private long addBookToShelf(@NonNull final Context context,
-                                final long grBookId,
+    private long addBookToShelf(final long grBookId,
                                 @SuppressWarnings("SameParameterValue")
                                 @NonNull final String shelfName)
             throws CredentialsException, Http404Exception, IOException {
 
         if (mAddBookToShelfApiHandler == null) {
-            mAddBookToShelfApiHandler = new AddBookToShelfApiHandler(context, mGoodreadsAuth);
+            mAddBookToShelfApiHandler = new AddBookToShelfApiHandler(mAppContext, mGoodreadsAuth);
         }
         return mAddBookToShelfApiHandler.add(grBookId, shelfName);
     }
@@ -287,7 +279,6 @@ public class GoodreadsHandler {
     /**
      * Wrapper to add book to a list of shelves.
      *
-     * @param context    Current context
      * @param grBookId   GoodReads book id
      * @param shelfNames list of GoodReads shelf name
      *
@@ -297,13 +288,12 @@ public class GoodreadsHandler {
      * @throws Http404Exception     the requested item was not found
      * @throws IOException          on other failures
      */
-    private long addBookToShelf(@NonNull final Context context,
-                                final long grBookId,
+    private long addBookToShelf(final long grBookId,
                                 @NonNull final Iterable<String> shelfNames)
             throws CredentialsException, Http404Exception, IOException {
 
         if (mAddBookToShelfApiHandler == null) {
-            mAddBookToShelfApiHandler = new AddBookToShelfApiHandler(context, mGoodreadsAuth);
+            mAddBookToShelfApiHandler = new AddBookToShelfApiHandler(mAppContext, mGoodreadsAuth);
         }
         return mAddBookToShelfApiHandler.add(grBookId, shelfNames);
     }
@@ -311,7 +301,6 @@ public class GoodreadsHandler {
     /**
      * Wrapper to remove a book from a shelf.
      *
-     * @param context   Current context
      * @param grBookId  GoodReads book id
      * @param shelfName GoodReads shelf name
      *
@@ -319,13 +308,12 @@ public class GoodreadsHandler {
      * @throws Http404Exception     the requested item was not found
      * @throws IOException          on other failures
      */
-    private void removeBookFromShelf(@NonNull final Context context,
-                                     final long grBookId,
+    private void removeBookFromShelf(final long grBookId,
                                      @NonNull final String shelfName)
             throws CredentialsException, Http404Exception, IOException {
 
         if (mAddBookToShelfApiHandler == null) {
-            mAddBookToShelfApiHandler = new AddBookToShelfApiHandler(context, mGoodreadsAuth);
+            mAddBookToShelfApiHandler = new AddBookToShelfApiHandler(mAppContext, mGoodreadsAuth);
         }
         mAddBookToShelfApiHandler.remove(grBookId, shelfName);
     }
@@ -333,7 +321,6 @@ public class GoodreadsHandler {
     /**
      * Wrapper to search for a book.
      *
-     * @param context        Current context
      * @param grBookId       Goodreads book id to get
      * @param fetchThumbnail Set to {@code true} if we want to get thumbnails
      * @param bookData       Bundle to update <em>(passed in to allow mocking)</em>
@@ -345,24 +332,26 @@ public class GoodreadsHandler {
      * @throws IOException          on other failures
      */
     @NonNull
-    public Bundle getBookById(@NonNull final Context context,
-                              final long grBookId,
+    public Bundle getBookById(@IntRange(from = 1) final long grBookId,
                               @NonNull final boolean[] fetchThumbnail,
                               @NonNull final Bundle bookData)
             throws CredentialsException, Http404Exception, IOException {
 
-        if (grBookId != 0) {
-            final ShowBookByIdApiHandler api = new ShowBookByIdApiHandler(context, mGoodreadsAuth);
-            return api.get(context, grBookId, fetchThumbnail, bookData);
-        } else {
-            throw new IllegalArgumentException(ErrorMsg.ZERO_ID_FOR_BOOK);
+        if (BuildConfig.DEBUG /* always */) {
+            if (grBookId < 1) {
+                throw new IllegalArgumentException(ErrorMsg.ZERO_ID_FOR_BOOK);
+            }
         }
+
+        if (mShowBookByIdApiHandler == null) {
+            mShowBookByIdApiHandler = new ShowBookByIdApiHandler(mAppContext, mGoodreadsAuth);
+        }
+        return mShowBookByIdApiHandler.get(grBookId, fetchThumbnail, bookData);
     }
 
     /**
      * Wrapper to search for a book.
      *
-     * @param context        Current context
      * @param validIsbn      ISBN to use, must be valid
      * @param fetchThumbnail Set to {@code true} if we want to get thumbnails
      * @param bookData       Bundle to update <em>(passed in to allow mocking)</em>
@@ -374,14 +363,15 @@ public class GoodreadsHandler {
      * @throws IOException          on other failures
      */
     @NonNull
-    public Bundle getBookByIsbn(@NonNull final Context context,
-                                @NonNull final String validIsbn,
+    public Bundle getBookByIsbn(@NonNull final String validIsbn,
                                 @NonNull final boolean[] fetchThumbnail,
                                 @NonNull final Bundle bookData)
             throws CredentialsException, Http404Exception, IOException {
 
-        final ShowBookByIsbnApiHandler api = new ShowBookByIsbnApiHandler(context, mGoodreadsAuth);
-        return api.get(context, validIsbn, fetchThumbnail, bookData);
+        if (mShowBookByIsbnApiHandler == null) {
+            mShowBookByIsbnApiHandler = new ShowBookByIsbnApiHandler(mAppContext, mGoodreadsAuth);
+        }
+        return mShowBookByIsbnApiHandler.get(validIsbn, fetchThumbnail, bookData);
     }
 
     /**
@@ -398,7 +388,6 @@ public class GoodreadsHandler {
      * <p>
      * See {@link DAO#fetchBookForGoodreadsExport}
      *
-     * @param context  Current context
      * @param db       Database Access
      * @param bookData with book data to send
      *
@@ -410,8 +399,7 @@ public class GoodreadsHandler {
      */
     @WorkerThread
     @GrStatus.Status
-    public int sendOneBook(@NonNull final Context context,
-                           @NonNull final DAO db,
+    public int sendOneBook(@NonNull final DAO db,
                            @NonNull final DataHolder bookData)
             throws CredentialsException, Http404Exception, IOException {
 
@@ -422,8 +410,8 @@ public class GoodreadsHandler {
         }
 
         // Get the list of shelves from Goodreads.
-        // This is cached per instance of GoodreadsHandler.
-        final GoodreadsShelves grShelfList = getShelves(context);
+        // This is cached per instance of GoodreadsManager.
+        final GoodreadsShelves grShelfList = getShelves();
 
         long grBookId;
         Bundle grBook = null;
@@ -434,7 +422,7 @@ public class GoodreadsHandler {
             if (grBookId != 0) {
                 // Get the book details to make sure we have a valid book ID
                 final boolean[] fetchThumbnails = {false, false};
-                grBook = getBookById(context, grBookId, fetchThumbnails, new Bundle());
+                grBook = getBookById(grBookId, fetchThumbnails, new Bundle());
             }
         } catch (@NonNull final Http404Exception ignore) {
             grBookId = 0;
@@ -453,7 +441,7 @@ public class GoodreadsHandler {
 
             // Get the book details using ISBN
             final boolean[] fetchThumbnails = {false, false};
-            grBook = getBookByIsbn(context, isbn.asText(), fetchThumbnails, new Bundle());
+            grBook = getBookByIsbn(isbn.asText(), fetchThumbnails, new Bundle());
             grBookId = grBook.getLong(DBDefinitions.KEY_EID_GOODREADS_BOOK);
 
             // If we got an ID, save it against the book
@@ -473,7 +461,7 @@ public class GoodreadsHandler {
         final Collection<String> shelves = new ArrayList<>();
         final Collection<String> canonicalShelves = new ArrayList<>();
 
-        final Locale locale = LocaleUtils.getUserLocale(context);
+        final Locale userLocale = LocaleUtils.getUserLocale(mAppContext);
 
         // Build the list of shelves for the book that we have in the local database
         int exclusiveCount = 0;
@@ -482,7 +470,7 @@ public class GoodreadsHandler {
             shelves.add(bookshelfName);
 
             final String canonicalShelfName =
-                    GoodreadsShelf.canonicalizeName(locale, bookshelfName);
+                    GoodreadsShelf.canonicalizeName(userLocale, bookshelfName);
             canonicalShelves.add(canonicalShelfName);
 
             // Count how many of these shelves are exclusive in Goodreads.
@@ -502,7 +490,7 @@ public class GoodreadsHandler {
             }
             if (!shelves.contains(pseudoShelf)) {
                 shelves.add(pseudoShelf);
-                canonicalShelves.add(GoodreadsShelf.canonicalizeName(locale, pseudoShelf));
+                canonicalShelves.add(GoodreadsShelf.canonicalizeName(userLocale, pseudoShelf));
             }
         }
 
@@ -522,9 +510,9 @@ public class GoodreadsHandler {
                 try {
                     // Goodreads does not seem to like removing books from the special shelves.
                     if (!(grShelfList.isExclusive(grShelf))) {
-                        removeBookFromShelf(context, grBookId, grShelf);
+                        removeBookFromShelf(grBookId, grShelf);
                     }
-                } catch (@NonNull final Http404Exception e) {
+                } catch (@NonNull final Http404Exception ignore) {
                     // Ignore here; probably means the book was not on this shelf anyway
                 }
             }
@@ -534,7 +522,7 @@ public class GoodreadsHandler {
         final Collection<String> shelvesToAddTo = new ArrayList<>();
         for (String shelf : shelves) {
             // Get the name the shelf will have at Goodreads
-            final String canonicalShelfName = GoodreadsShelf.canonicalizeName(locale, shelf);
+            final String canonicalShelfName = GoodreadsShelf.canonicalizeName(userLocale, shelf);
             // Can only sent canonical shelf names if the book is on 0 or 1 of them.
             final boolean okToSend = exclusiveCount < 2
                                      || !grShelfList.isExclusive(canonicalShelfName);
@@ -544,7 +532,7 @@ public class GoodreadsHandler {
             }
         }
         if (!shelvesToAddTo.isEmpty()) {
-            reviewId = addBookToShelf(context, grBookId, shelvesToAddTo);
+            reviewId = addBookToShelf(grBookId, shelvesToAddTo);
         }
 
         // We should be safe always updating here because:
@@ -556,12 +544,12 @@ public class GoodreadsHandler {
         // we add the book to the 'Default' shelf.
         //
         if (reviewId == 0) {
-            reviewId = addBookToShelf(context, grBookId, GoodreadsShelf.DEFAULT_SHELF);
+            reviewId = addBookToShelf(grBookId, GoodreadsShelf.DEFAULT_SHELF);
         }
 
         // Finally update the remaining review details.
         if (mReviewEditApiHandler == null) {
-            mReviewEditApiHandler = new ReviewEditApiHandler(context, mGoodreadsAuth);
+            mReviewEditApiHandler = new ReviewEditApiHandler(mAppContext, mGoodreadsAuth);
         }
         mReviewEditApiHandler.update(reviewId,
                                      bookData.getBoolean(DBDefinitions.KEY_READ),

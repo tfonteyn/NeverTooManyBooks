@@ -165,7 +165,9 @@ public class SimpleXmlFilter {
             return false;
         }
 
-        switch (s.trim().toLowerCase(LocaleUtils.getSystemLocale())) {
+        final Locale systemLocale = LocaleUtils.getSystemLocale();
+
+        switch (s.trim().toLowerCase(systemLocale)) {
             case "true":
             case "t":
                 return true;

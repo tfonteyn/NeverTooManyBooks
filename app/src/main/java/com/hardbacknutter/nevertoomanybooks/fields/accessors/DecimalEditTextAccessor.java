@@ -109,9 +109,9 @@ public class DecimalEditTextAccessor
 
         DecimalTextWatcher(@NonNull final EditText view) {
             mView = view;
-            Locale locale = LocaleUtils.getUserLocale(mView.getContext());
-            DecimalFormat nf = (DecimalFormat) DecimalFormat.getInstance(locale);
-            DecimalFormatSymbols symbols = nf.getDecimalFormatSymbols();
+            final Locale userLocale = LocaleUtils.getUserLocale(mView.getContext());
+            final DecimalFormat nf = (DecimalFormat) DecimalFormat.getInstance(userLocale);
+            final DecimalFormatSymbols symbols = nf.getDecimalFormatSymbols();
             mDecimalSeparator = Character.toString(symbols.getDecimalSeparator());
 
             enableListener(mView.getText());

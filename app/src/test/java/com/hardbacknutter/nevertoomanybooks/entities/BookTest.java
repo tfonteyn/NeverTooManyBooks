@@ -35,20 +35,18 @@ import java.util.Locale;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 
 import com.hardbacknutter.nevertoomanybooks.BundleMock;
-import com.hardbacknutter.nevertoomanybooks.CommonSetup;
+import com.hardbacknutter.nevertoomanybooks.CommonMocks;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
-import com.hardbacknutter.nevertoomanybooks.database.definitions.ColumnInfo;
-import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
+import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
 
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_UTC_LAST_SYNC_DATE_GOODREADS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_DATE_ACQUIRED;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_EID_GOODREADS_BOOK;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_EID_ISFDB;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_EID_LIBRARY_THING;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_EID_OPEN_LIBRARY;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_ISBN;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_PRICE_LISTED;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_PRICE_LISTED_CURRENCY;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_PRICE_PAID;
@@ -62,11 +60,10 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 class BookTest
-        extends CommonSetup {
+        extends CommonMocks {
 
     private static final String INVALID_DEFAULT = "Invalid default";
 
-    @Mock
     protected Bundle mBundleHelper;
 
     @BeforeEach
@@ -74,6 +71,8 @@ class BookTest
         super.setUp();
 
         mBundleHelper = BundleMock.mock();
+
+        SearchSites.createConfigs();
     }
 
     /** US english book, price in $. */
@@ -164,20 +163,19 @@ class BookTest
     @Test
     void preprocessExternalIdsForInsert() {
 
-        DBDefinitions.NATIVE_ID_DOMAINS.add(
-                new Domain.Builder("DUMMY", ColumnInfo.TYPE_TEXT).build());
-
         Book book = new Book(mRawData);
         // valid number
         book.put(KEY_EID_ISFDB, 2L);
         // valid string
         book.put(KEY_EID_OPEN_LIBRARY, "test");
+
         // invalid string for a long field -> should be removed
         book.put(KEY_EID_GOODREADS_BOOK, "test");
 
 
         // blank string for a text field -> should be removed
-        book.put("DUMMY", "");
+        // KEY_ISBN is the external key for Amazon
+        book.put(KEY_ISBN, "");
         // blank string for a long field -> should be removed
         book.put(KEY_EID_LIBRARY_THING, "");
 
@@ -188,37 +186,37 @@ class BookTest
         assertEquals("test", book.getString(KEY_EID_OPEN_LIBRARY));
         assertFalse(book.contains(KEY_EID_GOODREADS_BOOK));
 
-        assertFalse(book.contains("DUMMY"));
+        assertFalse(book.contains(KEY_ISBN));
         assertFalse(book.contains(KEY_EID_LIBRARY_THING));
     }
 
     @Test
     void preprocessExternalIdsForUpdate() {
 
-        DBDefinitions.NATIVE_ID_DOMAINS.add(
-                new Domain.Builder("DUMMY", ColumnInfo.TYPE_TEXT).build());
-
         Book book = new Book(mRawData);
         // valid number
         book.put(KEY_EID_ISFDB, 2L);
         // valid string
         book.put(KEY_EID_OPEN_LIBRARY, "test");
+
         // invalid string for a long field -> should be removed
         book.put(KEY_EID_GOODREADS_BOOK, "test");
-
-
-        // blank string for a text field -> replace with null
-        book.put("DUMMY", "");
         // blank string for a long field -> replace with null
         book.put(KEY_EID_LIBRARY_THING, "");
+
+        // blank string for a text field -> replace with null
+        // KEY_ISBN is the external key for Amazon
+        book.put(KEY_ISBN, "");
+
 
         book.preprocessExternalIds(false);
 
         assertEquals(2, book.getLong(KEY_EID_ISFDB));
         assertEquals("test", book.getString(KEY_EID_OPEN_LIBRARY));
+
         assertFalse(book.contains(KEY_EID_GOODREADS_BOOK));
 
-        assertNull(book.get("DUMMY"));
+        assertNull(book.get(KEY_ISBN));
         assertNull(book.get(KEY_EID_LIBRARY_THING));
     }
 
@@ -234,7 +232,7 @@ class BookTest
         assertEquals("0.0",
                      DBDefinitions.DOM_BOOK_PRICE_LISTED.getDefault(), INVALID_DEFAULT);
         assertEquals("0000-00-00",
-                     DOM_UTC_LAST_SYNC_DATE_GOODREADS.getDefault(), INVALID_DEFAULT);
+                     DBDefinitions.DOM_UTC_LAST_SYNC_DATE_GOODREADS.getDefault(), INVALID_DEFAULT);
 
     }
 

@@ -28,34 +28,24 @@
 package com.hardbacknutter.nevertoomanybooks.goodreads.api;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import java.net.URL;
-
-import com.hardbacknutter.nevertoomanybooks.App;
-import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 
 public class Http404Exception
         extends Exception {
 
-    private static final long serialVersionUID = 2676079698072569074L;
+    private static final long serialVersionUID = 3287736232776571504L;
     @NonNull
     private final URL mUrl;
 
-    public Http404Exception(@NonNull final URL url) {
+    public Http404Exception(@NonNull final String message,
+                            @NonNull final URL url) {
+        super(message);
         mUrl = url;
     }
 
     @NonNull
     public URL getUrl() {
         return mUrl;
-    }
-
-    @Nullable
-    @Override
-    public String getLocalizedMessage() {
-        return LocaleUtils.applyLocale(App.getAppContext())
-                          .getString(R.string.error_site_access_failed);
     }
 }

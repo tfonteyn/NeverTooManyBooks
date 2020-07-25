@@ -32,7 +32,8 @@ import android.app.SearchManager;
 import android.app.SearchableInfo;
 import android.content.ComponentName;
 import android.content.Context;
-import android.util.SparseArray;
+import android.content.Intent;
+import android.net.Uri;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SubMenu;
@@ -42,22 +43,23 @@ import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
-import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
-import com.hardbacknutter.nevertoomanybooks.searches.amazon.AmazonSearchEngine;
-import com.hardbacknutter.nevertoomanybooks.searches.goodreads.GoodreadsSearchEngine;
-import com.hardbacknutter.nevertoomanybooks.searches.isfdb.IsfdbSearchEngine;
-import com.hardbacknutter.nevertoomanybooks.searches.librarything.LibraryThingSearchEngine;
-import com.hardbacknutter.nevertoomanybooks.searches.openlibrary.OpenLibrarySearchEngine;
-import com.hardbacknutter.nevertoomanybooks.searches.stripinfo.StripInfoSearchEngine;
-import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
+import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
+import com.hardbacknutter.nevertoomanybooks.searches.Site;
 
 final class MenuHandler {
 
     private MenuHandler() {
     }
 
+    /**
+     * Called from a details screen. i.e. the data comes from a {@link Book}.
+     *
+     * @param menu to add to
+     * @param book data to use
+     */
     static void prepareOptionalMenus(@NonNull final Menu menu,
                                      @NonNull final Book book) {
 
@@ -66,10 +68,16 @@ final class MenuHandler {
         final boolean hasSeries = !book.getParcelableArrayList(Book.BKEY_SERIES_ARRAY)
                                        .isEmpty();
 
-        prepareOpenOnWebsiteMenu(menu, getNativeIds(book));
+        prepareOpenOnWebsiteMenu(menu, book);
         prepareSearchOnAmazonMenu(menu, hasAuthor, hasSeries);
     }
 
+    /**
+     * Called from a list screen. i.e. the data comes from a row {@link DataHolder}.
+     *
+     * @param menu    to add to
+     * @param rowData data to use
+     */
     static void prepareOptionalMenus(@NonNull final Menu menu,
                                      @NonNull final DataHolder rowData) {
 
@@ -78,95 +86,64 @@ final class MenuHandler {
         final boolean hasSeries = rowData.contains(DBDefinitions.KEY_FK_SERIES)
                                   && rowData.getLong(DBDefinitions.KEY_FK_SERIES) > 0;
 
-        prepareOpenOnWebsiteMenu(menu, getNativeIds(rowData));
+        prepareOpenOnWebsiteMenu(menu, rowData);
         prepareSearchOnAmazonMenu(menu, hasAuthor, hasSeries);
     }
 
-    /**
-     * Get a map with all valid native ID's for the given item.
-     * All values will be cast to String.
-     *
-     * @param rowData a DataHolder compatible object with native id keys.
-     *
-     * @return map, can be empty.
-     */
-    @NonNull
-    private static SparseArray<String> getNativeIds(@NonNull final DataHolder rowData) {
-        final SparseArray<String> nativeIds = new SparseArray<>();
-        for (String key : DBDefinitions.NATIVE_ID_KEYS) {
-            final String value = rowData.getString(key);
-            if (!value.isEmpty() && !"0".equals(value)) {
-                nativeIds.put(SearchSites.getSiteIdFromDBDefinitions(key), value);
-            }
-        }
-        // explicitly add Amazon if we have a valid ISBN
-        final ISBN isbn = ISBN.createISBN(rowData.getString(DBDefinitions.KEY_ISBN));
-        if (isbn.isValid(true)) {
-            nativeIds.put(SearchSites.AMAZON, isbn.asText());
-        }
-        return nativeIds;
-    }
-
     private static void prepareOpenOnWebsiteMenu(@NonNull final Menu menu,
-                                                 @NonNull final SparseArray<String> nativeIds) {
+                                                 @NonNull final DataHolder dataHolder) {
 
         final MenuItem subMenuItem = menu.findItem(R.id.SUBMENU_VIEW_BOOK_AT_SITE);
         if (subMenuItem == null) {
             return;
         }
 
-        final boolean show = nativeIds.size() > 0;
-        subMenuItem.setVisible(show);
-        if (show) {
-            final SubMenu sm = subMenuItem.getSubMenu();
-            // display/hide menu items on their presence in the nativeIds list.
-            for (int item = 0; item < sm.size(); item++) {
-                final int menuId = sm.getItem(item).getItemId();
-                sm.findItem(menuId)
-                  .setVisible(nativeIds.get(SearchSites.getSiteIdFromResId(menuId)) != null);
+        final SubMenu subMenu = subMenuItem.getSubMenu();
+        boolean subMenuVisible = false;
+        for (int i = 0; i < subMenu.size(); i++) {
+            final MenuItem menuItem = subMenu.getItem(i);
+            boolean visible = false;
+
+            final Site.Config config = Site
+                    .getConfigByMenuId(menuItem.getItemId());
+            if (config != null) {
+                final Domain domain = config.getExternalIdDomain();
+                if (domain != null) {
+                    final String value = dataHolder.getString(domain.getName());
+                    if (!value.isEmpty() && !"0".equals(value)) {
+                        visible = true;
+                    }
+                }
+            }
+
+            menuItem.setVisible(visible);
+            if (visible) {
+                subMenuVisible = true;
             }
         }
+        subMenuItem.setVisible(subMenuVisible);
     }
 
     static boolean handleOpenOnWebsiteMenus(@NonNull final Context context,
-                                            @IdRes final int menuItem,
+                                            @IdRes final int menuItemId,
                                             @NonNull final DataHolder rowData) {
-        switch (menuItem) {
-            case R.id.MENU_VIEW_BOOK_AT_AMAZON:
-                AmazonSearchEngine.openWebsite(
-                        context, rowData.getString(DBDefinitions.KEY_ISBN));
+
+        final Site.Config config = Site.getConfigByMenuId(menuItemId);
+        // sanity check
+        if (config != null) {
+            final SearchEngine searchEngine = config.createSearchEngine();
+            // sanity check
+            if (searchEngine instanceof SearchEngine.ByExternalId) {
+                final Domain domain = config.getExternalIdDomain();
+                //noinspection ConstantConditions
+                final String url = ((SearchEngine.ByExternalId) searchEngine)
+                        .createUrl(rowData.getString(domain.getName()));
+                context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
                 return true;
-
-            case R.id.MENU_VIEW_BOOK_AT_GOODREADS:
-                GoodreadsSearchEngine.openWebsite(
-                        context, rowData.getLong(DBDefinitions.KEY_EID_GOODREADS_BOOK));
-                return true;
-
-            case R.id.MENU_VIEW_BOOK_AT_ISFDB:
-                IsfdbSearchEngine.openWebsite(
-                        context, rowData.getLong(DBDefinitions.KEY_EID_ISFDB));
-                return true;
-
-            case R.id.MENU_VIEW_BOOK_AT_LIBRARY_THING:
-                LibraryThingSearchEngine.openWebsite(
-                        context, rowData.getLong(DBDefinitions.KEY_EID_LIBRARY_THING));
-                return true;
-
-            case R.id.MENU_VIEW_BOOK_AT_OPEN_LIBRARY:
-                OpenLibrarySearchEngine.openWebsite(
-                        context, rowData.getString(DBDefinitions.KEY_EID_OPEN_LIBRARY));
-                return true;
-
-            case R.id.MENU_VIEW_BOOK_AT_STRIP_INFO_BE:
-                StripInfoSearchEngine.openWebsite(
-                        context, rowData.getLong(DBDefinitions.KEY_EID_STRIP_INFO_BE));
-                return true;
-
-            //NEWTHINGS: add new site specific ID: add case
-
-            default:
-                return false;
+            }
         }
+
+        return false;
     }
 
     private static void prepareSearchOnAmazonMenu(@NonNull final Menu menu,

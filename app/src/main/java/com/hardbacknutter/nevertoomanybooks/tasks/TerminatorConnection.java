@@ -48,7 +48,6 @@ import java.net.UnknownHostException;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
-import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.utils.NetworkUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.Throttler;
 
@@ -77,7 +76,7 @@ public final class TerminatorConnection
     /** kill connections after this delay. */
     private static final int KILL_TIMEOUT_MS = 60_000;
 
-    /** if at first we don't succeed... */
+    /** The default number of times we try to connect; i.e. one RETRY. */
     private static final int NR_OF_TRIES = 2;
     /** milliseconds to wait between retries. This is in ADDITION to the Throttler. */
     private static final int RETRY_AFTER_MS = 1_000;
@@ -98,7 +97,9 @@ public final class TerminatorConnection
 
     /** DEBUG: Indicates close() has been called. Also see {@link Closeable#close()}. */
     private boolean mCloseWasCalled;
-    private int mNrOfTries;
+
+    /** see {@link #setRetryCount(int)}. */
+    private int mNrOfTries = NR_OF_TRIES;
 
     /**
      * Constructor.
@@ -140,29 +141,11 @@ public final class TerminatorConnection
         mReadTimeout = readTimeout;
         mThrottler = throttler;
 
-        // redirect MUST BE SET TO TRUE here.
-        mCon.setInstanceFollowRedirects(true);
-        mCon.setUseCaches(false);
-    }
+        // redirect MUST BE TRUE here (it's the default)
+        //mCon.setInstanceFollowRedirects(true);
 
-    /**
-     * Convenience constructor.
-     *
-     * @param context      Application context
-     * @param urlStr       URL to retrieve
-     * @param searchEngine to use
-     *
-     * @throws IOException on failure
-     */
-    @WorkerThread
-    public TerminatorConnection(@NonNull final Context context,
-                                @NonNull final String urlStr,
-                                @NonNull final SearchEngine searchEngine)
-            throws IOException {
-        this(context, urlStr,
-             searchEngine.getConnectTimeoutMs(),
-             searchEngine.getReadTimeoutMs(),
-             searchEngine.getThrottler());
+        // Don't trust the caches; they have proven to be cumbersome.
+        mCon.setUseCaches(false);
     }
 
     /**
@@ -207,6 +190,7 @@ public final class TerminatorConnection
 
         // If the site drops connection, we retry.
         int retry;
+        // sanity check
         if (mNrOfTries > 0) {
             retry = mNrOfTries;
         } else {
@@ -268,9 +252,13 @@ public final class TerminatorConnection
         throw new IOException("Giving up");
     }
 
-    @SuppressWarnings("unused")
-    public void setNrOfTries(@IntRange(from = 0) final int nrOfTries) {
-        mNrOfTries = nrOfTries;
+    /**
+     * Override the default retry count {@link #NR_OF_TRIES}.
+     *
+     * @param retryCount to use, should be {@code 0} for no retries.
+     */
+    public void setRetryCount(@IntRange(from = 0) final int retryCount) {
+        mNrOfTries = retryCount + 1;
     }
 
     /** wrapper to {@link HttpURLConnection}. */

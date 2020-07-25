@@ -27,8 +27,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.searches.isfdb;
 
-import android.content.Context;
-
 import androidx.annotation.NonNull;
 
 import java.io.IOException;
@@ -42,9 +40,7 @@ import org.jsoup.nodes.Document;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import com.hardbacknutter.nevertoomanybooks.CommonSetup;
-import com.hardbacknutter.nevertoomanybooks.searches.JsoupBase;
-import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
+import com.hardbacknutter.nevertoomanybooks.CommonMocks;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -55,16 +51,16 @@ import static org.junit.jupiter.api.Assertions.fail;
  * Test parsing the Jsoup Document for ISFDB multi-edition data.
  */
 class IsfdbEditionsHandlerTest
-        extends CommonSetup {
+        extends CommonMocks {
 
     private static final String sBaseUrl = "http://www.isfdb.org";
 
-    private SearchEngine mSearchEngine;
+    private IsfdbSearchEngine mSearchEngine;
 
     @BeforeEach
     public void setUp() {
         super.setUp();
-        mSearchEngine = new IsfdbSearchEngine();
+        mSearchEngine = new IsfdbSearchEngine(mContext);
         mSearchEngine.setCaller(new DummyCaller());
     }
 
@@ -74,19 +70,18 @@ class IsfdbEditionsHandlerTest
         String locationHeader = "http://www.isfdb.org/cgi-bin/title.cgi?11169";
         String filename = "/isfdb/11169-multi-edition.html";
 
-        Document doc = null;
+        Document document = null;
         try (InputStream in = this.getClass().getResourceAsStream(filename)) {
             assertNotNull(in);
-            doc = Jsoup.parse(in, IsfdbSearchEngine.CHARSET_DECODE_PAGE, locationHeader);
+            document = Jsoup.parse(in, IsfdbSearchEngine.CHARSET_DECODE_PAGE, locationHeader);
         } catch (@NonNull final IOException e) {
             fail(e);
         }
-        assertNotNull(doc);
-        assertTrue(doc.hasText());
+        assertNotNull(document);
+        assertTrue(document.hasText());
 
-        final IsfdbEditionsHandler handler = new IsfdbEditionsHandler(mContext, mSearchEngine, doc);
         // we've set the doc, so no internet download will be done.
-        final List<Edition> editions = handler.parseDoc();
+        final List<Edition> editions = mSearchEngine.parseEditions(document);
 
         assertEquals(24, editions.size());
 
@@ -104,16 +99,18 @@ class IsfdbEditionsHandlerTest
      */
     @Test
     void searchSingleEditionIsbn() {
-        final DummyLoader loader = new DummyLoader(mContext, mSearchEngine);
 
         final String path = sBaseUrl + "/cgi-bin/se.cgi?arg=0887331602&type=ISBN";
-        String resultingUrl = null;
+        Document document = null;
         try {
-            resultingUrl = loader.loadPage(path);
+            document = mSearchEngine.loadDocument(path);
         } catch (@NonNull final SocketTimeoutException e) {
             fail(e);
         }
-        assertEquals(sBaseUrl + "/cgi-bin/pl.cgi?326539", resultingUrl);
+        assertNotNull(document);
+        assertTrue(document.hasText());
+
+        assertEquals(sBaseUrl + "/cgi-bin/pl.cgi?326539", document.location());
     }
 
 
@@ -125,25 +122,18 @@ class IsfdbEditionsHandlerTest
      */
     @Test
     void searchMultiEditionIsbn() {
-        final DummyLoader loader = new DummyLoader(mContext, mSearchEngine);
 
         final String path = sBaseUrl + "/cgi-bin/se.cgi?arg=9781473208926&type=ISBN";
-        String resultingUrl = null;
+        Document document = null;
         try {
-            resultingUrl = loader.loadPage(path);
+            document = mSearchEngine.loadDocument(path);
         } catch (@NonNull final SocketTimeoutException e) {
             fail(e);
         }
-        assertEquals(sBaseUrl + "/cgi-bin/se.cgi?arg=9781473208926&type=ISBN", resultingUrl);
-    }
+        assertNotNull(document);
+        assertTrue(document.hasText());
 
-    private static class DummyLoader
-            extends JsoupBase {
-
-        DummyLoader(@NonNull final Context context,
-                    @NonNull final SearchEngine searchEngine) {
-            super(context, searchEngine);
-            setCharSetName(IsfdbSearchEngine.CHARSET_DECODE_PAGE);
-        }
+        assertEquals(sBaseUrl + "/cgi-bin/se.cgi?arg=9781473208926&type=ISBN",
+                     document.location());
     }
 }

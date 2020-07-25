@@ -77,9 +77,9 @@ public class GoodreadsRegistrationActivity
         mGrAuthTask.onFinished().observe(this, this::onGrFinished);
 
         // Goodreads Reg Link
-        mVb.goodreadsUrl.setText(GoodreadsHandler.BASE_URL);
+        mVb.goodreadsUrl.setText(GoodreadsManager.BASE_URL);
         mVb.goodreadsUrl.setOnClickListener(v -> startActivity(
-                new Intent(Intent.ACTION_VIEW, Uri.parse(GoodreadsHandler.BASE_URL))));
+                new Intent(Intent.ACTION_VIEW, Uri.parse(GoodreadsManager.BASE_URL))));
 
         mVb.btnAuthorize.setOnClickListener(v -> {
             Snackbar.make(mVb.btnAuthorize, R.string.progress_msg_connecting,

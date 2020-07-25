@@ -30,7 +30,7 @@
 <!-- searchSuggestAuthority should not use ${}, won't work.
             The authorities value must match:
             - AndroidManifest.xml/provider/android:authorities
-            - res/xml/searchable.xml/searchSuggestAuthority
+            - src/main/res/xml/searchable.xml/searchSuggestAuthority
             - SearchSuggestionProvider.java/AUTHORITY
  -->
 <searchable

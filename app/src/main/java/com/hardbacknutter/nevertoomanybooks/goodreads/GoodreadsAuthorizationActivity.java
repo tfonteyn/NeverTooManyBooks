@@ -46,7 +46,6 @@ import com.hardbacknutter.nevertoomanybooks.BooksOnBookshelf;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.Notifier;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.FormattedMessageException;
 
 /**
  * Trivial Activity to handle the callback URI.
@@ -120,10 +119,7 @@ public class GoodreadsAuthorizationActivity
 
             } else {
                 final String msg;
-                if (mException instanceof FormattedMessageException) {
-                    msg = ((FormattedMessageException) mException).getLocalizedMessage(context);
-
-                } else if (mException != null) {
+                if (mException != null) {
                     msg = context.getString(R.string.error_site_authorization_failed,
                                             context.getString(R.string.site_goodreads)) + ' '
                           + context.getString(R.string.error_if_the_problem_persists,

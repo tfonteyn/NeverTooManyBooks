@@ -274,7 +274,7 @@ public class EditBookActivity
             new MaterialAlertDialogBuilder(this)
                     .setIcon(R.drawable.ic_error)
                     .setTitle(R.string.vldt_failure)
-                    .setMessage(book.getValidationExceptionMessage(this))
+                    .setMessage(book.getValidationExceptionMessage())
                     .setPositiveButton(android.R.string.ok, (d, w) -> d.dismiss())
                     .create()
                     .show();
@@ -354,8 +354,8 @@ public class EditBookActivity
                 mTabs.add(new TabInfo(EditBookTocFragment.class,
                                       R.string.tab_lbl_content));
             }
-            if (Prefs.showEditBookTabNativeId(activity)) {
-                mTabs.add(new TabInfo(EditBookNativeIdFragment.class,
+            if (Prefs.showEditBookTabExternalId(activity)) {
+                mTabs.add(new TabInfo(EditBookExternalIdFragment.class,
                                       R.string.tab_lbl_ext_id));
             }
         }

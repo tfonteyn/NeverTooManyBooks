@@ -113,16 +113,9 @@ public class EditBookshelvesFragment
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        getChildFragmentManager().addFragmentOnAttachListener(mFragmentOnAttachListener);
-
         setHasOptionsMenu(true);
 
-        //noinspection ConstantConditions
-        mResultData = new ViewModelProvider(getActivity()).get(ResultDataModel.class);
-
-        mModel = new ViewModelProvider(this).get(EditBookshelvesModel.class);
-        mModel.init(getArguments());
+        getChildFragmentManager().addFragmentOnAttachListener(mFragmentOnAttachListener);
     }
 
     @Override
@@ -142,6 +135,10 @@ public class EditBookshelvesFragment
         //noinspection ConstantConditions
         getActivity().setTitle(R.string.lbl_bookshelves_long);
 
+        mResultData = new ViewModelProvider(getActivity()).get(ResultDataModel.class);
+
+        mModel = new ViewModelProvider(this).get(EditBookshelvesModel.class);
+        mModel.init(getArguments());
         mModel.getSelectedPosition().observe(getViewLifecycleOwner(), position ->
                 mAdapter.setSelectedPosition(position));
 

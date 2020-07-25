@@ -27,25 +27,17 @@
  */
 package com.hardbacknutter.nevertoomanybooks.backup.base;
 
-import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
-
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.FormattedMessageException;
+import androidx.annotation.NonNull;
 
 /**
- * Importing data can give a more detailed reason of failure.
+ * Importing data can give a detailed reason of failure.
  */
 public class ImportException
-        extends FormattedMessageException {
+        extends Exception {
 
-    private static final long serialVersionUID = -1890286839718300179L;
+    private static final long serialVersionUID = 7716517613350773122L;
 
-    public ImportException(@StringRes final int stringId) {
-        super(stringId);
-    }
-
-    public ImportException(@StringRes final int stringId,
-                           @Nullable final Object... args) {
-        super(stringId, args);
+    public ImportException(@NonNull final String message) {
+        super(message);
     }
 }

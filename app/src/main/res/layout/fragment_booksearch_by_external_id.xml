@@ -67,7 +67,9 @@
             tools:ignore="MissingConstraints"
             />
 
-        <!-- //NEWTHINGS: add new site specific ID: add a RadioButton and add the name to the ConstraintRadioGroup. -->
+        <!-- NEWTHINGS: adding a new search engine:
+                optional: external id KEY add a RadioButton widget
+                and add the name to the ConstraintRadioGroup. -->
 
         <!-- Amazon search is disabled. -->
         <RadioButton
@@ -125,23 +127,32 @@
             android:id="@+id/site_strip_info_be"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/site_stripinfo"
+            android:text="@string/site_stripinfo_be"
             app:layout_constraintStart_toEndOf="@id/indent_fields"
             app:layout_constraintTop_toBottomOf="@id/site_open_library"
             />
 
+        <RadioButton
+            android:id="@+id/site_last_dodo_nl"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/site_lastdodo_nl"
+            app:layout_constraintStart_toEndOf="@id/indent_fields"
+            app:layout_constraintTop_toBottomOf="@id/site_strip_info_be"
+            />
+
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/lbl_native_id"
+            android:id="@+id/lbl_external_id"
             style="@style/Envelope.EditText"
             android:hint="@string/lbl_site_book_id"
             android:padding="@dimen/border2"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/site_strip_info_be"
+            app:layout_constraintTop_toBottomOf="@id/site_last_dodo_nl"
             >
 
             <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/native_id"
+                android:id="@+id/external_id"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:drawableStart="@drawable/ic_apps"
@@ -161,7 +172,7 @@
             android:text="@android:string/search_go"
             app:icon="@drawable/ic_search"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/lbl_native_id"
+            app:layout_constraintTop_toBottomOf="@id/lbl_external_id"
             />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

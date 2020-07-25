@@ -28,13 +28,9 @@
 
 package com.hardbacknutter.nevertoomanybooks.utils.exceptions;
 
-import androidx.annotation.Nullable;
+import androidx.annotation.NonNull;
 
 import java.io.IOException;
-
-import com.hardbacknutter.nevertoomanybooks.App;
-import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 
 /**
  * Should be thrown if the device has no network connectivity at all for whatever reason.
@@ -42,18 +38,9 @@ import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 public class NetworkUnavailableException
         extends IOException {
 
-    private static final long serialVersionUID = 8027184885533560891L;
+    private static final long serialVersionUID = 4360785674069682919L;
 
-    @Nullable
-    @Override
-    public String getMessage() {
-        return App.getAppContext().getString(R.string.error_network_no_connection);
-    }
-
-    @Nullable
-    @Override
-    public String getLocalizedMessage() {
-        return LocaleUtils.applyLocale(App.getAppContext())
-                          .getString(R.string.error_network_no_connection);
+    public NetworkUnavailableException(@NonNull final String message) {
+        super(message);
     }
 }

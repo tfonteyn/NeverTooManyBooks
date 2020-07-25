@@ -101,8 +101,6 @@ public class BookSearchByIsbnFragment
         if (args != null) {
             mInScanMode = args.getBoolean(BKEY_SCAN_MODE, false);
         }
-        //noinspection ConstantConditions
-        mScannerModel = new ViewModelProvider(getActivity()).get(ScannerViewModel.class);
     }
 
     @Override
@@ -121,6 +119,8 @@ public class BookSearchByIsbnFragment
 
         //noinspection ConstantConditions
         getActivity().setTitle(R.string.lbl_search_isbn);
+
+        mScannerModel = new ViewModelProvider(getActivity()).get(ScannerViewModel.class);
 
         mVb.isbn.setText(mCoordinator.getIsbnSearchText());
 
@@ -156,7 +156,6 @@ public class BookSearchByIsbnFragment
         mVb.btnSearch.setOnClickListener(v -> prepareSearch(mVb.isbn.getText().toString().trim()));
 
         // auto-start scanner first time.
-        //noinspection ConstantConditions
         if (mInScanMode && mScannerModel.isFirstStart()) {
             mInScanMode = mScannerModel.scan(this, RequestCode.SCAN_BARCODE);
         }

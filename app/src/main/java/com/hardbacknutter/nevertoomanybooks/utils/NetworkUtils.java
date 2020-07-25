@@ -46,6 +46,7 @@ import java.util.regex.Pattern;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
+import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.NetworkUnavailableException;
@@ -142,7 +143,8 @@ public final class NetworkUtils {
             throws NetworkUnavailableException, IOException {
 
         if (!isNetworkAvailable(context)) {
-            throw new NetworkUnavailableException();
+            throw new NetworkUnavailableException(
+                    context.getString(R.string.error_network_no_connection));
         }
 
         final String url = urlStr.toLowerCase(Locale.ROOT);

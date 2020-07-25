@@ -29,20 +29,18 @@ package com.hardbacknutter.nevertoomanybooks.searches.librarything;
 
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
+import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
 import androidx.preference.PreferenceManager;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Locale;
 import java.util.regex.Pattern;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -54,17 +52,22 @@ import org.xml.sax.SAXException;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageFileInfo;
-import com.hardbacknutter.nevertoomanybooks.covers.ImageUtils;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
-import com.hardbacknutter.nevertoomanybooks.tasks.Canceller;
+import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineBase;
+import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.tasks.TerminatorConnection;
 import com.hardbacknutter.nevertoomanybooks.utils.Throttler;
-import com.hardbacknutter.nevertoomanybooks.utils.xml.SearchHandler;
 
 /**
+ * FIXME: 2020-03-27. Started getting "APIs Temporarily disabled" for book and cover searches.
+ * Searching for alternative editions still works.
+ * The code for this site is kept up to date but not tested.
+ * We might have to switch the html scraping.
+ * <p>
+ * <p>
  * Handle all aspects of searching (and ultimately synchronizing with) LibraryThing.
  * <p>
  * The basic URLs are:
@@ -87,63 +90,60 @@ import com.hardbacknutter.nevertoomanybooks.utils.xml.SearchHandler;
  * - Lookup title using keywords: http://www.librarything.com/api/thingTitle/hand oberon
  * <p>
  * - consider scraping html for covers: http://www.librarything.com/work/18998/covers
- * with 18998 being the 'work' identifier.
- * * selector:
+ * with 18998 being the 'work' identifier: i.e. the site's (external) book id.
+ * selector:
  * #coverlist_customcovers
  * then all 'img'
  * and use the href.
  */
+@SearchEngine.Configuration(
+        id = SearchSites.LIBRARY_THING,
+        nameResId = R.string.site_library_thing,
+        url = "https://www.librarything.com",
+        prefKey = LibraryThingSearchEngine.PREF_KEY,
+        domainKey = DBDefinitions.KEY_EID_LIBRARY_THING,
+        domainViewId = R.id.site_library_thing,
+        domainMenuId = R.id.MENU_VIEW_BOOK_AT_LIBRARY_THING,
+        supportsMultipleCoverSizes = true
+)
 public class LibraryThingSearchEngine
-        implements SearchEngine,
-                   SearchEngine.ByIsbn,
-                   SearchEngine.ByNativeId,
+        extends SearchEngineBase
+        implements SearchEngine.ByIsbn,
+                   SearchEngine.ByExternalId,
                    SearchEngine.CoverByIsbn,
                    SearchEngine.AlternativeEditions {
 
-    /** base urls. */
-    public static final String BASE_URL = "https://www.librarything.com";
-    private static final String TAG = "LibraryThingSE";
     /** Preferences prefix. */
-    private static final String PREF_PREFIX = "librarything.";
+    public static final String PREF_KEY = "librarything";
+
     /** Preference that contains the dev key for the user. Type: {@code String}. */
-    static final String PREFS_DEV_KEY = PREF_PREFIX + "dev_key";
+    static final String PREFS_DEV_KEY = PREF_KEY + ".dev_key";
+    private static final String TAG = "LibraryThingSE";
     /** Preference that controls display of alert about LibraryThing. */
-    private static final String PREFS_HIDE_ALERT = PREF_PREFIX + "hide_alert.";
+    private static final String PREFS_HIDE_ALERT = PREF_KEY + ".hide_alert.";
     /** file suffix for cover files. */
     private static final String FILENAME_SUFFIX = "_LT";
-    private static final String WORK_URL = BASE_URL + "/work/%1$s";
     /**
      * book details urls.
      * <p>
      * param 1: dev-key; param 2: search-key; param 3: value
      */
     private static final String BOOK_URL =
-            BASE_URL + "/services/rest/1.1/?method=librarything.ck.getwork&apikey=%1$s&%2$s=%3$s";
-
-    /** fetches all isbn's from editions related to the requested isbn. */
-    private static final String EDITIONS_URL = BASE_URL + "/api/thingISBN/%1$s";
-
+            "/services/rest/1.1/?method=librarything.ck.getwork&apikey=%1$s&%2$s=%3$s";
     /** param 1: dev-key; param 2: size; param 3: isbn. */
     private static final String COVER_BY_ISBN_URL =
             "https://covers.librarything.com/devkey/%1$s/%2$s/isbn/%3$s";
-
     /** Can only send requests at a throttled speed. */
     private static final Throttler THROTTLER = new Throttler();
     private static final Pattern DEV_KEY_PATTERN = Pattern.compile("[\\r\\t\\n\\s]*");
 
-    @Nullable
-    private Canceller mCaller;
-
     /**
-     * View a Book on the web site.
+     * Constructor.
      *
-     * @param context Current context
-     * @param bookId  site native book id to show
+     * @param appContext Application context
      */
-    public static void openWebsite(@NonNull final Context context,
-                                   final long bookId) {
-        final String url = String.format(WORK_URL, bookId);
-        context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+    public LibraryThingSearchEngine(@NonNull final Context appContext) {
+        super(appContext);
     }
 
     /**
@@ -172,6 +172,7 @@ public class LibraryThingSearchEngine
      *
      * @return {@code true} if an alert is currently shown
      */
+    @UiThread
     public static boolean alertRegistrationNeeded(@NonNull final Context context,
                                                   final boolean required,
                                                   @NonNull final String prefSuffix) {
@@ -213,70 +214,31 @@ public class LibraryThingSearchEngine
 
     @NonNull
     @Override
+    public String createUrl(@NonNull final String externalId) {
+        return getSiteUrl() + String.format("/work/%1$s", externalId);
+    }
+
+    @Override
+    public boolean isAvailable() {
+        return hasKey(mAppContext);
+    }
+
+    @NonNull
+    @Override
     public Throttler getThrottler() {
         return THROTTLER;
-    }
-
-    @Override
-    public void setCaller(@Nullable final Canceller caller) {
-        mCaller = caller;
-    }
-
-    @Override
-    public boolean isCancelled() {
-        return mCaller == null || mCaller.isCancelled();
-    }
-
-    @NonNull
-    @Override
-    public Locale getLocale(@NonNull final Context context) {
-        return Locale.US;
-    }
-
-    /**
-     * Search for edition data.
-     * <p>
-     * No dev-key needed for this call.
-     *
-     * <strong>Note:</strong> we assume the isbn numbers from the site are valid.
-     * No extra checks are made.
-     *
-     * <br><br>{@inheritDoc}
-     */
-    @WorkerThread
-    @NonNull
-    @Override
-    public List<String> getAlternativeEditions(@NonNull final Context context,
-                                               @NonNull final String isbn) {
-
-        final SAXParserFactory factory = SAXParserFactory.newInstance();
-        final LibraryThingEditionHandler handler = new LibraryThingEditionHandler(isbn);
-
-        // Make sure we follow LibraryThing ToS (no more than 1 request/second).
-        THROTTLER.waitUntilRequestAllowed();
-
-        // Get it
-        final String url = String.format(EDITIONS_URL, isbn);
-        try (TerminatorConnection con = new TerminatorConnection(context, url, this)) {
-            final SAXParser parser = factory.newSAXParser();
-            parser.parse(con.getInputStream(), handler);
-        } catch (@NonNull final ParserConfigurationException | SAXException | IOException e) {
-            if (BuildConfig.DEBUG /* always */) {
-                Log.d(TAG, "getAlternativeEditions|e=" + e);
-            }
-        }
-        return handler.getResult();
     }
 
     @Override
     public boolean promptToRegister(@NonNull final Context context,
                                     final boolean required,
                                     @NonNull final String prefSuffix) {
-        if (!hasKey(context)) {
+        if (!hasKey(mAppContext)) {
             return alertRegistrationNeeded(context, required, prefSuffix);
         }
         return false;
     }
+
 
     /**
      * Dev-key needed for this call.
@@ -285,14 +247,13 @@ public class LibraryThingSearchEngine
      */
     @NonNull
     @Override
-    public Bundle searchByNativeId(@NonNull final Context context,
-                                   @NonNull final String nativeId,
-                                   @NonNull final boolean[] fetchThumbnail)
-            throws IOException, SearchException {
+    public Bundle searchByExternalId(@NonNull final String externalId,
+                                     @NonNull final boolean[] fetchThumbnail)
+            throws IOException {
 
-        final String url = String.format(BOOK_URL, getDevKey(context), "id", nativeId);
-
-        final Bundle bookData = fetchBook(context, url, new Bundle());
+        final String url = getSiteUrl() + String.format(BOOK_URL, getDevKey(mAppContext),
+                                                        "id", externalId);
+        final Bundle bookData = fetchBook(url, new Bundle());
 
         if (isCancelled()) {
             return bookData;
@@ -301,7 +262,7 @@ public class LibraryThingSearchEngine
         if (fetchThumbnail[0]) {
             final String isbn = bookData.getString(DBDefinitions.KEY_ISBN);
             if (isbn != null && !isbn.isEmpty()) {
-                CoverByIsbn.getCoverImage(context, this, isbn, 0, bookData);
+                searchBestCoverImageByIsbn(isbn, 0, bookData);
             }
         }
 
@@ -315,55 +276,23 @@ public class LibraryThingSearchEngine
      */
     @NonNull
     @Override
-    public Bundle searchByIsbn(@NonNull final Context context,
-                               @NonNull final String validIsbn,
+    public Bundle searchByIsbn(@NonNull final String validIsbn,
                                @NonNull final boolean[] fetchThumbnail)
-            throws IOException, SearchException {
+            throws IOException {
 
-        String url = String.format(BOOK_URL, getDevKey(context), "isbn", validIsbn);
-        Bundle bookData = fetchBook(context, url, new Bundle());
+        final String url = getSiteUrl() + String.format(BOOK_URL, getDevKey(mAppContext),
+                                                        "isbn", validIsbn);
+        final Bundle bookData = fetchBook(url, new Bundle());
 
         if (isCancelled()) {
             return bookData;
         }
 
         if (fetchThumbnail[0]) {
-            CoverByIsbn.getCoverImage(context, this, validIsbn, 0, bookData);
+            searchBestCoverImageByIsbn(validIsbn, 0, bookData);
         }
 
         return bookData;
-    }
-
-    private Bundle fetchBook(@NonNull final Context context,
-                             @NonNull final String url,
-                             @NonNull final Bundle bookData)
-            throws IOException, SearchException {
-
-        final SAXParserFactory factory = SAXParserFactory.newInstance();
-        final SearchHandler handler = new LibraryThingHandler(bookData);
-//        final SearchHandler handler = new XmlDumpParser();
-
-        // Make sure we follow LibraryThing ToS (no more than 1 request/second).
-        THROTTLER.waitUntilRequestAllowed();
-
-        // Get it
-        try (TerminatorConnection con = new TerminatorConnection(context, url, this)) {
-            final SAXParser parser = factory.newSAXParser();
-            parser.parse(con.getInputStream(), handler);
-            return handler.getResult();
-
-        } catch (@NonNull final ParserConfigurationException | SAXException e) {
-            final String msg = e.getMessage();
-            // Horrible hack... but once again the underlying apache class makes life difficult.
-            // Sure, the Locator could be used to see that the line==1 and column==0,
-            // but other then that it does not seem possible to get full details.
-            if (msg != null && msg.contains("At line 1, column 0: syntax error")) {
-                // 2020-03-27. Started getting "APIs Temporarily disabled"
-                throw new SearchException(R.string.error_site_has_problems);
-            }
-            // wrap parser exceptions in an IOException
-            throw new IOException(e);
-        }
     }
 
     /**
@@ -375,8 +304,7 @@ public class LibraryThingSearchEngine
     @Nullable
     @WorkerThread
     @Override
-    public String searchCoverImageByIsbn(@NonNull final Context context,
-                                         @NonNull final String validIsbn,
+    public String searchCoverImageByIsbn(@NonNull final String validIsbn,
                                          @IntRange(from = 0) final int cIdx,
                                          @Nullable final ImageFileInfo.Size size) {
         final String sizeParam;
@@ -397,31 +325,70 @@ public class LibraryThingSearchEngine
             }
         }
 
-        final String url = String.format(COVER_BY_ISBN_URL,
-                                         getDevKey(context), sizeParam, validIsbn);
-        final String tmpName = validIsbn + FILENAME_SUFFIX + "_" + sizeParam;
-        return ImageUtils.saveImage(context, url, tmpName, this);
+        final String url = String.format(COVER_BY_ISBN_URL, getDevKey(mAppContext),
+                                         sizeParam, validIsbn);
+        return saveImage(url, validIsbn, FILENAME_SUFFIX + "_" + sizeParam, 0);
     }
 
-    @Override
-    public boolean isAvailable(@NonNull final Context context) {
-        return hasKey(context);
-    }
-
+    /**
+     * Search for edition data.
+     * <p>
+     * No dev-key needed for this call.
+     *
+     * <strong>Note:</strong> we assume the isbn numbers retrieved from the site are valid.
+     * No extra checks are made at this point.
+     *
+     * <br>{@inheritDoc}
+     */
+    @WorkerThread
     @NonNull
     @Override
-    public String getUrl(@NonNull final Context context) {
-        return BASE_URL;
+    public List<String> searchAlternativeEditions(@NonNull final String validIsbn)
+            throws IOException {
+
+        final SAXParserFactory factory = SAXParserFactory.newInstance();
+        final LibraryThingEditionHandler handler = new LibraryThingEditionHandler();
+
+        // Get it
+        final String url = getSiteUrl() + String.format("/api/thingISBN/%1$s", validIsbn);
+        try (TerminatorConnection con = createConnection(url, true)) {
+            final SAXParser parser = factory.newSAXParser();
+            parser.parse(con.getInputStream(), handler);
+        } catch (@NonNull final ParserConfigurationException | SAXException e) {
+            throw new IOException(e);
+        }
+        return handler.getResult();
     }
 
-    @Override
-    public boolean supportsMultipleSizes() {
-        return true;
-    }
 
-    @StringRes
-    @Override
-    public int getNameResId() {
-        return R.string.site_library_thing;
+    private Bundle fetchBook(@NonNull final String url,
+                             @NonNull final Bundle bookData)
+            throws IOException {
+
+        final SAXParserFactory factory = SAXParserFactory.newInstance();
+        final LibraryThingHandler handler = new LibraryThingHandler(bookData);
+//        final XmlDumpParser handler = new XmlDumpParser();
+
+        // Get it
+        try (TerminatorConnection con = createConnection(url, true)) {
+            final SAXParser parser = factory.newSAXParser();
+            parser.parse(con.getInputStream(), handler);
+            return handler.getResult();
+
+        } catch (@NonNull final ParserConfigurationException | SAXException e) {
+            final String msg = e.getMessage();
+            // Horrible hack... but once again the underlying apache class makes life difficult.
+            // Sure, the Locator could be used to see that the line==1 and column==0,
+            // but other then that it does not seem possible to get full details.
+            if (msg != null && msg.contains("At line 1, column 0: syntax error")) {
+                // 2020-03-27. Started getting "APIs Temporarily disabled"
+                throw new IOException(mAppContext.getString(R.string.error_site_has_problems));
+            }
+
+            if (BuildConfig.DEBUG /* always */) {
+                Log.d(TAG, "fetchBook", e);
+            }
+            throw new IOException(e);
+        }
     }
 }

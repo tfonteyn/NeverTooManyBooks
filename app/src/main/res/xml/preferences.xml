@@ -145,10 +145,10 @@
         <SwitchPreference
             android:defaultValue="false"
             android:icon="@drawable/ic_tab"
-            android:key="edit.book.tab.nativeId"
+            android:key="edit.book.tab.externalId"
             android:summaryOff="@string/no"
             android:summaryOn="@string/yes"
-            android:title="@string/pt_allow_edit_native_id" />
+            android:title="@string/pt_allow_edit_external_id" />
 
     </PreferenceCategory>
 

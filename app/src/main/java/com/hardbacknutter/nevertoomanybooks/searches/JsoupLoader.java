@@ -31,7 +31,6 @@ import android.content.Context;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 import androidx.annotation.WorkerThread;
 
 import java.io.EOFException;
@@ -44,7 +43,6 @@ import javax.net.ssl.SSLProtocolException;
 
 import org.jsoup.HttpStatusException;
 import org.jsoup.Jsoup;
-import org.jsoup.helper.HttpConnection;
 import org.jsoup.nodes.Document;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
@@ -56,7 +54,7 @@ import com.hardbacknutter.nevertoomanybooks.tasks.TerminatorConnection;
  * Provide a more or less robust base to load a url and parse the html with Jsoup.
  * The extra safeguards are needed due to the size of some html pages we're parsing.
  */
-public abstract class JsoupBase {
+public class JsoupLoader {
 
     /**
      * RELEASE: Chrome 2020-07-17. Continuously update to latest version.
@@ -70,33 +68,20 @@ public abstract class JsoupBase {
             + " Chrome/84.0.4147.89 Safari/537.36";
 
     /** Log tag. */
-    private static final String TAG = "JsoupBase";
-    @NonNull
-    protected final SearchEngine mSearchEngine;
-    @NonNull
-    protected final Context mContext;
-    /** The parsed downloaded web page. */
+    private static final String TAG = "JsoupLoader";
+
+    /** The downloaded and parsed web page. */
     @Nullable
-    protected Document mDoc;
+    private Document mDoc;
 
     /** If the site drops connection, we retry once. */
     private boolean mRetry = true;
     /** The user agent to send. */
+    @Nullable
     private String mUserAgent = USER_AGENT_VALUE;
     /** {@code null} by default: for Jsoup to figure it out. */
+    @Nullable
     private String mCharSetName;
-
-    /**
-     * Constructor.
-     *
-     * @param context      current context
-     * @param searchEngine to use
-     */
-    protected JsoupBase(@NonNull final Context context,
-                        @NonNull final SearchEngine searchEngine) {
-        mSearchEngine = searchEngine;
-        mContext = context;
-    }
 
     /**
      * Optionally override the user agent; can be set to {@code null} to revert to JSoup default.
@@ -104,7 +89,7 @@ public abstract class JsoupBase {
      * @param userAgent string to use
      */
     @SuppressWarnings({"WeakerAccess", "unused"})
-    protected void setUserAgent(@Nullable final String userAgent) {
+    public void setUserAgent(@Nullable final String userAgent) {
         mUserAgent = userAgent;
     }
 
@@ -114,39 +99,46 @@ public abstract class JsoupBase {
      *
      * @param charSetName to use
      */
-    protected void setCharSetName(@SuppressWarnings("SameParameterValue")
-                                  @NonNull final String charSetName) {
+    public void setCharSetName(@SuppressWarnings("SameParameterValue")
+                               @NonNull final String charSetName) {
         mCharSetName = charSetName;
+    }
+
+    public void reset() {
+        mDoc = null;
     }
 
     /**
      * Fetch the URL and parse it into {@link #mDoc}.
+     * Will silently return if it has downloaded the document before.
+     * Call {@link #reset()} before to force a clean/new download.
      * <p>
-     * the connect call uses a set of defaults. For example the user-agent:
-     * {@link HttpConnection#DEFAULT_UA}
-     * <p>
-     * The content encoding by default is: "Accept-Encoding", "gzip"
+     * The content encoding is: "Accept-Encoding", "gzip"
      *
-     * @param url to fetch
+     * @param context Current context
+     * @param url     to fetch
      *
-     * @return the actual URL for the page we got (after redirects etc), or {@code null}
-     * on failure to load.
+     * @return the parsed Document, or {@code null} on failure to load.
      *
      * @throws SocketTimeoutException if the connection times out
      */
-    @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
     @WorkerThread
     @Nullable
-    public String loadPage(@NonNull final String url)
+    public Document loadDocument(@NonNull final Context context,
+                                 @NonNull final String url,
+                                 @NonNull final SearchEngine searchEngine)
             throws SocketTimeoutException {
 
         if (mDoc == null) {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.JSOUP) {
-                Logger.d(TAG, "loadPage|REQUESTED|url=\"" + url + '\"');
+                Logger.d(TAG, "loadDocument|REQUESTED|url=\"" + url + '\"');
             }
 
-            try (TerminatorConnection con = new TerminatorConnection(mContext, url,
-                                                                     mSearchEngine)) {
+            try (TerminatorConnection con = searchEngine.createConnection(url, true)) {
+                // Don't retry if the initial connection fails...
+                // We use our own retry mechanism here.
+                con.setRetryCount(0);
+
                 // added due to https://github.com/square/okhttp/issues/1517
                 // it's a server issue, this is a workaround.
                 con.setRequestProperty("Connection", "close");
@@ -159,8 +151,8 @@ public abstract class JsoupBase {
                 final InputStream inputStream = con.getInputStream();
 
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.JSOUP) {
-                    Logger.d(TAG, "loadPage|AFTER open|con.getURL()=" + con.getURL());
-                    Logger.d(TAG, "loadPage|AFTER open|con.getHeaderField(\"location\")="
+                    Logger.d(TAG, "loadDocument|AFTER open|con.getURL()=" + con.getURL());
+                    Logger.d(TAG, "loadDocument|AFTER open|con.getHeaderField(\"location\")="
                                   + con.getHeaderField("location"));
                 }
 
@@ -199,12 +191,16 @@ public abstract class JsoupBase {
                 }
 
             } catch (@NonNull final HttpStatusException e) {
+                mDoc = null;
+
                 if (BuildConfig.DEBUG) {
-                    Logger.error(mContext, TAG, e, "url=" + url);
+                    Logger.error(context, TAG, e, "url=" + url);
                 }
                 return null;
 
             } catch (@NonNull final EOFException | SSLProtocolException e) {
+                mDoc = null;
+
                 // EOFException: happens often with ISFDB...
                 // This is after a successful connection was made.
                 // Google search says it's a server issue.
@@ -222,36 +218,40 @@ public abstract class JsoupBase {
                 // at com.android.org.conscrypt.NativeCrypto.SSL_read(Native Method)
                 // ...
                 // at com.hardbacknutter.nevertoomanybooks.tasks.TerminatorConnection.open
-                // at com.hardbacknutter.nevertoomanybooks.searches.JsoupBase.loadPage
+                // at com.hardbacknutter.nevertoomanybooks.searches.JsoupLoader.loadPage
 
-                Logger.warn(mContext, TAG, "loadPage"
-                                           + "|e=" + e.getLocalizedMessage()
-                                           + "|url=\"" + url + '\"');
-                // retry once. TODO: unify this with TerminatorConnection retries
+                Logger.warn(context, TAG, "loadPage"
+                                          + "|e=" + e.getLocalizedMessage()
+                                          + "|url=\"" + url + '\"');
                 if (mRetry) {
                     mRetry = false;
-                    mDoc = null;
-                    return loadPage(url);
+                    return loadDocument(context, url, searchEngine);
                 } else {
                     return null;
                 }
 
             } catch (@NonNull final SocketTimeoutException e) {
+                mDoc = null;
                 throw e;
 
             } catch (@NonNull final FileNotFoundException e) {
+                mDoc = null;
+
                 if (BuildConfig.DEBUG /* always */) {
                     Logger.w(TAG, "loadPage|" + url);
                 }
 
             } catch (@NonNull final IOException e) {
-                Logger.error(mContext, TAG, e, url);
+                mDoc = null;
+
+                Logger.error(context, TAG, e, url);
                 return null;
             }
+
             // reset the flag.
             mRetry = true;
         }
 
-        return mDoc != null ? mDoc.location() : null;
+        return mDoc;
     }
 }

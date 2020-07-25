@@ -35,6 +35,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Locale;
 import java.util.Map;
 
 import com.hardbacknutter.nevertoomanybooks.goodreads.api.SearchBooksApiHandler;
@@ -59,13 +60,12 @@ public class XmlFilter {
 
     /** List of sub-filters for this filter. */
     private final Collection<XmlFilter> mSubFilters = new ArrayList<>();
-
+    private final Locale mSystemLocale;
     /** Action to perform, if any, when the associated tag is started. */
     @Nullable
     private XmlHandler mStartAction;
     /** Optional parameter put in context before action is called. */
     private Object mStartArg;
-
     /** Action to perform, if any, when the associated tag is finished. */
     @Nullable
     private XmlHandler mEndAction;
@@ -79,6 +79,8 @@ public class XmlFilter {
      */
     public XmlFilter(@NonNull final String pattern) {
         mTagName = pattern;
+
+        mSystemLocale = LocaleUtils.getSystemLocale();
     }
 
     /**
@@ -268,14 +270,13 @@ public class XmlFilter {
         return this;
     }
 
-
     /**
      * Add a filter at this level; ensure it is unique.
      *
      * @param filter filter to add
      */
     private void addFilter(@NonNull final XmlFilter filter) {
-        String lcPat = filter.getTagName().toLowerCase(LocaleUtils.getSystemLocale());
+        String lcPat = filter.getTagName().toLowerCase(mSystemLocale);
         if (mSubFilterHash.containsKey(lcPat)) {
             throw new RuntimeException("Filter " + filter.getTagName() + " already exists");
         }

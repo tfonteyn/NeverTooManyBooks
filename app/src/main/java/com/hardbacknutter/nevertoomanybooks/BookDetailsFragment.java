@@ -77,7 +77,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.fields.Field;
 import com.hardbacknutter.nevertoomanybooks.fields.Fields;
-import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsHandler;
+import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsManager;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GrStatus;
 import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.GrSendOneBookTask;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.FinishedMessage;
@@ -153,10 +153,6 @@ public class BookDetailsFragment
         super.onCreate(savedInstanceState);
 
         getChildFragmentManager().addFragmentOnAttachListener(mFragmentOnAttachListener);
-
-        mFragmentVM = new ViewModelProvider(this).get(BookDetailsFragmentViewModel.class);
-        //noinspection ConstantConditions
-        mFragmentVM.init(getContext(), getArguments(), mBookViewModel.getBook());
     }
 
     @Override
@@ -198,6 +194,10 @@ public class BookDetailsFragment
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        mFragmentVM = new ViewModelProvider(this).get(BookDetailsFragmentViewModel.class);
+        //noinspection ConstantConditions
+        mFragmentVM.init(getContext(), getArguments(), mBookViewModel.getBook());
+
         mGrSendOneBookTask = new ViewModelProvider(this).get(GrSendOneBookTask.class);
         mGrSendOneBookTask.onProgressUpdate().observe(getViewLifecycleOwner(), this::onProgress);
         mGrSendOneBookTask.onCancelled().observe(getViewLifecycleOwner(), this::onCancelled);
@@ -230,7 +230,6 @@ public class BookDetailsFragment
         });
 
         if (savedInstanceState == null) {
-            //noinspection ConstantConditions
             TipManager.display(getContext(), R.string.tip_view_only_help, null);
         }
     }
@@ -276,9 +275,6 @@ public class BookDetailsFragment
     public void onResume() {
         // hook up the Views, and calls {@link #onPopulateViews}
         super.onResume();
-
-        // No ViewPager2 involved, override the parent (see google bug comment there)
-        setHasOptionsMenu(true);
 
         //noinspection ConstantConditions
         ((BookDetailsActivity) getActivity()).registerOnTouchListener(mOnTouchListener);
@@ -572,14 +568,12 @@ public class BookDetailsFragment
 
         //noinspection ConstantConditions
         menu.findItem(R.id.MENU_BOOK_SEND_TO_GOODREADS)
-            .setVisible(GoodreadsHandler.isShowSyncMenus(getContext()));
+            .setVisible(GoodreadsManager.isShowSyncMenus(getContext()));
 
         // specifically check App.isUsed for KEY_LOANEE independent from the style in use.
         final boolean useLending = DBDefinitions.isUsed(getContext(), DBDefinitions.KEY_LOANEE);
         menu.findItem(R.id.MENU_BOOK_LOAN_ADD).setVisible(useLending && isSaved && isAvailable);
         menu.findItem(R.id.MENU_BOOK_LOAN_DELETE).setVisible(useLending && isSaved && !isAvailable);
-
-        MenuHandler.prepareOptionalMenus(menu, book);
 
         super.onPrepareOptionsMenu(menu);
     }

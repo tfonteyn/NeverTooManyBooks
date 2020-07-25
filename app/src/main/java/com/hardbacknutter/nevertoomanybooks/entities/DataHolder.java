@@ -104,6 +104,8 @@ public interface DataHolder {
      * Returns the value associated with the given key, or {@code null} if
      * no mapping of the desired type exists for the given key or a {@code null}
      * value is explicitly associated with the key.
+     * <p>
+     * If the value was not a String, implementations <strong>must</strong> stringify it.
      *
      * @param key a String, or {@code null}
      *

@@ -151,7 +151,7 @@ public class FabMenu {
         // Test for split-screen layouts (or really small devices?)
         // Having more then 4 FAB buttons is not really a good UI design
         // But this just about fits our 5...
-        //TODO: use resource qualifiers instead.
+        // It's a fringe case... resource qualifiers would be overkill.
         final boolean smallScreen = res.getConfiguration().screenHeightDp < 400;
 
         int i = 0;

@@ -45,6 +45,7 @@ import java.util.Map;
 import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
+import com.hardbacknutter.nevertoomanybooks.searches.isfdb.IsfdbSearchEngine;
 
 /**
  * Uppercase preference keys are internal only.
@@ -52,7 +53,7 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
  * The lowercase pk_* preference key names are the ones that define USER settings.
  * See {@link com.hardbacknutter.nevertoomanybooks.settings}.
  * <p>
- * All keys <strong>MUST</strong> be kept in sync with "res/xml/preferences*.xml"
+ * All keys <strong>MUST</strong> be kept in sync with "src/main/res/xml/preferences*.xml"
  */
 public final class Prefs {
 
@@ -105,7 +106,7 @@ public final class Prefs {
     public static final String PSK_BARCODE_SCANNER = "psk_barcode_scanner";
 
 
-    private static final String pk_edit_book_tabs_native_id = "edit.book.tab.nativeId";
+    private static final String pk_edit_book_tabs_external_id = "edit.book.tab.externalId";
     public static final String pk_edit_book_isbn_checks = "edit.book.isbn.checks";
 
     /** Log tag. */
@@ -114,10 +115,25 @@ public final class Prefs {
     private Prefs() {
     }
 
-    public static boolean showEditBookTabNativeId(@NonNull final Context context) {
+    public static boolean showEditBookTabExternalId(@NonNull final Context context) {
         return PreferenceManager
                 .getDefaultSharedPreferences(context)
-                .getBoolean(pk_edit_book_tabs_native_id, false);
+                .getBoolean(pk_edit_book_tabs_external_id, false);
+    }
+
+    /**
+     * Whether a search should (also) use the publisher name to search for books.
+     * <p>
+     * Hardcoded to ISFDB only for now, as that's the only site supporting this flag.
+     * This method will be refactored/moved/... at some point.
+     *
+     * @param context Current context
+     *
+     * @return flag
+     */
+    public static boolean usePublisher(@NonNull final Context context) {
+        return PreferenceManager.getDefaultSharedPreferences(context)
+                                .getBoolean(IsfdbSearchEngine.PREFS_USE_PUBLISHER, false);
     }
 
     /**

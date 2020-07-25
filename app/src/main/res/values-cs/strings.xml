@@ -127,7 +127,7 @@
     <string name="fab_add_book_by_barcode_scan">Skenování čárového kódu</string>
     <string name="fab_add_book_by_internet_search">Prohledat internet</string>
     <string name="fab_add_book_by_isbn">Zadejte ISBN</string>
-    <string name="fab_add_book_by_native_id">ID webové stránky</string>
+    <string name="fab_add_book_by_external_id">ID webové stránky</string>
     <string name="fab_add_book_manually">Přidat ručně</string>
     <string name="fallback_currency_format">%2$.2f %1$s</string>
     <string name="gr_auth_blurb_part1">Goodreads je internetová síť, jejímž hlavním cílem je „pomoci lidem najít a sdílet knihy, které milují“. Mají velmi rozsáhlou databázi knih a recenzí, a pokud jste jejich registovaný uživatel, může &APP_NAME; exportovat Vaše knihy, knihovny a recenze do Goodreads a naopak importovat Vaše knihy, knihovny a recenze z Goodreads. &APP_NAME; je samostatná aplikace a ke své činnosti Goodreads nepotřebuje, ale přesto, pokud máte zájem, můžete se registrovat na:</string>
@@ -458,7 +458,7 @@
     <string name="progress_msg_skip_s">Vynechat - %1$s</string>
     <string name="progress_msg_starting_up">Spouštění…</string>
     <string name="progress_msg_upgrading">Aktualizování…</string>
-    <string name="pt_allow_edit_native_id">Povolit úpravy ID nativní webové knihy.</string>
+    <string name="pt_allow_edit_external_id">Povolit úpravy ID nativní webové knihy.</string>
     <string name="pt_allow_mobile_data">Povolit používání mobilních dat</string>
     <string name="pt_bob_books_under_multiple_authors">Knihy s více autory</string>
     <string name="pt_bob_books_under_multiple_series">Knihy ve více sériích</string>

@@ -619,7 +619,7 @@ public class DataManager
 
         for (DataCrossValidator crossValidator : mCrossValidators) {
             try {
-                crossValidator.validate(this);
+                crossValidator.validate(context, this);
             } catch (@NonNull final ValidatorException e) {
                 mValidationExceptions.add(e);
                 isOk = false;
@@ -631,12 +631,10 @@ public class DataManager
     /**
      * Retrieve the text message associated with the validation exceptions (if any).
      *
-     * @param context Current context
-     *
      * @return a user displayable list of error messages, or {@code null} if none present
      */
     @Nullable
-    public String getValidationExceptionMessage(@NonNull final Context context) {
+    public String getValidationExceptionMessage() {
         if (mValidationExceptions.isEmpty()) {
             return null;
         } else {
@@ -644,7 +642,7 @@ public class DataManager
             int i = 0;
             for (ValidatorException e : mValidationExceptions) {
                 message.append(" (").append(++i).append(") ")
-                       .append(e.getLocalizedMessage(context))
+                       .append(e.getLocalizedMessage())
                        .append('\n');
             }
             return message.toString();

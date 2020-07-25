@@ -27,8 +27,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.searches.stripinfo;
 
-import android.os.Bundle;
-
 import androidx.annotation.NonNull;
 
 import java.io.IOException;
@@ -42,14 +40,13 @@ import org.jsoup.nodes.Document;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import com.hardbacknutter.nevertoomanybooks.CommonSetup;
+import com.hardbacknutter.nevertoomanybooks.JSoupCommonMocks;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
-import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -59,14 +56,14 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 class StripInfoTest
-        extends CommonSetup {
+        extends JSoupCommonMocks {
 
-    private SearchEngine mSearchEngine;
+    private StripInfoSearchEngine mSearchEngine;
 
     @BeforeEach
     public void setUp() {
         super.setUp();
-        mSearchEngine = new StripInfoSearchEngine();
+        mSearchEngine = new StripInfoSearchEngine(mContext);
         mSearchEngine.setCaller(new DummyCaller());
     }
 
@@ -77,39 +74,23 @@ class StripInfoTest
                                       + "/336348_Hauteville_House_14_De_37ste_parallel";
         final String filename = "/stripinfo/336348_Hauteville_House_14_De_37ste_parallel.html";
 
-        Document doc = null;
-        try (InputStream is = this.getClass().getResourceAsStream(filename)) {
-            assertNotNull(is);
-            doc = Jsoup.parse(is, "UTF-8", locationHeader);
-        } catch (@NonNull final IOException e) {
-            fail(e);
-        }
-        assertNotNull(doc);
-        assertTrue(doc.hasText());
+        loadData(mSearchEngine, "UTF-8", locationHeader, filename);
 
-        final StripInfoBookHandler handler = new StripInfoBookHandler(mContext, mSearchEngine, doc);
-        // we've set the doc, so no internet download will be done.
-        final boolean[] fetchThumbnails = {false, false};
-        final Bundle bookData = handler.parseDoc(fetchThumbnails, mRawData);
+        assertEquals("De 37ste parallel", mRawData.getString(DBDefinitions.KEY_TITLE));
+        assertEquals("9789463064385", mRawData.getString(DBDefinitions.KEY_ISBN));
+        assertEquals("2018", mRawData.getString(DBDefinitions.KEY_DATE_PUBLISHED));
+        assertEquals("48", mRawData.getString(DBDefinitions.KEY_PAGES));
+        assertEquals("Hardcover", mRawData.getString(DBDefinitions.KEY_FORMAT));
+        assertEquals("nld", mRawData.getString(DBDefinitions.KEY_LANGUAGE));
+        assertEquals("Kleur", mRawData.getString(DBDefinitions.KEY_COLOR));
 
-        assertFalse(bookData.isEmpty());
-        System.out.println(bookData);
-
-        assertEquals("De 37ste parallel", bookData.getString(DBDefinitions.KEY_TITLE));
-        assertEquals("9789463064385", bookData.getString(DBDefinitions.KEY_ISBN));
-        assertEquals("2018", bookData.getString(DBDefinitions.KEY_DATE_PUBLISHED));
-        assertEquals("48", bookData.getString(DBDefinitions.KEY_PAGES));
-        assertEquals("Hardcover", bookData.getString(DBDefinitions.KEY_FORMAT));
-        assertEquals("nld", bookData.getString(DBDefinitions.KEY_LANGUAGE));
-        assertEquals("Kleur", bookData.getString(DBDefinitions.KEY_COLOR));
-
-        final ArrayList<Publisher> allPublishers = bookData
+        final ArrayList<Publisher> allPublishers = mRawData
                 .getParcelableArrayList(Book.BKEY_PUBLISHER_ARRAY);
         assertNotNull(allPublishers);
         assertEquals(1, allPublishers.size());
         assertEquals("Silvester", allPublishers.get(0).getName());
 
-        final ArrayList<Series> allSeries = bookData.getParcelableArrayList(Book.BKEY_SERIES_ARRAY);
+        final ArrayList<Series> allSeries = mRawData.getParcelableArrayList(Book.BKEY_SERIES_ARRAY);
         assertNotNull(allSeries);
         assertEquals(1, allSeries.size());
 
@@ -117,7 +98,7 @@ class StripInfoTest
         assertEquals("Hauteville House", series.getTitle());
         assertEquals("14", series.getNumber());
 
-        final ArrayList<Author> authors = bookData.getParcelableArrayList(Book.BKEY_AUTHOR_ARRAY);
+        final ArrayList<Author> authors = mRawData.getParcelableArrayList(Book.BKEY_AUTHOR_ARRAY);
         assertNotNull(authors);
         assertEquals(3, authors.size());
 
@@ -146,40 +127,23 @@ class StripInfoTest
         final String filename = "/stripinfo/2060_De_boom_van_de_twee_lentes_1"
                                 + "_De_boom_van_de_twee_lentes.html";
 
-        Document doc = null;
-        try (InputStream is = this.getClass().getResourceAsStream(filename)) {
-            assertNotNull(is);
-            doc = Jsoup.parse(is, null, locationHeader);
-        } catch (@NonNull final IOException e) {
-            fail(e);
-        }
-        assertNotNull(doc);
-        assertTrue(doc.hasText());
+        loadData(mSearchEngine, "UTF-8", locationHeader, filename);
 
-        final StripInfoBookHandler handler = new StripInfoBookHandler(mContext, mSearchEngine, doc);
+        assertEquals("De boom van de twee lentes", mRawData.getString(DBDefinitions.KEY_TITLE));
+        assertEquals("905581315X", mRawData.getString(DBDefinitions.KEY_ISBN));
+        assertEquals("2000", mRawData.getString(DBDefinitions.KEY_DATE_PUBLISHED));
+        assertEquals("64", mRawData.getString(DBDefinitions.KEY_PAGES));
+        assertEquals("Softcover", mRawData.getString(DBDefinitions.KEY_FORMAT));
+        assertEquals("nld", mRawData.getString(DBDefinitions.KEY_LANGUAGE));
+        assertEquals("Kleur", mRawData.getString(DBDefinitions.KEY_COLOR));
 
-        // we've set the doc, so no internet download will be done.
-        final boolean[] fetchThumbnails = {false, false};
-        final Bundle bookData = handler.parseDoc(fetchThumbnails, mRawData);
-
-        assertFalse(bookData.isEmpty());
-        System.out.println(bookData);
-
-        assertEquals("De boom van de twee lentes", bookData.getString(DBDefinitions.KEY_TITLE));
-        assertEquals("905581315X", bookData.getString(DBDefinitions.KEY_ISBN));
-        assertEquals("2000", bookData.getString(DBDefinitions.KEY_DATE_PUBLISHED));
-        assertEquals("64", bookData.getString(DBDefinitions.KEY_PAGES));
-        assertEquals("Softcover", bookData.getString(DBDefinitions.KEY_FORMAT));
-        assertEquals("nld", bookData.getString(DBDefinitions.KEY_LANGUAGE));
-        assertEquals("Kleur", bookData.getString(DBDefinitions.KEY_COLOR));
-
-        final ArrayList<Publisher> allPublishers = bookData
+        final ArrayList<Publisher> allPublishers = mRawData
                 .getParcelableArrayList(Book.BKEY_PUBLISHER_ARRAY);
         assertNotNull(allPublishers);
         assertEquals(1, allPublishers.size());
         assertEquals("Le Lombard", allPublishers.get(0).getName());
 
-        final ArrayList<Series> allSeries = bookData.getParcelableArrayList(Book.BKEY_SERIES_ARRAY);
+        final ArrayList<Series> allSeries = mRawData.getParcelableArrayList(Book.BKEY_SERIES_ARRAY);
         assertNotNull(allSeries);
         assertEquals(2, allSeries.size());
 
@@ -191,7 +155,7 @@ class StripInfoTest
         assertEquals("Getekend", series.getTitle());
         assertEquals("", series.getNumber());
 
-        final ArrayList<Author> authors = bookData.getParcelableArrayList(Book.BKEY_AUTHOR_ARRAY);
+        final ArrayList<Author> authors = mRawData.getParcelableArrayList(Book.BKEY_AUTHOR_ARRAY);
         assertNotNull(authors);
         assertEquals(20, authors.size());
 
@@ -214,40 +178,23 @@ class StripInfoTest
                                       + "316016_Johan_en_Pirrewiet_INT_5_De_integrale_5";
         final String filename = "/stripinfo/316016_Johan_en_Pirrewiet_INT_5_De_integrale_5.html";
 
-        Document doc = null;
-        try (InputStream is = this.getClass().getResourceAsStream(filename)) {
-            assertNotNull(is);
-            doc = Jsoup.parse(is, null, locationHeader);
-        } catch (@NonNull final IOException e) {
-            fail(e);
-        }
-        assertNotNull(doc);
-        assertTrue(doc.hasText());
+        loadData(mSearchEngine, "UTF-8", locationHeader, filename);
 
-        final StripInfoBookHandler handler = new StripInfoBookHandler(mContext, mSearchEngine, doc);
+        assertEquals("De integrale 5", mRawData.getString(DBDefinitions.KEY_TITLE));
+        assertEquals("9789055819485", mRawData.getString(DBDefinitions.KEY_ISBN));
+        assertEquals("2017", mRawData.getString(DBDefinitions.KEY_DATE_PUBLISHED));
+        assertEquals("224", mRawData.getString(DBDefinitions.KEY_PAGES));
+        assertEquals("Hardcover", mRawData.getString(DBDefinitions.KEY_FORMAT));
+        assertEquals("nld", mRawData.getString(DBDefinitions.KEY_LANGUAGE));
+        assertEquals("Kleur", mRawData.getString(DBDefinitions.KEY_COLOR));
 
-        // we've set the doc, so no internet download will be done.
-        final boolean[] fetchThumbnails = {false, false};
-        final Bundle bookData = handler.parseDoc(fetchThumbnails, mRawData);
-
-        assertFalse(bookData.isEmpty());
-        System.out.println(bookData);
-
-        assertEquals("De integrale 5", bookData.getString(DBDefinitions.KEY_TITLE));
-        assertEquals("9789055819485", bookData.getString(DBDefinitions.KEY_ISBN));
-        assertEquals("2017", bookData.getString(DBDefinitions.KEY_DATE_PUBLISHED));
-        assertEquals("224", bookData.getString(DBDefinitions.KEY_PAGES));
-        assertEquals("Hardcover", bookData.getString(DBDefinitions.KEY_FORMAT));
-        assertEquals("nld", bookData.getString(DBDefinitions.KEY_LANGUAGE));
-        assertEquals("Kleur", bookData.getString(DBDefinitions.KEY_COLOR));
-
-        final ArrayList<Publisher> allPublishers = bookData
+        final ArrayList<Publisher> allPublishers = mRawData
                 .getParcelableArrayList(Book.BKEY_PUBLISHER_ARRAY);
         assertNotNull(allPublishers);
         assertEquals(1, allPublishers.size());
         assertEquals("Le Lombard", allPublishers.get(0).getName());
 
-        final ArrayList<TocEntry> tocs = bookData.getParcelableArrayList(Book.BKEY_TOC_ARRAY);
+        final ArrayList<TocEntry> tocs = mRawData.getParcelableArrayList(Book.BKEY_TOC_ARRAY);
         assertNotNull(tocs);
         assertEquals(4, tocs.size());
 
@@ -258,7 +205,7 @@ class StripInfoTest
 
         assertEquals("Culliford", tocs.get(0).getAuthor().getFamilyName());
 
-        final ArrayList<Series> allSeries = bookData.getParcelableArrayList(Book.BKEY_SERIES_ARRAY);
+        final ArrayList<Series> allSeries = mRawData.getParcelableArrayList(Book.BKEY_SERIES_ARRAY);
         assertNotNull(allSeries);
         assertEquals(1, allSeries.size());
 
@@ -266,7 +213,7 @@ class StripInfoTest
         assertEquals("Johan en Pirrewiet", series.getTitle());
         assertEquals("INT 5", series.getNumber());
 
-        final ArrayList<Author> authors = bookData.getParcelableArrayList(Book.BKEY_AUTHOR_ARRAY);
+        final ArrayList<Author> authors = mRawData.getParcelableArrayList(Book.BKEY_AUTHOR_ARRAY);
         assertNotNull(authors);
         assertEquals(6, authors.size());
 
@@ -289,39 +236,22 @@ class StripInfoTest
                                       + "17030_Comanche_1_Red_Dust";
         final String filename = "/stripinfo/17030_Comanche_1_Red_Dust.html";
 
-        Document doc = null;
-        try (InputStream is = this.getClass().getResourceAsStream(filename)) {
-            assertNotNull(is);
-            doc = Jsoup.parse(is, null, locationHeader);
-        } catch (@NonNull final IOException e) {
-            fail(e);
-        }
-        assertNotNull(doc);
-        assertTrue(doc.hasText());
+        loadData(mSearchEngine, "UTF-8", locationHeader, filename);
 
-        final StripInfoBookHandler handler = new StripInfoBookHandler(mContext, mSearchEngine, doc);
+        assertEquals("Red Dust", mRawData.getString(DBDefinitions.KEY_TITLE));
+        assertEquals("1972", mRawData.getString(DBDefinitions.KEY_DATE_PUBLISHED));
+        assertEquals("48", mRawData.getString(DBDefinitions.KEY_PAGES));
+        assertEquals("Softcover", mRawData.getString(DBDefinitions.KEY_FORMAT));
+        assertEquals("nld", mRawData.getString(DBDefinitions.KEY_LANGUAGE));
+        assertEquals("Kleur", mRawData.getString(DBDefinitions.KEY_COLOR));
 
-        // we've set the doc, so no internet download will be done.
-        final boolean[] fetchThumbnails = {false, false};
-        final Bundle bookData = handler.parseDoc(fetchThumbnails, mRawData);
-
-        assertFalse(bookData.isEmpty());
-        System.out.println(bookData);
-
-        assertEquals("Red Dust", bookData.getString(DBDefinitions.KEY_TITLE));
-        assertEquals("1972", bookData.getString(DBDefinitions.KEY_DATE_PUBLISHED));
-        assertEquals("48", bookData.getString(DBDefinitions.KEY_PAGES));
-        assertEquals("Softcover", bookData.getString(DBDefinitions.KEY_FORMAT));
-        assertEquals("nld", bookData.getString(DBDefinitions.KEY_LANGUAGE));
-        assertEquals("Kleur", bookData.getString(DBDefinitions.KEY_COLOR));
-
-        final ArrayList<Publisher> allPublishers = bookData
+        final ArrayList<Publisher> allPublishers = mRawData
                 .getParcelableArrayList(Book.BKEY_PUBLISHER_ARRAY);
         assertNotNull(allPublishers);
         assertEquals(1, allPublishers.size());
         assertEquals("Le Lombard", allPublishers.get(0).getName());
 
-        final ArrayList<TocEntry> tocs = bookData.getParcelableArrayList(Book.BKEY_TOC_ARRAY);
+        final ArrayList<TocEntry> tocs = mRawData.getParcelableArrayList(Book.BKEY_TOC_ARRAY);
         assertNotNull(tocs);
         assertEquals(3, tocs.size());
 
@@ -331,7 +261,7 @@ class StripInfoTest
 
         assertEquals("Greg", tocs.get(0).getAuthor().getFamilyName());
 
-        final ArrayList<Series> allSeries = bookData.getParcelableArrayList(Book.BKEY_SERIES_ARRAY);
+        final ArrayList<Series> allSeries = mRawData.getParcelableArrayList(Book.BKEY_SERIES_ARRAY);
         assertNotNull(allSeries);
         assertEquals(1, allSeries.size());
 
@@ -339,7 +269,7 @@ class StripInfoTest
         assertEquals("Comanche", series.getTitle());
         assertEquals("1", series.getNumber());
 
-        final ArrayList<Author> authors = bookData.getParcelableArrayList(Book.BKEY_AUTHOR_ARRAY);
+        final ArrayList<Author> authors = mRawData.getParcelableArrayList(Book.BKEY_AUTHOR_ARRAY);
         assertNotNull(authors);
         assertEquals(2, authors.size());
 
@@ -361,41 +291,24 @@ class StripInfoTest
                                       + "8155_De_avonturen_van_de_3L_7_Spoken_in_de_grot";
         final String filename = "/stripinfo/8155_De_avonturen_van_de_3L_7_Spoken_in_de_grot.html";
 
-        Document doc = null;
-        try (InputStream is = this.getClass().getResourceAsStream(filename)) {
-            assertNotNull(is);
-            doc = Jsoup.parse(is, null, locationHeader);
-        } catch (@NonNull final IOException e) {
-            fail(e);
-        }
-        assertNotNull(doc);
-        assertTrue(doc.hasText());
+        loadData(mSearchEngine, "UTF-8", locationHeader, filename);
 
-        final StripInfoBookHandler handler = new StripInfoBookHandler(mContext, mSearchEngine, doc);
+        assertEquals("Spoken in de grot", mRawData.getString(DBDefinitions.KEY_TITLE));
+        assertEquals("1977", mRawData.getString(DBDefinitions.KEY_DATE_PUBLISHED));
+        assertEquals("Softcover", mRawData.getString(DBDefinitions.KEY_FORMAT));
+        assertEquals("nld", mRawData.getString(DBDefinitions.KEY_LANGUAGE));
+        assertEquals("Kleur", mRawData.getString(DBDefinitions.KEY_COLOR));
 
-        // we've set the doc, so no internet download will be done.
-        final boolean[] fetchThumbnails = {false, false};
-        final Bundle bookData = handler.parseDoc(fetchThumbnails, mRawData);
-
-        assertFalse(bookData.isEmpty());
-        System.out.println(bookData);
-
-        assertEquals("Spoken in de grot", bookData.getString(DBDefinitions.KEY_TITLE));
-        assertEquals("1977", bookData.getString(DBDefinitions.KEY_DATE_PUBLISHED));
-        assertEquals("Softcover", bookData.getString(DBDefinitions.KEY_FORMAT));
-        assertEquals("nld", bookData.getString(DBDefinitions.KEY_LANGUAGE));
-        assertEquals("Kleur", bookData.getString(DBDefinitions.KEY_COLOR));
-
-        final ArrayList<Publisher> allPublishers = bookData
+        final ArrayList<Publisher> allPublishers = mRawData
                 .getParcelableArrayList(Book.BKEY_PUBLISHER_ARRAY);
         assertNotNull(allPublishers);
         assertEquals(1, allPublishers.size());
         assertEquals("Le Lombard", allPublishers.get(0).getName());
 
-        final ArrayList<TocEntry> tocs = bookData.getParcelableArrayList(Book.BKEY_TOC_ARRAY);
+        final ArrayList<TocEntry> tocs = mRawData.getParcelableArrayList(Book.BKEY_TOC_ARRAY);
         assertNull(tocs);
 
-        final ArrayList<Series> allSeries = bookData.getParcelableArrayList(Book.BKEY_SERIES_ARRAY);
+        final ArrayList<Series> allSeries = mRawData.getParcelableArrayList(Book.BKEY_SERIES_ARRAY);
         assertNotNull(allSeries);
         assertEquals(2, allSeries.size());
 
@@ -406,7 +319,7 @@ class StripInfoTest
         assertEquals("Favorietenreeks", series.getTitle());
         assertEquals("2.50", series.getNumber());
 
-        final ArrayList<Author> authors = bookData.getParcelableArrayList(Book.BKEY_AUTHOR_ARRAY);
+        final ArrayList<Author> authors = mRawData.getParcelableArrayList(Book.BKEY_AUTHOR_ARRAY);
         assertNotNull(authors);
         assertEquals(2, authors.size());
 
@@ -427,50 +340,49 @@ class StripInfoTest
     void parseMultiResult() {
         setLocale(Locale.FRANCE);
         final String locationHeader = "https://stripinfo.be/zoek/zoek?zoekstring=pluvi";
+        // this is a multi-result, so use mSearchEngine.parseMultiResult
         final String filename = "/stripinfo/multi-result-pluvi.html";
 
-        Document doc = null;
+        Document document = null;
         try (InputStream is = this.getClass().getResourceAsStream(filename)) {
             assertNotNull(is);
-            doc = Jsoup.parse(is, null, locationHeader);
+            document = Jsoup.parse(is, null, locationHeader);
         } catch (@NonNull final IOException e) {
             fail(e);
         }
-        assertNotNull(doc);
-        assertTrue(doc.hasText());
+        assertNotNull(document);
+        assertTrue(document.hasText());
 
-        final StripInfoBookHandler handler = new StripInfoBookHandler(mContext, mSearchEngine, doc);
+        final boolean[] fetchThumbnails = {false, false};
 
         // we've set the doc, but will redirect.. so an internet download WILL be done.
-        Bundle bookData = null;
         try {
-            final boolean[] fetchThumbnails = {false, false};
-            bookData = handler.parseMultiResult(fetchThumbnails, mRawData);
+            mSearchEngine.parseMultiResult(document, fetchThumbnails, mRawData);
         } catch (@NonNull final SocketTimeoutException e) {
             fail(e);
         }
 
-        assertFalse(bookData.isEmpty());
-        System.out.println(bookData);
+        assertFalse(mRawData.isEmpty());
+        System.out.println(mRawData);
 
-        assertEquals("9782756010830", bookData.getString(DBDefinitions.KEY_ISBN));
-        assertEquals("Le chant du pluvier", bookData.getString(DBDefinitions.KEY_TITLE));
-        assertEquals("2009", bookData.getString(DBDefinitions.KEY_DATE_PUBLISHED));
-        assertEquals("172", bookData.getString(DBDefinitions.KEY_PAGES));
-        assertEquals("Hardcover", bookData.getString(DBDefinitions.KEY_FORMAT));
-        assertEquals("fra", bookData.getString(DBDefinitions.KEY_LANGUAGE));
-        assertEquals("Kleur", bookData.getString(DBDefinitions.KEY_COLOR));
+        assertEquals("9782756010830", mRawData.getString(DBDefinitions.KEY_ISBN));
+        assertEquals("Le chant du pluvier", mRawData.getString(DBDefinitions.KEY_TITLE));
+        assertEquals("2009", mRawData.getString(DBDefinitions.KEY_DATE_PUBLISHED));
+        assertEquals("172", mRawData.getString(DBDefinitions.KEY_PAGES));
+        assertEquals("Hardcover", mRawData.getString(DBDefinitions.KEY_FORMAT));
+        assertEquals("fra", mRawData.getString(DBDefinitions.KEY_LANGUAGE));
+        assertEquals("Kleur", mRawData.getString(DBDefinitions.KEY_COLOR));
 
-        final ArrayList<Publisher> allPublishers = bookData
+        final ArrayList<Publisher> allPublishers = mRawData
                 .getParcelableArrayList(Book.BKEY_PUBLISHER_ARRAY);
         assertNotNull(allPublishers);
         assertEquals(1, allPublishers.size());
         assertEquals("Delcourt", allPublishers.get(0).getName());
 
-        final ArrayList<TocEntry> tocs = bookData.getParcelableArrayList(Book.BKEY_TOC_ARRAY);
+        final ArrayList<TocEntry> tocs = mRawData.getParcelableArrayList(Book.BKEY_TOC_ARRAY);
         assertNull(tocs);
 
-        final ArrayList<Series> allSeries = bookData.getParcelableArrayList(Book.BKEY_SERIES_ARRAY);
+        final ArrayList<Series> allSeries = mRawData.getParcelableArrayList(Book.BKEY_SERIES_ARRAY);
         assertNotNull(allSeries);
         assertEquals(2, allSeries.size());
 
@@ -482,7 +394,7 @@ class StripInfoTest
         assertEquals("Mirages", series.getTitle());
         assertEquals("", series.getNumber());
 
-        final ArrayList<Author> authors = bookData.getParcelableArrayList(Book.BKEY_AUTHOR_ARRAY);
+        final ArrayList<Author> authors = mRawData.getParcelableArrayList(Book.BKEY_AUTHOR_ARRAY);
         assertNotNull(authors);
         assertEquals(3, authors.size());
 

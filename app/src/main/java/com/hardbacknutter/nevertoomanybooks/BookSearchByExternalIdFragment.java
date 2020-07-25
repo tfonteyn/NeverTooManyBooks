@@ -43,34 +43,34 @@ import com.google.android.material.snackbar.Snackbar;
 import java.util.regex.Pattern;
 
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
-import com.hardbacknutter.nevertoomanybooks.databinding.FragmentBooksearchByNativeIdBinding;
+import com.hardbacknutter.nevertoomanybooks.databinding.FragmentBooksearchByExternalIdBinding;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
-import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.searches.Site;
 import com.hardbacknutter.nevertoomanybooks.widgets.ConstraintRadioGroup;
 
-public class BookSearchByNativeIdFragment
+public class BookSearchByExternalIdFragment
         extends BookSearchBaseFragment {
 
     /** Log tag. */
-    public static final String TAG = "BookSearchByNativeId";
+    public static final String TAG = "BookSearchByExternalId";
     private static final Pattern DIGITS_PATTERN = Pattern.compile("\\d+");
     private static final String BKEY_SITE_RES_ID = TAG + ":siteResId";
-    private static final String BKEY_NATIVE_ID = TAG + ":nativeId";
+    private static final String BKEY_EXTERNAL_ID = TAG + ":externalId";
 
     /** The currently selected radio button for onPause/onSaveInstanceState. */
     private int mCheckedSiteResId = View.NO_ID;
-    /** The current native id text for onPause/onSaveInstanceState. */
-    private String mNativeId;
+    /** The current external id text for onPause/onSaveInstanceState. */
+    private String mExternalId;
     /** View Binding. */
-    private FragmentBooksearchByNativeIdBinding mVb;
+    private FragmentBooksearchByExternalIdBinding mVb;
+    private SearchEngine.ByExternalId mSelectedSearchEngine;
 
     @Override
     @Nullable
     public View onCreateView(@NonNull final LayoutInflater inflater,
                              @Nullable final ViewGroup container,
                              @Nullable final Bundle savedInstanceState) {
-        mVb = FragmentBooksearchByNativeIdBinding.inflate(inflater, container, false);
+        mVb = FragmentBooksearchByExternalIdBinding.inflate(inflater, container, false);
         return mVb.getRoot();
     }
 
@@ -80,7 +80,7 @@ public class BookSearchByNativeIdFragment
         super.onViewCreated(view, savedInstanceState);
 
         //noinspection ConstantConditions
-        getActivity().setTitle(R.string.fab_add_book_by_native_id);
+        getActivity().setTitle(R.string.fab_add_book_by_external_id);
 
         final Bundle args = savedInstanceState != null ? savedInstanceState : getArguments();
         if (args != null) {
@@ -89,8 +89,8 @@ public class BookSearchByNativeIdFragment
                 final RadioButton btn = mVb.getRoot().findViewById(checkedId);
                 if (btn.getVisibility() == View.VISIBLE) {
                     btn.setChecked(true);
-                    mVb.nativeId.setEnabled(true);
-                    mVb.nativeId.setText(args.getString(BKEY_NATIVE_ID, ""));
+                    mVb.externalId.setEnabled(true);
+                    mVb.externalId.setText(args.getString(BKEY_EXTERNAL_ID, ""));
                 }
             }
         }
@@ -99,7 +99,7 @@ public class BookSearchByNativeIdFragment
         mVb.btnSearch.setOnClickListener(v -> startSearch());
 
         // soft-keyboards 'search' button act as a shortcut to start the search
-        mVb.nativeId.setOnEditorActionListener((v, actionId, event) -> {
+        mVb.externalId.setOnEditorActionListener((v, actionId, event) -> {
             if (actionId == EditorInfo.IME_ACTION_SEARCH) {
                 BaseActivity.hideKeyboard(v);
                 startSearch();
@@ -113,9 +113,9 @@ public class BookSearchByNativeIdFragment
     boolean onPreSearch() {
         //sanity check
         //noinspection ConstantConditions
-        if (mVb.nativeId.getText().toString().trim().isEmpty()
+        if (mVb.externalId.getText().toString().trim().isEmpty()
             || mVb.sitesGroup.getCheckedRadioButtonId() == View.NO_ID) {
-            showError(mVb.lblNativeId, getString(R.string.warning_requires_site_and_id));
+            showError(mVb.lblExternalId, getString(R.string.warning_requires_site_and_id));
             return false;
         }
         return true;
@@ -123,22 +123,21 @@ public class BookSearchByNativeIdFragment
 
     @Override
     boolean onSearch() {
-        final int siteId = SearchSites.getSiteIdFromResId(mVb.sitesGroup.getCheckedRadioButtonId());
         //noinspection ConstantConditions
-        final String nativeId = mVb.nativeId.getText().toString().trim();
+        final String externalId = mVb.externalId.getText().toString().trim();
         //noinspection ConstantConditions
-        return mCoordinator.searchByNativeId(getContext(), Site.createDataSite(siteId), nativeId);
+        return mCoordinator.searchByExternalId(getContext(), mSelectedSearchEngine, externalId);
     }
 
     @Override
     void onSearchResults(@NonNull final Bundle bookData) {
         // A non-empty result will have a title, or at least 3 fields:
-        // The native id field for the site should be present as we searched on one.
+        // The external id field for the site should be present as we searched on one.
         // The title field, *might* be there but *might* be empty.
         // So a valid result means we either need a title, or a third field.
         final String title = bookData.getString(DBDefinitions.KEY_TITLE);
         if ((title == null || title.isEmpty()) && bookData.size() <= 2) {
-            Snackbar.make(mVb.nativeId, R.string.warning_no_matching_book_found,
+            Snackbar.make(mVb.externalId, R.string.warning_no_matching_book_found,
                           Snackbar.LENGTH_LONG).show();
             return;
         }
@@ -149,7 +148,7 @@ public class BookSearchByNativeIdFragment
     @Override
     void onClearPreviousSearchCriteria() {
         super.onClearPreviousSearchCriteria();
-        mVb.nativeId.setText("");
+        mVb.externalId.setText("");
     }
 
     @Override
@@ -157,7 +156,7 @@ public class BookSearchByNativeIdFragment
         super.onPause();
         mCheckedSiteResId = mVb.sitesGroup.getCheckedRadioButtonId();
         //noinspection ConstantConditions
-        mNativeId = mVb.nativeId.getText().toString().trim();
+        mExternalId = mVb.externalId.getText().toString().trim();
     }
 
     @Override
@@ -165,38 +164,40 @@ public class BookSearchByNativeIdFragment
         super.onSaveInstanceState(outState);
         if (mCheckedSiteResId != View.NO_ID) {
             outState.putInt(BKEY_SITE_RES_ID, mCheckedSiteResId);
-            outState.putString(BKEY_NATIVE_ID, mNativeId);
+            outState.putString(BKEY_EXTERNAL_ID, mExternalId);
         }
     }
 
     private void onSiteSelect(@NonNull final ConstraintRadioGroup group,
-                              final int checkedId) {
+                              final int viewId) {
 
-        final Site site = Site.createDataSite(SearchSites.getSiteIdFromResId(checkedId));
-        final SearchEngine.ByNativeId searchEngine =
-                (SearchEngine.ByNativeId) site.getSearchEngine();
+        final Site.Config config = Site.getConfigByViewId(viewId);
         //noinspection ConstantConditions
-        if (!searchEngine.isAvailable(getContext())) {
+        mSelectedSearchEngine = (SearchEngine.ByExternalId) config.createSearchEngine();
+
+        if (!mSelectedSearchEngine.isAvailable()) {
             // If the selected site needs registration, prompt the user.
-            searchEngine.promptToRegister(getContext(), true, "native_id");
+            //noinspection ConstantConditions
+            mSelectedSearchEngine.promptToRegister(getContext(), true, "external_id");
             mVb.sitesGroup.clearCheck();
             return;
         }
 
         final int keyboardIcon;
         final int inputType;
-        if (searchEngine.hasStringId()) {
+        //noinspection ConstantConditions
+        if (config.getExternalIdDomain().isText()) {
             // display an alphanumeric keyboard icon
             keyboardIcon = R.drawable.ic_keyboard;
             inputType = InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS;
 
         } else {
             // if the user switched from a text input, clean the input
-            if ((mVb.nativeId.getInputType() & InputType.TYPE_CLASS_NUMBER) == 0) {
+            if ((mVb.externalId.getInputType() & InputType.TYPE_CLASS_NUMBER) == 0) {
                 //noinspection ConstantConditions
-                String text = mVb.nativeId.getText().toString().trim();
+                String text = mVb.externalId.getText().toString().trim();
                 if (!DIGITS_PATTERN.matcher(text).matches()) {
-                    mVb.nativeId.setText("");
+                    mVb.externalId.setText("");
                 }
             }
             // display a (sort of) numeric keyboard icon
@@ -204,8 +205,8 @@ public class BookSearchByNativeIdFragment
             inputType = InputType.TYPE_CLASS_NUMBER;
         }
 
-        mVb.nativeId.setInputType(inputType);
-        mVb.nativeId.setCompoundDrawablesRelativeWithIntrinsicBounds(keyboardIcon, 0, 0, 0);
-        mVb.nativeId.setEnabled(true);
+        mVb.externalId.setInputType(inputType);
+        mVb.externalId.setCompoundDrawablesRelativeWithIntrinsicBounds(keyboardIcon, 0, 0, 0);
+        mVb.externalId.setEnabled(true);
     }
 }

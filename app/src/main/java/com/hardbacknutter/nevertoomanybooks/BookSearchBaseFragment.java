@@ -85,9 +85,6 @@ public abstract class BookSearchBaseFragment
         super.onCreate(savedInstanceState);
 
         mDb = new DAO(TAG);
-
-        //noinspection ConstantConditions
-        mResultData = new ViewModelProvider(getActivity()).get(ResultDataModel.class);
     }
 
     @Override
@@ -95,8 +92,10 @@ public abstract class BookSearchBaseFragment
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // Activity scope!
         //noinspection ConstantConditions
+        mResultData = new ViewModelProvider(getActivity()).get(ResultDataModel.class);
+
+        // Activity scope!
         mCoordinator = new ViewModelProvider(getActivity()).get(SearchCoordinator.class);
         //noinspection ConstantConditions
         mCoordinator.init(getContext(), requireArguments());

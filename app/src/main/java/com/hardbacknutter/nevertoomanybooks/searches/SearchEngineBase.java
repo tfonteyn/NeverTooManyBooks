@@ -25,22 +25,62 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.utils.xml;
+package com.hardbacknutter.nevertoomanybooks.searches;
 
-import android.os.Bundle;
+import android.content.Context;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
-import org.xml.sax.helpers.DefaultHandler;
+import java.util.Objects;
 
-public abstract class SearchHandler
-        extends DefaultHandler {
+import com.hardbacknutter.nevertoomanybooks.tasks.Canceller;
+
+public abstract class SearchEngineBase
+        implements SearchEngine {
+
+    @SearchSites.EngineId
+    protected final int mId;
+
+    @NonNull
+    protected final Context mAppContext;
+
+    @Nullable
+    private Canceller mCaller;
 
     /**
-     * Get the results.
+     * Constructor.
      *
-     * @return Bundle with book data
+     * @param appContext Application context
      */
+    public SearchEngineBase(@NonNull final Context appContext) {
+        mAppContext = appContext;
+
+        final SearchEngine.Configuration se = getClass().getAnnotation(
+                SearchEngine.Configuration.class);
+        Objects.requireNonNull(se);
+        mId = se.id();
+    }
+
+    @Override
+    public int getId() {
+        return mId;
+    }
+
     @NonNull
-    public abstract Bundle getResult();
+    @Override
+    public Context getAppContext() {
+        return mAppContext;
+    }
+
+    @Override
+    public void setCaller(@Nullable final Canceller caller) {
+        mCaller = caller;
+    }
+
+    @Override
+    public boolean isCancelled() {
+        return mCaller == null || mCaller.isCancelled();
+    }
+
 }

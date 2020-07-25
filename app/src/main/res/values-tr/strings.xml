@@ -128,7 +128,7 @@
     <string name="fab_add_book_by_barcode_scan">Barkod tara</string>
     <string name="fab_add_book_by_internet_search">Genelağ\'da ara</string>
     <string name="fab_add_book_by_isbn">ISBN gir</string>
-    <string name="fab_add_book_by_native_id">Web sitesi kitap kimliği</string>
+    <string name="fab_add_book_by_external_id">Web sitesi kitap kimliği</string>
     <string name="fab_add_book_manually">El ile ekle</string>
     <string name="fallback_currency_format">%2$.2f %1$s</string>
     <string name="gr_auth_blurb_part1">Goodreads, ağ sayfasında belirtildiği üzere ereği “kişilerin sevdiği kitapları bulmasına ve paylaşmasına yardımcı olmak” olan bir servistir. Çok geniş bir kitap ve yorum veritabanına iye olan Goodreads\'te kayıtlı bir kullanıcı iseniz Goodreads\'ten kitaplarınızı, raflarınızı ve yorumlarınızı alabilir veya Goodreads\'e gönderebilir. &APP_NAME; kendi başına bir uygulama olup Goodreads\'i gerektirmemektedir, ancak ilgilendiyseniz buradan kayıt olabilirsiniz:</string>
@@ -459,7 +459,7 @@
     <string name="progress_msg_skip_s">Atla - %1$s</string>
     <string name="progress_msg_starting_up">Başlatılıyor…</string>
     <string name="progress_msg_upgrading">Yükseltiliyor…</string>
-    <string name="pt_allow_edit_native_id">Yerel web sitesi kitap kimliğinin düzenlenmesine izin ver.</string>
+    <string name="pt_allow_edit_external_id">Yerel web sitesi kitap kimliğinin düzenlenmesine izin ver.</string>
     <string name="pt_allow_mobile_data">Mobil veri kullanımına izin ver</string>
     <string name="pt_bob_books_under_multiple_authors">Birden fazla yazarlı kitaplar</string>
     <string name="pt_bob_books_under_multiple_series">Birden fazla seride bulunan kitaplar</string>

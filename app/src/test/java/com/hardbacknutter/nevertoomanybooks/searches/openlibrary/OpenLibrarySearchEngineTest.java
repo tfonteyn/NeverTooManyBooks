@@ -39,7 +39,7 @@ import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import com.hardbacknutter.nevertoomanybooks.CommonSetup;
+import com.hardbacknutter.nevertoomanybooks.CommonMocks;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -52,14 +52,14 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.fail;
 
 class OpenLibrarySearchEngineTest
-        extends CommonSetup {
+        extends CommonMocks {
 
     private OpenLibrarySearchEngine mSearchEngine;
 
     @BeforeEach
     public void setUp() {
         super.setUp();
-        mSearchEngine = new OpenLibrarySearchEngine();
+        mSearchEngine = new OpenLibrarySearchEngine(mContext);
         mSearchEngine.setCaller(new DummyCaller());
     }
 
@@ -76,7 +76,7 @@ class OpenLibrarySearchEngineTest
             final String response = mSearchEngine.readResponseStream(is);
             final JSONObject json = new JSONObject(response);
             final boolean[] fetchThumbnails = {false, false};
-            mRawData = mSearchEngine.handleResponse(mContext, json, fetchThumbnails, mRawData);
+            mSearchEngine.handleResponse(json, fetchThumbnails, mRawData);
 
         } catch (@NonNull final IOException | JSONException e) {
             fail(e);

@@ -676,7 +676,7 @@ import org.xml.sax.helpers.DefaultHandler;
  *     }
  * </pre>
  */
-class GoogleBooksHandler
+class GoogleBooksListHandler
         extends DefaultHandler {
 
     /** XML tags/attrs we look for. */
@@ -684,6 +684,8 @@ class GoogleBooksHandler
     private static final String XML_ENTRY = "entry";
     private static final Pattern HTTP_PATTERN = Pattern.compile("http:", Pattern.LITERAL);
 
+    /** XML content. */
+    @SuppressWarnings("StringBufferField")
     private final StringBuilder mBuilder = new StringBuilder();
     @NonNull
     private final List<String> url = new ArrayList<>();

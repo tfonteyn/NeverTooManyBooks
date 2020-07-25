@@ -95,7 +95,7 @@ public interface ItemWithTitle {
                 words = localeResources.getString(R.string.pv_reformat_titles_prefixes);
                 LOCALE_PREFIX_MAP.put(locale, words);
             }
-            // case sensitive, see notes in res/values/string.xml/pv_reformat_titles_prefixes
+            // case sensitive, see notes in src/main/res/values/string.xml/pv_reformat_titles_prefixes
             if (words.contains(titleWords[0])) {
                 final StringBuilder newTitle = new StringBuilder();
                 for (int i = 1; i < titleWords.length; i++) {

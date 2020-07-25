@@ -27,33 +27,22 @@
  */
 package com.hardbacknutter.nevertoomanybooks.searches.isfdb;
 
-import androidx.annotation.NonNull;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.Locale;
 
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import com.hardbacknutter.nevertoomanybooks.CommonSetup;
+import com.hardbacknutter.nevertoomanybooks.JSoupCommonMocks;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
-import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
@@ -62,14 +51,14 @@ import static org.mockito.Mockito.when;
  * Test parsing the Jsoup Document for ISFDB single-book data.
  */
 class IsfdbBookHandlerTest
-        extends CommonSetup {
+        extends JSoupCommonMocks {
 
-    private SearchEngine mSearchEngine;
+    private IsfdbSearchEngine mSearchEngine;
 
     @BeforeEach
     public void setUp() {
         super.setUp();
-        mSearchEngine = new IsfdbSearchEngine();
+        mSearchEngine = new IsfdbSearchEngine(mContext);
         mSearchEngine.setCaller(new DummyCaller());
 
         // Override the default 'false'
@@ -84,38 +73,19 @@ class IsfdbBookHandlerTest
         final String locationHeader = "http://www.isfdb.org/cgi-bin/pl.cgi?112781";
         final String filename = "/isfdb/112781.html";
 
-        Document doc = null;
-        try (InputStream is = this.getClass().getResourceAsStream(filename)) {
-            assertNotNull(is);
-            doc = Jsoup.parse(is, IsfdbSearchEngine.CHARSET_DECODE_PAGE, locationHeader);
-        } catch (@NonNull final IOException e) {
-            fail(e);
-        }
-        assertNotNull(doc);
-        assertTrue(doc.hasText());
-
-        final IsfdbBookHandler handler = new IsfdbBookHandler(mContext, mSearchEngine, doc);
-        // we've set the doc, so no internet download will be done.
-        try {
-            final boolean[] fetchThumbnails = {false, false};
-            mRawData = handler.parseDoc(fetchThumbnails, mRawData);
-        } catch (@NonNull final SocketTimeoutException e) {
-            fail(e);
-        }
-
-        assertFalse(mRawData.isEmpty());
+        loadData(mSearchEngine, IsfdbSearchEngine.CHARSET_DECODE_PAGE, locationHeader, filename);
 
         assertEquals("Like Nothing on Earth", mRawData.getString(DBDefinitions.KEY_TITLE));
         assertEquals(112781L, mRawData.getLong(DBDefinitions.KEY_EID_ISFDB));
         // On the site: "Date: 1986-10-00". Our code substitutes "00" with "01"
         assertEquals("1986-10-01", mRawData.getString(DBDefinitions.KEY_DATE_PUBLISHED));
         assertEquals("0413600106", mRawData.getString(DBDefinitions.KEY_ISBN));
-        assertEquals("9780413600103", mRawData.getString(IsfdbBookHandler.SiteField.ISBN_2));
+        assertEquals("9780413600103", mRawData.getString(IsfdbSearchEngine.SiteField.ISBN_2));
         assertEquals(1.95d, mRawData.getDouble(DBDefinitions.KEY_PRICE_LISTED));
         assertEquals("GBP", mRawData.getString(DBDefinitions.KEY_PRICE_LISTED_CURRENCY));
         assertEquals("159", mRawData.getString(DBDefinitions.KEY_PAGES));
         assertEquals("pb", mRawData.getString(DBDefinitions.KEY_FORMAT));
-        assertEquals("COLLECTION", mRawData.getString(IsfdbBookHandler.SiteField.BOOK_TYPE));
+        assertEquals("COLLECTION", mRawData.getString(IsfdbSearchEngine.SiteField.BOOK_TYPE));
         assertEquals(Book.TOC_MULTIPLE_WORKS | Book.TOC_MULTIPLE_AUTHORS,
                      mRawData.getLong(DBDefinitions.KEY_TOC_BITMASK));
 
@@ -171,38 +141,18 @@ class IsfdbBookHandlerTest
         final String locationHeader = "http://www.isfdb.org/cgi-bin/pl.cgi?431964";
         final String filename = "/isfdb/431964.html";
 
-        Document doc = null;
-        try (InputStream is = this.getClass().getResourceAsStream(filename)) {
-            assertNotNull(is);
-            doc = Jsoup.parse(is, IsfdbSearchEngine.CHARSET_DECODE_PAGE, locationHeader);
-        } catch (@NonNull final IOException e) {
-            fail(e);
-        }
-        assertNotNull(doc);
-        assertTrue(doc.hasText());
-
-        final IsfdbBookHandler handler = new IsfdbBookHandler(mContext, mSearchEngine, doc);
-
-        // we've set the doc, so no internet download will be done.
-        try {
-            final boolean[] fetchThumbnails = {false, false};
-            mRawData = handler.parseDoc(fetchThumbnails, mRawData);
-        } catch (@NonNull final SocketTimeoutException e) {
-            fail(e);
-        }
-
-        assertFalse(mRawData.isEmpty());
+        loadData(mSearchEngine, IsfdbSearchEngine.CHARSET_DECODE_PAGE, locationHeader, filename);
 
         assertEquals("Mort", mRawData.getString(DBDefinitions.KEY_TITLE));
         assertEquals(431964L, mRawData.getLong(DBDefinitions.KEY_EID_ISFDB));
         assertEquals("2013-11-07", mRawData.getString(DBDefinitions.KEY_DATE_PUBLISHED));
         assertEquals("9781473200104", mRawData.getString(DBDefinitions.KEY_ISBN));
-        assertEquals("1473200105", mRawData.getString(IsfdbBookHandler.SiteField.ISBN_2));
+        assertEquals("1473200105", mRawData.getString(IsfdbSearchEngine.SiteField.ISBN_2));
         assertEquals(9.99d, mRawData.getDouble(DBDefinitions.KEY_PRICE_LISTED));
         assertEquals("GBP", mRawData.getString(DBDefinitions.KEY_PRICE_LISTED_CURRENCY));
         assertEquals("257", mRawData.getString(DBDefinitions.KEY_PAGES));
         assertEquals("hc", mRawData.getString(DBDefinitions.KEY_FORMAT));
-        assertEquals("NOVEL", mRawData.getString(IsfdbBookHandler.SiteField.BOOK_TYPE));
+        assertEquals("NOVEL", mRawData.getString(IsfdbSearchEngine.SiteField.BOOK_TYPE));
 
         final ArrayList<Publisher> allPublishers = mRawData
                 .getParcelableArrayList(Book.BKEY_PUBLISHER_ARRAY);
@@ -245,37 +195,17 @@ class IsfdbBookHandlerTest
         final String locationHeader = "http://www.isfdb.org/cgi-bin/pl.cgi?542125";
         final String filename = "/isfdb/542125.html";
 
-        Document doc = null;
-        try (InputStream is = this.getClass().getResourceAsStream(filename)) {
-            assertNotNull(is);
-            doc = Jsoup.parse(is, IsfdbSearchEngine.CHARSET_DECODE_PAGE, locationHeader);
-        } catch (@NonNull final IOException e) {
-            fail(e);
-        }
-        assertNotNull(doc);
-        assertTrue(doc.hasText());
-
-        final IsfdbBookHandler bookHandler = new IsfdbBookHandler(mContext, mSearchEngine, doc);
-
-        // we've set the doc, so no internet download will be done.
-        try {
-            final boolean[] fetchThumbnails = {false, false};
-            mRawData = bookHandler.parseDoc(fetchThumbnails, mRawData);
-        } catch (@NonNull final SocketTimeoutException e) {
-            fail(e);
-        }
-
-        assertFalse(mRawData.isEmpty());
+        loadData(mSearchEngine, IsfdbSearchEngine.CHARSET_DECODE_PAGE, locationHeader, filename);
 
         assertEquals("The Shepherd's Crown", mRawData.getString(DBDefinitions.KEY_TITLE));
         assertEquals(542125L, mRawData.getLong(DBDefinitions.KEY_EID_ISFDB));
         assertEquals("2015-09-01", mRawData.getString(DBDefinitions.KEY_DATE_PUBLISHED));
         assertEquals("9780062429995", mRawData.getString(DBDefinitions.KEY_ISBN));
-        assertEquals("006242999X", mRawData.getString(IsfdbBookHandler.SiteField.ISBN_2));
+        assertEquals("006242999X", mRawData.getString(IsfdbSearchEngine.SiteField.ISBN_2));
         assertEquals(11.99d, mRawData.getDouble(DBDefinitions.KEY_PRICE_LISTED));
         assertEquals("USD", mRawData.getString(DBDefinitions.KEY_PRICE_LISTED_CURRENCY));
         assertEquals("ebook", mRawData.getString(DBDefinitions.KEY_FORMAT));
-        assertEquals("NOVEL", mRawData.getString(IsfdbBookHandler.SiteField.BOOK_TYPE));
+        assertEquals("NOVEL", mRawData.getString(IsfdbSearchEngine.SiteField.BOOK_TYPE));
 
         assertEquals("2015943558", mRawData.getString(DBDefinitions.KEY_EID_LCCN));
         assertEquals("B00W2EBY8O", mRawData.getString(DBDefinitions.KEY_EID_ASIN));

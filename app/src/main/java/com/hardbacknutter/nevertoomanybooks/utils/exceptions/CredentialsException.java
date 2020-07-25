@@ -29,11 +29,11 @@ package com.hardbacknutter.nevertoomanybooks.utils.exceptions;
 
 import android.content.Context;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 
 /**
@@ -44,18 +44,18 @@ import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 public class CredentialsException
         extends Exception {
 
-    private static final long serialVersionUID = 4232206649906882515L;
+    private static final long serialVersionUID = 4436573044442202621L;
     /** The site that caused the issue. */
-    @SearchSites.Id
-    private final int mSite;
+    @NonNull
+    private final String mSite;
 
     /**
      * Constructor.
      *
-     * @param site id
+     * @param site name
      */
-    public CredentialsException(@SearchSites.Id final int site) {
-        super();
+    public CredentialsException(@NonNull final String site) {
+        super(site);
         mSite = site;
     }
 
@@ -63,12 +63,6 @@ public class CredentialsException
     @Override
     public String getLocalizedMessage() {
         final Context context = LocaleUtils.applyLocale(App.getAppContext());
-        return context.getString(R.string.error_site_authentication_failed,
-                                 SearchSites.getName(mSite));
-    }
-
-    @SearchSites.Id
-    public int getSite() {
-        return mSite;
+        return context.getString(R.string.error_site_authentication_failed, mSite);
     }
 }

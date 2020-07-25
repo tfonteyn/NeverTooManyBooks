@@ -29,15 +29,14 @@ package com.hardbacknutter.nevertoomanybooks.searches.googlebooks;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
 import androidx.annotation.WorkerThread;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Locale;
 import java.util.regex.Pattern;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -46,11 +45,12 @@ import javax.xml.parsers.SAXParserFactory;
 
 import org.xml.sax.SAXException;
 
+import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
-import com.hardbacknutter.nevertoomanybooks.tasks.Canceller;
+import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineBase;
+import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.tasks.TerminatorConnection;
-import com.hardbacknutter.nevertoomanybooks.utils.xml.SearchHandler;
 
 /**
  * FIXME: migrate to new googlebooks API or drop Google altogether?
@@ -70,53 +70,42 @@ import com.hardbacknutter.nevertoomanybooks.utils.xml.SearchHandler;
  * example:
  * https://stackoverflow.com/questions/7908954/google-books-api-searching-by-isbn
  */
+@SearchEngine.Configuration(
+        id = SearchSites.GOOGLE_BOOKS,
+        nameResId = R.string.site_google_books,
+        url = "https://books.google.com",
+        prefKey = "googlebooks"
+)
 public final class GoogleBooksSearchEngine
-        implements SearchEngine,
-                   SearchEngine.ByIsbn,
+        extends SearchEngineBase
+        implements SearchEngine.ByIsbn,
                    SearchEngine.ByText {
-
-    /* Preferences prefix. */
-//    private static final String PREF_PREFIX = "googlebooks.";
-
-    private static final String BASE_URL = "https://books.google.com";
 
     private static final Pattern SPACE_PATTERN = Pattern.compile(" ", Pattern.LITERAL);
 
-    @Nullable
-    private Canceller mCaller;
-
-    @Override
-    public void setCaller(@Nullable final Canceller caller) {
-        mCaller = caller;
-    }
-
-    @Override
-    public boolean isCancelled() {
-        return mCaller == null || mCaller.isCancelled();
+    /**
+     * Constructor.
+     *
+     * @param appContext Application context
+     */
+    public GoogleBooksSearchEngine(@NonNull final Context appContext) {
+        super(appContext);
     }
 
     @NonNull
     @Override
-    public Locale getLocale(@NonNull final Context context) {
-        return Locale.US;
-    }
-
-    @NonNull
-    @Override
-    public Bundle searchByIsbn(@NonNull final Context context,
-                               @NonNull final String validIsbn,
+    public Bundle searchByIsbn(@NonNull final String validIsbn,
                                @NonNull final boolean[] fetchThumbnail)
             throws IOException {
         // %3A  :
-        final String url = BASE_URL + "/books/feeds/volumes?q=ISBN%3A" + validIsbn;
-        return fetchBook(context, url, fetchThumbnail, new Bundle());
+        final String url = getSiteUrl() + "/books/feeds/volumes?q=ISBN%3A" + validIsbn;
+        return fetchBook(url, fetchThumbnail, new Bundle());
     }
 
     @NonNull
     @Override
     @WorkerThread
-    public Bundle search(@NonNull final Context context,
-                         @Nullable final String code,
+    public Bundle search(@Nullable final String code,
                          @Nullable final String author,
                          @Nullable final String title,
                          @Nullable final /* not supported */ String publisher,
@@ -127,19 +116,18 @@ public final class GoogleBooksSearchEngine
         // %3A  :
         if (author != null && !author.isEmpty()
             && title != null && !title.isEmpty()) {
-            final String url = BASE_URL + "/books/feeds/volumes?q="
+            final String url = getSiteUrl() + "/books/feeds/volumes?q="
                                + "intitle%3A" + encodeSpaces(title)
                                + "%2B"
                                + "inauthor%3A" + encodeSpaces(author);
-            return fetchBook(context, url, fetchThumbnail, new Bundle());
+            return fetchBook(url, fetchThumbnail, new Bundle());
 
         } else {
             return new Bundle();
         }
     }
 
-    private Bundle fetchBook(@NonNull final Context context,
-                             @NonNull final String url,
+    private Bundle fetchBook(@NonNull final String url,
                              @NonNull final boolean[] fetchThumbnail,
                              @NonNull final Bundle bookData)
             throws IOException {
@@ -150,46 +138,36 @@ public final class GoogleBooksSearchEngine
             final SAXParser parser = factory.newSAXParser();
 
             // get the booklist, can return multiple books ('entry' elements)
-            final GoogleBooksHandler booksHandler = new GoogleBooksHandler();
-            try (TerminatorConnection con = new TerminatorConnection(context, url, this)) {
-                parser.parse(con.getInputStream(), booksHandler);
+            final GoogleBooksListHandler listHandler = new GoogleBooksListHandler();
+            try (TerminatorConnection con = createConnection(url, true)) {
+                parser.parse(con.getInputStream(), listHandler);
             }
-            final List<String> urlList = booksHandler.getResult();
 
             if (isCancelled()) {
                 return bookData;
             }
 
+            final List<String> urlList = listHandler.getResult();
+
             // The entry handler takes care of an individual book ('entry')
-            final SearchHandler handler =
+            final GoogleBooksEntryHandler handler =
                     new GoogleBooksEntryHandler(this, fetchThumbnail, bookData);
             if (!urlList.isEmpty()) {
                 // only using the first one found, maybe future enhancement?
                 final String oneBookUrl = urlList.get(0);
 
-                try (TerminatorConnection con =
-                             new TerminatorConnection(context, oneBookUrl, this)) {
+                try (TerminatorConnection con = createConnection(oneBookUrl, true)) {
                     parser.parse(con.getInputStream(), handler);
                 }
             }
             return handler.getResult();
 
         } catch (@NonNull final ParserConfigurationException | SAXException e) {
-            // wrap parser exceptions in an IOException
+            if (BuildConfig.DEBUG /* always */) {
+                Log.d(TAG, "fetchBook", e);
+            }
             throw new IOException(e);
         }
-    }
-
-    @NonNull
-    @Override
-    public String getUrl(@NonNull final Context context) {
-        return BASE_URL;
-    }
-
-    @StringRes
-    @Override
-    public int getNameResId() {
-        return R.string.site_google_books;
     }
 
     /**

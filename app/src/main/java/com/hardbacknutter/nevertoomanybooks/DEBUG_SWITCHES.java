@@ -28,6 +28,7 @@
 package com.hardbacknutter.nevertoomanybooks;
 
 import com.hardbacknutter.nevertoomanybooks.covers.CoverBrowserDialogFragment;
+import com.hardbacknutter.nevertoomanybooks.searches.JsoupLoader;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.BooksOnBookshelfModel;
 
 /**
@@ -83,7 +84,7 @@ public final class DEBUG_SWITCHES {
     /** all things network related. */
     public static final boolean NETWORK = false;
 
-    /** {@link com.hardbacknutter.nevertoomanybooks.searches.JsoupBase}. */
+    /** {@link JsoupLoader}. */
     public static final boolean JSOUP = false;
     /** {@link com.hardbacknutter.nevertoomanybooks.searches.SearchCoordinator}. */
     public static final boolean SEARCH_COORDINATOR = false;

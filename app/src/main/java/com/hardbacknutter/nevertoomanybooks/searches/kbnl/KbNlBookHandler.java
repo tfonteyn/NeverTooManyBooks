@@ -466,5 +466,4 @@ class KbNlBookHandler
             }
         }
     }
-
 }

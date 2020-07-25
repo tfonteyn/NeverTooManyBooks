@@ -243,8 +243,8 @@ public class GoodreadsSearchActivity
             super(itemView);
 
             coverView = itemView.findViewById(R.id.coverImage0);
-            if (!DBDefinitions
-                    .isUsed(itemView.getContext(), DBDefinitions.PREFS_IS_USED_THUMBNAIL)) {
+            if (!DBDefinitions.isUsed(itemView.getContext(),
+                                      DBDefinitions.PREFS_IS_USED_THUMBNAIL)) {
                 coverView.setVisibility(View.GONE);
             }
             authorView = itemView.findViewById(R.id.author);

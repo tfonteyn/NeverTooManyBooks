@@ -27,6 +27,8 @@
  */
 package com.hardbacknutter.nevertoomanybooks.goodreads.api;
 
+import android.content.Context;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -35,7 +37,7 @@ import java.io.IOException;
 import org.xml.sax.helpers.DefaultHandler;
 
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsAuth;
-import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsHandler;
+import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsManager;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlFilter;
 import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlResponseParser;
@@ -48,7 +50,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlResponseParser;
 public class AuthUserApiHandler
         extends ApiHandler {
 
-    private static final String URL = GoodreadsHandler.BASE_URL + "/api/auth_user";
+    private static final String URL = GoodreadsManager.BASE_URL + "/api/auth_user";
 
     private static final String XML_USER = "user";
 
@@ -59,10 +61,12 @@ public class AuthUserApiHandler
     /**
      * Constructor.
      *
-     * @param grAuth Authentication handler
+     * @param appContext Application context
+     * @param grAuth     Authentication handler
      */
-    public AuthUserApiHandler(@NonNull final GoodreadsAuth grAuth) {
-        super(grAuth);
+    public AuthUserApiHandler(@NonNull final Context appContext,
+                              @NonNull final GoodreadsAuth grAuth) {
+        super(appContext, grAuth);
         // don't ...if (!apiHandler.hasValidCredentials()) {
 
         buildFilters();
@@ -76,13 +80,13 @@ public class AuthUserApiHandler
     public long getAuthUser() {
         mUserId = 0;
         try {
-            DefaultHandler handler = new XmlResponseParser(mRootFilter);
+            final DefaultHandler handler = new XmlResponseParser(mRootFilter);
             executePost(URL, null, true, handler);
             // Return user found.
             return mUserId;
 
         } catch (@NonNull final CredentialsException | Http404Exception | IOException
-                | RuntimeException e) {
+                | RuntimeException ignore) {
             return 0;
         }
     }

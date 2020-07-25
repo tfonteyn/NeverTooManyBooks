@@ -1,0 +1,1378 @@
+<!--
+  ~ @Copyright 2020 HardBackNutter
+  ~ @License GNU General Public License
+  ~
+  ~ This file is part of NeverTooManyBooks.
+  ~
+  ~ In August 2018, this project was forked from:
+  ~ Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
+  ~
+  ~ Without their original creation, this project would not exist in its
+  ~ current form. It was however largely rewritten/refactored and any
+  ~ comments on this fork should be directed at HardBackNutter and not
+  ~ at the original creators.
+  ~
+  ~ NeverTooManyBooks is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ NeverTooManyBooks is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  ~ See the GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<!DOCTYPE html>
+<!--suppress ALL -->
+<!--[if lt IE 7]>
+<html class="no-js lt-ie10 lt-ie9 lt-ie8 lt-ie7 oldie" lang="nl">
+<![endif]-->
+<!--[if IE 7]>
+<html class="no-js ie7 lt-ie10 lt-ie9 lt-ie8 oldie" lang="nl">
+<![endif]-->
+<!--[if IE 8]>
+<html class="no-js ie8 lt-ie10 lt-ie9 oldie" lang="nl">
+<![endif]-->
+<!--[if IE 9]>
+<html class="no-js ie9 lt-ie10 oldie" lang="nl">
+<![endif]-->
+<!--[if gt IE 9]><!-->
+<html class='no-js' lang='nl'><!--<![endif]-->
+<!--
+Generated at: 2020-07-16T16:20:31+00:00
+-->
+<head>
+    <meta content='IE=edge,chrome=1' http-equiv='X-UA-Compatible'/>
+    <script src="/assets/catalog/ui/3977544990/javascripts/jquery-1.9.1.min.js"
+            type="text/javascript"></script>
+    <script src="/assets/catalog/ui/2698291342/javascripts/widgets/tooltip.js"
+            type="text/javascript"></script>
+    <meta charset='utf-8'/>
+
+    <title>LastDodo - ’s Werelds grootste catalogus &amp; community voor verzamelaars -
+        LastDodo</title>
+    <meta content="authenticity_token" name="csrf-param"/>
+    <meta content="8IaBTVRYwop/SscbWKT+UAR6sVwiB8mJ0wvpLCfbw64=" name="csrf-token"/>
+    <!--[if lt IE 9]>
+    <link href="/assets/catalog/ui/2314956227/stylesheets/v3/css/proximanova-oldie.css" media="all"
+          rel="stylesheet" type="text/css"/>
+    <![endif]-->
+    <!--[if gte IE 9]><!-->
+    <link href="/assets/catalog/ui/6058740964/stylesheets/v3/css/proximanova.css" media="all"
+          rel="stylesheet" type="text/css"/>
+    <!--<![endif]-->
+    <link href="/assets/catalog/ui/4850414237/stylesheets/cached/v3/application-a.min.css"
+          media="all" rel="stylesheet" type="text/css"/>
+    <link href="/assets/catalog/ui/0353430564/stylesheets/cached/v3/application-b.min.css"
+          media="all" rel="stylesheet" type="text/css"/>
+    <link href="/assets/catalog/ui/3256637992/stylesheets/v3/css/print.css" media="print"
+          rel="stylesheet" type="text/css"/>
+    <meta content='width=device-width, user-scalable=no, initial-scale=1.0, minimal-ui'
+          name='viewport'/>
+    <meta content='' name='description'/>
+    <meta content='index, follow' name='robots'/>
+    <meta content='9B7CE640116586D414B77E45E1B07C0B' name='msvalidate.01'/>
+
+    <script src="/assets/catalog/ui/4282008859/javascripts/v3/modernizr.min.js"
+            type="text/javascript"></script>
+    <link href='/catalog/images/favicon.ico?v=3' rel='shortcut icon'/>
+
+    <link href='https://plus.google.com/+Catawiki' rel='publisher'/>
+    <meta content='df73c70b119aeb' name='df-verify'/>
+    <link href='/apple-touch-icon.png' rel='apple-touch-icon' sizes='180x180'/>
+    <link href='/catalog/assets/favicon-32x32.png' rel='icon' sizes='32x32' type='image/png'/>
+    <link href='/catalog/assets/favicon-16x16.png' rel='icon' sizes='16x16' type='image/png'/>
+    <link color='#5bbad5' href='/safari-pinned-tab.svg' rel='mask-icon'/>
+</head>
+
+<body class='cw-currency-eur cw-visual_refresh cw_lang_nl cw_not_logged_in lastdodo-header-footer v3'
+      data-lang='nl' data-locale='nl-NL'>
+<div id='fb-root'></div>
+<div id='all'>
+    <div id='cw-main'>
+
+
+        <header class="header lastdodo-header">
+            <nav class="navbar navbar-primary">
+                <div class="container">
+                    <a class="lastdodo" href="/">
+                        <svg height="20px" viewBox="0 0 166.75 20" width="161px"
+                             xmlns="http://www.w3.org/2000/svg">
+                            <path d="M161.82,1.35a10.18,10.18,0,0,0-10.15,0A9.63,9.63,0,0,0,148.06,5a10.08,10.08,0,0,0-1.29,5,10.08,10.08,0,0,0,1.31,5,9.73,9.73,0,0,0,3.61,3.65,10,10,0,0,0,5,1.33h0a10,10,0,0,0,5-1.33A9.61,9.61,0,0,0,165.43,15a10,10,0,0,0,1.32-5V10a9.85,9.85,0,0,0-1.32-5,9.53,9.53,0,0,0-3.61-3.63m-3.53,10.29a2.22,2.22,0,0,1-3.08,0A2.26,2.26,0,0,1,154.6,10a2.21,2.21,0,0,1,.61-1.63,2,2,0,0,1,1.53-.64,2.29,2.29,0,0,1,.87.17,2.05,2.05,0,0,1,.7.47,2.2,2.2,0,0,1,.45.72,2.45,2.45,0,0,1,.16.91,2.28,2.28,0,0,1-.63,1.65"
+                                  fill="#f4981a"></path>
+                            <path d="M140.31,18.45A8.75,8.75,0,0,0,144.15,15a9.53,9.53,0,0,0,1.38-5,9.68,9.68,0,0,0-1.34-5,8.74,8.74,0,0,0-3.78-3.54A12.25,12.25,0,0,0,134.86.25h-9.74V19.63h9.55a13,13,0,0,0,5.64-1.18m-6.57-6.24V7.67h.5a3,3,0,0,1,2,.57,2.09,2.09,0,0,1,.65,1.66,2.11,2.11,0,0,1-.68,1.77,3.68,3.68,0,0,1-2.25.54Z"
+                                  fill="#f4981a"></path>
+                            <path d="M122.56,15a10.07,10.07,0,0,0,1.31-5,9.85,9.85,0,0,0-1.31-5,9.63,9.63,0,0,0-3.62-3.63,10.18,10.18,0,0,0-10.15,0A9.63,9.63,0,0,0,105.18,5a10.08,10.08,0,0,0-1.29,5,10,10,0,0,0,1.32,5,9.66,9.66,0,0,0,3.61,3.65,9.94,9.94,0,0,0,5,1.33h0a10,10,0,0,0,5-1.33A9.71,9.71,0,0,0,122.56,15m-7.14-3.37a2.24,2.24,0,0,1-3.09,0,2.26,2.26,0,0,1-.61-1.65,2.21,2.21,0,0,1,.61-1.63,2,2,0,0,1,1.53-.64,2.34,2.34,0,0,1,.88.17,2.11,2.11,0,0,1,.69.47,2.2,2.2,0,0,1,.45.72A2.45,2.45,0,0,1,116,10a2.31,2.31,0,0,1-.62,1.65"
+                                  fill="#f4981a"></path>
+                            <path d="M97.44,18.45A8.8,8.8,0,0,0,101.28,15a9.53,9.53,0,0,0,1.38-5,9.78,9.78,0,0,0-1.34-5,8.85,8.85,0,0,0-3.78-3.54A12.32,12.32,0,0,0,92,.25H82.24V19.63h9.55a13.12,13.12,0,0,0,5.65-1.18m-6.58-6.24V7.67h.5a3,3,0,0,1,2,.57A2.1,2.1,0,0,1,94,9.9a2.11,2.11,0,0,1-.69,1.77,3.68,3.68,0,0,1-2.25.54Z"
+                                  fill="#f4981a"></path>
+                            <polygon fill="#36af7c"
+                                     points="67.45 19.63 76.08 19.63 76.08 7.72 80.39 7.72 80.39 0.25 63.11 0.25 63.11 7.72 67.45 7.72 67.45 19.63"></polygon>
+                            <path d="M62.16,13.63a5.16,5.16,0,0,0-1.08-3.33c-.74-.92-2.38-1.83-4.9-2.76a13.38,13.38,0,0,1-2.15-1c-.47-.28-.7-.57-.7-.88a1,1,0,0,1,.36-.8,1.67,1.67,0,0,1,1.16-.33,5,5,0,0,1,2.59.74A8,8,0,0,1,59.69,7.4l2.14-6.1A15.15,15.15,0,0,0,60.15.77c-.62-.15-1.28-.28-2-.4S56.72.16,56,.1A19.93,19.93,0,0,0,54,0q-4.62,0-7,1.63A5.53,5.53,0,0,0,44.7,6.5a4.94,4.94,0,0,0,1.11,3.27A10.24,10.24,0,0,0,50,12.22a8.11,8.11,0,0,1,1.8.88,1.17,1.17,0,0,1,.58,1,.93.93,0,0,1-.41.78,1.67,1.67,0,0,1-1,.31,4.91,4.91,0,0,1-2.62-.85A7.24,7.24,0,0,1,46,12.06l-2.1,6.48a21,21,0,0,0,4.28,1.13,30.46,30.46,0,0,0,4.58.33h.09c3.08,0,5.4-.55,7-1.64a5.43,5.43,0,0,0,2.35-4.73"
+                                  fill="#36af7c"></path>
+                            <path d="M27.36,16.28h6.28l1.11,3.29h8.56L36.59.12H24.39L17.68,19.57h8.56Zm2.93-8.66h.41l1.54,4.56h-3.5Z"
+                                  fill="#36af7c"></path>
+                            <polygon fill="#36af7c"
+                                     points="16.35 14.69 8.72 14.69 8.72 0.13 0 0.13 0 19.57 16.35 19.57 16.35 14.69">
+                            </polygon>
+                        </svg>
+                    </a>
+                    <button class="btn btn-toggle-search" type="button">
+                        <svg class="white" height="20" viewBox="0 0 20 20" width="20"
+                             xmlns="http://www.w3.org/2000/svg">
+                            <path d="m5.35597305 1.343325c3.85344363-1.63773445 8.30467205.15858855 9.94267845 4.01183556 1.1585544 2.72538379.5986426 5.75056044-1.1920875 7.86743804l4.9702776 4.9703595c.2440603.2440951.2440322.6398232-.0000629.8838835-.2169733.2169425-.5537556.241025-.7973287.0722626l-.0865548-.0723255-4.9695692-4.9703787c-.5676064.480653-1.2161045.8852494-1.9364909 1.191484-3.85281713 1.6378236-8.30476651-.1586859-9.94272345-4.0118165-1.63782367-3.85281707.15868589-8.30476646 4.0118614-9.9427425zm8.79230525 4.50085655c-1.3679611-3.21799226-5.08529381-4.71814676-8.30332921-3.35046426-3.21785044 1.36790082-4.71818636 5.08589918-3.35046425 8.30332921 1.36790082 3.2178505 5.08589917 4.7181864 8.30332926 3.3504643.7649064-.32516 1.4327651-.7831116 1.9881224-1.3355659.003305-.0061069.0075914-.0105192.0119558-.014883l.0199783-.0171132c1.7564449-1.7725582 2.3667563-4.49786024 1.3304077-6.93576715z">
+                            </path>
+                        </svg>
+                    </button>
+                    <button aria-controls="navbarContent" aria-expanded="false"
+                            aria-label="Toggle navigation" class="navbar-toggler"
+                            data-target="#navbarContent" data-toggle="collapse" type="button">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+
+
+                    <div class="user-menu">
+                        <a class="btn btn-user" href="/catalog/user/login">
+                            <svg class="white user-icon" height="24" viewBox="0 0 24 24" width="24"
+                                 xmlns="http://www.w3.org/2000/svg">
+                                <path d="m22.947 19.219c-.734-1.47-3.241-2.391-6.71-3.666l-1.074-.4c-.0966556-.0361684-.1613223-.1278126-.163-.231v-2.122c-.0000197-.0712654.0301362-.139207.083-.187.7983516-.7132073 1.2982972-1.701314 1.4-2.767.0050639-.05772894.0301843-.11186176.071-.153.2263474-.25467295.3800472-.56552638.445-.9.1879345-.65897496.0708897-1.36748125-.319-1.931-.0571378-.07102124-.0716542-.1672879-.038-.252.657733-1.3199872.9508406-2.7917395.849-4.263-.332-1.658-2.669-2.299-4.569-2.347-1.581-.034-3.534.311-4.209 1.364-.03854631.06051985-.10115061.10164943-.172.113-.50007884.05945223-.95416012.32063024-1.257.723-1.038 1.4.14 4.5.109 4.4.0247863.08188416.0063351.17075121-.049.236-.40847806.56440004-.53528579 1.28506607-.344 1.955.06495281.33447362.21865256.64532705.445.9.0409577.04103924.06610342.09522651.071.153.10170281 1.065686.60164837 2.0537927 1.4 2.767.05375435.048078.08433422.1168827.084.189v2.122c-.00002839.1046546-.06498818.1983083-.163.235l-1.076.4c-3.469 1.275-5.975 2.2-6.708 3.666-.64736758 1.3359331-1.00615217 2.7932186-1.053 4.277 0 .2761424.22385763.5.5.5h23c.2761424 0 .5-.2238576.5-.5-.046289-1.485138-.4050877-2.9438436-1.053-4.281z"></path>
+                            </svg>
+                            <span class="user-text">Aanmelden</span>
+                        </a></div>
+
+                    <div class="collapse navbar-collapse" id="navbarContent">
+                        <form accept-charset="UTF-8" action="/nl/areas" class="navbar-search"
+                              method="get">
+                            <input id="type" name="type" type="hidden" value="147"/>
+                            <input aria-label="Search"
+                                   class="form-control"
+                                   id="q"
+                                   name="q"
+                                   placeholder="Doorzoek de catalogus"
+                                   type="text"
+                                   value="9789463064385">
+                            <button class="btn btn-search btn-icon" type="submit">
+                                <svg class="search" height="20" viewBox="0 0 20 20" width="20"
+                                     xmlns="http://www.w3.org/2000/svg">
+                                    <path d="m5.35597305 1.343325c3.85344363-1.63773445 8.30467205.15858855 9.94267845 4.01183556 1.1585544 2.72538379.5986426 5.75056044-1.1920875 7.86743804l4.9702776 4.9703595c.2440603.2440951.2440322.6398232-.0000629.8838835-.2169733.2169425-.5537556.241025-.7973287.0722626l-.0865548-.0723255-4.9695692-4.9703787c-.5676064.480653-1.2161045.8852494-1.9364909 1.191484-3.85281713 1.6378236-8.30476651-.1586859-9.94272345-4.0118165-1.63782367-3.85281707.15868589-8.30476646 4.0118614-9.9427425zm8.79230525 4.50085655c-1.3679611-3.21799226-5.08529381-4.71814676-8.30332921-3.35046426-3.21785044 1.36790082-4.71818636 5.08589918-3.35046425 8.30332921 1.36790082 3.2178505 5.08589917 4.7181864 8.30332926 3.3504643.7649064-.32516 1.4327651-.7831116 1.9881224-1.3355659.003305-.0061069.0075914-.0105192.0119558-.014883l.0199783-.0171132c1.7564449-1.7725582 2.3667563-4.49786024 1.3304077-6.93576715z">
+                                    </path>
+                                </svg>
+                            </button>
+                        </form>
+
+                        <ul class="navbar-nav">
+                            <li class="nav-item nav-item-signup">
+                                <a class="nav-link" href="/catalog/user/login">Aanmelden</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="/home_page/catalog">Catalogus</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="/marketplace/areas">Marktplaats</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="/forum">Community</a>
+                            </li>
+                            <li class="nav-devider"></li>
+                            <li class="nav-item dropdown">
+                                <a aria-expanded="false" aria-haspopup="true"
+                                   class="nav-link dropdown-toggle" data-toggle="dropdown" href="#"
+                                   id="languageDropdown" role="button">
+                                    NL
+                                </a>
+                                <div aria-labelledby="languageDropdown"
+                                     class="dropdown-menu dropdown-menu-right">
+                                    <a class="dropdown-item" href="https://www.lastdodo.nl/search">Nederlands</a>
+                                    <a class="dropdown-item" href="https://www.lastdodo.com/search">English</a>
+                                    <a class="dropdown-item" href="https://www.lastdodo.fr/search">Français</a>
+                                    <a class="dropdown-item" href="https://www.lastdodo.de/search">Deutsch</a>
+                                </div>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link has-icon" href="/catalog/help">
+                                    <svg class="white" height="20px" viewBox="0 0 20 20"
+                                         width="20px" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="m10 0c5.5227273 0 10 4.47727273 10 10 0 5.5227273-4.4772727 10-10 10-5.52272727 0-10-4.4772727-10-10 0-5.52272727 4.47727273-10 10-10zm0 1.3c-4.8047571 0-8.7 3.8952429-8.7 8.7s3.8952429 8.7 8.7 8.7 8.7-3.8952429 8.7-8.7-3.8952429-8.7-8.7-8.7zm0 12.4359649.1090306.0067741c.42859.0536493.7602676.4194124.7602676.8625242 0 .4800377-.3892605.8692982-.8692982.8692982-.48003772 0-.86929825-.3892605-.86929825-.8692982 0-.4431118.33167761-.8088749.7602676-.8625242zm0-8.76754385c1.8122245 0 3.2815789 1.46969281 3.2815789 3.28157895 0 1.30475871-.7731277 2.4852665-1.9690583 3.0071868-.3621022.157954-.6090621.4957387-.6548331.8818122l-.0076875.1302992v.3622807c0 .3589851-.2910149.65-.65.65-.32635008 0-.59652646-.2405081-.64295233-.5539477l-.00704767-.0960523v-.3622807c0-.8962428.49785373-1.7128926 1.2820485-2.1264033l.1605942-.0772311c.722144-.31515341 1.1889362-1.02790997 1.1889362-1.8156638 0-1.09398296-.8873916-1.98157895-1.9815789-1.98157895-1.09398296 0-1.98157895.88739167-1.98157895 1.98157895 0 .35898509-.29101491.65-.65.65-.35898508 0-.65-.29101491-.65-.65 0-1.81222447 1.46969281-3.28157895 3.28157895-3.28157895z">
+                                        </path>
+                                    </svg>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link has-icon" href="/user/my_shopping_carts">
+                                    <svg class="white" height="21" viewBox="0 0 21 21" width="21"
+                                         xmlns="http://www.w3.org/2000/svg">
+                                        <path d="m7.01351351 18.0662162.11518499.0066473c.4912248.0570739.87265285.4746812.87265285.9811906 0 .5454715-.44236626.9878378-.98783784.9878378-.54547157 0-.98783783-.4423663-.98783783-.9878378 0-.5065094.38142805-.9241167.87265285-.9811906zm6.75675679 0 .115185.0066473c.4912248.0570739.8726528.4746812.8726528.9811906 0 .5454715-.4423663.9878378-.9878378.9878378-.5454716 0-.9878379-.4423663-.9878379-.9878378 0-.5065094.3814281-.9241167.8726529-.9811906zm6.4993352-18.02702701c.3589851 0 .65.29101491.65.65 0 .32635008-.2405082.59652646-.5539477.64295233l-.0960523.00704767h-.8945454c-.3161732 0-.5874237.19770254-.6800772.47551385l-.0240864.09540946-2.3971713 13.7794898c-.156097.9021577-.9146356 1.5716305-1.8232241 1.643232l-.1618047.0063549h-9.01909087c-.35898508 0-.65-.2910149-.65-.65 0-.3263501.2405082-.5965265.55394777-.6429523l.09605223-.0070477h9.01909087c.3165242 0 .5877788-.1978997.6801732-.4762211l.0239904-.0955913.3695854-2.1291876-10.19376687.001c-1.45873279 0-2.7387822-.9507493-3.16826564-2.3287053l-.05114074-.182113-1.2897973-5.15252661c-.1775556-.70579357.25225923-1.42050268.95864799-1.59774875.06982183-.01743291.14066601-.02891365.21202067-.03463049l.10735086-.00427586 15.04295103-.001.4097391-2.35118382c.1572682-.90153688.915513-1.56998211 1.8232304-1.64147128l.1616452-.0063449zm-4.6811601 11.99900001 1.166-6.70000001-14.82067255.0010029-.01134453.00780741-.00204958.01242605 1.2899548 5.15315395c.21145825.8441081.93928257 1.4515978 1.79624561 1.5201464l.16209938.0064633z"
+                                              transform="matrix(-1 0 0 1 21 0)"></path>
+                                    </svg>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+            <nav class="navbar navbar-secondary">
+                <div class="navbar-nav-wrapper">
+                    <ul class="navbar-nav sections">
+                        <li class="nav-item">
+                            <a class="nav-link" href="/home_page/catalog">Catalogus</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/marketplace/areas">Marktplaats</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/forum">Community</a>
+                        </li>
+                    </ul>
+                    <ul class="navbar-nav areas">
+                        <li class="nav-item">
+                            <a class="nav-link" href="/nl/catalog/1888-strips">Strips</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/nl/catalog/100271-postzegels">Postzegels</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/nl/catalog/10-munten">Munten</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/nl/catalog/1607-boeken">Boeken</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/nl/catalog/102-muziek">Muziek</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/nl/catalog/397691-film">Film</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/nl/catalog/19925-ansichtkaarten">Ansichtkaarten</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/nl/catalog/20191-trading-cards">Trading
+                                cards</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/nl/catalog/741105-sigarenbandjes">Sigarenbandjes</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link"
+                               href="/nl/catalog/20118-modelauto-s">Modelauto&#39;s</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/nl/catalog/92-theezakjes">Theezakjes</a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+        </header>
+        <div class="search-box">
+            <div class="close"></div>
+            <div class="container">
+                <form accept-charset="UTF-8" action="/nl/areas" class="wrap" method="get">
+                    <input id="type" name="type" type="hidden" value="147"/>
+                    <input aria-label="Search"
+                           class="form-control"
+                           id="q"
+                           name="q"
+                           placeholder="Doorzoek de catalogus"
+                           type="text"
+                           value="9789463064385">
+                    <button class="btn" type="submit">
+                        <svg class="white" height="20" viewBox="0 0 20 20" width="20"
+                             xmlns="http://www.w3.org/2000/svg">
+                            <path d="m5.35597305 1.343325c3.85344363-1.63773445 8.30467205.15858855 9.94267845 4.01183556 1.1585544 2.72538379.5986426 5.75056044-1.1920875 7.86743804l4.9702776 4.9703595c.2440603.2440951.2440322.6398232-.0000629.8838835-.2169733.2169425-.5537556.241025-.7973287.0722626l-.0865548-.0723255-4.9695692-4.9703787c-.5676064.480653-1.2161045.8852494-1.9364909 1.191484-3.85281713 1.6378236-8.30476651-.1586859-9.94272345-4.0118165-1.63782367-3.85281707.15868589-8.30476646 4.0118614-9.9427425zm8.79230525 4.50085655c-1.3679611-3.21799226-5.08529381-4.71814676-8.30332921-3.35046426-3.21785044 1.36790082-4.71818636 5.08589918-3.35046425 8.30332921 1.36790082 3.2178505 5.08589917 4.7181864 8.30332926 3.3504643.7649064-.32516 1.4327651-.7831116 1.9881224-1.3355659.003305-.0061069.0075914-.0105192.0119558-.014883l.0199783-.0171132c1.7564449-1.7725582 2.3667563-4.49786024 1.3304077-6.93576715z">
+                            </path>
+                        </svg>
+                    </button>
+                </form>
+            </div>
+        </div>
+        <div class="search-overlay"></div>
+
+
+        <div class='wrapper cw-hide js-resend-email-wrapper'>
+            <div class='cw-content'>
+                <div class='cw-alert warning spacing-top js-resend-email-container'
+                     data-edit-url='https://www.lastdodo.nl/catalog/user/email'
+                     data-resend-url='https://www.lastdodo.nl/accounts/api/v1/users/:user_id/email/confirmation'>
+                    <div class='cw-alert__heading js-resend-email-header'>U heeft uw e-mailadres nog
+                        niet bevestigd
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <section class='cw-auction'>
+            <div class='wrapper'>
+                <div class='cw-container'>
+                    <div class='cw-content'>
+                        <div class='cw-auction-header'>
+                            <header class='cw-page_title'>
+                                <h1>1 resultaten voor “9789463064385”</h1>
+                                <div class='cw-fontsize-s'>
+                                    <a href='/search?q=9789463064385'>
+                                        Zoek “9789463064385” in alle rubrieken
+                                        &raquo;
+                                    </a>
+                                </div>
+
+                            </header>
+                            <div class='cw-auction-status'>
+                                <div class='cw-list-view_options'>
+                                    <div class='cw-list-view_options-item cw-sort_selector'>
+                                        <form id='cw_search_form' method='get'>
+                                            <input name='type' type='hidden' value='147'/>
+                                            <input name='q' type='hidden' value='9789463064385'/>
+                                            <input name='action' type='hidden' value='index'/>
+                                            <input name='locale' type='hidden' value='nl'/>
+                                            <input name='controller' type='hidden' value='search'/>
+                                            Sorteren op
+                                            <select class='cw_search_sort_select' name='sort'
+                                                    onchange="jQuery('#cw_search_form').submit();">
+                                                <option value='relevance'>Relevantie</option>
+                                                <option value='title-asc'>Titel oplopend</option>
+                                                <option value='title-desc'>Titel aflopend</option>
+                                                <option value='year-asc'>Jaar oplopend</option>
+                                                <option value='year-desc'>Jaar aflopend</option>
+                                                <option value='number-asc'>Nr. oplopend</option>
+                                                <option value='number-desc'>Nr. aflopend</option>
+                                            </select>
+                                        </form>
+                                    </div>
+                                    <div class='cw-list-view_options-item cw-sort_selector'>
+                                        <label class='checkbox'>
+                                            <input id='cw_search_result_two_images_checkbox'
+                                                   type='checkbox'/>
+                                            Toon twee afbeeldingen
+                                        </label>
+                                    </div>
+
+                                    <div class='cw-list-view_options-item cw-display_mode_switcher'
+                                         data-target='#lot_list'>
+                                        <div class='cw-display_normal_mode cw-display_mode_switcher-button cw-has_tooltip'
+                                             title='Lijst'>&#xe085;
+                                        </div>
+                                        <div class='cw-display_gallery_mode cw-display_mode_switcher-button cw-has_tooltip'
+                                             title='Galerij'>&#xe087;
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                    <input name='experiment_name' type='hidden'/>
+                    <div class='cw-auction-main'>
+                        <div class='cw-grid'>
+                            <div class='cw-grid-unit cw-grid-unit-s4 cw-grid-unit-w9 cw-grid-unit-small-s4 cw-grid-unit-small-w6'>
+                                <div class='cw-content'>
+
+                                    <div class='cw-list-table_list normal' id='lot_list'>
+                                        <div class='cw-list-item cw-item-auctionlot cw-img_last'
+                                             data-link='a.cw_item_link' id='i7323911'
+                                             title='De 37ste parallel'>
+                                            <article class='cw-grid'>
+                                                <div class='cw-info cw-grid-unit cw-grid-unit-s4 cw-grid-unit-w6 cw-grid-unit-small-s4 cw-grid-unit-small-w4'>
+                                                    <div class='cw-content'>
+                                                        <div class='cw-lot_content'>
+                                                            <header>
+                                                                <h2>
+                                                                    <a href='/catalogus/strips/series-helden/hauteville-house/7323911-de-37ste-parallel'>
+                                                                        <span class='cw-lot_order'>1.&nbsp;</span>
+                                                                        <span class='cw-lot_title'>De 37ste parallel</span>
+                                                                    </a>
+                                                                </h2>
+                                                                <p class='cw-lot_title_extra'>
+                                                                    2018
+                                                                    (14 HC)
+                                                                </p>
+                                                            </header>
+                                                            <div class='cw-item-fields'>
+                                                                <span>Serie / held:</span>
+                                                                <span>
+<a href='/catalogus/strips/series-helden/16030-hauteville-house'>Hauteville House</a>
+</span>
+                                                                <br/>
+                                                                <span>Reeks:</span>
+                                                                <span>
+<a href='/catalogus/strips/albumreeksen/16967-silvester-uitgaven-hc'>Silvester uitgaven HC</a>
+</span>
+                                                            </div>
+                                                            <div class='cw-item-fields'>
+                                                                <span class='auction_current_bid_text'>Rubriek:</span>
+                                                                <span class='auction_current_bid_price font_bold'>Strips</span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class='cw-image cw-grid-unit cw-grid-unit-s10 cw-grid-unit-w3 cw-grid-unit-small-s8 cw-grid-unit-small-w2'>
+                                                    <div class='cw-content'>
+                                                        <a class='cw_search_result_first_image'
+                                                           href='/catalogus/strips/series-helden/hauteville-house/7323911-de-37ste-parallel'
+                                                           title='De 37ste parallel'>
+                                                            <img alt='' class='lazy'
+                                                                 src='https://assets.catawiki.nl/assets/2018/8/24/f/5/4/f54cda56-a78c-11e8-9d34-a4ad93065e38.jpg'
+                                                                 width='229'/>
+                                                        </a>
+                                                        <a class='cw_search_result_second_image'
+                                                           href='/catalogus/strips/series-helden/hauteville-house/7323911-de-37ste-parallel'
+                                                           title='De 37ste parallel'>
+                                                            <img alt='' class='lazy'
+                                                                 src='https://assets.catawiki.nl/assets/2018/8/24/f/6/0/f60d3c2e-a78c-11e8-9c05-04bb4555abdd.jpg'
+                                                                 width='229'/>
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                                <footer>
+                                                    <div class='cw_lot_button'><a
+                                                            class='btn btn-orange'
+                                                            href='/catalogus/strips/series-helden/hauteville-house/7323911-de-37ste-parallel'
+                                                            title='De 37ste parallel'><span
+                                                            class='view_lot'>Bekijk item</span></a>
+                                                    </div>
+                                                    <div class='counter_container'>
+                                                        Cataloguswaarde
+                                                        &#8364; 8,50
+                                                    </div>
+                                                </footer>
+                                            </article>
+                                        </div>
+
+
+                                    </div>
+                                    <div class='cw-list-table_list normal'>
+                                        <div class='cw-serp_feedback cw-list-item cw-item-auctionlot'
+                                             ub-in-page='5825c9ac64ad1063fbde9930'></div>
+                                    </div>
+
+
+                                </div>
+                            </div>
+                            <div class='cw-auction-sidebar cw-grid-unit cw-grid-unit-s1 cw-grid-unit-w3 cw-grid-unit-small-s1 cw-grid-unit-small-w3'>
+                                <div class='cw-content'>
+                                    <div class='cw-fontsize-s' id='cw-mobile-side_menu'>
+                                        <h2 class='more_auctions_dropdown__trigger hide'>Filter</h2>
+                                        <div class='more_auctions_dropdown__content'>
+
+                                            <div id='cw_search_side_navigation'>
+                                                <div class='cw-box cw-box-padding cw-bg-lightorange'>
+                                                    <h2 class='cw-box-heading'>Rubrieken</h2>
+                                                    <ul class='cw-list-no_styling no-margin'>
+                                                        <li>
+                                                            <a class='area_search_facet_delete cw-icon_link cw-icon_link-delete'
+                                                               href='/search?locale=nl&amp;q=9789463064385'
+                                                               title='Verwijderen'>
+                                                                Strips
+                                                            </a>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+
+                                                <div class='cw_side_navigation cw-box cw-box-padding cw-bg-lightgray cw-collapsible'>
+                                                    <h2 class='cw-box-heading'>Serie / held</h2>
+                                                    <div class='cw-collapsible-hidden'>
+                                                        <ul class='cw-list-no_styling cw-list-spacious no-margin'>
+                                                            <li>
+                                                                <a class='cw_facet_selector'
+                                                                   href='https://www.lastdodo.nl/search?6751-4-Serie-%2F-held=Hauteville+House&amp;q=9789463064385&amp;type=147'
+                                                                   title='Hauteville House'>
+                                                                    Hauteville House&nbsp;<small
+                                                                        class="gray cw-old-fig">(1)</small>
+                                                                </a>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+
+                                                <div class='cw_side_navigation cw-box cw-box-padding cw-bg-lightgray cw-collapsible'>
+                                                    <h2 class='cw-box-heading'>Reeks</h2>
+                                                    <div class='cw-collapsible-hidden'>
+                                                        <ul class='cw-list-no_styling cw-list-spacious no-margin'>
+                                                            <li>
+                                                                <a class='cw_facet_selector'
+                                                                   href='https://www.lastdodo.nl/search?6752-5-Reeks=Silvester+uitgaven+HC&amp;q=9789463064385&amp;type=147'
+                                                                   title='Silvester uitgaven HC'>
+                                                                    Silvester uitgaven
+                                                                    HC&nbsp;<small
+                                                                        class="gray cw-old-fig">(1)</small>
+                                                                </a>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+
+                                                <div class='cw_side_navigation cw-box cw-box-padding cw-bg-lightgray cw-collapsible'>
+                                                    <h2 class='cw-box-heading'>Tekenaar</h2>
+                                                    <div class='cw-collapsible-hidden'>
+                                                        <ul class='cw-list-no_styling cw-list-spacious no-margin'>
+                                                            <li>
+                                                                <a class='cw_facet_selector'
+                                                                   href='https://www.lastdodo.nl/search?6754-8-Tekenaar=Gioux%2C+Thierry&amp;q=9789463064385&amp;type=147'
+                                                                   title='Gioux, Thierry'>
+                                                                    Gioux, Thierry&nbsp;<small
+                                                                        class="gray cw-old-fig">(1)</small>
+                                                                </a>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+
+                                                <div class='cw-bg-lightgray cw-box cw-box-padding cw-collapsed cw-collapsible cw_side_navigation'>
+                                                    <h2 class='cw-box-heading'>Scenarist</h2>
+                                                    <div class='cw-collapsible-hidden'>
+                                                        <ul class='cw-list-no_styling cw-list-spacious no-margin'>
+                                                            <li>
+                                                                <a class='cw_facet_selector'
+                                                                   href='https://www.lastdodo.nl/search?6761-9-Scenarist=Duval%2C+Fred&amp;q=9789463064385&amp;type=147'
+                                                                   title='Duval, Fred'>
+                                                                    Duval, Fred&nbsp;<small
+                                                                        class="gray cw-old-fig">(1)</small>
+                                                                </a>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+
+                                                <div class='cw-bg-lightgray cw-box cw-box-padding cw-collapsed cw-collapsible cw_side_navigation'>
+                                                    <h2 class='cw-box-heading'>Uitgeverij</h2>
+                                                    <div class='cw-collapsible-hidden'>
+                                                        <ul class='cw-list-no_styling cw-list-spacious no-margin'>
+                                                            <li>
+                                                                <a class='cw_facet_selector'
+                                                                   href='https://www.lastdodo.nl/search?6755-10-Uitgeverij=Silvester&amp;q=9789463064385&amp;type=147'
+                                                                   title='Silvester'>
+                                                                    Silvester&nbsp;<small
+                                                                        class="gray cw-old-fig">(1)</small>
+                                                                </a>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+
+                                                <div class='cw-bg-lightgray cw-box cw-box-padding cw-collapsed cw-collapsible cw_side_navigation'>
+                                                    <h2 class='cw-box-heading'>Jaar</h2>
+                                                    <div class='cw-collapsible-hidden'>
+                                                        <ul class='cw-list-no_styling cw-list-spacious no-margin'>
+                                                            <li>
+                                                                <a class='cw_facet_selector'
+                                                                   href='https://www.lastdodo.nl/search?6757-11-Jaar=2018&amp;q=9789463064385&amp;type=147'
+                                                                   title='2018'>
+                                                                    2018&nbsp;<small
+                                                                        class="gray cw-old-fig">(1)</small>
+                                                                </a>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+
+                                                <div class='cw-bg-lightgray cw-box cw-box-padding cw-collapsed cw-collapsible cw_side_navigation'>
+                                                    <h2 class='cw-box-heading'>Soort</h2>
+                                                    <div class='cw-collapsible-hidden'>
+                                                        <ul class='cw-list-no_styling cw-list-spacious no-margin'>
+                                                            <li>
+                                                                <a class='cw_facet_selector'
+                                                                   href='https://www.lastdodo.nl/search?6767-19-Soort=Album&amp;q=9789463064385&amp;type=147'
+                                                                   title='Album'>
+                                                                    Album&nbsp;<small
+                                                                        class="gray cw-old-fig">(1)</small>
+                                                                </a>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+
+                                                <div class='cw-bg-lightgray cw-box cw-box-padding cw-collapsed cw-collapsible cw_side_navigation'>
+                                                    <h2 class='cw-box-heading'>Taal / dialect</h2>
+                                                    <div class='cw-collapsible-hidden'>
+                                                        <ul class='cw-list-no_styling cw-list-spacious no-margin'>
+                                                            <li>
+                                                                <a class='cw_facet_selector'
+                                                                   href='https://www.lastdodo.nl/search?6797-20-Taal-%2F-dialect=Nederlands&amp;q=9789463064385&amp;type=147'
+                                                                   title='Nederlands'>
+                                                                    Nederlands&nbsp;<small
+                                                                        class="gray cw-old-fig">(1)</small>
+                                                                </a>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+
+
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </section>
+        <script type='text/javascript'>
+  //<![CDATA[
+    var badBrowser;
+    var list_filters = {};
+    var list_sorters = {};
+    var $list_items = $('#lot_list > .cw-item-auctionlot');
+    var is_unloaded = false;
+    var listeners = [];
+    var closed_lots_filter = null;
+    var click_timeout = 150;
+    var disable_timer;
+    var use_animations = false; // Isotope animations on or off
+    if (use_animations && Modernizr.touch) { // too many animations make Safari on iOS very slow...
+      use_animations = false;
+    }
+
+    window.searchAutoTranslate = function(){
+      $('.cw-show-translation, .cw-hide-translation').on('click', function(e) {
+        e.preventDefault();
+        var container = $(this).parents('article'),
+            title_el = container.find('.cw-lot_title'),
+            sub_title_el = container.find('.cw-lot-subtitle span'),
+            translated_title = title_el.data('translation'),
+            original_title = title_el.data('original'),
+            translated_sub_title = sub_title_el.data('translation'),
+            original_sub_title = sub_title_el.data('original');
+
+        if ($(this).hasClass('cw-show-translation')) {
+          if (translated_title != undefined) {
+            if (!title_el.data('original')) {
+              title_el.data('original', title_el.html());
+            }
+            title_el.html(translated_title);
+          }
+          if (translated_sub_title != undefined) {
+            if (!sub_title_el.data('original')) {
+              sub_title_el.data('original', sub_title_el.html());
+            }
+            sub_title_el.html(translated_sub_title);
+          }
+          container.find('.cw-hide-translation').removeClass('cw-hide');
+        } else {
+          if (original_title != undefined) {
+            title_el.html(original_title);
+          }
+          if (original_sub_title != undefined) {
+            sub_title_el.html(original_sub_title);
+          }
+          container.find('.cw-show-translation').removeClass('cw-hide');
+        }
+        $(this).addClass('cw-hide');
+      });
+    };
+    jQuery(document).ready(function() {
+      window.searchAutoTranslate();
+    });
+
+    function disableList(throbber) {
+      if (!use_animations) {
+        throbber = throbber || false;
+        clearTimeout(disable_timer);
+        disable_timer = setTimeout(function(){
+          $('html').addClass('cw-lot_list-disabled');
+          if (throbber) {
+            $('html').addClass('cw-lot_list-throbber');
+          }
+        }, 50);
+      }
+    }
+    function enableList() {
+      if (!use_animations) {
+        clearTimeout(disable_timer);
+        $('html').removeClass('cw-lot_list-disabled').removeClass('cw-lot_list-throbber');
+      }
+    }
+
+    function displayModeSwitcher() {
+      var display_mode = CWCookie.get_cookie('auction_view_mode') || 'normal';
+      var switchMode = function($switcher, $target, $button, mode, force) {
+        force = force || false;
+        if (mode != display_mode || force) {
+          disableList(true);
+          $switcher.find('.cw-display_mode_switcher-button.active').removeClass('active');
+          $button.addClass('active');
+          setTimeout(function(){
+            var new_gallery_view = $($target).attr('data-new-gallery-tiles');
+            var mode_class = (new_gallery_view && mode == 'gallery') ? 'gallery_tiles' : mode;
+            $target.find('img.lazy').attr('style', null); // lazyload sets inline style attributes.. :(
+            $target
+              .removeClass('normal').removeClass('compact gallery gallery_tiles')
+              .addClass(mode_class);
+            applyFilters($target);
+          }, click_timeout);
+          display_mode = mode;
+          CWCookie.set_cookie('auction_view_mode', mode, { expires: 365 });
+        }
+      };
+      $('.cw-display_mode_switcher').each(function(){
+        var $switcher = $(this);
+        var $target = $($switcher.attr('data-target'));
+        if($(window).width() < 747 && display_mode != 'normal'){ // make sure mobile uses the normal view
+          switchMode($switcher, $target, $switcher.find('.cw-display_normal_mode'), 'normal', true);
+        } else if (!$target.hasClass(display_mode) && !$target.hasClass(display_mode + '_tiles')) { // cookie not set in html somehow :) (cached via backbutton, etc)
+          switchMode($switcher, $target, $switcher.find('.cw-display_' + display_mode + '_mode'), display_mode, true);
+        } else {
+          $switcher.find('.cw-display_' + display_mode + '_mode').addClass('active');
+          $target.find('img.lazy').attr('style', null); // lazyload sets inline style attributes.. :(
+        }
+        if ($target.length) {
+          $switcher.find('.cw-display_normal_mode')
+            .on('click', function(){ switchMode($switcher, $target, $(this), 'normal'); });
+          $switcher.find('.cw-display_compact_mode')
+            .on('click', function(){ switchMode($switcher, $target, $(this), 'compact'); });
+          $switcher.find('.cw-display_gallery_mode')
+            .on('click', function(){ switchMode($switcher, $target, $(this), 'gallery'); });
+        }
+      });
+    };
+
+
+    /*** private functions ***/
+
+    // "filters" filter the list, non-matches are hidden
+    // "sort filters" sort the list, matches first, non-matches at the bottom
+
+    // set a specific filter (without applying it)
+    function setFilter(filter, value) {
+      setFilterOnly(filter, value);
+      return getFilterValue();
+    }
+    function setFilterOnly(filter, value) {
+      $cached_filtered_items = null;
+      list_filters[filter] = value;
+    }
+    function getFilterValue() {
+      var filterValue = '';
+      for ( var prop in list_filters ) {
+        filterValue += list_filters[ prop ];
+      }
+      return filterValue;
+    }
+
+    // set a specific sort filter (without applying it)
+    function setSorter(filter, value) {
+      setSorterOnly(filter, value);
+      return getSorterValue();
+    }
+    function setSorterOnly(filter, value) {
+      $cached_sorted_items = null;
+      list_sorters[filter] = value;
+    }
+    // get value of all sort filters (concatenated array)
+    function getSorterValue() {
+      var filterValue = '';
+      for ( var prop in list_sorters ) {
+        filterValue += list_sorters[ prop ];
+      }
+      return filterValue;
+    }
+
+    // get value of all filters (concatenated array)
+    var $cached_filtered_items; // invalidated when a filter is changed (in setFilterOnly())
+    function getFilteredItems(exclude) {
+      exclude = exclude || '';
+      // if ($cached_filtered_items && !exclude) {
+      //   return $cached_filtered_items;
+      // }
+      var $filteredItems = $list_items;
+      for ( var prop in list_filters ) {
+        if (list_filters[prop] && prop != exclude) {
+          $filteredItems = $filteredItems.filter(list_filters[prop]);
+        }
+      }
+      // if (!exclude) {
+      //   $cached_filtered_items = $filteredItems;
+      // }
+      return $filteredItems;
+    }
+
+    // get value of all sort filters (concatenated array)
+    var $cached_sorted_items; // invalidated when a sort filter is changed (in setSorterOnly())
+    function getSortedItems(exclude) {
+      exclude = exclude || '';
+      // if ($cached_sorted_items && !exclude) {
+      //   return $cached_sorted_items;
+      // }
+      var $filteredItems = $list_items;
+      for ( var prop in list_sorters ) {
+        if (list_sorters[prop] && prop != exclude) {
+          $filteredItems = $filteredItems.filter(list_sorters[prop]);
+        }
+      }
+      // if (!exclude) {
+      //   $cached_sorted_items = $filteredItems;
+      // }
+      return $filteredItems;
+    }
+
+    function getMatches(array1, array2) {
+      var items = $.grep(array1, function(element) {
+        return $.inArray(element, array2) !== -1;
+      });
+      return $(items);
+    }
+
+    // isotope
+    // set and apply filters on isotope
+    var update_related_lots_timeout;
+    function applyFilters($target, filter, value) {
+      if ($target.data('isotope')) {
+        if (filter) {
+          setFilter(filter, value);
+        }
+        var $filtered_items = getFilteredItems();
+        var $sorted_items = getSortedItems();
+        var $filtered_and_sorted_items = getMatches($filtered_items, $sorted_items);
+        $target.find('.cw-list-separator').remove();
+
+        clearTimeout(update_related_lots_timeout);
+        update_related_lots_timeout = setTimeout(function(){
+          //update_related_lots();
+          sortFilters($filtered_items, $sorted_items, $filtered_and_sorted_items, $target);
+        }, 300);
+      }
+    }
+
+    function sortFilters($filtered_items, $sorted_items, $filtered_and_sorted_items, $target){
+      var do_sort = ($sorted_items.length < $list_items.length);
+      if (do_sort) {
+        var n_other_items = $filtered_items.not('.cw-list-related').length - $filtered_and_sorted_items.length;
+        if (n_other_items > 0) {
+          if (list_filters['show_only_favorites']) {
+            var txt = TRANSLATIONS.other_favorites || '';
+            txt = txt + ' (' + n_other_items + ')';
+          } else if ($('body').hasClass('cw-my_bids_page')) {
+            var txt = I18n.translate('my_bids_other_lots');
+          } else {
+            var re = new RegExp('%{count}', 'g');
+            var txt = TRANSLATIONS.n_other_lots_in_this_auction || '';
+            txt = txt.replace(re, n_other_items);
+          }
+          var $separator = $('<div/>').addClass('cw-list-item cw-item-auctionlot cw-list-separator').text(txt);
+          $list_items.first().before($separator);
+          $target.isotope('appended', $separator);
+        }
+        if ($filtered_and_sorted_items.length < 1) {
+          $target.addClass('cw-no_sort_results');
+        } else {
+          $target.removeClass('cw-no_sort_results');
+        }
+        $target.isotope('updateSortData');
+      }
+      $target.isotope({
+        sortBy: (do_sort) ? 'search_items' : 'original-order',
+        filter: function(){
+          if ($filtered_items.index($(this)) > -1 || $(this).hasClass('cw-list-separator')) {
+            return true;
+          } else {
+            return false;
+          }
+        }
+      });
+      if (do_sort) {
+        $sorted_items.find("img.lazy").trigger("appear");
+      }
+    }
+
+
+    function init_isotope(callback) {
+      var animations = false; // Isotope animations on or off
+      var $target = $("#lot_list");
+      // set filters & current view_mode
+      var query = HashBang.get('title');
+      if (query && query != 'undefined') {
+        $('#filter_by_title').attr('value', query);
+        filterByTitle($target, query); // just set filter value, don't apply yet, feedback after isotope init
+      }
+      displayModeSwitcher();
+      //listViewOptions();
+      // init isotope
+      var speed;
+      var use_animations = false;
+      if (!use_animations) {
+        speed = 0;
+      } else {
+        speed = '0.4s';
+        $('#cw-lot_list-intro').addClass('animated');
+      }
+      // Temporarily set min-height for body, to remember scrollTop after backbutton in Firefox.
+      // When isotoping the lot_list has no height for a very short moment.
+      // That causes Firefox to maximize the scrollTop to the height of the page without the lot_list.
+      // To prevent this a min-height is added to the body, and removed after layoutComplete.
+      var fixScrollTop = true;
+      if (fixScrollTop && $target.length > 0) {
+        var body_height = $(document).height();
+        $('body').css('min-height', body_height+'px');
+      }
+      $target.removeClass("initial_hide_closed_lots");
+      $target.isotope({
+        layoutMode: 'masonry',
+        itemSelector: '#lot_list > .cw-item-auctionlot',
+        filter: getFilterValue(),
+        isInitLayout: true,
+        transitionDuration: speed,
+        getSortData: {
+          current_bid: function(itemElem) {
+            var bid = $(itemElem).find('.amount').text();
+            return parseInt(bid.replace(/[^0-9]/g, ''), 10)*-1;
+          },
+          search_items: function(itemElem) {
+            if (getSortedItems().index($(itemElem)) > -1) { // if item is in results
+              return 0;
+            } else if ($(itemElem).hasClass('cw-list-related--filtered')) {
+              return 1;
+            } else if ($(itemElem).hasClass('cw-list-separator')) {
+              return 2;
+            } else {
+              return 3;
+            }
+          }
+        }
+      });
+      $target.isotope('on', 'layoutComplete', function(){
+        enableList();
+        $(window).trigger('scroll');
+        if (fixScrollTop) {
+          $('body').css('min-height', '');
+        }
+      });
+      // on favorites page: show only favorites
+      if ($('section.cw-auction').hasClass('cw-favorites')) {
+        setFilterOnly('show_only_favorites', '.favorite');
+      }
+      // feedback after isotope, to know number of items
+      if (query && query != 'undefined') {
+        searchFeedback($target, query);
+      }
+    }
+
+    $(document).ready(init_isotope)
+  //]]>
+
+        </script>
+
+        <footer class="footer lastdodo-footer">
+            <div class="container">
+                <a class="lastdodo" href="/">
+                    <svg height="20px" viewBox="0 0 166.75 20" width="161px"
+                         xmlns="http://www.w3.org/2000/svg">
+                        <path d="M161.82,1.35a10.18,10.18,0,0,0-10.15,0A9.63,9.63,0,0,0,148.06,5a10.08,10.08,0,0,0-1.29,5,10.08,10.08,0,0,0,1.31,5,9.73,9.73,0,0,0,3.61,3.65,10,10,0,0,0,5,1.33h0a10,10,0,0,0,5-1.33A9.61,9.61,0,0,0,165.43,15a10,10,0,0,0,1.32-5V10a9.85,9.85,0,0,0-1.32-5,9.53,9.53,0,0,0-3.61-3.63m-3.53,10.29a2.22,2.22,0,0,1-3.08,0A2.26,2.26,0,0,1,154.6,10a2.21,2.21,0,0,1,.61-1.63,2,2,0,0,1,1.53-.64,2.29,2.29,0,0,1,.87.17,2.05,2.05,0,0,1,.7.47,2.2,2.2,0,0,1,.45.72,2.45,2.45,0,0,1,.16.91,2.28,2.28,0,0,1-.63,1.65"
+                              fill="#f4981a"></path>
+                        <path d="M140.31,18.45A8.75,8.75,0,0,0,144.15,15a9.53,9.53,0,0,0,1.38-5,9.68,9.68,0,0,0-1.34-5,8.74,8.74,0,0,0-3.78-3.54A12.25,12.25,0,0,0,134.86.25h-9.74V19.63h9.55a13,13,0,0,0,5.64-1.18m-6.57-6.24V7.67h.5a3,3,0,0,1,2,.57,2.09,2.09,0,0,1,.65,1.66,2.11,2.11,0,0,1-.68,1.77,3.68,3.68,0,0,1-2.25.54Z"
+                              fill="#f4981a"></path>
+                        <path d="M122.56,15a10.07,10.07,0,0,0,1.31-5,9.85,9.85,0,0,0-1.31-5,9.63,9.63,0,0,0-3.62-3.63,10.18,10.18,0,0,0-10.15,0A9.63,9.63,0,0,0,105.18,5a10.08,10.08,0,0,0-1.29,5,10,10,0,0,0,1.32,5,9.66,9.66,0,0,0,3.61,3.65,9.94,9.94,0,0,0,5,1.33h0a10,10,0,0,0,5-1.33A9.71,9.71,0,0,0,122.56,15m-7.14-3.37a2.24,2.24,0,0,1-3.09,0,2.26,2.26,0,0,1-.61-1.65,2.21,2.21,0,0,1,.61-1.63,2,2,0,0,1,1.53-.64,2.34,2.34,0,0,1,.88.17,2.11,2.11,0,0,1,.69.47,2.2,2.2,0,0,1,.45.72A2.45,2.45,0,0,1,116,10a2.31,2.31,0,0,1-.62,1.65"
+                              fill="#f4981a"></path>
+                        <path d="M97.44,18.45A8.8,8.8,0,0,0,101.28,15a9.53,9.53,0,0,0,1.38-5,9.78,9.78,0,0,0-1.34-5,8.85,8.85,0,0,0-3.78-3.54A12.32,12.32,0,0,0,92,.25H82.24V19.63h9.55a13.12,13.12,0,0,0,5.65-1.18m-6.58-6.24V7.67h.5a3,3,0,0,1,2,.57A2.1,2.1,0,0,1,94,9.9a2.11,2.11,0,0,1-.69,1.77,3.68,3.68,0,0,1-2.25.54Z"
+                              fill="#f4981a"></path>
+                        <polygon fill="#36af7c"
+                                 points="67.45 19.63 76.08 19.63 76.08 7.72 80.39 7.72 80.39 0.25 63.11 0.25 63.11 7.72 67.45 7.72 67.45 19.63"></polygon>
+                        <path d="M62.16,13.63a5.16,5.16,0,0,0-1.08-3.33c-.74-.92-2.38-1.83-4.9-2.76a13.38,13.38,0,0,1-2.15-1c-.47-.28-.7-.57-.7-.88a1,1,0,0,1,.36-.8,1.67,1.67,0,0,1,1.16-.33,5,5,0,0,1,2.59.74A8,8,0,0,1,59.69,7.4l2.14-6.1A15.15,15.15,0,0,0,60.15.77c-.62-.15-1.28-.28-2-.4S56.72.16,56,.1A19.93,19.93,0,0,0,54,0q-4.62,0-7,1.63A5.53,5.53,0,0,0,44.7,6.5a4.94,4.94,0,0,0,1.11,3.27A10.24,10.24,0,0,0,50,12.22a8.11,8.11,0,0,1,1.8.88,1.17,1.17,0,0,1,.58,1,.93.93,0,0,1-.41.78,1.67,1.67,0,0,1-1,.31,4.91,4.91,0,0,1-2.62-.85A7.24,7.24,0,0,1,46,12.06l-2.1,6.48a21,21,0,0,0,4.28,1.13,30.46,30.46,0,0,0,4.58.33h.09c3.08,0,5.4-.55,7-1.64a5.43,5.43,0,0,0,2.35-4.73"
+                              fill="#36af7c"></path>
+                        <path d="M27.36,16.28h6.28l1.11,3.29h8.56L36.59.12H24.39L17.68,19.57h8.56Zm2.93-8.66h.41l1.54,4.56h-3.5Z"
+                              fill="#36af7c"></path>
+                        <polygon fill="#36af7c"
+                                 points="16.35 14.69 8.72 14.69 8.72 0.13 0 0.13 0 19.57 16.35 19.57 16.35 14.69">
+                        </polygon>
+                    </svg>
+                </a>
+                <section class="links">
+                    <ul>
+                        <li class="label">
+                            Leer ons kennen
+                        </li>
+                        <li>
+                            <a href="/nl/about">Over LastDodo</a>
+                        </li>
+                        <li>
+                            <a href="/home_page/catalog">Catalogus</a>
+                        </li>
+                        <li>
+                            <a href="/marktplaats/rubrieken">Marktplaats</a>
+                        </li>
+                        <li>
+                            <a href="/forum">Community</a>
+                        </li>
+                    </ul>
+                    <ul>
+                        <li class="label">
+                            Hulp
+                        </li>
+                        <li>
+                            <a href="/catalog/help">Veelgestelde vragen</a>
+                        </li>
+                        <li>
+                            <a href="/forum">Forum</a>
+                        </li>
+                    </ul>
+                    <ul>
+                        <li class="label">
+                            Ontdek
+                        </li>
+                        <li>
+                            <a href="/nl/catalog/1888-strips">Strips verzamelen</a>
+                        </li>
+                        <li>
+                            <a href="/nl/catalog/100271-postzegels">Postzegels verzamelen</a>
+                        </li>
+                        <li>
+                            <a href="/nl/catalog/10-munten">Munten verzamelen</a>
+                        </li>
+                        <li>
+                            <a href="/nl/catalog/1607-boeken">Boeken verzamelen</a>
+                        </li>
+                        <li>
+                            <a href="/nl/catalog/102-muziek">Platen en CD&#39;s verzamelen</a>
+                        </li>
+                    </ul>
+                    <ul class="no-label">
+                        <li>
+                            <a href="/nl/catalog/397691-film">DVD / Video / Blu-ray verzamelen</a>
+                        </li>
+                        <li>
+                            <a href="/nl/catalog/19925-ansichtkaarten">Ansichtkaarten verzamelen</a>
+                        </li>
+                        <li>
+                            <a href="/nl/catalog/20191-trading-cards">Trading cards verzamelen</a>
+                        </li>
+                        <li>
+                            <a href="/nl/catalog/741105-sigarenbandjes">Sigarenbandjes
+                                verzamelen</a>
+                        </li>
+                        <li>
+                            <a href="/nl/catalog/20118-modelauto-s">Modelauto&#39;s / autominiaturen
+                                verzamelen</a>
+                        </li>
+                    </ul>
+                </section>
+                <section class="copyright row">
+                    <div class="col-md-6 col-lg-5 col-xl-6">
+                        <span>© 2020 LastDodo</span>
+                    </div>
+                    <div class="col-md-6 col-lg-2">
+                        <select class="custom-select custom-select-sm language-select">
+                            <option selected=&#39;true&#39;" value="https://www.lastdodo.nl/search">
+                                Nederlands
+                            </option>
+                            <option value="https://www.lastdodo.com/search"
+                            ">
+                            English
+                            </option>
+                            <option value="https://www.lastdodo.fr/search"
+                            ">
+                            Français
+                            </option>
+                            <option value="https://www.lastdodo.de/search"
+                            ">
+                            Deutsch
+                            </option>
+                        </select>
+                    </div>
+                    <div class="col-md-12 col-lg-5 col-xl-4">
+                        <div class="links">
+                            <a href="/help/termsandconditions" rel="noopener" target="_blank">Gebruikersvoorwaarden</a>
+                            <a href="/help/privacypolicy" rel="noopener" target="_blank">Privacybeleid</a>
+                            <a href="/user/cookies" rel="noopener"
+                               target="_blank">Cookiestatement</a>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </footer>
+
+    </div>
+</div>
+<script type='text/javascript'>
+  //<![CDATA[
+    window.TRANSLATIONS = jQuery.extend(window.TRANSLATIONS || {}, {"your_bid":"Uw bieding","i_agree_to_the_sellers":"Ik ga akkoord met de %{link} van deze verkoper","auction_current_bid":"Huidig bod","choose_list_or_gallery":"Kies ervoor om de veiling in een lijst- of gallerijweergave te bekijken met deze knoppen","auction_bid_confirmation_localized":"U gaat een bod van  @bid_amount@@localized_bid_amount@  uitbrengen. Weet u dit zeker? Biedingen zijn niet vrijblijvend. Als u een kavel wint bent u verplicht dit af te nemen.","auction_bid_confirmation_disclaimer_18_plus":"Door dit bod te plaatsen, bevestigt u dat u 18 jaar of ouder bent.","stay_on_the_page":"Blijf op deze pagina","show_less":"Toon minder","auction_lot_view_lot":"Bekijk kavel","coming_soon":"Binnenkort: ontvang een melding op uw bureaublad wanneer u bent overboden!","cancel":"Annuleren","auction_lot_translation_turn_off":"Uitzetten","save_as_concept":"Als concept opslaan","auction_bid_confirmation_new":"U gaat een bod van  @bid_amount@@localized_bid_amount@  uitbrengen.","yes_im_interested":"Ja, ik ben ge\u00efnteresseerdv","reserve_price":"Minimumprijs","category_listing_page_zero_results_message":"Geen resultaten gevonden","gallery_x_of_total":"%curr% van %total%","like_to_place_your_bid":"Wilt u meebieden?","no_results_found":"Geen resultaten gevonden","short_auction_current_bid":"Huidig bod","please_insert_valid_bid_amount":"Vul alstublieft een geldig bod in","auctions":"Veilingen","next_minimum_bid_is":"Het volgende minimumbod is %{min_bid_amount}","delete":"Verwijderen","auction_auto_bid_match":"Het maximum van uw automatische bod is geboden en daarmee niet meer actief.","auction_lot_view_object":"Bekijk nu","n_current_auction_lots_found":"%{count} actuele veilingkavels gevonden","invite.success_message":"Uw uitnodiging is verstuurd!","short_item_is_auctioned":"Dit item wordt geveild","show_second_image":"Toon tweede afbeelding","next":"Volgende","bidder":"Bieder","online_auctions":"Online veilingen","lot_closes_at2":"Sluit over","auction_auto_bid_confirmation_localized":"U gaat een automatisch bod van @bid_amount@@localized_bid_amount@ uitbrengen. Weet u dit zeker? Biedingen zijn niet vrijblijvend. Als u een kavel wint bent u verplicht dit af te nemen.","auction_bid_confirmation_v3":"U gaat een bod van  @bid_amount@  uitbrengen. Weet u dit zeker? Biedingen zijn niet vrijblijvend. Als u een kavel wint bent u verplicht dit af te nemen.","auction_this_is_you":"dit bent u","auction_bidding":"Bieden","show_two_images":"Toon twee afbeeldingen","bid_rejected_only_numeric_values":"Plaats uw bod door het bedrag in cijfers in te vullen. Interpunctie en andere speciale tekens zijn niet toegestaan.","search_you_searched_for":"U heeft gezocht op \u201c%{search}\u201d","auction_lot_closed":"Kavel gesloten","start_selling":"Start met verkopen","reserve_price_almost_met":"Het huidige bod ligt dicht bij de minimumprijs voor dit object!","gallery":"Fotogalerij","auction_highest_bid":"Hoogste bod","translate_entire_auction":"Vertaal deze hele veiling","my_followed_auctions":"Mijn gevolgde veilingen","other_favorites":"Overige favorieten","auction_lot_open_in":"Open voor biedingen over","auction_bid_confirmation_v4c":"Bijna klaar! Wordt dit het winnende bod? Ter herinnering, alle biedingen zijn bindend.","read_on":"Lees verder","reserve_price_range_hint":"Nieuwe minimumprijs moet tussen de volgende bedragen liggen","sorting_AuctionLots_highest_bid":"Hoogste bod","resend_confirmation_email":"E-mail opnieuw versturen","bid_in_whole_numbers":"Bied alstublieft alleen in hele getallen","lot_wizard_confirm_page_leave_1_html":"Uw kavel is nog niet verzonden.<strong>Weet u zeker dat u deze pagina wilt verlaten?</strong>\r\n","unnecessarily_high_bid":"U heeft een onnodig hoog bod geplaatst. Controleer en verander het in een lager bod.","auction_auto_bid_confirmation_v3":"U gaat een automatisch bod van @bid_amount@ uitbrengen. Weet u dit zeker? Biedingen zijn niet vrijblijvend. Als u een kavel wint bent u verplicht dit af te nemen.","search_lots_for":"Zoek in kavels naar %{term}","list":"Lijst","auction_lot_wizard.step.submit.exit_warning":"U staat op het punt om deze pagina te verlaten. Wilt u uw kavel aanbieden of opslaan als een concept ?","view_all_auctions":"Bekijk alle veilingen","your_winning_bid":"Jouw winnend bod","edit":"Wijzigen","remove":"Verwijderen","this_field_cannot_be_changed":"Dit veld kan niet veranderd worden","automatically_translated":"Automatisch vertaald.","fast_navigation":"Direct naar","successfully_resent_email_confirmation":"We hebben u de e-mail met instructies over hoe u uw e-mailadres kunt verifi\u00ebren opnieuw gestuurd.","create_my_account":"Maak mijn account aan","sorting_AuctionLots_lowest_bid":"Laagste bod","confirm":"Bevestigen","error_has_occured_please_try_again":"Er is een fout opgetreden. Probeer opnieuw.","auction_lot_close_in":"Kavel sluit over:","approximately_equal_to":"\u2248","almost_there_2":"We zijn er bijna!","good_bid":"Goed bod!","save":"Opslaan","lot_wizard_confirm_page_leave_2_html":"Het zal dan als concept worden opgeslagen en kan worden teruggevonden in het overzicht van uw aangeboden kavels.","auction_bid_confirm_x_bid":"Bevestig bod van @bid_amount@@localized_bid_amount@","gallery_previous_left_key":"Vorige (Toets linkerpijl)","no":"Nee","auction_auto_bid_confirmation_new":"U staat op het punt om een automatisch bod van @bid_amount@@localized_bid_amount@ in te stellen.","sorting_AuctionLots_nearest_to_close":"Aflooptijd","my_bids_other_lots":"Andere kavels waar u op hebt geboden","yes":"Ja","gallery_next_right_key":"Volgende (Toets rechterpijl)","change_email":"Verander e-mail","unpaid_auction_purchases":"Nog niet betaalde veilingaankopen","my_bids":"Mijn biedingen","please_confirm_the_email":"Check uw e-mailadres door middel van onze bevestigingse-mail.","n_other_lots_in_this_auction":"%{count} andere kavels in deze veiling","leave_the_page":"Pagina verlaten","view_all_n_bids":"Bekijk alle %{count} biedingen","auction_bid_confirmation_disclaimer":"Biedingen zijn niet vrijblijvend. Als u een kavel wint, bent u verplicht dit af te nemen.","search":"Zoeken","sorting_AuctionLots_relevancy":"Relevantie","sort_by":"Sorteren op","are_you_sure":"Weet u het zeker?","facet_auction_name":"Veiling","offer":"Aanbieden","search_page":"Pagina %{page}","recommended_for_you":"Aanbevolen voor u","no_im_not_interested":"Nee, ik ben niet ge\u00efnteresseerd ","previous":"Vorige","loading":"Laden","show_translation":"Vertaling bekijken","change_bid":"Verander bod","what_are_you_looking_for":"Waar ben je naar op zoek?","more":"Meer","new_outbid_notification":"Weet meteen wanneer u bent overboden.","select":"Selecteer","sorting_AuctionLots_distant_to_close":"Aflooptijd (aflopend)","destroy":"Verwijderen","close":"Sluiten","category_listing_page_reset_search_term":"Wis zoekopdracht"})
+  //]]>
+
+</script>
+
+
+<script src="/assets/catalog/ui/5406618580/javascripts/cached-u/v3/application.min.js"
+        type="text/javascript"></script>
+<!--[if gt IE 8]><!-->
+<script src="/assets/catalog/ui/1872813692/javascripts/v3/awesomplete/awesomplete.min.js"
+        type="text/javascript"></script>
+<!--<![endif]-->
+<!--[if gt IE 7]><!-->
+<script src="/assets/catalog/ui/4243018003/javascripts/cached/v3/gt_ie7.js"
+        type="text/javascript"></script>
+<!--<![endif]-->
+<script type='text/javascript'>
+  //<![CDATA[
+    function item_page_isotope_layout() {
+      if ($('#lot_list').data('isotope')) {
+        $('#lot_list').isotope('layout');
+      }
+    }
+
+    jQuery(document).ready(function($){
+      if ($.cookie("cw_search_result_two_images") == "true") {
+        $("#lot_list").addClass("cw_search_second_image");
+      }
+      $("#lot_list").imagesLoaded(function(){
+        item_page_isotope_layout()
+      });
+      $('#cw_search_result_two_images_checkbox').on('change', function(){
+        if ($(this).is(':checked')) {
+          $.cookie("cw_search_result_two_images","true");
+          $("#lot_list").addClass("cw_search_second_image");
+          item_page_isotope_layout()
+        } else {
+          $.cookie("cw_search_result_two_images","false");
+          $("#lot_list").removeClass("cw_search_second_image");
+          item_page_isotope_layout()
+        }
+      });
+    });
+  //]]>
+
+</script>
+<script type='text/javascript'>
+  //<![CDATA[
+    window.usabilla||function(){var a=window,d=a.document,c={},f=d.createElement("div"),h=!1,a=a.usabilla=function(){(c.a=c.a||[]).push(arguments)};a._=c;c.ids={};f.style.display="none";(function(){if(!d.body)return setTimeout(arguments.callee,100);d.body.insertBefore(f,d.body.firstChild).id="usabilla";h=!0})();a.load=function(a,g,k){if(!c.ids[g]){var e=c.ids={};e.url="//"+a+"/"+g+".js?s1";e.config=k;setTimeout(function(){if(!h)return setTimeout(arguments.callee,100);var b=d.createElement("iframe"),a;b.id="usabilla-"+g;/MSIE[ ]+6/.test(navigator.userAgent)&&(b.src="javascript:false");f.appendChild(b);try{b.contentWindow.document.open()}catch(c){e.domain=d.domain,a="javascript:var d=document.open();d.domain='"+e.domain+"';",b.src=a+"void(0);"}try{var l=b.contentWindow.document;l.write(["<!DOCTYPE html><html><head></head><body onload=\"var d = document;d.getElementsByTagName('head')[0].appendChild(d.createElement('script')).src='",e.url,"'\"></body></html>"].join(""));l.close()}catch(m){b.src=a+'d.write("'+loaderHtml().replace(/"/g,String.fromCharCode(92)+'"')+'");d.close();'}b.contentWindow.config=k;b.contentWindow.SCRIPT_ID=g},0)}}}();
+    window.usabilla.load("w.usabilla.com", "c979a9967b3c");
+  //]]>
+
+</script>
+<script type='text/javascript'>
+  //<![CDATA[
+    $(document).ready(function(){
+      var obj = {
+        'event': 'push',
+        'eventCategory': 'Filters',
+        'eventAction': 'auction',
+        'eventLabel': 'Deactivate Strips'
+      }
+      $('.area_search_facet_delete').on('click', function(){
+        dataLayer.push(obj);
+      });
+    });
+  //]]>
+
+</script>
+
+<script type='text/javascript'>
+  //<![CDATA[
+    function FacetSearch(json, holder, base_url) {
+      // //debug
+      // console.log(holder);
+      //console.log(json);
+
+      // //temp
+      // console.log(json[0]['facets']);
+      // json = json[0]['facets'];
+
+      $('#' + holder).html(json.length);
+      //frist fill
+      var output = '<ul class="searchresult cw-list-no_styling cw-list-spacious no-margin">';
+      var i = 1;
+      $.each(json, function (index, val) {
+        if (i < 36) { //|| (val.bio.search(myExp) != -1)
+
+          output += '<li>';
+          output += '<a href="'+base_url+'&'+val.url_key+'='+encodeURIComponent(val.url_value)+'" class="cw_facet_selector" title="'+val.value+'"> '+val.value + '&nbsp;<small class="gray cw-old-fig">('+ val.count + ')</small></a>';
+          output += '</li>';
+
+          if(i == 35){
+            output += "<li><strong>" + TRANSLATIONS["there_are_more_filters"] + "</strong></li>"
+          }
+          i++;
+        }
+      });
+      output += '</ul>';
+
+
+      $('.'+holder+ ' .more_facet_holder').html(output).removeClass("loading");
+
+      //search
+      $('.'+holder+' .searchInput').on('keydown', function (e) {
+        var keycode = e.keyCode;
+        var $this = $(this);
+        setTimeout(function(){
+          var searchField = $this.get(0).value ;
+          var myExp = new RegExp(searchField, 'i');
+
+
+          if($.trim(searchField.length) > 0){
+            $('.'+holder+' .clearSearch').show().on( "click", function() {
+              $('.'+holder+' .searchInput').val("");
+              myExp = new RegExp('', 'i');
+              facet_fill_elements_with_regexp($, holder, myExp, json, base_url);
+            });;
+          }else{
+            $('.'+holder+' .clearSearch').hide();
+          }
+          //alert(JSON.stringify(json));
+
+          facet_fill_elements_with_regexp($, holder, myExp, json, base_url);
+        },50);
+
+      });
+
+    }
+
+    function facet_fill_elements_with_regexp($, holder, myExp, json, base_url) {
+
+      var output = '<ul class="searchresult cw-list-no_styling cw-list-spacious no-margin">';
+      var i = 1;
+      $.each(json, function (index, val) {
+        if ((val.value.search(myExp) != -1) && i < 37) {
+
+          output += '<li>';
+          output += '<a href="'+base_url+'&'+val.url_key+'='+encodeURIComponent(val.url_value)+'" class="cw_facet_selector" title="'+val.value+'"> '+val.value + '&nbsp;<small class="gray cw-old-fig">('+ val.count + ')</small></a>';
+          output += '</li>';
+
+          i++;
+        }
+      });
+
+      output += '</ul>';
+      $('.'+holder+ ' .more_facet_holder').html(output);
+    }
+
+    jQuery(document).ready(function($){
+      $(".more_facets").on('click', function(e){
+        var link = $(this);
+        if (!link.hasClass('loaded')) {
+          var more_facet_holder_class = $.trim($(this).parents('ul:first').next('div:first').attr('class').replace("more_facet_values", ""));
+          var json_params = {"type":"147","action":"index","q":"9789463064385","locale":"nl","controller":"search"};
+          json_params.facet_url_key = $(this).attr("data-facet-url-key");
+          jQuery.get("/search/facet_values", json_params).done(function( data ) {
+            link.addClass('loaded');
+            new FacetSearch(data, more_facet_holder_class, '/search?locale=nl&amp;q=9789463064385&amp;type=147');
+          });
+        }
+        if ($(this).parents( ".cw_side_navigation" ).hasClass('open')) {
+          $(this).parents( ".cw_side_navigation" ).removeClass('open');
+        } else {
+          $( ".cw_side_navigation.open" ).removeClass('open');
+          $(this).parents( ".cw_side_navigation" ).addClass('open');
+        }
+        e.stopPropagation();
+      });
+      $(document).bind('click touchstart', function(e) {
+        if((!$(e.target).parents('.more_facet_values').length) && !$(e.target).hasClass('more_facet_values') && !$(e.target).hasClass('more_facets')) {
+          $(".cw_side_navigation").removeClass('open');
+        }
+      });
+
+    });
+  //]]>
+
+</script>
+
+
+<script type='text/javascript'>
+  //<![CDATA[
+    function getCookie(cname){var name = cname + "=";var ca = document.cookie.split(';');for(var i=0; i<ca.length; i++) {var c = ca[i];while (c.charAt(0)==' ') c = c.substring(1);if (c.indexOf(name) == 0) return c.substring(name.length,c.length);}return "";}
+
+    var user_id = getCookie("user_id");
+    var user_email = getCookie("user_email");
+    var user_name = getCookie("user_name");
+    var fbEmail, fbFirstName, fbLastName, fbCity, fbPhone;
+    if (typeof(cw_store) !== 'undefined' && cw_store.enabled){
+      fbEmail = cw_store.get('fbEmail');
+      fbFirstName = cw_store.get('fbFirstName');
+      fbLastName = cw_store.get('fbLastName');
+      fbCity = cw_store.get('fbCity');
+      fbPhone = cw_store.get('fbPhone');
+    }
+
+    if(user_name.length < 1){user_name = getCookie("datalayer_tmp_usr_nam")};
+
+    // Note: Moved to Google Tag Manager
+    //(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    //(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    //m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    //})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    var device_type = getCookie("device_type");
+    if(device_type == "M" && $(window).width() > 750)
+      device_type = "T"
+
+    dataLayer = [{
+      'user_id': user_id,
+      'user_email': user_email,
+      'user_name': user_name,
+      'DeviceType': device_type,
+      'TwitterAccountType': getCookie("twitter_visitor_type"),
+      'CriteoVisitorType': getCookie("criteo_visitor_type"),
+      'disabledCookies': disable_cookies_for_user(),
+      'fb_email': fbEmail || '',
+      'fb_firstname': fbFirstName || '',
+      'fb_lastname': fbLastName || '',
+      'fb_city': fbCity || '',
+      'fb_phone': fbPhone || ''
+    }];
+  //]]>
+
+</script>
+<noscript>
+    <iframe height='0' src='//www.googletagmanager.com/ns.html?id=GTM-58DK923'
+            style='display:none;visibility:hidden' width='0'></iframe>
+</noscript>
+<script type='text/javascript'>
+  //<![CDATA[
+    (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='//www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','GTM-58DK923');
+  //]]>
+
+</script>
+
+
+<div aria-hidden='true' class='pswp' role='dialog' tabindex='-1'>
+    <div class='pswp__bg'></div>
+    <div class='pswp__scroll-wrap'>
+        <div class='pswp__container'>
+            <div class='pswp__item'></div>
+            <div class='pswp__item'></div>
+            <div class='pswp__item'></div>
+        </div>
+        <div class='pswp__ui pswp__ui--hidden'>
+            <div class='pswp__top-bar'>
+                <div class='pswp__counter'></div>
+                <button class='pswp__button pswp__button--close' title='Sluiten (Esc)'></button>
+                <button class='pswp__button pswp__button--share' title='Delen'></button>
+                <button class='pswp__button pswp__button--fs' title='Toggle fullscreen'></button>
+                <button class='pswp__button pswp__button--zoom' title='Zoom in/out'></button>
+                <div class='pswp__preloader'>
+                    <div class='pswp__preloader__icn'>
+                        <div class='pswp__preloader__cut'>
+                            <div class='pswp__preloader__donut'></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class='pswp__share-modal pswp__share-modal--hidden pswp__single-tap'>
+                <div class='pswp__share-tooltip'></div>
+            </div>
+            <button class='pswp__button pswp__button--arrow--left'
+                    title='Vorige (Toets linkerpijl)'></button>
+            <button class='pswp__button pswp__button--arrow--right'
+                    title='Volgende (Toets rechterpijl)'></button>
+            <div class='pswp__caption'>
+                <div class='pswp__caption__center'></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class='cookie_notification'>
+    <div class='wrapper'>
+        <div class='cw-content'>
+            <p class='no-margin'>Door LastDodo te bezoeken, gaat u akkoord met de manier waarop wij
+                van cookies gebruikmaken. Lees meer over hoe we cookies gebruiken in onze <a
+                        class="c-link" href="/user/cookies">Cookieverklaring</a>.</p>
+            <a class='close-cookies' title='Sluiten'></a>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

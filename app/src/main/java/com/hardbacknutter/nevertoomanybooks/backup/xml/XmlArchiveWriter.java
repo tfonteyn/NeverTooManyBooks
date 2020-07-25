@@ -48,7 +48,6 @@ import com.hardbacknutter.nevertoomanybooks.backup.base.Exporter;
 import com.hardbacknutter.nevertoomanybooks.backup.base.Options;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlUtils;
 
 /**
  * Implementation of XML-specific writer functions.

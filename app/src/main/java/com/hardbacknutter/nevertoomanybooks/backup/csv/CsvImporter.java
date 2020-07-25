@@ -196,8 +196,7 @@ public class CsvImporter
      *
      * @throws IndexOutOfBoundsException if the number of column headers != number of column data
      * @throws IOException               on failure
-     * @throws ImportException           on failure. This is a user displayable Exception,
-     *                                   and must provide a localized message
+     * @throws ImportException           on failure
      */
     @Override
     public ImportResults read(@NonNull final Context context,
@@ -233,7 +232,7 @@ public class CsvImporter
         // reused during the loop
         final Book book = new Book();
         // first line in import must be the column names
-        final String[] csvColumnNames = parseRow(importedList.get(0), true);
+        final String[] csvColumnNames = parse(context, 0, importedList.get(0), true);
 
         // Store the names so we can check what is present
         for (int i = 0; i < csvColumnNames.length; i++) {
@@ -250,7 +249,7 @@ public class CsvImporter
         // (i.e. if not an update)
 
         // need either UUID or ID
-        requireColumnOrThrow(book,
+        requireColumnOrThrow(context, book,
                              // preferred, the original "book_uuid"
                              DBDefinitions.KEY_BOOK_UUID,
                              // as a courtesy, we also allow the plain "uuid"
@@ -259,11 +258,11 @@ public class CsvImporter
                              DBDefinitions.KEY_PK_ID);
 
         // need a title.
-        requireColumnOrThrow(book, DBDefinitions.KEY_TITLE);
+        requireColumnOrThrow(context, book, DBDefinitions.KEY_TITLE);
 
         final boolean updateOnlyIfNewer;
         if ((mOptions & ImportManager.IMPORT_ONLY_NEW_OR_UPDATED) != 0) {
-            requireColumnOrThrow(book, DBDefinitions.KEY_UTC_LAST_UPDATED);
+            requireColumnOrThrow(context, book, DBDefinitions.KEY_UTC_LAST_UPDATED);
             updateOnlyIfNewer = true;
         } else {
             updateOnlyIfNewer = false;
@@ -300,7 +299,8 @@ public class CsvImporter
                 txRowCount++;
 
                 try {
-                    final String[] csvDataRow = parseRow(importedList.get(row), fullEscaping);
+                    final String[] csvDataRow = parse(context, row, importedList.get(row),
+                                                      fullEscaping);
                     // clear book (avoiding construction another object)
                     book.clear();
                     // Read all columns of the current row into the Bundle.
@@ -313,8 +313,9 @@ public class CsvImporter
 
                     // check we have a title
                     if (book.getString(DBDefinitions.KEY_TITLE).isEmpty()) {
-                        throw new ImportException(R.string.error_column_is_blank,
-                                                  DBDefinitions.KEY_TITLE, row);
+                        final String msg = context.getString(
+                                R.string.error_column_is_blank, DBDefinitions.KEY_TITLE, row);
+                        throw new ImportException(msg);
                     }
 
                     // do the actual import.
@@ -757,17 +758,20 @@ public class CsvImporter
      * This CSV parser is not a complete parser, but it will parse files exported by older
      * versions.
      *
-     * @param row          with CSV fields
+     * @param row          row number
+     * @param line         with CSV fields
      * @param fullEscaping if {@code true} handle the import as a version 3.4+;
      *                     if {@code false} handle as an earlier version.
      *
      * @return an array representing the row
      *
-     * @throws ImportException on failure
+     * @throws ImportException on failure to parse this line
      */
     @NonNull
-    private String[] parseRow(@NonNull final String row,
-                              final boolean fullEscaping)
+    private String[] parse(@NonNull final Context context,
+                           final int row,
+                           @NonNull final String line,
+                           final boolean fullEscaping)
             throws ImportException {
         // Fields found in row
         final Collection<String> fields = new ArrayList<>();
@@ -783,16 +787,16 @@ public class CsvImporter
         // 'Current' char
         char c;
         // Last position in row
-        int endPos = row.length() - 1;
+        int endPos = line.length() - 1;
         // 'Next' char
-        char next = (row.isEmpty()) ? '\0' : row.charAt(0);
+        char next = (line.isEmpty()) ? '\0' : line.charAt(0);
 
         // '\0' is used as (and artificial) null character indicating end-of-string.
         while (next != '\0') {
             // Get current and next char
             c = next;
             if (pos < endPos) {
-                next = row.charAt(pos + 1);
+                next = line.charAt(pos + 1);
             } else {
                 next = '\0';
             }
@@ -828,7 +832,7 @@ public class CsvImporter
                             // substitute two successive quotes with one quote
                             pos++;
                             if (pos < endPos) {
-                                next = row.charAt(pos + 1);
+                                next = line.charAt(pos + 1);
                             } else {
                                 next = '\0';
                             }
@@ -860,8 +864,9 @@ public class CsvImporter
                         case '"':
                             if (sb.length() > 0) {
                                 // Fields with inner quotes MUST be escaped
-                                throw new ImportException(R.string.warning_import_unescaped_quote,
-                                                          row, pos);
+                                final String msg = context.getString(
+                                        R.string.warning_import_unescaped_quote, row, pos);
+                                throw new ImportException(msg);
                             } else {
                                 inQuotes = true;
                             }
@@ -908,7 +913,8 @@ public class CsvImporter
      *
      * @throws ImportException if no suitable column is present
      */
-    private void requireColumnOrThrow(@SuppressWarnings("TypeMayBeWeakened")
+    private void requireColumnOrThrow(@NonNull final Context context,
+                                      @SuppressWarnings("TypeMayBeWeakened")
                                       @NonNull final Book book,
                                       @NonNull final String... names)
             throws ImportException {
@@ -918,31 +924,8 @@ public class CsvImporter
             }
         }
 
-        throw new ImportException(R.string.error_import_csv_file_must_contain_columns_x,
-                                  TextUtils.join(",", names));
-    }
-
-    /***
-     * Require a column to be present and non-blank.
-     *
-     * @param book  to check
-     * @param names columns which should be checked for, in order of preference
-     *
-     * @throws ImportException if no suitable column is present
-     */
-    @SuppressWarnings("unused")
-    private void requireNonBlankOrThrow(@SuppressWarnings("TypeMayBeWeakened")
-                                        @NonNull final Book book,
-                                        final int row,
-                                        @NonNull final String... names)
-            throws ImportException {
-        for (String name : names) {
-            if (!book.getString(name).isEmpty()) {
-                return;
-            }
-        }
-
-        throw new ImportException(R.string.error_columns_are_blank,
-                                  TextUtils.join(",", names), row);
+        final String msg = context.getString(R.string.error_import_csv_file_must_contain_columns_x,
+                                             TextUtils.join(",", names));
+        throw new ImportException(msg);
     }
 }

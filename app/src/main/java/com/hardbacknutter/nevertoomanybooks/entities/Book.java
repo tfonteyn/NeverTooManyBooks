@@ -58,6 +58,7 @@ import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 import com.hardbacknutter.nevertoomanybooks.datamanager.validators.ValidatorException;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
+import com.hardbacknutter.nevertoomanybooks.searches.Site;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.Money;
 
@@ -650,8 +651,6 @@ public class Book
 
     /**
      * Add validators.
-     * <p>
-     * ENHANCE: add (partial) date validators ? any other validators needed ?
      */
     public void addValidators() {
 
@@ -673,7 +672,7 @@ public class Book
         addValidator(DBDefinitions.KEY_PRICE_PAID,
                      BLANK_OR_DOUBLE_VALIDATOR, R.string.lbl_price_paid);
 
-        addCrossValidator(book -> {
+        addCrossValidator((context, book) -> {
             final String start = book.getString(DBDefinitions.KEY_READ_START);
             if (start.isEmpty()) {
                 return;
@@ -683,7 +682,7 @@ public class Book
                 return;
             }
             if (start.compareToIgnoreCase(end) > 0) {
-                throw new ValidatorException(R.string.vldt_read_start_after_end);
+                throw new ValidatorException(context.getString(R.string.vldt_read_start_after_end));
             }
         });
     }
@@ -773,6 +772,8 @@ public class Book
     /**
      * Helper for {@link #preprocessForStoring(Context, boolean)}.
      * <p>
+     * Processes the external id keys.
+     * <p>
      * For new books, remove zero values, empty strings and null values
      * Existing books, replace zero values and empty string with a {@code null}
      * <p>
@@ -784,7 +785,7 @@ public class Book
      */
     @VisibleForTesting
     void preprocessExternalIds(final boolean isNew) {
-        for (Domain domain : DBDefinitions.NATIVE_ID_DOMAINS) {
+        for (Domain domain : Site.getExternalIdDomains()) {
             final String key = domain.getName();
             if (contains(key)) {
                 switch (domain.getType()) {
