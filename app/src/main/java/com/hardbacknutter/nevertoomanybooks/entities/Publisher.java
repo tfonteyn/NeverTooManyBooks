@@ -51,18 +51,17 @@ public class Publisher
         implements Parcelable, Entity, ItemWithTitle {
 
     /** {@link Parcelable}. */
-    public static final Creator<Publisher> CREATOR =
-            new Creator<Publisher>() {
-                @Override
-                public Publisher createFromParcel(@NonNull final Parcel source) {
-                    return new Publisher(source);
-                }
+    public static final Creator<Publisher> CREATOR = new Creator<Publisher>() {
+        @Override
+        public Publisher createFromParcel(@NonNull final Parcel source) {
+            return new Publisher(source);
+        }
 
-                @Override
-                public Publisher[] newArray(final int size) {
-                    return new Publisher[size];
-                }
-            };
+        @Override
+        public Publisher[] newArray(final int size) {
+            return new Publisher[size];
+        }
+    };
 
     /** Row ID. */
     private long mId;
@@ -116,8 +115,13 @@ public class Publisher
     /**
      * Passed a list of Objects, remove duplicates.
      *
-     * @param list List to clean up
-     * @param db   Database Access
+     * @param list         List to clean up
+     * @param context      Current context
+     * @param db           Database Access
+     * @param lookupLocale set to {@code true} to force a database lookup of the locale.
+     *                     This can be (relatively) slow, and hence should be {@code false}
+     *                     during for example an import.
+     * @param bookLocale   Locale to use if the item has none set
      *
      * @return {@code true} if the list was modified.
      */

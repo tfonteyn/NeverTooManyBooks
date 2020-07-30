@@ -101,7 +101,8 @@ import com.hardbacknutter.nevertoomanybooks.utils.DateParser;
          domainKey = DBDefinitions.KEY_EID_OPEN_LIBRARY,
          domainViewId = R.id.site_open_library,
          domainMenuId = R.id.MENU_VIEW_BOOK_AT_OPEN_LIBRARY,
-         supportsMultipleCoverSizes = true
+         supportsMultipleCoverSizes = true,
+         filenameSuffix = "OL"
         )
 public class OpenLibrarySearchEngine
         extends SearchEngineBase
@@ -154,8 +155,6 @@ public class OpenLibrarySearchEngine
      */
     private static final String BASE_COVER_URL
             = "https://covers.openlibrary.org/b/%1$s/%2$s-%3$s.jpg?default=false";
-    /** file suffix for cover files. */
-    private static final String FILENAME_SUFFIX = "_OL";
     /** The search keys in the json object we support: ISBN, external id. */
     private static final String SUPPORTED_KEYS = "ISBN,OLID";
 
@@ -180,8 +179,9 @@ public class OpenLibrarySearchEngine
                                      @NonNull final boolean[] fetchThumbnail)
             throws IOException {
 
-        final String url = getSiteUrl() + String.format(BASE_BOOK_URL, "OLID", externalId);
         final Bundle bookData = new Bundle();
+
+        final String url = getSiteUrl() + String.format(BASE_BOOK_URL, "OLID", externalId);
         fetchBook(url, fetchThumbnail, bookData);
         return bookData;
     }
@@ -197,8 +197,9 @@ public class OpenLibrarySearchEngine
                                @NonNull final boolean[] fetchThumbnail)
             throws IOException {
 
-        final String url = getSiteUrl() + String.format(BASE_BOOK_URL, "ISBN", validIsbn);
         final Bundle bookData = new Bundle();
+
+        final String url = getSiteUrl() + String.format(BASE_BOOK_URL, "ISBN", validIsbn);
         fetchBook(url, fetchThumbnail, bookData);
         return bookData;
     }
@@ -239,7 +240,8 @@ public class OpenLibrarySearchEngine
         }
 
         final String url = String.format(BASE_COVER_URL, "isbn", validIsbn, sizeParam);
-        return saveImage(url, validIsbn, FILENAME_SUFFIX + "_" + sizeParam, 0);
+        final String tmpName = createFilename(validIsbn, cIdx, size);
+        return saveImage(url, tmpName);
     }
 
 
@@ -433,10 +435,10 @@ public class OpenLibrarySearchEngine
             final String topLevelKey = it.next();
             final String[] data = topLevelKey.split(":");
             if (data.length == 2 && SUPPORTED_KEYS.contains(data[0])) {
-                handleBook(data[1],
-                           jsonObject.getJSONObject(topLevelKey),
-                           fetchThumbnail,
-                           bookData);
+                parse(data[1],
+                      jsonObject.getJSONObject(topLevelKey),
+                      fetchThumbnail,
+                      bookData);
             }
         }
     }
@@ -444,35 +446,35 @@ public class OpenLibrarySearchEngine
     /**
      * Parse the results, and build the bookData bundle.
      *
-     * @param isbn           of the book
-     * @param result         JSON result data
+     * @param validIsbn      of the book
+     * @param document       JSON result data
      * @param fetchThumbnail Set to {@code true} if we want to get thumbnails
      * @param bookData       Bundle to update
      *
      * @throws JSONException upon any error
      */
-    private void handleBook(@NonNull final String isbn,
-                            @NonNull final JSONObject result,
-                            @NonNull final boolean[] fetchThumbnail,
-                            @NonNull final Bundle bookData)
+    private void parse(@NonNull final String validIsbn,
+                       @NonNull final JSONObject document,
+                       @NonNull final boolean[] fetchThumbnail,
+                       @NonNull final Bundle bookData)
             throws JSONException {
 
-        JSONObject o;
+        JSONObject element;
         JSONArray a;
         String s;
         int i;
 
-        s = result.optString("title");
+        s = document.optString("title");
         if (!s.isEmpty()) {
             bookData.putString(DBDefinitions.KEY_TITLE, s);
         }
 
         final ArrayList<Author> authors = new ArrayList<>();
-        a = result.optJSONArray("authors");
+        a = document.optJSONArray("authors");
         if (a != null && a.length() > 0) {
             for (int ai = 0; ai < a.length(); ai++) {
-                o = a.optJSONObject(ai);
-                final String name = o.optString("name");
+                element = a.optJSONObject(ai);
+                final String name = element.optString("name");
                 if (!name.isEmpty()) {
                     authors.add(Author.from(name));
                 }
@@ -484,17 +486,17 @@ public class OpenLibrarySearchEngine
 
         // store the isbn; we might override it later on though (e.g. isbn 13v10)
         // not sure if this is needed though. Need more data.
-        bookData.putString(DBDefinitions.KEY_ISBN, isbn);
+        bookData.putString(DBDefinitions.KEY_ISBN, validIsbn);
 
         // everything below is optional.
 
         // "notes" is a specific (set of) remarks on this particular edition of the book.
-        s = result.optString("notes");
+        s = document.optString("notes");
         if (!s.isEmpty()) {
             bookData.putString(DBDefinitions.KEY_DESCRIPTION, s);
         }
 
-        s = result.optString("publish_date");
+        s = document.optString("publish_date");
         if (!s.isEmpty()) {
             final LocalDateTime date = DateParser.getInstance(mAppContext).parse(s);
             if (date != null) {
@@ -507,48 +509,15 @@ public class OpenLibrarySearchEngine
 //        if (!s.isEmpty()) {
 //            bookData.putString(DBDefinitions.KEY_PAGES, s);
 //        } else {
-        i = result.optInt("number_of_pages");
+        i = document.optInt("number_of_pages");
         if (i > 0) {
             bookData.putString(DBDefinitions.KEY_PAGES, String.valueOf(i));
         }
 //        }
 
-        o = result.optJSONObject("identifiers");
-        if (o != null) {
-            // see if we have a better isbn.
-            a = o.optJSONArray("isbn_13");
-            if (a != null && a.length() > 0) {
-                bookData.putString(DBDefinitions.KEY_ISBN, a.getString(0));
-            } else {
-                a = o.optJSONArray("isbn_10");
-                if (a != null && a.length() > 0) {
-                    bookData.putString(DBDefinitions.KEY_ISBN, a.getString(0));
-                }
-            }
-            a = o.optJSONArray("amazon");
-            if (a != null && a.length() > 0) {
-                bookData.putString(DBDefinitions.KEY_EID_ASIN, a.getString(0));
-            }
-            a = o.optJSONArray("openlibrary");
-            if (a != null && a.length() > 0) {
-                bookData.putString(DBDefinitions.KEY_EID_OPEN_LIBRARY, a.getString(0));
-            }
-            a = o.optJSONArray("librarything");
-            if (a != null && a.length() > 0) {
-                bookData.putLong(DBDefinitions.KEY_EID_LIBRARY_THING, a.getLong(0));
-            }
-            a = o.optJSONArray("goodreads");
-            if (a != null && a.length() > 0) {
-                bookData.putLong(DBDefinitions.KEY_EID_GOODREADS_BOOK, a.getLong(0));
-            }
-            a = o.optJSONArray("lccn");
-            if (a != null && a.length() > 0) {
-                bookData.putString(DBDefinitions.KEY_EID_LCCN, a.getString(0));
-            }
-            a = o.optJSONArray("oclc");
-            if (a != null && a.length() > 0) {
-                bookData.putString(DBDefinitions.KEY_EID_WORLDCAT, a.getString(0));
-            }
+        element = document.optJSONObject("identifiers");
+        if (element != null) {
+            processIdentifiers(element, bookData);
         }
 
         if (isCancelled()) {
@@ -556,33 +525,9 @@ public class OpenLibrarySearchEngine
         }
 
         if (fetchThumbnail[0]) {
-            // get the largest cover image available.
-            o = result.optJSONObject("cover");
-            String sizeParam = "large";
-            if (o != null) {
-                String coverUrl = o.optString(sizeParam);
-                if (coverUrl.isEmpty()) {
-                    sizeParam = "medium";
-                    coverUrl = o.optString(sizeParam);
-                    if (coverUrl.isEmpty()) {
-                        sizeParam = "small";
-                        coverUrl = o.optString(sizeParam);
-                    }
-                }
-                // we assume that the download will work if there is a url.
-                if (!coverUrl.isEmpty()) {
-                    final String fileSpec = saveImage(coverUrl, isbn,
-                                                      FILENAME_SUFFIX + "_" + sizeParam, 0);
-                    if (fileSpec != null) {
-                        ArrayList<String> imageList =
-                                bookData.getStringArrayList(Book.BKEY_FILE_SPEC_ARRAY[0]);
-                        if (imageList == null) {
-                            imageList = new ArrayList<>();
-                        }
-                        imageList.add(fileSpec);
-                        bookData.putStringArrayList(Book.BKEY_FILE_SPEC_ARRAY[0], imageList);
-                    }
-                }
+            final ArrayList<String> imageList = parseCovers(document, validIsbn, 0);
+            if (!imageList.isEmpty()) {
+                bookData.putStringArrayList(Book.BKEY_FILE_SPEC_ARRAY[0], imageList);
             }
         }
 
@@ -590,35 +535,116 @@ public class OpenLibrarySearchEngine
             return;
         }
 
-        final ArrayList<Publisher> publishers = new ArrayList<>();
-        a = result.optJSONArray("publishers");
+        a = document.optJSONArray("publishers");
         if (a != null && a.length() > 0) {
+            processPublishers(a, bookData);
+        }
+
+        // always use the first author only for TOC entries.
+        a = document.optJSONArray("table_of_contents");
+        if (a != null && a.length() > 0) {
+            final ArrayList<TocEntry> toc = new ArrayList<>();
             for (int ai = 0; ai < a.length(); ai++) {
-                o = a.optJSONObject(ai);
-                final String name = o.optString("name");
-                if (!name.isEmpty()) {
-                    publishers.add(Publisher.from(name));
+                element = a.optJSONObject(ai);
+                final String title = element.optString("title");
+                if (!title.isEmpty()) {
+                    toc.add(new TocEntry(authors.get(0), title, ""));
                 }
+            }
+            if (!toc.isEmpty()) {
+                bookData.putParcelableArrayList(Book.BKEY_TOC_ARRAY, toc);
+            }
+        }
+    }
+
+    private void processPublishers(@NonNull final JSONArray a,
+                                   @NonNull final Bundle bookData) {
+        JSONObject element;
+        final ArrayList<Publisher> publishers = new ArrayList<>();
+        for (int ai = 0; ai < a.length(); ai++) {
+            element = a.optJSONObject(ai);
+            final String name = element.optString("name");
+            if (!name.isEmpty()) {
+                publishers.add(Publisher.from(name));
             }
         }
         if (!publishers.isEmpty()) {
             bookData.putParcelableArrayList(Book.BKEY_PUBLISHER_ARRAY, publishers);
         }
+    }
 
-        // always use the first author only for TOC entries.
-        final ArrayList<TocEntry> toc = new ArrayList<>();
-        a = result.optJSONArray("table_of_contents");
+    private void processIdentifiers(@NonNull final JSONObject element,
+                                    @NonNull final Bundle bookData)
+            throws JSONException {
+
+        JSONArray a;
+
+        // see if we have a better isbn.
+        a = element.optJSONArray("isbn_13");
         if (a != null && a.length() > 0) {
-            for (int ai = 0; ai < a.length(); ai++) {
-                o = a.optJSONObject(ai);
-                final String title = o.optString("title");
-                if (!title.isEmpty()) {
-                    toc.add(new TocEntry(authors.get(0), title, ""));
+            bookData.putString(DBDefinitions.KEY_ISBN, a.getString(0));
+        } else {
+            a = element.optJSONArray("isbn_10");
+            if (a != null && a.length() > 0) {
+                bookData.putString(DBDefinitions.KEY_ISBN, a.getString(0));
+            }
+        }
+        a = element.optJSONArray("amazon");
+        if (a != null && a.length() > 0) {
+            bookData.putString(DBDefinitions.KEY_EID_ASIN, a.getString(0));
+        }
+        a = element.optJSONArray("openlibrary");
+        if (a != null && a.length() > 0) {
+            bookData.putString(DBDefinitions.KEY_EID_OPEN_LIBRARY, a.getString(0));
+        }
+        a = element.optJSONArray("librarything");
+        if (a != null && a.length() > 0) {
+            bookData.putLong(DBDefinitions.KEY_EID_LIBRARY_THING, a.getLong(0));
+        }
+        a = element.optJSONArray("goodreads");
+        if (a != null && a.length() > 0) {
+            bookData.putLong(DBDefinitions.KEY_EID_GOODREADS_BOOK, a.getLong(0));
+        }
+        a = element.optJSONArray("lccn");
+        if (a != null && a.length() > 0) {
+            bookData.putString(DBDefinitions.KEY_EID_LCCN, a.getString(0));
+        }
+        a = element.optJSONArray("oclc");
+        if (a != null && a.length() > 0) {
+            bookData.putString(DBDefinitions.KEY_EID_WORLDCAT, a.getString(0));
+        }
+    }
+
+    private ArrayList<String> parseCovers(@NonNull final JSONObject element,
+                                          @NonNull final String validIsbn,
+                                          @SuppressWarnings("SameParameterValue") final int cIdx) {
+
+        final ArrayList<String> imageList = new ArrayList<>();
+
+        // get the largest cover image available.
+        final JSONObject o = element.optJSONObject("cover");
+        if (o != null) {
+            ImageFileInfo.Size size = ImageFileInfo.Size.Large;
+            String coverUrl = o.optString("large");
+            if (coverUrl.isEmpty()) {
+                size = ImageFileInfo.Size.Medium;
+                coverUrl = o.optString("medium");
+                if (coverUrl.isEmpty()) {
+                    size = ImageFileInfo.Size.Small;
+                    coverUrl = o.optString("small");
+                }
+            }
+
+            // we assume that the download will work if there is a url.
+            if (!coverUrl.isEmpty()) {
+                final String tmpName = createFilename(validIsbn, cIdx, size);
+                final String fileSpec = saveImage(coverUrl, tmpName);
+                if (fileSpec != null) {
+                    imageList.add(fileSpec);
                 }
             }
         }
-        if (!toc.isEmpty()) {
-            bookData.putParcelableArrayList(Book.BKEY_TOC_ARRAY, toc);
-        }
+
+        return imageList;
     }
 }

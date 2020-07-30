@@ -198,9 +198,10 @@ public class AuthorWorksFragment
     @Override
     public void onPrepareOptionsMenu(@NonNull final Menu menu) {
         final MenuItem all = menu.findItem(R.id.MENU_AUTHOR_WORKS_ALL_BOOKSHELVES);
-        // hide if a specific INITIAL bookshelf was set.
+        // show if we got here with a specific bookshelf selected.
+        // hide if the that bookshelf was set to Bookshelf.ALL_BOOKS.
         all.setVisible(mModel.getBookshelfId() != Bookshelf.ALL_BOOKS);
-        // check if the user overrules the initial
+
         all.setChecked(mModel.isAllBookshelves());
 
         super.onPrepareOptionsMenu(menu);
@@ -353,6 +354,9 @@ public class AuthorWorksFragment
                             .putExtra(BooksOnBookshelfModel.BKEY_LIST_STATE,
                                       BooklistBuilder.PREF_REBUILD_ALWAYS_EXPANDED);
 
+                    if (mModel.isAllBookshelves()) {
+                        intent.putExtra(BooksOnBookshelfModel.BKEY_BOOKSHELF, Bookshelf.ALL_BOOKS);
+                    }
 
                     startActivity(intent);
                     break;

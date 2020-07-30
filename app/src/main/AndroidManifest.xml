@@ -91,6 +91,7 @@
         -->
         <activity
             android:name=".StartupActivity"
+            android:theme="@style/Theme.MaterialComponents.DayNight.Dialog"
             android:configChanges="locale|orientation|keyboardHidden"
             android:launchMode="singleInstance"
             android:noHistory="true">
@@ -145,9 +146,12 @@
             android:windowSoftInputMode="stateAlwaysHidden|adjustResize" />
 
         <activity android:name=".goodreads.GoodreadsRegistrationActivity" />
-        <activity android:name=".goodreads.admin.TasksAdminActivity" />
-        <activity android:name=".goodreads.admin.EventsAdminActivity" />
-        <activity android:name=".goodreads.GoodreadsSearchActivity" />
+        <activity android:name=".goodreads.qtasks.admin.TasksAdminActivity" />
+        <activity android:name=".goodreads.qtasks.admin.EventsAdminActivity" />
+
+        <!-- ENHANCE: Reinstate Goodreads search when Goodreads work.editions is available -->
+        <!-- <activity android:name=".goodreads.editions.GoodreadsSearchActivity" /> -->
+
         <!--
              The callback-activity after we requested authorizing this application
              for the current user to Goodreads.

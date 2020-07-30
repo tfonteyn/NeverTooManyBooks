@@ -26,12 +26,31 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
-
-<!-- This is the initial place holder only. -->
-<ImageView
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    style="@style/CoverImage"
-    android:src="@drawable/ic_image"
-    tools:ignore="ContentDescription"
-    />
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    >
+
+    <TextView
+        android:id="@+id/lbl_site"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:textIsSelectable="true"
+        android:textSize="12sp"
+        android:textStyle="italic"
+        tools:text="@sample/data.json/sites/name"
+        />
+
+    <!-- This is the initial place holder only. -->
+    <ImageView
+        android:id="@+id/coverImage0"
+        style="@style/CoverImage"
+        android:src="@drawable/ic_image"
+        tools:ignore="ContentDescription"
+        />
+</LinearLayout>
+

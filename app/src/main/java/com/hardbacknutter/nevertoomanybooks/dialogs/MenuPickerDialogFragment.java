@@ -208,6 +208,7 @@ public class MenuPickerDialogFragment
     public static class Pick
             implements Parcelable, Comparable<Pick> {
 
+        /** {@link Parcelable}. */
         public static final Creator<Pick> CREATOR = new Creator<Pick>() {
             @Override
             @NonNull

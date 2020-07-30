@@ -60,15 +60,14 @@ import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.searches.Site;
 import com.hardbacknutter.nevertoomanybooks.searches.goodreads.GoodreadsSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
-import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlFilter;
 
 /**
  * Base class for all Goodreads handler classes.
  * <p>
- * The job of  handler is to implement a method to run the Goodreads request (e.g. 'search' in
- * {@link SearchBooksApiHandler} and to process the output.
+ * The job of a handler is to implement a method to run the Goodreads request
+ * and to process the output.
  */
-abstract class ApiHandler {
+public abstract class ApiHandler {
 
     /** Log tag. */
     private static final String TAG = "ApiHandler";
@@ -81,11 +80,7 @@ abstract class ApiHandler {
     final Context mAppContext;
 
     @NonNull
-    final GoodreadsAuth mGrAuth;
-
-    /** XmlFilter root object. Used in extracting data file XML results. */
-    @NonNull
-    final XmlFilter mRootFilter = new XmlFilter("");
+    protected final GoodreadsAuth mGrAuth;
 
     final Site.Config mSiteConfig;
 
@@ -95,8 +90,8 @@ abstract class ApiHandler {
      * @param appContext Application context
      * @param grAuth     Authentication handler
      */
-    ApiHandler(@NonNull final Context appContext,
-               @NonNull final GoodreadsAuth grAuth) {
+    protected ApiHandler(@NonNull final Context appContext,
+                         @NonNull final GoodreadsAuth grAuth) {
         mAppContext = appContext;
         mGrAuth = grAuth;
 
@@ -115,11 +110,12 @@ abstract class ApiHandler {
      * @throws Http404Exception     the URL was not found
      * @throws IOException          on other failures
      */
-    void executeGet(@NonNull final String url,
-                    @SuppressWarnings({"SameParameterValue", "unused"})
-                    @Nullable final Map<String, String> parameterMap,
-                    @SuppressWarnings("SameParameterValue") final boolean requiresSignature,
-                    @Nullable final DefaultHandler requestHandler)
+    protected void executeGet(@NonNull final String url,
+                              @SuppressWarnings({"SameParameterValue", "unused"})
+                              @Nullable final Map<String, String> parameterMap,
+                              @SuppressWarnings("SameParameterValue")
+                              final boolean requiresSignature,
+                              @Nullable final DefaultHandler requestHandler)
             throws CredentialsException, Http404Exception, IOException {
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.NETWORK) {

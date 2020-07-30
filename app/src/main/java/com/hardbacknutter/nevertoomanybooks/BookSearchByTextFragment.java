@@ -105,7 +105,6 @@ public class BookSearchByTextFragment
         //noinspection ConstantConditions
         mUsePublisher = Prefs.usePublisher(getContext());
 
-        //TEST: do we need to set the ime options explicitly ?
         if (mUsePublisher) {
             mVb.lblPublisher.setVisibility(View.VISIBLE);
 

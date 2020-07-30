@@ -77,7 +77,6 @@ public final class DEBUG_SWITCHES {
 
     /** {@link CoverBrowserDialogFragment}. */
     public static final boolean COVER_BROWSER = false;
-    public static final boolean COVER_BROWSER_DOWNLOADS = false;
 
     /** all things XML related. */
     public static final boolean XML = false;
@@ -86,6 +85,7 @@ public final class DEBUG_SWITCHES {
 
     /** {@link JsoupLoader}. */
     public static final boolean JSOUP = false;
+
     /** {@link com.hardbacknutter.nevertoomanybooks.searches.SearchCoordinator}. */
     public static final boolean SEARCH_COORDINATOR = false;
 

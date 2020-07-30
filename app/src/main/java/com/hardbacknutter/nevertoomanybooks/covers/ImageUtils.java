@@ -261,13 +261,42 @@ public final class ImageUtils {
     }
 
     /**
+     * Create a temporary filename.
+     *
+     * @param source of the image (normally a SearchEngine specific code)
+     * @param bookId (optional) either the native id, or the isbn
+     *               If not set, a timestamp will be used
+     * @param cIdx   0..n image index
+     * @param size   (optional) size of the image
+     *               Omitted if not set
+     *
+     * @return filename
+     */
+    @NonNull
+    public static String createFilename(@NonNull final String source,
+                                        @Nullable final String bookId,
+                                        @IntRange(from = 0) final int cIdx,
+                                        @Nullable final ImageFileInfo.Size size) {
+        final String tmpBookId;
+        if (bookId != null && !bookId.isEmpty()) {
+            tmpBookId = bookId;
+        } else {
+            // just use something...
+            tmpBookId = String.valueOf(System.currentTimeMillis());
+        }
+        return tmpBookId
+               + '_' + source
+               + '_' + cIdx
+               + (size != null ? "_" + size : "")
+               + ".jpg";
+    }
+
+    /**
      * Given a URL, get an image and save to a file. Called/run in a background task.
      *
      * @param context        Application context
      * @param url            Image file URL
-     * @param prefix         for the filename
-     * @param suffix         for the filename
-     * @param cIdx           0..n image index
+     * @param filename       to use
      * @param connectTimeout in milliseconds
      * @param readTimeout    in milliseconds
      * @param throttler      (optional) {@link Throttler} to use
@@ -278,26 +307,12 @@ public final class ImageUtils {
     @WorkerThread
     public static String saveImage(@NonNull final Context context,
                                    @NonNull final String url,
-                                   @NonNull final String prefix,
-                                   @NonNull final String suffix,
-                                   @IntRange(from = 0) final int cIdx,
+                                   @NonNull final String filename,
                                    @IntRange(from = 0) final int connectTimeout,
                                    @IntRange(from = 0) final int readTimeout,
                                    @Nullable final Throttler throttler) {
 
-
-        // We don't use {@code File.createTempFile(prefix, suffix);} because we
-        // want a NAME (not a file). The actual file will be in a fixed directory,
-        // and not in the system temp folder.
-        final String tmpName;
-        if (!prefix.isEmpty()) {
-            tmpName = prefix + suffix + '_' + cIdx;
-        } else {
-            // just use something...
-            tmpName = System.currentTimeMillis() + suffix + '_' + cIdx;
-        }
-
-        File file = AppDir.Cache.getFile(context, tmpName + ".jpg");
+        File file = AppDir.Cache.getFile(context, filename);
         try {
             if (url.startsWith(DATA_IMAGE_JPEG_BASE_64)) {
                 try (OutputStream os = new FileOutputStream(file)) {

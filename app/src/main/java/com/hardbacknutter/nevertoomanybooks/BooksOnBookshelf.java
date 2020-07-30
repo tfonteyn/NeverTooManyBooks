@@ -27,6 +27,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.SearchManager;
 import android.content.Context;
@@ -38,10 +39,10 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
@@ -98,7 +99,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsManager;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GrStatus;
-import com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.QueueManager;
+import com.hardbacknutter.nevertoomanybooks.goodreads.qtasks.taskqueue.QueueManager;
 import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.GrAuthTask;
 import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.GrSendOneBookTask;
 import com.hardbacknutter.nevertoomanybooks.searches.amazon.AmazonSearchEngine;
@@ -113,6 +114,7 @@ import com.hardbacknutter.nevertoomanybooks.viewmodels.BooksOnBookshelfModel;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.EditBookshelvesModel;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.LiveDataEvent;
 import com.hardbacknutter.nevertoomanybooks.widgets.FabMenu;
+import com.hardbacknutter.nevertoomanybooks.widgets.SpinnerInteractionListener;
 import com.hardbacknutter.nevertoomanybooks.widgets.fastscroller.FastScroller;
 
 /**
@@ -147,8 +149,6 @@ import com.hardbacknutter.nevertoomanybooks.widgets.fastscroller.FastScroller;
 public class BooksOnBookshelf
         extends BaseActivity {
 
-    RecyclerView.Adapter.StateRestorationPolicy f;
-
     /** Log tag. */
     private static final String TAG = "BooksOnBookshelf";
     /** Goodreads authorization task. */
@@ -170,6 +170,48 @@ public class BooksOnBookshelf
     private BooksonbookshelfBinding mVb;
     /** List layout manager. */
     private LinearLayoutManager mLayoutManager;
+    /** Listener for the Bookshelf Spinner. */
+    private final SpinnerInteractionListener mOnBookshelfSelectionChanged =
+            new SpinnerInteractionListener() {
+                private boolean userInteraction;
+
+                @SuppressLint("ClickableViewAccessibility")
+                @Override
+                public boolean onTouch(@NonNull final View v,
+                                       @NonNull final MotionEvent event) {
+                    userInteraction = true;
+                    return false;
+                }
+
+                @Override
+                public void onItemSelected(@NonNull final AdapterView<?> parent,
+                                           @Nullable final View view,
+                                           final int position,
+                                           final long id) {
+                    if (userInteraction) {
+                        userInteraction = false;
+
+                        Log.d(TAG, "OnItemSelectedListener|onItemSelected"
+                                   + "|position=" + position
+                                   + "|id=" + id
+                                   + "|view=" + view);
+
+
+                        if (view == null) {
+                            return;
+                        }
+
+                        // check if the selection is actually different from the previous one
+                        final boolean isChanged = id != mModel.getSelectedBookshelf().getId();
+                        if (isChanged) {
+                            saveListPosition();
+                            // make the new shelf the current and rebuild
+                            mModel.setSelectedBookshelf(parent.getContext(), id);
+                            buildBookList();
+                        }
+                    }
+                }
+            };
     /** React to row changes made. ENHANCE: update the modified row without a rebuild. */
     private final BookChangedListener mBookChangedListener =
             new BookChangedListener() {
@@ -211,6 +253,37 @@ public class BooksOnBookshelf
 //                buildBookList();
 //            }
 //        }
+                }
+            };
+    /** React to the user selecting a style to apply. */
+    private final StylePickerDialogFragment.StyleChangedListener mStyleChangedListener =
+            new StylePickerDialogFragment.StyleChangedListener() {
+                public void onStyleChanged(@NonNull final String uuid) {
+                    saveListPosition();
+                    mModel.onStyleChanged(BooksOnBookshelf.this, uuid);
+                    // Set the rebuild state like this is the first time in,
+                    // which it sort of is, given we are changing style.
+                    mModel.setPreferredListRebuildState(BooksOnBookshelf.this);
+                    // and do a rebuild
+                    buildBookList();
+                }
+            };
+    /** (re)attach the result listener when a fragment gets started. */
+    private final FragmentOnAttachListener mFragmentOnAttachListener =
+            new FragmentOnAttachListener() {
+                @Override
+                public void onAttachFragment(@NonNull final FragmentManager fragmentManager,
+                                             @NonNull final Fragment fragment) {
+                    if (BuildConfig.DEBUG && DEBUG_SWITCHES.ATTACH_FRAGMENT) {
+                        Log.d(getClass().getName(), "onAttachFragment: " + fragment.getTag());
+                    }
+
+                    if (fragment instanceof BookChangedListener.Owner) {
+                        ((BookChangedListener.Owner) fragment).setListener(mBookChangedListener);
+
+                    } else if (fragment instanceof StylePickerDialogFragment) {
+                        ((StylePickerDialogFragment) fragment).setListener(mStyleChangedListener);
+                    }
                 }
             };
     /** Listener for clicks on the list. */
@@ -284,77 +357,8 @@ public class BooksOnBookshelf
                     return true;
                 }
             };
-    /** React to the user selecting a style to apply. */
-    private final StylePickerDialogFragment.StyleChangedListener mStyleChangedListener =
-            new StylePickerDialogFragment.StyleChangedListener() {
-                public void onStyleChanged(@NonNull final String uuid) {
-                    saveListPosition();
-                    mModel.onStyleChanged(BooksOnBookshelf.this, uuid);
-                    // Set the rebuild state like this is the first time in,
-                    // which it sort of is, given we are changing style.
-                    mModel.setPreferredListRebuildState(BooksOnBookshelf.this);
-                    // and do a rebuild
-                    buildBookList();
-                }
-            };
-    /** (re)attach the result listener when a fragment gets started. */
-    private final FragmentOnAttachListener mFragmentOnAttachListener =
-            new FragmentOnAttachListener() {
-                @Override
-                public void onAttachFragment(@NonNull final FragmentManager fragmentManager,
-                                             @NonNull final Fragment fragment) {
-                    if (BuildConfig.DEBUG && DEBUG_SWITCHES.ATTACH_FRAGMENT) {
-                        Log.d(getClass().getName(), "onAttachFragment: " + fragment.getTag());
-                    }
-
-                    if (fragment instanceof BookChangedListener.Owner) {
-                        ((BookChangedListener.Owner) fragment).setListener(mBookChangedListener);
-
-                    } else if (fragment instanceof StylePickerDialogFragment) {
-                        ((StylePickerDialogFragment) fragment).setListener(mStyleChangedListener);
-                    }
-                }
-            };
     /** Encapsulates the FAB button/menu. */
     private FabMenu mFabMenu;
-    /**
-     * We MUST set this flag to {@code false} when initialising the Bookshelf Spinner.
-     * See {@link #initBookShelfSpinner()}.
-     * <br>It will be set to {@code true} <strong>AFTER a COMPLETED list build</strong>
-     * See {@link #onBuildFinished}.
-     * <p>
-     * https://stackoverflow.com/questions/21747917/undesired-onitemselected-calls/21751327#21751327
-     */
-    private boolean mBookshelfSelectionShouldBuildBookList;
-    /** Listener for the Bookshelf Spinner. */
-    private final OnItemSelectedListener mOnBookshelfSelectionChanged =
-            new OnItemSelectedListener() {
-                @Override
-                public void onItemSelected(@NonNull final AdapterView<?> parent,
-                                           @NonNull final View view,
-                                           final int position,
-                                           final long id) {
-
-                    // check if the selection is actually different from the previous one
-                    if (id != mModel.getBookshelf().getId()) {
-                        saveListPosition();
-                        // make the new shelf the current
-                        mModel.setBookshelf(view.getContext(), id);
-                        // and build the new list
-                        if (mBookshelfSelectionShouldBuildBookList) {
-                            buildBookList();
-                        }
-                    }
-
-                    // next time it will be an actual user selecting a shelf.
-                    mBookshelfSelectionShouldBuildBookList = true;
-                }
-
-                @Override
-                public void onNothingSelected(@NonNull final AdapterView<?> parent) {
-                    // Do Nothing
-                }
-            };
     /** The adapter used to fill the mBookshelfSpinner. */
     private BookshelfSpinnerAdapter mBookshelfSpinnerAdapter;
 
@@ -398,24 +402,32 @@ public class BooksOnBookshelf
         mGrSendOneBookTask.onFailure().observe(this, this::onGrFailure);
         mGrSendOneBookTask.onFinished().observe(this, this::onGrFinished);
 
-        // enable the navigation menu
+        // enable the navigation menus
         setNavigationItemVisibility(R.id.nav_manage_list_styles, true);
         setNavigationItemVisibility(R.id.nav_manage_bookshelves, true);
         setNavigationItemVisibility(R.id.nav_export, true);
         setNavigationItemVisibility(R.id.nav_import, true);
         setNavigationItemVisibility(R.id.nav_goodreads, GoodreadsManager.isShowSyncMenus(this));
 
+        // The booklist.
         mLayoutManager = new LinearLayoutManager(this);
         mVb.list.setLayoutManager(mLayoutManager);
         mVb.list.addItemDecoration(new TopLevelItemDecoration(this));
         FastScroller.attach(mVb.list);
         // initialise adapter without a cursor.
-        // Not doing so creates issues with Android internals.
+        // Not creating and setting it in here, creates issues with Android internals.
         createAdapter(null);
 
-        mBookshelfSpinnerAdapter = new BookshelfSpinnerAdapter(this, mModel.getBookshelfList());
+
+        // Setup the Bookshelf spinner;
+        // The list is initially empty here; loading the list and
+        // setting/selecting the current shelf are both done in onResume
+        mBookshelfSpinnerAdapter =
+                new BookshelfSpinnerAdapter(this, mModel.getBookshelfList());
         mVb.bookshelfSpinner.setAdapter(mBookshelfSpinnerAdapter);
+        mVb.bookshelfSpinner.setOnTouchListener(mOnBookshelfSelectionChanged);
         mVb.bookshelfSpinner.setOnItemSelectedListener(mOnBookshelfSelectionChanged);
+
 
         mFabMenu.attach(mVb.list);
         mFabMenu.setOnClickListener(this::onFabMenuItemSelected);
@@ -437,7 +449,7 @@ public class BooksOnBookshelf
      *
      * <strong>Developer note:</strong>
      * There seems to be no other solution but to always create the adapter
-     * in {@link #onCreate} (with an empty cursor) and recreate it when we have a valid cursor.
+     * in {@link #onCreate} (with an empty cursor) and RECREATE it when we have a valid cursor.
      * Tested several strategies, but it seems to be impossible to RELIABLY
      * flush the adapter cache of View/ViewHolder.
      * <p>
@@ -512,7 +524,7 @@ public class BooksOnBookshelf
                 final Intent intent = new Intent(this, AdminActivity.class)
                         .putExtra(BKEY_FRAGMENT_TAG, EditBookshelvesFragment.TAG)
                         .putExtra(EditBookshelvesModel.BKEY_CURRENT_BOOKSHELF,
-                                  mModel.getBookshelf().getId());
+                                  mModel.getSelectedBookshelf().getId());
                 startActivityForResult(intent, RequestCode.NAV_PANEL_MANAGE_BOOKSHELVES);
                 return true;
             }
@@ -941,7 +953,7 @@ public class BooksOnBookshelf
                         .putExtra(DBDefinitions.KEY_PK_ID,
                                   rowData.getLong(DBDefinitions.KEY_FK_AUTHOR))
                         .putExtra(DBDefinitions.KEY_FK_BOOKSHELF,
-                                  mModel.getBookshelf().getId());
+                                  mModel.getSelectedBookshelf().getId());
                 startActivityForResult(intent, RequestCode.AUTHOR_WORKS);
                 return true;
             }
@@ -1137,8 +1149,8 @@ public class BooksOnBookshelf
                     // the last edited/inserted shelf
                     final long bookshelfId = data.getLongExtra(DBDefinitions.KEY_PK_ID,
                                                                Bookshelf.DEFAULT);
-                    if (bookshelfId != mModel.getBookshelf().getId()) {
-                        mModel.setBookshelf(this, bookshelfId);
+                    if (bookshelfId != mModel.getSelectedBookshelf().getId()) {
+                        mModel.setSelectedBookshelf(this, bookshelfId);
                         mModel.setForceRebuildInOnResume(true);
                     }
                 }
@@ -1198,7 +1210,7 @@ public class BooksOnBookshelf
                             }
                             if ((options & Options.PREFS) != 0) {
                                 // Refresh the preferred bookshelf. This also refreshes its style.
-                                mModel.reloadBookshelf(this);
+                                mModel.reloadSelectedBookshelf(this);
                             }
 
                             // styles, prefs, books, covers,... it all requires a rebuild.
@@ -1252,25 +1264,22 @@ public class BooksOnBookshelf
         // then we should display the 'up' indicator. See #onBackPressed.
         updateActionBar(mModel.getSearchCriteria().isEmpty());
 
-        // Update the list of bookshelves + set the current bookshelf.
-        // This also takes care of the initial build (no-selection -> initial shelf)
-        final boolean bookshelfChanged = initBookShelfSpinner();
+        // Initialize/Update the list of bookshelves
+        mModel.reloadBookshelfList(this);
+        mBookshelfSpinnerAdapter.notifyDataSetChanged();
+        // and select the current shelf.
+        final int selectedPosition = mModel.getSelectedBookshelfSpinnerPosition(this);
+        mVb.bookshelfSpinner.setSelection(selectedPosition);
+
 
         final boolean forceRebuildInOnResume = mModel.isForceRebuildInOnResume();
         // always reset for next iteration.
         mModel.setForceRebuildInOnResume(false);
 
         // This if/else is to be able to debug/log *why* we're rebuilding
-
         if (!mModel.isListLoaded()) {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_INIT_BOOK_LIST) {
                 Log.d(TAG, "onResume|initial load");
-            }
-            buildBookList();
-
-        } else if (bookshelfChanged) {
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_INIT_BOOK_LIST) {
-                Log.d(TAG, "onResume|bookshelfChanged");
             }
             buildBookList();
 
@@ -1287,35 +1296,6 @@ public class BooksOnBookshelf
             // no rebuild needed/done, just let the system redisplay the list state
             displayList(mModel.getListCursor(), null);
         }
-    }
-
-    /**
-     * Populate the BookShelf list in the Spinner and set the current bookshelf/style.
-     *
-     * @return {@code true}  if the selection was set for the first time or was changed.
-     */
-    private boolean initBookShelfSpinner() {
-
-        // Prevent the listener to trigger a rebuild while we doing the setup.
-        // Note that setting the listener to null before calling setSelection
-        // does NOT prevent the listener being called (seemingly it gets called
-        // in the next pass of layout?) so we need to do this ourselves with this boolean.
-        mBookshelfSelectionShouldBuildBookList = false;
-
-        @Nullable
-        final Bookshelf previous = (Bookshelf) mVb.bookshelfSpinner.getSelectedItem();
-
-        final int selectedPosition = mModel.reloadBookshelfList(this);
-        mBookshelfSpinnerAdapter.notifyDataSetChanged();
-        mVb.bookshelfSpinner.setSelection(selectedPosition);
-
-        final long selected = mModel.getBookshelf().getId();
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_INIT_BOOK_LIST) {
-            Log.d(TAG, "populateBookShelfSpinner"
-                       + "|previous=" + previous
-                       + "|selected=" + selected);
-        }
-        return previous == null || selected != previous.getId();
     }
 
     /**
@@ -1490,7 +1470,7 @@ public class BooksOnBookshelf
      * @param targetNodes (optional) to re-position to
      */
     private void scrollToSavedPosition(@Nullable final List<RowStateDAO.Node> targetNodes) {
-        final Bookshelf bookshelf = mModel.getBookshelf();
+        final Bookshelf bookshelf = mModel.getSelectedBookshelf();
         int position = bookshelf.getTopItemPosition();
 
         if (position >= mAdapter.getItemCount()) {
@@ -1712,8 +1692,8 @@ public class BooksOnBookshelf
          * @param context Current context
          * @param list    of bookshelves
          */
-        public BookshelfSpinnerAdapter(@NonNull final Context context,
-                                       @NonNull final List<Bookshelf> list) {
+        BookshelfSpinnerAdapter(@NonNull final Context context,
+                                @NonNull final List<Bookshelf> list) {
             // 0: see getView() below.
             super(context, 0, list);
             mInflater = LayoutInflater.from(context);

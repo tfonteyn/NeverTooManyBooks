@@ -34,14 +34,11 @@ import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 
 import java.io.EOFException;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.SocketTimeoutException;
 
 import javax.net.ssl.SSLProtocolException;
 
-import org.jsoup.HttpStatusException;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
@@ -56,6 +53,7 @@ import com.hardbacknutter.nevertoomanybooks.tasks.TerminatorConnection;
  */
 public class JsoupLoader {
 
+
     /**
      * RELEASE: Chrome 2020-07-17. Continuously update to latest version.
      * - KBNL site does not return full data unless the user agent is set to a valid browser.
@@ -66,19 +64,28 @@ public class JsoupLoader {
             "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
             + " AppleWebKit/537.36 (KHTML, like Gecko)"
             + " Chrome/84.0.4147.89 Safari/537.36";
-
     /** Log tag. */
     private static final String TAG = "JsoupLoader";
+
+    /** HTTP Request Header. */
+    private static final String HEADER_CONNECTION = "Connection";
+    /** HTTP Request Header. */
+    private static final String HEADER_USER_AGENT = "User-Agent";
+    /** HTTP Response Header. */
+    private static final String HEADER_LOCATION = "location";
+
 
     /** The downloaded and parsed web page. */
     @Nullable
     private Document mDoc;
+    /** The <strong>request</strong> url for the web page. */
+    @Nullable
+    private String mDocRequestUrl;
 
-    /** If the site drops connection, we retry once. */
-    private boolean mRetry = true;
     /** The user agent to send. */
     @Nullable
     private String mUserAgent = USER_AGENT_VALUE;
+
     /** {@code null} by default: for Jsoup to figure it out. */
     @Nullable
     private String mCharSetName;
@@ -104,6 +111,9 @@ public class JsoupLoader {
         mCharSetName = charSetName;
     }
 
+    /**
+     * Reset the loader.
+     */
     public void reset() {
         mDoc = null;
     }
@@ -115,21 +125,33 @@ public class JsoupLoader {
      * <p>
      * The content encoding is: "Accept-Encoding", "gzip"
      *
-     * @param context Current context
-     * @param url     to fetch
+     * @param context      Current context
+     * @param url          to fetch
+     * @param searchEngine to make the connection for
      *
      * @return the parsed Document, or {@code null} on failure to load.
      *
-     * @throws SocketTimeoutException if the connection times out
+     * @throws IOException on failure
      */
     @WorkerThread
     @Nullable
     public Document loadDocument(@NonNull final Context context,
                                  @NonNull final String url,
                                  @NonNull final SearchEngine searchEngine)
-            throws SocketTimeoutException {
+            throws IOException {
 
-        if (mDoc == null) {
+        // are we requesting the same url again ?
+        if (mDoc != null && url.equals(mDocRequestUrl)) {
+            // return the previously parsed doc
+            return mDoc;
+        }
+
+        // new download
+        mDoc = null;
+        mDocRequestUrl = url;
+        // If the site drops connection, we retry once
+        int attempts = 2;
+        while (attempts > 0) {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.JSOUP) {
                 Logger.d(TAG, "loadDocument|REQUESTED|url=\"" + url + '\"');
             }
@@ -141,30 +163,30 @@ public class JsoupLoader {
 
                 // added due to https://github.com/square/okhttp/issues/1517
                 // it's a server issue, this is a workaround.
-                con.setRequestProperty("Connection", "close");
+                con.setRequestProperty(HEADER_CONNECTION, "close");
 
                 if (mUserAgent != null) {
-                    con.setRequestProperty("User-Agent", mUserAgent);
+                    con.setRequestProperty(HEADER_USER_AGENT, mUserAgent);
                 }
 
                 // GO!
                 final InputStream inputStream = con.getInputStream();
 
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.JSOUP) {
-                    Logger.d(TAG, "loadDocument|AFTER open|con.getURL()=" + con.getURL());
-                    Logger.d(TAG, "loadDocument|AFTER open|con.getHeaderField(\"location\")="
-                                  + con.getHeaderField("location"));
+                    Logger.d(TAG, "loadDocument|AFTER open"
+                                  + "\ncon.getURL=" + con.getURL()
+                                  + "\nlocation  =" + con.getHeaderField(HEADER_LOCATION));
                 }
 
                 // the original url will change after a redirect.
                 // We need the actual url for further processing.
-                String locationHeader = con.getHeaderField("location");
+                String locationHeader = con.getHeaderField(HEADER_LOCATION);
                 if (locationHeader == null || locationHeader.isEmpty()) {
                     //noinspection ConstantConditions
                     locationHeader = con.getURL().toString();
 
                     if (BuildConfig.DEBUG && DEBUG_SWITCHES.JSOUP) {
-                        Logger.d(TAG, "loadPage|location header not set, using url");
+                        Logger.d(TAG, "loadDocument|location header not set, using url");
                     }
                 }
 
@@ -187,28 +209,22 @@ public class JsoupLoader {
                 mDoc = Jsoup.parse(inputStream, mCharSetName, locationHeader);
 
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.JSOUP) {
-                    Logger.d(TAG, "loadPage|AFTER parsing|mDoc.location()=" + mDoc.location());
+                    Logger.d(TAG, "loadDocument|AFTER parsing|mDoc.location()=" + mDoc.location());
                 }
 
-            } catch (@NonNull final HttpStatusException e) {
-                mDoc = null;
+                // Success
+                return mDoc;
 
-                if (BuildConfig.DEBUG) {
-                    Logger.error(context, TAG, e, "url=" + url);
-                }
-                return null;
-
-            } catch (@NonNull final EOFException | SSLProtocolException e) {
+            } catch (@NonNull final SSLProtocolException | EOFException e) {
                 mDoc = null;
 
                 // EOFException: happens often with ISFDB...
                 // This is after a successful connection was made.
                 // Google search says it's a server issue.
                 // Not so sure that Google search is correct thought but what do I know...
-                //
-                //
-                // SSLProtocolException: happens often with stripinfo.be; at least while running
-                // in the emulator.
+
+                // SSLProtocolException: happens often with stripinfo.be;
+                // ... at least while running in the emulator:
                 // javax.net.ssl.SSLProtocolException:
                 //  Read error: ssl=0x91461c80: Failure in SSL library, usually a protocol error
                 //  error:1e000065:Cipher functions:OPENSSL_internal:BAD_DECRYPT
@@ -220,38 +236,27 @@ public class JsoupLoader {
                 // at com.hardbacknutter.nevertoomanybooks.tasks.TerminatorConnection.open
                 // at com.hardbacknutter.nevertoomanybooks.searches.JsoupLoader.loadPage
 
-                Logger.warn(context, TAG, "loadPage"
+                // Log it as WARN, so at least we can get to know the frequency of these issues.
+                Logger.warn(context, TAG, "loadDocument"
                                           + "|e=" + e.getLocalizedMessage()
                                           + "|url=\"" + url + '\"');
-                if (mRetry) {
-                    mRetry = false;
-                    return loadDocument(context, url, searchEngine);
-                } else {
-                    return null;
-                }
-
-            } catch (@NonNull final SocketTimeoutException e) {
-                mDoc = null;
-                throw e;
-
-            } catch (@NonNull final FileNotFoundException e) {
-                mDoc = null;
-
-                if (BuildConfig.DEBUG /* always */) {
-                    Logger.w(TAG, "loadPage|" + url);
+                // we'll retry.
+                attempts--;
+                if (attempts == 0) {
+                    throw e;
                 }
 
             } catch (@NonNull final IOException e) {
                 mDoc = null;
 
-                Logger.error(context, TAG, e, url);
-                return null;
+                if (BuildConfig.DEBUG && DEBUG_SWITCHES.JSOUP) {
+                    Logger.error(context, TAG, e, "url=" + url);
+                }
+                throw e;
             }
-
-            // reset the flag.
-            mRetry = true;
         }
 
-        return mDoc;
+        // Shouldn't get here ... flw
+        return null;
     }
 }

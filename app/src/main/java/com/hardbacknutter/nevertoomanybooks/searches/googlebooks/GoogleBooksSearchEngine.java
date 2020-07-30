@@ -81,7 +81,7 @@ public final class GoogleBooksSearchEngine
         implements SearchEngine.ByIsbn,
                    SearchEngine.ByText {
 
-    private static final Pattern SPACE_PATTERN = Pattern.compile(" ", Pattern.LITERAL);
+    private static final Pattern SPACE_LITERAL = Pattern.compile(" ", Pattern.LITERAL);
 
     /**
      * Constructor.
@@ -97,20 +97,26 @@ public final class GoogleBooksSearchEngine
     public Bundle searchByIsbn(@NonNull final String validIsbn,
                                @NonNull final boolean[] fetchThumbnail)
             throws IOException {
+
+        final Bundle bookData = new Bundle();
+
         // %3A  :
         final String url = getSiteUrl() + "/books/feeds/volumes?q=ISBN%3A" + validIsbn;
-        return fetchBook(url, fetchThumbnail, new Bundle());
+        fetchBook(url, fetchThumbnail, bookData);
+        return bookData;
     }
 
     @NonNull
     @Override
     @WorkerThread
-    public Bundle search(@Nullable final String code,
+    public Bundle search(@Nullable final /* not supported */ String code,
                          @Nullable final String author,
                          @Nullable final String title,
                          @Nullable final /* not supported */ String publisher,
                          @NonNull final boolean[] fetchThumbnail)
             throws IOException {
+
+        final Bundle bookData = new Bundle();
 
         // %2B  +
         // %3A  :
@@ -120,16 +126,24 @@ public final class GoogleBooksSearchEngine
                                + "intitle%3A" + encodeSpaces(title)
                                + "%2B"
                                + "inauthor%3A" + encodeSpaces(author);
-            return fetchBook(url, fetchThumbnail, new Bundle());
-
-        } else {
-            return new Bundle();
+            fetchBook(url, fetchThumbnail, bookData);
         }
+        return bookData;
     }
 
-    private Bundle fetchBook(@NonNull final String url,
-                             @NonNull final boolean[] fetchThumbnail,
-                             @NonNull final Bundle bookData)
+    /**
+     * Fetch a book by url.
+     *
+     * @param url            to fetch
+     * @param fetchThumbnail Set to {@code true} if we want to get thumbnails
+     *                       The array is guaranteed to have at least one element.
+     * @param bookData       Bundle to update <em>(passed in to allow mocking)</em>
+     *
+     * @throws IOException on failure
+     */
+    private void fetchBook(@NonNull final String url,
+                           @NonNull final boolean[] fetchThumbnail,
+                           @NonNull final Bundle bookData)
             throws IOException {
 
         final SAXParserFactory factory = SAXParserFactory.newInstance();
@@ -144,7 +158,7 @@ public final class GoogleBooksSearchEngine
             }
 
             if (isCancelled()) {
-                return bookData;
+                return;
             }
 
             final List<String> urlList = listHandler.getResult();
@@ -160,7 +174,6 @@ public final class GoogleBooksSearchEngine
                     parser.parse(con.getInputStream(), handler);
                 }
             }
-            return handler.getResult();
 
         } catch (@NonNull final ParserConfigurationException | SAXException e) {
             if (BuildConfig.DEBUG /* always */) {
@@ -179,6 +192,6 @@ public final class GoogleBooksSearchEngine
      */
     private String encodeSpaces(@NonNull final CharSequence s) {
 //        return URLEncoder.encode(s, "UTF-8");
-        return SPACE_PATTERN.matcher(s).replaceAll("%20");
+        return SPACE_LITERAL.matcher(s).replaceAll("%20");
     }
 }

@@ -58,11 +58,13 @@ public class AuthorWorksModel
     private DAO mDb;
     /** Author is set in {@link #init}. */
     private Author mAuthor;
+    /** Iniitial Bookshelf is set in {@link #init}. */
     private Bookshelf mBookshelf;
     /** Initially we get toc entries and books. */
     private boolean mWithTocEntries = true;
     /** Initially we get toc entries and books. */
     private boolean mWithBooks = true;
+    /** Show all shelves, or only the initially selected shelf. */
     private boolean mAllBookshelves;
 
     @Override
@@ -111,9 +113,8 @@ public class AuthorWorksModel
 
     public void reloadTocEntries() {
         mTocEntries.clear();
-        mTocEntries.addAll(mDb.getTocEntryByAuthor(mAuthor,
-                                                   mAllBookshelves ? Bookshelf.ALL_BOOKS
-                                                                   : mBookshelf.getId(),
+        final long bookshelfId = mAllBookshelves ? Bookshelf.ALL_BOOKS : mBookshelf.getId();
+        mTocEntries.addAll(mDb.getTocEntryByAuthor(mAuthor, bookshelfId,
                                                    mWithTocEntries, mWithBooks));
     }
 
@@ -159,12 +160,23 @@ public class AuthorWorksModel
         }
     }
 
+    /**
+     * Screen title consists of the author name + the number of entries shown.
+     *
+     * @param context Current context
+     *
+     * @return title
+     */
     public String getScreenTitle(@NonNull final Context context) {
         return context.getString(R.string.name_hash_nr,
-                                 mAuthor.getLabel(context),
-                                 getTocEntries().size());
+                                 mAuthor.getLabel(context), getTocEntries().size());
     }
 
+    /**
+     * Screen subtitle will show the bookshelf name (or nothing if all-shelves).
+     *
+     * @return subtitle
+     */
     @Nullable
     public String getScreenSubtitle() {
         if (mAllBookshelves) {

@@ -129,7 +129,7 @@ public final class AuthorTypeMapper {
         // German, unless listed above
         MAPPER.put("autor", TYPE_WRITER);
         MAPPER.put("Übersetzer", TYPE_TRANSLATOR);
-        MAPPER.put("übersetzer", TYPE_TRANSLATOR);
+        MAPPER.put("Übersetzung", TYPE_TRANSLATOR);
 
         // Italian, unless listed above
         MAPPER.put("testi", TYPE_WRITER);

@@ -31,10 +31,13 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.WorkerThread;
 
 import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.App;
+import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.utils.LanguageUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
@@ -44,15 +47,20 @@ import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
  * Only build once per Locale.
  */
 public class BuildLanguageMappingsTask
-        implements Runnable {
+        extends LTask<Boolean> {
 
     /** Log tag. */
     private static final String TAG = "BuildLanguageMappings";
     /** Prefix added to the iso code for the 'done' flag in the language cache. */
     private static final String LANG_CREATED_PREFIX = "___";
 
+    public BuildLanguageMappingsTask(@NonNull final TaskListener<Boolean> taskListener) {
+        super(R.id.TASK_ID_BUILD_LANG_MAP, taskListener);
+    }
+
+    @WorkerThread
     @Override
-    public void run() {
+    protected Boolean doInBackground(@Nullable final Void... voids) {
         Thread.currentThread().setName(TAG);
         final Context context = App.getTaskContext();
         final SharedPreferences prefs = LanguageUtils.getLanguageCache(context);
@@ -70,8 +78,11 @@ public class BuildLanguageMappingsTask
             // Dutch: StripInfoSearchEngine, KbNlSearchEngine
             createLanguageMappingCache(prefs, new Locale("nl"));
 
+            return true;
+
         } catch (@NonNull final RuntimeException e) {
             Logger.error(context, TAG, e);
+            return false;
         }
     }
 

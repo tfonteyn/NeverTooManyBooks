@@ -154,18 +154,17 @@ public class BooklistGroup
         implements Parcelable {
 
     /** {@link Parcelable}. */
-    public static final Creator<BooklistGroup> CREATOR =
-            new Creator<BooklistGroup>() {
-                @Override
-                public BooklistGroup createFromParcel(@NonNull final Parcel source) {
-                    return new BooklistGroup(source);
-                }
+    public static final Creator<BooklistGroup> CREATOR = new Creator<BooklistGroup>() {
+        @Override
+        public BooklistGroup createFromParcel(@NonNull final Parcel source) {
+            return new BooklistGroup(source);
+        }
 
-                @Override
-                public BooklistGroup[] newArray(final int size) {
-                    return new BooklistGroup[size];
-                }
-            };
+        @Override
+        public BooklistGroup[] newArray(final int size) {
+            return new BooklistGroup[size];
+        }
+    };
 
     /**
      * The ID's for the groups. <strong>Never change these</strong>,

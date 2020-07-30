@@ -58,11 +58,12 @@ public class TocEntryCoder
      * The pattern finds (1987), (1978-04) or (1987-04-22)
      * Result is found in group 1.
      */
-    private static final Pattern DATE_PATTERN = Pattern.compile("\\("
-                                                                + "([1|2]\\d\\d\\d"
-                                                                + "|[1|2]\\d\\d\\d-\\d\\d"
-                                                                + "|[1|2]\\d\\d\\d-\\d\\d-\\d\\d)"
-                                                                + "\\)");
+    private static final Pattern DATE_PATTERN =
+            Pattern.compile("\\("
+                            + "([1|2]\\d\\d\\d"
+                            + "|[1|2]\\d\\d\\d-\\d\\d"
+                            + "|[1|2]\\d\\d\\d-\\d\\d-\\d\\d)"
+                            + "\\)");
 
     @NonNull
     private final char[] escapeChars = {'(', ')'};

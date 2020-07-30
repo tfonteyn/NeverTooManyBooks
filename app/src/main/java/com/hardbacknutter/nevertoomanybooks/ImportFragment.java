@@ -135,6 +135,7 @@ public class ImportFragment
         mArchiveImportTask.onFailure().observe(getViewLifecycleOwner(), this::onImportFailure);
         mArchiveImportTask.onFinished().observe(getViewLifecycleOwner(), this::onImportFinished);
 
+        // if the task is NOT already running (e.g. after a screen rotation...) show the options
         if (!mArchiveImportTask.isRunning()) {
             importPickUri();
         }

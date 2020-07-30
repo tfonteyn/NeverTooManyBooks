@@ -123,7 +123,6 @@
             />
 
 
-        <!-- FIXME: before enabling either amazon or library-thing, we'll need 'barrier's added -->
         <!-- Amazon search is disabled. For books the user can/should use the isbn search.-->
         <RadioButton
             android:id="@+id/site_amazon"

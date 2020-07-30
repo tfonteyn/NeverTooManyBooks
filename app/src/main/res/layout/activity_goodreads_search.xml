@@ -33,7 +33,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".goodreads.GoodreadsSearchActivity"
+    tools:context=".goodreads.editions.GoodreadsSearchActivity"
     >
 
     <com.google.android.material.appbar.AppBarLayout
@@ -110,7 +110,7 @@
 
         <TextView
             android:id="@+id/isbn"
-            style="@style/Field.Generic"
+            style="@style/Field.Isbn"
             android:hint="@string/lbl_isbn"
             app:layout_constraintStart_toStartOf="@id/lbl_isbn"
             app:layout_constraintTop_toBottomOf="@id/lbl_isbn"

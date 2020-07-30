@@ -68,7 +68,7 @@ public final class Csv {
 
     /**
      * Create a CSV list String from the passed collection.
-     * Uses ", " as delimiter.
+     * Uses ',' as delimiter.
      * A {@code null} element is morphed into "".
      * This can be avoided by providing a {@link Formatter}.
      * Either way, empty elements <strong>are included</strong>.
@@ -82,7 +82,7 @@ public final class Csv {
     @NonNull
     public static <E> String join(@NonNull final Iterable<E> collection,
                                   @Nullable final Formatter<E> formatter) {
-        return join(", ", collection, false, null, formatter);
+        return join(",", collection, false, null, formatter);
     }
 
     /**

@@ -81,6 +81,8 @@ public class BooksOnBookshelfModel
     private static final String TAG = "BooksOnBookshelfModel";
     /** collapsed/expanded. */
     public static final String BKEY_LIST_STATE = TAG + ":list.state";
+    /** Allows to set an explicit shelf. */
+    public static final String BKEY_BOOKSHELF = TAG + ":bs";
 
     /** The fixed list of domains we always need for building the book list. */
     private static final Collection<VirtualDomain> FIXED_DOMAIN_LIST = new ArrayList<>();
@@ -111,7 +113,8 @@ public class BooksOnBookshelfModel
                         DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_READ)));
 
         FIXED_DOMAIN_LIST.add(
-                // Always get the Author ID (the need for the actual name is depending on the style).
+                // Always get the Author ID
+                // (the need for the name will depend on the style).
                 new VirtualDomain(
                         DBDefinitions.DOM_FK_AUTHOR,
                         DBDefinitions.TBL_BOOK_AUTHOR.dot(DBDefinitions.KEY_FK_AUTHOR)));
@@ -200,8 +203,22 @@ public class BooksOnBookshelfModel
 
             if (args != null) {
                 mSearchCriteria.from(args, true);
+
+                // check for an explicit bookshelf set
+                if (args.containsKey(BKEY_BOOKSHELF)) {
+                    int exShelfId = args.getInt(BKEY_BOOKSHELF);
+                    // might be null, that's ok.
+                    mBookshelf = Bookshelf.getBookshelf(context, mDb, exShelfId);
+                }
             }
         }
+
+        // Set the last/preferred bookshelf if not explicitly set above
+        if (mBookshelf == null) {
+            mBookshelf = Bookshelf.getBookshelf(context, mDb, Bookshelf.PREFERRED,
+                                                Bookshelf.ALL_BOOKS);
+        }
+
 
         final Bundle currentArgs = savedInstanceState != null ? savedInstanceState : args;
 
@@ -209,15 +226,11 @@ public class BooksOnBookshelfModel
             // Get preferred booklist state to use from preferences;
             // always do this here in init, as the prefs might have changed anytime.
             mRebuildState = getPreferredListRebuildState(context);
-
         } else {
             // Unless set by the caller, preserve state when rebuilding/recreating etc
             mRebuildState = currentArgs.getInt(BKEY_LIST_STATE,
                                                BooklistBuilder.PREF_REBUILD_SAVED_STATE);
         }
-
-        // Set the last/preferred bookshelf
-        mBookshelf = Bookshelf.getBookshelf(context, mDb, Bookshelf.PREFERRED, Bookshelf.ALL_BOOKS);
     }
 
 
@@ -247,6 +260,12 @@ public class BooksOnBookshelfModel
     }
 
 
+    /**
+     * Get the Bookshelf list to show in the Spinner.
+     * Will be empty until a call to {@link #reloadBookshelfList(Context)} is made.
+     *
+     * @return list
+     */
     @NonNull
     public List<Bookshelf> getBookshelfList() {
         return mBookshelfList;
@@ -256,41 +275,62 @@ public class BooksOnBookshelfModel
      * Construct the Bookshelf list to show in the Spinner.
      *
      * @param context Current context.
-     *
-     * @return the position that reflects the current bookshelf.
      */
-    public int reloadBookshelfList(@NonNull final Context context) {
+    public void reloadBookshelfList(@NonNull final Context context) {
         mBookshelfList.clear();
         mBookshelfList.add(
                 Bookshelf.getBookshelf(context, mDb, Bookshelf.ALL_BOOKS, Bookshelf.ALL_BOOKS));
-
-        int selectedPosition = 0;
-
-        // position of the default shelf
-        int defaultPosition = 0;
-
-        // start at 1, as position 0 is 'All Books'
-        int count = 1;
-
-        for (Bookshelf bookshelf : mDb.getBookshelves()) {
-            if (bookshelf.getId() == Bookshelf.DEFAULT) {
-                defaultPosition = count;
-            }
-
-            if (bookshelf.getId() == getBookshelf().getId()) {
-                selectedPosition = count;
-            }
-
-            mBookshelfList.add(bookshelf);
-            count++;
-        }
-
-        return selectedPosition != 0 ? selectedPosition : defaultPosition;
+        mBookshelfList.addAll(mDb.getBookshelves());
     }
 
 
+    /**
+     * Find the position of the currently set Bookshelf in the Spinner.
+     * (with fallback to the default, or to 0 if needed)
+     *
+     * @param context Current context.
+     *
+     * @return the position that reflects the current bookshelf.
+     */
+    public int getSelectedBookshelfSpinnerPosition(@NonNull final Context context) {
+        Objects.requireNonNull(mBookshelf, ErrorMsg.NULL_BOOKSHELF);
+
+        final List<Bookshelf> bookshelfList = getBookshelfList();
+        // Not strictly needed, but guard against future changes
+        if (bookshelfList.isEmpty()) {
+            reloadBookshelfList(context);
+        }
+
+        // position we want to find
+        Integer selectedPosition = null;
+        // fallback if no selection found
+        Integer defaultPosition = null;
+
+        for (int i = 0; i < bookshelfList.size(); i++) {
+            final Bookshelf bookshelf = bookshelfList.get(i);
+            // find the position of the default shelf.
+            if (bookshelf.getId() == Bookshelf.DEFAULT) {
+                defaultPosition = i;
+            }
+            // find the position of the selected shelf
+            if (bookshelf.getId() == mBookshelf.getId()) {
+                selectedPosition = i;
+            }
+        }
+
+        if (selectedPosition != null) {
+            return selectedPosition;
+
+        } else if (defaultPosition != null) {
+            return defaultPosition;
+        } else {
+            // shouldn't get here... flw
+            return 0;
+        }
+    }
+
     @NonNull
-    public Bookshelf getBookshelf() {
+    public Bookshelf getSelectedBookshelf() {
         Objects.requireNonNull(mBookshelf, ErrorMsg.NULL_BOOKSHELF);
         return mBookshelf;
     }
@@ -301,8 +341,8 @@ public class BooksOnBookshelfModel
      * @param context Current context
      * @param id      of desired Bookshelf
      */
-    public void setBookshelf(@NonNull final Context context,
-                             final long id) {
+    public void setSelectedBookshelf(@NonNull final Context context,
+                                     final long id) {
         mBookshelf = mDb.getBookshelf(id);
         if (mBookshelf == null) {
             mBookshelf = Bookshelf.getBookshelf(context, mDb, Bookshelf.PREFERRED,
@@ -312,7 +352,7 @@ public class BooksOnBookshelfModel
     }
 
     @SuppressWarnings("UnusedReturnValue")
-    public boolean reloadBookshelf(@NonNull final Context context) {
+    public boolean reloadSelectedBookshelf(@NonNull final Context context) {
         final Bookshelf newBookshelf =
                 Bookshelf.getBookshelf(context, mDb, Bookshelf.PREFERRED, Bookshelf.ALL_BOOKS);
         if (!newBookshelf.equals(mBookshelf)) {
@@ -735,12 +775,12 @@ public class BooksOnBookshelfModel
             }
 
             // for now, don't get the author type.
-//                if (style.useBookDetail(context, prefs, BooklistStyle.pk_book_show_author_type)) {
-//                    builder.addDomain(new VirtualDomain(
-//                            DBDefinitions.DOM_BOOK_AUTHOR_TYPE_BITMASK,
-//                            DBDefinitions.TBL_BOOK_AUTHOR
-//                                    .dot(DBDefinitions.KEY_BOOK_AUTHOR_TYPE_BITMASK)));
-//                }
+            //  if (style.useBookDetail(context, prefs, BooklistStyle.pk_book_show_author_type)) {
+            //      builder.addDomain(new VirtualDomain(
+            //              DBDefinitions.DOM_BOOK_AUTHOR_TYPE_BITMASK,
+            //              DBDefinitions.TBL_BOOK_AUTHOR
+            //              .dot(DBDefinitions.KEY_BOOK_AUTHOR_TYPE_BITMASK)));
+            //  }
 
             if (style.useBookDetail(context, prefs, BooklistStyle.pk_book_show_publisher)) {
                 // Collect a CSV list of the publishers of the book

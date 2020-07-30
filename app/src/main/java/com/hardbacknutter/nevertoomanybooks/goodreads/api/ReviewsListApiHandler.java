@@ -43,10 +43,10 @@ import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsAuth;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsManager;
+import com.hardbacknutter.nevertoomanybooks.goodreads.api.SimpleXmlFilter.XmlListener;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
-import com.hardbacknutter.nevertoomanybooks.utils.xml.SimpleXmlFilter;
-import com.hardbacknutter.nevertoomanybooks.utils.xml.SimpleXmlFilter.XmlListener;
+import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlFilter;
 import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlResponseParser;
 
 /**
@@ -90,6 +90,10 @@ public class ReviewsListApiHandler
             Review.validateDate(bc.getData(), Review.UPDATED);
 
     private SimpleXmlFilter mFilters;
+
+    /** XmlFilter root object. Used in extracting data file XML results. */
+    @NonNull
+    final XmlFilter mRootFilter = new XmlFilter("");
 
     /**
      * Constructor.
@@ -403,7 +407,8 @@ public class ReviewsListApiHandler
                 .s(XmlTags.XML_SHELVES).asArray(Review.SHELVES)
                 //              <shelf name="sci-fi-fantasy" />
                 .s(XmlTags.XML_SHELF).asArrayItem()
-                .stringAttr(XmlTags.XML_NAME, Review.SHELF)
+                // Leave "name" as string... it's an attribute for THIS tag.
+                .stringAttr("name", Review.SHELF)
                 .popTo(XmlTags.XML_REVIEW)
                 //              <shelf name="to-read" />
                 //          </shelves>

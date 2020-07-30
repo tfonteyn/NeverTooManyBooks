@@ -88,7 +88,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.LanguageUtils;
  *      </li>
  * </ul>
  * <p>
- * There are 3 types of {@link SiteList}. These are enums, so only ONE copy of each list exists.
+ * There are 3 types of {@link SiteList}.
  * <ol>
  *      <li>{@link SiteList.Type#Data} : search for book data (and cover)</li>
  *      <li>{@link SiteList.Type#Covers} : search for book covers only</li>
@@ -205,13 +205,20 @@ public final class SearchSites {
         // NEWTHINGS: adding a new search engine: add the search engine class
         Site.add(AmazonSearchEngine.class);
         Site.add(GoodreadsSearchEngine.class);
-        Site.add(GoogleBooksSearchEngine.class);
         Site.add(IsfdbSearchEngine.class);
         Site.add(KbNlSearchEngine.class);
-        Site.add(LastDodoSearchEngine.class);
-        Site.add(LibraryThingSearchEngine.class);
         Site.add(OpenLibrarySearchEngine.class);
         Site.add(StripInfoSearchEngine.class);
+
+        if (BuildConfig.ENABLE_GOOGLE_BOOKS) {
+            Site.add(GoogleBooksSearchEngine.class);
+        }
+        if (BuildConfig.ENABLE_LAST_DODO) {
+            Site.add(LastDodoSearchEngine.class);
+        }
+        if (BuildConfig.ENABLE_LIBRARY_THING || BuildConfig.ENABLE_LIBRARY_THING_ALT_ED) {
+            Site.add(LibraryThingSearchEngine.class);
+        }
     }
 
     /**
@@ -273,9 +280,11 @@ public final class SearchSites {
             case Covers: {
                 // Only add sites here that implement {@link SearchEngine.CoverByIsbn}.
 
-                list.add(ISFDB);
+                list.add(AMAZON);
 
                 list.add(GOODREADS);
+
+                list.add(ISFDB);
 
                 // Dutch.
                 list.add(KB_NL, enableIfDutch);

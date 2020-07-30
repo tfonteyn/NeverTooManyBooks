@@ -51,6 +51,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.Csv;
 public class ImportResults
         implements Parcelable {
 
+    /** {@link Parcelable}. */
     public static final Creator<ImportResults> CREATOR = new Creator<ImportResults>() {
         @Override
         public ImportResults createFromParcel(@NonNull final Parcel in) {

@@ -33,6 +33,7 @@ import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.util.Pair;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -66,18 +67,17 @@ public class TocEntry
         implements Entity, ItemWithTitle {
 
     /** {@link Parcelable}. */
-    public static final Creator<TocEntry> CREATOR =
-            new Creator<TocEntry>() {
-                @Override
-                public TocEntry createFromParcel(@NonNull final Parcel source) {
-                    return new TocEntry(source);
-                }
+    public static final Creator<TocEntry> CREATOR = new Creator<TocEntry>() {
+        @Override
+        public TocEntry createFromParcel(@NonNull final Parcel source) {
+            return new TocEntry(source);
+        }
 
-                @Override
-                public TocEntry[] newArray(final int size) {
-                    return new TocEntry[size];
-                }
-            };
+        @Override
+        public TocEntry[] newArray(final int size) {
+            return new TocEntry[size];
+        }
+    };
 
     /** As used by the DAO. */
     public static final char TYPE_TOC = 'T';
@@ -96,6 +96,8 @@ public class TocEntry
     private char mType;
     /** in-memory use only. Number of books this TocEntry appears in. */
     private int mBookCount;
+    @Nullable
+    private List<Pair<Long, String>> mBookTitles;
 
     /**
      * Constructor.
@@ -366,6 +368,19 @@ public class TocEntry
         return Arrays.asList(authors);
     }
 
+    /**
+     * Lazy load the book id/title pair list this TOC entry is published in.
+     *
+     * @return list of id/titles of books.
+     */
+    @NonNull
+    public List<Pair<Long, String>> getBookTitles(@NonNull final DAO db) {
+        if (mBookTitles == null) {
+            mBookTitles = db.getBookTitlesForToc(mId);
+        }
+        return mBookTitles;
+    }
+
     @NonNull
     public String getFirstPublication() {
         return mFirstPublicationDate;
@@ -464,6 +479,7 @@ public class TocEntry
                + ", mFirstPublicationDate=`" + mFirstPublicationDate + '`'
                + ", mType=`" + mType + '`'
                + ", mBookCount=`" + mBookCount + '`'
+               + ", mBookTitles=" + mBookTitles
                + '}';
     }
 }

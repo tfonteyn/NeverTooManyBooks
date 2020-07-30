@@ -82,11 +82,11 @@ final class XmlUtils {
     /** the value of the individual item of the "thing". */
     public static final String ATTR_VALUE = "value";
 
-    private static final Pattern QUOT_PATTERN = Pattern.compile("&quot;", Pattern.LITERAL);
-    private static final Pattern APOS_PATTERN = Pattern.compile("&apos;", Pattern.LITERAL);
-    private static final Pattern LT_PATTERN = Pattern.compile("&lt;", Pattern.LITERAL);
-    private static final Pattern GT_PATTERN = Pattern.compile("&gt;", Pattern.LITERAL);
-    private static final Pattern AMP_PATTERN = Pattern.compile("&amp;", Pattern.LITERAL);
+    private static final Pattern QUOT_LITERAL = Pattern.compile("&quot;", Pattern.LITERAL);
+    private static final Pattern APOS_LITERAL = Pattern.compile("&apos;", Pattern.LITERAL);
+    private static final Pattern LT_LITERAL = Pattern.compile("&lt;", Pattern.LITERAL);
+    private static final Pattern GT_LITERAL = Pattern.compile("&gt;", Pattern.LITERAL);
+    private static final Pattern AMP_LITERAL = Pattern.compile("&amp;", Pattern.LITERAL);
 
     /**
      * Generic tag with (optional) name and value attribute, empty body.
@@ -326,11 +326,11 @@ final class XmlUtils {
 
         // must be last of the entities
         String result = data.trim();
-        result = AMP_PATTERN.matcher(result).replaceAll("&");
-        result = GT_PATTERN.matcher(result).replaceAll(">");
-        result = LT_PATTERN.matcher(result).replaceAll("<");
-        result = APOS_PATTERN.matcher(result).replaceAll("'");
-        result = QUOT_PATTERN.matcher(result).replaceAll("\"");
+        result = AMP_LITERAL.matcher(result).replaceAll("&");
+        result = GT_LITERAL.matcher(result).replaceAll(">");
+        result = LT_LITERAL.matcher(result).replaceAll("<");
+        result = APOS_LITERAL.matcher(result).replaceAll("'");
+        result = QUOT_LITERAL.matcher(result).replaceAll("\"");
         return result;
     }
 

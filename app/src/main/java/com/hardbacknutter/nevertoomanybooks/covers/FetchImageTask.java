@@ -27,21 +27,17 @@
  */
 package com.hardbacknutter.nevertoomanybooks.covers;
 
-import android.content.Context;
-
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
 
-import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.tasks.LTask;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
-import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 
 /**
  * Fetch an image from the {@link FileManager}.
@@ -100,16 +96,15 @@ class FetchImageTask
     @WorkerThread
     protected ImageFileInfo doInBackground(@Nullable final Void... voids) {
         Thread.currentThread().setName(TAG + mIsbn);
-        final Context context = LocaleUtils.applyLocale(App.getTaskContext());
 
         try {
-            return mFileManager.search(this, context, mIsbn, mCIdx, mSizes);
+            return mFileManager.search(this, mIsbn, mCIdx, mSizes);
 
         } catch (@SuppressWarnings("OverlyBroadCatchBlock") @NonNull final Exception ignore) {
             // tad annoying... java.io.InterruptedIOException: thread interrupted
             // can be thrown, but for some reason javac does not think so.
         }
-        // we failed, but we still need to return the isbn.
+        // we failed, but we still need to return the isbn + null fileSpec
         return new ImageFileInfo(mIsbn);
     }
 }

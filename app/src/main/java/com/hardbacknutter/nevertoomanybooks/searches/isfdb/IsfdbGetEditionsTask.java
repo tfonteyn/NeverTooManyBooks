@@ -33,7 +33,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 
-import java.net.SocketTimeoutException;
+import java.io.IOException;
 import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.App;
@@ -65,7 +65,7 @@ public class IsfdbGetEditionsTask
     @Nullable
     @Override
     protected List<Edition> doWork()
-            throws SocketTimeoutException {
+            throws IOException {
         Thread.currentThread().setName(TAG + mIsbn);
         final Context context = LocaleUtils.applyLocale(App.getTaskContext());
 

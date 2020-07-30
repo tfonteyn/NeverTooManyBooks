@@ -82,6 +82,7 @@ import com.hardbacknutter.nevertoomanybooks.goodreads.GrStatus;
 import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.GrSendOneBookTask;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.FinishedMessage;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.ProgressMessage;
+import com.hardbacknutter.nevertoomanybooks.utils.Csv;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.BookDetailsFragmentViewModel;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.LiveDataEvent;
 
@@ -498,8 +499,16 @@ public class BookDetailsFragment
                 rowVb.author.setText(tocEntry.getAuthor().getLabel(context));
 
                 final boolean isSet = tocEntry.getBookCount() > 1;
-                rowVb.cbxMultipleBooks.setChecked(isSet);
-                rowVb.cbxMultipleBooks.setVisibility(isSet ? View.VISIBLE : View.GONE);
+                if (isSet) {
+                    rowVb.cbxMultipleBooks.setVisibility(View.VISIBLE);
+                    rowVb.cbxMultipleBooks.setOnClickListener(v -> {
+                        final String titles =
+                                Csv.textList(context,
+                                             tocEntry.getBookTitles(mBookViewModel.getDb()),
+                                             element -> element.second);
+                        StandardDialogs.infoPopup(rowVb.cbxMultipleBooks, titles);
+                    });
+                }
 
                 final String date = tocEntry.getFirstPublication();
                 // "< 4" covers empty and illegal dates

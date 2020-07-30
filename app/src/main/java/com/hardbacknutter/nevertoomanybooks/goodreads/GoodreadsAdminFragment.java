@@ -49,7 +49,7 @@ import com.hardbacknutter.nevertoomanybooks.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentGoodreadsAdminBinding;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
-import com.hardbacknutter.nevertoomanybooks.goodreads.admin.TasksAdminActivity;
+import com.hardbacknutter.nevertoomanybooks.goodreads.qtasks.admin.TasksAdminActivity;
 import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.GrAuthTask;
 import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.ImportTask;
 import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.SendBooksTask;

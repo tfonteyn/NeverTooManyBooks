@@ -76,7 +76,7 @@
 
     <TextView
         android:id="@+id/isbn"
-        style="@style/BoB.Book.Text"
+        style="@style/BoB.Book.Text.Isbn"
         android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

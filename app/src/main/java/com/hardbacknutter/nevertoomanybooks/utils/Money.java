@@ -70,8 +70,9 @@ public class Money
 
     /** Specific for pre-decimal UK money. */
     private static final Pattern SHILLING_PENCE_PATTERN = Pattern.compile("(\\d*|-?)/(\\d*|-?)");
+
     /** HTML cleaning. */
-    private static final Pattern NBSP_PATTERN = Pattern.compile("&nbsp;", Pattern.LITERAL);
+    private static final Pattern NBSP_LITERAL = Pattern.compile("&nbsp;", Pattern.LITERAL);
 
     /** A Map to translate currency symbols to their official ISO code. */
     private static final Map<String, String> CURRENCY_MAP = new HashMap<>();
@@ -165,7 +166,7 @@ public class Money
                          @NonNull final CharSequence priceWithCurrency) {
 
         // website html cleaning
-        final String pc = NBSP_PATTERN.matcher(priceWithCurrency).replaceAll(" ");
+        final String pc = NBSP_LITERAL.matcher(priceWithCurrency).replaceAll(" ");
 
         final String[] data = CURRENCY_AS_PREFIX_PATTERN.split(pc, 2);
         if (data.length > 1 && parse(locale, data[0], data[1])) {

@@ -221,9 +221,6 @@ class AmazonXmlHandler
     /** Log tag. */
     private static final String TAG = "AmazonXmlHandler";
 
-    /** file suffix for cover files. */
-    private static final String FILENAME_SUFFIX = "_AM";
-
     /**
      * XML tags we look for.
      * They are mixed-case, hence we use .equalsIgnoreCase and not a switch
@@ -330,16 +327,6 @@ class AmazonXmlHandler
         mBookData = bookData;
     }
 
-    /**
-     * Get the results.
-     *
-     * @return Bundle with book data
-     */
-    @NonNull
-    public Bundle getResult() {
-        return mBookData;
-    }
-
     @Nullable
     public String getError() {
         return mError;
@@ -353,8 +340,9 @@ class AmazonXmlHandler
     @CallSuper
     public void endDocument() {
         if (mFetchThumbnail[0] && !mCoverUrl.isEmpty()) {
-            final String prefix = mBookData.getString(DBDefinitions.KEY_EID_ASIN, "");
-            final String fileSpec = mSearchEngine.saveImage(mCoverUrl, prefix, FILENAME_SUFFIX, 0);
+            final String tmpName = mSearchEngine.createFilename(
+                    mBookData.getString(DBDefinitions.KEY_ISBN), 0, null);
+            final String fileSpec = mSearchEngine.saveImage(mCoverUrl, tmpName);
             if (fileSpec != null) {
                 ArrayList<String> imageList =
                         mBookData.getStringArrayList(Book.BKEY_FILE_SPEC_ARRAY[0]);
@@ -477,7 +465,6 @@ class AmazonXmlHandler
                 addIfNotPresent(DBDefinitions.KEY_FORMAT, mBuilder.toString());
 
             } else if (mInLanguage && localName.equalsIgnoreCase(XML_NAME)) {
-                // the language is a 'DisplayName' so convert to iso first.
                 addIfNotPresent(DBDefinitions.KEY_LANGUAGE,
                                 LanguageUtils.getISO3FromDisplayName(mSearchEngine.getAppContext(),
                                                                      mSearchEngine.getLocale(),
@@ -494,8 +481,8 @@ class AmazonXmlHandler
                        || localName.equalsIgnoreCase(XML_ISBN_OLD)) {
                 // we prefer the "longest" isbn, which theoretically should be an ISBN-13
                 String tmp = mBuilder.toString();
-                String test = mBookData.getString(DBDefinitions.KEY_ISBN);
-                if (test == null || test.length() < tmp.length()) {
+                String isbnStr = mBookData.getString(DBDefinitions.KEY_ISBN);
+                if (isbnStr == null || isbnStr.length() < tmp.length()) {
                     mBookData.putString(DBDefinitions.KEY_ISBN, tmp);
                 }
 

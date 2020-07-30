@@ -64,7 +64,7 @@
                 android:id="@+id/statusMessage"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="?attr/dialogPreferredPadding"
+                android:layout_marginTop="16dp"
                 android:textAppearance="?android:attr/textAppearanceSmall"
                 android:textIsSelectable="false"
                 app:layout_constraintEnd_toEndOf="parent"

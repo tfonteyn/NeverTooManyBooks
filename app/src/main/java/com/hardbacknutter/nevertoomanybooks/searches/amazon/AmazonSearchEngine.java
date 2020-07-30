@@ -30,15 +30,18 @@ package com.hardbacknutter.nevertoomanybooks.searches.amazon;
 import android.content.Context;
 import android.os.Bundle;
 
+import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.annotation.WorkerThread;
 import androidx.preference.PreferenceManager;
 
+import java.io.File;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.net.SocketTimeoutException;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -51,6 +54,7 @@ import org.jsoup.select.Elements;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.covers.ImageFileInfo;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -62,6 +66,7 @@ import com.hardbacknutter.nevertoomanybooks.searches.JsoupSearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.searches.Site;
+import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.LanguageUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
@@ -95,12 +100,14 @@ import com.hardbacknutter.nevertoomanybooks.utils.Money;
         // The ASIN is not yet fully implemented
         domainKey = DBDefinitions.KEY_ISBN,
         domainViewId = R.id.site_amazon,
-        domainMenuId = R.id.MENU_VIEW_BOOK_AT_AMAZON
+        domainMenuId = R.id.MENU_VIEW_BOOK_AT_AMAZON,
+        filenameSuffix = "AMZ"
 )
 public final class AmazonSearchEngine
         extends JsoupSearchEngineBase
         implements SearchEngine.ByExternalId,
-                   SearchEngine.ByIsbn {
+                   SearchEngine.ByIsbn,
+                   SearchEngine.CoverByIsbn {
 
     /** Preferences prefix. */
     public static final String PREF_KEY = "amazon";
@@ -126,8 +133,6 @@ public final class AmazonSearchEngine
     private static final String SEARCH_SUFFIX = "/gp/search?index=books";
     /** Param 1: external book ID; the ASIN/ISBN. */
     private static final String BY_EXTERNAL_ID = "/gp/product/%1$s";
-    /** file suffix for cover files. */
-    private static final String FILENAME_SUFFIX = "_AMZ";
     /**
      * Parse "some text; more text (some more text)" into "some text" and "some more text".
      * <p>
@@ -143,9 +148,11 @@ public final class AmazonSearchEngine
     private static final Pattern PUBLISHER_PATTERN =
             Pattern.compile("([^(;]*).*\\((.*)\\).*",
                             Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
+
     private static final Pattern AUTHOR_TYPE_PATTERN =
             Pattern.compile("\\((.*)\\).*",
                             Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
+
     /** Parse the "x pages" string. */
     private final Pattern mPagesPattern;
 
@@ -183,8 +190,7 @@ public final class AmazonSearchEngine
         //noinspection ConstantConditions
         return PreferenceManager
                 .getDefaultSharedPreferences(context)
-                .getString(PREFS_HOST_URL, Site.getConfig(SearchSites.AMAZON)
-                                               .getSiteUrl());
+                .getString(PREFS_HOST_URL, Site.getConfig(SearchSites.AMAZON).getSiteUrl());
     }
 
     /**
@@ -297,13 +303,20 @@ public final class AmazonSearchEngine
         }
     }
 
+    /**
+     * The external ID is the ASIN.
+     * The ASIN for books is identical to the ISBN10 code.
+     * <p>
+     * {@inheritDoc}
+     */
     @NonNull
     @Override
     public Bundle searchByExternalId(@NonNull final String externalId,
                                      @NonNull final boolean[] fetchThumbnail)
-            throws SocketTimeoutException {
+            throws IOException {
 
         final Bundle bookData = new Bundle();
+
         final String url = getSiteUrl() + String.format(BY_EXTERNAL_ID, externalId);
         final Document document = loadDocument(url);
         if (document != null && !isCancelled()) {
@@ -316,7 +329,7 @@ public final class AmazonSearchEngine
     @Override
     public Bundle searchByIsbn(@NonNull final String validIsbn,
                                @NonNull final boolean[] fetchThumbnail)
-            throws SocketTimeoutException {
+            throws IOException {
 
         final ISBN tmp = new ISBN(validIsbn);
         if (tmp.isIsbn10Compat()) {
@@ -326,6 +339,29 @@ public final class AmazonSearchEngine
         }
     }
 
+    @Nullable
+    @Override
+    public String searchCoverImageByIsbn(@NonNull final String validIsbn,
+                                         @IntRange(from = 0) final int cIdx,
+                                         @Nullable final ImageFileInfo.Size size) {
+        try {
+            final String url = getSiteUrl() + String.format(BY_EXTERNAL_ID, validIsbn);
+            final Document document = loadDocument(url);
+            if (document != null && !isCancelled()) {
+                final ArrayList<String> imageList = parseCovers(document, validIsbn, 0);
+                if (!imageList.isEmpty()) {
+                    final File downloadedFile = new File(imageList.get(0));
+                    // let the system resolve any path variations
+                    final File destination = new File(downloadedFile.getAbsolutePath());
+                    FileUtils.rename(downloadedFile, destination);
+                    return destination.getAbsolutePath();
+                }
+            }
+        } catch (@NonNull final IOException ignore) {
+            // ignore
+        }
+        return null;
+    }
 
     @Override
     @VisibleForTesting
@@ -438,7 +474,6 @@ public final class AmazonSearchEngine
                 case "langue":
                 case "sprache":
                 case "taal":
-                    // the language is a 'DisplayName' so convert to iso first.
                     data = LanguageUtils.getISO3FromDisplayName(mAppContext, siteLocale, data);
                     bookData.putString(DBDefinitions.KEY_LANGUAGE, data);
                     break;
@@ -523,21 +558,29 @@ public final class AmazonSearchEngine
         }
 
         if (fetchThumbnail[0]) {
-            parseCovers(document, bookData);
+            final String isbn = bookData.getString(DBDefinitions.KEY_ISBN);
+            final ArrayList<String> imageList = parseCovers(document, isbn, 0);
+            if (!imageList.isEmpty()) {
+                bookData.putStringArrayList(Book.BKEY_FILE_SPEC_ARRAY[0], imageList);
+            }
         }
     }
 
     /**
      * Parses the downloaded {@link Document} for the cover and fetches it when present.
      *
-     * @param coverRoot to parse
-     * @param bookData  Bundle to update
+     * @param document to parse
+     * @param isbn     (optional) ISBN of the book, will be used for the cover filename
+     * @param cIdx     0..n image index
      */
     @WorkerThread
-    private void parseCovers(@NonNull final Element coverRoot,
-                             @NonNull final Bundle bookData) {
-        final Element coverElement = coverRoot.selectFirst("img#imgBlkFront");
+    @VisibleForTesting
+    @NonNull
+    public ArrayList<String> parseCovers(@NonNull final Document document,
+                                         @Nullable final String isbn,
+                                         @IntRange(from = 0) final int cIdx) {
 
+        final Element coverElement = document.selectFirst("img#imgBlkFront");
         String url;
         try {
             // data-a-dynamic-image = {"https://...":[327,499],"https://...":[227,346]}
@@ -556,6 +599,13 @@ public final class AmazonSearchEngine
             url = srcUrl;
         }
 
-        fetchCover(url, bookData, FILENAME_SUFFIX, 0);
+        final ArrayList<String> imageList = new ArrayList<>();
+
+        final String tmpName = createFilename(isbn, cIdx, null);
+        final String fileSpec = saveImage(url, tmpName);
+        if (fileSpec != null) {
+            imageList.add(fileSpec);
+        }
+        return imageList;
     }
 }

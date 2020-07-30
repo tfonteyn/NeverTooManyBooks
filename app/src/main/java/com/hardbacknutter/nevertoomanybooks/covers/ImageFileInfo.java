@@ -36,6 +36,7 @@ import androidx.annotation.Nullable;
 import java.io.File;
 
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
+import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
 
 /**
  * Value class containing info about a cover file.
@@ -63,6 +64,9 @@ public class ImageFileInfo
     @Nullable
     public final String fileSpec;
 
+    @SearchSites.EngineId
+    public final int engineId;
+
     /**
      * Constructor. No file.
      */
@@ -70,16 +74,7 @@ public class ImageFileInfo
         this.isbn = isbn;
         this.fileSpec = null;
         this.size = null;
-    }
-
-    /**
-     * Constructor. File is considered 'Large'.
-     */
-    ImageFileInfo(@NonNull final String isbn,
-                  @Nullable final String fileSpec) {
-        this.isbn = isbn;
-        this.fileSpec = fileSpec;
-        this.size = Size.Large;
+        this.engineId = 0;
     }
 
     /**
@@ -87,10 +82,12 @@ public class ImageFileInfo
      */
     ImageFileInfo(@NonNull final String isbn,
                   @Nullable final String fileSpec,
-                  @Nullable final Size size) {
+                  @Nullable final Size size,
+                  @SearchSites.EngineId final int engineId) {
         this.isbn = isbn;
         this.fileSpec = fileSpec;
         this.size = size;
+        this.engineId = engineId;
     }
 
     /**
@@ -102,6 +99,8 @@ public class ImageFileInfo
         //noinspection ConstantConditions
         isbn = in.readString();
         fileSpec = in.readString();
+        engineId = in.readInt();
+
         int sizeOrdinal = in.readInt();
         if (sizeOrdinal >= 0) {
             size = Size.values()[sizeOrdinal];
@@ -115,6 +114,8 @@ public class ImageFileInfo
                               final int flags) {
         dest.writeString(isbn);
         dest.writeString(fileSpec);
+        dest.writeInt(engineId);
+
         dest.writeInt(size != null ? size.ordinal() : -1);
     }
 
@@ -137,18 +138,22 @@ public class ImageFileInfo
         return "ImageFileInfo{"
                + "isbn=`" + isbn + '`'
                + ", size=" + size
-               + ", fileSpec=`" + fileSpec + '`'
+               + ", engineId=" + engineId
+               + ", fileSpec=`" + (fileSpec == null ? "" :
+                                   fileSpec.substring(fileSpec.lastIndexOf('/'))) + '`'
                + '}';
     }
 
     /**
      * Sizes of images downloaded by {@link SearchEngine} implementations.
      * These are open to interpretation (or not used at all) by individual sites.
+     * <p>
+     * The order must be from Small to Large so we can use {@link Enum#compareTo(Enum)}.
      */
     public enum Size {
-        Large,
+        Small,
         Medium,
-        Small;
+        Large;
 
         public static final Size[] SMALL_FIRST = {Small, Medium, Large};
         public static final Size[] LARGE_FIRST = {Large, Medium, Small};

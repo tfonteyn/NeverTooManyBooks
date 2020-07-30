@@ -30,12 +30,12 @@ package com.hardbacknutter.nevertoomanybooks.searches;
 import android.content.Context;
 import android.os.Bundle;
 
-import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.annotation.WorkerThread;
 
+import java.io.IOException;
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
@@ -43,9 +43,7 @@ import java.util.regex.Pattern;
 
 import org.jsoup.nodes.Document;
 
-import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
-import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 
@@ -55,9 +53,9 @@ public abstract class JsoupSearchEngineBase
     /** The description contains div tags which we remove to make the text shorter. */
     private static final Pattern DIV_PATTERN = Pattern.compile("(\n*\\s*<div>\\s*|\\s*</div>)");
     /** Convert "&amp;" to '&'. */
-    private static final Pattern AMPERSAND_PATTERN = Pattern.compile("&amp;", Pattern.LITERAL);
+    private static final Pattern AMPERSAND_LITERAL = Pattern.compile("&amp;", Pattern.LITERAL);
     /** a CR is replaced with a space. */
-    private static final Pattern CR_PATTERN = Pattern.compile("\n", Pattern.LITERAL);
+    private static final Pattern CR_LITERAL = Pattern.compile("\n", Pattern.LITERAL);
 
 
     /** accumulate all Authors for this book. */
@@ -67,6 +65,7 @@ public abstract class JsoupSearchEngineBase
     /** accumulate all Publishers for this book. */
     protected final ArrayList<Publisher> mPublishers = new ArrayList<>();
 
+    /** Responsible for loading and parsing the web page. */
     @NonNull
     private final JsoupLoader mJsoupLoader;
 
@@ -83,7 +82,8 @@ public abstract class JsoupSearchEngineBase
     /**
      * Constructor.
      *
-     * @param appContext Application context
+     * @param appContext  Application context
+     * @param charSetName to use
      */
     protected JsoupSearchEngineBase(@NonNull final Context appContext,
                                     @NonNull final String charSetName) {
@@ -94,29 +94,21 @@ public abstract class JsoupSearchEngineBase
     @WorkerThread
     @Nullable
     public Document loadDocument(@NonNull final String url)
-            throws SocketTimeoutException {
-        return mJsoupLoader.loadDocument(mAppContext, url, this);
-    }
-
-    @WorkerThread
-    @Nullable
-    public Document redirect(@NonNull final String url)
-            throws SocketTimeoutException {
-        mJsoupLoader.reset();
+            throws IOException {
         return mJsoupLoader.loadDocument(mAppContext, url, this);
     }
 
     /**
      * Parses the downloaded {@link org.jsoup.nodes.Document}.
      * We only parse the <strong>first book</strong> found.
+     * <p>
+     * (dev note: This method is abstract to make testing easier.)
      *
      * @param document       to parse
      * @param fetchThumbnail Set to {@code true} if we want to get thumbnails
      * @param bookData       Bundle to update
      *
      * @throws SocketTimeoutException if the connection times out while fetching additional data
-     *                                <p>
-     *                                This is here as an abstract to make testing easier.
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
     @WorkerThread
@@ -124,38 +116,6 @@ public abstract class JsoupSearchEngineBase
                                @NonNull boolean[] fetchThumbnail,
                                @NonNull Bundle bookData)
             throws SocketTimeoutException;
-
-    /**
-     * Fetch the cover from the url.
-     *
-     * @param url      fully qualified url
-     * @param bookData Bundle to update
-     * @param cIdx     0..n image index
-     */
-    @WorkerThread
-    protected void fetchCover(@NonNull final String url,
-                              @NonNull final Bundle bookData,
-                              @NonNull final String suffix,
-                              @IntRange(from = 0) final int cIdx) {
-
-        final String prefix = bookData.getString(DBDefinitions.KEY_ISBN, "");
-        final String fileSpec = saveImage(url, prefix, suffix, cIdx);
-
-        if (fileSpec != null) {
-            addCover(bookData, Book.BKEY_FILE_SPEC_ARRAY[cIdx], fileSpec);
-        }
-    }
-
-    protected void addCover(@NonNull final Bundle bookData,
-                            @NonNull final String key,
-                            @NonNull final String fileSpec) {
-        ArrayList<String> imageList = bookData.getStringArrayList(key);
-        if (imageList == null) {
-            imageList = new ArrayList<>();
-        }
-        imageList.add(fileSpec);
-        bookData.putStringArrayList(key, imageList);
-    }
 
     /**
      * Filter a string of all non-digits. Used to clean isbn strings, years... etc.
@@ -187,14 +147,14 @@ public abstract class JsoupSearchEngineBase
         String text = s.trim();
         // add more rules when needed.
         if (text.contains("&")) {
-            text = AMPERSAND_PATTERN.matcher(text).replaceAll(Matcher.quoteReplacement("&"));
+            text = AMPERSAND_LITERAL.matcher(text).replaceAll(Matcher.quoteReplacement("&"));
         }
         if (text.contains("<div>")) {
             // the div elements only create empty lines, we remove them to save screen space
             text = DIV_PATTERN.matcher(text).replaceAll("");
         }
         if (text.contains("\n")) {
-            text = CR_PATTERN.matcher(text).replaceAll(" ").trim();
+            text = CR_LITERAL.matcher(text).replaceAll(" ").trim();
         }
         return text;
     }

@@ -34,7 +34,7 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:background="@drawable/popup_background"
-    android:maxWidth="200dp"
+    android:maxWidth="250dp"
     android:maxLines="10"
     android:paddingStart="8dp"
     android:paddingTop="4dp"

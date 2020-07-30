@@ -38,9 +38,8 @@ import androidx.annotation.VisibleForTesting;
 import androidx.annotation.WorkerThread;
 import androidx.preference.PreferenceManager;
 
+import java.io.File;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.SocketTimeoutException;
 import java.net.URLEncoder;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -72,6 +71,7 @@ import com.hardbacknutter.nevertoomanybooks.searches.JsoupSearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.utils.DateParser;
+import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.Money;
 
@@ -90,7 +90,8 @@ import com.hardbacknutter.nevertoomanybooks.utils.Money;
         domainViewId = R.id.site_isfdb,
         domainMenuId = R.id.MENU_VIEW_BOOK_AT_ISFDB,
         connectTimeoutMs = 20_000,
-        readTimeoutMs = 60_000
+        readTimeoutMs = 60_000,
+        filenameSuffix = "ISFDB"
 )
 public class IsfdbSearchEngine
         extends JsoupSearchEngineBase
@@ -106,9 +107,7 @@ public class IsfdbSearchEngine
     public static final String PREFS_SERIES_FROM_TOC = PREF_KEY + ".search.toc.series";
     /** Type: {@code boolean}. */
     public static final String PREFS_USE_PUBLISHER = PREF_KEY + ".search.uses.publisher";
-    /** Type: {@code String}. */
-    @VisibleForTesting
-    public static final String PREFS_HOST_URL = PREF_KEY + ".host.url";
+
     /**
      * The site claims to use ISO-8859-1.
      * <pre>
@@ -139,8 +138,6 @@ public class IsfdbSearchEngine
     static final String URL_ADV_SEARCH_RESULTS_CGI = "adv_search_results.cgi";
     /** Log tag. */
     private static final String TAG = "IsfdbSearchEngine";
-    /** file suffix for cover files. */
-    private static final String FILENAME_SUFFIX = "_ISFDB";
     /** Param 1: external book ID. */
     private static final String BY_EXTERNAL_ID = IsfdbSearchEngine.CGI_BIN
                                                  + IsfdbSearchEngine.URL_PL_CGI + "?%1$s";
@@ -158,7 +155,7 @@ public class IsfdbSearchEngine
     // private static final Pattern DOT_PATTERN = Pattern.compile(DOT);
     private static final Pattern YEAR_PATTERN = Pattern.compile(DOT + " \\(([1|2]\\d\\d\\d)\\)");
     /** ISFDB uses 00 for the day/month when unknown. We cut that out. */
-    private static final Pattern UNKNOWN_M_D_PATTERN = Pattern.compile("-00", Pattern.LITERAL);
+    private static final Pattern UNKNOWN_M_D_LITERAL = Pattern.compile("-00", Pattern.LITERAL);
     /** A CSS select query. */
     private static final String CSS_Q_DIV_CONTENTBOX = "div.contentbox";
     /**
@@ -256,9 +253,10 @@ public class IsfdbSearchEngine
     @Override
     public Bundle searchByExternalId(@NonNull final String externalId,
                                      @NonNull final boolean[] fetchThumbnail)
-            throws SocketTimeoutException {
+            throws IOException {
 
         final Bundle bookData = new Bundle();
+
         final String url = getSiteUrl() + String.format(BY_EXTERNAL_ID, externalId);
         final Document document = loadDocument(url);
         if (document != null && !isCancelled()) {
@@ -271,9 +269,10 @@ public class IsfdbSearchEngine
     @Override
     public Bundle searchByIsbn(@NonNull final String validIsbn,
                                @NonNull final boolean[] fetchThumbnail)
-            throws SocketTimeoutException {
+            throws IOException {
 
         final Bundle bookData = new Bundle();
+
         final List<Edition> editions = fetchEditionsByIsbn(validIsbn);
         if (!editions.isEmpty()) {
             fetchByEdition(editions.get(0), fetchThumbnail, bookData);
@@ -284,12 +283,12 @@ public class IsfdbSearchEngine
     @NonNull
     @Override
     @WorkerThread
-    public Bundle search(@Nullable final String code,
+    public Bundle search(@Nullable final /* not supported */ String code,
                          @Nullable final String author,
                          @Nullable final String title,
                          @Nullable final String publisher,
                          @NonNull final boolean[] fetchThumbnail)
-            throws UnsupportedEncodingException, SocketTimeoutException {
+            throws IOException {
 
         final String url = getSiteUrl() + CGI_BIN + URL_ADV_SEARCH_RESULTS_CGI + "?"
                            + "ORDERBY=pub_title"
@@ -332,6 +331,7 @@ public class IsfdbSearchEngine
         // &USE_6=pub_title&O_6=exact&TERM_6=
 
         final Bundle bookData = new Bundle();
+
         // sanity check: any data to search for?
         if (!args.isEmpty()) {
             final List<Edition> editions = fetchEditions(url + args);
@@ -350,9 +350,18 @@ public class IsfdbSearchEngine
         try {
             final List<Edition> editions = fetchEditionsByIsbn(validIsbn);
             if (!editions.isEmpty()) {
-                final Bundle bookData = new Bundle();
-                fetchCoverByEdition(editions.get(0), bookData);
-                return getFirstCoverFileFoundPath(bookData, cIdx);
+                final Edition edition = editions.get(0);
+                final Document document = loadDocumentByEdition(edition);
+                if (document != null && !isCancelled()) {
+                    final ArrayList<String> imageList = parseCovers(document, edition.getIsbn(), 0);
+                    if (!imageList.isEmpty()) {
+                        final File downloadedFile = new File(imageList.get(0));
+                        // let the system resolve any path variations
+                        final File destination = new File(downloadedFile.getAbsolutePath());
+                        FileUtils.rename(downloadedFile, destination);
+                        return destination.getAbsolutePath();
+                    }
+                }
             }
         } catch (@NonNull final IOException ignore) {
             // ignore
@@ -371,7 +380,7 @@ public class IsfdbSearchEngine
     @NonNull
     @Override
     public List<String> searchAlternativeEditions(@NonNull final String validIsbn)
-            throws SocketTimeoutException {
+            throws IOException {
 
         final List<Edition> editions = fetchEditionsByIsbn(validIsbn);
 
@@ -615,7 +624,7 @@ public class IsfdbSearchEngine
                     tmpString = fieldLabelElement.nextSibling().toString().trim();
                     // except that ISFDB uses 00 for the day/month when unknown ...
                     // e.g. "1975-04-00" or "1974-00-00" Cut that part off.
-                    tmpString = UNKNOWN_M_D_PATTERN.matcher(tmpString).replaceAll("");
+                    tmpString = UNKNOWN_M_D_LITERAL.matcher(tmpString).replaceAll("");
                     // and we're paranoid...
                     final LocalDateTime date = dateParser.parse(tmpString);
                     if (date != null) {
@@ -768,8 +777,7 @@ public class IsfdbSearchEngine
         // For now, default to a localised 'English" as ISFDB is after all (I presume) 95% english
         bookData.putString(DBDefinitions.KEY_LANGUAGE, "eng");
 
-        final ArrayList<TocEntry> toc = parseToc(document,
-                                                 bookData.getString(DBDefinitions.KEY_ISBN));
+        final ArrayList<TocEntry> toc = parseToc(document);
         // We DON'T store a toc with a single entry (i.e. the book title itself).
         if (toc.size() > 1) {
             bookData.putParcelableArrayList(Book.BKEY_TOC_ARRAY, toc);
@@ -821,7 +829,11 @@ public class IsfdbSearchEngine
         }
 
         if (fetchThumbnail[0]) {
-            parseCovers(document, bookData);
+            final String isbn = bookData.getString(DBDefinitions.KEY_ISBN);
+            final ArrayList<String> imageList = parseCovers(document, isbn, 0);
+            if (!imageList.isEmpty()) {
+                bookData.putStringArrayList(Book.BKEY_FILE_SPEC_ARRAY[0], imageList);
+            }
         }
     }
 
@@ -849,13 +861,11 @@ public class IsfdbSearchEngine
      * </pre>
      *
      * @param document to parse
-     * @param isbn     only used for for logging
      *
      * @return the toc list
      */
     @WorkerThread
-    private ArrayList<TocEntry> parseToc(@NonNull final Document document,
-                                         @Nullable final String isbn) {
+    private ArrayList<TocEntry> parseToc(@NonNull final Document document) {
 
         final boolean addSeriesFromToc = PreferenceManager
                 .getDefaultSharedPreferences(mAppContext)
@@ -985,7 +995,6 @@ public class IsfdbSearchEngine
             if (title == null) {
                 title = "";
                 Logger.warn(mAppContext, TAG, "getTocList"
-                                              + "|ISBN=" + isbn
                                               + "|no title for li=" + li);
             }
 
@@ -1009,12 +1018,16 @@ public class IsfdbSearchEngine
     /**
      * Parses the downloaded {@link Document} for the cover and fetches it when present.
      *
-     * @param coverRoot to parse
-     * @param bookData  Bundle to update
+     * @param document to parse
+     * @param isbn     (optional) ISBN of the book, will be used for the cover filename
+     * @param cIdx     0..n image index
      */
     @WorkerThread
-    private void parseCovers(@NonNull final Element coverRoot,
-                             @NonNull final Bundle bookData) {
+    @VisibleForTesting
+    @NonNull
+    public ArrayList<String> parseCovers(@NonNull final Document document,
+                                         @Nullable final String isbn,
+                                         @IntRange(from = 0) final int cIdx) {
         /* First "ContentBox" contains all basic details.
          * <pre>
          *   {@code
@@ -1041,14 +1054,22 @@ public class IsfdbSearchEngine
          *     }
          * </pre>
          */
-        final Element contentBox = coverRoot.selectFirst(CSS_Q_DIV_CONTENTBOX);
+
+        final ArrayList<String> imageList = new ArrayList<>();
+
+        final Element contentBox = document.selectFirst(CSS_Q_DIV_CONTENTBOX);
         if (contentBox != null) {
             final Element img = contentBox.selectFirst("img");
             if (img != null) {
-                final String coverUrl = img.attr("src");
-                fetchCover(coverUrl, bookData, FILENAME_SUFFIX, 0);
+                final String url = img.attr("src");
+                final String tmpName = createFilename(isbn, cIdx, null);
+                final String fileSpec = saveImage(url, tmpName);
+                if (fileSpec != null) {
+                    imageList.add(fileSpec);
+                }
             }
         }
+        return imageList;
     }
 
 
@@ -1059,13 +1080,13 @@ public class IsfdbSearchEngine
      *
      * @return list of editions found, can be empty, but never {@code null}
      *
-     * @throws SocketTimeoutException if the connection times out
+     * @throws IOException on failure
      */
     @SuppressWarnings("WeakerAccess")
     @WorkerThread
     @NonNull
     public List<Edition> fetchEditions(@NonNull final String url)
-            throws SocketTimeoutException {
+            throws IOException {
 
         final Document document = loadDocument(url);
         if (document != null && !isCancelled()) {
@@ -1082,12 +1103,12 @@ public class IsfdbSearchEngine
      *
      * @return list of editions found, can be empty, but never {@code null}
      *
-     * @throws SocketTimeoutException if the connection times out
+     * @throws IOException on failure
      */
     @WorkerThread
     @NonNull
     public List<Edition> fetchEditionsByIsbn(@NonNull final String validIsbn)
-            throws SocketTimeoutException {
+            throws IOException {
         mIsbn = validIsbn;
 
         final String url = getSiteUrl() + String.format(EDITIONS_URL, validIsbn);
@@ -1181,13 +1202,13 @@ public class IsfdbSearchEngine
      * @param fetchThumbnail Set to {@code true} if we want to get thumbnails
      * @param bookData       Bundle to update <em>(passed in to allow mocking)</em>
      *
-     * @throws SocketTimeoutException if the connection times out
+     * @throws IOException on failure
      */
     @WorkerThread
     public void fetchByEdition(@NonNull final Edition edition,
                                @NonNull final boolean[] fetchThumbnail,
                                @NonNull final Bundle bookData)
-            throws SocketTimeoutException {
+            throws IOException {
 
         final Document document = loadDocumentByEdition(edition);
         if (document != null && !isCancelled()) {
@@ -1195,27 +1216,8 @@ public class IsfdbSearchEngine
         }
     }
 
-    /**
-     * Fetch a cover.
-     *
-     * @param edition  to get
-     * @param bookData Bundle to update <em>(passed in to allow mocking)</em>
-     *
-     * @throws SocketTimeoutException if the connection times out
-     */
-    @WorkerThread
-    void fetchCoverByEdition(@NonNull final Edition edition,
-                             @NonNull final Bundle bookData)
-            throws SocketTimeoutException {
-
-        final Document document = loadDocumentByEdition(edition);
-        if (document != null && !isCancelled()) {
-            parseCovers(document, bookData);
-        }
-    }
-
     private Document loadDocumentByEdition(@NonNull final Edition edition)
-            throws SocketTimeoutException {
+            throws IOException {
 
         // check if we already got the page
         final Document document = edition.getDocument();

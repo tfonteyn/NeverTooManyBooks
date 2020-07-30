@@ -43,7 +43,7 @@ import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsAuth;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsManager;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsShelf;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
-import com.hardbacknutter.nevertoomanybooks.utils.xml.SimpleXmlFilter;
+import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlFilter;
 import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlResponseParser;
 
 /**
@@ -58,6 +58,10 @@ public class ShelvesListApiHandler
                                       + "key=%1$s&page=%2$s&user_id=%3$s";
 
     private SimpleXmlFilter mFilters;
+
+    /** XmlFilter root object. Used in extracting data file XML results. */
+    @NonNull
+    final XmlFilter mRootFilter = new XmlFilter("");
 
     /**
      * Constructor.

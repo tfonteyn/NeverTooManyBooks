@@ -50,8 +50,6 @@ import org.mockito.quality.Strictness;
 import org.mockito.stubbing.Answer;
 
 import com.hardbacknutter.nevertoomanybooks.searches.amazon.AmazonSearchEngine;
-import com.hardbacknutter.nevertoomanybooks.searches.isfdb.IsfdbSearchEngine;
-import com.hardbacknutter.nevertoomanybooks.searches.kbnl.KbNlSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.tasks.Canceller;
 import com.hardbacknutter.nevertoomanybooks.utils.DateParser;
@@ -166,11 +164,6 @@ public class CommonMocks {
         when(mSharedPreferences.getString(eq("néerlandais"), anyString())).thenReturn("nld");
         when(mSharedPreferences.getString(eq("niederländisch"), anyString())).thenReturn("nld");
         when(mSharedPreferences.getString(eq("nederlands"), anyString())).thenReturn("nld");
-
-        when(mSharedPreferences.getString(eq(IsfdbSearchEngine.PREFS_HOST_URL), anyString()))
-                .thenReturn("http://www.isfdb.org");
-        when(mSharedPreferences.getString(eq(KbNlSearchEngine.PREFS_HOST_URL), anyString()))
-                .thenReturn("http://opc4.kb.nl");
 
         when(mSharedPreferences.getString(eq(AmazonSearchEngine.PREFS_HOST_URL), anyString()))
                 .thenAnswer((Answer<String>) invocation -> {

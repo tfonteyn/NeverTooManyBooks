@@ -615,7 +615,7 @@ public class DiacriticArrayAdapter<T>
     private class ArrayFilter
             extends Filter {
 
-        private final Pattern DIACRITICS_REGEX = Pattern.compile("[^\\p{ASCII}]");
+        private final Pattern DIACRITICS_PATTERN = Pattern.compile("[^\\p{ASCII}]");
 
         @Override
         protected FilterResults performFiltering(@Nullable final CharSequence prefix) {
@@ -683,9 +683,9 @@ public class DiacriticArrayAdapter<T>
          * @return ascii text
          */
         private String filterDiacritics(@NonNull final CharSequence text) {
-            return DIACRITICS_REGEX.matcher(Normalizer.normalize(text, Normalizer.Form.NFD))
-                                   .replaceAll("")
-                                   .toLowerCase(Locale.getDefault());
+            return DIACRITICS_PATTERN.matcher(Normalizer.normalize(text, Normalizer.Form.NFD))
+                                     .replaceAll("")
+                                     .toLowerCase(Locale.getDefault());
         }
 
         @Override

@@ -34,9 +34,9 @@ import android.util.Log;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
@@ -47,6 +47,7 @@ import org.xml.sax.SAXException;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageFileInfo;
+import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
@@ -66,7 +67,8 @@ import com.hardbacknutter.nevertoomanybooks.tasks.TerminatorConnection;
         prefKey = KbNlSearchEngine.PREF_KEY,
         lang = "nl",
         country = "NL",
-        supportsMultipleCoverSizes = true
+        supportsMultipleCoverSizes = true,
+        filenameSuffix = "KB"
 )
 public class KbNlSearchEngine
         extends SearchEngineBase
@@ -75,9 +77,6 @@ public class KbNlSearchEngine
 
     /** Preferences prefix. */
     public static final String PREF_KEY = "kbnl";
-    /** Type: {@code String}. */
-    @VisibleForTesting
-    public static final String PREFS_HOST_URL = PREF_KEY + ".host.url";
 
     /**
      * <strong>Note:</strong> This is not the same site as the search site itself.
@@ -87,8 +86,6 @@ public class KbNlSearchEngine
      */
     private static final String BASE_URL_COVERS =
             "https://webservices.bibliotheek.be/index.php?func=cover&ISBN=%1$s&coversize=%2$s";
-    /** file suffix for cover files. */
-    private static final String FILENAME_SUFFIX = "_KB";
 
     /* Response with English labels. */
     //private static final String BOOK_URL =
@@ -119,10 +116,12 @@ public class KbNlSearchEngine
                                @NonNull final boolean[] fetchThumbnail)
             throws IOException {
 
+        final Bundle bookData = new Bundle();
+
         final String url = getSiteUrl() + String.format(BOOK_URL, validIsbn);
 
         final SAXParserFactory factory = SAXParserFactory.newInstance();
-        final KbNlBookHandler handler = new KbNlBookHandler(new Bundle());
+        final KbNlBookHandler handler = new KbNlBookHandler(bookData);
 
         // Don't follow redirects, so we get the XML instead of the rendered page
         try (TerminatorConnection con = createConnection(url, false)) {
@@ -135,14 +134,15 @@ public class KbNlSearchEngine
             throw new IOException(e);
         }
 
-        final Bundle bookData = handler.getResult();
-
         if (isCancelled()) {
             return bookData;
         }
 
         if (fetchThumbnail[0]) {
-            searchBestCoverImageByIsbn(validIsbn, 0, bookData);
+            final ArrayList<String> imageList = searchBestCoverImageByIsbn(validIsbn, 0);
+            if (!imageList.isEmpty()) {
+                bookData.putStringArrayList(Book.BKEY_FILE_SPEC_ARRAY[0], imageList);
+            }
         }
         return bookData;
     }
@@ -159,25 +159,26 @@ public class KbNlSearchEngine
     public String searchCoverImageByIsbn(@NonNull final String validIsbn,
                                          @IntRange(from = 0) final int cIdx,
                                          @Nullable final ImageFileInfo.Size size) {
-        final String sizeSuffix;
+        final String sizeParam;
         if (size == null) {
-            sizeSuffix = "large";
+            sizeParam = "large";
         } else {
             switch (size) {
                 case Small:
-                    sizeSuffix = "small";
+                    sizeParam = "small";
                     break;
                 case Medium:
-                    sizeSuffix = "medium";
+                    sizeParam = "medium";
                     break;
                 case Large:
                 default:
-                    sizeSuffix = "large";
+                    sizeParam = "large";
                     break;
             }
         }
 
-        final String url = String.format(BASE_URL_COVERS, validIsbn, sizeSuffix);
-        return saveImage(url, validIsbn, FILENAME_SUFFIX + "_" + sizeSuffix, 0);
+        final String url = String.format(BASE_URL_COVERS, validIsbn, sizeParam);
+        final String tmpName = createFilename(validIsbn, cIdx, size);
+        return saveImage(url, tmpName);
     }
 }

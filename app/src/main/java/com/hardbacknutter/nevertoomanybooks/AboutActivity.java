@@ -122,11 +122,6 @@ public class AboutActivity
         mVb.debugDumpTempTables.setOnClickListener(
                 v -> DBHelper.dumpTempTableNames(DAO.getSyncDb()));
 
-//        view = findViewById(R.id.contact1);
-//        view.setOnClickListener(v -> sendContactEmail(R.string.email_contact1));
-//
-//        view = findViewById(R.id.contact2);
-//        view.setOnClickListener(v -> sendContactEmail(R.string.email_contact2));
 //
 //        view = findViewById(R.id.website);
 //        view.setText(LinkifyUtils.fromHtml(

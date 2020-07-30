@@ -198,7 +198,7 @@
 
             <TextView
                 android:id="@+id/isbn"
-                style="@style/Field.Generic.Small"
+                style="@style/Field.Isbn.Small"
                 app:layout_constraintStart_toStartOf="@id/lbl_isbn"
                 app:layout_constraintTop_toBottomOf="@id/lbl_isbn"
                 tools:ignore="SelectableText"

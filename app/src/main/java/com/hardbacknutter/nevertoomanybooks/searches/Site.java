@@ -45,6 +45,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.App;
@@ -61,18 +62,17 @@ public class Site
         implements Parcelable {
 
     /** {@link Parcelable}. */
-    public static final Creator<Site> CREATOR =
-            new Creator<Site>() {
-                @Override
-                public Site createFromParcel(@NonNull final Parcel source) {
-                    return new Site(source);
-                }
+    public static final Creator<Site> CREATOR = new Creator<Site>() {
+        @Override
+        public Site createFromParcel(@NonNull final Parcel source) {
+            return new Site(source);
+        }
 
-                @Override
-                public Site[] newArray(final int size) {
-                    return new Site[size];
-                }
-            };
+        @Override
+        public Site[] newArray(final int size) {
+            return new Site[size];
+        }
+    };
 
     /**
      * The (for now) only actual preference:
@@ -82,7 +82,7 @@ public class Site
 
 
     /** All site configurations. */
-    private static final HashMap<Integer, Config> ALL_SITE_CONFIGS = new HashMap<>();
+    private static final Map<Integer, Config> ALL_SITE_CONFIGS = new HashMap<>();
 
     /** SearchEngine ID. Used to (re)create {@link #mSearchEngine}. */
     @SearchSites.EngineId
@@ -295,7 +295,7 @@ public class Site
      * <p>
      * See {@link SearchSites} for more details.
      */
-    public static class Config {
+    public static final class Config {
 
         @NonNull
         private final Class<? extends SearchEngine> mClass;
@@ -382,6 +382,11 @@ public class Site
         @NonNull
         public String getPreferenceKey() {
             return mConfiguration.prefKey();
+        }
+
+        @NonNull
+        public String getFilenameSuffix() {
+            return mConfiguration.filenameSuffix();
         }
 
         @NonNull

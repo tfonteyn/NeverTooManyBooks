@@ -47,7 +47,7 @@ public class ShowBookByIdApiHandler
         extends ShowBookApiHandler {
 
     /** Page url. */
-    private static final String URL = GoodreadsManager.BASE_URL + "/book/show/%1$s.xml?key=%2$s";
+    private static final String BY_ID = GoodreadsManager.BASE_URL + "/book/show/%1$s.xml?key=%2$s";
 
     /**
      * Constructor.
@@ -77,12 +77,12 @@ public class ShowBookByIdApiHandler
      * @throws IOException          on other failures
      */
     @NonNull
-    public Bundle get(final long grBookId,
-                      @NonNull final boolean[] fetchThumbnail,
-                      @NonNull final Bundle bookData)
+    public Bundle searchByExternalId(final long grBookId,
+                                     @NonNull final boolean[] fetchThumbnail,
+                                     @NonNull final Bundle bookData)
             throws CredentialsException, Http404Exception, IOException {
 
-        final String url = String.format(URL, grBookId, mGrAuth.getDevKey());
-        return getBookData(url, fetchThumbnail, bookData);
+        final String url = String.format(BY_ID, grBookId, mGrAuth.getDevKey());
+        return searchBook(url, fetchThumbnail, bookData);
     }
 }

@@ -35,7 +35,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.annotation.WorkerThread;
 
-import java.net.SocketTimeoutException;
+import java.io.IOException;
 import java.util.ArrayList;
 
 import org.jsoup.nodes.Document;
@@ -66,15 +66,14 @@ import com.hardbacknutter.nevertoomanybooks.utils.LanguageUtils;
         country = "NL",
         domainKey = DBDefinitions.KEY_EID_LAST_DODO_NL,
         domainViewId = R.id.site_last_dodo_nl,
-        domainMenuId = R.id.MENU_VIEW_BOOK_AT_LAST_DODO_NL
+        domainMenuId = R.id.MENU_VIEW_BOOK_AT_LAST_DODO_NL,
+        filenameSuffix = "LDD"
 )
 public class LastDodoSearchEngine
         extends JsoupSearchEngineBase
         implements SearchEngine.ByIsbn,
                    SearchEngine.ByExternalId {
 
-    /** file suffix for cover files. */
-    private static final String FILENAME_SUFFIX = "_LDD";
     /**
      * Param 1: external book ID; really a 'long'.
      * Param 2: 147==comics
@@ -110,9 +109,10 @@ public class LastDodoSearchEngine
     @NonNull
     public Bundle searchByExternalId(@NonNull final String externalId,
                                      @NonNull final boolean[] fetchThumbnail)
-            throws SocketTimeoutException {
+            throws IOException {
 
         final Bundle bookData = new Bundle();
+
         final String url = getSiteUrl() + String.format(BY_EXTERNAL_ID, externalId);
         final Document document = loadDocument(url);
         if (document != null && !isCancelled()) {
@@ -125,9 +125,10 @@ public class LastDodoSearchEngine
     @Override
     public Bundle searchByIsbn(@NonNull final String validIsbn,
                                @NonNull final boolean[] fetchThumbnail)
-            throws SocketTimeoutException {
+            throws IOException {
 
         final Bundle bookData = new Bundle();
+
         final String url = getSiteUrl() + String.format(BY_ISBN, validIsbn);
         final Document document = loadDocument(url);
         if (document != null && !isCancelled()) {
@@ -146,19 +147,19 @@ public class LastDodoSearchEngine
      * @param fetchThumbnail Set to {@code true} if we want to get thumbnails
      * @param bookData       Bundle to update
      *
-     * @throws SocketTimeoutException if the connection times out
+     * @throws IOException on failure
      */
     @WorkerThread
     void parseMultiResult(@NonNull final Document document,
                           @NonNull final boolean[] fetchThumbnail,
                           @NonNull final Bundle bookData)
-            throws SocketTimeoutException {
+            throws IOException {
 
         // Grab the first search result, and redirect to that page
         final Element section = document.selectFirst("div.cw-lot_content");
         final Element urlElement = section.selectFirst("a");
         if (urlElement != null) {
-            final Document redirected = redirect(urlElement.attr("href"));
+            final Document redirected = loadDocument(urlElement.attr("href"));
             if (redirected != null && !isCancelled()) {
                 parse(redirected, fetchThumbnail, bookData);
             }
@@ -317,7 +318,26 @@ public class LastDodoSearchEngine
         }
 
         if (fetchThumbnail[0] || fetchThumbnail[1]) {
-            parseCovers(document, fetchThumbnail, bookData);
+            final String isbn = bookData.getString(DBDefinitions.KEY_ISBN);
+            final Element images = document.getElementById("images_container");
+            if (images != null) {
+                final Elements aas = images.select("a");
+                for (int cIdx = 0; cIdx < 2; cIdx++) {
+                    if (isCancelled()) {
+                        return;
+                    }
+                    if (fetchThumbnail[cIdx] && aas.size() > cIdx) {
+                        final String url = aas.get(cIdx).attr("href");
+                        final String tmpName = createFilename(isbn, cIdx, null);
+                        final String fileSpec = saveImage(url, tmpName);
+                        if (fileSpec != null) {
+                            final ArrayList<String> imageList = new ArrayList<>();
+                            imageList.add(fileSpec);
+                            bookData.putStringArrayList(Book.BKEY_FILE_SPEC_ARRAY[cIdx], imageList);
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -346,7 +366,7 @@ public class LastDodoSearchEngine
         if (section != null) {
             final ArrayList<TocEntry> toc = new ArrayList<>();
             section = section.nextElementSibling();
-            Elements entries = section.select("tr:contains(Verhaaltitel)");
+            final Elements entries = section.select("tr:contains(Verhaaltitel)");
             for (Element tr : entries) {
                 final String title = tr.child(1).text();
                 toc.add(new TocEntry(mAuthors.get(0), title, null));
@@ -354,31 +374,6 @@ public class LastDodoSearchEngine
             return toc;
         }
         return null;
-    }
-
-    /**
-     * Parses the downloaded {@link Document} for the cover and fetches it when present.
-     *
-     * @param coverRoot      to parse
-     * @param fetchThumbnail Set to {@code true} if we want to get thumbnails
-     * @param bookData       Bundle to update
-     */
-    @WorkerThread
-    private void parseCovers(@NonNull final Element coverRoot,
-                             @NonNull final boolean[] fetchThumbnail,
-                             @NonNull final Bundle bookData) {
-        final Element images = coverRoot.getElementById("images_container");
-        if (images != null) {
-            final Elements aas = images.select("a");
-            for (int i = 0; i < 2; i++) {
-                if (isCancelled()) {
-                    return;
-                }
-                if (fetchThumbnail[i] && aas.size() > i) {
-                    fetchCover(aas.get(i).attr("href"), bookData, FILENAME_SUFFIX, i);
-                }
-            }
-        }
     }
 
 
@@ -460,7 +455,6 @@ public class LastDodoSearchEngine
         processText(td, DBDefinitions.KEY_LANGUAGE, bookData);
         String lang = bookData.getString(DBDefinitions.KEY_LANGUAGE);
         if (lang != null && !lang.isEmpty()) {
-            // the language is a 'DisplayName' so convert to iso.
             lang = LanguageUtils.getISO3FromDisplayName(mAppContext, getLocale(), lang);
             bookData.putString(DBDefinitions.KEY_LANGUAGE, lang);
         }
@@ -469,12 +463,10 @@ public class LastDodoSearchEngine
     private void processType(@NonNull final Element td,
                              @NonNull final Bundle bookData) {
         // there might be more then one; we only grab the first one here
-        Element a = td.child(0);
+        final Element a = td.child(0);
         if (a != null) {
-            String text = a.text();
-            bookData.putString(SiteField.KEY_TYPE, text);
+            bookData.putString(SiteField.KEY_TYPE, a.text());
         }
-
     }
 
     /**
@@ -494,7 +486,6 @@ public class LastDodoSearchEngine
             }
         }
     }
-
 
     /**
      * LastDodoField specific field names we add to the bundle based on parsed XML data.

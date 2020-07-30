@@ -187,7 +187,7 @@ public enum AppDir {
             throws ExternalStorageException {
         final File coverDir = Covers.get(context);
 
-        String name = uuid + (cIdx > 0 ? "_" + cIdx : "");
+        String name = uuid + (cIdx > 0 ? '_' + cIdx : "");
 
         final File jpg = new File(coverDir, name + ".jpg");
         if (jpg.exists()) {

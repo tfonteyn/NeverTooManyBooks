@@ -131,6 +131,7 @@ public class ExportFragment
         mArchiveExportTask.onFailure().observe(getViewLifecycleOwner(), this::onExportFailure);
         mArchiveExportTask.onFinished().observe(getViewLifecycleOwner(), this::onExportFinished);
 
+        // if the task is NOT already running (e.g. after a screen rotation...) show the options
         if (!mArchiveExportTask.isRunning()) {
             exportShowOptions();
         }

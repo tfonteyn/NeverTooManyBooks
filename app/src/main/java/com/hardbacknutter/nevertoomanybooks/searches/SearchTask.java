@@ -204,7 +204,7 @@ public class SearchTask
                 mFetchThumbnail = new boolean[2];
             }
 
-            final Bundle bookData;
+            Bundle bookData;
             switch (mBy) {
                 case BY_EXTERNAL_ID:
                     Objects.requireNonNull(mExternalId, ErrorMsg.NULL_EXTERNAL_ID);

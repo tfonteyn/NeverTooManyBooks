@@ -69,18 +69,17 @@ public class Series
         implements Parcelable, Entity, ItemWithTitle {
 
     /** {@link Parcelable}. */
-    public static final Creator<Series> CREATOR =
-            new Creator<Series>() {
-                @Override
-                public Series createFromParcel(@NonNull final Parcel source) {
-                    return new Series(source);
-                }
+    public static final Creator<Series> CREATOR = new Creator<Series>() {
+        @Override
+        public Series createFromParcel(@NonNull final Parcel source) {
+            return new Series(source);
+        }
 
-                @Override
-                public Series[] newArray(final int size) {
-                    return new Series[size];
-                }
-            };
+        @Override
+        public Series[] newArray(final int size) {
+            return new Series[size];
+        }
+    };
 
     /**
      * Parse "some text (some more text)" into "some text" and "some more text".
@@ -88,21 +87,12 @@ public class Series
      * We want a "some text" that does not START with a bracket!
      */
     public static final Pattern TEXT1_BR_TEXT2_BR_PATTERN =
-            Pattern.compile("([^(]+.*)"
-                            + "\\s*"
-                            + "\\("
-                            + /* */ "(.*)"
-                            + "\\).*",
+            Pattern.compile("([^(]+.*)\\s*\\((.*)\\).*",
                             Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
 
     /** Variant of the above, with an additional 3rd part. */
     private static final Pattern TEXT1_BR_TEXT2_BR_TEXT3_PATTERN =
-            Pattern.compile("([^(]+.*)"
-                            + "\\s*"
-                            + "\\("
-                            + /* */ "(.*)"
-                            + "\\)"
-                            + "\\s*(.*)\\s*",
+            Pattern.compile("([^(]+.*)\\s*\\((.*)\\)\\s*(.*)\\s*",
                             Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
 
     private static final String NUMBER_REGEXP =
@@ -156,7 +146,7 @@ public class Series
      * i.e. "Blake's 7 1" should give "Blake's 7" and number 1
      * but "Blake's 7" will give "Blake's" and number 7
      */
-    private static final String TITLE_NUMBER_REGEXP =
+    private static final Pattern TITLE_NUMBER_PATTERN = Pattern.compile(
             // whitespace at the start
             "^\\s*"
             // Capture the title group(1)
@@ -166,10 +156,8 @@ public class Series
             // Capture the number group(2)
             + /* */ NUMBER_REGEXP
             // whitespace to the end
-            + "\\s*$";
-
-    private static final Pattern TITLE_NUMBER_PATTERN =
-            Pattern.compile(TITLE_NUMBER_REGEXP, Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
+            + "\\s*$",
+            Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
 
     /**
      * Remove extraneous text from Series number. Used by {@link #from}.

@@ -63,18 +63,17 @@ public class Bookshelf
         implements Parcelable, Entity {
 
     /** {@link Parcelable}. */
-    public static final Creator<Bookshelf> CREATOR =
-            new Creator<Bookshelf>() {
-                @Override
-                public Bookshelf createFromParcel(@NonNull final Parcel source) {
-                    return new Bookshelf(source);
-                }
+    public static final Creator<Bookshelf> CREATOR = new Creator<Bookshelf>() {
+        @Override
+        public Bookshelf createFromParcel(@NonNull final Parcel source) {
+            return new Bookshelf(source);
+        }
 
-                @Override
-                public Bookshelf[] newArray(final int size) {
-                    return new Bookshelf[size];
-                }
-            };
+        @Override
+        public Bookshelf[] newArray(final int size) {
+            return new Bookshelf[size];
+        }
+    };
     /** the 'first' bookshelf created at install time. We allow renaming it, but not deleting. */
     public static final int DEFAULT = 1;
     /**
@@ -219,9 +218,9 @@ public class Bookshelf
      * @return the bookshelf, or {@code null} if not found
      */
     @Nullable
-    private static Bookshelf getBookshelf(@NonNull final Context context,
-                                          @NonNull final DAO db,
-                                          final long id) {
+    public static Bookshelf getBookshelf(@NonNull final Context context,
+                                         @NonNull final DAO db,
+                                         final long id) {
         if (id == ALL_BOOKS) {
             return new Bookshelf(ALL_BOOKS, context.getString(R.string.bookshelf_all_books),
                                  BooklistStyle.getDefault(context, db));

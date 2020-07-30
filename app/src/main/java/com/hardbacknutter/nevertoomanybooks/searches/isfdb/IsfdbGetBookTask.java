@@ -35,7 +35,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
 
-import java.net.SocketTimeoutException;
+import java.io.IOException;
 
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -87,17 +87,16 @@ public class IsfdbGetBookTask
     @Nullable
     @WorkerThread
     protected Bundle doWork()
-            throws SocketTimeoutException {
+            throws IOException {
         Thread.currentThread().setName(TAG);
         final Context context = LocaleUtils.applyLocale(App.getTaskContext());
 
         final IsfdbSearchEngine searchEngine = new IsfdbSearchEngine(context);
-
         searchEngine.setCaller(this);
 
-        final Bundle bookData = new Bundle();
         final boolean[] fetchThumbnails = {false, false};
         if (mEdition != null) {
+            final Bundle bookData = new Bundle();
             searchEngine.fetchByEdition(mEdition, fetchThumbnails, bookData);
             return bookData;
 

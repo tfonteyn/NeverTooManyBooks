@@ -29,10 +29,8 @@ package com.hardbacknutter.nevertoomanybooks.viewmodels;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.os.AsyncTask;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.preference.PreferenceManager;
 
 import java.util.Collection;
@@ -54,7 +52,6 @@ import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 import com.hardbacknutter.nevertoomanybooks.tasks.VMTask;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.FinishedMessage;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.ProgressMessage;
-import com.hardbacknutter.nevertoomanybooks.utils.UpgradeMessageManager;
 
 /**
  * <strong>Note:</strong> yes, this is overkill for the startup. Call it an experiment.
@@ -126,9 +123,6 @@ public class StartupViewModel
     /** Triggers periodic maintenance tasks. */
     private boolean mDoMaintenance;
 
-    /** Indicates the upgrade message has been shown. */
-    private boolean mUpgradeMessageShown;
-
     @Override
     protected void onCleared() {
         super.onCleared();
@@ -161,11 +155,11 @@ public class StartupViewModel
 
             prefs.edit()
                  .putInt(PREF_MAINTENANCE_COUNTDOWN,
-                         maintenanceCountdown == 0 ? MAINTENANCE_COUNTDOWN :
-                         maintenanceCountdown - 1)
+                         maintenanceCountdown == 0 ? MAINTENANCE_COUNTDOWN
+                                                   : maintenanceCountdown - 1)
                  .putInt(Prefs.PREF_STARTUP_BACKUP_COUNTDOWN,
-                         backupCountdown == 0 ? Prefs.STARTUP_BACKUP_COUNTDOWN :
-                         backupCountdown - 1)
+                         backupCountdown == 0 ? Prefs.STARTUP_BACKUP_COUNTDOWN
+                                              : backupCountdown - 1)
 
                  // The number of times the app was opened.
                  .putInt(PREF_STARTUP_COUNT, prefs.getInt(PREF_STARTUP_COUNT, 0) + 1)
@@ -193,26 +187,6 @@ public class StartupViewModel
     }
 
     /**
-     * Get a potential upgrade-message.
-     *
-     * @param context Current context
-     *
-     * @return message or {@code null} if none
-     */
-    @Nullable
-    public String getUpgradeMessage(@NonNull final Context context) {
-        // only show the message once for each run (until user confirmed reading it)
-        if (!mUpgradeMessageShown) {
-            mUpgradeMessageShown = true;
-            final String msg = UpgradeMessageManager.getUpgradeMessage(context);
-            if (!msg.isEmpty()) {
-                return msg;
-            }
-        }
-        return null;
-    }
-
-    /**
      * We use the standard AsyncTask execute, so tasks are run serially.
      *
      * @param context Current context
@@ -233,12 +207,13 @@ public class StartupViewModel
             return;
         }
 
-        // Start this as fire-and-forget runnable; no need to wait for it.
-        AsyncTask.THREAD_POOL_EXECUTOR.execute(new BuildLanguageMappingsTask());
-
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 
         boolean optimizeDb = false;
+
+        // unconditional. No longer publishing progress, ...
+        // faster as the progress dialog is not needed.
+        startTask(new BuildLanguageMappingsTask(mTaskListener));
 
         // this is not critical, once every so often is fine
         if (mDoMaintenance) {

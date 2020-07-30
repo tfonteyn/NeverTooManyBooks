@@ -33,7 +33,6 @@ import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.text.Html;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -52,7 +51,6 @@ import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.NightModeUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.Notifier;
-import com.hardbacknutter.nevertoomanybooks.utils.UpgradeMessageManager;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.StartupViewModel;
 
 /**
@@ -143,14 +141,10 @@ public class StartupActivity
                 break;
 
             case 2:
-                checkForUpgrades();
-                break;
-
-            case 3:
                 backupRequired();
                 break;
 
-            case 4:
+            case 3:
                 gotoMainScreen();
                 break;
 
@@ -169,28 +163,6 @@ public class StartupActivity
     private void startTasks() {
         if (mModel.isStartTasks()) {
             mModel.startTasks(this);
-        } else {
-            nextStage();
-        }
-    }
-
-    /**
-     * If the application was upgraded, tell the user.
-     */
-    private void checkForUpgrades() {
-        // Display upgrade message if necessary, otherwise go on to next stage
-        final String upgradeMessage = mModel.getUpgradeMessage(this);
-        if (upgradeMessage != null) {
-            new MaterialAlertDialogBuilder(this)
-                    .setIcon(R.drawable.ic_info)
-                    .setTitle(R.string.lbl_about_upgrade)
-                    .setMessage(Html.fromHtml(upgradeMessage))
-                    .setPositiveButton(android.R.string.ok, (d, w) -> {
-                        UpgradeMessageManager.setUpgradeAcknowledged(this);
-                        nextStage();
-                    })
-                    .create()
-                    .show();
         } else {
             nextStage();
         }

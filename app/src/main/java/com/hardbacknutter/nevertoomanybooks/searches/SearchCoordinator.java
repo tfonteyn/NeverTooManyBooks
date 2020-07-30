@@ -657,8 +657,8 @@ public class SearchCoordinator
      * @return Present/absent
      */
     private boolean hasIsbn(@NonNull final Bundle bundle) {
-        final String s = bundle.getString(DBDefinitions.KEY_ISBN);
-        return s != null && !s.trim().isEmpty();
+        final String isbnStr = bundle.getString(DBDefinitions.KEY_ISBN);
+        return isbnStr != null && !isbnStr.trim().isEmpty();
     }
 
     /**
@@ -915,8 +915,8 @@ public class SearchCoordinator
         }
 
         // If we did not get an ISBN, use the one we originally searched for.
-        final String isbn = mBookData.getString(DBDefinitions.KEY_ISBN);
-        if (isbn == null || isbn.isEmpty()) {
+        final String isbnStr = mBookData.getString(DBDefinitions.KEY_ISBN);
+        if (isbnStr == null || isbnStr.isEmpty()) {
             mBookData.putString(DBDefinitions.KEY_ISBN, mIsbnSearchText);
         }
 

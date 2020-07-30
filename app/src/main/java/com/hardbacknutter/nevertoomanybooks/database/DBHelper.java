@@ -68,7 +68,6 @@ import com.hardbacknutter.nevertoomanybooks.searches.Site;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.UpgradeMessageManager;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOKSHELF_NAME;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOK_PUBLISHER_POSITION;
@@ -566,9 +565,6 @@ public final class DBHelper
     public void onCreate(@NonNull final SQLiteDatabase db) {
         final Context context = LocaleUtils.applyLocale(App.getAppContext());
 
-        // 'Upgrade' from not being installed. Run this first to avoid racing issues.
-        UpgradeMessageManager.setUpgradeAcknowledged(context);
-
         final SynchronizedDb syncedDb = new SynchronizedDb(sSynchronizer, db);
 
         TableDefinition.createTables(db,
@@ -746,8 +742,9 @@ public final class DBHelper
                     editor.remove(key);
                 }
             }
-            editor.remove("edit.book.tab.nativeId");
-            editor.apply();
+            editor.remove("edit.book.tab.nativeId")
+                  .remove("startup.lastVersion")
+                  .apply();
 
             TBL_BOOKS.alterTableAddColumn(syncedDb, DBDefinitions.DOM_EID_LAST_DODO_NL);
         }

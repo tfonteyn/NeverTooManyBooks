@@ -43,6 +43,7 @@ import androidx.annotation.IntDef;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.util.Pair;
 
 import java.io.Closeable;
 import java.io.File;
@@ -66,7 +67,6 @@ import java.util.regex.Pattern;
 
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyle;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedCursor;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
@@ -319,13 +319,17 @@ public class DAO
 
     private static final String STMT_INSERT_FTS = "InsertFts";
     private static final String STMT_UPDATE_FTS = "UpdateFts";
+
     /** log error string. */
     private static final String ERROR_FAILED_TO_UPDATE_FTS = "Failed to onProgress FTS";
+
     /** See {@link #encodeString}. */
-    private static final Pattern ENCODE_STRING = Pattern.compile("'", Pattern.LITERAL);
-    /** any non-word character. */
-    private static final Pattern ENCODE_ORDERBY_PATTERN = Pattern.compile("\\W");
-    private static final Pattern ASCII_REGEX = Pattern.compile("[^\\p{ASCII}]");
+    private static final Pattern SINGLE_QUOTE_LITERAL = Pattern.compile("'", Pattern.LITERAL);
+    /** See {@link #encodeOrderByColumn}. */
+    private static final Pattern NON_WORD_CHARACTER_PATTERN = Pattern.compile("\\W");
+    /** See {@link #toAscii}. */
+    private static final Pattern ASCII_PATTERN = Pattern.compile("[^\\p{ASCII}]");
+
     /** divider to convert nanoseconds to milliseconds. */
     private static final int NANO_TO_MILLIS = 1_000_000;
 
@@ -410,7 +414,7 @@ public class DAO
      */
     @NonNull
     public static String encodeString(@NonNull final CharSequence value) {
-        return ENCODE_STRING.matcher(value).replaceAll("''");
+        return SINGLE_QUOTE_LITERAL.matcher(value).replaceAll("''");
     }
 
     /**
@@ -424,10 +428,9 @@ public class DAO
      */
     public static String encodeOrderByColumn(@NonNull final CharSequence value,
                                              @NonNull final Locale locale) {
-
-        String s = toAscii(value);
+        final String s = toAscii(value);
         // remove all non-word characters. i.e. all characters not in [a-zA-Z_0-9]
-        return ENCODE_ORDERBY_PATTERN.matcher(s).replaceAll("").toLowerCase(locale);
+        return NON_WORD_CHARACTER_PATTERN.matcher(s).replaceAll("").toLowerCase(locale);
     }
 
     /**
@@ -438,8 +441,8 @@ public class DAO
      * @return ascii text
      */
     static String toAscii(@NonNull final CharSequence text) {
-        return ASCII_REGEX.matcher(Normalizer.normalize(text, Normalizer.Form.NFD))
-                          .replaceAll("");
+        return ASCII_PATTERN.matcher(Normalizer.normalize(text, Normalizer.Form.NFD))
+                            .replaceAll("");
     }
 
     /**
@@ -3358,19 +3361,43 @@ public class DAO
         try (Cursor cursor = sSyncedDb.rawQuery(sql, paramList.toArray(new String[0]))) {
             final DataHolder rowData = new CursorRow(cursor);
             while (cursor.moveToNext()) {
-                final TocEntry tocEntry = new TocEntry(rowData.getLong(KEY_PK_ID),
-                                                       author,
-                                                       rowData.getString(KEY_TITLE),
-                                                       rowData.getString(
-                                                               KEY_DATE_FIRST_PUBLICATION),
-                                                       rowData.getString(KEY_TOC_TYPE).charAt(0),
-                                                       rowData.getInt(KEY_BOOK_COUNT));
+                final TocEntry tocEntry =
+                        new TocEntry(rowData.getLong(KEY_PK_ID),
+                                     author,
+                                     rowData.getString(KEY_TITLE),
+                                     rowData.getString(KEY_DATE_FIRST_PUBLICATION),
+                                     rowData.getString(KEY_TOC_TYPE).charAt(0),
+                                     rowData.getInt(KEY_BOOK_COUNT));
                 list.add(tocEntry);
             }
         }
         return list;
     }
 
+    /**
+     * Return a list of paired book-id and book-title 's for the given TOC id.
+     *
+     * @param id TOC id
+     *
+     * @return list of id/titles of books.
+     */
+    @NonNull
+    public List<Pair<Long, String>> getBookTitlesForToc(@IntRange(from = 1) final long id) {
+        final List<Pair<Long, String>> list = new ArrayList<>();
+        final String sql =
+                SELECT_ + TBL_BOOKS.dot(KEY_PK_ID) + ',' + TBL_BOOKS.dot(KEY_TITLE)
+                + _FROM_ + TBL_BOOK_TOC_ENTRIES.ref() + TBL_BOOK_TOC_ENTRIES.join(TBL_BOOKS)
+                + _WHERE_ + TBL_BOOK_TOC_ENTRIES.dot(KEY_FK_TOC_ENTRY) + "=?";
+
+        try (Cursor cursor = sSyncedDb.rawQuery(sql, new String[]{String.valueOf(id)})) {
+            final DataHolder rowData = new CursorRow(cursor);
+            while (cursor.moveToNext()) {
+                list.add(new Pair<>(rowData.getLong(KEY_PK_ID),
+                                    rowData.getString(KEY_TITLE)));
+            }
+        }
+        return list;
+    }
 
     /**
      * Check that a book with the passed id exists.
@@ -3981,7 +4008,7 @@ public class DAO
      */
     public void ftsRebuild() {
         long t0 = 0;
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
+        if (BuildConfig.DEBUG /* always */) {
             t0 = System.nanoTime();
         }
         boolean gotError = false;
@@ -4022,7 +4049,7 @@ public class DAO
             }
         }
 
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
+        if (BuildConfig.DEBUG /* always */) {
             Log.d(TAG, mInstanceName
                        + "|rebuildFts"
                        + "|completed in " + (System.nanoTime() - t0) / NANO_TO_MILLIS + " ms");

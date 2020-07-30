@@ -70,6 +70,10 @@ import com.hardbacknutter.nevertoomanybooks.utils.StringList;
  * So this class does not strictly represent an Author, but a "BookAuthor"
  * When the type is disregarded, it is a real Author representation.
  * <p>
+ * Author types:
+ * <a href="http://www.loc.gov/marc/relators/relaterm.html">
+ * http://www.loc.gov/marc/relators/relaterm.html</a>
+ * <p>
  * ENHANCE: add a column 'real-name-id' with the id of another author entry
  * i.e one entry typed 'pseudonym' with the 'real-name-id' column pointing to the real name entry.
  */
@@ -77,18 +81,17 @@ public class Author
         implements Parcelable, Entity {
 
     /** {@link Parcelable}. */
-    public static final Creator<Author> CREATOR =
-            new Creator<Author>() {
-                @Override
-                public Author createFromParcel(@NonNull final Parcel source) {
-                    return new Author(source);
-                }
+    public static final Creator<Author> CREATOR = new Creator<Author>() {
+        @Override
+        public Author createFromParcel(@NonNull final Parcel source) {
+            return new Author(source);
+        }
 
-                @Override
-                public Author[] newArray(final int size) {
-                    return new Author[size];
-                }
-            };
+        @Override
+        public Author[] newArray(final int size) {
+            return new Author[size];
+        }
+    };
 
     /*
      * {@link DBDefinitions#DOM_BOOK_AUTHOR_TYPE_BITMASK}.
@@ -126,7 +129,7 @@ public class Author
     /** ARTIST: cover inking (if different from above). */
     public static final int TYPE_COVER_INKING = 1 << 9;
 
-    // Audio books
+    /** Audio books. */
     public static final int TYPE_NARRATOR = 1 << 10;
 
     /** COLOR: cover. */
@@ -164,6 +167,7 @@ public class Author
             | TYPE_NARRATOR
             | TYPE_COVER_ARTIST | TYPE_COVER_INKING | TYPE_COVER_COLORIST
             | TYPE_ARTIST | TYPE_INKING | TYPE_COLORIST;
+
     /** Maps the type-bit to a string resource for the type-label. */
     private static final Map<Integer, Integer> TYPES = new LinkedHashMap<>();
     /**
@@ -174,7 +178,7 @@ public class Author
      * A. E. Van Vogt
      * Rip Von Ronkel
      */
-    private static final Pattern FAMILY_NAME_PREFIX =
+    private static final Pattern FAMILY_NAME_PREFIX_PATTERN =
             Pattern.compile("(le|de|van|von)",
                             Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
     /**
@@ -197,13 +201,12 @@ public class Author
      * "James jr. Tiptree" -> suffix as a middle name.
      * "Dr. Asimov" -> titles... pre or suffixed
      */
-    private static final Pattern FAMILY_NAME_SUFFIX =
+    private static final Pattern FAMILY_NAME_SUFFIX_PATTERN =
             Pattern.compile("jr\\.|jr|junior|sr\\.|sr|senior|II|III",
                             Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
 
     /*
      * NEWTHINGS: author type: add the label for the type
-     *
      * This is a LinkedHashMap, so the order below is the order they will show up on the screen.
      */
     static {
@@ -311,7 +314,8 @@ public class Author
      * then the string is assumed to be in the format of "family, given-names"
      * All other formats are decoded as complete as possible.
      * <p>
-     * Recognised pre/suffixes: see {@link #FAMILY_NAME_PREFIX} and {@link #FAMILY_NAME_SUFFIX}
+     * Recognised pre/suffixes: see {@link #FAMILY_NAME_PREFIX_PATTERN}
+     * and {@link #FAMILY_NAME_SUFFIX_PATTERN}
      * <ul>Not covered:
      *      <li>multiple, and not concatenated, family names.</li>
      *      <li>more than 1 un-encoded comma.</li>
@@ -330,8 +334,8 @@ public class Author
 
         final List<String> tmp = StringList.newInstance().decode(uName, NAME_SEPARATOR, true);
         if (tmp.size() > 1) {
-            final Matcher matchSuffix = FAMILY_NAME_SUFFIX.matcher(tmp.get(1));
-            if (!matchSuffix.find()) {
+            final Matcher suffixMatcher = FAMILY_NAME_SUFFIX_PATTERN.matcher(tmp.get(1));
+            if (!suffixMatcher.find()) {
                 // not a suffix, assume the names are already formatted.
                 return new Author(tmp.get(0), tmp.get(1));
             } else {
@@ -356,8 +360,8 @@ public class Author
         // the position to check, start at the end.
         int pos = names.length - 1;
 
-        final Matcher matchSuffix = FAMILY_NAME_SUFFIX.matcher(names[pos]);
-        if (!matchSuffix.find()) {
+        final Matcher suffixMatcher = FAMILY_NAME_SUFFIX_PATTERN.matcher(names[pos]);
+        if (!suffixMatcher.find()) {
             // no suffix.
             buildFamilyName.append(names[pos]);
             pos--;
@@ -368,8 +372,8 @@ public class Author
         }
 
         // the last name could also have a prefix
-        final Matcher matchMiddleName = FAMILY_NAME_PREFIX.matcher(names[pos]);
-        if (matchMiddleName.find()) {
+        final Matcher middleNameMatcher = FAMILY_NAME_PREFIX_PATTERN.matcher(names[pos]);
+        if (middleNameMatcher.find()) {
             // insert it at the front of the family name
             buildFamilyName.insert(0, names[pos] + ' ');
             pos--;

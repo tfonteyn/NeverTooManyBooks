@@ -50,18 +50,17 @@ public class Domain
         implements Parcelable {
 
     /** {@link Parcelable}. */
-    public static final Creator<Domain> CREATOR =
-            new Creator<Domain>() {
-                @Override
-                public Domain createFromParcel(@NonNull final Parcel source) {
-                    return new Domain(source);
-                }
+    public static final Creator<Domain> CREATOR = new Creator<Domain>() {
+        @Override
+        public Domain createFromParcel(@NonNull final Parcel source) {
+            return new Domain(source);
+        }
 
-                @Override
-                public Domain[] newArray(final int size) {
-                    return new Domain[size];
-                }
-            };
+        @Override
+        public Domain[] newArray(final int size) {
+            return new Domain[size];
+        }
+    };
 
     @NonNull
     private final String mName;

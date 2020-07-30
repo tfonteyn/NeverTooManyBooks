@@ -181,81 +181,40 @@
             tools:text="sourcecode url"
             />
 
-        <!--        <TextView-->
-        <!--            android:id="@+id/contact1"-->
-        <!--            style="@style/Url"-->
-        <!--            android:text="@string/email_contact1"-->
-        <!--            app:layout_constraintStart_toEndOf="@id/indents"-->
-        <!--            app:layout_constraintTop_toBottomOf="@id/contacts"-->
-        <!--            />-->
 
-        <!--        <TextView-->
-        <!--            android:id="@+id/contact2"-->
-        <!--            style="@style/Url"-->
-        <!--            android:text="@string/email_contact2"-->
-        <!--            app:layout_constraintStart_toEndOf="@id/indents"-->
-        <!--            app:layout_constraintTop_toBottomOf="@id/contact1"-->
-        <!--            />-->
+        <!--                <TextView-->
+        <!--                    android:id="@+id/lbl_creators"-->
+        <!--                    style="@style/Text.Header"-->
+        <!--                    android:text="@string/lbl_about_creators"-->
+        <!--                    app:layout_constraintStart_toStartOf="parent"-->
+        <!--                    app:layout_constraintTop_toBottomOf="@id/sourcecode6"-->
+        <!--                    />-->
 
-        <!--        <TextView-->
-        <!--            android:id="@+id/lbl_creators"-->
-        <!--            style="@style/Label.Header"-->
-        <!--            android:text="@string/lbl_about_creators"-->
-        <!--            app:layout_constraintStart_toStartOf="parent"-->
-        <!--            app:layout_constraintTop_toBottomOf="@id/contact2"-->
-        <!--            />-->
+        <!--                <TextView-->
+        <!--                    android:id="@+id/creators"-->
+        <!--                    style="@style/Text.Blurb.Small"-->
+        <!--                    android:text="@string/original_creators"-->
+        <!--                    app:layout_constraintStart_toStartOf="@id/indents"-->
+        <!--                    app:layout_constraintTop_toBottomOf="@id/lbl_creators"-->
+        <!--                    />-->
 
-        <!--        <TextView-->
-        <!--            android:id="@+id/creators"-->
-        <!--            style="@style/Text.Blurb.Small"-->
-        <!--            android:text="@string/original_creators"-->
-        <!--            app:layout_constraintStart_toStartOf="@id/indents"-->
-        <!--            app:layout_constraintTop_toBottomOf="@id/lbl_creators"-->
-        <!--            />-->
+        <!--                <TextView-->
+        <!--                    android:id="@+id/website"-->
+        <!--                    style="@style/Url"-->
+        <!--                    app:layout_constraintStart_toStartOf="@id/indents"-->
+        <!--                    app:layout_constraintTop_toBottomOf="@id/creators"-->
+        <!--                    tools:ignore="SelectableText"-->
+        <!--                    tools:text="website url"-->
+        <!--                    />-->
 
-        <!--        <TextView-->
-        <!--            android:id="@+id/website"-->
-        <!--            style="@style/Url"-->
-        <!--            app:layout_constraintStart_toStartOf="@id/indents"-->
-        <!--            app:layout_constraintTop_toBottomOf="@id/creators"-->
-        <!--            tools:ignore="SelectableText"-->
-        <!--            tools:text="website url"-->
-        <!--            />-->
-
-        <!--        <TextView-->
-        <!--            android:id="@+id/sourcecode"-->
-        <!--            style="@style/Url"-->
-        <!--            app:layout_constraintStart_toStartOf="@id/indents"-->
-        <!--            app:layout_constraintTop_toBottomOf="@id/website"-->
-        <!--            tools:ignore="SelectableText"-->
-        <!--            tools:text="sourcecode url"-->
-        <!--            />-->
-
-        <!--        <TextView-->
-        <!--            android:id="@+id/thanks"-->
-        <!--            style="@style/Label.Header"-->
-        <!--            android:text="@string/lbl_about_special_thanks"-->
-        <!--            app:layout_constraintStart_toStartOf="parent"-->
-        <!--            app:layout_constraintTop_toBottomOf="@id/sourcecode"-->
-        <!--            />-->
-
-        <!--        <TextView-->
-        <!--            android:id="@+id/b1"-->
-        <!--            style="@style/Text.Blurb.Small"-->
-        <!--            android:text="@string/lbl_about_translators"-->
-        <!--            app:layout_constraintEnd_toEndOf="parent"-->
-        <!--            app:layout_constraintStart_toEndOf="@id/indents"-->
-        <!--            app:layout_constraintTop_toBottomOf="@id/thanks"-->
-        <!--            />-->
-
-        <!--        <TextView-->
-        <!--            android:id="@+id/translators"-->
-        <!--            style="@style/Text.Blurb.Small"-->
-        <!--            android:text="@string/translators"-->
-        <!--            app:layout_constraintEnd_toEndOf="parent"-->
-        <!--            app:layout_constraintStart_toEndOf="@id/indents"-->
-        <!--            app:layout_constraintTop_toBottomOf="@id/b1"-->
-        <!--            />-->
+        <!--                <TextView-->
+        <!--                    android:id="@+id/sourcecode"-->
+        <!--                    style="@style/Url"-->
+        <!--                    app:layout_constraintStart_toStartOf="@id/indents"-->
+        <!--                    app:layout_constraintTop_toBottomOf="@id/website"-->
+        <!--                    tools:ignore="SelectableText"-->
+        <!--                    tools:text="sourcecode url"-->
+        <!--                    />-->
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

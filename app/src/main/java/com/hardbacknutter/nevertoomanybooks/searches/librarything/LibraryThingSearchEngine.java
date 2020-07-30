@@ -28,18 +28,17 @@
 package com.hardbacknutter.nevertoomanybooks.searches.librarything;
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
 import androidx.preference.PreferenceManager;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -54,6 +53,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageFileInfo;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
+import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineBase;
@@ -104,7 +104,8 @@ import com.hardbacknutter.nevertoomanybooks.utils.Throttler;
         domainKey = DBDefinitions.KEY_EID_LIBRARY_THING,
         domainViewId = R.id.site_library_thing,
         domainMenuId = R.id.MENU_VIEW_BOOK_AT_LIBRARY_THING,
-        supportsMultipleCoverSizes = true
+        supportsMultipleCoverSizes = true,
+        filenameSuffix = "LT"
 )
 public class LibraryThingSearchEngine
         extends SearchEngineBase
@@ -119,10 +120,7 @@ public class LibraryThingSearchEngine
     /** Preference that contains the dev key for the user. Type: {@code String}. */
     static final String PREFS_DEV_KEY = PREF_KEY + ".dev_key";
     private static final String TAG = "LibraryThingSE";
-    /** Preference that controls display of alert about LibraryThing. */
-    private static final String PREFS_HIDE_ALERT = PREF_KEY + ".hide_alert.";
-    /** file suffix for cover files. */
-    private static final String FILENAME_SUFFIX = "_LT";
+
     /**
      * book details urls.
      * <p>
@@ -162,40 +160,6 @@ public class LibraryThingSearchEngine
     }
 
     /**
-     * Alert the user if not shown before that we require or would benefit from LibraryThing access.
-     *
-     * @param context    Current context
-     * @param required   {@code true} if we <strong>must</strong> have access to LT.
-     *                   {@code false} if it would be beneficial.
-     * @param prefSuffix String used to flag in preferences if we showed the alert from
-     *                   that caller already or not yet.
-     *
-     * @return {@code true} if an alert is currently shown
-     */
-    @UiThread
-    public static boolean alertRegistrationNeeded(@NonNull final Context context,
-                                                  final boolean required,
-                                                  @NonNull final String prefSuffix) {
-
-        final String prefName = PREFS_HIDE_ALERT + prefSuffix;
-        final boolean showAlert;
-        if (required) {
-            showAlert = true;
-        } else {
-            showAlert = !PreferenceManager.getDefaultSharedPreferences(context)
-                                          .getBoolean(prefName, false);
-        }
-
-        if (showAlert) {
-            final Intent intent = new Intent(context, LibraryThingRegistrationActivity.class);
-            StandardDialogs.registerOnSite(context, R.string.site_library_thing,
-                                           intent, required, prefName);
-        }
-
-        return showAlert;
-    }
-
-    /**
      * Get the dev key.
      *
      * @param context Current context
@@ -210,6 +174,18 @@ public class LibraryThingSearchEngine
             return DEV_KEY_PATTERN.matcher(key).replaceAll("");
         }
         return "";
+    }
+
+    //FIXME: bad method name
+    public static boolean isRegistered(@NonNull final Context context,
+                                       final boolean required,
+                                       @NonNull final String prefSuffix) {
+        if (hasKey(context)) {
+            return true;
+        }
+
+        return StandardDialogs.registerOnSite(context, SearchSites.LIBRARY_THING, required,
+                                              prefSuffix, LibraryThingRegistrationActivity.class);
     }
 
     @NonNull
@@ -232,13 +208,10 @@ public class LibraryThingSearchEngine
     @Override
     public boolean promptToRegister(@NonNull final Context context,
                                     final boolean required,
-                                    @NonNull final String prefSuffix) {
-        if (!hasKey(mAppContext)) {
-            return alertRegistrationNeeded(context, required, prefSuffix);
-        }
-        return false;
-    }
+                                    @NonNull final String callerSuffix) {
 
+        return isRegistered(context, required, callerSuffix);
+    }
 
     /**
      * Dev-key needed for this call.
@@ -251,18 +224,23 @@ public class LibraryThingSearchEngine
                                      @NonNull final boolean[] fetchThumbnail)
             throws IOException {
 
+        final Bundle bookData = new Bundle();
+
         final String url = getSiteUrl() + String.format(BOOK_URL, getDevKey(mAppContext),
                                                         "id", externalId);
-        final Bundle bookData = fetchBook(url, new Bundle());
+        fetchBook(url, bookData);
 
         if (isCancelled()) {
             return bookData;
         }
 
         if (fetchThumbnail[0]) {
-            final String isbn = bookData.getString(DBDefinitions.KEY_ISBN);
-            if (isbn != null && !isbn.isEmpty()) {
-                searchBestCoverImageByIsbn(isbn, 0, bookData);
+            final String isbnStr = bookData.getString(DBDefinitions.KEY_ISBN);
+            if (isbnStr != null && !isbnStr.isEmpty()) {
+                final ArrayList<String> imageList = searchBestCoverImageByIsbn(isbnStr, 0);
+                if (!imageList.isEmpty()) {
+                    bookData.putStringArrayList(Book.BKEY_FILE_SPEC_ARRAY[0], imageList);
+                }
             }
         }
 
@@ -280,16 +258,21 @@ public class LibraryThingSearchEngine
                                @NonNull final boolean[] fetchThumbnail)
             throws IOException {
 
+        final Bundle bookData = new Bundle();
+
         final String url = getSiteUrl() + String.format(BOOK_URL, getDevKey(mAppContext),
                                                         "isbn", validIsbn);
-        final Bundle bookData = fetchBook(url, new Bundle());
+        fetchBook(url, bookData);
 
         if (isCancelled()) {
             return bookData;
         }
 
         if (fetchThumbnail[0]) {
-            searchBestCoverImageByIsbn(validIsbn, 0, bookData);
+            final ArrayList<String> imageList = searchBestCoverImageByIsbn(validIsbn, 0);
+            if (!imageList.isEmpty()) {
+                bookData.putStringArrayList(Book.BKEY_FILE_SPEC_ARRAY[0], imageList);
+            }
         }
 
         return bookData;
@@ -327,7 +310,8 @@ public class LibraryThingSearchEngine
 
         final String url = String.format(COVER_BY_ISBN_URL, getDevKey(mAppContext),
                                          sizeParam, validIsbn);
-        return saveImage(url, validIsbn, FILENAME_SUFFIX + "_" + sizeParam, 0);
+        final String tmpName = createFilename(validIsbn, cIdx, size);
+        return saveImage(url, tmpName);
     }
 
     /**
@@ -349,7 +333,6 @@ public class LibraryThingSearchEngine
         final SAXParserFactory factory = SAXParserFactory.newInstance();
         final LibraryThingEditionHandler handler = new LibraryThingEditionHandler();
 
-        // Get it
         final String url = getSiteUrl() + String.format("/api/thingISBN/%1$s", validIsbn);
         try (TerminatorConnection con = createConnection(url, true)) {
             final SAXParser parser = factory.newSAXParser();
@@ -360,9 +343,16 @@ public class LibraryThingSearchEngine
         return handler.getResult();
     }
 
-
-    private Bundle fetchBook(@NonNull final String url,
-                             @NonNull final Bundle bookData)
+    /**
+     * Fetch a book by url.
+     *
+     * @param url      to fetch
+     * @param bookData Bundle to update <em>(passed in to allow mocking)</em>
+     *
+     * @throws IOException on failure
+     */
+    private void fetchBook(@NonNull final String url,
+                           @NonNull final Bundle bookData)
             throws IOException {
 
         final SAXParserFactory factory = SAXParserFactory.newInstance();
@@ -373,7 +363,6 @@ public class LibraryThingSearchEngine
         try (TerminatorConnection con = createConnection(url, true)) {
             final SAXParser parser = factory.newSAXParser();
             parser.parse(con.getInputStream(), handler);
-            return handler.getResult();
 
         } catch (@NonNull final ParserConfigurationException | SAXException e) {
             final String msg = e.getMessage();

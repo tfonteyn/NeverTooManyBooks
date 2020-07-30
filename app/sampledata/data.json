@@ -1,4 +1,8 @@
 {
+  "sites": [
+    {"name": "Amazon"},
+    {"name": "Goodreads"}
+  ],
   "author": [
     {"full_name": "Charles Emerson Winchester III"},
     {"full_name": "Isaac Asimov"},

@@ -31,6 +31,7 @@ import android.content.Context;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import java.io.IOException;
 
@@ -47,8 +48,8 @@ public class ShowBookByIsbnApiHandler
         extends ShowBookApiHandler {
 
     /** Page url. */
-    private static final String URL = GoodreadsManager.BASE_URL + "/book/isbn?"
-                                      + "format=xml&isbn=%1$s&key=%2$s";
+    private static final String BY_ISBN = GoodreadsManager.BASE_URL + "/book/isbn?"
+                                          + "format=xml&isbn=%1$s&key=%2$s";
 
     /**
      * Constructor.
@@ -78,12 +79,33 @@ public class ShowBookByIsbnApiHandler
      * @throws IOException          on other failures
      */
     @NonNull
-    public Bundle get(@NonNull final String validIsbn,
-                      @NonNull final boolean[] fetchThumbnail,
-                      @NonNull final Bundle bookData)
+    public Bundle searchByIsbn(@NonNull final String validIsbn,
+                               @NonNull final boolean[] fetchThumbnail,
+                               @NonNull final Bundle bookData)
             throws CredentialsException, Http404Exception, IOException {
 
-        final String url = String.format(URL, validIsbn, mGrAuth.getDevKey());
-        return getBookData(url, fetchThumbnail, bookData);
+        final String url = String.format(BY_ISBN, validIsbn, mGrAuth.getDevKey());
+        return searchBook(url, fetchThumbnail, bookData);
+    }
+
+    /**
+     * Perform a search and extract/fetch only the cover.
+     *
+     * @param validIsbn ISBN to use, must be valid
+     * @param bookData  Bundle to update <em>(passed in to allow mocking)</em>
+     *
+     * @return fileSpec, or {@code null} if no image found.
+     *
+     * @throws CredentialsException with GoodReads
+     * @throws Http404Exception     the requested item was not found
+     * @throws IOException          on other failures
+     */
+    @Nullable
+    public String searchCoverImageByIsbn(@NonNull final String validIsbn,
+                                         @NonNull final Bundle bookData)
+            throws CredentialsException, Http404Exception, IOException {
+
+        final String url = String.format(BY_ISBN, validIsbn, mGrAuth.getDevKey());
+        return searchCoverImage(url, bookData);
     }
 }

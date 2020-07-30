@@ -537,10 +537,10 @@ public class CoverHandler {
     private void startCoverBrowser() {
         // getting alternative editions is limited to LibraryThing and ISFDB for now.
         // ISFDB is obviously limited to their specific genre,
-        // so remind the user that LT is rather essential.
-        if (BuildConfig.ENABLE_LIBRARY_THING) {
-            if (!LibraryThingSearchEngine.hasKey(mContext)) {
-                LibraryThingSearchEngine.alertRegistrationNeeded(mContext, false, "cover_browser");
+        // so remind the user that LT is rather essential for getting a list of editions.
+        // Note this is NOT for getting covers from LT, only the edition list.
+        if (BuildConfig.ENABLE_LIBRARY_THING_ALT_ED) {
+            if (!LibraryThingSearchEngine.isRegistered(mContext, false, "cover_browser")) {
                 return;
             }
         }

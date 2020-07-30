@@ -684,7 +684,7 @@ public class XmlImporter
          * @param elementContext of the XML tag
          */
         TagInfo(@NonNull final ElementContext elementContext) {
-            Attributes attrs = elementContext.getAttributes();
+            final Attributes attrs = elementContext.getAttributes();
 
             type = elementContext.getLocalName();
             // BookCatalogue used a fixed tag "item", with the type as an attribute
@@ -692,7 +692,7 @@ public class XmlImporter
                 type = attrs.getValue("type");
             }
             name = attrs.getValue(XmlUtils.ATTR_NAME);
-            String idStr = attrs.getValue(XmlUtils.ATTR_ID);
+            final String idStr = attrs.getValue(XmlUtils.ATTR_ID);
             if (idStr != null) {
                 try {
                     id = Integer.parseInt(idStr);

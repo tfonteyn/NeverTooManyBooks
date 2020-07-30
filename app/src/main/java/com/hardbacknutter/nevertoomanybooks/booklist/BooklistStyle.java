@@ -102,18 +102,17 @@ public class BooklistStyle
         implements Parcelable, Entity {
 
     /** {@link Parcelable}. */
-    public static final Creator<BooklistStyle> CREATOR =
-            new Creator<BooklistStyle>() {
-                @Override
-                public BooklistStyle createFromParcel(@NonNull final Parcel source) {
-                    return new BooklistStyle(source);
-                }
+    public static final Creator<BooklistStyle> CREATOR = new Creator<BooklistStyle>() {
+        @Override
+        public BooklistStyle createFromParcel(@NonNull final Parcel source) {
+            return new BooklistStyle(source);
+        }
 
-                @Override
-                public BooklistStyle[] newArray(final int size) {
-                    return new BooklistStyle[size];
-                }
-            };
+        @Override
+        public BooklistStyle[] newArray(final int size) {
+            return new BooklistStyle[size];
+        }
+    };
 
     /** default style when none is set yet. */
     public static final int DEFAULT_STYLE_ID = Builtin.AUTHOR_THEN_SERIES_ID;
@@ -1127,7 +1126,7 @@ public class BooklistStyle
      */
     @NonNull
     public String getGroupLabels(@NonNull final Context context) {
-        return Csv.join(mStyleGroups.getGroups(), element -> element.getLabel(context));
+        return Csv.join(", ", mStyleGroups.getGroups(), element -> element.getLabel(context));
     }
 
     /**

@@ -54,7 +54,6 @@ import com.hardbacknutter.nevertoomanybooks.goodreads.api.AddBookToShelfApiHandl
 import com.hardbacknutter.nevertoomanybooks.goodreads.api.Http404Exception;
 import com.hardbacknutter.nevertoomanybooks.goodreads.api.IsbnToIdApiHandler;
 import com.hardbacknutter.nevertoomanybooks.goodreads.api.ReviewEditApiHandler;
-import com.hardbacknutter.nevertoomanybooks.goodreads.api.SearchBooksApiHandler;
 import com.hardbacknutter.nevertoomanybooks.goodreads.api.ShelvesListApiHandler;
 import com.hardbacknutter.nevertoomanybooks.goodreads.api.ShowBookApiHandler;
 import com.hardbacknutter.nevertoomanybooks.goodreads.api.ShowBookByIdApiHandler;
@@ -64,14 +63,9 @@ import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 
 /**
- * Manages connections and interfaces between the {@code SearchEngine} and the actual
- * Goodreads API classes.
+ * This is a layer between the API handler classes and the Goodreads sync tasks.
  * <p>
- * Is cached by the {@code SearchEngine}, and in turn caches the various ApiHandler as and when
- * they get created.
- * <p>
- * Also keeps a cache of the Goodreads shelves list.
- *
+ * Keeps a cache of the Goodreads shelves list.
  * <p>
  * <a href="https://www.goodreads.com/api/documentation">api documentation</a>
  */
@@ -79,14 +73,15 @@ public class GoodreadsManager {
 
     public static final String BASE_URL = "https://www.goodreads.com";
     public static final Locale SITE_LOCALE = Locale.US;
+
     public static final int CONNECTION_TIMEOUT_MS = 10_000;
     public static final int READ_TIMEOUT_MS = 10_000;
+    /** file suffix for cover files. */
+    public static final String FILENAME_SUFFIX = "GR";
 
     /** Preferences prefix. */
     public static final String PREF_KEY = "goodreads";
 
-    /** Preference that controls display of alert about Goodreads. */
-    public static final String PREFS_HIDE_ALERT = PREF_KEY + ".hide_alert.";
 
     /** Log tag. */
     private static final String TAG = "GoodreadsManager";
@@ -105,9 +100,6 @@ public class GoodreadsManager {
     @NonNull
     private final GoodreadsAuth mGoodreadsAuth;
 
-    /** Cache this handler. */
-    @Nullable
-    private SearchBooksApiHandler mSearchBooksApiHandler;
     /** Cache this handler. */
     @Nullable
     private IsbnToIdApiHandler mIsbnToIdApiHandler;
@@ -190,46 +182,249 @@ public class GoodreadsManager {
     }
 
     /**
-     * Wrapper to search for a book based on the given query.
+     * Wrapper to send an entire book, including shelves, to Goodreads.
+     * <ul>The bookData bundle has to have:
+     *      <li>{@link DBDefinitions#KEY_PK_ID}</li>
+     *      <li>{@link DBDefinitions#KEY_EID_GOODREADS_BOOK}</li>
+     *      <li>{@link DBDefinitions#KEY_ISBN}</li>
+     *      <li>{@link DBDefinitions#KEY_READ}</li>
+     *      <li>{@link DBDefinitions#KEY_READ_START}</li>
+     *      <li>{@link DBDefinitions#KEY_READ_END}</li>
+     *      <li>{@link DBDefinitions#KEY_RATING}</li>
+     * </ul>
+     * <p>
+     * See {@link DAO#fetchBookForGoodreadsExport}
      *
-     * @param query to search
+     * @param db       Database Access
+     * @param bookData with book data to send
      *
-     * @return the array of GoodreadsWork objects.
+     * @return Disposition of book
+     *
+     * @throws CredentialsException with GoodReads
+     * @throws Http404Exception     the requested item was not found
+     * @throws IOException          on other failures
+     */
+    @WorkerThread
+    @GrStatus.Status
+    public int sendOneBook(@NonNull final DAO db,
+                           @NonNull final DataHolder bookData)
+            throws CredentialsException, Http404Exception, IOException {
+
+        final long bookId = bookData.getLong(DBDefinitions.KEY_PK_ID);
+
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.GOODREADS_SEND) {
+            Logger.d(TAG, "sendOneBook|bookId=" + bookId);
+        }
+
+        // Get the list of shelves from Goodreads.
+        // This is cached per instance of GoodreadsManager.
+        final GoodreadsShelves grShelfList = getShelves();
+
+        long grBookId;
+        Bundle grBookData = null;
+
+        // See if the book already has a Goodreads id and if it is valid.
+        try {
+            grBookId = bookData.getLong(DBDefinitions.KEY_EID_GOODREADS_BOOK);
+            if (grBookId != 0) {
+                // Get the book details to make sure we have a valid book ID
+                final boolean[] fetchThumbnails = {false, false};
+                grBookData = getBookById(grBookId, fetchThumbnails, new Bundle());
+            }
+        } catch (@NonNull final Http404Exception ignore) {
+            grBookId = 0;
+        }
+
+        // wasn't there, see if we can find it using the ISBN instead.
+        if (grBookId == 0) {
+            final String isbnStr = bookData.getString(DBDefinitions.KEY_ISBN);
+            if (isbnStr.isEmpty()) {
+                return GrStatus.FAILED_BOOK_HAS_NO_ISBN;
+            }
+            final ISBN isbn = ISBN.createISBN(isbnStr);
+            if (!isbn.isValid(true)) {
+                return GrStatus.FAILED_BOOK_HAS_NO_ISBN;
+            }
+
+            // Get the book details using ISBN
+            final boolean[] fetchThumbnails = {false, false};
+            grBookData = getBookByIsbn(isbn.asText(), fetchThumbnails, new Bundle());
+            grBookId = grBookData.getLong(DBDefinitions.KEY_EID_GOODREADS_BOOK);
+
+            // If we got an ID, save it against the book
+            if (grBookId != 0) {
+                db.setGoodreadsBookId(bookId, grBookId);
+            } else {
+                // Still nothing... Give up.
+                return GrStatus.FAILED_BOOK_NOT_FOUND_ON_GOODREADS;
+            }
+        }
+
+        // We found a Goodreads book.
+        // Get the review id if we have the book details. For new books, it will not be present.
+        long reviewId = grBookData.getLong(ShowBookApiHandler.SiteField.REVIEW_ID);
+
+        // Lists of shelf names and our best guess at the Goodreads canonical name
+        final Collection<String> shelves = new ArrayList<>();
+        final Collection<String> canonicalShelves = new ArrayList<>();
+
+        final Locale userLocale = LocaleUtils.getUserLocale(mAppContext);
+
+        // Build the list of shelves for the book that we have in the local database
+        int exclusiveCount = 0;
+        for (Bookshelf bookshelf : db.getBookshelvesByBookId(bookId)) {
+            final String bookshelfName = bookshelf.getName();
+            shelves.add(bookshelfName);
+
+            final String canonicalShelfName =
+                    GoodreadsShelf.canonicalizeName(userLocale, bookshelfName);
+            canonicalShelves.add(canonicalShelfName);
+
+            // Count how many of these shelves are exclusive in Goodreads.
+            if (grShelfList.isExclusive(canonicalShelfName)) {
+                exclusiveCount++;
+            }
+        }
+
+        // If no exclusive shelves are specified, add a pseudo-shelf to match Goodreads
+        // because review.update does not seem to update them properly
+        if (exclusiveCount == 0) {
+            final String pseudoShelf;
+            if (bookData.getInt(DBDefinitions.KEY_READ) != 0) {
+                pseudoShelf = "Read";
+            } else {
+                pseudoShelf = "To Read";
+            }
+            if (!shelves.contains(pseudoShelf)) {
+                shelves.add(pseudoShelf);
+                canonicalShelves.add(GoodreadsShelf.canonicalizeName(userLocale, pseudoShelf));
+            }
+        }
+
+        // Get the names of the shelves the book is currently on at Goodreads
+        List<String> grShelves = null;
+        if (grBookData.containsKey(ShowBookApiHandler.SiteField.SHELVES)) {
+            grShelves = grBookData.getStringArrayList(ShowBookApiHandler.SiteField.SHELVES);
+        }
+        // not in info, or failed to get
+        if (grShelves == null) {
+            grShelves = new ArrayList<>();
+        }
+
+        // Remove from any shelves from Goodreads that are not in our local list
+        for (String grShelf : grShelves) {
+            if (!canonicalShelves.contains(grShelf)) {
+                try {
+                    // Goodreads does not seem to like removing books from the special shelves.
+                    if (!(grShelfList.isExclusive(grShelf))) {
+                        removeBookFromShelf(grBookId, grShelf);
+                    }
+                } catch (@NonNull final Http404Exception ignore) {
+                    // Ignore here; probably means the book was not on this shelf anyway
+                }
+            }
+        }
+
+        // Add shelves to Goodreads if they are not currently there
+        final Collection<String> shelvesToAddTo = new ArrayList<>();
+        for (String shelf : shelves) {
+            // Get the name the shelf will have at Goodreads
+            final String canonicalShelfName = GoodreadsShelf.canonicalizeName(userLocale, shelf);
+            // Can only sent canonical shelf names if the book is on 0 or 1 of them.
+            final boolean okToSend = exclusiveCount < 2
+                                     || !grShelfList.isExclusive(canonicalShelfName);
+
+            if (okToSend && !grShelves.contains(canonicalShelfName)) {
+                shelvesToAddTo.add(shelf);
+            }
+        }
+        if (!shelvesToAddTo.isEmpty()) {
+            reviewId = addBookToShelf(grBookId, shelvesToAddTo);
+        }
+
+        // We should be safe always updating here because:
+        // - all books that are already added have a review ID,
+        //   which we would have got from the bundle
+        // - all new books will be added to at least one shelf,
+        //   which will have returned a review ID.
+        // But, just in case, we check the review ID, and if 0,
+        // we add the book to the 'Default' shelf.
+        //
+        if (reviewId == 0) {
+            reviewId = addBookToShelf(grBookId, GoodreadsShelf.DEFAULT_SHELF);
+        }
+
+        // Finally update the remaining review details.
+        if (mReviewEditApiHandler == null) {
+            mReviewEditApiHandler = new ReviewEditApiHandler(mAppContext, mGoodreadsAuth);
+        }
+        mReviewEditApiHandler.update(reviewId,
+                                     bookData.getBoolean(DBDefinitions.KEY_READ),
+                                     bookData.getString(DBDefinitions.KEY_READ_START),
+                                     bookData.getString(DBDefinitions.KEY_READ_END),
+                                     (int) bookData.getDouble(DBDefinitions.KEY_RATING),
+                                     null);
+
+        return GrStatus.SUCCESS;
+    }
+
+
+    /**
+     * Wrapper to search for a book.
+     *
+     * @param grBookId       Goodreads book id to get
+     * @param fetchThumbnail Set to {@code true} if we want to get thumbnails
+     * @param bookData       Bundle to update <em>(passed in to allow mocking)</em>
+     *
+     * @return Bundle of GoodreadsWork objects
      *
      * @throws CredentialsException with GoodReads
      * @throws Http404Exception     the requested item was not found
      * @throws IOException          on other failures
      */
     @NonNull
-    public List<GoodreadsWork> search(@NonNull final String query)
+    private Bundle getBookById(@IntRange(from = 1) final long grBookId,
+                               @NonNull final boolean[] fetchThumbnail,
+                               @NonNull final Bundle bookData)
             throws CredentialsException, Http404Exception, IOException {
 
-        if (mSearchBooksApiHandler == null) {
-            mSearchBooksApiHandler = new SearchBooksApiHandler(mAppContext, mGoodreadsAuth);
+        if (BuildConfig.DEBUG /* always */) {
+            if (grBookId < 1) {
+                throw new IllegalArgumentException(ErrorMsg.ZERO_ID_FOR_BOOK);
+            }
         }
-        return mSearchBooksApiHandler.search(query);
+
+        if (mShowBookByIdApiHandler == null) {
+            mShowBookByIdApiHandler = new ShowBookByIdApiHandler(mAppContext, mGoodreadsAuth);
+        }
+        return mShowBookByIdApiHandler.searchByExternalId(grBookId, fetchThumbnail, bookData);
     }
 
     /**
-     * Wrapper to call ISBN->ID.
+     * Wrapper to search for a book.
      *
-     * @param isbn to search for
+     * @param validIsbn      ISBN to use, must be valid
+     * @param fetchThumbnail Set to {@code true} if we want to get thumbnails
+     * @param bookData       Bundle to update <em>(passed in to allow mocking)</em>
      *
-     * @return Goodreads book ID
+     * @return Bundle of GoodreadsWork objects
      *
      * @throws CredentialsException with GoodReads
      * @throws Http404Exception     the requested item was not found
      * @throws IOException          on other failures
      */
-    @SuppressWarnings("unused")
-    public long isbnToId(@NonNull final String isbn)
+    @NonNull
+    private Bundle getBookByIsbn(@NonNull final String validIsbn,
+                                 @NonNull final boolean[] fetchThumbnail,
+                                 @NonNull final Bundle bookData)
             throws CredentialsException, Http404Exception, IOException {
 
-        if (mIsbnToIdApiHandler == null) {
-            mIsbnToIdApiHandler = new IsbnToIdApiHandler(mAppContext, mGoodreadsAuth);
+        if (mShowBookByIsbnApiHandler == null) {
+            mShowBookByIsbnApiHandler = new ShowBookByIsbnApiHandler(mAppContext, mGoodreadsAuth);
         }
-        return mIsbnToIdApiHandler.isbnToId(isbn);
+        return mShowBookByIsbnApiHandler.searchByIsbn(validIsbn, fetchThumbnail, bookData);
     }
+
 
     /**
      * Fetch all our shelves from Goodreads.
@@ -318,246 +513,25 @@ public class GoodreadsManager {
         mAddBookToShelfApiHandler.remove(grBookId, shelfName);
     }
 
+
     /**
-     * Wrapper to search for a book.
+     * Wrapper to call ISBN->ID.
      *
-     * @param grBookId       Goodreads book id to get
-     * @param fetchThumbnail Set to {@code true} if we want to get thumbnails
-     * @param bookData       Bundle to update <em>(passed in to allow mocking)</em>
+     * @param isbn to search for
      *
-     * @return Bundle of GoodreadsWork objects
+     * @return Goodreads book ID
      *
      * @throws CredentialsException with GoodReads
      * @throws Http404Exception     the requested item was not found
      * @throws IOException          on other failures
      */
-    @NonNull
-    public Bundle getBookById(@IntRange(from = 1) final long grBookId,
-                              @NonNull final boolean[] fetchThumbnail,
-                              @NonNull final Bundle bookData)
+    @SuppressWarnings("unused")
+    private long isbnToId(@NonNull final String isbn)
             throws CredentialsException, Http404Exception, IOException {
 
-        if (BuildConfig.DEBUG /* always */) {
-            if (grBookId < 1) {
-                throw new IllegalArgumentException(ErrorMsg.ZERO_ID_FOR_BOOK);
-            }
+        if (mIsbnToIdApiHandler == null) {
+            mIsbnToIdApiHandler = new IsbnToIdApiHandler(mAppContext, mGoodreadsAuth);
         }
-
-        if (mShowBookByIdApiHandler == null) {
-            mShowBookByIdApiHandler = new ShowBookByIdApiHandler(mAppContext, mGoodreadsAuth);
-        }
-        return mShowBookByIdApiHandler.get(grBookId, fetchThumbnail, bookData);
-    }
-
-    /**
-     * Wrapper to search for a book.
-     *
-     * @param validIsbn      ISBN to use, must be valid
-     * @param fetchThumbnail Set to {@code true} if we want to get thumbnails
-     * @param bookData       Bundle to update <em>(passed in to allow mocking)</em>
-     *
-     * @return Bundle of GoodreadsWork objects
-     *
-     * @throws CredentialsException with GoodReads
-     * @throws Http404Exception     the requested item was not found
-     * @throws IOException          on other failures
-     */
-    @NonNull
-    public Bundle getBookByIsbn(@NonNull final String validIsbn,
-                                @NonNull final boolean[] fetchThumbnail,
-                                @NonNull final Bundle bookData)
-            throws CredentialsException, Http404Exception, IOException {
-
-        if (mShowBookByIsbnApiHandler == null) {
-            mShowBookByIsbnApiHandler = new ShowBookByIsbnApiHandler(mAppContext, mGoodreadsAuth);
-        }
-        return mShowBookByIsbnApiHandler.get(validIsbn, fetchThumbnail, bookData);
-    }
-
-    /**
-     * Wrapper to send an entire book, including shelves, to Goodreads.
-     * <ul>The bookData bundle has to have:
-     *      <li>{@link DBDefinitions#KEY_PK_ID}</li>
-     *      <li>{@link DBDefinitions#KEY_EID_GOODREADS_BOOK}</li>
-     *      <li>{@link DBDefinitions#KEY_ISBN}</li>
-     *      <li>{@link DBDefinitions#KEY_READ}</li>
-     *      <li>{@link DBDefinitions#KEY_READ_START}</li>
-     *      <li>{@link DBDefinitions#KEY_READ_END}</li>
-     *      <li>{@link DBDefinitions#KEY_RATING}</li>
-     * </ul>
-     * <p>
-     * See {@link DAO#fetchBookForGoodreadsExport}
-     *
-     * @param db       Database Access
-     * @param bookData with book data to send
-     *
-     * @return Disposition of book
-     *
-     * @throws CredentialsException with GoodReads
-     * @throws Http404Exception     the requested item was not found
-     * @throws IOException          on other failures
-     */
-    @WorkerThread
-    @GrStatus.Status
-    public int sendOneBook(@NonNull final DAO db,
-                           @NonNull final DataHolder bookData)
-            throws CredentialsException, Http404Exception, IOException {
-
-        final long bookId = bookData.getLong(DBDefinitions.KEY_PK_ID);
-
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.GOODREADS_SEND) {
-            Logger.d(TAG, "sendOneBook|bookId=" + bookId);
-        }
-
-        // Get the list of shelves from Goodreads.
-        // This is cached per instance of GoodreadsManager.
-        final GoodreadsShelves grShelfList = getShelves();
-
-        long grBookId;
-        Bundle grBook = null;
-
-        // See if the book already has a Goodreads id and if it is valid.
-        try {
-            grBookId = bookData.getLong(DBDefinitions.KEY_EID_GOODREADS_BOOK);
-            if (grBookId != 0) {
-                // Get the book details to make sure we have a valid book ID
-                final boolean[] fetchThumbnails = {false, false};
-                grBook = getBookById(grBookId, fetchThumbnails, new Bundle());
-            }
-        } catch (@NonNull final Http404Exception ignore) {
-            grBookId = 0;
-        }
-
-        // wasn't there, see if we can find it using the ISBN instead.
-        if (grBookId == 0) {
-            final String isbnStr = bookData.getString(DBDefinitions.KEY_ISBN);
-            if (isbnStr.isEmpty()) {
-                return GrStatus.FAILED_BOOK_HAS_NO_ISBN;
-            }
-            final ISBN isbn = ISBN.createISBN(isbnStr);
-            if (!isbn.isValid(true)) {
-                return GrStatus.FAILED_BOOK_HAS_NO_ISBN;
-            }
-
-            // Get the book details using ISBN
-            final boolean[] fetchThumbnails = {false, false};
-            grBook = getBookByIsbn(isbn.asText(), fetchThumbnails, new Bundle());
-            grBookId = grBook.getLong(DBDefinitions.KEY_EID_GOODREADS_BOOK);
-
-            // If we got an ID, save it against the book
-            if (grBookId != 0) {
-                db.setGoodreadsBookId(bookId, grBookId);
-            } else {
-                // Still nothing... Give up.
-                return GrStatus.FAILED_BOOK_NOT_FOUND_ON_GOODREADS;
-            }
-        }
-
-        // We found a Goodreads book.
-        // Get the review id if we have the book details. For new books, it will not be present.
-        long reviewId = grBook.getLong(ShowBookApiHandler.SiteField.REVIEW_ID);
-
-        // Lists of shelf names and our best guess at the Goodreads canonical name
-        final Collection<String> shelves = new ArrayList<>();
-        final Collection<String> canonicalShelves = new ArrayList<>();
-
-        final Locale userLocale = LocaleUtils.getUserLocale(mAppContext);
-
-        // Build the list of shelves for the book that we have in the local database
-        int exclusiveCount = 0;
-        for (Bookshelf bookshelf : db.getBookshelvesByBookId(bookId)) {
-            final String bookshelfName = bookshelf.getName();
-            shelves.add(bookshelfName);
-
-            final String canonicalShelfName =
-                    GoodreadsShelf.canonicalizeName(userLocale, bookshelfName);
-            canonicalShelves.add(canonicalShelfName);
-
-            // Count how many of these shelves are exclusive in Goodreads.
-            if (grShelfList.isExclusive(canonicalShelfName)) {
-                exclusiveCount++;
-            }
-        }
-
-        // If no exclusive shelves are specified, add a pseudo-shelf to match Goodreads
-        // because review.update does not seem to update them properly
-        if (exclusiveCount == 0) {
-            final String pseudoShelf;
-            if (bookData.getInt(DBDefinitions.KEY_READ) != 0) {
-                pseudoShelf = "Read";
-            } else {
-                pseudoShelf = "To Read";
-            }
-            if (!shelves.contains(pseudoShelf)) {
-                shelves.add(pseudoShelf);
-                canonicalShelves.add(GoodreadsShelf.canonicalizeName(userLocale, pseudoShelf));
-            }
-        }
-
-        // Get the names of the shelves the book is currently on at Goodreads
-        List<String> grShelves = null;
-        if (grBook.containsKey(ShowBookApiHandler.SiteField.SHELVES)) {
-            grShelves = grBook.getStringArrayList(ShowBookApiHandler.SiteField.SHELVES);
-        }
-        // not in info, or failed to get
-        if (grShelves == null) {
-            grShelves = new ArrayList<>();
-        }
-
-        // Remove from any shelves from Goodreads that are not in our local list
-        for (String grShelf : grShelves) {
-            if (!canonicalShelves.contains(grShelf)) {
-                try {
-                    // Goodreads does not seem to like removing books from the special shelves.
-                    if (!(grShelfList.isExclusive(grShelf))) {
-                        removeBookFromShelf(grBookId, grShelf);
-                    }
-                } catch (@NonNull final Http404Exception ignore) {
-                    // Ignore here; probably means the book was not on this shelf anyway
-                }
-            }
-        }
-
-        // Add shelves to Goodreads if they are not currently there
-        final Collection<String> shelvesToAddTo = new ArrayList<>();
-        for (String shelf : shelves) {
-            // Get the name the shelf will have at Goodreads
-            final String canonicalShelfName = GoodreadsShelf.canonicalizeName(userLocale, shelf);
-            // Can only sent canonical shelf names if the book is on 0 or 1 of them.
-            final boolean okToSend = exclusiveCount < 2
-                                     || !grShelfList.isExclusive(canonicalShelfName);
-
-            if (okToSend && !grShelves.contains(canonicalShelfName)) {
-                shelvesToAddTo.add(shelf);
-            }
-        }
-        if (!shelvesToAddTo.isEmpty()) {
-            reviewId = addBookToShelf(grBookId, shelvesToAddTo);
-        }
-
-        // We should be safe always updating here because:
-        // - all books that are already added have a review ID,
-        //   which we would have got from the bundle
-        // - all new books will be added to at least one shelf,
-        //   which will have returned a review ID.
-        // But, just in case, we check the review ID, and if 0,
-        // we add the book to the 'Default' shelf.
-        //
-        if (reviewId == 0) {
-            reviewId = addBookToShelf(grBookId, GoodreadsShelf.DEFAULT_SHELF);
-        }
-
-        // Finally update the remaining review details.
-        if (mReviewEditApiHandler == null) {
-            mReviewEditApiHandler = new ReviewEditApiHandler(mAppContext, mGoodreadsAuth);
-        }
-        mReviewEditApiHandler.update(reviewId,
-                                     bookData.getBoolean(DBDefinitions.KEY_READ),
-                                     bookData.getString(DBDefinitions.KEY_READ_START),
-                                     bookData.getString(DBDefinitions.KEY_READ_END),
-                                     (int) bookData.getDouble(DBDefinitions.KEY_RATING),
-                                     null);
-
-        return GrStatus.SUCCESS;
+        return mIsbnToIdApiHandler.isbnToId(isbn);
     }
 }

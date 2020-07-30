@@ -682,7 +682,8 @@ class GoogleBooksListHandler
     /** XML tags/attrs we look for. */
     private static final String XML_ID = "id";
     private static final String XML_ENTRY = "entry";
-    private static final Pattern HTTP_PATTERN = Pattern.compile("http:", Pattern.LITERAL);
+
+    private static final Pattern HTTP_LITERAL = Pattern.compile("http:", Pattern.LITERAL);
 
     /** XML content. */
     @SuppressWarnings("StringBufferField")
@@ -736,7 +737,7 @@ class GoogleBooksListHandler
         } else if (mInEntry) {
             if (localName.equalsIgnoreCase(XML_ID)) {
                 // This url comes back as http, and we must use https... so replace it.
-                url.add(HTTP_PATTERN.matcher(mBuilder.toString())
+                url.add(HTTP_LITERAL.matcher(mBuilder.toString())
                                     .replaceAll(Matcher.quoteReplacement("https:")));
             }
         }

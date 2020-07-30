@@ -58,6 +58,10 @@ public class AuthUserApiHandler
     @Nullable
     private String mUsername;
 
+    /** XmlFilter root object. Used in extracting data file XML results. */
+    @NonNull
+    final XmlFilter mRootFilter = new XmlFilter("");
+
     /**
      * Constructor.
      *
@@ -115,13 +119,14 @@ public class AuthUserApiHandler
      * </pre>
      */
     private void buildFilters() {
+        // Leave "id" as string... it's an attribute for THIS tag.
         XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XML_USER)
-                 .setStartAction(elementContext -> mUserId = Long.parseLong(
-                         elementContext.getAttributes().getValue("", XmlTags.XML_ID)));
+                 .setStartAction(ec -> mUserId = Long.parseLong(
+                         ec.getAttributes().getValue("", "id")));
 
         XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XML_USER,
                               XmlTags.XML_NAME)
-                 .setEndAction(elementContext -> mUsername = elementContext.getBody());
+                 .setEndAction(ec -> mUsername = ec.getBody());
     }
 
     @Nullable

@@ -46,6 +46,7 @@ import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsAuth;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsManager;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GrStatus;
 import com.hardbacknutter.nevertoomanybooks.goodreads.api.Http404Exception;
+import com.hardbacknutter.nevertoomanybooks.goodreads.qtasks.SendOneBookGrTask;
 import com.hardbacknutter.nevertoomanybooks.tasks.VMTask;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.NetworkUtils;
@@ -55,8 +56,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsExceptio
  * Start a background task that exports a single books to Goodreads.
  * This is used for sending single books, <strong>initiated by the user</strong>.
  * <p>
- * See also {@link SendOneBookGrTask} which is used internally by
- * {@link SendBooksGrTask}. The core of the task is (should be) identical.
+ * See also {@link SendOneBookGrTask}. The core of the task is (should be) identical.
  */
 public class GrSendOneBookTask
         extends VMTask<GrStatus> {

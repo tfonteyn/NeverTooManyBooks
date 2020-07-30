@@ -38,15 +38,12 @@ import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
 
-import com.hardbacknutter.nevertoomanybooks.goodreads.api.SearchBooksApiHandler;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 
 /**
  * A class to help parsing Sax Xml output. For Goodreads XML output, 90% of the XML can be
  * thrown away but we do need to ensure we get the tags from the right context. The XmlFilter
  * objects build a tree of filters and XmlHandler objects that make this process more manageable.
- * <p>
- * See {@link SearchBooksApiHandler} for an example of usage.
  */
 public class XmlFilter {
 
@@ -109,8 +106,8 @@ public class XmlFilter {
      * @return The filter matching the final tag name passed.
      */
     @NonNull
-    static XmlFilter buildFilter(@NonNull final XmlFilter root,
-                                 @NonNull final Collection<String> filters) {
+    public static XmlFilter buildFilter(@NonNull final XmlFilter root,
+                                        @NonNull final Collection<String> filters) {
         if (filters.isEmpty()) {
             throw new IllegalArgumentException(NO_FILTERS);
         }

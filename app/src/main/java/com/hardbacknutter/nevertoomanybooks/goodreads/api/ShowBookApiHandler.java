@@ -38,7 +38,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
-import java.util.regex.Matcher;
 
 import org.xml.sax.helpers.DefaultHandler;
 
@@ -51,6 +50,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsAuth;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsManager;
 import com.hardbacknutter.nevertoomanybooks.searches.AuthorTypeMapper;
+import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.utils.LanguageUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
@@ -67,6 +67,9 @@ import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlResponseParser;
  * <p>
  * This is an abstract class designed to be used by other classes that implement specific
  * search methods. It does the heavy lifting of parsing the results etc.
+ * <p>
+ * It's very similar to a standard SearchEngine, but the 'bookData' it delivers
+ * is Goodreads specific.
  */
 public abstract class ShowBookApiHandler
         extends ApiHandler {
@@ -78,177 +81,159 @@ public abstract class ShowBookApiHandler
      */
     private static List<String> sGenreExclusions;
 
-    // Current Series being processed
-    // private int mCurrSeriesId = 0;
-    private final XmlHandler mHandleSeriesStart = elementContext -> {
-//        mCurrSeries = new Series();
-    };
-    private final XmlHandler mHandleSeriesId = elementContext -> {
-//        try {
-//            mCurrSeriesId = Integer.parseInt(context.getBody());
-//        } catch (@NonNull final NumberFormatException ignore) {
-        // ignore
-//        }
-    };
-    // Current author being processed
-    // private long mCurrAuthorId = 0;
-    private final XmlHandler mHandleAuthorStart = elementContext -> {
-//        mCurrAuthor = new Author();
-    };
-    private final XmlHandler mHandleAuthorId = elementContext -> {
-//        try {
-//            mCurrAuthorId = Long.parseLong(context.getBody());
-//        } catch (@NonNull final Exception ignore) {
-        // ignore
-//        }
-    };
+    /** XmlFilter root object. Used in extracting data file XML results. */
+    @NonNull
+    final XmlFilter mRootFilter = new XmlFilter("");
+    /** Minimal filter to only extract the cover urls. */
+    @NonNull
+    final XmlFilter mCoverFilter = new XmlFilter("");
+
+
+    @NonNull
+    private final Locale mBookLocale;
+
     @NonNull
     private final String mEBookString;
-    private final Locale mBookLocale;
-    /** Global data for the <b>current work</b> in search results. */
-    private Bundle mBookData;
-    private final XmlHandler mHandleText = elementContext -> {
-        final String name = (String) elementContext.getUserArg();
-        mBookData.putString(name, elementContext.getBody());
+
+
+    /** Local storage for Authors. */
+    @NonNull
+    private final ArrayList<Author> mAuthors = new ArrayList<>();
+    /** Local storage for Series. */
+    @NonNull
+    private final ArrayList<Series> mSeries = new ArrayList<>();
+    /** Local storage for Publishers. */
+    @NonNull
+    private final ArrayList<Publisher> mPublishers = new ArrayList<>();
+
+    /** Local storage for Goodreads shelf names. */
+    @NonNull
+    private final ArrayList<String> mGoodreadsShelves = new ArrayList<>();
+    /**
+     * Current Shelves being processed.
+     */
+    private final XmlHandler mHandleShelvesStart = ec -> mGoodreadsShelves.clear();
+    private final XmlHandler mHandleShelf = ec -> {
+        // Leave "name" as string... it's an attribute for THIS tag.
+        final String name = ec.getAttributes().getValue("name");
+        if (name != null) {
+            mGoodreadsShelves.add(name);
+        }
     };
-    private final XmlHandler mHandleLong = elementContext -> {
-        final String name = (String) elementContext.getUserArg();
+    private final XmlHandler mHandleAuthorListStart = ec -> mAuthors.clear();
+    private final XmlHandler mHandleSeriesListStart = ec -> mSeries.clear();
+    /**
+     * Current Publisher being processed.
+     */
+    private final XmlHandler mHandlePublisher = ec -> {
+        final String name = ec.getBody();
+        if (!name.isEmpty()) {
+            final Publisher publisher = Publisher.from(name);
+            // bit silly... there is only one publisher on the site,
+            // but it's easier to keep the class logic universal.
+            mPublishers.clear();
+            mPublishers.add(publisher);
+        }
+    };
+    /** Injected by the search method calls. Collects the results. */
+    private Bundle mBookData;
+    /**
+     * Generic handlers.
+     */
+    private final XmlHandler mHandleText = ec -> {
+        final String name = (String) ec.getUserArg();
+        mBookData.putString(name, ec.getBody());
+    };
+    private final XmlHandler mHandleLong = ec -> {
+        final String name = (String) ec.getUserArg();
         try {
-            long l = Long.parseLong(elementContext.getBody());
+            long l = Long.parseLong(ec.getBody());
             mBookData.putLong(name, l);
         } catch (@NonNull final NumberFormatException ignore) {
             // Ignore but don't add
         }
     };
-    private final XmlHandler mHandleDouble = elementContext -> {
-        final String name = (String) elementContext.getUserArg();
+    private final XmlHandler mHandleDouble = ec -> {
+        final String name = (String) ec.getUserArg();
         try {
-            double d = ParseUtils.parseDouble(elementContext.getBody(),
-                                              GoodreadsManager.SITE_LOCALE);
+            double d = ParseUtils.parseDouble(ec.getBody(), GoodreadsManager.SITE_LOCALE);
             mBookData.putDouble(name, d);
         } catch (@NonNull final NumberFormatException ignore) {
             // Ignore but don't add
         }
     };
-    private final XmlHandler mHandleBoolean = elementContext -> {
-        final String name = (String) elementContext.getUserArg();
+    private final XmlHandler mHandleBoolean = ec -> {
+        final String name = (String) ec.getUserArg();
         try {
-            String s = elementContext.getBody();
-            boolean b;
-            if (s.isEmpty() || "false".equalsIgnoreCase(s) || "f".equalsIgnoreCase(s)) {
-                b = false;
-            } else if ("true".equalsIgnoreCase(s) || "t".equalsIgnoreCase(s)) {
-                b = true;
-            } else {
-                b = Long.parseLong(s) != 0;
-            }
+            final boolean b = ParseUtils.parseBoolean(ec.getBody(), true);
             mBookData.putBoolean(name, b);
         } catch (@NonNull final NumberFormatException ignore) {
             // ignore
         }
     };
-    /** Local storage for Series the book appears in. */
-    @Nullable
-    private ArrayList<Series> mSeries;
-    /** Local storage for Authors. */
-    @Nullable
-    private ArrayList<Author> mAuthors;
-    /** Local storage for shelf names. */
-    @Nullable
-    private ArrayList<String> mShelves;
     /**
-     * Create a new shelves collection when the "shelves" tag is encountered.
+     * The highest rated popular shelf name can optionally be used as the genre.
+     * We weed out commonly used non-genre names.
      */
-    private final XmlHandler mHandleShelvesStart = elementContext -> mShelves = new ArrayList<>();
-    /**
-     * Add a shelf to the array.
-     */
-    private final XmlHandler mHandleShelf = elementContext -> {
-        String name = elementContext.getAttributes().getValue(XmlTags.XML_NAME);
-        if (name != null) {
-            mShelves.add(name);
-        }
-    };
-    /** Local storage for genre aka highest rated popular shelf name. */
-    @Nullable
-    private String mGenre;
-    /**
-     * Popular shelves are Goodreads "genres". They come in descending order.
-     *
-     * <pre>
-     *   {@code
-     *     <popular_shelves>
-     *       <shelf name="to-read" count="43843"/>
-     *       <shelf name="currently-reading" count="4209"/>
-     *       <shelf name="young-adult" count="2469"/>
-     *       <shelf name="fiction" count="1996"/>
-     *       ...
-     *   }
-     * </pre>
-     * <p>
-     * We skip the virtual shelves.
-     */
-    private final XmlHandler mHandlePopularShelf = elementContext -> {
-        if (mGenre == null) {
-            String name = elementContext.getAttributes().getValue(XmlTags.XML_NAME);
+    private final XmlHandler mHandlePopularShelf = ec -> {
+        // only accept one
+        if (!mBookData.containsKey(DBDefinitions.KEY_GENRE)) {
+            // Leave "name" as string... it's an attribute for THIS tag.
+            final String name = ec.getAttributes().getValue("name");
             if (name != null && sGenreExclusions.contains(name.toLowerCase(Locale.ENGLISH))) {
-                mGenre = name;
+                mBookData.putString(DBDefinitions.KEY_GENRE, name);
             }
         }
     };
-    /** Current author being processed. */
+    /**
+     * Current Author being processed.
+     */
     @Nullable
-    private String mCurrAuthorName;
-    private final XmlHandler mHandleAuthorName = elementContext ->
-            mCurrAuthorName = elementContext.getBody();
+    private String mCurrentAuthorName;
+    private final XmlHandler mHandleAuthorName = ec -> mCurrentAuthorName = ec.getBody();
     @Nullable
-    private String mCurrAuthorRole;
-    private final XmlHandler mHandleAuthorRole = elementContext ->
-            mCurrAuthorRole = elementContext.getBody();
-    private final XmlHandler mHandleAuthorEnd = elementContext -> {
-        if (mCurrAuthorName != null && !mCurrAuthorName.isEmpty()) {
-            if (mAuthors == null) {
-                mAuthors = new ArrayList<>();
-            }
-            Author author = Author.from(mCurrAuthorName);
-            if (mCurrAuthorRole != null && !mCurrAuthorRole.isEmpty()) {
-                author.setType(AuthorTypeMapper.map(getBookLocale(), mCurrAuthorRole));
+    private String mCurrentAuthorRole;
+    private final XmlHandler mHandleAuthorRole = ec -> mCurrentAuthorRole = ec.getBody();
+    private final XmlHandler mHandleAuthorEnd = ec -> {
+        if (mCurrentAuthorName != null && !mCurrentAuthorName.isEmpty()) {
+            final Author author = Author.from(mCurrentAuthorName);
+            if (mCurrentAuthorRole != null && !mCurrentAuthorRole.isEmpty()) {
+                author.setType(AuthorTypeMapper.map(getBookLocale(), mCurrentAuthorRole));
             }
             mAuthors.add(author);
-            mCurrAuthorName = null;
-            mCurrAuthorRole = null;
+            // reset for next
+            mCurrentAuthorName = null;
+            mCurrentAuthorRole = null;
         }
     };
-    /** Current Series being processed. */
+    /**
+     * Current Series being processed.
+     */
     @Nullable
-    private String mCurrSeriesName;
-    private final XmlHandler mHandleSeriesName = elementContext ->
-            mCurrSeriesName = elementContext.getBody();
-    /** Current Series being processed. */
+    private String mCurrentSeriesName;
+    private final XmlHandler mHandleSeriesName = ec -> mCurrentSeriesName = ec.getBody();
     @Nullable
-    private Integer mCurrSeriesPosition;
-    private final XmlHandler mHandleSeriesEnd = elementContext -> {
-        if (mCurrSeriesName != null && !mCurrSeriesName.isEmpty()) {
-            if (mSeries == null) {
-                mSeries = new ArrayList<>();
-            }
-            if (mCurrSeriesPosition != null) {
-                mSeries.add(Series.from(mCurrSeriesName,
-                                        String.valueOf(mCurrSeriesPosition)));
-            } else {
-                mSeries.add(Series.from(mCurrSeriesName));
-            }
-            mCurrSeriesName = null;
-            mCurrSeriesPosition = null;
-        }
-    };
-    private final XmlHandler mHandleSeriesPosition = elementContext -> {
+    private Integer mCurrentSeriesPosition;
+    private final XmlHandler mHandleSeriesPosition = ec -> {
         try {
-            mCurrSeriesPosition = Integer.parseInt(elementContext.getBody());
+            mCurrentSeriesPosition = Integer.parseInt(ec.getBody());
         } catch (@NonNull final NumberFormatException ignore) {
             // ignore
         }
     };
+    private final XmlHandler mHandleSeriesEnd = ec -> {
+        if (mCurrentSeriesName != null && !mCurrentSeriesName.isEmpty()) {
+            final Series series = Series.from(mCurrentSeriesName);
+            if (mCurrentSeriesPosition != null) {
+                series.setNumber(String.valueOf(mCurrentSeriesPosition));
+            }
+            mSeries.add(series);
+            // reset for next
+            mCurrentSeriesName = null;
+            mCurrentSeriesPosition = null;
+        }
+    };
+
 
     /**
      * Constructor.
@@ -262,6 +247,7 @@ public abstract class ShowBookApiHandler
                        @NonNull final GoodreadsAuth grAuth)
             throws CredentialsException {
         super(appContext, grAuth);
+
         if (sGenreExclusions == null) {
             sGenreExclusions = Arrays.asList(
                     appContext.getResources().getStringArray(R.array.goodreads_genre_exclusions));
@@ -277,8 +263,38 @@ public abstract class ShowBookApiHandler
         buildFilters();
     }
 
+    @NonNull
     private Locale getBookLocale() {
         return mBookLocale;
+    }
+
+    /**
+     * Perform a search and extract/fetch only the cover.
+     *
+     * @param url      url to get
+     * @param bookData Bundle to update <em>(passed in to allow mocking)</em>
+     *
+     * @return fileSpec, or {@code null} if no image found.
+     *
+     * @throws CredentialsException with GoodReads
+     * @throws Http404Exception     the requested item was not found
+     * @throws IOException          on other failures
+     */
+    @Nullable
+    String searchCoverImage(@NonNull final String url,
+                            @NonNull final Bundle bookData)
+            throws CredentialsException, Http404Exception, IOException {
+
+        mBookData = bookData;
+
+        // Uses an optimized filter
+        final DefaultHandler handler = new XmlResponseParser(mCoverFilter);
+        executeGet(url, null, true, handler);
+
+        return ApiUtils.handleThumbnail(mAppContext,
+                                        mBookData,
+                                        SiteField.LARGE_IMAGE_URL,
+                                        SiteField.SMALL_IMAGE_URL);
     }
 
     /**
@@ -295,24 +311,25 @@ public abstract class ShowBookApiHandler
      * @throws IOException          on other failures
      */
     @NonNull
-    Bundle getBookData(@NonNull final String url,
-                       @NonNull final boolean[] fetchThumbnail,
-                       @NonNull final Bundle bookData)
+    Bundle searchBook(@NonNull final String url,
+                      @NonNull final boolean[] fetchThumbnail,
+                      @NonNull final Bundle bookData)
             throws CredentialsException, Http404Exception, IOException {
 
         mBookData = bookData;
-        mShelves = null;
 
         final DefaultHandler handler = new XmlResponseParser(mRootFilter);
         executeGet(url, null, true, handler);
 
-        // When we get here, the data has been collected but needs processing into standard form.
+        // When we get here, the data has been collected into mBookData
+        // but needs processing into standard form.
 
         // Use ISBN13 by preference
         if (mBookData.containsKey(SiteField.ISBN13)) {
-            final String s = mBookData.getString(SiteField.ISBN13);
-            if (s != null && s.length() == 13) {
-                mBookData.putString(DBDefinitions.KEY_ISBN, s);
+            final String isbnStr = mBookData.getString(SiteField.ISBN13);
+            if (isbnStr != null && isbnStr.length() == 13) {
+                mBookData.putString(DBDefinitions.KEY_ISBN, isbnStr);
+                mBookData.remove(SiteField.ISBN13);
             }
         }
 
@@ -347,6 +364,7 @@ public abstract class ShowBookApiHandler
         // is it an eBook ? Overwrite the format key
         if (mBookData.containsKey(SiteField.IS_EBOOK)
             && mBookData.getBoolean(SiteField.IS_EBOOK)) {
+            mBookData.remove(SiteField.IS_EBOOK);
             mBookData.putString(DBDefinitions.KEY_FORMAT, mEBookString);
         }
 
@@ -363,62 +381,49 @@ public abstract class ShowBookApiHandler
             }
         }
 
-        // Cleanup the title by removing Series name, if present
-        // Example: "<title>The Anome (Durdane, #1)</title>"
-        if (mBookData.containsKey(DBDefinitions.KEY_TITLE)) {
-            final String fullTitle = mBookData.getString(DBDefinitions.KEY_TITLE);
-            if (fullTitle != null && !fullTitle.isEmpty()) {
-                final Matcher matcher = Series.TEXT1_BR_TEXT2_BR_PATTERN.matcher(fullTitle);
-                if (matcher.find()) {
-                    final String bookTitle = matcher.group(1);
-                    final String seriesTitleWithNumber = matcher.group(2);
-                    if (seriesTitleWithNumber != null && !seriesTitleWithNumber.isEmpty()) {
-                        if (mSeries == null) {
-                            mSeries = new ArrayList<>();
-                        }
-                        final Series newSeries = Series.from(seriesTitleWithNumber);
-                        mSeries.add(newSeries);
-                        // It's tempting to replace KEY_TITLE with ORIG_TITLE, but that does
-                        // bad things to translations (it uses the original language)
-                        mBookData.putString(DBDefinitions.KEY_TITLE, bookTitle);
-//                        if (mBookData.containsKey(SiteField.ORIG_TITLE)) {
-//                            mBookData.putString(DBDefinitions.KEY_TITLE,
-//                                              mBookData.getString(SiteField.ORIG_TITLE));
-//                        } else {
-//                            mBookData.putString(DBDefinitions.KEY_TITLE, bookTitle);
-//                        }
+        if (mBookData.containsKey(DBDefinitions.KEY_RATING)) {
+            double rating = mBookData.getDouble(DBDefinitions.KEY_RATING);
+            if (rating == 0) {
+                // we did not have a personal rating, see if we have the average
+                if (mBookData.containsKey(SiteField.AVERAGE_RATING)) {
+                    rating = mBookData.getDouble(SiteField.AVERAGE_RATING);
+                    mBookData.remove(SiteField.AVERAGE_RATING);
+                    if (rating > 0) {
+                        // use the average rating
+                        mBookData.putDouble(DBDefinitions.KEY_RATING, rating);
+                    } else {
+                        // unlikely: no personal and no average, clear it.
+                        mBookData.remove(DBDefinitions.KEY_RATING);
                     }
                 }
             }
-
-        } else if (mBookData.containsKey(SiteField.ORIG_TITLE)) {
-            // if we did not get a title at all, but there is an original title, use that.
-            mBookData.putString(DBDefinitions.KEY_TITLE,
-                                mBookData.getString(SiteField.ORIG_TITLE));
         }
 
-        if (mGenre != null) {
-            mBookData.putString(DBDefinitions.KEY_GENRE, mGenre);
+        // It's tempting to always replace KEY_TITLE with SiteField.ORIG_TITLE,
+        // but that does bad things to translations (it uses the original language)
+        if (mBookData.containsKey(DBDefinitions.KEY_TITLE)) {
+            // Cleanup the title by removing Series name, if present
+            // Example: "<title>The Anome (Durdane, #1)</title>"
+            SearchEngine.checkForSeriesNameInTitleDefaultImpl(mBookData);
         }
 
-        if (mAuthors != null && !mAuthors.isEmpty()) {
+        // These are Goodreads shelves, not ours.
+        // They are used during a sync only where they will be mapped to our own.
+        // They are NOT used during simple searches.
+        if (!mGoodreadsShelves.isEmpty()) {
+            mBookData.putStringArrayList(SiteField.SHELVES, mGoodreadsShelves);
+        }
+
+
+
+        if (!mAuthors.isEmpty()) {
             mBookData.putParcelableArrayList(Book.BKEY_AUTHOR_ARRAY, mAuthors);
         }
-
-        if (mSeries != null && !mSeries.isEmpty()) {
+        if (!mSeries.isEmpty()) {
             mBookData.putParcelableArrayList(Book.BKEY_SERIES_ARRAY, mSeries);
         }
-
-        final String publisher = mBookData.getString(SiteField.PUBLISHER);
-        if (publisher != null && !publisher.isEmpty()) {
-            final ArrayList<Publisher> publishers = new ArrayList<>();
-            publishers.add(Publisher.from(publisher));
-            mBookData.putParcelableArrayList(Book.BKEY_PUBLISHER_ARRAY, publishers);
-        }
-
-        // these are Goodreads shelves, not ours.
-        if (mShelves != null && !mShelves.isEmpty()) {
-            mBookData.putStringArrayList(SiteField.SHELVES, mShelves);
+        if (!mPublishers.isEmpty()) {
+            mBookData.putParcelableArrayList(Book.BKEY_PUBLISHER_ARRAY, mPublishers);
         }
 
         if (fetchThumbnail[0]) {
@@ -427,10 +432,7 @@ public abstract class ShowBookApiHandler
                                                              SiteField.LARGE_IMAGE_URL,
                                                              SiteField.SMALL_IMAGE_URL);
             if (fileSpec != null) {
-                ArrayList<String> list = mBookData.getStringArrayList(Book.BKEY_FILE_SPEC_ARRAY[0]);
-                if (list == null) {
-                    list = new ArrayList<>();
-                }
+                final ArrayList<String> list = new ArrayList<>();
                 list.add(fileSpec);
                 mBookData.putStringArrayList(Book.BKEY_FILE_SPEC_ARRAY[0], list);
             }
@@ -555,61 +557,7 @@ public abstract class ShowBookApiHandler
      *          <name>Barnes & Noble</name>
      *          <link>http://www.goodreads.com/book_link/follow/3?book_id=50</link>
      *        </book_link>
-     *        <book_link>
-     *          <id>8</id>
-     *          <name>WorldCat</name>
-     *          <link>http://www.goodreads.com/book_link/follow/8?book_id=50</link>
-     *        </book_link>
-     *        <book_link>
-     *          <id>1027</id>
-     *          <name>Kobo</name>
-     *          <link>http://www.goodreads.com/book_link/follow/1027?book_id=50</link>
-     *        </book_link>
-     *        <book_link>
-     *          <id>9</id>
-     *          <name>Indigo</name>
-     *          <link>http://www.goodreads.com/book_link/follow/9?book_id=50</link>
-     *        </book_link>
-     *        <book_link>
-     *            <id>4</id>
-     *            <name>Abebooks</name>
-     *            <link>http://www.goodreads.com/book_link/follow/4?book_id=50</link>
-     *        </book_link>
-     *        <book_link>
-     *            <id>2</id>
-     *            <name>Half.com</name>
-     *            <link>http://www.goodreads.com/book_link/follow/2?book_id=50</link>
-     *        </book_link>
-     *        <book_link>
-     *            <id>10</id>
-     *            <name>Audible</name>
-     *            <link>http://www.goodreads.com/book_link/follow/10?book_id=50</link>
-     *        </book_link>
-     *        <book_link>
-     *            <id>5</id>
-     *            <name>Alibris</name>
-     *            <link>http://www.goodreads.com/book_link/follow/5?book_id=50</link>
-     *        </book_link>
-     *        <book_link>
-     *            <id>2102</id>
-     *            <name>iBookstore</name
-     *            ><link>http://www.goodreads.com/book_link/follow/2102?book_id=50</link>
-     *        </book_link>
-     *        <book_link>
-     *            <id>1602</id>
-     *            <name>Google eBooks</name>
-     *            <link>http://www.goodreads.com/book_link/follow/1602?book_id=50</link>
-     *        </book_link>
-     *        <book_link>
-     *            <id>107</id>
-     *            <name>Better World Books</name>
-     *            <link>http://www.goodreads.com/book_link/follow/107?book_id=50</link>
-     *        </book_link>
-     *        <book_link>
-     *            <id>7</id>
-     *            <name>IndieBound</name>
-     *            <link>http://www.goodreads.com/book_link/follow/7?book_id=50</link>
-     *        </book_link>
+     * [snip]
      *        <book_link>
      *            <id>1</id>
      *            <name>Amazon</name>
@@ -635,45 +583,146 @@ public abstract class ShowBookApiHandler
      *  </GoodreadsResponse>
      * }
      * </pre>
-     *
      */
     private void buildFilters() {
+
+        //
+        // Simple filter to extract the cover urls only.
+        //
+        XmlFilter.buildFilter(mCoverFilter, XmlTags.XML_GOODREADS_RESPONSE, XmlTags.XML_BOOK,
+                              XmlTags.XML_IMAGE_URL)
+                 .setEndAction(mHandleText, SiteField.LARGE_IMAGE_URL);
+        XmlFilter.buildFilter(mCoverFilter, XmlTags.XML_GOODREADS_RESPONSE, XmlTags.XML_BOOK,
+                              XmlTags.XML_SMALL_IMAGE_URL)
+                 .setEndAction(mHandleText, SiteField.SMALL_IMAGE_URL);
+
+
+        //
+        // The complete filter
+        //
+
+        // Goodreads specific ID fields
         XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XmlTags.XML_BOOK,
                               XmlTags.XML_ID)
                  .setEndAction(mHandleLong, DBDefinitions.KEY_EID_GOODREADS_BOOK);
+        XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XmlTags.XML_BOOK,
+                              XmlTags.XML_WORK,
+                              XmlTags.XML_ID)
+                 .setEndAction(mHandleLong, SiteField.WORK_ID);
+        XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XmlTags.XML_BOOK,
+                              XmlTags.XML_MY_REVIEW,
+                              XmlTags.XML_ID)
+                 .setEndAction(mHandleLong, SiteField.REVIEW_ID);
 
-        XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XmlTags.XML_BOOK,
-                              XmlTags.XML_TITLE)
-                 .setEndAction(mHandleText, DBDefinitions.KEY_TITLE);
-
-        XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XmlTags.XML_BOOK,
-                              XmlTags.XML_AUTHORS,
-                              XmlTags.XML_AUTHOR)
-                 .setStartAction(mHandleAuthorStart)
-                 .setEndAction(mHandleAuthorEnd);
-
-        XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XmlTags.XML_BOOK,
-                              XmlTags.XML_SERIES_WORKS,
-                              XmlTags.XML_SERIES_WORK)
-                 .setStartAction(mHandleSeriesStart)
-                 .setEndAction(mHandleSeriesEnd);
-
-        XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XmlTags.XML_BOOK,
-                              XmlTags.XML_ISBN)
-                 .setEndAction(mHandleText, DBDefinitions.KEY_ISBN);
-        XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XmlTags.XML_BOOK,
-                              XmlTags.XML_ISBN_13)
-                 .setEndAction(mHandleText, SiteField.ISBN13);
+        // Amazon ID: <asin></asin>
         XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XmlTags.XML_BOOK,
                               XmlTags.XML_ASIN)
                  .setEndAction(mHandleText, DBDefinitions.KEY_EID_ASIN);
 
+        // <isbn>0689840926</isbn>
+        XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XmlTags.XML_BOOK,
+                              XmlTags.XML_ISBN)
+                 .setEndAction(mHandleText, DBDefinitions.KEY_ISBN);
+        // <isbn13>9780689840920</isbn13>
+        XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XmlTags.XML_BOOK,
+                              XmlTags.XML_ISBN_13)
+                 .setEndAction(mHandleText, SiteField.ISBN13);
+
+
+        // <title>Hatchet (Hatchet, #1)</title>
+        XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XmlTags.XML_BOOK,
+                              XmlTags.XML_TITLE)
+                 .setEndAction(mHandleText, DBDefinitions.KEY_TITLE);
+        // <original_title>Hatchet</original_title>
+        XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XmlTags.XML_BOOK,
+                              XmlTags.XML_WORK, XmlTags.XML_ORIGINAL_TITLE)
+                 .setEndAction(mHandleText, SiteField.ORIG_TITLE);
+
+
+        /*      <authors>
+         *        <author>
+         *          <id>18</id>
+         *          <name>Gary Paulsen</name>
+         *          <image_url>http://photo.goodreads.com/authors/1309159225p5/18.jpg</image_url>
+         *          <small_image_url>
+         *              http://photo.goodreads.com/authors/1309159225p2/18.jpg
+         *          </small_image_url>
+         *          <link>http://www.goodreads.com/author/show/18.Gary_Paulsen</link>
+         *          <average_rating>3.64</average_rating>
+         *          <ratings_count>92755</ratings_count>
+         *          <text_reviews_count>9049</text_reviews_count>
+         *        </author>
+         *      </authors>
+         */
+        XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XmlTags.XML_BOOK,
+                              XmlTags.XML_AUTHORS)
+                 .setStartAction(mHandleAuthorListStart);
+        XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XmlTags.XML_BOOK,
+                              XmlTags.XML_AUTHORS, XmlTags.XML_AUTHOR)
+                 .setEndAction(mHandleAuthorEnd);
+        XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XmlTags.XML_BOOK,
+                              XmlTags.XML_AUTHORS, XmlTags.XML_AUTHOR,
+                              XmlTags.XML_NAME)
+                 .setEndAction(mHandleAuthorName);
+        XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XmlTags.XML_BOOK,
+                              XmlTags.XML_AUTHORS, XmlTags.XML_AUTHOR,
+                              XmlTags.XML_ROLE)
+                 .setEndAction(mHandleAuthorRole);
+
+
+
+        /*      <series_works>
+         *        <series_work>
+         *          <id>268218</id>
+         *          <user_position>1</user_position>
+         *          <series>
+         *            <id>62223</id>
+         *            <title>Brian's Saga</title>
+         *            <description></description>
+         *            <note></note>
+         *            <series_works_count>7</series_works_count>
+         *            <primary_work_count>5</primary_work_count>
+         *            <numbered>true</numbered>
+         *          </series>
+         *        </series_work>
+         *      </series_works>
+         */
+        XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XmlTags.XML_BOOK,
+                              XmlTags.XML_SERIES_WORKS)
+                 .setStartAction(mHandleSeriesListStart);
+        XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XmlTags.XML_BOOK,
+                              XmlTags.XML_SERIES_WORKS, XmlTags.XML_SERIES_WORK)
+                 .setEndAction(mHandleSeriesEnd);
+        XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XmlTags.XML_BOOK,
+                              XmlTags.XML_SERIES_WORKS, XmlTags.XML_SERIES_WORK,
+                              XmlTags.XML_USER_POSITION)
+                 .setEndAction(mHandleSeriesPosition);
+        XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XmlTags.XML_BOOK,
+                              XmlTags.XML_SERIES_WORKS, XmlTags.XML_SERIES_WORK,
+                              XmlTags.XML_SERIES, XmlTags.XML_TITLE)
+                 .setEndAction(mHandleSeriesName);
+
+
+        // <publisher/>
+        XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XmlTags.XML_BOOK,
+                              XmlTags.XML_PUBLISHER)
+                 .setEndAction(mHandlePublisher);
+
+
+        // <image_url>http://www.goodreads.com/images/nocover-111x148.jpg</image_url>
         XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XmlTags.XML_BOOK,
                               XmlTags.XML_IMAGE_URL)
                  .setEndAction(mHandleText, SiteField.LARGE_IMAGE_URL);
+        // <small_image_url>http://www.goodreads.com/images/nocover-60x80.jpg</small_image_url>
         XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XmlTags.XML_BOOK,
                               XmlTags.XML_SMALL_IMAGE_URL)
                  .setEndAction(mHandleText, SiteField.SMALL_IMAGE_URL);
+
+
+        /*      <publication_year>2000</publication_year>
+         *      <publication_month>4</publication_month>
+         *      <publication_day>1</publication_day>
+         */
         XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XmlTags.XML_BOOK,
                               XmlTags.XML_PUBLICATION_YEAR)
                  .setEndAction(mHandleLong, SiteField.PUBLICATION_YEAR);
@@ -683,26 +732,12 @@ public abstract class ShowBookApiHandler
         XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XmlTags.XML_BOOK,
                               XmlTags.XML_PUBLICATION_DAY)
                  .setEndAction(mHandleLong, SiteField.PUBLICATION_DAY);
-        XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XmlTags.XML_BOOK,
-                              XmlTags.XML_PUBLISHER)
-                 .setEndAction(mHandleText, SiteField.PUBLISHER);
-        XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XmlTags.XML_BOOK,
-                              XmlTags.XML_COUNTRY_CODE)
-                 .setEndAction(mHandleText, SiteField.COUNTRY_CODE);
-        XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XmlTags.XML_BOOK,
-                              XmlTags.XML_LANGUAGE)
-                 .setEndAction(mHandleText, DBDefinitions.KEY_LANGUAGE);
-        XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XmlTags.XML_BOOK,
-                              XmlTags.XML_IS_EBOOK)
-                 .setEndAction(mHandleBoolean, SiteField.IS_EBOOK);
-        XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XmlTags.XML_BOOK,
-                              XmlTags.XML_DESCRIPTION)
-                 .setEndAction(mHandleText, DBDefinitions.KEY_DESCRIPTION);
 
-        XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XmlTags.XML_BOOK,
-                              XmlTags.XML_WORK,
-                              XmlTags.XML_ID)
-                 .setEndAction(mHandleLong, SiteField.WORK_ID);
+
+        /*        <original_publication_day type="integer">1</original_publication_day>
+         *        <original_publication_month type="integer">1</original_publication_month>
+         *        <original_publication_year type="integer">1987</original_publication_year>
+         */
         XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XmlTags.XML_BOOK,
                               XmlTags.XML_WORK,
                               XmlTags.XML_ORIGINAL_PUBLICATION_DAY)
@@ -715,70 +750,93 @@ public abstract class ShowBookApiHandler
                               XmlTags.XML_WORK,
                               XmlTags.XML_ORIGINAL_PUBLICATION_YEAR)
                  .setEndAction(mHandleLong, SiteField.ORIG_PUBLICATION_YEAR);
-        XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XmlTags.XML_BOOK,
-                              XmlTags.XML_WORK,
-                              XmlTags.XML_ORIGINAL_TITLE)
-                 .setEndAction(mHandleText, SiteField.ORIG_TITLE);
+
+
 
         XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XmlTags.XML_BOOK,
-                              XmlTags.XML_AVERAGE_RATING)
-                 .setEndAction(mHandleDouble, SiteField.RATING);
+                              XmlTags.XML_COUNTRY_CODE)
+                 .setEndAction(mHandleText, SiteField.COUNTRY_CODE);
+
+
+
+        XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XmlTags.XML_BOOK,
+                              XmlTags.XML_LANGUAGE)
+                 .setEndAction(mHandleText, DBDefinitions.KEY_LANGUAGE);
+        XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XmlTags.XML_BOOK,
+                              XmlTags.XML_DESCRIPTION)
+                 .setEndAction(mHandleText, DBDefinitions.KEY_DESCRIPTION);
         XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XmlTags.XML_BOOK,
                               XmlTags.XML_NUM_PAGES)
                  .setEndAction(mHandleLong, DBDefinitions.KEY_PAGES);
+
+
+        // <average_rating>3.57</average_rating>
+        XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XmlTags.XML_BOOK,
+                              XmlTags.XML_AVERAGE_RATING)
+                 .setEndAction(mHandleDouble, SiteField.AVERAGE_RATING);
+        // <rating>0</rating>
+        XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XmlTags.XML_BOOK,
+                              XmlTags.XML_MY_REVIEW,
+                              XmlTags.XML_RATING)
+                 .setEndAction(mHandleDouble, DBDefinitions.KEY_RATING);
+
+
+        // <format>Hardcover</format>
         XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XmlTags.XML_BOOK,
                               XmlTags.XML_FORMAT)
                  .setEndAction(mHandleText, DBDefinitions.KEY_FORMAT);
         XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XmlTags.XML_BOOK,
-                              XmlTags.XML_URL)
-                 .setEndAction(mHandleText, SiteField.BOOK_URL);
+                              XmlTags.XML_IS_EBOOK)
+                 .setEndAction(mHandleBoolean, SiteField.IS_EBOOK);
+        XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XmlTags.XML_BOOK,
+                              XmlTags.XML_WORK,
+                              XmlTags.XML_MEDIA_TYPE)
+                 .setEndAction(mHandleText, SiteField.MEDIA_TYPE);
 
-        XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XmlTags.XML_BOOK,
-                              XmlTags.XML_AUTHORS,
-                              XmlTags.XML_AUTHOR, XmlTags.XML_ID)
-                 .setEndAction(mHandleAuthorId);
-        XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XmlTags.XML_BOOK,
-                              XmlTags.XML_AUTHORS,
-                              XmlTags.XML_AUTHOR, XmlTags.XML_NAME)
-                 .setEndAction(mHandleAuthorName);
-        XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XmlTags.XML_BOOK,
-                              XmlTags.XML_AUTHORS,
-                              XmlTags.XML_AUTHOR, XmlTags.XML_ROLE)
-                 .setEndAction(mHandleAuthorRole);
 
+
+        /*      <my_review>
+         *        <id>255221284</id>
+         *        <rating>0</rating>
+         *        <votes>0</votes>
+         *        <spoiler_flag>false</spoiler_flag>
+         *        <spoilers_state>none</spoilers_state>
+         *        <shelves>
+         *          <shelf name="sci-fi-fantasy"/>
+         *          <shelf name="to-read"/>
+         *          <shelf name="default"/>
+         *          <shelf name="environment"/>
+         *          <shelf name="games"/>
+         *          <shelf name="history"/>
+         *        </shelves>
+         * [snip]
+         *      </my_review>
+         */
+        XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XmlTags.XML_BOOK,
+                              XmlTags.XML_MY_REVIEW, XmlTags.XML_SHELVES)
+                 .setStartAction(mHandleShelvesStart);
+        XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XmlTags.XML_BOOK,
+                              XmlTags.XML_MY_REVIEW, XmlTags.XML_SHELVES, XmlTags.XML_SHELF)
+                 .setStartAction(mHandleShelf);
+
+
+        /*
+         *     <popular_shelves>
+         *        <shelf name="to-read" count="3496"/>
+         *        <shelf name="young-adult" count="810"/>
+         *        <shelf name="fiction" count="537"/>
+         *        <shelf name="currently-reading" count="284"/>
+         * [snip]
+         *      </popular_shelves>
+         *
+         * optionally used as genre.
+         */
         if (GoodreadsManager.isCollectGenre(mAppContext)) {
             XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XmlTags.XML_BOOK,
                                   XmlTags.XML_POPULAR_SHELVES,
                                   XmlTags.XML_SHELF)
                      .setStartAction(mHandlePopularShelf);
         }
-
-        XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XmlTags.XML_BOOK,
-                              XmlTags.XML_MY_REVIEW,
-                              XmlTags.XML_ID)
-                 .setEndAction(mHandleLong, SiteField.REVIEW_ID);
-        XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XmlTags.XML_BOOK,
-                              XmlTags.XML_MY_REVIEW,
-                              XmlTags.XML_SHELVES)
-                 .setStartAction(mHandleShelvesStart);
-        XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XmlTags.XML_BOOK,
-                              XmlTags.XML_MY_REVIEW,
-                              XmlTags.XML_SHELVES, XmlTags.XML_SHELF)
-                 .setStartAction(mHandleShelf);
-
-        XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XmlTags.XML_BOOK,
-                              XmlTags.XML_SERIES_WORKS,
-                              XmlTags.XML_SERIES_WORK, XmlTags.XML_USER_POSITION)
-                 .setEndAction(mHandleSeriesPosition);
-
-        XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XmlTags.XML_BOOK,
-                              XmlTags.XML_SERIES_WORKS,
-                              XmlTags.XML_SERIES_WORK, XmlTags.XML_SERIES, XmlTags.XML_ID)
-                 .setEndAction(mHandleSeriesId);
-        XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XmlTags.XML_BOOK,
-                              XmlTags.XML_SERIES_WORKS,
-                              XmlTags.XML_SERIES_WORK, XmlTags.XML_SERIES, XmlTags.XML_TITLE)
-                 .setEndAction(mHandleSeriesName);
     }
 
     /**
@@ -790,13 +848,14 @@ public abstract class ShowBookApiHandler
         public static final String SHELVES = "__shelves";
 
         static final String WORK_ID = "__work_id";
-        static final String BOOK_URL = "__url";
+        //static final String BOOK_URL = "__url";
 
         static final String ISBN13 = "__isbn13";
         static final String COUNTRY_CODE = "__country_code";
         static final String IS_EBOOK = "__is_ebook";
         static final String ORIG_TITLE = "__orig_title";
-        static final String RATING = "__rating";
+        static final String AVERAGE_RATING = "__rating";
+        static final String MEDIA_TYPE = "__media";
 
         static final String LARGE_IMAGE_URL = "__image";
         static final String SMALL_IMAGE_URL = "__smallImage";
@@ -808,7 +867,6 @@ public abstract class ShowBookApiHandler
         static final String PUBLICATION_YEAR = "__pub_year";
         static final String PUBLICATION_MONTH = "__pub_month";
         static final String PUBLICATION_DAY = "__pub_day";
-        static final String PUBLISHER = "__publisher";
 
         private SiteField() {
         }

@@ -83,6 +83,9 @@
     <!-- not an actual task, but this serves to identify messages from the StartupViewModel. -->
     <item name="TASK_ID_STARTUP_COORDINATOR" type="id" />
 
+    <!-- Startup task to build language cache file(s). -->
+    <item name="TASK_ID_BUILD_LANG_MAP" type="id" />
+
     <!-- Database maintenance tasks. -->
     <item name="TASK_ID_DB_CLEANER" type="id" />
     <item name="TASK_ID_DB_OPTIMIZE" type="id" />

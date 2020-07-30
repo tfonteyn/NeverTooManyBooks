@@ -35,6 +35,7 @@ import androidx.annotation.Nullable;
 
 import java.util.Locale;
 
+import com.hardbacknutter.nevertoomanybooks.covers.ImageFileInfo;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageUtils;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsManager;
@@ -48,25 +49,23 @@ public final class ApiUtils {
 
     /**
      * Construct a full or partial date string based on the y/m/d fields.
+     * <p>
+     * If successful, <strong>removes</strong> the individual keys
      *
      * @param source    Bundle to use
      * @param yearKey   bundle key
      * @param monthKey  bundle key
      * @param dayKey    bundle key
-     * @param resultKey key to write to formatted date to
-     *
-     * @return the date string, or {@code null} if invalid
+     * @param resultKey key to write the full/partial date to
      */
-    @Nullable
-    public static String buildDate(@NonNull final Bundle source,
-                                   @NonNull final String yearKey,
-                                   @NonNull final String monthKey,
-                                   @NonNull final String dayKey,
-                                   @Nullable final String resultKey) {
+    public static void buildDate(@NonNull final Bundle source,
+                                 @NonNull final String yearKey,
+                                 @NonNull final String monthKey,
+                                 @NonNull final String dayKey,
+                                 @Nullable final String resultKey) {
 
-        String date = null;
         if (source.containsKey(yearKey)) {
-            date = String.format(Locale.ENGLISH, "%04d", source.getLong(yearKey));
+            String date = String.format(Locale.ENGLISH, "%04d", source.getLong(yearKey));
             if (source.containsKey(monthKey)) {
                 date += '-' + String.format(Locale.ENGLISH, "%02d", source.getLong(monthKey));
                 if (source.containsKey(dayKey)) {
@@ -75,9 +74,11 @@ public final class ApiUtils {
             }
             if (resultKey != null && !date.isEmpty()) {
                 source.putString(resultKey, date);
+                source.remove(yearKey);
+                source.remove(monthKey);
+                source.remove(dayKey);
             }
         }
-        return date;
     }
 
     /**
@@ -96,31 +97,33 @@ public final class ApiUtils {
                                          @NonNull final String keyLargeImageUrl,
                                          @NonNull final String keySmallImageUrl) {
         // first check what the "best" image is that we have.
-        final String url;
-        final String sizeSuffix;
-
         final String largeImage = goodreadsData.getString(keyLargeImageUrl);
         final String smallImage = goodreadsData.getString(keySmallImageUrl);
 
+        final String url;
+        final ImageFileInfo.Size size;
+
         if (hasCover(largeImage)) {
-            sizeSuffix = keyLargeImageUrl;
+            size = ImageFileInfo.Size.Large;
             url = largeImage;
+
         } else if (hasCover(smallImage)) {
-            sizeSuffix = keySmallImageUrl;
+            size = ImageFileInfo.Size.Small;
             url = smallImage;
+
         } else {
             return null;
         }
 
-        // We have an image, save it using the Goodreads book id as base name.
-        final long grId = goodreadsData.getLong(DBDefinitions.KEY_EID_GOODREADS_BOOK);
-        return ImageUtils.saveImage(
-                context, url, String.valueOf(grId),
-                GoodreadsSearchEngine.FILENAME_SUFFIX + "_" + sizeSuffix,
-                0,
-                GoodreadsManager.CONNECTION_TIMEOUT_MS,
-                GoodreadsManager.READ_TIMEOUT_MS,
-                GoodreadsSearchEngine.THROTTLER);
+        final String tmpName = ImageUtils.createFilename(
+                GoodreadsManager.FILENAME_SUFFIX,
+                String.valueOf(goodreadsData.getLong(DBDefinitions.KEY_EID_GOODREADS_BOOK)),
+                0, size);
+
+        return ImageUtils.saveImage(context, url, tmpName,
+                                    GoodreadsManager.CONNECTION_TIMEOUT_MS,
+                                    GoodreadsManager.READ_TIMEOUT_MS,
+                                    GoodreadsSearchEngine.THROTTLER);
     }
 
     /**

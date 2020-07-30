@@ -116,7 +116,8 @@ public class EditBookTocFragment
     /** View Binding. */
     private FragmentEditBookTocBinding mVb;
     /** the rows. */
-    private ArrayList<TocEntry> mList;
+    private final ArrayList<TocEntry> mList = new ArrayList<>();
+
     /** The adapter for the list. */
     private TocListEditAdapter mListAdapter;
     /** Drag and drop support for the list view. */
@@ -252,20 +253,35 @@ public class EditBookTocFragment
         });
         mIsfdbGetBookTask.onFinished().observe(getViewLifecycleOwner(), this::onIsfdbBook);
 
-        // set up the list view. The adapter is setup in onPopulateViews
+
         final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         mVb.tocList.setLayoutManager(linearLayoutManager);
         //noinspection ConstantConditions
         mVb.tocList.addItemDecoration(
                 new DividerItemDecoration(getContext(), linearLayoutManager.getOrientation()));
         mVb.tocList.setHasFixedSize(true);
+        mListAdapter = new TocListEditAdapter(getContext(), mList,
+                                              vh -> mItemTouchHelper.startDrag(vh));
+        mListAdapter.registerAdapterDataObserver(mAdapterDataObserver);
+        mVb.tocList.setAdapter(mListAdapter);
+
+        final SimpleItemTouchHelperCallback sitHelperCallback =
+                new SimpleItemTouchHelperCallback(mListAdapter);
+        mItemTouchHelper = new ItemTouchHelper(sitHelperCallback);
+        mItemTouchHelper.attachToRecyclerView(mVb.tocList);
+
 
         mVb.cbxMultipleAuthors.setOnCheckedChangeListener(
                 (v, isChecked) -> updateMultiAuthor(isChecked));
         // adding a new entry
         mVb.btnAdd.setOnClickListener(v -> onAdd());
+
         // ready for user input
-        mVb.author.requestFocus();
+        if (mVb.author.getVisibility() == View.VISIBLE) {
+            mVb.author.requestFocus();
+        } else {
+            mVb.title.requestFocus();
+        }
     }
 
     void onEntryUpdated(@NonNull final TocEntry tocEntry,
@@ -306,18 +322,11 @@ public class EditBookTocFragment
         super.onPopulateViews(fields, book);
 
         // Populate the list view with the book content table.
-        mList = book.getParcelableArrayList(Book.BKEY_TOC_ARRAY);
+        mList.clear();
+        mList.addAll(book.getParcelableArrayList(Book.BKEY_TOC_ARRAY));
+        mListAdapter.notifyDataSetChanged();
 
-        //noinspection ConstantConditions
-        mListAdapter = new TocListEditAdapter(getContext(), mList,
-                                              vh -> mItemTouchHelper.startDrag(vh));
-        mListAdapter.registerAdapterDataObserver(mAdapterDataObserver);
-        mVb.tocList.setAdapter(mListAdapter);
 
-        final SimpleItemTouchHelperCallback sitHelperCallback =
-                new SimpleItemTouchHelperCallback(mListAdapter);
-        mItemTouchHelper = new ItemTouchHelper(sitHelperCallback);
-        mItemTouchHelper.attachToRecyclerView(mVb.tocList);
 
         populateTocBits(book);
 
@@ -504,9 +513,11 @@ public class EditBookTocFragment
             mVb.author.selectAll();
             mVb.lblAuthor.setVisibility(View.VISIBLE);
             mVb.author.setVisibility(View.VISIBLE);
+            mVb.author.requestFocus();
         } else {
             mVb.lblAuthor.setVisibility(View.GONE);
             mVb.author.setVisibility(View.GONE);
+            mVb.title.requestFocus();
         }
     }
 
@@ -729,7 +740,7 @@ public class EditBookTocFragment
                 final StringBuilder message =
                         new StringBuilder(getString(R.string.warning_toc_confirm))
                                 .append("\n\n")
-                                .append(Csv.join(mTocEntries,
+                                .append(Csv.join(", ", mTocEntries,
                                                  tocEntry -> tocEntry.getLabel(getContext())));
                 vb.content.setText(message);
 

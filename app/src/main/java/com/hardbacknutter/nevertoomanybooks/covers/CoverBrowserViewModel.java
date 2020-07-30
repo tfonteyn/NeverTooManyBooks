@@ -29,9 +29,7 @@ package com.hardbacknutter.nevertoomanybooks.covers;
 
 import android.content.Context;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.SparseArray;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -39,7 +37,11 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -73,35 +75,56 @@ public class CoverBrowserViewModel
     /** Executor for fetching gallery images. */
     private final Executor mGalleryNetworkExecutor = ASyncExecutor.create("gallery/n");
 
-    /** Holder for all active tasks, so we can cancel them if needed. */
-    @SuppressWarnings("rawtypes")
-    private final SparseArray<AsyncTask> mAllTasks = new SparseArray<>();
-    /** SelectedImage. */
-    @Nullable
-    private FetchImageTask mSelectedImageTask;
+    /**
+     * Holder for all active tasks, so we can cancel them if needed.
+     * key: isbn.
+     */
+    private final Map<String, FetchImageTask> mAllTasks = new HashMap<>();
     /** FetchImageTask listener. */
     private final TaskListener<ImageFileInfo> mTaskListener = new TaskListener<ImageFileInfo>() {
         @Override
         public void onFinished(@NonNull final FinishedMessage<ImageFileInfo> message) {
-            removeTask(message.taskId);
             if (message.taskId == R.id.TASK_ID_PREVIEW_IMAGE) {
                 mSelectedImageTask = null;
                 mSelectedImage.setValue(message.result);
             } else {
+                removeTask(message.taskId);
                 mGalleryImage.setValue(message.result);
             }
         }
 
         @Override
         public void onCancelled(@NonNull final FinishedMessage<ImageFileInfo> message) {
-            removeTask(message.taskId);
+            if (message.taskId == R.id.TASK_ID_PREVIEW_IMAGE) {
+                mSelectedImageTask = null;
+                mSelectedImage.setValue(null);
+            } else {
+                removeTask(message.taskId);
+                mGalleryImage.setValue(null);
+            }
         }
 
         @Override
         public void onFailure(@NonNull final FinishedMessage<Exception> message) {
-            removeTask(message.taskId);
+            if (message.taskId == R.id.TASK_ID_PREVIEW_IMAGE) {
+                mSelectedImageTask = null;
+                mSelectedImage.setValue(null);
+            } else {
+                removeTask(message.taskId);
+                mGalleryImage.setValue(null);
+            }
         }
     };
+
+    /** SelectedImage. */
+    @Nullable
+    private FetchImageTask mSelectedImageTask;
+    /** List of ISBN numbers for alternative editions. The base list for the gallery adapter. */
+    @NonNull
+    private final ArrayList<String> mEditions = new ArrayList<>();
+    /** Indicates cancel has been requested. */
+    private boolean mIsCancelled;
+
     /**
      * The selected (i.e. displayed in the preview) file.
      * This is the absolute/resolved path for the file
@@ -148,14 +171,23 @@ public class CoverBrowserViewModel
         }
     }
 
+    public boolean isCancelled() {
+        return mIsCancelled;
+    }
+
     /**
      * Cancel all active tasks.
      */
     void cancelAllTasks() {
+        // prevent new tasks being started.
+        mIsCancelled = true;
+
+        if (mSelectedImageTask != null) {
+            mSelectedImageTask.cancel(true);
+        }
+
         synchronized (mAllTasks) {
-            for (int i = 0; i < mAllTasks.size(); i++) {
-                //noinspection rawtypes
-                final AsyncTask task = mAllTasks.valueAt(i);
+            for (FetchImageTask task : mAllTasks.values()) {
                 task.cancel(true);
             }
             mAllTasks.clear();
@@ -169,7 +201,27 @@ public class CoverBrowserViewModel
      */
     private void removeTask(final int taskId) {
         synchronized (mAllTasks) {
-            mAllTasks.remove(taskId);
+            String isbn = null;
+            for (Map.Entry<String, FetchImageTask> entry : mAllTasks.entrySet()) {
+                if (entry.getValue().getTaskId() == taskId) {
+                    isbn = entry.getKey();
+                    break;
+                }
+            }
+            if (isbn != null) {
+                mAllTasks.remove(isbn);
+            }
+        }
+    }
+
+    /**
+     * Remove the task for the given ISBN
+     *
+     * @param isbn to remove
+     */
+    private void removeTask(@NonNull final String isbn) {
+        synchronized (mAllTasks) {
+            mAllTasks.remove(isbn);
         }
     }
 
@@ -191,6 +243,23 @@ public class CoverBrowserViewModel
         return mCIdx;
     }
 
+    @NonNull
+    public ArrayList<String> getEditions() {
+        return mEditions;
+    }
+
+    /**
+     * Set the given list as the editions list.
+     *
+     * @param list to use
+     */
+    public void setEditions(@Nullable final Collection<String> list) {
+        mEditions.clear();
+        if (list != null && !list.isEmpty()) {
+            mEditions.addAll(list);
+        }
+    }
+
     @Nullable
     String getSelectedFilePath() {
         return mSelectedFilePath;
@@ -203,14 +272,14 @@ public class CoverBrowserViewModel
     /**
      * wrapper for {@link FileManager#getFileInfo}.
      *
-     * @param isbn  to search
-     * @param sizes required sizes in order to look for. First found is used.
+     * @param isbn to search
      *
-     * @return the ImageFileInfo
+     * @return a {@link ImageFileInfo} object with or without a valid fileSpec,
+     * or {@code null} if there is no cached file at all
      */
-    ImageFileInfo getFileInfo(@NonNull final String isbn,
-                              @NonNull final ImageFileInfo.Size... sizes) {
-        return mFileManager.getFileInfo(isbn, sizes);
+    @Nullable
+    ImageFileInfo getFileInfo(@NonNull final String isbn) {
+        return mFileManager.getFileInfo(isbn);
     }
 
     /**
@@ -219,14 +288,17 @@ public class CoverBrowserViewModel
      * @param isbn to search for, <strong>must</strong> be valid.
      */
     void fetchGalleryImage(@NonNull final String isbn) {
-        final FetchImageTask task =
-                new FetchImageTask(mTaskIdCounter.getAndIncrement(), isbn, mCIdx,
-                                   mFileManager, mTaskListener,
-                                   ImageFileInfo.Size.SMALL_FIRST);
         synchronized (mAllTasks) {
-            mAllTasks.put(task.getTaskId(), task);
+            if (!mAllTasks.containsKey(isbn)) {
+                final FetchImageTask task =
+                        new FetchImageTask(mTaskIdCounter.getAndIncrement(), isbn, mCIdx,
+                                           mFileManager, mTaskListener,
+                                           ImageFileInfo.Size.SMALL_FIRST);
+
+                mAllTasks.put(isbn, task);
+                task.executeOnExecutor(mGalleryNetworkExecutor);
+            }
         }
-        task.executeOnExecutor(mGalleryNetworkExecutor);
     }
 
     /**
@@ -247,15 +319,12 @@ public class CoverBrowserViewModel
     void fetchSelectedImage(@NonNull final ImageFileInfo imageFileInfo) {
         if (mSelectedImageTask != null) {
             mSelectedImageTask.cancel(true);
-            removeTask(mSelectedImageTask.getTaskId());
         }
         mSelectedImageTask = new FetchImageTask(R.id.TASK_ID_PREVIEW_IMAGE,
                                                 imageFileInfo.isbn, mCIdx,
                                                 mFileManager, mTaskListener,
                                                 ImageFileInfo.Size.LARGE_FIRST);
-        synchronized (mAllTasks) {
-            mAllTasks.put(mSelectedImageTask.getTaskId(), mSelectedImageTask);
-        }
+
         // use the default executor which is free right now
         mSelectedImageTask.execute();
     }
@@ -269,4 +338,5 @@ public class CoverBrowserViewModel
     MutableLiveData<ImageFileInfo> onSelectedImage() {
         return mSelectedImage;
     }
+
 }

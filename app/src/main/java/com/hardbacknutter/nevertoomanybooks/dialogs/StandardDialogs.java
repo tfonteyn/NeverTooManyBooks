@@ -41,6 +41,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
+import androidx.annotation.UiThread;
 import androidx.appcompat.app.AlertDialog;
 import androidx.preference.PreferenceManager;
 
@@ -55,6 +56,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Entity;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
+import com.hardbacknutter.nevertoomanybooks.searches.Site;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 
 public final class StandardDialogs {
@@ -248,48 +250,6 @@ public final class StandardDialogs {
                 .show();
     }
 
-    /**
-     * Show a registration request dialog.
-     *
-     * @param context   Current context
-     * @param siteResId Site string resource ID
-     * @param intent    Intent to start if the user wants more information.
-     * @param required  Show third button allowing disabling message or not.
-     * @param prefName  Preference name to use for disabling the message if requested
-     */
-    public static void registerOnSite(@NonNull final Context context,
-                                      @StringRes final int siteResId,
-                                      @NonNull final Intent intent,
-                                      final boolean required,
-                                      @NonNull final String prefName) {
-
-        String site = context.getString(siteResId);
-        String message;
-        if (required) {
-            message = context.getString(R.string.confirm_registration_required, site);
-        } else {
-            message = context.getString(R.string.confirm_registration_benefits, site,
-                                        context.getString(R.string.lbl_credentials));
-        }
-
-        AlertDialog dialog = new MaterialAlertDialogBuilder(context)
-                .setIcon(R.drawable.ic_warning)
-                .setTitle(R.string.lbl_registration)
-                .setMessage(message)
-                .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
-                .setPositiveButton(R.string.btn_tell_me_more,
-                                   (d, w) -> context.startActivity(intent))
-                .create();
-
-        if (!required) {
-            dialog.setButton(DialogInterface.BUTTON_NEUTRAL,
-                             context.getString(R.string.btn_disable_message), (d, which) ->
-                                     PreferenceManager.getDefaultSharedPreferences(context)
-                                                      .edit().putBoolean(prefName, true).apply());
-        }
-
-        dialog.show();
-    }
 
     /**
      * Purge {@link DBDefinitions#TBL_BOOK_LIST_NODE_STATE} for the given entity.
@@ -371,5 +331,73 @@ public final class StandardDialogs {
         popup.setFocusable(true);
         // finally show it
         popup.showAsDropDown(anchorView);
+    }
+
+    /**
+     * Show a registration request dialog.
+     *
+     * @param context      Current context
+     * @param engineId     the search engine
+     * @param required     {@code true} if we <strong>must</strong> have access.
+     *                     {@code false} if it would be beneficial.
+     * @param callerSuffix String used to flag in preferences if we showed the alert from
+     *                     that caller already or not.
+     * @param intentClass  Intent to start if the user wants more information.
+     */
+    @UiThread
+    public static boolean registerOnSite(@NonNull final Context context,
+                                         final int engineId,
+                                         final boolean required,
+                                         @NonNull final String callerSuffix,
+                                         @NonNull final Class<?> intentClass) {
+
+        Site.Config config = Site.getConfig(engineId);
+
+        //noinspection ConstantConditions
+        final String key = config.getPreferenceKey() + ".hide_alert." + callerSuffix;
+
+        final boolean showAlert;
+        if (required) {
+            showAlert = true;
+        } else {
+            showAlert = !PreferenceManager.getDefaultSharedPreferences(context)
+                                          .getBoolean(key, false);
+        }
+
+        if (showAlert) {
+            final String message;
+            if (required) {
+                message = context.getString(R.string.confirm_registration_required,
+                                            context.getString(config.getNameResId()));
+            } else {
+                message = context.getString(R.string.confirm_registration_benefits,
+                                            context.getString(config.getNameResId()),
+                                            context.getString(R.string.lbl_credentials));
+            }
+
+            final AlertDialog dialog = new MaterialAlertDialogBuilder(context)
+                    .setIcon(R.drawable.ic_warning)
+                    .setTitle(R.string.lbl_registration)
+                    .setMessage(message)
+                    .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
+                    .setPositiveButton(R.string.btn_tell_me_more, (d, w) -> {
+                        final Intent intent = new Intent(context, intentClass);
+                        context.startActivity(intent);
+                    })
+                    .create();
+
+            if (!required) {
+                // If it's no required, allow the user to permanently hide this alter
+                // for the given preference suffix.
+                dialog.setButton(DialogInterface.BUTTON_NEUTRAL,
+                                 context.getString(R.string.btn_disable_message), (d, which) ->
+                                         PreferenceManager.getDefaultSharedPreferences(context)
+                                                          .edit().putBoolean(key, true).apply());
+            }
+
+            dialog.show();
+        }
+
+        return showAlert;
     }
 }

@@ -91,6 +91,48 @@ public interface SearchEngine {
     String TAG = "SearchEngine";
 
     /**
+     * Helper method.
+     * <p>
+     * Look for a book title; if present try to get a Series from it and clean the book title.
+     * <p>
+     * This default implementation is fine for most engines,
+     * but override {@link #checkForSeriesNameInTitle} when needed.
+     *
+     * @param bookData Bundle to update
+     */
+    static void checkForSeriesNameInTitleDefaultImpl(@NonNull final Bundle bookData) {
+        final String fullTitle = bookData.getString(DBDefinitions.KEY_TITLE);
+        if (fullTitle != null) {
+            final Matcher matcher = Series.TEXT1_BR_TEXT2_BR_PATTERN.matcher(fullTitle);
+            if (matcher.find()) {
+                // the cleansed title
+                final String bookTitle = matcher.group(1);
+                // the series title/number
+                final String seriesTitleWithNumber = matcher.group(2);
+
+                if (seriesTitleWithNumber != null && !seriesTitleWithNumber.isEmpty()) {
+                    // we'll add to, or create the Series list
+                    ArrayList<Series> seriesList =
+                            bookData.getParcelableArrayList(Book.BKEY_SERIES_ARRAY);
+                    if (seriesList == null) {
+                        seriesList = new ArrayList<>();
+                    }
+
+                    // add to the TOP of the list. This is based on translated books/comics
+                    // on Goodreads where the Series is in the original language, but the
+                    // Series name embedded in the title is in the same language as the title.
+                    seriesList.add(0, Series.from(seriesTitleWithNumber));
+
+                    // store Series back
+                    bookData.putParcelableArrayList(Book.BKEY_SERIES_ARRAY, seriesList);
+                    // and store cleansed book title back
+                    bookData.putString(DBDefinitions.KEY_TITLE, bookTitle);
+                }
+            }
+        }
+    }
+
+    /**
      * Get the engine id.
      * <p>
      * Default implementation in {@link SearchEngineBase}.
@@ -192,62 +234,25 @@ public interface SearchEngine {
      * <p>
      * Check if we have a key; if not alert the user.
      *
-     * @param context    Current context; <strong>MUST</strong> be passed in
-     *                   as this call might do UI interaction.
-     * @param required   {@code true} if we <strong>must</strong> have access to the site.
-     *                   {@code false} if it would be beneficial but not mandatory.
-     * @param prefSuffix String used to flag in preferences if we showed the alert from
-     *                   that caller already or not yet.
+     * @param context      Current context; <strong>MUST</strong> be passed in
+     *                     as this call might do UI interaction.
+     * @param required     {@code true} if we <strong>must</strong> have access to the site.
+     *                     {@code false} if it would be beneficial but not mandatory.
+     * @param callerSuffix String used to flag in preferences if we showed the alert from
+     *                     that caller already or not.
      *
      * @return {@code true} if an alert is currently shown
      */
     @UiThread
     default boolean promptToRegister(@NonNull final Context context,
                                      final boolean required,
-                                     @NonNull final String prefSuffix) {
+                                     @NonNull final String callerSuffix) {
         return false;
     }
 
-    /**
-     * Helper method.
-     * <p>
-     * Look for a book title; if present try to get a Series from it and clean the book title.
-     * <p>
-     * This default implementation is fine for most engines, but override when needed.
-     *
-     * @param bookData Bundle to update
-     */
     @AnyThread
     default void checkForSeriesNameInTitle(@NonNull final Bundle bookData) {
-        final String fullTitle = bookData.getString(DBDefinitions.KEY_TITLE);
-        if (fullTitle != null) {
-            final Matcher matcher = Series.TEXT1_BR_TEXT2_BR_PATTERN.matcher(fullTitle);
-            if (matcher.find()) {
-                // the cleansed title
-                final String bookTitle = matcher.group(1);
-                // the series title/number
-                final String seriesTitleWithNumber = matcher.group(2);
-
-                if (seriesTitleWithNumber != null && !seriesTitleWithNumber.isEmpty()) {
-                    // we'll add to, or create the Series list
-                    ArrayList<Series> seriesList =
-                            bookData.getParcelableArrayList(Book.BKEY_SERIES_ARRAY);
-                    if (seriesList == null) {
-                        seriesList = new ArrayList<>();
-                    }
-
-                    // add to the TOP of the list. This is based on translated books/comics
-                    // on Goodreads where the Series is in the original language, but the
-                    // Series name embedded in the title is in the same language as the title.
-                    seriesList.add(0, Series.from(seriesTitleWithNumber));
-
-                    // store Series back
-                    bookData.putParcelableArrayList(Book.BKEY_SERIES_ARRAY, seriesList);
-                    // and store cleansed book title back
-                    bookData.putString(DBDefinitions.KEY_TITLE, bookTitle);
-                }
-            }
-        }
+        checkForSeriesNameInTitleDefaultImpl(bookData);
     }
 
     /**
@@ -263,7 +268,9 @@ public interface SearchEngine {
     /**
      * Convenience method to create a connection using the engines specific network configuration.
      *
-     * @param url to connect to
+     * @param url             to connect to
+     * @param followRedirects a {@code boolean} indicating
+     *                        whether or not to follow HTTP redirects.
      *
      * @return the connection
      *
@@ -284,25 +291,31 @@ public interface SearchEngine {
         return con;
     }
 
+    @NonNull
+    default String createFilename(@Nullable final String bookId,
+                                  @IntRange(from = 0) final int cIdx,
+                                  @Nullable final ImageFileInfo.Size size) {
+        final Site.Config config = Site.getConfig(getId());
+        //noinspection ConstantConditions
+        return ImageUtils.createFilename(config.getFilenameSuffix(), bookId, cIdx, size);
+    }
+
     /**
      * Convenience method to save an image using the engines specific network configuration.
      *
-     * @param url    Image file URL
-     * @param prefix for the filename
-     * @param suffix for the filename
-     * @param cIdx   0..n image index
+     * @param url      Image file URL
+     * @param filename to use
      *
      * @return Downloaded fileSpec, or {@code null} on failure
      */
     @WorkerThread
     @Nullable
     default String saveImage(@NonNull final String url,
-                             @NonNull final String prefix,
-                             @NonNull final String suffix,
-                             @IntRange(from = 0) final int cIdx) {
+                             @NonNull final String filename) {
         final Site.Config config = Site.getConfig(getId());
+
         //noinspection ConstantConditions
-        return ImageUtils.saveImage(getAppContext(), url, prefix, suffix, cIdx,
+        return ImageUtils.saveImage(getAppContext(), url, filename,
                                     config.getConnectTimeoutMs(),
                                     config.getReadTimeoutMs(),
                                     getThrottler());
@@ -342,7 +355,7 @@ public interface SearchEngine {
                 throws CredentialsException, IOException;
     }
 
-    /** Optional. */
+    /** Optional. Every engine should really implement this. */
     interface ByIsbn
             extends SearchEngine {
 
@@ -385,10 +398,7 @@ public interface SearchEngine {
 
     /**
      * Optional.
-     * The engine can search generic bar codes, aside of strict ISBN only.
-     * <p>
-     * The default implementation provided redirects to {@link #searchByIsbn}.
-     * Override when needed.
+     * Implement if the engine can search generic bar codes, aside of strict ISBN only.
      */
     interface ByBarcode
             extends ByIsbn {
@@ -407,11 +417,9 @@ public interface SearchEngine {
          */
         @WorkerThread
         @NonNull
-        default Bundle searchByBarcode(@NonNull String barcode,
-                                       @NonNull boolean[] fetchThumbnail)
-                throws CredentialsException, IOException {
-            return searchByIsbn(barcode, fetchThumbnail);
-        }
+        Bundle searchByBarcode(@NonNull String barcode,
+                               @NonNull boolean[] fetchThumbnail)
+                throws CredentialsException, IOException;
     }
 
     /**
@@ -461,6 +469,9 @@ public interface SearchEngine {
          * <p>
          * <strong>Important</strong> this method should never throw any Exceptions.
          * Simply return {@code null} when an error occurs (but log the error).
+         * <p>
+         * See {@link #searchBestCoverImageByIsbn} for sites with
+         * {@link #supportsMultipleCoverSizes()} == true
          *
          * @param validIsbn to search for, <strong>must</strong> be valid.
          * @param cIdx      0..n image index
@@ -486,20 +497,24 @@ public interface SearchEngine {
         }
 
         /**
-         * Helper method. A wrapper around {@link #searchCoverImageByIsbn}.
-         * Will try in order of large, medium, small depending on the site
-         * supporting multiple sizes. i.e. the 'best' image being the largest we can find.
-         * If successful, the image will be added to the given bookData Bundle
+         * Helper method for sites which support multiple image sizes.
+         * It's a wrapper around {@link #searchCoverImageByIsbn} which
+         * will try to get an image in order of large, medium, small.
+         * i.e. the 'best' image being the largest we can find.
          *
          * @param validIsbn to search for, <strong>must</strong> be valid.
          * @param cIdx      0..n image index
-         * @param bookData  Bundle to update
+         *
+         * @return ArrayList with a single fileSpec (This is for convenience, as the result
+         * is meant to be stored into the book-data as a parcelable array;
+         * and it allows extending to multiple images at a future time)
          */
         @WorkerThread
-        default void searchBestCoverImageByIsbn(@NonNull final String validIsbn,
-                                                @IntRange(from = 0) final int cIdx,
-                                                @NonNull final Bundle bookData) {
+        @NonNull
+        default ArrayList<String> searchBestCoverImageByIsbn(@NonNull final String validIsbn,
+                                                             @IntRange(from = 0) final int cIdx) {
 
+            final ArrayList<String> imageList = new ArrayList<>();
             String fileSpec = searchCoverImageByIsbn(validIsbn, cIdx, ImageFileInfo.Size.Large);
             if (supportsMultipleCoverSizes()) {
                 if (fileSpec == null) {
@@ -510,41 +525,10 @@ public interface SearchEngine {
                     }
                 }
             }
-
             if (fileSpec != null) {
-                ArrayList<String> imageList =
-                        bookData.getStringArrayList(Book.BKEY_FILE_SPEC_ARRAY[cIdx]);
-                if (imageList == null) {
-                    imageList = new ArrayList<>();
-                }
                 imageList.add(fileSpec);
-                bookData.putStringArrayList(Book.BKEY_FILE_SPEC_ARRAY[cIdx], imageList);
             }
-        }
-
-        /**
-         * Helper method.
-         * Get the resolved file path for the first cover file found (for the given index).
-         *
-         * @param bookData with file-spec data
-         * @param cIdx     0..n image index
-         *
-         * @return resolved path, or {@code null} if none found
-         */
-        @AnyThread
-        @Nullable
-        default String getFirstCoverFileFoundPath(@NonNull final Bundle bookData,
-                                                  @IntRange(from = 0) final int cIdx) {
-            final ArrayList<String> imageList =
-                    bookData.getStringArrayList(Book.BKEY_FILE_SPEC_ARRAY[cIdx]);
-            if (imageList != null && !imageList.isEmpty()) {
-                final File downloadedFile = new File(imageList.get(0));
-                // let the system resolve any path variations
-                final File destination = new File(downloadedFile.getAbsolutePath());
-                FileUtils.rename(downloadedFile, destination);
-                return destination.getAbsolutePath();
-            }
-            return null;
+            return imageList;
         }
 
         /**
@@ -562,6 +546,7 @@ public interface SearchEngine {
          *
          * @return fileSpec, or {@code null} when none found (or any other failure)
          */
+        @SuppressWarnings("unused")
         @WorkerThread
         @Nullable
         default String searchCoverImageByIsbnFallback(@NonNull final String isbn,
@@ -596,7 +581,15 @@ public interface SearchEngine {
                     return null;
                 }
 
-                return getFirstCoverFileFoundPath(bookData, cIdx);
+                final ArrayList<String> imageList =
+                        bookData.getStringArrayList(Book.BKEY_FILE_SPEC_ARRAY[cIdx]);
+                if (imageList != null && !imageList.isEmpty()) {
+                    final File downloadedFile = new File(imageList.get(0));
+                    // let the system resolve any path variations
+                    final File destination = new File(downloadedFile.getAbsolutePath());
+                    FileUtils.rename(downloadedFile, destination);
+                    return destination.getAbsolutePath();
+                }
 
             } catch (@NonNull final CredentialsException | IOException e) {
                 if (BuildConfig.DEBUG /* always */) {
@@ -636,14 +629,19 @@ public interface SearchEngine {
 
         @StringRes int nameResId();
 
+        @NonNull
         String prefKey();
 
+        @NonNull
         String url();
 
+        @NonNull
         String lang() default "en";
 
+        @NonNull
         String country() default "";
 
+        @NonNull
         String domainKey() default "";
 
         @IdRes int domainViewId() default 0;
@@ -656,5 +654,9 @@ public interface SearchEngine {
 
         /** {@link CoverByIsbn} only. */
         boolean supportsMultipleCoverSizes() default false;
+
+        /** file suffix for cover files. */
+        @NonNull
+        String filenameSuffix() default "";
     }
 }

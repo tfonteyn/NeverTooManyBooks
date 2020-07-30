@@ -31,7 +31,6 @@ import androidx.annotation.NonNull;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.SocketTimeoutException;
 import java.util.List;
 import java.util.Locale;
 
@@ -104,7 +103,7 @@ class IsfdbEditionsHandlerTest
         Document document = null;
         try {
             document = mSearchEngine.loadDocument(path);
-        } catch (@NonNull final SocketTimeoutException e) {
+        } catch (@NonNull final IOException e) {
             fail(e);
         }
         assertNotNull(document);
@@ -127,7 +126,7 @@ class IsfdbEditionsHandlerTest
         Document document = null;
         try {
             document = mSearchEngine.loadDocument(path);
-        } catch (@NonNull final SocketTimeoutException e) {
+        } catch (@NonNull final IOException e) {
             fail(e);
         }
         assertNotNull(document);

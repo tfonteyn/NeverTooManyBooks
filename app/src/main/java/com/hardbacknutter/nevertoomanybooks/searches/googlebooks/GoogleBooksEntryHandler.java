@@ -171,7 +171,7 @@ class GoogleBooksEntryHandler
 
     /* XML tags/attrs we look for. */
     /** file suffix for cover files. */
-    private static final String FILENAME_SUFFIX = "_GB";
+    private static final String FILENAME_SUFFIX = "GB";
     /**
      * Contains a direct link to this entry.
      * <id>http://www.google.com/books/feeds/volumes/IVnpNAAACAAJ</id>
@@ -219,7 +219,8 @@ class GoogleBooksEntryHandler
     private static final String XML_PRICE_SUGGESTED_RETAIL_PRICE = "SuggestedRetailPrice";
     private static final String XML_PRICE_RETAIL_PRICE = "RetailPrice";
     private static final String XML_MONEY = "money";
-    private static final Pattern HTTP_PATTERN = Pattern.compile("http:", Pattern.LITERAL);
+
+    private static final Pattern HTTP_LITERAL = Pattern.compile("http:", Pattern.LITERAL);
 
     /** Schema for thumbnails. http, as it is a schema and not an actual website url. */
     private static final String SCHEMAS_GOOGLE_COM_BOOKS_2008_THUMBNAIL
@@ -269,16 +270,6 @@ class GoogleBooksEntryHandler
     }
 
     /**
-     * Get the results.
-     *
-     * @return Bundle with book data
-     */
-    @NonNull
-    public Bundle getResult() {
-        return mBookData;
-    }
-
-    /**
      * Store the accumulated data in the results.
      */
     @Override
@@ -308,10 +299,12 @@ class GoogleBooksEntryHandler
 
             if (SCHEMAS_GOOGLE_COM_BOOKS_2008_THUMBNAIL.equals(attributes.getValue("", "rel"))) {
                 // This url comes back as http, and we must use https... so replace it.
-                final String url = HTTP_PATTERN.matcher(attributes.getValue("", "href"))
+                final String url = HTTP_LITERAL.matcher(attributes.getValue("", "href"))
                                                .replaceAll(Matcher.quoteReplacement("https:"));
-                final String prefix = mBookData.getString(DBDefinitions.KEY_ISBN, "");
-                final String fileSpec = mSearchEngine.saveImage(url, prefix, FILENAME_SUFFIX, 0);
+
+                final String tmpName = mSearchEngine.createFilename(
+                        mBookData.getString(DBDefinitions.KEY_ISBN), 0, null);
+                final String fileSpec = mSearchEngine.saveImage(url, tmpName);
 
                 if (fileSpec != null) {
                     ArrayList<String> imageList =
@@ -378,9 +371,9 @@ class GoogleBooksEntryHandler
                 String tmpIsbn = mBuilder.toString();
                 if (tmpIsbn.indexOf("ISBN:") == 0) {
                     tmpIsbn = tmpIsbn.substring(5);
-                    final String isbn = mBookData.getString(DBDefinitions.KEY_ISBN);
+                    final String isbnStr = mBookData.getString(DBDefinitions.KEY_ISBN);
                     // store the 'longest' isbn
-                    if (isbn == null || tmpIsbn.length() > isbn.length()) {
+                    if (isbnStr == null || tmpIsbn.length() > isbnStr.length()) {
                         mBookData.putString(DBDefinitions.KEY_ISBN, tmpIsbn);
                     }
                 }

@@ -403,9 +403,9 @@ public class UpdateFieldsModel
                     clearSearchText();
                     boolean canSearch = false;
 
-                    final String isbn = mCurrentBook.getString(DBDefinitions.KEY_ISBN);
-                    if (!isbn.isEmpty()) {
-                        setIsbnSearchText(isbn, true);
+                    final String isbnStr = mCurrentBook.getString(DBDefinitions.KEY_ISBN);
+                    if (!isbnStr.isEmpty()) {
+                        setIsbnSearchText(isbnStr, true);
                         canSearch = true;
                     }
 
@@ -460,7 +460,7 @@ public class UpdateFieldsModel
                             if (!title.isEmpty()) {
                                 setBaseMessage(title);
                             } else {
-                                setBaseMessage(isbn);
+                                setBaseMessage(isbnStr);
                             }
                             return true;
                         }

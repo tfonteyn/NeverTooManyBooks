@@ -53,6 +53,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 public class SiteList
         implements Parcelable {
 
+    /** {@link Parcelable}. */
     public static final Creator<SiteList> CREATOR = new Creator<SiteList>() {
         @Override
         @NonNull
@@ -66,8 +67,6 @@ public class SiteList
             return new SiteList[size];
         }
     };
-
-    private static final String SEP = ",";
 
     /** Cached copy of the users preferred site order; one entry for each type of list. */
     private static final EnumMap<Type, SiteList> SITE_LIST_MAP = new EnumMap<>(Type.class);
@@ -194,25 +193,26 @@ public class SiteList
     }
 
     /**
-     * Bring up an Alert to the user if the searchSites include a site where registration
+     * Bring up an Alert to the user if the current list includes a site where registration
      * is beneficial/required.
      *
-     * @param context    Current context
-     * @param required   {@code true} if we <strong>must</strong> have access to LT.
-     *                   {@code false} if it would be beneficial.
-     * @param prefSuffix Tip preference marker
+     * @param context      Current context
+     * @param required     {@code true} if we <strong>must</strong> have access.
+     *                     {@code false} if it would be beneficial.
+     * @param callerSuffix String used to flag in preferences if we showed the alert from
+     *                     that caller already or not.
      *
      * @return {@code true} if an alert is currently shown
      */
     @SuppressWarnings("UnusedReturnValue")
     public boolean promptToRegister(@NonNull final Context context,
                                     final boolean required,
-                                    @NonNull final String prefSuffix) {
+                                    @NonNull final String callerSuffix) {
         boolean showingAlert = false;
         for (Site site : mList) {
             if (site.isEnabled()) {
                 showingAlert |= site.getSearchEngine()
-                                    .promptToRegister(context, required, prefSuffix);
+                                    .promptToRegister(context, required, callerSuffix);
             }
         }
 
@@ -263,8 +263,13 @@ public class SiteList
 
     /**
      * Reorder the given list based on user preferences.
-     * The site objects are the same as in the original list.
-     * The actual (internal) list is NOT modified.
+     * The site objects are the <strong>same</strong> as in the original list.
+     * <p>
+     * The reordered list <strong>MAY</strong> be shorter then the original,
+     * as sites from the original which are not present in the order string
+     * are <strong>NOT</strong> added.
+     * <p>
+     * The internal {@link #mList} is NOT modified.
      *
      * @param order CSV string with site ID's
      *
@@ -272,7 +277,7 @@ public class SiteList
      */
     private SiteList reorder(@NonNull final String order) {
         final SiteList orderedList = new SiteList(mType);
-        for (String idStr : order.split(SEP)) {
+        for (String idStr : order.split(",")) {
             final int id = Integer.parseInt(idStr);
             for (Site site : mList) {
                 if (site.engineId == id) {
@@ -303,7 +308,7 @@ public class SiteList
         // Save the order of the given list (ID's) and the individual site settings to preferences.
         final SharedPreferences.Editor ed = PreferenceManager.getDefaultSharedPreferences(context)
                                                              .edit();
-        final String order = Csv.join(SEP, mList, site -> {
+        final String order = Csv.join(mList, site -> {
             // store individual site settings
             site.saveToPrefs(ed);
             // and collect the id for the order string
@@ -320,14 +325,16 @@ public class SiteList
         }
         final String order = prefs.getString(mType.getOrderPreferenceKey(), null);
         if (order != null) {
-            final ArrayList<Site> oldList = mList;
-            // replace with the new order.
+            // List as hardcoded.
+            final ArrayList<Site> fullList = mList;
+            // Reorder according to user preferences.
             mList = reorder(order).mList;
-            if (mList.size() < oldList.size()) {
+
+            if (mList.size() < fullList.size()) {
                 // This is a fringe case: a new engine was added, and the user upgraded
                 // this app. The stored order will lack the new engine.
-                // Add any sites not added yet.
-                for (Site site : mList) {
+                // Add any sites not added yet to the end of the list
+                for (Site site : fullList) {
                     if (!mList.contains(site)) {
                         mList.add(site);
                     }
@@ -365,31 +372,34 @@ public class SiteList
         /** Alternative editions for a given isbn. */
         AltEditions(R.string.tab_lbl_alternative_editions, "alted");
 
+        /** {@link Parcelable}. */
         @SuppressWarnings("InnerClassFieldHidesOuterClassField")
-        public static final Creator<Type> CREATOR =
-                new Creator<Type>() {
-                    @Override
-                    @NonNull
-                    public Type createFromParcel(@NonNull final Parcel in) {
-                        return Type.values()[in.readInt()];
-                    }
+        public static final Creator<Type> CREATOR = new Creator<Type>() {
+            @Override
+            @NonNull
+            public Type createFromParcel(@NonNull final Parcel in) {
+                return Type.values()[in.readInt()];
+            }
 
-                    @Override
-                    @NonNull
-                    public Type[] newArray(final int size) {
-                        return new Type[size];
-                    }
-                };
+            @Override
+            @NonNull
+            public Type[] newArray(final int size) {
+                return new Type[size];
+            }
+        };
 
-        /** Preferences prefix. */
+        /** Preferences prefix for individual site settings. */
         private static final String PREF_PREFIX = "search.site.";
+        /** Preferences prefix for site order per type. */
         private static final String PREFS_ORDER_PREFIX = "search.siteOrder.";
 
         /** Log tag. */
         private static final String TAG = "SiteList.Type";
 
+        /** User displayable name. */
         @StringRes
         private final int mNameResId;
+        /** Internal name (for prefs). */
         private final String mTypeName;
 
         /**

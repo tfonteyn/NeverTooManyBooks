@@ -41,7 +41,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.SocketTimeoutException;
 import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -86,7 +85,8 @@ import com.hardbacknutter.nevertoomanybooks.utils.LanguageUtils;
         domainViewId = R.id.site_strip_info_be,
         domainKey = DBDefinitions.KEY_EID_STRIP_INFO_BE,
         connectTimeoutMs = 7_000,
-        readTimeoutMs = 60_000
+        readTimeoutMs = 60_000,
+        filenameSuffix = "SI"
 )
 public class StripInfoSearchEngine
         extends JsoupSearchEngineBase
@@ -96,32 +96,39 @@ public class StripInfoSearchEngine
 
     /** Log tag. */
     private static final String TAG = "StripInfoSearchEngine";
+
     /** Color string values as used on the site. Complete 2019-10-29. */
     private static final String COLOR_STRINGS = "Kleur|Zwart/wit|Zwart/wit met steunkleur";
+
     /** Param 1: external book ID; really a 'long'. */
     private static final String BY_EXTERNAL_ID = "/reeks/strip/%1$s";
+
     /** Param 1: ISBN. */
     private static final String BY_ISBN = "/zoek/zoek?zoekstring=%1$s";
-    /** file suffix for cover files. */
-    private static final String FILENAME_SUFFIX = "_SI";
+
     /** The description contains h4 tags which we remove to make the text shorter. */
     private static final Pattern H4_OPEN_PATTERN = Pattern.compile("<h4>\\s*");
     private static final Pattern H4_CLOSE_PATTERN = Pattern.compile("\\s*</h4>");
+
     /**
      * When a multi-result page is returned, its title will start with this text.
      * (dutch for: Searching for...)
      */
     private static final String MULTI_RESULT_PAGE_TITLE = "Zoeken naar";
+
     /** The site specific 'no cover' image. Correct 2019-12-19. */
     private static final int NO_COVER_FILE_LEN = 15779;
+
     /** The site specific 'no cover' image. Correct 2019-12-19. */
     private static final byte[] NO_COVER_MD5 = {
             (byte) 0xa1, (byte) 0x30, (byte) 0x43, (byte) 0x10,
             (byte) 0x09, (byte) 0x16, (byte) 0xd8, (byte) 0x93,
             (byte) 0xe4, (byte) 0xb5, (byte) 0x32, (byte) 0xcf,
             (byte) 0x3d, (byte) 0x7d, (byte) 0xa9, (byte) 0x37};
+
     /** The site specific 'mature' image. Correct 2019-12-19. */
     private static final int MATURE_FILE_LEN = 21578;
+
     /** The site specific 'mature' image. Correct 2019-12-19. */
     private static final byte[] MATURE_COVER_MD5 = {
             (byte) 0x22, (byte) 0x78, (byte) 0x58, (byte) 0x89,
@@ -131,10 +138,6 @@ public class StripInfoSearchEngine
 
     /** JSoup selector to get book url tags. */
     private static final String A_HREF_STRIP = "a[href*=/strip/]";
-
-
-    /** ISBN of the book we want. Only kept for logging reference. */
-    private String mIsbn;
 
     /**
      * Constructor.
@@ -157,14 +160,14 @@ public class StripInfoSearchEngine
         // which causes the default cleaner to give false positives.
     }
 
-
     @NonNull
     @Override
     public Bundle searchByExternalId(@NonNull final String externalId,
                                      @NonNull final boolean[] fetchThumbnail)
-            throws SocketTimeoutException {
+            throws IOException {
 
         final Bundle bookData = new Bundle();
+
         final String url = getSiteUrl() + String.format(BY_EXTERNAL_ID, externalId);
         final Document document = loadDocument(url);
         if (document != null && !isCancelled()) {
@@ -182,12 +185,10 @@ public class StripInfoSearchEngine
     @Override
     public Bundle searchByIsbn(@NonNull final String validIsbn,
                                @NonNull final boolean[] fetchThumbnail)
-            throws SocketTimeoutException {
-
-        // keep for reference
-        mIsbn = validIsbn;
+            throws IOException {
 
         final Bundle bookData = new Bundle();
+
         final String url = getSiteUrl() + String.format(BY_ISBN, validIsbn);
         final Document document = loadDocument(url);
         if (document != null && !isCancelled()) {
@@ -200,6 +201,14 @@ public class StripInfoSearchEngine
         return bookData;
     }
 
+    @NonNull
+    @Override
+    public Bundle searchByBarcode(@NonNull final String barcode,
+                                  @NonNull final boolean[] fetchThumbnail)
+            throws IOException {
+        // the search url is the same
+        return searchByIsbn(barcode, fetchThumbnail);
+    }
 
     private boolean isMultiResult(@NonNull final Document document) {
         return document.title().startsWith(MULTI_RESULT_PAGE_TITLE);
@@ -213,14 +222,14 @@ public class StripInfoSearchEngine
      * @param fetchThumbnail Set to {@code true} if we want to get thumbnails
      * @param bookData       Bundle to update
      *
-     * @throws SocketTimeoutException if the connection times out
+     * @throws IOException on failure
      */
     @WorkerThread
     @VisibleForTesting
     void parseMultiResult(@NonNull final Document document,
                           @NonNull final boolean[] fetchThumbnail,
                           @NonNull final Bundle bookData)
-            throws SocketTimeoutException {
+            throws IOException {
 
         final Elements sections = document.select("section.c6");
         if (sections != null) {
@@ -233,7 +242,7 @@ public class StripInfoSearchEngine
                 //      _Het_narrenschip_2_Pluvior_627">Pluvior 627</a>
                 final Element urlElement = section.selectFirst(A_HREF_STRIP);
                 if (urlElement != null) {
-                    final Document redirected = redirect(urlElement.attr("href"));
+                    final Document redirected = loadDocument(urlElement.attr("href"));
                     if (redirected != null && !isCancelled()) {
                         // prevent looping.
                         if (!isMultiResult(redirected)) {
@@ -389,7 +398,7 @@ public class StripInfoSearchEngine
 
             } catch (@NonNull final Exception e) {
                 if (BuildConfig.DEBUG) {
-                    Logger.d(TAG, "mIsbn=" + mIsbn, e);
+                    Logger.d(TAG, "row=" + row, e);
                 }
             }
         }
@@ -444,19 +453,90 @@ public class StripInfoSearchEngine
             return;
         }
 
+        // front cover
         if (fetchThumbnail[0]) {
-            // front cover
-            parseCovers(document, 0, bookData);
+            final String isbn = bookData.getString(DBDefinitions.KEY_ISBN);
+            final ArrayList<String> imageList = parseCovers(document, isbn, 0);
+            if (!imageList.isEmpty()) {
+                bookData.putStringArrayList(Book.BKEY_FILE_SPEC_ARRAY[0], imageList);
+            }
         }
 
         if (isCancelled()) {
             return;
         }
 
+        // back cover
         if (fetchThumbnail.length > 1 && fetchThumbnail[1]) {
-            // back cover
-            parseCovers(document, 1, bookData);
+            final String isbn = bookData.getString(DBDefinitions.KEY_ISBN);
+            final ArrayList<String> imageList = parseCovers(document, isbn, 1);
+            if (!imageList.isEmpty()) {
+                bookData.putStringArrayList(Book.BKEY_FILE_SPEC_ARRAY[1], imageList);
+            }
         }
+    }
+
+    /**
+     * Parses the downloaded {@link Document} for the cover and fetches it when present.
+     *
+     * @param document to parse
+     * @param isbn     (optional) ISBN of the book, will be used for the cover filename
+     * @param cIdx     0..n image index
+     */
+    @WorkerThread
+    @VisibleForTesting
+    @NonNull
+    public ArrayList<String> parseCovers(@NonNull final Document document,
+                                         @Nullable final String isbn,
+                                         @IntRange(from = 0) final int cIdx) {
+        final Element coverElement;
+        switch (cIdx) {
+            case 0:
+                coverElement = document.selectFirst("a.stripThumb");
+                break;
+            case 1:
+                coverElement = document.selectFirst("a.belowImage");
+                break;
+            default:
+                throw new IllegalArgumentException(ErrorMsg.UNEXPECTED_VALUE + cIdx);
+        }
+
+        final ArrayList<String> imageList = new ArrayList<>();
+
+        if (coverElement != null) {
+            final String url = coverElement.attr("data-ajax-url");
+            // if the site has no image: https://www.stripinfo.be/image.php?i=0
+            // if the cover is an 18+ image: https://www.stripinfo.be/images/mature.png
+            if (url != null && !url.isEmpty()
+                && !url.endsWith("i=0")
+                && !url.endsWith("mature.png")) {
+
+                final String tmpName = createFilename(isbn, cIdx, null);
+                final String fileSpec = saveImage(url, tmpName);
+                if (fileSpec != null) {
+                    // Some back covers will return the "no cover available" image regardless.
+                    // Sadly, we need to check explicitly after the download.
+                    // But we need to check on "mature content" as well anyhow.
+                    final File file = new File(fileSpec);
+                    final long fileLen = file.length();
+                    // check the length as a quick check first
+                    if (fileLen == NO_COVER_FILE_LEN
+                        || fileLen == MATURE_FILE_LEN) {
+                        // do the thorough check with md5 calculation as a second defence
+                        byte[] digest = md5(file);
+                        if (Arrays.equals(digest, NO_COVER_MD5)
+                            || Arrays.equals(digest, MATURE_COVER_MD5)) {
+                            //noinspection ResultOfMethodCallIgnored
+                            file.delete();
+                            return imageList;
+                        }
+                    }
+
+                    imageList.add(fileSpec);
+                }
+            }
+        }
+        return imageList;
     }
 
     /**
@@ -535,95 +615,6 @@ public class StripInfoSearchEngine
         return null;
     }
 
-    /**
-     * Parses the downloaded {@link Document} for the cover and fetches it when present.
-     *
-     * @param coverRoot to parse
-     * @param cIdx      0..n image index
-     * @param bookData  Bundle to update
-     */
-    @WorkerThread
-    private void parseCovers(@NonNull final Element coverRoot,
-                             @IntRange(from = 0) final int cIdx,
-                             @NonNull final Bundle bookData) {
-        final Element coverElement;
-        switch (cIdx) {
-            case 0:
-                coverElement = coverRoot.selectFirst("a.stripThumb");
-                break;
-            case 1:
-                coverElement = coverRoot.selectFirst("a.belowImage");
-                break;
-            default:
-                throw new IllegalArgumentException(ErrorMsg.UNEXPECTED_VALUE + cIdx);
-        }
-
-        if (coverElement != null) {
-            final String coverUrl = coverElement.attr("data-ajax-url");
-            // if the site has no image: https://www.stripinfo.be/image.php?i=0
-            // if the cover is an 18+ image: https://www.stripinfo.be/images/mature.png
-            if (coverUrl != null && !coverUrl.isEmpty()
-                && !coverUrl.endsWith("i=0")
-                && !coverUrl.endsWith("mature.png")) {
-
-                fetchCover(coverUrl, bookData, FILENAME_SUFFIX, cIdx);
-            }
-        }
-    }
-
-
-    /**
-     * Fetch the cover from the url. Uses the ISBN (if any) from the bookData bundle.
-     * <p>
-     * <img src="https://www.stripinfo.be/image.php?i=437246&amp;s=348664" srcset="
-     * https://www.stripinfo.be/image.php?i=437246&amp;s=348664&amp;m=440 311w,
-     * https://www.stripinfo.be/image.php?i=437246&amp;s=348664&amp;m=380 269w,
-     * https://www.stripinfo.be/image.php?i=437246&amp;s=348664&amp;m=310 219w,
-     * https://www.stripinfo.be/image.php?i=437246&amp;s=348664&amp;m=270 191w,
-     * https://www.stripinfo.be/image.php?i=437246&amp;s=348664&amp;m=250 177w,
-     * https://www.stripinfo.be/image.php?i=437246&amp;s=348664&amp;m=200 142w
-     * " alt="Uitvergroten" class="">
-     * <p>
-     * https://www.stripinfo.be/image.php?i=437246&s=348664
-     * <p>
-     * Note that the url contains the book external id, but also a specific image id.
-     * This means we cannot implement {@link SearchEngine.CoverByIsbn}.
-     *
-     * @param url      fully qualified url
-     * @param bookData Bundle to update
-     * @param suffix   for the filename
-     * @param cIdx     0..n image index
-     */
-    @WorkerThread
-    protected void fetchCover(@NonNull final String url,
-                              @NonNull final Bundle bookData,
-                              @NonNull final String suffix,
-                              @IntRange(from = 0) final int cIdx) {
-
-        final String prefix = bookData.getString(DBDefinitions.KEY_ISBN, "");
-        final String fileSpec = saveImage(url, prefix, suffix, cIdx);
-
-        if (fileSpec != null) {
-            // Some back covers will return the "no cover available" image regardless.
-            // Sadly, we need to check explicitly after the download.
-            // But we need to check on "mature content" as well anyhow.
-            final File file = new File(fileSpec);
-            final long fileLen = file.length();
-            if (fileLen == NO_COVER_FILE_LEN
-                || fileLen == MATURE_FILE_LEN) {
-                byte[] digest = md5(file);
-                if (Arrays.equals(digest, NO_COVER_MD5)
-                    || Arrays.equals(digest, MATURE_COVER_MD5)) {
-                    //noinspection ResultOfMethodCallIgnored
-                    file.delete();
-                    return;
-                }
-            }
-
-            addCover(bookData, Book.BKEY_FILE_SPEC_ARRAY[cIdx], fileSpec);
-        }
-    }
-
 
     /**
      * Extract the site book id from the url.
@@ -698,7 +689,7 @@ public class StripInfoSearchEngine
     private int processText(@NonNull final Element td,
                             @NonNull final String key,
                             @NonNull final Bundle bookData) {
-        Element dataElement = td.nextElementSibling();
+        final Element dataElement = td.nextElementSibling();
         if (dataElement.childNodeSize() == 1) {
             bookData.putString(key, cleanText(dataElement.text()));
             return 1;
@@ -720,9 +711,9 @@ public class StripInfoSearchEngine
      */
     private int processEmptyLabel(@NonNull final Element td,
                                   @NonNull final Bundle bookData) {
-        Element dataElement = td.nextElementSibling();
+        final Element dataElement = td.nextElementSibling();
         if (dataElement.childNodeSize() == 1) {
-            String text = dataElement.text().trim();
+            final String text = dataElement.text().trim();
 
             // is it a color ?
             if (COLOR_STRINGS.contains(text)) {
@@ -738,7 +729,6 @@ public class StripInfoSearchEngine
         int found = processText(td, DBDefinitions.KEY_LANGUAGE, bookData);
         String lang = bookData.getString(DBDefinitions.KEY_LANGUAGE);
         if (lang != null && !lang.isEmpty()) {
-            // the language is a 'DisplayName' so convert to iso first.
             lang = LanguageUtils.getISO3FromDisplayName(mAppContext, getLocale(), lang);
             bookData.putString(DBDefinitions.KEY_LANGUAGE, lang);
         }
@@ -755,12 +745,12 @@ public class StripInfoSearchEngine
      */
     private int processAuthor(@NonNull final Element td,
                               @Author.Type final int currentAuthorType) {
-        Element dataElement = td.nextElementSibling();
+        final Element dataElement = td.nextElementSibling();
         if (dataElement != null) {
-            Elements as = dataElement.select("a");
+            final Elements as = dataElement.select("a");
             for (int i = 0; i < as.size(); i++) {
-                String name = as.get(i).text();
-                Author currentAuthor = Author.from(name);
+                final String name = as.get(i).text();
+                final Author currentAuthor = Author.from(name);
                 boolean add = true;
                 // check if already present
                 for (Author author : mAuthors) {
@@ -789,12 +779,12 @@ public class StripInfoSearchEngine
      * @return 1 if we found a value td; 0 otherwise.
      */
     private int processCollectie(@NonNull final Element td) {
-        Element dataElement = td.nextElementSibling();
+        final Element dataElement = td.nextElementSibling();
         if (dataElement != null) {
-            Elements as = dataElement.select("a");
+            final Elements as = dataElement.select("a");
             for (int i = 0; i < as.size(); i++) {
-                String text = cleanText(as.get(i).text());
-                Series currentSeries = Series.from3(text);
+                final String text = cleanText(as.get(i).text());
+                final Series currentSeries = Series.from3(text);
                 // check if already present
                 for (Series series : mSeries) {
                     if (series.equals(currentSeries)) {
@@ -817,12 +807,12 @@ public class StripInfoSearchEngine
      * @return 1 if we found a value td; 0 otherwise.
      */
     private int processPublisher(@NonNull final Element td) {
-        Element dataElement = td.nextElementSibling();
+        final Element dataElement = td.nextElementSibling();
         if (dataElement != null) {
-            Elements aas = dataElement.select("a");
+            final Elements aas = dataElement.select("a");
             for (int i = 0; i < aas.size(); i++) {
-                String name = cleanText(aas.get(i).text());
-                Publisher currentPublisher = Publisher.from(name);
+                final String name = cleanText(aas.get(i).text());
+                final Publisher currentPublisher = Publisher.from(name);
                 // check if already present
                 for (Publisher publisher : mPublishers) {
                     if (publisher.equals(currentPublisher)) {
@@ -854,11 +844,11 @@ public class StripInfoSearchEngine
      */
     private void processDescription(@NonNull final Element item,
                                     @NonNull final Bundle bookData) {
-        Elements sections = item.select("section.c4");
+        final Elements sections = item.select("section.c4");
         if (sections != null && !sections.isEmpty()) {
-            StringBuilder content = new StringBuilder();
+            final StringBuilder content = new StringBuilder();
             for (int i = 0; i < sections.size(); i++) {
-                Element sectionElement = sections.get(i);
+                final Element sectionElement = sections.get(i);
                 // a section usually has 'h4' tags, replace with 'b' and add a line feed 'br'
                 String text = H4_OPEN_PATTERN
                         .matcher(sectionElement.html())

@@ -33,6 +33,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
@@ -47,7 +48,6 @@ import com.google.android.material.snackbar.Snackbar;
 
 import java.io.File;
 import java.lang.ref.WeakReference;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Objects;
 
@@ -59,6 +59,7 @@ import com.hardbacknutter.nevertoomanybooks.databinding.DialogCoverBrowserBindin
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.dialogs.BaseDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEditionsTask;
+import com.hardbacknutter.nevertoomanybooks.searches.Site;
 import com.hardbacknutter.nevertoomanybooks.searches.SiteList;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.FinishedMessage;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.BookViewModel;
@@ -81,10 +82,6 @@ public class CoverBrowserDialogFragment
     /** Log tag. */
     public static final String TAG = "CoverBrowserFragment";
 
-    /** List of ISBN numbers for alternative editions. The base list for the gallery adapter. */
-    @NonNull
-    private final ArrayList<String> mEditions = new ArrayList<>();
-
     /** The adapter for the horizontal scrolling covers list. */
     @Nullable
     private GalleryAdapter mGalleryAdapter;
@@ -93,9 +90,6 @@ public class CoverBrowserDialogFragment
     private int mPreviewMaxWidth;
     /** The max height to be used for the preview image. */
     private int mPreviewMaxHeight;
-
-    /** Indicates cancel has been requested. */
-    private boolean mIsCancelled;
 
     /** The book. Must be in the Activity scope. */
     @SuppressWarnings("FieldCanBeLocal")
@@ -109,9 +103,9 @@ public class CoverBrowserDialogFragment
     /** View Binding. */
     private DialogCoverBrowserBinding mVb;
 
-    /** Where to send the result. */
+    /** Where to send the selected file. */
     @Nullable
-    private WeakReference<OnFileSelected> mListener;
+    private WeakReference<OnFileSelected> mFileSelectedListener;
 
     /**
      * No-arg constructor for OS use.
@@ -171,17 +165,14 @@ public class CoverBrowserDialogFragment
         mSearchEditionsTask = new ViewModelProvider(this).get(SearchEditionsTask.class);
         // dismiss silently
         mSearchEditionsTask.onCancelled().observe(this, message -> dismiss());
-        // the task (should not) throws no exceptions; but just in case... dismiss silently
+        // the task throws no exceptions; but paranoia... dismiss silently is fine
         mSearchEditionsTask.onFailure().observe(this, message -> dismiss());
         mSearchEditionsTask.onFinished().observe(this, this::showGallery);
 
         mModel = new ViewModelProvider(this).get(CoverBrowserViewModel.class);
         mModel.init(getContext(), requireArguments());
         mModel.onGalleryImage().observe(this, this::setGalleryImage);
-        mModel.onSelectedImage().observe(this, imageFileInfo -> {
-            final File file = imageFileInfo != null ? imageFileInfo.getFile() : null;
-            setSelectedImage(file);
-        });
+        mModel.onSelectedImage().observe(this, this::setSelectedImage);
 
         // The gallery displays a list of images, one for each edition.
         final LinearLayoutManager galleryLM = new LinearLayoutManager(getContext());
@@ -198,14 +189,14 @@ public class CoverBrowserDialogFragment
                 Log.d(TAG, "preview.onClick|filePath=" + mModel.getSelectedFilePath());
             }
             if (mModel.getSelectedFilePath() != null) {
-                if (mListener != null && mListener.get() != null) {
-                    mListener.get().onFileSelected(mModel.getImageIndex(),
-                                                   mModel.getSelectedFilePath());
+                if (mFileSelectedListener != null && mFileSelectedListener.get() != null) {
+                    mFileSelectedListener.get().onFileSelected(mModel.getImageIndex(),
+                                                               mModel.getSelectedFilePath());
                 } else {
                     if (BuildConfig.DEBUG /* always */) {
-                        Log.w(TAG, "onFileSpecResult|"
-                                   + (mListener == null ? ErrorMsg.LISTENER_WAS_NULL
-                                                        : ErrorMsg.LISTENER_WAS_DEAD));
+                        Log.w(TAG, "onFileSelected|"
+                                   + (mFileSelectedListener == null ? ErrorMsg.LISTENER_WAS_NULL
+                                                                    : ErrorMsg.LISTENER_WAS_DEAD));
                     }
                 }
             }
@@ -222,20 +213,18 @@ public class CoverBrowserDialogFragment
 
     @Override
     public void onCancel(@NonNull final DialogInterface dialog) {
-        // is having this in onDismiss not enough?
         mModel.cancelAllTasks();
-        // prevent new tasks being started.
-        mIsCancelled = true;
         super.onCancel(dialog);
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        if (mEditions.isEmpty()) {
+        if (mModel.getEditions().isEmpty()) {
             mVb.statusMessage.setText(R.string.progress_msg_finding_editions);
             mVb.progressBar.setVisibility(View.VISIBLE);
-            if (mSearchEditionsTask.isRunning()) {
+            // if the task is NOT already running (e.g. after a screen rotation...) start it
+            if (!mSearchEditionsTask.isRunning()) {
                 mSearchEditionsTask.startTask(mModel.getBaseIsbn());
             }
         }
@@ -243,29 +232,24 @@ public class CoverBrowserDialogFragment
 
     /**
      * Show the user a selection of other covers and allow selection of a replacement.
-     * <p>
-     * Note that after e.g. a screen rotation, we get the full list again.
-     * This will re-trigger the downloading of gallery images but
-     * we'll only retry images we don't yet have.
      *
      * @param message the result of {@link SearchEditionsTask}
      */
     private void showGallery(@NonNull final FinishedMessage<Collection<String>> message) {
+        Objects.requireNonNull(mGalleryAdapter, ErrorMsg.NULL_GALLERY_ADAPTER);
+
         mVb.progressBar.setVisibility(View.INVISIBLE);
 
         if (message.isNewEvent()) {
-            mEditions.clear();
-            Collection<String> isbnList = message.result;
-            if (isbnList == null || isbnList.isEmpty()) {
+            if (message.result == null || message.result.isEmpty()) {
                 Snackbar.make(mVb.statusMessage, R.string.warning_no_editions,
                               Snackbar.LENGTH_LONG).show();
                 dismiss();
                 return;
             }
 
-            mEditions.addAll(isbnList);
-
-            Objects.requireNonNull(mGalleryAdapter, ErrorMsg.NULL_GALLERY_ADAPTER);
+            // set the list and trigger the adapter
+            mModel.setEditions(message.result);
             mGalleryAdapter.notifyDataSetChanged();
 
             // Show help message
@@ -274,16 +258,26 @@ public class CoverBrowserDialogFragment
     }
 
     /**
-     * handle result from the {@link CoverBrowserViewModel} GetGalleryImageTask.
+     * Display the given image in the gallery View.
+     * If it's invalid in any way, the placeholder/edition will be removed.
      * <p>
-     * TODO: pass the data via a MutableLiveData object and use a local FIFO queue.
+     * (Dev note: we should do the non-view processing in the model but having it here
+     * makes it uniform with {@link #setSelectedImage}.)
+     *
+     * @param imageFileInfo to display
      */
     private void setGalleryImage(@Nullable final ImageFileInfo imageFileInfo) {
         Objects.requireNonNull(mGalleryAdapter, ErrorMsg.NULL_GALLERY_ADAPTER);
 
         final int editionIndex;
         if (imageFileInfo != null) {
-            editionIndex = mEditions.indexOf(imageFileInfo.isbn);
+            editionIndex = mModel.getEditions().indexOf(imageFileInfo.isbn);
+
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVER_BROWSER) {
+                Log.d(TAG, "setGalleryImage"
+                           + "|editionIndex=" + editionIndex
+                           + "|" + imageFileInfo);
+            }
         } else {
             editionIndex = -1;
         }
@@ -299,7 +293,7 @@ public class CoverBrowserDialogFragment
             }
 
             // No file. Remove the defunct view from the gallery
-            mEditions.remove(editionIndex);
+            mModel.getEditions().remove(editionIndex);
             mGalleryAdapter.notifyItemRemoved(editionIndex);
         }
 
@@ -323,8 +317,8 @@ public class CoverBrowserDialogFragment
         // sanity check
         if (file != null) {
             if (ImageFileInfo.Size.Large.equals(imageFileInfo.size)) {
-                // we already have a valid large image, so just display it
-                setSelectedImage(file);
+                // the gallery image IS a valid large image, so just display it
+                setSelectedImage(imageFileInfo);
 
             } else {
                 mVb.preview.setVisibility(View.INVISIBLE);
@@ -338,30 +332,36 @@ public class CoverBrowserDialogFragment
     }
 
     /**
-     * Display the given file in the preview View.
+     * Display the given image in the preview View.
      *
-     * @param file to display
+     * @param imageFileInfo to display
      */
-    private void setSelectedImage(@Nullable final File file) {
-        // Reset the preview
+    private void setSelectedImage(@Nullable final ImageFileInfo imageFileInfo) {
+        // Always reset the preview
         mModel.setSelectedFilePath(null);
         mVb.preview.setVisibility(View.INVISIBLE);
+        // and hide the progress bar
         mVb.progressBar.setVisibility(View.INVISIBLE);
 
-        if (ImageUtils.isFileGood(file)) {
-            new ImageLoader(mVb.preview, file, mPreviewMaxWidth, mPreviewMaxHeight, () -> {
-                mModel.setSelectedFilePath(file.getAbsolutePath());
-                mVb.preview.setVisibility(View.VISIBLE);
-                mVb.statusMessage.setText(R.string.txt_tap_on_image_to_select);
-            })
-                    // use the default executor which is free right now
-                    .execute();
-
-        } else {
-            Snackbar.make(mVb.preview, R.string.warning_image_not_found,
-                          Snackbar.LENGTH_LONG).show();
-            mVb.statusMessage.setText(R.string.txt_tap_on_thumb);
+        if (imageFileInfo != null) {
+            final File file = imageFileInfo.getFile();
+            if (ImageUtils.isFileGood(file)) {
+                new ImageLoader(mVb.preview, file, mPreviewMaxWidth, mPreviewMaxHeight, () -> {
+                    // Set AFTER it was successfully loaded and displayed for maximum reliability
+                    mModel.setSelectedFilePath(file.getAbsolutePath());
+                    mVb.preview.setVisibility(View.VISIBLE);
+                    mVb.statusMessage.setText(R.string.txt_tap_on_image_to_select);
+                })
+                        // use the default executor which is free right now
+                        .execute();
+                return;
+            }
         }
+
+        Snackbar.make(mVb.preview, R.string.warning_image_not_found,
+                      Snackbar.LENGTH_LONG).show();
+        mVb.statusMessage.setText(R.string.txt_tap_on_thumb);
+
     }
 
     /**
@@ -370,7 +370,7 @@ public class CoverBrowserDialogFragment
      * @param listener the object to send the result to.
      */
     public void setListener(@NonNull final OnFileSelected listener) {
-        mListener = new WeakReference<>(listener);
+        mFileSelectedListener = new WeakReference<>(listener);
     }
 
     public interface OnFileSelected {
@@ -385,18 +385,28 @@ public class CoverBrowserDialogFragment
     private static class Holder
             extends RecyclerView.ViewHolder {
 
-        /** Keep an extra copy, to avoid casting. */
         @NonNull
         final ImageView imageView;
+        @NonNull
+        final TextView siteView;
 
-        Holder(@NonNull final ImageView itemView) {
+        Holder(@NonNull final View itemView,
+               final int maxWidth,
+               final int maxHeight) {
             super(itemView);
-            imageView = itemView;
+
+            siteView = itemView.findViewById(R.id.lbl_site);
+            imageView = itemView.findViewById(R.id.coverImage0);
+            imageView.getLayoutParams().width = maxWidth;
+            imageView.getLayoutParams().height = maxHeight;
         }
     }
 
     private class GalleryAdapter
             extends RecyclerView.Adapter<Holder> {
+
+        @SuppressWarnings("InnerClassFieldHidesOuterClassField")
+        private static final String TAG = "GalleryAdapter";
 
         /** A single image fixed width. */
         private final int mMaxWidth;
@@ -419,50 +429,63 @@ public class CoverBrowserDialogFragment
         @NonNull
         public Holder onCreateViewHolder(@NonNull final ViewGroup parent,
                                          final int viewType) {
-            final ImageView view = (ImageView) getLayoutInflater()
+            final View view = getLayoutInflater()
                     .inflate(R.layout.row_cover_browser_gallery, parent, false);
-            view.getLayoutParams().width = mMaxWidth;
-            view.getLayoutParams().height = mMaxHeight;
-            return new Holder(view);
+            return new Holder(view, mMaxWidth, mMaxHeight);
         }
 
         @Override
         public void onBindViewHolder(@NonNull final Holder holder,
                                      final int position) {
-            if (mIsCancelled) {
+            if (mModel.isCancelled()) {
                 return;
             }
 
-            final String isbn = mEditions.get(position);
-
-            // Get the image file based on the isbn; try the sizes in order as specified here.
-            final ImageFileInfo imageFileInfo =
-                    mModel.getFileInfo(isbn, ImageFileInfo.Size.SMALL_FIRST);
+            final String isbn = mModel.getEditions().get(position);
+            final ImageFileInfo imageFileInfo = mModel.getFileInfo(isbn);
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVER_BROWSER) {
-                Log.d(TAG, "onBindViewHolder|imageFileInfo=" + imageFileInfo);
+                Log.d(TAG, "onBindViewHolder"
+                           + "|position=" + position
+                           + "|imageFileInfo=" + imageFileInfo);
             }
 
-            final File file = imageFileInfo.getFile();
-            if (ImageUtils.isFileGood(file)) {
-                // we have a file, load it into the view.
-                new ImageLoader(holder.imageView, file, mMaxWidth, mMaxHeight, null)
-                        .executeOnExecutor(mModel.getGalleryDisplayExecutor());
-
-            } else {
-                // No valid file available; use a placeholder but preserve the available space
+            if (imageFileInfo == null) {
+                // not in the cache,; use a placeholder but preserve the available space
                 ImageUtils.setPlaceholder(holder.imageView, R.drawable.ic_image, 0,
                                           (int) (mMaxHeight * ImageUtils.HW_RATIO), mMaxHeight);
                 // and queue a request for it.
                 mModel.fetchGalleryImage(isbn);
-            }
 
-            holder.imageView.setOnClickListener(v -> onGalleryImageSelected(imageFileInfo));
+                holder.siteView.setText("");
+
+            } else {
+                // check if it's good
+                final File file = imageFileInfo.getFile();
+                if (ImageUtils.isFileGood(file)) {
+                    // YES, load it into the view.
+                    new ImageLoader(holder.imageView, file, mMaxWidth, mMaxHeight, null)
+                            .executeOnExecutor(mModel.getGalleryDisplayExecutor());
+
+                    holder.imageView.setOnClickListener(v -> onGalleryImageSelected(imageFileInfo));
+
+                    //noinspection ConstantConditions
+                    holder.siteView.setText(Site.getConfig(imageFileInfo.engineId).getNameResId());
+
+                } else {
+                    // no file. Theoretically we should not get here,
+                    // as a failed search should have removed the isbn from the edition list,
+                    // but race-conditions + paranoia...
+                    ImageUtils.setPlaceholder(holder.imageView, R.drawable.ic_broken_image, 0,
+                                              (int) (mMaxHeight * ImageUtils.HW_RATIO), mMaxHeight);
+                    holder.siteView.setText("");
+                }
+            }
         }
 
         @Override
         public int getItemCount() {
-            return mEditions.size();
+            return mModel.getEditions().size();
         }
     }
 }

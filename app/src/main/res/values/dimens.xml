@@ -113,9 +113,6 @@
     <!-- indent a radio button as a sub-list; e.g. radio buttons under a checkbox. -->
     <dimen name="indent_radio_button">16dp</dimen>
 
-    <!-- indent an element so it matches up with the text of a standard size compound button. -->
-    <dimen name="indent_compound_button">32dp</dimen>
-
     <!-- Start margin applied to a field. Used for individual fields, or with a Guideline for a group of fields. -->
     <dimen name="indent_field">8dp</dimen>
     <!-- Start margin applied to the 2nd, 3rd.. field on a line of fields. -->

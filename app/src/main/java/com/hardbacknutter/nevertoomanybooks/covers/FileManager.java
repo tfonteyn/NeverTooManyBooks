@@ -27,9 +27,9 @@
  */
 package com.hardbacknutter.nevertoomanybooks.covers;
 
-import android.content.Context;
 import android.util.Log;
 
+import androidx.annotation.AnyThread;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -59,7 +59,7 @@ public class FileManager {
 
     /**
      * Downloaded files.
-     * key = isbn + '_' + size.
+     * key = isbn
      */
     private final Map<String, ImageFileInfo> mFiles =
             Collections.synchronizedMap(new HashMap<>());
@@ -77,6 +77,20 @@ public class FileManager {
     }
 
     /**
+     * Get the requested ImageFileInfo.
+     *
+     * @param isbn to search
+     *
+     * @return a {@link ImageFileInfo} object with or without a valid fileSpec,
+     * or {@code null} if there is no cached file at all
+     */
+    @Nullable
+    @AnyThread
+    ImageFileInfo getFileInfo(@NonNull final String isbn) {
+        return mFiles.get(isbn);
+    }
+
+    /**
      * Search for a file according to preference of {@link ImageFileInfo.Size} and {@link Site}.
      * <p>
      * First checks the cache. If we already have a good image, abort the search and use it.
@@ -86,17 +100,16 @@ public class FileManager {
      * The first Site which has an image is accepted.
      * <p>
      *
-     * @param context Current context
-     * @param isbn    to search for, <strong>must</strong> be valid.
-     * @param cIdx    0..n image index
-     * @param sizes   a list of images sizes in order of preference
+     * @param caller to check for any cancellations
+     * @param isbn   to search for, <strong>must</strong> be valid.
+     * @param cIdx   0..n image index
+     * @param sizes  a list of images sizes in order of preference
      *
      * @return a {@link ImageFileInfo} object with or without a valid fileSpec.
      */
     @NonNull
     @WorkerThread
     public ImageFileInfo search(@NonNull final Canceller caller,
-                                @NonNull final Context context,
                                 @NonNull final String isbn,
                                 @IntRange(from = 0) final int cIdx,
                                 @NonNull final ImageFileInfo.Size... sizes) {
@@ -109,6 +122,8 @@ public class FileManager {
             currentSearchSites = currentSearchSites | site.engineId;
         }
 
+        ImageFileInfo imageFileInfo;
+
         // We need to use the size as the outer loop.
         // The idea is to check all sites for the same size first.
         // If none respond with that size, try the next size inline.
@@ -117,23 +132,42 @@ public class FileManager {
                 return new ImageFileInfo(isbn);
             }
 
-            final String key = isbn + '_' + size;
-            ImageFileInfo imageFileInfo = mFiles.get(key);
+            // Do we already have a file previously downloaded?
+            imageFileInfo = mFiles.get(isbn);
+            if (imageFileInfo != null) {
+                // Does it have an actual file ?
+                if (imageFileInfo.fileSpec == null) {
+                    if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVER_BROWSER) {
+                        Log.d(TAG, "search|PRESENT|NO FILE"
+                                   + "|imageFileInfo=" + imageFileInfo);
+                    }
+                    // a previous search failed, there simply is NO file
+                    return imageFileInfo;
 
-            // Do we already have a file and is it good ?
-            if ((imageFileInfo != null) && ImageUtils.isFileGood(imageFileInfo.getFile())) {
+                } else {
+                    // There is a file and it is good (as determined at download time)
+                    // But is the size we have suitable ? (null check to satisfy lint)
+                    // Bigger files are always better (we hope)...
+                    if (imageFileInfo.size != null
+                        && imageFileInfo.size.compareTo(size) >= 0) {
 
-                if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVER_BROWSER_DOWNLOADS) {
-                    Log.d(TAG, "download|PRESENT"
-                               + "|imageFileInfo=" + imageFileInfo);
+                        if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVER_BROWSER) {
+                            Log.d(TAG, "search|PRESENT|SUCCESS"
+                                       + "|imageFileInfo=" + imageFileInfo);
+                        }
+
+                        // YES, use the file we already have
+                        return imageFileInfo;
+                    }
+
+                    // else drop through and search for it.
+                    if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVER_BROWSER) {
+                        Log.d(TAG, "search|PRESENT|TO SMALL"
+                                   + "|imageFileInfo=" + imageFileInfo);
+                    }
                 }
-                // abort search and use the file we already have
-                return imageFileInfo;
-
-            } else {
-                // it was present but bad, remove it.
-                mFiles.remove(key);
             }
+
 
             for (Site site : mSiteList.getEnabledSites()) {
                 // Should we search this site ?
@@ -143,37 +177,62 @@ public class FileManager {
                         return new ImageFileInfo(isbn);
                     }
 
+                    // Is this Site's SearchEngine available and suitable?
                     final SearchEngine searchEngine = site.getSearchEngine(caller);
                     if (searchEngine instanceof SearchEngine.CoverByIsbn
                         && searchEngine.isAvailable()) {
-                        if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVER_BROWSER_DOWNLOADS) {
-                            Log.d(TAG, "download|TRYING"
+
+                        if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVER_BROWSER) {
+                            Log.d(TAG, "search|SEARCHING"
+                                       + "|searchEngine=" + searchEngine.getName()
                                        + "|isbn=" + isbn
-                                       + "|size=" + size
-                                       + "|searchEngine=" + searchEngine.getName());
+                                       + "|cIdx=" + cIdx
+                                       + "|size=" + size);
                         }
 
                         @Nullable
                         final String fileSpec = ((SearchEngine.CoverByIsbn) searchEngine)
                                 .searchCoverImageByIsbn(isbn, cIdx, size);
 
-                        imageFileInfo = new ImageFileInfo(isbn, fileSpec, size);
+                        if (fileSpec != null) {
+                            // we got a file
+                            imageFileInfo = new ImageFileInfo(isbn, fileSpec, size,
+                                                              searchEngine.getId());
+                            // is it any good ?
+                            final File file = imageFileInfo.getFile();
+                            if (ImageUtils.isFileGood(file)) {
+                                // YES
+                                mFiles.put(isbn, imageFileInfo);
 
-                        if (ImageUtils.isFileGood(imageFileInfo.getFile())) {
-                            mFiles.put(key, imageFileInfo);
+                                if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVER_BROWSER) {
+                                    Log.d(TAG, "search|SUCCESS"
+                                               + "|searchEngine=" + searchEngine.getName()
+                                               + "|imageFileInfo=" + imageFileInfo);
+                                }
+                                // abort search, we got an image
+                                return imageFileInfo;
 
-                            if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVER_BROWSER_DOWNLOADS) {
-                                Log.d(TAG, "download|SUCCESS"
-                                           + "|searchEngine=" + searchEngine.getName()
-                                           + "|imageFileInfo=" + imageFileInfo);
+                            } else {
+                                // we got a file, but it's bad
+                                FileUtils.delete(file);
+
+                                if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVER_BROWSER) {
+                                    Log.d(TAG, "search|BAD FILE"
+                                               + "|searchEngine=" + searchEngine.getName()
+                                               + "|isbn=" + isbn
+                                               + "|cIdx=" + cIdx
+                                               + "|size=" + size);
+                                }
                             }
-                            // abort search, we got an image
-                            return imageFileInfo;
-
-                        } else if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVER_BROWSER_DOWNLOADS) {
-                            Log.d(TAG, "download|NO GOOD"
-                                       + "|searchEngine=" + searchEngine.getName()
-                                       + "|imageFileInfo=" + imageFileInfo);
+                        } else {
+                            // we didn't get a file at all
+                            if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVER_BROWSER) {
+                                Log.d(TAG, "search|NO FILE"
+                                           + "|searchEngine=" + searchEngine.getName()
+                                           + "|isbn=" + isbn
+                                           + "|cIdx=" + cIdx
+                                           + "|size=" + size);
+                            }
                         }
 
                         // if the site we just searched only supports one image,
@@ -190,44 +249,21 @@ public class FileManager {
                 }
                 // loop for next site
             }
-
-            // remove (if any) bad file
-            mFiles.remove(key);
             // loop for next size
         }
 
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVER_BROWSER_DOWNLOADS) {
-            Log.d(TAG, "download|FAILED "
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVER_BROWSER) {
+            Log.d(TAG, "search|FAILED"
                        + "|isbn=" + isbn);
         }
 
-        // Failed to find any size on all sites.
-        return new ImageFileInfo(isbn);
+        // Failed to find any size on all sites, record the failure to prevent future attempt
+        // and return the failure
+        imageFileInfo = new ImageFileInfo(isbn);
+        mFiles.put(isbn, imageFileInfo);
+        return imageFileInfo;
     }
 
-    /**
-     * Get the requested ImageFileInfo.
-     * The fileSpec member will be {@code null} if there is no available file.
-     *
-     * @param isbn  to search
-     * @param sizes required sizes in order to look for. First found is used.
-     *
-     * @return the ImageFileInfo
-     */
-    @NonNull
-    ImageFileInfo getFileInfo(@NonNull final String isbn,
-                              @NonNull final ImageFileInfo.Size... sizes) {
-        for (ImageFileInfo.Size size : sizes) {
-            final ImageFileInfo imageFileInfo = mFiles.get(isbn + '_' + size);
-            if (imageFileInfo != null
-                && imageFileInfo.fileSpec != null
-                && !imageFileInfo.fileSpec.isEmpty()) {
-                return imageFileInfo;
-            }
-        }
-        // Failed to find.
-        return new ImageFileInfo(isbn);
-    }
 
     /**
      * Clean up all files.
@@ -241,6 +277,7 @@ public class FileManager {
                 }
             }
         }
+        // not strictly needed, but future-proof
         mFiles.clear();
     }
 }

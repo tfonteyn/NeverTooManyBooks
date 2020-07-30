@@ -43,13 +43,13 @@
         app:layout_constraintGuide_begin="@dimen/icon_button_width"
         />
 
-    <CheckBox
+    <ImageButton
         android:id="@+id/cbx_multiple_books"
         style="@style/Flag.MultipleBooks"
+        android:contentDescription="@string/tip_authors_works_multiple_books"
         android:visibility="invisible"
         app:layout_constraintBaseline_toBaselineOf="@id/title"
         app:layout_constraintStart_toStartOf="parent"
-        tools:checked="true"
         tools:visibility="visible"
         />
 

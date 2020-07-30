@@ -46,6 +46,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 public class ExportResults
         implements Parcelable {
 
+    /** {@link Parcelable}. */
     public static final Creator<ExportResults> CREATOR = new Creator<ExportResults>() {
         @Override
         public ExportResults createFromParcel(@NonNull final Parcel in) {
@@ -152,7 +153,7 @@ public class ExportResults
         // Disabling for now. We'd need to change the descriptive string not to include the folder.
         if (uriInfo != null && uriInfo.first != null && uriInfo.second != null) {
             msg.append("\n\n")
-               .append(context.getString(R.string.X_export_info_success_archive_details,
+               .append(context.getString(R.string.progress_end_export_success,
                                          "",
                                          uriInfo.first,
                                          FileUtils.formatFileSize(context, uriInfo.second)));
