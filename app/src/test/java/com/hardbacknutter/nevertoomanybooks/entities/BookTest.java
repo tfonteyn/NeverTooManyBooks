@@ -44,8 +44,10 @@ import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_DATE_ACQUIRED;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_EID_GOODREADS_BOOK;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_EID_ISFDB;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_EID_LAST_DODO_NL;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_EID_LIBRARY_THING;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_EID_OPEN_LIBRARY;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_EID_STRIP_INFO_BE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_ISBN;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_PRICE_LISTED;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_PRICE_LISTED_CURRENCY;
@@ -80,7 +82,7 @@ class BookTest
     void preprocessPrices01() {
         setLocale(Locale.US);
 
-        Book book = new Book(mRawData);
+        final Book book = new Book(mRawData);
         book.putString(DBDefinitions.KEY_LANGUAGE, "eng");
         book.putDouble(KEY_PRICE_LISTED, 1.23d);
         book.putString(KEY_PRICE_LISTED_CURRENCY, "$");
@@ -98,7 +100,8 @@ class BookTest
     @Test
     void preprocessPrices02() {
         setLocale(Locale.US);
-        Book book = new Book(mRawData);
+
+        final Book book = new Book(mRawData);
         book.putString(DBDefinitions.KEY_LANGUAGE, "eng");
         book.putDouble(KEY_PRICE_LISTED, 0d);
         book.putString(KEY_PRICE_LISTED_CURRENCY, "");
@@ -123,7 +126,7 @@ class BookTest
     void preprocessPrices03() {
         setLocale(Locale.FRANCE);
 
-        Book book = new Book(mRawData);
+        final Book book = new Book(mRawData);
         book.putString(DBDefinitions.KEY_LANGUAGE, "fra");
         book.putString(KEY_PRICE_LISTED, "");
         book.putString(KEY_PRICE_LISTED_CURRENCY, "EUR");
@@ -146,7 +149,8 @@ class BookTest
     @Test
     void preprocessPrices04() {
         setLocale(Locale.FRANCE);
-        Book book = new Book(mRawData);
+
+        final Book book = new Book(mRawData);
         book.putString(DBDefinitions.KEY_LANGUAGE, "eng");
         book.putString(KEY_PRICE_LISTED, "EUR 45");
 
@@ -163,61 +167,101 @@ class BookTest
     @Test
     void preprocessExternalIdsForInsert() {
 
-        Book book = new Book(mRawData);
-        // valid number
-        book.put(KEY_EID_ISFDB, 2L);
-        // valid string
-        book.put(KEY_EID_OPEN_LIBRARY, "test");
+        final Book book = new Book(mRawData);
 
-        // invalid string for a long field -> should be removed
-        book.put(KEY_EID_GOODREADS_BOOK, "test");
-
-
-        // blank string for a text field -> should be removed
-        // KEY_ISBN is the external key for Amazon
-        book.put(KEY_ISBN, "");
-        // blank string for a long field -> should be removed
+        // Long: valid number
+        book.put(KEY_EID_GOODREADS_BOOK, 2L);
+        // Long: 0 -> should be removed
+        book.put(KEY_EID_ISFDB, 0L);
+        // Long: null -> should be removed
+        book.put(KEY_EID_LAST_DODO_NL, null);
+        // Long: blank string -> should be removed
         book.put(KEY_EID_LIBRARY_THING, "");
+        // Long: non-blank string -> should be removed
+        book.put(KEY_EID_STRIP_INFO_BE, "test");
+
+
+        // String: valid
+        // (KEY_ISBN is the external key for Amazon)
+        book.put(KEY_ISBN, "test");
+        // blank string for a text field -> should be removed
+        book.put(KEY_EID_OPEN_LIBRARY, "");
+
+
+        // Not tested: null string for a string field..
+
 
         book.preprocessExternalIds(true);
         dump(book);
 
-        assertEquals(2, book.getLong(KEY_EID_ISFDB));
-        assertEquals("test", book.getString(KEY_EID_OPEN_LIBRARY));
-        assertFalse(book.contains(KEY_EID_GOODREADS_BOOK));
-
-        assertFalse(book.contains(KEY_ISBN));
+        assertEquals(2, book.getLong(KEY_EID_GOODREADS_BOOK));
+        assertFalse(book.contains(KEY_EID_ISFDB));
+        assertFalse(book.contains(KEY_EID_LAST_DODO_NL));
         assertFalse(book.contains(KEY_EID_LIBRARY_THING));
+        assertFalse(book.contains(KEY_EID_STRIP_INFO_BE));
+
+        assertEquals("test", book.getString(KEY_ISBN));
+        assertFalse(book.contains(KEY_EID_OPEN_LIBRARY));
+
+
+        book.preprocessNullsAndBlanks(true);
+        dump(book);
+        // should not have any effect, so same tests:
+        assertEquals(2, book.getLong(KEY_EID_GOODREADS_BOOK));
+        assertEquals("test", book.getString(KEY_ISBN));
     }
 
     @Test
     void preprocessExternalIdsForUpdate() {
 
-        Book book = new Book(mRawData);
-        // valid number
-        book.put(KEY_EID_ISFDB, 2L);
-        // valid string
-        book.put(KEY_EID_OPEN_LIBRARY, "test");
+        final Book book = new Book(mRawData);
 
-        // invalid string for a long field -> should be removed
-        book.put(KEY_EID_GOODREADS_BOOK, "test");
-        // blank string for a long field -> replace with null
+        // Long: valid number
+        book.put(KEY_EID_GOODREADS_BOOK, 2L);
+        // Long: 0 -> should be defaulted to null
+        book.put(KEY_EID_ISFDB, 0L);
+        // Long: null
+        book.put(KEY_EID_LAST_DODO_NL, null);
+        // Long: blank string -> defaulted to null
         book.put(KEY_EID_LIBRARY_THING, "");
+        // Long: non-blank string -> defaulted to null
+        book.put(KEY_EID_STRIP_INFO_BE, "test");
 
-        // blank string for a text field -> replace with null
-        // KEY_ISBN is the external key for Amazon
-        book.put(KEY_ISBN, "");
+
+        // String: valid
+        // (KEY_ISBN is the external key for Amazon)
+        book.put(KEY_ISBN, "test");
+        // blank string for a text field -> defaulted to null
+        book.put(KEY_EID_OPEN_LIBRARY, "");
+
+
+        // Not tested: null string for a string field..
 
 
         book.preprocessExternalIds(false);
+        dump(book);
 
-        assertEquals(2, book.getLong(KEY_EID_ISFDB));
-        assertEquals("test", book.getString(KEY_EID_OPEN_LIBRARY));
-
-        assertFalse(book.contains(KEY_EID_GOODREADS_BOOK));
-
-        assertNull(book.get(KEY_ISBN));
+        assertEquals(2, book.getLong(KEY_EID_GOODREADS_BOOK));
+        assertNull(book.get(KEY_EID_ISFDB));
+        assertNull(book.get(KEY_EID_LAST_DODO_NL));
         assertNull(book.get(KEY_EID_LIBRARY_THING));
+        assertNull(book.get(KEY_EID_STRIP_INFO_BE));
+
+        assertEquals("test", book.getString(KEY_ISBN));
+        assertNull(book.get(KEY_EID_OPEN_LIBRARY));
+
+
+        book.preprocessNullsAndBlanks(false);
+        dump(book);
+        // should not have any effect, so same tests:
+        assertEquals(2, book.getLong(KEY_EID_GOODREADS_BOOK));
+        assertNull(book.get(KEY_EID_ISFDB));
+        assertNull(book.get(KEY_EID_LAST_DODO_NL));
+        assertNull(book.get(KEY_EID_LIBRARY_THING));
+        assertNull(book.get(KEY_EID_STRIP_INFO_BE));
+
+        assertEquals("test", book.getString(KEY_ISBN));
+        assertNull(book.get(KEY_EID_OPEN_LIBRARY));
     }
 
     /**
@@ -239,7 +283,7 @@ class BookTest
     /** Domain: text, default "". */
     @Test
     void preprocessNullsAndBlanksForInsert() {
-        Book book = new Book(mRawData);
+        final Book book = new Book(mRawData);
         book.put(KEY_DATE_ACQUIRED, "2020-01-14");
         book.put(KEY_READ_START, "");
         book.put(KEY_READ_END, null);
@@ -251,10 +295,13 @@ class BookTest
         book.preprocessNullsAndBlanks(true);
 
         assertEquals("2020-01-14", book.getString(KEY_DATE_ACQUIRED));
+
         // text, default "". Storing an empty string is allowed.
         assertEquals("", book.getString(KEY_READ_START));
+
         // text, default "". A null is removed.
         assertFalse(book.contains(KEY_READ_END));
+
         // text, default "0000-00-00". A null is removed.
         assertFalse(book.contains(KEY_UTC_LAST_SYNC_DATE_GOODREADS));
 
@@ -264,7 +311,7 @@ class BookTest
 
     @Test
     void preprocessNullsAndBlanksForUpdate() {
-        Book book = new Book(mRawData);
+        final Book book = new Book(mRawData);
         book.put(KEY_DATE_ACQUIRED, "2020-01-14");
         book.put(KEY_READ_START, "");
         book.put(KEY_READ_END, null);
@@ -276,10 +323,13 @@ class BookTest
         book.preprocessNullsAndBlanks(false);
 
         assertEquals("2020-01-14", book.getString(KEY_DATE_ACQUIRED));
+
         // text, default "". Storing an empty string is allowed.
         assertEquals("", book.getString(KEY_READ_START));
+
         // text, default "". A null is replaced by the default
         assertEquals("", book.getString(KEY_READ_END));
+
         // text, default "". A null is replaced by the default
         assertEquals("0000-00-00", book.getString(KEY_UTC_LAST_SYNC_DATE_GOODREADS));
 
@@ -289,7 +339,7 @@ class BookTest
 
     private void dump(@NonNull final Book book) {
         for (String key : mRawData.keySet()) {
-            Object value = book.get(key);
+            final Object value = book.get(key);
             System.out.println(key + "=" + value);
         }
     }

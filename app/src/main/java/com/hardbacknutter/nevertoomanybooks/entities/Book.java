@@ -722,7 +722,8 @@ public class Book
 
         // make sure we only store valid bits
         if (contains(DBDefinitions.KEY_EDITION_BITMASK)) {
-            final int editions = getInt(DBDefinitions.KEY_EDITION_BITMASK) & Edition.BITMASK_ALL;
+            final int editions = getInt(DBDefinitions.KEY_EDITION_BITMASK)
+                                 & Book.Edition.BITMASK_ALL;
             putInt(DBDefinitions.KEY_EDITION_BITMASK, editions);
         }
 
@@ -774,8 +775,8 @@ public class Book
      * <p>
      * Processes the external id keys.
      * <p>
-     * For new books, remove zero values, empty strings and null values
-     * Existing books, replace zero values and empty string with a {@code null}
+     * For new books, REMOVE zero values, empty strings AND null values
+     * Existing books, REPLACE zero values and empty string with a {@code null}
      * <p>
      * Invalid values are always removed.
      * <p>
@@ -788,22 +789,32 @@ public class Book
         for (Domain domain : Site.getExternalIdDomains()) {
             final String key = domain.getName();
             if (contains(key)) {
+                final Object o = get(key);
                 switch (domain.getType()) {
                     case ColumnInfo.TYPE_INTEGER: {
-                        final Object o = get(key);
                         try {
-                            // null and empty strings become zero
-                            final long v = getLong(key);
-
-                            if (isNew && (o == null || v < 1)) {
-                                // for new books, remove zero values altogether
-                                remove(key);
-
-                            } else if (o != null && v < 1) {
-                                // existing books, replace zero values with a null
-                                putNull(key);
+                            if (isNew) {
+                                // For new books:
+                                if (o == null) {
+                                    // remove null values
+                                    remove(key);
+                                } else {
+                                    final long v = getLong(key);
+                                    if (v < 1) {
+                                        // remove zero values
+                                        remove(key);
+                                    }
+                                }
+                            } else {
+                                // for existing books, leave null values as-is
+                                if (o != null) {
+                                    final long v = getLong(key);
+                                    if (v < 1) {
+                                        // replace zero values with a null
+                                        putNull(key);
+                                    }
+                                }
                             }
-
                         } catch (@NonNull final NumberFormatException e) {
                             // always remove illegal input
                             remove(key);
@@ -818,19 +829,28 @@ public class Book
                         break;
                     }
                     case ColumnInfo.TYPE_TEXT: {
-                        final Object o = get(key);
-                        if (isNew && (o == null
-                                      || o.toString().isEmpty()
-                                      || "0".equals(o.toString()))) {
-                            // for new books, remove null, "0" and empty strings altogether
-                            remove(key);
-
-                        } else if (o != null
-                                   && (o.toString().isEmpty() || "0".equals(o.toString()))) {
-                            // existing books, replace "0" and empty strings with a null
-                            putNull(key);
+                        if (isNew) {
+                            // for new books,
+                            if (o == null) {
+                                // remove null values
+                                remove(key);
+                            } else {
+                                final String v = o.toString();
+                                if (v.isEmpty() || "0".equals(v)) {
+                                    // remove empty/zero values
+                                    remove(key);
+                                }
+                            }
+                        } else {
+                            // for existing books, leave null values as-is
+                            if (o != null) {
+                                final String v = o.toString();
+                                if (v.isEmpty() || "0".equals(v)) {
+                                    // replace "0" and empty strings with a null
+                                    putNull(key);
+                                }
+                            }
                         }
-
                         break;
                     }
                     default:
@@ -847,16 +867,12 @@ public class Book
      * Helper for {@link #preprocessForStoring(Context, boolean)}.
      *
      * <ul>Fields in this Book, which have a default in the database and
-     *      <li>which are not allowed to be blank but are</li>
-     *      <li>which are not allowed to be null but are</li>
+     *      <li>which are null but not allowed to be null</li>
+     *      <li>which are null/empty (i.e. blank) but not allowed to be blank</li>
      * </ul>
      * <p>
-     * For new books, remove those keys.
-     * Existing books, replace those keys with the default value for the column.
-     *
-     * <p>
-     * if the book is new: remove those keys,
-     * otherwise make sure the values are reset to their defaults.
+     * For new books, REMOVE those keys.
+     * Existing books, REPLACE those keys with the default value for the column.
      *
      * @param isNew {@code true} if the book is new
      */
@@ -865,15 +881,30 @@ public class Book
         for (Domain domain : DBDefinitions.TBL_BOOKS.getDomains()) {
             final String key = domain.getName();
             if (contains(key) && domain.hasDefault()) {
-                final Object value = get(key);
-                if ((domain.isNotBlank() && value != null && value.toString().isEmpty())
-                    || ((domain.isNotNull() && value == null))) {
-                    if (isNew) {
-                        remove(key);
-                    } else {
-                        // restore the column to its default value.
-                        //noinspection ConstantConditions
-                        putString(key, domain.getDefault());
+                final Object o = get(key);
+
+                if (o == null) {
+                    if (domain.isNotNull()) {
+                        if (isNew) {
+                            remove(key);
+                        } else {
+                            // restore the column to its default value.
+                            //noinspection ConstantConditions
+                            putString(key, domain.getDefault());
+                        }
+                        continue;
+                    }
+                }
+
+                if (o == null || o.toString().isEmpty()) {
+                    if (domain.isNotBlank()) {
+                        if (isNew) {
+                            remove(key);
+                        } else {
+                            // restore the column to its default value.
+                            //noinspection ConstantConditions
+                            putString(key, domain.getDefault());
+                        }
                     }
                 }
             }
