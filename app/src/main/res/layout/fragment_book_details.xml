@@ -63,10 +63,10 @@
             />
 
         <androidx.constraintlayout.widget.Barrier
-            android:id="@+id/barrier_covers"
+            android:id="@+id/barrier_covers_end"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:barrierDirection="start"
+            app:barrierDirection="end"
             app:constraint_referenced_ids="coverImage0,coverImage1"
             />
 
@@ -77,32 +77,37 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/indent_field"
             android:layout_marginTop="@dimen/border1"
-            android:layout_marginEnd="@dimen/indent_field"
             android:numStars="5"
-            app:layout_constraintEnd_toStartOf="@id/cbx_read"
+            app:layout_constraintStart_toEndOf="@id/barrier_covers_end"
             app:layout_constraintTop_toBottomOf="@id/title"
             />
 
         <CheckBox
             android:id="@+id/cbx_read"
             style="@style/Flag.Read"
-            android:layout_marginStart="@dimen/indent_field"
-            android:layout_marginEnd="@dimen/indent_field"
             android:contentDescription="@string/lbl_read"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/lend_to"
+            app:layout_constraintTop_toBottomOf="@id/title"
             tools:checked="true"
             />
 
+        <androidx.constraintlayout.widget.Barrier
+            android:id="@+id/barrier_rating_read"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:barrierDirection="bottom"
+            app:constraint_referenced_ids="rating,cbx_read"
+            />
+
         <!-- 2020-07-13: setting visibility="gone" from code
-                but keeping/populating as normal for now.
-                The title is ALSO visible in the ToolBar (and usually on the cover image).
+            but keeping/populating as normal for now.
+            The title is ALSO visible in the ToolBar (and usually on the cover image).
         -->
         <TextView
             android:id="@+id/title"
             style="@style/Field.BookTitle.Large"
             android:visibility="gone"
-            app:layout_constraintEnd_toStartOf="@id/cbx_read"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lend_to"
             tools:ignore="SelectableText"
@@ -159,8 +164,8 @@
             android:id="@+id/author"
             style="@style/Field.Generic"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/coverImage0"
-            app:layout_constraintTop_toBottomOf="@id/rating"
+            app:layout_constraintStart_toEndOf="@id/barrier_covers_end"
+            app:layout_constraintTop_toBottomOf="@id/barrier_rating_read"
             tools:ignore="SelectableText"
             tools:text="@sample/data.json/author/full_name"
             />
@@ -173,7 +178,7 @@
             android:layout_marginStart="@dimen/indent2"
             android:layout_marginTop="@dimen/border2"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/coverImage0"
+            app:layout_constraintStart_toEndOf="@id/barrier_covers_end"
             app:layout_constraintTop_toBottomOf="@id/author"
             >
 

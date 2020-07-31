@@ -90,7 +90,7 @@
             android:id="@+id/coverImage1"
             style="@style/CoverImage"
             android:contentDescription="@string/lbl_cover"
-            app:layout_constraintTop_toBottomOf="@id/lend_to"
+            app:layout_constraintTop_toBottomOf="@id/title"
             app:layout_constraintStart_toEndOf="@id/coverImage0"
             tools:layout_height="@dimen/tools_cover_scale_2_height"
             tools:layout_width="@dimen/tools_cover_scale_2_width"
@@ -116,21 +116,26 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/indent_field"
             android:layout_marginTop="@dimen/border1"
-            android:layout_marginEnd="@dimen/indent_field"
             android:numStars="5"
-            app:layout_constraintEnd_toStartOf="@id/cbx_read"
+            app:layout_constraintStart_toEndOf="@id/coverImage1"
             app:layout_constraintTop_toBottomOf="@id/title"
             />
 
         <CheckBox
             android:id="@+id/cbx_read"
             style="@style/Flag.Read"
-            android:layout_marginStart="@dimen/indent_field"
-            android:layout_marginEnd="@dimen/indent_field"
             android:contentDescription="@string/lbl_read"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/lend_to"
+            app:layout_constraintTop_toBottomOf="@id/title"
             tools:checked="true"
+            />
+
+        <androidx.constraintlayout.widget.Barrier
+            android:id="@+id/barrier_rating_read"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:barrierDirection="bottom"
+            app:constraint_referenced_ids="rating,cbx_read"
             />
 
         <!-- 2020-07-13: setting visibility="gone" from code
@@ -142,7 +147,7 @@
             style="@style/Field.BookTitle.Large"
             android:visibility="gone"
             android:layout_marginStart="@dimen/indent_field"
-            app:layout_constraintEnd_toStartOf="@id/cbx_read"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/coverImage0"
             app:layout_constraintTop_toBottomOf="@id/lend_to"
             tools:ignore="SelectableText"
@@ -154,7 +159,7 @@
             style="@style/Field.Generic"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/coverImage1"
-            app:layout_constraintTop_toBottomOf="@id/rating"
+            app:layout_constraintTop_toBottomOf="@id/barrier_rating_read"
             tools:ignore="SelectableText"
             tools:text="@sample/data.json/author/full_name"
             />
