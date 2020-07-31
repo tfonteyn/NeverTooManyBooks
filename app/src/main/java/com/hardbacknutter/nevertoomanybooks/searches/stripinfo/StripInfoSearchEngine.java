@@ -154,12 +154,6 @@ public class StripInfoSearchEngine
         return getSiteUrl() + String.format(BY_EXTERNAL_ID, externalId);
     }
 
-    @Override
-    public void checkForSeriesNameInTitle(@NonNull final Bundle bookData) {
-        // StripInfo always has clean titles and uses ()
-        // which causes the default cleaner to give false positives.
-    }
-
     @NonNull
     @Override
     public Bundle searchByExternalId(@NonNull final String externalId,

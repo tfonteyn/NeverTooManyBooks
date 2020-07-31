@@ -97,7 +97,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.Money;
         nameResId = R.string.site_amazon,
         url = "https://www.amazon.com",
         prefKey = AmazonSearchEngine.PREF_KEY,
-        // The ASIN is not yet fully implemented
+        // The ASIN is not yet fully implemented ENHANCE: support ASIN
         domainKey = DBDefinitions.KEY_ISBN,
         domainViewId = R.id.site_amazon,
         domainMenuId = R.id.MENU_VIEW_BOOK_AT_AMAZON,
@@ -252,7 +252,7 @@ public final class AmazonSearchEngine
     }
 
     /**
-     * The external id for Amazon is the isbn.
+     * The external id for Amazon is the isbn. // ENHANCE: support ASIN
      *
      * @param isbn to search for
      *
@@ -305,7 +305,7 @@ public final class AmazonSearchEngine
 
     /**
      * The external ID is the ASIN.
-     * The ASIN for books is identical to the ISBN10 code.
+     * The ASIN for books is identical to the ISBN10 code. // ENHANCE: support ASIN
      * <p>
      * {@inheritDoc}
      */
@@ -322,6 +322,7 @@ public final class AmazonSearchEngine
         if (document != null && !isCancelled()) {
             parse(document, fetchThumbnail, bookData);
         }
+
         return bookData;
     }
 
@@ -552,6 +553,8 @@ public final class AmazonSearchEngine
         if (!mSeries.isEmpty()) {
             bookData.putParcelableArrayList(Book.BKEY_SERIES_ARRAY, mSeries);
         }
+
+        checkForSeriesNameInTitle(bookData);
 
         if (isCancelled()) {
             return;

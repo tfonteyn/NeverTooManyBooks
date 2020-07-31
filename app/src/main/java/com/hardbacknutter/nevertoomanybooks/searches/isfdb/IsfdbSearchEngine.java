@@ -795,6 +795,8 @@ public class IsfdbSearchEngine
             bookData.putParcelableArrayList(Book.BKEY_PUBLISHER_ARRAY, mPublishers);
         }
 
+        checkForSeriesNameInTitle(bookData);
+
         if (isCancelled()) {
             return;
         }

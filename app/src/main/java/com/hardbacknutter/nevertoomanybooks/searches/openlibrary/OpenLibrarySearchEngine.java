@@ -263,11 +263,12 @@ public class OpenLibrarySearchEngine
         // json-ify and handle.
         try {
             handleResponse(new JSONObject(response), fetchThumbnail, bookData);
-
         } catch (@NonNull final JSONException e) {
             // wrap parser exceptions in an IOException
             throw new IOException(e);
         }
+
+        checkForSeriesNameInTitle(bookData);
     }
 
     /**

@@ -134,6 +134,8 @@ public class KbNlSearchEngine
             throw new IOException(e);
         }
 
+        checkForSeriesNameInTitle(bookData);
+
         if (isCancelled()) {
             return bookData;
         }

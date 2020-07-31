@@ -379,5 +379,7 @@ public class LibraryThingSearchEngine
             }
             throw new IOException(e);
         }
+
+        checkForSeriesNameInTitle(bookData);
     }
 }

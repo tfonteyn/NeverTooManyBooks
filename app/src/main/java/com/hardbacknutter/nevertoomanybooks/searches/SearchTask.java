@@ -235,10 +235,6 @@ public class SearchTask
                                                     + " does not implement By=" + mBy);
             }
 
-            if (!bookData.isEmpty()) {
-                // Look for Series name in the book title and clean KEY_TITLE
-                mSearchEngine.checkForSeriesNameInTitle(bookData);
-            }
             return bookData;
 
         } catch (@NonNull final CredentialsException | IOException | RuntimeException e) {

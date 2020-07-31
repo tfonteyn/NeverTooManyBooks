@@ -50,7 +50,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsAuth;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsManager;
 import com.hardbacknutter.nevertoomanybooks.searches.AuthorTypeMapper;
-import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
+import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.utils.LanguageUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
@@ -399,21 +399,12 @@ public abstract class ShowBookApiHandler
             }
         }
 
-        // It's tempting to always replace KEY_TITLE with SiteField.ORIG_TITLE,
-        // but that does bad things to translations (it uses the original language)
-        if (mBookData.containsKey(DBDefinitions.KEY_TITLE)) {
-            // Cleanup the title by removing Series name, if present
-            // Example: "<title>The Anome (Durdane, #1)</title>"
-            SearchEngine.checkForSeriesNameInTitleDefaultImpl(mBookData);
-        }
-
         // These are Goodreads shelves, not ours.
         // They are used during a sync only where they will be mapped to our own.
         // They are NOT used during simple searches.
         if (!mGoodreadsShelves.isEmpty()) {
             mBookData.putStringArrayList(SiteField.SHELVES, mGoodreadsShelves);
         }
-
 
 
         if (!mAuthors.isEmpty()) {
@@ -424,6 +415,14 @@ public abstract class ShowBookApiHandler
         }
         if (!mPublishers.isEmpty()) {
             mBookData.putParcelableArrayList(Book.BKEY_PUBLISHER_ARRAY, mPublishers);
+        }
+
+        // It's tempting to always replace KEY_TITLE with SiteField.ORIG_TITLE,
+        // but that does bad things to translations (it uses the original language)
+        if (mBookData.containsKey(DBDefinitions.KEY_TITLE)) {
+            // Cleanup the title by removing Series name, if present
+            // Example: "<title>The Anome (Durdane, #1)</title>"
+            SearchEngineBase.checkForSeriesNameInTitle(mBookData);
         }
 
         if (fetchThumbnail[0]) {

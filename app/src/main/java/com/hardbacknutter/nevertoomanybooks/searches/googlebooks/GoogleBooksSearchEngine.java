@@ -173,6 +173,8 @@ public final class GoogleBooksSearchEngine
                 try (TerminatorConnection con = createConnection(oneBookUrl, true)) {
                     parser.parse(con.getInputStream(), handler);
                 }
+
+                checkForSeriesNameInTitle(bookData);
             }
 
         } catch (@NonNull final ParserConfigurationException | SAXException e) {

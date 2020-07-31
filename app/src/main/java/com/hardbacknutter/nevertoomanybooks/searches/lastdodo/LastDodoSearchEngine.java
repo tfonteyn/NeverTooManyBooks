@@ -94,12 +94,6 @@ public class LastDodoSearchEngine
         super(appContext);
     }
 
-    @Override
-    public void checkForSeriesNameInTitle(@NonNull final Bundle bookData) {
-        // This site always has clean titles and uses ()
-        // which causes the default cleaner to give false positives.
-    }
-
     @NonNull
     @Override
     public String createUrl(@NonNull final String externalId) {

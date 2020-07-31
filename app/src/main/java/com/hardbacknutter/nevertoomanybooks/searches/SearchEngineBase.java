@@ -28,12 +28,18 @@
 package com.hardbacknutter.nevertoomanybooks.searches;
 
 import android.content.Context;
+import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.util.ArrayList;
 import java.util.Objects;
+import java.util.regex.Matcher;
 
+import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.tasks.Canceller;
 
 public abstract class SearchEngineBase
@@ -62,6 +68,51 @@ public abstract class SearchEngineBase
         mId = se.id();
     }
 
+    /**
+     * Helper method.
+     * <p>
+     * Look for a book title; if present try to get a Series from it and clean the book title.
+     * <p>
+     * This default implementation is fine for most engines but not always needed.
+     * TODO: we probably call checkForSeriesNameInTitleDefaultImpl for sites that don't need it.
+     * It's static so we can use it from
+     * {@link com.hardbacknutter.nevertoomanybooks.goodreads.api.ShowBookApiHandler}
+     * until that one is converted.
+     *
+     * @param bookData Bundle to update
+     */
+    public static void checkForSeriesNameInTitle(@NonNull final Bundle bookData) {
+        final String fullTitle = bookData.getString(DBDefinitions.KEY_TITLE);
+        if (fullTitle != null) {
+            final Matcher matcher = Series.TEXT1_BR_TEXT2_BR_PATTERN.matcher(fullTitle);
+            if (matcher.find()) {
+                // the cleansed title
+                final String bookTitle = matcher.group(1);
+                // the series title/number
+                final String seriesTitleWithNumber = matcher.group(2);
+
+                if (seriesTitleWithNumber != null && !seriesTitleWithNumber.isEmpty()) {
+                    // we'll add to, or create the Series list
+                    ArrayList<Series> seriesList =
+                            bookData.getParcelableArrayList(Book.BKEY_SERIES_ARRAY);
+                    if (seriesList == null) {
+                        seriesList = new ArrayList<>();
+                    }
+
+                    // add to the TOP of the list. This is based on translated books/comics
+                    // on Goodreads where the Series is in the original language, but the
+                    // Series name embedded in the title is in the same language as the title.
+                    seriesList.add(0, Series.from(seriesTitleWithNumber));
+
+                    // store Series back
+                    bookData.putParcelableArrayList(Book.BKEY_SERIES_ARRAY, seriesList);
+                    // and store cleansed book title back
+                    bookData.putString(DBDefinitions.KEY_TITLE, bookTitle);
+                }
+            }
+        }
+    }
+
     @Override
     public int getId() {
         return mId;
@@ -80,7 +131,8 @@ public abstract class SearchEngineBase
 
     @Override
     public boolean isCancelled() {
+        // mCaller being null should only happen when we check if we're cancelled
+        // before a task was started.
         return mCaller == null || mCaller.isCancelled();
     }
-
 }
