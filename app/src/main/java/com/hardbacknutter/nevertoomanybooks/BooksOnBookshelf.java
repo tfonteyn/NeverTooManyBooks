@@ -99,7 +99,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsManager;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GrStatus;
-import com.hardbacknutter.nevertoomanybooks.goodreads.qtasks.taskqueue.QueueManager;
 import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.GrAuthTask;
 import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.GrSendOneBookTask;
 import com.hardbacknutter.nevertoomanybooks.searches.amazon.AmazonSearchEngine;
@@ -373,9 +372,6 @@ public class BooksOnBookshelf
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
-        // Create the Goodreads QueueManager. This (re)starts stored tasks.
-        QueueManager.create(this);
-
         super.onCreate(savedInstanceState);
 
         // remove the default title to make space for the bookshelf spinner.

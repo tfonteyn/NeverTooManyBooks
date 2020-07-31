@@ -31,7 +31,6 @@ import android.os.Parcelable;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
-import androidx.annotation.VisibleForTesting;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -144,6 +143,8 @@ import com.hardbacknutter.nevertoomanybooks.utils.LanguageUtils;
  *
  * <strong>Note:</strong> NEVER change the identifiers (bit flag) of the sites,
  * as they are stored in user preferences.
+ * Dev note: there is really only one place where the code relies on this being bit numbers...
+ * URGENT: remove the need for engine id's to be BIT numbers
  */
 public final class SearchSites {
 
@@ -189,15 +190,12 @@ public final class SearchSites {
             + "," + KB_NL
             + "," + OPEN_LIBRARY;
 
-    static {
-        // create all engine basic configurations.
-        createConfigs();
-    }
-
     private SearchSites() {
     }
 
-    @VisibleForTesting
+    /**
+     * create all engine basic configurations; called during startup.
+     */
     public static void createConfigs() {
         //dev note: we could scan for the annotation or for classes implementing the interface...
         // ... but that means traversing the class path. Not really worth the hassle.

@@ -120,21 +120,26 @@ public class BooksOnBookshelfModel
                         DBDefinitions.TBL_BOOK_AUTHOR.dot(DBDefinitions.KEY_FK_AUTHOR)));
 
         FIXED_DOMAIN_LIST.add(
-                // Always get the ISBN
-                new VirtualDomain(
-                        DBDefinitions.DOM_BOOK_ISBN,
-                        DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_ISBN)));
-
-        FIXED_DOMAIN_LIST.add(
                 // We want the UUID for the book so we can get thumbnails
                 new VirtualDomain(
                         DBDefinitions.DOM_BOOK_UUID,
                         DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_BOOK_UUID)));
 
+        FIXED_DOMAIN_LIST.add(
+                // Always get the ISBN
+                new VirtualDomain(
+                        DBDefinitions.DOM_BOOK_ISBN,
+                        DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_ISBN)));
+
         // external site ID's
         for (Domain domain : Site.getExternalIdDomains()) {
-            FIXED_DOMAIN_LIST.add(
-                    new VirtualDomain(domain, DBDefinitions.TBL_BOOKS.dot(domain.getName())));
+            // ENHANCE: support ASIN
+            //For now, the Amazon search engine uses the ISBN; if we switch it to ASIN,
+            // we can remove this "if".
+            if (!domain.getName().equals(DBDefinitions.KEY_ISBN)) {
+                FIXED_DOMAIN_LIST.add(
+                        new VirtualDomain(domain, DBDefinitions.TBL_BOOKS.dot(domain.getName())));
+            }
         }
     }
 

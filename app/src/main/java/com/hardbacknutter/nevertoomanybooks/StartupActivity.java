@@ -47,6 +47,8 @@ import java.lang.ref.WeakReference;
 import com.hardbacknutter.nevertoomanybooks.database.DBHelper;
 import com.hardbacknutter.nevertoomanybooks.databinding.ActivityStartupBinding;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
+import com.hardbacknutter.nevertoomanybooks.goodreads.qtasks.taskqueue.QueueManager;
+import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.NightModeUtils;
@@ -170,8 +172,6 @@ public class StartupActivity
 
     /**
      * Prompt the user to make a backup.
-     * <p>
-     * Note the backup is not done here; we just set a flag if requested.
      */
     private void backupRequired() {
         if (mModel.isProposeBackup()) {
@@ -209,13 +209,20 @@ public class StartupActivity
     }
 
     /**
-     * Last step: start the main user activity.
-     * If requested earlier, run a backup now / tell the main activity to start a backup.
+     * Last steps:
+     * Init the search engines and startup the task queue.
+     * Finally, start the main user activity.
      */
     private void gotoMainScreen() {
-        startActivity(new Intent(this, BooksOnBookshelf.class));
-        // We are done here. Remove the weak self-reference and finish.
+        // Remove the weak self-reference
         sStartupActivity.clear();
+        // Setup the search engines
+        SearchSites.createConfigs();
+        // Create the Goodreads QueueManager. This (re)starts stored tasks.
+        QueueManager.create(this);
+
+        startActivity(new Intent(this, BooksOnBookshelf.class));
+        // done here
         finish();
     }
 
