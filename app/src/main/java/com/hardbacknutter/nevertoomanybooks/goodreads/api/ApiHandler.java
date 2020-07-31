@@ -75,13 +75,10 @@ public abstract class ApiHandler {
     /** log error string. */
     private static final String ERROR_UNEXPECTED_STATUS_CODE_FROM_API =
             "Unexpected status code from API: ";
-
-    @NonNull
-    final Context mAppContext;
-
     @NonNull
     protected final GoodreadsAuth mGrAuth;
-
+    @NonNull
+    final Context mAppContext;
     final Site.Config mSiteConfig;
 
     /**

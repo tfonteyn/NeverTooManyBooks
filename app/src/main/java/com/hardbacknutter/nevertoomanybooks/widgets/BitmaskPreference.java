@@ -53,16 +53,13 @@ import java.util.List;
 import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.settings.styles.StyleFiltersFragment;
 
 /**
  * Allows a user to select 0 or more checkboxes (forming a bitmask) or select to disregard
  * the entire setting.
  * <p>
  * The latter is handled with a secondary preference key (originalKey + ".active")
- * to enable/disabled the actual preference.
- * <p>
- * Usage example see {@link StyleFiltersFragment}.
+ * to enable/disabled the actual preference..
  *
  * <pre>
  *     {@code

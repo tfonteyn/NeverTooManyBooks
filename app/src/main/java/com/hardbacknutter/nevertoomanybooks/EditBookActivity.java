@@ -351,12 +351,10 @@ public class EditBookActivity
             mTabs.add(new TabInfo(EditBookNotesFragment.class, R.string.tab_lbl_notes));
 
             if (DBDefinitions.isUsed(prefs, DBDefinitions.KEY_TOC_BITMASK)) {
-                mTabs.add(new TabInfo(EditBookTocFragment.class,
-                                      R.string.tab_lbl_content));
+                mTabs.add(new TabInfo(EditBookTocFragment.class, R.string.tab_lbl_content));
             }
             if (Prefs.showEditBookTabExternalId(activity)) {
-                mTabs.add(new TabInfo(EditBookExternalIdFragment.class,
-                                      R.string.tab_lbl_ext_id));
+                mTabs.add(new TabInfo(EditBookExternalIdFragment.class, R.string.tab_lbl_ext_id));
             }
         }
 

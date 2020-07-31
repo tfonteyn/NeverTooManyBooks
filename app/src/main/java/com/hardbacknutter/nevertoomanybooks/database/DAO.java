@@ -3387,7 +3387,8 @@ public class DAO
         final String sql =
                 SELECT_ + TBL_BOOKS.dot(KEY_PK_ID) + ',' + TBL_BOOKS.dot(KEY_TITLE)
                 + _FROM_ + TBL_BOOK_TOC_ENTRIES.ref() + TBL_BOOK_TOC_ENTRIES.join(TBL_BOOKS)
-                + _WHERE_ + TBL_BOOK_TOC_ENTRIES.dot(KEY_FK_TOC_ENTRY) + "=?";
+                + _WHERE_ + TBL_BOOK_TOC_ENTRIES.dot(KEY_FK_TOC_ENTRY) + "=?"
+                + _ORDER_BY_ + TBL_BOOKS.dot(KEY_TITLE_OB);
 
         try (Cursor cursor = sSyncedDb.rawQuery(sql, new String[]{String.valueOf(id)})) {
             final DataHolder rowData = new CursorRow(cursor);

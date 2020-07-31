@@ -406,8 +406,7 @@ public class BookViewModel
                     final String uuid = mDb.getBookUuid(id);
                     if (uuid != null) {
                         final File downloadedFile = new File(fileSpec);
-                        final File destination = AppDir
-                                .getCoverFile(context, uuid, cIdx);
+                        final File destination = AppDir.getCoverFile(context, uuid, cIdx);
                         FileUtils.rename(downloadedFile, destination);
                     }
                 }

@@ -292,6 +292,8 @@ public class Site
 
     /**
      * Immutable configuration data for a {@link SearchEngine}.
+     * Encapsulates the annotation class together with the search engine class,
+     * and provides the 'complex' configuration objects along side the 'simple' attributes.
      * <p>
      * See {@link SearchSites} for more details.
      */
@@ -300,7 +302,7 @@ public class Site
         @NonNull
         private final Class<? extends SearchEngine> mClass;
         @NonNull
-        private final SearchEngine.Configuration mConfiguration;
+        private final SearchEngine.Configuration mSEConfig;
 
         @NonNull
         private final Locale mLocale;
@@ -314,20 +316,20 @@ public class Site
          *
          * @param searchEngineClass to configure
          */
-        private Config(@NonNull final Class<? extends SearchEngine> searchEngineClass) {
+        public Config(@NonNull final Class<? extends SearchEngine> searchEngineClass) {
             mClass = searchEngineClass;
-            mConfiguration = Objects.requireNonNull(searchEngineClass.getAnnotation(
+            mSEConfig = Objects.requireNonNull(searchEngineClass.getAnnotation(
                     SearchEngine.Configuration.class));
 
-            if ("en".equals(mConfiguration.lang()) && mConfiguration.country().isEmpty()) {
+            if ("en".equals(mSEConfig.lang()) && mSEConfig.country().isEmpty()) {
                 // be lenient...
                 mLocale = Locale.US;
             } else {
-                mLocale = new Locale(mConfiguration.lang(),
-                                     mConfiguration.country().toUpperCase(Locale.ENGLISH));
+                mLocale = new Locale(mSEConfig.lang(),
+                                     mSEConfig.country().toUpperCase(Locale.ENGLISH));
             }
 
-            final String domainKey = mConfiguration.domainKey();
+            final String domainKey = mSEConfig.domainKey();
             if (domainKey.isEmpty()) {
                 mExternalIdDomain = null;
             } else {
@@ -366,7 +368,7 @@ public class Site
 
         @SearchSites.EngineId
         public int getEngineId() {
-            return mConfiguration.id();
+            return mSEConfig.id();
         }
 
         /**
@@ -376,22 +378,22 @@ public class Site
          */
         @StringRes
         public int getNameResId() {
-            return mConfiguration.nameResId();
+            return mSEConfig.nameResId();
         }
 
         @NonNull
         public String getPreferenceKey() {
-            return mConfiguration.prefKey();
+            return mSEConfig.prefKey();
         }
 
         @NonNull
         public String getFilenameSuffix() {
-            return mConfiguration.filenameSuffix();
+            return mSEConfig.filenameSuffix();
         }
 
         @NonNull
         public String getSiteUrl() {
-            return mConfiguration.url();
+            return mSEConfig.url();
         }
 
         /**
@@ -411,12 +413,12 @@ public class Site
 
         @IdRes
         public int getDomainViewId() {
-            return mConfiguration.domainViewId();
+            return mSEConfig.domainViewId();
         }
 
         @IdRes
         public int getDomainMenuId() {
-            return mConfiguration.domainMenuId();
+            return mSEConfig.domainMenuId();
         }
 
         /**
@@ -425,7 +427,7 @@ public class Site
          * @return defaults to 5 second. Override as needed.
          */
         public int getConnectTimeoutMs() {
-            return mConfiguration.connectTimeoutMs();
+            return mSEConfig.connectTimeoutMs();
         }
 
         /**
@@ -434,12 +436,12 @@ public class Site
          * @return defaults to 10 second. Override as needed.
          */
         public int getReadTimeoutMs() {
-            return mConfiguration.readTimeoutMs();
+            return mSEConfig.readTimeoutMs();
         }
 
         /** {@link SearchEngine.CoverByIsbn} only. */
         public boolean supportsMultipleCoverSizes() {
-            return mConfiguration.supportsMultipleCoverSizes();
+            return mSEConfig.supportsMultipleCoverSizes();
         }
     }
 }

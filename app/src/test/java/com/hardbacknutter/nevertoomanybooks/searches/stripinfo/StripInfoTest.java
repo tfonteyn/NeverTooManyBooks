@@ -31,7 +31,6 @@ import androidx.annotation.NonNull;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.Locale;
 
@@ -358,7 +357,7 @@ class StripInfoTest
         // we've set the doc, but will redirect.. so an internet download WILL be done.
         try {
             mSearchEngine.parseMultiResult(document, fetchThumbnails, mRawData);
-        } catch (@NonNull final SocketTimeoutException e) {
+        } catch (@NonNull final IOException e) {
             fail(e);
         }
 
