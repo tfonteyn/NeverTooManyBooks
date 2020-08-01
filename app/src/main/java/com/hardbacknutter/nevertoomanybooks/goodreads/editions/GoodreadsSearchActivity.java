@@ -129,7 +129,8 @@ public class GoodreadsSearchActivity
         });
         mGrSearchTask.onCancelled().observe(this, message -> {
             if (message.isNewEvent()) {
-                Snackbar.make(mVb.getRoot(), R.string.cancelled, Snackbar.LENGTH_LONG).show();
+                Snackbar.make(mVb.getRoot(), R.string.warning_task_cancelled, Snackbar.LENGTH_LONG)
+                        .show();
             }
         });
         mGrSearchTask.onFinished().observe(this, message -> {

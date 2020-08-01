@@ -1147,7 +1147,7 @@ public class SearchCoordinator
 
                 final String error;
                 if (exception == null) {
-                    error = context.getString(R.string.cancelled);
+                    error = context.getString(R.string.warning_task_cancelled);
                 } else {
                     error = createSiteError(context, engineName, exception);
                 }

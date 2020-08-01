@@ -36,7 +36,7 @@
     <string name="X_btn_do_not_show_again">Bir daha gösterme</string>
     <string name="X_error_file_must_contain_column">Dosya adı %1$s adında bir sütun içermeli</string>
     <string name="progress_end_export_success">%2$s adında bir %3$s dosyası SD kartınızın “%1$s” dizininde oluşturuldu.\n\nBu dosyayı el ile başka bir yere yedeklemeniz aygıtınızın hasar görmesi, kaybolması veya çalınması durumunda verilerinizin korunması için tavsiye edilir.</string>
-    <string name="lbl_available">Uygun</string>
+    <string name="lbl_available">Kullanılabilir</string>
     <string name="X_lbl_data_import_export">Yedekleme ve İçe Aktarma</string>
     <string name="X_lbl_select_fields_to_update">Güncellenecek alanları seçin</string>
     <string name="X_action_show_all">Hepsini Göster</string>
@@ -76,7 +76,7 @@
     <string name="btn_options">Seçenekler</string>
     <string name="btn_reset">Sıfırla</string>
     <string name="btn_scan_barcode">Barkod tara</string>
-    <string name="btn_tell_me_more">Bilgi ver</string>
+    <string name="btn_learn_more">Daha fazla bilgi</string>
     <string name="btn_this_book">Bu kitap</string>
     <string name="bytes">%.0fB</string>
     <string name="action_clear">Silme</string>
@@ -93,7 +93,7 @@
     <string name="debug_body">Lütfen yaşamakta olduğunuz sorunu kısaca anlatınız.</string>
     <string name="debug_send_info_text">Bu, herhangi bir günlük dosyasının yanı sıra veritabanınızın yedek bir kopyasını oluşturacak ve geliştiricilere gönderecektir. Eğer bu dosyaları bize göndermek istemezseniz göndermeden önce lütfen e-posta eklerinden kaldırın.</string>
     <string name="debug_subject">Hata ayıklama bilgisi alındı</string>
-    <string name="done">Tamam</string>
+    <string name="done">Bitti</string>
     <string name="action_edit">Düzenle</string>
     <string name="error_authentication_failed">Kimlik doğrulama başarısız oldu</string>
     <string name="error_authorization_failed">Yetkilendirme başarısız oldu</string>
@@ -268,12 +268,12 @@
     <string name="lbl_field_usage_append">Ek veriyi iliştirir</string>
     <string name="lbl_field_usage_copy_if_blank">Boş ise eşlemle</string>
     <string name="lbl_field_usage_overwrite">Bulunan verinin üstüne yazar</string>
-    <string name="lbl_field_usage_skip">Atlamak</string>
+    <string name="lbl_field_usage_skip">Atla</string>
     <string name="lbl_first_pub_month">Yayının İlk Ayı</string>
     <string name="lbl_first_pub_year">Yayının İlk Yılı</string>
     <string name="lbl_first_publication">İlk yayın</string>
     <string name="lbl_format">Biçim</string>
-    <string name="lbl_formatting">Biçimlendirme</string>
+    <string name="lbl_formatting">Biçimlendiriliyor</string>
     <string name="lbl_genre">Tür</string>
     <string name="lbl_given_names">Adı</string>
     <string name="lbl_import">Ithal etmek</string>
@@ -312,11 +312,11 @@
     <string name="lbl_search_filtered_on_x">Süzülmüş: %1$s</string>
     <string name="lbl_select_fields">Alanları seçin</string>
     <string name="lbl_select_website">Bir web sitesi seçin:</string>
-    <string name="lbl_send_debug">Hata Ayıklama Bilgilerini Gönder</string>
+    <string name="lbl_send_debug">Hata raporu</string>
     <string name="lbl_series">Dizi</string>
     <string name="lbl_series_multiple">Dizi</string>
     <string name="lbl_series_num">#</string>
-    <string name="lbl_settings">Yeğlenenler</string>
+    <string name="lbl_settings">Ayarlar</string>
     <string name="lbl_signed">İmzalanmış</string>
     <string name="lbl_site_book_id">Web sitesi kitap kimliği</string>
     <string name="lbl_sorting">sınıflandırma</string>
@@ -361,7 +361,7 @@
     <string name="menu_cover_rotate">Döndür…</string>
     <string name="menu_cover_rotate_ccw">Saat yönünün tersine</string>
     <string name="menu_cover_rotate_cw">Saat yönünde</string>
-    <string name="action_delete">Silmek</string>
+    <string name="action_delete">Sil</string>
     <string name="action_duplicate">Çift</string>
     <string name="action_edit_ellipsis">Düzenle…</string>
     <string name="lbl_level_collapse">Hepsini gizle</string>
@@ -421,20 +421,18 @@
     <string name="pg_ui">Kullanıcı arayüzü</string>
     <string name="pg_ui_field_visibility">Alan görünürlüğünü yönet</string>
     <string name="progress_end_backup_success">Yedekleme başarılı!</string>
-    <string name="cancelled">İptal edildi</string>
+    <string name="warning_task_cancelled">İptal edildi</string>
     <string name="progress_end_import_complete">İçe aktarma başarılı</string>
     <string name="progress_end_import_partially_complete">Kısmi ithalat yapıldı</string>
-    <string name="progress_msg_connecting">Ağ sayfasına bağlanılıyor…</string>
+    <string name="progress_msg_connecting">Bağlanılıyor…</string>
     <string name="progress_msg_finding_editions">Sürümler bulunuyor…</string>
-    <string name="progress_msg_loading">Yükleniyor…</string>
+    <string name="progress_msg_loading">Yükleniyor...</string>
     <string name="progress_end_export_result_n_books_processed">%1$d kitap işlendi</string>
     <string name="progress_end_export_result_n_covers_processed_m_missing">%1$d kapak işlendi\n(%2$d/%3$d bulunamadı)</string>
     <string name="progress_msg_n_covers_processed_m_missing_s_skipped">%1$d kapak işlendi (%2$d/%3$d bulunamadı, %4$d atlandı)</string>
     <string name="X_progress_msg_x_created_y_updated">%1$s: %2$d oluşturuldu, %3$d güncellendi</string>
     <string name="progress_msg_optimizing">Veritabanları eniyileniyor…</string>
     <string name="progress_msg_please_wait">Lütfen bekle…</string>
-    <string name="progress_msg_process_booklist_style">Kitap Listesi Stilleri…</string>
-    <string name="progress_msg_process_preferences">Tercihler…</string>
     <string name="progress_msg_rebuilding_search_index">Arama dizini yeniden oluşturuluyor…</string>
     <string name="progress_msg_saving_image">Resim kaydediliyor…</string>
     <string name="progress_msg_searching">Aranıyor…</string>
@@ -576,7 +574,7 @@
     <string name="lbl_select_image">Resim seç…</string>
     <string name="lbl_select_style">Biçem seç</string>
     <string name="lbl_send_mail">E-posta…</string>
-    <string name="unknown">Bilinmiyor</string>
+    <string name="unknownName">Bilinmiyor</string>
     <string name="unused">kullanılmamış</string>
     <string name="vldt_blank_required_for_x">“%1$s” için boş değer gerekli</string>
     <string name="vldt_boolean_expected_for_x">“%1$s” için bir ikili (bool) değer gerekli (0,1,t,f,true,false)</string>
@@ -634,7 +632,7 @@
     <string name="hint_empty_day">(Gün ayarlanmadı)</string>
     <string name="hint_empty_year">(Yıl ayarlanmadı)</string>
     <string name="lbl_all_bookshelves">Tüm raflardan</string>
-    <string name="btn_more_ellipsis">Daha…</string>
+    <string name="btn_more_ellipsis">Diğer…</string>
     <string name="lbl_toc_multiple_authors">Birden çok yazar</string>
     <string name="X_lbl_edit_publisher">Yayıncıyı Düzenle</string>
     <string name="X_lbl_edit_toc_entry">Girişi düzenleyin</string>
@@ -662,5 +660,8 @@
     <string name="pt_bob_books_under_multiple_publisher">Birden çok yayıncının bulunduğu kitapları gösterin.</string>
     <string name="pv_bob_books_under_multiple_primary_publisher_only">yalnızca birincil yayıncıları altında.</string>
     <string name="pv_bob_books_under_multiple_each_publisher">her yayıncının altında.</string>
+    <string name="image">Resim</string>
+    <string name="lbl_author_type_narrator">Dış ses</string>
+    <string name="unknown">Bilinmiyor</string>
 
 </resources>

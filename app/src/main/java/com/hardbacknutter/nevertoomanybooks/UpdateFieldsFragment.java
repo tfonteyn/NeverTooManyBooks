@@ -129,7 +129,8 @@ public class UpdateFieldsFragment
         // User cancelled the update
         mUpdateFieldsModel.onSearchCancelled().observe(getViewLifecycleOwner(), message -> {
             // Unlikely to be seen...
-            Snackbar.make(mVb.getRoot(), R.string.cancelled, Snackbar.LENGTH_LONG).show();
+            Snackbar.make(mVb.getRoot(), R.string.warning_task_cancelled, Snackbar.LENGTH_LONG)
+                    .show();
             // report up what work did get done + the last book we did.
             onAllDone(message);
         });

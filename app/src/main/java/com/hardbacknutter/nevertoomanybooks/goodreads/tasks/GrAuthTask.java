@@ -68,7 +68,7 @@ public class GrAuthTask
                 .setTitle(R.string.info_authorized_needed)
                 .setMessage(R.string.gr_authorization_needed)
                 .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
-                .setNeutralButton(R.string.btn_tell_me_more, (d, w) -> {
+                .setNeutralButton(R.string.btn_learn_more, (d, w) -> {
                     Intent intent = new Intent(context, GoodreadsRegistrationActivity.class);
                     context.startActivity(intent);
                 })

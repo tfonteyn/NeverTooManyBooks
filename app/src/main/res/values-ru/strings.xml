@@ -36,7 +36,7 @@
     <string name="X_btn_do_not_show_again">Больше не показывать</string>
     <string name="X_error_file_must_contain_column">В файле должен быть столбец с названием %1$s</string>
     <string name="progress_end_export_success">Файл %3$s с именем %2$s был создан в папке «%1$s».\n\nВам следует вручную скопировать его, чтобы защитить данные в случае утери или повреждения телефона.</string>
-    <string name="lbl_available">Доступно</string>
+    <string name="lbl_available">Доступен</string>
     <string name="X_lbl_data_import_export">Резервное копирование и импорт</string>
     <string name="X_lbl_select_fields_to_update">Выберите поля для обновления</string>
     <string name="X_action_show_all">Показать все</string>
@@ -70,12 +70,12 @@
     <string name="X_btn_customize">Настроить…</string>
     <string name="btn_delete_credentials">Удалить учетные данные</string>
     <string name="btn_disable_message">Отключить сообщение</string>
-    <string name="btn_email">е-мейл</string>
+    <string name="btn_email">Написать письмо</string>
     <string name="X_btn_loan_returned">Возвращена</string>
     <string name="btn_options">опции</string>
-    <string name="btn_reset">Сброс</string>
+    <string name="btn_reset">Сбросить</string>
     <string name="btn_scan_barcode">Сканирование штрих-кода</string>
-    <string name="btn_tell_me_more">Расскажите мне ещё</string>
+    <string name="btn_learn_more">Подробнее</string>
     <string name="btn_this_book">Эта книга</string>
     <string name="bytes">%.0f байт</string>
     <string name="action_clear">протирать</string>
@@ -92,8 +92,8 @@
     <string name="debug_body">Пожалуйста, кратко опишите обнаруженную ошибку.</string>
     <string name="debug_send_info_text">Это создаст резервную копию вашей базы данных, а также любых файлов журналов и отправит ее разработчикам. Если вы не хотите отправлять какой-либо из этих файлов, удалите его из приложений письма до отправки.</string>
     <string name="debug_subject">Собрана отладочная информация</string>
-    <string name="done">сделанный</string>
-    <string name="action_edit">Редактировать</string>
+    <string name="done">Готово</string>
+    <string name="action_edit">Изменить</string>
     <string name="error_authentication_failed">Ошибка аутентификации</string>
     <string name="error_authorization_failed">Авторизация не удалась</string>
     <string name="error_auto_toc_population_failed">Автоматическое заполнение названий не удалось</string>
@@ -253,7 +253,7 @@
     <string name="lbl_date_acquired_month">Месяц купил</string>
     <string name="lbl_date_acquired_year">Год покупки</string>
     <string name="lbl_date_published">Дата издания</string>
-    <string name="lbl_day">День</string>
+    <string name="lbl_day">дн.</string>
     <string name="lbl_description">Описание</string>
     <string name="lbl_edition">Издание</string>
     <string name="lbl_edition_book_club">Книжный клуб Издание</string>
@@ -266,7 +266,7 @@
     <string name="lbl_field_usage_append">Добавляет дополнительные данные</string>
     <string name="lbl_field_usage_copy_if_blank">Копирует, если пусто</string>
     <string name="lbl_field_usage_overwrite">Перезаписывает существующие данные</string>
-    <string name="lbl_field_usage_skip">Пропускать</string>
+    <string name="lbl_field_usage_skip">Пропустить</string>
     <string name="lbl_first_pub_month">первый месяц публикации</string>
     <string name="lbl_first_pub_year">первый год публикации</string>
     <string name="lbl_first_publication">первая публикация</string>
@@ -310,7 +310,7 @@
     <string name="lbl_search_filtered_on_x">отфильтрованный: %1$s</string>
     <string name="lbl_select_fields">Выберите поля</string>
     <string name="lbl_select_website">Выберите сайт:</string>
-    <string name="lbl_send_debug">Отправить отладочную информацию</string>
+    <string name="lbl_send_debug">Отчет об ошибке</string>
     <string name="lbl_series">Серия</string>
     <string name="lbl_series_multiple">Серии</string>
     <string name="lbl_series_num">№</string>
@@ -328,7 +328,7 @@
     <string name="lbl_update_year">Год обновления</string>
     <string name="lbl_websites">Веб-сайты</string>
     <string name="txt_x_pages">Страниц: %1$d</string>
-    <string name="lbl_year">Год</string>
+    <string name="lbl_year">г.</string>
     <string name="legacy_description">Эта запись устарела и не может быть восстановлена. Желательно удалить его.</string>
     <string name="legacy_record">Устаревшая запись #%1$d</string>
     <string name="list_and">и</string>
@@ -361,7 +361,7 @@
     <string name="menu_cover_rotate_cw">По часовой</string>
     <string name="action_delete">Удалить</string>
     <string name="action_duplicate">копия</string>
-    <string name="action_edit_ellipsis">редактировать…</string>
+    <string name="action_edit_ellipsis">Изменить…</string>
     <string name="lbl_level_collapse">Свернуть всё</string>
     <string name="lbl_level_expand">Развернуть всё</string>
     <string name="lbl_level_reset">Предпочтительный уровень расширения</string>
@@ -374,7 +374,7 @@
     <string name="menu_set_incomplete">Отметить не полностью</string>
     <string name="menu_set_read">Марк читать</string>
     <string name="menu_set_unread">Марк не читается</string>
-    <string name="menu_share_this">Поделиться</string>
+    <string name="menu_share_this">Отправить</string>
     <string name="lbl_sort_and_style_ellipsis">Сортировать &amp; Стиль…</string>
     <string name="lbl_strict_isbn">Строгий ISBN</string>
     <string name="menu_update_books">Обновите книги</string>
@@ -384,7 +384,7 @@
     <string name="name_colon_value">%1$s: %2$s</string>
     <string name="no">Нет</string>
     <string name="none">Никто</string>
-    <string name="notification_channel_error">ошибка</string>
+    <string name="notification_channel_error">Ошибка</string>
     <string name="notification_channel_info">Информация</string>
     <string name="pe_bob_filter_anthology_no">Все, кроме антологий</string>
     <string name="pe_bob_filter_anthology_yes">Антологии</string>
@@ -419,10 +419,10 @@
     <string name="pg_ui">Пользовательский интерфейс</string>
     <string name="pg_ui_field_visibility">Видимость полей</string>
     <string name="progress_end_backup_success">Резервное копирование успешно</string>
-    <string name="cancelled">Отменено</string>
+    <string name="warning_task_cancelled">Печать отменена</string>
     <string name="progress_end_import_complete">Импорт завершен</string>
     <string name="progress_end_import_partially_complete">Частичный импорт выполнен</string>
-    <string name="progress_msg_connecting">Соединение с сайтом…</string>
+    <string name="progress_msg_connecting">Подключение…</string>
     <string name="progress_msg_finding_editions">Поиск изданий…</string>
     <string name="progress_msg_loading">Загрузка…</string>
     <string name="progress_end_export_result_n_books_processed">%1$d книг обработано</string>
@@ -431,8 +431,6 @@
     <string name="X_progress_msg_x_created_y_updated">%1$s: %2$d создано, %3$d обновлено</string>
     <string name="progress_msg_optimizing">Оптимизация баз данных…</string>
     <string name="progress_msg_please_wait">подождите пожалуйста…</string>
-    <string name="progress_msg_process_booklist_style">Стили списков книг…</string>
-    <string name="progress_msg_process_preferences">предпочтения…</string>
     <string name="progress_msg_rebuilding_search_index">Перестроение индексов поиска…</string>
     <string name="progress_msg_saving_image">Сохранение изображения…</string>
     <string name="progress_msg_searching">Поиск…</string>
@@ -574,7 +572,7 @@
     <string name="lbl_select_image">Выбор картинки…</string>
     <string name="lbl_select_style">Выбрать стиль</string>
     <string name="lbl_send_mail">Эл. адрес…</string>
-    <string name="unknown">Неизвестно</string>
+    <string name="unknownName">Неизвестно</string>
     <string name="unused">неиспользуемый</string>
     <string name="vldt_blank_required_for_x">Требуется пустое значение: «%1$s»</string>
     <string name="vldt_boolean_expected_for_x">Введите логическое да-нет значение (0,1,t,f,true,false) for «%1$s»</string>
@@ -632,7 +630,7 @@
     <string name="hint_empty_day">(День не назначен)</string>
     <string name="hint_empty_year">(Год не указан)</string>
     <string name="lbl_all_bookshelves">Все книжные полки</string>
-    <string name="btn_more_ellipsis">Больше…</string>
+    <string name="btn_more_ellipsis">Ещё…</string>
     <string name="lbl_toc_multiple_authors">Несколько авторов</string>
     <string name="X_lbl_edit_publisher">Редактировать Издатель</string>
     <string name="X_lbl_edit_toc_entry">Изменить запись</string>
@@ -661,5 +659,8 @@
     <string name="pv_bob_books_under_multiple_primary_publisher_only">только под своим основным издателем.</string>
     <string name="pv_bob_books_under_multiple_each_publisher">под каждым издателем.</string>
     <string name="book_format_paperback_large">Большая мягкая обложка</string>
+    <string name="image">Изображение</string>
+    <string name="lbl_author_type_narrator">рассказчик</string>
+    <string name="unknown">Неизвестно</string>
 
 </resources>

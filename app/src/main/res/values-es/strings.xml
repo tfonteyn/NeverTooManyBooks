@@ -72,12 +72,12 @@
     <string name="X_btn_customize">Configurar…</string>
     <string name="btn_delete_credentials">Eliminar credenciales</string>
     <string name="btn_disable_message">Deshabilitar mensaje</string>
-    <string name="btn_email">e-mail</string>
+    <string name="btn_email">Enviar correo</string>
     <string name="X_btn_loan_returned">Devuelto</string>
     <string name="btn_options">Opciones</string>
-    <string name="btn_reset">Reiniciar</string>
+    <string name="btn_reset">Restablecer</string>
     <string name="btn_scan_barcode">Escanear código de barras</string>
-    <string name="btn_tell_me_more">Cuéntenos más</string>
+    <string name="btn_learn_more">Más información</string>
     <string name="btn_this_book">Este libro</string>
     <string name="bytes">%.0fB</string>
     <string name="action_clear">Claro</string>
@@ -94,7 +94,7 @@
     <string name="debug_body">Por favor, explique brevemente el problema experimentado.</string>
     <string name="debug_send_info_text">Esto creará una copia de seguridad de su base de datos, así como cualquier archivo de registro y la enviará a los desarrolladores. Si no desea enviar alguno de estos ficheros, elimine los correspondientes adjuntos antes de enviar el correo que se generará.</string>
     <string name="debug_subject">Recopilando información sobre fallos</string>
-    <string name="done">Hecho</string>
+    <string name="done">Listo</string>
     <string name="action_edit">Editar</string>
     <string name="error_authentication_failed">Autenticación fallida</string>
     <string name="error_authorization_failed">Autorización fallida</string>
@@ -269,7 +269,7 @@
     <string name="lbl_field_usage_append">Añadir datos adicionales</string>
     <string name="lbl_field_usage_copy_if_blank">Copiar si está en blanco</string>
     <string name="lbl_field_usage_overwrite">Sobreescribir los datos existentes</string>
-    <string name="lbl_field_usage_skip">Omitir</string>
+    <string name="lbl_field_usage_skip">Saltar</string>
     <string name="lbl_first_pub_month">Primer mes de publicación</string>
     <string name="lbl_first_pub_year">Primer año de publicación</string>
     <string name="lbl_first_publication">Primera publicación</string>
@@ -313,11 +313,11 @@
     <string name="lbl_search_filtered_on_x">Filtrado: %1$s</string>
     <string name="lbl_select_fields">Seleccione campos</string>
     <string name="lbl_select_website">Selecciona un sitio web:</string>
-    <string name="lbl_send_debug">Enviar información de depuración</string>
+    <string name="lbl_send_debug">Informe de error</string>
     <string name="lbl_series">Serie</string>
     <string name="lbl_series_multiple">Serie</string>
     <string name="lbl_series_num">#</string>
-    <string name="lbl_settings">Preferencias</string>
+    <string name="lbl_settings">Ajustes</string>
     <string name="lbl_signed">Firmado</string>
     <string name="lbl_site_book_id">ID del libro del sitio web</string>
     <string name="lbl_sorting">Clasificación</string>
@@ -355,14 +355,14 @@
     <string name="X_lbl_clear_search_filters">Borrar filtros</string>
     <string name="menu_cover_crop">Recortar</string>
     <string name="menu_cover_edit">Iniciar editor</string>
-    <string name="menu_cover_replace">Cambiar…</string>
+    <string name="menu_cover_replace">Sustituir...</string>
     <string name="menu_cover_replace_from_alt_editions">De otras ediciones…</string>
     <string name="menu_cover_replace_from_camera">Desde la cámara…</string>
     <string name="menu_cover_replace_from_gallery">Desde la galería…</string>
     <string name="menu_cover_rotate">Girar…</string>
     <string name="menu_cover_rotate_ccw">Sentido antihorario</string>
     <string name="menu_cover_rotate_cw">Sentido horario</string>
-    <string name="action_delete">Borrar</string>
+    <string name="action_delete">Eliminar</string>
     <string name="action_duplicate">Duplicar</string>
     <string name="action_edit_ellipsis">Editar…</string>
     <string name="lbl_level_collapse">Comprimir todo</string>
@@ -422,20 +422,18 @@
     <string name="pg_ui">Interfaz de usuario</string>
     <string name="pg_ui_field_visibility">Visibilidad de campos</string>
     <string name="progress_end_backup_success">Copia de seguridad correcta</string>
-    <string name="cancelled">Cancelado</string>
+    <string name="warning_task_cancelled">Cancelado</string>
     <string name="progress_end_import_complete">Importación finalizada</string>
     <string name="progress_end_import_partially_complete">Importación parcial realizada</string>
-    <string name="progress_msg_connecting">Conectando con el sitio web…</string>
+    <string name="progress_msg_connecting">Conectando…</string>
     <string name="progress_msg_finding_editions">Buscando ediciones…</string>
-    <string name="progress_msg_loading">Cargando…</string>
+    <string name="progress_msg_loading">Cargando...</string>
     <string name="progress_end_export_result_n_books_processed">%1$d libros procesados</string>
     <string name="progress_end_export_result_n_covers_processed_m_missing">%1$d portadas procesadas\n(%2$d/%3$d faltantes)</string>
     <string name="progress_msg_n_covers_processed_m_missing_s_skipped">%1$d portadas procesadas (%2$d/%3$d faltantes, %4$d omitidas)</string>
     <string name="X_progress_msg_x_created_y_updated">%1$s: %2$d creados, %3$d actualizados</string>
     <string name="progress_msg_optimizing">Optimizando bases de datos…</string>
     <string name="progress_msg_please_wait">Por favor espera…</string>
-    <string name="progress_msg_process_booklist_style">Estilos de listas de libros…</string>
-    <string name="progress_msg_process_preferences">Preferencias…</string>
     <string name="progress_msg_rebuilding_search_index">Reconstruyendo índices…</string>
     <string name="progress_msg_saving_image">Guardando imagen…</string>
     <string name="progress_msg_searching">Buscando…</string>
@@ -580,7 +578,7 @@
     <string name="lbl_select_image">Seleccionar imagen…</string>
     <string name="lbl_select_style">Seleccionar Estilo</string>
     <string name="lbl_send_mail">Enviar correo electrónico…</string>
-    <string name="unknown">Desconocido</string>
+    <string name="unknownName">Desconocido</string>
     <string name="unused">no usado</string>
     <string name="vldt_blank_required_for_x">«%1$s» debe estar en blanco</string>
     <string name="vldt_boolean_expected_for_x">«%1$s» debe ser (0,1,t,f,true,false)</string>
@@ -665,5 +663,8 @@
     <string name="pt_bob_books_under_multiple_publisher">Mostrar libros con varias editoriales.</string>
     <string name="pv_bob_books_under_multiple_primary_publisher_only">solo bajo su editor principal.</string>
     <string name="pv_bob_books_under_multiple_each_publisher">debajo de cada editor.</string>
+    <string name="image">Imagen</string>
+    <string name="lbl_author_type_narrator">Narrador</string>
+    <string name="unknown">Desconocido</string>
 
 </resources>

@@ -97,7 +97,7 @@ public class BookEventViewHolder
             if (!authors.isEmpty()) {
                 authorName = Author.getCondensedNames(context, authors);
             } else {
-                authorName = context.getString(R.string.unknown).toUpperCase(userLocale);
+                authorName = context.getString(R.string.unknownName).toUpperCase(userLocale);
             }
             authorView.setText(authorName);
             authorView.setVisibility(View.VISIBLE);

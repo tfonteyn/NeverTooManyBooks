@@ -140,7 +140,7 @@ public class CommonMocks {
         when(mContext.getString(R.string.book_format_hardcover)).thenReturn("Hardcover");
         when(mContext.getString(R.string.book_format_dimensions)).thenReturn("Dim");
 
-        when(mContext.getString(R.string.unknown)).thenReturn("Unknown");
+        when(mContext.getString(R.string.unknownName)).thenReturn("Unknown");
 
         when(mSharedPreferences.getString(eq(Prefs.pk_ui_locale), eq(LocaleUtils.SYSTEM_LANGUAGE)))
                 .thenReturn(LocaleUtils.SYSTEM_LANGUAGE);
@@ -185,7 +185,7 @@ public class CommonMocks {
                 });
     }
 
-    public static class DummyCaller
+    public static class TextCaller
             implements Canceller {
 
         @Override

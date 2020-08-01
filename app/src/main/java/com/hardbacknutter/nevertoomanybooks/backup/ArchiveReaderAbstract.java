@@ -96,8 +96,8 @@ public abstract class ArchiveReaderAbstract
         mDb = new DAO(TAG);
         mHelper = helper;
 
-        mProcessPreferences = context.getString(R.string.progress_msg_process_preferences);
-        mProcessBooklistStyles = context.getString(R.string.progress_msg_process_booklist_style);
+        mProcessPreferences = context.getString(R.string.lbl_settings);
+        mProcessBooklistStyles = context.getString(R.string.lbl_styles_long);
 
         mCoversText = context.getString(R.string.lbl_covers);
         mProgressMessage = context.getString(R.string.progress_msg_x_created_y_updated_z_skipped);

@@ -75,7 +75,8 @@ public class LibraryThingRegistrationActivity
         });
         mValidateKeyTask.onCancelled().observe(this, message -> {
             if (message.isNewEvent()) {
-                Snackbar.make(mVb.getRoot(), R.string.cancelled, Snackbar.LENGTH_LONG).show();
+                Snackbar.make(mVb.getRoot(), R.string.warning_task_cancelled, Snackbar.LENGTH_LONG)
+                        .show();
             }
         });
         mValidateKeyTask.onFinished().observe(this, message -> {

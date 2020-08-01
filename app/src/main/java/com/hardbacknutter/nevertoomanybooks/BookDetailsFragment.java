@@ -245,7 +245,7 @@ public class BookDetailsFragment
     private void onCancelled(@NonNull final LiveDataEvent message) {
         if (message.isNewEvent()) {
             //noinspection ConstantConditions
-            Snackbar.make(getView(), R.string.cancelled, Snackbar.LENGTH_LONG).show();
+            Snackbar.make(getView(), R.string.warning_task_cancelled, Snackbar.LENGTH_LONG).show();
         }
     }
 

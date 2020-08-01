@@ -71,12 +71,12 @@
     <string name="X_btn_customize">Personalizza…</string>
     <string name="btn_delete_credentials">Rimuovi credenziali</string>
     <string name="btn_disable_message">Disattiva messaggio</string>
-    <string name="btn_email">e-mail</string>
+    <string name="btn_email">Invia email</string>
     <string name="X_btn_loan_returned">Restituito</string>
     <string name="btn_options">Opzioni</string>
-    <string name="btn_reset">Ripristina</string>
+    <string name="btn_reset">Reimposta</string>
     <string name="btn_scan_barcode">Scansione codice a barre</string>
-    <string name="btn_tell_me_more">Maggiori informazioni</string>
+    <string name="btn_learn_more">Ulteriori informazioni</string>
     <string name="btn_this_book">Questo libro</string>
     <string name="bytes">%.0fB</string>
     <string name="action_clear">Pulire</string>
@@ -93,7 +93,7 @@
     <string name="debug_body">Prenditi qualche secondo per descrivere brevemente il problema riscontrato.</string>
     <string name="debug_send_info_text">Ciò creerà una copia di backup del database e di tutti i file di registro e lo invierà agli sviluppatori. Cancella i file che non vuoi allegare alla email prima di inviarla.</string>
     <string name="debug_subject">Informazioni di debug raccolte</string>
-    <string name="done">Fatto</string>
+    <string name="done">Fine</string>
     <string name="action_edit">Modifica</string>
     <string name="error_authentication_failed">Autenticazione fallita</string>
     <string name="error_authorization_failed">Autorizzazione fallita</string>
@@ -268,7 +268,7 @@
     <string name="lbl_field_usage_append">Aggiungi altri dati</string>
     <string name="lbl_field_usage_copy_if_blank">Copia se vuoto</string>
     <string name="lbl_field_usage_overwrite">Sovrascrivi dati esistenti</string>
-    <string name="lbl_field_usage_skip">Omettere</string>
+    <string name="lbl_field_usage_skip">Ignora</string>
     <string name="lbl_first_pub_month">Primo mese di pub.</string>
     <string name="lbl_first_pub_year">Primo anno di pub.</string>
     <string name="lbl_first_publication">Prima pubblicazione</string>
@@ -286,7 +286,7 @@
     <string name="lbl_loaned">Prestato</string>
     <string name="lbl_loaned_to_name">Prestato a %1$s</string>
     <string name="lbl_location">Locazione</string>
-    <string name="lbl_location_long">Posizione del libro</string>
+    <string name="lbl_location_long">Locazione del libro</string>
     <string name="lbl_month">Mese</string>
     <string name="lbl_pages">Pagine</string>
     <string name="lbl_personal_notes">Note personali</string>
@@ -312,11 +312,11 @@
     <string name="lbl_search_filtered_on_x">Filtrato: %1$s</string>
     <string name="lbl_select_fields">Seleziona i campi</string>
     <string name="lbl_select_website">Seleziona un sito Web:</string>
-    <string name="lbl_send_debug">Invia informazioni di debug</string>
+    <string name="lbl_send_debug">Segnalazione di bug</string>
     <string name="lbl_series">Serie</string>
     <string name="lbl_series_multiple">Collezione</string>
     <string name="lbl_series_num">#</string>
-    <string name="lbl_settings">Preferenze</string>
+    <string name="lbl_settings">Impostazioni</string>
     <string name="lbl_signed">Firmato</string>
     <string name="lbl_site_book_id">ID libro del sito Web</string>
     <string name="lbl_sorting">Ordinamento</string>
@@ -354,14 +354,14 @@
     <string name="X_lbl_clear_search_filters">Cancella filtri</string>
     <string name="menu_cover_crop">Ritaglia</string>
     <string name="menu_cover_edit">Avvia l\'editor</string>
-    <string name="menu_cover_replace">Rimpiazza…</string>
+    <string name="menu_cover_replace">Sostituisci...</string>
     <string name="menu_cover_replace_from_alt_editions">Da altre edizioni…</string>
     <string name="menu_cover_replace_from_camera">Dalla fotocamera…</string>
     <string name="menu_cover_replace_from_gallery">Dalla Galleria…</string>
     <string name="menu_cover_rotate">Rotazione…</string>
     <string name="menu_cover_rotate_ccw">Senso antiorario</string>
     <string name="menu_cover_rotate_cw">Senso orario</string>
-    <string name="action_delete">Cancellare</string>
+    <string name="action_delete">Elimina</string>
     <string name="action_duplicate">Duplicare</string>
     <string name="action_edit_ellipsis">Modifica…</string>
     <string name="lbl_level_collapse">Comprimi tutto</string>
@@ -411,7 +411,7 @@
     <string name="pg_barcode_scanner">Scanner di codici a barre</string>
     <string name="pg_bob_show_details">Dettagli del libro</string>
     <string name="pg_booklist">Elenchi di libri</string>
-    <string name="pg_camera">Telecamera</string>
+    <string name="pg_camera">Fotocamera</string>
     <string name="pg_filters">Filtra libri</string>
     <string name="X_pg_general">Generale</string>
     <string name="pg_image_cache">Cache di immagini</string>
@@ -421,20 +421,18 @@
     <string name="pg_ui">Interfaccia Utente</string>
     <string name="pg_ui_field_visibility">Gestisci visibilità campi</string>
     <string name="progress_end_backup_success">Backup completato</string>
-    <string name="cancelled">Cancellato</string>
+    <string name="warning_task_cancelled">Annullato</string>
     <string name="progress_end_import_complete">Importazione Completata</string>
     <string name="progress_end_import_partially_complete">Importazione parziale eseguita</string>
-    <string name="progress_msg_connecting">Collegamento al sito web…</string>
+    <string name="progress_msg_connecting">Connessione…</string>
     <string name="progress_msg_finding_editions">Ricerca edizioni…</string>
-    <string name="progress_msg_loading">Caricamento…</string>
+    <string name="progress_msg_loading">Caricamento...</string>
     <string name="progress_end_export_result_n_books_processed">%1$d libri elaborati</string>
     <string name="progress_end_export_result_n_covers_processed_m_missing">%1$d copertine elaborate\n(%2$d/%3$d mancanti)</string>
     <string name="progress_msg_n_covers_processed_m_missing_s_skipped">%1$d copertine elaborate (%2$d/%3$d mancanti, %4$d saltate)</string>
     <string name="X_progress_msg_x_created_y_updated">%1$s: %2$d creati, %3$d aggiornati</string>
     <string name="progress_msg_optimizing">Ottimizzazione archivi…</string>
     <string name="progress_msg_please_wait">Attendere prego…</string>
-    <string name="progress_msg_process_booklist_style">Stili della lista di libri…</string>
-    <string name="progress_msg_process_preferences">Preferenze…</string>
     <string name="progress_msg_rebuilding_search_index">Ricostruzione indice di ricerca…</string>
     <string name="progress_msg_saving_image">Salvataggio dell\'immagine…</string>
     <string name="progress_msg_searching">Ricerca…</string>
@@ -579,7 +577,7 @@
     <string name="lbl_select_image">Seleziona immagine…</string>
     <string name="lbl_select_style">Seleziona Stile</string>
     <string name="lbl_send_mail">Invia una email…</string>
-    <string name="unknown">Sconosciuto</string>
+    <string name="unknownName">Sconosciuto</string>
     <string name="unused">non usato</string>
     <string name="vldt_blank_required_for_x">È richiesto un valore vuoto per «%1$s»</string>
     <string name="vldt_boolean_expected_for_x">È previsto un valore booleano (0,1,t,f,true,false) for «%1$s»</string>
@@ -637,7 +635,7 @@
     <string name="hint_empty_day">(Giorno non impostato)</string>
     <string name="hint_empty_year">(Anno non impostato)</string>
     <string name="lbl_all_bookshelves">Tutte le biblioteche</string>
-    <string name="btn_more_ellipsis">Di Più…</string>
+    <string name="btn_more_ellipsis">Altro…</string>
     <string name="lbl_toc_multiple_authors">Autori multipli</string>
     <string name="X_lbl_edit_publisher">Modifica editore</string>
     <string name="X_lbl_edit_toc_entry">Modifica voce</string>
@@ -665,5 +663,8 @@
     <string name="pt_bob_books_under_multiple_publisher">Mostra libri con più editori.</string>
     <string name="pv_bob_books_under_multiple_primary_publisher_only">solo con il loro editore principale.</string>
     <string name="pv_bob_books_under_multiple_each_publisher">sotto ciascun editore.</string>
+    <string name="image">Immagine</string>
+    <string name="lbl_author_type_narrator">Narratore</string>
+    <string name="unknown">Sconosciuto</string>
 
 </resources>

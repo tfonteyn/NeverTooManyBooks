@@ -73,12 +73,12 @@
     <string name="X_btn_customize">Anpassen…</string>
     <string name="btn_delete_credentials">Anmeldeinformationen löschen</string>
     <string name="btn_disable_message">Meldung deaktivieren</string>
-    <string name="btn_email">Email</string>
+    <string name="btn_email">E-Mail senden</string>
     <string name="X_btn_loan_returned">Zurückgegeben</string>
     <string name="btn_options">Optionen</string>
     <string name="btn_reset">Zurücksetzen</string>
     <string name="btn_scan_barcode">Barcode scannen</string>
-    <string name="btn_tell_me_more">Erzählen Sie mehr davon</string>
+    <string name="btn_learn_more">Weitere Informationen</string>
     <string name="btn_this_book">Dieses Buch</string>
     <string name="bytes">%.0fB</string>
     <string name="action_clear">Klar</string>
@@ -95,7 +95,7 @@
     <string name="debug_body">Bitte nehmen Sie sich Zeit, das aufgetretene Problem zu beschreiben.</string>
     <string name="debug_send_info_text">Dieser Vorgang erstellt eine Sicherheitskopie Ihrer gesamten Datenbank sowie aller Protokolldateien erstellt und an die Entwickler gesendet. Wenn Sie eine dieser Dateien nicht verschicken wollen, löschen Sie diese vor dem Senden aus dem Anhang.</string>
     <string name="debug_subject">Gesammelte Debug-Informationen</string>
-    <string name="done">Erledigt</string>
+    <string name="done">Fertig</string>
     <string name="action_edit">Bearbeiten</string>
     <string name="error_authentication_failed">Authentifizierung fehlgeschlagen</string>
     <string name="error_authorization_failed">Autorisation fehlgeschlagen</string>
@@ -290,7 +290,7 @@
     <string name="lbl_loaned">Verliehen</string>
     <string name="lbl_loaned_to_name">Leihgabe an %1$s</string>
     <string name="lbl_location">Standort</string>
-    <string name="lbl_location_long">Ort des Buches</string>
+    <string name="lbl_location_long">Standort des Buches</string>
     <string name="lbl_month">Monat</string>
     <string name="lbl_pages">Seiten</string>
     <string name="lbl_personal_notes">Persönliche Notizen</string>
@@ -316,7 +316,7 @@
     <string name="lbl_search_filtered_on_x">Gefiltert: %1$s</string>
     <string name="lbl_select_fields">Felder auswählen</string>
     <string name="lbl_select_website">Wählen Sie eine Website aus:</string>
-    <string name="lbl_send_debug">Debug-Informationen senden</string>
+    <string name="lbl_send_debug">Fehlerbericht</string>
     <string name="lbl_series">Serie</string>
     <string name="lbl_series_multiple">Serie</string>
     <string name="lbl_series_num">#</string>
@@ -368,7 +368,7 @@
     <string name="action_delete">Löschen</string>
     <string name="action_duplicate">Vervielfältigen</string>
     <string name="action_edit_ellipsis">Bearbeiten…</string>
-    <string name="lbl_level_collapse">Alles einklappen</string>
+    <string name="lbl_level_collapse">Alles minimieren</string>
     <string name="lbl_level_expand">Alles ausklappen</string>
     <string name="lbl_level_reset">Bevorzugte Ausbaustufe</string>
     <string name="menu_loan_lend_book">Buch verleihen…</string>
@@ -425,20 +425,18 @@
     <string name="pg_ui">Benutzeroberfläche</string>
     <string name="pg_ui_field_visibility">Feld Sichtbarkeit bearbeiten</string>
     <string name="progress_end_backup_success">Sicherungskopie erfolgreich erstellt</string>
-    <string name="cancelled">Abgebrochen</string>
+    <string name="warning_task_cancelled">Abgebrochen</string>
     <string name="progress_end_import_complete">Import vollständig</string>
     <string name="progress_end_import_partially_complete">Teilweise importiert</string>
-    <string name="progress_msg_connecting">Verbinde mit der Website…</string>
+    <string name="progress_msg_connecting">Verbindung wird hergestellt…</string>
     <string name="progress_msg_finding_editions">Suche Ausgaben…</string>
-    <string name="progress_msg_loading">Lade…</string>
+    <string name="progress_msg_loading">Wird geladen…</string>
     <string name="progress_end_export_result_n_books_processed">%1$d Bücher verarbeitet</string>
     <string name="progress_end_export_result_n_covers_processed_m_missing">%1$d Cover verarbeitet\n(%2$d/%3$d fehlen)</string>
     <string name="progress_msg_n_covers_processed_m_missing_s_skipped">%1$d Cover verarbeitet (%2$d/%3$d fehlen, %4$d übersprungen)</string>
     <string name="X_progress_msg_x_created_y_updated">%1$s: %2$d erzeugt, %3$d aktualisiert</string>
     <string name="progress_msg_optimizing">Datenbanken werden optimiert…</string>
     <string name="progress_msg_please_wait">Warten Sie mal…</string>
-    <string name="progress_msg_process_booklist_style">Bücherlistenstile…</string>
-    <string name="progress_msg_process_preferences">Einstellungen…</string>
     <string name="progress_msg_rebuilding_search_index">Suchindex wird regeneriert…</string>
     <string name="progress_msg_saving_image">Bild speichern…</string>
     <string name="progress_msg_searching">Suche…</string>
@@ -583,7 +581,7 @@
     <string name="lbl_select_image">Bild auswählen…</string>
     <string name="lbl_select_style">Stil wählen</string>
     <string name="lbl_send_mail">E-Mail senden…</string>
-    <string name="unknown">Unbekannt</string>
+    <string name="unknownName">Unbekannt</string>
     <string name="unused">ungebraucht</string>
     <string name="vldt_blank_required_for_x">„%1$s“ muss leer sein</string>
     <string name="vldt_boolean_expected_for_x">Es wird ein boolescher Wert (0,1,t,f,true,false) für „%1$s“ erwartet</string>
@@ -668,4 +666,7 @@
     <string name="pt_bob_books_under_multiple_publisher">Bücher mit mehreren Verlagen anzeigen.</string>
     <string name="pv_bob_books_under_multiple_primary_publisher_only">nur unter ihrem Hauptverleger.</string>
     <string name="pv_bob_books_under_multiple_each_publisher">unter jedem Verlag.</string>
+    <string name="image">Bild</string>
+    <string name="lbl_author_type_narrator">Erzähler</string>
+    <string name="unknown">Unbekannt</string>
 </resources>

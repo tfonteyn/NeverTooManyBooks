@@ -36,7 +36,7 @@
     <string name="X_btn_do_not_show_again">Μην εμφανιστείς ξανά</string>
     <string name="X_error_file_must_contain_column">Το αρχείο πρέπει να περιέχει στήλη με όνομα %1$s</string>
     <string name="progress_end_export_success">;Ένα αρχείο %3$s με το όνομα %2$s δημιουργήθηκε στον κατάλογο «%1$s».\n\nΜπορείτε το αντιγράψετε κάπου αλλού για να προστατέψετε τα δεδομένα σε περίπτωση που η συσκευή σας πάθει ζημιά, χαθεί, ή κλαπεί.</string>
-    <string name="lbl_available">Διαθέσιμο</string>
+    <string name="lbl_available">Διαθέσιμη</string>
     <string name="X_lbl_data_import_export">Δημιουργία αντιγράφων ασφαλείας &amp; εισαγωγή</string>
     <string name="X_lbl_select_fields_to_update">Επιλεγξτε πεδία για ενημέρωση</string>
     <string name="X_action_show_all">Προβολή όλων</string>
@@ -71,12 +71,12 @@
     <string name="X_btn_customize">Προσαρμογή…</string>
     <string name="btn_delete_credentials">Κατάργηση διαπιστευτηρίων</string>
     <string name="btn_disable_message">Απενεργοποίηση μηνυμάτων</string>
-    <string name="btn_email">e-mail</string>
+    <string name="btn_email">Ηλεκτρονικό ταχυδρομείο</string>
     <string name="X_btn_loan_returned">Έχει επιστραφεί</string>
     <string name="btn_options">Επιλογές</string>
     <string name="btn_reset">Επαναφορά</string>
     <string name="btn_scan_barcode">Σάρωση γραμμωτού κώδικα</string>
-    <string name="btn_tell_me_more">Πες μου περισσότερα</string>
+    <string name="btn_learn_more">Μάθετε περισσότερα</string>
     <string name="btn_this_book">Αυτό το βιβλίο</string>
     <string name="bytes">%.0fB</string>
     <string name="action_clear">Καθαρίστε</string>
@@ -93,7 +93,7 @@
     <string name="debug_body">Παρακαλούμε περιγράψτε συνοπτικά το πρόβλημα που αντιμετωπίζετε.</string>
     <string name="debug_send_info_text">Αυτό θα δημιουργήσει ένα αντίγραφο ασφαλείας της βάσης δεδομένων σας καθώς και οποιαδήποτε αρχεία καταγραφής και θα το στείλει στους προγραμματιστές. Εαν δεν θέλετε να στείλετε αυτά τα αρχεία διαγράψτε τα επισυναπτόμενα αρχεία του e-mail πριν την αποστολή.</string>
     <string name="debug_subject">Συλλέχθησαν πληροφορίες debugging</string>
-    <string name="done">Εγινε</string>
+    <string name="done">Τέλος</string>
     <string name="action_edit">Επεξεργασία</string>
     <string name="error_authentication_failed">Η ταυτοποίηση απέτυχε</string>
     <string name="error_authorization_failed">Η εξουσιοδότηση απέτυχε</string>
@@ -268,7 +268,7 @@
     <string name="lbl_field_usage_append">Προσθέτει επιπλέον δεδομένα</string>
     <string name="lbl_field_usage_copy_if_blank">Αντιγραφή εαν ειναι κενό</string>
     <string name="lbl_field_usage_overwrite">Αντικαθιστά υπάρχοντα δεδομένα</string>
-    <string name="lbl_field_usage_skip">Παραλείπω</string>
+    <string name="lbl_field_usage_skip">Παράλειψη</string>
     <string name="lbl_first_pub_month">Πρώτος Μήνας Δημοσίευσης</string>
     <string name="lbl_first_pub_year">Πρώτο έτος δημοσίευσης</string>
     <string name="lbl_first_publication">Πρώτη δημοσίευση</string>
@@ -312,11 +312,11 @@
     <string name="lbl_search_filtered_on_x">Φιλτραρισμένο: %1$s</string>
     <string name="lbl_select_fields">Επιλεγξτε πεδία</string>
     <string name="lbl_select_website">Επιλέξτε έναν ιστότοπο:</string>
-    <string name="lbl_send_debug">Αποστολή πληροφοριών εντοπισμού σφαλμάτων</string>
+    <string name="lbl_send_debug">Αναφορά σφαλμάτων</string>
     <string name="lbl_series">Σειρές</string>
     <string name="lbl_series_multiple">Σειρά</string>
     <string name="lbl_series_num">#</string>
-    <string name="lbl_settings">Επιλογές</string>
+    <string name="lbl_settings">Ρυθμίσεις</string>
     <string name="lbl_signed">Υπογραφή</string>
     <string name="lbl_site_book_id">Αναγνωριστικό βιβλίου ιστοτόπου</string>
     <string name="lbl_sorting">Ταξινόμηση</string>
@@ -354,14 +354,14 @@
     <string name="X_lbl_clear_search_filters">Διαγραφή φίλτρων</string>
     <string name="menu_cover_crop">Περικοπή</string>
     <string name="menu_cover_edit">Ξεκινήστε τον επεξεργαστή</string>
-    <string name="menu_cover_replace">Αντικατάσταση…</string>
+    <string name="menu_cover_replace">Αντικατάσταση...</string>
     <string name="menu_cover_replace_from_alt_editions">Από άλλες εκδόσεις…</string>
     <string name="menu_cover_replace_from_camera">Από κάμερα…</string>
     <string name="menu_cover_replace_from_gallery">Από φωτογραφίες…</string>
     <string name="menu_cover_rotate">Περιστροφή…</string>
     <string name="menu_cover_rotate_ccw">Αριστερόστροφος</string>
     <string name="menu_cover_rotate_cw">Δεξιόστροφος</string>
-    <string name="action_delete">Διαγράφω</string>
+    <string name="action_delete">Διαγραφή</string>
     <string name="action_duplicate">Aντιγράφω</string>
     <string name="action_edit_ellipsis">επεξεργασία…</string>
     <string name="lbl_level_collapse">Απόκρυψη Όλων</string>
@@ -376,7 +376,7 @@
     <string name="menu_set_incomplete">Ρυθμίστε σε «ατελές»</string>
     <string name="menu_set_read">Ορίστε ως «διαβάσετε»</string>
     <string name="menu_set_unread">Ορίστε ως «μη αναγνωσμένο»</string>
-    <string name="menu_share_this">Δημοσίευση</string>
+    <string name="menu_share_this">Κοινή χρ.</string>
     <string name="lbl_sort_and_style_ellipsis">Ταξινόμηση &amp; Στυλ…</string>
     <string name="lbl_strict_isbn">Αυστηρό ISBN</string>
     <string name="menu_update_books">Ενημέρωση βιβλίων</string>
@@ -386,7 +386,7 @@
     <string name="name_colon_value">%1$s: %2$s</string>
     <string name="no">Όχι</string>
     <string name="none">Κανένας</string>
-    <string name="notification_channel_error">Λάθος</string>
+    <string name="notification_channel_error">Σφάλμα</string>
     <string name="notification_channel_info">Πληροφορίες</string>
     <string name="pe_bob_filter_anthology_no">Όλοι εκτός από Ανθολογίες</string>
     <string name="pe_bob_filter_anthology_yes">Ανθολογίες</string>
@@ -411,7 +411,7 @@
     <string name="pg_barcode_scanner">Σάρωση γραμμοκώδικα</string>
     <string name="pg_bob_show_details">Στοιχεία βιβλίου</string>
     <string name="pg_booklist">Λίστα βιβλίων</string>
-    <string name="pg_camera">φωτογραφική μηχανή</string>
+    <string name="pg_camera">Κάμερα</string>
     <string name="pg_filters">Φίλτρα Βιβλίων</string>
     <string name="X_pg_general">Γενικά</string>
     <string name="pg_image_cache">Cache εικόνας</string>
@@ -421,20 +421,18 @@
     <string name="pg_ui">Περιβάλλον Χρήστη</string>
     <string name="pg_ui_field_visibility">Διαχείρηση ορατότητας πεδίου</string>
     <string name="progress_end_backup_success">Αντίγραφο δημιουργήθηκε επιτυχώς</string>
-    <string name="cancelled">Ακυρώθηκε</string>
+    <string name="warning_task_cancelled">Ακυρώθηκε</string>
     <string name="progress_end_import_complete">Εισαγωγή Ολοκληρώθηκε</string>
     <string name="progress_end_import_partially_complete">Έγινε μερική εισαγωγή</string>
-    <string name="progress_msg_connecting">Γίνεται σύνδεση με τη ιστοσελίδα…</string>
+    <string name="progress_msg_connecting">Σύνδεση…</string>
     <string name="progress_msg_finding_editions">Γίνεται εντοπισμός Εκδόσεων…</string>
-    <string name="progress_msg_loading">Φορτώνει…</string>
+    <string name="progress_msg_loading">Φόρτωση…</string>
     <string name="progress_end_export_result_n_books_processed">%1$d βιβλία επεξεργασμένα</string>
     <string name="progress_end_export_result_n_covers_processed_m_missing">%1$d εξώφυλλα επεξεργάστηκαν\n(%2$d/%3$d λείπουν)</string>
     <string name="progress_msg_n_covers_processed_m_missing_s_skipped">%1$d εξώφυλλα επεξεργάστηκαν (%2$d/%3$d λείπουν, %4$d παρελείφθησαν)</string>
     <string name="X_progress_msg_x_created_y_updated">%1$s: %2$d δημιουργήθηκαν, %3$d ενημερώθηκαν</string>
     <string name="progress_msg_optimizing">Βελτιστοποίηση βάσεων δεδομένων…</string>
     <string name="progress_msg_please_wait">Παρακαλώ περιμένετε…</string>
-    <string name="progress_msg_process_booklist_style">Στυλ βιβλίου…</string>
-    <string name="progress_msg_process_preferences">Προτιμήσεις…</string>
     <string name="progress_msg_rebuilding_search_index">Ανακατασκευή Ευρετηρίου Αναζήτησης…</string>
     <string name="progress_msg_saving_image">Αποθήκευση της εικόνας…</string>
     <string name="progress_msg_searching">Γίνεται αναζήτηση…</string>
@@ -579,7 +577,7 @@
     <string name="lbl_select_image">Επιλογή εικόνας…</string>
     <string name="lbl_select_style">Επιλογή Στυλ</string>
     <string name="lbl_send_mail">Να στείλετε e-mail…</string>
-    <string name="unknown">Άγνωστο</string>
+    <string name="unknownName">Άγνωστο</string>
     <string name="unused">αχρησιμοποίητος</string>
     <string name="vldt_blank_required_for_x">Απαιτείται κενή τιμή για «%1$s»</string>
     <string name="vldt_boolean_expected_for_x">Αναμένεται boolean τιμή (0,1,t,f,true,false) για «%1$s»</string>
@@ -665,5 +663,8 @@
     <string name="pt_bob_books_under_multiple_publisher">Εμφάνιση βιβλίων με πολλούς εκδότες.</string>
     <string name="pv_bob_books_under_multiple_primary_publisher_only">μόνο στον κύριο εκδότη τους.</string>
     <string name="pv_bob_books_under_multiple_each_publisher">κάτω από κάθε εκδότη.</string>
+    <string name="image">Εικόνα</string>
+    <string name="lbl_author_type_narrator">Αφηγητής</string>
+    <string name="unknown">Άγνωστο</string>
 
 </resources>

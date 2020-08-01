@@ -31,7 +31,7 @@
 <!--suppress LongLine -->
 <resources>
     <string name="X_anthology_titles">Bloemlezing titels</string>
-    <string name="X_action_update">Bijwerken</string>
+    <string name="X_action_update">Updaten</string>
     <string name="X_btn_do_not_show_again">Niet meer laten zien</string>
     <string name="X_error_file_must_contain_column">Import bestand moet een kolom met de naam „%1$s” bevatten.</string>
     <string name="progress_end_export_success">Een %3$s bestand met de naam %2$s is aangemaakt in de „%1$s” map.\n\nWe raden aan dit bestand naar een ander plek te kopiëren om de gegevens veilig te stellen in geval uw apparaat wordt gestolen, beschadigd of verloren raakt.</string>
@@ -72,12 +72,12 @@
     <string name="X_btn_customize">Aanpassen…</string>
     <string name="btn_delete_credentials">Verwijder inloggegevens</string>
     <string name="btn_disable_message">Bericht uitschakelen</string>
-    <string name="btn_email">e-mail</string>
+    <string name="btn_email">E-mailen</string>
     <string name="X_btn_loan_returned">Terug</string>
     <string name="btn_options">Opties</string>
-    <string name="btn_reset">Herstellen</string>
+    <string name="btn_reset">Resetten</string>
     <string name="btn_scan_barcode">Scan barcode</string>
-    <string name="btn_tell_me_more">Vertel me meer</string>
+    <string name="btn_learn_more">Meer info</string>
     <string name="btn_this_book">Dit boek</string>
     <string name="bytes">%.0fB</string>
     <string name="action_clear">Wissen</string>
@@ -94,7 +94,7 @@
     <string name="debug_body">Beschrijf in het kort de problemen die je hebt ondervonden.</string>
     <string name="debug_send_info_text">Dit maakt een back-up van je hele database en van alle log-bestanden en zend deze naar de ontwikkelaars. Als je deze bestanden niet wilt opsturen, kan je ze van de bijlagen lijst in het e-mailbericht verwijderen voordat je dit verstuurt.</string>
     <string name="debug_subject">Verzamelde foutopsporingsgegevens</string>
-    <string name="done">Klaar</string>
+    <string name="done">Gereed</string>
     <string name="action_edit">Bewerken</string>
     <string name="error_authentication_failed">Authenticatie mislukt</string>
     <string name="error_authorization_failed">Autorisatie mislukt</string>
@@ -125,7 +125,7 @@
     <string name="error_unknown">Er is een onbekende fout opgetreden</string>
     <string name="fab_add_book_by_barcode_scan">Scan barcode</string>
     <string name="fab_add_book_by_internet_search">Internet doorzoeken</string>
-    <string name="fab_add_book_by_isbn">Invullen ISBN</string>
+    <string name="fab_add_book_by_isbn">"ISBN invoeren "</string>
     <string name="fab_add_book_by_external_id">Website boek-id</string>
     <string name="fab_add_book_manually">Handmatig toevoegen</string>
     <string name="fallback_currency_format">%2$.2f %1$s</string>
@@ -317,7 +317,7 @@
     <string name="lbl_search_filtered_on_x">Gefiltered: %1$s</string>
     <string name="lbl_select_fields">Selecteer velden</string>
     <string name="lbl_select_website">Selecteer een website:</string>
-    <string name="lbl_send_debug">Zend debug informatie</string>
+    <string name="lbl_send_debug">Bugrapport</string>
     <string name="lbl_series">Reeks</string>
     <string name="lbl_series_multiple">Reeksen</string>
     <string name="lbl_series_num">nr.</string>
@@ -366,7 +366,7 @@
     <string name="menu_cover_rotate">Roteren…</string>
     <string name="menu_cover_rotate_ccw">Links roteren</string>
     <string name="menu_cover_rotate_cw">Rechts roteren</string>
-    <string name="action_delete">Verwijder</string>
+    <string name="action_delete">Verwijderen</string>
     <string name="action_duplicate">Dupliceer</string>
     <string name="action_edit_ellipsis">Bewerken…</string>
     <string name="lbl_level_collapse">Alles samenvouwen</string>
@@ -426,20 +426,18 @@
     <string name="pg_ui">Gebruikersinterface</string>
     <string name="pg_ui_field_visibility">Zichtbaarheid velden beheren</string>
     <string name="progress_end_backup_success">Back-up gelukt</string>
-    <string name="cancelled">Geannuleerd</string>
+    <string name="warning_task_cancelled">Geannuleerd</string>
     <string name="progress_end_import_complete">Import Compleet</string>
     <string name="progress_end_import_partially_complete">Gedeeltelijke import voltooid</string>
-    <string name="progress_msg_connecting">Website contacteren…</string>
+    <string name="progress_msg_connecting">Verbinden…</string>
     <string name="progress_msg_finding_editions">Zoeken naar uitgaven…</string>
-    <string name="progress_msg_loading">Bezig met laden…</string>
+    <string name="progress_msg_loading">Laden...</string>
     <string name="progress_end_export_result_n_books_processed">%1$d boeken verwerkt</string>
     <string name="progress_end_export_result_n_covers_processed_m_missing">%1$d boekomslagen verwerkt\n(%2$d/%3$d missend)</string>
     <string name="progress_msg_n_covers_processed_m_missing_s_skipped">%1$d boekomslagen verwerkt (%2$d/%3$d missend, %4$d overgeslagen)</string>
     <string name="X_progress_msg_x_created_y_updated">%1$s: %2$d toegevoegd, %3$d bijgewerkt</string>
     <string name="progress_msg_optimizing">Databases optimaliseren…</string>
     <string name="progress_msg_please_wait">Even geduld…</string>
-    <string name="progress_msg_process_booklist_style">Boekenlijst stijlen…</string>
-    <string name="progress_msg_process_preferences">Voorkeuren…</string>
     <string name="progress_msg_rebuilding_search_index">Zoekindex opnieuw opbouwen…</string>
     <string name="progress_msg_saving_image">Scan wordt bewaard…</string>
     <string name="progress_msg_searching">Aan \'t zoeken…</string>
@@ -584,7 +582,7 @@
     <string name="lbl_select_image">Selecteer afbeelding…</string>
     <string name="lbl_select_style">Selecteer een stijl</string>
     <string name="lbl_send_mail">Bericht versturen…</string>
-    <string name="unknown">Onbekend</string>
+    <string name="unknownName">Onbekend</string>
     <string name="unused">ongebruikt</string>
     <string name="vldt_blank_required_for_x">Veld moet leeg zijn voor „%1$s”</string>
     <string name="vldt_boolean_expected_for_x">Verwachtte een boolean waarde (0,1,t,f,true,false) voor „%1$s”</string>
@@ -666,5 +664,8 @@
     <string name="pt_bob_books_under_multiple_publisher">Toon boeken met meerdere uitgevers.</string>
     <string name="pv_bob_books_under_multiple_primary_publisher_only">alleen onder hun primaire uitgever.</string>
     <string name="pv_bob_books_under_multiple_each_publisher">onder elke uitgever.</string>
+    <string name="image">Afbeelding</string>
+    <string name="lbl_author_type_narrator">Verteller</string>
+    <string name="unknown">Onbekend</string>
 
 </resources>

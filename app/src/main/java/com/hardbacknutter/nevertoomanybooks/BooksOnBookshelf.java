@@ -1597,7 +1597,7 @@ public class BooksOnBookshelf
     private void onCancelled(@NonNull final LiveDataEvent message) {
         closeProgressDialog();
         if (message.isNewEvent()) {
-            Snackbar.make(mVb.list, R.string.cancelled, Snackbar.LENGTH_LONG).show();
+            Snackbar.make(mVb.list, R.string.warning_task_cancelled, Snackbar.LENGTH_LONG).show();
         }
     }
 

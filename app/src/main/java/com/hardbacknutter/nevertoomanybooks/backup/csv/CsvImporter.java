@@ -152,7 +152,7 @@ public class CsvImporter
     @NonNull
     private final String mBooksString;
     @NonNull
-    private final String mUnknownError;
+    private final String mUnknownString;
     @NonNull
     private final String mProgressMessage;
     @NonNull
@@ -177,7 +177,7 @@ public class CsvImporter
                        final int options) {
         mBooksString = context.getString(R.string.lbl_books);
         mProgressMessage = context.getString(R.string.progress_msg_x_created_y_updated_z_skipped);
-        mUnknownError = context.getString(R.string.unknown);
+        mUnknownString = context.getString(R.string.unknown);
 
         mOptions = options;
 
@@ -326,7 +326,7 @@ public class CsvImporter
                         | IndexOutOfBoundsException e) {
                     mResults.booksSkipped++;
                     //TODO: see if we can give a meaningful user-displaying string.
-                    mResults.failedLinesMessage.add(mUnknownError);
+                    mResults.failedLinesMessage.add(mUnknownString);
                     mResults.failedLinesNr.add(row);
                     if (BuildConfig.DEBUG /* always */) {
                         if (DEBUG_SWITCHES.IMPORT_CSV_BOOKS) {

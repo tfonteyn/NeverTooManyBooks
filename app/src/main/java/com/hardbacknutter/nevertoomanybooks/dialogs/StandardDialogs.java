@@ -224,7 +224,7 @@ public final class StandardDialogs {
         StringBuilder authors = new StringBuilder();
         if (authorList.isEmpty()) {
             authors.append('<')
-                   .append(context.getString(R.string.unknown)
+                   .append(context.getString(R.string.unknownName)
                                   .toUpperCase(LocaleUtils.getUserLocale(context)))
                    .append('>');
         } else {
@@ -380,7 +380,7 @@ public final class StandardDialogs {
                     .setTitle(R.string.lbl_registration)
                     .setMessage(message)
                     .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
-                    .setPositiveButton(R.string.btn_tell_me_more, (d, w) -> {
+                    .setPositiveButton(R.string.btn_learn_more, (d, w) -> {
                         final Intent intent = new Intent(context, intentClass);
                         context.startActivity(intent);
                     })

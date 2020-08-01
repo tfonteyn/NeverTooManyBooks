@@ -303,9 +303,9 @@ public class Author
 
     @NonNull
     public static Author createUnknownAuthor(@NonNull final Context context) {
-        final String unknown = context.getString(R.string.unknown)
-                                      .toUpperCase(LocaleUtils.getUserLocale(context));
-        return new Author(unknown, "");
+        final String unknownName = context.getString(R.string.unknownName)
+                                          .toUpperCase(LocaleUtils.getUserLocale(context));
+        return new Author(unknownName, "");
     }
 
     /**

@@ -96,7 +96,7 @@ public class GrStatus {
                                     @Nullable final Exception exception) {
         if (exception == null) {
             // the task was cancelled before it started.
-            return context.getString(R.string.cancelled);
+            return context.getString(R.string.warning_task_cancelled);
         } else {
             return context.getString(R.string.error_unexpected_error)
                    + ' ' + exception.getLocalizedMessage();
@@ -112,7 +112,7 @@ public class GrStatus {
             case SUCCESS:
                 return context.getString(R.string.gr_tq_completed);
             case CANCELLED:
-                return context.getString(R.string.cancelled);
+                return context.getString(R.string.warning_task_cancelled);
 
             case SUCCESS_AUTHORIZATION_ALREADY_GRANTED:
                 return context.getString(R.string.gr_authorization_already_granted);

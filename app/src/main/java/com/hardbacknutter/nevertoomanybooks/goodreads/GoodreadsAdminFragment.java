@@ -130,7 +130,8 @@ public class GoodreadsAdminFragment
 
     private void onCancelled(@NonNull final LiveDataEvent message) {
         if (message.isNewEvent()) {
-            Snackbar.make(mVb.getRoot(), R.string.cancelled, Snackbar.LENGTH_LONG).show();
+            Snackbar.make(mVb.getRoot(), R.string.warning_task_cancelled, Snackbar.LENGTH_LONG)
+                    .show();
         }
     }
 

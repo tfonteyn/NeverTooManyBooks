@@ -32,11 +32,11 @@
 <!--suppress LongLine -->
 <resources>
     <string name="X_anthology_titles">Antologické tituly</string>
-    <string name="X_action_update">Upravit</string>
+    <string name="X_action_update">Aktualizovat</string>
     <string name="X_btn_do_not_show_again">Příště již nezobrazovat</string>
     <string name="X_error_file_must_contain_column">Soubor musí obsahovat sloupec jménem %1$s</string>
     <string name="progress_end_export_success">Soubor %3$s nazvaný „%2$s“ byl vytvořen v adresáři „%1$s“ a měli byste jej ručně zkopírovat jinam, aby byla data chráněna v případě poškození, ztráty nebo odcizení zařízení.</string>
-    <string name="lbl_available">Dostupný</string>
+    <string name="lbl_available">Dostupná</string>
     <string name="X_lbl_data_import_export">Zálohování a import</string>
     <string name="X_lbl_select_fields_to_update">Zvolit pole k aktualizaci</string>
     <string name="X_action_show_all">Ukázat vše</string>
@@ -70,12 +70,12 @@
     <string name="X_btn_customize">Přizpůsobit…</string>
     <string name="btn_delete_credentials">Odebrat pověření</string>
     <string name="btn_disable_message">Zakázat zprávu</string>
-    <string name="btn_email">e-mailem</string>
+    <string name="btn_email">Poslat e-mail</string>
     <string name="X_btn_loan_returned">Vráceno</string>
     <string name="btn_options">Možnosti</string>
-    <string name="btn_reset">Reset</string>
+    <string name="btn_reset">Resetovat</string>
     <string name="btn_scan_barcode">Naskenujte čárový kód</string>
-    <string name="btn_tell_me_more">Dozvědět se více</string>
+    <string name="btn_learn_more">Další informace</string>
     <string name="btn_this_book">Tato kniha</string>
     <string name="bytes">%.0fB</string>
     <string name="action_clear">Jasné</string>
@@ -267,7 +267,7 @@
     <string name="lbl_field_usage_append">Přidat extra data</string>
     <string name="lbl_field_usage_copy_if_blank">Kopírovat pokud je prázdné</string>
     <string name="lbl_field_usage_overwrite">Přepsat existující data</string>
-    <string name="lbl_field_usage_skip">Vynechat</string>
+    <string name="lbl_field_usage_skip">Přeskočit</string>
     <string name="lbl_first_pub_month">První měsíc vydání</string>
     <string name="lbl_first_pub_year">Rok prvního vydání</string>
     <string name="lbl_first_publication">První publikace</string>
@@ -284,7 +284,7 @@
     <string name="lbl_lending">Půjčování</string>
     <string name="lbl_loaned">Půjčeno</string>
     <string name="lbl_loaned_to_name">Na úvěr na %1$s</string>
-    <string name="lbl_location">Umístění knihy</string>
+    <string name="lbl_location">Umístění</string>
     <string name="lbl_location_long">Umístění knihy</string>
     <string name="lbl_month">Měsíc</string>
     <string name="lbl_pages">Počet stran</string>
@@ -311,7 +311,7 @@
     <string name="lbl_search_filtered_on_x">Filtrovaný: %1$s</string>
     <string name="lbl_select_fields">Zvolit pole</string>
     <string name="lbl_select_website">Vyberte web.:</string>
-    <string name="lbl_send_debug">Odeslat informace o ladění</string>
+    <string name="lbl_send_debug">Hlášení chyb</string>
     <string name="lbl_series">Série</string>
     <string name="lbl_series_multiple">Série</string>
     <string name="lbl_series_num">#</string>
@@ -329,7 +329,7 @@
     <string name="lbl_update_year">Rok aktualizace</string>
     <string name="lbl_websites">Webové stránky</string>
     <string name="txt_x_pages">%1$d stran</string>
-    <string name="lbl_year">Rok</string>
+    <string name="lbl_year">Rokem</string>
     <string name="legacy_description">Tento záznam je zastaralý a nelze jej obnovit. Je vhodné jej odstranit.</string>
     <string name="legacy_record">Zastaralý záznam #%1$d</string>
     <string name="list_and">a</string>
@@ -420,10 +420,10 @@
     <string name="pg_ui">Uživatelské rozhraní</string>
     <string name="pg_ui_field_visibility">Spravovat viditelnost jednotlivých polí</string>
     <string name="progress_end_backup_success">Zálohování úspěšně dokončeno</string>
-    <string name="cancelled">Zrušeno</string>
+    <string name="warning_task_cancelled">Zrušeno</string>
     <string name="progress_end_import_complete">Import byl dokončen</string>
     <string name="progress_end_import_partially_complete">Částečný import byl dokončen</string>
-    <string name="progress_msg_connecting">Připojení k webu…</string>
+    <string name="progress_msg_connecting">Připojování…</string>
     <string name="progress_msg_finding_editions">Hledání edicí…</string>
     <string name="progress_msg_loading">Načítání…</string>
     <string name="progress_end_export_result_n_books_processed">Zpracované knih %1$d</string>
@@ -432,8 +432,6 @@
     <string name="X_progress_msg_x_created_y_updated">%1$s: %2$d vytvořeno, %3$d aktualizováno</string>
     <string name="progress_msg_optimizing">Optimalizování databáze…</string>
     <string name="progress_msg_please_wait">Prosím, čekejte…</string>
-    <string name="progress_msg_process_booklist_style">Styly seznamu…</string>
-    <string name="progress_msg_process_preferences">Předvolby…</string>
     <string name="progress_msg_rebuilding_search_index">Obnovování indexu pro vyhledávání…</string>
     <string name="progress_msg_saving_image">Uložení obrázku…</string>
     <string name="progress_msg_searching">Vyhledávání…</string>
@@ -510,7 +508,7 @@
     <string name="style_builtin_genre">Název žánru</string>
     <string name="style_builtin_language">Jazyk</string>
     <string name="style_builtin_loaned">Půjčeno</string>
-    <string name="style_builtin_location">Umístění knihy</string>
+    <string name="style_builtin_location">Umístění</string>
     <string name="style_builtin_publication_date">Datum vydání</string>
     <string name="style_builtin_rating">Hodnocení</string>
     <string name="style_builtin_read_and_unread">Přečteno/Nepřečteno</string>
@@ -575,7 +573,7 @@
     <string name="lbl_select_image">Zvolit obrázek…</string>
     <string name="lbl_select_style">Zvolit styl</string>
     <string name="lbl_send_mail">Poslat e-mailem…</string>
-    <string name="unknown">Není známo</string>
+    <string name="unknownName">Není známo</string>
     <string name="unused">nepoužitý</string>
     <string name="vldt_blank_required_for_x">Prázdná hodnota vyžadována pro „%1$s“</string>
     <string name="vldt_boolean_expected_for_x">Očekávána pravdivostní hodnota (0,1,t,f,true,false) pro „%1$s“</string>
@@ -662,5 +660,8 @@
     <string name="pv_bob_books_under_multiple_primary_publisher_only">pouze pod jejich primárním vydavatelem.</string>
     <string name="pv_bob_books_under_multiple_each_publisher">pod každým vydavatelem.</string>
     <string name="book_format_paperback_large">Velká brožovaná vazba</string>
+    <string name="image">Obrázek</string>
+    <string name="lbl_author_type_narrator">Vypravěč</string>
+    <string name="unknown">Neznámé</string>
 
 </resources>

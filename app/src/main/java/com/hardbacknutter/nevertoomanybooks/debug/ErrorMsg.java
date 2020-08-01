@@ -56,6 +56,7 @@ public final class ErrorMsg {
     public static final String NULL_EXTERNAL_ID = "externalId";
     public static final String NULL_FRAGMENT_TAG = "Fragment Tag";
     public static final String NULL_GALLERY_ADAPTER = "GalleryAdapter";
+    public static final String NULL_LAYOUT_MANAGER = "LinearLayoutManager";
     public static final String NULL_IMAGE_PATH = "ImagePath";
     public static final String NULL_INTENT_DATA = "Intent data";
     public static final String NULL_ISBN = "ISBN";

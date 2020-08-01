@@ -87,6 +87,7 @@
     <!-- System Notification channel names -->
     <!-- ####################################################################################### -->
 
+    <!-- [VERIFIED] -->
     <string name="notification_channel_error">Error</string>
     <string name="notification_channel_warn">Warning</string>
     <string name="notification_channel_info">Info</string>
@@ -367,6 +368,7 @@
     <!-- ####################################################################################### -->
 
     <string name="progress_msg_please_wait">Please wait…</string>
+    <!-- [VERIFIED] -->
     <string name="progress_msg_loading">Loading…</string>
 
     <!-- During startup. -->
@@ -379,14 +381,12 @@
     <string name="progress_msg_searching">Searching…</string>
     <string name="progress_msg_searching_site">Searching %1$s</string>
 
-    <!-- Progress dialog message displayed when doing a long network operation to a web site -->
-    <string name="progress_msg_connecting">Connecting to web site…</string>
+    <!-- [VERIFIED] Progress dialog message displayed when doing a long network operation to a web site -->
+    <string name="progress_msg_connecting">Connecting…</string>
     <!-- Progress dialog message displayed when uploading data to a web site. -->
     <string name="progress_msg_sending">Sending, please wait…</string>
 
     <string name="progress_msg_saving_image">Saving image…</string>
-    <string name="progress_msg_process_preferences">Preferences…</string>
-    <string name="progress_msg_process_booklist_style">Booklist Styles…</string>
 
     <!-- displayed while searching for alternative editions of the book, to get cover images. -->
     <string name="progress_msg_finding_editions">Finding Editions…</string>
@@ -706,7 +706,7 @@
     <!-- SwitchPreference -->
     <string name="pt_scanning_beep_on_invalid">Beep if scanned ISBN is invalid</string>
 
-    <!-- Preference Category -->
+    <!-- [VERIFIED] Preference Category -->
     <string name="pg_camera">Camera</string>
     <string name="pt_camera_next_action">Action after taking a picture</string>
 
@@ -937,7 +937,7 @@
     <string name="menu_cover_crop">Crop</string>
     <!-- Cover image context menu option -->
     <string name="menu_cover_edit">Start editor</string>
-    <!-- Context menu for a cover image submenu title -->
+    <!-- [VERIFIED] Context menu for a cover image submenu title -->
     <string name="menu_cover_replace">Replace…</string>
     <!-- Cover image context menu option -->
     <string name="menu_cover_replace_from_gallery">From Gallery…</string>
@@ -964,7 +964,7 @@
     <string name="menu_loan_lend_book">Lend Book to…</string>
     <!-- Book context/options menu option: the current book was returned. -->
     <string name="menu_loan_return_book">Lend book is returned</string>
-    <!-- Book context/options menu option: bring up the Android generic share chooser -->
+    <!-- [VERIFIED] Book context/options menu option: bring up the Android generic share chooser -->
     <string name="menu_share_this">Share</string>
     <!-- Book context/options Update Fields from internet for a single book -->
     <string name="menu_update_fields">Update fields</string>
@@ -995,12 +995,16 @@
     <!-- == Button texts, must be short == -->
     <!-- ####################################################################################### -->
 
-    <!-- generic action buttons/menus -->
+    <!-- [VERIFIED] generic action buttons/menus -->
     <string name="action_add">Add</string>
     <string name="action_new">New</string>
+    <!-- [VERIFIED] -->
     <string name="action_edit">Edit</string>
+    <!-- [VERIFIED] -->
     <string name="action_edit_ellipsis">Edit…</string>
+    <!-- [VERIFIED] -->
     <string name="action_delete">Delete</string>
+    <!-- [VERIFIED] -->
     <string name="action_save">Save</string>
     <string name="action_discard">Discard</string>
     <string name="action_help">Help</string>
@@ -1024,11 +1028,14 @@
 
     <!-- generic response button texts -->
     <string name="btn_disable_message">Disable Message</string>
-    <string name="btn_tell_me_more">Tell me more</string>
+    <!-- [VERIFIED] -->
+    <string name="btn_learn_more">Learn more</string>
     <string name="btn_this_book">This Book</string>
+    <!-- [VERIFIED] -->
     <string name="btn_reset">Reset</string>
     <string name="btn_delete_credentials">Remove Credentials</string>
-    <string name="btn_email">email</string>
+    <!-- [VERIFIED] -->
+    <string name="btn_email">Email</string>
 
 
     <!-- Hint text for the drag handle button in re-order-able lists -->
@@ -1114,6 +1121,7 @@
     <string name="style_builtin_genre">Genre</string>
     <string name="style_builtin_language">Language</string>
     <string name="style_builtin_loaned">Lending</string>
+    <!-- [VERIFIED] -->
     <string name="style_builtin_location">Location</string>
     <string name="style_builtin_publication_date">Pub. Date</string>
     <string name="style_builtin_rating">Rating</string>
@@ -1226,14 +1234,20 @@
     <!-- ========== Single words used for multiple purposes ========== -->
     <!-- ####################################################################################### -->
 
+    <!-- [VERIFIED] -->
     <string name="yes">Yes</string>
+    <!-- [VERIFIED] -->
     <string name="no">No</string>
 
-    <string name="cancelled">Cancelled</string>
+    <!-- [VERIFIED] -->
+    <string name="warning_task_cancelled">Cancelled</string>
 
-    <!-- Copy from android-29#unknownName -->
+    <!-- [VERIFIED] Generic string. e.g. "the reason is unknown" -->
     <string name="unknown">Unknown</string>
+    <!-- [VERIFIED] Unknown name; e.g. "the author is unknown". -->
+    <string name="unknownName">Unknown</string>
 
+    <!-- [VERIFIED] Generic string. -->
     <string name="done">Done</string>
     <string name="unused">unused</string>
 
@@ -1244,7 +1258,7 @@
     <!-- 'and' as used in lists:  x and y -->
     <string name="list_and">and</string>
 
-    <!-- buttons on the "sorting / styles" dialog -->
+    <!-- [VERIFIED] buttons on the "sorting / styles" dialog -->
     <string name="btn_more_ellipsis">More…</string>
     <string name="btn_less_ellipsis">Less…</string>
 
@@ -1324,9 +1338,9 @@
     <string name="lbl_description">Description</string>
     <string name="lbl_personal_notes">Personal notes</string>
 
-    <!-- short label for the Location field -->
+    <!-- [VERIFIED] short label for the Location field -->
     <string name="lbl_location">Location</string>
-    <!-- long label for the Location field -->
+    <!-- [VERIFIED] long label for the Location field -->
     <string name="lbl_location_long">Location of the book</string>
 
     <!-- Header for a screen section. -->
@@ -1384,15 +1398,17 @@
     <!-- a one line label, with the name of the person appended -->
     <string name="lbl_loaned_to_name">On Loan to %1$s</string>
     <string name="lbl_loaned">On Loan</string>
+    <!-- [VERIFIED] -->
     <string name="lbl_available">Available</string>
 
     <!-- Search on keywords entered. -->
     <string name="lbl_keywords">Keywords</string>
 
 
-    <!-- Universal date strings -->
+    <!-- [VERIFIED] Universal date strings -->
     <string name="lbl_year">Year</string>
     <string name="lbl_month">Month</string>
+    <!-- [VERIFIED] -->
     <string name="lbl_day">Day</string>
     <!-- Individual fields for "date added" -->
     <string name="lbl_added_year">Year Added</string>
@@ -1443,15 +1459,17 @@
     <string name="lbl_import_option_new_and_changed_books">New and updated books</string>
 
 
-    <!-- heading/titles for settings/preference screens -->
+    <!-- [VERIFIED] heading/titles for settings/preference screens. -->
     <string name="lbl_settings">Settings</string>
+
+
     <string name="lbl_websites">Websites</string>
 
     <!-- Admin GROUP -->
     <string name="lbl_advanced_options">Advanced</string>
 
-    <!-- Admin advanced - collect debug information and prepare an email to the developers -->
-    <string name="lbl_send_debug">Send Debug Information</string>
+    <!-- [VERIFIED] Admin advanced - collect debug information and prepare an email to the developers -->
+    <string name="lbl_send_debug">Bug report</string>
     <!-- Admin advanced - cleanup log, temp files -->
     <string name="lbl_purge_files">Cleanup Files</string>
     <!-- Admin advanced - clear the cached images -->
@@ -1557,5 +1575,8 @@
     <string name="info_purge_blns_all">Purge all BLNS</string>
     <!-- param 1: type of item; param 2: item name.  Example: "Purge BLNS for Bookshelf “ToRead” " -->
     <string name="info_purge_blns_item_name">Purge BLNS for %1$s “%2$s” ?</string>
+
+    <!-- [VERIFIED] -->
+    <string name="image">Image</string>
 
 </resources>

@@ -149,7 +149,7 @@ public class CsvExporter
     @NonNull
     private final DAO mDb;
     /** cached localized "unknown" string. */
-    private final String mUnknownString;
+    private final String mUnknownNameString;
     private final StringList<Author> mAuthorCoder = new StringList<>(new AuthorCoder());
     private final StringList<Series> mSeriesCoder = new StringList<>(new SeriesCoder());
     private final StringList<Publisher> mPublisherCoder = new StringList<>(new PublisherCoder());
@@ -184,7 +184,7 @@ public class CsvExporter
         }
 
         final Locale userLocale = LocaleUtils.getUserLocale(context);
-        mUnknownString = context.getString(R.string.unknown).toUpperCase(userLocale);
+        mUnknownNameString = context.getString(R.string.unknownName).toUpperCase(userLocale);
 
         mOptions = options;
         mUtcSinceDateTime = utcSinceDateTime;
@@ -230,14 +230,14 @@ public class CsvExporter
                 String title = book.getString(DBDefinitions.KEY_TITLE);
                 // Sanity check: ensure title is non-blank.
                 if (title.trim().isEmpty()) {
-                    title = mUnknownString;
+                    title = mUnknownNameString;
                 }
 
                 String authors = mAuthorCoder.encodeList(
                         book.getParcelableArrayList(Book.BKEY_AUTHOR_ARRAY));
                 // Sanity check: ensure author is non-blank.
                 if (authors.trim().isEmpty()) {
-                    authors = mUnknownString;
+                    authors = mUnknownNameString;
                 }
 
                 // it's a buffered writer, no need to first StringBuilder the line.

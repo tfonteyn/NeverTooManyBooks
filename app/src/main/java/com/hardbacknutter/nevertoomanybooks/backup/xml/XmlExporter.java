@@ -146,7 +146,7 @@ public class XmlExporter
     private final LocalDateTime mUtcSinceDateTime;
     /** cached localized "unknown" string. */
     @NonNull
-    private final String mUnknownString;
+    private final String mUnknownNameString;
 
     /**
      * Constructor.
@@ -169,7 +169,7 @@ public class XmlExporter
         }
 
         final Locale userLocale = LocaleUtils.getUserLocale(context);
-        mUnknownString = context.getString(R.string.unknown).toUpperCase(userLocale);
+        mUnknownNameString = context.getString(R.string.unknownName).toUpperCase(userLocale);
 
         mOptions = options;
         mUtcSinceDateTime = utcSinceDateTime;
@@ -584,7 +584,7 @@ public class XmlExporter
                 String title = book.getString(DBDefinitions.KEY_TITLE);
                 // Sanity check: ensure title is non-blank.
                 if (title.trim().isEmpty()) {
-                    title = mUnknownString;
+                    title = mUnknownNameString;
                 }
 
                 // it's a buffered writer, no need to first StringBuilder the line.
