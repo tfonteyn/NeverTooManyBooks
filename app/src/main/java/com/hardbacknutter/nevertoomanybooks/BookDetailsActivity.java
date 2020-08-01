@@ -40,7 +40,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import com.hardbacknutter.nevertoomanybooks.viewmodels.BookViewModel;
-import com.hardbacknutter.nevertoomanybooks.viewmodels.ResultDataModel;
 
 /**
  * Hosting activity for showing a book.
@@ -51,6 +50,9 @@ public class BookDetailsActivity
     /** all registered listeners. */
     private final Collection<View.OnTouchListener> mOnTouchListeners = new ArrayList<>();
 
+    /** The book. Must be in the Activity scope. */
+    private BookViewModel mBookViewModel;
+
     @Override
     protected void onSetContentView() {
         setContentView(R.layout.activity_book_details);
@@ -59,6 +61,9 @@ public class BookDetailsActivity
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        mBookViewModel = new ViewModelProvider(this).get(BookViewModel.class);
+        mBookViewModel.init(this, getIntent().getExtras());
 
         setNavigationItemVisibility(R.id.nav_manage_bookshelves, true);
 
@@ -70,8 +75,7 @@ public class BookDetailsActivity
 
     @Override
     public void onBackPressed() {
-        final ResultDataModel resultData = new ViewModelProvider(this).get(BookViewModel.class);
-        setResult(Activity.RESULT_OK, resultData.getResultIntent());
+        setResult(Activity.RESULT_OK, mBookViewModel.getResultIntent());
         super.onBackPressed();
     }
 

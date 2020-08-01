@@ -157,7 +157,7 @@ public class BookViewModel
     }
 
     /**
-     * Add the DATA validator (not field validators) validator to the book.
+     * Add the DATA validators (not field validators) to the book.
      * This cannot be undone during an edit session.
      */
     public void enableValidators() {
