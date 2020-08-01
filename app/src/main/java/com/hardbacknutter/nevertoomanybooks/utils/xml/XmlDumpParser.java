@@ -28,10 +28,7 @@
 package com.hardbacknutter.nevertoomanybooks.utils.xml;
 
 import android.annotation.SuppressLint;
-import android.os.Bundle;
 import android.util.Log;
-
-import androidx.annotation.NonNull;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.Locator;
@@ -130,15 +127,5 @@ public class XmlDumpParser
 
     public void skippedEntity(final String name) {
         Log.d(TAG, "&" + name + ";");
-    }
-
-    /**
-     * Dummy implementation.
-     *
-     * @return new empty bundle
-     */
-    @NonNull
-    public Bundle getResult() {
-        return new Bundle();
     }
 }
