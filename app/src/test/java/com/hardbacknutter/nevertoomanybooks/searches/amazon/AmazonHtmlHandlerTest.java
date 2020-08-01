@@ -51,7 +51,7 @@ class AmazonHtmlHandlerTest
     public void setUp() {
         super.setUp();
         mSearchEngine = new AmazonSearchEngine(mContext);
-        mSearchEngine.setCaller(new DummyCaller());
+        mSearchEngine.setCaller(new TextCaller());
     }
 
     @Test

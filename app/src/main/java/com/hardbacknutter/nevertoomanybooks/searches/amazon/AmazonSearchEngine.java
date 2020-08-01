@@ -378,7 +378,7 @@ public final class AmazonSearchEngine
         // When run in JUnit, this call is NOT needed.
         // Whats different? -> the Java JDK!
         //noinspection unused
-        final Element dummy = document.selectFirst("div#booksTitle");
+        final Element unused = document.selectFirst("div#booksTitle");
 
         final Element titleElement = document.selectFirst("span#productTitle");
         if (titleElement == null) {

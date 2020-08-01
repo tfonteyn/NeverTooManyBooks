@@ -60,7 +60,7 @@ class IsfdbEditionsHandlerTest
     public void setUp() {
         super.setUp();
         mSearchEngine = new IsfdbSearchEngine(mContext);
-        mSearchEngine.setCaller(new DummyCaller());
+        mSearchEngine.setCaller(new TextCaller());
     }
 
     @Test

@@ -60,7 +60,7 @@ class OpenLibrarySearchEngineTest
     public void setUp() {
         super.setUp();
         mSearchEngine = new OpenLibrarySearchEngine(mContext);
-        mSearchEngine.setCaller(new DummyCaller());
+        mSearchEngine.setCaller(new TextCaller());
     }
 
     @Test

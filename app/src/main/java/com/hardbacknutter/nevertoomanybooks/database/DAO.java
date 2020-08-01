@@ -5476,7 +5476,7 @@ public class DAO
             final int len = chars.length;
             // Initial position
             int pos = 0;
-            // Dummy 'previous' character
+            // 'previous' character
             char prev = ' ';
 
             // Output buffer

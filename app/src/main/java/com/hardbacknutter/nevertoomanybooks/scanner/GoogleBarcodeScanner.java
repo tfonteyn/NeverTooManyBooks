@@ -164,7 +164,7 @@ public class GoogleBarcodeScanner
     }
 
     /**
-     * If the Google barcode scanner factory can be loaded, create a dummy instance to
+     * If the Google barcode scanner factory can be loaded, create a temp instance to
      * force it to download the native library if not done already.
      * <p>
      * This can be seen in the device logs as:

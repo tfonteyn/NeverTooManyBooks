@@ -52,7 +52,7 @@ class LastDodoTest
     public void setUp() {
         super.setUp();
         mSearchEngine = new LastDodoSearchEngine(mContext);
-        mSearchEngine.setCaller(new DummyCaller());
+        mSearchEngine.setCaller(new TextCaller());
     }
 
     @Test

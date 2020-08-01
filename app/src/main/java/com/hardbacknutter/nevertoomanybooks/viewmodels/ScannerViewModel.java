@@ -124,11 +124,11 @@ public class ScannerViewModel
             // when used, the file must be in the root external app dir.
             final File file = AppDir.Root.getFile(context, "barcode.jpg");
             if (file.exists()) {
-                final Bitmap dummy = BitmapFactory.decodeFile(file.getAbsolutePath());
+                final Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
                 if (data != null
                     && data.getExtras() != null
                     && data.getExtras().containsKey("data")) {
-                    data.putExtra("data", dummy);
+                    data.putExtra("data", bitmap);
                 } else {
                     try {
                         FileUtils.copy(file, CameraHelper.getCameraFile(context));

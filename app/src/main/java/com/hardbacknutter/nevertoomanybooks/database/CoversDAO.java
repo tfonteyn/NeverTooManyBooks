@@ -255,7 +255,7 @@ public final class CoversDAO
                                   final int maxWidth,
                                   final int maxHeight) {
         // safely initialise if needed
-        try (@SuppressWarnings("unused") CoversDAO dummy = CoversDAO.getInstance(context)) {
+        try (@SuppressWarnings("unused") CoversDAO dao = CoversDAO.getInstance(context)) {
             if (sSyncedDb == null) {
                 return null;
             }
@@ -295,7 +295,7 @@ public final class CoversDAO
     public static void delete(@NonNull final Context context,
                               @NonNull final String uuid) {
         // safely initialise if needed
-        try (@SuppressWarnings("unused") CoversDAO dummy = CoversDAO.getInstance(context)) {
+        try (@SuppressWarnings("unused") CoversDAO dao = CoversDAO.getInstance(context)) {
             if (sSyncedDb == null) {
                 return;
             }
@@ -314,7 +314,7 @@ public final class CoversDAO
      */
     public static void deleteAll(@NonNull final Context context) {
         // safely initialise if needed
-        try (@SuppressWarnings("unused") CoversDAO dummy = CoversDAO.getInstance(context)) {
+        try (@SuppressWarnings("unused") CoversDAO dao = CoversDAO.getInstance(context)) {
             if (sSyncedDb == null) {
                 return;
             }
@@ -331,7 +331,7 @@ public final class CoversDAO
      */
     public static void optimize(@NonNull final Context context) {
         // safely initialise if needed
-        try (@SuppressWarnings("unused") CoversDAO dummy = CoversDAO.getInstance(context)) {
+        try (@SuppressWarnings("unused") CoversDAO dao = CoversDAO.getInstance(context)) {
             if (sSyncedDb == null) {
                 return;
             }

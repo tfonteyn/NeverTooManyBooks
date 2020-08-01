@@ -73,7 +73,7 @@ public abstract class StyleBaseFragment
             // a user-style, set the correct UUID SharedPreferences to use
             getPreferenceManager().setSharedPreferencesName(mStyle.getUuid());
         } else {
-            // we're doing the global preferences, create a dummy style with an empty uuid
+            // we're doing the global preferences, create a placeholder style with an empty uuid
             // and let it use the standard SharedPreferences
             //noinspection ConstantConditions
             mStyle = new BooklistStyle(getContext());

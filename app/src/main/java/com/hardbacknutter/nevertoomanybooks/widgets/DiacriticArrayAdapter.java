@@ -59,7 +59,7 @@ import java.util.regex.Pattern;
 /**
  * A copy of the {@link android.widget.ArrayAdapter} code from Android-29, rev. 4 (2020-01-07)
  * <p>
- * Modified to support diacritics. Do not blindly overwrite from a newer version of the above.
+ * Modified to support diacritics. Do not overwrite from a newer version of the above.
  * Source code modification can be found by searching by "diacritics"; being part
  * of variable/method names.
  *

@@ -63,7 +63,7 @@ class StripInfoTest
     public void setUp() {
         super.setUp();
         mSearchEngine = new StripInfoSearchEngine(mContext);
-        mSearchEngine.setCaller(new DummyCaller());
+        mSearchEngine.setCaller(new TextCaller());
     }
 
     @Test
