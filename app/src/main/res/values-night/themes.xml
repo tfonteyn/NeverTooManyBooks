@@ -79,7 +79,13 @@
     </style>
 
     <style name="ThemeOverlay.App.MaterialAlertDialog" parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog">
-        <item name="colorPrimary">@color/white</item>
+        <!-- button text. "colorPrimary" as set to "blue_grey_600" works fine. No need to override. -->
+        <!--  <item name="colorPrimary">@color/blue_grey_600</item>-->
     </style>
 
+    <!-- Specific Theme for the startup activity so it looks like a dialog as intended. -->
+    <style name="Theme.App.Startup" parent="Theme.MaterialComponents.DayNight.Dialog">
+        <!-- button text. Use the same as in "ThemeOverlay.App.MaterialAlertDialog" -->
+        <item name="colorPrimary">@color/blue_grey_600</item>
+    </style>
 </resources>

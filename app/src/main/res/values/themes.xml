@@ -88,8 +88,14 @@ https://material.io/design/material-theming/implementing-your-theme.html#color
     </style>
 
     <style name="ThemeOverlay.App.MaterialAlertDialog" parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog">
-        <!-- determines the color of the button text. -->
-        <item name="colorPrimary">@color/black</item>
+        <!-- button text. The default colorPrimary (blue_grey_100) is to light on the white background. -->
+        <item name="colorPrimary">@color/blue_grey_900</item>
+    </style>
+
+    <!-- Specific Theme for the startup activity so it looks like a dialog as intended. -->
+    <style name="Theme.App.Startup" parent="Theme.MaterialComponents.DayNight.Dialog">
+        <!-- button text. Use the same as in "ThemeOverlay.App.MaterialAlertDialog" -->
+        <item name="colorPrimary">@color/blue_grey_900</item>
     </style>
 
     <!-- Specific Theme for full screen usage. -->

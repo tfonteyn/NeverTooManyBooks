@@ -211,8 +211,7 @@ public class StartupViewModel
 
         boolean optimizeDb = false;
 
-        // unconditional. No longer publishing progress, ...
-        // faster as the progress dialog is not needed.
+        // unconditional
         startTask(new BuildLanguageMappingsTask(mTaskListener));
 
         // this is not critical, once every so often is fine

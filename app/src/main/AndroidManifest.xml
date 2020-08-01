@@ -91,7 +91,7 @@
         -->
         <activity
             android:name=".StartupActivity"
-            android:theme="@style/Theme.MaterialComponents.DayNight.Dialog"
+            android:theme="@style/Theme.App.Startup"
             android:configChanges="locale|orientation|keyboardHidden"
             android:launchMode="singleInstance"
             android:noHistory="true">

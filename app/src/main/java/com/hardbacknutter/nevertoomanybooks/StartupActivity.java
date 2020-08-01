@@ -237,7 +237,7 @@ public class StartupActivity
 
     /**
      * Use a Notification to tell the user this is a good time to panic.
-     * URGENT: add contact details to the message, as the user cannot access the About screen
+     * URGENT: add email button to the message, as the user cannot access the About screen
      *
      * @param message to show
      */
