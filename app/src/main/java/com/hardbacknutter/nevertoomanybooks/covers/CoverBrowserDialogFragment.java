@@ -174,10 +174,9 @@ public class CoverBrowserDialogFragment
         mModel.onGalleryImage().observe(this, this::setGalleryImage);
         mModel.onSelectedImage().observe(this, this::setSelectedImage);
 
-        // The gallery displays a list of images, one for each edition.
-        final LinearLayoutManager galleryLM = new LinearLayoutManager(getContext());
-        galleryLM.setOrientation(RecyclerView.HORIZONTAL);
-        mVb.gallery.setLayoutManager(galleryLM);
+        // LayoutManager is set in the layout xml
+        final LinearLayoutManager galleryLM = (LinearLayoutManager) mVb.gallery.getLayoutManager();
+        Objects.requireNonNull(galleryLM, ErrorMsg.NULL_LAYOUT_MANAGER);
         mVb.gallery.addItemDecoration(
                 new DividerItemDecoration(getContext(), galleryLM.getOrientation()));
         mGalleryAdapter = new GalleryAdapter();

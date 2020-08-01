@@ -56,7 +56,7 @@
     </integer-array>
 
     <!-- this is an INDEX to the SCALE_FACTOR array. -->
-    <integer name="cover_scale_browser_gallery">2</integer>
+    <integer name="cover_scale_browser_gallery">1</integer>
     <integer name="cover_scale_browser_preview">4</integer>
 
     <!-- tools only; used to mock reasonable sized images.

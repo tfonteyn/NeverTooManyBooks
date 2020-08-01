@@ -79,6 +79,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:orientation="horizontal"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/statusMessage"
@@ -109,8 +110,8 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/progressBar"
                 tools:ignore="ContentDescription"
-                tools:layout_height="@dimen/tools_cover_scale_5_height"
-                tools:layout_width="@dimen/tools_cover_scale_5_width"
+                tools:layout_height="@dimen/tools_cover_scale_4_height"
+                tools:layout_width="@dimen/tools_cover_scale_4_width"
                 tools:src="@sample/covers"
                 tools:visibility="visible"
                 />

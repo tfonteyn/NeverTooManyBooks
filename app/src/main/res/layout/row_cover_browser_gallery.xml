@@ -40,9 +40,10 @@
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:textIsSelectable="true"
-        android:textSize="12sp"
+        android:textSize="10sp"
         android:textStyle="italic"
         tools:text="@sample/data.json/sites/name"
+        tools:ignore="SmallSp"
         />
 
     <!-- This is the initial place holder only. -->
@@ -51,6 +52,9 @@
         style="@style/CoverImage"
         android:src="@drawable/ic_image"
         tools:ignore="ContentDescription"
+        tools:layout_height="@dimen/tools_cover_scale_1_height"
+        tools:layout_width="@dimen/tools_cover_scale_1_width"
+        tools:src="@sample/covers"
         />
 </LinearLayout>
 
