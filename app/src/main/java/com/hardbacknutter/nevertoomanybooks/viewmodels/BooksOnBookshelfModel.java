@@ -133,13 +133,8 @@ public class BooksOnBookshelfModel
 
         // external site ID's
         for (Domain domain : Site.getExternalIdDomains()) {
-            // ENHANCE: support ASIN
-            //For now, the Amazon search engine uses the ISBN; if we switch it to ASIN,
-            // we can remove this "if".
-            if (!domain.getName().equals(DBDefinitions.KEY_ISBN)) {
-                FIXED_DOMAIN_LIST.add(
-                        new VirtualDomain(domain, DBDefinitions.TBL_BOOKS.dot(domain.getName())));
-            }
+            FIXED_DOMAIN_LIST.add(
+                    new VirtualDomain(domain, DBDefinitions.TBL_BOOKS.dot(domain.getName())));
         }
     }
 

@@ -108,7 +108,9 @@ public class EditBookAuthorListDialogFragment
                 public void onAttachFragment(@NonNull final FragmentManager fragmentManager,
                                              @NonNull final Fragment fragment) {
                     if (BuildConfig.DEBUG && DEBUG_SWITCHES.ATTACH_FRAGMENT) {
-                        Log.d(getClass().getName(), "onAttachFragment: " + fragment.getTag());
+                        Log.d(getClass().getName(), "onAttachFragment"
+                                                    + "|fragmentManager=" + fragmentManager
+                                                    + "|fragment=" + fragment.getTag());
                     }
 
                     if (fragment instanceof EditAuthorForBookDialogFragment) {

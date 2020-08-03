@@ -132,7 +132,9 @@ public class BookDetailsFragment
                 public void onAttachFragment(@NonNull final FragmentManager fragmentManager,
                                              @NonNull final Fragment fragment) {
                     if (BuildConfig.DEBUG && DEBUG_SWITCHES.ATTACH_FRAGMENT) {
-                        Log.d(getClass().getName(), "onAttachFragment: " + fragment.getTag());
+                        Log.d(getClass().getName(), "onAttachFragment"
+                                                    + "|fragmentManager=" + fragmentManager
+                                                    + "|fragment=" + fragment.getTag());
                     }
 
                     if (fragment instanceof BookChangedListener.Owner) {
@@ -308,6 +310,11 @@ public class BookDetailsFragment
                     }
                     // onResume will display the changed book.
                     mBookViewModel.reload();
+
+                    //URGENT open book details and have book assigned to two shelves,
+                    // use nav menu to add bookshelf; edit book
+                    // remove one shelf, and add the new shelf
+                    // save... verify the shelves list
                 }
                 break;
 

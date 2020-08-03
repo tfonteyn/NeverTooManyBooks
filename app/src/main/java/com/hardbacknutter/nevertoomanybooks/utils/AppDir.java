@@ -205,6 +205,19 @@ public enum AppDir {
 
     /**
      * Get the File object for this directory.
+     * <p>
+     * Dev. note: a device might have two (or more) external file directories of the same type.
+     * i.e. {@link Context#getExternalFilesDir} for {@link Environment#DIRECTORY_PICTURES}
+     * might internally resolve to two paths. The will "ensure" those before returning them.
+     * Which (at least in the emulator) can result in log messages like this:
+     * <pre>
+     *     W/ContextImpl: Failed to ensure /storage/14ED-381E/Android/data/com.hardbacknutter
+     *     .nevertoomanybooks/files/Pictures: java.lang.IllegalStateException:
+     *     Failed to resolve /storage/14ED-381E/Android/data/com.hardbacknutter
+     *     .nevertoomanybooks/files/Pictures:
+     *     java.io.IOException: I/O error
+     * </pre>
+     * These can be ignored. The other "ensured" path will be returned for use as normal. flw...
      *
      * @param context Current context
      *

@@ -176,16 +176,27 @@ public class LibraryThingSearchEngine
         return "";
     }
 
-    //FIXME: bad method name
-    public static boolean isRegistered(@NonNull final Context context,
-                                       final boolean required,
-                                       @NonNull final String prefSuffix) {
+    /**
+     * FIXME: bad method name
+     *
+     * @param context      Current context
+     * @param required     {@code true} if we <strong>must</strong> have access.
+     *                     {@code false} if it would be beneficial.
+     * @param callerSuffix String used to flag in preferences if we showed the alert from
+     *                     that caller already or not.
+     *
+     * @return {@code true} if an alert is currently shown
+     */
+    public static boolean registerOnSite(@NonNull final Context context,
+                                         final boolean required,
+                                         @NonNull final String callerSuffix) {
         if (hasKey(context)) {
-            return true;
+            return false;
         }
 
-        return StandardDialogs.registerOnSite(context, SearchSites.LIBRARY_THING, required,
-                                              prefSuffix, LibraryThingRegistrationActivity.class);
+        return StandardDialogs.registerOnSite(context, SearchSites.LIBRARY_THING,
+                                              required, callerSuffix,
+                                              LibraryThingRegistrationActivity.class);
     }
 
     @NonNull
@@ -210,7 +221,7 @@ public class LibraryThingSearchEngine
                                     final boolean required,
                                     @NonNull final String callerSuffix) {
 
-        return isRegistered(context, required, callerSuffix);
+        return registerOnSite(context, required, callerSuffix);
     }
 
     /**

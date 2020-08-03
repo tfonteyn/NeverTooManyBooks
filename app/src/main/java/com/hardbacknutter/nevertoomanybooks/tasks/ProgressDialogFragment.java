@@ -35,14 +35,12 @@ import android.view.WindowManager;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
 import androidx.annotation.UiThread;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
-import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogTaskProgressBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.ProgressMessage;
@@ -91,7 +89,7 @@ public class ProgressDialogFragment
     /**
      * Constructor.
      *
-     * @param titleId         resource id for the dialog title, can be 0 for no title.
+     * @param title           (optional) title for the dialog title, {@code null} for no title.
      * @param isIndeterminate default type of progress
      * @param preventSleep    whether to block the device from sleeping while the action is ongoing
      *
@@ -99,12 +97,12 @@ public class ProgressDialogFragment
      */
     @NonNull
     @UiThread
-    public static ProgressDialogFragment newInstance(@StringRes final int titleId,
+    public static ProgressDialogFragment newInstance(@Nullable final String title,
                                                      final boolean isIndeterminate,
                                                      final boolean preventSleep) {
         final ProgressDialogFragment frag = new ProgressDialogFragment();
         final Bundle args = new Bundle(4);
-        args.putInt(StandardDialogs.BKEY_DIALOG_TITLE, titleId);
+        args.putString(StandardDialogs.BKEY_DIALOG_TITLE, title);
         args.putBoolean(BKEY_IS_INDETERMINATE, isIndeterminate);
         args.putBoolean(BKEY_PREVENT_SLEEP, preventSleep);
         frag.setArguments(args);
@@ -140,11 +138,9 @@ public class ProgressDialogFragment
 
         final Bundle args = getArguments();
         if (args != null) {
-            @StringRes
-            final int titleId = args.getInt(StandardDialogs.BKEY_DIALOG_TITLE,
-                                            R.string.progress_msg_please_wait);
-            if (titleId != 0) {
-                dialog.setTitle(titleId);
+            final String title = args.getString(StandardDialogs.BKEY_DIALOG_TITLE);
+            if (title != null) {
+                dialog.setTitle(title);
             }
         }
 

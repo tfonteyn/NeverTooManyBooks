@@ -41,7 +41,6 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -178,16 +177,19 @@ public class CoverHandler {
         mMaxHeight = longestSide;
 
         // Allow zooming by clicking on the image;
-        // If there is no actual image, bring up the context menu instead.
         mCoverView.setOnClickListener(v -> {
             final File srcFile = getCoverFile();
             if (srcFile.exists()) {
                 ZoomedImageDialogFragment
                         .newInstance(srcFile)
                         .show(fragment.getChildFragmentManager(), ZoomedImageDialogFragment.TAG);
-            } else {
-                onCreateContextMenu();
             }
+            //else {
+            // If there is no actual image, bring up the context menu instead.
+            // 2020-08-03: disabled, since making the placeholder bigger it
+            // was to easy to accidentally trigger this
+            //onCreateContextMenu();
+            //}
         });
 
         mCoverView.setOnLongClickListener(v -> {
@@ -501,13 +503,13 @@ public class CoverHandler {
         if (file == null || file.length() == 0) {
             ImageUtils.setPlaceholder(mCoverView, R.drawable.ic_add_a_photo,
                                       R.drawable.outline_rounded,
-                                      ViewGroup.LayoutParams.WRAP_CONTENT,
-                                      ViewGroup.LayoutParams.WRAP_CONTENT);
+                                      (int) (mMaxWidth * ImageUtils.HW_RATIO),
+                                      mMaxHeight);
         } else {
             ImageUtils.setPlaceholder(mCoverView, R.drawable.ic_broken_image,
                                       R.drawable.outline_rounded,
-                                      ViewGroup.LayoutParams.WRAP_CONTENT,
-                                      ViewGroup.LayoutParams.WRAP_CONTENT);
+                                      (int) (mMaxWidth * ImageUtils.HW_RATIO),
+                                      mMaxHeight);
         }
     }
 
@@ -540,7 +542,7 @@ public class CoverHandler {
         // so remind the user that LT is rather essential for getting a list of editions.
         // Note this is NOT for getting covers from LT, only the edition list.
         if (BuildConfig.ENABLE_LIBRARY_THING_ALT_ED) {
-            if (!LibraryThingSearchEngine.isRegistered(mContext, false, "cover_browser")) {
+            if (LibraryThingSearchEngine.registerOnSite(mContext, false, "cover_browser")) {
                 return;
             }
         }

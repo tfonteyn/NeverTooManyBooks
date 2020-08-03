@@ -125,7 +125,7 @@ public final class StandardDialogs {
     public static void unsavedEdits(@NonNull final Context context,
                                     @Nullable final Runnable onSave,
                                     @Nullable final Runnable onDiscard) {
-        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(context)
+        final MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(context)
                 .setIcon(R.drawable.ic_warning)
                 .setTitle(R.string.lbl_details_have_changed)
                 .setMessage(R.string.confirm_unsaved_edits)
@@ -221,7 +221,7 @@ public final class StandardDialogs {
                                   @NonNull final Runnable onConfirm) {
 
         // Format the list of authors nicely
-        StringBuilder authors = new StringBuilder();
+        final StringBuilder authors = new StringBuilder();
         if (authorList.isEmpty()) {
             authors.append('<')
                    .append(context.getString(R.string.unknownName)
@@ -264,9 +264,9 @@ public final class StandardDialogs {
                                  @NonNull final Entity entity,
                                  @NonNull final Runnable onConfirm) {
 
-        String msg = context.getString(R.string.info_purge_blns_item_name,
-                                       context.getString(label),
-                                       entity.getLabel(context));
+        final String msg = context.getString(R.string.info_purge_blns_item_name,
+                                             context.getString(label),
+                                             entity.getLabel(context));
         new MaterialAlertDialogBuilder(context)
                 .setIcon(R.drawable.ic_warning)
                 .setTitle(R.string.lbl_purge_blns)
@@ -343,6 +343,8 @@ public final class StandardDialogs {
      * @param callerSuffix String used to flag in preferences if we showed the alert from
      *                     that caller already or not.
      * @param intentClass  Intent to start if the user wants more information.
+     *
+     * @return {@code true} if an alert is currently shown
      */
     @UiThread
     public static boolean registerOnSite(@NonNull final Context context,
@@ -351,7 +353,7 @@ public final class StandardDialogs {
                                          @NonNull final String callerSuffix,
                                          @NonNull final Class<?> intentClass) {
 
-        Site.Config config = Site.getConfig(engineId);
+        final Site.Config config = Site.getConfig(engineId);
 
         //noinspection ConstantConditions
         final String key = config.getPreferenceKey() + ".hide_alert." + callerSuffix;
@@ -365,21 +367,20 @@ public final class StandardDialogs {
         }
 
         if (showAlert) {
+            final String siteName = context.getString(config.getNameResId());
             final String message;
             if (required) {
-                message = context.getString(R.string.confirm_registration_required,
-                                            context.getString(config.getNameResId()));
+                message = context.getString(R.string.confirm_registration_required, siteName);
             } else {
-                message = context.getString(R.string.confirm_registration_benefits,
-                                            context.getString(config.getNameResId()),
+                message = context.getString(R.string.confirm_registration_benefits, siteName,
                                             context.getString(R.string.lbl_credentials));
             }
 
             final AlertDialog dialog = new MaterialAlertDialogBuilder(context)
                     .setIcon(R.drawable.ic_warning)
-                    .setTitle(R.string.lbl_registration)
+                    .setTitle(context.getString(R.string.lbl_registration, siteName))
                     .setMessage(message)
-                    .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
+                    .setNegativeButton(R.string.btn_not_now, (d, w) -> d.dismiss())
                     .setPositiveButton(R.string.btn_learn_more, (d, w) -> {
                         final Intent intent = new Intent(context, intentClass);
                         context.startActivity(intent);

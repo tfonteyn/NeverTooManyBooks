@@ -91,7 +91,9 @@ public class EditBookSeriesListDialogFragment
                 public void onAttachFragment(@NonNull final FragmentManager fragmentManager,
                                              @NonNull final Fragment fragment) {
                     if (BuildConfig.DEBUG && DEBUG_SWITCHES.ATTACH_FRAGMENT) {
-                        Log.d(getClass().getName(), "onAttachFragment: " + fragment.getTag());
+                        Log.d(getClass().getName(), "onAttachFragment"
+                                                    + "|fragmentManager=" + fragmentManager
+                                                    + "|fragment=" + fragment.getTag());
                     }
 
                     if (fragment instanceof EditSeriesForBookDialogFragment) {
@@ -118,8 +120,10 @@ public class EditBookSeriesListDialogFragment
     private ArrayList<Series> mList;
     /** The adapter for the list itself. */
     private SeriesListAdapter mListAdapter;
+
     private final EditSeriesForBookDialogFragment.OnProcessChangesListener
             mOnProcessChangesListener = EditBookSeriesListDialogFragment.this::processChanges;
+
     /** Drag and drop support for the list view. */
     private ItemTouchHelper mItemTouchHelper;
 

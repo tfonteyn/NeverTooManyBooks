@@ -31,7 +31,6 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -166,7 +165,7 @@ public abstract class BaseDialogFragment
     protected void showError(@NonNull final TextInputLayout til,
                              @NonNull final CharSequence error) {
         til.setError(error);
-        new Handler().postDelayed(() -> til.setError(null), BaseActivity.ERROR_DELAY_MS);
+        til.postDelayed(() -> til.setError(null), BaseActivity.ERROR_DELAY_MS);
     }
 
     /**

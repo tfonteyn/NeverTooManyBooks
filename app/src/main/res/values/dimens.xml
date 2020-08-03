@@ -115,6 +115,7 @@
 
     <!-- Start margin applied to a field. Used for individual fields, or with a Guideline for a group of fields. -->
     <dimen name="indent_field">8dp</dimen>
+    <dimen name="indent_field_large">16dp</dimen>
     <!-- Start margin applied to the 2nd, 3rd.. field on a line of fields. -->
     <dimen name="indent_field_inline">12dp</dimen>
 

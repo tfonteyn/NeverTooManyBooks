@@ -32,8 +32,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Parcelable;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -143,10 +141,7 @@ public abstract class BookSearchBaseFragment
         switch (item.getItemId()) {
             case R.id.MENU_PREFS_SEARCH_SITES: {
                 final Intent intent = new Intent(getContext(), SearchAdminActivity.class)
-                        .putExtra(SearchAdminModel.BKEY_LIST_TYPE,
-                                  (Parcelable) SiteList.Type.Data)
-                        .putExtra(SiteList.Type.Data.getBundleKey(),
-                                  mCoordinator.getSiteList());
+                        .putExtra(SearchAdminModel.BKEY_LIST, mCoordinator.getSiteList());
                 startActivityForResult(intent, RequestCode.PREFERRED_SEARCH_SITES);
                 return true;
             }
@@ -212,8 +207,8 @@ public abstract class BookSearchBaseFragment
                 fm.findFragmentByTag(ProgressDialogFragment.TAG);
         // not found? create it
         if (dialog == null) {
-            dialog = ProgressDialogFragment
-                    .newInstance(R.string.progress_msg_searching, true, false);
+            dialog = ProgressDialogFragment.newInstance(
+                    getString(R.string.progress_msg_searching), true, false);
             dialog.show(fm, ProgressDialogFragment.TAG);
         }
 
@@ -308,7 +303,7 @@ public abstract class BookSearchBaseFragment
     protected void showError(@NonNull final TextInputLayout til,
                              @NonNull final CharSequence error) {
         til.setError(error);
-        new Handler().postDelayed(() -> til.setError(null), BaseActivity.ERROR_DELAY_MS);
+        til.postDelayed(() -> til.setError(null), BaseActivity.ERROR_DELAY_MS);
     }
 
     @Override
@@ -323,8 +318,8 @@ public abstract class BookSearchBaseFragment
             // no changes committed, we got data to use temporarily
             case RequestCode.PREFERRED_SEARCH_SITES: {
                 if (resultCode == Activity.RESULT_OK && data != null) {
-                    final SiteList siteList = data.getParcelableExtra(
-                            SiteList.Type.Data.getBundleKey());
+                    final SiteList siteList =
+                            data.getParcelableExtra(SiteList.Type.Data.getBundleKey());
                     if (siteList != null) {
                         mCoordinator.setSiteList(siteList);
                     }

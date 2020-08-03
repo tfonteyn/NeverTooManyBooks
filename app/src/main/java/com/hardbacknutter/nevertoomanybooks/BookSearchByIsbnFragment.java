@@ -52,7 +52,6 @@ import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentBooksearchByIsbnBinding;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
-import com.hardbacknutter.nevertoomanybooks.searches.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.searches.SiteList;
 import com.hardbacknutter.nevertoomanybooks.settings.BarcodePreferenceFragment;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
@@ -273,6 +272,8 @@ public class BookSearchByIsbnFragment
                 mInScanMode = false;
                 return;
             }
+
+            // RequestCode.PREFERRED_SEARCH_SITES is handled in the parent class.
             case RequestCode.SETTINGS: {
                 // Settings initiated from the local menu or dialog box.
                 if (resultCode == Activity.RESULT_OK && data != null) {
@@ -280,9 +281,7 @@ public class BookSearchByIsbnFragment
                     final SiteList siteList =
                             data.getParcelableExtra(SiteList.Type.Data.getBundleKey());
                     if (siteList != null) {
-                        final SearchCoordinator model =
-                                new ViewModelProvider(this).get(SearchCoordinator.class);
-                        model.setSiteList(siteList);
+                        mCoordinator.setSiteList(siteList);
                     }
 
                     // init the scanner if it was changed.

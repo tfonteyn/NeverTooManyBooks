@@ -76,7 +76,9 @@ public class ExportFragment
                 public void onAttachFragment(@NonNull final FragmentManager fragmentManager,
                                              @NonNull final Fragment fragment) {
                     if (BuildConfig.DEBUG && DEBUG_SWITCHES.ATTACH_FRAGMENT) {
-                        Log.d(getClass().getName(), "onAttachFragment: " + fragment.getTag());
+                        Log.d(getClass().getName(), "onAttachFragment"
+                                                    + "|fragmentManager=" + fragmentManager
+                                                    + "|fragment=" + fragment.getTag());
                     }
 
                     if (fragment instanceof ExportHelperDialogFragment) {
@@ -185,7 +187,8 @@ public class ExportFragment
                 fm.findFragmentByTag(ProgressDialogFragment.TAG);
         // not found? create it
         if (dialog == null) {
-            dialog = ProgressDialogFragment.newInstance(R.string.lbl_backing_up, false, true);
+            dialog = ProgressDialogFragment.newInstance(
+                    getString(R.string.lbl_backing_up), false, true);
             dialog.show(fm, ProgressDialogFragment.TAG);
         }
 
@@ -259,11 +262,10 @@ public class ExportFragment
         closeProgressDialog();
 
         if (message.isNewEvent()) {
-            // won't be seen
             //noinspection ConstantConditions
             Snackbar.make(getView(), R.string.warning_task_cancelled, Snackbar.LENGTH_LONG).show();
             //noinspection ConstantConditions
-            getActivity().finish();
+            getView().postDelayed(() -> getActivity().finish(), BaseActivity.ERROR_DELAY_MS);
         }
     }
 
