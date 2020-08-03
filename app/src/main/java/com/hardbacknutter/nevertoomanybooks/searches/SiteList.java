@@ -33,13 +33,16 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
+import androidx.annotation.VisibleForTesting;
 import androidx.preference.PreferenceManager;
 
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -115,21 +118,64 @@ public class SiteList
     }
 
     /**
+     * Create the list map. Called during startup.
+     *
+     * @param context Current context
+     */
+    public static void create(@NonNull final Context context) {
+        final Locale systemLocale = LocaleUtils.getSystemLocale();
+        final Locale userLocale = LocaleUtils.getUserLocale(context);
+
+        create(context, systemLocale, userLocale);
+    }
+
+    /**
+     * Create the list map.
+     *
+     * @param context      Current context
+     * @param systemLocale device Locale <em>(passed in to allow mocking)</em>
+     * @param userLocale   user locale <em>(passed in to allow mocking)</em>
+     */
+    @VisibleForTesting
+    public static void create(@NonNull final Context context,
+                              @NonNull final Locale systemLocale,
+                              @NonNull final Locale userLocale) {
+        // allow recreating
+        SITE_LIST_MAP.clear();
+        for (Type type : Type.values()) {
+            final SiteList siteList = new SiteList(type);
+            SearchSites.createSiteList(systemLocale, userLocale, siteList);
+            // apply user preferences.
+            siteList.loadPrefs(context);
+
+            SITE_LIST_MAP.put(type, siteList);
+        }
+    }
+
+    /**
+     * Should <strong>ONLY</strong> be called by the
+     * {@link com.hardbacknutter.nevertoomanybooks.settings.SearchAdminModel#persist}.
+     * <strong>NEVER</strong> call this from anywhere else.
+     *
+     * @return the full site list map
+     */
+    @NonNull
+    public static EnumMap<Type, SiteList> getSiteListMap() {
+        return SITE_LIST_MAP;
+    }
+
+    /**
      * Get the (cached) list with user preferences for the data sites, ordered by reliability.
      * Includes enabled <strong>AND</strong> disabled sites.
      * <p>
      * This list will be a re-ordered clone/copy of the {@link Type#Data} list,
      * with the SAME Site objects
      *
-     * @param context Current context
-     *
      * @return the list
      */
     @NonNull
-    static List<Site> getDataSitesByReliability(@NonNull final Context context) {
-        final Locale systemLocale = LocaleUtils.getSystemLocale();
-        final Locale userLocale = LocaleUtils.getUserLocale(context);
-        return getList(context, systemLocale, userLocale, Type.Data)
+    static List<Site> getDataSitesByReliability() {
+        return getList(Type.Data)
                 .reorder(SearchSites.DATA_RELIABILITY_ORDER)
                 .getSites();
     }
@@ -138,98 +184,18 @@ public class SiteList
      * Get the global search site list in the preferred order.
      * Includes enabled <strong>AND</strong> disabled sites.
      *
-     * @param context      Current context
-     * @param systemLocale device Locale <em>(passed in to allow mocking)</em>
-     * @param userLocale   user locale <em>(passed in to allow mocking)</em>
-     * @param type         type
+     * <Strong>Dev. note</Strong>: this method returns a <strong>NEW instance</strong>
+     * of the cached list so the caller can reorder at will without affected the next caller.
+     * The site instances in the list are however shared!
      *
-     * @return the list
+     * @param type type
+     *
+     * @return a new instance of the cached list.
      */
     @NonNull
-    public static SiteList getList(@NonNull final Context context,
-                                   @NonNull final Locale systemLocale,
-                                   @NonNull final Locale userLocale,
-                                   @NonNull final Type type) {
-        // already loaded ?
-        final SiteList list = SITE_LIST_MAP.get(type);
-        if (list != null) {
-            return new SiteList(list);
-        }
-
-        // create the list according to user preferences.
-        final SiteList newList = SearchSites.createSiteList(systemLocale, userLocale, type);
-        newList.loadPrefs(context);
-
-        // cache the list for reuse
-        SITE_LIST_MAP.put(type, newList);
-
-        return new SiteList(newList);
-    }
-
-    /**
-     * Reset a list back to the hardcoded defaults.
-     *
-     * @param context      Current context
-     * @param systemLocale device Locale <em>(passed in to allow mocking)</em>
-     * @param userLocale   user locale <em>(passed in to allow mocking)</em>
-     * @param type         type
-     *
-     * @return the new list
-     */
-    public static SiteList resetList(@NonNull final Context context,
-                                     @NonNull final Locale systemLocale,
-                                     @NonNull final Locale userLocale,
-                                     @NonNull final Type type) {
-
-        // recreate the list with all defaults applied.
-        final SiteList newList = SearchSites.createSiteList(systemLocale, userLocale, type);
-        // overwrite stored user preferences
-        newList.update(context);
-
-        // cache the list for reuse; thereby overwriting the previously stored copy
-        SITE_LIST_MAP.put(type, newList);
-
-        return new SiteList(newList);
-    }
-
-    /**
-     * Bring up an Alert to the user if the current list includes a site where registration
-     * is beneficial/required.
-     *
-     * @param context      Current context
-     * @param required     {@code true} if we <strong>must</strong> have access.
-     *                     {@code false} if it would be beneficial.
-     * @param callerSuffix String used to flag in preferences if we showed the alert from
-     *                     that caller already or not.
-     *
-     * @return {@code true} if an alert is currently shown
-     */
-    @SuppressWarnings("UnusedReturnValue")
-    public boolean promptToRegister(@NonNull final Context context,
-                                    final boolean required,
-                                    @NonNull final String callerSuffix) {
-        boolean showingAlert = false;
-        for (Site site : mList) {
-            if (site.isEnabled()) {
-                showingAlert |= site.getSearchEngine()
-                                    .promptToRegister(context, required, callerSuffix);
-            }
-        }
-
-        return showingAlert;
-    }
-
-
-    public void clear() {
-        mList.clear();
-    }
-
-    public void add(@NonNull final Site site) {
-        mList.add(site);
-    }
-
-    public void add(@SearchSites.EngineId final int id) {
-        add(id, true);
+    public static SiteList getList(@NonNull final Type type) {
+        final SiteList siteList = Objects.requireNonNull(SITE_LIST_MAP.get(type));
+        return new SiteList(siteList);
     }
 
     public void add(@SearchSites.EngineId final int id,
@@ -237,12 +203,30 @@ public class SiteList
         mList.add(new Site(id, mType, enabled));
     }
 
-    public void addAll(@NonNull final SiteList newList) {
-        mList.addAll(newList.mList);
+    @NonNull
+    public Type getType() {
+        return mType;
     }
 
     /**
-     * Get the sites (both enabled and disabled) in the preferred order.
+     * Get the specified site in this list.
+     *
+     * @param engineId of the site to get
+     *
+     * @return the site
+     */
+    @Nullable
+    public Site getSite(@SearchSites.EngineId final int engineId) {
+        for (Site site : mList) {
+            if (site.engineId == engineId) {
+                return site;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Get all sites (both enabled and disabled) in this list, in the preferred order.
      *
      * @return the list
      */
@@ -252,7 +236,7 @@ public class SiteList
     }
 
     /**
-     * Get the enabled sites list in the preferred order.
+     * Get the enabled sites in this list, in the preferred order.
      *
      * @return the list
      */
@@ -262,18 +246,18 @@ public class SiteList
     }
 
     /**
-     * Reorder the given list based on user preferences.
+     * Create a new list, but reordered according to the given order string.
      * The site objects are the <strong>same</strong> as in the original list.
      * <p>
      * The reordered list <strong>MAY</strong> be shorter then the original,
      * as sites from the original which are not present in the order string
      * are <strong>NOT</strong> added.
      * <p>
-     * The internal {@link #mList} is NOT modified.
+     * The original list ('this') is NOT modified.
      *
      * @param order CSV string with site ID's
      *
-     * @return ordered list
+     * @return new instance with the <strong>original</strong> site objects in the desired order
      */
     private SiteList reorder(@NonNull final String order) {
         final SiteList orderedList = new SiteList(mType);
@@ -281,7 +265,7 @@ public class SiteList
             final int id = Integer.parseInt(idStr);
             for (Site site : mList) {
                 if (site.engineId == id) {
-                    orderedList.add(site);
+                    orderedList.mList.add(site);
                     break;
                 }
             }
@@ -289,14 +273,41 @@ public class SiteList
         return orderedList;
     }
 
+
     /**
-     * Update the list.
+     * Reset a list back to the hardcoded defaults.
      *
      * @param context Current context
      */
-    public void update(@NonNull final Context context) {
-        SITE_LIST_MAP.put(mType, this);
-        savePrefs(context);
+    public void resetList(@NonNull final Context context) {
+        final Locale systemLocale = LocaleUtils.getSystemLocale();
+        final Locale userLocale = LocaleUtils.getUserLocale(context);
+        resetList(context, systemLocale, userLocale);
+    }
+
+    /**
+     * Reset a list back to the hardcoded defaults.
+     *
+     * @param context      Current context
+     * @param systemLocale device Locale <em>(passed in to allow mocking)</em>
+     * @param userLocale   user locale <em>(passed in to allow mocking)</em>
+     */
+    @VisibleForTesting
+    public void resetList(@NonNull final Context context,
+                          @NonNull final Locale systemLocale,
+                          @NonNull final Locale userLocale) {
+
+        // re-create the global list for the type we want to reset
+        final SiteList globalList = SITE_LIST_MAP.get(this.getType());
+        //noinspection ConstantConditions
+        globalList.mList.clear();
+        SearchSites.createSiteList(systemLocale, userLocale, globalList);
+        // overwrite stored user preferences with the defaults
+        globalList.savePrefs(context);
+
+        // now replace the given list CONTENT/order
+        mList.clear();
+        mList.addAll(globalList.mList);
     }
 
     /**
@@ -304,7 +315,7 @@ public class SiteList
      *
      * @param context Current context
      */
-    private void savePrefs(@NonNull final Context context) {
+    public void savePrefs(@NonNull final Context context) {
         // Save the order of the given list (ID's) and the individual site settings to preferences.
         final SharedPreferences.Editor ed = PreferenceManager.getDefaultSharedPreferences(context)
                                                              .edit();
@@ -342,6 +353,34 @@ public class SiteList
                 savePrefs(context);
             }
         }
+    }
+
+
+    /**
+     * Bring up an Alert to the user if the current list includes a site where registration
+     * is beneficial/required.
+     *
+     * @param context      Current context
+     * @param required     {@code true} if we <strong>must</strong> have access.
+     *                     {@code false} if it would be beneficial.
+     * @param callerSuffix String used to flag in preferences if we showed the alert from
+     *                     that caller already or not.
+     *
+     * @return {@code true} if an alert is currently shown
+     */
+    @SuppressWarnings("UnusedReturnValue")
+    public boolean promptToRegister(@NonNull final Context context,
+                                    final boolean required,
+                                    @NonNull final String callerSuffix) {
+        boolean showingAlert = false;
+        for (Site site : mList) {
+            if (site.isEnabled()) {
+                showingAlert |= site.getSearchEngine()
+                                    .promptToRegister(context, required, callerSuffix);
+            }
+        }
+
+        return showingAlert;
     }
 
     @Override

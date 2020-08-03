@@ -93,20 +93,21 @@ class SearchSitesTest
     void site() {
         Locale systemLocale = Locale.US;
         Locale userLocale = Locale.UK;
+        SiteList.create(mContext, systemLocale, userLocale);
 
         for (SiteList.Type type : SiteList.Type.values()) {
 
-            final List<Site> sites = SiteList.getList(mContext, systemLocale, userLocale, type)
-                                             .getSites();
-            System.out.println("\n--------------------------------------------------\n" + type);
+            final List<Site> sites = SiteList.getList(type).getSites();
+            System.out.println("\n--------------------------------------------------\n\n"
+                               + type);
 
             for (Site site : sites) {
                 final Site.Config config = Site.getConfig(site.engineId);
                 assertNotNull(config);
-                final SearchEngine searchEngine = config.createSearchEngine(mContext);
+                final SearchEngine searchEngine = site.getSearchEngine();
                 assertNotNull(searchEngine);
 
-                System.out.println("\n" + site + "\n" + searchEngine);
+                System.out.println("\n" + config + "\n\n" + site + "\n\n" + searchEngine);
             }
         }
     }

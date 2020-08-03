@@ -48,8 +48,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
-import java.util.Locale;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -57,7 +55,6 @@ import com.hardbacknutter.nevertoomanybooks.databinding.FragmentEditSearchOrderB
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searches.Site;
 import com.hardbacknutter.nevertoomanybooks.searches.SiteList;
-import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.widgets.ItemTouchHelperViewHolderBase;
 import com.hardbacknutter.nevertoomanybooks.widgets.RecyclerViewAdapterBase;
 import com.hardbacknutter.nevertoomanybooks.widgets.ddsupport.SimpleItemTouchHelperCallback;
@@ -66,29 +63,31 @@ import com.hardbacknutter.nevertoomanybooks.widgets.ddsupport.StartDragListener;
 /**
  * Handles the order of sites to search, and the individual site being enabled or not.
  * <p>
- * Persistence is handled in {@link SearchAdminModel}.
+ * Persistence is handled in {@link SearchAdminActivity} / {@link SearchAdminModel}.
  */
 public class SearchOrderFragment
         extends Fragment {
 
+    private static final String TAG = "SearchOrderFragment";
+    public static final String BKEY_TYPE = TAG + ":type";
+
     private SearchSiteListAdapter mListAdapter;
     private ItemTouchHelper mItemTouchHelper;
 
-    /** The list we're handling in this fragment (tab). */
-    private SiteList.Type mOurType;
-
+    /* The View model. */
+    @SuppressWarnings("FieldCanBeLocal")
     private SearchAdminModel mModel;
 
     /** View binding. */
     private FragmentEditSearchOrderBinding mVb;
 
+    /** The list we're handling in this fragment (tab). */
+    private SiteList mSiteList;
+
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-
-        mOurType = requireArguments().getParcelable(SearchAdminModel.BKEY_LIST_TYPE);
-        Objects.requireNonNull(mOurType);
     }
 
     @Override
@@ -105,8 +104,12 @@ public class SearchOrderFragment
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        final SiteList.Type type = Objects
+                .requireNonNull(requireArguments().getParcelable(BKEY_TYPE));
+
         //noinspection ConstantConditions
         mModel = new ViewModelProvider(getActivity()).get(SearchAdminModel.class);
+        mSiteList = mModel.getList(type);
 
         final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         mVb.siteList.setLayoutManager(linearLayoutManager);
@@ -115,8 +118,7 @@ public class SearchOrderFragment
                 new DividerItemDecoration(getContext(), linearLayoutManager.getOrientation()));
         mVb.siteList.setHasFixedSize(true);
 
-        final List<Site> list = mModel.getList(getContext(), mOurType).getSites();
-        mListAdapter = new SearchSiteListAdapter(getContext(), mOurType, list,
+        mListAdapter = new SearchSiteListAdapter(getContext(), mSiteList,
                                                  vh -> mItemTouchHelper.startDrag(vh));
         mVb.siteList.setAdapter(mListAdapter);
 
@@ -130,7 +132,7 @@ public class SearchOrderFragment
     public void onCreateOptionsMenu(@NonNull final Menu menu,
                                     @NonNull final MenuInflater inflater) {
 
-        menu.add(Menu.NONE, R.id.MENU_RESET, 0, R.string.btn_reset)
+        menu.add(Menu.NONE, R.id.MENU_RESET, 0, R.string.menu_reset_to_default)
             .setIcon(R.drawable.ic_undo)
             .setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
 
@@ -143,10 +145,8 @@ public class SearchOrderFragment
         //noinspection SwitchStatementWithTooFewBranches
         switch (item.getItemId()) {
             case R.id.MENU_RESET: {
-                final Locale systemLocale = LocaleUtils.getSystemLocale();
                 //noinspection ConstantConditions
-                final Locale userLocale = LocaleUtils.getUserLocale(getContext());
-                mModel.resetList(getContext(), systemLocale, userLocale, mOurType);
+                mSiteList.resetList(getContext());
                 mListAdapter.notifyDataSetChanged();
                 return true;
             }
@@ -165,17 +165,16 @@ public class SearchOrderFragment
          * Constructor.
          *
          * @param context           Current context
-         * @param items             List of sites
+         * @param siteList          to use
          * @param dragStartListener Listener to handle the user moving rows up and down
          */
         SearchSiteListAdapter(@NonNull final Context context,
-                              @NonNull final SiteList.Type type,
-                              @NonNull final List<Site> items,
+                              @NonNull final SiteList siteList,
                               @NonNull final StartDragListener dragStartListener) {
-            super(context, items, dragStartListener);
+            super(context, siteList.getSites(), dragStartListener);
 
             // only show the info for Data lists. Irrelevant for others.
-            mShowInfo = type == SiteList.Type.Data;
+            mShowInfo = siteList.getType() == SiteList.Type.Data;
         }
 
         @NonNull

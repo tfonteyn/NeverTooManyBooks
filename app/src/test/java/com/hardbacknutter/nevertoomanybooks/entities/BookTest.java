@@ -74,7 +74,7 @@ class BookTest
 
         mBundleHelper = BundleMock.mock();
 
-        SearchSites.createConfigs();
+        SearchSites.registerSearchEngineClasses();
     }
 
     /** US english book, price in $. */

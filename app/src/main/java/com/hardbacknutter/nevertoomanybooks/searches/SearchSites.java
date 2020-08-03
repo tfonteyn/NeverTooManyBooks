@@ -124,8 +124,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.LanguageUtils;
  *          Configure the engine using the {@link SearchEngine.Configuration} annotation.
  *      </li>
  *
- *     <li>Add the {@link SearchEngine} class to the static block in this class
- *         by calling {@link Site#add}</li>
+ *     <li>Add the {@link SearchEngine} class to {@link #registerSearchEngineClasses()}</li>
  *
  *      <li>Add a new {@link Site} instance to the one or more list(s)
  *          in {@link #createSiteList}</li>
@@ -195,12 +194,14 @@ public final class SearchSites {
 
     /**
      * create all engine basic configurations; called during startup.
+     * <p>
+     * For the BuildConfig.ENABLE_ usage: see app/build.gradle
      */
-    public static void createConfigs() {
+    public static void registerSearchEngineClasses() {
         //dev note: we could scan for the annotation or for classes implementing the interface...
         // ... but that means traversing the class path. Not really worth the hassle.
-
         // NEWTHINGS: adding a new search engine: add the search engine class
+        // The order added is not relevant
         Site.add(AmazonSearchEngine.class);
         Site.add(GoodreadsSearchEngine.class);
         Site.add(IsfdbSearchEngine.class);
@@ -220,17 +221,15 @@ public final class SearchSites {
     }
 
     /**
-     * Create the global search site list for the given type.
+     * Add sites to the given {@link SiteList}.
      *
      * @param systemLocale device Locale <em>(passed in to allow mocking)</em>
      * @param userLocale   user locale <em>(passed in to allow mocking)</em>
-     * @param type         list to get
-     *
-     * @return list
+     * @param list         list to populate
      */
-    static SiteList createSiteList(@NonNull final Locale systemLocale,
-                                   @NonNull final Locale userLocale,
-                                   @NonNull final SiteList.Type type) {
+    static void createSiteList(@NonNull final Locale systemLocale,
+                               @NonNull final Locale userLocale,
+                               @NonNull final SiteList list) {
 
         // Certain sites are only enabled by default if the device or user set language
         // matches the site language.
@@ -245,22 +244,21 @@ public final class SearchSites {
         //
         // The order added here is the default order they will be used, but the user
         // can reorder the lists in preferences.
-        final SiteList list = new SiteList(type);
-        switch (type) {
+        switch (list.getType()) {
             case Data: {
-                list.add(AMAZON);
+                list.add(AMAZON, true);
 
-                list.add(GOODREADS);
+                list.add(GOODREADS, true);
 
                 if (BuildConfig.ENABLE_GOOGLE_BOOKS) {
-                    list.add(GOOGLE_BOOKS);
+                    list.add(GOOGLE_BOOKS, true);
                 }
 
                 if (BuildConfig.ENABLE_LIBRARY_THING) {
-                    list.add(LIBRARY_THING);
+                    list.add(LIBRARY_THING, true);
                 }
 
-                list.add(ISFDB);
+                list.add(ISFDB, true);
 
                 // Dutch.
                 list.add(STRIP_INFO_BE, enableIfDutch);
@@ -278,11 +276,11 @@ public final class SearchSites {
             case Covers: {
                 // Only add sites here that implement {@link SearchEngine.CoverByIsbn}.
 
-                list.add(AMAZON);
+                list.add(AMAZON, true);
 
-                list.add(GOODREADS);
+                list.add(GOODREADS, true);
 
-                list.add(ISFDB);
+                list.add(ISFDB, true);
 
                 // Dutch.
                 list.add(KB_NL, enableIfDutch);
@@ -301,18 +299,16 @@ public final class SearchSites {
                 //Only add sites here that implement {@link SearchEngine.AlternativeEditions}.
 
                 if (BuildConfig.ENABLE_LIBRARY_THING_ALT_ED) {
-                    list.add(LIBRARY_THING);
+                    list.add(LIBRARY_THING, true);
                 }
 
-                list.add(ISFDB);
+                list.add(ISFDB, true);
                 break;
             }
 
             default:
-                throw new IllegalArgumentException(ErrorMsg.UNEXPECTED_VALUE + type);
+                throw new IllegalArgumentException(ErrorMsg.UNEXPECTED_VALUE + list);
         }
-
-        return list;
     }
 
     // NEWTHINGS: adding a new search engine: add the engine id

@@ -21,6 +21,12 @@
 #-renamesourcefileattribute SourceFile
 
 
-#  public boolean onPreferenceStartFragment(@NonNull final PreferenceFragmentCompat caller,
-#                                           @NonNull final Preference pref) {
+# Implementation of Interface
+# androidx.preference.PreferenceFragmentCompat.OnPreferenceStartFragmentCallback
+# was getting removed.
 -keep public class * extends androidx.preference.PreferenceFragmentCompat
+
+# SearchEngine constructors are called using reflection
+-keepclassmembers public class * extends com.hardbacknutter.nevertoomanybooks.searches.SearchEngine {
+   public <init>(...);
+   }

@@ -37,11 +37,10 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModel;
 
 import java.util.EnumMap;
-import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.searches.SiteList;
-import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 
 /**
  * Shared between ALL tabs (fragments) and the hosting Activity.
@@ -51,14 +50,14 @@ public class SearchAdminModel
 
     /** Log tag. */
     private static final String TAG = "SearchAdminModel";
-    public static final String BKEY_LIST_TYPE = TAG + ":type";
+    /** Single-list/tab mode parameter. */
+    public static final String BKEY_LIST = TAG + ":list";
 
-    /** Contains cloned copies of the lists we're handling. */
+    /**
+     * In single-list mode: a local instance, containing a COPY of the single list we're editing.
+     * In all-lists mode: a reference to the global list map.
+     */
     private Map<SiteList.Type, SiteList> mListMap;
-
-    /** {@code null} if we're doing all lists. */
-    @Nullable
-    private SiteList.Type mType;
 
     /**
      * Pseudo constructor.
@@ -70,62 +69,76 @@ public class SearchAdminModel
      */
     public void init(@Nullable final Bundle args) {
         if (mListMap == null) {
-            mListMap = new EnumMap<>(SiteList.Type.class);
+            // Check/load single-list mode
+            final SiteList singleList;
             if (args != null) {
-                mType = args.getParcelable(BKEY_LIST_TYPE);
+                // will be null if not present
+                singleList = args.getParcelable(BKEY_LIST);
+            } else {
+                singleList = null;
+            }
 
-                // first see if we got passed in any custom lists.
-                for (SiteList.Type type : SiteList.Type.values()) {
-                    if (!mListMap.containsKey(type)) {
-                        final SiteList siteList = args.getParcelable(type.getBundleKey());
-                        if (siteList != null) {
-                            mListMap.put(type, siteList);
-                        }
-                    }
-                }
+            if (singleList != null) {
+                // create a local instance and add the list
+                mListMap = new EnumMap<>(SiteList.Type.class);
+                mListMap.put(singleList.getType(), singleList);
+
+            } else {
+                // Get a reference to the global lists
+                mListMap = SiteList.getSiteListMap();
             }
         }
     }
 
-    @Nullable
-    SiteList.Type getType() {
-        return mType;
+    boolean isSingleListMode() {
+        return mListMap.size() == 1;
     }
 
     /**
-     * Getter for single tab mode.
+     * Get the list for single-list mode.
+     * Should only be called when {@link #isSingleListMode()} returns {@code true}
      *
-     * @param context Current context
-     * @param type    type of list
-     *
-     * @return list matching the single tab.
+     * @return the list
      */
     @NonNull
-    SiteList getList(@NonNull final Context context,
-                     @NonNull final SiteList.Type type) {
-
-        SiteList list = mListMap.get(type);
-        if (list == null) {
-            final Locale systemLocale = LocaleUtils.getSystemLocale();
-            final Locale userLocale = LocaleUtils.getUserLocale(context);
-            list = SiteList.getList(context, systemLocale, userLocale, type);
-            mListMap.put(type, list);
+    SiteList getList() {
+        if (!isSingleListMode()) {
+            throw new IllegalStateException("NOT in single-list mode");
         }
+        return mListMap.values().iterator().next();
+    }
+
+    /**
+     * Get the list for the given type.
+     * <p>
+     * Can be called in single-list, AND in all-lists mode.
+     * For single-list mode, the type must match or a NullPointerException will be thrown.
+     *
+     * @param type type of list
+     *
+     * @return list
+     *
+     * @throws NullPointerException if in single-list mode and the given type does not match
+     *                              (This would be a bug...)
+     */
+    @NonNull
+    SiteList getList(@NonNull final SiteList.Type type) {
+        final SiteList list = mListMap.get(type);
+        Objects.requireNonNull(list, "in single-list mode, wrong type=" + type);
         return list;
     }
 
     /**
-     * Persist the lists.
-     *
-     * @param context Current context
+     * Validate if each list handled has at least one site enabled.
+     * <p>
+     * Can be called in single-list, AND in all-lists mode.
      *
      * @return {@code true} if each list handled has at least one site enabled.
      */
-    public boolean persist(@NonNull final Context context) {
+    public boolean validate() {
         int shouldHave = 0;
         int has = 0;
         for (SiteList list : mListMap.values()) {
-            list.update(context);
             shouldHave++;
             has += list.getEnabledSites().isEmpty() ? 0 : 1;
         }
@@ -133,19 +146,21 @@ public class SearchAdminModel
         return (has > 0) && (shouldHave == has);
     }
 
-    void resetList(@NonNull final Context context,
-                   @NonNull final Locale systemLocale,
-                   @NonNull final Locale locale,
-                   @NonNull final SiteList.Type type) {
 
-        final SiteList newList = SiteList.resetList(context, systemLocale, locale, type);
+    /**
+     * Persist the lists.
+     * <p>
+     * Should only be called when {@link #isSingleListMode()} returns {@code false}
+     *
+     * @param context Current context
+     */
+    public void persist(@NonNull final Context context) {
+        if (isSingleListMode()) {
+            throw new IllegalStateException("in single-list mode");
+        }
 
-        final SiteList currentList = mListMap.get(type);
-        if (currentList == null) {
-            mListMap.put(type, newList);
-        } else {
-            currentList.clear();
-            currentList.addAll(newList);
+        for (SiteList list : mListMap.values()) {
+            list.savePrefs(context);
         }
     }
 }

@@ -48,6 +48,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searches.Site;
+import com.hardbacknutter.nevertoomanybooks.searches.SiteList;
 
 final class MenuHandler {
 
@@ -104,8 +105,7 @@ final class MenuHandler {
             final MenuItem menuItem = subMenu.getItem(i);
             boolean visible = false;
 
-            final Site.Config config = Site
-                    .getConfigByMenuId(menuItem.getItemId());
+            final Site.Config config = Site.getConfigByMenuId(menuItem.getItemId());
             if (config != null) {
                 final Domain domain = config.getExternalIdDomain();
                 if (domain != null) {
@@ -129,21 +129,19 @@ final class MenuHandler {
                                             @NonNull final DataHolder rowData) {
 
         final Site.Config config = Site.getConfigByMenuId(menuItemId);
-        // sanity check
-        if (config != null) {
-            final SearchEngine searchEngine = config.createSearchEngine();
-            // sanity check
-            if (searchEngine instanceof SearchEngine.ByExternalId) {
-                final Domain domain = config.getExternalIdDomain();
-                //noinspection ConstantConditions
-                final String url = ((SearchEngine.ByExternalId) searchEngine)
-                        .createUrl(rowData.getString(domain.getName()));
-                context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
-                return true;
-            }
-        }
 
-        return false;
+        //noinspection ConstantConditions
+        final SearchEngine.ByExternalId searchEngine = (SearchEngine.ByExternalId)
+                SiteList.getList(SiteList.Type.Data)
+                        .getSite(config.getEngineId())
+                        .getSearchEngine();
+
+        final Domain domain = config.getExternalIdDomain();
+        //noinspection ConstantConditions
+        final String url = searchEngine.createUrl(rowData.getString(domain.getName()));
+        context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+        return true;
+
     }
 
     private static void prepareSearchOnAmazonMenu(@NonNull final Menu menu,

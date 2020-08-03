@@ -31,7 +31,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -121,6 +120,7 @@ public class UpdateFieldsFragment
         mUpdateFieldsModel = new ViewModelProvider(this).get(UpdateFieldsModel.class);
         //noinspection ConstantConditions
         mUpdateFieldsModel.init(getContext(), args);
+
         // Progress from individual searches AND overall progress
         mUpdateFieldsModel.onProgress().observe(getViewLifecycleOwner(), this::onProgress);
         // An individual book search finished.
@@ -225,7 +225,7 @@ public class UpdateFieldsFragment
             .setIcon(R.drawable.ic_find_in_page)
             .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
 
-        menu.add(Menu.NONE, R.id.MENU_RESET, 0, R.string.btn_reset)
+        menu.add(Menu.NONE, R.id.MENU_RESET, 0, R.string.menu_reset_to_default)
             .setIcon(R.drawable.ic_undo)
             .setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
 
@@ -238,10 +238,7 @@ public class UpdateFieldsFragment
         switch (item.getItemId()) {
             case R.id.MENU_PREFS_SEARCH_SITES: {
                 final Intent intent = new Intent(getContext(), SearchAdminActivity.class)
-                        .putExtra(SearchAdminModel.BKEY_LIST_TYPE,
-                                  (Parcelable) SiteList.Type.Data)
-                        .putExtra(SiteList.Type.Data.getBundleKey(),
-                                  mUpdateFieldsModel.getSiteList());
+                        .putExtra(SearchAdminModel.BKEY_LIST, mUpdateFieldsModel.getSiteList());
                 startActivityForResult(intent, RequestCode.PREFERRED_SEARCH_SITES);
                 return true;
             }
@@ -298,28 +295,27 @@ public class UpdateFieldsFragment
         }
 
         // If the user has selected to overwrite thumbnails...
-        final FieldUsage covers = mUpdateFieldsModel
-                .getFieldUsage(DBDefinitions.PREFS_IS_USED_THUMBNAIL);
-        if (covers != null && covers.getUsage().equals(FieldUsage.Usage.Overwrite)) {
+        if (mUpdateFieldsModel.isShowWarningAboutCovers()) {
             // check if the user really wants to overwrite all covers
             new MaterialAlertDialogBuilder(getContext())
                     .setIcon(R.drawable.ic_warning)
                     .setTitle(R.string.menu_update_fields)
                     .setMessage(R.string.confirm_overwrite_thumbnail)
-                    .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
-                    .setNeutralButton(R.string.no, (d, w) -> {
-                        covers.setUsage(FieldUsage.Usage.CopyIfBlank);
+                    .setNeutralButton(android.R.string.cancel, (d, w) -> d.dismiss())
+                    .setNegativeButton(R.string.lbl_field_usage_copy_if_blank, (d, w) -> {
+                        mUpdateFieldsModel.setFieldUsage(DBDefinitions.PREFS_IS_USED_THUMBNAIL,
+                                                         FieldUsage.Usage.CopyIfBlank);
                         startUpdate();
                     })
-                    .setPositiveButton(R.string.yes, (d, w) -> {
-                        covers.setUsage(FieldUsage.Usage.Overwrite);
+                    .setPositiveButton(R.string.lbl_field_usage_overwrite, (d, w) -> {
+                        mUpdateFieldsModel.setFieldUsage(DBDefinitions.PREFS_IS_USED_THUMBNAIL,
+                                                         FieldUsage.Usage.Overwrite);
                         startUpdate();
                     })
                     .create()
                     .show();
             return;
         }
-
         startUpdate();
     }
 
@@ -399,8 +395,8 @@ public class UpdateFieldsFragment
                 fm.findFragmentByTag(ProgressDialogFragment.TAG);
         // not found? create it
         if (dialog == null) {
-            dialog = ProgressDialogFragment
-                    .newInstance(R.string.progress_msg_searching, true, true);
+            dialog = ProgressDialogFragment.newInstance(
+                    getString(R.string.progress_msg_searching), true, true);
             dialog.show(fm, ProgressDialogFragment.TAG);
         }
 

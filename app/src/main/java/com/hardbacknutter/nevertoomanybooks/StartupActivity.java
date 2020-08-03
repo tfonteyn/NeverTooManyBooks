@@ -49,6 +49,7 @@ import com.hardbacknutter.nevertoomanybooks.databinding.ActivityStartupBinding;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.goodreads.qtasks.taskqueue.QueueManager;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
+import com.hardbacknutter.nevertoomanybooks.searches.SiteList;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.NightModeUtils;
@@ -210,14 +211,18 @@ public class StartupActivity
 
     /**
      * Last steps:
-     * Init the search engines and startup the task queue.
+     * Init the search engines
+     * Startup the task queue.
      * Finally, start the main user activity.
      */
     private void gotoMainScreen() {
         // Remove the weak self-reference
         sStartupActivity.clear();
         // Setup the search engines
-        SearchSites.createConfigs();
+        SearchSites.registerSearchEngineClasses();
+        // and the lists for the engines
+        SiteList.create(this);
+
         // Create the Goodreads QueueManager. This (re)starts stored tasks.
         QueueManager.create(this);
 
@@ -237,7 +242,7 @@ public class StartupActivity
 
     /**
      * Use a Notification to tell the user this is a good time to panic.
-     * URGENT: add email button to the message, as the user cannot access the About screen
+     * URGENT: add email button to the notification, as the user cannot access the About screen
      *
      * @param message to show
      */

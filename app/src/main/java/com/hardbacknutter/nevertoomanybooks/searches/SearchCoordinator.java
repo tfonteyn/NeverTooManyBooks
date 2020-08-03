@@ -257,6 +257,9 @@ public class SearchCoordinator
                 mSearchTasksEndTime = new SparseLongArray();
             }
 
+            // use global preference.
+            mSiteList = SiteList.getList(SiteList.Type.Data);
+
             final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
             if (FormatMapper.isMappingAllowed(prefs)) {
                 mMappers.add(new FormatMapper());
@@ -284,12 +287,6 @@ public class SearchCoordinator
 
                 mPublisherSearchText = args.getString(
                         BooksOnBookshelfModel.SearchCriteria.BKEY_SEARCH_TEXT_PUBLISHER, "");
-
-                // use global preference.
-                final Locale systemLocale = LocaleUtils.getSystemLocale();
-                final Locale userLocale = LocaleUtils.getUserLocale(context);
-                mSiteList = SiteList.getList(context, systemLocale, userLocale,
-                                             SiteList.Type.Data);
             }
         }
     }
@@ -850,7 +847,7 @@ public class SearchCoordinator
             // If an ISBN was passed, ignore entries with the wrong ISBN,
             // and put entries without ISBN at the end
             final Collection<Site> sitesWithoutIsbn = new ArrayList<>();
-            final List<Site> allSites = SiteList.getDataSitesByReliability(context);
+            final List<Site> allSites = SiteList.getDataSitesByReliability();
             for (Site site : allSites) {
                 if (mSearchResults.containsKey(site.engineId)) {
                     final Bundle bookData = mSearchResults.get(site.engineId);
@@ -879,7 +876,7 @@ public class SearchCoordinator
 
         } else {
             // If an ISBN was not passed, then just use the default order
-            sites.addAll(SiteList.getDataSitesByReliability(context));
+            sites.addAll(SiteList.getDataSitesByReliability());
         }
 
         // Merge the data we have in the order as decided upon above.

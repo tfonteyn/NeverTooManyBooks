@@ -46,6 +46,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentBooksearchByExternalIdBinding;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searches.Site;
+import com.hardbacknutter.nevertoomanybooks.searches.SiteList;
 import com.hardbacknutter.nevertoomanybooks.widgets.ConstraintRadioGroup;
 
 public class BookSearchByExternalIdFragment
@@ -172,8 +173,12 @@ public class BookSearchByExternalIdFragment
                               final int viewId) {
 
         final Site.Config config = Site.getConfigByViewId(viewId);
+
         //noinspection ConstantConditions
-        mSelectedSearchEngine = (SearchEngine.ByExternalId) config.createSearchEngine();
+        mSelectedSearchEngine = (SearchEngine.ByExternalId)
+                SiteList.getList(SiteList.Type.Data)
+                        .getSite(config.getEngineId())
+                        .getSearchEngine();
 
         if (!mSelectedSearchEngine.isAvailable()) {
             // If the selected site needs registration, prompt the user.

@@ -66,12 +66,10 @@ import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.searches.Site;
-import com.hardbacknutter.nevertoomanybooks.searches.SiteList;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.FinishedMessage;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.ProgressMessage;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 
 import static com.hardbacknutter.nevertoomanybooks.entities.FieldUsage.Usage.CopyIfBlank;
 import static com.hardbacknutter.nevertoomanybooks.entities.FieldUsage.Usage.Overwrite;
@@ -160,13 +158,7 @@ public class UpdateFieldsModel
         super.init(context, args);
 
         if (mDb == null) {
-
             mDb = new DAO(TAG);
-
-            // use global preference.
-            final Locale systemLocale = LocaleUtils.getSystemLocale();
-            final Locale userLocale = LocaleUtils.getUserLocale(context);
-            setSiteList(SiteList.getList(context, systemLocale, userLocale, SiteList.Type.Data));
 
             if (args != null) {
                 //noinspection unchecked
@@ -231,9 +223,32 @@ public class UpdateFieldsModel
         return mFieldUsages.values();
     }
 
+    /**
+     * Whether the user needs to be warned about lengthy download of covers.
+     *
+     * @return {@code true} if a dialog should be shown
+     */
+    public boolean isShowWarningAboutCovers() {
+
+        // Less then (arbitrary) 10 books, don't check/warn needed.
+        if (mBookIdList != null && mBookIdList.size() < 10) {
+            return false;
+        }
+
+        // More then 10 books, check if they actually want covers
+        final FieldUsage covers = getFieldUsage(DBDefinitions.PREFS_IS_USED_THUMBNAIL);
+        return covers != null && covers.getUsage().equals(FieldUsage.Usage.Overwrite);
+    }
+
     @Nullable
     public FieldUsage getFieldUsage(@NonNull final String key) {
         return mFieldUsages.get(key);
+    }
+
+    public void setFieldUsage(@NonNull final String key,
+                              @NonNull final FieldUsage.Usage usage) {
+        //noinspection ConstantConditions
+        mFieldUsages.get(key).setUsage(usage);
     }
 
     /**

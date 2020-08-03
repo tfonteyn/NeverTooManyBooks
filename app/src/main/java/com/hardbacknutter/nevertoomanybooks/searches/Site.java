@@ -224,7 +224,10 @@ public class Site
 
             final Config config = ALL_SITE_CONFIGS.get(engineId);
             Objects.requireNonNull(config, ErrorMsg.NULL_SEARCH_ENGINE_CONFIG);
-            mSearchEngine = config.createSearchEngine();
+            // ALWAYS use the localized Application context here
+            // It's going to get used in background tasks!
+            final Context appContext = LocaleUtils.applyLocale(App.getTaskContext());
+            mSearchEngine = config.createSearchEngine(appContext);
         }
 
         mSearchEngine.reset();
@@ -337,19 +340,6 @@ public class Site
             }
         }
 
-
-        /**
-         * Create an instance of the {@link SearchEngine} for this configuration.
-         *
-         * @return new instance
-         */
-        @NonNull
-        public SearchEngine createSearchEngine() {
-            // ALWAYS use the localized Application context here
-            // It's going to get used in background tasks!
-            final Context appContext = LocaleUtils.applyLocale(App.getTaskContext());
-            return createSearchEngine(appContext);
-        }
 
         @VisibleForTesting
         @NonNull

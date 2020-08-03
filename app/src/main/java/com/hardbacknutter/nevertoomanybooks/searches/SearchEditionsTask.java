@@ -36,7 +36,7 @@ import androidx.annotation.WorkerThread;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.LinkedHashSet;
-import java.util.Locale;
+import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
@@ -86,17 +86,15 @@ public class SearchEditionsTask
     protected Collection<String> doWork() {
         Thread.currentThread().setName(TAG + mIsbn);
         final Context context = LocaleUtils.applyLocale(App.getTaskContext());
-        final Locale systemLocale = LocaleUtils.getSystemLocale();
-        final Locale userLocale = LocaleUtils.getUserLocale(context);
 
         // keep the order, but eliminate duplicates.
         final Collection<String> isbnList = new LinkedHashSet<>();
         // Always add the original isbn!
         isbnList.add(mIsbn);
 
-        final SiteList siteList = SiteList.getList(context, systemLocale, userLocale,
-                                                   SiteList.Type.AltEditions);
-        for (Site site : siteList.getEnabledSites()) {
+        final List<Site> sites = SiteList.getList(SiteList.Type.AltEditions)
+                                         .getEnabledSites();
+        for (Site site : sites) {
             final SearchEngine searchEngine = site.getSearchEngine(this);
             try {
                 // can we reach the site at all ?

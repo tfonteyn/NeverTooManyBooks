@@ -49,9 +49,6 @@ import com.hardbacknutter.nevertoomanybooks.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.searches.SiteList;
 
-/**
- * USE scenario is (2019-07-05) on a per-page basis only. Hence we 'use' the current displayed list.
- */
 public class SearchAdminActivity
         extends BaseActivity {
 
@@ -75,13 +72,16 @@ public class SearchAdminActivity
         mViewPager = findViewById(R.id.pager);
         final TabLayout tabBarLayout = findViewById(R.id.tab_panel);
 
-        if (mModel.getType() != null) {
+        if (mModel.isSingleListMode()) {
+            final SiteList.Type type = mModel.getList().getType();
             //noinspection ConstantConditions
-            getSupportActionBar().setSubtitle(mModel.getType().getLabelId());
+            getSupportActionBar().setSubtitle(type.getLabelId());
             tabBarLayout.setVisibility(View.GONE);
-        }
 
-        mTabAdapter = new TabAdapter(this, mModel.getType());
+            mTabAdapter = new TabAdapter(this, type);
+        } else {
+            mTabAdapter = new TabAdapter(this, null);
+        }
 
         //FIXME: workaround for what seems to be a bug with FragmentStateAdapter#createFragment
         // and its re-use strategy.
@@ -95,20 +95,20 @@ public class SearchAdminActivity
 
     @Override
     public void onBackPressed() {
-        final boolean hasSites;
-        if (mModel.getType() == null) {
-            hasSites = mModel.persist(this);
-
-        } else {
-            final SiteList siteList = mModel.getList(this, mModel.getType());
-            final Intent resultData = new Intent()
-                    .putExtra(mModel.getType().getBundleKey(), siteList);
-            setResult(Activity.RESULT_OK, resultData);
-            hasSites = !siteList.getEnabledSites().isEmpty();
-        }
-
+        final boolean hasSites = mModel.validate();
         if (hasSites) {
+            if (mModel.isSingleListMode()) {
+                // single-list is NOT persisted, just returned for temporary usage.
+                final SiteList siteList = mModel.getList();
+                final Intent resultData = new Intent()
+                        .putExtra(siteList.getType().getBundleKey(), siteList);
+                setResult(Activity.RESULT_OK, resultData);
+
+            } else {
+                mModel.persist(this);
+            }
             super.onBackPressed();
+
         } else {
             Snackbar.make(mViewPager, R.string.warning_enable_at_least_1_website,
                           Snackbar.LENGTH_LONG).show();
@@ -123,18 +123,22 @@ public class SearchAdminActivity
     private static class TabAdapter
             extends FragmentStateAdapter {
 
+        /**
+         * If in single-list mode, the type of that list,
+         * or {@code null} in all-lists mode.
+         */
         @Nullable
-        private final SiteList.Type mType;
+        private final SiteList.Type mSingleListType;
 
         TabAdapter(@NonNull final FragmentActivity container,
-                   @Nullable final SiteList.Type type) {
+                   @Nullable final SiteList.Type singleListType) {
             super(container);
-            mType = type;
+            mSingleListType = singleListType;
         }
 
         @Override
         public int getItemCount() {
-            if (mType == null) {
+            if (mSingleListType == null) {
                 return SiteList.Type.values().length;
             } else {
                 return 1;
@@ -146,7 +150,7 @@ public class SearchAdminActivity
         public Fragment createFragment(final int position) {
             final Fragment fragment = new SearchOrderFragment();
             final Bundle args = new Bundle(1);
-            args.putParcelable(SearchAdminModel.BKEY_LIST_TYPE, toType(position));
+            args.putParcelable(SearchOrderFragment.BKEY_TYPE, toType(position));
             fragment.setArguments(args);
             return fragment;
         }
@@ -160,8 +164,8 @@ public class SearchAdminActivity
         @NonNull
         private SiteList.Type toType(final int position) {
             // showing a single tab ?
-            if (mType != null) {
-                return mType;
+            if (mSingleListType != null) {
+                return mSingleListType;
             } else {
                 return SiteList.Type.values()[position];
             }

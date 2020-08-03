@@ -97,16 +97,15 @@ import com.hardbacknutter.nevertoomanybooks.utils.Money;
         nameResId = R.string.site_amazon,
         url = "https://www.amazon.com",
         prefKey = AmazonSearchEngine.PREF_KEY,
-        // The ASIN is not yet fully implemented ENHANCE: support ASIN
-        domainKey = DBDefinitions.KEY_ISBN,
-        domainViewId = R.id.site_amazon,
-        domainMenuId = R.id.MENU_VIEW_BOOK_AT_AMAZON,
+//        // ENHANCE: support ASIN
+//        domainKey = DBDefinitions.KEY_EID_ASIN,
+//        domainViewId = R.id.site_amazon,
+//        domainMenuId = R.id.MENU_VIEW_BOOK_AT_AMAZON,
         filenameSuffix = "AMZ"
 )
 public final class AmazonSearchEngine
         extends JsoupSearchEngineBase
-        implements SearchEngine.ByExternalId,
-                   SearchEngine.ByIsbn,
+        implements SearchEngine.ByIsbn,
                    SearchEngine.CoverByIsbn {
 
     /** Preferences prefix. */
@@ -259,7 +258,7 @@ public final class AmazonSearchEngine
      * @return url
      */
     @NonNull
-    @Override
+//    @Override
     public String createUrl(@NonNull final String isbn) {
         String fields = "";
         if (!isbn.isEmpty()) {
@@ -306,11 +305,9 @@ public final class AmazonSearchEngine
     /**
      * The external ID is the ASIN.
      * The ASIN for books is identical to the ISBN10 code. // ENHANCE: support ASIN
-     * <p>
-     * {@inheritDoc}
      */
     @NonNull
-    @Override
+//    @Override
     public Bundle searchByExternalId(@NonNull final String externalId,
                                      @NonNull final boolean[] fetchThumbnail)
             throws IOException {
