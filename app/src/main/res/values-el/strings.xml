@@ -187,8 +187,8 @@
     <string name="txt_import_option_new_and_changed_books">Εισαγωγή μόνο βιβλίων που είναι καινούρια, ή που έχουν ενημερωθεί πιο πρόσφατα στο Αρχείο. Χρήσιμο όταν συγχρονίζετε δύο συσκευές.</string>
     <string name="txt_install_scanner_recommendation">Προτείνουμε να εγκαταστήσετε την εφαρμογή Zxing barcode scanner, και αν είναι ήδη εγκατεστημένη, προτείνουμε να την απεγκαταστήσετε και να την ξαναεγκαταστήσετε.</string>
     <string name="txt_manage_fields">Τα επιλεγμένα πεδία είναι ορατά στις οθόνες προσθήκης/επεξεργασίας βιβλίου. Τα μη επιλεγμένα πεδία είναι κρυφά.</string>
-    <string name="confirm_registration_benefits">Αυτή η δυνατότητα επωφελείται από την εγγραφή με %1$s.\n Θα θέλατε να δείτε περισσότερες πληροφορίες ή να απενεργοποιήσετε αυτό το μήνυμα;\n Μπορείτε να βρείτε αυτές τις πληροφορίες σε μεταγενέστερη ημερομηνία κάτω από την ενότητα «%2$s» στις ρυθμίσεις.</string>
-    <string name="confirm_registration_required">Αυτή η λειτουργία απαιτεί εγγραφή με %1$s.\n Θα θέλατε να δείτε περισσότερες πληροφορίες;</string>
+    <string name="confirm_registration_benefits">Αυτή η δυνατότητα επωφελείται από την εγγραφή με %1$s. Θα θέλατε να δείτε περισσότερες πληροφορίες ή να απενεργοποιήσετε αυτό το μήνυμα;\n Μπορείτε να βρείτε αυτές τις πληροφορίες σε μεταγενέστερη ημερομηνία κάτω από την ενότητα «%2$s» στις ρυθμίσεις.</string>
+    <string name="confirm_registration_required">Αυτή η λειτουργία απαιτεί εγγραφή με %1$s. Θα θέλατε να δείτε περισσότερες πληροφορίες;</string>
     <string name="txt_select_fields_to_update">Τα επιλεγμένα πεδία θα ενημερωθούν από το διαδίκτυο. Τα μη επιλεγμένα θα μείνουν ως έχει.</string>
     <string name="txt_share_book_im_reading">Διαβάζω «%1$s» %2$s από %3$s %4$s</string>
     <string name="txt_tap_on_image_to_select">Πατήστε τη μεγάλη εικόνα για να επιλέξετε</string>
@@ -205,7 +205,7 @@
     <string name="lbl_added_day">Ημέρα Πρόσθεσης</string>
     <string name="lbl_added_month">Μήνας Πρόσθεσης</string>
     <string name="lbl_added_year">Έτος Πρόσθεσης</string>
-    <string name="lbl_advanced_options">Προχωρημένες Επιλογές</string>
+    <string name="lbl_advanced_options">Για προχωρημένους</string>
     <string name="lbl_anthology">Ανθολογία</string>
     <string name="lbl_archive_type_csv">βιβλία (%1$s)</string>
     <string name="lbl_archive_type_csv_info">Εξαγωγή βιβλίων σε αρχείο CSV</string>
@@ -425,14 +425,14 @@
     <string name="progress_end_import_complete">Εισαγωγή Ολοκληρώθηκε</string>
     <string name="progress_end_import_partially_complete">Έγινε μερική εισαγωγή</string>
     <string name="progress_msg_connecting">Σύνδεση…</string>
-    <string name="progress_msg_finding_editions">Γίνεται εντοπισμός Εκδόσεων…</string>
+    <string name="progress_msg_searching_editions">Γίνεται εντοπισμός Εκδόσεων…</string>
     <string name="progress_msg_loading">Φόρτωση…</string>
     <string name="progress_end_export_result_n_books_processed">%1$d βιβλία επεξεργασμένα</string>
     <string name="progress_end_export_result_n_covers_processed_m_missing">%1$d εξώφυλλα επεξεργάστηκαν\n(%2$d/%3$d λείπουν)</string>
     <string name="progress_msg_n_covers_processed_m_missing_s_skipped">%1$d εξώφυλλα επεξεργάστηκαν (%2$d/%3$d λείπουν, %4$d παρελείφθησαν)</string>
     <string name="X_progress_msg_x_created_y_updated">%1$s: %2$d δημιουργήθηκαν, %3$d ενημερώθηκαν</string>
     <string name="progress_msg_optimizing">Βελτιστοποίηση βάσεων δεδομένων…</string>
-    <string name="progress_msg_please_wait">Παρακαλώ περιμένετε…</string>
+    <string name="progress_msg_please_wait">Περιμένετε…</string>
     <string name="progress_msg_rebuilding_search_index">Ανακατασκευή Ευρετηρίου Αναζήτησης…</string>
     <string name="progress_msg_saving_image">Αποθήκευση της εικόνας…</string>
     <string name="progress_msg_searching">Γίνεται αναζήτηση…</string>
@@ -568,7 +568,7 @@
     <string name="lbl_import_options">Επιλέξτε τι θα εισαχθεί.</string>
     <string name="lbl_importing">Γίνεται εισαγωγή…</string>
     <string name="info_not_authorized">Χωρίς άδεια</string>
-    <string name="lbl_registration">LibraryThing Εγγραφή</string>
+    <string name="lbl_registration">%1$s Εγγραφή</string>
     <string name="lbl_scope_of_change">Πεδίο εφαρμογής της αλλαγής</string>
     <string name="warning_search_failed">Η αναζήτηση του βιβλίου απέτυχε.</string>
     <string name="lbl_search_for_books">Αναζήτηση για βιβλία</string>
@@ -639,7 +639,7 @@
     <string name="lbl_toc_multiple_authors">Πολλαπλοί συγγραφείς</string>
     <string name="X_lbl_edit_publisher">Επεξεργασία εκδότη</string>
     <string name="X_lbl_edit_toc_entry">Επεξεργασία καταχώρησης</string>
-    <string name="action_discard">Απορρίπτω</string>
+    <string name="action_discard">Απόρριψη</string>
     <string name="btn_show_list">Εμφάνιση λίστας</string>
     <string name="btn_less_ellipsis">Πιο λιγο…</string>
     <string name="lbl_archive_format">Μορφή</string>
@@ -666,5 +666,7 @@
     <string name="image">Εικόνα</string>
     <string name="lbl_author_type_narrator">Αφηγητής</string>
     <string name="unknown">Άγνωστο</string>
+    <string name="btn_not_now">Όχι τώρα</string>
+    <string name="menu_reset_to_default">Επαναφορά στις προεπιλογές</string>
 
 </resources>

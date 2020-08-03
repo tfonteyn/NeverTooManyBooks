@@ -187,8 +187,8 @@
     <string name="txt_import_option_new_and_changed_books">Yalnızca yeni olan veya son zamanlarda arşivde güncellenmiş kitapları içe aktar. Bu seçenek özellikle örneğin iki aygıtı eşlerken yararlıdır.</string>
     <string name="txt_install_scanner_recommendation">Biz Zxing barkod tarayıcısını yüklemenizi öneriyoruz. Eğer zaten yüklüyse silip yeniden yüklemeniz yardımcı olabilir.</string>
     <string name="txt_manage_fields">Seçili alanlar kitap ekle/düzenle ekranlarında görünecektir. Seçilmeyen alanlar gizli kalacaktır.</string>
-    <string name="confirm_registration_benefits">Bu özellik %1$s kayıt işleminden faydalanır.\n Daha fazla bilgi görmek veya bu mesajı devre dışı bırakmak ister misiniz?\n Bu bilgiyi daha sonra ayarlarda “%2$s” bölümünün altında bulabilirsiniz.</string>
-    <string name="confirm_registration_required">Bu özellik %1$s ile kayıt gerektiriyor.\nDaha fazla bilgi görmek ister misiniz?</string>
+    <string name="confirm_registration_benefits">Bu özellik %1$s kayıt işleminden faydalanır. Daha fazla bilgi görmek veya bu mesajı devre dışı bırakmak ister misiniz?\n Bu bilgiyi daha sonra ayarlarda “%2$s” bölümünün altında bulabilirsiniz.</string>
+    <string name="confirm_registration_required">Bu özellik %1$s ile kayıt gerektiriyor. Daha fazla bilgi görmek ister misiniz?</string>
     <string name="txt_select_fields_to_update">Seçilen alanlar İnternet\'ten güncellenecektir. Seçilmeyen alanlar değiştirilmeden kalacaktır.</string>
     <string name="txt_share_book_im_reading">“%1$s” %2$s yazısını %3$s %4$s okuyorum</string>
     <string name="txt_tap_on_image_to_select">Seçmek için büyük resmin üzerine dokunun</string>
@@ -205,7 +205,7 @@
     <string name="lbl_added_day">Eklenen gün</string>
     <string name="lbl_added_month">Eklenen ay</string>
     <string name="lbl_added_year">Eklenen yıl</string>
-    <string name="lbl_advanced_options">Gelişmiş seçenekler</string>
+    <string name="lbl_advanced_options">Gelişmiş</string>
     <string name="lbl_anthology">Seçmeler</string>
     <string name="lbl_archive_type_csv">Kitaplar (%1$s)</string>
     <string name="lbl_archive_type_csv_info">Kitapların bir CSV dosyasına aktarılması</string>
@@ -425,14 +425,14 @@
     <string name="progress_end_import_complete">İçe aktarma başarılı</string>
     <string name="progress_end_import_partially_complete">Kısmi ithalat yapıldı</string>
     <string name="progress_msg_connecting">Bağlanılıyor…</string>
-    <string name="progress_msg_finding_editions">Sürümler bulunuyor…</string>
+    <string name="progress_msg_searching_editions">Sürümler bulunuyor…</string>
     <string name="progress_msg_loading">Yükleniyor...</string>
     <string name="progress_end_export_result_n_books_processed">%1$d kitap işlendi</string>
     <string name="progress_end_export_result_n_covers_processed_m_missing">%1$d kapak işlendi\n(%2$d/%3$d bulunamadı)</string>
     <string name="progress_msg_n_covers_processed_m_missing_s_skipped">%1$d kapak işlendi (%2$d/%3$d bulunamadı, %4$d atlandı)</string>
     <string name="X_progress_msg_x_created_y_updated">%1$s: %2$d oluşturuldu, %3$d güncellendi</string>
     <string name="progress_msg_optimizing">Veritabanları eniyileniyor…</string>
-    <string name="progress_msg_please_wait">Lütfen bekle…</string>
+    <string name="progress_msg_please_wait">Lütfen bekleyin…</string>
     <string name="progress_msg_rebuilding_search_index">Arama dizini yeniden oluşturuluyor…</string>
     <string name="progress_msg_saving_image">Resim kaydediliyor…</string>
     <string name="progress_msg_searching">Aranıyor…</string>
@@ -489,7 +489,7 @@
     <string name="pv_bob_header_style_name">Stil adı</string>
     <string name="pv_scanner_embedded">İç</string>
     <string name="pv_scanner_zxing_compatible">Zxing Uyumlu Tarayıcı</string>
-    <string name="action_retry">Yeniden dene</string>
+    <string name="action_retry">Tekrar dene</string>
     <string name="size_hidden">Gizli</string>
     <string name="size_large">Büyük</string>
     <string name="size_medium">Orta</string>
@@ -565,7 +565,7 @@
     <string name="lbl_import_options">Neyin içe aktarılacağını seçin</string>
     <string name="lbl_importing">İçe aktarılıyor…</string>
     <string name="info_not_authorized">Yetkilendirilmemiş</string>
-    <string name="lbl_registration">LibraryThing Kayıt</string>
+    <string name="lbl_registration">%1$s Kayıt</string>
     <string name="lbl_scope_of_change">Değişiklik kapsamı</string>
     <string name="warning_search_failed">Kitap araması başarısız oldu.</string>
     <string name="lbl_search_for_books">Kitap ara</string>
@@ -663,5 +663,7 @@
     <string name="image">Resim</string>
     <string name="lbl_author_type_narrator">Dış ses</string>
     <string name="unknown">Bilinmiyor</string>
+    <string name="btn_not_now">Şimdi değil</string>
+    <string name="menu_reset_to_default">Varsayılana sıfırla</string>
 
 </resources>

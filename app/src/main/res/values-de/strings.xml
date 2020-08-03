@@ -191,8 +191,8 @@
     <string name="txt_import_option_new_and_changed_books">Nur neue oder aktuellere Bücher im Archiv. Das ist nützlich, um zwei Geräte zu synchronisieren.</string>
     <string name="txt_install_scanner_recommendation">Wir empfehlen, die App „Zxing Barcode Scanner“ zu installieren. Falls sie bereits installiert ist, empfehlen wir eine Deinstalltion und erneute Installation.</string>
     <string name="txt_manage_fields">Die ausgewählten Felder werden im Bildschirm Buch hinzufügen/bearbeiten angezeigt. Nicht ausgewählte Felder werden nicht angezeigt.</string>
-    <string name="confirm_registration_benefits">Diese Funktion profitiert von der Registrierung bei %1$s.\nMöchten Sie weitere Informationen sehen oder diese Nachricht deaktivieren?\n Sie finden diese Informationen zu einem späteren Zeitpunkt in den Einstellungen unter „%2$s“.</string>
-    <string name="confirm_registration_required">Diese Funktion erfordert eine Registrierung bei %1$s.\n Möchten Sie weitere Informationen sehen?</string>
+    <string name="confirm_registration_benefits">Diese Funktion profitiert von der Registrierung bei %1$s. Möchten Sie weitere Informationen sehen oder diese Nachricht deaktivieren?\n Sie finden diese Informationen zu einem späteren Zeitpunkt in den Einstellungen unter „%2$s“.</string>
+    <string name="confirm_registration_required">Diese Funktion erfordert eine Registrierung bei %1$s. Möchten Sie weitere Informationen sehen?</string>
     <string name="txt_select_fields_to_update">Die ausgewählten Felder werden aus dem Internet aktualisiert. Nicht ausgewählte Felder werden nicht geändert.</string>
     <string name="txt_share_book_im_reading">Ich lese „%1$s“ %2$s von %3$s %4$s</string>
     <string name="txt_tap_on_image_to_select">Tippen Sie auf das große Bild, um es auszuwählen</string>
@@ -209,7 +209,7 @@
     <string name="lbl_added_day">Tag der Erfassung</string>
     <string name="lbl_added_month">Monat der Erfassung</string>
     <string name="lbl_added_year">Jahr der Erfassung</string>
-    <string name="lbl_advanced_options">Erweiterte Optionen</string>
+    <string name="lbl_advanced_options">Erweitert</string>
     <string name="lbl_anthology">Anthologie</string>
     <string name="lbl_archive_type_csv">Bücher (%1$s)</string>
     <string name="lbl_archive_type_csv_info">Export der Bücher in eine CSV-Datei</string>
@@ -429,14 +429,14 @@
     <string name="progress_end_import_complete">Import vollständig</string>
     <string name="progress_end_import_partially_complete">Teilweise importiert</string>
     <string name="progress_msg_connecting">Verbindung wird hergestellt…</string>
-    <string name="progress_msg_finding_editions">Suche Ausgaben…</string>
+    <string name="progress_msg_searching_editions">Suche Ausgaben…</string>
     <string name="progress_msg_loading">Wird geladen…</string>
     <string name="progress_end_export_result_n_books_processed">%1$d Bücher verarbeitet</string>
     <string name="progress_end_export_result_n_covers_processed_m_missing">%1$d Cover verarbeitet\n(%2$d/%3$d fehlen)</string>
     <string name="progress_msg_n_covers_processed_m_missing_s_skipped">%1$d Cover verarbeitet (%2$d/%3$d fehlen, %4$d übersprungen)</string>
     <string name="X_progress_msg_x_created_y_updated">%1$s: %2$d erzeugt, %3$d aktualisiert</string>
     <string name="progress_msg_optimizing">Datenbanken werden optimiert…</string>
-    <string name="progress_msg_please_wait">Warten Sie mal…</string>
+    <string name="progress_msg_please_wait">Bitte warten…</string>
     <string name="progress_msg_rebuilding_search_index">Suchindex wird regeneriert…</string>
     <string name="progress_msg_saving_image">Bild speichern…</string>
     <string name="progress_msg_searching">Suche…</string>
@@ -496,7 +496,7 @@
     <string name="pv_reformat_titles_prefixes">die|Die|der|Der|das|Das|ein|Ein|eine|Eine|eines|Eines|einer|Einer|einem|Einem|einen|Einen</string>
     <string name="pv_scanner_embedded">Intern</string>
     <string name="pv_scanner_zxing_compatible">Zxing-kompatibler Scanner</string>
-    <string name="action_retry">Wiederholen</string>
+    <string name="action_retry">Noch mal\n versuchen</string>
     <string name="size_hidden">Versteckt</string>
     <string name="size_large">Groß</string>
     <string name="size_medium">Mittel</string>
@@ -572,7 +572,7 @@
     <string name="lbl_import_options">Wählen Sie aus, was importiert werden soll.</string>
     <string name="lbl_importing">Importiere…</string>
     <string name="info_not_authorized">Nicht autorisiert</string>
-    <string name="lbl_registration">LibraryThing-Registrierung</string>
+    <string name="lbl_registration">%1$s-Registrierung</string>
     <string name="lbl_scope_of_change">Umfang der Änderung</string>
     <string name="warning_search_failed">Die Suche nach dem Buch ist fehlgeschlagen.</string>
     <string name="lbl_search_for_books">Suche nach Büchern</string>
@@ -669,4 +669,6 @@
     <string name="image">Bild</string>
     <string name="lbl_author_type_narrator">Erzähler</string>
     <string name="unknown">Unbekannt</string>
+    <string name="btn_not_now">Jetzt nicht</string>
+    <string name="menu_reset_to_default">Auf Standard zurücksetzen</string>
 </resources>

@@ -192,8 +192,8 @@
     <string name="txt_import_option_new_and_changed_books">Alleen nieuwe boeken importeren of boeken die onlangs zijn bijgewerkt in het archief. Dit is handig bij het synchroniseren van twee apparaten.</string>
     <string name="txt_install_scanner_recommendation">Wij kunnen de Zxing barcode scanner application aanbevelen. Als deze al is geïnstalleerd raden we aan deze te deïnstalleren en daarna weer opnieuw te installeren.</string>
     <string name="txt_manage_fields">Geselecteerde velden zijn zichtbaar in de toevoegen/bewerken boekschermen. Ongeselecteerde velden zijn verborgen.</string>
-    <string name="confirm_registration_benefits">Deze functie profiteert van registratie bij %1$s.\nWil je meer informatie bekijken of dit bericht uitschakelen?\nJe vind deze informatie op een later tijdstip in de sectie „%2$s” in de instellingen.</string>
-    <string name="confirm_registration_required">Deze functie vereist registratie bij %1$s.\n Wil je meer informatie zien?</string>
+    <string name="confirm_registration_benefits">Deze functie profiteert van registratie bij %1$s. Wil je meer informatie bekijken of dit bericht uitschakelen?\nJe vind deze informatie op een later tijdstip in de sectie „%2$s” in de instellingen.</string>
+    <string name="confirm_registration_required">Deze functie vereist registratie bij %1$s. Wil je meer informatie zien?</string>
     <string name="txt_select_fields_to_update">De geselecteerde velden zullen worden bijgewerkt vanaf het internet. Niet geselecteerde velden blijven onveranderd.</string>
     <string name="txt_share_book_im_reading">Ik lees %1$s %2$s door %3$s %4$s</string>
     <string name="txt_tap_on_image_to_select">Tik op de grote afbeelding om deze te selecteren</string>
@@ -210,7 +210,7 @@
     <string name="lbl_added_day">Dag</string>
     <string name="lbl_added_month">Maand</string>
     <string name="lbl_added_year">Jaar</string>
-    <string name="lbl_advanced_options">Geavanceerde opties</string>
+    <string name="lbl_advanced_options">Geavanceerd</string>
     <string name="lbl_anthology">Bloemlezing</string>
     <string name="lbl_archive_type_csv">Boeken (%1$s)</string>
     <string name="lbl_archive_type_csv_info">Export van de boeken naar een CSV-bestand</string>
@@ -272,7 +272,7 @@
     <string name="lbl_family_name">Achternaam</string>
     <string name="lbl_field_usage_append">Voegt extra gegevens toe</string>
     <string name="lbl_field_usage_copy_if_blank">kopieer indien leeg</string>
-    <string name="lbl_field_usage_overwrite">Overschrijft bestaande gegevens</string>
+    <string name="lbl_field_usage_overwrite">Overschrijf bestaande gegevens</string>
     <string name="lbl_field_usage_skip">Overslaan</string>
     <string name="lbl_first_pub_month">Eerste uitg. Maand</string>
     <string name="lbl_first_pub_year">Eerste uitg. Dag</string>
@@ -430,7 +430,7 @@
     <string name="progress_end_import_complete">Import Compleet</string>
     <string name="progress_end_import_partially_complete">Gedeeltelijke import voltooid</string>
     <string name="progress_msg_connecting">Verbinden…</string>
-    <string name="progress_msg_finding_editions">Zoeken naar uitgaven…</string>
+    <string name="progress_msg_searching_editions">Zoeken naar uitgaven…</string>
     <string name="progress_msg_loading">Laden...</string>
     <string name="progress_end_export_result_n_books_processed">%1$d boeken verwerkt</string>
     <string name="progress_end_export_result_n_covers_processed_m_missing">%1$d boekomslagen verwerkt\n(%2$d/%3$d missend)</string>
@@ -497,7 +497,7 @@
     <string name="pv_reformat_titles_prefixes">de|De|een|Een|het|Het</string>
     <string name="pv_scanner_embedded">Intern</string>
     <string name="pv_scanner_zxing_compatible">Zxing Compatibele Scanner</string>
-    <string name="action_retry">Opnieuw\nproberen</string>
+    <string name="action_retry">Opnieuw\n proberen</string>
     <string name="size_hidden">Verborgen</string>
     <string name="size_large">Groot</string>
     <string name="size_medium">Medium</string>
@@ -573,7 +573,7 @@
     <string name="lbl_import_options">Selecteer wat je wil importeren.</string>
     <string name="lbl_importing">Importeren…</string>
     <string name="info_not_authorized">Niet geautoriseerd</string>
-    <string name="lbl_registration">LibraryThing Registratie</string>
+    <string name="lbl_registration">%1$s registratie</string>
     <string name="lbl_scope_of_change">Omvang van de verandering</string>
     <string name="warning_search_failed">Het zoeken naar het boek is mislukt.</string>
     <string name="lbl_search_for_books">Zoeken naar boeken</string>
@@ -667,5 +667,7 @@
     <string name="image">Afbeelding</string>
     <string name="lbl_author_type_narrator">Verteller</string>
     <string name="unknown">Onbekend</string>
+    <string name="btn_not_now">Niet nu</string>
+    <string name="menu_reset_to_default">Standaardinstellingen herstellen</string>
 
 </resources>

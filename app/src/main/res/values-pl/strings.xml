@@ -185,8 +185,8 @@
     <string name="txt_import_option_new_and_changed_books">Importuj tylko książki, które są nowe lub zostały zaktualizowane w archiwum ostatnio. Jest to przydatne podczas synchronizacji dwóch urządzeń.</string>
     <string name="txt_install_scanner_recommendation">Zalecamy zainstalowanie aplikacji skanera kodów kreskowych Zxing, a jeśli jest już zainstalowana, zalecamy odinstalowanie i ponowne zainstalowanie.</string>
     <string name="txt_manage_fields">Wybrane pola są widoczne na ekranach dodawania i edycji książki. Pozostałe są ukryte.</string>
-    <string name="confirm_registration_benefits">Ta funkcja korzysta z rejestracji w %1$s.\n Czy chcesz zobaczyć więcej informacji lub wyłączyć tę wiadomość?\n Informacje te można znaleźć później w sekcji „%2$s” w ustawieniach.</string>
-    <string name="confirm_registration_required">Ta funkcja wymaga rejestracji w %1$s.\n Czy chcesz zobaczyć więcej informacji?</string>
+    <string name="confirm_registration_benefits">Ta funkcja korzysta z rejestracji w %1$s. Czy chcesz zobaczyć więcej informacji lub wyłączyć tę wiadomość?\n Informacje te można znaleźć później w sekcji „%2$s” w ustawieniach.</string>
+    <string name="confirm_registration_required">Ta funkcja wymaga rejestracji w %1$s. Czy chcesz zobaczyć więcej informacji?</string>
     <string name="txt_select_fields_to_update">Wybrane pola będą zaktualizowane wg danych z sieci. Pozostałe nie zostaną zmienione.</string>
     <string name="txt_share_book_im_reading">Czytam „%1$s” %2$s przez %3$s %4$s</string>
     <string name="txt_tap_on_image_to_select">Stuknij w większy obraz, aby go wybrać</string>
@@ -423,14 +423,14 @@
     <string name="progress_end_import_complete">Import zakończony</string>
     <string name="progress_end_import_partially_complete">Wykonano częściowy import</string>
     <string name="progress_msg_connecting">Łączę…</string>
-    <string name="progress_msg_finding_editions">Szukanie wydań…</string>
+    <string name="progress_msg_searching_editions">Szukanie wydań…</string>
     <string name="progress_msg_loading">Wczytuję…</string>
     <string name="progress_end_export_result_n_books_processed">Książki przetworzonych %1$d</string>
     <string name="progress_end_export_result_n_covers_processed_m_missing">Objętych przetworzonych\n%1$d (brak %2$d/%3$d)</string>
     <string name="progress_msg_n_covers_processed_m_missing_s_skipped">Obejmuje przetworzonych %1$d (brak %2$d/%3$d, pominięto %4$d)</string>
     <string name="X_progress_msg_x_created_y_updated">%1$s: Utworzono %2$d, zaktualizowano %3$d</string>
     <string name="progress_msg_optimizing">Optymalizacja bazy danych</string>
-    <string name="progress_msg_please_wait">Proszę czekać…</string>
+    <string name="progress_msg_please_wait">Zaczekaj…</string>
     <string name="progress_msg_rebuilding_search_index">Przebudowywanie indeksu wyszukiwania…</string>
     <string name="progress_msg_saving_image">Zapisywanie obrazu…</string>
     <string name="progress_msg_searching">Badawczy…</string>
@@ -487,7 +487,7 @@
     <string name="pv_bob_header_style_name">Nazwa stylu</string>
     <string name="pv_scanner_embedded">Wewnętrzny</string>
     <string name="pv_scanner_zxing_compatible">Skaner kompatybilny z Zxing</string>
-    <string name="action_retry">spróbować\nponownie</string>
+    <string name="action_retry">Ponów</string>
     <string name="size_hidden">Ukryty</string>
     <string name="size_large">Duży</string>
     <string name="size_medium">Średni</string>
@@ -563,7 +563,7 @@
     <string name="lbl_import_options">Wybierz, co zostanie zaimportowane.</string>
     <string name="lbl_importing">Importowanie…</string>
     <string name="info_not_authorized">Nieautoryzowany</string>
-    <string name="lbl_registration">Rejestracja w LibraryThing</string>
+    <string name="lbl_registration">Rejestracja w %1$s</string>
     <string name="lbl_scope_of_change">Zakres zmiany</string>
     <string name="warning_search_failed">Wyszukiwanie książki nie powiodło się.</string>
     <string name="lbl_search_for_books">Szukaj książek</string>
@@ -634,7 +634,7 @@
     <string name="lbl_toc_multiple_authors">Wielu autorów</string>
     <string name="X_lbl_edit_publisher">Edytuj wydawcę</string>
     <string name="X_lbl_edit_toc_entry">Edytuj wpis</string>
-    <string name="action_discard">Odrzucać</string>
+    <string name="action_discard">Odrzuć</string>
     <string name="btn_show_list">Pokaż listę</string>
     <string name="btn_less_ellipsis">Mniej…</string>
     <string name="lbl_archive_format">Format</string>
@@ -662,4 +662,6 @@
     <string name="image">Obraz</string>
     <string name="lbl_author_type_narrator">Narrator</string>
     <string name="unknown">Brak informacji</string>
+    <string name="btn_not_now">Nie teraz</string>
+    <string name="menu_reset_to_default">Resetuj ustawienia</string>
 </resources>

@@ -186,8 +186,8 @@
     <string name="txt_import_option_new_and_changed_books">Importujte pouze knihy, které jsou nové nebo které byly aktualizovány v archivu. To je užitečné při synchronizaci dvou zařízení.</string>
     <string name="txt_install_scanner_recommendation">Doporučujeme nainstalovat aplikaci pro skenování čárových kódů Zxing a pokud je již nainstalována, doporučujeme odinstalovat a znovu nainstalovat.</string>
     <string name="txt_manage_fields">Vybraná pole jsou viditelná na obrazovce pro přidání/úpravu knihy. Nevybraná pole jsou skryta.</string>
-    <string name="confirm_registration_benefits">Tato funkce těží z registrace u %1$s.\nChcete zobrazit další informace nebo tuto zprávu deaktivovat?\nTyto informace najdete později v části „%2$s“ v nastavení.</string>
-    <string name="confirm_registration_required">Tato funkce vyžaduje registraci s %1$s.\n Chtěli byste vidět více informací?</string>
+    <string name="confirm_registration_benefits">Tato funkce těží z registrace u %1$s. Chcete zobrazit další informace nebo tuto zprávu deaktivovat?\nTyto informace najdete později v části „%2$s“ v nastavení.</string>
+    <string name="confirm_registration_required">Tato funkce vyžaduje registraci s %1$s. Chtěli byste vidět více informací?</string>
     <string name="txt_select_fields_to_update">Vybraná pole budou aktualizována automaticky z internetu. Nevybraná pole zůstanou beze změny.</string>
     <string name="txt_share_book_im_reading">Čtu „%1$s“ %2$s o %3$s %4$s</string>
     <string name="txt_tap_on_image_to_select">Klikněte na velký obrázek a vyberte jej</string>
@@ -204,7 +204,7 @@
     <string name="lbl_added_day">Den přidání</string>
     <string name="lbl_added_month">Měsíc přidání</string>
     <string name="lbl_added_year">Rok přidání</string>
-    <string name="lbl_advanced_options">Pokročilý</string>
+    <string name="lbl_advanced_options">Rozšířené nastavení</string>
     <string name="lbl_anthology">Antologie</string>
     <string name="lbl_archive_type_csv">Knihy (%1$s)</string>
     <string name="lbl_archive_type_csv_info">Export knih do souboru CSV</string>
@@ -424,14 +424,14 @@
     <string name="progress_end_import_complete">Import byl dokončen</string>
     <string name="progress_end_import_partially_complete">Částečný import byl dokončen</string>
     <string name="progress_msg_connecting">Připojování…</string>
-    <string name="progress_msg_finding_editions">Hledání edicí…</string>
+    <string name="progress_msg_searching_editions">Hledání edicí…</string>
     <string name="progress_msg_loading">Načítání…</string>
     <string name="progress_end_export_result_n_books_processed">Zpracované knih %1$d</string>
     <string name="progress_end_export_result_n_covers_processed_m_missing">Zpracované kryty %1$d\n(chybí %2$d/%3$d)</string>
     <string name="progress_msg_n_covers_processed_m_missing_s_skipped">Zpracované kryty %1$d (chybí %2$d/%3$d, %4$d přeskočeno)</string>
     <string name="X_progress_msg_x_created_y_updated">%1$s: %2$d vytvořeno, %3$d aktualizováno</string>
     <string name="progress_msg_optimizing">Optimalizování databáze…</string>
-    <string name="progress_msg_please_wait">Prosím, čekejte…</string>
+    <string name="progress_msg_please_wait">Prosím čekejte…</string>
     <string name="progress_msg_rebuilding_search_index">Obnovování indexu pro vyhledávání…</string>
     <string name="progress_msg_saving_image">Uložení obrázku…</string>
     <string name="progress_msg_searching">Vyhledávání…</string>
@@ -488,7 +488,7 @@
     <string name="pv_bob_header_style_name">Název stylu</string>
     <string name="pv_scanner_embedded">Vnitřní</string>
     <string name="pv_scanner_zxing_compatible">Kompatibilní skener Zxing</string>
-    <string name="action_retry">Opakovat</string>
+    <string name="action_retry">Zkusit znovu</string>
     <string name="size_hidden">Skrytý</string>
     <string name="size_large">Velký</string>
     <string name="size_medium">Střední</string>
@@ -564,7 +564,7 @@
     <string name="lbl_import_options">Vyberte, co bude importováno.</string>
     <string name="lbl_importing">Import…</string>
     <string name="info_not_authorized">Neautorizováno</string>
-    <string name="lbl_registration">LibraryThing registrace</string>
+    <string name="lbl_registration">%1$s registrace</string>
     <string name="lbl_scope_of_change">Rozsah změny</string>
     <string name="warning_search_failed">Vyhledávání knihy se nezdařilo.</string>
     <string name="lbl_search_for_books">Hledat knihy</string>
@@ -663,5 +663,7 @@
     <string name="image">Obrázek</string>
     <string name="lbl_author_type_narrator">Vypravěč</string>
     <string name="unknown">Neznámé</string>
+    <string name="btn_not_now">Teď ne</string>
+    <string name="menu_reset_to_default">Obnovit výchozí</string>
 
 </resources>

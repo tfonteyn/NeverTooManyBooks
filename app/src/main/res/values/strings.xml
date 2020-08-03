@@ -266,12 +266,8 @@
     <!-- Info message for the "editions" filter selection (part of the style settings). -->
     <string name="info_filter_edition">Select 0 or more options and tap “OK” to apply them, or tap “All books” to disregard all of them.</string>
 
-    <string name="confirm_registration_required">This feature requires registration with %1$s.\nWould you like to see more information?</string>
-    <string name="confirm_registration_benefits">
-        This feature benefits from registration with %1$s.\n
-        Would you like to see more information, or disable this message?\n
-        You can find this information at a later date under the “%2$s” section in the settings.
-    </string>
+    <string name="confirm_registration_required">This feature requires registration with %1$s. Would you like to see more information?</string>
+    <string name="confirm_registration_benefits">This feature benefits from registration with %1$s. Would you like to see more information, or disable this message?\n You can find this information at a later date under the “%2$s” section in the settings.</string>
 
     <!-- Explanatory note of the 'import from archive' "all books" option -->
     <string name="txt_import_option_all_books">New books will be added. Existing books will be updated.</string>
@@ -367,6 +363,7 @@
     <!-- ========== Progress messages for 'lengthy' actions ========== -->
     <!-- ####################################################################################### -->
 
+    <!-- [VERIFIED] -->
     <string name="progress_msg_please_wait">Please wait…</string>
     <!-- [VERIFIED] -->
     <string name="progress_msg_loading">Loading…</string>
@@ -389,7 +386,7 @@
     <string name="progress_msg_saving_image">Saving image…</string>
 
     <!-- displayed while searching for alternative editions of the book, to get cover images. -->
-    <string name="progress_msg_finding_editions">Finding Editions…</string>
+    <string name="progress_msg_searching_editions">Searching for other editions…</string>
 
     <!-- Progress message displayed when automatically updating book fields  -->
     <string name="progress_msg_skip_s">Skipping “%1$s”</string>
@@ -855,7 +852,7 @@
 
 
     <!-- Dialog title; prompts user to register at a website. -->
-    <string name="lbl_registration">Registration</string>
+    <string name="lbl_registration">%1$s registration</string>
     <!-- Dialog title. -->
     <string name="lbl_scope_of_change">Scope of Change</string>
     <!-- Dialog title. -->
@@ -1006,13 +1003,15 @@
     <string name="action_delete">Delete</string>
     <!-- [VERIFIED] -->
     <string name="action_save">Save</string>
+    <!-- [VERIFIED] -->
     <string name="action_discard">Discard</string>
+    <!-- [VERIFIED] -->
     <string name="action_help">Help</string>
     <!-- merging two bookshelves -->
     <string name="action_merge">Merge</string>
     <!-- Duplication or Clone. Not the same as 'copy'. -->
     <string name="action_duplicate">Duplicate</string>
-    <!-- 'try again' -->
+    <!-- [VERIFIED] 'try again' -->
     <string name="action_retry">Retry</string>
     <!-- e.g. clearing a form. -->
     <string name="action_clear">Clear</string>
@@ -1033,6 +1032,8 @@
     <string name="btn_this_book">This Book</string>
     <!-- [VERIFIED] -->
     <string name="btn_reset">Reset</string>
+    <!-- [VERIFIED] -->
+    <string name="menu_reset_to_default">Reset to default</string>
     <string name="btn_delete_credentials">Remove Credentials</string>
     <!-- [VERIFIED] -->
     <string name="btn_email">Email</string>
@@ -1465,7 +1466,7 @@
 
     <string name="lbl_websites">Websites</string>
 
-    <!-- Admin GROUP -->
+    <!-- [VERIFIED] Admin GROUP -->
     <string name="lbl_advanced_options">Advanced</string>
 
     <!-- [VERIFIED] Admin advanced - collect debug information and prepare an email to the developers -->
@@ -1578,5 +1579,7 @@
 
     <!-- [VERIFIED] -->
     <string name="image">Image</string>
+    <!-- [VERIFIED] -->
+    <string name="btn_not_now">Not now</string>
 
 </resources>

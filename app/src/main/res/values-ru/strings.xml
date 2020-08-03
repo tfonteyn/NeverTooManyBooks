@@ -164,7 +164,7 @@
     <string name="gr_tq_show_events_ellipsis">Показать события…</string>
     <string name="gr_tq_task_has_been_queued">Задача поставлена в очередь в фоне</string>
     <string name="gr_tq_title_task_errors">Ошибки задач</string>
-    <string name="action_help">Помощь</string>
+    <string name="action_help">Справка</string>
     <string name="hint_btn_drag_handle">Перетащите меня, чтобы изменить порядок в этом списке.</string>
     <string name="hint_developer_key">Ключ разработчика</string>
     <string name="hint_empty_author">(Автор отсутствует)</string>
@@ -185,8 +185,8 @@
     <string name="txt_import_option_new_and_changed_books">Импортировать только новые книги или только те, что обновлены более поздно. Это удобно, когда синхронизируются несклоько устройств.</string>
     <string name="txt_install_scanner_recommendation">Мы рекомендуем установить Zxing сканер, или если он уже установлен, удалите его, затем снова установите.</string>
     <string name="txt_manage_fields">Выбранные поля видны на экранах добавления/редактирования книги. Невыбранные поля скрыты.</string>
-    <string name="confirm_registration_benefits">Эта функция имеет преимущества при регистрации в %1$s.\n Хотите увидеть больше информации или отключить это сообщение?\n Вы можете найти эту информацию позже в разделе «%2$s» в настройках.</string>
-    <string name="confirm_registration_required">Эта функция требует регистрации в %1$s.\n Хотите увидеть больше информации?</string>
+    <string name="confirm_registration_benefits">Эта функция имеет преимущества при регистрации в %1$s. Хотите увидеть больше информации или отключить это сообщение?\n Вы можете найти эту информацию позже в разделе «%2$s» в настройках.</string>
+    <string name="confirm_registration_required">Эта функция требует регистрации в %1$s. Хотите увидеть больше информации?</string>
     <string name="txt_select_fields_to_update">Выбранные поля будут обновлены через интернет. Остальные останутся неизменными.</string>
     <string name="txt_share_book_im_reading">Я читаю «%1$s» %2$s %3$s %4$s</string>
     <string name="txt_tap_on_image_to_select">Нажмите на большое изображение, чтобы выбрать его.</string>
@@ -203,7 +203,7 @@
     <string name="lbl_added_day">Добавленый день</string>
     <string name="lbl_added_month">Добавленый месяц</string>
     <string name="lbl_added_year">Добавленый год</string>
-    <string name="lbl_advanced_options">Тонкие настройки</string>
+    <string name="lbl_advanced_options">Дополнительные настройки</string>
     <string name="lbl_anthology">Антология</string>
     <string name="lbl_archive_type_csv">книги (%1$s)</string>
     <string name="lbl_archive_type_csv_info">Экспорт книг в файл CSV</string>
@@ -423,14 +423,14 @@
     <string name="progress_end_import_complete">Импорт завершен</string>
     <string name="progress_end_import_partially_complete">Частичный импорт выполнен</string>
     <string name="progress_msg_connecting">Подключение…</string>
-    <string name="progress_msg_finding_editions">Поиск изданий…</string>
+    <string name="progress_msg_searching_editions">Поиск изданий…</string>
     <string name="progress_msg_loading">Загрузка…</string>
     <string name="progress_end_export_result_n_books_processed">%1$d книг обработано</string>
     <string name="progress_end_export_result_n_covers_processed_m_missing">%1$d обложек обработана\n(%2$d/%3$d отсутствует)</string>
     <string name="progress_msg_n_covers_processed_m_missing_s_skipped">%1$d обложек обработана (%2$d/%3$d отсутствует, %4$d пропущена)</string>
     <string name="X_progress_msg_x_created_y_updated">%1$s: %2$d создано, %3$d обновлено</string>
     <string name="progress_msg_optimizing">Оптимизация баз данных…</string>
-    <string name="progress_msg_please_wait">подождите пожалуйста…</string>
+    <string name="progress_msg_please_wait">Подождите…</string>
     <string name="progress_msg_rebuilding_search_index">Перестроение индексов поиска…</string>
     <string name="progress_msg_saving_image">Сохранение изображения…</string>
     <string name="progress_msg_searching">Поиск…</string>
@@ -487,7 +487,7 @@
     <string name="pv_bob_header_style_name">Название стиля</string>
     <string name="pv_scanner_embedded">внутренний</string>
     <string name="pv_scanner_zxing_compatible">Zxing совместимый сканер</string>
-    <string name="action_retry">Повторить</string>
+    <string name="action_retry">Повторить\n попытку</string>
     <string name="size_hidden">скрытый</string>
     <string name="size_large">большой</string>
     <string name="size_medium">Средняя</string>
@@ -563,7 +563,7 @@
     <string name="lbl_import_options">Выберите, что будет импортировано.</string>
     <string name="lbl_importing">Импорт…</string>
     <string name="info_not_authorized">Не авторизовано</string>
-    <string name="lbl_registration">Регистрация в LibraryThing</string>
+    <string name="lbl_registration">Регистрация в %1$s</string>
     <string name="lbl_scope_of_change">Масштаб изменения</string>
     <string name="warning_search_failed">Поиск книги не удался.</string>
     <string name="lbl_search_for_books">Поиск книг</string>
@@ -634,7 +634,7 @@
     <string name="lbl_toc_multiple_authors">Несколько авторов</string>
     <string name="X_lbl_edit_publisher">Редактировать Издатель</string>
     <string name="X_lbl_edit_toc_entry">Изменить запись</string>
-    <string name="action_discard">Выбросьте</string>
+    <string name="action_discard">Отменить</string>
     <string name="btn_show_list">Показать список</string>
     <string name="btn_less_ellipsis">Меньше…</string>
     <string name="lbl_archive_format">Формат</string>
@@ -662,5 +662,7 @@
     <string name="image">Изображение</string>
     <string name="lbl_author_type_narrator">рассказчик</string>
     <string name="unknown">Неизвестно</string>
+    <string name="btn_not_now">Не сейчас</string>
+    <string name="menu_reset_to_default">Сбросить настройки</string>
 
 </resources>
