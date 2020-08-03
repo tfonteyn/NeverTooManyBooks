@@ -47,10 +47,10 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.io.File;
-import java.lang.ref.WeakReference;
 import java.util.Collection;
 import java.util.Objects;
 
+import com.hardbacknutter.nevertoomanybooks.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -82,6 +82,9 @@ public class CoverBrowserDialogFragment
     /** Log tag. */
     public static final String TAG = "CoverBrowserFragment";
 
+    public static final String BKEY_RESULT_COVER_INDEX = TAG + ":cIdx";
+    public static final String BKEY_RESULT_COVER_FILE_SPEC = TAG + ":fileSpec";
+
     /** The adapter for the horizontal scrolling covers list. */
     @Nullable
     private GalleryAdapter mGalleryAdapter;
@@ -102,10 +105,6 @@ public class CoverBrowserDialogFragment
 
     /** View Binding. */
     private DialogCoverBrowserBinding mVb;
-
-    /** Where to send the selected file. */
-    @Nullable
-    private WeakReference<OnFileSelected> mFileSelectedListener;
 
     /**
      * No-arg constructor for OS use.
@@ -162,18 +161,6 @@ public class CoverBrowserDialogFragment
         mVb.toolbar.setSubtitle(mBookViewModel.getBook().getTitle());
         mVb.toolbar.setNavigationOnClickListener(v -> dismiss());
 
-        mSearchEditionsTask = new ViewModelProvider(this).get(SearchEditionsTask.class);
-        // dismiss silently
-        mSearchEditionsTask.onCancelled().observe(this, message -> dismiss());
-        // the task throws no exceptions; but paranoia... dismiss silently is fine
-        mSearchEditionsTask.onFailure().observe(this, message -> dismiss());
-        mSearchEditionsTask.onFinished().observe(this, this::showGallery);
-
-        mModel = new ViewModelProvider(this).get(CoverBrowserViewModel.class);
-        mModel.init(getContext(), requireArguments());
-        mModel.onGalleryImage().observe(this, this::setGalleryImage);
-        mModel.onSelectedImage().observe(this, this::setSelectedImage);
-
         // LayoutManager is set in the layout xml
         final LinearLayoutManager galleryLM = (LinearLayoutManager) mVb.gallery.getLayoutManager();
         Objects.requireNonNull(galleryLM, ErrorMsg.NULL_LAYOUT_MANAGER);
@@ -185,29 +172,33 @@ public class CoverBrowserDialogFragment
         // When the preview image is clicked, send the fileSpec back to the caller and terminate.
         mVb.preview.setOnClickListener(v -> {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVER_BROWSER) {
-                Log.d(TAG, "preview.onClick|filePath=" + mModel.getSelectedFilePath());
+                Log.d(TAG, "preview.onClick|filePath=" + mModel.getSelectedFileAbsPath());
             }
-            if (mModel.getSelectedFilePath() != null) {
-                if (mFileSelectedListener != null && mFileSelectedListener.get() != null) {
-                    mFileSelectedListener.get().onFileSelected(mModel.getImageIndex(),
-                                                               mModel.getSelectedFilePath());
-                } else {
-                    if (BuildConfig.DEBUG /* always */) {
-                        Log.w(TAG, "onFileSelected|"
-                                   + (mFileSelectedListener == null ? ErrorMsg.LISTENER_WAS_NULL
-                                                                    : ErrorMsg.LISTENER_WAS_DEAD));
-                    }
-                }
+
+            if (mModel.getSelectedFileAbsPath() != null) {
+                final Bundle result = new Bundle();
+                result.putInt(BKEY_RESULT_COVER_INDEX, mModel.getImageIndex());
+                result.putString(BKEY_RESULT_COVER_FILE_SPEC, mModel.getSelectedFileAbsPath());
+                getParentFragmentManager().setFragmentResult(TAG, result);
             }
-            // close the CoverBrowserFragment
+            // close the CoverBrowserDialogFragment
             dismiss();
         });
-    }
 
-    @Override
-    public void onDismiss(@NonNull final DialogInterface dialog) {
-        mModel.cancelAllTasks();
-        super.onDismiss(dialog);
+
+        mSearchEditionsTask = new ViewModelProvider(this).get(SearchEditionsTask.class);
+        // dismiss silently
+        mSearchEditionsTask.onCancelled().observe(getViewLifecycleOwner(), message -> dismiss());
+        // the task throws no exceptions; but paranoia... dismiss silently is fine
+        mSearchEditionsTask.onFailure().observe(getViewLifecycleOwner(), message -> dismiss());
+        mSearchEditionsTask.onFinished().observe(getViewLifecycleOwner(), this::showGallery);
+
+        mModel = new ViewModelProvider(this).get(CoverBrowserViewModel.class);
+        mModel.init(requireArguments());
+        mModel.onGalleryImage().observe(getViewLifecycleOwner(), this::setGalleryImage);
+        mModel.onSelectedImage().observe(getViewLifecycleOwner(), this::setSelectedImage);
+        mModel.onShowGalleryProgress().observe(getViewLifecycleOwner(), show ->
+                mVb.progressBar.setVisibility(show ? View.VISIBLE : View.INVISIBLE));
     }
 
     @Override
@@ -219,13 +210,23 @@ public class CoverBrowserDialogFragment
     @Override
     public void onResume() {
         super.onResume();
-        if (mModel.getEditions().isEmpty()) {
-            mVb.statusMessage.setText(R.string.progress_msg_finding_editions);
-            mVb.progressBar.setVisibility(View.VISIBLE);
-            // if the task is NOT already running (e.g. after a screen rotation...) start it
-            if (!mSearchEditionsTask.isRunning()) {
+        // if the task is NOT already running and we have no editions loaded before
+        if (!mSearchEditionsTask.isRunning()) {
+            if (mModel.getEditions().isEmpty()) {
+                // start the task
+                mVb.statusMessage.setText(R.string.progress_msg_searching_editions);
+                mVb.progressBar.setVisibility(View.VISIBLE);
                 mSearchEditionsTask.startTask(mModel.getBaseIsbn());
             }
+        }
+
+        // If currently not shown, set a reasonable size for the preview image
+        // so the progress overlay will be shown in the correct position
+        if (mVb.preview.getVisibility() != View.VISIBLE) {
+            final ViewGroup.LayoutParams previewLp = mVb.preview.getLayoutParams();
+            previewLp.width = (int) (mPreviewMaxHeight * ImageUtils.HW_RATIO);
+            previewLp.height = mPreviewMaxHeight;
+            mVb.preview.setLayoutParams(previewLp);
         }
     }
 
@@ -237,13 +238,11 @@ public class CoverBrowserDialogFragment
     private void showGallery(@NonNull final FinishedMessage<Collection<String>> message) {
         Objects.requireNonNull(mGalleryAdapter, ErrorMsg.NULL_GALLERY_ADAPTER);
 
-        mVb.progressBar.setVisibility(View.INVISIBLE);
-
         if (message.isNewEvent()) {
             if (message.result == null || message.result.isEmpty()) {
-                Snackbar.make(mVb.statusMessage, R.string.warning_no_editions,
-                              Snackbar.LENGTH_LONG).show();
-                dismiss();
+                mVb.progressBar.setVisibility(View.INVISIBLE);
+                mVb.statusMessage.setText(R.string.warning_no_editions);
+                mVb.statusMessage.postDelayed(this::dismiss, BaseActivity.ERROR_DELAY_MS);
                 return;
             }
 
@@ -298,9 +297,9 @@ public class CoverBrowserDialogFragment
 
         // if none left, dismiss.
         if (mGalleryAdapter.getItemCount() == 0) {
-            Snackbar.make(mVb.statusMessage, R.string.warning_image_not_found,
-                          Snackbar.LENGTH_LONG).show();
-            dismiss();
+            mVb.progressBar.setVisibility(View.INVISIBLE);
+            mVb.statusMessage.setText(R.string.warning_image_not_found);
+            mVb.statusMessage.postDelayed(this::dismiss, BaseActivity.ERROR_DELAY_MS);
         }
     }
 
@@ -321,8 +320,7 @@ public class CoverBrowserDialogFragment
 
             } else {
                 mVb.preview.setVisibility(View.INVISIBLE);
-                mVb.statusMessage.setText(R.string.progress_msg_loading);
-                mVb.progressBar.setVisibility(View.VISIBLE);
+                mVb.previewProgressBar.setVisibility(View.VISIBLE);
 
                 // start a task to fetch a larger image
                 mModel.fetchSelectedImage(imageFileInfo);
@@ -336,18 +334,17 @@ public class CoverBrowserDialogFragment
      * @param imageFileInfo to display
      */
     private void setSelectedImage(@Nullable final ImageFileInfo imageFileInfo) {
-        // Always reset the preview
-        mModel.setSelectedFilePath(null);
+        // Always reset the preview and hide the progress bar
+        mModel.setSelectedFile(null);
         mVb.preview.setVisibility(View.INVISIBLE);
-        // and hide the progress bar
-        mVb.progressBar.setVisibility(View.INVISIBLE);
+        mVb.previewProgressBar.setVisibility(View.INVISIBLE);
 
         if (imageFileInfo != null) {
             final File file = imageFileInfo.getFile();
             if (ImageUtils.isFileGood(file)) {
                 new ImageLoader(mVb.preview, file, mPreviewMaxWidth, mPreviewMaxHeight, () -> {
                     // Set AFTER it was successfully loaded and displayed for maximum reliability
-                    mModel.setSelectedFilePath(file.getAbsolutePath());
+                    mModel.setSelectedFile(file);
                     mVb.preview.setVisibility(View.VISIBLE);
                     mVb.statusMessage.setText(R.string.txt_tap_on_image_to_select);
                 })
@@ -361,21 +358,6 @@ public class CoverBrowserDialogFragment
                       Snackbar.LENGTH_LONG).show();
         mVb.statusMessage.setText(R.string.txt_tap_on_thumb);
 
-    }
-
-    /**
-     * Call this from {@link #onAttachFragment} in the parent.
-     *
-     * @param listener the object to send the result to.
-     */
-    public void setListener(@NonNull final OnFileSelected listener) {
-        mFileSelectedListener = new WeakReference<>(listener);
-    }
-
-    public interface OnFileSelected {
-
-        void onFileSelected(@IntRange(from = 0) int cIdx,
-                            @NonNull String fileSpec);
     }
 
     /**
@@ -455,7 +437,6 @@ public class CoverBrowserDialogFragment
                                           (int) (mMaxHeight * ImageUtils.HW_RATIO), mMaxHeight);
                 // and queue a request for it.
                 mModel.fetchGalleryImage(isbn);
-
                 holder.siteView.setText("");
 
             } else {

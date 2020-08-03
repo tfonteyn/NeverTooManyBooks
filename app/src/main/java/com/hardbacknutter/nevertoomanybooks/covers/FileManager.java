@@ -266,14 +266,26 @@ public class FileManager {
 
 
     /**
-     * Clean up all files.
+     * Clean up all files except the given file.
+     *
+     * @param keepAbsolutePath the file to keep.
      */
-    public void purge() {
+    public void purge(@Nullable final String keepAbsolutePath) {
         for (ImageFileInfo imageFileInfo : mFiles.values()) {
             if (imageFileInfo != null) {
                 final File file = imageFileInfo.getFile();
                 if (file != null) {
-                    FileUtils.delete(file);
+                    if (!file.getAbsolutePath().equals(keepAbsolutePath)) {
+                        if (BuildConfig.DEBUG /* always */) {
+                            Log.d(TAG, "purging file=" + file.getName());
+                        }
+                        FileUtils.delete(file);
+
+                    } else {
+                        if (BuildConfig.DEBUG /* always */) {
+                            Log.d(TAG, "keeping file=" + file.getName());
+                        }
+                    }
                 }
             }
         }

@@ -27,7 +27,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.covers;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -37,10 +36,10 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.Executor;
@@ -53,7 +52,6 @@ import com.hardbacknutter.nevertoomanybooks.searches.SiteList;
 import com.hardbacknutter.nevertoomanybooks.tasks.ASyncExecutor;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.FinishedMessage;
-import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 
 public class CoverBrowserViewModel
         extends ViewModel {
@@ -62,6 +60,8 @@ public class CoverBrowserViewModel
     private static final String TAG = "CoverBrowserViewModel";
     static final String BKEY_FILE_INDEX = TAG + ":cIdx";
 
+    /** Progressbar for the gallery. */
+    private final MutableLiveData<Boolean> mShowGalleryProgress = new MutableLiveData<>();
     /** GalleryImage. */
     private final MutableLiveData<ImageFileInfo> mGalleryImage = new MutableLiveData<>();
     /** SelectedImage. */
@@ -79,7 +79,7 @@ public class CoverBrowserViewModel
      * Holder for all active tasks, so we can cancel them if needed.
      * key: isbn.
      */
-    private final Map<String, FetchImageTask> mAllTasks = new HashMap<>();
+    private final Map<String, FetchImageTask> mGalleryTasks = new HashMap<>();
     /** FetchImageTask listener. */
     private final TaskListener<ImageFileInfo> mTaskListener = new TaskListener<ImageFileInfo>() {
         @Override
@@ -130,7 +130,7 @@ public class CoverBrowserViewModel
      * This is the absolute/resolved path for the file
      */
     @Nullable
-    private String mSelectedFilePath;
+    private String mSelectedFileAbsolutePath;
     /** Handles downloading, checking and cleanup of files. */
     private FileManager mFileManager;
     /** ISBN of book to fetch other editions of. */
@@ -143,18 +143,16 @@ public class CoverBrowserViewModel
         cancelAllTasks();
 
         if (mFileManager != null) {
-            mFileManager.purge();
+            mFileManager.purge(mSelectedFileAbsolutePath);
         }
     }
 
     /**
      * Pseudo constructor.
      *
-     * @param context Current context
-     * @param args    {@link Intent#getExtras()} or {@link Fragment#getArguments()}
+     * @param args {@link Intent#getExtras()} or {@link Fragment#getArguments()}
      */
-    public void init(@NonNull final Context context,
-                     @NonNull final Bundle args) {
+    public void init(@NonNull final Bundle args) {
         if (mBaseIsbn == null) {
             mBaseIsbn = args.getString(DBDefinitions.KEY_ISBN);
             mCIdx = args.getInt(BKEY_FILE_INDEX);
@@ -162,10 +160,7 @@ public class CoverBrowserViewModel
             // optional
             SiteList siteList = args.getParcelable(SiteList.Type.Covers.getBundleKey());
             if (siteList == null) {
-                final Locale systemLocale = LocaleUtils.getSystemLocale();
-                final Locale userLocale = LocaleUtils.getUserLocale(context);
-                siteList = SiteList.getList(context, systemLocale, userLocale,
-                                            SiteList.Type.Covers);
+                siteList = SiteList.getList(SiteList.Type.Covers);
             }
             mFileManager = new FileManager(siteList);
         }
@@ -176,7 +171,7 @@ public class CoverBrowserViewModel
     }
 
     /**
-     * Cancel all active tasks.
+     * Cancel all active tasks; called before we're dismissed in any way.
      */
     void cancelAllTasks() {
         // prevent new tasks being started.
@@ -186,11 +181,12 @@ public class CoverBrowserViewModel
             mSelectedImageTask.cancel(true);
         }
 
-        synchronized (mAllTasks) {
-            for (FetchImageTask task : mAllTasks.values()) {
+        synchronized (mGalleryTasks) {
+            for (FetchImageTask task : mGalleryTasks.values()) {
                 task.cancel(true);
             }
-            mAllTasks.clear();
+            // not strictly needed, but future-proof
+            mGalleryTasks.clear();
         }
     }
 
@@ -200,28 +196,21 @@ public class CoverBrowserViewModel
      * @param taskId to remove
      */
     private void removeTask(final int taskId) {
-        synchronized (mAllTasks) {
+        synchronized (mGalleryTasks) {
             String isbn = null;
-            for (Map.Entry<String, FetchImageTask> entry : mAllTasks.entrySet()) {
+            for (Map.Entry<String, FetchImageTask> entry : mGalleryTasks.entrySet()) {
                 if (entry.getValue().getTaskId() == taskId) {
                     isbn = entry.getKey();
                     break;
                 }
             }
             if (isbn != null) {
-                mAllTasks.remove(isbn);
+                mGalleryTasks.remove(isbn);
             }
-        }
-    }
 
-    /**
-     * Remove the task for the given ISBN
-     *
-     * @param isbn to remove
-     */
-    private void removeTask(@NonNull final String isbn) {
-        synchronized (mAllTasks) {
-            mAllTasks.remove(isbn);
+            if (mGalleryTasks.isEmpty()) {
+                mShowGalleryProgress.setValue(false);
+            }
         }
     }
 
@@ -261,12 +250,12 @@ public class CoverBrowserViewModel
     }
 
     @Nullable
-    String getSelectedFilePath() {
-        return mSelectedFilePath;
+    String getSelectedFileAbsPath() {
+        return mSelectedFileAbsolutePath;
     }
 
-    void setSelectedFilePath(@Nullable final String filePath) {
-        mSelectedFilePath = filePath;
+    void setSelectedFile(@Nullable final File file) {
+        mSelectedFileAbsolutePath = file != null ? file.getAbsolutePath() : null;
     }
 
     /**
@@ -288,17 +277,32 @@ public class CoverBrowserViewModel
      * @param isbn to search for, <strong>must</strong> be valid.
      */
     void fetchGalleryImage(@NonNull final String isbn) {
-        synchronized (mAllTasks) {
-            if (!mAllTasks.containsKey(isbn)) {
+        synchronized (mGalleryTasks) {
+            if (!mGalleryTasks.containsKey(isbn)) {
                 final FetchImageTask task =
                         new FetchImageTask(mTaskIdCounter.getAndIncrement(), isbn, mCIdx,
                                            mFileManager, mTaskListener,
                                            ImageFileInfo.Size.SMALL_FIRST);
 
-                mAllTasks.put(isbn, task);
+                mGalleryTasks.put(isbn, task);
                 task.executeOnExecutor(mGalleryNetworkExecutor);
+
+                final Boolean isShowing = mShowGalleryProgress.getValue();
+                if (isShowing == null || !isShowing) {
+                    mShowGalleryProgress.setValue(true);
+                }
             }
         }
+    }
+
+    /**
+     * Observable.
+     *
+     * @return boolean whether to show or hide the progress bar
+     */
+    @NonNull
+    public MutableLiveData<Boolean> onShowGalleryProgress() {
+        return mShowGalleryProgress;
     }
 
     /**

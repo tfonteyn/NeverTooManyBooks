@@ -46,8 +46,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentOnAttachListener;
+import androidx.fragment.app.FragmentResultListener;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.snackbar.Snackbar;
@@ -90,24 +89,14 @@ public abstract class BookBaseFragment
     final CoverHandler[] mCoverHandler = new CoverHandler[2];
 
     /** Forwarding listener; send the selected image to the correct handler. */
-    private final CoverBrowserDialogFragment.OnFileSelected mOnFileSelected =
-            (cIdx, fileSpec) -> mCoverHandler[cIdx].onFileSelected(fileSpec);
+    private final FragmentResultListener mCoverBrowserDialogFRL = (key, bundle) -> {
+        final int cIdx = bundle.getInt(
+                CoverBrowserDialogFragment.BKEY_RESULT_COVER_INDEX);
+        final String fileSpec = bundle.getString(
+                CoverBrowserDialogFragment.BKEY_RESULT_COVER_FILE_SPEC);
+        mCoverHandler[cIdx].onFileSelected(fileSpec);
+    };
 
-    /** (re)attach the result listener when a fragment gets started. */
-    private final FragmentOnAttachListener mFragmentOnAttachListener =
-            new FragmentOnAttachListener() {
-                @Override
-                public void onAttachFragment(@NonNull final FragmentManager fragmentManager,
-                                             @NonNull final Fragment fragment) {
-                    if (BuildConfig.DEBUG && DEBUG_SWITCHES.ATTACH_FRAGMENT) {
-                        Log.d(getClass().getName(), "onAttachFragment: " + fragment.getTag());
-                    }
-
-                    if (fragment instanceof CoverBrowserDialogFragment) {
-                        ((CoverBrowserDialogFragment) fragment).setListener(mOnFileSelected);
-                    }
-                }
-            };
     protected GrAuthTask mGrAuthTask;
     /** simple indeterminate progress spinner to show while doing lengthy work. */
     ProgressBar mProgressBar;

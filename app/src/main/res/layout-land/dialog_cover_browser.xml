@@ -60,17 +60,30 @@
             style="@style/Dialog.Body.FloatingAndFullscreen"
             >
 
+            <ProgressBar
+                android:id="@+id/progressBar"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/indent_field_large"
+                android:indeterminate="true"
+                android:visibility="invisible"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/preview"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:visibility="visible"
+                />
+
             <TextView
                 android:id="@+id/statusMessage"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="8dp"
+                android:layout_marginStart="@dimen/indent_field_large"
                 android:textAppearance="?android:attr/textAppearanceSmall"
                 android:textIsSelectable="false"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/preview"
-                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/progressBar"
                 tools:text="@tools:sample/lorem"
                 />
 
@@ -78,7 +91,7 @@
                 android:id="@+id/gallery"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
+                android:layout_marginStart="@dimen/indent_field_large"
                 android:layout_marginTop="8dp"
                 android:orientation="horizontal"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
@@ -87,20 +100,6 @@
                 app:layout_constraintTop_toBottomOf="@id/statusMessage"
                 tools:itemCount="3"
                 tools:listitem="@layout/row_cover_browser_gallery"
-                />
-
-            <ProgressBar
-                android:id="@+id/progressBar"
-                style="?android:attr/progressBarStyleHorizontal"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:indeterminate="true"
-                android:visibility="invisible"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@id/preview"
-                app:layout_constraintTop_toBottomOf="@id/gallery"
-                tools:visibility="visible"
                 />
 
             <ImageView
@@ -117,6 +116,22 @@
                 tools:src="@sample/covers"
                 tools:visibility="visible"
                 />
+
+            <ProgressBar
+                android:id="@+id/previewProgressBar"
+                style="?android:attr/progressBarStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:elevation="@dimen/progress_z"
+                android:indeterminate="true"
+                android:visibility="invisible"
+                app:layout_constraintBottom_toBottomOf="@id/preview"
+                app:layout_constraintEnd_toEndOf="@id/preview"
+                app:layout_constraintStart_toStartOf="@id/preview"
+                app:layout_constraintTop_toTopOf="@id/preview"
+                tools:visibility="visible"
+                />
+
         </androidx.constraintlayout.widget.ConstraintLayout>
     </FrameLayout>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
