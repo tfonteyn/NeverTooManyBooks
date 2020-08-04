@@ -31,7 +31,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -42,7 +41,7 @@ import androidx.annotation.Nullable;
 import androidx.core.util.Pair;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentOnAttachListener;
+import androidx.fragment.app.FragmentResultListener;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -69,26 +68,10 @@ public class ExportFragment
 
     /** Log tag. */
     public static final String TAG = "ExportFragment";
-    /** (re)attach the result listener when a fragment gets started. */
-    private final FragmentOnAttachListener mFragmentOnAttachListener =
-            new FragmentOnAttachListener() {
-                @Override
-                public void onAttachFragment(@NonNull final FragmentManager fragmentManager,
-                                             @NonNull final Fragment fragment) {
-                    if (BuildConfig.DEBUG && DEBUG_SWITCHES.ATTACH_FRAGMENT) {
-                        Log.d(getClass().getName(), "onAttachFragment"
-                                                    + "|fragmentManager=" + fragmentManager
-                                                    + "|fragment=" + fragment.getTag());
-                    }
 
-                    if (fragment instanceof ExportHelperDialogFragment) {
-                        ((ExportHelperDialogFragment) fragment).setListener(mExportOptionsListener);
-                    }
-                }
-            };
     /** Export. */
     private ArchiveExportTask mArchiveExportTask;
-    private final OptionsDialogBase.OptionsListener<ExportManager> mExportOptionsListener =
+    private final FragmentResultListener mExportOptionsListener =
             new OptionsDialogBase.OptionsListener<ExportManager>() {
                 @Override
                 public void onOptionsSet(@NonNull final ExportManager options) {
@@ -108,7 +91,8 @@ public class ExportFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        getChildFragmentManager().addFragmentOnAttachListener(mFragmentOnAttachListener);
+        getChildFragmentManager().setFragmentResultListener(
+                ExportHelperDialogFragment.REQUEST_KEY, this, mExportOptionsListener);
     }
 
     @Nullable

@@ -42,16 +42,17 @@ import com.hardbacknutter.nevertoomanybooks.R;
  * Dialog to edit an <strong>in-line in Books table</strong> Genre.
  */
 public class EditGenreDialogFragment
-        extends EditStringBaseDialogFragment {
+        extends EditStringBaseDialogFragment{
 
     /** Fragment/Log tag. */
     public static final String TAG = "EditGenreDialogFrag";
+    public static final String REQUEST_KEY = TAG + ":rk";
 
     /**
      * No-arg constructor for OS use.
      */
     public EditGenreDialogFragment() {
-        super(R.string.lbl_genre, R.string.lbl_genre, BookChangedListener.GENRE);
+        super(REQUEST_KEY, R.string.lbl_genre, R.string.lbl_genre, BookChangedListener.GENRE);
     }
 
     /**

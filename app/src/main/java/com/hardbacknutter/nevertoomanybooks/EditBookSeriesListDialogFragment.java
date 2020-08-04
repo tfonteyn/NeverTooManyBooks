@@ -29,7 +29,6 @@ package com.hardbacknutter.nevertoomanybooks;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
@@ -38,14 +37,10 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentOnAttachListener;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -84,24 +79,7 @@ public class EditBookSeriesListDialogFragment
 
     /** Fragment/Log tag. */
     static final String TAG = "EditBookSeriesListDlg";
-    /** (re)attach the result listener when a fragment gets started. */
-    private final FragmentOnAttachListener mFragmentOnAttachListener =
-            new FragmentOnAttachListener() {
-                @Override
-                public void onAttachFragment(@NonNull final FragmentManager fragmentManager,
-                                             @NonNull final Fragment fragment) {
-                    if (BuildConfig.DEBUG && DEBUG_SWITCHES.ATTACH_FRAGMENT) {
-                        Log.d(getClass().getName(), "onAttachFragment"
-                                                    + "|fragmentManager=" + fragmentManager
-                                                    + "|fragment=" + fragment.getTag());
-                    }
 
-                    if (fragment instanceof EditSeriesForBookDialogFragment) {
-                        ((EditSeriesForBookDialogFragment) fragment)
-                                .setListener(mOnProcessChangesListener);
-                    }
-                }
-            };
     /** Database Access. */
     private DAO mDb;
     /** The book. Must be in the Activity scope. */
@@ -121,8 +99,8 @@ public class EditBookSeriesListDialogFragment
     /** The adapter for the list itself. */
     private SeriesListAdapter mListAdapter;
 
-    private final EditSeriesForBookDialogFragment.OnProcessChangesListener
-            mOnProcessChangesListener = EditBookSeriesListDialogFragment.this::processChanges;
+    private final EditBookBaseFragment.OnResultListener<Series> mOnEditSeriesListener =
+            this::processChanges;
 
     /** Drag and drop support for the list view. */
     private ItemTouchHelper mItemTouchHelper;
@@ -148,7 +126,8 @@ public class EditBookSeriesListDialogFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        getParentFragmentManager().addFragmentOnAttachListener(mFragmentOnAttachListener);
+        getParentFragmentManager().setFragmentResultListener(
+                EditSeriesForBookDialogFragment.REQUEST_KEY, this, mOnEditSeriesListener);
 
         mDb = new DAO(TAG);
     }
@@ -391,6 +370,7 @@ public class EditBookSeriesListDialogFragment
         /** Fragment/Log tag. */
         @SuppressWarnings("InnerClassFieldHidesOuterClassField")
         private static final String TAG = "EditSeriesForBookDialog";
+        private static final String REQUEST_KEY = TAG + ":rk";
 
         /** Database Access. */
         private DAO mDb;
@@ -409,10 +389,6 @@ public class EditBookSeriesListDialogFragment
         private boolean mIsComplete;
         /** Current edit. */
         private String mNumber;
-
-        /** Where to send the result. */
-        @Nullable
-        private WeakReference<OnProcessChangesListener> mListener;
 
         /**
          * No-arg constructor for OS use.
@@ -506,16 +482,7 @@ public class EditBookSeriesListDialogFragment
             tmpSeries.setComplete(mIsComplete);
             tmpSeries.setNumber(mNumber);
 
-            if (mListener != null && mListener.get() != null) {
-                mListener.get().onProcessChanges(mSeries, tmpSeries);
-            } else {
-                if (BuildConfig.DEBUG /* always */) {
-                    Log.w(TAG, "saveChanges|"
-                               + (mListener == null ? ErrorMsg.LISTENER_WAS_NULL
-                                                    : ErrorMsg.LISTENER_WAS_DEAD));
-                }
-            }
-
+            EditBookBaseFragment.OnResultListener.sendResult(this, REQUEST_KEY, mSeries, tmpSeries);
             return true;
         }
 
@@ -546,21 +513,6 @@ public class EditBookSeriesListDialogFragment
                 mDb.close();
             }
             super.onDestroy();
-        }
-
-        /**
-         * Call this from {@link #onAttachFragment} in the parent.
-         *
-         * @param listener the object to send the result to.
-         */
-        public void setListener(@NonNull final OnProcessChangesListener listener) {
-            mListener = new WeakReference<>(listener);
-        }
-
-        interface OnProcessChangesListener {
-
-            void onProcessChanges(@NonNull Series original,
-                                  @NonNull Series modified);
         }
     }
 

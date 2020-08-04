@@ -54,17 +54,14 @@ import com.hardbacknutter.nevertoomanybooks.widgets.DiacriticArrayAdapter;
  * Dialog to edit an <strong>EXISTING or NEW</strong> {@link Author}.
  */
 public class EditAuthorDialogFragment
-        extends BaseDialogFragment
-        implements BookChangedListener.Owner {
+        extends BaseDialogFragment {
 
     /** Fragment/Log tag. */
     public static final String TAG = "EditAuthorDialogFrag";
+    public static final String REQUEST_KEY = TAG + ":rk";
 
     /** Database Access. */
     private DAO mDb;
-    /** Where to send the result. */
-    @Nullable
-    private WeakReference<BookChangedListener> mListener;
     /** View Binding. */
     private DialogEditAuthorBinding mVb;
 
@@ -184,15 +181,7 @@ public class EditAuthorDialogFragment
             success = mDb.update(getContext(), mAuthor);
         }
         if (success) {
-            if (mListener != null && mListener.get() != null) {
-                mListener.get().onChange(0, BookChangedListener.AUTHOR, null);
-            } else {
-                if (BuildConfig.DEBUG /* always */) {
-                    Log.w(TAG, "onBookChanged|"
-                               + (mListener == null ? ErrorMsg.LISTENER_WAS_NULL
-                                                    : ErrorMsg.LISTENER_WAS_DEAD));
-                }
-            }
+            BookChangedListener.sendResult(this, REQUEST_KEY, BookChangedListener.AUTHOR);
             return true;
         }
         return false;
@@ -210,16 +199,6 @@ public class EditAuthorDialogFragment
         outState.putString(DBDefinitions.KEY_AUTHOR_FAMILY_NAME, mFamilyName);
         outState.putString(DBDefinitions.KEY_AUTHOR_GIVEN_NAMES, mGivenNames);
         outState.putBoolean(DBDefinitions.KEY_AUTHOR_IS_COMPLETE, mIsComplete);
-    }
-
-    /**
-     * Call this from {@link #onAttachFragment} in the parent.
-     *
-     * @param listener the object to send the result to.
-     */
-    @Override
-    public void setListener(@NonNull final BookChangedListener listener) {
-        mListener = new WeakReference<>(listener);
     }
 
     @Override

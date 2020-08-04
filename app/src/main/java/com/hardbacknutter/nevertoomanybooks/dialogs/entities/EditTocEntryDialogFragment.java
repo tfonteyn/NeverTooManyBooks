@@ -55,11 +55,11 @@ import com.hardbacknutter.nevertoomanybooks.widgets.DiacriticArrayAdapter;
  * Dialog to edit an <strong>EXISTING or NEW</strong> {@link TocEntry}.
  */
 public class EditTocEntryDialogFragment
-        extends BaseDialogFragment
-        implements BookChangedListener.Owner {
+        extends BaseDialogFragment {
 
     /** Log tag. */
     public static final String TAG = "EditTocEntryDialogFrag";
+    public static final String REQUEST_KEY = TAG + ":rk";
 
     public static final String BKEY_HAS_MULTIPLE_AUTHORS = TAG + ":hasMultipleAuthors";
     public static final String BKEY_TOC_ENTRY = TAG + ":tocEntry";
@@ -67,15 +67,13 @@ public class EditTocEntryDialogFragment
 
     /** Database Access. */
     private DAO mDb;
-    /** Where to send the result. */
-    @Nullable
-    private WeakReference<BookChangedListener> mListener;
+    /** View Binding. */
+    private DialogEditBookTocBinding mVb;
+
     @Nullable
     private String mBookTitle;
     private long mBookId;
 
-    /** View Binding. */
-    private DialogEditBookTocBinding mVb;
     private DiacriticArrayAdapter<String> mAuthorAdapter;
 
     /** The TocEntry we're editing. */
@@ -224,15 +222,8 @@ public class EditTocEntryDialogFragment
         result.putParcelable(BKEY_TOC_ENTRY, mTocEntry);
         result.putBoolean(BKEY_HAS_MULTIPLE_AUTHORS, mHasMultipleAuthors);
 
-        if (mListener != null && mListener.get() != null) {
-            mListener.get().onChange(mBookId, BookChangedListener.TOC_ENTRY, result);
-        } else {
-            if (BuildConfig.DEBUG /* always */) {
-                Log.w(TAG, "addOrUpdateEntry|"
-                           + (mListener == null ? ErrorMsg.LISTENER_WAS_NULL
-                                                : ErrorMsg.LISTENER_WAS_DEAD));
-            }
-        }
+        BookChangedListener.sendResult(this, REQUEST_KEY, mBookId,
+                                       BookChangedListener.TOC_ENTRY, result);
         return true;
     }
 
@@ -253,15 +244,6 @@ public class EditTocEntryDialogFragment
         outState.putString(DBDefinitions.KEY_DATE_FIRST_PUBLICATION, mFirstPublication);
         outState.putString(DBDefinitions.KEY_AUTHOR_FORMATTED, mAuthorName);
         outState.putBoolean(BKEY_HAS_MULTIPLE_AUTHORS, mHasMultipleAuthors);
-    }
-
-    /**
-     * Call this from {@link #onAttachFragment} in the parent.
-     *
-     * @param listener the object to send the result to.
-     */
-    public void setListener(@NonNull final BookChangedListener listener) {
-        mListener = new WeakReference<>(listener);
     }
 
     @Override

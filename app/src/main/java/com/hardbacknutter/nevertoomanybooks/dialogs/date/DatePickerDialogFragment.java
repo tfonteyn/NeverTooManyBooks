@@ -48,6 +48,7 @@ public class DatePickerDialogFragment
 
     /** Log tag. */
     public static final String TAG = "DatePickerDialog";
+    public static final String REQUEST_KEY = TAG + ":rk";
 
     /**
      * Constructor.
@@ -89,7 +90,7 @@ public class DatePickerDialogFragment
                           final int month,
                           final int day) {
         // forward it to our own listener
-        send(year, month + 1, day);
+        DatePickerResultsListener.sendResult(this, REQUEST_KEY, year, month + 1, day);
     }
 
     @NonNull
@@ -98,15 +99,15 @@ public class DatePickerDialogFragment
 
         setupDate(savedInstanceState);
 
-        // can't have null values, revert to today if needed.
+        // can't have {@code 0} values here, revert to today if needed.
         final LocalDate now = LocalDate.now();
-        if (mYear == null) {
+        if (mYear == 0) {
             mYear = now.getYear();
         }
-        if (mMonth == null) {
+        if (mMonth == 0) {
             mMonth = now.getMonthValue();
         }
-        if (mDay == null) {
+        if (mDay == 0) {
             mDay = now.getDayOfMonth();
         }
         //noinspection ConstantConditions

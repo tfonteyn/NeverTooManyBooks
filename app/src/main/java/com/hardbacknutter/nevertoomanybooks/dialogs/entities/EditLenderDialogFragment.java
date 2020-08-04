@@ -33,7 +33,6 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.provider.ContactsContract;
-import android.util.Log;
 import android.view.View;
 
 import androidx.annotation.NonNull;
@@ -42,20 +41,17 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.DialogFragment;
 
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 
 import com.hardbacknutter.nevertoomanybooks.BookChangedListener;
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.RequestCode;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditLoanBinding;
-import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.dialogs.BaseDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.widgets.DiacriticArrayAdapter;
@@ -67,11 +63,11 @@ import com.hardbacknutter.nevertoomanybooks.widgets.DiacriticArrayAdapter;
  * This is done to minimize trips to the database.
  */
 public class EditLenderDialogFragment
-        extends BaseDialogFragment
-        implements BookChangedListener.Owner {
+        extends BaseDialogFragment {
 
     /** Fragment/Log tag. */
     public static final String TAG = "LendBookDialogFrag";
+    public static final String REQUEST_KEY = TAG + ":rk";
 
     private static final String BKEY_NEW_LOANEE = TAG + ':' + DBDefinitions.KEY_LOANEE;
 
@@ -83,9 +79,6 @@ public class EditLenderDialogFragment
 
     /** Database Access. */
     private DAO mDb;
-    /** Where to send the result. */
-    @Nullable
-    private WeakReference<BookChangedListener> mListener;
     /** View Binding. */
     private DialogEditLoanBinding mVb;
 
@@ -279,15 +272,8 @@ public class EditLenderDialogFragment
         }
 
         if (success) {
-            if (mListener != null && mListener.get() != null) {
-                mListener.get().onChange(mBookId, BookChangedListener.BOOK_LOANEE, result);
-            } else {
-                if (BuildConfig.DEBUG /* always */) {
-                    Log.w(TAG, "onBookChanged|"
-                               + (mListener == null ? ErrorMsg.LISTENER_WAS_NULL
-                                                    : ErrorMsg.LISTENER_WAS_DEAD));
-                }
-            }
+            BookChangedListener.sendResult(this, REQUEST_KEY, mBookId,
+                                           BookChangedListener.BOOK_LOANEE, result);
             return true;
         }
         return false;
@@ -303,16 +289,6 @@ public class EditLenderDialogFragment
         // store the original loanee to avoid a trip to the database
         outState.putString(DBDefinitions.KEY_LOANEE, mOriginalLoanee);
         outState.putString(BKEY_NEW_LOANEE, mLoanee);
-    }
-
-    /**
-     * Call this from {@link #onAttachFragment} in the parent.
-     *
-     * @param listener the object to send the result to.
-     */
-    @Override
-    public void setListener(@NonNull final BookChangedListener listener) {
-        mListener = new WeakReference<>(listener);
     }
 
     @Override

@@ -29,7 +29,6 @@ package com.hardbacknutter.nevertoomanybooks;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
@@ -38,14 +37,10 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentOnAttachListener;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -102,26 +97,9 @@ public class EditBookPublisherListDialogFragment
     private ArrayList<Publisher> mList;
     /** The adapter for the list itself. */
     private PublisherListAdapter mListAdapter;
-    private final EditPublisherForBookDialogFragment.OnProcessChangesListener
-            mOnProcessChangesListener = EditBookPublisherListDialogFragment.this::processChanges;
-    /** (re)attach the result listener when a fragment gets started. */
-    private final FragmentOnAttachListener mFragmentOnAttachListener =
-            new FragmentOnAttachListener() {
-                @Override
-                public void onAttachFragment(@NonNull final FragmentManager fragmentManager,
-                                             @NonNull final Fragment fragment) {
-                    if (BuildConfig.DEBUG && DEBUG_SWITCHES.ATTACH_FRAGMENT) {
-                        Log.d(getClass().getName(), "onAttachFragment"
-                                                    + "|fragmentManager=" + fragmentManager
-                                                    + "|fragment=" + fragment.getTag());
-                    }
+    private final EditBookBaseFragment.OnResultListener<Publisher> mOnEditPublisherListener =
+            this::processChanges;
 
-                    if (fragment instanceof EditPublisherForBookDialogFragment) {
-                        ((EditPublisherForBookDialogFragment) fragment)
-                                .setListener(mOnProcessChangesListener);
-                    }
-                }
-            };
     /** Drag and drop support for the list view. */
     private ItemTouchHelper mItemTouchHelper;
 
@@ -146,7 +124,9 @@ public class EditBookPublisherListDialogFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        getParentFragmentManager().addFragmentOnAttachListener(mFragmentOnAttachListener);
+        getParentFragmentManager().setFragmentResultListener(
+                EditPublisherForBookDialogFragment.REQUEST_KEY, this,
+                mOnEditPublisherListener);
 
         mDb = new DAO(TAG);
     }
@@ -375,6 +355,7 @@ public class EditBookPublisherListDialogFragment
         /** Fragment/Log tag. */
         @SuppressWarnings("InnerClassFieldHidesOuterClassField")
         private static final String TAG = "EditPublisherForBookDlg";
+        private static final String REQUEST_KEY = TAG + ":rk";
 
         /** Database Access. */
         private DAO mDb;
@@ -389,10 +370,6 @@ public class EditBookPublisherListDialogFragment
 
         /** Current edit. */
         private String mName;
-
-        /** Where to send the result. */
-        @Nullable
-        private WeakReference<OnProcessChangesListener> mListener;
 
         /**
          * No-arg constructor for OS use.
@@ -476,16 +453,8 @@ public class EditBookPublisherListDialogFragment
             // Create a new Publisher as a holder for all changes.
             final Publisher tmpPublisher = Publisher.from(mName);
 
-            if (mListener != null && mListener.get() != null) {
-                mListener.get().onProcessChanges(mPublisher, tmpPublisher);
-            } else {
-                if (BuildConfig.DEBUG /* always */) {
-                    Log.w(TAG, "saveChanges|"
-                               + (mListener == null ? ErrorMsg.LISTENER_WAS_NULL
-                                                    : ErrorMsg.LISTENER_WAS_DEAD));
-                }
-            }
-
+            EditBookBaseFragment.OnResultListener.sendResult(
+                    this, REQUEST_KEY, mPublisher, tmpPublisher);
             return true;
         }
 
@@ -511,21 +480,6 @@ public class EditBookPublisherListDialogFragment
                 mDb.close();
             }
             super.onDestroy();
-        }
-
-        /**
-         * Call this from {@link #onAttachFragment} in the parent.
-         *
-         * @param listener the object to send the result to.
-         */
-        public void setListener(@NonNull final OnProcessChangesListener listener) {
-            mListener = new WeakReference<>(listener);
-        }
-
-        interface OnProcessChangesListener {
-
-            void onProcessChanges(@NonNull Publisher original,
-                                  @NonNull Publisher modified);
         }
     }
 

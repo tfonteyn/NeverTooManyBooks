@@ -32,7 +32,6 @@ import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -48,8 +47,6 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.MenuCompat;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentOnAttachListener;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -92,29 +89,14 @@ public class AuthorWorksFragment
     public static final String BKEY_WITH_TOC = TAG + ":tocs";
     /** Optional. Show the books. Defaults to {@code true}. */
     public static final String BKEY_WITH_BOOKS = TAG + ":books";
-
     /** the ViewModel. */
     private ResultDataModel mResultData;
     /** The ViewModel. */
     private AuthorWorksModel mModel;
     /** The Adapter. */
     private TocAdapter mAdapter;
-    /** (re)attach the result listener when a fragment gets started. */
-    private final FragmentOnAttachListener mFragmentOnAttachListener =
-            new FragmentOnAttachListener() {
-                @Override
-                public void onAttachFragment(@NonNull final FragmentManager fragmentManager,
-                                             @NonNull final Fragment fragment) {
-                    if (BuildConfig.DEBUG && DEBUG_SWITCHES.ATTACH_FRAGMENT) {
-                        Log.d(getClass().getName(), "onAttachFragment: " + fragment.getTag());
-                    }
-
-                    if (fragment instanceof MenuPickerDialogFragment) {
-                        ((MenuPickerDialogFragment) fragment).setListener(
-                                (menuItem, position) -> onContextItemSelected(menuItem, position));
-                    }
-                }
-            };
+    private final MenuPickerDialogFragment.OnResultListener mOnMenuPickerListener =
+            this::onContextItemSelected;
     private ActionBar mActionBar;
 
     @Override
@@ -122,7 +104,9 @@ public class AuthorWorksFragment
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
 
-        getChildFragmentManager().addFragmentOnAttachListener(mFragmentOnAttachListener);
+        getChildFragmentManager().setFragmentResultListener(
+                MenuPickerDialogFragment.REQUEST_KEY, this, mOnMenuPickerListener);
+
     }
 
     @Nullable

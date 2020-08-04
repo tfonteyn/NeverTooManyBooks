@@ -46,12 +46,13 @@ public class EditFormatDialogFragment
 
     /** Fragment/Log tag. */
     public static final String TAG = "EditFormatDialogFrag";
+    public static final String REQUEST_KEY = TAG + ":rk";
 
     /**
      * No-arg constructor for OS use.
      */
     public EditFormatDialogFragment() {
-        super(R.string.lbl_format, R.string.lbl_format, BookChangedListener.FORMAT);
+        super(REQUEST_KEY, R.string.lbl_format, R.string.lbl_format, BookChangedListener.FORMAT);
     }
 
     /**

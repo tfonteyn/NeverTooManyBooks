@@ -46,7 +46,6 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentResultListener;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.snackbar.Snackbar;
@@ -89,13 +88,8 @@ public abstract class BookBaseFragment
     final CoverHandler[] mCoverHandler = new CoverHandler[2];
 
     /** Forwarding listener; send the selected image to the correct handler. */
-    private final FragmentResultListener mCoverBrowserDialogFRL = (key, bundle) -> {
-        final int cIdx = bundle.getInt(
-                CoverBrowserDialogFragment.BKEY_RESULT_COVER_INDEX);
-        final String fileSpec = bundle.getString(
-                CoverBrowserDialogFragment.BKEY_RESULT_COVER_FILE_SPEC);
-        mCoverHandler[cIdx].onFileSelected(fileSpec);
-    };
+    private final CoverBrowserDialogFragment.OnResultListener mOnCoverBrowserListener =
+            (cIdx, fileSpec) -> mCoverHandler[cIdx].onFileSelected(fileSpec);
 
     protected GrAuthTask mGrAuthTask;
     /** simple indeterminate progress spinner to show while doing lengthy work. */
@@ -127,7 +121,8 @@ public abstract class BookBaseFragment
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
 
-        getChildFragmentManager().addFragmentOnAttachListener(mFragmentOnAttachListener);
+        getChildFragmentManager().setFragmentResultListener(
+                CoverBrowserDialogFragment.REQUEST_KEY, this, mOnCoverBrowserListener);
     }
 
     @Override

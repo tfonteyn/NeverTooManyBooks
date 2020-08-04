@@ -33,7 +33,6 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -48,18 +47,18 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentResultListener;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 
@@ -77,15 +76,13 @@ public class MenuPickerDialogFragment
 
     /** Log tag. */
     public static final String TAG = "MenuPickerDialogFrag";
+    public static final String REQUEST_KEY = TAG + ":rk";
 
     private static final String BKEY_MENU = TAG + ":menu";
     private static final String BKEY_POSITION = TAG + ":pos";
 
     /** Cached position of the item in the list this menu was invoked on. */
     private int mPosition;
-    /** Where to send the result. */
-    @Nullable
-    private WeakReference<MenuPicker.ContextItemSelected> mListener;
 
     /**
      * Constructor.
@@ -150,15 +147,6 @@ public class MenuPickerDialogFragment
         return pickList;
     }
 
-    /**
-     * Call this from {@link #onAttachFragment} in the parent.
-     *
-     * @param listener the object to send the result to.
-     */
-    public void setListener(@NonNull final MenuPicker.ContextItemSelected listener) {
-        mListener = new WeakReference<>(listener);
-    }
-
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
@@ -202,6 +190,41 @@ public class MenuPickerDialogFragment
         listView.setAdapter(adapter);
 
         return mDialog;
+    }
+
+    public interface OnResultListener
+            extends FragmentResultListener {
+
+        /* private. */ String MENU_ITEM = "menuItem";
+        /* private. */ String POSITION = "position";
+
+        static void sendResult(@NonNull final Fragment fragment,
+                               @NonNull final String requestKey,
+                               @IdRes final int menuItemId,
+                               final int position) {
+            final Bundle result = new Bundle();
+            result.putInt(MENU_ITEM, menuItemId);
+            result.putInt(POSITION, position);
+            fragment.getParentFragmentManager().setFragmentResult(requestKey, result);
+        }
+
+        @Override
+        default void onFragmentResult(@NonNull final String requestKey,
+                                      @NonNull final Bundle result) {
+            onResult(result.getInt(MENU_ITEM), result.getInt(POSITION));
+        }
+
+        /**
+         * Callback handler with the user's selection.
+         *
+         * @param menuItemId that was selected
+         * @param position   of the item in a list where the context menu was initiated
+         *
+         * @return {@code true} if handled (not used here, but needed for compatibility)
+         */
+        @SuppressWarnings("UnusedReturnValue")
+        boolean onResult(@IdRes int menuItemId,
+                         int position);
     }
 
     /** Equivalent of a {@code MenuItem}. */
@@ -482,17 +505,11 @@ public class MenuPickerDialogFragment
                             getDialog().setTitle(item.getTitle());
                             setMenu(item.getSubMenu());
                         } else {
-                            dismiss();
 
-                            if (mListener != null && mListener.get() != null) {
-                                mListener.get().onContextItemSelected(item.getItemId(), mPosition);
-                            } else {
-                                if (BuildConfig.DEBUG /* always */) {
-                                    Log.w(TAG, "onContextItemSelected|"
-                                               + (mListener == null ? ErrorMsg.LISTENER_WAS_NULL
-                                                                    : ErrorMsg.LISTENER_WAS_DEAD));
-                                }
-                            }
+                            OnResultListener.sendResult(MenuPickerDialogFragment.this, REQUEST_KEY,
+                                                        item.getItemId(), mPosition);
+
+                            dismiss();
                         }
                     });
                 }

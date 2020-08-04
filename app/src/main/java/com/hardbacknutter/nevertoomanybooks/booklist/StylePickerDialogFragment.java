@@ -32,7 +32,6 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 
 import androidx.annotation.NonNull;
@@ -41,19 +40,19 @@ import androidx.annotation.StringRes;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.util.Pair;
 import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentResultListener;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.BaseActivity;
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.RequestCode;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
@@ -68,6 +67,7 @@ public class StylePickerDialogFragment
 
     /** Log tag. */
     public static final String TAG = "StylePickerDialogFrag";
+    public static final String REQUEST_KEY = TAG + ":rk";
 
     private static final String BKEY_SHOW_ALL_STYLES = TAG + ":showAllStyles";
     /** The styles get transformed into Pair records which are passed to the adapter. */
@@ -80,10 +80,6 @@ public class StylePickerDialogFragment
     /** Currently selected style. */
     @Nullable
     private String mCurrentStyleUuid;
-
-    /** Where to send the result. */
-    @Nullable
-    private WeakReference<StyleChangedListener> mListener;
 
     /**
      * Constructor.
@@ -101,15 +97,6 @@ public class StylePickerDialogFragment
         args.putBoolean(BKEY_SHOW_ALL_STYLES, all);
         frag.setArguments(args);
         return frag;
-    }
-
-    /**
-     * Call this from {@link #onAttachFragment} in the parent.
-     *
-     * @param listener the object to send the result to.
-     */
-    public void setListener(@NonNull final StyleChangedListener listener) {
-        mListener = new WeakReference<>(listener);
     }
 
     @Override
@@ -179,17 +166,10 @@ public class StylePickerDialogFragment
         if (mCurrentStyleUuid == null) {
             return;
         }
-        dismiss();
 
-        if (mListener != null && mListener.get() != null) {
-            mListener.get().onStyleChanged(mCurrentStyleUuid);
-        } else {
-            if (BuildConfig.DEBUG /* always */) {
-                Log.w(TAG, "onStyleSelected|"
-                           + (mListener == null ? ErrorMsg.LISTENER_WAS_NULL
-                                                : ErrorMsg.LISTENER_WAS_DEAD));
-            }
-        }
+        PickListener.sendResult(this, REQUEST_KEY, mCurrentStyleUuid);
+
+        dismiss();
     }
 
     /**
@@ -244,8 +224,30 @@ public class StylePickerDialogFragment
         }
     }
 
-    public interface StyleChangedListener {
+    public interface PickListener
+            extends FragmentResultListener {
 
-        void onStyleChanged(@NonNull String uuid);
+        /* private. */ String UUID = "uuid";
+
+        static void sendResult(@NonNull final Fragment fragment,
+                               @NonNull final String requestKey,
+                               @NonNull final String uuid) {
+            final Bundle result = new Bundle();
+            result.putString(UUID, uuid);
+            fragment.getParentFragmentManager().setFragmentResult(requestKey, result);
+        }
+
+        @Override
+        default void onFragmentResult(@NonNull final String requestKey,
+                                      @NonNull final Bundle result) {
+            onSelection(Objects.requireNonNull(result.getString(UUID)));
+        }
+
+        /**
+         * Callback handler with the user's selection.
+         *
+         * @param uuid the selected style
+         */
+        void onSelection(@NonNull String uuid);
     }
 }

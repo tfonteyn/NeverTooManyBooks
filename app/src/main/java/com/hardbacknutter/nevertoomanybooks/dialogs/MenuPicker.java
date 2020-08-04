@@ -68,7 +68,7 @@ public class MenuPicker {
     private final int mPosition;
     /** Listener for the result. */
     @NonNull
-    private final ContextItemSelected mListener;
+    private final MenuPickListener mListener;
 
     /**
      * Constructor.
@@ -86,7 +86,7 @@ public class MenuPicker {
                       @Nullable final CharSequence title,
                       @NonNull final Menu menu,
                       final int position,
-                      @NonNull final ContextItemSelected listener) {
+                      @NonNull final MenuPickListener listener) {
 
         mPosition = position;
         mListener = listener;
@@ -117,7 +117,7 @@ public class MenuPicker {
         mDialog.show();
     }
 
-    public interface ContextItemSelected {
+    public interface MenuPickListener {
 
         /**
          * Callback handler.
@@ -171,8 +171,8 @@ public class MenuPicker {
         /**
          * Constructor.
          *
-         * @param context  Current context
-         * @param menu     Menu (list of items) to display
+         * @param context Current context
+         * @param menu    Menu (list of items) to display
          */
         MenuItemListAdapter(@NonNull final Context context,
                             @NonNull final Menu menu) {

@@ -28,17 +28,11 @@
 package com.hardbacknutter.nevertoomanybooks.dialogs.date;
 
 import android.os.Bundle;
-import android.util.Log;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
-
-import java.lang.ref.WeakReference;
-
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 
 public class BaseDatePickerDialogFragment
         extends DialogFragment {
@@ -48,34 +42,25 @@ public class BaseDatePickerDialogFragment
 
     /** a standard sql style date string, must be correct. */
     static final String BKEY_DATE = TAG + ":date";
-    /** or the date split into components, which can be partial. */
-    @SuppressWarnings("WeakerAccess")
-    static final String BKEY_YEAR = TAG + ":year";
-    /** range: 0: 'not set' or 1..12. */
-    @SuppressWarnings("WeakerAccess")
-    static final String BKEY_MONTH = TAG + ":month";
-    /** range: 0: 'not set' or 1..31. */
-    @SuppressWarnings("WeakerAccess")
-    static final String BKEY_DAY = TAG + ":day";
 
-    /** Currently displayed; {@code null} if empty/invalid. */
-    @Nullable
-    Integer mYear;
+    /** or the date split into components, which can be partial. */
+    private static final String SIS_YEAR = TAG + ":year";
+    /** range: 0: 'not set' or 1..12. */
+    private static final String SIS_MONTH = TAG + ":month";
+    /** range: 0: 'not set' or 1..31. */
+    private  static final String SIS_BKEY_DAY = TAG + ":day";
+
+    /** Currently displayed; {@code 0} if empty/invalid. */
+    int mYear;
 
     /**
-     * Currently displayed; {@code null} or {@code 0} if invalid/empty.
+     * Currently displayed; {@code 0} if invalid/empty.
      * <strong>IMPORTANT:</strong> 1..12 based. (the jdk internals expect 0..11).
      */
-    @Nullable
-    Integer mMonth;
+    int mMonth;
 
-    /** Currently displayed; {@code null} if empty/invalid. */
-    @Nullable
-    Integer mDay;
-
-    /** Where to send the result. */
-    @Nullable
-    private WeakReference<DatePickerResultsListener> mListener;
+    /** Currently displayed; {@code 0} if empty/invalid. */
+    int mDay;
 
     /**
      * Common setup for the pickers.
@@ -90,9 +75,9 @@ public class BaseDatePickerDialogFragment
             parseDate(args.getString(BKEY_DATE));
         } else {
             // These are only present in the savedInstanceState
-            mYear = args.getInt(BKEY_YEAR);
-            mMonth = args.getInt(BKEY_MONTH);
-            mDay = args.getInt(BKEY_DAY);
+            mYear = args.getInt(SIS_YEAR);
+            mMonth = args.getInt(SIS_MONTH);
+            mDay = args.getInt(SIS_BKEY_DAY);
         }
     }
 
@@ -100,15 +85,9 @@ public class BaseDatePickerDialogFragment
     @CallSuper
     public void onSaveInstanceState(@NonNull final Bundle outState) {
         super.onSaveInstanceState(outState);
-        if (mYear != null) {
-            outState.putInt(BKEY_YEAR, mYear);
-        }
-        if (mMonth != null) {
-            outState.putInt(BKEY_MONTH, mMonth);
-        }
-        if (mDay != null) {
-            outState.putInt(BKEY_DAY, mDay);
-        }
+            outState.putInt(SIS_YEAR, mYear);
+            outState.putInt(SIS_MONTH, mMonth);
+            outState.putInt(SIS_BKEY_DAY, mDay);
     }
 
     /**
@@ -129,15 +108,15 @@ public class BaseDatePickerDialogFragment
      */
     private void parseDate(@Nullable final String dateString) {
         if (dateString == null || dateString.isEmpty()) {
-            mYear = null;
-            mMonth = null;
-            mDay = null;
+            mYear = 0;
+            mMonth = 0;
+            mDay = 0;
             return;
         }
 
-        Integer yyyy = null;
-        Integer mm = null;
-        Integer dd = null;
+        int yyyy = 0;
+        int mm = 0;
+        int dd = 0;
         try {
             final String[] dateAndTime = dateString.split(" ");
             final String[] date = dateAndTime[0].split("-");
@@ -155,35 +134,5 @@ public class BaseDatePickerDialogFragment
         mYear = yyyy;
         mMonth = mm;
         mDay = dd;
-    }
-
-    /**
-     * Call this from {@link #onAttachFragment} in the parent.
-     *
-     * @param listener the object to send the result to.
-     */
-    public void setListener(@NonNull final DatePickerResultsListener listener) {
-        mListener = new WeakReference<>(listener);
-    }
-
-    /**
-     * Send the date back to the listener.
-     *
-     * @param month 1..12 based (or null for no month)
-     */
-    void send(@Nullable final Integer year,
-              @Nullable final Integer month,
-              @Nullable final Integer day) {
-        dismiss();
-
-        if (mListener != null && mListener.get() != null) {
-            mListener.get().onDateSet(year, month, day);
-        } else {
-            if (BuildConfig.DEBUG /* always */) {
-                Log.w(TAG, "send|"
-                           + (mListener == null ? ErrorMsg.LISTENER_WAS_NULL
-                                                : ErrorMsg.LISTENER_WAS_DEAD));
-            }
-        }
     }
 }

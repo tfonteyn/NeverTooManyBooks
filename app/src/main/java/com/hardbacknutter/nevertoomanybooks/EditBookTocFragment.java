@@ -48,8 +48,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentOnAttachListener;
+import androidx.fragment.app.FragmentResultListener;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.ItemTouchHelper;
@@ -58,7 +57,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -113,56 +111,34 @@ public class EditBookTocFragment
                     mBookViewModel.setDirty(true);
                 }
             };
-    /** View Binding. */
-    private FragmentEditBookTocBinding mVb;
     /** the rows. */
     private final ArrayList<TocEntry> mList = new ArrayList<>();
-
-    /** The adapter for the list. */
-    private TocListEditAdapter mListAdapter;
-    /** Drag and drop support for the list view. */
-    private ItemTouchHelper mItemTouchHelper;
     /**
      * ISFDB editions of a book(isbn).
      * We'll try them one by one if the user asks for a re-try.
      */
     @NonNull
     private final List<Edition> mIsfdbEditions = new ArrayList<>();
+    /** View Binding. */
+    private FragmentEditBookTocBinding mVb;
+    /** The adapter for the list. */
+    private TocListEditAdapter mListAdapter;
+    /** Drag and drop support for the list view. */
+    private ItemTouchHelper mItemTouchHelper;
     private DiacriticArrayAdapter<String> mAuthorAdapter;
     /** Stores the item position in the list while we're editing that item. */
     @Nullable
     private Integer mEditPosition;
-    /** (re)attach the result listener when a fragment gets started. */
-    private final FragmentOnAttachListener mFragmentOnAttachListener =
-            new FragmentOnAttachListener() {
-                @Override
-                public void onAttachFragment(@NonNull final FragmentManager fragmentManager,
-                                             @NonNull final Fragment fragment) {
-                    if (BuildConfig.DEBUG && DEBUG_SWITCHES.ATTACH_FRAGMENT) {
-                        Log.d(getClass().getName(), "onAttachFragment: " + fragment.getTag());
-                    }
-
-                    if (fragment instanceof MenuPickerDialogFragment) {
-                        ((MenuPickerDialogFragment) fragment).setListener(
-                                (menuItem, position) -> onContextItemSelected(menuItem, position));
-
-                    } else if (fragment instanceof ConfirmTocDialogFragment) {
-                        ((ConfirmTocDialogFragment) fragment)
-                                .setListener(mConfirmTocResultsListener);
-
-                    } else if (fragment instanceof BookChangedListener.Owner) {
-                        ((BookChangedListener.Owner) fragment).setListener(mOnBookChangedListener);
-                    }
-                }
-            };
+    private final MenuPickerDialogFragment.OnResultListener mOnMenuPickerListener =
+            this::onContextItemSelected;
     private IsfdbGetEditionsTask mIsfdbGetEditionsTask;
     /** Database Access. */
     private DAO mDb;
     /** Listen for the results of the entry edit-dialog. */
-    private final BookChangedListener mOnBookChangedListener = (bookId, fieldsChanged, data) -> {
+    private final BookChangedListener mOnBookChangedListener = (bookId, fieldChanges, data) -> {
         Objects.requireNonNull(data, ErrorMsg.NULL_INTENT_DATA);
 
-        if ((fieldsChanged & BookChangedListener.TOC_ENTRY) != 0) {
+        if ((fieldChanges & BookChangedListener.TOC_ENTRY) != 0) {
             final TocEntry tocEntry = data
                     .getParcelable(EditTocEntryDialogFragment.BKEY_TOC_ENTRY);
             Objects.requireNonNull(tocEntry, ErrorMsg.NULL_TOC_ENTRY);
@@ -174,15 +150,15 @@ public class EditBookTocFragment
         } else {
             // we don't expect/implement any others.
             if (BuildConfig.DEBUG /* always */) {
-                Log.d(TAG, "bookId=" + bookId + "|fieldsChanged=" + fieldsChanged);
+                Log.d(TAG, "bookId=" + bookId + "|fieldChanges=" + fieldChanges);
             }
         }
 
     };
     private IsfdbGetBookTask mIsfdbGetBookTask;
-    /** Listen for the results (approval) to add the TOC to the list and refresh the screen. */
-    private final ConfirmTocDialogFragment.ConfirmTocResults mConfirmTocResultsListener =
-            new ConfirmTocDialogFragment.ConfirmTocResults() {
+
+    private final FragmentResultListener mConfirmTocResultsListener =
+            new ConfirmTocDialogFragment.OnResultListener() {
                 @Override
                 public void commitToc(@Book.TocBits final long tocBitMask,
                                       @NonNull final List<TocEntry> tocEntries) {
@@ -205,7 +181,12 @@ public class EditBookTocFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        getChildFragmentManager().addFragmentOnAttachListener(mFragmentOnAttachListener);
+        getChildFragmentManager().setFragmentResultListener(
+                ConfirmTocDialogFragment.REQUEST_KEY, this, mConfirmTocResultsListener);
+        getChildFragmentManager().setFragmentResultListener(
+                MenuPickerDialogFragment.REQUEST_KEY, this, mOnMenuPickerListener);
+        getChildFragmentManager().setFragmentResultListener(
+                EditTocEntryDialogFragment.REQUEST_KEY, this, mOnBookChangedListener);
 
         mDb = new DAO(TAG);
     }
@@ -683,6 +664,7 @@ public class EditBookTocFragment
         /** Log tag. */
         @SuppressWarnings("InnerClassFieldHidesOuterClassField")
         private static final String TAG = "ConfirmTocDialogFrag";
+        public static final String REQUEST_KEY = TAG + ":rk";
 
         private static final String BKEY_HAS_OTHER_EDITIONS = TAG + ":hasOtherEditions";
 
@@ -690,10 +672,6 @@ public class EditBookTocFragment
         @Book.TocBits
         private long mTocBitMask;
         private ArrayList<TocEntry> mTocEntries;
-
-        /** Where to send the result. */
-        @Nullable
-        private WeakReference<ConfirmTocResults> mListener;
 
         /**
          * Constructor.
@@ -708,15 +686,6 @@ public class EditBookTocFragment
             bookData.putBoolean(BKEY_HAS_OTHER_EDITIONS, hasOtherEditions);
             frag.setArguments(bookData);
             return frag;
-        }
-
-        /**
-         * Call this from {@link #onAttachFragment} in the parent.
-         *
-         * @param listener the object to send the result to.
-         */
-        void setListener(@NonNull final ConfirmTocResults listener) {
-            mListener = new WeakReference<>(listener);
         }
 
         @Override
@@ -774,38 +743,57 @@ public class EditBookTocFragment
 
         private void onCommitToc(@SuppressWarnings("unused") @NonNull final DialogInterface d,
                                  @SuppressWarnings("unused") final int which) {
-            if (mListener != null && mListener.get() != null) {
-                mListener.get().commitToc(mTocBitMask, mTocEntries);
-            } else {
-                if (BuildConfig.DEBUG /* always */) {
-                    Log.w(TAG, "onCommitToc|"
-                               + (mListener == null ? ErrorMsg.LISTENER_WAS_NULL
-                                                    : ErrorMsg.LISTENER_WAS_DEAD));
-                }
-            }
+            OnResultListener.sendResult(this, REQUEST_KEY, mTocBitMask, mTocEntries);
         }
 
         private void onSearchNextEdition(@SuppressWarnings("unused")
                                          @NonNull final DialogInterface d,
                                          @SuppressWarnings("unused") final int which) {
-            if (mListener != null && mListener.get() != null) {
-                mListener.get().searchNextEdition();
-            } else {
-                if (BuildConfig.DEBUG /* always */) {
-                    Log.w(TAG, "onGetNext|"
-                               + (mListener == null ? ErrorMsg.LISTENER_WAS_NULL
-                                                    : ErrorMsg.LISTENER_WAS_DEAD));
-                }
-            }
+            OnResultListener.searchNextEdition(this, REQUEST_KEY);
         }
 
-        interface ConfirmTocResults {
+        public interface OnResultListener
+                extends FragmentResultListener {
+
+            /* private. */ String SEARCH_NEXT_EDITION = "searchNextEdition";
+            /* private. */ String TOC_BIT_MASK = "tocBitMask";
+            /* private. */ String TOC_LIST = "tocEntries";
+
+            static void searchNextEdition(@NonNull final Fragment fragment,
+                                          @NonNull final String requestKey) {
+                final Bundle result = new Bundle();
+                result.putBoolean(SEARCH_NEXT_EDITION, true);
+                fragment.getParentFragmentManager().setFragmentResult(requestKey, result);
+            }
+
+            static void sendResult(@NonNull final Fragment fragment,
+                                   @NonNull final String requestKey,
+                                   @Book.TocBits long tocBitMask,
+                                   @NonNull ArrayList<TocEntry> tocEntries) {
+                final Bundle result = new Bundle();
+                result.putLong(TOC_BIT_MASK, tocBitMask);
+                result.putParcelableArrayList(TOC_LIST, tocEntries);
+                fragment.getParentFragmentManager().setFragmentResult(requestKey, result);
+            }
+
+            @Override
+            default void onFragmentResult(@NonNull final String requestKey,
+                                          @NonNull final Bundle result) {
+                if (result.getBoolean(SEARCH_NEXT_EDITION)) {
+                    searchNextEdition();
+                } else {
+                    commitToc(result.getLong(TOC_BIT_MASK),
+                              Objects.requireNonNull(result.getParcelableArrayList(TOC_LIST)));
+                }
+            }
+
 
             void commitToc(@Book.TocBits long tocBitMask,
                            @NonNull List<TocEntry> tocEntries);
 
             void searchNextEdition();
         }
+
     }
 
     /**

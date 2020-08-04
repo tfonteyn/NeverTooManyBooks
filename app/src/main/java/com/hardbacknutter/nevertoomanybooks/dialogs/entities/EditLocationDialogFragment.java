@@ -42,16 +42,17 @@ import com.hardbacknutter.nevertoomanybooks.R;
  * Dialog to edit an <strong>in-line in Books table</strong> Location.
  */
 public class EditLocationDialogFragment
-        extends EditStringBaseDialogFragment {
+        extends EditStringBaseDialogFragment{
 
     /** Fragment/Log tag. */
     public static final String TAG = "EditLocationDialogFrag";
+    public static final String REQUEST_KEY = TAG + ":rk";
 
     /**
      * No-arg constructor for OS use.
      */
     public EditLocationDialogFragment() {
-        super(R.string.lbl_location, R.string.lbl_location, BookChangedListener.LOCATION);
+        super(REQUEST_KEY, R.string.lbl_location, R.string.lbl_location, BookChangedListener.LOCATION);
     }
 
     /**

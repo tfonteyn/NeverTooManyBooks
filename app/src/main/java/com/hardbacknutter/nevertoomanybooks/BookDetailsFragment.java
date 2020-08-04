@@ -50,9 +50,6 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentOnAttachListener;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.preference.PreferenceManager;
 
@@ -125,23 +122,7 @@ public class BookDetailsFragment
             }
         }
     };
-    /** (re)attach the result listener when a fragment gets started. */
-    private final FragmentOnAttachListener mFragmentOnAttachListener =
-            new FragmentOnAttachListener() {
-                @Override
-                public void onAttachFragment(@NonNull final FragmentManager fragmentManager,
-                                             @NonNull final Fragment fragment) {
-                    if (BuildConfig.DEBUG && DEBUG_SWITCHES.ATTACH_FRAGMENT) {
-                        Log.d(getClass().getName(), "onAttachFragment"
-                                                    + "|fragmentManager=" + fragmentManager
-                                                    + "|fragment=" + fragment.getTag());
-                    }
 
-                    if (fragment instanceof BookChangedListener.Owner) {
-                        ((BookChangedListener.Owner) fragment).setListener(mBookChangedListener);
-                    }
-                }
-            };
     /** Goodreads send-book task. */
     private GrSendOneBookTask mGrSendOneBookTask;
 
@@ -155,7 +136,8 @@ public class BookDetailsFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        getChildFragmentManager().addFragmentOnAttachListener(mFragmentOnAttachListener);
+        getChildFragmentManager().setFragmentResultListener(
+                EditLenderDialogFragment.REQUEST_KEY, this, mBookChangedListener);
     }
 
     @Override

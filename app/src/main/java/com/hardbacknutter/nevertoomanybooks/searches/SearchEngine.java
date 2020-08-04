@@ -53,7 +53,6 @@ import java.util.List;
 import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.covers.CoverBrowserDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageFileInfo;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageUtils;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -78,7 +77,6 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsExceptio
  *      <li>{@link ByText}</li>
  * </ul>
  * and if the site supports fetching images by ISBN: {@link CoverByIsbn}.
- * The latter is used to get covers for alternative editions in {@link CoverBrowserDialogFragment}.
  * <p>
  * ENHANCE: it seems most implementations can return multiple book bundles quite easily.
  */

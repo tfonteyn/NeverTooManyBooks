@@ -30,7 +30,6 @@ package com.hardbacknutter.nevertoomanybooks;
 import android.content.Context;
 import android.content.res.Resources;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -43,8 +42,6 @@ import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentOnAttachListener;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -77,45 +74,27 @@ public class EditBookshelvesFragment
     /** The adapter for the list. */
     private BookshelfAdapter mAdapter;
     private EditBookshelvesModel mModel;
-    private final EditBookshelfDialogFragment.BookshelfChangedListener mListener =
-            new EditBookshelfDialogFragment.BookshelfChangedListener() {
-                @Override
-                public void onBookshelfChanged(final long bookshelfId,
-                                               final int booksMoved) {
-                    mModel.reloadList(bookshelfId);
-                }
-            };
+
+
+    private final EditBookshelfDialogFragment.OnResultListener mOnEditBookshelfListener =
+            (bookshelfId, booksMoved) -> mModel.reloadList(bookshelfId);
     /** ViewModel. */
     private ResultDataModel mResultData;
     /** View Binding. */
     private FragmentEditBookshelvesBinding mVb;
 
-    /** (re)attach the result listener when a fragment gets started. */
-    private final FragmentOnAttachListener mFragmentOnAttachListener =
-            new FragmentOnAttachListener() {
-                @Override
-                public void onAttachFragment(@NonNull final FragmentManager fragmentManager,
-                                             @NonNull final Fragment fragment) {
-                    if (BuildConfig.DEBUG && DEBUG_SWITCHES.ATTACH_FRAGMENT) {
-                        Log.d(getClass().getName(), "onAttachFragment: " + fragment.getTag());
-                    }
-
-                    if (fragment instanceof MenuPickerDialogFragment) {
-                        ((MenuPickerDialogFragment) fragment).setListener(
-                                (menuItem, position) -> onContextItemSelected(menuItem, position));
-
-                    } else if (fragment instanceof EditBookshelfDialogFragment) {
-                        ((EditBookshelfDialogFragment) fragment).setListener(mListener);
-                    }
-                }
-            };
+    private final MenuPickerDialogFragment.OnResultListener mOnMenuPickerListener =
+            this::onContextItemSelected;
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
 
-        getChildFragmentManager().addFragmentOnAttachListener(mFragmentOnAttachListener);
+        getChildFragmentManager().setFragmentResultListener(
+                EditBookshelfDialogFragment.REQUEST_KEY, this, mOnEditBookshelfListener);
+        getChildFragmentManager().setFragmentResultListener(
+                MenuPickerDialogFragment.REQUEST_KEY, this, mOnMenuPickerListener);
     }
 
     @Override

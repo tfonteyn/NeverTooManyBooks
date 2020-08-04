@@ -30,7 +30,6 @@ package com.hardbacknutter.nevertoomanybooks.dialogs;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
@@ -40,14 +39,14 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentResultListener;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Objects;
 
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.entities.Entity;
@@ -62,15 +61,13 @@ public class CheckListDialogFragment
 
     /** Fragment/Log tag. */
     public static final String TAG = "CheckListDialogFragment";
+    public static final String REQUEST_KEY = TAG + ":rk";
 
     /** Argument. */
     private static final String BKEY_ALL = TAG + ":all";
     /** Argument. */
     private static final String BKEY_SELECTED = TAG + ":selected";
 
-    /** Where to send the result. */
-    @Nullable
-    private WeakReference<CheckListResultsListener> mListener;
     @Nullable
     private String mDialogTitle;
 
@@ -150,16 +147,7 @@ public class CheckListDialogFragment
     }
 
     private void saveChanges() {
-        if (mListener != null && mListener.get() != null) {
-            mListener.get().onCheckListEditorSave(mSelectedItems);
-
-        } else {
-            if (BuildConfig.DEBUG /* always */) {
-                Log.w(TAG, "onCheckListEditorSave|"
-                           + (mListener == null ? ErrorMsg.LISTENER_WAS_NULL
-                                                : ErrorMsg.LISTENER_WAS_DEAD));
-            }
-        }
+        OnResultListener.sendResult(this, REQUEST_KEY, mSelectedItems);
     }
 
     @Override
@@ -169,25 +157,30 @@ public class CheckListDialogFragment
         outState.putParcelableArrayList(BKEY_SELECTED, mSelectedItems);
     }
 
-    /**
-     * Call this from {@link #onAttachFragment} in the parent.
-     *
-     * @param listener the object to send the result to.
-     */
-    public void setListener(@NonNull final CheckListResultsListener listener) {
-        mListener = new WeakReference<>(listener);
-    }
+    public interface OnResultListener
+            extends FragmentResultListener {
 
-    /**
-     * Listener interface to receive notifications when dialog is confirmed.
-     */
-    public interface CheckListResultsListener {
+        /* private. */ String SELECTED_ITEMS = "selectedItems";
+
+        static void sendResult(@NonNull final Fragment fragment,
+                               @NonNull final String requestKey,
+                               @NonNull final ArrayList<Entity> selectedItems) {
+            final Bundle result = new Bundle();
+            result.putParcelableArrayList(SELECTED_ITEMS, selectedItems);
+            fragment.getParentFragmentManager().setFragmentResult(requestKey, result);
+        }
+
+        @Override
+        default void onFragmentResult(@NonNull final String requestKey,
+                                      @NonNull final Bundle result) {
+            onResult(Objects.requireNonNull(result.getParcelableArrayList(SELECTED_ITEMS)));
+        }
 
         /**
-         * Reports the results after this dialog was confirmed.
+         * Callback handler with the user's selection.
          *
-         * @param list the list of <strong>checked</strong> items
+         * @param selectedItems the list of <strong>checked</strong> items
          */
-        void onCheckListEditorSave(@NonNull ArrayList<Entity> list);
+        void onResult(@NonNull ArrayList<Entity> selectedItems);
     }
 }

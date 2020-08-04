@@ -55,17 +55,14 @@ import com.hardbacknutter.nevertoomanybooks.widgets.DiacriticArrayAdapter;
  * Dialog to edit an <strong>EXISTING</strong> {@link Series}.
  */
 public class EditSeriesDialogFragment
-        extends BaseDialogFragment
-        implements BookChangedListener.Owner {
+        extends BaseDialogFragment {
 
     /** Fragment/Log tag. */
     public static final String TAG = "EditSeriesDialogFrag";
+    public static final String REQUEST_KEY = TAG + ":rk";
 
     /** Database Access. */
     private DAO mDb;
-    /** Where to send the result. */
-    @Nullable
-    private WeakReference<BookChangedListener> mListener;
     /** View binding. */
     private DialogEditSeriesBinding mVb;
 
@@ -173,15 +170,7 @@ public class EditSeriesDialogFragment
             success = mDb.update(getContext(), mSeries, bookLocale);
         }
         if (success) {
-            if (mListener != null && mListener.get() != null) {
-                mListener.get().onChange(0, BookChangedListener.SERIES, null);
-            } else {
-                if (BuildConfig.DEBUG /* always */) {
-                    Log.w(TAG, "onBookChanged|"
-                               + (mListener == null ? ErrorMsg.LISTENER_WAS_NULL
-                                                    : ErrorMsg.LISTENER_WAS_DEAD));
-                }
-            }
+            BookChangedListener.sendResult(this, REQUEST_KEY,  BookChangedListener.SERIES);
             return true;
         }
         return false;
@@ -197,16 +186,6 @@ public class EditSeriesDialogFragment
         super.onSaveInstanceState(outState);
         outState.putString(DBDefinitions.KEY_SERIES_TITLE, mTitle);
         outState.putBoolean(DBDefinitions.KEY_SERIES_IS_COMPLETE, mIsComplete);
-    }
-
-    /**
-     * Call this from {@link #onAttachFragment} in the parent.
-     *
-     * @param listener the object to send the result to.
-     */
-    @Override
-    public void setListener(@NonNull final BookChangedListener listener) {
-        mListener = new WeakReference<>(listener);
     }
 
     @Override

@@ -39,6 +39,8 @@ import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentResultListener;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -81,9 +83,7 @@ public class CoverBrowserDialogFragment
 
     /** Log tag. */
     public static final String TAG = "CoverBrowserFragment";
-
-    public static final String BKEY_RESULT_COVER_INDEX = TAG + ":cIdx";
-    public static final String BKEY_RESULT_COVER_FILE_SPEC = TAG + ":fileSpec";
+    public static final String REQUEST_KEY = TAG + ":rk";
 
     /** The adapter for the horizontal scrolling covers list. */
     @Nullable
@@ -176,10 +176,8 @@ public class CoverBrowserDialogFragment
             }
 
             if (mModel.getSelectedFileAbsPath() != null) {
-                final Bundle result = new Bundle();
-                result.putInt(BKEY_RESULT_COVER_INDEX, mModel.getImageIndex());
-                result.putString(BKEY_RESULT_COVER_FILE_SPEC, mModel.getSelectedFileAbsPath());
-                getParentFragmentManager().setFragmentResult(TAG, result);
+                OnResultListener.sendResult(this, REQUEST_KEY, mModel.getImageIndex(),
+                                            mModel.getSelectedFileAbsPath());
             }
             // close the CoverBrowserDialogFragment
             dismiss();
@@ -358,6 +356,39 @@ public class CoverBrowserDialogFragment
                       Snackbar.LENGTH_LONG).show();
         mVb.statusMessage.setText(R.string.txt_tap_on_thumb);
 
+    }
+
+    public interface OnResultListener
+            extends FragmentResultListener {
+
+        /* private. */ String COVER_INDEX = "cIdx";
+        /* private. */ String COVER_FILE_SPEC = "fileSpec";
+
+        static void sendResult(@NonNull final Fragment fragment,
+                               @NonNull final String requestKey,
+                               @IntRange(from = 0) final int cIdx,
+                               @NonNull final String fileSpec) {
+            final Bundle result = new Bundle();
+            result.putInt(COVER_INDEX, cIdx);
+            result.putString(COVER_FILE_SPEC, fileSpec);
+            fragment.getParentFragmentManager().setFragmentResult(requestKey, result);
+        }
+
+        @Override
+        default void onFragmentResult(@NonNull final String requestKey,
+                                      @NonNull final Bundle result) {
+            onResult(result.getInt(COVER_INDEX),
+                     Objects.requireNonNull(result.getString(COVER_FILE_SPEC)));
+        }
+
+        /**
+         * Callback handler with the user's selection.
+         *
+         * @param cIdx      cover index as passed in
+         * @param fileSpec  for the selected file
+         */
+        void onResult(@IntRange(from = 0) int cIdx,
+                      @NonNull String fileSpec);
     }
 
     /**

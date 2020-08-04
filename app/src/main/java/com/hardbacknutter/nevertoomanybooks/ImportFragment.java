@@ -43,6 +43,7 @@ import androidx.annotation.StringRes;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentOnAttachListener;
+import androidx.fragment.app.FragmentResultListener;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -69,26 +70,9 @@ public class ImportFragment
 
     /** Log tag. */
     public static final String TAG = "ImportFragment";
-    /** (re)attach the result listener when a fragment gets started. */
-    private final FragmentOnAttachListener mFragmentOnAttachListener =
-            new FragmentOnAttachListener() {
-                @Override
-                public void onAttachFragment(@NonNull final FragmentManager fragmentManager,
-                                             @NonNull final Fragment fragment) {
-                    if (BuildConfig.DEBUG && DEBUG_SWITCHES.ATTACH_FRAGMENT) {
-                        Log.d(getClass().getName(), "onAttachFragment"
-                                                    + "|fragmentManager=" + fragmentManager
-                                                    + "|fragment=" + fragment.getTag());
-                    }
-
-                    if (fragment instanceof ImportHelperDialogFragment) {
-                        ((ImportHelperDialogFragment) fragment).setListener(mImportOptionsListener);
-                    }
-                }
-            };
     /** Import. */
     private ArchiveImportTask mArchiveImportTask;
-    private final OptionsDialogBase.OptionsListener<ImportManager> mImportOptionsListener =
+    private final FragmentResultListener mImportOptionsListener =
             new OptionsDialogBase.OptionsListener<ImportManager>() {
                 @Override
                 public void onOptionsSet(@NonNull final ImportManager options) {
@@ -110,7 +94,8 @@ public class ImportFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        getChildFragmentManager().addFragmentOnAttachListener(mFragmentOnAttachListener);
+        getChildFragmentManager().setFragmentResultListener(
+                ImportHelperDialogFragment.REQUEST_KEY, this, mImportOptionsListener);
     }
 
     @Nullable

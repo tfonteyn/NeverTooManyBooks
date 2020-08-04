@@ -29,19 +29,18 @@ package com.hardbacknutter.nevertoomanybooks.dialogs.entities;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentResultListener;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
-import java.lang.ref.WeakReference;
 import java.util.Objects;
 
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
@@ -58,12 +57,11 @@ public class EditBookshelfDialogFragment
 
     /** Fragment/Log tag. */
     public static final String TAG = "EditBookshelfDialogFrag";
+    public static final String REQUEST_KEY = TAG + ":rk";
+
 
     /** Database Access. */
     private DAO mDb;
-    /** Where to send the result. */
-    @Nullable
-    private WeakReference<BookshelfChangedListener> mListener;
     /** View Binding. */
     private DialogEditBookshelfBinding mVb;
 
@@ -172,15 +170,7 @@ public class EditBookshelfDialogFragment
                 success = mDb.update(getContext(), mBookshelf);
             }
             if (success) {
-                if (mListener != null && mListener.get() != null) {
-                    mListener.get().onBookshelfChanged(mBookshelf.getId(), 0);
-                } else {
-                    if (BuildConfig.DEBUG /* always */) {
-                        Log.w(TAG, "onBookshelfChanged(rename)|"
-                                   + (mListener == null ? ErrorMsg.LISTENER_WAS_NULL
-                                                        : ErrorMsg.LISTENER_WAS_DEAD));
-                    }
-                }
+                OnResultListener.sendResult(this, REQUEST_KEY, mBookshelf.getId(), 0);
                 return true;
             }
         } else {
@@ -195,16 +185,8 @@ public class EditBookshelfDialogFragment
                         // move all books from the shelf being edited to the existing shelf
                         final long toShelfId = existingShelfWithSameName.getId();
                         final int booksMoved = mDb.mergeBookshelves(mBookshelf.getId(), toShelfId);
-                        if (mListener != null && mListener.get() != null) {
-                            mListener.get().onBookshelfChanged(toShelfId, booksMoved);
-                        } else {
-                            if (BuildConfig.DEBUG /* always */) {
-                                Log.w(TAG, "onBookshelfChanged(merge)|"
-                                           + (mListener == null ? ErrorMsg.LISTENER_WAS_NULL
-                                                                : ErrorMsg.LISTENER_WAS_DEAD));
-                            }
-                        }
-                        // close the DialogFrame
+
+                        OnResultListener.sendResult(this, REQUEST_KEY, toShelfId, booksMoved);
                         dismiss();
                     })
                     .create()
@@ -224,15 +206,6 @@ public class EditBookshelfDialogFragment
         outState.putString(DBDefinitions.KEY_BOOKSHELF_NAME, mName);
     }
 
-    /**
-     * Call this from {@link #onAttachFragment} in the parent.
-     *
-     * @param listener the object to send the result to.
-     */
-    public void setListener(@NonNull final BookshelfChangedListener listener) {
-        mListener = new WeakReference<>(listener);
-    }
-
     @Override
     public void onPause() {
         viewToModel();
@@ -247,15 +220,35 @@ public class EditBookshelfDialogFragment
         super.onDestroy();
     }
 
-    public interface BookshelfChangedListener {
+    public interface OnResultListener
+            extends FragmentResultListener {
+
+        /* private. */ String BOOKSHELF_ID = "bookshelfId";
+        /* private. */ String BOOKS_MOVED = "booksMoved";
+
+        static void sendResult(@NonNull final Fragment fragment,
+                               @NonNull final String requestKey,
+                               final long bookshelfId,
+                               final int booksMoved) {
+            final Bundle result = new Bundle();
+            result.putLong(BOOKSHELF_ID, bookshelfId);
+            result.putInt(BOOKS_MOVED, booksMoved);
+            fragment.getParentFragmentManager().setFragmentResult(requestKey, result);
+        }
+
+        @Override
+        default void onFragmentResult(@NonNull final String requestKey,
+                                      @NonNull final Bundle result) {
+            onResult(result.getLong(BOOKSHELF_ID), result.getInt(BOOKS_MOVED));
+        }
 
         /**
-         * Called after the user confirms a change.
+         * Callback handler with the user's selection.
          *
          * @param bookshelfId the id of the updated shelf, or of the newly inserted shelf.
          * @param booksMoved  if a merge took place, the amount of books moved (otherwise 0).
          */
-        void onBookshelfChanged(long bookshelfId,
-                                int booksMoved);
+        void onResult(long bookshelfId,
+                      int booksMoved);
     }
 }

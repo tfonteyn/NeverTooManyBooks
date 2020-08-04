@@ -29,28 +29,24 @@ package com.hardbacknutter.nevertoomanybooks.backup.base;
 
 import android.app.Dialog;
 import android.content.res.Configuration;
-import android.util.Log;
+import android.os.Bundle;
+import android.os.Parcelable;
 import android.view.ViewGroup;
 
 import androidx.annotation.DimenRes;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentResultListener;
 
-import java.lang.ref.WeakReference;
+import java.util.Objects;
 
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
-
-public abstract class OptionsDialogBase<T>
+public abstract class OptionsDialogBase<T extends Parcelable>
         extends DialogFragment {
 
     /** Log tag. */
     private static final String TAG = "OptionsDialogBase";
-
-    /** Where to send the result. */
-    @Nullable
-    private WeakReference<OptionsListener<T>> mListener;
+    public static final String REQUEST_KEY = TAG + ":rk";
 
     protected void fixDialogWidth(@DimenRes final int dimenId) {
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
@@ -65,38 +61,47 @@ public abstract class OptionsDialogBase<T>
         }
     }
 
-    public void setListener(@NonNull final OptionsListener<T> listener) {
-        mListener = new WeakReference<>(listener);
-    }
-
     protected void onOptionsSet(@NonNull final T options) {
-        if (mListener != null && mListener.get() != null) {
-            mListener.get().onOptionsSet(options);
-        } else {
-            if (BuildConfig.DEBUG /* always */) {
-                Log.w(TAG, "onOptionsSet|"
-                           + (mListener == null ? ErrorMsg.LISTENER_WAS_NULL
-                                                : ErrorMsg.LISTENER_WAS_DEAD));
-            }
-        }
+        OptionsListener.sendResult(this, REQUEST_KEY, options);
     }
 
     protected void onCancelled() {
-        if (mListener != null && mListener.get() != null) {
-            mListener.get().onCancelled();
-        } else {
-            if (BuildConfig.DEBUG /* always */) {
-                Log.w(TAG, "onCancelled|"
-                           + (mListener == null ? ErrorMsg.LISTENER_WAS_NULL
-                                                : ErrorMsg.LISTENER_WAS_DEAD));
-            }
-        }
+        OptionsListener.sendCancelled(this, REQUEST_KEY);
     }
 
     /**
      * Listener interface to receive notifications when dialog is confirmed or cancelled.
      */
-    public interface OptionsListener<T> {
+    public interface OptionsListener<T extends Parcelable>
+            extends FragmentResultListener {
+
+        /* private. */ String OPTIONS = "options";
+        /* private. */ String CANCELLED = "cancelled";
+
+        static void sendCancelled(@NonNull final Fragment fragment,
+                                  @NonNull final String requestKey) {
+            final Bundle result = new Bundle();
+            result.putBoolean(CANCELLED, true);
+            fragment.getParentFragmentManager().setFragmentResult(requestKey, result);
+        }
+
+        static <T extends Parcelable> void sendResult(@NonNull final Fragment fragment,
+                                                      @NonNull final String requestKey,
+                                                      @NonNull final T options) {
+            final Bundle result = new Bundle();
+            result.putParcelable(OPTIONS, options);
+            fragment.getParentFragmentManager().setFragmentResult(requestKey, result);
+        }
+
+        @Override
+        default void onFragmentResult(@NonNull final String requestKey,
+                                      @NonNull final Bundle result) {
+            if (result.getBoolean(CANCELLED)) {
+                onCancelled();
+            } else {
+                onOptionsSet(Objects.requireNonNull(result.getParcelable(OPTIONS)));
+            }
+        }
 
         void onOptionsSet(@NonNull T options);
 

@@ -32,7 +32,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -43,9 +42,6 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentOnAttachListener;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.ItemTouchHelper;
@@ -110,22 +106,8 @@ public class PreferredStylesActivity
                 }
             };
 
-    /** (re)attach the result listener when a fragment gets started. */
-    private final FragmentOnAttachListener mFragmentOnAttachListener =
-            new FragmentOnAttachListener() {
-                @Override
-                public void onAttachFragment(@NonNull final FragmentManager fragmentManager,
-                                             @NonNull final Fragment fragment) {
-                    if (BuildConfig.DEBUG && DEBUG_SWITCHES.ATTACH_FRAGMENT) {
-                        Log.d(getClass().getName(), "onAttachFragment: " + fragment.getTag());
-                    }
-
-                    if (fragment instanceof MenuPickerDialogFragment) {
-                        ((MenuPickerDialogFragment) fragment).setListener(
-                                (menuItem, position) -> onContextItemSelected(menuItem, position));
-                    }
-                }
-            };
+    private final MenuPickerDialogFragment.OnResultListener mOnMenuPickerListener =
+            this::onContextItemSelected;
 
     @Override
     protected void onSetContentView() {
@@ -136,7 +118,8 @@ public class PreferredStylesActivity
     protected void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        getSupportFragmentManager().addFragmentOnAttachListener(mFragmentOnAttachListener);
+        getSupportFragmentManager().setFragmentResultListener(
+                MenuPickerDialogFragment.REQUEST_KEY, this, mOnMenuPickerListener);
 
         mModel = new ViewModelProvider(this).get(PreferredStylesViewModel.class);
         mModel.init(this, Objects.requireNonNull(getIntent().getExtras(), ErrorMsg.NULL_EXTRAS));

@@ -30,7 +30,6 @@ package com.hardbacknutter.nevertoomanybooks;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -44,9 +43,6 @@ import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.view.MenuCompat;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentOnAttachListener;
 import androidx.lifecycle.ViewModelProvider;
 
 import java.util.ArrayList;
@@ -81,31 +77,13 @@ public class EditBookFieldsFragment
     /** Log tag. */
     private static final String TAG = "EditBookFieldsFragment";
 
-    /** Dialog listener (strong reference). */
-    private final CheckListDialogFragment.CheckListResultsListener mCheckListResultsListener =
-            list -> {
-                final int fieldId = mFragmentVM.getCurrentDialogFieldId()[0];
-                final Field<List<Entity>, TextView> field = getField(fieldId);
-                mBookViewModel.getBook().putParcelableArrayList(field.getKey(), list);
-                field.getAccessor().setValue(list);
-                field.onChanged(true);
-            };
-
-    /** (re)attach the result listener when a fragment gets started. */
-    private final FragmentOnAttachListener mFragmentOnAttachListener =
-            new FragmentOnAttachListener() {
-                @Override
-                public void onAttachFragment(@NonNull final FragmentManager fragmentManager,
-                                             @NonNull final Fragment fragment) {
-                    if (BuildConfig.DEBUG && DEBUG_SWITCHES.ATTACH_FRAGMENT) {
-                        Log.d(getClass().getName(), "onAttachFragment: " + fragment.getTag());
-                    }
-
-                    if (fragment instanceof CheckListDialogFragment) {
-                        ((CheckListDialogFragment) fragment).setListener(mCheckListResultsListener);
-                    }
-                }
-            };
+    private final CheckListDialogFragment.OnResultListener mOnCheckListListener = selectedItems -> {
+        final int fieldId = mFragmentVM.getCurrentDialogFieldId()[0];
+        final Field<List<Entity>, TextView> field = getField(fieldId);
+        mBookViewModel.getBook().putParcelableArrayList(field.getKey(), selectedItems);
+        field.getAccessor().setValue(selectedItems);
+        field.onChanged(true);
+    };
 
     /** manage the validation check next to the ISBN field. */
     private ISBN.ValidationTextWatcher mIsbnValidationTextWatcher;
@@ -130,7 +108,8 @@ public class EditBookFieldsFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        getChildFragmentManager().addFragmentOnAttachListener(mFragmentOnAttachListener);
+        getChildFragmentManager().setFragmentResultListener(
+                CheckListDialogFragment.REQUEST_KEY, this, mOnCheckListListener);
 
         //noinspection ConstantConditions
         mScannerModel = new ViewModelProvider(getActivity()).get(ScannerViewModel.class);
@@ -196,7 +175,6 @@ public class EditBookFieldsFragment
                                 new ArrayList<>(mFragmentVM.getAllBookshelves()),
                                 new ArrayList<>(mBookViewModel.getBook().getParcelableArrayList(
                                         Book.BKEY_BOOKSHELF_ARRAY)))
-                        // child fragment. We use a listener, see onAttachFragment
                         .show(getChildFragmentManager(), CheckListDialogFragment.TAG);
             });
         }

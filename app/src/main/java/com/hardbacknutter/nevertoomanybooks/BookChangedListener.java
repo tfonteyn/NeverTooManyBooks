@@ -32,6 +32,8 @@ import android.os.Bundle;
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentResultListener;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -39,7 +41,8 @@ import java.lang.annotation.RetentionPolicy;
 /**
  * Allows to be notified of changes made to book(s).
  */
-public interface BookChangedListener {
+public interface BookChangedListener
+        extends FragmentResultListener {
 
     /** Author was modified. */
     int AUTHOR = 1;
@@ -70,32 +73,53 @@ public interface BookChangedListener {
     /** A book was deleted. */
     int BOOK_DELETED = 1 << 11;
 
+
+    /* private. */ String BOOK_ID = "bookId";
+    /* private. */ String FIELDS = "fields";
+    /* private. */ String DATA = "data";
+
+    static void sendResult(@NonNull final Fragment fragment,
+                           @NonNull final String requestKey,
+                           @FieldChanges int fieldChanges) {
+        final Bundle result = new Bundle();
+        result.putInt(FIELDS, fieldChanges);
+        fragment.getParentFragmentManager().setFragmentResult(requestKey, result);
+    }
+
+    static void sendResult(@NonNull final Fragment fragment,
+                           @NonNull final String requestKey,
+                           final long bookId,
+                           @FieldChanges int fieldChanges,
+                           @Nullable final Bundle data) {
+        final Bundle result = new Bundle();
+        result.putLong(BOOK_ID, bookId);
+        result.putInt(FIELDS, fieldChanges);
+        result.putBundle(DATA, data);
+        fragment.getParentFragmentManager().setFragmentResult(requestKey, result);
+    }
+
+    @Override
+    default void onFragmentResult(@NonNull final String requestKey,
+                                  @NonNull final Bundle result) {
+        onChange(result.getLong(BOOK_ID), result.getInt(FIELDS), result.getBundle(DATA));
+    }
+
     /**
      * Called if changes were made.
      *
-     * @param bookId        the book that was changed, or 0 if the change was global
-     * @param fieldsChanged a bitmask build from the flags
-     * @param data          bundle with custom data, can be {@code null}
+     * @param bookId       the book that was changed, or 0 if the change was global
+     * @param fieldChanges a bitmask build from the flags
+     * @param data         bundle with custom data, can be {@code null}
      */
     void onChange(long bookId,
-                  @Flags int fieldsChanged,
+                  @FieldChanges int fieldChanges,
                   @Nullable Bundle data);
 
     @IntDef(flag = true, value = {AUTHOR, SERIES, PUBLISHER, TOC_ENTRY,
                                   FORMAT, COLOR, GENRE, LANGUAGE, LOCATION,
                                   BOOK_READ, BOOK_LOANEE, BOOK_DELETED})
     @Retention(RetentionPolicy.SOURCE)
-    @interface Flags {
+    @interface FieldChanges {
 
-    }
-
-    interface Owner {
-
-        /**
-         * Call this from {@code onAttachFragment} in the caller.
-         *
-         * @param listener the object to send the result to.
-         */
-        void setListener(@NonNull BookChangedListener listener);
     }
 }

@@ -71,6 +71,7 @@ public class PartialDatePickerDialogFragment
 
     /** Log tag. */
     public static final String TAG = "PartialDatePickerDialog";
+    public static final String REQUEST_KEY = TAG + ":rk";
 
     /** Displayed to user: unset month. */
     private static final String UNKNOWN_MONTH = "---";
@@ -85,7 +86,7 @@ public class PartialDatePickerDialogFragment
                     case R.id.year:
                         mYear = newVal;
                         // only February can be different number of days
-                        if (mMonth != null && mMonth == 2) {
+                        if (mMonth == 2) {
                             updateDaysInMonth();
                         }
                         break;
@@ -151,7 +152,7 @@ public class PartialDatePickerDialogFragment
         setupDate(savedInstanceState);
         // can't have a null year. (but month/day can be null)
         // The user can/should use the "clear" button if they want no date at all.
-        if (mYear == null) {
+        if (mYear == 0) {
             mYear = LocalDate.now().getYear();
         }
     }
@@ -166,8 +167,9 @@ public class PartialDatePickerDialogFragment
         reorderPickers(root);
 
         final NumberPicker yearPicker = root.findViewById(R.id.year);
-        // we're optimistic...
+        // 0: 'not set'
         yearPicker.setMinValue(0);
+        // we're optimistic...
         yearPicker.setMaxValue(2100);
         yearPicker.setOnValueChangedListener(mOnValueChangeListener);
 
@@ -189,9 +191,9 @@ public class PartialDatePickerDialogFragment
         mDayPicker.setOnValueChangedListener(mOnValueChangeListener);
 
         // set the initial date
-        yearPicker.setValue(mYear != null ? mYear : LocalDate.now().getYear());
-        monthPicker.setValue(mMonth != null ? mMonth : 0);
-        mDayPicker.setValue(mDay != null ? mDay : 0);
+        yearPicker.setValue(mYear != 0 ? mYear : LocalDate.now().getYear());
+        monthPicker.setValue(mMonth);
+        mDayPicker.setValue(mDay);
         updateDaysInMonth();
 
         //noinspection ConstantConditions
@@ -216,18 +218,18 @@ public class PartialDatePickerDialogFragment
             dialog.getButton(Dialog.BUTTON_NEGATIVE).setOnClickListener(
                     v -> dismiss());
             dialog.getButton(Dialog.BUTTON_NEUTRAL).setOnClickListener(
-                    v -> send(null, null, null));
+                    v -> DatePickerResultsListener.sendResult(this, REQUEST_KEY, 0, 0, 0));
             dialog.getButton(Dialog.BUTTON_POSITIVE).setOnClickListener(v -> {
-                if (mDay != null && mDay > 0 && (mMonth == null || mMonth == 0)) {
+                if (mDay != 0 && mMonth == 0) {
                     Snackbar.make(v, R.string.warning_if_day_set_month_and_year_must_be,
                                   Snackbar.LENGTH_LONG).show();
 
-                } else if (mMonth != null && mMonth > 0 && mYear == null) {
+                } else if (mMonth != 0 && mYear == 0) {
                     Snackbar.make(v, R.string.warning_if_month_set_year_must_be,
                                   Snackbar.LENGTH_LONG).show();
 
                 } else {
-                    send(mYear, mMonth, mDay);
+                    DatePickerResultsListener.sendResult(this, REQUEST_KEY, mYear, mMonth, mDay);
                 }
             });
         }
@@ -251,11 +253,11 @@ public class PartialDatePickerDialogFragment
      * Depending on year/month selected, set the correct number of days.
      */
     private void updateDaysInMonth() {
-        Integer currentlySelectedDay = mDay;
+        int currentlySelectedDay = mDay;
 
         // Determine the total days if we have a valid month/year
         int totalDays;
-        if (mYear != null && mMonth != null && mMonth > 0) {
+        if (mYear != 0 && mMonth != 0) {
             totalDays = LocalDate.of(mYear, mMonth, 1).lengthOfMonth();
         } else {
             // allow the user to start inputting with day first.
@@ -265,7 +267,7 @@ public class PartialDatePickerDialogFragment
         mDayPicker.setMaxValue(totalDays);
 
         // Ensure selected day is valid
-        if (currentlySelectedDay == null || currentlySelectedDay == 0) {
+        if (currentlySelectedDay == 0) {
             mDayPicker.setValue(0);
         } else {
             if (currentlySelectedDay > totalDays) {

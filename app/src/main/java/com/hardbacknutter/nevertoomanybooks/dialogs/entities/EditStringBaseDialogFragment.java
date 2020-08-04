@@ -28,7 +28,6 @@
 package com.hardbacknutter.nevertoomanybooks.dialogs.entities;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 
@@ -36,15 +35,12 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
-import java.lang.ref.WeakReference;
 import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.BookChangedListener;
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditStringBinding;
-import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.dialogs.BaseDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.widgets.DiacriticArrayAdapter;
 
@@ -52,8 +48,7 @@ import com.hardbacknutter.nevertoomanybooks.widgets.DiacriticArrayAdapter;
  * Base Dialog class to edit an <strong>in-line in Books table</strong> String field.
  */
 public abstract class EditStringBaseDialogFragment
-        extends BaseDialogFragment
-        implements BookChangedListener.Owner {
+        extends BaseDialogFragment {
 
     /** Fragment/Log tag. */
     private static final String TAG = "EditStringBaseDialog";
@@ -64,36 +59,38 @@ public abstract class EditStringBaseDialogFragment
     private final int mDialogTitleId;
     @StringRes
     private final int mLabelId;
-    @BookChangedListener.Flags
-    private final int mChangeFlags;
+    @BookChangedListener.FieldChanges
+    private final int mFieldChanges;
+    private final String mRequestKey;
     /** Database Access. */
     @Nullable
     DAO mDb;
+    /** View Binding. */
+    private DialogEditStringBinding mVb;
     /** The text we're editing. */
     private String mOriginalText;
     /** Current edit. */
     private String mCurrentText;
-    /** Where to send the result. */
-    @Nullable
-    private WeakReference<BookChangedListener> mListener;
-
-    private DialogEditStringBinding mVb;
 
     /**
      * Constructor; only used by the child class no-args constructor.
      *
-     * @param titleId     for the dialog (i.e. the toolbar)
-     * @param label       to use for the 'hint' of the input field
-     * @param changeFlags one of the {@link BookChangedListener.Flags} bits
+     * @param requestKey   for the fragment result listener
+     * @param titleId      for the dialog (i.e. the toolbar)
+     * @param label        to use for the 'hint' of the input field
+     * @param fieldChanges one of the {@link BookChangedListener.FieldChanges} bits
      */
-    EditStringBaseDialogFragment(@StringRes final int titleId,
+    EditStringBaseDialogFragment(@NonNull final String requestKey,
+                                 @StringRes final int titleId,
                                  @StringRes final int label,
-                                 @BookChangedListener.Flags final int changeFlags) {
+                                 @BookChangedListener.FieldChanges final int fieldChanges) {
         super(R.layout.dialog_edit_string);
+
+        mRequestKey = requestKey;
 
         mDialogTitleId = titleId;
         mLabelId = label;
-        mChangeFlags = changeFlags;
+        mFieldChanges = fieldChanges;
     }
 
     @Override
@@ -176,16 +173,7 @@ public abstract class EditStringBaseDialogFragment
 
         final Bundle data = onSave(mOriginalText, mCurrentText);
 
-        if (mListener != null && mListener.get() != null) {
-            mListener.get().onChange(0, mChangeFlags, data);
-        } else {
-            if (BuildConfig.DEBUG /* always */) {
-                Log.w(TAG, "onBookChanged|"
-                           + (mListener == null ? ErrorMsg.LISTENER_WAS_NULL
-                                                : ErrorMsg.LISTENER_WAS_DEAD));
-            }
-        }
-
+        BookChangedListener.sendResult(this, mRequestKey, 0, mFieldChanges, data);
         return true;
     }
 
@@ -197,7 +185,6 @@ public abstract class EditStringBaseDialogFragment
      * Save data.
      *
      * @return the bundle to pass back to
-     * {@link BookChangedListener#onChange(long, int, Bundle)}
      */
     @Nullable
     abstract Bundle onSave(final String originalText,
@@ -207,16 +194,6 @@ public abstract class EditStringBaseDialogFragment
     public void onSaveInstanceState(@NonNull final Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putString(BKEY_TEXT, mCurrentText);
-    }
-
-    /**
-     * Call this from {@link #onAttachFragment} in the parent.
-     *
-     * @param listener the object to send the result to.
-     */
-    @Override
-    public void setListener(@NonNull final BookChangedListener listener) {
-        mListener = new WeakReference<>(listener);
     }
 
     @Override

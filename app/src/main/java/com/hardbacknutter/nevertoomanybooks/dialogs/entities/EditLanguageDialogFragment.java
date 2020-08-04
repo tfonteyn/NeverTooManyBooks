@@ -50,16 +50,17 @@ import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
  * and a manual edit *will* be needed.
  */
 public class EditLanguageDialogFragment
-        extends EditStringBaseDialogFragment {
+        extends EditStringBaseDialogFragment{
 
     /** Fragment/Log tag. */
     public static final String TAG = "EditLanguageDialogFrag";
+    public static final String REQUEST_KEY = TAG + ":rk";
 
     /**
      * No-arg constructor for OS use.
      */
     public EditLanguageDialogFragment() {
-        super(R.string.lbl_language, R.string.lbl_language, BookChangedListener.LANGUAGE);
+        super(REQUEST_KEY, R.string.lbl_language, R.string.lbl_language, BookChangedListener.LANGUAGE);
     }
 
     /**

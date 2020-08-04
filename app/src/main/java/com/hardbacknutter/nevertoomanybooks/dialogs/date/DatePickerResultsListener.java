@@ -27,21 +27,49 @@
  */
 package com.hardbacknutter.nevertoomanybooks.dialogs.date;
 
-import androidx.annotation.Nullable;
+import android.os.Bundle;
+
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentResultListener;
 
 /**
  * Listener interface to receive notifications a date was picked.
  */
-public interface DatePickerResultsListener {
+public interface DatePickerResultsListener
+        extends FragmentResultListener {
+
+    /* private. */ String YEAR = "year";
+    /* private. */ String MONTH = "month";
+    /* private. */ String DAY = "day";
+
+    static void sendResult(@NonNull final Fragment fragment,
+                           @NonNull final String requestKey,
+                           final int year,
+                           final int month,
+                           final int day) {
+        final Bundle result = new Bundle();
+        result.putInt(YEAR, year);
+        result.putInt(MONTH, month);
+        result.putInt(DAY, day);
+
+        fragment.getParentFragmentManager().setFragmentResult(requestKey, result);
+    }
+
+    @Override
+    default void onFragmentResult(@NonNull final String requestKey,
+                                  @NonNull final Bundle result) {
+        onResult(result.getInt(YEAR), result.getInt(MONTH), result.getInt(MONTH));
+    }
 
     /**
-     * Report the date selected.
+     * Callback handler with the user's selection.
      *
-     * @param year  4 digit year, or null for none
-     * @param month 1..12 based, or null for none
-     * @param day   1..31 based, or null for none
+     * @param year  4 digit year, or {@code 0} for none
+     * @param month 1..12 based, or {@code 0} for none
+     * @param day   1..31 based, or {@code 0} for none
      */
-    void onDateSet(@Nullable final Integer year,
-                   @Nullable final Integer month,
-                   @Nullable final Integer day);
+    void onResult(int year,
+                  int month,
+                  int day);
 }

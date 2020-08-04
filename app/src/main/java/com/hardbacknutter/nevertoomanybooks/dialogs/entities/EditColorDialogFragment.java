@@ -42,16 +42,17 @@ import com.hardbacknutter.nevertoomanybooks.R;
  * Dialog to edit an <strong>in-line in Books table</strong> Color.
  */
 public class EditColorDialogFragment
-        extends EditStringBaseDialogFragment {
+        extends EditStringBaseDialogFragment{
 
     /** Fragment/Log tag. */
     public static final String TAG = "EditColorDialogFragment";
+    public static final String REQUEST_KEY = TAG + ":rk";
 
     /**
      * No-arg constructor for OS use.
      */
     public EditColorDialogFragment() {
-        super(R.string.lbl_color, R.string.lbl_color, BookChangedListener.COLOR);
+        super(REQUEST_KEY, R.string.lbl_color, R.string.lbl_color, BookChangedListener.COLOR);
     }
 
     /**
