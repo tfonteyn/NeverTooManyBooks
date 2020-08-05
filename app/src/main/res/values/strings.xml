@@ -120,7 +120,8 @@
     <string name="error_if_the_problem_persists">If the problem persists, contact support via the “%1$s” option at the bottom of the settings page.</string>
 
     <string name="error_unknown">An unknown error occurred.</string>
-    <string name="error_network_no_connection">Internet connection is not available.</string>
+    <!-- [VERIFIED] -->
+    <string name="error_please_connect_to_internet">Please connect to the internet.</string>
     <string name="error_network_timeout">No response, please try again.</string>
 
     <string name="error_site_access_failed">There was a network problem while accessing %1$s. Please check if the website is up, and if the problem persists please contact support.</string>
@@ -644,8 +645,10 @@
 
     <!-- Preference Category -->
     <string name="pg_ui">User Interface</string>
-    <!-- ListPreference - Preferred interface Language -->
+
+    <!-- [VERIFIED] ListPreference - "Preferred interface Language" -->
     <string name="pt_ui_language">Language</string>
+
     <!-- ListPreference - Preferred interface Language; option 1 in the list -->
     <string name="pt_ui_system_locale">System Locale</string>
     <!-- ListPreference - Preferred interface Theme -->
@@ -797,8 +800,8 @@
     <string name="pv_bob_header_filters">Filters</string>
 
 
-    <!-- ListPreference - Scale text. -->
-    <string name="pt_bob_font_scale">Size of booklist text</string>
+    <!-- [VERIFIED] ListPreference - Scale text. -->
+    <string name="pt_bob_font_size">Font size</string>
 
     <!-- SwitchPreference -->
     <string name="pt_bob_list_state_expansion_level">Default booklist expansion</string>
@@ -923,8 +926,6 @@
     <!-- Booklist menu option -->
     <string name="lbl_level_collapse">Collapse All</string>
 
-    <!-- "view all works of an author" menu option - show both TOC entries and Books -->
-    <string name="menu_author_works_all">Show all</string>
     <!-- "view all works of an author" menu option - show only Books -->
     <string name="menu_author_works_book">Books only</string>
     <!-- "view all works of an author" menu option - show only TOC entries -->
@@ -1007,15 +1008,19 @@
     <string name="action_discard">Discard</string>
     <!-- [VERIFIED] -->
     <string name="action_help">Help</string>
+    <!-- [VERIFIED] 'Retry' -->
+    <string name="action_retry">Retry</string>
+    <!-- [VERIFIED] 'Try again' -->
+    <string name="action_try_again">Try again</string>
+    <!-- [VERIFIED] e.g. clearing a form. -->
+    <string name="action_clear">Clear</string>
+    <!-- [VERIFIED] -->
+    <string name="action_show_all">Show all</string>
+
     <!-- merging two bookshelves -->
     <string name="action_merge">Merge</string>
     <!-- Duplication or Clone. Not the same as 'copy'. -->
     <string name="action_duplicate">Duplicate</string>
-    <!-- [VERIFIED] 'try again' -->
-    <string name="action_retry">Retry</string>
-    <!-- e.g. clearing a form. -->
-    <string name="action_clear">Clear</string>
-
 
     <!-- button text for import/export dialogs -->
     <string name="btn_options">Options</string>
@@ -1034,7 +1039,8 @@
     <string name="btn_reset">Reset</string>
     <!-- [VERIFIED] -->
     <string name="menu_reset_to_default">Reset to default</string>
-    <string name="btn_delete_credentials">Remove Credentials</string>
+    <!-- [VERIFIED] -->
+    <string name="btn_clear_credentials">Clear credentials</string>
     <!-- [VERIFIED] -->
     <string name="btn_email">Email</string>
 
@@ -1120,6 +1126,7 @@
     <string name="style_builtin_first_letter_series_title">Series title 1st letter</string>
     <string name="style_builtin_format">Format</string>
     <string name="style_builtin_genre">Genre</string>
+    <!-- [VERIFIED] -->
     <string name="style_builtin_language">Language</string>
     <string name="style_builtin_loaned">Lending</string>
     <!-- [VERIFIED] -->
@@ -1327,7 +1334,9 @@
     <string name="lbl_rating">Rating</string>
     <string name="lbl_anthology">Anthology</string>
     <string name="lbl_format">Format</string>
+    <!-- [VERIFIED] -->
     <string name="lbl_color">Color</string>
+    <!-- [VERIFIED] -->
     <string name="lbl_language">Language</string>
     <string name="lbl_genre">Genre</string>
     <string name="lbl_signed">Signed</string>
@@ -1354,8 +1363,8 @@
     <string name="lbl_date_published">Date Published</string>
     <!-- Number of books printed of this edition. -->
     <string name="lbl_print_run">Print run</string>
-
-    <string name="lbl_credentials">Credentials</string>
+    <!-- [VERIFIED] -->
+    <string name="lbl_credentials">User credentials</string>
 
     <string name="lbl_read_start">Date started reading</string>
     <string name="lbl_read_end">Date finished reading</string>
@@ -1377,7 +1386,8 @@
     <string name="lbl_field_usage_copy_if_blank">Copy if blank</string>
     <string name="lbl_field_usage_append">Appends extra data</string>
     <string name="lbl_field_usage_overwrite">Overwrites existing data</string>
-    <string name="lbl_field_usage_skip">Skip</string>
+    <!-- [VERIFIED] -->
+    <string name="action_skip">Skip</string>
 
     <string name="lbl_search_filtered_on_x">Filtered on: %1$s</string>
 
@@ -1460,7 +1470,7 @@
     <string name="lbl_import_option_new_and_changed_books">New and updated books</string>
 
 
-    <!-- [VERIFIED] heading/titles for settings/preference screens. -->
+    <!-- [VERIFIED] - heading/titles for settings/preference screens. -->
     <string name="lbl_settings">Settings</string>
 
 
@@ -1504,7 +1514,6 @@
 
 
     <string name="X_action_exit">Exit</string>
-    <string name="X_action_show_all">Show all</string>
     <string name="X_action_update">Update</string>
     <string name="X_action_swap">Swap</string>
 
@@ -1539,10 +1548,6 @@
     <string name="X_lbl_data_import_export">Backup &amp; Import</string>
     <!-- alternative used in some places for lbl_keywords -->
     <string name="X_lbl_search_criteria">Search Criteria</string>
-    <!-- checkbox for the TOC edit screen. -->
-    <!-- checkbox for the TOC edit screen. -->
-    <string name="X_lbl_credentials_goodreads">Goodreads Credentials</string>
-
 
     <string name="X_error_not_available">%1$s is not available.</string>
     <string name="X_error_file_must_contain_column">File must contain column named “%1$s”</string>
@@ -1581,5 +1586,6 @@
     <string name="image">Image</string>
     <!-- [VERIFIED] -->
     <string name="btn_not_now">Not now</string>
+    <string name="action_validate">Validate</string>
 
 </resources>

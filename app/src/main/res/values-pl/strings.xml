@@ -39,7 +39,6 @@
     <string name="lbl_available">Dostępne</string>
     <string name="X_lbl_data_import_export">Kopia zapasowa i import</string>
     <string name="X_lbl_select_fields_to_update">Wybierz pola do aktualizacji</string>
-    <string name="X_action_show_all">Pokaż wszystko</string>
     <string name="X_action_swap">Wymieniać</string>
     <string name="X_tip_booklist_global_properties">Możesz użyć tego ekranu, aby ustawić domyślną charakterystykę wszystkich stylów listy książek. Większość właściwości może być nadpisana przez poszczególne style, ale tutaj są zdefiniowane wartości domyślne. Możesz zmienić sposób wyświetlania list przy starcie i dostosować różne inne preferencje, które będą stosowane do wszystkich twoich stylów, jeśli to możliwe. Możesz także edytować menu stylów i same style.</string>
     <string name="X_use_default_setting">Zastosowanie domyślne</string>
@@ -68,7 +67,7 @@
     <string name="action_save">Zapisz</string>
     <string name="X_btn_continue_edit">Kontynuuj edycję</string>
     <string name="X_btn_customize">Dostosuj…</string>
-    <string name="btn_delete_credentials">Usuń poświadczenia</string>
+    <string name="btn_clear_credentials">Wyczyść dane o certyfikatach</string>
     <string name="btn_disable_message">Wyłącz komunikat.</string>
     <string name="btn_email">Wyślij e-maila</string>
     <string name="X_btn_loan_returned">Zwrócona</string>
@@ -106,7 +105,7 @@
     <string name="error_import_csv_file_must_contain_columns_x">Plik musi zawierać jedno z pól: %1$s</string>
     <string name="error_import_failed">Import nie powiódł się.</string>
     <string name="error_import_invalid_archive">Wybrany plik nie został rozpoznany.</string>
-    <string name="error_network_no_connection">Połączenie internetowe nie jest dostępne.</string>
+    <string name="error_please_connect_to_internet">Połącz się z internetem.</string>
     <string name="error_network_timeout">Brak odpowiedzi. Spróbuj ponownie.</string>
     <string name="error_no_image_editor">Nie znaleziono edytora zdjęć</string>
     <string name="X_error_not_available">%1$s jest niedostępny</string>
@@ -245,8 +244,7 @@
     <string name="lbl_cover">Okładka</string>
     <string name="lbl_covers_long">Obrazy okładkowe</string>
     <string name="lbl_covers">Okładka</string>
-    <string name="lbl_credentials">Poświadczenia</string>
-    <string name="X_lbl_credentials_goodreads">Goodreads Poświadczenia</string>
+    <string name="lbl_credentials">Dane logowania użytkownika</string>
     <string name="lbl_currency">Waluta</string>
     <string name="lbl_date_acquired">Data nabycia</string>
     <string name="lbl_date_acquired_day">Dzień nabyty</string>
@@ -266,7 +264,7 @@
     <string name="lbl_field_usage_append">Dopisz do istniejącego</string>
     <string name="lbl_field_usage_copy_if_blank">Kopiuj, gdy puste</string>
     <string name="lbl_field_usage_overwrite">Nadpisz istniejące dane</string>
-    <string name="lbl_field_usage_skip">Pomiń</string>
+    <string name="action_skip">Pomiń</string>
     <string name="lbl_first_pub_month">Pierwszy miesiąc publikacji</string>
     <string name="lbl_first_pub_year">Pierwszy rok publikacji</string>
     <string name="lbl_first_publication">Pierwsza publikacja</string>
@@ -345,7 +343,7 @@
     <string name="menu_amazon_books_by_author_in_series">Książki według autora / serii</string>
     <string name="menu_amazon_books_in_series">Książki z tej serii</string>
     <string name="menu_author_details">Wszystkie prace tego autora</string>
-    <string name="menu_author_works_all">Pokaż wszystko</string>
+    <string name="action_show_all">Pokaż wszystko</string>
     <string name="menu_author_works_book">Tylko książki</string>
     <string name="menu_author_works_toc">Tylko tytuły treści</string>
     <string name="lbl_styles_long">Style listy książek</string>
@@ -443,7 +441,7 @@
     <string name="pt_allow_mobile_data">Włącz mobilne korzystanie z danych</string>
     <string name="pt_bob_books_under_multiple_authors">Książki z wieloma autorami</string>
     <string name="pt_bob_books_under_multiple_series">Książki w wielu seriach</string>
-    <string name="pt_bob_font_scale">Rozmiar tekstu listy książek</string>
+    <string name="pt_bob_font_size">Rozmiar czcionki</string>
     <string name="pt_bob_header">Szczegóły podsumowujące w nagłówku</string>
     <string name="pt_bob_list_rebuild_state">Stan uruchamiania listy książek</string>
     <string name="pt_bob_list_state_expansion_level">Domyślne rozszerzenie listy książek</string>
@@ -664,4 +662,5 @@
     <string name="unknown">Brak informacji</string>
     <string name="btn_not_now">Nie teraz</string>
     <string name="menu_reset_to_default">Resetuj ustawienia</string>
+    <string name="action_try_again">Spróbuj ponownie</string>
 </resources>

@@ -36,7 +36,7 @@
         <item
             android:id="@id/MENU_AUTHOR_WORKS_ALL"
             android:checked="true"
-            android:title="@string/menu_author_works_all" />
+            android:title="@string/action_show_all" />
 
         <item
             android:id="@id/MENU_AUTHOR_WORKS_TOC"

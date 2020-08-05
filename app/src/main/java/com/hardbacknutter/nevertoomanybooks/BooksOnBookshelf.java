@@ -306,30 +306,31 @@ public class BooksOnBookshelf
         // remove the default title to make space for the bookshelf spinner.
         setTitle("");
 
-        getSupportFragmentManager().setFragmentResultListener(
-                EditAuthorDialogFragment.REQUEST_KEY, this, mBookChangedListener);
-        getSupportFragmentManager().setFragmentResultListener(
-                EditSeriesDialogFragment.REQUEST_KEY, this, mBookChangedListener);
-        getSupportFragmentManager().setFragmentResultListener(
-                EditPublisherDialogFragment.REQUEST_KEY, this, mBookChangedListener);
+        final FragmentManager fm = getSupportFragmentManager();
 
-        getSupportFragmentManager().setFragmentResultListener(
-                EditColorDialogFragment.REQUEST_KEY, this, mBookChangedListener);
-        getSupportFragmentManager().setFragmentResultListener(
-                EditFormatDialogFragment.REQUEST_KEY, this, mBookChangedListener);
-        getSupportFragmentManager().setFragmentResultListener(
-                EditGenreDialogFragment.REQUEST_KEY, this, mBookChangedListener);
-        getSupportFragmentManager().setFragmentResultListener(
-                EditLanguageDialogFragment.REQUEST_KEY, this, mBookChangedListener);
-        getSupportFragmentManager().setFragmentResultListener(
-                EditLocationDialogFragment.REQUEST_KEY, this, mBookChangedListener);
+        fm.setFragmentResultListener(EditAuthorDialogFragment.REQUEST_KEY, this,
+                                     mBookChangedListener);
+        fm.setFragmentResultListener(EditSeriesDialogFragment.REQUEST_KEY, this,
+                                     mBookChangedListener);
+        fm.setFragmentResultListener(EditPublisherDialogFragment.REQUEST_KEY, this,
+                                     mBookChangedListener);
 
+        fm.setFragmentResultListener(EditColorDialogFragment.REQUEST_KEY, this,
+                                     mBookChangedListener);
+        fm.setFragmentResultListener(EditFormatDialogFragment.REQUEST_KEY, this,
+                                     mBookChangedListener);
+        fm.setFragmentResultListener(EditGenreDialogFragment.REQUEST_KEY, this,
+                                     mBookChangedListener);
+        fm.setFragmentResultListener(EditLanguageDialogFragment.REQUEST_KEY, this,
+                                     mBookChangedListener);
+        fm.setFragmentResultListener(EditLocationDialogFragment.REQUEST_KEY, this,
+                                     mBookChangedListener);
 
-        getSupportFragmentManager().setFragmentResultListener(
-                EditLenderDialogFragment.REQUEST_KEY, this, mBookChangedListener);
+        fm.setFragmentResultListener(EditLenderDialogFragment.REQUEST_KEY, this,
+                                     mBookChangedListener);
 
-        getSupportFragmentManager().setFragmentResultListener(
-                StylePickerDialogFragment.REQUEST_KEY, this, mPickListener);
+        fm.setFragmentResultListener(StylePickerDialogFragment.REQUEST_KEY, this,
+                                     mPickListener);
 
         // Does not use the full progress dialog. Instead uses the overlay progress bar.
         mModel = new ViewModelProvider(this).get(BooksOnBookshelfModel.class);

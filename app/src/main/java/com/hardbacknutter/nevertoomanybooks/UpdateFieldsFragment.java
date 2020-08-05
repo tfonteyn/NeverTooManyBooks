@@ -157,7 +157,7 @@ public class UpdateFieldsFragment
         // Warn the user, but don't abort.
         //noinspection ConstantConditions
         if (!NetworkUtils.isNetworkAvailable(getContext())) {
-            Snackbar.make(mVb.getRoot(), R.string.error_network_no_connection,
+            Snackbar.make(mVb.getRoot(), R.string.error_please_connect_to_internet,
                           Snackbar.LENGTH_LONG).show();
         }
     }
@@ -289,7 +289,7 @@ public class UpdateFieldsFragment
 
         //noinspection ConstantConditions
         if (!NetworkUtils.isNetworkAvailable(getContext())) {
-            Snackbar.make(mVb.getRoot(), R.string.error_network_no_connection,
+            Snackbar.make(mVb.getRoot(), R.string.error_please_connect_to_internet,
                           Snackbar.LENGTH_LONG).show();
             return;
         }

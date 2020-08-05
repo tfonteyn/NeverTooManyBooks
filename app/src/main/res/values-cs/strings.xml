@@ -39,7 +39,6 @@
     <string name="lbl_available">Dostupná</string>
     <string name="X_lbl_data_import_export">Zálohování a import</string>
     <string name="X_lbl_select_fields_to_update">Zvolit pole k aktualizaci</string>
-    <string name="X_action_show_all">Ukázat vše</string>
     <string name="X_action_swap">Vyměnit</string>
     <string name="X_tip_booklist_global_properties">Na této obrazovce můžete nastavit výchozí charakteristiky všech stylů seznamu knih. Většina vlastností může být potlačena jednotlivými styly, ale zde jsou definovány výchozí hodnoty. Můžete změnit způsob zobrazení seznamů při spuštění a upravit řadu dalších preferencí, které budou použity na všechny vaše styly, pokud to bude možné.</string>
     <string name="X_use_default_setting">Použít defaultní nastavení</string>
@@ -68,7 +67,7 @@
     <string name="action_save">Uložit</string>
     <string name="X_btn_continue_edit">Pokračovat v úpravách</string>
     <string name="X_btn_customize">Přizpůsobit…</string>
-    <string name="btn_delete_credentials">Odebrat pověření</string>
+    <string name="btn_clear_credentials">Vymazat pověření</string>
     <string name="btn_disable_message">Zakázat zprávu</string>
     <string name="btn_email">Poslat e-mail</string>
     <string name="X_btn_loan_returned">Vráceno</string>
@@ -78,7 +77,7 @@
     <string name="btn_learn_more">Další informace</string>
     <string name="btn_this_book">Tato kniha</string>
     <string name="bytes">%.0fB</string>
-    <string name="action_clear">Jasné</string>
+    <string name="action_clear">Vymazat</string>
     <string name="confirm_scope_for_change">Změnili jste:\n „%1$s“\n na\n „%2$s“\n\nJak si přejete aplikovat tuto změnu?\n\nUpozornění: Volba „%3$s“ bude aplikována okamžitě.</string>
     <string name="confirm_delete_book">Tímto kompletně odstraníte knihu „%1$s“ od %2$s. Určitě chcete pokračovat?</string>
     <string name="confirm_delete_series">Opravdu chcete smazat série „%1$s“?\n\nSamotná kniha nebude smazána.\n\nZvažte prosím úpravu série a změnu názvu série s ohledem na korektnost dat.</string>
@@ -106,7 +105,7 @@
     <string name="error_import_csv_file_must_contain_columns_x">Soubor musí obsahovat sloupec s jedním z následujících jmen: %1$s</string>
     <string name="error_import_failed">Import se nezdařil.</string>
     <string name="error_import_invalid_archive">Vybraný soubor není rozpoznán.</string>
-    <string name="error_network_no_connection">Připojení k internetu není k dispozici.</string>
+    <string name="error_please_connect_to_internet">Připojte se prosím k internetu.</string>
     <string name="error_network_timeout">Žádná odpověď, zkuste to prosím znovu</string>
     <string name="error_no_image_editor">Nebyl nalezen žádný editor obrázků</string>
     <string name="X_error_not_available">%1$s není k dispozici</string>
@@ -246,8 +245,7 @@
     <string name="lbl_cover">Přebal</string>
     <string name="lbl_covers_long">Obrázky na obálce</string>
     <string name="lbl_covers">Přebal</string>
-    <string name="lbl_credentials">Přihlašovací údaje</string>
-    <string name="X_lbl_credentials_goodreads">Goodreads Přihlašovací údaje</string>
+    <string name="lbl_credentials">Identifikační údaje uživatele</string>
     <string name="lbl_currency">Měna</string>
     <string name="lbl_date_acquired">Datum Nabytí</string>
     <string name="lbl_date_acquired_day">Den Nabytí</string>
@@ -267,7 +265,7 @@
     <string name="lbl_field_usage_append">Přidat extra data</string>
     <string name="lbl_field_usage_copy_if_blank">Kopírovat pokud je prázdné</string>
     <string name="lbl_field_usage_overwrite">Přepsat existující data</string>
-    <string name="lbl_field_usage_skip">Přeskočit</string>
+    <string name="action_skip">Přeskočit</string>
     <string name="lbl_first_pub_month">První měsíc vydání</string>
     <string name="lbl_first_pub_year">Rok prvního vydání</string>
     <string name="lbl_first_publication">První publikace</string>
@@ -346,7 +344,7 @@
     <string name="menu_amazon_books_by_author_in_series">Knihy podle autora / série</string>
     <string name="menu_amazon_books_in_series">Knihy v této sérii</string>
     <string name="menu_author_details">Všechna díla tohoto autora</string>
-    <string name="menu_author_works_all">Ukázat vše</string>
+    <string name="action_show_all">Zobrazit vše</string>
     <string name="menu_author_works_book">Pouze knihy</string>
     <string name="menu_author_works_toc">Pouze tituly obsahu</string>
     <string name="lbl_styles_long">Styly pro seznam knih</string>
@@ -444,7 +442,7 @@
     <string name="pt_allow_mobile_data">Povolit používání mobilních dat</string>
     <string name="pt_bob_books_under_multiple_authors">Knihy s více autory</string>
     <string name="pt_bob_books_under_multiple_series">Knihy ve více sériích</string>
-    <string name="pt_bob_font_scale">Velikost položek na seznamu knih</string>
+    <string name="pt_bob_font_size">Velikost písma</string>
     <string name="pt_bob_header">Souhrnné údaje v záhlaví</string>
     <string name="pt_bob_list_rebuild_state">Stav spuštění seznamu knih</string>
     <string name="pt_bob_list_state_expansion_level">Výchozí seznam rozšiřujících knih</string>
@@ -665,5 +663,6 @@
     <string name="unknown">Neznámé</string>
     <string name="btn_not_now">Teď ne</string>
     <string name="menu_reset_to_default">Obnovit výchozí</string>
+    <string name="action_try_again">Zkusit znovu</string>
 
 </resources>

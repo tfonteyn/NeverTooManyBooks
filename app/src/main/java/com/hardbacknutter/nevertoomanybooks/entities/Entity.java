@@ -32,10 +32,13 @@ import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
 /**
  * An item (entity) in a database table always has an id and some user-friendly label
  * aka 'displayName'.
- *
+ * <p>
  * Must be Parcelable.
  */
 public interface Entity
@@ -46,6 +49,7 @@ public interface Entity
      *
      * @return id
      */
+    @RowId
     long getId();
 
     /**
@@ -56,4 +60,9 @@ public interface Entity
      * @return the label to use.
      */
     String getLabel(@NonNull Context context);
+
+    @Retention(RetentionPolicy.SOURCE)
+    @interface RowId {
+
+    }
 }

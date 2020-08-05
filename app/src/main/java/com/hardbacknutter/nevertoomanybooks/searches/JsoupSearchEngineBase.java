@@ -36,7 +36,6 @@ import androidx.annotation.VisibleForTesting;
 import androidx.annotation.WorkerThread;
 
 import java.io.IOException;
-import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -108,14 +107,14 @@ public abstract class JsoupSearchEngineBase
      * @param fetchThumbnail Set to {@code true} if we want to get thumbnails
      * @param bookData       Bundle to update
      *
-     * @throws SocketTimeoutException if the connection times out while fetching additional data
+     * @throws IOException on failure
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
     @WorkerThread
     public abstract void parse(@NonNull final Document document,
                                @NonNull boolean[] fetchThumbnail,
                                @NonNull Bundle bookData)
-            throws SocketTimeoutException;
+            throws IOException;
 
     /**
      * Filter a string of all non-digits. Used to clean isbn strings, years... etc.

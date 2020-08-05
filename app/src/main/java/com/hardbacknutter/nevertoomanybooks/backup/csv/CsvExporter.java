@@ -102,7 +102,7 @@ public class CsvExporter
      * <p>
      * The fields CSV_COLUMN_* are {@link StringList} encoded
      * <p>
-     * External id columns will be added to the end in {@link #getFieldHeaders(List)}.
+     * External id columns will be added to the end in {@link #getFieldHeaders} (List)}.
      */
     private static final String EXPORT_FIELD_HEADERS_BASE =
             '"' + DBDefinitions.KEY_PK_ID + '"'

@@ -39,7 +39,6 @@
     <string name="lbl_available">Kullanılabilir</string>
     <string name="X_lbl_data_import_export">Yedekleme ve İçe Aktarma</string>
     <string name="X_lbl_select_fields_to_update">Güncellenecek alanları seçin</string>
-    <string name="X_action_show_all">Hepsini Göster</string>
     <string name="X_action_swap">Değiştirmek</string>
     <string name="X_tip_booklist_global_properties">Tüm kitap listesi stillerinin varsayılan özelliklerini ayarlamak için bu ekranı kullanabilirsiniz. Çoğu özellik bireysel stiller tarafından geçersiz kılınabilir, ancak varsayılan değerler burada tanımlanır. Listelerin başlangıçta nasıl görüntüleneceğini değiştirebilir ve mümkün olduğunda tüm stillerinize uygulanacak çeşitli diğer tercihleri ayarlayabilirsiniz.</string>
     <string name="X_use_default_setting">Öntanımlı ayarları kullan</string>
@@ -69,7 +68,7 @@
     <string name="action_save">Kaydet</string>
     <string name="X_btn_continue_edit">Düzenlemeyi sürdür</string>
     <string name="X_btn_customize">Kişiselleştir…</string>
-    <string name="btn_delete_credentials">Kimlik Bilgilerini Kaldır</string>
+    <string name="btn_clear_credentials">Kimlik bilgilerini temizle</string>
     <string name="btn_disable_message">İletiyi kapat</string>
     <string name="btn_email">E-posta</string>
     <string name="X_btn_loan_returned">Geri geldi</string>
@@ -79,7 +78,7 @@
     <string name="btn_learn_more">Daha fazla bilgi</string>
     <string name="btn_this_book">Bu kitap</string>
     <string name="bytes">%.0fB</string>
-    <string name="action_clear">Silme</string>
+    <string name="action_clear">Temizle</string>
     <string name="confirm_scope_for_change">Değiştirdiniz:\n “%1$s”,\n“%2$s”\n olarak.\n\nDeğişiklikleri nasıl uygulamak istersiniz?\n\nNot: “%3$s” seçimi anında uygulanacaktır.</string>
     <string name="confirm_delete_book">Bu işlem bu kitabı tümüyle silecektir: “%1$s” - %2$s. Sürdürmek istediğinizden emin misiniz?</string>
     <string name="confirm_delete_series">“%1$s” serisi gerçekten silinsin mi?\n\nKitabın kendisi silinmeyecektir.\n\nSeriyi düzenleyip seri adını başka bir serininkiyle değiştirip bu veriyi korumayı düşünün.</string>
@@ -107,7 +106,7 @@
     <string name="error_import_csv_file_must_contain_columns_x">Dosya, %1$s adlarından birini kullanan bir sütun içermeli</string>
     <string name="error_import_failed">İçe aktarma başarısız.</string>
     <string name="error_import_invalid_archive">Seçilen dosya tanınmıyor.</string>
-    <string name="error_network_no_connection">Ağ bağlantısı yok.</string>
+    <string name="error_please_connect_to_internet">Lütfen İnternet\'e bağlanın.</string>
     <string name="error_network_timeout">Cevapsız. Tekrar deneyin.</string>
     <string name="error_no_image_editor">Resim editörü bulunamadı</string>
     <string name="X_error_not_available">%1$s kullanılamıyor</string>
@@ -247,8 +246,7 @@
     <string name="lbl_cover">Kapak</string>
     <string name="lbl_covers_long">Kapak görselleri</string>
     <string name="lbl_covers">Kapaklar</string>
-    <string name="lbl_credentials">Kimlik Bilgileri</string>
-    <string name="X_lbl_credentials_goodreads">Goodreads Kimlik Bilgileri</string>
+    <string name="lbl_credentials">Kullanıcı kimlik bilgileri</string>
     <string name="lbl_currency">Para birimi</string>
     <string name="lbl_date_acquired">Alınan Tarih</string>
     <string name="lbl_date_acquired_day">Alınan Gün</string>
@@ -268,7 +266,7 @@
     <string name="lbl_field_usage_append">Ek veriyi iliştirir</string>
     <string name="lbl_field_usage_copy_if_blank">Boş ise eşlemle</string>
     <string name="lbl_field_usage_overwrite">Bulunan verinin üstüne yazar</string>
-    <string name="lbl_field_usage_skip">Atla</string>
+    <string name="action_skip">Atla</string>
     <string name="lbl_first_pub_month">Yayının İlk Ayı</string>
     <string name="lbl_first_pub_year">Yayının İlk Yılı</string>
     <string name="lbl_first_publication">İlk yayın</string>
@@ -347,7 +345,7 @@
     <string name="menu_amazon_books_by_author_in_series">Yazara/diziye göre kitaplar</string>
     <string name="menu_amazon_books_in_series">Bu dizideki kitaplar</string>
     <string name="menu_author_details">Bu yazarın tüm eserleri</string>
-    <string name="menu_author_works_all">Hepsini Göster</string>
+    <string name="action_show_all">Tümünü göster</string>
     <string name="menu_author_works_book">Sadece kitaplar</string>
     <string name="menu_author_works_toc">Yalnızca içerik başlıkları</string>
     <string name="lbl_styles_long">Kitap listesi stilleri</string>
@@ -426,7 +424,7 @@
     <string name="progress_end_import_partially_complete">Kısmi ithalat yapıldı</string>
     <string name="progress_msg_connecting">Bağlanılıyor…</string>
     <string name="progress_msg_searching_editions">Sürümler bulunuyor…</string>
-    <string name="progress_msg_loading">Yükleniyor...</string>
+    <string name="progress_msg_loading">Yükleniyor…</string>
     <string name="progress_end_export_result_n_books_processed">%1$d kitap işlendi</string>
     <string name="progress_end_export_result_n_covers_processed_m_missing">%1$d kapak işlendi\n(%2$d/%3$d bulunamadı)</string>
     <string name="progress_msg_n_covers_processed_m_missing_s_skipped">%1$d kapak işlendi (%2$d/%3$d bulunamadı, %4$d atlandı)</string>
@@ -445,7 +443,7 @@
     <string name="pt_allow_mobile_data">Mobil veri kullanımına izin ver</string>
     <string name="pt_bob_books_under_multiple_authors">Birden fazla yazarlı kitaplar</string>
     <string name="pt_bob_books_under_multiple_series">Birden fazla seride bulunan kitaplar</string>
-    <string name="pt_bob_font_scale">Kitap dizelgesi öğeleri boyutu</string>
+    <string name="pt_bob_font_size">Yazı tipi boyutu</string>
     <string name="pt_bob_header">Başlık özet ayrıntıları</string>
     <string name="pt_bob_list_rebuild_state">Kitap listesi başlangıç durumu</string>
     <string name="pt_bob_list_state_expansion_level">Varsayılan Kitap listesi genişletme</string>
@@ -665,5 +663,6 @@
     <string name="unknown">Bilinmiyor</string>
     <string name="btn_not_now">Şimdi değil</string>
     <string name="menu_reset_to_default">Varsayılana sıfırla</string>
+    <string name="action_try_again">Tekrar dene</string>
 
 </resources>

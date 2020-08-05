@@ -39,7 +39,6 @@
     <string name="lbl_available">Disponible</string>
     <string name="X_lbl_data_import_export">Copia de seguridad e importación</string>
     <string name="X_lbl_select_fields_to_update">Seleccione campos para actualizar</string>
-    <string name="X_action_show_all">Mostrar todo</string>
     <string name="X_action_swap">Intercambiar</string>
     <string name="X_tip_booklist_global_properties">Puede usar esta pantalla para configurar las características predeterminadas de todos los estilos de listas de libros. La mayoría de las propiedades pueden ser reemplazadas por estilos individuales, pero los valores predeterminados se definen aquí. Puede cambiar la forma en que se muestran las listas al inicio y ajustar una variedad de otras preferencias que se aplicarán a todos sus estilos cuando sea posible.</string>
     <string name="X_use_default_setting">Utilizar configuración por defecto</string>
@@ -70,7 +69,7 @@
     <string name="action_save">Guardar</string>
     <string name="X_btn_continue_edit">Continuar editando</string>
     <string name="X_btn_customize">Configurar…</string>
-    <string name="btn_delete_credentials">Eliminar credenciales</string>
+    <string name="btn_clear_credentials">Eliminar certificados</string>
     <string name="btn_disable_message">Deshabilitar mensaje</string>
     <string name="btn_email">Enviar correo</string>
     <string name="X_btn_loan_returned">Devuelto</string>
@@ -80,7 +79,7 @@
     <string name="btn_learn_more">Más información</string>
     <string name="btn_this_book">Este libro</string>
     <string name="bytes">%.0fB</string>
-    <string name="action_clear">Claro</string>
+    <string name="action_clear">Borrar</string>
     <string name="confirm_scope_for_change">Ha cambiado:\n «%1$s»\n a\n «%2$s»\n\n¿Cómo quiere aplicar este cambio?\n\nNota: La opción «%3$s» se aplicará de manera inmediata.</string>
     <string name="confirm_delete_book">Se dispone a eliminar el libro con el título «%1$s» de %2$s. ¿Está seguro de que desea continuar?</string>
     <string name="confirm_delete_series">Confirme la eliminación de la serie «%1$s»\n\nLos libros no se eliminarán.\n\nConsidere la opción de editar la serie para cambiar el nombre, para conservar los datos</string>
@@ -108,7 +107,7 @@
     <string name="error_import_csv_file_must_contain_columns_x">El fichero debe tener una columna con uno de los nombres siguientes: %1$s</string>
     <string name="error_import_failed">La importación falló.</string>
     <string name="error_import_invalid_archive">El archivo seleccionado no se reconoce.</string>
-    <string name="error_network_no_connection">No hay conexión a internet.</string>
+    <string name="error_please_connect_to_internet">Debes conectarte a Internet.</string>
     <string name="error_network_timeout">No hay respuesta, por favor intente de nuevo</string>
     <string name="error_no_image_editor">No se encontró editor de imágenes</string>
     <string name="X_error_not_available">%1$s no disponible</string>
@@ -248,8 +247,7 @@
     <string name="lbl_cover">Portada</string>
     <string name="lbl_covers_long">Portadas</string>
     <string name="lbl_covers">Portadas</string>
-    <string name="lbl_credentials">Credenciales</string>
-    <string name="X_lbl_credentials_goodreads">Goodreads Credenciales</string>
+    <string name="lbl_credentials">Credenciales de usuario</string>
     <string name="lbl_currency">Moneda</string>
     <string name="lbl_date_acquired">Fecha de adquisición</string>
     <string name="lbl_date_acquired_day">Día adquirido</string>
@@ -269,7 +267,7 @@
     <string name="lbl_field_usage_append">Añadir datos adicionales</string>
     <string name="lbl_field_usage_copy_if_blank">Copiar si está en blanco</string>
     <string name="lbl_field_usage_overwrite">Sobreescribir los datos existentes</string>
-    <string name="lbl_field_usage_skip">Saltar</string>
+    <string name="action_skip">Saltar</string>
     <string name="lbl_first_pub_month">Primer mes de publicación</string>
     <string name="lbl_first_pub_year">Primer año de publicación</string>
     <string name="lbl_first_publication">Primera publicación</string>
@@ -348,14 +346,14 @@
     <string name="menu_amazon_books_by_author_in_series">Libros del autor/serie</string>
     <string name="menu_amazon_books_in_series">Libros de la misma serie</string>
     <string name="menu_author_details">Todas las obras de este autor.</string>
-    <string name="menu_author_works_all">Mostrar todo</string>
+    <string name="action_show_all">Mostrar todo</string>
     <string name="menu_author_works_book">Solo libros</string>
     <string name="menu_author_works_toc">Solo títulos de contenido</string>
     <string name="lbl_styles_long">Estilos del listado de libros</string>
     <string name="X_lbl_clear_search_filters">Borrar filtros</string>
     <string name="menu_cover_crop">Recortar</string>
     <string name="menu_cover_edit">Iniciar editor</string>
-    <string name="menu_cover_replace">Sustituir...</string>
+    <string name="menu_cover_replace">Sustituir…</string>
     <string name="menu_cover_replace_from_alt_editions">De otras ediciones…</string>
     <string name="menu_cover_replace_from_camera">Desde la cámara…</string>
     <string name="menu_cover_replace_from_gallery">Desde la galería…</string>
@@ -427,7 +425,7 @@
     <string name="progress_end_import_partially_complete">Importación parcial realizada</string>
     <string name="progress_msg_connecting">Conectando…</string>
     <string name="progress_msg_searching_editions">Buscando ediciones…</string>
-    <string name="progress_msg_loading">Cargando...</string>
+    <string name="progress_msg_loading">Cargando…</string>
     <string name="progress_end_export_result_n_books_processed">%1$d libros procesados</string>
     <string name="progress_end_export_result_n_covers_processed_m_missing">%1$d portadas procesadas\n(%2$d/%3$d faltantes)</string>
     <string name="progress_msg_n_covers_processed_m_missing_s_skipped">%1$d portadas procesadas (%2$d/%3$d faltantes, %4$d omitidas)</string>
@@ -446,7 +444,7 @@
     <string name="pt_allow_mobile_data">Permitir el uso de datos móviles</string>
     <string name="pt_bob_books_under_multiple_authors">Libros con varios autores</string>
     <string name="pt_bob_books_under_multiple_series">Libros en varias series</string>
-    <string name="pt_bob_font_scale">Tamaño de los elementos en el listado</string>
+    <string name="pt_bob_font_size">Tamaño de la fuente</string>
     <string name="pt_bob_header">Resumen en la cabecera</string>
     <string name="pt_bob_list_rebuild_state">Estado de inicio de la lista de libros</string>
     <string name="pt_bob_list_state_expansion_level">Expansión predeterminada de la lista de libros</string>
@@ -668,5 +666,6 @@
     <string name="unknown">Desconocido</string>
     <string name="btn_not_now">Ahora no</string>
     <string name="menu_reset_to_default">Restablecer ajustes</string>
+    <string name="action_try_again">Reintentar</string>
 
 </resources>

@@ -38,7 +38,6 @@
     <string name="lbl_available">Beschikbaar</string>
     <string name="X_lbl_data_import_export">Back-up &amp; import</string>
     <string name="X_lbl_select_fields_to_update">Selecteer bij te werken velden</string>
-    <string name="X_action_show_all">Toon alles</string>
     <string name="X_action_swap">Wisselen</string>
     <string name="X_tip_booklist_global_properties">Je kan dit scherm gebruiken om de standaardkenmerken van alle stijlen van de boekenlijst in te stellen. De meeste eigenschappen kunnen worden overschreven door afzonderlijke stijlen, maar de standaardwaarden worden hier gedefinieerd. Je kan de manier wijzigen waarop lijsten worden weergegeven bij het opstarten en een aantal andere voorkeuren aanpassen die indien mogelijk op al uw stijlen worden toegepast.</string>
     <string name="X_use_default_setting">Gebruik de standaard waarden</string>
@@ -70,7 +69,7 @@
     <string name="action_save">Opslaan</string>
     <string name="X_btn_continue_edit">Doorgaan met bewerken</string>
     <string name="X_btn_customize">Aanpassen…</string>
-    <string name="btn_delete_credentials">Verwijder inloggegevens</string>
+    <string name="btn_clear_credentials">Certificaatgegevens wissen</string>
     <string name="btn_disable_message">Bericht uitschakelen</string>
     <string name="btn_email">E-mailen</string>
     <string name="X_btn_loan_returned">Terug</string>
@@ -108,7 +107,7 @@
     <string name="error_import_csv_file_must_contain_columns_x">Import bestand moet een kolom met de volgende namen bevatten: %1$s</string>
     <string name="error_import_failed">Import mislukt.</string>
     <string name="error_import_invalid_archive">Het geselecteerde bestand is niet herkend.</string>
-    <string name="error_network_no_connection">Geen Internet verbinding beschikbaar.</string>
+    <string name="error_please_connect_to_internet">Maak verbinding met internet.</string>
     <string name="error_network_timeout">Geen antwoord, probeer opnieuw</string>
     <string name="error_no_image_editor">Geen foto-editor gevonden</string>
     <string name="X_error_not_available">%1$s is niet beschikbaar</string>
@@ -252,8 +251,7 @@
     <string name="lbl_cover">Omslag</string>
     <string name="lbl_covers_long">Omslagafbeeldingen</string>
     <string name="lbl_covers">Omslagen</string>
-    <string name="lbl_credentials">Inloggegevens</string>
-    <string name="X_lbl_credentials_goodreads">Goodreads Inloggegevens</string>
+    <string name="lbl_credentials">Inloggegevens van gebruiker</string>
     <string name="lbl_currency">Munt</string>
     <string name="lbl_date_acquired">Datum verworven</string>
     <string name="lbl_date_acquired_day">Dag verworven</string>
@@ -273,7 +271,7 @@
     <string name="lbl_field_usage_append">Voegt extra gegevens toe</string>
     <string name="lbl_field_usage_copy_if_blank">kopieer indien leeg</string>
     <string name="lbl_field_usage_overwrite">Overschrijf bestaande gegevens</string>
-    <string name="lbl_field_usage_skip">Overslaan</string>
+    <string name="action_skip">Overslaan</string>
     <string name="lbl_first_pub_month">Eerste uitg. Maand</string>
     <string name="lbl_first_pub_year">Eerste uitg. Dag</string>
     <string name="lbl_first_publication">Eerste uitgave</string>
@@ -352,7 +350,7 @@
     <string name="menu_amazon_books_by_author_in_series">Boeken per auteur/reeks</string>
     <string name="menu_amazon_books_in_series">Boeken in deze reeks</string>
     <string name="menu_author_details">Alle werken van deze Auteur</string>
-    <string name="menu_author_works_all">Toon alles</string>
+    <string name="action_show_all">Alles tonen</string>
     <string name="menu_author_works_book">Alleen boeken</string>
     <string name="menu_author_works_toc">Alleen inhouds titels</string>
     <string name="lbl_styles_long">Boekenlijst Stijlen</string>
@@ -431,7 +429,7 @@
     <string name="progress_end_import_partially_complete">Gedeeltelijke import voltooid</string>
     <string name="progress_msg_connecting">Verbinden…</string>
     <string name="progress_msg_searching_editions">Zoeken naar uitgaven…</string>
-    <string name="progress_msg_loading">Laden...</string>
+    <string name="progress_msg_loading">Laden…</string>
     <string name="progress_end_export_result_n_books_processed">%1$d boeken verwerkt</string>
     <string name="progress_end_export_result_n_covers_processed_m_missing">%1$d boekomslagen verwerkt\n(%2$d/%3$d missend)</string>
     <string name="progress_msg_n_covers_processed_m_missing_s_skipped">%1$d boekomslagen verwerkt (%2$d/%3$d missend, %4$d overgeslagen)</string>
@@ -450,7 +448,7 @@
     <string name="pt_allow_mobile_data">Sta mobiel dataverbruik toe</string>
     <string name="pt_bob_books_under_multiple_authors">Boeken met meerdere auteurs</string>
     <string name="pt_bob_books_under_multiple_series">Boeken in meerdere reeksen</string>
-    <string name="pt_bob_font_scale">Grootte van boekenlijst tekst</string>
+    <string name="pt_bob_font_size">Lettergrootte</string>
     <string name="pt_bob_header">Details in de koptekst</string>
     <string name="pt_bob_list_rebuild_state">Boekenlijst opstart status</string>
     <string name="pt_bob_list_state_expansion_level">Standaard boekenlijst niveau</string>
@@ -669,5 +667,6 @@
     <string name="unknown">Onbekend</string>
     <string name="btn_not_now">Niet nu</string>
     <string name="menu_reset_to_default">Standaardinstellingen herstellen</string>
+    <string name="action_try_again">Opnieuw proberen</string>
 
 </resources>

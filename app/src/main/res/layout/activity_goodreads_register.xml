@@ -106,7 +106,7 @@
                 android:id="@+id/btn_delete_credentials"
                 style="@style/MenuButton"
                 android:layout_gravity="center_horizontal"
-                android:text="@string/btn_delete_credentials"
+                android:text="@string/btn_clear_credentials"
                 android:visibility="gone"
                 app:icon="@drawable/ic_delete"
                 tools:visibility="visible"

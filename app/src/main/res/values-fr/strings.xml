@@ -31,7 +31,7 @@
 <!-- Quotes «…»  - Regex to find wrong ones: ('|„|“|”|‘|’)
 -->
 <!--suppress LongLine -->
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="X_anthology_titles">Titres de l\'anthologie</string>
     <string name="X_action_update">Mettre à jour</string>
     <string name="X_btn_do_not_show_again">Ne plus montrer</string>
@@ -40,7 +40,6 @@
     <string name="lbl_available">Disponible</string>
     <string name="X_lbl_data_import_export">Sauvegarde et importation</string>
     <string name="X_lbl_select_fields_to_update">Sélection des champs à mettre à jour</string>
-    <string name="X_action_show_all">Montre tout</string>
     <string name="X_action_swap">Échanger</string>
     <string name="X_tip_booklist_global_properties">Vous pouvez utiliser cet écran pour définir les caractéristiques par défaut de tous les styles de liste de livres. La plupart des propriétés peuvent être remplacées par des styles individuels, mais les valeurs par défaut sont définies ici. Vous pouvez modifier le mode d\'affichage des listes au démarrage et définir diverses autres préférences qui seront appliquées à tous vos styles dans la mesure du possible.</string>
     <string name="X_use_default_setting">Utiliser les réglages par défaut</string>
@@ -70,7 +69,7 @@
     <string name="action_save">Enregistrer</string>
     <string name="X_btn_continue_edit">Continuer la modification</string>
     <string name="X_btn_customize">Personnaliser…</string>
-    <string name="btn_delete_credentials">Suppr. les données de connexion</string>
+    <string name="btn_clear_credentials">Effacer les identifiants</string>
     <string name="btn_disable_message">Désactiver ce message</string>
     <string name="btn_email">Envoyer un e-mail</string>
     <string name="X_btn_loan_returned">Rendu</string>
@@ -108,7 +107,7 @@
     <string name="error_import_csv_file_must_contain_columns_x">Le fichier doit contenir au moins une des colonnes suivantes : %1$s</string>
     <string name="error_import_failed">Restauration échouée</string>
     <string name="error_import_invalid_archive">Le fichier sélectionné n\'est pas reconnu.</string>
-    <string name="error_network_no_connection">Pas de connexion Internet disponible.</string>
+    <string name="error_please_connect_to_internet">Connectez-vous à Internet.</string>
     <string name="error_network_timeout">Pas de réponse, veuillez réessayer</string>
     <string name="error_no_image_editor">Aucun éditeur d\'image trouvé</string>
     <string name="X_error_not_available">%1$s indisponible</string>
@@ -190,7 +189,7 @@
     <string name="txt_import_option_all_books">De nouveaux livres seront ajoutés. Les livres existants seront mis à jour.</string>
     <string name="txt_import_option_new_and_changed_books">Seuls les livres récemment ajoutés ou mis à jour dans la sauvegarde seront mis à jour. Cette option est utile lors de la synchronisation de deux appareils.</string>
     <string name="txt_install_scanner_recommendation">Nous vous recommandons d\'installer le scanner de code barre de Zxing et, s\'il est déjà installé, de le désinstaller puis le réinstaller.</string>
-    <string name="txt_manage_fields">Les champs sélectionnés sont visibles dans les écrans d\'ajout et d\'édition des livres. Les champs non sélectionnés sont cachés.</string>
+    <string name="txt_manage_fields" tools:ignore="TypographyQuotes">Les champs sélectionnés sont visibles dans les écrans d\'ajout et d\'édition des livres. Les champs non sélectionnés sont cachés.</string>
     <string name="confirm_registration_benefits">Cette fonctionnalité bénéficie d\'une inscription avec %1$s. Souhaitez-vous avoir plus d\'informations ou désactiver ce message?\nVous trouverez ces informations ultérieurement dans la section «%2$s» des paramètres.</string>
     <string name="confirm_registration_required">Cette fonctionnalité nécessite une inscription avec %1$s. Souhaitez-vous avoir plus d\'informations?</string>
     <string name="txt_select_fields_to_update">Les champs sélectionnés vont être mis à jour à partir d\'Internet. Les champs non sélectionnés ne seront pas modifiés.</string>
@@ -251,8 +250,7 @@
     <string name="lbl_cover">Couverture</string>
     <string name="lbl_covers_long">Images de couverture</string>
     <string name="lbl_covers">Couvertures</string>
-    <string name="lbl_credentials">Certificats</string>
-    <string name="X_lbl_credentials_goodreads">Goodreads Certificats</string>
+    <string name="lbl_credentials">Identifiants de l\'utilisateur</string>
     <string name="lbl_currency">Devise</string>
     <string name="lbl_date_acquired">Date d\'acquisition</string>
     <string name="lbl_date_acquired_day">Jour acquis</string>
@@ -272,7 +270,7 @@
     <string name="lbl_field_usage_append">Ajouter des données supplémentaires</string>
     <string name="lbl_field_usage_copy_if_blank">Copier si vide</string>
     <string name="lbl_field_usage_overwrite">Remplacer les données existantes</string>
-    <string name="lbl_field_usage_skip">Ignorer</string>
+    <string name="action_skip">Ignorer</string>
     <string name="lbl_first_pub_month">Premier mois de parution</string>
     <string name="lbl_first_pub_year">Première année de parution</string>
     <string name="lbl_first_publication">Première parution</string>
@@ -351,7 +349,7 @@
     <string name="menu_amazon_books_by_author_in_series">Livres par auteur par série</string>
     <string name="menu_amazon_books_in_series">Livres dans cette série</string>
     <string name="menu_author_details">Toutes les œuvres de cet auteur</string>
-    <string name="menu_author_works_all">Montre tout</string>
+    <string name="action_show_all">Tout afficher</string>
     <string name="menu_author_works_book">Livres seulement</string>
     <string name="menu_author_works_toc">Titres de contenu uniquement</string>
     <string name="lbl_styles_long">Styles de liste de livres</string>
@@ -449,7 +447,7 @@
     <string name="pt_allow_mobile_data">Autoriser l\'utilisation de données mobiles</string>
     <string name="pt_bob_books_under_multiple_authors">Livres d\'auteurs multiples</string>
     <string name="pt_bob_books_under_multiple_series">Livres appartenant à des séries multiples</string>
-    <string name="pt_bob_font_scale">Taille des éléments de liste de livres</string>
+    <string name="pt_bob_font_size">Taille de la police</string>
     <string name="pt_bob_header">Détails du résumé dans l\'en-tête</string>
     <string name="pt_bob_list_rebuild_state">Etat de démarrage de la liste de lecture</string>
     <string name="pt_bob_list_state_expansion_level">Liste de livres d\'expansion par défaut</string>
@@ -545,7 +543,7 @@
     <string name="tip_booklist_style_groups">Vous pouvez utiliser cet écran pour modifier la hiérarchie des en-têtes pour un style de liste de livres spécifique. Une coche indique que l\'en-tête sera affiché dans la liste, décochez-la pour la masquer et inversement. Vous pouvez réorganiser la hiérarchie en faisant glisser l\'icône située à l\'extrême droite de chaque ligne.</string>
     <string name="tip_booklist_style_menu">Ce menu vous permet de sélectionner le style de la liste.\n\nVous pouvez également personnaliser ce menu, ainsi que créer vos propres styles de liste, en cliquant sur «personnaliser» à la fin de la liste.</string>
     <string name="tip_booklist_style_properties">Vous pouvez utiliser cet écran pour définir les caractéristiques d\'un style de liste de livres spécifique. Vous pouvez modifier le nom, modifier les regroupements pour modifier la hiérarchie et définir diverses autres préférences afin de créer un style que vous jugerez utile. Il est également possible d\'utiliser filtres pour modifier la sélection des livres à afficher dans la liste. par exemple. pour récupérer uniquement des livres que vous n\'avez pas encore lus et plus.</string>
-    <string name="tip_booklist_styles_editor">Vous pouvez utiliser cet écran pour personnaliser la liste des styles qui seront affichés dans votre menu de styles par défaut. Une coche indique que le style sera affiché dans la liste, décochez-la pour le masquer et inversement. Si aucun style n\'est coché, tous les styles seront affichés. Vous pouvez réorganiser la hiérarchie en faisant glisser l\'icône située à l\'extrême droite de chaque ligne. Un appui prolongé n\'importe où sur une ligne vous permettra d\'éditer ou de cloner les détails d\'un style spécifique. Si vous avez cloné un style et changé d\'avis, vous devrez le supprimer vous-même.</string>
+    <string name="tip_booklist_styles_editor" tools:ignore="TypographyQuotes">Vous pouvez utiliser cet écran pour personnaliser la liste des styles qui seront affichés dans votre menu de styles par défaut. Une coche indique que le style sera affiché dans la liste, décochez-la pour le masquer et inversement. Si aucun style n\'est coché, tous les styles seront affichés. Vous pouvez réorganiser la hiérarchie en faisant glisser l\'icône située à l\'extrême droite de chaque ligne. Un appui prolongé n\'importe où sur une ligne vous permettra d\'éditer ou de cloner les détails d\'un style spécifique. Si vous avez cloné un style et changé d\'avis, vous devrez le supprimer vous-même.</string>
     <string name="tip_dialog_title">Astuce</string>
     <string name="tip_reset_all">Réinitialiser les astuces</string>
     <string name="tip_reset_done">Les astuces ont été réinitialisées.</string>
@@ -600,8 +598,8 @@
     <string name="warning_image_copy_failed">L\'image n\'a pas pu être copiée.</string>
     <string name="warning_image_not_found">L\'image est introuvable.</string>
     <string name="warning_enable_at_least_1_website">Activer au moins un site Web pour chaque catégorie.</string>
-    <string name="warning_if_day_set_month_and_year_must_be">Si le jour est précisé, le mois et l\'année doivent l\'être aussi.</string>
-    <string name="warning_if_month_set_year_must_be">Si le mois est précisé, l\'année doit l\'être aussi.</string>
+    <string name="warning_if_day_set_month_and_year_must_be" tools:ignore="TypographyQuotes">Si le jour est précisé, le mois et l\'année doivent l\'être aussi.</string>
+    <string name="warning_if_month_set_year_must_be" tools:ignore="TypographyQuotes">Si le mois est précisé, l\'année doit l\'être aussi.</string>
     <string name="warning_immediate_global_changes">Note : toutes les modifications sont prises en compte immédiatement et globalement.</string>
     <string name="warning_import_be_cautious">Attention ! L\'import de données peut provoquer la mise à jour de livres avec de nouvelles informations si les identifiants importés sont identiques à ceux existants. Cela est généralement correct si vous n\'avez modifié qu\'un champ dans un fichier exporté. Si vous avez intégralement créé un livre, assurez vous que le champ identifiant est vide.</string>
     <string name="warning_import_csv_failed_lines_lots">L\'analyse CSV a échoué pour les lignes \n%1$s\n et autres.</string>
@@ -672,5 +670,6 @@
     <string name="unknown">Inconnu</string>
     <string name="btn_not_now">Pas maintenant</string>
     <string name="menu_reset_to_default">Rétablir param. par défaut</string>
+    <string name="action_try_again">Réessayer</string>
 
 </resources>

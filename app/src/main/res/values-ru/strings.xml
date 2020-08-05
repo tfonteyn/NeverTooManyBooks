@@ -39,7 +39,6 @@
     <string name="lbl_available">Доступен</string>
     <string name="X_lbl_data_import_export">Резервное копирование и импорт</string>
     <string name="X_lbl_select_fields_to_update">Выберите поля для обновления</string>
-    <string name="X_action_show_all">Показать все</string>
     <string name="X_action_swap">обменивать</string>
     <string name="X_tip_booklist_global_properties">Вы можете использовать этот экран, чтобы установить характеристики по умолчанию для всех стилей списка книг. Большинство свойств могут быть переопределены отдельными стилями, но значения по умолчанию определены здесь. Вы можете изменить способ отображения списков при запуске и настроить множество других параметров, которые будут применяться ко всем вашим стилям, когда это возможно.</string>
     <string name="X_use_default_setting">Использовать настройки по умолчанию</string>
@@ -68,7 +67,7 @@
     <string name="action_save">Сохранить</string>
     <string name="X_btn_continue_edit">Продолжить редактирование</string>
     <string name="X_btn_customize">Настроить…</string>
-    <string name="btn_delete_credentials">Удалить учетные данные</string>
+    <string name="btn_clear_credentials">Очистить учетные данные</string>
     <string name="btn_disable_message">Отключить сообщение</string>
     <string name="btn_email">Написать письмо</string>
     <string name="X_btn_loan_returned">Возвращена</string>
@@ -78,7 +77,7 @@
     <string name="btn_learn_more">Подробнее</string>
     <string name="btn_this_book">Эта книга</string>
     <string name="bytes">%.0f байт</string>
-    <string name="action_clear">протирать</string>
+    <string name="action_clear">Очистить</string>
     <string name="confirm_scope_for_change">Вы изменили:\n «%1$s»\n на\n «%2$s»\n\nКак вы хотите применить это изменение?\n\nЗамечание: выбор «%3$s» будет применён немедленно.</string>
     <string name="confirm_delete_book">Книга с названием «%1$s» будет полностью удалена %2$s. Вы уверены?</string>
     <string name="confirm_delete_series">Действительно удалить серию «%1$s»?\n\nКниги этой серии не будут удалены.\n\nВместо удаления вы можете переименовать серию, чтобы сохранить существующую связь с книгами</string>
@@ -106,7 +105,7 @@
     <string name="error_import_csv_file_must_contain_columns_x">Файл должен содержать столбец с одним из следующих имён: %1$s</string>
     <string name="error_import_failed">Импорт не удался.</string>
     <string name="error_import_invalid_archive">Выбранный файл не распознан.</string>
-    <string name="error_network_no_connection">Интернет соединение отсутствует.</string>
+    <string name="error_please_connect_to_internet">Подключитесь к Интернету.</string>
     <string name="error_network_timeout">Нет ответа, пожалуйста, попробуйте еще раз</string>
     <string name="error_no_image_editor">Редактор изображений не найден</string>
     <string name="X_error_not_available">%1$s недоступен</string>
@@ -232,7 +231,7 @@
     <string name="lbl_bookshelf">Книжная полка</string>
     <string name="lbl_bookshelves_long">Книжные полки</string>
     <string name="X_lbl_by_author_s">к %1$s</string>
-    <string name="lbl_color">цвет</string>
+    <string name="lbl_color">Цвет</string>
     <string name="lbl_condition">Условие</string>
     <string name="lbl_condition_dust_cover_missing_or_bad">Отсутствует/приемлемо</string>
     <string name="lbl_condition_dust_cover_none">Никто</string>
@@ -245,8 +244,7 @@
     <string name="lbl_cover">обложка</string>
     <string name="lbl_covers_long">Обложки</string>
     <string name="lbl_covers">обложки</string>
-    <string name="lbl_credentials">Учетные данные</string>
-    <string name="X_lbl_credentials_goodreads">Goodreads Учетные данные</string>
+    <string name="lbl_credentials">Учетные данные пользователя</string>
     <string name="lbl_currency">валюта</string>
     <string name="lbl_date_acquired">Дата покупки</string>
     <string name="lbl_date_acquired_day">День куплен</string>
@@ -266,7 +264,7 @@
     <string name="lbl_field_usage_append">Добавляет дополнительные данные</string>
     <string name="lbl_field_usage_copy_if_blank">Копирует, если пусто</string>
     <string name="lbl_field_usage_overwrite">Перезаписывает существующие данные</string>
-    <string name="lbl_field_usage_skip">Пропустить</string>
+    <string name="action_skip">Пропустить</string>
     <string name="lbl_first_pub_month">первый месяц публикации</string>
     <string name="lbl_first_pub_year">первый год публикации</string>
     <string name="lbl_first_publication">первая публикация</string>
@@ -345,7 +343,7 @@
     <string name="menu_amazon_books_by_author_in_series">Книги по автору/серии</string>
     <string name="menu_amazon_books_in_series">Книги в этой серии</string>
     <string name="menu_author_details">Все работы этого автора</string>
-    <string name="menu_author_works_all">Показать все</string>
+    <string name="action_show_all">Показать все</string>
     <string name="menu_author_works_book">Только книги</string>
     <string name="menu_author_works_toc">Только заголовки контента</string>
     <string name="lbl_styles_long">Cтили списка книг</string>
@@ -443,7 +441,7 @@
     <string name="pt_allow_mobile_data">Разрешить использование мобильных данных</string>
     <string name="pt_bob_books_under_multiple_authors">Книги с множеством авторов</string>
     <string name="pt_bob_books_under_multiple_series">Книги в множестве серий</string>
-    <string name="pt_bob_font_scale">Размер элемента списка книг</string>
+    <string name="pt_bob_font_size">Размер шрифта</string>
     <string name="pt_bob_header">Суммарная информация в заголовке</string>
     <string name="pt_bob_list_rebuild_state">Состояние запуска списка книг</string>
     <string name="pt_bob_list_state_expansion_level">Расширение списка книг по умолчанию</string>
@@ -664,5 +662,6 @@
     <string name="unknown">Неизвестно</string>
     <string name="btn_not_now">Не сейчас</string>
     <string name="menu_reset_to_default">Сбросить настройки</string>
+    <string name="action_try_again">Повторить попытку</string>
 
 </resources>

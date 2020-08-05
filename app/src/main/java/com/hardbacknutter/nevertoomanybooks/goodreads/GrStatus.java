@@ -147,7 +147,7 @@ public class GrStatus {
                 return context.getString(R.string.warning_book_not_found);
 
             case FAILED_NETWORK_UNAVAILABLE:
-                return context.getString(R.string.error_network_no_connection);
+                return context.getString(R.string.error_please_connect_to_internet);
             case FAILED_IO_EXCEPTION:
                 return context.getString(R.string.error_site_access_failed,
                                          context.getString(R.string.site_goodreads));

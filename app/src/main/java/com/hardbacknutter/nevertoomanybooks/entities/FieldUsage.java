@@ -249,9 +249,9 @@ public class FieldUsage {
                 case Overwrite:
                     return R.string.lbl_field_usage_overwrite;
                 case Skip:
-                    return R.string.lbl_field_usage_skip;
+                    return R.string.action_skip;
             }
-            return R.string.lbl_field_usage_skip;
+            return R.string.action_skip;
         }
     }
 }

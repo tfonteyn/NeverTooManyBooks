@@ -39,7 +39,6 @@
     <string name="lbl_available">Διαθέσιμη</string>
     <string name="X_lbl_data_import_export">Δημιουργία αντιγράφων ασφαλείας &amp; εισαγωγή</string>
     <string name="X_lbl_select_fields_to_update">Επιλεγξτε πεδία για ενημέρωση</string>
-    <string name="X_action_show_all">Προβολή όλων</string>
     <string name="X_action_swap">ανταλλάσσω</string>
     <string name="X_tip_booklist_global_properties">Μπορείτε να χρησιμοποιήσετε αυτήν την οθόνη για να ορίσετε τα προεπιλεγμένα χαρακτηριστικά όλων των μορφών λίστας βιβλίων. Οι περισσότερες ιδιότητες μπορούν να αντικατασταθούν από μεμονωμένα στυλ, αλλά οι προεπιλεγμένες τιμές ορίζονται εδώ. Μπορείτε να αλλάξετε τον τρόπο εμφάνισης των λιστών κατά την εκκίνηση και να προσαρμόσετε διάφορες άλλες προτιμήσεις που θα εφαρμοστούν σε όλα τα στυλ σας, όταν είναι δυνατόν.</string>
     <string name="X_use_default_setting">Χρήση προεπιλεγμένης ρύθμισης</string>
@@ -69,7 +68,7 @@
     <string name="action_save">Αποθήκευση</string>
     <string name="X_btn_continue_edit">Συνέχεια Επεξεργασίας</string>
     <string name="X_btn_customize">Προσαρμογή…</string>
-    <string name="btn_delete_credentials">Κατάργηση διαπιστευτηρίων</string>
+    <string name="btn_clear_credentials">Διαγραφή διαπιστευτηρίων</string>
     <string name="btn_disable_message">Απενεργοποίηση μηνυμάτων</string>
     <string name="btn_email">Ηλεκτρονικό ταχυδρομείο</string>
     <string name="X_btn_loan_returned">Έχει επιστραφεί</string>
@@ -79,7 +78,7 @@
     <string name="btn_learn_more">Μάθετε περισσότερα</string>
     <string name="btn_this_book">Αυτό το βιβλίο</string>
     <string name="bytes">%.0fB</string>
-    <string name="action_clear">Καθαρίστε</string>
+    <string name="action_clear">Διαγραφή</string>
     <string name="confirm_scope_for_change">Έχετε αλλάξει:\n «%1$s»\n σε\n «%2$s»\n\nΠως επιθυμείτε να εφαρμοστεί αυτή η αλλαγή;\nΣημείωση: Η επιλογή «%3$s» θα εφαρμοστεί στιγμιαία.</string>
     <string name="confirm_delete_book">Θα διαγραφεί ολοκληρωτικά το βίβλιο με τίτλο «%1$s» από %2$s. Είστε σίγουροι ότι επιθυμείτε να συνεχίσετε;</string>
     <string name="confirm_delete_series">Θέλετε να διαγραφεί η σειρά «%1$s»;\n\nΤα βιβλία της δε θα διαγραφούν.\n\nΣκεφτείτε να επεξεργαστείτε την σειρά και να αλλάξετε το όνομα της σε κάποιο άλλης σειράς για να διατηρήσετε τα δεδομένα.</string>
@@ -107,7 +106,7 @@
     <string name="error_import_csv_file_must_contain_columns_x">Το αρχείο πρέπει να περιέχει στήλη με ένα από τα ακόλουθα όνοματα: %1$s</string>
     <string name="error_import_failed">Αποτυχία Εισαγωγής.</string>
     <string name="error_import_invalid_archive">Το επιλεγμένο αρχείο δεν αναγνωρίζεται.</string>
-    <string name="error_network_no_connection">Δεν υπάρχει διαθέσιμη σύνδεση internet.</string>
+    <string name="error_please_connect_to_internet">Συνδεθείτε στο διαδίκτυο.</string>
     <string name="error_network_timeout">Δεν υπάρχει απάντηση, δοκιμάστε ξανά</string>
     <string name="error_no_image_editor">Δεν βρέθηκε επεξεργαστής εικόνων</string>
     <string name="X_error_not_available">Το %1$s δεν είναι διαθέσιμο</string>
@@ -234,7 +233,7 @@
     <string name="lbl_bookshelf">Ράφι</string>
     <string name="lbl_bookshelves_long">Ράφια Βιβλιοθήκης</string>
     <string name="X_lbl_by_author_s">κατα %1$s</string>
-    <string name="lbl_color">χρώμα</string>
+    <string name="lbl_color">Χρώμα</string>
     <string name="lbl_condition">Κατάσταση</string>
     <string name="lbl_condition_dust_cover_missing_or_bad">Λείπει/δεκτός</string>
     <string name="lbl_condition_dust_cover_none">Κανένας</string>
@@ -247,8 +246,7 @@
     <string name="lbl_cover">Κάλυμμα</string>
     <string name="lbl_covers_long">Εικόνες εξωφύλλων</string>
     <string name="lbl_covers">Καλύπτει</string>
-    <string name="lbl_credentials">Διαπιστευτήρια</string>
-    <string name="X_lbl_credentials_goodreads">Goodreads Διαπιστευτήρια</string>
+    <string name="lbl_credentials">Διαπιστευτήρια χρήστη</string>
     <string name="lbl_currency">Νομίσματα</string>
     <string name="lbl_date_acquired">Ημερομηνία που αποκτήθηκαν</string>
     <string name="lbl_date_acquired_day">Ημέρα που αποκτήθηκε</string>
@@ -268,7 +266,7 @@
     <string name="lbl_field_usage_append">Προσθέτει επιπλέον δεδομένα</string>
     <string name="lbl_field_usage_copy_if_blank">Αντιγραφή εαν ειναι κενό</string>
     <string name="lbl_field_usage_overwrite">Αντικαθιστά υπάρχοντα δεδομένα</string>
-    <string name="lbl_field_usage_skip">Παράλειψη</string>
+    <string name="action_skip">Παράλ</string>
     <string name="lbl_first_pub_month">Πρώτος Μήνας Δημοσίευσης</string>
     <string name="lbl_first_pub_year">Πρώτο έτος δημοσίευσης</string>
     <string name="lbl_first_publication">Πρώτη δημοσίευση</string>
@@ -347,14 +345,14 @@
     <string name="menu_amazon_books_by_author_in_series">Βιβλία από συγγραφέα/σειρά</string>
     <string name="menu_amazon_books_in_series">Βιβλία σε αυτή τη σειρά</string>
     <string name="menu_author_details">Όλα τα έργα αυτού του συγγραφέα</string>
-    <string name="menu_author_works_all">Προβολή όλων</string>
+    <string name="action_show_all">Εμφάνιση όλων</string>
     <string name="menu_author_works_book">Μόνο βιβλία</string>
     <string name="menu_author_works_toc">Μόνο τίτλοι περιεχομένου</string>
     <string name="lbl_styles_long">Στυλ λίστας βιβλίων</string>
     <string name="X_lbl_clear_search_filters">Διαγραφή φίλτρων</string>
     <string name="menu_cover_crop">Περικοπή</string>
     <string name="menu_cover_edit">Ξεκινήστε τον επεξεργαστή</string>
-    <string name="menu_cover_replace">Αντικατάσταση...</string>
+    <string name="menu_cover_replace">Αντικατάσταση…</string>
     <string name="menu_cover_replace_from_alt_editions">Από άλλες εκδόσεις…</string>
     <string name="menu_cover_replace_from_camera">Από κάμερα…</string>
     <string name="menu_cover_replace_from_gallery">Από φωτογραφίες…</string>
@@ -445,7 +443,7 @@
     <string name="pt_allow_mobile_data">Να επιτρέπεται η χρήση δεδομένων κινητής τηλεφωνίας</string>
     <string name="pt_bob_books_under_multiple_authors">Βιβλία με πολλούς συγγραφείς</string>
     <string name="pt_bob_books_under_multiple_series">Βιβλία σε πολλές σειρές</string>
-    <string name="pt_bob_font_scale">Μέγεθος αντικειμένων λίστας βιβλίων</string>
+    <string name="pt_bob_font_size">Μέγεθος γραμματοσειράς</string>
     <string name="pt_bob_header">Λεπτομέρειες περίληψης στην επικεφαλίδα</string>
     <string name="pt_bob_list_rebuild_state">Κατάσταση εκκίνησης βιβλιοθήκης</string>
     <string name="pt_bob_list_state_expansion_level">Προεπιλογή επέκτασης λίστας</string>
@@ -668,5 +666,6 @@
     <string name="unknown">Άγνωστο</string>
     <string name="btn_not_now">Όχι τώρα</string>
     <string name="menu_reset_to_default">Επαναφορά στις προεπιλογές</string>
+    <string name="action_try_again">Δοκιμάστε ξανά</string>
 
 </resources>

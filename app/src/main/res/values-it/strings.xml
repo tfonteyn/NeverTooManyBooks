@@ -30,7 +30,7 @@
 <!DOCTYPE resources [<!ENTITY APP_NAME "NeverTooManyBooks">]>
 <!-- Quotes «…»  - Regex to find wrong ones: ('|„|“|”|‘|’) -->
 <!--suppress LongLine -->
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="X_anthology_titles">Antologia titoli</string>
     <string name="X_action_update">Aggiorna</string>
     <string name="X_btn_do_not_show_again">Non mostrare più</string>
@@ -39,7 +39,6 @@
     <string name="lbl_available">Disponibile</string>
     <string name="X_lbl_data_import_export">Backup e importazione</string>
     <string name="X_lbl_select_fields_to_update">Seleziona i campi da aggiornare</string>
-    <string name="X_action_show_all">Mostra tutto</string>
     <string name="X_action_swap">Scambiare</string>
     <string name="X_tip_booklist_global_properties">È possibile utilizzare questa schermata per impostare le caratteristiche predefinite di tutti gli stili dell\'elenco libri. La maggior parte delle proprietà può essere sovrascritta dai singoli stili, ma i valori predefiniti sono definiti qui. Puoi cambiare la modalità di visualizzazione degli elenchi all\'avvio e regolare una varietà di altre preferenze che verranno applicate a tutti i tuoi stili quando possibile.</string>
     <string name="X_use_default_setting">Usa i parametri predefiniti</string>
@@ -69,7 +68,7 @@
     <string name="action_save">Salva</string>
     <string name="X_btn_continue_edit">Annulla</string>
     <string name="X_btn_customize">Personalizza…</string>
-    <string name="btn_delete_credentials">Rimuovi credenziali</string>
+    <string name="btn_clear_credentials">Cancella credenziali</string>
     <string name="btn_disable_message">Disattiva messaggio</string>
     <string name="btn_email">Invia email</string>
     <string name="X_btn_loan_returned">Restituito</string>
@@ -79,7 +78,7 @@
     <string name="btn_learn_more">Ulteriori informazioni</string>
     <string name="btn_this_book">Questo libro</string>
     <string name="bytes">%.0fB</string>
-    <string name="action_clear">Pulire</string>
+    <string name="action_clear">Cancella</string>
     <string name="confirm_scope_for_change">Hai modificato:\n «%1$s»\n in\n «%2$s»\n\nCome desideri applicare questa modifica?\n\nNota: La scelta «%3$s» sarà applicata immediatamente.</string>
     <string name="confirm_delete_book">Il libro intitolato «%1$s» verrà completamente cancellato da %2$s. Procedere?</string>
     <string name="confirm_delete_series">Cancellare la serie «%1$s»?\n\nI libri non verranno cancellati.\n\nValuta se modificare la serie e cambiare il nome della serie in quello di un\'altra serie per preservare i dati</string>
@@ -107,7 +106,7 @@
     <string name="error_import_csv_file_must_contain_columns_x">Il file deve contenere una colonna con uno dei seguenti nomi: %1$s</string>
     <string name="error_import_failed">Importazione fallita.</string>
     <string name="error_import_invalid_archive">Il file selezionato non è riconosciuto.</string>
-    <string name="error_network_no_connection">Nessuna connessione disponibile.</string>
+    <string name="error_please_connect_to_internet">Connettiti a Internet.</string>
     <string name="error_network_timeout">Nessuna risposta, per favore riprova</string>
     <string name="error_no_image_editor">Nessun editor di immagini trovato</string>
     <string name="X_error_not_available">%1$s non disponibile</string>
@@ -247,8 +246,7 @@
     <string name="lbl_cover">Copertina</string>
     <string name="lbl_covers_long">Immagini delle copertine</string>
     <string name="lbl_covers">Copertine</string>
-    <string name="lbl_credentials">Credenziali</string>
-    <string name="X_lbl_credentials_goodreads">Goodreads Credenziali</string>
+    <string name="lbl_credentials">Credenziali utente</string>
     <string name="lbl_currency">Moneta</string>
     <string name="lbl_date_acquired">Data di acquisizione</string>
     <string name="lbl_date_acquired_day">Giorno acquisito</string>
@@ -268,7 +266,7 @@
     <string name="lbl_field_usage_append">Aggiungi altri dati</string>
     <string name="lbl_field_usage_copy_if_blank">Copia se vuoto</string>
     <string name="lbl_field_usage_overwrite">Sovrascrivi dati esistenti</string>
-    <string name="lbl_field_usage_skip">Ignora</string>
+    <string name="action_skip">Ignora</string>
     <string name="lbl_first_pub_month">Primo mese di pub.</string>
     <string name="lbl_first_pub_year">Primo anno di pub.</string>
     <string name="lbl_first_publication">Prima pubblicazione</string>
@@ -347,14 +345,14 @@
     <string name="menu_amazon_books_by_author_in_series">Libri per autore / serie</string>
     <string name="menu_amazon_books_in_series">Libri in questa serie</string>
     <string name="menu_author_details">Tutte le opere di questo autore</string>
-    <string name="menu_author_works_all">Mostra tutto</string>
+    <string name="action_show_all">Mostra tutte</string>
     <string name="menu_author_works_book">Solo libri</string>
     <string name="menu_author_works_toc">Solo titoli di contenuti</string>
     <string name="lbl_styles_long">Stili elenco libri</string>
     <string name="X_lbl_clear_search_filters">Cancella filtri</string>
     <string name="menu_cover_crop">Ritaglia</string>
     <string name="menu_cover_edit">Avvia l\'editor</string>
-    <string name="menu_cover_replace">Sostituisci...</string>
+    <string name="menu_cover_replace">Sostituisci…</string>
     <string name="menu_cover_replace_from_alt_editions">Da altre edizioni…</string>
     <string name="menu_cover_replace_from_camera">Dalla fotocamera…</string>
     <string name="menu_cover_replace_from_gallery">Dalla Galleria…</string>
@@ -426,7 +424,7 @@
     <string name="progress_end_import_partially_complete">Importazione parziale eseguita</string>
     <string name="progress_msg_connecting">Connessione…</string>
     <string name="progress_msg_searching_editions">Ricerca edizioni…</string>
-    <string name="progress_msg_loading">Caricamento...</string>
+    <string name="progress_msg_loading">Caricamento…</string>
     <string name="progress_end_export_result_n_books_processed">%1$d libri elaborati</string>
     <string name="progress_end_export_result_n_covers_processed_m_missing">%1$d copertine elaborate\n(%2$d/%3$d mancanti)</string>
     <string name="progress_msg_n_covers_processed_m_missing_s_skipped">%1$d copertine elaborate (%2$d/%3$d mancanti, %4$d saltate)</string>
@@ -445,7 +443,7 @@
     <string name="pt_allow_mobile_data">Consenti l\'utilizzo dei dati mobili</string>
     <string name="pt_bob_books_under_multiple_authors">Libri con autori multipli</string>
     <string name="pt_bob_books_under_multiple_series">Libri in serie multiple</string>
-    <string name="pt_bob_font_scale">Dimensione degli elementi dell\'elenco libri</string>
+    <string name="pt_bob_font_size">Dimensioni carattere</string>
     <string name="pt_bob_header">Riassunto dettagli nel titolo</string>
     <string name="pt_bob_list_rebuild_state">Stato di avvio dell\'elenco libri</string>
     <string name="pt_bob_list_state_expansion_level">Espansione elenco libri predefinito</string>
@@ -489,7 +487,7 @@
     <string name="pv_bob_header_filters">Filtra libri</string>
     <string name="pv_bob_header_nr_of_books">Mostra numero di libri</string>
     <string name="pv_bob_header_style_name">Nome dello stile</string>
-    <string name="pv_reformat_titles_prefixes">il|lo|la|l\'|i||gli|le|un\'|uno|una|un</string>
+    <string name="pv_reformat_titles_prefixes" tools:ignore="TypographyQuotes">il|lo|la|l\'|i||gli|le|un\'|uno|una|un</string>
     <string name="pv_scanner_embedded">Interno</string>
     <string name="pv_scanner_zxing_compatible">Programma Compatibile Zxing</string>
     <string name="action_retry">Riprova</string>
@@ -668,5 +666,6 @@
     <string name="unknown">Sconosciuto</string>
     <string name="btn_not_now">Non ora</string>
     <string name="menu_reset_to_default">Ripristina impostazioni predefinite</string>
+    <string name="action_try_again">Riprova</string>
 
 </resources>

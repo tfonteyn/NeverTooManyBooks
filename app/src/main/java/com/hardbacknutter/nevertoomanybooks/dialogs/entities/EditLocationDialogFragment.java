@@ -52,7 +52,8 @@ public class EditLocationDialogFragment
      * No-arg constructor for OS use.
      */
     public EditLocationDialogFragment() {
-        super(REQUEST_KEY, R.string.lbl_location, R.string.lbl_location, BookChangedListener.LOCATION);
+        super(REQUEST_KEY, R.string.lbl_location, R.string.lbl_location,
+              BookChangedListener.LOCATION);
     }
 
     /**

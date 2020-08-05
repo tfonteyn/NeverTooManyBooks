@@ -74,7 +74,7 @@
         android:icon="@drawable/ic_format_size"
         android:key="style.booklist.scale.font"
         android:max="2"
-        android:title="@string/pt_bob_font_scale"
+        android:title="@string/pt_bob_font_size"
         app:min="0"
         />
     <!-- ListPreference - booklist default expanded level.

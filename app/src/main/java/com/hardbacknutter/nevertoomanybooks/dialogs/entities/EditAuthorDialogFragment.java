@@ -29,18 +29,15 @@ package com.hardbacknutter.nevertoomanybooks.dialogs.entities;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
-import java.lang.ref.WeakReference;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.BookChangedListener;
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
