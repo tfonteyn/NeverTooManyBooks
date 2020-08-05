@@ -43,10 +43,8 @@
 
         <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
+            style="@style/Toolbar.Dialog"
             app:menu="@menu/toolbar_save"
-            app:navigationIcon="@drawable/ic_close"
             app:title="@string/lbl_author"
             />
 

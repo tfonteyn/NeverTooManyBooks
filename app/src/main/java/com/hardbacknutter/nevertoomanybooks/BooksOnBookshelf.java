@@ -213,7 +213,8 @@ public class BooksOnBookshelf
     /** React to row changes made. ENHANCE: update the modified row without a rebuild. */
     private final BookChangedListener mBookChangedListener = this::onBookChange;
     /** React to the user selecting a style to apply. */
-    private final StylePickerDialogFragment.PickListener mPickListener = this::onStyleChanged;
+    private final StylePickerDialogFragment.OnResultListener mOnStylePickerListener =
+            this::onStyleChanged;
     /** Listener for clicks on the list. */
     private final BooklistAdapter.OnRowClickedListener mOnRowClickedListener =
             new BooklistAdapter.OnRowClickedListener() {
@@ -330,7 +331,7 @@ public class BooksOnBookshelf
                                      mBookChangedListener);
 
         fm.setFragmentResultListener(StylePickerDialogFragment.REQUEST_KEY, this,
-                                     mPickListener);
+                                     mOnStylePickerListener);
 
         // Does not use the full progress dialog. Instead uses the overlay progress bar.
         mModel = new ViewModelProvider(this).get(BooksOnBookshelfModel.class);

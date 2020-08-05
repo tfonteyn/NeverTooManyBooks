@@ -30,7 +30,10 @@ package com.hardbacknutter.nevertoomanybooks.searches.librarything;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.preference.PreferenceManager;
@@ -107,21 +110,41 @@ public class LibraryThingRegistrationActivity
         final String key = PreferenceManager.getDefaultSharedPreferences(this)
                                             .getString(LibraryThingSearchEngine.PREFS_DEV_KEY, "");
         mVb.devKey.setText(key);
+    }
 
-        // Saves first, then TESTS the key.
-        mVb.fab.setOnClickListener(v -> {
-            //noinspection ConstantConditions
-            final String devKey = mVb.devKey.getText().toString().trim();
-            PreferenceManager.getDefaultSharedPreferences(this)
-                             .edit()
-                             .putString(LibraryThingSearchEngine.PREFS_DEV_KEY, devKey)
-                             .apply();
+    @Override
+    public boolean onCreateOptionsMenu(@NonNull final Menu menu) {
+        getMenuInflater().inflate(R.menu.toolbar_validate, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
 
-            if (!devKey.isEmpty()) {
-                Snackbar.make(mVb.devKey, R.string.progress_msg_connecting,
-                              Snackbar.LENGTH_LONG).show();
-                mValidateKeyTask.startTask();
-            }
-        });
+    @Override
+    public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
+        //noinspection SwitchStatementWithTooFewBranches
+        switch (item.getItemId()) {
+            case R.id.MENU_SAVE:
+                validateKey();
+                return true;
+
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    public void validateKey() {
+        //noinspection ConstantConditions
+        final String devKey = mVb.devKey.getText().toString().trim();
+        PreferenceManager.getDefaultSharedPreferences(this)
+                         .edit()
+                         .putString(LibraryThingSearchEngine.PREFS_DEV_KEY, devKey)
+                         .apply();
+
+        if (!devKey.isEmpty()) {
+            Snackbar.make(mVb.devKey, R.string.progress_msg_connecting,
+                          Snackbar.LENGTH_LONG).show();
+            mValidateKeyTask.startTask();
+        } else {
+            showError(mVb.lblDevKey, getString(R.string.vldt_non_blank_required));
+        }
     }
 }

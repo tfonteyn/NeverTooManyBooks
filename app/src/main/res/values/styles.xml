@@ -648,11 +648,18 @@
         <item name="menu">@menu/nav_view</item>
     </style>
 
-    <!-- The Activity primary/top toolbar -->
-    <style name="Toolbar" parent="Widget.MaterialComponents.Toolbar.Primary">
+    <!-- An Activity primary/top toolbar -->
+    <style name="Toolbar.Activity" parent="Widget.MaterialComponents.Toolbar.Primary">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">?attr/actionBarSize</item>
         <item name="layout_scrollFlags">scroll|enterAlways</item>
+    </style>
+
+    <!-- A Dialog primary/top toolbar -->
+    <style name="Toolbar.Dialog" parent="Widget.MaterialComponents.Toolbar.Primary">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">?attr/actionBarSize</item>
+        <item name="navigationIcon">@drawable/ic_close</item>
     </style>
 
     <style name="TabBar" parent="Widget.MaterialComponents.TabLayout.Colored">

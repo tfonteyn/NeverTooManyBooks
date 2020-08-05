@@ -62,17 +62,17 @@ public abstract class OptionsDialogBase<T extends Parcelable>
     }
 
     protected void onOptionsSet(@NonNull final T options) {
-        OptionsListener.sendResult(this, REQUEST_KEY, options);
+        OnOptionsListener.sendResult(this, REQUEST_KEY, options);
     }
 
     protected void onCancelled() {
-        OptionsListener.sendCancelled(this, REQUEST_KEY);
+        OnOptionsListener.sendCancelled(this, REQUEST_KEY);
     }
 
     /**
      * Listener interface to receive notifications when dialog is confirmed or cancelled.
      */
-    public interface OptionsListener<T extends Parcelable>
+    public interface OnOptionsListener<T extends Parcelable>
             extends FragmentResultListener {
 
         /* private. */ String OPTIONS = "options";

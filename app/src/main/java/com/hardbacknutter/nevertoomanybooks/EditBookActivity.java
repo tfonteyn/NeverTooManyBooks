@@ -41,7 +41,6 @@ import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.preference.PreferenceManager;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
-import androidx.viewpager2.widget.ViewPager2;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.tabs.TabLayoutMediator;
@@ -53,6 +52,7 @@ import java.util.List;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverHandler;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.databinding.ActivityEditBookBinding;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataEditor;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
@@ -74,7 +74,6 @@ public class EditBookActivity
     private static final String BKEY_TAB = TAG + ":tab";
 
     /** Host for the tabbed fragments. */
-    private ViewPager2 mViewPager;
     private TabAdapter mViewPagerAdapter;
 
     /** The book. Must be in the Activity scope. */
@@ -82,10 +81,13 @@ public class EditBookActivity
 
     /** Track the currently displayed tab so we can survive recreations. {@link #BKEY_TAB}. */
     private int mCurrentTab;
+    /** View binding. */
+    private ActivityEditBookBinding mVb;
 
     @Override
     protected void onSetContentView() {
-        setContentView(R.layout.activity_edit_book);
+        mVb = ActivityEditBookBinding.inflate(getLayoutInflater());
+        setContentView(mVb.getRoot());
     }
 
     @Override
@@ -101,14 +103,11 @@ public class EditBookActivity
         mBookViewModel.enableValidators();
 
         mViewPagerAdapter = new TabAdapter(this);
-        mViewPager = findViewById(R.id.pager);
-        mViewPager.setAdapter(mViewPagerAdapter);
+        mVb.pager.setAdapter(mViewPagerAdapter);
 
-        new TabLayoutMediator(findViewById(R.id.tab_panel), mViewPager, (tab, position) ->
+        new TabLayoutMediator(mVb.tabPanel, mVb.pager, (tab, position) ->
                 tab.setText(getString(mViewPagerAdapter.getTabTitle(position))))
                 .attach();
-
-        findViewById(R.id.fab).setOnClickListener(v -> prepareSave(true));
 
         setNavigationItemVisibility(R.id.nav_manage_bookshelves, true);
     }
@@ -120,17 +119,17 @@ public class EditBookActivity
         if (mCurrentTab >= mViewPagerAdapter.getItemCount()) {
             mCurrentTab = 0;
         }
-        mViewPager.setCurrentItem(mCurrentTab);
+        mVb.pager.setCurrentItem(mCurrentTab);
 
         //FIXME: workaround for what seems to be a bug with FragmentStateAdapter#createFragment
         // and its re-use strategy.
-        mViewPager.setOffscreenPageLimit(mViewPagerAdapter.getItemCount());
+        mVb.pager.setOffscreenPageLimit(mViewPagerAdapter.getItemCount());
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        mCurrentTab = mViewPager.getCurrentItem();
+        mCurrentTab = mVb.pager.getCurrentItem();
     }
 
     @Override
@@ -227,7 +226,7 @@ public class EditBookActivity
      *                             "save" when prompted, this method will call itself
      *                             with {@code false}
      */
-    private void prepareSave(final boolean checkUnfinishedEdits) {
+    public void prepareSave(final boolean checkUnfinishedEdits) {
         final Book book = mBookViewModel.getBook();
         final Collection<String> unfinishedEdits = mBookViewModel.getUnfinishedEdits();
 
@@ -242,7 +241,7 @@ public class EditBookActivity
                 && checkUnfinishedEdits
                 && unfinishedEdits.contains(frag.getTag())) {
                 // bring it to the front; i.e. resume it; the user will see it below the dialog.
-                mViewPager.setCurrentItem(i);
+                mVb.pager.setCurrentItem(i);
                 StandardDialogs.unsavedEdits(this,
                                              () -> prepareSave(false),
                                              this::setResultsAndFinish);
@@ -260,7 +259,7 @@ public class EditBookActivity
                 dataEditor.onSaveFields(book);
                 if (checkUnfinishedEdits
                     && dataEditor.hasUnfinishedEdits()) {
-                    mViewPager.setCurrentItem(i);
+                    mVb.pager.setCurrentItem(i);
                     StandardDialogs.unsavedEdits(this,
                                                  () -> prepareSave(false),
                                                  this::setResultsAndFinish);

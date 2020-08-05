@@ -72,7 +72,7 @@ public class ExportFragment
     /** Export. */
     private ArchiveExportTask mArchiveExportTask;
     private final FragmentResultListener mExportOptionsListener =
-            new OptionsDialogBase.OptionsListener<ExportManager>() {
+            new OptionsDialogBase.OnOptionsListener<ExportManager>() {
                 @Override
                 public void onOptionsSet(@NonNull final ExportManager options) {
                     exportPickUri(options);

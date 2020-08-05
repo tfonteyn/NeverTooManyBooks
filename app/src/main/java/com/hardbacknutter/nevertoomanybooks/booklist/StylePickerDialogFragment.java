@@ -167,7 +167,7 @@ public class StylePickerDialogFragment
             return;
         }
 
-        PickListener.sendResult(this, REQUEST_KEY, mCurrentStyleUuid);
+        OnResultListener.sendResult(this, REQUEST_KEY, mCurrentStyleUuid);
 
         dismiss();
     }
@@ -224,7 +224,7 @@ public class StylePickerDialogFragment
         }
     }
 
-    public interface PickListener
+    public interface OnResultListener
             extends FragmentResultListener {
 
         /* private. */ String UUID = "uuid";
@@ -240,7 +240,7 @@ public class StylePickerDialogFragment
         @Override
         default void onFragmentResult(@NonNull final String requestKey,
                                       @NonNull final Bundle result) {
-            onSelection(Objects.requireNonNull(result.getString(UUID)));
+            onResult(Objects.requireNonNull(result.getString(UUID)));
         }
 
         /**
@@ -248,6 +248,6 @@ public class StylePickerDialogFragment
          *
          * @param uuid the selected style
          */
-        void onSelection(@NonNull String uuid);
+        void onResult(@NonNull String uuid);
     }
 }

@@ -43,7 +43,7 @@
 
         <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/toolbar"
-            style="@style/Toolbar"
+            style="@style/Toolbar.Activity"
             tools:title="activity_edit_book"
             />
 
@@ -71,11 +71,4 @@
         android:visibility="gone"
         tools:visibility="visible"
         />
-
-    <com.hardbacknutter.nevertoomanybooks.widgets.MovableFloatingActionButton
-        android:id="@+id/fab"
-        style="@style/FAB"
-        android:src="@drawable/ic_save"
-        />
-
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

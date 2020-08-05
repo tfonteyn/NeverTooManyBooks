@@ -44,7 +44,7 @@
 
         <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/toolbar"
-            style="@style/Toolbar"
+            style="@style/Toolbar.Activity"
             app:title="@string/lbl_local_search"
             />
     </com.google.android.material.appbar.AppBarLayout>

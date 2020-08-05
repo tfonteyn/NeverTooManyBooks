@@ -71,7 +71,7 @@ public class ImportFragment
     /** Import. */
     private ArchiveImportTask mArchiveImportTask;
     private final FragmentResultListener mImportOptionsListener =
-            new OptionsDialogBase.OptionsListener<ImportManager>() {
+            new OptionsDialogBase.OnOptionsListener<ImportManager>() {
                 @Override
                 public void onOptionsSet(@NonNull final ImportManager options) {
                     mArchiveImportTask.startImport(options);

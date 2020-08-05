@@ -44,7 +44,7 @@
 
         <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/toolbar"
-            style="@style/Toolbar"
+            style="@style/Toolbar.Activity"
             app:title="@string/site_library_thing"
             />
     </com.google.android.material.appbar.AppBarLayout>
@@ -110,13 +110,5 @@
                 />
 
         </com.google.android.material.textfield.TextInputLayout>
-
     </androidx.constraintlayout.widget.ConstraintLayout>
-
-    <com.hardbacknutter.nevertoomanybooks.widgets.MovableFloatingActionButton
-        android:id="@+id/fab"
-        style="@style/FAB"
-        android:src="@drawable/ic_save"
-        />
-
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -51,7 +51,7 @@
 
             <com.google.android.material.appbar.MaterialToolbar
                 android:id="@+id/toolbar"
-                style="@style/Toolbar"
+                style="@style/Toolbar.Activity"
                 >
 
                 <Spinner
