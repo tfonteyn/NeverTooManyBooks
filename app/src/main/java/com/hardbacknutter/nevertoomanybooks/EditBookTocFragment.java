@@ -160,8 +160,8 @@ public class EditBookTocFragment
     private final FragmentResultListener mConfirmTocResultsListener =
             new ConfirmTocDialogFragment.OnResultListener() {
                 @Override
-                public void commitToc(@Book.TocBits final long tocBitMask,
-                                      @NonNull final List<TocEntry> tocEntries) {
+                public void onResult(@Book.TocBits final long tocBitMask,
+                                     @NonNull final List<TocEntry> tocEntries) {
                     onIsfdbDataConfirmed(tocBitMask, tocEntries);
                 }
 
@@ -782,14 +782,14 @@ public class EditBookTocFragment
                 if (result.getBoolean(SEARCH_NEXT_EDITION)) {
                     searchNextEdition();
                 } else {
-                    commitToc(result.getLong(TOC_BIT_MASK),
-                              Objects.requireNonNull(result.getParcelableArrayList(TOC_LIST)));
+                    onResult(result.getLong(TOC_BIT_MASK),
+                             Objects.requireNonNull(result.getParcelableArrayList(TOC_LIST)));
                 }
             }
 
 
-            void commitToc(@Book.TocBits long tocBitMask,
-                           @NonNull List<TocEntry> tocEntries);
+            void onResult(@Book.TocBits long tocBitMask,
+                          @NonNull List<TocEntry> tocEntries);
 
             void searchNextEdition();
         }

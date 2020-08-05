@@ -29,6 +29,9 @@ package com.hardbacknutter.nevertoomanybooks;
 
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AutoCompleteTextView;
 import android.widget.TextView;
@@ -40,6 +43,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.core.util.Pair;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentResultListener;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -56,8 +60,7 @@ import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataEditor;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
-import com.hardbacknutter.nevertoomanybooks.dialogs.date.DatePickerResultsListener;
-import com.hardbacknutter.nevertoomanybooks.dialogs.date.PartialDatePickerDialogFragment;
+import com.hardbacknutter.nevertoomanybooks.dialogs.PartialDatePickerDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.fields.Field;
 import com.hardbacknutter.nevertoomanybooks.fields.Fields;
@@ -80,9 +83,10 @@ public abstract class EditBookBaseFragment
 
     /** The view model. */
     EditBookFragmentViewModel mFragmentVM;
-    private final DatePickerResultsListener mPartialDatePickerListener =
-            this::onPartialDateSet;
 
+    /** Dialog listener (strong reference). */
+    private final PartialDatePickerDialogFragment.OnResultListener mPartialDatePickerListener =
+            this::onPartialDateSet;
     /** Dialog listener (strong reference). */
     private final WrappedMaterialDatePicker.OnResultListener mDatePickerListener = this::onDateSet;
 
@@ -129,13 +133,14 @@ public abstract class EditBookBaseFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        getChildFragmentManager().setFragmentResultListener(
-                PartialDatePickerDialogFragment.REQUEST_KEY, this, mPartialDatePickerListener);
-        getChildFragmentManager().setFragmentResultListener(
-                REQUEST_KEY_DATE_PICKER_SINGLE, this, mDatePickerListener);
-        getChildFragmentManager().setFragmentResultListener(
-                REQUEST_KEY_DATE_PICKER_RANGE, this, mDatePickerListener);
+        final FragmentManager fm = getChildFragmentManager();
 
+        fm.setFragmentResultListener(PartialDatePickerDialogFragment.REQUEST_KEY, this,
+                                     mPartialDatePickerListener);
+        fm.setFragmentResultListener(REQUEST_KEY_DATE_PICKER_SINGLE, this,
+                                     mDatePickerListener);
+        fm.setFragmentResultListener(REQUEST_KEY_DATE_PICKER_RANGE, this,
+                                     mDatePickerListener);
 
         final String fragmentTag = getTag();
         Objects.requireNonNull(fragmentTag, ErrorMsg.NULL_FRAGMENT_TAG);
@@ -169,6 +174,26 @@ public abstract class EditBookBaseFragment
      */
     @CallSuper
     void onInitFields(@NonNull final Fields fields) {
+    }
+
+    @Override
+    public void onCreateOptionsMenu(@NonNull final Menu menu,
+                                    @NonNull final MenuInflater inflater) {
+        inflater.inflate(R.menu.toolbar_save, menu);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
+        //noinspection SwitchStatementWithTooFewBranches
+        switch (item.getItemId()) {
+            case R.id.MENU_SAVE:
+                //noinspection ConstantConditions
+                ((EditBookActivity) getActivity()).prepareSave(true);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     @Override
