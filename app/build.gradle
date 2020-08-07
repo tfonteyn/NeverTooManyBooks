@@ -244,8 +244,7 @@ dependencies {
     implementation 'ch.acra:acra-toast:5.7.0'
     implementation 'ch.acra:acra-dialog:5.7.0'
     // OAuth for Goodreads secure access. https://github.com/mttkay/signpost
-//    implementation 'oauth.signpost:signpost-core:1.2.1.2'
-    implementation 'oauth.signpost:signpost-core:2.0.0'
+    implementation 'oauth.signpost:signpost-core:2.1.1'
     // Tar file support for backups
     // http://commons.apache.org/proper/commons-compress/
     implementation 'org.apache.commons:commons-compress:1.20'

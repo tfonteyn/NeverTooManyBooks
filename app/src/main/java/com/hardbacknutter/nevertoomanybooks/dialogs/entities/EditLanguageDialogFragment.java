@@ -60,7 +60,8 @@ public class EditLanguageDialogFragment
      * No-arg constructor for OS use.
      */
     public EditLanguageDialogFragment() {
-        super(REQUEST_KEY, R.string.lbl_language, R.string.lbl_language, BookChangedListener.LANGUAGE);
+        super(REQUEST_KEY, R.string.lbl_language, R.string.lbl_language,
+              BookChangedListener.LANGUAGE);
     }
 
     /**

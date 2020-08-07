@@ -91,7 +91,7 @@ public abstract class BookBaseFragment
     private final CoverBrowserDialogFragment.OnResultListener mOnCoverBrowserListener =
             (cIdx, fileSpec) -> mCoverHandler[cIdx].onFileSelected(fileSpec);
 
-    protected GrAuthTask mGrAuthTask;
+    GrAuthTask mGrAuthTask;
     /** simple indeterminate progress spinner to show while doing lengthy work. */
     ProgressBar mProgressBar;
     /** The book. Must be in the Activity scope. */
@@ -220,20 +220,20 @@ public abstract class BookBaseFragment
         // Set the activity title
         //noinspection ConstantConditions
         final ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
-        if (actionBar != null) {
-            if (book.isNew()) {
-                // EDIT NEW book
-                actionBar.setTitle(R.string.lbl_add_book);
-                actionBar.setSubtitle(null);
-            } else {
-                // Reminder: in BookDetailsFragment, we only display title + single author here!
-                // so never remove these unless BookDetailsFragment is updated as well.
-                // VIEW or EDIT existing book
-                actionBar.setTitle(book.getString(DBDefinitions.KEY_TITLE));
-                //noinspection ConstantConditions
-                actionBar.setSubtitle(Author.getCondensedNames(
-                        getContext(), book.getParcelableArrayList(Book.BKEY_AUTHOR_ARRAY)));
-            }
+        if (book.isNew()) {
+            // EDIT NEW book
+            //noinspection ConstantConditions
+            actionBar.setTitle(R.string.lbl_add_book);
+            actionBar.setSubtitle(null);
+        } else {
+            // Reminder: in BookDetailsFragment, we only display title + single author here!
+            // so never remove these unless BookDetailsFragment is updated as well.
+            // VIEW or EDIT existing book
+            //noinspection ConstantConditions
+            actionBar.setTitle(book.getString(DBDefinitions.KEY_TITLE));
+            //noinspection ConstantConditions
+            actionBar.setSubtitle(Author.getCondensedNames(
+                    getContext(), book.getParcelableArrayList(Book.BKEY_AUTHOR_ARRAY)));
         }
     }
 

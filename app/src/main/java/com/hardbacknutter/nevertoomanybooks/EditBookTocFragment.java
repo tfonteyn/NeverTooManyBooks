@@ -267,8 +267,8 @@ public class EditBookTocFragment
         }
     }
 
-    void onEntryUpdated(@NonNull final TocEntry tocEntry,
-                        final boolean hasMultipleAuthors) {
+    private void onEntryUpdated(@NonNull final TocEntry tocEntry,
+                                final boolean hasMultipleAuthors) {
         updateMultiAuthor(hasMultipleAuthors);
 
         if (mEditPosition == null) {
@@ -384,7 +384,7 @@ public class EditBookTocFragment
         }
     }
 
-    void onCreateContextMenu(final int position) {
+    private void onCreateContextMenu(final int position) {
         final Resources res = getResources();
         final TocEntry item = mList.get(position);
 
@@ -454,16 +454,16 @@ public class EditBookTocFragment
      * @param position the item position which will be used to update the data after editing.
      * @param tocEntry to edit
      */
-    void editEntry(@Nullable final Integer position,
-                   @NonNull final TocEntry tocEntry) {
+    private void editEntry(@Nullable final Integer position,
+                           @NonNull final TocEntry tocEntry) {
         mEditPosition = position;
         EditTocEntryDialogFragment
                 .newInstance(mBookViewModel.getBook(), tocEntry, mVb.cbxMultipleAuthors.isChecked())
                 .show(getChildFragmentManager(), EditTocEntryDialogFragment.TAG);
     }
 
-    void deleteEntry(final int position,
-                     @NonNull final TocEntry tocEntry) {
+    private void deleteEntry(final int position,
+                             @NonNull final TocEntry tocEntry) {
         //noinspection ConstantConditions
         StandardDialogs.deleteTocEntry(getContext(), tocEntry, () -> {
             if (mFragmentVM.deleteTocEntry(getContext(), tocEntry.getId())) {
@@ -618,8 +618,8 @@ public class EditBookTocFragment
         }
     }
 
-    void onIsfdbDataConfirmed(@Book.TocBits final long tocBitMask,
-                              @NonNull final Collection<TocEntry> tocEntries) {
+    private void onIsfdbDataConfirmed(@Book.TocBits final long tocBitMask,
+                                      @NonNull final Collection<TocEntry> tocEntries) {
         if (tocBitMask != 0) {
             final Book book = mBookViewModel.getBook();
             book.putLong(DBDefinitions.KEY_TOC_BITMASK, tocBitMask);

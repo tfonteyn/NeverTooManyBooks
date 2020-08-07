@@ -155,7 +155,7 @@
       <option name="useParameterizedTypeForCollectionMethods" value="true" />
       <option name="doNotWeakenToJavaLangObject" value="true" />
       <option name="onlyWeakentoInterface" value="true" />
-      <stopClasses>com.hardbacknutter.nevertoomanybooks.entities.TocEntry,com.hardbacknutter.nevertoomanybooks.entities.Author,com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyle,com.hardbacknutter.nevertoomanybooks.entities.Series,com.hardbacknutter.nevertoomanybooks.entities.Bookshelf,com.hardbacknutter.nevertoomanybooks.entities.Publisher,java.util.Date,com.hardbacknutter.nevertoomanybooks.backup.Options,com.hardbacknutter.nevertoomanybooks.backup.base.Options,com.hardbacknutter.nevertoomanybooks.backup.ImportHelper,com.hardbacknutter.nevertoomanybooks.backup.ImportManager,java.time.LocalDateTime,android.text.Editable</stopClasses>
+      <stopClasses>com.hardbacknutter.nevertoomanybooks.entities.TocEntry,com.hardbacknutter.nevertoomanybooks.entities.Author,com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyle,com.hardbacknutter.nevertoomanybooks.entities.Series,com.hardbacknutter.nevertoomanybooks.entities.Bookshelf,com.hardbacknutter.nevertoomanybooks.entities.Publisher,java.util.Date,com.hardbacknutter.nevertoomanybooks.backup.Options,com.hardbacknutter.nevertoomanybooks.backup.base.Options,com.hardbacknutter.nevertoomanybooks.backup.ImportHelper,com.hardbacknutter.nevertoomanybooks.backup.ImportManager,java.time.LocalDateTime,android.text.Editable,java.util.Collection</stopClasses>
     </inspection_tool>
     <inspection_tool class="UnnecessaryConstructor" enabled="true" level="WARNING" enabled_by_default="true">
       <option name="ignoreAnnotations" value="true" />
@@ -166,6 +166,11 @@
     </inspection_tool>
     <inspection_tool class="UnnecessaryUnicodeEscape" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="VarargParameter" enabled="false" level="INFORMATION" enabled_by_default="false" />
+    <inspection_tool class="WeakerAccess" enabled="true" level="WARNING" enabled_by_default="true">
+      <option name="SUGGEST_PACKAGE_LOCAL_FOR_MEMBERS" value="true" />
+      <option name="SUGGEST_PACKAGE_LOCAL_FOR_TOP_CLASSES" value="true" />
+      <option name="SUGGEST_PRIVATE_FOR_INNERS" value="false" />
+    </inspection_tool>
     <inspection_tool class="ZeroLengthArrayInitialization" enabled="true" level="WARNING" enabled_by_default="true" />
   </profile>
 </component>

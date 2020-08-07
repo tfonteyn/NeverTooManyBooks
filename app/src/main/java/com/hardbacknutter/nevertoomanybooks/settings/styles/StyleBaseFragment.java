@@ -103,15 +103,15 @@ public abstract class StyleBaseFragment
 
         //noinspection ConstantConditions
         final ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
-        if (actionBar != null) {
-            if (mStyle.getId() == 0) {
-                actionBar.setTitle(R.string.lbl_clone_style);
-            } else {
-                actionBar.setTitle(R.string.lbl_edit_style);
-            }
+        if (mStyle.getId() == 0) {
             //noinspection ConstantConditions
-            actionBar.setSubtitle(mStyle.getLabel(getContext()));
+            actionBar.setTitle(R.string.lbl_clone_style);
+        } else {
+            //noinspection ConstantConditions
+            actionBar.setTitle(R.string.lbl_edit_style);
         }
+        //noinspection ConstantConditions
+        actionBar.setSubtitle(mStyle.getLabel(getContext()));
     }
 
     @Override

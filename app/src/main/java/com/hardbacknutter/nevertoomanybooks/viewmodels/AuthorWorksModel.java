@@ -58,7 +58,7 @@ public class AuthorWorksModel
     private DAO mDb;
     /** Author is set in {@link #init}. */
     private Author mAuthor;
-    /** Iniitial Bookshelf is set in {@link #init}. */
+    /** Initial Bookshelf is set in {@link #init}. */
     private Bookshelf mBookshelf;
     /** Initially we get toc entries and books. */
     private boolean mWithTocEntries = true;

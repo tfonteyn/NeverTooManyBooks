@@ -180,8 +180,7 @@
         <item name="android:layout_width">200dp</item>
     </style>
 
-    <!-- parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu" -->
-    <!-- parent="Widget.MaterialComponents.TextInputLayout.FilledBox.Dense.ExposedDropdownMenu" -->
+    <!-- Reminder: AutoCompleteTextView is automatically replaced with MaterialAutoCompleteTextView -->
     <style name="Envelope.AutoCompleteTextView"
         parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu">
         <item name="android:layout_width">0dp</item>
@@ -655,7 +654,7 @@
         <item name="layout_scrollFlags">scroll|enterAlways</item>
     </style>
 
-    <!-- A Dialog primary/top toolbar -->
+    <!-- A Dialog primary/top toolbar with a 'close' icon. -->
     <style name="Toolbar.Dialog" parent="Widget.MaterialComponents.Toolbar.Primary">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">?attr/actionBarSize</item>
