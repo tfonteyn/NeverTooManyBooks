@@ -27,18 +27,22 @@
  */
 package com.hardbacknutter.nevertoomanybooks.searches;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
-import java.util.Locale;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import com.hardbacknutter.nevertoomanybooks.CommonMocks;
+import com.hardbacknutter.nevertoomanybooks.utils.Csv;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.when;
 
 class SearchSitesTest
@@ -51,64 +55,101 @@ class SearchSitesTest
         when(mSharedPreferences.getBoolean(eq("search.site.goodreads.enabled"),
                                            anyBoolean())).thenReturn(true);
         when(mSharedPreferences.getString(eq("goodreads.host.url"),
-                                          anyString())).thenReturn("https://www.goodreads.com");
+                                          anyString()))
+                .thenReturn("https://www.goodreads.com");
 
         when(mSharedPreferences.getBoolean(eq("search.site.googlebooks.enabled"),
                                            anyBoolean())).thenReturn(true);
         when(mSharedPreferences.getString(eq("googlebooks.host.url"),
-                                          anyString())).thenReturn("https://books.google.com");
+                                          anyString()))
+                .thenReturn("https://books.google.com");
 
         when(mSharedPreferences.getBoolean(eq("search.site.librarything.enabled"),
                                            anyBoolean())).thenReturn(true);
         when(mSharedPreferences.getString(eq("librarything.host.url"),
-                                          anyString())).thenReturn("https://www.librarything.com");
+                                          anyString()))
+                .thenReturn("https://www.librarything.com");
 
         when(mSharedPreferences.getBoolean(eq("search.site.isfdb.enabled"),
                                            anyBoolean())).thenReturn(true);
         when(mSharedPreferences.getString(eq("isfdb.host.url"),
-                                          anyString())).thenReturn("https://www.isfdb.com");
+                                          anyString()))
+                .thenReturn("https://www.isfdb.com");
 
         when(mSharedPreferences.getBoolean(eq("search.site.stripinfo.enabled"),
                                            anyBoolean())).thenReturn(true);
         when(mSharedPreferences.getString(eq("stripinfo.host.url"),
-                                          anyString())).thenReturn("https://www.stripinfo.be");
+                                          anyString()))
+                .thenReturn("https://www.stripinfo.be");
 
         when(mSharedPreferences.getBoolean(eq("search.site.kbnl.enabled"),
                                            anyBoolean())).thenReturn(true);
         when(mSharedPreferences.getString(eq("kbnl.host.url"),
-                                          anyString())).thenReturn("https://www.kb.nl");
+                                          anyString()))
+                .thenReturn("https://www.kb.nl");
 
         when(mSharedPreferences.getBoolean(eq("search.site.openlibrary.enabled"),
                                            anyBoolean())).thenReturn(true);
         when(mSharedPreferences.getString(eq("openlibrary.host.url"),
-                                          anyString())).thenReturn("https://www.openlibrary.com");
+                                          anyString()))
+                .thenReturn("https://www.openlibrary.com");
 
         when(mSharedPreferences.getBoolean(eq("search.site.amazon.enabled"),
                                            anyBoolean())).thenReturn(true);
         when(mSharedPreferences.getString(eq("amazon.host.url"),
-                                          anyString())).thenReturn("https://www.amazon.co.uk");
+                                          anyString()))
+                .thenReturn("https://www.amazon.co.uk");
+
     }
 
     @Test
-    void site() {
-        Locale systemLocale = Locale.US;
-        Locale userLocale = Locale.UK;
-        SiteList.create(mContext, systemLocale, userLocale);
+    void dumpEngines() {
+        SearchEngineRegistry.create(mContext);
 
-        for (SiteList.Type type : SiteList.Type.values()) {
+        final Collection<SearchEngineRegistry.Config> all = SearchEngineRegistry.getAll();
+        for (SearchEngineRegistry.Config config : all) {
+            assertNotNull(config);
+            System.out.println("\n" + config);
+        }
+    }
 
-            final List<Site> sites = SiteList.getList(type).getSites();
-            System.out.println("\n--------------------------------------------------\n\n"
-                               + type);
+    @Test
+    void dumpSites() {
+        SearchEngineRegistry.create(mContext);
+
+        for (Site.Type type : Site.Type.values()) {
+            final List<Site> sites = type.getSites();
+            System.out.println("\n------------------------------------------\n\n" + type);
 
             for (Site site : sites) {
-                final Site.Config config = Site.getConfig(site.engineId);
+                final SearchEngineRegistry.Config config =
+                        SearchEngineRegistry.getByEngineId(site.engineId);
                 assertNotNull(config);
-                final SearchEngine searchEngine = site.getSearchEngine();
+                final SearchEngine searchEngine = site.getSearchEngine(mContext);
                 assertNotNull(searchEngine);
 
                 System.out.println("\n" + config + "\n\n" + site + "\n\n" + searchEngine);
             }
         }
+    }
+
+    @Test
+    void order() {
+        when(mSharedPreferences.getString(eq("search.siteOrder.data"), isNull()))
+                // deliberate added 4 and omitted 128/256
+                .thenReturn("64,32,16,8,4,2,1");
+
+        SearchEngineRegistry.create(mContext);
+
+        final ArrayList<Site> sites = Site.Type.Data.getSites();
+        // 4 should be removed, 128/256 added as loadPrefs will have been called
+        assertEquals("64,32,16,8,2,1,128,256",
+                     Csv.join(sites, element -> String.valueOf(element.engineId)));
+
+
+        final List<Site> reordered = Site.Type.reorder(sites, "1,2,4,16,64,128,256,512");
+        // 4/512 should be removed, 8/32 NOT added as loadPrefs will NOT have been called
+        assertEquals("1,2,16,64,128,256",
+                     Csv.join(reordered, element -> String.valueOf(element.engineId)));
     }
 }

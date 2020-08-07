@@ -64,7 +64,7 @@ import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition
 import com.hardbacknutter.nevertoomanybooks.database.tasks.Scheduler;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
-import com.hardbacknutter.nevertoomanybooks.searches.Site;
+import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineRegistry;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
@@ -530,11 +530,8 @@ public final class DBHelper
                + "  UPDATE " + TBL_BOOKS.getName() + " SET ";
 
         final StringBuilder eidSb = new StringBuilder();
-        for (Site.Config config : Site.getConfigs()) {
-            final Domain domain = config.getExternalIdDomain();
-            if (domain != null) {
-                eidSb.append(domain.getName()).append("=null,");
-            }
+        for (Domain domain : SearchEngineRegistry.getExternalIdDomains()) {
+            eidSb.append(domain.getName()).append("=null,");
         }
         body += eidSb.toString();
 

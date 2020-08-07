@@ -64,8 +64,8 @@ import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.searches.AuthorTypeMapper;
 import com.hardbacknutter.nevertoomanybooks.searches.JsoupSearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
+import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineRegistry;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
-import com.hardbacknutter.nevertoomanybooks.searches.Site;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.LanguageUtils;
@@ -189,7 +189,8 @@ public final class AmazonSearchEngine
         //noinspection ConstantConditions
         return PreferenceManager
                 .getDefaultSharedPreferences(context)
-                .getString(PREFS_HOST_URL, Site.getConfig(SearchSites.AMAZON).getSiteUrl());
+                .getString(PREFS_HOST_URL,
+                           SearchEngineRegistry.getByEngineId(SearchSites.AMAZON).getSiteUrl());
     }
 
     /**

@@ -50,6 +50,8 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
+import java.util.ArrayList;
+
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentUpdateFromInternetBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.RowUpdateFromInternetBinding;
@@ -57,7 +59,7 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.entities.FieldUsage;
-import com.hardbacknutter.nevertoomanybooks.searches.SiteList;
+import com.hardbacknutter.nevertoomanybooks.searches.Site;
 import com.hardbacknutter.nevertoomanybooks.settings.SearchAdminActivity;
 import com.hardbacknutter.nevertoomanybooks.settings.SearchAdminModel;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDialogFragment;
@@ -149,8 +151,8 @@ public class UpdateFieldsFragment
 
         if (savedInstanceState == null) {
             //noinspection ConstantConditions
-            mUpdateFieldsModel.getSiteList().promptToRegister(getContext(), false,
-                                                              "update_from_internet");
+            Site.promptToRegister(getContext(), mUpdateFieldsModel.getSiteList(), false,
+                                  "update_from_internet");
             TipManager.display(getContext(), R.string.tip_update_fields_from_internet, null);
         }
 
@@ -200,8 +202,8 @@ public class UpdateFieldsFragment
             // no changes committed, we got data to use temporarily
             case RequestCode.PREFERRED_SEARCH_SITES:
                 if (resultCode == Activity.RESULT_OK && data != null) {
-                    final SiteList sites =
-                            data.getParcelableExtra(SiteList.Type.Data.getBundleKey());
+                    final ArrayList<Site> sites =
+                            data.getParcelableArrayListExtra(Site.Type.Data.getBundleKey());
                     if (sites != null) {
                         mUpdateFieldsModel.setSiteList(sites);
                     }

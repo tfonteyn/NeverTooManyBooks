@@ -80,7 +80,7 @@
         </Preference>
 
         <Preference
-            android:fragment="com.hardbacknutter.nevertoomanybooks.settings.WebSearchesPreferenceFragment"
+            android:fragment="com.hardbacknutter.nevertoomanybooks.settings.SearchInternetPreferenceFragment"
             android:icon="@drawable/ic_search"
             android:key="psk_web_searches"
             android:title="@string/btn_more_ellipsis"

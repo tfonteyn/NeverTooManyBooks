@@ -48,13 +48,15 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentEditSearchOrderBinding;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searches.Site;
-import com.hardbacknutter.nevertoomanybooks.searches.SiteList;
+import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.widgets.ItemTouchHelperViewHolderBase;
 import com.hardbacknutter.nevertoomanybooks.widgets.RecyclerViewAdapterBase;
 import com.hardbacknutter.nevertoomanybooks.widgets.ddsupport.SimpleItemTouchHelperCallback;
@@ -68,8 +70,9 @@ import com.hardbacknutter.nevertoomanybooks.widgets.ddsupport.StartDragListener;
 public class SearchOrderFragment
         extends Fragment {
 
+    /** Log tag. */
     private static final String TAG = "SearchOrderFragment";
-    public static final String BKEY_TYPE = TAG + ":type";
+    static final String BKEY_TYPE = TAG + ":type";
 
     private SearchSiteListAdapter mListAdapter;
     private ItemTouchHelper mItemTouchHelper;
@@ -81,8 +84,15 @@ public class SearchOrderFragment
     /** View binding. */
     private FragmentEditSearchOrderBinding mVb;
 
-    /** The list we're handling in this fragment (tab). */
-    private SiteList mSiteList;
+    /** The type of list we're handling in this fragment (tab). */
+    private Site.Type mType;
+
+    /**
+     * The list we're handling in this fragment (tab).
+     * Single-list mode: the list as passed in.
+     * All-list mode: a local <strong>deep-copy</strong> of the {@link #mType} list.
+     */
+    private ArrayList<Site> mSiteList;
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -104,12 +114,10 @@ public class SearchOrderFragment
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        final SiteList.Type type = Objects
-                .requireNonNull(requireArguments().getParcelable(BKEY_TYPE));
-
         //noinspection ConstantConditions
         mModel = new ViewModelProvider(getActivity()).get(SearchAdminModel.class);
-        mSiteList = mModel.getList(type);
+        mType = Objects.requireNonNull(requireArguments().getParcelable(BKEY_TYPE));
+        mSiteList = mModel.getList(mType);
 
         final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         mVb.siteList.setLayoutManager(linearLayoutManager);
@@ -145,8 +153,16 @@ public class SearchOrderFragment
         //noinspection SwitchStatementWithTooFewBranches
         switch (item.getItemId()) {
             case R.id.MENU_RESET: {
+                final Locale systemLocale = LocaleUtils.getSystemLocale();
                 //noinspection ConstantConditions
-                mSiteList.resetList(getContext());
+                final Locale userLocale = LocaleUtils.getUserLocale(getContext());
+
+                // Reset the global/original list for the type.
+                mType.resetList(getContext(), systemLocale, userLocale);
+                // and replace the content of the local list with the (new) defaults.
+                mSiteList.clear();
+                mSiteList.addAll(mType.getSites());
+
                 mListAdapter.notifyDataSetChanged();
                 return true;
             }
@@ -159,22 +175,17 @@ public class SearchOrderFragment
     private static class SearchSiteListAdapter
             extends RecyclerViewAdapterBase<Site, Holder> {
 
-        private final boolean mShowInfo;
-
         /**
          * Constructor.
          *
          * @param context           Current context
-         * @param siteList          to use
+         * @param sites             to use
          * @param dragStartListener Listener to handle the user moving rows up and down
          */
         SearchSiteListAdapter(@NonNull final Context context,
-                              @NonNull final SiteList siteList,
+                              @NonNull final List<Site> sites,
                               @NonNull final StartDragListener dragStartListener) {
-            super(context, siteList.getSites(), dragStartListener);
-
-            // only show the info for Data lists. Irrelevant for others.
-            mShowInfo = siteList.getType() == SiteList.Type.Data;
+            super(context, sites, dragStartListener);
         }
 
         @NonNull
@@ -183,7 +194,7 @@ public class SearchOrderFragment
                                          final int viewType) {
             final View view = getLayoutInflater()
                     .inflate(R.layout.row_edit_searchsite, parent, false);
-            return new Holder(view, mShowInfo);
+            return new Holder(view);
         }
 
         @Override
@@ -195,11 +206,12 @@ public class SearchOrderFragment
             final Context context = getContext();
 
             final Site site = getItem(position);
-            final SearchEngine searchEngine = site.getSearchEngine();
+            final SearchEngine searchEngine = site.getSearchEngine(context);
 
             holder.nameView.setText(searchEngine.getName());
 
-            if (mShowInfo) {
+            // only show the info for Data lists. Irrelevant for others.
+            if (site.getType() == Site.Type.Data) {
                 // do not list SearchEngine.CoverByIsbn, it's irrelevant to the user.
                 final Collection<String> info = new ArrayList<>();
                 if (searchEngine instanceof SearchEngine.ByIsbn) {
@@ -216,6 +228,10 @@ public class SearchOrderFragment
                 }
                 holder.infoView.setText(context.getString(R.string.brackets,
                                                           TextUtils.join(", ", info)));
+
+                holder.infoView.setVisibility(View.VISIBLE);
+            } else {
+                holder.infoView.setVisibility(View.GONE);
             }
 
             //noinspection ConstantConditions
@@ -240,12 +256,10 @@ public class SearchOrderFragment
         @NonNull
         final TextView infoView;
 
-        Holder(@NonNull final View itemView,
-               final boolean showInfo) {
+        Holder(@NonNull final View itemView) {
             super(itemView);
             nameView = itemView.findViewById(R.id.name);
             infoView = itemView.findViewById(R.id.info);
-            infoView.setVisibility(showInfo ? View.VISIBLE : View.GONE);
         }
     }
 }

@@ -116,7 +116,8 @@ public interface SearchEngine {
     @NonNull
     default String getName() {
         //noinspection ConstantConditions
-        return getAppContext().getString(Site.getConfig(getId()).getNameResId());
+        return getAppContext().getString(SearchEngineRegistry.getByEngineId(getId())
+                                                             .getNameResId());
     }
 
     /**
@@ -130,7 +131,7 @@ public interface SearchEngine {
     @NonNull
     default String getSiteUrl() {
         //noinspection ConstantConditions
-        return Site.getConfig(getId()).getSiteUrl();
+        return SearchEngineRegistry.getByEngineId(getId()).getSiteUrl();
     }
 
     /**
@@ -145,7 +146,7 @@ public interface SearchEngine {
     @NonNull
     default Locale getLocale() {
         //noinspection ConstantConditions
-        return Site.getConfig(getId()).getLocale();
+        return SearchEngineRegistry.getByEngineId(getId()).getLocale();
     }
 
     /**
@@ -229,7 +230,7 @@ public interface SearchEngine {
     default TerminatorConnection createConnection(@NonNull final String url,
                                                   final boolean followRedirects)
             throws IOException {
-        final Site.Config config = Site.getConfig(getId());
+        final SearchEngineRegistry.Config config = SearchEngineRegistry.getByEngineId(getId());
         //noinspection ConstantConditions
         final TerminatorConnection con = new TerminatorConnection(getAppContext(), url,
                                                                   config.getConnectTimeoutMs(),
@@ -243,7 +244,7 @@ public interface SearchEngine {
     default String createFilename(@Nullable final String bookId,
                                   @IntRange(from = 0) final int cIdx,
                                   @Nullable final ImageFileInfo.Size size) {
-        final Site.Config config = Site.getConfig(getId());
+        final SearchEngineRegistry.Config config = SearchEngineRegistry.getByEngineId(getId());
         //noinspection ConstantConditions
         return ImageUtils.createFilename(config.getFilenameSuffix(), bookId, cIdx, size);
     }
@@ -260,7 +261,7 @@ public interface SearchEngine {
     @Nullable
     default String saveImage(@NonNull final String url,
                              @NonNull final String filename) {
-        final Site.Config config = Site.getConfig(getId());
+        final SearchEngineRegistry.Config config = SearchEngineRegistry.getByEngineId(getId());
 
         //noinspection ConstantConditions
         return ImageUtils.saveImage(getAppContext(), url, filename,
@@ -441,7 +442,7 @@ public interface SearchEngine {
         @AnyThread
         default boolean supportsMultipleCoverSizes() {
             //noinspection ConstantConditions
-            return Site.getConfig(getId()).supportsMultipleCoverSizes();
+            return SearchEngineRegistry.getByEngineId(getId()).supportsMultipleCoverSizes();
         }
 
         /**

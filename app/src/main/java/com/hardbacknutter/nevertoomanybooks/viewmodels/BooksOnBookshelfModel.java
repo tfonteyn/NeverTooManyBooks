@@ -69,7 +69,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
-import com.hardbacknutter.nevertoomanybooks.searches.Site;
+import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineRegistry;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.tasks.VMTask;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
@@ -132,7 +132,7 @@ public class BooksOnBookshelfModel
                         DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_ISBN)));
 
         // external site ID's
-        for (Domain domain : Site.getExternalIdDomains()) {
+        for (Domain domain : SearchEngineRegistry.getExternalIdDomains()) {
             FIXED_DOMAIN_LIST.add(
                     new VirtualDomain(domain, DBDefinitions.TBL_BOOKS.dot(domain.getName())));
         }

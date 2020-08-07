@@ -65,7 +65,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchCoordinator;
-import com.hardbacknutter.nevertoomanybooks.searches.Site;
+import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineRegistry;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.FinishedMessage;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.ProgressMessage;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
@@ -210,7 +210,7 @@ public class UpdateFieldsModel
         addField(prefs, DBDefinitions.KEY_LANGUAGE, R.string.lbl_language, CopyIfBlank);
         addField(prefs, DBDefinitions.KEY_GENRE, R.string.lbl_genre, CopyIfBlank);
 
-        for (Site.Config config : Site.getConfigs()) {
+        for (SearchEngineRegistry.Config config : SearchEngineRegistry.getAll()) {
             final Domain domain = config.getExternalIdDomain();
             if (domain != null) {
                 addField(prefs, domain.getName(), config.getNameResId(), Overwrite);
@@ -436,7 +436,7 @@ public class UpdateFieldsModel
 
                     // Collect external ID's we can use
                     final SparseArray<String> externalIds = new SparseArray<>();
-                    for (Site.Config config : Site.getConfigs()) {
+                    for (SearchEngineRegistry.Config config : SearchEngineRegistry.getAll()) {
                         final Domain domain = config.getExternalIdDomain();
                         if (domain != null) {
                             final String value = mCurrentBook.getString(domain.getName());

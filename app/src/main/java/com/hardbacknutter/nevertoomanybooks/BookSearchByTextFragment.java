@@ -54,6 +54,7 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
+import com.hardbacknutter.nevertoomanybooks.searches.Site;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.BooksOnBookshelfModel;
@@ -132,7 +133,8 @@ public class BookSearchByTextFragment
         populatePublisherList();
 
         if (savedInstanceState == null) {
-            mCoordinator.getSiteList().promptToRegister(getContext(), false, "search");
+            Site.promptToRegister(getContext(), mCoordinator.getSiteList(), false,
+                                  "search");
 
             TipManager.display(getContext(), R.string.tip_book_search_by_text, null);
         }

@@ -27,8 +27,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.searches;
 
-import android.os.Parcelable;
-
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 
@@ -52,64 +50,6 @@ import com.hardbacknutter.nevertoomanybooks.utils.LanguageUtils;
 
 /**
  * Manages the setup of {@link SearchEngine}'s.
- * <br><br>
- * Classes involved:
- * <ul>
- *      <li>{@link SearchEngine} :
- *          The interface that the engine class implements and responsible for the actual searches.
- *      </li>
- *      <li>{@link SearchEngine.Configuration} :
- *          The annotation that configures the engine class.
- *      </li>
- *
- *      <li>{@link Site.Config} :
- *          Encapsulates the engine class + {@link SearchEngine.Configuration}
- *          and resolves some complex objects ready to use.
- *          Singletons Stored in a STATIC map, and retrieved by engine id.
- *      </li>
- *
- *      <li>{@link Site} :
- *          Encapsulates a {@link SearchEngine} instance + the current enabled/disabled state.
- *          Implements {@link Parcelable} as it will be passed around as a member
- *          of a {@link SiteList}.
- *      </li>
- *
- *      <li>{@link SiteList} :
- *          A list of {@link Site}'s all of the same {@link SiteList.Type}.
- *          A search will use such a list to perform searches on the desired sites.
- *          Membership is hardcoded at design time (it depends on capabilities of the engine),
- *          but the order and enabling/disabling of the individual sites is user configurable.
- *          Implements {@link Parcelable} as it will be passed around.
- *      </li>
- *
- *      <li>{@link SearchCoordinator} and {@link SearchTask} will use all of the above to perform
- *          the searches.
- *      </li>
- * </ul>
- * <p>
- * There are 3 types of {@link SiteList}.
- * <ol>
- *      <li>{@link SiteList.Type#Data} : search for book data (and cover)</li>
- *      <li>{@link SiteList.Type#Covers} : search for book covers only</li>
- *      <li>{@link SiteList.Type#AltEditions} : search for alternative editions of a book.</li>
- * </ol>
- * Site/SearchEngine pairs are unique PER LIST:
- * <ul>
- *     <li>there is only one copy of a Site inside a single SiteList</li>
- *     <li>a SearchEngine is cached by a Site,
- *          but re-created each time the Site/SiteList is Parceled.</li>
- *     <li>two Site for the SAME website (i.e. same engine id),
- *          but in a different SiteList will have the same SearchEngine class,
- *          but a different instance of that SearchEngine </li>
- * </ul>
- * Example:
- * <ul>
- * <li>Site A1 with id=AAA, and type Data, will have a SearchEngine_A1</li>
- * <li>Site B1 with id=BBB, and type Data, will have a SearchEngine_B1</li>
- * <li>...</li>
- * <li>Site C1 with id=AAA, and type Covers, will have a SearchEngine_C1</li>
- * </ul>
- * <p>
  * <p>
  * To add a new site to search, follow these steps:
  * <ol>
@@ -193,43 +133,43 @@ public final class SearchSites {
     }
 
     /**
-     * create all engine basic configurations; called during startup.
-     * <p>
-     * For the BuildConfig.ENABLE_ usage: see app/build.gradle
+     * Register all {@link SearchEngine} classes; called during startup.
      */
     public static void registerSearchEngineClasses() {
         //dev note: we could scan for the annotation or for classes implementing the interface...
         // ... but that means traversing the class path. Not really worth the hassle.
+        // For the BuildConfig.ENABLE_ usage: see app/build.gradle
+
         // NEWTHINGS: adding a new search engine: add the search engine class
         // The order added is not relevant
-        Site.add(AmazonSearchEngine.class);
-        Site.add(GoodreadsSearchEngine.class);
-        Site.add(IsfdbSearchEngine.class);
-        Site.add(KbNlSearchEngine.class);
-        Site.add(OpenLibrarySearchEngine.class);
-        Site.add(StripInfoSearchEngine.class);
+        SearchEngineRegistry.add(AmazonSearchEngine.class);
+        SearchEngineRegistry.add(GoodreadsSearchEngine.class);
+        SearchEngineRegistry.add(IsfdbSearchEngine.class);
+        SearchEngineRegistry.add(KbNlSearchEngine.class);
+        SearchEngineRegistry.add(OpenLibrarySearchEngine.class);
+        SearchEngineRegistry.add(StripInfoSearchEngine.class);
 
         if (BuildConfig.ENABLE_GOOGLE_BOOKS) {
-            Site.add(GoogleBooksSearchEngine.class);
+            SearchEngineRegistry.add(GoogleBooksSearchEngine.class);
         }
         if (BuildConfig.ENABLE_LAST_DODO) {
-            Site.add(LastDodoSearchEngine.class);
+            SearchEngineRegistry.add(LastDodoSearchEngine.class);
         }
         if (BuildConfig.ENABLE_LIBRARY_THING || BuildConfig.ENABLE_LIBRARY_THING_ALT_ED) {
-            Site.add(LibraryThingSearchEngine.class);
+            SearchEngineRegistry.add(LibraryThingSearchEngine.class);
         }
     }
 
     /**
-     * Add sites to the given {@link SiteList}.
+     * Register all {@link Site} instances; called during startup.
      *
      * @param systemLocale device Locale <em>(passed in to allow mocking)</em>
      * @param userLocale   user locale <em>(passed in to allow mocking)</em>
-     * @param list         list to populate
+     * @param type         the type of Site list
      */
     static void createSiteList(@NonNull final Locale systemLocale,
                                @NonNull final Locale userLocale,
-                               @NonNull final SiteList list) {
+                               @NonNull final Site.Type type) {
 
         // Certain sites are only enabled by default if the device or user set language
         // matches the site language.
@@ -244,70 +184,70 @@ public final class SearchSites {
         //
         // The order added here is the default order they will be used, but the user
         // can reorder the lists in preferences.
-        switch (list.getType()) {
-            case Data: {
-                list.add(AMAZON, true);
 
-                list.add(GOODREADS, true);
+        switch (type) {
+            case Data: {
+                type.addSite(AMAZON);
+
+                type.addSite(GOODREADS);
 
                 if (BuildConfig.ENABLE_GOOGLE_BOOKS) {
-                    list.add(GOOGLE_BOOKS, true);
+                    type.addSite(GOOGLE_BOOKS);
                 }
 
                 if (BuildConfig.ENABLE_LIBRARY_THING) {
-                    list.add(LIBRARY_THING, true);
+                    type.addSite(LIBRARY_THING);
                 }
 
-                list.add(ISFDB, true);
+                type.addSite(ISFDB);
 
                 // Dutch.
-                list.add(STRIP_INFO_BE, enableIfDutch);
+                type.addSite(STRIP_INFO_BE, enableIfDutch);
                 // Dutch.
-                list.add(KB_NL, enableIfDutch);
+                type.addSite(KB_NL, enableIfDutch);
                 // Dutch.
                 if (BuildConfig.ENABLE_LAST_DODO) {
-                    list.add(LAST_DODO, enableIfDutch);
+                    type.addSite(LAST_DODO, enableIfDutch);
                 }
 
                 // Disabled by default as data from this site is not very complete.
-                list.add(OPEN_LIBRARY, false);
+                type.addSite(OPEN_LIBRARY, false);
                 break;
             }
             case Covers: {
                 // Only add sites here that implement {@link SearchEngine.CoverByIsbn}.
 
-                list.add(AMAZON, true);
+                type.addSite(AMAZON);
 
-                list.add(GOODREADS, true);
+                type.addSite(GOODREADS);
 
-                list.add(ISFDB, true);
+                type.addSite(ISFDB);
 
                 // Dutch.
-                list.add(KB_NL, enableIfDutch);
+                type.addSite(KB_NL, enableIfDutch);
 
                 if (BuildConfig.ENABLE_LIBRARY_THING) {
                     // Disabled by default as this site lacks many covers.
-                    list.add(LIBRARY_THING, false);
+                    type.addSite(LIBRARY_THING, false);
                 }
 
                 // Disabled by default as this site lacks many covers.
-                list.add(OPEN_LIBRARY, false);
+                type.addSite(OPEN_LIBRARY, false);
                 break;
             }
-
             case AltEditions: {
                 //Only add sites here that implement {@link SearchEngine.AlternativeEditions}.
 
                 if (BuildConfig.ENABLE_LIBRARY_THING_ALT_ED) {
-                    list.add(LIBRARY_THING, true);
+                    type.addSite(LIBRARY_THING);
                 }
 
-                list.add(ISFDB, true);
+                type.addSite(ISFDB);
                 break;
             }
 
             default:
-                throw new IllegalArgumentException(ErrorMsg.UNEXPECTED_VALUE + list);
+                throw new IllegalArgumentException(ErrorMsg.UNEXPECTED_VALUE + type);
         }
     }
 

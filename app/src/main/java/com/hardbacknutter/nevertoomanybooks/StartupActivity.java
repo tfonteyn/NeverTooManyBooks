@@ -48,8 +48,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DBHelper;
 import com.hardbacknutter.nevertoomanybooks.databinding.ActivityStartupBinding;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.goodreads.qtasks.taskqueue.QueueManager;
-import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
-import com.hardbacknutter.nevertoomanybooks.searches.SiteList;
+import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineRegistry;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.NightModeUtils;
@@ -218,10 +217,9 @@ public class StartupActivity
     private void gotoMainScreen() {
         // Remove the weak self-reference
         sStartupActivity.clear();
+
         // Setup the search engines
-        SearchSites.registerSearchEngineClasses();
-        // and the lists for the engines
-        SiteList.create(this);
+        SearchEngineRegistry.create(this);
 
         // Create the Goodreads QueueManager. This (re)starts stored tasks.
         QueueManager.create(this);

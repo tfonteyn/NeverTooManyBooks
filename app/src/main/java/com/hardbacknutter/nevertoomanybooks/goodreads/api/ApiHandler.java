@@ -56,8 +56,8 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsAuth;
+import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineRegistry;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
-import com.hardbacknutter.nevertoomanybooks.searches.Site;
 import com.hardbacknutter.nevertoomanybooks.searches.goodreads.GoodreadsSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 
@@ -79,7 +79,7 @@ public abstract class ApiHandler {
     protected final GoodreadsAuth mGrAuth;
     @NonNull
     final Context mAppContext;
-    final Site.Config mSiteConfig;
+    final SearchEngineRegistry.Config mSiteConfig;
 
     /**
      * Constructor.
@@ -92,7 +92,7 @@ public abstract class ApiHandler {
         mAppContext = appContext;
         mGrAuth = grAuth;
 
-        mSiteConfig = Site.getConfig(SearchSites.GOODREADS);
+        mSiteConfig = SearchEngineRegistry.getByEngineId(SearchSites.GOODREADS);
     }
 
     /**

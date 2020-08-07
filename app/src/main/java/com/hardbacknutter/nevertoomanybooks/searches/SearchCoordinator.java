@@ -135,8 +135,11 @@ public class SearchCoordinator
     private final Map<Integer, ProgressMessage> mSearchProgressMessages = new HashMap<>();
 
 
-    /** Sites to search on. If this list is empty, all searches will return {@code false}. */
-    private SiteList mSiteList;
+    /**
+     * Sites to search on. If this list is empty, all searches will return {@code false}.
+     * This list includes both enabled and disabled sites.
+     */
+    private ArrayList<Site> mAllSites;
     /** Base message for progress updates. */
     private String mBaseMessage;
     /** Flag indicating at least one search is currently running. */
@@ -251,14 +254,13 @@ public class SearchCoordinator
     public void init(@NonNull final Context context,
                      @Nullable final Bundle args) {
 
-        if (mSiteList == null) {
+        if (mAllSites == null) {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
                 mSearchTasksStartTime = new SparseLongArray();
                 mSearchTasksEndTime = new SparseLongArray();
             }
 
-            // use global preference.
-            mSiteList = SiteList.getList(SiteList.Type.Data);
+            mAllSites = Site.Type.Data.getSites();
 
             final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
             if (FormatMapper.isMappingAllowed(prefs)) {
@@ -353,10 +355,10 @@ public class SearchCoordinator
 
                 // Start the others...even if they have run before.
                 // They will redo the search WITH the ISBN.
-                startSearch();
+                startSearch(appContext);
             } else {
                 // Start next one that has not run yet.
-                startNextSearch();
+                startNextSearch(appContext);
             }
         }
 
@@ -371,13 +373,13 @@ public class SearchCoordinator
             }
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
-                Site.Config config = Site.getConfig(taskId);
+                SearchEngineRegistry.Config config = SearchEngineRegistry.getByEngineId(taskId);
                 //noinspection ConstantConditions
                 Log.d(TAG, "mSearchTaskListener.onFinished|finished="
                            + appContext.getString(config.getNameResId()));
 
                 for (SearchTask searchTask : mActiveTasks) {
-                    config = Site.getConfig(searchTask.getTaskId());
+                    config = SearchEngineRegistry.getByEngineId(searchTask.getTaskId());
                     //noinspection ConstantConditions
                     Log.d(TAG, "mSearchTaskListener.onFinished|running="
                                + appContext.getString(config.getNameResId()));
@@ -422,7 +424,7 @@ public class SearchCoordinator
 
                         //noinspection ConstantConditions
                         final String engineName = appContext.getString(
-                                Site.getConfig(key).getNameResId());
+                                SearchEngineRegistry.getByEngineId(key).getNameResId());
 
                         if (end != 0) {
                             Log.d(TAG, String.format(Locale.ENGLISH,
@@ -456,20 +458,20 @@ public class SearchCoordinator
     /**
      * Get the <strong>current</strong> preferred search sites.
      *
-     * @return list
+     * @return list with the enabled sites
      */
     @NonNull
-    public SiteList getSiteList() {
-        return mSiteList;
+    public ArrayList<Site> getSiteList() {
+        return mAllSites;
     }
 
     /**
      * Override the initial list.
      *
-     * @param siteList to use temporarily
+     * @param sites to use
      */
-    public void setSiteList(@NonNull final SiteList siteList) {
-        mSiteList = siteList;
+    public void setSiteList(@NonNull final ArrayList<Site> sites) {
+        mAllSites = sites;
     }
 
     /**
@@ -629,14 +631,14 @@ public class SearchCoordinator
 
             // then start a concurrent search
             mWaitingForExactCode = false;
-            mIsSearchActive = startSearch();
+            mIsSearchActive = startSearch(context);
 
         } else {
             // We really want to ensure we get the same book from each,
             // so if the ISBN/code is NOT PRESENT, search the sites
             // one at a time until we get a ISBN/code.
             mWaitingForExactCode = true;
-            mIsSearchActive = startNextSearch();
+            mIsSearchActive = startNextSearch(context);
         }
 
         return mIsSearchActive;
@@ -724,13 +726,13 @@ public class SearchCoordinator
      *
      * @return {@code true} if at least one search was started, {@code false} if none
      */
-    private boolean startSearch() {
+    private boolean startSearch(@NonNull final Context context) {
         // if currentSearchSites is empty, we return false.
         boolean atLeastOneStarted = false;
-        for (Site site : mSiteList.getEnabledSites()) {
+        for (Site site : Site.filterForEnabled(mAllSites)) {
             // If the site has not been searched yet, search it
             if (!mSearchResults.containsKey(site.engineId)) {
-                if (startSearch(site.getSearchEngine())) {
+                if (startSearch(site.getSearchEngine(context))) {
                     atLeastOneStarted = true;
                 }
             }
@@ -743,11 +745,11 @@ public class SearchCoordinator
      *
      * @return {@code true} if a search was started, {@code false} if not
      */
-    private boolean startNextSearch() {
-        for (Site site : mSiteList.getEnabledSites()) {
+    private boolean startNextSearch(@NonNull final Context context) {
+        for (Site site : Site.filterForEnabled(mAllSites)) {
             // If the site has not been searched yet, search it
             if (!mSearchResults.containsKey(site.engineId)) {
-                return startSearch(site.getSearchEngine());
+                return startSearch(site.getSearchEngine(context));
             }
         }
         return false;
@@ -833,7 +835,7 @@ public class SearchCoordinator
      *
      * <strong>Developer note:</strong> before you think you can simplify this method
      * by working directly with engine-id and SearchEngines... DON'T
-     * Read class docs for {@link SearchSites} and {@link SiteList#getDataSitesByReliability}.
+     * Read class docs for {@link SearchSites} and {@link Site.Type#getDataSitesByReliability}.
      *
      * @param context Localized context
      */
@@ -847,7 +849,7 @@ public class SearchCoordinator
             // If an ISBN was passed, ignore entries with the wrong ISBN,
             // and put entries without ISBN at the end
             final Collection<Site> sitesWithoutIsbn = new ArrayList<>();
-            final List<Site> allSites = SiteList.getDataSitesByReliability();
+            final List<Site> allSites = Site.Type.getDataSitesByReliability();
             for (Site site : allSites) {
                 if (mSearchResults.containsKey(site.engineId)) {
                     final Bundle bookData = mSearchResults.get(site.engineId);
@@ -876,12 +878,12 @@ public class SearchCoordinator
 
         } else {
             // If an ISBN was not passed, then just use the default order
-            sites.addAll(SiteList.getDataSitesByReliability());
+            sites.addAll(Site.Type.getDataSitesByReliability());
         }
 
         // Merge the data we have in the order as decided upon above.
         for (Site site : sites) {
-            final SearchEngine searchEngine = site.getSearchEngine();
+            final SearchEngine searchEngine = site.getSearchEngine(context);
 
             final Bundle siteData = mSearchResults.get(searchEngine.getId());
             if (siteData != null && !siteData.isEmpty()) {
@@ -933,7 +935,7 @@ public class SearchCoordinator
      */
     @AnyThread
     @Nullable
-    public String getBestImage(@NonNull final ArrayList<String> imageList) {
+    private String getBestImage(@NonNull final ArrayList<String> imageList) {
 
         // biggest size based on height * width
         long bestImageSize = -1;
@@ -1137,7 +1139,8 @@ public class SearchCoordinator
         if (!mSearchFinishedMessages.isEmpty()) {
             final StringBuilder sb = new StringBuilder();
             for (Map.Entry<Integer, Exception> entry : mSearchFinishedMessages.entrySet()) {
-                final Site.Config config = Site.getConfig(entry.getKey());
+                final SearchEngineRegistry.Config config = SearchEngineRegistry
+                        .getByEngineId(entry.getKey());
                 //noinspection ConstantConditions
                 final String engineName = context.getString(config.getNameResId());
                 final Exception exception = entry.getValue();

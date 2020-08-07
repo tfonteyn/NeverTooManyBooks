@@ -46,13 +46,14 @@ import androidx.lifecycle.ViewModelProvider;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 
+import java.util.ArrayList;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentBooksearchByIsbnBinding;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
-import com.hardbacknutter.nevertoomanybooks.searches.SiteList;
+import com.hardbacknutter.nevertoomanybooks.searches.Site;
 import com.hardbacknutter.nevertoomanybooks.settings.BarcodePreferenceFragment;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.PermissionsHelper;
@@ -160,7 +161,8 @@ public class BookSearchByIsbnFragment
         }
 
 //        if (savedInstanceState == null) {
-//            mSearchCoordinator.getSiteList().promptToRegister(getContext(), false, "search");
+//            Site.promptToRegister(getContext(), mSearchCoordinator.getSiteList(),
+//                                      false, "search");
 //        }
 
 //        Configuration c = getActivity().getResources().getConfiguration();
@@ -278,10 +280,10 @@ public class BookSearchByIsbnFragment
                 // Settings initiated from the local menu or dialog box.
                 if (resultCode == Activity.RESULT_OK && data != null) {
                     // update the search sites list.
-                    final SiteList siteList =
-                            data.getParcelableExtra(SiteList.Type.Data.getBundleKey());
-                    if (siteList != null) {
-                        mCoordinator.setSiteList(siteList);
+                    final ArrayList<Site> sites =
+                            data.getParcelableArrayListExtra(Site.Type.Data.getBundleKey());
+                    if (sites != null) {
+                        mCoordinator.setSiteList(sites);
                     }
 
                     // init the scanner if it was changed.

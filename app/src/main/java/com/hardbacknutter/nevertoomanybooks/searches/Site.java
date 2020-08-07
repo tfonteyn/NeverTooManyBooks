@@ -32,31 +32,26 @@ import android.content.SharedPreferences;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
+import androidx.preference.PreferenceManager;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
-import java.util.Objects;
+import java.util.stream.Collectors;
 
-import com.hardbacknutter.nevertoomanybooks.App;
-import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
-import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
+import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
+import com.hardbacknutter.nevertoomanybooks.settings.SearchAdminActivity;
 import com.hardbacknutter.nevertoomanybooks.tasks.Canceller;
-import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.Csv;
 
 /**
- * Represents a site we can search.
+ * Encapsulates a {@link SearchEngine} instance + the current enabled/disabled state.
  */
 public class Site
         implements Parcelable {
@@ -74,23 +69,22 @@ public class Site
         }
     };
 
+    /** Preferences prefix for individual site settings. */
+    private static final String PREF_PREFIX = "search.site.";
+
     /**
      * The (for now) only actual preference:
      * whether this site is enabled <strong>for the list it belongs to</strong>.
      */
-    private static final String PREF_SUFFIX_ENABLED = ".enabled";
-
-
-    /** All site configurations. */
-    private static final Map<Integer, Config> ALL_SITE_CONFIGS = new HashMap<>();
+    private static final String PREF_SUFFIX_ENABLED = "enabled";
 
     /** SearchEngine ID. Used to (re)create {@link #mSearchEngine}. */
     @SearchSites.EngineId
     public final int engineId;
 
-    /** key into prefs. */
+    /** Type of this site. */
     @NonNull
-    private final String mPreferenceKey;
+    private final Type mType;
 
     /** user preference: enable/disable this site. */
     private boolean mEnabled;
@@ -101,17 +95,17 @@ public class Site
     /**
      * Constructor.
      *
-     * @param engineId for the engine
-     * @param type     the list type this site will belong to
+     * @param type     the type of Site list this Site will belong to
+     * @param engineId the search engine id
      * @param enabled  flag
      */
-    Site(@SearchSites.EngineId final int engineId,
-         @NonNull final SiteList.Type type,
-         final boolean enabled) {
+    private Site(@NonNull final Type type,
+                 @SearchSites.EngineId final int engineId,
+                 final boolean enabled) {
 
         this.engineId = engineId;
+        mType = type;
         mEnabled = enabled;
-        mPreferenceKey = type.getSitePreferenceKey(engineId);
     }
 
     /**
@@ -119,11 +113,13 @@ public class Site
      *
      * @param from object to copy
      */
-    Site(@NonNull final Site from) {
+    private Site(@NonNull final Site from) {
         engineId = from.engineId;
+        mType = from.mType;
+
+        // Copy the current state
         mEnabled = from.mEnabled;
-        mPreferenceKey = from.mPreferenceKey;
-        // don't copy, it will be recreated
+        // don't copy the mSearchEngine, let it be recreated.
         mSearchEngine = null;
     }
 
@@ -134,83 +130,54 @@ public class Site
      */
     private Site(@NonNull final Parcel in) {
         engineId = in.readInt();
-        mEnabled = in.readInt() != 0;
         //noinspection ConstantConditions
-        mPreferenceKey = in.readString();
-        // Reminder: this is IPC.. so don't load prefs!
-    }
-
-    static void add(@NonNull final Class<? extends SearchEngine> searchEngineClass) {
-        final Config config = new Config(searchEngineClass);
-        ALL_SITE_CONFIGS.put(config.getEngineId(), config);
+        mType = in.readParcelable(Type.class.getClassLoader());
+        mEnabled = in.readInt() != 0;
     }
 
     /**
-     * Get the list of all configured search engines.
+     * Get the enabled sites in the <strong>given</strong> list.
      *
-     * @return list
+     * @param sites to filter
+     *
+     * @return new list instance containing the <strong>original</strong> site objects;
+     * filtered for being enabled. The order is the same.
      */
     @NonNull
-    public static Collection<Config> getConfigs() {
-        return ALL_SITE_CONFIGS.values();
+    public static ArrayList<Site> filterForEnabled(@NonNull final Collection<Site> sites) {
+        return sites.stream()
+                    .filter(Site::isEnabled)
+                    .collect(Collectors.toCollection(ArrayList::new));
     }
 
     /**
-     * Get the configuration for the given EngineId.
+     * Bring up an Alert to the user if the given list includes a site where registration
+     * is beneficial/required.
      *
-     * @param engineId to get the config for
+     * @param context      Current context
+     * @param sites        the list to check
+     * @param required     {@code true} if we <strong>must</strong> have access.
+     *                     {@code false} if it would be beneficial.
+     * @param callerSuffix String used to flag in preferences if we showed the alert from
+     *                     that caller already or not.
      *
-     * @return Config, or {@link null} if not found
+     * @return {@code true} if an alert is currently shown
      */
-    @Nullable
-    public static Config getConfig(@SearchSites.EngineId final int engineId) {
-        return ALL_SITE_CONFIGS.get(engineId);
-    }
-
-    @Nullable
-    public static Config getConfigByViewId(@IdRes final int viewId) {
-        for (Config config : getConfigs()) {
-            if (config.getDomainViewId() == viewId) {
-                return config;
+    @SuppressWarnings("UnusedReturnValue")
+    public static boolean promptToRegister(@NonNull final Context context,
+                                           @NonNull final Collection<Site> sites,
+                                           final boolean required,
+                                           @NonNull final String callerSuffix) {
+        boolean showingAlert = false;
+        for (Site site : sites) {
+            if (site.isEnabled()) {
+                showingAlert |= site.getSearchEngine(context)
+                                    .promptToRegister(context, required, callerSuffix);
             }
         }
-        return null;
-    }
 
-    /**
-     * Search for the configuration containing the given menuId.
-     *
-     * @param menuId to get
-     *
-     * @return Config, or {@link null} if not found
-     */
-    @Nullable
-    public static Config getConfigByMenuId(@IdRes final int menuId) {
-        for (Config config : getConfigs()) {
-            if (config.getDomainMenuId() == menuId) {
-                return config;
-            }
-        }
-        return null;
+        return showingAlert;
     }
-
-    /**
-     * Get the list of configured external-id domains.
-     *
-     * @return list
-     */
-    @NonNull
-    public static List<Domain> getExternalIdDomains() {
-        final List<Domain> externalIds = new ArrayList<>();
-        for (Config config : getConfigs()) {
-            final Domain domain = config.getExternalIdDomain();
-            if (domain != null) {
-                externalIds.add(domain);
-            }
-        }
-        return externalIds;
-    }
-
 
     /**
      * Get the {@link SearchEngine} instance for this site.
@@ -219,15 +186,9 @@ public class Site
      * @return (cached) instance
      */
     @NonNull
-    public SearchEngine getSearchEngine() {
+    public SearchEngine getSearchEngine(@NonNull final Context context) {
         if (mSearchEngine == null) {
-
-            final Config config = ALL_SITE_CONFIGS.get(engineId);
-            Objects.requireNonNull(config, ErrorMsg.NULL_SEARCH_ENGINE_CONFIG);
-            // ALWAYS use the localized Application context here
-            // It's going to get used in background tasks!
-            final Context appContext = LocaleUtils.applyLocale(App.getTaskContext());
-            mSearchEngine = config.createSearchEngine(appContext);
+            mSearchEngine = SearchEngineRegistry.createSearchEngine(context, engineId);
         }
 
         mSearchEngine.reset();
@@ -243,10 +204,16 @@ public class Site
      * @return (cached) instance
      */
     @NonNull
-    public SearchEngine getSearchEngine(@NonNull final Canceller caller) {
-        final SearchEngine searchEngine = getSearchEngine();
+    public SearchEngine getSearchEngine(@NonNull final Context context,
+                                        @NonNull final Canceller caller) {
+        final SearchEngine searchEngine = getSearchEngine(context);
         searchEngine.setCaller(caller);
         return searchEngine;
+    }
+
+    @NonNull
+    public Type getType() {
+        return mType;
     }
 
     public boolean isEnabled() {
@@ -257,12 +224,25 @@ public class Site
         mEnabled = enabled;
     }
 
-    void loadFromPrefs(@NonNull final SharedPreferences preferences) {
-        mEnabled = preferences.getBoolean(mPreferenceKey + PREF_SUFFIX_ENABLED, mEnabled);
+    /**
+     * Helper to combine all parts of the preference key used.
+     *
+     * @return full prefix for the preference key
+     */
+    @NonNull
+    private String getPrefPrefix() {
+        //noinspection ConstantConditions
+        return PREF_PREFIX
+               + SearchEngineRegistry.getByEngineId(engineId).getPreferenceKey() + '.'
+               + mType.mTypeName + '.';
     }
 
-    void saveToPrefs(@NonNull final SharedPreferences.Editor editor) {
-        editor.putBoolean(mPreferenceKey + PREF_SUFFIX_ENABLED, mEnabled);
+    private void loadFromPrefs(@NonNull final SharedPreferences preferences) {
+        mEnabled = preferences.getBoolean(getPrefPrefix() + PREF_SUFFIX_ENABLED, mEnabled);
+    }
+
+    private void saveToPrefs(@NonNull final SharedPreferences.Editor editor) {
+        editor.putBoolean(getPrefPrefix() + PREF_SUFFIX_ENABLED, mEnabled);
     }
 
     @SuppressWarnings("SameReturnValue")
@@ -271,15 +251,12 @@ public class Site
         return 0;
     }
 
-    /**
-     * Reminder: this is IPC.. so don't save prefs.
-     */
     @Override
     public void writeToParcel(@NonNull final Parcel dest,
                               final int flags) {
         dest.writeInt(engineId);
+        dest.writeParcelable(mType, flags);
         dest.writeInt(mEnabled ? 1 : 0);
-        dest.writeString(mPreferenceKey);
     }
 
     @Override
@@ -287,151 +264,298 @@ public class Site
     public String toString() {
         return "Site{"
                + "engineId=" + engineId
-               + ", mPreferenceKey=`" + mPreferenceKey + '`'
+               + ", mType=" + mType
                + ", mEnabled=" + mEnabled
                + ", mSearchEngine=" + mSearchEngine
                + '}';
     }
 
     /**
-     * Immutable configuration data for a {@link SearchEngine}.
-     * Encapsulates the annotation class together with the search engine class,
-     * and provides the 'complex' configuration objects along side the 'simple' attributes.
-     * <p>
-     * See {@link SearchSites} for more details.
+     * The different types of configurable site lists we maintain.
+     *
+     * <strong>Note:</strong> the order of the enum values is used as the order
+     * of the tabs in {@link SearchAdminActivity}.
      */
-    public static final class Config {
+    public enum Type
+            implements Parcelable {
 
-        @NonNull
-        private final Class<? extends SearchEngine> mClass;
-        @NonNull
-        private final SearchEngine.Configuration mSEConfig;
+        /** generic searches. */
+        Data(R.string.lbl_books, "data"),
+        /** Covers. */
+        Covers(R.string.lbl_covers, "covers"),
+        /** Alternative editions for a given isbn. */
+        AltEditions(R.string.tab_lbl_alternative_editions, "alted");
 
-        @NonNull
-        private final Locale mLocale;
+        /** {@link Parcelable}. */
+        @SuppressWarnings("InnerClassFieldHidesOuterClassField")
+        public static final Creator<Type> CREATOR = new Creator<Type>() {
+            @Override
+            @NonNull
+            public Type createFromParcel(@NonNull final Parcel in) {
+                return Type.values()[in.readInt()];
+            }
 
-        /** {@link SearchEngine.ByExternalId} only. */
-        @Nullable
-        private final Domain mExternalIdDomain;
+            @Override
+            @NonNull
+            public Type[] newArray(final int size) {
+                return new Type[size];
+            }
+        };
+
+        /** Preferences prefix for site order per type. */
+        private static final String PREFS_ORDER_PREFIX = "search.siteOrder.";
+
+        /** Log tag. */
+        private static final String TAG = "Site.Type";
+
+        /** User displayable name. */
+        @StringRes
+        private final int mNameResId;
+        /** Internal name (for prefs). */
+        private final String mTypeName;
+
+        private final Collection<Site> mList = new ArrayList<>();
 
         /**
          * Constructor.
          *
-         * @param searchEngineClass to configure
+         * @param stringId for displaying the type name to the user
+         * @param typeName for internal usage
          */
-        public Config(@NonNull final Class<? extends SearchEngine> searchEngineClass) {
-            mClass = searchEngineClass;
-            mSEConfig = Objects.requireNonNull(searchEngineClass.getAnnotation(
-                    SearchEngine.Configuration.class));
-
-            if ("en".equals(mSEConfig.lang()) && mSEConfig.country().isEmpty()) {
-                // be lenient...
-                mLocale = Locale.US;
-            } else {
-                mLocale = new Locale(mSEConfig.lang(),
-                                     mSEConfig.country().toUpperCase(Locale.ENGLISH));
-            }
-
-            final String domainKey = mSEConfig.domainKey();
-            if (domainKey.isEmpty()) {
-                mExternalIdDomain = null;
-            } else {
-                mExternalIdDomain = DBDefinitions.TBL_BOOKS.getDomain(domainKey);
-            }
+        Type(@StringRes final int stringId,
+             @NonNull final String typeName) {
+            mNameResId = stringId;
+            mTypeName = typeName;
         }
 
+        /**
+         * Get the data sites list, ordered by reliability.
+         * Includes enabled <strong>AND</strong> disabled sites.
+         *
+         * @return deep-copy unmodifiable List sorted by reliability of data
+         */
+        @NonNull
+        static List<Site> getDataSitesByReliability() {
+            return Collections.unmodifiableList(
+                    reorder(Data.getSites(), SearchSites.DATA_RELIABILITY_ORDER));
+        }
 
+        /**
+         * Create a new list, but reordered according to the given order string.
+         * The site objects are the <strong>same</strong> as in the original list.
+         * The original list order is NOT modified.
+         * <p>
+         * The reordered list <strong>MAY</strong> be shorter then the original,
+         * as sites from the original which are not present in the order string
+         * are <strong>NOT</strong> added.
+         *
+         * @param sites list to reorder
+         * @param order CSV string with site ID's
+         *
+         * @return new list instance containing the <strong>original</strong> site objects
+         * in the desired order.
+         */
         @VisibleForTesting
-        @NonNull
-        public SearchEngine createSearchEngine(@NonNull final Context appContext) {
-            try {
-                final Constructor<? extends SearchEngine> c =
-                        mClass.getConstructor(Context.class);
-                return c.newInstance(appContext);
+        public static List<Site> reorder(@NonNull final Collection<Site> sites,
+                                         @NonNull final String order) {
+            final List<Site> reorderedList = new ArrayList<>();
+            for (String idStr : order.split(",")) {
+                final int id = Integer.parseInt(idStr);
+                for (Site site : sites) {
+                    if (site.engineId == id) {
+                        reorderedList.add(site);
+                        break;
+                    }
+                }
+            }
+            return reorderedList;
+        }
 
-            } catch (@NonNull final NoSuchMethodException | IllegalAccessException
-                    | InstantiationException | InvocationTargetException e) {
-                throw new IllegalStateException(mClass
-                                                + " must implement SearchEngine(Context)", e);
+        /**
+         * Create the list.
+         *
+         * @param context      Current context
+         * @param systemLocale device Locale <em>(passed in to allow mocking)</em>
+         * @param userLocale   user locale <em>(passed in to allow mocking)</em>
+         */
+        void createList(@NonNull final Context context,
+                        @NonNull final Locale systemLocale,
+                        @NonNull final Locale userLocale) {
+
+            // re-create the global list for the type
+            mList.clear();
+            SearchSites.createSiteList(systemLocale, userLocale, this);
+
+            // apply stored user preferences to the list
+            loadPrefs(context);
+        }
+
+        /**
+         * Reset the list back to the hardcoded defaults.
+         *
+         * @param context      Current context
+         * @param systemLocale device Locale <em>(passed in to allow mocking)</em>
+         * @param userLocale   user locale <em>(passed in to allow mocking)</em>
+         */
+        public void resetList(@NonNull final Context context,
+                              @NonNull final Locale systemLocale,
+                              @NonNull final Locale userLocale) {
+
+            // re-create the global list for the type
+            mList.clear();
+            SearchSites.createSiteList(systemLocale, userLocale, this);
+
+            // overwrite stored user preferences with the defaults from the list
+            savePrefs(context);
+        }
+
+        /**
+         * Replace the current list with the given list. A deep-copy will be taken.
+         *
+         * @param context Current context
+         * @param sites   list to use
+         */
+        public void setList(@NonNull final Context context,
+                            @NonNull final Collection<Site> sites) {
+            mList.clear();
+            for (Site site : sites) {
+                mList.add(new Site(site));
+            }
+            savePrefs(context);
+        }
+
+        /**
+         * Get a <strong>deep-copy</strong> of the desired Site.
+         *
+         * @param engineId the search engine id
+         *
+         * @return deep-copy instance of the Site
+         */
+        @NonNull
+        public Site getSite(@SearchSites.EngineId final int engineId) {
+            for (Site site : mList) {
+                if (site.engineId == engineId) {
+                    return new Site(site);
+                }
+            }
+            throw new IllegalStateException(ErrorMsg.UNEXPECTED_VALUE + engineId);
+        }
+
+
+        /**
+         * Get a <strong>deep-copy</strong> of the list.
+         * Includes enabled <strong>AND</strong> disabled sites.
+         *
+         * @return deep-copy instance of the Site list
+         */
+        @NonNull
+        public ArrayList<Site> getSites() {
+            final ArrayList<Site> list = new ArrayList<>();
+            for (Site site : mList) {
+                list.add(new Site(site));
+            }
+            return list;
+        }
+
+        /**
+         * Helper for {@link SearchSites#createSiteList}.
+         *
+         * @param engineId the search engine id
+         */
+        public void addSite(final int engineId) {
+            mList.add(new Site(this, engineId, true));
+        }
+
+        /**
+         * Helper for {@link SearchSites#createSiteList}.
+         *
+         * @param engineId the search engine id
+         * @param enabled  flag
+         */
+        public void addSite(final int engineId,
+                            final boolean enabled) {
+            mList.add(new Site(this, engineId, enabled));
+        }
+
+        /**
+         * Load the site settings and the order of the list.
+         *
+         * @param context Current context
+         */
+        @VisibleForTesting
+        public void loadPrefs(@NonNull final Context context) {
+
+            final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+            for (Site site : mList) {
+                site.loadFromPrefs(prefs);
+            }
+
+            final String order = prefs.getString(PREFS_ORDER_PREFIX + mTypeName, null);
+            if (order != null) {
+                // Reorder keeps the original list members.
+                final List<Site> reorderedList = reorder(mList, order);
+
+                if (reorderedList.size() < mList.size()) {
+                    // This is a fringe case: a new engine was added, and the user upgraded
+                    // this app. The stored order will lack the new engine.
+                    // Add any sites not added yet to the end of the list
+                    for (Site site : mList) {
+                        if (!reorderedList.contains(site)) {
+                            reorderedList.add(site);
+                        }
+                    }
+                    savePrefs(context);
+                }
+
+                // simply replace in the new order.
+                mList.clear();
+                mList.addAll(reorderedList);
             }
         }
 
-        @SearchSites.EngineId
-        public int getEngineId() {
-            return mSEConfig.id();
+        /**
+         * Save the site settings and the order of the list.
+         *
+         * @param context Current context
+         */
+        public void savePrefs(@NonNull final Context context) {
+
+            // Save the order of the given list (ID's) and
+            // the individual site settings to preferences.
+            final SharedPreferences.Editor ed =
+                    PreferenceManager.getDefaultSharedPreferences(context).edit();
+
+            final String order = Csv.join(mList, site -> {
+                // store individual site settings
+                site.saveToPrefs(ed);
+                // and collect the id for the order string
+                return String.valueOf(site.engineId);
+            });
+
+            ed.putString(PREFS_ORDER_PREFIX + mTypeName, order);
+            ed.apply();
         }
 
-        /**
-         * Get the resource id for the human-readable name of the site.
-         *
-         * @return the resource id of the name
-         */
+
         @StringRes
-        public int getNameResId() {
-            return mSEConfig.nameResId();
+        public int getLabelId() {
+            return mNameResId;
         }
 
         @NonNull
-        public String getPreferenceKey() {
-            return mSEConfig.prefKey();
+        public String getBundleKey() {
+            return TAG + ":" + mTypeName;
         }
 
-        @NonNull
-        public String getFilenameSuffix() {
-            return mSEConfig.filenameSuffix();
+        @Override
+        public int describeContents() {
+            return 0;
         }
 
-        @NonNull
-        public String getSiteUrl() {
-            return mSEConfig.url();
-        }
-
-        /**
-         * Get the <strong>standard</strong> Locale for this engine.
-         *
-         * @return site locale
-         */
-        @NonNull
-        public Locale getLocale() {
-            return mLocale;
-        }
-
-        @Nullable
-        public Domain getExternalIdDomain() {
-            return mExternalIdDomain;
-        }
-
-        @IdRes
-        public int getDomainViewId() {
-            return mSEConfig.domainViewId();
-        }
-
-        @IdRes
-        public int getDomainMenuId() {
-            return mSEConfig.domainMenuId();
-        }
-
-        /**
-         * Timeout we allow for a connection to work.
-         *
-         * @return defaults to 5 second. Override as needed.
-         */
-        public int getConnectTimeoutMs() {
-            return mSEConfig.connectTimeoutMs();
-        }
-
-        /**
-         * Timeout we allow for a response to a request.
-         *
-         * @return defaults to 10 second. Override as needed.
-         */
-        public int getReadTimeoutMs() {
-            return mSEConfig.readTimeoutMs();
-        }
-
-        /** {@link SearchEngine.CoverByIsbn} only. */
-        public boolean supportsMultipleCoverSizes() {
-            return mSEConfig.supportsMultipleCoverSizes();
+        @Override
+        public void writeToParcel(@NonNull final Parcel dest,
+                                  final int flags) {
+            dest.writeInt(this.ordinal());
         }
     }
 }

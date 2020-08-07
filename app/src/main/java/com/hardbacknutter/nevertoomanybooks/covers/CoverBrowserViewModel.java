@@ -40,6 +40,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.Executor;
@@ -48,7 +49,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
-import com.hardbacknutter.nevertoomanybooks.searches.SiteList;
+import com.hardbacknutter.nevertoomanybooks.searches.Site;
 import com.hardbacknutter.nevertoomanybooks.tasks.ASyncExecutor;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.FinishedMessage;
@@ -80,6 +81,12 @@ public class CoverBrowserViewModel
      * key: isbn.
      */
     private final Map<String, FetchImageTask> mGalleryTasks = new HashMap<>();
+    /** List of ISBN numbers for alternative editions. The base list for the gallery adapter. */
+    @NonNull
+    private final ArrayList<String> mEditions = new ArrayList<>();
+    /** SelectedImage. */
+    @Nullable
+    private FetchImageTask mSelectedImageTask;
     /** FetchImageTask listener. */
     private final TaskListener<ImageFileInfo> mTaskListener = new TaskListener<ImageFileInfo>() {
         @Override
@@ -115,13 +122,6 @@ public class CoverBrowserViewModel
             }
         }
     };
-
-    /** SelectedImage. */
-    @Nullable
-    private FetchImageTask mSelectedImageTask;
-    /** List of ISBN numbers for alternative editions. The base list for the gallery adapter. */
-    @NonNull
-    private final ArrayList<String> mEditions = new ArrayList<>();
     /** Indicates cancel has been requested. */
     private boolean mIsCancelled;
 
@@ -158,11 +158,11 @@ public class CoverBrowserViewModel
             mCIdx = args.getInt(BKEY_FILE_INDEX);
             Objects.requireNonNull(mBaseIsbn, ErrorMsg.NULL_ISBN);
             // optional
-            SiteList siteList = args.getParcelable(SiteList.Type.Covers.getBundleKey());
-            if (siteList == null) {
-                siteList = SiteList.getList(SiteList.Type.Covers);
+            List<Site> sites = args.getParcelableArrayList(Site.Type.Covers.getBundleKey());
+            if (sites == null) {
+                sites = Site.Type.Covers.getSites();
             }
-            mFileManager = new FileManager(siteList);
+            mFileManager = new FileManager(sites);
         }
     }
 

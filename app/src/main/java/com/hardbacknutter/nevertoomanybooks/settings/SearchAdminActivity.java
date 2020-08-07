@@ -39,27 +39,29 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
-import androidx.viewpager2.widget.ViewPager2;
 
 import com.google.android.material.snackbar.Snackbar;
-import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
 import com.hardbacknutter.nevertoomanybooks.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.searches.SiteList;
+import com.hardbacknutter.nevertoomanybooks.databinding.ActivityAdminSearchBinding;
+import com.hardbacknutter.nevertoomanybooks.searches.Site;
 
 public class SearchAdminActivity
         extends BaseActivity {
 
-    private ViewPager2 mViewPager;
     private TabAdapter mTabAdapter;
 
     private SearchAdminModel mModel;
 
+    /** View binding. */
+    private ActivityAdminSearchBinding mVb;
+
     @Override
     protected void onSetContentView() {
-        setContentView(R.layout.activity_admin_search);
+        mVb = ActivityAdminSearchBinding.inflate(getLayoutInflater());
+        setContentView(mVb.getRoot());
     }
 
     @Override
@@ -69,14 +71,11 @@ public class SearchAdminActivity
         mModel = new ViewModelProvider(this).get(SearchAdminModel.class);
         mModel.init(getIntent().getExtras());
 
-        mViewPager = findViewById(R.id.pager);
-        final TabLayout tabBarLayout = findViewById(R.id.tab_panel);
-
         if (mModel.isSingleListMode()) {
-            final SiteList.Type type = mModel.getList().getType();
+            final Site.Type type = mModel.getType();
             //noinspection ConstantConditions
             getSupportActionBar().setSubtitle(type.getLabelId());
-            tabBarLayout.setVisibility(View.GONE);
+            mVb.tabPanel.setVisibility(View.GONE);
 
             mTabAdapter = new TabAdapter(this, type);
         } else {
@@ -85,10 +84,10 @@ public class SearchAdminActivity
 
         //FIXME: workaround for what seems to be a bug with FragmentStateAdapter#createFragment
         // and its re-use strategy.
-        mViewPager.setOffscreenPageLimit(mTabAdapter.getItemCount());
+        mVb.pager.setOffscreenPageLimit(mTabAdapter.getItemCount());
 
-        mViewPager.setAdapter(mTabAdapter);
-        new TabLayoutMediator(tabBarLayout, mViewPager, (tab, position) ->
+        mVb.pager.setAdapter(mTabAdapter);
+        new TabLayoutMediator(mVb.tabPanel, mVb.pager, (tab, position) ->
                 tab.setText(getString(mTabAdapter.getTabTitle(position))))
                 .attach();
     }
@@ -99,9 +98,8 @@ public class SearchAdminActivity
         if (hasSites) {
             if (mModel.isSingleListMode()) {
                 // single-list is NOT persisted, just returned for temporary usage.
-                final SiteList siteList = mModel.getList();
                 final Intent resultData = new Intent()
-                        .putExtra(siteList.getType().getBundleKey(), siteList);
+                        .putExtra(mModel.getType().getBundleKey(), mModel.getList());
                 setResult(Activity.RESULT_OK, resultData);
 
             } else {
@@ -110,7 +108,7 @@ public class SearchAdminActivity
             super.onBackPressed();
 
         } else {
-            Snackbar.make(mViewPager, R.string.warning_enable_at_least_1_website,
+            Snackbar.make(mVb.pager, R.string.warning_enable_at_least_1_website,
                           Snackbar.LENGTH_LONG).show();
         }
     }
@@ -128,10 +126,10 @@ public class SearchAdminActivity
          * or {@code null} in all-lists mode.
          */
         @Nullable
-        private final SiteList.Type mSingleListType;
+        private final Site.Type mSingleListType;
 
         TabAdapter(@NonNull final FragmentActivity container,
-                   @Nullable final SiteList.Type singleListType) {
+                   @Nullable final Site.Type singleListType) {
             super(container);
             mSingleListType = singleListType;
         }
@@ -139,7 +137,7 @@ public class SearchAdminActivity
         @Override
         public int getItemCount() {
             if (mSingleListType == null) {
-                return SiteList.Type.values().length;
+                return Site.Type.values().length;
             } else {
                 return 1;
             }
@@ -162,12 +160,12 @@ public class SearchAdminActivity
         }
 
         @NonNull
-        private SiteList.Type toType(final int position) {
+        private Site.Type toType(final int position) {
             // showing a single tab ?
             if (mSingleListType != null) {
                 return mSingleListType;
             } else {
-                return SiteList.Type.values()[position];
+                return Site.Type.values()[position];
             }
         }
     }

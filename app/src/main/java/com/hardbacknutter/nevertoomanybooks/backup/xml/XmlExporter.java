@@ -71,7 +71,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
-import com.hardbacknutter.nevertoomanybooks.searches.Site;
+import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineRegistry;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 
@@ -575,7 +575,7 @@ public class XmlExporter
             int progressMaxCount = progressListener.getProgressMaxPos() + cursor.getCount();
             progressListener.setProgressMaxPos(progressMaxCount);
 
-            final List<Domain> externalIdDomains = Site.getExternalIdDomains();
+            final List<Domain> externalIdDomains = SearchEngineRegistry.getExternalIdDomains();
 
             while (cursor.moveToNext() && !progressListener.isCancelled()) {
 

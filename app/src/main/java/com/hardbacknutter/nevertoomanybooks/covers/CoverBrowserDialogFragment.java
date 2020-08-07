@@ -61,8 +61,8 @@ import com.hardbacknutter.nevertoomanybooks.databinding.DialogCoverBrowserBindin
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.dialogs.BaseDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEditionsTask;
+import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineRegistry;
 import com.hardbacknutter.nevertoomanybooks.searches.Site;
-import com.hardbacknutter.nevertoomanybooks.searches.SiteList;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.FinishedMessage;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.BookViewModel;
 
@@ -133,7 +133,7 @@ public class CoverBrowserDialogFragment
     }
 
     /**
-     * ENHANCE: pass in a {@link SiteList.Type#Covers} list / set it on the fly.
+     * ENHANCE: pass in a {@link Site.Type#Covers} list / set it on the fly.
      */
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -384,8 +384,8 @@ public class CoverBrowserDialogFragment
         /**
          * Callback handler with the user's selection.
          *
-         * @param cIdx      cover index as passed in
-         * @param fileSpec  for the selected file
+         * @param cIdx     cover index as passed in
+         * @param fileSpec for the selected file
          */
         void onResult(@IntRange(from = 0) int cIdx,
                       @NonNull String fileSpec);
@@ -481,7 +481,9 @@ public class CoverBrowserDialogFragment
                     holder.imageView.setOnClickListener(v -> onGalleryImageSelected(imageFileInfo));
 
                     //noinspection ConstantConditions
-                    holder.siteView.setText(Site.getConfig(imageFileInfo.engineId).getNameResId());
+                    holder.siteView.setText(
+                            SearchEngineRegistry.getByEngineId(imageFileInfo.engineId)
+                                                .getNameResId());
 
                 } else {
                     // no file. Theoretically we should not get here,

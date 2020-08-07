@@ -36,10 +36,12 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModelProvider;
 
+import java.util.ArrayList;
+
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchCoordinator;
-import com.hardbacknutter.nevertoomanybooks.searches.SiteList;
+import com.hardbacknutter.nevertoomanybooks.searches.Site;
 import com.hardbacknutter.nevertoomanybooks.settings.BarcodePreferenceFragment;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.ResultDataModel;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.ScannerViewModel;
@@ -113,12 +115,12 @@ public class BookSearchActivity
         if (requestCode == RequestCode.NAV_PANEL_SETTINGS) {
             if (resultCode == Activity.RESULT_OK && data != null) {
                 // update the search sites list.
-                final SiteList siteList =
-                        data.getParcelableExtra(SiteList.Type.Data.getBundleKey());
-                if (siteList != null) {
+                final ArrayList<Site> sites =
+                        data.getParcelableArrayListExtra(Site.Type.Data.getBundleKey());
+                if (sites != null) {
                     final SearchCoordinator model =
                             new ViewModelProvider(this).get(SearchCoordinator.class);
-                    model.setSiteList(siteList);
+                    model.setSiteList(sites);
                 }
 
                 // Reset the scanner if it was changed.

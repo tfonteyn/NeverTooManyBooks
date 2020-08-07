@@ -47,8 +47,8 @@ import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
+import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineRegistry;
 import com.hardbacknutter.nevertoomanybooks.searches.Site;
-import com.hardbacknutter.nevertoomanybooks.searches.SiteList;
 
 final class MenuHandler {
 
@@ -105,7 +105,8 @@ final class MenuHandler {
             final MenuItem menuItem = subMenu.getItem(i);
             boolean visible = false;
 
-            final Site.Config config = Site.getConfigByMenuId(menuItem.getItemId());
+            final SearchEngineRegistry.Config config = SearchEngineRegistry
+                    .getByMenuId(menuItem.getItemId());
             if (config != null) {
                 final Domain domain = config.getExternalIdDomain();
                 if (domain != null) {
@@ -128,13 +129,13 @@ final class MenuHandler {
                                             @IdRes final int menuItemId,
                                             @NonNull final DataHolder rowData) {
 
-        final Site.Config config = Site.getConfigByMenuId(menuItemId);
+        final SearchEngineRegistry.Config config = SearchEngineRegistry
+                .getByMenuId(menuItemId);
 
         //noinspection ConstantConditions
         final SearchEngine.ByExternalId searchEngine = (SearchEngine.ByExternalId)
-                SiteList.getList(SiteList.Type.Data)
-                        .getSite(config.getEngineId())
-                        .getSearchEngine();
+                Site.Type.Data.getSite(config.getEngineId())
+                              .getSearchEngine(context);
 
         final Domain domain = config.getExternalIdDomain();
         //noinspection ConstantConditions

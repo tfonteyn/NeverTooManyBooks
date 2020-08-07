@@ -90,7 +90,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsManager;
-import com.hardbacknutter.nevertoomanybooks.searches.Site;
+import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineRegistry;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 import com.hardbacknutter.nevertoomanybooks.utils.Csv;
 import com.hardbacknutter.nevertoomanybooks.utils.DateParser;
@@ -204,7 +204,7 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_TO
  * <p>
  * TODO: some places ignore insert/update failures. A storage full could trigger a failure.
  * <p>
- * TODO: caching of statements forces synchronisation ... is it worth it ?
+ * URGENT: caching of statements forces synchronized (stmt) ... is it worth it ?
  * There is an explicit warning that {@link SQLiteStatement} is not thread safe!
  */
 public class DAO
@@ -4742,7 +4742,7 @@ public class DAO
                     + ',' + TBL_BOOKS.dotAs(KEY_UTC_ADDED)
                     + ',' + TBL_BOOKS.dotAs(KEY_UTC_LAST_UPDATED));
 
-            for (Domain domain : Site.getExternalIdDomains()) {
+            for (Domain domain : SearchEngineRegistry.getExternalIdDomains()) {
                 sqlBookTmp.append(',').append(TBL_BOOKS.dotAs(domain.getName()));
             }
 

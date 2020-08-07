@@ -56,7 +56,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Entity;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
-import com.hardbacknutter.nevertoomanybooks.searches.Site;
+import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineRegistry;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 
 public final class StandardDialogs {
@@ -337,7 +337,7 @@ public final class StandardDialogs {
      * Show a registration request dialog.
      *
      * @param context      Current context
-     * @param engineId     the search engine
+     * @param engineId     the search engine id
      * @param required     {@code true} if we <strong>must</strong> have access.
      *                     {@code false} if it would be beneficial.
      * @param callerSuffix String used to flag in preferences if we showed the alert from
@@ -353,7 +353,7 @@ public final class StandardDialogs {
                                          @NonNull final String callerSuffix,
                                          @NonNull final Class<?> intentClass) {
 
-        final Site.Config config = Site.getConfig(engineId);
+        final SearchEngineRegistry.Config config = SearchEngineRegistry.getByEngineId(engineId);
 
         //noinspection ConstantConditions
         final String key = config.getPreferenceKey() + ".hide_alert." + callerSuffix;

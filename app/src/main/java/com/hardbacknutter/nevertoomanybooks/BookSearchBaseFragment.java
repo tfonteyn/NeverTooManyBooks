@@ -49,6 +49,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputLayout;
 
+import java.util.ArrayList;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
@@ -56,7 +57,7 @@ import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchCoordinator;
-import com.hardbacknutter.nevertoomanybooks.searches.SiteList;
+import com.hardbacknutter.nevertoomanybooks.searches.Site;
 import com.hardbacknutter.nevertoomanybooks.settings.SearchAdminActivity;
 import com.hardbacknutter.nevertoomanybooks.settings.SearchAdminModel;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDialogFragment;
@@ -270,7 +271,6 @@ public abstract class BookSearchBaseFragment
      *
      * @return {@code true} if a search is allowed
      */
-    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     boolean onPreSearch() {
         return true;
     }
@@ -281,7 +281,6 @@ public abstract class BookSearchBaseFragment
      *
      * @return {@code true} if a search was started
      */
-    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     boolean onSearch() {
         //noinspection ConstantConditions
         return mCoordinator.search(getContext());
@@ -318,10 +317,10 @@ public abstract class BookSearchBaseFragment
             // no changes committed, we got data to use temporarily
             case RequestCode.PREFERRED_SEARCH_SITES: {
                 if (resultCode == Activity.RESULT_OK && data != null) {
-                    final SiteList siteList =
-                            data.getParcelableExtra(SiteList.Type.Data.getBundleKey());
-                    if (siteList != null) {
-                        mCoordinator.setSiteList(siteList);
+                    final ArrayList<Site> sites =
+                            data.getParcelableArrayListExtra(Site.Type.Data.getBundleKey());
+                    if (sites != null) {
+                        mCoordinator.setSiteList(sites);
                     }
                 }
                 break;
@@ -332,9 +331,9 @@ public abstract class BookSearchBaseFragment
                 }
                 break;
             }
-//            case UniqueId.REQ_NAV_PANEL_SETTINGS: {
-//                mSearchCoordinator.setSiteList(sites);
-//            }
+            // case UniqueId.REQ_NAV_PANEL_SETTINGS: {
+            //     mSearchCoordinator.setSiteList(sites);
+            // }
 
             default: {
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {

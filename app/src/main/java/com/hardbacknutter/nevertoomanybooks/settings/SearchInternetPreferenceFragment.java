@@ -38,7 +38,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 /**
  * Used/defined in xml/preferences.xml
  */
-public class WebSearchesPreferenceFragment
+public class SearchInternetPreferenceFragment
         extends BasePreferenceFragment {
 
     @Override

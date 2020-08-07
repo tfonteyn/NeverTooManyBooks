@@ -36,11 +36,12 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModel;
 
+import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.Map;
 import java.util.Objects;
 
-import com.hardbacknutter.nevertoomanybooks.searches.SiteList;
+import com.hardbacknutter.nevertoomanybooks.searches.Site;
 
 /**
  * Shared between ALL tabs (fragments) and the hosting Activity.
@@ -48,16 +49,13 @@ import com.hardbacknutter.nevertoomanybooks.searches.SiteList;
 public class SearchAdminModel
         extends ViewModel {
 
+    private static final String ERROR_NOT_IN_SINGLE_LIST_MODE = "NOT in single-list mode";
     /** Log tag. */
     private static final String TAG = "SearchAdminModel";
     /** Single-list/tab mode parameter. */
     public static final String BKEY_LIST = TAG + ":list";
 
-    /**
-     * In single-list mode: a local instance, containing a COPY of the single list we're editing.
-     * In all-lists mode: a reference to the global list map.
-     */
-    private Map<SiteList.Type, SiteList> mListMap;
+    private final Map<Site.Type, ArrayList<Site>> mSiteListMap = new EnumMap<>(Site.Type.class);
 
     /**
      * Pseudo constructor.
@@ -68,30 +66,44 @@ public class SearchAdminModel
      * @param args {@link Intent#getExtras()} or {@link Fragment#getArguments()}
      */
     public void init(@Nullable final Bundle args) {
-        if (mListMap == null) {
-            // Check/load single-list mode
-            final SiteList singleList;
+        if (mSiteListMap.isEmpty()) {
+            // single-list mode ?
+            final ArrayList<Site> singleList;
             if (args != null) {
                 // will be null if not present
-                singleList = args.getParcelable(BKEY_LIST);
+                singleList = args.getParcelableArrayList(BKEY_LIST);
             } else {
                 singleList = null;
             }
 
             if (singleList != null) {
-                // create a local instance and add the list
-                mListMap = new EnumMap<>(SiteList.Type.class);
-                mListMap.put(singleList.getType(), singleList);
+                final Site.Type type = singleList.get(0).getType();
+                mSiteListMap.put(type, singleList);
 
             } else {
-                // Get a reference to the global lists
-                mListMap = SiteList.getSiteListMap();
+                for (Site.Type type : Site.Type.values()) {
+                    mSiteListMap.put(type, type.getSites());
+                }
             }
         }
     }
 
     boolean isSingleListMode() {
-        return mListMap.size() == 1;
+        return mSiteListMap.size() == 1;
+    }
+
+    /**
+     * Get the type of the list for single-list mode.
+     * Should only be called when {@link #isSingleListMode()} returns {@code true}
+     *
+     * @return the type
+     */
+    @NonNull
+    Site.Type getType() {
+        if (!isSingleListMode()) {
+            throw new IllegalStateException(ERROR_NOT_IN_SINGLE_LIST_MODE);
+        }
+        return mSiteListMap.values().iterator().next().get(0).getType();
     }
 
     /**
@@ -101,11 +113,11 @@ public class SearchAdminModel
      * @return the list
      */
     @NonNull
-    SiteList getList() {
+    ArrayList<Site> getList() {
         if (!isSingleListMode()) {
-            throw new IllegalStateException("NOT in single-list mode");
+            throw new IllegalStateException(ERROR_NOT_IN_SINGLE_LIST_MODE);
         }
-        return mListMap.values().iterator().next();
+        return mSiteListMap.values().iterator().next();
     }
 
     /**
@@ -122,8 +134,8 @@ public class SearchAdminModel
      *                              (This would be a bug...)
      */
     @NonNull
-    SiteList getList(@NonNull final SiteList.Type type) {
-        final SiteList list = mListMap.get(type);
+    ArrayList<Site> getList(@NonNull final Site.Type type) {
+        final ArrayList<Site> list = mSiteListMap.get(type);
         Objects.requireNonNull(list, "in single-list mode, wrong type=" + type);
         return list;
     }
@@ -136,16 +148,14 @@ public class SearchAdminModel
      * @return {@code true} if each list handled has at least one site enabled.
      */
     public boolean validate() {
-        int shouldHave = 0;
-        int has = 0;
-        for (SiteList list : mListMap.values()) {
-            shouldHave++;
-            has += list.getEnabledSites().isEmpty() ? 0 : 1;
+        for (ArrayList<Site> list : mSiteListMap.values()) {
+            if (list.stream().noneMatch(Site::isEnabled)) {
+                return false;
+            }
         }
 
-        return (has > 0) && (shouldHave == has);
+        return true;
     }
-
 
     /**
      * Persist the lists.
@@ -159,8 +169,8 @@ public class SearchAdminModel
             throw new IllegalStateException("in single-list mode");
         }
 
-        for (SiteList list : mListMap.values()) {
-            list.savePrefs(context);
+        for (Map.Entry<Site.Type, ArrayList<Site>> entry : mSiteListMap.entrySet()) {
+            entry.getKey().setList(context, entry.getValue());
         }
     }
 }

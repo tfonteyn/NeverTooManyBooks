@@ -61,7 +61,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
-import com.hardbacknutter.nevertoomanybooks.searches.Site;
+import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineRegistry;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.StringList;
@@ -214,7 +214,7 @@ public class CsvExporter
 
         final Book book = new Book();
 
-        final List<Domain> externalIdDomains = Site.getExternalIdDomains();
+        final List<Domain> externalIdDomains = SearchEngineRegistry.getExternalIdDomains();
 
         try (Cursor cursor = mDb.fetchBooksForExport(mUtcSinceDateTime)) {
             // row 0 with the column labels

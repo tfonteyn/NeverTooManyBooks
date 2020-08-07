@@ -92,10 +92,9 @@ public class SearchEditionsTask
         // Always add the original isbn!
         isbnList.add(mIsbn);
 
-        final List<Site> sites = SiteList.getList(SiteList.Type.AltEditions)
-                                         .getEnabledSites();
-        for (Site site : sites) {
-            final SearchEngine searchEngine = site.getSearchEngine(this);
+        final List<Site> allSites = Site.Type.AltEditions.getSites();
+        for (Site site : Site.filterForEnabled(allSites)) {
+            final SearchEngine searchEngine = site.getSearchEngine(context, this);
             try {
                 // can we reach the site at all ?
                 NetworkUtils.ping(context, searchEngine.getSiteUrl());

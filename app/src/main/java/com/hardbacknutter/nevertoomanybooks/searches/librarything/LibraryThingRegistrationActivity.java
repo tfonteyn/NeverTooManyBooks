@@ -43,8 +43,8 @@ import com.google.android.material.snackbar.Snackbar;
 import com.hardbacknutter.nevertoomanybooks.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.databinding.ActivityLibrarythingRegisterBinding;
+import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineRegistry;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
-import com.hardbacknutter.nevertoomanybooks.searches.Site;
 
 /**
  * Contains details about LibraryThing links and how to register for a developer key.
@@ -95,7 +95,8 @@ public class LibraryThingRegistrationActivity
         // for the purist: we should call SearchEngine#getSiteUrl()
         // but it's extremely unlikely that LibraryThing would ever get a configurable url
         //noinspection ConstantConditions
-        final String siteUrl = Site.getConfig(SearchSites.LIBRARY_THING).getSiteUrl();
+        final String siteUrl = SearchEngineRegistry.getByEngineId(SearchSites.LIBRARY_THING)
+                                                   .getSiteUrl();
 
         mVb.registerUrl.setOnClickListener(v -> {
             final Uri uri = Uri.parse(siteUrl + '/');

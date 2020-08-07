@@ -58,7 +58,7 @@ import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 import com.hardbacknutter.nevertoomanybooks.datamanager.validators.ValidatorException;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
-import com.hardbacknutter.nevertoomanybooks.searches.Site;
+import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineRegistry;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.Money;
 
@@ -786,7 +786,7 @@ public class Book
      */
     @VisibleForTesting
     void preprocessExternalIds(final boolean isNew) {
-        for (Domain domain : Site.getExternalIdDomains()) {
+        for (Domain domain : SearchEngineRegistry.getExternalIdDomains()) {
             final String key = domain.getName();
             if (contains(key)) {
                 final Object o = get(key);

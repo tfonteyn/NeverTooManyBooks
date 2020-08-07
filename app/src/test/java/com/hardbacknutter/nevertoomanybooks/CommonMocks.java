@@ -56,7 +56,11 @@ import com.hardbacknutter.nevertoomanybooks.utils.DateParser;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyFloat;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anySet;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
@@ -74,6 +78,9 @@ public class CommonMocks {
     protected Context mContext;
     @Mock
     protected SharedPreferences mSharedPreferences;
+    @Mock
+    protected SharedPreferences.Editor mSharedPreferencesEditor;
+
     @Mock
     protected Resources mResources;
     @Mock
@@ -111,11 +118,14 @@ public class CommonMocks {
     }
 
     /**
-     * Each test <strong>MUST</strong> call {@link #setLocale(Locale)} as needed.
+     * Each test <strong>should</strong> call {@link #setLocale(Locale)} as needed.
+     * The default is Locale.US.
      */
     @BeforeEach
     @CallSuper
     public void setUp() {
+        setLocale(Locale.US);
+
         mJdkLocale = Locale.getDefault();
 
         mRawData = BundleMock.mock();
@@ -131,6 +141,7 @@ public class CommonMocks {
         when(mResources.getConfiguration()).thenReturn(mConfiguration);
 
         when(mConfiguration.getLocales()).thenReturn(mLocaleList);
+
 
         when(mLocaleList.get(0)).thenAnswer((Answer<Locale>) invocation -> mLocale0);
 
@@ -183,6 +194,21 @@ public class CommonMocks {
                     }
                     return "https://www.amazon.com";
                 });
+
+        when(mSharedPreferences.edit()).thenReturn(mSharedPreferencesEditor);
+
+        when(mSharedPreferencesEditor.putString(anyString(), anyString()))
+                .thenReturn(mSharedPreferencesEditor);
+        when(mSharedPreferencesEditor.putStringSet(anyString(), anySet()))
+                .thenReturn(mSharedPreferencesEditor);
+        when(mSharedPreferencesEditor.putBoolean(anyString(), anyBoolean()))
+                .thenReturn(mSharedPreferencesEditor);
+        when(mSharedPreferencesEditor.putInt(anyString(), anyInt()))
+                .thenReturn(mSharedPreferencesEditor);
+        when(mSharedPreferencesEditor.putLong(anyString(), anyLong()))
+                .thenReturn(mSharedPreferencesEditor);
+        when(mSharedPreferencesEditor.putFloat(anyString(), anyFloat()))
+                .thenReturn(mSharedPreferencesEditor);
     }
 
     public static class TextCaller

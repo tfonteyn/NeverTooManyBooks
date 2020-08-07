@@ -150,11 +150,12 @@ public class EditBookActivity
         if (requestCode == RequestCode.NAV_PANEL_SETTINGS) {
             if (resultCode == Activity.RESULT_OK && data != null) {
                 // update the search sites list.
-                // SiteList siteList = data.getParcelableExtra(SiteList.Type.Data.getBundleKey());
-                // if (siteList != null) {
+                // ArrayList<Site> sites = data.getParcelableArrayListExtra(
+                //                                      Site.Type.Data.getBundleKey());
+                // if (sites != null) {
                 //     SearchCoordinator model =
                 //             new ViewModelProvider(this).get(SearchCoordinator.class);
-                //     model.setSiteList(siteList);
+                //     model.setSiteList(sites);
                 // }
 
                 // Reset the scanner if it was changed.
@@ -228,6 +229,8 @@ public class EditBookActivity
      */
     public void prepareSave(final boolean checkUnfinishedEdits) {
         final Book book = mBookViewModel.getBook();
+        // this will normally only contain 1 element maximum but is designed (and proven
+        // to work) with multiple.
         final Collection<String> unfinishedEdits = mBookViewModel.getUnfinishedEdits();
 
         final List<Fragment> fragments = getSupportFragmentManager().getFragments();
@@ -253,7 +256,7 @@ public class EditBookActivity
             // check them for unfinished edits.
             // Note that for now, there will only ever be a single (front/visible), but this code
             // should be able to cope with future layouts showing multiple fragments at once (flw)
-            if (frag.isResumed() && frag instanceof DataEditor) {
+            if (frag instanceof DataEditor && frag.isResumed()) {
                 //noinspection unchecked
                 final DataEditor<Book> dataEditor = (DataEditor<Book>) frag;
                 dataEditor.onSaveFields(book);

@@ -27,6 +27,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.covers;
 
+import android.content.Context;
 import android.util.Log;
 
 import androidx.annotation.AnyThread;
@@ -38,6 +39,7 @@ import androidx.annotation.WorkerThread;
 import java.io.File;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
@@ -45,7 +47,6 @@ import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.searches.Site;
-import com.hardbacknutter.nevertoomanybooks.searches.SiteList;
 import com.hardbacknutter.nevertoomanybooks.tasks.Canceller;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 
@@ -64,16 +65,16 @@ public class FileManager {
     private final Map<String, ImageFileInfo> mFiles =
             Collections.synchronizedMap(new HashMap<>());
 
-    /** Sites the user wants to search for cover images. */
-    private final SiteList mSiteList;
+    /** The Sites the user wants to search for cover images. */
+    private final List<Site> mSiteList;
 
     /**
      * Constructor.
      *
-     * @param siteList site list
+     * @param sites site list
      */
-    FileManager(@NonNull final SiteList siteList) {
-        mSiteList = siteList;
+    FileManager(@NonNull final List<Site> sites) {
+        mSiteList = sites;
     }
 
     /**
@@ -100,25 +101,29 @@ public class FileManager {
      * The first Site which has an image is accepted.
      * <p>
      *
-     * @param caller to check for any cancellations
-     * @param isbn   to search for, <strong>must</strong> be valid.
-     * @param cIdx   0..n image index
-     * @param sizes  a list of images sizes in order of preference
+     * @param context Current context
+     * @param caller  to check for any cancellations
+     * @param isbn    to search for, <strong>must</strong> be valid.
+     * @param cIdx    0..n image index
+     * @param sizes   a list of images sizes in order of preference
      *
      * @return a {@link ImageFileInfo} object with or without a valid fileSpec.
      */
     @NonNull
     @WorkerThread
-    public ImageFileInfo search(@NonNull final Canceller caller,
+    public ImageFileInfo search(@NonNull final Context context,
+                                @NonNull final Canceller caller,
                                 @NonNull final String isbn,
                                 @IntRange(from = 0) final int cIdx,
                                 @NonNull final ImageFileInfo.Size... sizes) {
+
+        final List<Site> enabledSites = Site.filterForEnabled(mSiteList);
 
         // We will disable sites on the fly for the *current* search without
         // modifying the list by using a simple bitmask.
         @SearchSites.EngineId
         int currentSearchSites = 0;
-        for (Site site : mSiteList.getEnabledSites()) {
+        for (Site site : enabledSites) {
             currentSearchSites = currentSearchSites | site.engineId;
         }
 
@@ -169,7 +174,7 @@ public class FileManager {
             }
 
 
-            for (Site site : mSiteList.getEnabledSites()) {
+            for (Site site : enabledSites) {
                 // Should we search this site ?
                 if ((currentSearchSites & site.engineId) != 0) {
 
@@ -178,7 +183,7 @@ public class FileManager {
                     }
 
                     // Is this Site's SearchEngine available and suitable?
-                    final SearchEngine searchEngine = site.getSearchEngine(caller);
+                    final SearchEngine searchEngine = site.getSearchEngine(context, caller);
                     if (searchEngine instanceof SearchEngine.CoverByIsbn
                         && searchEngine.isAvailable()) {
 
