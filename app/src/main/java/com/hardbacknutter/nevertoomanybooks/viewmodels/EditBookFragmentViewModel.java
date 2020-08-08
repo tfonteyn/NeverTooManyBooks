@@ -63,8 +63,6 @@ public class EditBookFragmentViewModel
     private List<Bookshelf> mBookshelves;
     /** Field drop down list. */
     private List<String> mAuthorNames;
-    /** Field drop down list. */
-    private List<String> mPublisherNames;
 
     @IdRes
     private int[] mCurrentDialogFieldId;
@@ -92,19 +90,6 @@ public class EditBookFragmentViewModel
             mAuthorNames = mDb.getAuthorNames(DBDefinitions.KEY_AUTHOR_FORMATTED);
         }
         return mAuthorNames;
-    }
-
-    /**
-     * Load a publisher list.
-     *
-     * @return List of publishers
-     */
-    @NonNull
-    public List<String> getAllPublishers() {
-        if (mPublisherNames == null) {
-            mPublisherNames = mDb.getPublisherNames();
-        }
-        return mPublisherNames;
     }
 
     /**
