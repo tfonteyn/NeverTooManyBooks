@@ -109,7 +109,7 @@ public final class AmazonSearchEngine
                    SearchEngine.CoverByIsbn {
 
     /** Preferences prefix. */
-    public static final String PREF_KEY = "amazon";
+    static final String PREF_KEY = "amazon";
     /** Type: {@code String}. */
     @VisibleForTesting
     public static final String PREFS_HOST_URL = PREF_KEY + ".host.url";
@@ -156,10 +156,11 @@ public final class AmazonSearchEngine
     private final Pattern mPagesPattern;
 
     /**
-     * Constructor.
+     * Constructor. Called using reflections, so <strong>MUST</strong> be <em>public</em>.
      *
      * @param appContext Application context
      */
+    @SuppressWarnings("WeakerAccess")
     public AmazonSearchEngine(@NonNull final Context appContext) {
         super(appContext);
 
@@ -282,8 +283,20 @@ public final class AmazonSearchEngine
     @NonNull
     @Override
     public Locale getLocale() {
-        // The Locale depends on the actual website url as configured by the user.
-        final String baseUrl = getSiteUrl();
+        // Derive the Locale from the user configured url.
+        return getLocale(getSiteUrl());
+    }
+
+    /**
+     * Derive the Locale from the actual url.
+     *
+     * @param baseUrl to digest
+     *
+     * @return Locale matching the url root domain
+     */
+    @NonNull
+    private Locale getLocale(@NonNull final String baseUrl) {
+
         final String root = baseUrl.substring(baseUrl.lastIndexOf('.') + 1);
         switch (root) {
             case "com":
@@ -368,7 +381,7 @@ public final class AmazonSearchEngine
                       @NonNull final boolean[] fetchThumbnail,
                       @NonNull final Bundle bookData) {
 
-        final Locale siteLocale = getLocale();
+        final Locale siteLocale = getLocale(document.location().split("/")[2]);
 
         // This is WEIRD...
         // Unless we do this seemingly needless select, the next select (for the title)
@@ -577,9 +590,9 @@ public final class AmazonSearchEngine
     @WorkerThread
     @VisibleForTesting
     @NonNull
-    public ArrayList<String> parseCovers(@NonNull final Document document,
-                                         @Nullable final String isbn,
-                                         @IntRange(from = 0) final int cIdx) {
+    private ArrayList<String> parseCovers(@NonNull final Document document,
+                                          @Nullable final String isbn,
+                                          @IntRange(from = 0) final int cIdx) {
 
         final Element coverElement = document.selectFirst("img#imgBlkFront");
         String url;

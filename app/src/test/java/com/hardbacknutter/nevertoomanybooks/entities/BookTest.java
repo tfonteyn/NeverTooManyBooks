@@ -36,8 +36,8 @@ import java.util.Locale;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import com.hardbacknutter.nevertoomanybooks.BundleMock;
-import com.hardbacknutter.nevertoomanybooks.CommonMocks;
+import com.hardbacknutter.nevertoomanybooks.Base;
+import com.hardbacknutter.nevertoomanybooks._mocks.os.BundleMock;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
 
@@ -62,7 +62,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 class BookTest
-        extends CommonMocks {
+        extends Base {
 
     private static final String INVALID_DEFAULT = "Invalid default";
 
@@ -72,7 +72,7 @@ class BookTest
     public void setUp() {
         super.setUp();
 
-        mBundleHelper = BundleMock.mock();
+        mBundleHelper = BundleMock.create();
 
         SearchSites.registerSearchEngineClasses();
     }

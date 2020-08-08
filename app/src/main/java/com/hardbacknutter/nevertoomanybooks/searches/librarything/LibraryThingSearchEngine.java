@@ -115,7 +115,7 @@ public class LibraryThingSearchEngine
                    SearchEngine.AlternativeEditions {
 
     /** Preferences prefix. */
-    public static final String PREF_KEY = "librarything";
+    static final String PREF_KEY = "librarything";
 
     /** Preference that contains the dev key for the user. Type: {@code String}. */
     static final String PREFS_DEV_KEY = PREF_KEY + ".dev_key";
@@ -136,10 +136,11 @@ public class LibraryThingSearchEngine
     private static final Pattern DEV_KEY_PATTERN = Pattern.compile("[\\r\\t\\n\\s]*");
 
     /**
-     * Constructor.
+     * Constructor. Called using reflections, so <strong>MUST</strong> be <em>public</em>.
      *
      * @param appContext Application context
      */
+    @SuppressWarnings("WeakerAccess")
     public LibraryThingSearchEngine(@NonNull final Context appContext) {
         super(appContext);
     }
@@ -151,7 +152,7 @@ public class LibraryThingSearchEngine
      *
      * @return {@code true} if there is a developer key configured.
      */
-    public static boolean hasKey(@NonNull final Context context) {
+    private static boolean hasKey(@NonNull final Context context) {
         final boolean hasKey = !getDevKey(context).isEmpty();
         if (BuildConfig.DEBUG && !hasKey) {
             Log.d(TAG, "hasKey|key not available");

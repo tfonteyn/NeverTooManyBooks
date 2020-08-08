@@ -159,10 +159,11 @@ public class OpenLibrarySearchEngine
     private static final String SUPPORTED_KEYS = "ISBN,OLID";
 
     /**
-     * Constructor.
+     * Constructor. Called using reflections, so <strong>MUST</strong> be <em>public</em>.
      *
      * @param appContext Application context
      */
+    @SuppressWarnings("WeakerAccess")
     public OpenLibrarySearchEngine(@NonNull final Context appContext) {
         super(appContext);
     }
@@ -552,8 +553,12 @@ public class OpenLibrarySearchEngine
                     toc.add(new TocEntry(authors.get(0), title, ""));
                 }
             }
+
             if (!toc.isEmpty()) {
                 bookData.putParcelableArrayList(Book.BKEY_TOC_ARRAY, toc);
+                if (toc.size() > 1) {
+                    bookData.putLong(DBDefinitions.KEY_TOC_BITMASK, Book.TOC_MULTIPLE_WORKS);
+                }
             }
         }
     }

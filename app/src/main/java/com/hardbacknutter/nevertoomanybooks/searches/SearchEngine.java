@@ -165,7 +165,7 @@ public interface SearchEngine {
 
     /**
      * Reset the engine, ready for a new search.
-     * This is called by {@link Site#getSearchEngine()}.
+     * This is called by {@link Site#getSearchEngine}.
      * <p>
      * The default implementation calls {@code setCaller(null)}.
      * Custom implementations should do the same.

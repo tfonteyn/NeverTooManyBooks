@@ -76,7 +76,7 @@ public class KbNlSearchEngine
                    SearchEngine.CoverByIsbn {
 
     /** Preferences prefix. */
-    public static final String PREF_KEY = "kbnl";
+    static final String PREF_KEY = "kbnl";
 
     /**
      * <strong>Note:</strong> This is not the same site as the search site itself.
@@ -102,10 +102,11 @@ public class KbNlSearchEngine
             "/DB=1/SET=1/TTL=1/LNG=NE/CMD?ACT=SRCHA&IKT=1007&SRT=YOP&TRM=%1$s";
 
     /**
-     * Constructor.
+     * Constructor. Called using reflections, so <strong>MUST</strong> be <em>public</em>.
      *
      * @param appContext Application context
      */
+    @SuppressWarnings("WeakerAccess")
     public KbNlSearchEngine(@NonNull final Context appContext) {
         super(appContext);
     }

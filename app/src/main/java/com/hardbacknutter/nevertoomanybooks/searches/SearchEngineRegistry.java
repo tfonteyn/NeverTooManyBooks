@@ -212,10 +212,7 @@ public final class SearchEngineRegistry {
                         mClass.getConstructor(Context.class);
                 // ALWAYS use the localized Application context here
                 // It's going to get used in background tasks!
-                //URGENT: do we need the call to applyLocale?
-//                final Context appContext = LocaleUtils.applyLocale(context.getApplicationContext());
-                final Context appContext = context.getApplicationContext();
-                return c.newInstance(appContext);
+                return c.newInstance(context.getApplicationContext());
 
             } catch (@NonNull final NoSuchMethodException | IllegalAccessException
                     | InstantiationException | InvocationTargetException e) {

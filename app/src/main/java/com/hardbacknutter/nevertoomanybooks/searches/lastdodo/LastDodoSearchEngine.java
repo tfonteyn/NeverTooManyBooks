@@ -86,10 +86,11 @@ public class LastDodoSearchEngine
     private static final String BY_ISBN = "/search?q=%1$s&type=147";
 
     /**
-     * Constructor.
+     * Constructor. Called using reflections, so <strong>MUST</strong> be <em>public</em>.
      *
      * @param appContext Application context
      */
+    @SuppressWarnings("WeakerAccess")
     public LastDodoSearchEngine(@NonNull final Context appContext) {
         super(appContext);
     }
@@ -144,9 +145,9 @@ public class LastDodoSearchEngine
      * @throws IOException on failure
      */
     @WorkerThread
-    void parseMultiResult(@NonNull final Document document,
-                          @NonNull final boolean[] fetchThumbnail,
-                          @NonNull final Bundle bookData)
+    private void parseMultiResult(@NonNull final Document document,
+                                  @NonNull final boolean[] fetchThumbnail,
+                                  @NonNull final Bundle bookData)
             throws IOException {
 
         // Grab the first search result, and redirect to that page
@@ -487,10 +488,10 @@ public class LastDodoSearchEngine
     public static final class SiteField {
 
         /** The barcode (e.g. the EAN code) is not always an ISBN. */
-        public static final String KEY_PRINTING = "__printing";
-        public static final String KEY_SIZE = "__size";
-        public static final String KEY_TYPE = "__type";
-        public static final String KEY_REEKS = "__reeks";
+        static final String KEY_PRINTING = "__printing";
+        static final String KEY_SIZE = "__size";
+        static final String KEY_TYPE = "__type";
+        static final String KEY_REEKS = "__reeks";
 
         private SiteField() {
         }

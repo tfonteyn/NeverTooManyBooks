@@ -140,10 +140,11 @@ public class StripInfoSearchEngine
     private static final String A_HREF_STRIP = "a[href*=/strip/]";
 
     /**
-     * Constructor.
+     * Constructor. Called using reflections, so <strong>MUST</strong> be <em>public</em>.
      *
      * @param appContext Application context
      */
+    @SuppressWarnings("WeakerAccess")
     public StripInfoSearchEngine(@NonNull final Context appContext) {
         super(appContext);
     }
@@ -411,11 +412,10 @@ public class StripInfoSearchEngine
         }
 
         final ArrayList<TocEntry> toc = parseToc(document);
-        if (toc != null && !toc.isEmpty()) {
+        // We DON'T store a toc with a single entry (i.e. the book title itself).
+        if (toc != null && toc.size() > 1) {
             bookData.putParcelableArrayList(Book.BKEY_TOC_ARRAY, toc);
-            if (toc.size() > 1) {
-                bookData.putLong(DBDefinitions.KEY_TOC_BITMASK, Book.TOC_MULTIPLE_WORKS);
-            }
+            bookData.putLong(DBDefinitions.KEY_TOC_BITMASK, Book.TOC_MULTIPLE_WORKS);
         }
 
         // store accumulated ArrayList's *after* we got the TOC
@@ -480,9 +480,9 @@ public class StripInfoSearchEngine
     @WorkerThread
     @VisibleForTesting
     @NonNull
-    public ArrayList<String> parseCovers(@NonNull final Document document,
-                                         @Nullable final String isbn,
-                                         @IntRange(from = 0) final int cIdx) {
+    private ArrayList<String> parseCovers(@NonNull final Document document,
+                                          @Nullable final String isbn,
+                                          @IntRange(from = 0) final int cIdx) {
         final Element coverElement;
         switch (cIdx) {
             case 0:
@@ -718,8 +718,8 @@ public class StripInfoSearchEngine
         return 0;
     }
 
-    public int processLanguage(@NonNull final Element td,
-                               @NonNull final Bundle bookData) {
+    private int processLanguage(@NonNull final Element td,
+                                @NonNull final Bundle bookData) {
         int found = processText(td, DBDefinitions.KEY_LANGUAGE, bookData);
         String lang = bookData.getString(DBDefinitions.KEY_LANGUAGE);
         if (lang != null && !lang.isEmpty()) {
@@ -896,7 +896,7 @@ public class StripInfoSearchEngine
     public static final class SiteField {
 
         /** The barcode (e.g. the EAN code) is not always an ISBN. */
-        public static final String BARCODE = "__barcode";
+        static final String BARCODE = "__barcode";
 
         private SiteField() {
         }

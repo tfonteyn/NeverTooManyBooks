@@ -102,9 +102,9 @@ public class IsfdbSearchEngine
                    SearchEngine.AlternativeEditions {
 
     /** Preferences prefix. */
-    public static final String PREF_KEY = "isfdb";
+    static final String PREF_KEY = "isfdb";
     /** Type: {@code boolean}. */
-    public static final String PREFS_SERIES_FROM_TOC = PREF_KEY + ".search.toc.series";
+    static final String PREFS_SERIES_FROM_TOC = PREF_KEY + ".search.toc.series";
     /** Type: {@code boolean}. */
     public static final String PREFS_USE_PUBLISHER = PREF_KEY + ".search.uses.publisher";
 
@@ -123,19 +123,19 @@ public class IsfdbSearchEngine
     @SuppressWarnings("WeakerAccess")
     static final String CHARSET_ENCODE_URL = "iso-8859-1";
     /** Common CGI directory. */
-    static final String CGI_BIN = "/cgi-bin/";
+    private static final String CGI_BIN = "/cgi-bin/";
     /** bibliographic information for one title. */
-    static final String URL_TITLE_CGI = "title.cgi";
+    private static final String URL_TITLE_CGI = "title.cgi";
     /** bibliographic information for one publication. */
-    static final String URL_PL_CGI = "pl.cgi";
+    private static final String URL_PL_CGI = "pl.cgi";
     /** ISFDB bibliography for one author. */
-    static final String URL_EA_CGI = "ea.cgi";
+    private static final String URL_EA_CGI = "ea.cgi";
     /** titles associated with a particular Series. */
-    static final String URL_PE_CGI = "pe.cgi";
+    private static final String URL_PE_CGI = "pe.cgi";
     /** Search by type; e.g.  arg=%s&type=ISBN. */
-    static final String URL_SE_CGI = "se.cgi";
+    private static final String URL_SE_CGI = "se.cgi";
     /** Advanced search FORM submission (using GET), and the returned results page url. */
-    static final String URL_ADV_SEARCH_RESULTS_CGI = "adv_search_results.cgi";
+    private static final String URL_ADV_SEARCH_RESULTS_CGI = "adv_search_results.cgi";
     /** Log tag. */
     private static final String TAG = "IsfdbSearchEngine";
     /** Param 1: external book ID. */
@@ -235,10 +235,11 @@ public class IsfdbSearchEngine
     private String mIsbn;
 
     /**
-     * Constructor.
+     * Constructor. Called using reflections, so <strong>MUST</strong> be <em>public</em>.
      *
      * @param appContext Application context
      */
+    @SuppressWarnings("WeakerAccess")
     public IsfdbSearchEngine(@NonNull final Context appContext) {
         super(appContext, IsfdbSearchEngine.CHARSET_DECODE_PAGE);
     }
@@ -778,10 +779,11 @@ public class IsfdbSearchEngine
         bookData.putString(DBDefinitions.KEY_LANGUAGE, "eng");
 
         final ArrayList<TocEntry> toc = parseToc(document);
-        // We DON'T store a toc with a single entry (i.e. the book title itself).
-        if (toc.size() > 1) {
+        if (!toc.isEmpty()) {
             bookData.putParcelableArrayList(Book.BKEY_TOC_ARRAY, toc);
-            bookData.putLong(DBDefinitions.KEY_TOC_BITMASK, Book.TOC_MULTIPLE_WORKS);
+            if (toc.size() > 1) {
+                bookData.putLong(DBDefinitions.KEY_TOC_BITMASK, Book.TOC_MULTIPLE_WORKS);
+            }
         }
 
         // store accumulated ArrayList's *after* we got the TOC
@@ -1027,9 +1029,9 @@ public class IsfdbSearchEngine
     @WorkerThread
     @VisibleForTesting
     @NonNull
-    public ArrayList<String> parseCovers(@NonNull final Document document,
-                                         @Nullable final String isbn,
-                                         @IntRange(from = 0) final int cIdx) {
+    private ArrayList<String> parseCovers(@NonNull final Document document,
+                                          @Nullable final String isbn,
+                                          @IntRange(from = 0) final int cIdx) {
         /* First "ContentBox" contains all basic details.
          * <pre>
          *   {@code
@@ -1109,7 +1111,7 @@ public class IsfdbSearchEngine
      */
     @WorkerThread
     @NonNull
-    public List<Edition> fetchEditionsByIsbn(@NonNull final String validIsbn)
+    List<Edition> fetchEditionsByIsbn(@NonNull final String validIsbn)
             throws IOException {
         mIsbn = validIsbn;
 
@@ -1207,9 +1209,9 @@ public class IsfdbSearchEngine
      * @throws IOException on failure
      */
     @WorkerThread
-    public void fetchByEdition(@NonNull final Edition edition,
-                               @NonNull final boolean[] fetchThumbnail,
-                               @NonNull final Bundle bookData)
+    void fetchByEdition(@NonNull final Edition edition,
+                        @NonNull final boolean[] fetchThumbnail,
+                        @NonNull final Bundle bookData)
             throws IOException {
 
         final Document document = loadDocumentByEdition(edition);
