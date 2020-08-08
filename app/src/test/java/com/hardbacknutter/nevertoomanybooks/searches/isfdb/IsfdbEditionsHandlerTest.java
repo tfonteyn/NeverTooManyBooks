@@ -39,7 +39,11 @@ import org.jsoup.nodes.Document;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import com.hardbacknutter.nevertoomanybooks.CommonMocks;
+import com.hardbacknutter.nevertoomanybooks.Base;
+import com.hardbacknutter.nevertoomanybooks._mocks.MockCaller;
+import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineRegistry;
+import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
+import com.hardbacknutter.nevertoomanybooks.searches.Site;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -50,7 +54,7 @@ import static org.junit.jupiter.api.Assertions.fail;
  * Test parsing the Jsoup Document for ISFDB multi-edition data.
  */
 class IsfdbEditionsHandlerTest
-        extends CommonMocks {
+        extends Base {
 
     private static final String sBaseUrl = "http://www.isfdb.org";
 
@@ -59,8 +63,9 @@ class IsfdbEditionsHandlerTest
     @BeforeEach
     public void setUp() {
         super.setUp();
-        mSearchEngine = new IsfdbSearchEngine(mContext);
-        mSearchEngine.setCaller(new TextCaller());
+        SearchEngineRegistry.create(mContext);
+        mSearchEngine = (IsfdbSearchEngine) Site.Type.Data
+                .getSite(SearchSites.ISFDB).getSearchEngine(mContext, new MockCaller());
     }
 
     @Test

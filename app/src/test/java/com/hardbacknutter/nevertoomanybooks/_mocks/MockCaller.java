@@ -25,30 +25,20 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.searches;
+package com.hardbacknutter.nevertoomanybooks._mocks;
 
-import java.util.Locale;
+import com.hardbacknutter.nevertoomanybooks.tasks.Canceller;
 
-import org.junit.jupiter.api.Test;
+public class MockCaller
+        implements Canceller {
 
-import com.hardbacknutter.nevertoomanybooks.Base;
+    @Override
+    public boolean cancel(final boolean mayInterruptIfRunning) {
+        return false;
+    }
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
-class FormatMapperTest
-        extends Base {
-
-    @Test
-    void basic() {
-        setLocale(Locale.UK);
-        Mapper mapper = new FormatMapper();
-        String key = mapper.getKey();
-        mRawData.putString(key, "pb");
-        mapper.map(mContext, mRawData);
-        assertEquals("Paperback", mRawData.getString(key));
-
-        mRawData.putString(key, "Dimensions 5x4");
-        mapper.map(mContext, mRawData);
-        assertEquals("Dim 5x4", mRawData.getString(key));
+    @Override
+    public boolean isCancelled() {
+        return false;
     }
 }

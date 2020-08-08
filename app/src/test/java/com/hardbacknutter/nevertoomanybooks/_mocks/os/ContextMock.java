@@ -25,30 +25,28 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.searches;
+package com.hardbacknutter.nevertoomanybooks._mocks.os;
 
-import java.util.Locale;
+import android.content.Context;
 
-import org.junit.jupiter.api.Test;
+import androidx.annotation.NonNull;
 
-import com.hardbacknutter.nevertoomanybooks.Base;
+import org.mockito.Mockito;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 
-class FormatMapperTest
-        extends Base {
+public final class ContextMock {
 
-    @Test
-    void basic() {
-        setLocale(Locale.UK);
-        Mapper mapper = new FormatMapper();
-        String key = mapper.getKey();
-        mRawData.putString(key, "pb");
-        mapper.map(mContext, mRawData);
-        assertEquals("Paperback", mRawData.getString(key));
+    @NonNull
+    public static Context create(@NonNull final String packageName) {
 
-        mRawData.putString(key, "Dimensions 5x4");
-        mapper.map(mContext, mRawData);
-        assertEquals("Dim 5x4", mRawData.getString(key));
+        final Context context = Mockito.mock(Context.class);
+
+        when(context.getPackageName()).thenReturn(packageName);
+        when(context.getApplicationContext()).thenReturn(context);
+        when(context.createConfigurationContext(any())).thenReturn(context);
+
+        return context;
     }
 }

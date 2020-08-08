@@ -26,7 +26,7 @@
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.hardbacknutter.nevertoomanybooks;
+package com.hardbacknutter.nevertoomanybooks._mocks.os;
 
 import android.os.Parcel;
 
@@ -46,9 +46,9 @@ import static org.mockito.Mockito.when;
  */
 public class ParcelMock {
 
-    public static Parcel mock() {
+    public static Parcel create() {
 
-        Parcel parcel = Mockito.mock(Parcel.class);
+        final Parcel parcel = Mockito.mock(Parcel.class);
         final List<Object> objects = new ArrayList<>();
         final AtomicInteger position = new AtomicInteger();
 

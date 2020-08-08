@@ -34,72 +34,20 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import com.hardbacknutter.nevertoomanybooks.CommonMocks;
+import com.hardbacknutter.nevertoomanybooks.Base;
 import com.hardbacknutter.nevertoomanybooks.utils.Csv;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.ArgumentMatchers.anyBoolean;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.ArgumentMatchers.isNull;
-import static org.mockito.Mockito.when;
 
 class SearchSitesTest
-        extends CommonMocks {
+        extends Base {
 
+    @Override
     @BeforeEach
     public void setUp() {
         super.setUp();
-
-        when(mSharedPreferences.getBoolean(eq("search.site.goodreads.enabled"),
-                                           anyBoolean())).thenReturn(true);
-        when(mSharedPreferences.getString(eq("goodreads.host.url"),
-                                          anyString()))
-                .thenReturn("https://www.goodreads.com");
-
-        when(mSharedPreferences.getBoolean(eq("search.site.googlebooks.enabled"),
-                                           anyBoolean())).thenReturn(true);
-        when(mSharedPreferences.getString(eq("googlebooks.host.url"),
-                                          anyString()))
-                .thenReturn("https://books.google.com");
-
-        when(mSharedPreferences.getBoolean(eq("search.site.librarything.enabled"),
-                                           anyBoolean())).thenReturn(true);
-        when(mSharedPreferences.getString(eq("librarything.host.url"),
-                                          anyString()))
-                .thenReturn("https://www.librarything.com");
-
-        when(mSharedPreferences.getBoolean(eq("search.site.isfdb.enabled"),
-                                           anyBoolean())).thenReturn(true);
-        when(mSharedPreferences.getString(eq("isfdb.host.url"),
-                                          anyString()))
-                .thenReturn("https://www.isfdb.com");
-
-        when(mSharedPreferences.getBoolean(eq("search.site.stripinfo.enabled"),
-                                           anyBoolean())).thenReturn(true);
-        when(mSharedPreferences.getString(eq("stripinfo.host.url"),
-                                          anyString()))
-                .thenReturn("https://www.stripinfo.be");
-
-        when(mSharedPreferences.getBoolean(eq("search.site.kbnl.enabled"),
-                                           anyBoolean())).thenReturn(true);
-        when(mSharedPreferences.getString(eq("kbnl.host.url"),
-                                          anyString()))
-                .thenReturn("https://www.kb.nl");
-
-        when(mSharedPreferences.getBoolean(eq("search.site.openlibrary.enabled"),
-                                           anyBoolean())).thenReturn(true);
-        when(mSharedPreferences.getString(eq("openlibrary.host.url"),
-                                          anyString()))
-                .thenReturn("https://www.openlibrary.com");
-
-        when(mSharedPreferences.getBoolean(eq("search.site.amazon.enabled"),
-                                           anyBoolean())).thenReturn(true);
-        when(mSharedPreferences.getString(eq("amazon.host.url"),
-                                          anyString()))
-                .thenReturn("https://www.amazon.co.uk");
-
+        setupSearchEnginePreferences(mSharedPreferences);
     }
 
     @Test
@@ -135,10 +83,6 @@ class SearchSitesTest
 
     @Test
     void order() {
-        when(mSharedPreferences.getString(eq("search.siteOrder.data"), isNull()))
-                // deliberate added 4 and omitted 128/256
-                .thenReturn("64,32,16,8,4,2,1");
-
         SearchEngineRegistry.create(mContext);
 
         final ArrayList<Site> sites = Site.Type.Data.getSites();

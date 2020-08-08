@@ -33,26 +33,31 @@ import java.util.Locale;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import com.hardbacknutter.nevertoomanybooks.JSoupCommonMocks;
+import com.hardbacknutter.nevertoomanybooks.JSoupBase;
+import com.hardbacknutter.nevertoomanybooks._mocks.MockCaller;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
+import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineRegistry;
+import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
+import com.hardbacknutter.nevertoomanybooks.searches.Site;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class LastDodoTest
-        extends JSoupCommonMocks {
+        extends JSoupBase {
 
     private LastDodoSearchEngine mSearchEngine;
 
     @BeforeEach
     public void setUp() {
         super.setUp();
-        mSearchEngine = new LastDodoSearchEngine(mContext);
-        mSearchEngine.setCaller(new TextCaller());
+        SearchEngineRegistry.create(mContext);
+        mSearchEngine = (LastDodoSearchEngine) Site.Type.Data
+                .getSite(SearchSites.LAST_DODO).getSearchEngine(mContext, new MockCaller());
     }
 
     @Test

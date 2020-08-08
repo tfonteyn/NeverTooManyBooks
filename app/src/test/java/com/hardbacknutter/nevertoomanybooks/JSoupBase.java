@@ -42,8 +42,8 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
-public class JSoupCommonMocks
-        extends CommonMocks {
+public class JSoupBase
+        extends Base {
 
     /** Helper: Load the data from the given file, and populate {@link #mRawData} */
     protected void loadData(@NonNull JsoupSearchEngineBase searchEngine,

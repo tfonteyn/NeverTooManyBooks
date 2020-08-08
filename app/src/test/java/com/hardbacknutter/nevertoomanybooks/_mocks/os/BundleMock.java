@@ -25,7 +25,7 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks;
+package com.hardbacknutter.nevertoomanybooks._mocks.os;
 
 import android.os.Bundle;
 import android.os.Parcelable;
@@ -37,10 +37,12 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.mockito.stubbing.Answer;
 
-import static org.mockito.ArgumentMatchers.isNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Matchers.anyByte;
@@ -57,32 +59,32 @@ import static org.mockito.Mockito.when;
 /**
  * <a href="https://github.com/konmik/nucleus/blob/master/nucleus-test-kit/src/main/java/mocks/BundleMock.java">BundleMock</a>
  * <p>
- * ADDED 2020-02-02: allow storing null values
- * doAnswer(put).when(bundle).putString(anyString(), isNull());
+ * ADDED:
+ * - allow storing String null values
+ * - putAll implementation
  */
 public final class BundleMock {
 
-    public static Bundle mock() {
-        return mock(new HashMap<>());
-    }
+    @SuppressWarnings("unchecked")
+    @NonNull
+    public static Bundle create() {
 
-    @SuppressWarnings({"SuspiciousMethodCalls", "ResultOfMethodCallIgnored", "unchecked"})
-    private static Bundle mock(@NonNull final HashMap<String, Object> map) {
+        final HashMap<String, Object> map = new HashMap<>();
+        final Bundle bundle = Mockito.mock(Bundle.class);
 
-        Answer<Object> unsupported = invocation -> {
+
+        final Answer<Object> unsupported = invocation -> {
             throw new UnsupportedOperationException();
         };
-        Answer<Object> put = invocation -> {
+        final Answer<Object> put = invocation -> {
             map.put((String) invocation.getArguments()[0], invocation.getArguments()[1]);
             return null;
         };
-        Answer<Object> get = invocation -> map.get(invocation.getArguments()[0]);
-        Answer<Object> getOrDefault = invocation -> {
-            Object key = invocation.getArguments()[0];
+        final Answer<Object> get = invocation -> map.get((String) invocation.getArguments()[0]);
+        final Answer<Object> getOrDefault = invocation -> {
+            String key = (String) invocation.getArguments()[0];
             return map.containsKey(key) ? map.get(key) : invocation.getArguments()[1];
         };
-
-        Bundle bundle = Mockito.mock(Bundle.class);
 
         doAnswer(invocation -> map.size()).when(bundle).size();
         doAnswer(invocation -> map.isEmpty()).when(bundle).isEmpty();
@@ -91,17 +93,18 @@ public final class BundleMock {
             return null;
         }).when(bundle).clear();
 
-        doAnswer(invocation -> map.containsKey(invocation.getArguments()[0]))
+        doAnswer(invocation -> map.containsKey((String) invocation.getArguments()[0]))
                 .when(bundle).containsKey(anyString());
-        doAnswer(invocation -> map.get(invocation.getArguments()[0]))
+        doAnswer(invocation -> map.get((String) invocation.getArguments()[0]))
                 .when(bundle).get(anyString());
         doAnswer(invocation -> {
-            map.remove(invocation.getArguments()[0]);
+            map.remove((String) invocation.getArguments()[0]);
             return null;
         }).when(bundle).remove(anyString());
 
         doAnswer(invocation -> map.keySet()).when(bundle).keySet();
 
+        //noinspection ResultOfMethodCallIgnored
         doAnswer(invocation -> BundleMock.class.getSimpleName() + "{map=" + map.toString() + "}")
                 .when(bundle).toString();
 
@@ -133,9 +136,8 @@ public final class BundleMock {
         when(bundle.getDouble(anyString())).thenAnswer(get);
         when(bundle.getDouble(anyString(), anyDouble())).thenAnswer(getOrDefault);
 
-        // ADDED 2020-02-02: allow storing null values
-        doAnswer(put).when(bundle).putString(anyString(), isNull());
-        doAnswer(put).when(bundle).putString(anyString(), anyString());
+        // 2020-02-02: allow storing null String values
+        doAnswer(put).when(bundle).putString(anyString(), nullable(String.class));
         when(bundle.getString(anyString())).thenAnswer(get);
         when(bundle.getString(anyString(), anyString())).thenAnswer(getOrDefault);
 
@@ -154,9 +156,6 @@ public final class BundleMock {
         doAnswer(put).when(bundle).putInt(anyString(), anyInt());
         when(bundle.getInt(anyString())).thenAnswer(get);
         when(bundle.getInt(anyString(), anyInt())).thenAnswer(getOrDefault);
-
-        doAnswer(unsupported).when(bundle).putAll(any(Bundle.class));
-        when(bundle.hasFileDescriptors()).thenAnswer(unsupported);
 
         doAnswer(put).when(bundle).putShort(anyString(), anyShort());
         when(bundle.getShort(anyString())).thenAnswer(get);
@@ -212,6 +211,30 @@ public final class BundleMock {
         doAnswer(put).when(bundle).putCharSequenceArray(anyString(), any(CharSequence[].class));
         when(bundle.getCharSequenceArray(anyString())).thenAnswer(get);
 
+        // 2020-08-07: implemented putAll
+        doAnswer(invocation -> {
+            final Bundle source = (Bundle) invocation.getArguments()[0];
+            for (String key : source.keySet()) {
+                map.put(key, source.get(key));
+            }
+            return null;
+        }).when(bundle).putAll(any(Bundle.class));
+
+
+        when(bundle.hasFileDescriptors()).thenAnswer(unsupported);
+
         return bundle;
+    }
+
+    @Test
+    void bu() {
+        Bundle b1 = BundleMock.create();
+        b1.putString("foo", "bar");
+        b1.putInt("ii", 11);
+        Bundle b2 = BundleMock.create();
+        b2.putAll(b1);
+
+        assertEquals("bar", b2.getString("foo"));
+        assertEquals(11, b2.getInt("ii"));
     }
 }
