@@ -129,7 +129,7 @@ public class App
      * Get the Application Context <strong>using the device Locale</strong>.
      * This is purely for readability / debug.
      * <p>
-     * If a {@link android.os.AsyncTask}#doInBackground needs a context, it should call this one.
+     * If a background task/runnable/... needs a context, it should call this method.
      *
      * @return app context
      */

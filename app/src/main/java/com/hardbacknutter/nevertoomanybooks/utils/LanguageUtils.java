@@ -32,6 +32,7 @@ import android.content.SharedPreferences;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import java.util.HashMap;
 import java.util.Locale;
@@ -53,7 +54,8 @@ public final class LanguageUtils {
      * Uses the {@link Locale#getDisplayName()} for the key,
      * and {@link Locale#getISO3Language} for the value.
      */
-    private static final String LANGUAGE_MAP = "language2iso3";
+    @VisibleForTesting
+    public static final String LANGUAGE_MAP = "language2iso3";
     @Nullable
     private static Map<String, String> LANG3_TO_LANG2_MAP;
 

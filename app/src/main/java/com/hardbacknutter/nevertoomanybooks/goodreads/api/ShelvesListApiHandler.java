@@ -61,7 +61,7 @@ public class ShelvesListApiHandler
 
     /** XmlFilter root object. Used in extracting data file XML results. */
     @NonNull
-    final XmlFilter mRootFilter = new XmlFilter("");
+    private final XmlFilter mRootFilter = new XmlFilter("");
 
     /**
      * Constructor.
@@ -208,10 +208,10 @@ public class ShelvesListApiHandler
      */
     public static final class ShelvesField {
 
-        public static final String SHELVES = "shelves";
-        public static final String START = "start";
+        static final String SHELVES = "shelves";
+        static final String START = "start";
         public static final String END = "end";
-        public static final String TOTAL = "total";
+        static final String TOTAL = "total";
         public static final String EXCLUSIVE = "exclusive";
         public static final String ID = "id";
         public static final String NAME = "name";

@@ -328,11 +328,11 @@ public class BooklistStyle
      * @param nameId   the resource id for the name
      * @param groupIds a list of groups to attach to this style
      */
-    BooklistStyle(@NonNull final Context context,
-                  @IntRange(from = -100, to = -1) final long id,
-                  @NonNull final String uuid,
-                  @StringRes final int nameId,
-                  @NonNull final int... groupIds) {
+    private BooklistStyle(@NonNull final Context context,
+                          @IntRange(from = -100, to = -1) final long id,
+                          @NonNull final String uuid,
+                          @StringRes final int nameId,
+                          @NonNull final int... groupIds) {
         mId = id;
         mUuid = uuid;
         mNameResId = nameId;
@@ -365,7 +365,7 @@ public class BooklistStyle
      *
      * @param in Parcel to construct the object from
      */
-    BooklistStyle(@NonNull final Parcel in) {
+    private BooklistStyle(@NonNull final Parcel in) {
         mId = in.readLong();
         // will be 0 for user defined styles
         mNameResId = in.readInt();
@@ -1044,7 +1044,7 @@ public class BooklistStyle
      * @param scale id
      */
     @SuppressWarnings("SameParameterValue")
-    void setTextScale(@FontScale final int scale) {
+    private void setTextScale(@FontScale final int scale) {
         mFontScale.set(scale);
     }
 
@@ -1070,8 +1070,8 @@ public class BooklistStyle
      * @param key  for the field
      * @param show value to set
      */
-    void setUseBookDetail(@BookDetailKey @NonNull final String key,
-                          final boolean show) {
+    private void setUseBookDetail(@BookDetailKey @NonNull final String key,
+                                  final boolean show) {
         //noinspection ConstantConditions
         mAllBookDetailFields.get(key).set(show);
     }
@@ -1172,8 +1172,8 @@ public class BooklistStyle
      * Used by built-in styles only. Set by user via preferences screen.
      */
     @SuppressWarnings("SameParameterValue")
-    void setFilter(@FilterKey @NonNull final String key,
-                   final boolean value) {
+    private void setFilter(@FilterKey @NonNull final String key,
+                           final boolean value) {
         //noinspection ConstantConditions
         ((BooleanFilter) mFilters.get(key)).set(value);
     }

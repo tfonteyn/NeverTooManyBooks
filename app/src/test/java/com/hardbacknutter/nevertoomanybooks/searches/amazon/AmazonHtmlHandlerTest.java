@@ -33,25 +33,30 @@ import java.util.Locale;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import com.hardbacknutter.nevertoomanybooks.JSoupCommonMocks;
+import com.hardbacknutter.nevertoomanybooks.JSoupBase;
+import com.hardbacknutter.nevertoomanybooks._mocks.MockCaller;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
+import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineRegistry;
+import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
+import com.hardbacknutter.nevertoomanybooks.searches.Site;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class AmazonHtmlHandlerTest
-        extends JSoupCommonMocks {
+        extends JSoupBase {
 
     private AmazonSearchEngine mSearchEngine;
 
     @BeforeEach
     public void setUp() {
         super.setUp();
-        mSearchEngine = new AmazonSearchEngine(mContext);
-        mSearchEngine.setCaller(new TextCaller());
+        SearchEngineRegistry.create(mContext);
+        mSearchEngine = (AmazonSearchEngine) Site.Type.Data
+                .getSite(SearchSites.AMAZON).getSearchEngine(mContext, new MockCaller());
     }
 
     @Test

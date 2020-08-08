@@ -174,7 +174,7 @@ public class BooklistAdapter
         return mUserLocale;
     }
 
-    public boolean isImageCachingEnabled() {
+    private boolean isImageCachingEnabled() {
         return mImageCachingEnabled;
     }
 
@@ -192,10 +192,10 @@ public class BooklistAdapter
      */
     @SuppressLint("SwitchIntDef")
     @NonNull
-    String format(@NonNull final Context context,
-                  @BooklistGroup.Id final int groupKeyId,
-                  @Nullable final String text,
-                  @Nullable final Locale locale) {
+    private String format(@NonNull final Context context,
+                          @BooklistGroup.Id final int groupKeyId,
+                          @Nullable final String text,
+                          @Nullable final Locale locale) {
         final Locale tmpLocale;
         if (locale != null) {
             tmpLocale = locale;
@@ -1118,7 +1118,7 @@ public class BooklistAdapter
          * @return {@code true} if the image was displayed.
          * {@code false} if a place holder was used.
          */
-        public boolean setImageView(@NonNull final String uuid) {
+        boolean setImageView(@NonNull final String uuid) {
 
             final Context context = mCoverView.getContext();
 

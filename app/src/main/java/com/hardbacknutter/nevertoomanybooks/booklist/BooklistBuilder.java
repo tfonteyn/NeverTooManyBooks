@@ -114,11 +114,11 @@ public class BooklistBuilder
     public static final int PREF_REBUILD_ALWAYS_COLLAPSED = 2;
     public static final int PREF_REBUILD_PREFERRED_STATE = 3;
 
-    public static final String SELECT_ = "SELECT ";
-    public static final String _FROM_ = " FROM ";
-    public static final String _WHERE_ = " WHERE ";
-    public static final String _AND_ = " AND ";
-    public static final String _ORDER_BY_ = " ORDER BY ";
+    private static final String SELECT_ = "SELECT ";
+    private static final String _FROM_ = " FROM ";
+    private static final String _WHERE_ = " WHERE ";
+    private static final String _AND_ = " AND ";
+    private static final String _ORDER_BY_ = " ORDER BY ";
 
     /** Log tag. */
     private static final String TAG = "BooklistBuilder";

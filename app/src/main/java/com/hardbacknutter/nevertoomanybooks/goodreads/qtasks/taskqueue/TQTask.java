@@ -50,7 +50,7 @@ public abstract class TQTask
      * <p>
      * {@code 0} is used for legacy tasks.
      */
-    public static final int CAT_UNKNOWN = 0;
+    static final int CAT_UNKNOWN = 0;
     /** We're only allowing a single import task to be scheduled/run at any time. */
     public static final int CAT_IMPORT = 1;
     /** We're only allowing a single export task to be scheduled/run at any time. */
@@ -119,7 +119,7 @@ public abstract class TQTask
         return mLastException;
     }
 
-    public void setLastException(@Nullable final Exception e) {
+    protected void setLastException(@Nullable final Exception e) {
         mLastException = e;
     }
 
@@ -139,15 +139,15 @@ public abstract class TQTask
         return RETRY_LIMIT;
     }
 
-    public int getRetryDelay() {
+    protected int getRetryDelay() {
         return mRetryDelay;
     }
 
-    public void setRetryDelay(@SuppressWarnings("SameParameterValue") final int delay) {
+    protected void setRetryDelay(@SuppressWarnings("SameParameterValue") final int delay) {
         mRetryDelay = delay;
     }
 
-    public void setRetryDelay() {
+    void setRetryDelay() {
         mRetryDelay = (int) Math.pow(2, mRetries + 1);
     }
 
@@ -155,19 +155,19 @@ public abstract class TQTask
         return mRetries;
     }
 
-    public void setRetries(final int retries) {
+    void setRetries(final int retries) {
         mRetries = retries;
     }
 
-    public boolean canRetry() {
+    boolean canRetry() {
         return mRetries < RETRY_LIMIT;
     }
 
-    public void storeEvent(@NonNull final TQEvent event) {
+    protected void storeEvent(@NonNull final TQEvent event) {
         QueueManager.getQueueManager().storeTaskEvent(mId, event);
     }
 
-    public void resetRetryCounter() {
+    protected void resetRetryCounter() {
         mRetries = 0;
         setRetryDelay();
     }

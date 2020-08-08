@@ -128,13 +128,14 @@ public class RowStateDAO
     /** Maintenance/debug usage. Simple clear all state data. */
     private static final String PURGE_ALL_SQL =
             "DELETE FROM " + DBDefinitions.TBL_BOOK_LIST_NODE_STATE;
-    public static final String _AND_ = " AND ";
-    public static final String _ORDER_BY_ = " ORDER BY ";
-    public static final String _FROM_ = " FROM ";
-    public static final String SELECT_ = "SELECT ";
-    public static final String _WHERE_ = " WHERE ";
-    public static final String UPDATE_ = "UPDATE ";
-    public static final String _SET_ = " SET ";
+
+    private static final String _AND_ = " AND ";
+    private static final String _ORDER_BY_ = " ORDER BY ";
+    private static final String _FROM_ = " FROM ";
+    private static final String SELECT_ = "SELECT ";
+    private static final String _WHERE_ = " WHERE ";
+    private static final String UPDATE_ = "UPDATE ";
+    private static final String _SET_ = " SET ";
     /** This is a reference only. Cleanup is done by the owner of this object. */
     @NonNull
     private final SynchronizedDb mSyncedDb;
@@ -417,7 +418,7 @@ public class RowStateDAO
      *
      * @param node to set
      */
-    public void findAndSetListPosition(@NonNull final Node node) {
+    void findAndSetListPosition(@NonNull final Node node) {
         SynchronizedStatement stmt = mStatementManager.get(STMT_COUNT_VIS_ROWS_BEFORE);
         if (stmt == null) {
             stmt = mStatementManager.add(STMT_COUNT_VIS_ROWS_BEFORE,

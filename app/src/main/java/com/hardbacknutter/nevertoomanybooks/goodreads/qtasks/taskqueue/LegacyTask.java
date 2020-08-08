@@ -42,7 +42,7 @@ public class LegacyTask
      *
      * @param description for the task
      */
-    public LegacyTask(@NonNull final String description) {
+    LegacyTask(@NonNull final String description) {
         super(description);
     }
 

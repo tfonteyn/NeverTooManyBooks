@@ -41,13 +41,13 @@ public abstract class IntStringFilter
         extends PIntString
         implements Filter<Integer> {
 
-    protected static final Integer P_NOT_USED = -1;
+    static final Integer P_NOT_USED = -1;
 
     @StringRes
     private final int mLabelId;
 
-    protected final TableDefinition mTable;
-    protected final String mDomainKey;
+    final TableDefinition mTable;
+    final String mDomainKey;
 
     /**
      * Constructor.

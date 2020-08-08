@@ -44,7 +44,7 @@ public abstract class BaseViewHolder {
     @NonNull
     protected final View itemView;
 
-    protected BaseViewHolder(@NonNull final View view) {
+    BaseViewHolder(@NonNull final View view) {
         itemView = view;
         itemView.setTag(R.id.TAG_VIEW_HOLDER, this);
     }
@@ -58,8 +58,8 @@ public abstract class BaseViewHolder {
      * @return human readable datetime string
      */
     @NonNull
-    protected static String toPrettyDateTime(@NonNull final LocalDateTime date,
-                                             @NonNull final Locale displayLocale) {
+    static String toPrettyDateTime(@NonNull final LocalDateTime date,
+                                   @NonNull final Locale displayLocale) {
         return date.format(DateTimeFormatter
                                    .ofLocalizedDateTime(FormatStyle.MEDIUM, FormatStyle.SHORT)
                                    .withLocale(displayLocale));

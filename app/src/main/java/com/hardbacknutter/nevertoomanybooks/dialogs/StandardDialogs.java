@@ -314,7 +314,6 @@ public final class StandardDialogs {
      * @param anchorView for the popup window
      * @param text       to display
      */
-    @SuppressWarnings("WeakerAccess")
     public static void infoPopup(@NonNull final View anchorView,
                                  @NonNull final CharSequence text) {
         final Context context = anchorView.getContext();

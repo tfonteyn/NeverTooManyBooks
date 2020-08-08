@@ -93,7 +93,7 @@ public class ReviewsListApiHandler
 
     /** XmlFilter root object. Used in extracting data file XML results. */
     @NonNull
-    final XmlFilter mRootFilter = new XmlFilter("");
+    private final XmlFilter mRootFilter = new XmlFilter("");
 
     /**
      * Constructor.
@@ -497,8 +497,8 @@ public class ReviewsListApiHandler
          * If it's valid, store the reformatted value back into the bundle.
          * If it's invalid, remove the field from the bundle.
          */
-        public static void validateDate(@NonNull final Bundle bundle,
-                                        @NonNull final String key) {
+        static void validateDate(@NonNull final Bundle bundle,
+                                 @NonNull final String key) {
             if (bundle.containsKey(key)) {
                 final LocalDateTime date = parseDate(bundle.getString(key));
                 if (date != null) {

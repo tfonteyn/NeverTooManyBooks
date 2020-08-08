@@ -124,7 +124,7 @@ public class BooklistCursor
     }
 
     @NonNull
-    public BooklistBuilder getBooklistBuilder() {
+    BooklistBuilder getBooklistBuilder() {
         return mBooklistBuilder;
     }
 

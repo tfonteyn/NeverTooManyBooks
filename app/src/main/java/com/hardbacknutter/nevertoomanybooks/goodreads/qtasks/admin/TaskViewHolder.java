@@ -60,7 +60,7 @@ public class TaskViewHolder
     @SuppressWarnings("FieldCanBeLocal")
     private final CompoundButton checkedButton;
 
-    public TaskViewHolder(@NonNull final View itemView) {
+    TaskViewHolder(@NonNull final View itemView) {
         super(itemView);
 
         descriptionView = itemView.findViewById(R.id.description);

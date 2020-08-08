@@ -83,10 +83,10 @@ public abstract class ShowBookApiHandler
 
     /** XmlFilter root object. Used in extracting data file XML results. */
     @NonNull
-    final XmlFilter mRootFilter = new XmlFilter("");
+    private final XmlFilter mRootFilter = new XmlFilter("");
     /** Minimal filter to only extract the cover urls. */
     @NonNull
-    final XmlFilter mCoverFilter = new XmlFilter("");
+    private final XmlFilter mCoverFilter = new XmlFilter("");
 
 
     @NonNull

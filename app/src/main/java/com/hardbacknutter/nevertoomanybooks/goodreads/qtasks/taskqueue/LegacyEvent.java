@@ -42,7 +42,7 @@ public class LegacyEvent
      *
      * @param description for the event
      */
-    public LegacyEvent(@NonNull final String description) {
+    LegacyEvent(@NonNull final String description) {
         super(description);
     }
 }

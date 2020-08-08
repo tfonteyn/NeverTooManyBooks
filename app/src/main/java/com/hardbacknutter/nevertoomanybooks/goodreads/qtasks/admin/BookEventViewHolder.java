@@ -56,7 +56,7 @@ public class BookEventViewHolder
     @SuppressWarnings("FieldCanBeLocal")
     private final CompoundButton checkedButton;
 
-    public BookEventViewHolder(@NonNull final View itemView) {
+    BookEventViewHolder(@NonNull final View itemView) {
         super(itemView);
 
         titleView = itemView.findViewById(R.id.title);

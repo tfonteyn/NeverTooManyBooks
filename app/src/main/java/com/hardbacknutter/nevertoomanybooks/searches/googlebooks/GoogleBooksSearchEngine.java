@@ -84,10 +84,11 @@ public final class GoogleBooksSearchEngine
     private static final Pattern SPACE_LITERAL = Pattern.compile(" ", Pattern.LITERAL);
 
     /**
-     * Constructor.
+     * Constructor. Called using reflections, so <strong>MUST</strong> be <em>public</em>.
      *
      * @param appContext Application context
      */
+    @SuppressWarnings("WeakerAccess")
     public GoogleBooksSearchEngine(@NonNull final Context appContext) {
         super(appContext);
     }

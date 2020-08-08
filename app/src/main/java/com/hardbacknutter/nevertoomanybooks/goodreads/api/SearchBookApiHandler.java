@@ -64,7 +64,7 @@ public class SearchBookApiHandler
 
     /** XmlFilter root object. Used in extracting data file XML results. */
     @NonNull
-    final XmlFilter mRootFilter = new XmlFilter("");
+    private final XmlFilter mRootFilter = new XmlFilter("");
 
     private final List<Long> mGrIdList = new ArrayList<>();
 

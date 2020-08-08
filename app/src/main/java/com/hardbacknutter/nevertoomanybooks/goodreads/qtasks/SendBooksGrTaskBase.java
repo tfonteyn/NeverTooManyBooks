@@ -74,15 +74,15 @@ public abstract class SendBooksGrTaskBase
         super(description);
     }
 
-    public int getNumberOfBooksWithoutIsbn() {
+    int getNumberOfBooksWithoutIsbn() {
         return mNoIsbn;
     }
 
-    public int getNumberOfBooksNotFound() {
+    int getNumberOfBooksNotFound() {
         return mNotFound;
     }
 
-    public int getNumberOfBooksSent() {
+    int getNumberOfBooksSent() {
         return mSent;
     }
 
@@ -193,8 +193,8 @@ public abstract class SendBooksGrTaskBase
 
         private static final long serialVersionUID = -5466960636472729577L;
 
-        public GrNoIsbnEvent(@NonNull final Context context,
-                             final long bookId) {
+        GrNoIsbnEvent(@NonNull final Context context,
+                      final long bookId) {
             super(context.getString(R.string.warning_no_isbn_stored_for_book), bookId);
         }
 
@@ -214,8 +214,8 @@ public abstract class SendBooksGrTaskBase
 
         private static final long serialVersionUID = -8047306486727741746L;
 
-        public GrNoMatchEvent(@NonNull final Context context,
-                              final long bookId) {
+        GrNoMatchEvent(@NonNull final Context context,
+                       final long bookId) {
             super(context.getString(R.string.warning_no_matching_book_found), bookId);
         }
 

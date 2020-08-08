@@ -171,7 +171,7 @@ public class Bookshelf
      *
      * @param in Parcel to construct the object from
      */
-    Bookshelf(@NonNull final Parcel in) {
+    private Bookshelf(@NonNull final Parcel in) {
         mId = in.readLong();
         //noinspection ConstantConditions
         mName = in.readString();

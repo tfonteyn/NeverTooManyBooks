@@ -51,12 +51,12 @@ public abstract class BaseTQTask
      *
      * @param description for the task
      */
-    public BaseTQTask(@NonNull final String description) {
+    BaseTQTask(@NonNull final String description) {
         super(description);
     }
 
-    public void setLastExtStatus(@GrStatus.Status final int status,
-                                 @Nullable final Exception e) {
+    void setLastExtStatus(@GrStatus.Status final int status,
+                          @Nullable final Exception e) {
         mLastExtStatus = status;
         setLastException(e);
     }
@@ -66,7 +66,7 @@ public abstract class BaseTQTask
         return mLastExtStatus;
     }
 
-    public void setLastExtStatus(@GrStatus.Status final int status) {
+    void setLastExtStatus(@GrStatus.Status final int status) {
         mLastExtStatus = status;
     }
 

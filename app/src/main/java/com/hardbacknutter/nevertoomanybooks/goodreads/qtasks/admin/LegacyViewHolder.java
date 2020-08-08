@@ -44,7 +44,7 @@ public class LegacyViewHolder
     private final TextView tv1;
     private final TextView tv2;
 
-    public LegacyViewHolder(@NonNull final View itemView) {
+    LegacyViewHolder(@NonNull final View itemView) {
         super(itemView);
 
         tv1 = itemView.findViewById(R.id.LEGACY_VIEW_1);
@@ -58,7 +58,7 @@ public class LegacyViewHolder
      *
      * @return new View
      */
-    public static View createView(@NonNull final Context context) {
+    static View createView(@NonNull final Context context) {
         final LinearLayout view = new LinearLayout(context);
         view.setOrientation(LinearLayout.VERTICAL);
 

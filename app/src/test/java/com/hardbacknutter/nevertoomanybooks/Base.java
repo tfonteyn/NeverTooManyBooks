@@ -49,20 +49,19 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import org.mockito.stubbing.Answer;
 
+import com.hardbacknutter.nevertoomanybooks._mocks.os.BundleMock;
+import com.hardbacknutter.nevertoomanybooks._mocks.os.ContextMock;
+import com.hardbacknutter.nevertoomanybooks._mocks.os.SharedPreferencesMock;
 import com.hardbacknutter.nevertoomanybooks.searches.amazon.AmazonSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
-import com.hardbacknutter.nevertoomanybooks.tasks.Canceller;
 import com.hardbacknutter.nevertoomanybooks.utils.DateParser;
+import com.hardbacknutter.nevertoomanybooks.utils.LanguageUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyBoolean;
-import static org.mockito.ArgumentMatchers.anyFloat;
 import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.anySet;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.nullable;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.when;
 
 /**
@@ -70,27 +69,22 @@ import static org.mockito.Mockito.when;
  */
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-public class CommonMocks {
+public class Base {
+
+    private static final String PACKAGE_NAME = "com.hardbacknutter.nevertoomanybooks";
 
     @Mock
     protected App mApp;
     @Mock
-    protected Context mContext;
-    @Mock
-    protected SharedPreferences mSharedPreferences;
-    @Mock
-    protected SharedPreferences.Editor mSharedPreferencesEditor;
-
-    @Mock
     protected Resources mResources;
     @Mock
     protected Configuration mConfiguration;
-
     @Mock
     protected LocaleList mLocaleList;
 
-    @Mock
     protected Bundle mRawData;
+    protected Context mContext;
+    protected SharedPreferences mSharedPreferences;
 
     /** set during setup() call. */
     @Nullable
@@ -124,59 +118,90 @@ public class CommonMocks {
     @BeforeEach
     @CallSuper
     public void setUp() {
+        // save the JDK locale first
+        mJdkLocale = Locale.getDefault();
+        // set as default
         setLocale(Locale.US);
 
-        mJdkLocale = Locale.getDefault();
+        mContext = ContextMock.create(PACKAGE_NAME);
+        mSharedPreferences = SharedPreferencesMock.create();
 
-        mRawData = BundleMock.mock();
+        mRawData = BundleMock.create();
 
         when(mApp.getApplicationContext()).thenReturn(mContext);
 
-        when(mContext.getApplicationContext()).thenReturn(mContext);
         when(mContext.getResources()).thenReturn(mResources);
-        when(mContext.createConfigurationContext(any())).thenReturn(mContext);
-        when(mContext.getSharedPreferences(anyString(), anyInt())).thenReturn(mSharedPreferences);
-        when(mContext.getPackageName()).thenReturn("com.hardbacknutter.nevertoomanybooks");
+        when(mContext.getSharedPreferences(eq(PACKAGE_NAME + "_preferences"), anyInt()))
+                .thenReturn(mSharedPreferences);
+
+        doAnswer(invocation -> mResources.getString(invocation.getArgument(0)))
+                .when(mContext).getString(anyInt());
 
         when(mResources.getConfiguration()).thenReturn(mConfiguration);
-
-        when(mConfiguration.getLocales()).thenReturn(mLocaleList);
-
+        when(mResources.getConfiguration().getLocales()).thenReturn(mLocaleList);
 
         when(mLocaleList.get(0)).thenAnswer((Answer<Locale>) invocation -> mLocale0);
 
 
-        when(mContext.getString(R.string.book_format_paperback)).thenReturn("Paperback");
-        when(mContext.getString(R.string.book_format_softcover)).thenReturn("Softcover");
-        when(mContext.getString(R.string.book_format_hardcover)).thenReturn("Hardcover");
-        when(mContext.getString(R.string.book_format_dimensions)).thenReturn("Dim");
+        setupStringResources(mResources);
+        setupLanguageMap(mContext);
+    }
 
-        when(mContext.getString(R.string.unknownName)).thenReturn("Unknown");
+    public void setupLanguageMap(@NonNull final Context context) {
+        /*
+         * SharedPreferences for the language map.
+         */
+        final SharedPreferences mLanguageMap = SharedPreferencesMock.create();
 
-        when(mSharedPreferences.getString(eq(Prefs.pk_ui_locale), eq(LocaleUtils.SYSTEM_LANGUAGE)))
-                .thenReturn(LocaleUtils.SYSTEM_LANGUAGE);
+        when(context.getSharedPreferences(eq(LanguageUtils.LANGUAGE_MAP), anyInt()))
+                .thenReturn(mLanguageMap);
 
-        when(mSharedPreferences.getString(eq("english"), anyString())).thenReturn("eng");
-        when(mSharedPreferences.getString(eq("engels"), anyString())).thenReturn("eng");
-        when(mSharedPreferences.getString(eq("anglais"), anyString())).thenReturn("eng");
-        when(mSharedPreferences.getString(eq("englisch"), anyString())).thenReturn("eng");
+        mLanguageMap.edit()
+                    .putString("english", "eng")
+                    .putString("engels", "eng")
+                    .putString("anglais", "eng")
+                    .putString("englisch", "eng")
 
-        when(mSharedPreferences.getString(eq("french"), anyString())).thenReturn("fra");
-        when(mSharedPreferences.getString(eq("français"), anyString())).thenReturn("fra");
-        when(mSharedPreferences.getString(eq("französisch"), anyString())).thenReturn("fra");
-        when(mSharedPreferences.getString(eq("frans"), anyString())).thenReturn("fra");
+                    .putString("french", "fra")
+                    .putString("français", "fra")
+                    .putString("französisch", "fra")
+                    .putString("frans", "fra")
 
-        when(mSharedPreferences.getString(eq("german"), anyString())).thenReturn("ger");
-        when(mSharedPreferences.getString(eq("allemand"), anyString())).thenReturn("ger");
-        when(mSharedPreferences.getString(eq("deutsch"), anyString())).thenReturn("ger");
-        when(mSharedPreferences.getString(eq("duits"), anyString())).thenReturn("ger");
+                    .putString("german", "ger")
+                    .putString("allemand", "ger")
+                    .putString("deutsch", "ger")
+                    .putString("duits", "ger")
 
-        when(mSharedPreferences.getString(eq("dutch"), anyString())).thenReturn("nld");
-        when(mSharedPreferences.getString(eq("néerlandais"), anyString())).thenReturn("nld");
-        when(mSharedPreferences.getString(eq("niederländisch"), anyString())).thenReturn("nld");
-        when(mSharedPreferences.getString(eq("nederlands"), anyString())).thenReturn("nld");
+                    .putString("dutch", "nld")
+                    .putString("néerlandais", "nld")
+                    .putString("niederländisch", "nld")
+                    .putString("nederlands", "nld")
 
-        when(mSharedPreferences.getString(eq(AmazonSearchEngine.PREFS_HOST_URL), anyString()))
+                    .apply();
+    }
+
+    protected void setupSearchEnginePreferences(@NonNull final SharedPreferences preferences) {
+        preferences.edit()
+                   .putString(Prefs.pk_ui_locale, LocaleUtils.SYSTEM_LANGUAGE)
+                   // random some at true, some at false.
+                   .putBoolean("search.site.amazon.data.enabled", true)
+                   .putBoolean("search.site.goodreads.data.enabled", true)
+                   .putBoolean("search.site.googlebooks.data.enabled", false)
+                   .putBoolean("search.site.isfdb.data.enabled", true)
+                   .putBoolean("search.site.kbnl.data.enabled", true)
+                   .putBoolean("search.site.lastdodo.data.enabled", true)
+                   .putBoolean("search.site.librarything.data.enabled", false)
+                   .putBoolean("search.site.openlibrary.data.enabled", true)
+                   .putBoolean("search.site.stripinfo.data.enabled", false)
+
+                   // deliberate added 4 (LibraryThing) and omitted 128/256
+                   .putString("search.siteOrder.data", "64,32,16,8,4,2,1")
+                   .putString("search.siteOrder.covers", "16,2,8,64,32")
+                   .putString("search.siteOrder.alted", "16,4")
+
+                   .apply();
+
+        when(preferences.getString(eq(AmazonSearchEngine.PREFS_HOST_URL), nullable(String.class)))
                 .thenAnswer((Answer<String>) invocation -> {
                     if (mLocale0 != null) {
                         final String iso3 = mLocale0.getISO3Language();
@@ -194,34 +219,18 @@ public class CommonMocks {
                     }
                     return "https://www.amazon.com";
                 });
-
-        when(mSharedPreferences.edit()).thenReturn(mSharedPreferencesEditor);
-
-        when(mSharedPreferencesEditor.putString(anyString(), anyString()))
-                .thenReturn(mSharedPreferencesEditor);
-        when(mSharedPreferencesEditor.putStringSet(anyString(), anySet()))
-                .thenReturn(mSharedPreferencesEditor);
-        when(mSharedPreferencesEditor.putBoolean(anyString(), anyBoolean()))
-                .thenReturn(mSharedPreferencesEditor);
-        when(mSharedPreferencesEditor.putInt(anyString(), anyInt()))
-                .thenReturn(mSharedPreferencesEditor);
-        when(mSharedPreferencesEditor.putLong(anyString(), anyLong()))
-                .thenReturn(mSharedPreferencesEditor);
-        when(mSharedPreferencesEditor.putFloat(anyString(), anyFloat()))
-                .thenReturn(mSharedPreferencesEditor);
     }
 
-    public static class TextCaller
-            implements Canceller {
+    /*
+     * String resources.
+     */
+    public void setupStringResources(@NonNull final Resources resources) {
+        when(resources.getString(eq(R.string.book_format_paperback))).thenReturn("Paperback");
+        when(resources.getString(eq(R.string.book_format_softcover))).thenReturn("Softcover");
+        when(resources.getString(eq(R.string.book_format_hardcover))).thenReturn("Hardcover");
+        when(resources.getString(eq(R.string.book_format_dimensions))).thenReturn("Dim");
 
-        @Override
-        public boolean cancel(final boolean mayInterruptIfRunning) {
-            return false;
-        }
-
-        @Override
-        public boolean isCancelled() {
-            return false;
-        }
+        when(resources.getString(eq(R.string.unknownName))).thenReturn("Unknown");
     }
+
 }

@@ -57,8 +57,8 @@ public class TaskCursorAdapter
      * @param context Current context
      * @param cursor  Cursor to use as source
      */
-    public TaskCursorAdapter(@NonNull final Context context,
-                             @NonNull final Cursor cursor) {
+    TaskCursorAdapter(@NonNull final Context context,
+                      @NonNull final Cursor cursor) {
         super(context, cursor);
         mLayoutInflater = LayoutInflater.from(context);
     }

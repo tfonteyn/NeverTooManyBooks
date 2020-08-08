@@ -140,8 +140,8 @@ public class SimpleXmlFilter {
      * @param locale <strong>Must</strong> be the Locale for the source data.
      *               (and NOT simply the system/user).
      */
-    public SimpleXmlFilter(@NonNull final XmlFilter root,
-                           @Nullable final Locale locale) {
+    SimpleXmlFilter(@NonNull final XmlFilter root,
+                    @Nullable final Locale locale) {
         mRootFilter = root;
         mLocale = locale;
 
@@ -160,13 +160,13 @@ public class SimpleXmlFilter {
     }
 
     @NonNull
-    public SimpleXmlFilter asArray(@NonNull final String arrayName) {
+    SimpleXmlFilter asArray(@NonNull final String arrayName) {
         mContexts.get(mContexts.size() - 1).setArray(arrayName);
         return this;
     }
 
     @NonNull
-    public SimpleXmlFilter asArrayItem() {
+    SimpleXmlFilter asArrayItem() {
         mContexts.get(mContexts.size() - 1).setArrayItem();
         return this;
     }
@@ -233,8 +233,8 @@ public class SimpleXmlFilter {
     }
 
     @NonNull
-    public SimpleXmlFilter popTo(@SuppressWarnings("SameParameterValue")
-                                 @NonNull final String tag) {
+    SimpleXmlFilter popTo(@SuppressWarnings("SameParameterValue")
+                          @NonNull final String tag) {
         int last = mTags.size() - 1;
         while (!mTags.get(last).equalsIgnoreCase(tag)) {
             if (last == 0) {
@@ -266,8 +266,8 @@ public class SimpleXmlFilter {
     }
 
     @NonNull
-    public SimpleXmlFilter longAttr(@NonNull final String attrName,
-                                    @NonNull final String key) {
+    SimpleXmlFilter longAttr(@NonNull final String attrName,
+                             @NonNull final String key) {
         List<AttrFilter> attrs = getAttrFilters();
         attrs.add(new LongAttrFilter(key, attrName));
         return this;
@@ -275,8 +275,8 @@ public class SimpleXmlFilter {
 
     @SuppressWarnings("SameParameterValue")
     @NonNull
-    public SimpleXmlFilter stringAttr(@NonNull final String attrName,
-                                      @NonNull final String key) {
+    SimpleXmlFilter stringAttr(@NonNull final String attrName,
+                               @NonNull final String key) {
         List<AttrFilter> attrs = getAttrFilters();
         attrs.add(new StringAttrFilter(key, attrName));
         return this;
@@ -306,8 +306,8 @@ public class SimpleXmlFilter {
 
     @SuppressWarnings("SameParameterValue")
     @NonNull
-    public SimpleXmlFilter booleanBody(@NonNull final String tag,
-                                       @NonNull final String fieldName) {
+    SimpleXmlFilter booleanBody(@NonNull final String tag,
+                                @NonNull final String fieldName) {
         setCollector(tag, mBooleanHandler, fieldName);
         return this;
     }
@@ -321,8 +321,8 @@ public class SimpleXmlFilter {
 
     @SuppressWarnings("SameParameterValue")
     @NonNull
-    public SimpleXmlFilter doubleBody(@NonNull final String tag,
-                                      @NonNull final String fieldName) {
+    SimpleXmlFilter doubleBody(@NonNull final String tag,
+                               @NonNull final String fieldName) {
         setCollector(tag, mDoubleHandler, fieldName);
         return this;
     }
@@ -335,21 +335,21 @@ public class SimpleXmlFilter {
     }
 
     @NonNull
-    public SimpleXmlFilter longBody(@NonNull final String tag,
-                                    @NonNull final String fieldName) {
+    SimpleXmlFilter longBody(@NonNull final String tag,
+                             @NonNull final String fieldName) {
         setCollector(tag, mLongHandler, fieldName);
         return this;
     }
 
     @NonNull
-    public SimpleXmlFilter stringBody(@NonNull final String fieldName) {
+    SimpleXmlFilter stringBody(@NonNull final String fieldName) {
         setCollector(mTextHandler, fieldName);
         return this;
     }
 
     @NonNull
-    public SimpleXmlFilter stringBody(@NonNull final String tag,
-                                      @NonNull final String fieldName) {
+    SimpleXmlFilter stringBody(@NonNull final String tag,
+                               @NonNull final String fieldName) {
         setCollector(tag, mTextHandler, fieldName);
         return this;
     }

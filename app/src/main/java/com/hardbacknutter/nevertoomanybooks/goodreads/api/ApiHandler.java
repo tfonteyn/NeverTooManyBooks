@@ -79,7 +79,7 @@ public abstract class ApiHandler {
     protected final GoodreadsAuth mGrAuth;
     @NonNull
     final Context mAppContext;
-    final SearchEngineRegistry.Config mSiteConfig;
+    private final SearchEngineRegistry.Config mSiteConfig;
 
     /**
      * Constructor.

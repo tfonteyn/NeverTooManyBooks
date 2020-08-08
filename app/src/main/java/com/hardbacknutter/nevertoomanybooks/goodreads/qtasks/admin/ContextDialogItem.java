@@ -63,8 +63,8 @@ public class ContextDialogItem
      * @param context Current context
      * @param items   List of items to display
      */
-    public static void showContextDialog(@NonNull final Context context,
-                                         @NonNull final Collection<ContextDialogItem> items) {
+    static void showContextDialog(@NonNull final Context context,
+                                  @NonNull final Collection<ContextDialogItem> items) {
         if (!items.isEmpty()) {
             final ContextDialogItem[] itemArray = new ContextDialogItem[items.size()];
             items.toArray(itemArray);

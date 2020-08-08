@@ -73,7 +73,7 @@ public class PartialDatePickerDialogFragment
     public static final String REQUEST_KEY = TAG + ":rk";
 
     /** a standard sql style date string, must be correct. */
-    static final String BKEY_DATE = TAG + ":date";
+    private static final String BKEY_DATE = TAG + ":date";
 
     /** Displayed to user: unset month. */
     private static final String UNKNOWN_MONTH = "---";
@@ -88,14 +88,14 @@ public class PartialDatePickerDialogFragment
     private static final String SIS_BKEY_DAY = TAG + ":day";
 
     /** Currently displayed; {@code 0} if empty/invalid. */
-    int mYear;
+    private int mYear;
     /**
      * Currently displayed; {@code 0} if invalid/empty.
      * <strong>IMPORTANT:</strong> 1..12 based. (the jdk internals expect 0..11).
      */
-    int mMonth;
+    private int mMonth;
     /** Currently displayed; {@code 0} if empty/invalid. */
-    int mDay;
+    private int mDay;
 
     private NumberPicker mDayPicker;
 
@@ -353,7 +353,7 @@ public class PartialDatePickerDialogFragment
      *
      * @param savedInstanceState from #onCreateDialog
      */
-    void setupDate(@Nullable final Bundle savedInstanceState) {
+    private void setupDate(@Nullable final Bundle savedInstanceState) {
 
         final Bundle args = savedInstanceState != null ? savedInstanceState : requireArguments();
         if (args.containsKey(BKEY_DATE)) {

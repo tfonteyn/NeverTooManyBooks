@@ -92,10 +92,11 @@ public class GoodreadsSearchEngine
 
 
     /**
-     * Constructor.
+     * Constructor. Called using reflections, so <strong>MUST</strong> be <em>public</em>.
      *
      * @param appContext Application context
      */
+    @SuppressWarnings("WeakerAccess")
     public GoodreadsSearchEngine(@NonNull final Context appContext) {
         super(appContext);
         mGoodreadsAuth = new GoodreadsAuth(mAppContext);

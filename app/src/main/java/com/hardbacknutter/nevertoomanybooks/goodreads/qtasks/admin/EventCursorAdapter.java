@@ -61,9 +61,9 @@ public class EventCursorAdapter
      * @param cursor  Cursor to use as source
      * @param db      Database Access
      */
-    public EventCursorAdapter(@NonNull final Context context,
-                              @NonNull final Cursor cursor,
-                              @NonNull final DAO db) {
+    EventCursorAdapter(@NonNull final Context context,
+                       @NonNull final Cursor cursor,
+                       @NonNull final DAO db) {
         super(context, cursor);
         mLayoutInflater = LayoutInflater.from(context);
         mDb = db;

@@ -301,8 +301,8 @@ public final class QueueManager {
      * @param taskId Related task
      * @param event  Event
      */
-    public void storeTaskEvent(final long taskId,
-                               @NonNull final TQEvent event) {
+    void storeTaskEvent(final long taskId,
+                        @NonNull final TQEvent event) {
         mQueueDAO.storeTaskEvent(taskId, event);
         notifyEventChange();
     }
@@ -355,7 +355,7 @@ public final class QueueManager {
      *
      * @param id of Task to delete.
      */
-    public void deleteTask(final long id) {
+    void deleteTask(final long id) {
         boolean isActive = false;
         // Synchronize so that no queue will be able to get another task while we are deleting
         synchronized (this) {

@@ -41,17 +41,17 @@ class QueueDBHelper
 
     public static final String KEY_PK_ID = "_id";
 
-    public static final String KEY_TASK = "task";
-    public static final String KEY_TASK_CATEGORY = "category";
-    public static final String KEY_TASK_EXCEPTION = "exception";
-    public static final String KEY_TASK_FAILURE_REASON = "failure_reason";
-    public static final String KEY_TASK_QUEUED_UTC_DATETIME = "queued_date";
-    public static final String KEY_TASK_RETRY_UTC_DATETIME = "retry_date";
-    public static final String KEY_TASK_STATUS_CODE = "status_code";
+    static final String KEY_TASK = "task";
+    static final String KEY_TASK_CATEGORY = "category";
+    static final String KEY_TASK_EXCEPTION = "exception";
+    static final String KEY_TASK_FAILURE_REASON = "failure_reason";
+    static final String KEY_TASK_QUEUED_UTC_DATETIME = "queued_date";
+    static final String KEY_TASK_RETRY_UTC_DATETIME = "retry_date";
+    static final String KEY_TASK_STATUS_CODE = "status_code";
 
-    public static final String KEY_EVENT = "event";
-    public static final String KEY_EVENT_COUNT = "event_count";
-    public static final String KEY_EVENT_UTC_DATETIME = "event_date";
+    static final String KEY_EVENT = "event";
+    static final String KEY_EVENT_COUNT = "event_count";
+    static final String KEY_EVENT_UTC_DATETIME = "event_date";
 
     static final String KEY_QUEUE_NAME = "name";
 
