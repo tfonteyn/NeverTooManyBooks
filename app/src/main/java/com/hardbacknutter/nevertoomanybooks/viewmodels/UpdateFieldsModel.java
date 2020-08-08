@@ -86,12 +86,8 @@ public class UpdateFieldsModel
 
     private final MutableLiveData<FinishedMessage<Bundle>> mListFinished = new MutableLiveData<>();
     private final MutableLiveData<FinishedMessage<Exception>> mListFailed = new MutableLiveData<>();
-
     /**
      * Current and original book data.
-     * Tracks between {@link #startSearch(Context)}
-     * and {@link #processSearchResults(Context, Bundle)}.
-     * <p>
      * The object gets cleared and reused for each iteration of the loop.
      */
     private final Book mCurrentBook = new Book();
@@ -104,18 +100,9 @@ public class UpdateFieldsModel
     private long mFromBookIdOnwards;
     /** Indicates the user has requested a cancel. Up to the subclass to decide what to do. */
     private boolean mIsCancelled;
-
-    /**
-     * Tracks the current book ID between {@link #nextBook(Context)}
-     * and {@link #processSearchResults(Context, Bundle)}.
-     */
+    /** Tracks the current book ID. */
     private long mCurrentBookId;
-
-    /**
-     * The (subset) of fields relevant to the current book.
-     * Tracks between {@link #startSearch(Context)}
-     * and {@link #processSearchResults(Context, Bundle)}.
-     */
+    /** The (subset) of fields relevant to the current book. */
     private Map<String, FieldUsage> mCurrentFieldsWanted;
 
     private int mCurrentProgressCounter;
@@ -236,13 +223,8 @@ public class UpdateFieldsModel
         }
 
         // More then 10 books, check if they actually want covers
-        final FieldUsage covers = getFieldUsage(DBDefinitions.PREFS_IS_USED_THUMBNAIL);
+        final FieldUsage covers = mFieldUsages.get(DBDefinitions.PREFS_IS_USED_THUMBNAIL);
         return covers != null && covers.getUsage().equals(FieldUsage.Usage.Overwrite);
-    }
-
-    @Nullable
-    public FieldUsage getFieldUsage(@NonNull final String key) {
-        return mFieldUsages.get(key);
     }
 
     public void setFieldUsage(@NonNull final String key,
