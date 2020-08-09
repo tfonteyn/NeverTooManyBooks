@@ -73,19 +73,19 @@ public final class ConstraintRadioGroup
     private int mCheckedId = View.NO_ID;
     /** individual button listener. */
     @NonNull
-    private final CompoundButton.OnCheckedChangeListener mRadioButtonListener =
+    private final CompoundButton.OnCheckedChangeListener mChildOnCheckedChangeListener =
             (buttonView, isChecked) -> {
                 // prevents from infinite recursion
                 if (mProtectFromCheckedChange) {
                     return;
                 }
 
+                mProtectFromCheckedChange = true;
                 // uncheck previously checked button
                 if (mCheckedId != View.NO_ID) {
-                    mProtectFromCheckedChange = true;
                     setCheckedStateForView(mCheckedId, false);
-                    mProtectFromCheckedChange = false;
                 }
+                mProtectFromCheckedChange = false;
 
                 // set the new checked button
                 setCheckedId(buttonView.getId());
@@ -124,13 +124,13 @@ public final class ConstraintRadioGroup
         // Collect the radio buttons in our container, and set a listener on them.
         for (int i = 0; i < mCount; i++) {
             // mIds: constraint_referenced_ids
-            int id = mIds[i];
-            View view = container.getViewById(id);
+            final int id = mIds[i];
+            final View view = container.getViewById(id);
             // sanity check
             if (view instanceof RadioButton) {
-                RadioButton radioButton = (RadioButton) view;
+                final RadioButton radioButton = (RadioButton) view;
                 mRadioButtons.put(id, radioButton);
-                radioButton.setOnCheckedChangeListener(mRadioButtonListener);
+                radioButton.setOnCheckedChangeListener(mChildOnCheckedChangeListener);
                 if (radioButton.isChecked()) {
                     mCheckedId = id;
                 }
@@ -140,9 +140,10 @@ public final class ConstraintRadioGroup
 
     @Override
     public void updatePostLayout(@NonNull final ConstraintLayout container) {
-        ConstraintLayout.LayoutParams params = (ConstraintLayout.LayoutParams) getLayoutParams();
-        params.getConstraintWidget().setWidth(0);
-        params.getConstraintWidget().setHeight(0);
+        // make sure we don't show
+        final ConstraintLayout.LayoutParams lp = (ConstraintLayout.LayoutParams) getLayoutParams();
+        lp.getConstraintWidget().setWidth(0);
+        lp.getConstraintWidget().setHeight(0);
     }
 
     @Override
@@ -157,18 +158,16 @@ public final class ConstraintRadioGroup
      * parameter. Using {@code View.NO_ID} as the selection identifier clears the selection;
      * such an operation is equivalent to invoking {@link #clearCheck()}.</p>
      *
-     * @param id the unique id of the radio button to select in this group
+     * @param viewId the unique id of the radio button to select in this group
      *
      * @see #getCheckedRadioButtonId()
      * @see #clearCheck()
      */
-    public void check(@IdRes final int id) {
+    public void check(@IdRes final int viewId) {
         // don't even bother
-        if (id != -1 && (id == mCheckedId)) {
+        if (viewId != View.NO_ID && (viewId == mCheckedId)) {
             return;
         }
-
-        mProtectFromCheckedChange = true;
 
         // uncheck current
         if (mCheckedId != View.NO_ID) {
@@ -176,26 +175,24 @@ public final class ConstraintRadioGroup
         }
 
         // check new one
-        if (id != View.NO_ID) {
-            setCheckedStateForView(id, true);
+        if (viewId != View.NO_ID) {
+            setCheckedStateForView(viewId, true);
         }
 
-        setCheckedId(id);
+        setCheckedId(viewId);
     }
 
     private void setCheckedId(@IdRes final int id) {
-        if (mCheckedId != id) {
-            mCheckedId = id;
+        mCheckedId = id;
 
-            if (mOnCheckedChangeListener != null) {
-                mOnCheckedChangeListener.onCheckedChanged(this, id);
-            }
+        if (mOnCheckedChangeListener != null) {
+            mOnCheckedChangeListener.onCheckedChanged(this, id);
         }
     }
 
     private void setCheckedStateForView(@IdRes final int viewId,
                                         final boolean checked) {
-        RadioButton radioButton = mRadioButtons.get(viewId);
+        final RadioButton radioButton = mRadioButtons.get(viewId);
         if (radioButton != null) {
             radioButton.setChecked(checked);
         }
@@ -210,7 +207,6 @@ public final class ConstraintRadioGroup
      * @see #check(int)
      * @see #clearCheck()
      */
-    @SuppressWarnings("unused")
     @IdRes
     public int getCheckedRadioButtonId() {
         return mCheckedId;
@@ -224,7 +220,6 @@ public final class ConstraintRadioGroup
      * @see #check(int)
      * @see #getCheckedRadioButtonId()
      */
-    @SuppressWarnings("unused")
     public void clearCheck() {
         check(View.NO_ID);
     }
