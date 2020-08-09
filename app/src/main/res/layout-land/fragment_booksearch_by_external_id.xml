@@ -80,13 +80,13 @@
             android:id="@+id/sites_group"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            app:constraint_referenced_ids="site_amazon,site_goodreads,site_isfdb,site_library_thing,site_open_library,site_strip_info_be"
+            app:constraint_referenced_ids="site_amazon,site_goodreads,site_isfdb,site_last_dodo_nl,site_library_thing,site_open_library,site_strip_info_be"
             tools:ignore="MissingConstraints"
             />
 
         <!-- NEWTHINGS: adding a new search engine:
                 optional: external id KEY add a RadioButton widget
-                and add the name to the ConstraintRadioGroup. -->
+                and add the name to the ConstraintRadioGroup#constraint_referenced_ids. -->
 
         <RadioButton
             android:id="@+id/site_goodreads"
