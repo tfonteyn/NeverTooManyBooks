@@ -55,15 +55,19 @@ public class BookSearchByExternalIdFragment
     /** Log tag. */
     public static final String TAG = "BookSearchByExternalId";
     private static final Pattern DIGITS_PATTERN = Pattern.compile("\\d+");
-    private static final String BKEY_SITE_RES_ID = TAG + ":siteResId";
-    private static final String BKEY_EXTERNAL_ID = TAG + ":externalId";
 
-    /** The currently selected radio button for onPause/onSaveInstanceState. */
-    private int mCheckedSiteResId = View.NO_ID;
-    /** The current external id text for onPause/onSaveInstanceState. */
-    private String mExternalId;
+    private static final String SIS_SELECTED_RB_ID = TAG + ":selectedResId";
+    private static final String SIS_USER_INPUT = TAG + ":externalId";
+
+    /** The currently selected radio button used by onPause/onSaveInstanceState. */
+    private int mSisSelectedRbId = View.NO_ID;
+    /** The current external id text used by onPause/onSaveInstanceState. */
+    private String mSisUserInput;
+
     /** View Binding. */
     private FragmentBooksearchByExternalIdBinding mVb;
+
+    /** Set when the user selects a site. */
     private SearchEngine.ByExternalId mSelectedSearchEngine;
 
     @Override
@@ -85,13 +89,13 @@ public class BookSearchByExternalIdFragment
 
         final Bundle args = savedInstanceState != null ? savedInstanceState : getArguments();
         if (args != null) {
-            final int checkedId = args.getInt(BKEY_SITE_RES_ID, View.NO_ID);
+            final int checkedId = args.getInt(SIS_SELECTED_RB_ID, View.NO_ID);
             if (checkedId != View.NO_ID) {
                 final RadioButton btn = mVb.getRoot().findViewById(checkedId);
                 if (btn.getVisibility() == View.VISIBLE) {
                     btn.setChecked(true);
                     mVb.externalId.setEnabled(true);
-                    mVb.externalId.setText(args.getString(BKEY_EXTERNAL_ID, ""));
+                    mVb.externalId.setText(args.getString(SIS_USER_INPUT, ""));
                 }
             }
         }
@@ -155,22 +159,36 @@ public class BookSearchByExternalIdFragment
     @Override
     public void onPause() {
         super.onPause();
-        mCheckedSiteResId = mVb.sitesGroup.getCheckedRadioButtonId();
+        mSisSelectedRbId = mVb.sitesGroup.getCheckedRadioButtonId();
         //noinspection ConstantConditions
-        mExternalId = mVb.externalId.getText().toString().trim();
+        mSisUserInput = mVb.externalId.getText().toString().trim();
     }
 
     @Override
     public void onSaveInstanceState(@NonNull final Bundle outState) {
         super.onSaveInstanceState(outState);
-        if (mCheckedSiteResId != View.NO_ID) {
-            outState.putInt(BKEY_SITE_RES_ID, mCheckedSiteResId);
-            outState.putString(BKEY_EXTERNAL_ID, mExternalId);
-        }
+        outState.putInt(SIS_SELECTED_RB_ID, mSisSelectedRbId);
+        outState.putString(SIS_USER_INPUT, mSisUserInput);
     }
 
     private void onSiteSelect(@NonNull final ConstraintRadioGroup group,
                               final int viewId) {
+
+        // on NOTHING selected
+        if (viewId == View.NO_ID) {
+            mSelectedSearchEngine = null;
+            // disable, but don't clear it
+            mVb.externalId.setEnabled(false);
+            return;
+        }
+
+        // on true->false transition
+        final RadioButton btn = mVb.getRoot().findViewById(viewId);
+        if (!btn.isChecked()) {
+            return;
+        }
+
+        // on false->true transition
 
         final SearchEngineRegistry.Config config = SearchEngineRegistry.getByViewId(viewId);
 
@@ -181,8 +199,14 @@ public class BookSearchByExternalIdFragment
 
         if (!mSelectedSearchEngine.isAvailable()) {
             // If the selected site needs registration, prompt the user.
-            mSelectedSearchEngine.promptToRegister(getContext(), true, "external_id");
-            mVb.sitesGroup.clearCheck();
+            mSelectedSearchEngine.promptToRegister(getContext(), true, null, action -> {
+                if (action == SearchEngine.RegistrationCallback.Code.NotNow
+                    || action == SearchEngine.RegistrationCallback.Code.Cancelled) {
+                    // Clear the selection.
+                    // Do not disable the button, allowing the user to change their mind.
+                    mVb.sitesGroup.clearCheck();
+                }
+            });
             return;
         }
 
