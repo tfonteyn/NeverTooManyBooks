@@ -152,27 +152,25 @@ public class Site
 
     /**
      * Bring up an Alert to the user if the given list includes a site where registration
-     * is beneficial/required.
+     * is beneficial (but not required... it's just one of many engines here).
      *
      * @param context      Current context
      * @param sites        the list to check
-     * @param required     {@code true} if we <strong>must</strong> have access.
-     *                     {@code false} if it would be beneficial.
      * @param callerSuffix String used to flag in preferences if we showed the alert from
      *                     that caller already or not.
      *
      * @return {@code true} if an alert is currently shown
      */
     @SuppressWarnings("UnusedReturnValue")
-    public static boolean promptToRegister(@NonNull final Context context,
-                                           @NonNull final Collection<Site> sites,
-                                           final boolean required,
-                                           @NonNull final String callerSuffix) {
+    public static boolean promptToRegister(
+            @NonNull final Context context,
+            @NonNull final Collection<Site> sites,
+            @NonNull final String callerSuffix) {
         boolean showingAlert = false;
         for (Site site : sites) {
             if (site.isEnabled()) {
                 showingAlert |= site.getSearchEngine(context)
-                                    .promptToRegister(context, required, callerSuffix);
+                                    .promptToRegister(context, false, callerSuffix, null);
             }
         }
 

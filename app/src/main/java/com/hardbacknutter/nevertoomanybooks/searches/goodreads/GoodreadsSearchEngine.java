@@ -28,6 +28,7 @@
 package com.hardbacknutter.nevertoomanybooks.searches.goodreads;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.IntRange;
@@ -41,7 +42,6 @@ import java.util.List;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageFileInfo;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
-import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsAuth;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsManager;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsRegistrationActivity;
@@ -125,13 +125,21 @@ public class GoodreadsSearchEngine
     @Override
     public boolean promptToRegister(@NonNull final Context context,
                                     final boolean required,
-                                    @NonNull final String callerSuffix) {
+                                    @Nullable final String callerIdString,
+                                    @Nullable final RegistrationCallback registrationCallback) {
         if (mGoodreadsAuth.hasCredentials(context)) {
             return false;
         }
 
-        return StandardDialogs.registerOnSite(context, getId(), required, callerSuffix,
-                                              GoodreadsRegistrationActivity.class);
+        return showRegistrationDialog(context, required, callerIdString, action -> {
+            if (action == RegistrationCallback.Code.Register) {
+                final Intent intent = new Intent(context, GoodreadsRegistrationActivity.class);
+                context.startActivity(intent);
+            }
+            if (registrationCallback != null) {
+                registrationCallback.onRegistration(action);
+            }
+        });
     }
 
     @NonNull

@@ -39,7 +39,10 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
+import androidx.appcompat.app.AlertDialog;
 import androidx.preference.PreferenceManager;
+
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import java.io.File;
 import java.io.IOException;
@@ -53,6 +56,7 @@ import java.util.List;
 import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
+import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageFileInfo;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageUtils;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -86,6 +90,78 @@ public interface SearchEngine {
     String TAG = "SearchEngine";
 
     /**
+     * Show a registration request dialog.
+     *
+     * @param context        Current context
+     * @param required       {@code true} if we <strong>must</strong> have access.
+     *                       {@code false} if it would be beneficial.
+     * @param callerIdString String used to flag in preferences if we showed the alert from
+     *                       that caller already or not.
+     *
+     * @return {@code true} if an alert is currently shown
+     */
+    @UiThread
+    default boolean showRegistrationDialog(@NonNull final Context context,
+                                           final boolean required,
+                                           @Nullable final String callerIdString,
+                                           @NonNull final RegistrationCallback callback) {
+
+        final SearchEngineRegistry.Config config = getConfig();
+        final String key;
+        if (callerIdString != null) {
+            key = config.getPreferenceKey() + ".hide_alert." + callerIdString;
+        } else {
+            key = null;
+        }
+
+        final boolean showAlert;
+        if (required || key == null) {
+            showAlert = true;
+        } else {
+            showAlert = !PreferenceManager.getDefaultSharedPreferences(context)
+                                          .getBoolean(key, false);
+        }
+
+        if (showAlert) {
+            final String siteName = context.getString(config.getNameResId());
+
+            final AlertDialog.Builder dialogBuilder = new MaterialAlertDialogBuilder(context)
+                    .setIcon(R.drawable.ic_warning)
+                    .setTitle(context.getString(R.string.lbl_registration, siteName))
+                    .setNegativeButton(R.string.btn_not_now, (d, w) ->
+                            callback.onRegistration(RegistrationCallback.Code.NotNow))
+                    .setPositiveButton(R.string.btn_learn_more, (d, w) ->
+                            callback.onRegistration(RegistrationCallback.Code.Register))
+                    .setOnCancelListener(
+                            dialog -> callback.onRegistration(RegistrationCallback.Code.Cancelled));
+
+            if (required) {
+                dialogBuilder.setMessage(context.getString(
+                        R.string.confirm_registration_required, siteName));
+
+            } else {
+                dialogBuilder.setMessage(context.getString(
+                        R.string.confirm_registration_benefits, siteName,
+                        context.getString(R.string.lbl_credentials)));
+
+                // If it's not required, allow the user to permanently hide this alert
+                // for the given caller.
+                if (key != null) {
+                    dialogBuilder.setPositiveButton(context.getString(
+                            R.string.btn_disable_message), (d, w) -> {
+                        PreferenceManager.getDefaultSharedPreferences(context)
+                                         .edit().putBoolean(key, true).apply();
+                        callback.onRegistration(RegistrationCallback.Code.Disable);
+                    });
+                }
+            }
+            dialogBuilder.create().show();
+        }
+
+        return showAlert;
+    }
+
+    /**
      * Get the engine id.
      * <p>
      * Default implementation in {@link SearchEngineBase}.
@@ -106,6 +182,18 @@ public interface SearchEngine {
     @AnyThread
     @NonNull
     Context getAppContext();
+
+    /**
+     * Get the configuration for this engine.
+     *
+     * @return config
+     */
+    @AnyThread
+    @NonNull
+    default SearchEngineRegistry.Config getConfig() {
+        //noinspection ConstantConditions
+        return SearchEngineRegistry.getByEngineId(getId());
+    }
 
     /**
      * Get the name for this engine.
@@ -154,7 +242,7 @@ public interface SearchEngine {
      * this site can be consider for searching.
      * <p>
      * Implementations can for example check for developer keys, ...
-     * <strong>Should not run network code.</strong>
+     * <strong>Should NOT run network code / test for connection.</strong>
      *
      * @return {@code true} if we can consider this site for searching.
      */
@@ -186,21 +274,23 @@ public interface SearchEngine {
     /**
      * Optional to implement: sites which need a registration of some sorts.
      * <p>
-     * Check if we have a key; if not alert the user.
+     * Check if we have a key/account; if not alert the user.
      *
-     * @param context      Current context; <strong>MUST</strong> be passed in
-     *                     as this call might do UI interaction.
-     * @param required     {@code true} if we <strong>must</strong> have access to the site.
-     *                     {@code false} if it would be beneficial but not mandatory.
-     * @param callerSuffix String used to flag in preferences if we showed the alert from
-     *                     that caller already or not.
+     * @param context              Current context; <strong>MUST</strong> be passed in
+     *                             as this call might do UI interaction.
+     * @param required             {@code true} if we <strong>must</strong> have access to the site.
+     *                             {@code false} if it would be beneficial but not mandatory.
+     * @param callerIdString       String used to flag in preferences if we showed the alert from
+     *                             that caller already or not.
+     * @param registrationCallback called after user selects an outcome
      *
      * @return {@code true} if an alert is currently shown
      */
     @UiThread
     default boolean promptToRegister(@NonNull final Context context,
                                      final boolean required,
-                                     @NonNull final String callerSuffix) {
+                                     @Nullable final String callerIdString,
+                                     @Nullable final RegistrationCallback registrationCallback) {
         return false;
     }
 
@@ -567,6 +657,30 @@ public interface SearchEngine {
         @NonNull
         List<String> searchAlternativeEditions(@NonNull String validIsbn)
                 throws CredentialsException, IOException;
+    }
+
+    interface RegistrationCallback {
+
+        /**
+         * Call back with the action the user selected.
+         *
+         * @param action selected
+         */
+        void onRegistration(@NonNull Code action);
+
+        enum Code {
+            /** User selected to 'learn more' and register on the given site. */
+            Register,
+            /** User does not want to bother now, but wants to be reminded later. */
+            NotNow,
+            /** Not interested, don't bother the user again. */
+            Disable,
+            /**
+             * Cancelled without selecting any option.
+             * Should likely be treated the same as 'NotNow'.
+             */
+            Cancelled
+        }
     }
 
     @Target(ElementType.TYPE)

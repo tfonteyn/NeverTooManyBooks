@@ -28,6 +28,7 @@
 package com.hardbacknutter.nevertoomanybooks.searches.librarything;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -52,7 +53,6 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageFileInfo;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
-import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
@@ -177,29 +177,6 @@ public class LibraryThingSearchEngine
         return "";
     }
 
-    /**
-     * FIXME: bad method name
-     *
-     * @param context      Current context
-     * @param required     {@code true} if we <strong>must</strong> have access.
-     *                     {@code false} if it would be beneficial.
-     * @param callerSuffix String used to flag in preferences if we showed the alert from
-     *                     that caller already or not.
-     *
-     * @return {@code true} if an alert is currently shown
-     */
-    public static boolean registerOnSite(@NonNull final Context context,
-                                         final boolean required,
-                                         @NonNull final String callerSuffix) {
-        if (hasKey(context)) {
-            return false;
-        }
-
-        return StandardDialogs.registerOnSite(context, SearchSites.LIBRARY_THING,
-                                              required, callerSuffix,
-                                              LibraryThingRegistrationActivity.class);
-    }
-
     @NonNull
     @Override
     public String createUrl(@NonNull final String externalId) {
@@ -220,9 +197,22 @@ public class LibraryThingSearchEngine
     @Override
     public boolean promptToRegister(@NonNull final Context context,
                                     final boolean required,
-                                    @NonNull final String callerSuffix) {
+                                    @Nullable final String callerIdString,
+                                    @Nullable final RegistrationCallback registrationCallback) {
 
-        return registerOnSite(context, required, callerSuffix);
+        if (hasKey(context)) {
+            return false;
+        }
+
+        return showRegistrationDialog(context, required, callerIdString, action -> {
+            if (action == RegistrationCallback.Code.Register) {
+                final Intent intent = new Intent(context, LibraryThingRegistrationActivity.class);
+                context.startActivity(intent);
+            }
+            if (registrationCallback != null) {
+                registrationCallback.onRegistration(action);
+            }
+        });
     }
 
     /**
