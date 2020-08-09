@@ -74,7 +74,6 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ZoomedImageDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
-import com.hardbacknutter.nevertoomanybooks.searches.librarything.LibraryThingSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 import com.hardbacknutter.nevertoomanybooks.utils.CameraHelper;
@@ -537,16 +536,6 @@ public class CoverHandler {
      * and present to the user to choose one.
      */
     private void startCoverBrowser() {
-        // getting alternative editions is limited to LibraryThing and ISFDB for now.
-        // ISFDB is obviously limited to their specific genre,
-        // so remind the user that LT is rather essential for getting a list of editions.
-        // Note this is NOT for getting covers from LT, only the edition list.
-        if (BuildConfig.ENABLE_LIBRARY_THING_ALT_ED) {
-            if (LibraryThingSearchEngine.registerOnSite(mContext, false, "cover_browser")) {
-                return;
-            }
-        }
-
         final String isbnStr = mIsbnView.getText().toString();
         if (!isbnStr.isEmpty()) {
             final ISBN isbn = ISBN.createISBN(isbnStr);
