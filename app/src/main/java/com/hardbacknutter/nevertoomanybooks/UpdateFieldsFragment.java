@@ -150,10 +150,9 @@ public class UpdateFieldsFragment
         populateFields();
 
         if (savedInstanceState == null) {
-            //noinspection ConstantConditions
-            Site.promptToRegister(getContext(), mUpdateFieldsModel.getSiteList(), false,
-                                  "update_from_internet");
-            TipManager.display(getContext(), R.string.tip_update_fields_from_internet, null);
+            TipManager.display(getContext(), R.string.tip_update_fields_from_internet, () ->
+                    Site.promptToRegister(getContext(), mUpdateFieldsModel.getSiteList(),
+                                          "update_from_internet"));
         }
 
         // Warn the user, but don't abort.

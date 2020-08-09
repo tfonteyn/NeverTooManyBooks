@@ -69,12 +69,11 @@ public class BookSearchByTextFragment
     /** A list of author names we have already searched for in this session. */
     @NonNull
     private final Collection<String> mRecentAuthorNames = new ArrayList<>();
-    /** adapter for the AutoCompleteTextView. */
-    private DiacriticArrayAdapter<String> mAuthorAdapter;
-
     /** A list of Publisher names we have already searched for in this session. */
     @NonNull
     private final Collection<String> mRecentPublisherNames = new ArrayList<>();
+    /** adapter for the AutoCompleteTextView. */
+    private DiacriticArrayAdapter<String> mAuthorAdapter;
     /** adapter for the AutoCompleteTextView. */
     private DiacriticArrayAdapter<String> mPublisherAdapter;
     /** Flag: show the publisher field or not. */
@@ -133,10 +132,9 @@ public class BookSearchByTextFragment
         populatePublisherList();
 
         if (savedInstanceState == null) {
-            Site.promptToRegister(getContext(), mCoordinator.getSiteList(), false,
-                                  "search");
-
-            TipManager.display(getContext(), R.string.tip_book_search_by_text, null);
+            TipManager.display(getContext(), R.string.tip_book_search_by_text, () ->
+                    Site.promptToRegister(getContext(), mCoordinator.getSiteList(),
+                                          "search"));
         }
     }
 
