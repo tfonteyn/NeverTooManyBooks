@@ -4,14 +4,6 @@
  *
  * This file is part of NeverTooManyBooks.
  *
- * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
- *
- * Without their original creation, this project would not exist in its
- * current form. It was however largely rewritten/refactored and any
- * comments on this fork should be directed at HardBackNutter and not
- * at the original creators.
- *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -58,15 +50,23 @@ import com.hardbacknutter.nevertoomanybooks.R;
  * <p>
  * /src/main/res/values/attrs.xml:
  * <pre>
+ *     {@code
  *     <declare-styleable name="ExtGroup">
- *         <attr name="applyVisibility" format="boolean" />
- *         <attr name="applyOnClick" format="boolean" />
- *         <attr name="applyTags" format="boolean" />
+ *         <attr name="groupApply">
+ *             <flag name="visibility" value="0x1" />
+ *             <flag name="onclick" value="0x2" />
+ *             <flag name="tags" value="0x4" />
+ *         </attr>
  *     </declare-styleable>
+ *     }
  * </pre>
  */
 public class ExtGroup
         extends ConstraintHelper {
+
+    public static final int APPLY_VISIBILITY = 0x1;
+    public static final int APPLY_ON_CLICK = 0x2;
+    public static final int APPLY_TAGS = 0x4;
 
     @Nullable
     private OnClickListener mOnClickListener;
@@ -75,10 +75,8 @@ public class ExtGroup
     private Object mTag;
     private SparseArray<Object> mKeyedTags;
 
-    /** Initialised to {@code true} in {@link #init(AttributeSet)}. */
-    private boolean mApplyVisibility;
-    private boolean mApplyOnClick;
-    private boolean mApplyTags;
+    /** Initialised in {@link #init(AttributeSet)}. */
+    private int mApplyFlags;
 
     public ExtGroup(@NonNull final Context context,
                     @Nullable final AttributeSet attrs,
@@ -105,16 +103,12 @@ public class ExtGroup
             final TypedArray ta = getContext().getTheme().obtainStyledAttributes(
                     attrs, R.styleable.ExtGroup, 0, 0);
             try {
-                mApplyVisibility = ta.getBoolean(R.styleable.ExtGroup_applyVisibility, true);
-                mApplyOnClick = ta.getBoolean(R.styleable.ExtGroup_applyOnClick, true);
-                mApplyTags = ta.getBoolean(R.styleable.ExtGroup_applyTags, true);
+                mApplyFlags = ta.getInteger(R.styleable.ExtGroup_groupApply, 0);
             } finally {
                 ta.recycle();
             }
         } else {
-            mApplyVisibility = true;
-            mApplyOnClick = true;
-            mApplyTags = true;
+            mApplyFlags = 0;
         }
     }
 
@@ -167,14 +161,14 @@ public class ExtGroup
             View view = container.getViewById(id);
             if (view != null) {
 
-                if (mApplyVisibility) {
+                if ((mApplyFlags & APPLY_VISIBILITY) != 0) {
                     view.setVisibility(visibility);
                     if (elevation > 0.0F) {
                         view.setTranslationZ(view.getTranslationZ() + elevation);
                     }
                 }
 
-                if (mApplyOnClick) {
+                if ((mApplyFlags & APPLY_ON_CLICK) != 0) {
                     if (mOnClickListener != null) {
                         view.setOnClickListener(mOnClickListener);
                     }
@@ -183,7 +177,7 @@ public class ExtGroup
                     }
                 }
 
-                if (mApplyTags) {
+                if ((mApplyFlags & APPLY_TAGS) != 0) {
                     if (mTag != null) {
                         view.setTag(mTag);
                     }
@@ -229,9 +223,7 @@ public class ExtGroup
     public String toString() {
         return "ExtGroup{"
                + "id=" + this.getId()
-               + ", mApplyVisibility=" + mApplyVisibility
-               + ", mApplyOnClick=" + mApplyOnClick
-               + ", mApplyTags=" + mApplyTags
+               + ", mApplyFlags=0b" + Integer.toBinaryString(mApplyFlags)
                + ", mTag=" + mTag
                + ", mKeyedTags=" + mKeyedTags
                + ", mOnClickListener=" + mOnClickListener
