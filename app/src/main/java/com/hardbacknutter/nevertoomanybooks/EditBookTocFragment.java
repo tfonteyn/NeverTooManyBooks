@@ -4,14 +4,6 @@
  *
  * This file is part of NeverTooManyBooks.
  *
- * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
- *
- * Without their original creation, this project would not exist in its
- * current form. It was however largely rewritten/refactored and any
- * comments on this fork should be directed at HardBackNutter and not
- * at the original creators.
- *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -174,7 +166,7 @@ public class EditBookTocFragment
     @NonNull
     @Override
     Fields getFields() {
-        return mFragmentVM.getFields(TAG);
+        return mEditHelperVM.getFields(TAG);
     }
 
     @Override
@@ -466,7 +458,7 @@ public class EditBookTocFragment
                              @NonNull final TocEntry tocEntry) {
         //noinspection ConstantConditions
         StandardDialogs.deleteTocEntry(getContext(), tocEntry, () -> {
-            if (mFragmentVM.deleteTocEntry(getContext(), tocEntry.getId())) {
+            if (mEditHelperVM.deleteTocEntry(getContext(), tocEntry.getId())) {
                 mList.remove(tocEntry);
                 mListAdapter.notifyItemRemoved(position);
             }
@@ -487,7 +479,7 @@ public class EditBookTocFragment
                 //noinspection ConstantConditions
                 mAuthorAdapter = new DiacriticArrayAdapter<>(
                         getContext(), R.layout.dropdown_menu_popup_item,
-                        mFragmentVM.getAllAuthorNames());
+                        mEditHelperVM.getAllAuthorNames());
                 mVb.author.setAdapter(mAuthorAdapter);
             }
 

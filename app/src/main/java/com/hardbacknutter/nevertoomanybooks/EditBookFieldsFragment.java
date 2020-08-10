@@ -4,14 +4,6 @@
  *
  * This file is part of NeverTooManyBooks.
  *
- * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
- *
- * Without their original creation, this project would not exist in its
- * current form. It was however largely rewritten/refactored and any
- * comments on this fork should be directed at HardBackNutter and not
- * at the original creators.
- *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -78,7 +70,7 @@ public class EditBookFieldsFragment
     private static final String TAG = "EditBookFieldsFragment";
 
     private final CheckListDialogFragment.OnResultListener mOnCheckListListener = selectedItems -> {
-        final int fieldId = mFragmentVM.getCurrentDialogFieldId()[0];
+        final int fieldId = mEditHelperVM.getCurrentDialogFieldId()[0];
         final Field<List<Entity>, TextView> field = getField(fieldId);
         mBookViewModel.getBook().putParcelableArrayList(field.getKey(), selectedItems);
         field.getAccessor().setValue(selectedItems);
@@ -101,7 +93,7 @@ public class EditBookFieldsFragment
     @NonNull
     @Override
     Fields getFields() {
-        return mFragmentVM.getFields(TAG);
+        return mEditHelperVM.getFields(TAG);
     }
 
     @Override
@@ -168,11 +160,11 @@ public class EditBookFieldsFragment
         // Bookshelves editor (dialog)
         if (getField(R.id.bookshelves).isUsed(getContext())) {
             mVb.bookshelves.setOnClickListener(v -> {
-                mFragmentVM.setCurrentDialogFieldId(R.id.bookshelves);
+                mEditHelperVM.setCurrentDialogFieldId(R.id.bookshelves);
                 CheckListDialogFragment
                         .newInstance(
                                 getString(R.string.lbl_bookshelves_long),
-                                new ArrayList<>(mFragmentVM.getAllBookshelves()),
+                                new ArrayList<>(mEditHelperVM.getAllBookshelves()),
                                 new ArrayList<>(mBookViewModel.getBook().getParcelableArrayList(
                                         Book.BKEY_BOOKSHELF_ARRAY)))
                         .show(getChildFragmentManager(), CheckListDialogFragment.TAG);
@@ -198,8 +190,8 @@ public class EditBookFieldsFragment
         super.onResume();
         // With all Views populated, (re-)add the helpers which rely on fields having valid views
 
-        addAutocomplete(R.id.genre, mFragmentVM.getAllGenres());
-        addAutocomplete(R.id.language, mFragmentVM.getAllLanguagesCodes());
+        addAutocomplete(R.id.genre, mEditHelperVM.getAllGenres());
+        addAutocomplete(R.id.language, mEditHelperVM.getAllLanguagesCodes());
     }
 
     @Override
@@ -274,7 +266,7 @@ public class EditBookFieldsFragment
     /** Called by the CoverHandler when a context menu is selected. */
     @Override
     public void setCurrentCoverIndex(@IntRange(from = 0) final int cIdx) {
-        mFragmentVM.setCurrentCoverHandlerIndex(cIdx);
+        mEditHelperVM.setCurrentCoverHandlerIndex(cIdx);
     }
 
     @Override
@@ -365,7 +357,7 @@ public class EditBookFieldsFragment
 
             default: {
                 // handle any cover image request codes
-                final int cIdx = mFragmentVM.getAndClearCurrentCoverHandlerIndex();
+                final int cIdx = mEditHelperVM.getAndClearCurrentCoverHandlerIndex();
                 if (cIdx >= 0 && cIdx < mCoverHandler.length) {
                     if (mCoverHandler[cIdx] != null) {
                         if (mCoverHandler[cIdx].onActivityResult(requestCode, resultCode, data)) {

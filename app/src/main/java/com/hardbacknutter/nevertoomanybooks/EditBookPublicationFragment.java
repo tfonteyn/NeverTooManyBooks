@@ -4,14 +4,6 @@
  *
  * This file is part of NeverTooManyBooks.
  *
- * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
- *
- * Without their original creation, this project would not exist in its
- * current form. It was however largely rewritten/refactored and any
- * comments on this fork should be directed at HardBackNutter and not
- * at the original creators.
- *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -63,7 +55,7 @@ public class EditBookPublicationFragment
     @NonNull
     @Override
     Fields getFields() {
-        return mFragmentVM.getFields(TAG);
+        return mEditHelperVM.getFields(TAG);
     }
 
     @Override
@@ -102,9 +94,9 @@ public class EditBookPublicationFragment
         super.onResume();
         // With all Views populated, (re-)add the helpers which rely on fields having valid views
 
-        addAutocomplete(R.id.format, mFragmentVM.getAllFormats());
-        addAutocomplete(R.id.color, mFragmentVM.getAllColors());
-        addAutocomplete(R.id.price_listed_currency, mFragmentVM.getAllListPriceCurrencyCodes());
+        addAutocomplete(R.id.format, mEditHelperVM.getAllFormats());
+        addAutocomplete(R.id.color, mEditHelperVM.getAllColors());
+        addAutocomplete(R.id.price_listed_currency, mEditHelperVM.getAllListPriceCurrencyCodes());
 
         addPartialDatePicker(getField(R.id.date_published),
                              R.string.lbl_date_published, false);

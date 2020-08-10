@@ -4,14 +4,6 @@
  *
  * This file is part of NeverTooManyBooks.
  *
- * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
- *
- * Without their original creation, this project would not exist in its
- * current form. It was however largely rewritten/refactored and any
- * comments on this fork should be directed at HardBackNutter and not
- * at the original creators.
- *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -101,8 +93,8 @@ public class BookDetailsFragment
     private View.OnTouchListener mOnTouchListener;
     /** Handle next/previous paging in the flattened booklist; called by mOnTouchListener. */
     private GestureDetector mGestureDetector;
-    /** View model. */
-    private BookDetailsFragmentViewModel mFragmentVM;
+    /** The details helper View model. Must be in the Activity scope. */
+    private BookDetailsFragmentViewModel mDetailsHelperVM;
     /** View Binding. */
     private FragmentBookDetailsBinding mVb;
     /** Listen for changes coming from child (dialog) fragments. */
@@ -129,7 +121,7 @@ public class BookDetailsFragment
     @NonNull
     @Override
     Fields getFields() {
-        return mFragmentVM.getFields(null);
+        return mDetailsHelperVM.getFields(null);
     }
 
     @Override
@@ -179,9 +171,9 @@ public class BookDetailsFragment
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        mFragmentVM = new ViewModelProvider(this).get(BookDetailsFragmentViewModel.class);
+        mDetailsHelperVM = new ViewModelProvider(this).get(BookDetailsFragmentViewModel.class);
         //noinspection ConstantConditions
-        mFragmentVM.init(getContext(), getArguments(), mBookViewModel.getBook());
+        mDetailsHelperVM.init(getContext(), getArguments(), mBookViewModel.getBook());
 
         mGrSendOneBookTask = new ViewModelProvider(this).get(GrSendOneBookTask.class);
         mGrSendOneBookTask.onProgressUpdate().observe(getViewLifecycleOwner(), this::onProgress);
@@ -292,11 +284,6 @@ public class BookDetailsFragment
                     }
                     // onResume will display the changed book.
                     mBookViewModel.reload();
-
-                    //URGENT open book details and have book assigned to two shelves,
-                    // use nav menu to add bookshelf; edit book
-                    // remove one shelf, and add the new shelf
-                    // save... verify the shelves list
                 }
                 break;
 
@@ -321,7 +308,7 @@ public class BookDetailsFragment
 
             default: {
                 // handle any cover image request codes
-                final int cIdx = mFragmentVM.getAndClearCurrentCoverHandlerIndex();
+                final int cIdx = mDetailsHelperVM.getAndClearCurrentCoverHandlerIndex();
                 if (cIdx >= 0 && cIdx < mCoverHandler.length) {
                     if (mCoverHandler[cIdx] != null) {
                         if (mCoverHandler[cIdx].onActivityResult(requestCode, resultCode, data)) {
@@ -351,7 +338,7 @@ public class BookDetailsFragment
     /** Called by the CoverHandler when a context menu is selected. */
     @Override
     public void setCurrentCoverIndex(@IntRange(from = 0) final int cIdx) {
-        mFragmentVM.setCurrentCoverHandlerIndex(cIdx);
+        mDetailsHelperVM.setCurrentCoverHandlerIndex(cIdx);
     }
 
     /**
@@ -690,12 +677,12 @@ public class BookDetailsFragment
             }
 
             if ((e1.getX() - e2.getX()) > SENSITIVITY) {
-                if (mFragmentVM.move(mBookViewModel.getBook(), true)) {
+                if (mDetailsHelperVM.move(mBookViewModel.getBook(), true)) {
                     populateViews(getFields());
                     return true;
                 }
             } else if ((e2.getX() - e1.getX()) > SENSITIVITY) {
-                if (mFragmentVM.move(mBookViewModel.getBook(), false)) {
+                if (mDetailsHelperVM.move(mBookViewModel.getBook(), false)) {
                     populateViews(getFields());
                     return true;
                 }

@@ -4,14 +4,6 @@
  *
  * This file is part of NeverTooManyBooks.
  *
- * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
- *
- * Without their original creation, this project would not exist in its
- * current form. It was however largely rewritten/refactored and any
- * comments on this fork should be directed at HardBackNutter and not
- * at the original creators.
- *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -82,7 +74,7 @@ public abstract class EditBookBaseFragment
     private static final String REQUEST_KEY_DATE_PICKER_RANGE = TAG + ":rk:datePickerRange";
 
     /** The view model. */
-    EditBookFragmentViewModel mFragmentVM;
+    EditBookFragmentViewModel mEditHelperVM;
 
     /** Dialog listener (strong reference). */
     private final PartialDatePickerDialogFragment.OnResultListener mPartialDatePickerListener =
@@ -146,10 +138,10 @@ public abstract class EditBookBaseFragment
         Objects.requireNonNull(fragmentTag, ErrorMsg.NULL_FRAGMENT_TAG);
 
         //noinspection ConstantConditions
-        mFragmentVM = new ViewModelProvider(getActivity())
+        mEditHelperVM = new ViewModelProvider(getActivity())
                 .get(fragmentTag, EditBookFragmentViewModel.class);
 
-        mFragmentVM.init();
+        mEditHelperVM.init();
     }
 
     @Override
@@ -157,9 +149,9 @@ public abstract class EditBookBaseFragment
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        if (mFragmentVM.shouldInitFields()) {
+        if (mEditHelperVM.shouldInitFields()) {
             onInitFields(getFields());
-            mFragmentVM.setFieldsAreInitialised();
+            mEditHelperVM.setFieldsAreInitialised();
         }
     }
 
@@ -318,7 +310,7 @@ public abstract class EditBookBaseFragment
                     startSelection = endSelection;
                     endSelection = tmp;
                 }
-                mFragmentVM.setCurrentDialogFieldId(fieldStartDate.getId(), fieldEndDate.getId());
+                mEditHelperVM.setCurrentDialogFieldId(fieldStartDate.getId(), fieldEndDate.getId());
 
                 new WrappedMaterialDatePicker<>(
                         MaterialDatePicker.Builder
@@ -352,7 +344,7 @@ public abstract class EditBookBaseFragment
             field.getAccessor().getView().setOnClickListener(v -> {
                 final Instant time = getInstant(field, todayIfNone);
                 final Long selection = time != null ? time.toEpochMilli() : null;
-                mFragmentVM.setCurrentDialogFieldId(field.getId());
+                mEditHelperVM.setCurrentDialogFieldId(field.getId());
 
                 new WrappedMaterialDatePicker<>(
                         MaterialDatePicker.Builder
@@ -380,7 +372,7 @@ public abstract class EditBookBaseFragment
         if (field.isUsed(getContext())) {
             //noinspection ConstantConditions
             field.getAccessor().getView().setOnClickListener(v -> {
-                mFragmentVM.setCurrentDialogFieldId(field.getId());
+                mEditHelperVM.setCurrentDialogFieldId(field.getId());
                 PartialDatePickerDialogFragment
                         .newInstance(dialogTitleId, field.getAccessor().getValue(), todayIfNone)
                         .show(getChildFragmentManager(), PartialDatePickerDialogFragment.TAG);
@@ -435,7 +427,7 @@ public abstract class EditBookBaseFragment
                            @NonNull final String value) {
 
         @IdRes
-        final int fieldId = mFragmentVM.getCurrentDialogFieldId()[fieldIndex];
+        final int fieldId = mEditHelperVM.getCurrentDialogFieldId()[fieldIndex];
 
         final Field<String, TextView> field = getField(fieldId);
         field.getAccessor().setValue(value);
