@@ -4,14 +4,6 @@
  *
  * This file is part of NeverTooManyBooks.
  *
- * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
- *
- * Without their original creation, this project would not exist in its
- * current form. It was however largely rewritten/refactored and any
- * comments on this fork should be directed at HardBackNutter and not
- * at the original creators.
- *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -133,7 +125,7 @@ public interface SearchEngine {
                     .setPositiveButton(R.string.btn_learn_more, (d, w) ->
                             callback.onRegistration(RegistrationCallback.Code.Register))
                     .setOnCancelListener(
-                            dialog -> callback.onRegistration(RegistrationCallback.Code.Cancelled));
+                            d -> callback.onRegistration(RegistrationCallback.Code.Cancelled));
 
             if (required) {
                 dialogBuilder.setMessage(context.getString(
@@ -151,7 +143,7 @@ public interface SearchEngine {
                             R.string.btn_disable_message), (d, w) -> {
                         PreferenceManager.getDefaultSharedPreferences(context)
                                          .edit().putBoolean(key, true).apply();
-                        callback.onRegistration(RegistrationCallback.Code.Disable);
+                        callback.onRegistration(RegistrationCallback.Code.NotEver);
                     });
                 }
             }
@@ -674,11 +666,8 @@ public interface SearchEngine {
             /** User does not want to bother now, but wants to be reminded later. */
             NotNow,
             /** Not interested, don't bother the user again. */
-            Disable,
-            /**
-             * Cancelled without selecting any option.
-             * Should likely be treated the same as 'NotNow'.
-             */
+            NotEver,
+            /** Cancelled without selecting any option. */
             Cancelled
         }
     }

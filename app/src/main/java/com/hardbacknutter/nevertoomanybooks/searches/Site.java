@@ -4,14 +4,6 @@
  *
  * This file is part of NeverTooManyBooks.
  *
- * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
- *
- * Without their original creation, this project would not exist in its
- * current form. It was however largely rewritten/refactored and any
- * comments on this fork should be directed at HardBackNutter and not
- * at the original creators.
- *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -33,6 +25,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.preference.PreferenceManager;
@@ -154,27 +147,45 @@ public class Site
      * Bring up an Alert to the user if the given list includes a site where registration
      * is beneficial (but not required... it's just one of many engines here).
      *
-     * @param context      Current context
-     * @param sites        the list to check
-     * @param callerSuffix String used to flag in preferences if we showed the alert from
-     *                     that caller already or not.
-     *
-     * @return {@code true} if an alert is currently shown
+     * @param context        Current context
+     * @param sites          the list to check
+     * @param callerIdString String used to flag in preferences if we showed the alert from
+     *                       that caller already or not.
      */
-    @SuppressWarnings("UnusedReturnValue")
-    public static boolean promptToRegister(
-            @NonNull final Context context,
-            @NonNull final Collection<Site> sites,
-            @NonNull final String callerSuffix) {
-        boolean showingAlert = false;
+    public static void promptToRegister(@NonNull final Context context,
+                                        @NonNull final Collection<Site> sites,
+                                        @NonNull final String callerIdString,
+                                        @Nullable final Runnable onFinished) {
         for (Site site : sites) {
             if (site.isEnabled()) {
-                showingAlert |= site.getSearchEngine(context)
-                                    .promptToRegister(context, false, callerSuffix, null);
+                final SearchEngine searchEngine = site.getSearchEngine(context);
+                if (searchEngine.promptToRegister(context, false, callerIdString, action -> {
+                    switch (action) {
+                        case Register:
+                            throw new IllegalStateException("Engine must handle Register");
+                        case NotNow:
+                        case NotEver:
+                            // run the loop again, it will skip the disabled engine
+                            promptToRegister(context, sites, callerIdString, onFinished);
+                            return;
+                        case Cancelled:
+                            // user explicitly cancelled, we're done here
+                            if (onFinished != null) {
+                                onFinished.run();
+                            }
+                            break;
+                    }
+                })) {
+                    // we are showing a registration dialog, quit the loop
+                    return;
+                }
             }
         }
 
-        return showingAlert;
+        // all engines that need registration, have it, or were cancelled/disabled.
+        if (onFinished != null) {
+            onFinished.run();
+        }
     }
 
     /**
