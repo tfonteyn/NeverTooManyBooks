@@ -5,14 +5,6 @@
   ~
   ~ This file is part of NeverTooManyBooks.
   ~
-  ~ In August 2018, this project was forked from:
-  ~ Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
-  ~
-  ~ Without their original creation, this project would not exist in its
-  ~ current form. It was however largely rewritten/refactored and any
-  ~ comments on this fork should be directed at HardBackNutter and not
-  ~ at the original creators.
-  ~
   ~ NeverTooManyBooks is free software: you can redistribute it and/or modify
   ~ it under the terms of the GNU General Public License as published by
   ~ the Free Software Foundation, either version 3 of the License, or
@@ -173,7 +165,7 @@
     <style name="Envelope.EditText.Isbn">
         <item name="android:hint">@string/lbl_isbn</item>
         <item name="startIconDrawable">@drawable/ic_check</item>
-        <item name="startIconTint">?attr/appIconTintChecked</item>
+        <item name="startIconTint">?attr/appColorChecked</item>
     </style>
 
     <style name="Envelope.EditText.SeriesNum">
@@ -384,13 +376,13 @@
     <!-- Generic Indicator. -->
     <style name="Flag.Generic">
         <item name="android:button">@drawable/ic_selector_check</item>
-        <item name="android:buttonTint">?attr/appIconTintChecked</item>
+        <item name="android:buttonTint">?attr/appColorChecked</item>
     </style>
 
     <!-- Indicator a book has been read. -->
     <style name="Flag.Read">
         <item name="android:button">@drawable/ic_selector_read</item>
-        <item name="android:buttonTint">?attr/appIconTintChecked</item>
+        <item name="android:buttonTint">?attr/appColorChecked</item>
     </style>
 
     <!-- Indicator a book is a first edition. -->

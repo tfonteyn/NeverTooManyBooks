@@ -5,14 +5,6 @@
   ~
   ~ This file is part of NeverTooManyBooks.
   ~
-  ~ In August 2018, this project was forked from:
-  ~ Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
-  ~
-  ~ Without their original creation, this project would not exist in its
-  ~ current form. It was however largely rewritten/refactored and any
-  ~ comments on this fork should be directed at HardBackNutter and not
-  ~ at the original creators.
-  ~
   ~ NeverTooManyBooks is free software: you can redistribute it and/or modify
   ~ it under the terms of the GNU General Public License as published by
   ~ the Free Software Foundation, either version 3 of the License, or
@@ -45,25 +37,31 @@ https://material.io/design/material-theming/implementing-your-theme.html#color
         <!-- =================== -->
         <!-- Theme Color palette -->
         <!-- =================== -->
+        <item name="android:statusBarColor">@color/blue_grey_300</item>
+
         <item name="colorPrimary">@color/blue_grey_100</item>
         <item name="colorPrimaryVariant">@color/blue_grey_200</item>
-        <item name="colorPrimaryDark">@color/blue_grey_300</item>
         <item name="colorOnPrimary">@color/black</item>
 
         <item name="colorSecondary">@color/cyan_200</item>
         <item name="colorSecondaryVariant">@color/cyan_300</item>
         <item name="colorOnSecondary">@color/black</item>
 
-        <item name="colorControlNormal">@color/black</item>
+        <!--        <item name="colorSurface">@color/white</item>-->
+        <!--        <item name="colorOnSurface">@color/black</item>-->
+
+        <!-- framework - The color applied to icons/controls in their normal state. -->
+        <!--        <item name="colorControlNormal">?attr/colorOnPrimary</item>-->
+        <!-- framework - The color applied to icons/controls in their activated state (e.g. checked). -->
+        <!--        <item name="colorControlActivated">?attr/colorPrimary</item>-->
+        <!-- framework - The color applied to control highlights (e.g. ripples, list selectors). -->
+        <!--        <item name="colorControlHighlight">DEFAULT</item>-->
 
         <!--  ======================== -->
         <!-- Component theme overrides -->
         <!--  ======================== -->
-
         <item name="materialAlertDialogTheme">@style/ThemeOverlay.App.MaterialAlertDialog</item>
-
         <item name="snackbarTextViewStyle">@style/SnackbarText</item>
-
 
         <!-- ==================== -->
         <!-- Application specific -->
@@ -77,13 +75,12 @@ https://material.io/design/material-theming/implementing-your-theme.html#color
         <item name="appFsOverlayBackgroundColor">?attr/colorPrimary</item>
 
         <!-- gradient used in the Navigation side bar. -->
-        <item name="appNavBarStartColor">@color/blue_grey_400</item>
-        <item name="appNavBarCenterColor">@color/blue_grey_100</item>
-        <item name="appNavBarEndColor">@color/blue_grey_50</item>
+        <item name="appNavBarColorStart">@color/blue_grey_400</item>
+        <item name="appNavBarColorCenter">@color/blue_grey_100</item>
+        <item name="appNavBarColorEnd">@color/blue_grey_50</item>
 
-        <item name="appIconTint">?attr/colorControlNormal</item>
-        <item name="appIconTintChecked">@color/green_300</item>
-        <item name="appIconTintCompleted">@color/teal_300</item>
+        <item name="appColorChecked">@color/green_300</item>
+        <item name="appColorCompleted">@color/teal_300</item>
 
     </style>
 

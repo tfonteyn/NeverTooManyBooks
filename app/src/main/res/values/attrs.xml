@@ -5,14 +5,6 @@
   ~
   ~ This file is part of NeverTooManyBooks.
   ~
-  ~ In August 2018, this project was forked from:
-  ~ Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
-  ~
-  ~ Without their original creation, this project would not exist in its
-  ~ current form. It was however largely rewritten/refactored and any
-  ~ comments on this fork should be directed at HardBackNutter and not
-  ~ at the original creators.
-  ~
   ~ NeverTooManyBooks is free software: you can redistribute it and/or modify
   ~ it under the terms of the GNU General Public License as published by
   ~ the Free Software Foundation, either version 3 of the License, or
@@ -36,31 +28,29 @@
     <!-- The header on the BoB screen.
          Default was using the surfaceColor, we override here. -->
     <attr name="appHeaderBackgroundColor" format="reference|color" />
-    <!-- The card view for a book on the BoB screen.
-         Default was using the surfaceColor, we override here. -->
+    <!-- The card "cardBackgroundColor" for a book on the BoB screen. -->
     <attr name="appBookCardBackgroundColor" format="reference|color" />
 
     <!-- The fast-scroller overlay -->
     <attr name="appFsOverlayTextColor" format="reference|color" />
     <attr name="appFsOverlayBackgroundColor" format="reference|color" />
 
-    <!-- gradient used in the Navigation side bar. -->
-    <attr name="appNavBarStartColor" format="reference|color" />
-    <attr name="appNavBarCenterColor" format="reference|color" />
-    <attr name="appNavBarEndColor" format="reference|color" />
+    <!-- Color gradient used in the Navigation side bar. -->
+    <attr name="appNavBarColorStart" format="reference|color" />
+    <attr name="appNavBarColorCenter" format="reference|color" />
+    <attr name="appNavBarColorEnd" format="reference|color" />
 
-    <!-- Global abstraction for an icon tint. See the drawable/ic_* files.
-        Note that "iconTint" exists as an attr on a MaterialButton which would clash with ours. -->
-    <attr name="appIconTint" format="reference|color" />
-    <!-- Color for a boolean status icon; true: this color; false: transparent. -->
-    <attr name="appIconTintChecked" format="reference|color" />
-    <!-- Color for a boolean status icon; true: this color; false: transparent. -->
-    <attr name="appIconTintCompleted" format="reference|color" />
+    <!-- Color for a boolean status. -->
+    <attr name="appColorChecked" format="reference|color" />
+    <!-- Color for a boolean status. -->
+    <attr name="appColorCompleted" format="reference|color" />
 
     <declare-styleable name="ExtGroup">
-        <attr name="applyVisibility" format="boolean" />
-        <attr name="applyOnClick" format="boolean" />
-        <attr name="applyTags" format="boolean" />
+        <attr name="groupApply">
+            <flag name="visibility" value="0x1" />
+            <flag name="onclick" value="0x2" />
+            <flag name="tags" value="0x4" />
+        </attr>
     </declare-styleable>
 
     <declare-styleable name="BitmaskPreference">
