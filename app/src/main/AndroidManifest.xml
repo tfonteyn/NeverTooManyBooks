@@ -5,14 +5,6 @@
   ~
   ~ This file is part of NeverTooManyBooks.
   ~
-  ~ In August 2018, this project was forked from:
-  ~ Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
-  ~
-  ~ Without their original creation, this project would not exist in its
-  ~ current form. It was however largely rewritten/refactored and any
-  ~ comments on this fork should be directed at HardBackNutter and not
-  ~ at the original creators.
-  ~
   ~ NeverTooManyBooks is free software: you can redistribute it and/or modify
   ~ it under the terms of the GNU General Public License as published by
   ~ the Free Software Foundation, either version 3 of the License, or
@@ -79,15 +71,15 @@
             android:value=".BooksOnBookshelf" />
 
         <!--
-            This is the activity that will appear in the app launcher
+            This is the Activity that will appear in the app launcher
+            The StartupActivity takes care of all pre-UI tasks.
+            When done, it starts the (real) main BooksOnBookshelf Activity.
 
-            The StartupActivity activity takes care of all pre-UI tasks.
             android:configChanges -> we'll IGNORE these,
-            hence the activity will not restart on those changes,
+            hence the Activity will not restart on those changes,
             which makes handling the startup tasks a lot easier.
 
-            The StartupActivity activity is just a forwarder to the BooksOnBookshelf Activity.
-            So in theory it is OK to make it singleInstance
+            Using specific Theme for the startup activity so it looks like a dialog as intended.
         -->
         <activity
             android:name=".StartupActivity"

@@ -4,14 +4,6 @@
  *
  * This file is part of NeverTooManyBooks.
  *
- * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
- *
- * Without their original creation, this project would not exist in its
- * current form. It was however largely rewritten/refactored and any
- * comments on this fork should be directed at HardBackNutter and not
- * at the original creators.
- *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -102,14 +94,14 @@ public class EditBookActivity
         mBookViewModel.init(this, getIntent().getExtras());
         mBookViewModel.enableValidators();
 
+        setNavigationItemVisibility(R.id.nav_manage_bookshelves, true);
+
         mViewPagerAdapter = new TabAdapter(this);
         mVb.pager.setAdapter(mViewPagerAdapter);
 
         new TabLayoutMediator(mVb.tabPanel, mVb.pager, (tab, position) ->
                 tab.setText(getString(mViewPagerAdapter.getTabTitle(position))))
                 .attach();
-
-        setNavigationItemVisibility(R.id.nav_manage_bookshelves, true);
     }
 
     @Override

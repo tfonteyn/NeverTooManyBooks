@@ -4,14 +4,6 @@
  *
  * This file is part of NeverTooManyBooks.
  *
- * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
- *
- * Without their original creation, this project would not exist in its
- * current form. It was however largely rewritten/refactored and any
- * comments on this fork should be directed at HardBackNutter and not
- * at the original creators.
- *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -39,6 +31,7 @@ import com.google.android.material.chip.ChipGroup;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
@@ -74,8 +67,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Entity;
 public class EntityListChipGroupAccessor
         extends BaseDataAccessor<ArrayList<Entity>, ChipGroup> {
 
-    @NonNull
-    private final List<Entity> mAll;
+    private final Supplier<List<Entity>> mListSupplier;
 
     @Nullable
     private final View.OnClickListener mFilterChipListener;
@@ -83,12 +75,12 @@ public class EntityListChipGroupAccessor
     /**
      * Constructor.
      *
-     * @param allValues  a list with all <strong>possible</strong> values
-     * @param isEditable flag
+     * @param listSupplier for a list with all <strong>possible</strong> values
+     * @param isEditable   flag
      */
-    public EntityListChipGroupAccessor(@NonNull final List<Entity> allValues,
+    public EntityListChipGroupAccessor(@NonNull final Supplier<List<Entity>> listSupplier,
                                        final boolean isEditable) {
-        mAll = allValues;
+        mListSupplier = listSupplier;
         mIsEditable = isEditable;
 
         if (mIsEditable) {
@@ -129,7 +121,7 @@ public class EntityListChipGroupAccessor
             Context context = chipGroup.getContext();
 
             // *all* values
-            for (Entity entity : mAll) {
+            for (Entity entity : mListSupplier.get()) {
                 final boolean isSet = mRawValue.contains(entity);
                 // if editable, all values; if not editable only the set values.
                 if (isSet || mIsEditable) {

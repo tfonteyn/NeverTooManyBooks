@@ -4,14 +4,6 @@
  *
  * This file is part of NeverTooManyBooks.
  *
- * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
- *
- * Without their original creation, this project would not exist in its
- * current form. It was however largely rewritten/refactored and any
- * comments on this fork should be directed at HardBackNutter and not
- * at the original creators.
- *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -60,8 +52,6 @@ public class EditBookFragmentViewModel
     private List<String> mListPriceCurrencies;
 
     /** Field drop down list. */
-    private List<Bookshelf> mBookshelves;
-    /** Field drop down list. */
     private List<String> mAuthorNames;
 
     @IdRes
@@ -78,10 +68,9 @@ public class EditBookFragmentViewModel
 
     @NonNull
     public List<Bookshelf> getAllBookshelves() {
-        if (mBookshelves == null) {
-            mBookshelves = mDb.getBookshelves();
-        }
-        return mBookshelves;
+        // not cached.
+        // This allows the user to edit the global list of shelves while editing a book.
+        return mDb.getBookshelves();
     }
 
     @NonNull
