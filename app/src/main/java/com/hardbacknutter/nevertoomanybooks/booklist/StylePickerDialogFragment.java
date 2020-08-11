@@ -4,14 +4,6 @@
  *
  * This file is part of NeverTooManyBooks.
  *
- * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
- *
- * Without their original creation, this project would not exist in its
- * current form. It was however largely rewritten/refactored and any
- * comments on this fork should be directed at HardBackNutter and not
- * at the original creators.
- *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -28,7 +20,6 @@
 package com.hardbacknutter.nevertoomanybooks.booklist;
 
 import android.app.Activity;
-import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -36,16 +27,10 @@ import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
-import androidx.appcompat.app.AlertDialog;
 import androidx.core.util.Pair;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentResultListener;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -56,14 +41,16 @@ import com.hardbacknutter.nevertoomanybooks.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.RequestCode;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
+import com.hardbacknutter.nevertoomanybooks.databinding.DialogStylesMenuBinding;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
+import com.hardbacknutter.nevertoomanybooks.dialogs.BaseDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.settings.SettingsActivity;
 import com.hardbacknutter.nevertoomanybooks.settings.styles.StyleBaseFragment;
 import com.hardbacknutter.nevertoomanybooks.settings.styles.StyleFragment;
 import com.hardbacknutter.nevertoomanybooks.widgets.RadioGroupRecyclerAdapter;
 
 public class StylePickerDialogFragment
-        extends DialogFragment {
+        extends BaseDialogFragment {
 
     /** Log tag. */
     public static final String TAG = "StylePickerDialogFrag";
@@ -80,6 +67,10 @@ public class StylePickerDialogFragment
     /** Currently selected style. */
     @Nullable
     private String mCurrentStyleUuid;
+
+    public StylePickerDialogFragment() {
+        super(R.layout.dialog_styles_menu);
+    }
 
     /**
      * Constructor.
@@ -109,14 +100,40 @@ public class StylePickerDialogFragment
         mShowAllStyles = args.getBoolean(BKEY_SHOW_ALL_STYLES, false);
     }
 
-    @NonNull
-    @Override
-    public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
-        final View root = getLayoutInflater().inflate(R.layout.dialog_styles_menu, null);
 
-        final RecyclerView listView = root.findViewById(R.id.styles);
-        final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
-        listView.setLayoutManager(linearLayoutManager);
+    @Override
+    public void onViewCreated(@NonNull final View view,
+                              @Nullable final Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        final DialogStylesMenuBinding vb = DialogStylesMenuBinding.bind(view);
+
+        vb.toolbar.setNavigationOnClickListener(v -> dismiss());
+        vb.toolbar.setOnMenuItemClickListener(item -> {
+            switch (item.getItemId()) {
+                case R.id.MENU_SAVE:
+                    onStyleSelected();
+                    return true;
+                case R.id.MENU_EDIT:
+                    onEditStyle();
+                    return true;
+                case R.id.MENU_LEVEL_TOGGLE:
+                    mShowAllStyles = !mShowAllStyles;
+                    if (mShowAllStyles) {
+                        item.setTitle(R.string.btn_less_ellipsis);
+                        item.setIcon(R.drawable.ic_unfold_less);
+                    } else {
+                        item.setTitle(R.string.btn_more_ellipsis);
+                        item.setIcon(R.drawable.ic_unfold_more);
+                    }
+                    loadStyles();
+                    mAdapter.notifyDataSetChanged();
+                    return true;
+
+                default:
+                    return false;
+            }
+        });
 
         loadStyles();
 
@@ -124,38 +141,7 @@ public class StylePickerDialogFragment
         mAdapter = new RadioGroupRecyclerAdapter<>(getContext(),
                                                    mAdapterItemList, mCurrentStyleUuid,
                                                    uuid -> mCurrentStyleUuid = uuid);
-        listView.setAdapter(mAdapter);
-
-        return new MaterialAlertDialogBuilder(getContext())
-                .setTitle(R.string.lbl_select_style)
-                .setView(root)
-                // We set the OnClickListener in onResume.
-                // This allows reloading the list without having the dialog close
-                // on us after the user clicks a button.
-                .setNeutralButton(getMoreOrLessBtnTxtId(), null)
-                .setNegativeButton(R.string.action_edit, null)
-                .setPositiveButton(android.R.string.ok, null)
-                .create();
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        final AlertDialog dialog = (AlertDialog) getDialog();
-        if (dialog != null) {
-            dialog.getButton(Dialog.BUTTON_NEUTRAL)
-                  .setOnClickListener(v -> {
-                      mShowAllStyles = !mShowAllStyles;
-                      ((AlertDialog) getDialog()).getButton(Dialog.BUTTON_NEUTRAL)
-                                                 .setText(getMoreOrLessBtnTxtId());
-                      loadStyles();
-                      mAdapter.notifyDataSetChanged();
-                  });
-            dialog.getButton(Dialog.BUTTON_NEGATIVE)
-                  .setOnClickListener(v -> onEditStyle());
-            dialog.getButton(Dialog.BUTTON_POSITIVE)
-                  .setOnClickListener(v -> onStyleSelected());
-        }
+        vb.styles.setAdapter(mAdapter);
     }
 
     /**
@@ -199,12 +185,6 @@ public class StylePickerDialogFragment
                 .putExtra(StyleBaseFragment.BKEY_TEMPLATE_ID, templateId);
         //noinspection ConstantConditions
         activity.startActivityForResult(intent, RequestCode.EDIT_STYLE);
-    }
-
-    @StringRes
-    private int getMoreOrLessBtnTxtId() {
-        return mShowAllStyles ? R.string.btn_less_ellipsis
-                              : R.string.btn_more_ellipsis;
     }
 
     /**
