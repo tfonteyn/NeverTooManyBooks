@@ -356,55 +356,39 @@
     </style>
 
     <!-- *************************************************************************************** -->
-    <!-- Flags == Read-only "CheckBox" with custom 'check/invisible' icon in our custom color.
-         Note we use selectors even when we just make them visible/gone instead of
-         checked/unchecked. While not optimal this gives more flexibility. -->
+    <!-- Read-only boolean Flags. GONE when false, VISIBLE when true.  -->
     <!-- *************************************************************************************** -->
 
-    <!-- Base Flag; not to be used directly in layouts -->
+    <!-- ImageView. Generic Flag. -->
     <style name="Flag">
-        <!-- Using 'Theme.AppCompat' a wrap_content/wrap_content worked fine.
-             Since using 'Theme.MaterialComponents' it had to be set to 24/24 (i.e. icon size) -->
         <item name="android:layout_width">24dp</item>
         <item name="android:layout_height">24dp</item>
-        <item name="android:enabled">false</item>
-        <item name="android:clickable">false</item>
-        <item name="android:focusable">false</item>
-        <item name="android:focusableInTouchMode">false</item>
     </style>
 
-    <!-- Generic Indicator. -->
-    <style name="Flag.Generic">
-        <item name="android:button">@drawable/ic_selector_check</item>
-        <item name="android:buttonTint">?attr/appColorChecked</item>
-    </style>
-
-    <!-- Indicator a book has been read. -->
+    <!-- ImageView. Indicator a book has been read. -->
     <style name="Flag.Read">
-        <item name="android:button">@drawable/ic_selector_read</item>
-        <item name="android:buttonTint">?attr/appColorChecked</item>
+        <item name="android:contentDescription">@string/lbl_read</item>
+        <item name="android:src">@drawable/ic_assignment_turned_in</item>
+        <item name="android:tint">?attr/appColorChecked</item>
     </style>
 
-    <!-- Indicator a book is a first edition. -->
+    <!-- ImageView. Indicator a book is a first edition. -->
     <style name="Flag.FirstEdition">
-        <item name="android:button">@drawable/ic_selector_first_edition</item>
+        <item name="android:contentDescription">@string/lbl_edition_first_edition</item>
+        <item name="android:src">@drawable/ic_filter_1</item>
     </style>
 
-    <!-- Indicator a book is signed. -->
+    <!-- ImageView. Indicator a book is signed. -->
     <style name="Flag.Signed">
-        <item name="android:button">@drawable/ic_selector_signed</item>
+        <item name="android:contentDescription">@string/lbl_signed</item>
+        <item name="android:src">@drawable/ic_gesture</item>
     </style>
 
-    <!-- Indicator a book has been lend out. -->
+    <!-- ImageView. Indicator a book has been lend out. -->
     <style name="Flag.OnLoan">
-        <item name="android:button">@drawable/ic_selector_on_loan</item>
-        <item name="android:buttonTint">?attr/colorError</item>
-    </style>
-
-    <!-- Indicator a story (TOC entry) is present in multiple books -->
-    <style name="Flag.MultipleBooks">
-        <item name="android:src">@drawable/ic_library_books</item>
-        <item name="android:backgroundTint">@android:color/transparent</item>
+        <item name="android:contentDescription">@string/lbl_loaned</item>
+        <item name="android:src">@drawable/ic_do_not_disturb</item>
+        <item name="android:tint">?attr/colorError</item>
     </style>
 
     <!-- *************************************************************************************** -->

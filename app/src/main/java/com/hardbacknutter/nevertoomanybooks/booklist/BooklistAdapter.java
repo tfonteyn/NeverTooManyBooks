@@ -4,14 +4,6 @@
  *
  * This file is part of NeverTooManyBooks.
  *
- * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
- *
- * Without their original creation, this project would not exist in its
- * current form. It was however largely rewritten/refactored and any
- * comments on this fork should be directed at HardBackNutter and not
- * at the original creators.
- *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -41,7 +33,6 @@ import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
@@ -829,14 +820,14 @@ public class BooklistAdapter
 
         /** View that stores the related book field. */
         private final TextView mTitleView;
-        /** The "I've read it" checkbox. */
-        private final CompoundButton mReadView;
-        /** The "signed" checkbox. */
-        private final CompoundButton mSignedView;
-        /** The "1th edition" checkbox. */
-        private final CompoundButton mEditionView;
-        /** The "on loan" checkbox. */
-        private final CompoundButton mOnLoanView;
+        /** The "I've read it" icon. */
+        private final ImageView mReadIconView;
+        /** The "signed" icon. */
+        private final ImageView mSignedIconView;
+        /** The "1th edition" icon. */
+        private final ImageView mEditionIconView;
+        /** The "on loan" icon. */
+        private final ImageView mOnLoanIconView;
         /** View that stores the related book field. */
         private final ImageView mCoverView;
         /** View that stores the Series number when it is a short piece of text. */
@@ -895,10 +886,11 @@ public class BooklistAdapter
             mTitleView = itemView.findViewById(R.id.title);
 
             // hidden by default
-            mReadView = itemView.findViewById(R.id.cbx_read);
-            mSignedView = itemView.findViewById(R.id.cbx_signed);
-            mEditionView = itemView.findViewById(R.id.cbx_first_edition);
-            mOnLoanView = itemView.findViewById(R.id.cbx_on_loan);
+            mReadIconView = itemView.findViewById(R.id.icon_read);
+            mSignedIconView = itemView.findViewById(R.id.icon_signed);
+            mEditionIconView = itemView.findViewById(R.id.icon_first_edition);
+            mOnLoanIconView = itemView.findViewById(R.id.icon_on_loan);
+
             mSeriesNumView = itemView.findViewById(R.id.series_num);
             mSeriesNumLongView = itemView.findViewById(R.id.series_num_long);
 
@@ -956,27 +948,23 @@ public class BooklistAdapter
 
             if (mInUse.read) {
                 final boolean isSet = rowData.getBoolean(DBDefinitions.KEY_READ);
-                mReadView.setVisibility(isSet ? View.VISIBLE : View.GONE);
-                mReadView.setChecked(isSet);
+                mReadIconView.setVisibility(isSet ? View.VISIBLE : View.GONE);
             }
 
             if (mInUse.signed) {
                 final boolean isSet = rowData.getBoolean(DBDefinitions.KEY_SIGNED);
-                mSignedView.setVisibility(isSet ? View.VISIBLE : View.GONE);
-                mSignedView.setChecked(isSet);
+                mSignedIconView.setVisibility(isSet ? View.VISIBLE : View.GONE);
             }
 
             if (mInUse.edition) {
                 final boolean isSet = (rowData.getInt(DBDefinitions.KEY_EDITION_BITMASK)
                                        & Book.Edition.FIRST) != 0;
-                mEditionView.setVisibility(isSet ? View.VISIBLE : View.GONE);
-                mEditionView.setChecked(isSet);
+                mEditionIconView.setVisibility(isSet ? View.VISIBLE : View.GONE);
             }
 
             if (mInUse.lending) {
                 final boolean isSet = !rowData.getBoolean(DBDefinitions.KEY_LOANEE_AS_BOOLEAN);
-                mOnLoanView.setVisibility(isSet ? View.VISIBLE : View.GONE);
-                mOnLoanView.setChecked(isSet);
+                mOnLoanIconView.setVisibility(isSet ? View.VISIBLE : View.GONE);
             }
 
             if (mInUse.cover) {
@@ -1005,6 +993,8 @@ public class BooklistAdapter
                 final String number = rowData.getString(DBDefinitions.KEY_BOOK_NUM_IN_SERIES);
                 if (!number.isEmpty()) {
                     // Display it in one of the views, based on the size of the text.
+                    // 4 characters is based on e.g. "1.12" being considered short
+                    // and e.g. "1|omnibus" being long.
                     if (number.length() > 4) {
                         mSeriesNumView.setVisibility(View.GONE);
                         mSeriesNumLongView.setText(number);

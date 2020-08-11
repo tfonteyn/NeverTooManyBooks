@@ -111,6 +111,8 @@
             android:layout_height="wrap_content"
             android:textColor="#03A9F4"
             android:visibility="gone"
+            app:layout_constraintTop_toBottomOf="@id/icon_sidebar"
+            app:layout_constraintVertical_bias="1.0"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             tools:ignore="SelectableText"

@@ -5,14 +5,6 @@
   ~
   ~ This file is part of NeverTooManyBooks.
   ~
-  ~ In August 2018, this project was forked from:
-  ~ Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
-  ~
-  ~ Without their original creation, this project would not exist in its
-  ~ current form. It was however largely rewritten/refactored and any
-  ~ comments on this fork should be directed at HardBackNutter and not
-  ~ at the original creators.
-  ~
   ~ NeverTooManyBooks is free software: you can redistribute it and/or modify
   ~ it under the terms of the GNU General Public License as published by
   ~ the Free Software Foundation, either version 3 of the License, or
@@ -82,13 +74,12 @@
             app:layout_constraintTop_toBottomOf="@id/title"
             />
 
-        <CheckBox
-            android:id="@+id/cbx_read"
+        <ImageView
+            android:id="@+id/icon_read"
             style="@style/Flag.Read"
-            android:contentDescription="@string/lbl_read"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/title"
-            tools:checked="true"
+            tools:ignore="ContentDescription"
             />
 
         <androidx.constraintlayout.widget.Barrier
@@ -96,7 +87,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:barrierDirection="bottom"
-            app:constraint_referenced_ids="rating,cbx_read"
+            app:constraint_referenced_ids="rating,icon_read"
             />
 
         <!-- 2020-07-13: setting visibility="gone" from code
@@ -351,17 +342,19 @@
             android:id="@+id/lbl_anthology"
             style="@style/Field.Label"
             android:text="@string/lbl_anthology"
-            app:layout_constraintBaseline_toBaselineOf="@id/cbx_anthology"
             app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/series_title"
             />
 
-        <CheckBox
-            android:id="@+id/cbx_anthology"
-            style="@style/Flag.Generic"
+        <ImageView
+            android:id="@+id/icon_anthology"
+            style="@style/Flag"
             android:layout_marginStart="@dimen/indent_field_inline"
+            android:contentDescription="@string/lbl_anthology"
+            android:src="@drawable/ic_check"
+            android:tint="?attr/appColorChecked"
             app:layout_constraintStart_toEndOf="@id/lbl_anthology"
             app:layout_constraintTop_toBottomOf="@id/series_title"
-            tools:checked="true"
             />
 
         <TextView
@@ -370,7 +363,7 @@
             android:text="@string/lbl_table_of_content"
             android:visibility="gone"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/cbx_anthology"
+            app:layout_constraintTop_toBottomOf="@id/icon_anthology"
             tools:visibility="visible"
             />
 
@@ -479,17 +472,19 @@
             android:id="@+id/lbl_signed"
             style="@style/Field.Label"
             android:text="@string/lbl_signed"
-            app:layout_constraintBaseline_toBaselineOf="@id/cbx_signed"
             app:layout_constraintStart_toEndOf="@id/indent_fields"
+            app:layout_constraintTop_toBottomOf="@id/notes"
             />
 
-        <CheckBox
-            android:id="@+id/cbx_signed"
-            style="@style/Flag.Generic"
+        <ImageView
+            android:id="@+id/icon_signed"
+            style="@style/Flag"
             android:layout_marginStart="@dimen/indent_field_inline"
+            android:contentDescription="@string/lbl_signed"
+            android:src="@drawable/ic_check"
+            android:tint="?attr/appColorChecked"
             app:layout_constraintStart_toEndOf="@id/lbl_signed"
             app:layout_constraintTop_toBottomOf="@id/notes"
-            tools:checked="true"
             />
 
         <TextView
@@ -504,7 +499,7 @@
             android:id="@+id/date_acquired"
             style="@style/Field.Generic.Inline"
             app:layout_constraintStart_toEndOf="@id/lbl_date_acquired"
-            app:layout_constraintTop_toBottomOf="@id/cbx_signed"
+            app:layout_constraintTop_toBottomOf="@id/icon_signed"
             tools:ignore="SelectableText"
             tools:text="@sample/data.json/date/long"
             />

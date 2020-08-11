@@ -1,17 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2019 HardBackNutter
+  ~ @Copyright 2020 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
-  ~
-  ~ In August 2018, this project was forked from:
-  ~ Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
-  ~
-  ~ Without their original creation, this project would not exist in its
-  ~ current form. It was however largely rewritten/refactored and any
-  ~ comments on this fork should be directed at HardBackNutter and not
-  ~ at the original creators.
   ~
   ~ NeverTooManyBooks is free software: you can redistribute it and/or modify
   ~ it under the terms of the GNU General Public License as published by
@@ -35,39 +27,27 @@
     android:orientation="vertical"
     >
 
-    <CheckBox
-        android:id="@+id/cbx_read"
+    <ImageView
+        android:id="@+id/icon_read"
         style="@style/Flag.Read"
-        android:contentDescription="@string/lbl_read"
-        android:visibility="gone"
-        tools:checked="true"
-        tools:visibility="visible"
+        tools:ignore="ContentDescription"
         />
 
-    <CheckBox
-        android:id="@+id/cbx_first_edition"
+    <ImageView
+        android:id="@+id/icon_first_edition"
         style="@style/Flag.FirstEdition"
-        android:contentDescription="@string/lbl_edition_first_edition"
-        android:visibility="gone"
-        tools:checked="true"
-        tools:visibility="visible"
+        tools:ignore="ContentDescription"
         />
 
-    <CheckBox
-        android:id="@+id/cbx_signed"
+    <ImageView
+        android:id="@+id/icon_signed"
         style="@style/Flag.Signed"
-        android:contentDescription="@string/lbl_signed"
-        android:visibility="gone"
-        tools:checked="true"
-        tools:visibility="visible"
+        tools:ignore="ContentDescription"
         />
 
-    <CheckBox
-        android:id="@+id/cbx_on_loan"
+    <ImageView
+        android:id="@+id/icon_on_loan"
         style="@style/Flag.OnLoan"
-        android:contentDescription="@string/lbl_loaned"
-        android:visibility="gone"
-        tools:checked="true"
-        tools:visibility="visible"
+        tools:ignore="ContentDescription"
         />
 </LinearLayout>

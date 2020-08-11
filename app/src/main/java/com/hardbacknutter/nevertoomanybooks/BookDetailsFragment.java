@@ -36,7 +36,6 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CompoundButton;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.IntRange;
@@ -146,7 +145,7 @@ public class BookDetailsFragment
         // Anthology/TOC fields
         if (!DBDefinitions.isUsed(prefs, DBDefinitions.KEY_TOC_BITMASK)) {
             mVb.lblAnthology.setVisibility(View.GONE);
-            mVb.cbxAnthology.setVisibility(View.GONE);
+            mVb.iconAnthology.setVisibility(View.GONE);
             mVb.lblToc.setVisibility(View.GONE);
             mVb.toc.setVisibility(View.GONE);
             mVb.btnShowToc.setVisibility(View.GONE);
@@ -402,7 +401,7 @@ public class BookDetailsFragment
         // Hide the "Personal notes" label if none of the notes fields are shown.
         setSectionVisibility(mVb.lblNotes,
                              mVb.notes,
-                             mVb.cbxSigned,
+                             mVb.iconSigned,
                              mVb.dateAcquired,
                              mVb.pricePaid,
                              mVb.readStart,
@@ -450,8 +449,7 @@ public class BookDetailsFragment
         final boolean isAnthology = book.isBitSet(DBDefinitions.KEY_TOC_BITMASK,
                                                   Book.TOC_MULTIPLE_WORKS);
         mVb.lblAnthology.setVisibility(isAnthology ? View.VISIBLE : View.GONE);
-        mVb.cbxAnthology.setVisibility(isAnthology ? View.VISIBLE : View.GONE);
-        mVb.cbxAnthology.setChecked(isAnthology);
+        mVb.iconAnthology.setVisibility(isAnthology ? View.VISIBLE : View.GONE);
 
         // we can get called more than once (when user moves sideways to another book),
         // so clear and hide/disable the view before populating it.
@@ -598,8 +596,9 @@ public class BookDetailsFragment
             case R.id.MENU_BOOK_UNREAD: {
                 // toggle 'read' status of the book
                 final boolean value = mBookViewModel.toggleRead();
-                final Field<Boolean, CompoundButton> field = getFields().getField(R.id.cbx_read);
+                final Field<Boolean, View> field = getFields().getField(R.id.icon_read);
                 field.getAccessor().setValue(value);
+                // Still call this, as it will handle related views (none for now, but future-proof)
                 //noinspection ConstantConditions
                 field.setVisibility(getView(), true, false);
                 return true;

@@ -38,7 +38,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.fields.Fields;
 import com.hardbacknutter.nevertoomanybooks.fields.accessors.BitmaskChipGroupAccessor;
-import com.hardbacknutter.nevertoomanybooks.fields.accessors.CompoundButtonAccessor;
+import com.hardbacknutter.nevertoomanybooks.fields.accessors.BooleanIndicatorAccessor;
 import com.hardbacknutter.nevertoomanybooks.fields.accessors.EntityListChipGroupAccessor;
 import com.hardbacknutter.nevertoomanybooks.fields.accessors.RatingBarAccessor;
 import com.hardbacknutter.nevertoomanybooks.fields.accessors.TextViewAccessor;
@@ -225,9 +225,9 @@ public class BookDetailsFragmentViewModel
         fields.add(R.id.read_end, new TextViewAccessor<>(dateFormatter), DBDefinitions.KEY_READ_END)
               .setRelatedFields(R.id.lbl_read_end);
 
-        fields.add(R.id.cbx_read, new CompoundButtonAccessor(), DBDefinitions.KEY_READ);
+        fields.add(R.id.icon_read, new BooleanIndicatorAccessor(), DBDefinitions.KEY_READ);
 
-        fields.add(R.id.cbx_signed, new CompoundButtonAccessor(), DBDefinitions.KEY_SIGNED)
+        fields.add(R.id.icon_signed, new BooleanIndicatorAccessor(), DBDefinitions.KEY_SIGNED)
               .setRelatedFields(R.id.lbl_signed);
 
         fields.add(R.id.price_paid, new TextViewAccessor<>(moneyFormatter),
