@@ -4,14 +4,6 @@
  *
  * This file is part of NeverTooManyBooks.
  *
- * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
- *
- * Without their original creation, this project would not exist in its
- * current form. It was however largely rewritten/refactored and any
- * comments on this fork should be directed at HardBackNutter and not
- * at the original creators.
- *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -44,7 +36,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.ItemTouchHelper;
-import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -119,11 +111,9 @@ public class SearchOrderFragment
         mType = Objects.requireNonNull(requireArguments().getParcelable(BKEY_TYPE));
         mSiteList = mModel.getList(mType);
 
-        final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
-        mVb.siteList.setLayoutManager(linearLayoutManager);
         //noinspection ConstantConditions
         mVb.siteList.addItemDecoration(
-                new DividerItemDecoration(getContext(), linearLayoutManager.getOrientation()));
+                new DividerItemDecoration(getContext(), RecyclerView.VERTICAL));
         mVb.siteList.setHasFixedSize(true);
 
         mListAdapter = new SearchSiteListAdapter(getContext(), mSiteList,

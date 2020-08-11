@@ -347,7 +347,7 @@ public class EditBookActivity
             if (DBDefinitions.isUsed(prefs, DBDefinitions.KEY_TOC_BITMASK)) {
                 mTabs.add(new TabInfo(EditBookTocFragment.class, R.string.tab_lbl_content));
             }
-            if (Prefs.showEditBookTabExternalId(activity)) {
+            if (Prefs.showEditBookTabExternalId(prefs)) {
                 mTabs.add(new TabInfo(EditBookExternalIdFragment.class, R.string.tab_lbl_ext_id));
             }
         }

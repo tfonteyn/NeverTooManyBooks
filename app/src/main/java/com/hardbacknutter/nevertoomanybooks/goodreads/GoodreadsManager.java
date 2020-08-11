@@ -4,14 +4,6 @@
  *
  * This file is part of NeverTooManyBooks.
  *
- * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
- *
- * Without their original creation, this project would not exist in its
- * current form. It was however largely rewritten/refactored and any
- * comments on this fork should be directed at HardBackNutter and not
- * at the original creators.
- *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -28,6 +20,7 @@
 package com.hardbacknutter.nevertoomanybooks.goodreads;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.annotation.IntRange;
@@ -138,13 +131,12 @@ public class GoodreadsManager {
      * Check if Goodreads SYNC menus should be shown at all.
      * This does not affect searching on Goodreads.
      *
-     * @param context Current context
+     * @param preferences sharedPreferences
      *
      * @return {@code true} if menus should be shown
      */
-    public static boolean isShowSyncMenus(@NonNull final Context context) {
-        return PreferenceManager.getDefaultSharedPreferences(context)
-                                .getBoolean(PREFS_SHOW_MENUS, true);
+    public static boolean isShowSyncMenus(@NonNull final SharedPreferences preferences) {
+        return preferences.getBoolean(PREFS_SHOW_MENUS, true);
     }
 
     public static boolean isCollectGenre(@NonNull final Context context) {

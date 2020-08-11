@@ -4,14 +4,6 @@
  *
  * This file is part of NeverTooManyBooks.
  *
- * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
- *
- * Without their original creation, this project would not exist in its
- * current form. It was however largely rewritten/refactored and any
- * comments on this fork should be directed at HardBackNutter and not
- * at the original creators.
- *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -1325,17 +1317,17 @@ public class BooklistStyle
     /**
      * Check if the given book-detail field is in use.
      *
-     * @param context           Current context
-     * @param sharedPreferences the <strong>GLOBAL</strong> preferences
-     * @param key               to check
+     * @param context     Current context
+     * @param preferences the <strong>GLOBAL</strong> preferences
+     * @param key         to check
      *
      * @return {@code true} if in use
      */
     public boolean useBookDetail(@NonNull final Context context,
-                                 @NonNull final SharedPreferences sharedPreferences,
+                                 @NonNull final SharedPreferences preferences,
                                  @BookDetailKey @NonNull final String key) {
         // global overrules local
-        if (!sharedPreferences.getBoolean(key, true)) {
+        if (!preferences.getBoolean(key, true)) {
             return false;
         }
 

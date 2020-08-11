@@ -4,14 +4,6 @@
  *
  * This file is part of NeverTooManyBooks.
  *
- * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
- *
- * Without their original creation, this project would not exist in its
- * current form. It was however largely rewritten/refactored and any
- * comments on this fork should be directed at HardBackNutter and not
- * at the original creators.
- *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -27,7 +19,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.fields;
 
-import android.content.Context;
+import android.content.SharedPreferences;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
@@ -35,6 +27,7 @@ import android.widget.ImageView;
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.preference.PreferenceManager;
 
 import com.google.android.material.textfield.TextInputLayout;
 
@@ -152,8 +145,11 @@ public class Field<T, V extends View> {
      * @param parent of the field View
      */
     void setParentView(@NonNull final View parent) {
+        final SharedPreferences prefs = PreferenceManager
+                .getDefaultSharedPreferences(parent.getContext());
+
         mFieldViewAccessor.setView(parent.findViewById(mId));
-        if (isUsed(parent.getContext())) {
+        if (isUsed(prefs)) {
             if (mErrorViewId != 0) {
                 mFieldViewAccessor.setErrorView(parent.findViewById(mErrorViewId));
             }
@@ -214,9 +210,13 @@ public class Field<T, V extends View> {
             // When 'hideEmptyFields' is set, empty fields are hidden.
             view.setVisibility(View.GONE);
 
-        } else if (isUsed(view.getContext())) {
-            // Anything else (in use) should be visible if it's not yet.
-            view.setVisibility(View.VISIBLE);
+        } else {
+            final SharedPreferences prefs = PreferenceManager
+                    .getDefaultSharedPreferences(parent.getContext());
+            if (isUsed(prefs)) {
+                // Anything else (in use) should be visible if it's not yet.
+                view.setVisibility(View.VISIBLE);
+            }
         }
 
         setRelatedFieldsVisibility(parent, view.getVisibility());
@@ -313,12 +313,12 @@ public class Field<T, V extends View> {
     /**
      * Is the field in use; i.e. is it enabled in the user-preferences.
      *
-     * @param context Current context
+     * @param preferences SharedPreferences
      *
      * @return {@code true} if the field *can* be visible
      */
-    public boolean isUsed(@NonNull final Context context) {
-        return DBDefinitions.isUsed(context, mIsUsedKey);
+    public boolean isUsed(@NonNull final SharedPreferences preferences) {
+        return DBDefinitions.isUsed(preferences, mIsUsedKey);
     }
 
     /**

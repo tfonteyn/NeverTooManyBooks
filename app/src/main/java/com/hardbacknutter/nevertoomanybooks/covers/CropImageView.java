@@ -4,14 +4,6 @@
  *
  * This file is part of NeverTooManyBooks.
  *
- * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
- *
- * Without their original creation, this project would not exist in its
- * current form. It was however largely rewritten/refactored and any
- * comments on this fork should be directed at HardBackNutter and not
- * at the original creators.
- *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -45,6 +37,7 @@ package com.hardbacknutter.nevertoomanybooks.covers;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -172,17 +165,16 @@ public class CropImageView
      * @param bitmap to crop
      */
     public void initCropView(@NonNull final Bitmap bitmap) {
+        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
 
-        final int type = Prefs.getListPreference(getContext(), Prefs.pk_image_cropper_layer_type,
+        final int type = Prefs.getListPreference(prefs, Prefs.pk_image_cropper_layer_type,
                                                  LAYER_TYPE_DEFAULT);
         if (type != LAYER_TYPE_DEFAULT) {
             setLayerType(type, null);
         }
 
         // Flag indicating if by default the crop rectangle should be the whole image.
-        final boolean wholeImage = PreferenceManager
-                .getDefaultSharedPreferences(getContext())
-                .getBoolean(Prefs.pk_image_cropper_frame_whole, false);
+        final boolean wholeImage = prefs.getBoolean(Prefs.pk_image_cropper_frame_whole, false);
 
         setBitmapMatrix(bitmap);
         if (getScale() == 1f) {

@@ -4,14 +4,6 @@
  *
  * This file is part of NeverTooManyBooks.
  *
- * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
- *
- * Without their original creation, this project would not exist in its
- * current form. It was however largely rewritten/refactored and any
- * comments on this fork should be directed at HardBackNutter and not
- * at the original creators.
- *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -200,7 +192,9 @@ public class RowStateDAO
 
         // we drop the newly defined table just in case there is a leftover physical table
         // with the same name (due to previous crash maybe).
-        mSyncedDb.drop(mTable.getName());
+        if (mTable.exists(mSyncedDb)) {
+            mSyncedDb.drop(mTable.getName());
+        }
 
         // Link with the list table using the actual row ID
         // We need this for joins, but it's not enforced with constraints.
@@ -407,7 +401,7 @@ public class RowStateDAO
         final int count;
         // no params here, so don't need synchronized... but leave as reminder
         //        synchronized (stmt) {
-        count = (int) stmt.count();
+        count = (int) stmt.simpleQueryForLongOrZero();
         //        }
         return count;
     }
@@ -433,7 +427,7 @@ public class RowStateDAO
         //noinspection SynchronizationOnLocalVariableOrMethodParameter
         synchronized (stmt) {
             stmt.bindLong(1, node.rowId);
-            count = (int) stmt.count();
+            count = (int) stmt.simpleQueryForLongOrZero();
         }
         int pos;
         if (node.isVisible) {

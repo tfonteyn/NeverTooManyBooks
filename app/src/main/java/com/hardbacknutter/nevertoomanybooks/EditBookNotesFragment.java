@@ -19,6 +19,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -28,6 +29,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.preference.PreferenceManager;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -163,10 +165,11 @@ public class EditBookNotesFragment
      * When user checks 'read', set the read-end date to today (unless set before)
      */
     private void addReadCheckboxOnClickListener() {
+        //noinspection ConstantConditions
+        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
         // only bother when it's in use
         final Field<?, ?> readCbx = getField(R.id.cbx_read);
-        //noinspection ConstantConditions
-        if (readCbx.isUsed(getContext())) {
+        if (readCbx.isUsed(prefs)) {
             //noinspection ConstantConditions
             readCbx.getAccessor().getView().setOnClickListener(v -> {
                 final Checkable cb = (Checkable) v;

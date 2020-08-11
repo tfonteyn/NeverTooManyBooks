@@ -36,7 +36,6 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DividerItemDecoration;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -122,11 +121,9 @@ public class EditBookshelvesFragment
         fab.setVisibility(View.VISIBLE);
         fab.setOnClickListener(v -> editItem(mModel.createNewBookshelf(getContext())));
 
-        final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
-        mVb.bookshelfList.setLayoutManager(linearLayoutManager);
         //noinspection ConstantConditions
         mVb.bookshelfList.addItemDecoration(
-                new DividerItemDecoration(getContext(), linearLayoutManager.getOrientation()));
+                new DividerItemDecoration(getContext(), RecyclerView.VERTICAL));
         mVb.bookshelfList.setHasFixedSize(true);
         mVb.bookshelfList.setAdapter(mAdapter);
     }

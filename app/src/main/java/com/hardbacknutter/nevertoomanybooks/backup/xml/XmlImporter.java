@@ -4,14 +4,6 @@
  *
  * This file is part of NeverTooManyBooks.
  *
- * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
- *
- * Without their original creation, this project would not exist in its
- * current form. It was however largely rewritten/refactored and any
- * comments on this fork should be directed at HardBackNutter and not
- * at the original creators.
- *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -158,10 +150,10 @@ public class XmlImporter
             case BooklistStylesXml:
                 if ((mOptions & Options.STYLES) != 0) {
                     // Don't close this stream!
-                    InputStream is = entity.getInputStream();
-                    Reader isr = new InputStreamReader(is, StandardCharsets.UTF_8);
-                    Reader in = new BufferedReaderNoClose(isr, BUFFER_SIZE);
-                    StylesReader stylesReader = new StylesReader(context, mDb);
+                    final InputStream is = entity.getInputStream();
+                    final Reader isr = new InputStreamReader(is, StandardCharsets.UTF_8);
+                    final Reader in = new BufferedReaderNoClose(isr, BUFFER_SIZE);
+                    final StylesReader stylesReader = new StylesReader(context, mDb);
                     fromXml(in, stylesReader);
                     mResults.styles += stylesReader.getStylesRead();
                 }
@@ -170,12 +162,11 @@ public class XmlImporter
             case PreferencesXml:
                 if ((mOptions & Options.PREFS) != 0) {
                     // Don't close this stream!
-                    InputStream is = entity.getInputStream();
-                    Reader isr = new InputStreamReader(is, StandardCharsets.UTF_8);
-                    Reader in = new BufferedReaderNoClose(isr, BUFFER_SIZE);
-                    SharedPreferences prefs =
-                            PreferenceManager.getDefaultSharedPreferences(context);
-                    SharedPreferences.Editor editor = prefs.edit();
+                    final InputStream is = entity.getInputStream();
+                    final Reader isr = new InputStreamReader(is, StandardCharsets.UTF_8);
+                    final Reader in = new BufferedReaderNoClose(isr, BUFFER_SIZE);
+                    final SharedPreferences.Editor editor = PreferenceManager
+                            .getDefaultSharedPreferences(context).edit();
                     fromXml(in, new PreferencesReader(editor));
                     editor.apply();
                     mResults.preferences++;

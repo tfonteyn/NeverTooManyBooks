@@ -44,7 +44,7 @@ import androidx.fragment.app.FragmentResultListener;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.ItemTouchHelper;
-import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
@@ -228,12 +228,9 @@ public class EditBookTocFragment
         });
         mIsfdbGetBookTask.onFinished().observe(getViewLifecycleOwner(), this::onIsfdbBook);
 
-
-        final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
-        mVb.tocList.setLayoutManager(linearLayoutManager);
         //noinspection ConstantConditions
         mVb.tocList.addItemDecoration(
-                new DividerItemDecoration(getContext(), linearLayoutManager.getOrientation()));
+                new DividerItemDecoration(getContext(), RecyclerView.VERTICAL));
         mVb.tocList.setHasFixedSize(true);
         mListAdapter = new TocListEditAdapter(getContext(), mList,
                                               vh -> mItemTouchHelper.startDrag(vh));

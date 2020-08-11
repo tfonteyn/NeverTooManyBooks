@@ -539,6 +539,9 @@ public class BookDetailsFragment
     public void onPrepareOptionsMenu(@NonNull final Menu menu) {
         final Book book = mBookViewModel.getBook();
 
+        //noinspection ConstantConditions
+        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+
         final boolean isSaved = !book.isNew();
         final boolean isRead = book.getBoolean(DBDefinitions.KEY_READ);
         final boolean isAvailable = mBookViewModel.isAvailable();
@@ -551,12 +554,11 @@ public class BookDetailsFragment
         // Temporary solution is removing the 'duplicate' option from this screen...
         menu.findItem(R.id.MENU_BOOK_DUPLICATE).setVisible(false);
 
-        //noinspection ConstantConditions
         menu.findItem(R.id.MENU_BOOK_SEND_TO_GOODREADS)
-            .setVisible(GoodreadsManager.isShowSyncMenus(getContext()));
+            .setVisible(GoodreadsManager.isShowSyncMenus(prefs));
 
         // specifically check App.isUsed for KEY_LOANEE independent from the style in use.
-        final boolean useLending = DBDefinitions.isUsed(getContext(), DBDefinitions.KEY_LOANEE);
+        final boolean useLending = DBDefinitions.isUsed(prefs, DBDefinitions.KEY_LOANEE);
         menu.findItem(R.id.MENU_BOOK_LOAN_ADD).setVisible(useLending && isSaved && isAvailable);
         menu.findItem(R.id.MENU_BOOK_LOAN_DELETE).setVisible(useLending && isSaved && !isAvailable);
 

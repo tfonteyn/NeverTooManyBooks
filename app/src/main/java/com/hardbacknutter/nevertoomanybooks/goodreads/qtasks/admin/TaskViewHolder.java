@@ -4,14 +4,6 @@
  *
  * This file is part of NeverTooManyBooks.
  *
- * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
- *
- * Without their original creation, this project would not exist in its
- * current form. It was however largely rewritten/refactored and any
- * comments on this fork should be directed at HardBackNutter and not
- * at the original creators.
- *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -82,7 +74,7 @@ public class TaskViewHolder
         final Locale userLocale = LocaleUtils.getUserLocale(context);
 
         descriptionView.setText(task.getDescription(context));
-        final String statusCode = rowData.getStatusCode().toUpperCase(Locale.ENGLISH);
+        final String statusCode = rowData.getStatusCode();
         String statusText;
         switch (statusCode) {
             case TQTask.COMPLETED:

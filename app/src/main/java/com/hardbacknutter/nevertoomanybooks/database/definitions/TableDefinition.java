@@ -4,14 +4,6 @@
  *
  * This file is part of NeverTooManyBooks.
  *
- * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
- *
- * Without their original creation, this project would not exist in its
- * current form. It was however largely rewritten/refactored and any
- * comments on this fork should be directed at HardBackNutter and not
- * at the original creators.
- *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -49,7 +41,6 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.utils.Csv;
-import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 
 /**
  * Class to store table name and a list of domain definitions.
@@ -57,11 +48,17 @@ import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 @SuppressWarnings("FieldNotUsedInToString")
 public class TableDefinition {
 
-    /** Check if a table exists; either in permanent or temporary storage. */
-    private static final String TABLE_EXISTS_SQL =
-            "SELECT "
-            + "(SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name=?) + "
-            + "(SELECT COUNT(*) FROM sqlite_temp_master WHERE type='table' AND name=?)";
+//    /** Check if a table exists; either in permanent or temporary storage. */
+//    private static final String TABLE_EXISTS_SQL_BOTH =
+//            "SELECT "
+//            + "(SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name=?) + "
+//            + "(SELECT COUNT(*) FROM sqlite_temp_master WHERE type='table' AND name=?)";
+
+    private static final String TABLE_EXISTS_SQL_STANDARD =
+            "SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name=?";
+
+    private static final String TABLE_EXISTS_SQL_TEMP =
+            "SELECT COUNT(*) FROM sqlite_temp_master WHERE type='table' AND name=?";
 
     /** List of index definitions for this table. */
     private final Collection<IndexDefinition> mIndexes = new ArrayList<>();
@@ -73,7 +70,7 @@ public class TableDefinition {
     /** Used for checking if a domain has already been added. */
     private final Collection<Domain> mDomainCheck = new HashSet<>();
     /** Used for checking if a domain NAME has already been added. */
-    private final Collection<String> mDomainNameCheck = new HashSet<>();
+    private final Collection<Integer> mDomainNameCheck = new HashSet<>();
 
     /** List of domains forming primary key. */
     private final List<Domain> mPrimaryKey = new ArrayList<>();
@@ -220,7 +217,9 @@ public class TableDefinition {
     public void recreate(@NonNull final SynchronizedDb db,
                          final boolean withConstraints) {
         // Drop the table in case there is an orphaned instance with the same name.
-        db.drop(mName);
+        if (exists(db)) {
+            db.drop(mName);
+        }
         db.execSQL(def(mName, withConstraints, true, false));
 
         createIndices(db);
@@ -371,16 +370,18 @@ public class TableDefinition {
         if (mDomainCheck.contains(domain)) {
             return false;
         }
+
+        // avoid toLowerCase
+        final int nameHash = domain.getName().hashCode();
         // Make sure one with the same name is not already in table, can't ignore that, go crash.
-        if (mDomainNameCheck
-                .contains(domain.getName().toLowerCase(LocaleUtils.getSystemLocale()))) {
+        if (mDomainNameCheck.contains(nameHash)) {
             throw new IllegalArgumentException("A domain '" + domain + "' has already been added");
         }
         // Add it
         mDomains.add(domain);
 
         mDomainCheck.add(domain);
-        mDomainNameCheck.add(domain.getName());
+        mDomainNameCheck.add(nameHash);
         return true;
     }
 
@@ -695,10 +696,15 @@ public class TableDefinition {
      * @return {@code true} if this table exists
      */
     public boolean exists(@NonNull final SynchronizedDb db) {
-        try (SynchronizedStatement stmt = db.compileStatement(TABLE_EXISTS_SQL)) {
+        final String sql;
+        if (mType == TableType.Standard) {
+            sql = TABLE_EXISTS_SQL_STANDARD;
+        } else {
+            sql = TABLE_EXISTS_SQL_TEMP;
+        }
+        try (SynchronizedStatement stmt = db.compileStatement(sql)) {
             stmt.bindString(1, mName);
-            stmt.bindString(2, mName);
-            return stmt.count() > 0;
+            return stmt.simpleQueryForLongOrZero() > 0;
         }
     }
 
@@ -785,7 +791,7 @@ public class TableDefinition {
                        final boolean withTableReferences,
                        @SuppressWarnings("SameParameterValue") final boolean ifNotExists) {
 
-        StringBuilder sql = new StringBuilder("CREATE")
+        final StringBuilder sql = new StringBuilder("CREATE")
                 .append(mType.getCreateModifier())
                 .append(" TABLE");
         if (ifNotExists) {
@@ -963,24 +969,20 @@ public class TableDefinition {
                        + '=' + mChild.getAlias() + '.' + mDomains.get(0).getName();
 
             } else {
-                List<Domain> pk = mParent.getPrimaryKey();
+                final List<Domain> pk = mParent.getPrimaryKey();
                 if (BuildConfig.DEBUG /* always */) {
                     if (pk.isEmpty()) {
                         throw new IllegalStateException("no primary key on table: " + mParent);
                     }
                 }
-                StringBuilder sql = new StringBuilder();
+                final StringBuilder sql = new StringBuilder();
                 for (int i = 0; i < pk.size(); i++) {
                     if (i > 0) {
                         sql.append(" AND ");
                     }
-                    sql.append(mParent.getAlias());
-                    sql.append('.');
-                    sql.append(pk.get(i).getName());
+                    sql.append(mParent.getAlias()).append('.').append(pk.get(i).getName());
                     sql.append('=');
-                    sql.append(mChild.getAlias());
-                    sql.append('.');
-                    sql.append(mDomains.get(i).getName());
+                    sql.append(mChild.getAlias()).append('.').append(mDomains.get(i).getName());
                 }
                 return sql.toString();
             }

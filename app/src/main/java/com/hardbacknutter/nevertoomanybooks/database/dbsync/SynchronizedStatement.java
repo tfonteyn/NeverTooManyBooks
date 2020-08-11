@@ -4,14 +4,6 @@
  *
  * This file is part of NeverTooManyBooks.
  *
- * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
- *
- * Without their original creation, this project would not exist in its
- * current form. It was however largely rewritten/refactored and any
- * comments on this fork should be directed at HardBackNutter and not
- * at the original creators.
- *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -36,7 +28,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.io.Closeable;
-import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
@@ -64,8 +55,6 @@ public class SynchronizedStatement
     private final SQLiteStatement mStatement;
     /** Indicates this is a 'read-only' statement. */
     private final boolean mIsReadOnly;
-    /** DEBUG: Indicates this is a 'count' statement. */
-    private boolean mIsCount;
     /** DEBUG: Indicates close() has been called. Also see {@link Closeable#close()}. */
     private boolean mCloseWasCalled;
 
@@ -82,12 +71,12 @@ public class SynchronizedStatement
                                  @NonNull final String sql) {
         mSync = db.getSynchronizer();
         mStatement = db.getSQLiteDatabase().compileStatement(sql);
-        // this is not a debug flag, but used to get a shared versus exclusive lock
-        mIsReadOnly = sql.trim().toUpperCase(Locale.ENGLISH).startsWith("SELECT");
 
-        if (BuildConfig.DEBUG /* always */) {
-            mIsCount = sql.trim().toUpperCase(Locale.ENGLISH).startsWith("SELECT COUNT(");
-        }
+        // mIsReadOnly is not a debug flag, but used to get a shared versus exclusive lock.
+        // The toUpper was VERY slow (profiler test)... there are only "select" and "savepoint"
+        // we don't use the latter... so test on 's' only, and assume trim() is not needed.
+//        mIsReadOnly = sql.trim().toUpperCase(Locale.ENGLISH).startsWith("SELECT");
+        mIsReadOnly = sql.charAt(0) == 'S' || sql.charAt(0) == 's';
     }
 
     /**
@@ -214,6 +203,7 @@ public class SynchronizedStatement
      * @throws SQLiteDoneException if the query returns zero rows
      * @see #simpleQueryForLongOrZero()
      */
+    @SuppressWarnings("unused")
     public long simpleQueryForLong()
             throws SQLiteDoneException {
         final Synchronizer.SyncLock sharedLock = mSync.getSharedLock();
@@ -250,25 +240,6 @@ public class SynchronizedStatement
         } finally {
             sharedLock.unlock();
         }
-    }
-
-    /**
-     * Syntax sugar to identify SELECT COUNT(..) statements
-     * <p>
-     * Wrapper that uses a lock before calling underlying method on SQLiteStatement.
-     * <p>
-     * Execute a statement that returns a 1 by 1 table with a numeric value.
-     * For example, SELECT COUNT(*) FROM table;
-     *
-     * @return The result of the query.
-     */
-    public long count() {
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_EXEC_SQL) {
-            if (!mIsCount) {
-                Log.d(TAG, "count|count statement not a count?", new Throwable());
-            }
-        }
-        return simpleQueryForLongOrZero();
     }
 
     /**
@@ -399,7 +370,6 @@ public class SynchronizedStatement
     @NonNull
     public String toString() {
         return "SynchronizedStatement{"
-               + "mIsCount=" + mIsCount
                + ", mIsReadOnly=" + mIsReadOnly
                + ", mCloseWasCalled=" + mCloseWasCalled
                + ", mStatement=" + mStatement.toString()

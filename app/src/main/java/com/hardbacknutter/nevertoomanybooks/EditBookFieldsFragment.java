@@ -21,6 +21,7 @@ package com.hardbacknutter.nevertoomanybooks;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -36,6 +37,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.view.MenuCompat;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.preference.PreferenceManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -121,9 +123,10 @@ public class EditBookFieldsFragment
                               @Nullable final Bundle savedInstanceState) {
         // setup common stuff and calls onInitFields()
         super.onViewCreated(view, savedInstanceState);
-
         //noinspection ConstantConditions
-        if (!DBDefinitions.isUsed(getContext(), DBDefinitions.PREFS_IS_USED_THUMBNAIL)) {
+        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+
+        if (!DBDefinitions.isUsed(prefs, DBDefinitions.PREFS_IS_USED_THUMBNAIL)) {
             mVb.coverImage0.setVisibility(View.GONE);
             mVb.coverImage1.setVisibility(View.GONE);
         }
@@ -150,7 +153,7 @@ public class EditBookFieldsFragment
                 // no listener/callback. We share the book view model in the Activity scope
                 .show(getChildFragmentManager(), EditBookAuthorListDialogFragment.TAG));
 
-        if (getField(R.id.series_title).isUsed(getContext())) {
+        if (getField(R.id.series_title).isUsed(prefs)) {
             mVb.seriesTitle.setOnClickListener(v -> EditBookSeriesListDialogFragment
                     .newInstance()
                     // no listener/callback. We share the book view model in the Activity scope
@@ -158,7 +161,7 @@ public class EditBookFieldsFragment
         }
 
         // Bookshelves editor (dialog)
-        if (getField(R.id.bookshelves).isUsed(getContext())) {
+        if (getField(R.id.bookshelves).isUsed(prefs)) {
             mVb.bookshelves.setOnClickListener(v -> {
                 mEditHelperVM.setCurrentDialogFieldId(R.id.bookshelves);
                 CheckListDialogFragment
@@ -171,7 +174,7 @@ public class EditBookFieldsFragment
             });
         }
 
-        mIsbnValidityCheck = ISBN.getEditValidityLevel(getContext());
+        mIsbnValidityCheck = ISBN.getEditValidityLevel(prefs);
 
         mIsbnCleanupTextWatcher = new ISBN.CleanupTextWatcher(mVb.isbn, mIsbnValidityCheck);
         mVb.isbn.addTextChangedListener(mIsbnCleanupTextWatcher);
@@ -244,9 +247,10 @@ public class EditBookFieldsFragment
     void onPopulateViews(@NonNull final Fields fields,
                          @NonNull final Book book) {
         super.onPopulateViews(fields, book);
-
         //noinspection ConstantConditions
-        if (DBDefinitions.isUsed(getContext(), DBDefinitions.PREFS_IS_USED_THUMBNAIL)) {
+        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+
+        if (DBDefinitions.isUsed(prefs, DBDefinitions.PREFS_IS_USED_THUMBNAIL)) {
             final int[] scale = getResources().getIntArray(R.array.cover_scale_edit);
 
             mCoverHandler[0] = new CoverHandler(this, mProgressBar,

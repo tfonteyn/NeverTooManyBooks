@@ -4,14 +4,6 @@
  *
  * This file is part of NeverTooManyBooks.
  *
- * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
- *
- * Without their original creation, this project would not exist in its
- * current form. It was however largely rewritten/refactored and any
- * comments on this fork should be directed at HardBackNutter and not
- * at the original creators.
- *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -49,7 +41,6 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentResultListener;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -155,9 +146,6 @@ public class MenuPickerDialogFragment
         // list of options
         final RecyclerView listView = root.findViewById(R.id.item_list);
         final TextView mMessageView = root.findViewById(R.id.message);
-
-        final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
-        listView.setLayoutManager(linearLayoutManager);
 
         //noinspection ConstantConditions
         AlertDialog mDialog = new MaterialAlertDialogBuilder(getContext())

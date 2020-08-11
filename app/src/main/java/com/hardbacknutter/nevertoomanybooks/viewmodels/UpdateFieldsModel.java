@@ -4,14 +4,6 @@
  *
  * This file is part of NeverTooManyBooks.
  *
- * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
- *
- * Without their original creation, this project would not exist in its
- * current form. It was however largely rewritten/refactored and any
- * comments on this fork should be directed at HardBackNutter and not
- * at the original creators.
- *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -248,38 +240,38 @@ public class UpdateFieldsModel
      * Add a FieldUsage for a <strong>list</strong> field if it has not been hidden by the user.
      * <p>
      *
-     * @param prefs        SharedPreferences
+     * @param preferences  SharedPreferences
      * @param fieldId      List-field name to use in FieldUsages
      * @param nameStringId Field label string resource ID
      * @param key          Field name to use for preferences.
      */
-    private void addListField(@NonNull final SharedPreferences prefs,
+    private void addListField(@NonNull final SharedPreferences preferences,
                               @NonNull final String fieldId,
                               @StringRes final int nameStringId,
                               @NonNull final String key) {
 
-        if (DBDefinitions.isUsed(prefs, key)) {
-            final FieldUsage fieldUsage = FieldUsage.createListField(fieldId, nameStringId, prefs);
-            mFieldUsages.put(fieldId, fieldUsage);
+        if (DBDefinitions.isUsed(preferences, key)) {
+            mFieldUsages.put(fieldId,
+                             FieldUsage.createListField(fieldId, nameStringId, preferences));
         }
     }
 
     /**
      * Add a FieldUsage for a <strong>simple</strong> field if it has not been hidden by the user.
      *
-     * @param prefs        SharedPreferences
+     * @param preferences        SharedPreferences
      * @param fieldId      Field name to use in FieldUsages, and as key for preferences.
      * @param nameStringId Field label string resource ID
      * @param defValue     default Usage for this field
      */
-    private void addField(@NonNull final SharedPreferences prefs,
+    private void addField(@NonNull final SharedPreferences preferences,
                           @NonNull final String fieldId,
                           @StringRes final int nameStringId,
                           @NonNull final FieldUsage.Usage defValue) {
 
-        if (DBDefinitions.isUsed(prefs, fieldId)) {
-            final FieldUsage fieldUsage = FieldUsage.create(fieldId, nameStringId, prefs, defValue);
-            mFieldUsages.put(fieldId, fieldUsage);
+        if (DBDefinitions.isUsed(preferences, fieldId)) {
+            mFieldUsages.put(fieldId,
+                             FieldUsage.create(fieldId, nameStringId, preferences, defValue));
         }
     }
 

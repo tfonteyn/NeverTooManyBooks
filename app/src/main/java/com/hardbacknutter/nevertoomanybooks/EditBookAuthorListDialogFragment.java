@@ -4,14 +4,6 @@
  *
  * This file is part of NeverTooManyBooks.
  *
- * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
- *
- * Without their original creation, this project would not exist in its
- * current form. It was however largely rewritten/refactored and any
- * comments on this fork should be directed at HardBackNutter and not
- * at the original creators.
- *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -28,6 +20,7 @@
 package com.hardbacknutter.nevertoomanybooks;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.SparseArray;
 import android.view.View;
@@ -41,8 +34,8 @@ import androidx.annotation.Nullable;
 import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.DialogFragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.ItemTouchHelper;
-import androidx.recyclerview.widget.LinearLayoutManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -182,8 +175,6 @@ public class EditBookAuthorListDialogFragment
             return false;
         });
 
-        final LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
-        mVb.authorList.setLayoutManager(layoutManager);
         mVb.authorList.setHasFixedSize(true);
 
         mList = mBookViewModel.getBook().getParcelableArrayList(Book.BKEY_AUTHOR_ARRAY);
@@ -477,6 +468,9 @@ public class EditBookAuthorListDialogFragment
         public void onViewCreated(@NonNull final View view,
                                   @Nullable final Bundle savedInstanceState) {
             super.onViewCreated(view, savedInstanceState);
+            //noinspection ConstantConditions
+            final SharedPreferences prefs = PreferenceManager
+                    .getDefaultSharedPreferences(getContext());
 
             mVb = DialogEditBookAuthorBinding.bind(view);
 
@@ -492,7 +486,6 @@ public class EditBookAuthorListDialogFragment
                 return false;
             });
 
-            //noinspection ConstantConditions
             final DiacriticArrayAdapter<String> mFamilyNameAdapter = new DiacriticArrayAdapter<>(
                     getContext(), R.layout.dropdown_menu_popup_item,
                     mDb.getAuthorNames(DBDefinitions.KEY_AUTHOR_FAMILY_NAME));
@@ -508,7 +501,7 @@ public class EditBookAuthorListDialogFragment
             mVb.cbxIsComplete.setChecked(mIsComplete);
 
             final boolean useAuthorType =
-                    DBDefinitions.isUsed(getContext(), DBDefinitions.KEY_BOOK_AUTHOR_TYPE_BITMASK);
+                    DBDefinitions.isUsed(prefs, DBDefinitions.KEY_BOOK_AUTHOR_TYPE_BITMASK);
             mVb.authorTypeGroup.setVisibility(useAuthorType ? View.VISIBLE : View.GONE);
             if (useAuthorType) {
                 mVb.btnUseAuthorType.setOnCheckedChangeListener(

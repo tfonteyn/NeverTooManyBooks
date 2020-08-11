@@ -4,14 +4,6 @@
  *
  * This file is part of NeverTooManyBooks.
  *
- * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
- *
- * Without their original creation, this project would not exist in its
- * current form. It was however largely rewritten/refactored and any
- * comments on this fork should be directed at HardBackNutter and not
- * at the original creators.
- *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -28,6 +20,7 @@
 package com.hardbacknutter.nevertoomanybooks.booklist;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.util.Log;
 
@@ -36,6 +29,7 @@ import androidx.annotation.IntDef;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.preference.PreferenceManager;
 
 import java.io.Closeable;
 import java.lang.annotation.Retention;
@@ -111,7 +105,9 @@ public class BooklistBuilder
     /** id values for state preservation property. See {@link ListRebuildMode}. */
     public static final int PREF_REBUILD_SAVED_STATE = 0;
     public static final int PREF_REBUILD_ALWAYS_EXPANDED = 1;
+    @SuppressWarnings("WeakerAccess")
     public static final int PREF_REBUILD_ALWAYS_COLLAPSED = 2;
+    @SuppressWarnings("WeakerAccess")
     public static final int PREF_REBUILD_PREFERRED_STATE = 3;
 
     private static final String SELECT_ = "SELECT ";
@@ -681,7 +677,7 @@ public class BooklistBuilder
                     + _FROM_ + mListTable.getName()
                     + _WHERE_ + KEY_BL_NODE_GROUP + "=?")) {
                 stmt.bindLong(1, BooklistGroup.BOOK);
-                mDistinctBooks = (int) stmt.count();
+                mDistinctBooks = (int) stmt.simpleQueryForLongOrZero();
             }
         }
         return mDistinctBooks;
@@ -699,7 +695,7 @@ public class BooklistBuilder
                     + _FROM_ + mListTable.getName()
                     + _WHERE_ + KEY_BL_NODE_GROUP + "=?")) {
                 stmt.bindLong(1, BooklistGroup.BOOK);
-                mTotalBooks = (int) stmt.count();
+                mTotalBooks = (int) stmt.simpleQueryForLongOrZero();
             }
         }
         return mTotalBooks;
@@ -1095,6 +1091,7 @@ public class BooklistBuilder
          * @return FROM clause
          */
         private String buildFrom(@NonNull final Context context) {
+            final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
             // Text of join statement
             final StringBuilder sql = new StringBuilder();
 
@@ -1109,7 +1106,7 @@ public class BooklistBuilder
                 sql.append(TBL_BOOKS.ref());
             }
 
-            if (DBDefinitions.isUsed(context, DBDefinitions.KEY_LOANEE)) {
+            if (DBDefinitions.isUsed(prefs, DBDefinitions.KEY_LOANEE)) {
                 // get the loanee name, or a {@code null} for available books.
                 sql.append(TBL_BOOKS.leftOuterJoin(TBL_BOOK_LOANEE));
             }
@@ -1143,7 +1140,7 @@ public class BooklistBuilder
             sql.append(TBL_BOOK_AUTHOR.join(TBL_AUTHORS));
 
             if (mStyle.containsGroup(BooklistGroup.SERIES)
-                || DBDefinitions.isUsed(context, DBDefinitions.KEY_SERIES_TITLE)) {
+                || DBDefinitions.isUsed(prefs, DBDefinitions.KEY_SERIES_TITLE)) {
                 // Join with the link table between Book and Series.
                 sql.append(TBL_BOOKS.leftOuterJoin(TBL_BOOK_SERIES));
                 // Extend the join filtering on the primary Series unless
@@ -1157,7 +1154,7 @@ public class BooklistBuilder
             }
 
             if (mStyle.containsGroup(BooklistGroup.PUBLISHER)
-                || DBDefinitions.isUsed(context, DBDefinitions.KEY_PUBLISHER_NAME)) {
+                || DBDefinitions.isUsed(prefs, DBDefinitions.KEY_PUBLISHER_NAME)) {
                 // Join with the link table between Book and Publishers.
                 sql.append(TBL_BOOKS.leftOuterJoin(TBL_BOOK_PUBLISHER));
                 // Extend the join filtering on the primary Publisher unless

@@ -4,14 +4,6 @@
  *
  * This file is part of NeverTooManyBooks.
  *
- * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
- *
- * Without their original creation, this project would not exist in its
- * current form. It was however largely rewritten/refactored and any
- * comments on this fork should be directed at HardBackNutter and not
- * at the original creators.
- *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -44,7 +36,6 @@ import androidx.fragment.app.Fragment;
 import androidx.preference.MultiSelectListPreference;
 import androidx.preference.MultiSelectListPreferenceDialogFragmentCompat;
 import androidx.preference.PreferenceDialogFragmentCompat;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
@@ -155,7 +146,7 @@ public class BitmaskPreference
      * @return string, can be {@code null}
      */
     @Nullable
-    public String getDisregardButtonText() {
+    private String getDisregardButtonText() {
         if (mDisregardButtonText != null) {
             return mDisregardButtonText;
         } else {
@@ -301,9 +292,6 @@ public class BitmaskPreference
                 messageView.setVisibility(View.GONE);
             }
 
-            final RecyclerView listView = view.findViewById(R.id.multi_choice_items);
-            final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
-            listView.setLayoutManager(linearLayoutManager);
 
             final List<Pair<String, String>> items = new ArrayList<>();
             for (int i = 0; i < mEntryValues.length; i++) {
@@ -313,6 +301,7 @@ public class BitmaskPreference
                     new ChecklistRecyclerAdapter<>(view.getContext(), items, mNewValues,
                                                    (id, c) -> mPreferenceChanged = true);
 
+            final RecyclerView listView = view.findViewById(R.id.multi_choice_items);
             listView.setAdapter(adapter);
             adapter.notifyDataSetChanged();
         }

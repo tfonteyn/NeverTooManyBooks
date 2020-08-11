@@ -4,14 +4,6 @@
  *
  * This file is part of NeverTooManyBooks.
  *
- * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
- *
- * Without their original creation, this project would not exist in its
- * current form. It was however largely rewritten/refactored and any
- * comments on this fork should be directed at HardBackNutter and not
- * at the original creators.
- *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -90,6 +82,7 @@ public final class Logger {
     /** Prefix for logfile entries. Not used on the console. */
     private static final String ERROR = "ERROR";
     private static final String WARN = "WARN";
+    public static boolean isJUnitTest;
 
     private Logger() {
     }
@@ -206,7 +199,7 @@ public final class Logger {
                                    @NonNull final String message,
                                    @Nullable final Throwable e) {
         // do not write to the file if we're running in a JUnit test.
-        if (isJUnitTest()) {
+        if (isJUnitTest) {
             return;
         }
 
@@ -356,7 +349,7 @@ public final class Logger {
     public static void d(@NonNull final String tag,
                          @NonNull final String msg) {
         if (BuildConfig.DEBUG /* always */) {
-            if (isJUnitTest()) {
+            if (isJUnitTest) {
                 System.out.println("isJUnitTest|DEBUG|" + tag + "|" + msg);
             } else {
                 Log.d(tag, msg);
@@ -369,7 +362,7 @@ public final class Logger {
                          @NonNull final String msg,
                          @Nullable final Throwable e) {
         if (BuildConfig.DEBUG /* always */) {
-            if (isJUnitTest()) {
+            if (isJUnitTest) {
                 System.out.println("isJUnitTest|DEBUG|" + tag + "|" + msg
                                    + "\n" + getStackTraceString(e));
             } else {
@@ -383,7 +376,7 @@ public final class Logger {
                          @NonNull final String msg,
                          @Nullable final Throwable e) {
         if (BuildConfig.DEBUG /* always */) {
-            if (isJUnitTest()) {
+            if (isJUnitTest) {
                 System.out.println("isJUnitTest|ERROR|" + tag + "|" + msg
                                    + "\n" + getStackTraceString(e));
             } else {
@@ -396,7 +389,7 @@ public final class Logger {
     public static void w(@NonNull final String tag,
                          @NonNull final String msg) {
         if (BuildConfig.DEBUG /* always */) {
-            if (isJUnitTest()) {
+            if (isJUnitTest) {
                 System.out.println("isJUnitTest|WARN|" + tag + "|" + msg);
             } else {
                 Log.w(tag, msg);
@@ -409,26 +402,12 @@ public final class Logger {
                          @NonNull final String msg,
                          @Nullable final Throwable e) {
         if (BuildConfig.DEBUG /* always */) {
-            if (isJUnitTest()) {
+            if (isJUnitTest) {
                 System.out.println("isJUnitTest|WARN|" + tag + "|" + msg
                                    + "\n" + getStackTraceString(e));
             } else {
                 Log.w(tag, msg, e);
             }
         }
-    }
-
-    /**
-     * DEBUG only.
-     *
-     * @return {@code true} if the current run is a JUnit test.
-     */
-    public static boolean isJUnitTest() {
-        for (StackTraceElement element : Thread.currentThread().getStackTrace()) {
-            if (element.getClassName().startsWith("org.junit.")) {
-                return true;
-            }
-        }
-        return false;
     }
 }

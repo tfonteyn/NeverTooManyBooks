@@ -4,14 +4,6 @@
  *
  * This file is part of NeverTooManyBooks.
  *
- * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
- *
- * Without their original creation, this project would not exist in its
- * current form. It was however largely rewritten/refactored and any
- * comments on this fork should be directed at HardBackNutter and not
- * at the original creators.
- *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -104,21 +96,16 @@ public final class Prefs {
 
     /** Global - PreferenceScreen/PreferenceCategory Key. */
     public static final String PSK_BARCODE_SCANNER = "psk_barcode_scanner";
-
-
-    private static final String pk_edit_book_tabs_external_id = "edit.book.tab.externalId";
     public static final String pk_edit_book_isbn_checks = "edit.book.isbn.checks";
-
+    private static final String pk_edit_book_tabs_external_id = "edit.book.tab.externalId";
     /** Log tag. */
     private static final String TAG = "Prefs";
 
     private Prefs() {
     }
 
-    public static boolean showEditBookTabExternalId(@NonNull final Context context) {
-        return PreferenceManager
-                .getDefaultSharedPreferences(context)
-                .getBoolean(pk_edit_book_tabs_external_id, false);
+    public static boolean showEditBookTabExternalId(@NonNull final SharedPreferences preferences) {
+        return preferences.getBoolean(pk_edit_book_tabs_external_id, false);
     }
 
     /**
@@ -140,17 +127,16 @@ public final class Prefs {
      * {@link ListPreference} stores the selected value as a String.
      * But they are really Integer values. Hence this transmogrification....
      *
-     * @param context  Current context
-     * @param key      The name of the preference to retrieve.
-     * @param defValue Value to return if this preference does not exist.
+     * @param preferences SharedPreferences
+     * @param key         The name of the preference to retrieve.
+     * @param defValue    Value to return if this preference does not exist.
      *
      * @return int (stored as String) global preference
      */
-    public static int getListPreference(@NonNull final Context context,
+    public static int getListPreference(@NonNull final SharedPreferences preferences,
                                         @NonNull final String key,
                                         final int defValue) {
-        final String value = PreferenceManager.getDefaultSharedPreferences(context)
-                                              .getString(key, null);
+        final String value = preferences.getString(key, null);
         if (value == null || value.isEmpty()) {
             return defValue;
         }

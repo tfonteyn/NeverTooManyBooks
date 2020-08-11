@@ -4,14 +4,6 @@
  *
  * This file is part of NeverTooManyBooks.
  *
- * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
- *
- * Without their original creation, this project would not exist in its
- * current form. It was however largely rewritten/refactored and any
- * comments on this fork should be directed at HardBackNutter and not
- * at the original creators.
- *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -115,9 +107,9 @@ public abstract class StyleBaseFragment
     }
 
     @Override
-    public void onSharedPreferenceChanged(@NonNull final SharedPreferences sharedPreferences,
+    public void onSharedPreferenceChanged(@NonNull final SharedPreferences preferences,
                                           @NonNull final String key) {
-        super.onSharedPreferenceChanged(sharedPreferences, key);
+        super.onSharedPreferenceChanged(preferences, key);
 
         // set the result (and again and again...)
         mResultData.putResultData(BooklistStyle.BKEY_STYLE_MODIFIED, true);

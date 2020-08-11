@@ -4,14 +4,6 @@
  *
  * This file is part of NeverTooManyBooks.
  *
- * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
- *
- * Without their original creation, this project would not exist in its
- * current form. It was however largely rewritten/refactored and any
- * comments on this fork should be directed at HardBackNutter and not
- * at the original creators.
- *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -30,6 +22,7 @@ package com.hardbacknutter.nevertoomanybooks;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.util.Log;
@@ -51,6 +44,7 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.preference.PreferenceManager;
 
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.textfield.TextInputLayout;
@@ -171,7 +165,9 @@ public abstract class BaseActivity
         final Context localizedContext = LocaleUtils.applyLocale(base);
         super.attachBaseContext(localizedContext);
         // preserve, so we can check for changes in onResume.
-        mInitialLocaleSpec = LocaleUtils.getPersistedLocaleSpec(localizedContext);
+        final SharedPreferences prefs =
+                PreferenceManager.getDefaultSharedPreferences(localizedContext);
+        mInitialLocaleSpec = LocaleUtils.getPersistedLocaleSpec(prefs);
     }
 
     /**
@@ -318,9 +314,11 @@ public abstract class BaseActivity
      */
     @SuppressWarnings("UnusedReturnValue")
     protected boolean recreateIfNeeded() {
+        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+
         if (sActivityRecreateStatus == ACTIVITY_REQUIRES_RECREATE
-            || LocaleUtils.isChanged(this, mInitialLocaleSpec)
-            || NightModeUtils.isChanged(this, mInitialNightModeId)) {
+            || LocaleUtils.isChanged(prefs, mInitialLocaleSpec)
+            || NightModeUtils.isChanged(prefs, mInitialNightModeId)) {
 
             sActivityRecreateStatus = ACTIVITY_IS_RECREATING;
             recreate();

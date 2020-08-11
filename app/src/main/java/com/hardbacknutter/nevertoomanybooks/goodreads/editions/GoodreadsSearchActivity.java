@@ -4,14 +4,6 @@
  *
  * This file is part of NeverTooManyBooks.
  *
- * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
- *
- * Without their original creation, this project would not exist in its
- * current form. It was however largely rewritten/refactored and any
- * comments on this fork should be directed at HardBackNutter and not
- * at the original creators.
- *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -29,6 +21,7 @@ package com.hardbacknutter.nevertoomanybooks.goodreads.editions;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
@@ -38,8 +31,8 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.DividerItemDecoration;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.snackbar.Snackbar;
@@ -157,10 +150,7 @@ public class GoodreadsSearchActivity
 
         updateViews();
 
-        final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
-        mVb.resultList.setLayoutManager(linearLayoutManager);
-        mVb.resultList.addItemDecoration(
-                new DividerItemDecoration(this, linearLayoutManager.getOrientation()));
+        mVb.resultList.addItemDecoration(new DividerItemDecoration(this, RecyclerView.VERTICAL));
         mWorksAdapter = new WorksAdapter(this, mWorks);
         mVb.resultList.setAdapter(mWorksAdapter);
 
@@ -240,8 +230,9 @@ public class GoodreadsSearchActivity
             super(itemView);
 
             coverView = itemView.findViewById(R.id.coverImage0);
-            if (!DBDefinitions.isUsed(itemView.getContext(),
-                                      DBDefinitions.PREFS_IS_USED_THUMBNAIL)) {
+            final SharedPreferences prefs = PreferenceManager
+                    .getDefaultSharedPreferences(itemView.getContext());
+            if (!DBDefinitions.isUsed(prefs, DBDefinitions.PREFS_IS_USED_THUMBNAIL)) {
                 coverView.setVisibility(View.GONE);
             }
             authorView = itemView.findViewById(R.id.author);

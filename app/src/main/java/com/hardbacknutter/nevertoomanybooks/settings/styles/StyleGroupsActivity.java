@@ -4,14 +4,6 @@
  *
  * This file is part of NeverTooManyBooks.
  *
- * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
- *
- * Without their original creation, this project would not exist in its
- * current form. It was however largely rewritten/refactored and any
- * comments on this fork should be directed at HardBackNutter and not
- * at the original creators.
- *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -40,7 +32,6 @@ import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.ItemTouchHelper;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -86,10 +77,7 @@ public class StyleGroupsActivity
 
         // The View for the list.
         final RecyclerView listView = findViewById(R.id.groupList);
-        final LinearLayoutManager layoutManager = new LinearLayoutManager(this);
-        listView.setLayoutManager(layoutManager);
-        listView.addItemDecoration(
-                new DividerItemDecoration(this, layoutManager.getOrientation()));
+        listView.addItemDecoration(new DividerItemDecoration(this, RecyclerView.VERTICAL));
         listView.setHasFixedSize(true);
 
         // setup the adapter

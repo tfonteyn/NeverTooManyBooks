@@ -19,6 +19,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.view.Menu;
@@ -38,6 +39,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentResultListener;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.preference.PreferenceManager;
 
 import com.google.android.material.datepicker.MaterialDatePicker;
 
@@ -251,10 +253,12 @@ public abstract class EditBookBaseFragment
      */
     void addAutocomplete(@IdRes final int fieldId,
                          @NonNull final List<String> list) {
+        //noinspection ConstantConditions
+        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+
         final Field<?, ?> field = getField(fieldId);
         // only bother when it's in use and we have a list
-        //noinspection ConstantConditions
-        if (field.isUsed(getContext()) && !list.isEmpty()) {
+        if (field.isUsed(prefs) && !list.isEmpty()) {
             final AutoCompleteTextView view = (AutoCompleteTextView) field.getAccessor().getView();
             //noinspection unchecked
             final Fields.FormattedDiacriticArrayAdapter adapter =
@@ -289,7 +293,9 @@ public abstract class EditBookBaseFragment
                             @NonNull final Field<String, TextView> fieldEndDate,
                             final boolean todayIfNone) {
         //noinspection ConstantConditions
-        if (fieldStartDate.isUsed(getContext()) && fieldEndDate.isUsed(getContext())) {
+        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+
+        if (fieldStartDate.isUsed(prefs) && fieldEndDate.isUsed(prefs)) {
 
             // single date picker for the start-date
             addDatePicker(fieldStartDate, dialogTitleIdStart, true);
@@ -321,9 +327,9 @@ public abstract class EditBookBaseFragment
                 ).show(getChildFragmentManager(), REQUEST_KEY_DATE_PICKER_RANGE);
             });
 
-        } else if (fieldStartDate.isUsed(getContext())) {
+        } else if (fieldStartDate.isUsed(prefs)) {
             addDatePicker(fieldStartDate, dialogTitleIdStart, todayIfNone);
-        } else if (fieldEndDate.isUsed(getContext())) {
+        } else if (fieldEndDate.isUsed(prefs)) {
             addDatePicker(fieldEndDate, dialogTitleIdEnd, todayIfNone);
         }
     }
@@ -339,7 +345,9 @@ public abstract class EditBookBaseFragment
                        @StringRes final int dialogTitleId,
                        final boolean todayIfNone) {
         //noinspection ConstantConditions
-        if (field.isUsed(getContext())) {
+        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+
+        if (field.isUsed(prefs)) {
             //noinspection ConstantConditions
             field.getAccessor().getView().setOnClickListener(v -> {
                 final Instant time = getInstant(field, todayIfNone);
@@ -369,7 +377,9 @@ public abstract class EditBookBaseFragment
                               @StringRes final int dialogTitleId,
                               final boolean todayIfNone) {
         //noinspection ConstantConditions
-        if (field.isUsed(getContext())) {
+        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+
+        if (field.isUsed(prefs)) {
             //noinspection ConstantConditions
             field.getAccessor().getView().setOnClickListener(v -> {
                 mEditHelperVM.setCurrentDialogFieldId(field.getId());

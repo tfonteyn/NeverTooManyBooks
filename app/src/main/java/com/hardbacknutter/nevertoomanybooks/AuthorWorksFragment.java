@@ -41,7 +41,6 @@ import androidx.core.view.MenuCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DividerItemDecoration;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
@@ -130,10 +129,7 @@ public class AuthorWorksFragment
 
         final RecyclerView listView = view.findViewById(R.id.author_works);
         listView.setHasFixedSize(true);
-        final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context);
-        listView.setLayoutManager(linearLayoutManager);
-        listView.addItemDecoration(
-                new DividerItemDecoration(context, linearLayoutManager.getOrientation()));
+        listView.addItemDecoration(new DividerItemDecoration(context, RecyclerView.VERTICAL));
 
         FastScroller.attach(listView);
 

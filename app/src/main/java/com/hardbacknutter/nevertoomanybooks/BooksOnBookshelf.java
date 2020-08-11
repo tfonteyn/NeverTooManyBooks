@@ -4,14 +4,6 @@
  *
  * This file is part of NeverTooManyBooks.
  *
- * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
- *
- * Without their original creation, this project would not exist in its
- * current form. It was however largely rewritten/refactored and any
- * comments on this fork should be directed at HardBackNutter and not
- * at the original creators.
- *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -32,6 +24,7 @@ import android.app.Activity;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -54,6 +47,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -304,6 +298,8 @@ public class BooksOnBookshelf
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+
         // remove the default title to make space for the bookshelf spinner.
         setTitle("");
 
@@ -357,11 +353,10 @@ public class BooksOnBookshelf
         setNavigationItemVisibility(R.id.nav_manage_bookshelves, true);
         setNavigationItemVisibility(R.id.nav_export, true);
         setNavigationItemVisibility(R.id.nav_import, true);
-        setNavigationItemVisibility(R.id.nav_goodreads, GoodreadsManager.isShowSyncMenus(this));
+        setNavigationItemVisibility(R.id.nav_goodreads, GoodreadsManager.isShowSyncMenus(prefs));
 
         // The booklist.
-        mLayoutManager = new LinearLayoutManager(this);
-        mVb.list.setLayoutManager(mLayoutManager);
+        mLayoutManager = (LinearLayoutManager) mVb.list.getLayoutManager();
         mVb.list.addItemDecoration(new TopLevelItemDecoration(this));
         FastScroller.attach(mVb.list);
         // initialise adapter without a cursor.
@@ -382,7 +377,7 @@ public class BooksOnBookshelf
         mFabMenu.attach(mVb.list);
         mFabMenu.setOnClickListener(this::onFabMenuItemSelected);
         // mVb.fab4
-        mFabMenu.getItem(4).setEnabled(Prefs.showEditBookTabExternalId(this));
+        mFabMenu.getItem(4).setEnabled(Prefs.showEditBookTabExternalId(prefs));
 
         // Popup the search widget when the user starts to type.
         setDefaultKeyMode(Activity.DEFAULT_KEYS_SEARCH_LOCAL);
@@ -597,18 +592,21 @@ public class BooksOnBookshelf
                 getMenuInflater().inflate(R.menu.sm_view_on_site, menu);
                 getMenuInflater().inflate(R.menu.sm_search_on_amazon, menu);
 
+                final SharedPreferences prefs = PreferenceManager
+                        .getDefaultSharedPreferences(this);
+
                 final boolean isRead = rowData.getBoolean(DBDefinitions.KEY_READ);
                 menu.findItem(R.id.MENU_BOOK_READ).setVisible(!isRead);
                 menu.findItem(R.id.MENU_BOOK_UNREAD).setVisible(isRead);
 
                 // specifically check App.isUsed for KEY_LOANEE independent from the style in use.
-                final boolean useLending = DBDefinitions.isUsed(this, DBDefinitions.KEY_LOANEE);
+                final boolean useLending = DBDefinitions.isUsed(prefs, DBDefinitions.KEY_LOANEE);
                 final boolean isAvailable = mModel.isAvailable(rowData);
                 menu.findItem(R.id.MENU_BOOK_LOAN_ADD).setVisible(useLending && isAvailable);
                 menu.findItem(R.id.MENU_BOOK_LOAN_DELETE).setVisible(useLending && !isAvailable);
 
                 menu.findItem(R.id.MENU_BOOK_SEND_TO_GOODREADS)
-                    .setVisible(GoodreadsManager.isShowSyncMenus(this));
+                    .setVisible(GoodreadsManager.isShowSyncMenus(prefs));
 
                 MenuHandler.prepareOptionalMenus(menu, rowData);
                 break;

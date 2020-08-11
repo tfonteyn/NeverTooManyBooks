@@ -4,14 +4,6 @@
  *
  * This file is part of NeverTooManyBooks.
  *
- * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
- *
- * Without their original creation, this project would not exist in its
- * current form. It was however largely rewritten/refactored and any
- * comments on this fork should be directed at HardBackNutter and not
- * at the original creators.
- *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -32,6 +24,7 @@ import android.app.Dialog;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
@@ -294,7 +287,8 @@ public final class ScannerManager {
     }
 
     private static int getPreferredScanner(@NonNull final Context context) {
-        return Prefs.getListPreference(context, Prefs.pk_scanner_preferred, DEFAULT);
+        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        return Prefs.getListPreference(prefs, Prefs.pk_scanner_preferred, DEFAULT);
     }
 
     static boolean isBeepOnBarcodeFound(@NonNull final Context context) {
@@ -322,11 +316,11 @@ public final class ScannerManager {
     public static String collectDebugInfo(@NonNull final Context context) {
 
         final StringBuilder message = new StringBuilder();
-
+        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         // Scanners installed
         try {
             message.append("Preferred Scanner: ")
-                   .append(Prefs.getListPreference(context, Prefs.pk_scanner_preferred, -1))
+                   .append(Prefs.getListPreference(prefs, Prefs.pk_scanner_preferred, -1))
                    .append('\n');
 
             for (String scannerAction : ALL_ACTIONS) {

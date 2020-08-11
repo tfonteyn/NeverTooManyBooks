@@ -4,14 +4,6 @@
  *
  * This file is part of NeverTooManyBooks.
  *
- * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
- *
- * Without their original creation, this project would not exist in its
- * current form. It was however largely rewritten/refactored and any
- * comments on this fork should be directed at HardBackNutter and not
- * at the original creators.
- *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -89,16 +81,16 @@ public class BuildLanguageMappingsTask
     /**
      * Generate language mappings for a given Locale.
      *
-     * @param prefs  the SharedPreferences used as our language names cache.
-     * @param locale the Locale for which to create a mapping
+     * @param preferences the SharedPreferences used as our language names cache.
+     * @param locale      the Locale for which to create a mapping
      */
-    private void createLanguageMappingCache(@NonNull final SharedPreferences prefs,
+    private void createLanguageMappingCache(@NonNull final SharedPreferences preferences,
                                             @NonNull final Locale locale) {
         // just return if already done for this Locale.
-        if (prefs.getBoolean(LANG_CREATED_PREFIX + locale.getISO3Language(), false)) {
+        if (preferences.getBoolean(LANG_CREATED_PREFIX + locale.getISO3Language(), false)) {
             return;
         }
-        final SharedPreferences.Editor ed = prefs.edit();
+        final SharedPreferences.Editor ed = preferences.edit();
         for (Locale loc : Locale.getAvailableLocales()) {
             ed.putString(loc.getDisplayLanguage(locale).toLowerCase(locale),
                          loc.getISO3Language());

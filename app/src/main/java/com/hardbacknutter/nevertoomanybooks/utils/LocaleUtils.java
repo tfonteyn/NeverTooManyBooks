@@ -4,14 +4,6 @@
  *
  * This file is part of NeverTooManyBooks.
  *
- * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
- *
- * Without their original creation, this project would not exist in its
- * current form. It was however largely rewritten/refactored and any
- * comments on this fork should be directed at HardBackNutter and not
- * at the original creators.
- *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -29,6 +21,7 @@ package com.hardbacknutter.nevertoomanybooks.utils;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.os.Build;
@@ -122,15 +115,14 @@ public final class LocaleUtils {
     /**
      * Get the user-preferred Locale as stored in the preferences.
      *
-     * @param context Current context
+     * @param preferences SharedPreferences
      *
      * @return a Locale specification as used for Android resources;
      * or {@link #SYSTEM_LANGUAGE} to use the system settings
      */
     @NonNull
-    public static String getPersistedLocaleSpec(@NonNull final Context context) {
-        return PreferenceManager.getDefaultSharedPreferences(context)
-                                .getString(Prefs.pk_ui_locale, SYSTEM_LANGUAGE);
+    public static String getPersistedLocaleSpec(@NonNull final SharedPreferences preferences) {
+        return preferences.getString(Prefs.pk_ui_locale, SYSTEM_LANGUAGE);
     }
 
     /**
@@ -186,14 +178,14 @@ public final class LocaleUtils {
     /**
      * Check if the passed localeSpec is different from the user preferred Locale.
      *
-     * @param context    Current context
-     * @param localeSpec to test
+     * @param preferences SharedPreferences
+     * @param localeSpec  to test
      *
      * @return {@code true} if different
      */
-    public static boolean isChanged(@NonNull final Context context,
+    public static boolean isChanged(@NonNull final SharedPreferences preferences,
                                     @Nullable final String localeSpec) {
-        return localeSpec == null || !localeSpec.equals(getPersistedLocaleSpec(context));
+        return localeSpec == null || !localeSpec.equals(getPersistedLocaleSpec(preferences));
     }
 
     /**
@@ -209,8 +201,10 @@ public final class LocaleUtils {
     public static Context applyLocale(@NonNull final Context context) {
         boolean changed = false;
 
+        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+
         // Create the Locale at first access, or if the persisted is different from the current.
-        final String localeSpec = getPersistedLocaleSpec(context);
+        final String localeSpec = getPersistedLocaleSpec(prefs);
         if (sPreferredLocale == null || !sPreferredLocaleSpec.equals(localeSpec)) {
             sPreferredLocaleSpec = localeSpec;
             sPreferredLocale = createLocale(localeSpec);
@@ -246,7 +240,7 @@ public final class LocaleUtils {
      * @return a new Locale
      */
     @NonNull
-    public static Locale createLocale(@Nullable final String localeSpec) {
+    static Locale createLocale(@Nullable final String localeSpec) {
 
         if (localeSpec == null || localeSpec.isEmpty() || SYSTEM_LANGUAGE.equals(localeSpec)) {
             return getSystemLocale();
@@ -280,7 +274,7 @@ public final class LocaleUtils {
     public static Locale getSystemLocale() {
         // While running JUnit tests we cannot get access or mock Resources.getSystem(),
         // ... so we need to cheat.
-        if (BuildConfig.DEBUG && Logger.isJUnitTest()) {
+        if (BuildConfig.DEBUG && Logger.isJUnitTest) {
             return Locale.ENGLISH;
         }
 
@@ -305,7 +299,7 @@ public final class LocaleUtils {
     @NonNull
     public static Locale getUserLocale(@NonNull final Context context) {
         // While running JUnit tests, we're mocking the getLocales().get(0) call.
-        if (BuildConfig.DEBUG && Logger.isJUnitTest()) {
+        if (BuildConfig.DEBUG && Logger.isJUnitTest) {
             return context.getResources().getConfiguration().getLocales().get(0);
         }
 
@@ -322,7 +316,7 @@ public final class LocaleUtils {
      *
      * @param listener to add
      */
-    @SuppressWarnings("unused")
+    @SuppressWarnings({"unused", "WeakerAccess"})
     public static void registerOnLocaleChangedListener(
             @NonNull final OnLocaleChangedListener listener) {
         synchronized (ON_LOCALE_CHANGED_LISTENERS) {

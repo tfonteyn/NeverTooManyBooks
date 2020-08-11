@@ -4,14 +4,6 @@
  *
  * This file is part of NeverTooManyBooks.
  *
- * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
- *
- * Without their original creation, this project would not exist in its
- * current form. It was however largely rewritten/refactored and any
- * comments on this fork should be directed at HardBackNutter and not
- * at the original creators.
- *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -30,6 +22,7 @@ package com.hardbacknutter.nevertoomanybooks.covers;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
@@ -52,6 +45,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.preference.PreferenceManager;
 
 import com.google.android.material.snackbar.Snackbar;
 
@@ -380,15 +374,17 @@ public class CoverHandler {
                         final File dstFile = getCoverFile();
                         FileUtils.rename(srcFile, dstFile);
 
+                        final SharedPreferences prefs = PreferenceManager
+                                .getDefaultSharedPreferences(mContext);
                         // Should we apply an explicit rotation angle?
                         // (which would overrule the setWindowManager call)
                         final int angle = Prefs
-                                .getListPreference(mContext, Prefs.pk_camera_image_autorotate, 0);
+                                .getListPreference(prefs, Prefs.pk_camera_image_autorotate, 0);
 
                         // What action should we take after we're done?
                         @NextAction
                         final int action = Prefs
-                                .getListPreference(mContext, Prefs.pk_camera_image_action,
+                                .getListPreference(prefs, Prefs.pk_camera_image_action,
                                                    ACTION_NOTHING);
 
                         showProgress(true);

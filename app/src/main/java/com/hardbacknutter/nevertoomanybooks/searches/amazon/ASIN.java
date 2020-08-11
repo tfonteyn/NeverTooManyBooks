@@ -1,16 +1,8 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
- *
- * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
- *
- * Without their original creation, this project would not exist in its
- * current form. It was however largely rewritten/refactored and any
- * comments on this fork should be directed at HardBackNutter and not
- * at the original creators.
  *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -60,7 +52,7 @@ public class ASIN {
         }
 
         boolean foundAlpha = false;
-        asin = asin.toUpperCase(Locale.ENGLISH).trim();
+        asin = asin.trim().toUpperCase(Locale.ENGLISH);
         for (int i = 0; i < asin.length(); i++) {
             int pos = "1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ".indexOf(asin.charAt(i));
             // Make sure it's a valid char

@@ -4,14 +4,6 @@
  *
  * This file is part of NeverTooManyBooks.
  *
- * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
- *
- * Without their original creation, this project would not exist in its
- * current form. It was however largely rewritten/refactored and any
- * comments on this fork should be directed at HardBackNutter and not
- * at the original creators.
- *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -28,7 +20,7 @@
 package com.hardbacknutter.nevertoomanybooks.utils;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
+import android.content.SharedPreferences;
 import android.text.Editable;
 import android.text.TextWatcher;
 
@@ -294,13 +286,13 @@ public class ISBN {
     /**
      * Get the user preferred ISBN validity level check for (by the user) editing ISBN codes.
      *
-     * @param context Current context
+     * @param preferences SharedPreferences
      *
      * @return {@link Validity} level
      */
     @Validity
-    public static int getEditValidityLevel(@NonNull final Context context) {
-        return Prefs.getListPreference(context, Prefs.pk_edit_book_isbn_checks, VALIDITY_LOOSE);
+    public static int getEditValidityLevel(@NonNull final SharedPreferences preferences) {
+        return Prefs.getListPreference(preferences, Prefs.pk_edit_book_isbn_checks, VALIDITY_LOOSE);
     }
 
     /**
@@ -525,7 +517,7 @@ public class ISBN {
                 }
                 digit = Integer.parseInt(Character.toString(c));
 
-            } else if (Character.toUpperCase(c) == 'X' && digits.size() == 9) {
+            } else if ((c == 'X' || c == 'x') && digits.size() == 9) {
                 if (foundX) {
                     throw new NumberFormatException(ERROR_X_CAN_ONLY_BE_AT_THE_END_OF_AN_ISBN_10);
                 }
@@ -909,7 +901,7 @@ public class ISBN {
                 for (char c : text.toCharArray()) {
                     if (Character.isDigit(c)) {
                         sb.append(c);
-                    } else if (c == 'x' || c == 'X') {
+                    } else if (c == 'X' || c == 'x') {
                         x = true;
                     }
                 }

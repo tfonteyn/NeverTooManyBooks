@@ -4,14 +4,6 @@
  *
  * This file is part of NeverTooManyBooks.
  *
- * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
- *
- * Without their original creation, this project would not exist in its
- * current form. It was however largely rewritten/refactored and any
- * comments on this fork should be directed at HardBackNutter and not
- * at the original creators.
- *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -27,12 +19,10 @@
  */
 package com.hardbacknutter.nevertoomanybooks.database;
 
-import android.content.Context;
 import android.content.SharedPreferences;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.StringDef;
-import androidx.preference.PreferenceManager;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -1449,28 +1439,14 @@ public final class DBDefinitions {
     /**
      * Is the field in use; i.e. is it enabled in the user-preferences.
      *
-     * @param context Current context
-     * @param key     DBDefinitions.KEY_x to lookup
+     * @param preferences prefs object
+     * @param key         DBDefinitions.KEY_x to lookup
      *
      * @return {@code true} if the user wants to use this field.
      */
-    public static boolean isUsed(@NonNull final Context context,
+    public static boolean isUsed(@NonNull final SharedPreferences preferences,
                                  @UserSelectedDomain @NonNull final String key) {
-        return PreferenceManager.getDefaultSharedPreferences(context)
-                                .getBoolean(PREFS_PREFIX_FIELD_VISIBILITY + key, true);
-    }
-
-    /**
-     * Is the field in use; i.e. is it enabled in the user-preferences.
-     *
-     * @param sharedPreferences prefs object
-     * @param key               DBDefinitions.KEY_x to lookup
-     *
-     * @return {@code true} if the user wants to use this field.
-     */
-    public static boolean isUsed(@NonNull final SharedPreferences sharedPreferences,
-                                 @UserSelectedDomain @NonNull final String key) {
-        return sharedPreferences.getBoolean(PREFS_PREFIX_FIELD_VISIBILITY + key, true);
+        return preferences.getBoolean(PREFS_PREFIX_FIELD_VISIBILITY + key, true);
     }
 
     /**

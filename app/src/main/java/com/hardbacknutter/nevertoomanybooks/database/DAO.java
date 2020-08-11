@@ -4,14 +4,6 @@
  *
  * This file is part of NeverTooManyBooks.
  *
- * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
- *
- * Without their original creation, this project would not exist in its
- * current form. It was however largely rewritten/refactored and any
- * comments on this fork should be directed at HardBackNutter and not
- * at the original creators.
- *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -2126,7 +2118,7 @@ public class DAO
      */
     public long countBooks() {
         try (SynchronizedStatement stmt = sSyncedDb.compileStatement(SqlCount.BOOKS)) {
-            return stmt.count();
+            return stmt.simpleQueryForLongOrZero();
         }
     }
 
@@ -2148,7 +2140,7 @@ public class DAO
 
         try (SynchronizedStatement stmt = sSyncedDb.compileStatement(SqlCount.BOOKS_BY_AUTHOR)) {
             stmt.bindLong(1, author.getId());
-            return stmt.count();
+            return stmt.simpleQueryForLongOrZero();
         }
     }
 
@@ -2170,7 +2162,7 @@ public class DAO
 
         try (SynchronizedStatement stmt = sSyncedDb.compileStatement(SqlCount.BOOKS_IN_SERIES)) {
             stmt.bindLong(1, series.getId());
-            return stmt.count();
+            return stmt.simpleQueryForLongOrZero();
         }
     }
 
@@ -2192,7 +2184,7 @@ public class DAO
 
         try (SynchronizedStatement stmt = sSyncedDb.compileStatement(SqlCount.BOOKS_BY_PUBLISHER)) {
             stmt.bindLong(1, publisher.getId());
-            return stmt.count();
+            return stmt.simpleQueryForLongOrZero();
         }
     }
 
@@ -2215,7 +2207,7 @@ public class DAO
         try (SynchronizedStatement stmt =
                      sSyncedDb.compileStatement(SqlCount.TOC_ENTRIES_BY_AUTHOR)) {
             stmt.bindLong(1, author.getId());
-            return stmt.count();
+            return stmt.simpleQueryForLongOrZero();
         }
     }
 
@@ -3415,7 +3407,7 @@ public class DAO
         //noinspection SynchronizationOnLocalVariableOrMethodParameter
         synchronized (stmt) {
             stmt.bindLong(1, bookId);
-            return stmt.count() == 1;
+            return stmt.simpleQueryForLongOrZero() == 1;
         }
     }
 

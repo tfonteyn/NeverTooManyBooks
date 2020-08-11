@@ -4,14 +4,6 @@
  *
  * This file is part of NeverTooManyBooks.
  *
- * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
- *
- * Without their original creation, this project would not exist in its
- * current form. It was however largely rewritten/refactored and any
- * comments on this fork should be directed at HardBackNutter and not
- * at the original creators.
- *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -85,16 +77,16 @@ public class FieldUsage {
      *
      * @param fieldId      Field name
      * @param nameStringId Field label string resource ID
-     * @param p            SharedPreferences to read current usage from.
+     * @param preferences  SharedPreferences to read current usage from.
      * @param defValue     default Usage for this field
      *
      * @return new instance
      */
     public static FieldUsage create(@NonNull final String fieldId,
                                     @StringRes final int nameStringId,
-                                    @NonNull final SharedPreferences p,
+                                    @NonNull final SharedPreferences preferences,
                                     @NonNull final Usage defValue) {
-        Usage initialValue = Usage.read(p, fieldId, defValue);
+        Usage initialValue = Usage.read(preferences, fieldId, defValue);
         return new FieldUsage(fieldId, nameStringId, initialValue, defValue, false);
     }
 
@@ -105,14 +97,14 @@ public class FieldUsage {
      *
      * @param fieldId      Field name
      * @param nameStringId Field label string resource ID
-     * @param p            SharedPreferences to read current usage from.
+     * @param preferences  SharedPreferences to read current usage from.
      *
      * @return new instance
      */
     public static FieldUsage createListField(@NonNull final String fieldId,
                                              @StringRes final int nameStringId,
-                                             @NonNull final SharedPreferences p) {
-        Usage initialValue = Usage.read(p, fieldId, Usage.Append);
+                                             @NonNull final SharedPreferences preferences) {
+        Usage initialValue = Usage.read(preferences, fieldId, Usage.Append);
         return new FieldUsage(fieldId, nameStringId, initialValue, Usage.Append, true);
     }
 
@@ -198,10 +190,10 @@ public class FieldUsage {
 
         private static final String PREFS_PREFIX_FIELD_USAGE = "fields.update.usage.";
 
-        public static Usage read(@NonNull final SharedPreferences p,
+        public static Usage read(@NonNull final SharedPreferences preferences,
                                  @NonNull final String key,
                                  @NonNull final Usage defValue) {
-            int ordinal = p.getInt(PREFS_PREFIX_FIELD_USAGE + key, -1);
+            int ordinal = preferences.getInt(PREFS_PREFIX_FIELD_USAGE + key, -1);
             if (ordinal != -1) {
                 return Usage.values()[ordinal];
             } else {

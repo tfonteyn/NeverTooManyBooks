@@ -4,14 +4,6 @@
  *
  * This file is part of NeverTooManyBooks.
  *
- * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
- *
- * Without their original creation, this project would not exist in its
- * current form. It was however largely rewritten/refactored and any
- * comments on this fork should be directed at HardBackNutter and not
- * at the original creators.
- *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -28,11 +20,13 @@
 package com.hardbacknutter.nevertoomanybooks.utils;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Build;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatDelegate;
+import androidx.preference.PreferenceManager;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -79,8 +73,9 @@ public final class NightModeUtils {
     @NightModeId
     public static int applyNightMode(@NonNull final Context context) {
         // Always read from prefs.
-        sCurrentMode = Prefs.getListPreference(context, Prefs.pk_ui_theme,
-                                               NIGHT_MODE_IS_DAY_NIGHT);
+        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        sCurrentMode = Prefs.getListPreference(prefs, Prefs.pk_ui_theme, NIGHT_MODE_IS_DAY_NIGHT);
+
         final int dnMode;
         switch (sCurrentMode) {
             case NIGHT_MODE_IS_NOT_SET:
@@ -105,9 +100,9 @@ public final class NightModeUtils {
         return sCurrentMode;
     }
 
-    public static boolean isChanged(@NonNull final Context context,
+    public static boolean isChanged(@NonNull final SharedPreferences preferences,
                                     @NightModeId final int mode) {
-        sCurrentMode = Prefs.getListPreference(context, Prefs.pk_ui_theme,
+        sCurrentMode = Prefs.getListPreference(preferences, Prefs.pk_ui_theme,
                                                NIGHT_MODE_IS_DAY_NIGHT);
         return mode != sCurrentMode;
     }
