@@ -85,7 +85,7 @@ public class EntityListChipGroupAccessor
 
         if (mIsEditable) {
             mFilterChipListener = view -> {
-                Entity current = (Entity) view.getTag();
+                final Entity current = (Entity) view.getTag();
                 if (((Checkable) view).isChecked()) {
                     //noinspection ConstantConditions
                     mRawValue.add(current);
@@ -97,12 +97,6 @@ public class EntityListChipGroupAccessor
         } else {
             mFilterChipListener = null;
         }
-    }
-
-    @Override
-    public void setView(@NonNull final ChipGroup view) {
-        super.setView(view);
-        addTouchSignalsDirty(view);
     }
 
     @NonNull
@@ -158,6 +152,7 @@ public class EntityListChipGroupAccessor
             chip.setCheckable(true);
             chip.setChecked(initialState);
             chip.setOnClickListener(mFilterChipListener);
+            addTouchSignalsDirty(chip);
         }
         return chip;
     }
