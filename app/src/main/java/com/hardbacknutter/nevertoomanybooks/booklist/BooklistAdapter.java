@@ -43,6 +43,8 @@ import androidx.annotation.IntRange;
 import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.core.math.MathUtils;
 import androidx.fragment.app.FragmentActivity;
 import androidx.preference.PreferenceManager;
@@ -912,11 +914,31 @@ public class BooklistAdapter
                 mCoverView.setVisibility(View.GONE);
             }
 
-            if (BuildConfig.DEBUG /* always */) {
-                mDbgRowIdView = itemView.findViewById(R.id.dbg_pos);
-                if (mDbgRowIdView != null) {
-                    mDbgRowIdView.setVisibility(View.VISIBLE);
-                }
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_NODE_ID) {
+                // add a text view to display the "position/nodeId" for a book
+                mDbgRowIdView = new TextView(context);
+                mDbgRowIdView.setId(View.generateViewId());
+                mDbgRowIdView.setTextColor(Color.BLUE);
+
+                final ConstraintLayout parentLayout = itemView.findViewById(R.id.row);
+                parentLayout.addView(mDbgRowIdView, 0);
+
+                final ConstraintSet set = new ConstraintSet();
+                set.clone(parentLayout);
+                set.connect(mDbgRowIdView.getId(), ConstraintSet.TOP,
+                            R.id.icon_sidebar, ConstraintSet.BOTTOM);
+                set.connect(mDbgRowIdView.getId(), ConstraintSet.BOTTOM,
+                            ConstraintSet.PARENT_ID, ConstraintSet.BOTTOM);
+                set.connect(mDbgRowIdView.getId(), ConstraintSet.END,
+                            ConstraintSet.PARENT_ID, ConstraintSet.END);
+                set.setVerticalBias(mDbgRowIdView.getId(), 1.0f);
+
+                set.applyTo(parentLayout);
+
+                // mDbgRowIdView = itemView.findViewById(R.id.dbg_pos);
+                // if (mDbgRowIdView != null) {
+                //     mDbgRowIdView.setVisibility(View.VISIBLE);
+                // }
             }
         }
 
