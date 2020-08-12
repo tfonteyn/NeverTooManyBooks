@@ -51,6 +51,7 @@
             android:id="@+id/original_details"
             android:layout_width="0dp"
             android:layout_height="0dp"
+            app:groupApply="visibility"
             app:constraint_referenced_ids="lbl_author,author,lbl_title,title,lbl_isbn,isbn"
             tools:ignore="MissingConstraints"
             />
