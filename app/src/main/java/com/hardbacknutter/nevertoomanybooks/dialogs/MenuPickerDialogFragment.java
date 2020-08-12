@@ -57,7 +57,8 @@ import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
  * Show context menu on a view.
  * <p>
  * Experimental: manual menu construction fully supported,
- * using a menu inflater works but will ignore icons.
+ * using a menu inflater works but will ignore icons (can't extract the icon ID from the MenuItem,
+ * only the Drawable)
  * <p>
  * See build.gradle for app module; android/defaultConfig
  * buildConfigField("boolean", "MENU_PICKER_USES_FRAGMENT", "false")
@@ -78,19 +79,16 @@ public class MenuPickerDialogFragment
     /**
      * Constructor.
      *
-     * @param title         (optional) for the dialog/menu
-     * @param headerMessage (optional) message to display above the menu
-     * @param pickList      the menu options to show
-     * @param position      of the item in a list where the context menu was initiated
+     * @param title    (optional) for the dialog/menu
+     * @param pickList the menu options to show
+     * @param position of the item in a list where the context menu was initiated
      */
     public static DialogFragment newInstance(@Nullable final String title,
-                                             @Nullable final String headerMessage,
                                              @NonNull final ArrayList<Pick> pickList,
                                              final int position) {
         final DialogFragment frag = new MenuPickerDialogFragment();
         final Bundle args = new Bundle(4);
         args.putString(StandardDialogs.BKEY_DIALOG_TITLE, title);
-        args.putString(StandardDialogs.BKEY_DIALOG_MESSAGE, headerMessage);
         args.putParcelableArrayList(BKEY_MENU, pickList);
         args.putInt(BKEY_POSITION, position);
         frag.setArguments(args);
@@ -100,18 +98,16 @@ public class MenuPickerDialogFragment
     /**
      * Constructor - <strong>No support for icons</strong>.
      *
-     * @param title         (optional) for the dialog/menu
-     * @param headerMessage (optional) message to display above the menu
-     * @param menu          the menu options to show
-     * @param position      of the item in a list where the context menu was initiated
+     * @param title    (optional) for the dialog/menu
+     * @param menu     the menu options to show
+     * @param position of the item in a list where the context menu was initiated
      *
      * @return instance
      */
     public static DialogFragment newInstance(@Nullable final String title,
-                                             @Nullable final String headerMessage,
                                              @NonNull final Menu menu,
                                              final int position) {
-        return newInstance(title, headerMessage, convert(menu), position);
+        return newInstance(title, convert(menu), position);
     }
 
     private static ArrayList<Pick> convert(@NonNull final Menu menu) {
@@ -145,10 +141,9 @@ public class MenuPickerDialogFragment
 
         // list of options
         final RecyclerView listView = root.findViewById(R.id.item_list);
-        final TextView mMessageView = root.findViewById(R.id.message);
 
         //noinspection ConstantConditions
-        AlertDialog mDialog = new MaterialAlertDialogBuilder(getContext())
+        final AlertDialog mDialog = new MaterialAlertDialogBuilder(getContext())
                 .setView(root)
                 .create();
 
@@ -159,16 +154,6 @@ public class MenuPickerDialogFragment
         final String title = args.getString(StandardDialogs.BKEY_DIALOG_TITLE);
         if (title != null && !title.isEmpty()) {
             mDialog.setTitle(title);
-        }
-        // Optional message
-        if (mMessageView != null) {
-            final String message = args.getString(StandardDialogs.BKEY_DIALOG_MESSAGE);
-            if (message != null && !message.isEmpty()) {
-                mMessageView.setText(message);
-                mMessageView.setVisibility(View.VISIBLE);
-            } else {
-                mMessageView.setVisibility(View.GONE);
-            }
         }
 
         //noinspection ConstantConditions

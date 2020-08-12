@@ -27,13 +27,6 @@
     android:orientation="vertical"
     >
 
-    <!--    <View-->
-    <!--        android:layout_width="match_parent"-->
-    <!--        android:layout_height="1dp"-->
-    <!--        android:layout_marginTop="@dimen/border2"-->
-    <!--        android:background="?attr/dividerHorizontal"-->
-    <!--        />-->
-
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/item_list"
         style="@style/Dialog.Body.Floating"

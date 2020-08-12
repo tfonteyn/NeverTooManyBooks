@@ -232,7 +232,7 @@ public class AuthorWorksFragment
             //noinspection ConstantConditions
             final String title = item.getLabel(getContext());
             MenuPickerDialogFragment
-                    .newInstance(title, null, menu, position)
+                    .newInstance(title, menu, position)
                     .show(getChildFragmentManager(), MenuPickerDialogFragment.TAG);
         } else {
             //noinspection ConstantConditions

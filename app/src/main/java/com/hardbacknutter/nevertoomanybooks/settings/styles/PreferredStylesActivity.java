@@ -262,7 +262,7 @@ public class PreferredStylesActivity
 
             final String title = style.getLabel(this);
             MenuPickerDialogFragment
-                    .newInstance(title, null, menu, position)
+                    .newInstance(title, menu, position)
                     .show(getSupportFragmentManager(), MenuPickerDialogFragment.TAG);
         } else {
             final Menu menu = MenuPicker.createMenu(this);

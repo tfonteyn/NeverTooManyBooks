@@ -184,7 +184,7 @@ public class EditBookshelvesFragment
 
             final String title = bookshelf.getName();
             MenuPickerDialogFragment
-                    .newInstance(title, null, menu, position)
+                    .newInstance(title, menu, position)
                     .show(getChildFragmentManager(), MenuPickerDialogFragment.TAG);
         } else {
             //noinspection ConstantConditions
