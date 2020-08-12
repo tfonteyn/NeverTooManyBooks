@@ -609,6 +609,7 @@
         <TextView
             android:id="@+id/description"
             style="@style/Field.Description"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/location"
             tools:ignore="SelectableText"
