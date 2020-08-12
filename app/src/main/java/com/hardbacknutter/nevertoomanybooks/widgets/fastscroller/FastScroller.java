@@ -4,14 +4,6 @@
  *
  * This file is part of NeverTooManyBooks.
  *
- * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
- *
- * Without their original creation, this project would not exist in its
- * current form. It was however largely rewritten/refactored and any
- * comments on this fork should be directed at HardBackNutter and not
- * at the original creators.
- *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -44,6 +36,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
+import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 
 /**
@@ -90,27 +83,23 @@ public class FastScroller {
 
         //Note: do not test the adapter here for being a PopupTextProvider,
         // it can still be null.
-        final OverlayProvider overlay;
-        int thumbWidth = verticalThumbDrawable.getIntrinsicWidth();
-        switch (getFastScrollerOverlayStyle()) {
-            case OverlayProvider.STYLE_CLASSIC: {
-                overlay = new ClassicOverlay(recyclerView, thumbWidth);
-                break;
-            }
-            case OverlayProvider.STYLE_MD1: {
-                overlay = new FastScrollerOverlay(recyclerView, thumbWidth, PopupStyles.DEFAULT);
-                break;
-            }
-            case OverlayProvider.STYLE_MD2: {
-                overlay = new FastScrollerOverlay(recyclerView, thumbWidth, PopupStyles.MD2);
-                break;
-            }
 
-            default:
-                throw new IllegalArgumentException("invalid OverlayProvider style");
-        }
-
-        fastScroller.setOverlayProvider(overlay);
+        // Configured in build.gradle
+        //noinspection ConstantConditions
+        if (BuildConfig.FAST_SCROLLER_OVERLAY == OverlayProvider.STYLE_CLASSIC) {
+            // Static
+            fastScroller.setOverlayProvider(new ClassicOverlay(
+                    recyclerView, verticalThumbDrawable.getIntrinsicWidth()));
+        } else //noinspection ConstantConditions
+            if (BuildConfig.FAST_SCROLLER_OVERLAY == OverlayProvider.STYLE_MD2) {
+                // 'fancy?' Material Design
+                fastScroller.setOverlayProvider(new FastScrollerOverlay(
+                        recyclerView, verticalThumbDrawable.getIntrinsicWidth(), PopupStyles.MD2));
+            } else {
+                // 'standard' Material Design
+                fastScroller.setOverlayProvider(new FastScrollerOverlay(
+                        recyclerView, verticalThumbDrawable.getIntrinsicWidth(), PopupStyles.MD));
+            }
     }
 
     /**
@@ -128,14 +117,6 @@ public class FastScroller {
         final TypedValue tv = new TypedValue();
         theme.resolveAttribute(attr, tv, true);
         return context.getResources().getColor(tv.resourceId, theme);
-    }
-
-    /** FIXME: Compile time set FastScroller overlay style... maybe make a real preference ? */
-    @OverlayProvider.Style
-    private static int getFastScrollerOverlayStyle() {
-        // return FastScroller.OverlayProvider.STYLE_CLASSIC;
-        return OverlayProvider.STYLE_MD1;
-        // return FastScroller.OverlayProvider.STYLE_MD2;
     }
 
     /**
