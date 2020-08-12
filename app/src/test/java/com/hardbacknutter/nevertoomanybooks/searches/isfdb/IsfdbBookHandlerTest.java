@@ -4,14 +4,6 @@
  *
  * This file is part of NeverTooManyBooks.
  *
- * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
- *
- * Without their original creation, this project would not exist in its
- * current form. It was however largely rewritten/refactored and any
- * comments on this fork should be directed at HardBackNutter and not
- * at the original creators.
- *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -82,7 +74,8 @@ class IsfdbBookHandlerTest
         final String locationHeader = "http://www.isfdb.org/cgi-bin/pl.cgi?112781";
         final String filename = "/isfdb/112781.html";
 
-        loadData(mSearchEngine, IsfdbSearchEngine.CHARSET_DECODE_PAGE, locationHeader, filename);
+        loadData(mSearchEngine, IsfdbSearchEngine.CHARSET_DECODE_PAGE, locationHeader, filename,
+                 new boolean[]{false, false});
 
         assertEquals("Like Nothing on Earth", mRawData.getString(DBDefinitions.KEY_TITLE));
         assertEquals(112781L, mRawData.getLong(DBDefinitions.KEY_EID_ISFDB));
@@ -150,7 +143,8 @@ class IsfdbBookHandlerTest
         final String locationHeader = "http://www.isfdb.org/cgi-bin/pl.cgi?431964";
         final String filename = "/isfdb/431964.html";
 
-        loadData(mSearchEngine, IsfdbSearchEngine.CHARSET_DECODE_PAGE, locationHeader, filename);
+        loadData(mSearchEngine, IsfdbSearchEngine.CHARSET_DECODE_PAGE, locationHeader, filename,
+                 new boolean[]{false, false});
 
         assertEquals("Mort", mRawData.getString(DBDefinitions.KEY_TITLE));
         assertEquals(431964L, mRawData.getLong(DBDefinitions.KEY_EID_ISFDB));
@@ -204,7 +198,8 @@ class IsfdbBookHandlerTest
         final String locationHeader = "http://www.isfdb.org/cgi-bin/pl.cgi?542125";
         final String filename = "/isfdb/542125.html";
 
-        loadData(mSearchEngine, IsfdbSearchEngine.CHARSET_DECODE_PAGE, locationHeader, filename);
+        loadData(mSearchEngine, IsfdbSearchEngine.CHARSET_DECODE_PAGE, locationHeader, filename,
+                 new boolean[]{false, false});
 
         assertEquals("The Shepherd's Crown", mRawData.getString(DBDefinitions.KEY_TITLE));
         assertEquals(542125L, mRawData.getLong(DBDefinitions.KEY_EID_ISFDB));

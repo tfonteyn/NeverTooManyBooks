@@ -4,14 +4,6 @@
  *
  * This file is part of NeverTooManyBooks.
  *
- * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
- *
- * Without their original creation, this project would not exist in its
- * current form. It was however largely rewritten/refactored and any
- * comments on this fork should be directed at HardBackNutter and not
- * at the original creators.
- *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -66,7 +58,7 @@ class AmazonHtmlHandlerTest
         final String locationHeader = "https://www.amazon.co.uk/gp/product/0575090677";
         final String filename = "/amazon/0575090677.html";
 
-        loadData(mSearchEngine, "UTF-8", locationHeader, filename);
+        loadData(mSearchEngine, "UTF-8", locationHeader, filename, new boolean[]{false, false});
 
         assertEquals("Bone Silence", mRawData.getString(DBDefinitions.KEY_TITLE));
         assertEquals("978-0575090675", mRawData.getString(DBDefinitions.KEY_ISBN));
@@ -98,7 +90,7 @@ class AmazonHtmlHandlerTest
         final String locationHeader = "https://www.amazon.co.uk/gp/product/1473210208";
         final String filename = "/amazon/1473210208.html";
 
-        loadData(mSearchEngine, "UTF-8", locationHeader, filename);
+        loadData(mSearchEngine, "UTF-8", locationHeader, filename, new boolean[]{false, false});
 
         assertEquals("The Medusa Chronicles", mRawData.getString(DBDefinitions.KEY_TITLE));
         assertEquals("978-1473210202", mRawData.getString(DBDefinitions.KEY_ISBN));
@@ -132,7 +124,7 @@ class AmazonHtmlHandlerTest
         final String locationHeader = "https://www.amazon.fr/gp/product/2205057332";
         final String filename = "/amazon/2205057332.html";
 
-        loadData(mSearchEngine, "UTF-8", locationHeader, filename);
+        loadData(mSearchEngine, "UTF-8", locationHeader, filename, new boolean[]{false, false});
 
         assertEquals("Le retour à la terre, 1 : La vraie vie",
                      mRawData.getString(DBDefinitions.KEY_TITLE));

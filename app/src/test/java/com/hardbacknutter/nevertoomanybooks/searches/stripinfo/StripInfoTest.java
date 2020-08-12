@@ -4,14 +4,6 @@
  *
  * This file is part of NeverTooManyBooks.
  *
- * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
- *
- * Without their original creation, this project would not exist in its
- * current form. It was however largely rewritten/refactored and any
- * comments on this fork should be directed at HardBackNutter and not
- * at the original creators.
- *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -29,6 +21,7 @@ package com.hardbacknutter.nevertoomanybooks.searches.stripinfo;
 
 import androidx.annotation.NonNull;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -41,6 +34,7 @@ import org.junit.jupiter.api.Test;
 
 import com.hardbacknutter.nevertoomanybooks.JSoupBase;
 import com.hardbacknutter.nevertoomanybooks._mocks.MockCaller;
+import com.hardbacknutter.nevertoomanybooks._mocks.os.ContextMock;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -58,6 +52,11 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
+/**
+ * Network access for covers in all tests.
+ * <p>
+ * Full network access for {@link #parseMultiResult}.
+ */
 class StripInfoTest
         extends JSoupBase {
 
@@ -78,7 +77,8 @@ class StripInfoTest
                                       + "/336348_Hauteville_House_14_De_37ste_parallel";
         final String filename = "/stripinfo/336348_Hauteville_House_14_De_37ste_parallel.html";
 
-        loadData(mSearchEngine, "UTF-8", locationHeader, filename);
+        loadData(mSearchEngine, "UTF-8", locationHeader, filename,
+                 new boolean[]{true, true});
 
         assertEquals("De 37ste parallel", mRawData.getString(DBDefinitions.KEY_TITLE));
         assertEquals("9789463064385", mRawData.getString(DBDefinitions.KEY_ISBN));
@@ -120,6 +120,21 @@ class StripInfoTest
         assertEquals("Sayago", author.getFamilyName());
         assertEquals("Nuria", author.getGivenNames());
         assertEquals(Author.TYPE_COLORIST, author.getType());
+
+
+        final ArrayList<String> covers =
+                mRawData.getStringArrayList(Book.BKEY_FILE_SPEC_ARRAY[0]);
+        assertNotNull(covers);
+        assertEquals(1, covers.size());
+        assertEquals(ContextMock.getTmpDir().getAbsolutePath()
+                     + File.separatorChar + "9789463064385_SI_0.jpg", covers.get(0));
+
+        final ArrayList<String> backCovers =
+                mRawData.getStringArrayList(Book.BKEY_FILE_SPEC_ARRAY[1]);
+        assertNotNull(backCovers);
+        assertEquals(1, backCovers.size());
+        assertEquals(ContextMock.getTmpDir().getAbsolutePath()
+                     + File.separatorChar + "9789463064385_SI_1.jpg", backCovers.get(0));
     }
 
     @Test
@@ -131,7 +146,8 @@ class StripInfoTest
         final String filename = "/stripinfo/2060_De_boom_van_de_twee_lentes_1"
                                 + "_De_boom_van_de_twee_lentes.html";
 
-        loadData(mSearchEngine, "UTF-8", locationHeader, filename);
+        loadData(mSearchEngine, "UTF-8", locationHeader, filename,
+                 new boolean[]{true, true});
 
         assertEquals("De boom van de twee lentes", mRawData.getString(DBDefinitions.KEY_TITLE));
         assertEquals("905581315X", mRawData.getString(DBDefinitions.KEY_ISBN));
@@ -173,6 +189,81 @@ class StripInfoTest
         assertEquals("", author.getGivenNames());
         assertEquals(Author.TYPE_ARTIST, author.getType());
         // there are more...
+
+        final ArrayList<String> covers =
+                mRawData.getStringArrayList(Book.BKEY_FILE_SPEC_ARRAY[0]);
+        assertNotNull(covers);
+        assertEquals(1, covers.size());
+        assertEquals(ContextMock.getTmpDir().getAbsolutePath()
+                     + File.separatorChar + "905581315X_SI_0.jpg", covers.get(0));
+
+        final ArrayList<String> backCovers =
+                mRawData.getStringArrayList(Book.BKEY_FILE_SPEC_ARRAY[1]);
+        assertNotNull(backCovers);
+        assertEquals(1, backCovers.size());
+        assertEquals(ContextMock.getTmpDir().getAbsolutePath()
+                     + File.separatorChar + "905581315X_SI_1.jpg", backCovers.get(0));
+    }
+
+    @Test
+    void parse03() {
+        setLocale(Locale.FRANCE);
+        final String locationHeader = "https://www.stripinfo.be/reeks/strip"
+                                      + "/181604_Okiya_het_huis_van_verboden_geneugten"
+                                      + "_1_Het_huis_van_verboden_geneugten";
+        final String filename = "/stripinfo/181604_mat_cover.html";
+
+        loadData(mSearchEngine, "UTF-8", locationHeader, filename,
+                 new boolean[]{true, false});
+
+        assertEquals("Het huis van verboden geneugten",
+                     mRawData.getString(DBDefinitions.KEY_TITLE));
+        assertEquals("9789085522072", mRawData.getString(DBDefinitions.KEY_ISBN));
+        assertEquals("2012", mRawData.getString(DBDefinitions.KEY_DATE_PUBLISHED));
+        assertEquals("64", mRawData.getString(DBDefinitions.KEY_PAGES));
+        assertEquals("Hardcover", mRawData.getString(DBDefinitions.KEY_FORMAT));
+        assertEquals("nld", mRawData.getString(DBDefinitions.KEY_LANGUAGE));
+        assertEquals("Kleur", mRawData.getString(DBDefinitions.KEY_COLOR));
+
+        final ArrayList<Publisher> allPublishers = mRawData
+                .getParcelableArrayList(Book.BKEY_PUBLISHER_ARRAY);
+        assertNotNull(allPublishers);
+        assertEquals(1, allPublishers.size());
+        assertEquals("Saga", allPublishers.get(0).getName());
+
+        final ArrayList<Series> allSeries = mRawData.getParcelableArrayList(Book.BKEY_SERIES_ARRAY);
+        assertNotNull(allSeries);
+        assertEquals(1, allSeries.size());
+
+        Series series = allSeries.get(0);
+        assertEquals("Okiya, het huis van verboden geneugten", series.getTitle());
+        assertEquals("1", series.getNumber());
+
+
+        final ArrayList<Author> authors = mRawData.getParcelableArrayList(Book.BKEY_AUTHOR_ARRAY);
+        assertNotNull(authors);
+        assertEquals(2, authors.size());
+
+        Author author = authors.get(0);
+        assertEquals("Toth", author.getFamilyName());
+        assertEquals("Jee Yun", author.getGivenNames());
+        assertEquals(Author.TYPE_WRITER, author.getType());
+
+        author = authors.get(1);
+        assertEquals("Jung", author.getFamilyName());
+        assertEquals("Jun Sik", author.getGivenNames());
+        assertEquals(Author.TYPE_ARTIST, author.getType());
+
+        final ArrayList<String> covers = mRawData.getStringArrayList(Book.BKEY_FILE_SPEC_ARRAY[0]);
+        assertNotNull(covers);
+        assertEquals(1, covers.size());
+
+        assertEquals(ContextMock.getTmpDir().getAbsolutePath()
+                     + File.separatorChar + "9789085522072_SI_0.jpg", covers.get(0));
+
+        final ArrayList<String> backCovers =
+                mRawData.getStringArrayList(Book.BKEY_FILE_SPEC_ARRAY[1]);
+        assertNull(backCovers);
     }
 
     @Test
@@ -182,7 +273,8 @@ class StripInfoTest
                                       + "316016_Johan_en_Pirrewiet_INT_5_De_integrale_5";
         final String filename = "/stripinfo/316016_Johan_en_Pirrewiet_INT_5_De_integrale_5.html";
 
-        loadData(mSearchEngine, "UTF-8", locationHeader, filename);
+        loadData(mSearchEngine, "UTF-8", locationHeader, filename,
+                 new boolean[]{false, false});
 
         assertEquals("De integrale 5", mRawData.getString(DBDefinitions.KEY_TITLE));
         assertEquals("9789055819485", mRawData.getString(DBDefinitions.KEY_ISBN));
@@ -240,7 +332,8 @@ class StripInfoTest
                                       + "17030_Comanche_1_Red_Dust";
         final String filename = "/stripinfo/17030_Comanche_1_Red_Dust.html";
 
-        loadData(mSearchEngine, "UTF-8", locationHeader, filename);
+        loadData(mSearchEngine, "UTF-8", locationHeader, filename,
+                 new boolean[]{false, false});
 
         assertEquals("Red Dust", mRawData.getString(DBDefinitions.KEY_TITLE));
         assertEquals("1972", mRawData.getString(DBDefinitions.KEY_DATE_PUBLISHED));
@@ -295,7 +388,8 @@ class StripInfoTest
                                       + "8155_De_avonturen_van_de_3L_7_Spoken_in_de_grot";
         final String filename = "/stripinfo/8155_De_avonturen_van_de_3L_7_Spoken_in_de_grot.html";
 
-        loadData(mSearchEngine, "UTF-8", locationHeader, filename);
+        loadData(mSearchEngine, "UTF-8", locationHeader, filename,
+                 new boolean[]{false, false});
 
         assertEquals("Spoken in de grot", mRawData.getString(DBDefinitions.KEY_TITLE));
         assertEquals("1977", mRawData.getString(DBDefinitions.KEY_DATE_PUBLISHED));

@@ -4,14 +4,6 @@
  *
  * This file is part of NeverTooManyBooks.
  *
- * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
- *
- * Without their original creation, this project would not exist in its
- * current form. It was however largely rewritten/refactored and any
- * comments on this fork should be directed at HardBackNutter and not
- * at the original creators.
- *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -31,9 +23,13 @@ import android.content.Context;
 
 import androidx.annotation.NonNull;
 
+import java.io.File;
+
 import org.mockito.Mockito;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.when;
 
 public final class ContextMock {
@@ -47,6 +43,23 @@ public final class ContextMock {
         when(context.getApplicationContext()).thenReturn(context);
         when(context.createConfigurationContext(any())).thenReturn(context);
 
+        when(context.getExternalCacheDir()).thenReturn(getTmpDir());
+        when(context.getExternalFilesDir(isNull())).thenReturn(getTmpDir());
+        when(context.getExternalFilesDir(eq("Pictures")))
+                .thenReturn(getTmpDir("MockPictures"));
+
         return context;
+    }
+
+    public static File getTmpDir() {
+        //noinspection ConstantConditions
+        return new File(System.getProperty("java.io.tmpdir"));
+    }
+
+    public static File getTmpDir(@NonNull final String path) {
+        File tmp = new File(System.getProperty("java.io.tmpdir") + path);
+        //noinspection ResultOfMethodCallIgnored
+        tmp.mkdir();
+        return tmp;
     }
 }
