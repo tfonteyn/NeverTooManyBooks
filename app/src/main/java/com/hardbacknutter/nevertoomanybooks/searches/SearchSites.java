@@ -4,14 +4,6 @@
  *
  * This file is part of NeverTooManyBooks.
  *
- * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
- *
- * Without their original creation, this project would not exist in its
- * current form. It was however largely rewritten/refactored and any
- * comments on this fork should be directed at HardBackNutter and not
- * at the original creators.
- *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -83,7 +75,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.LanguageUtils;
  * <strong>Note:</strong> NEVER change the identifiers (bit flag) of the sites,
  * as they are stored in user preferences.
  * Dev note: there is really only one place where the code relies on this being bit numbers...
- * URGENT: remove the need for engine id's to be BIT numbers
+ * but we might as well keep them as bits.
  */
 public final class SearchSites {
 

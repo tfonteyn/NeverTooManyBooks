@@ -238,7 +238,7 @@ public class DAO
      */
     public static final String _COLLATION = " Collate LOCALIZED";
 
-    public static final String SELECT_ = "SELECT ";
+    private static final String SELECT_ = "SELECT ";
     private static final String _AS_ = " AS ";
     private static final String _FROM_ = " FROM ";
     private static final String _WHERE_ = " WHERE ";
@@ -432,7 +432,7 @@ public class DAO
      *
      * @return ascii text
      */
-    static String toAscii(@NonNull final CharSequence text) {
+    private static String toAscii(@NonNull final CharSequence text) {
         return ASCII_PATTERN.matcher(Normalizer.normalize(text, Normalizer.Form.NFD))
                             .replaceAll("");
     }
@@ -5070,7 +5070,7 @@ public class DAO
      */
     private static final class SqlInsert {
 
-        public static final String INSERT_INTO_ = "INSERT INTO ";
+        static final String INSERT_INTO_ = "INSERT INTO ";
 
         static final String BOOKSHELF =
                 INSERT_INTO_ + TBL_BOOKSHELF.getName()
@@ -5170,8 +5170,8 @@ public class DAO
      */
     private static final class SqlUpdate {
 
-        public static final String UPDATE_ = "UPDATE ";
-        public static final String _SET_ = " SET ";
+        static final String UPDATE_ = "UPDATE ";
+        static final String _SET_ = " SET ";
 
         /**
          * Update a single Book's last sync date with Goodreads.
@@ -5228,7 +5228,7 @@ public class DAO
      */
     static final class SqlDelete {
 
-        public static final String _NOT_IN_ = " NOT IN ";
+        static final String _NOT_IN_ = " NOT IN ";
         private static final String DELETE_FROM_ = "DELETE FROM ";
         /** Delete a {@link Book}. */
         static final String BOOK_BY_ID =
@@ -5316,11 +5316,11 @@ public class DAO
                 + _FROM_ + TBL_BOOK_PUBLISHER.getName() + ')';
 
 
-        public static final String BOOK_LIST_NODE_STATE_BY_BOOKSHELF =
+        static final String BOOK_LIST_NODE_STATE_BY_BOOKSHELF =
                 DELETE_FROM_ + DBDefinitions.TBL_BOOK_LIST_NODE_STATE
                 + _WHERE_ + KEY_FK_BOOKSHELF + "=?";
 
-        public static final String BOOK_LIST_NODE_STATE_BY_STYLE =
+        static final String BOOK_LIST_NODE_STATE_BY_STYLE =
                 DELETE_FROM_ + DBDefinitions.TBL_BOOK_LIST_NODE_STATE
                 + _WHERE_ + KEY_FK_STYLE + "=?";
 

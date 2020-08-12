@@ -77,16 +77,6 @@ import com.hardbacknutter.nevertoomanybooks.utils.Throttler;
  *
  * <p>
  * xml see {@link SearchCoordinator#search} header
- * <p>
- * ENHANCE: extend the use of LibraryThing:
- * - Lookup title using keywords: http://www.librarything.com/api/thingTitle/hand oberon
- * <p>
- * - consider scraping html for covers: http://www.librarything.com/work/18998/covers
- * with 18998 being the 'work' identifier: i.e. the site's (external) book id.
- * selector:
- * #coverlist_customcovers
- * then all 'img'
- * and use the href.
  */
 @SearchEngine.Configuration(
         id = SearchSites.LIBRARY_THING,
