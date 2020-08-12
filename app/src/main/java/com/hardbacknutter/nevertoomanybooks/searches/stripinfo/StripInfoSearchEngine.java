@@ -4,14 +4,6 @@
  *
  * This file is part of NeverTooManyBooks.
  *
- * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
- *
- * Without their original creation, this project would not exist in its
- * current form. It was however largely rewritten/refactored and any
- * comments on this fork should be directed at HardBackNutter and not
- * at the original creators.
- *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -144,7 +136,6 @@ public class StripInfoSearchEngine
      *
      * @param appContext Application context
      */
-    @SuppressWarnings("WeakerAccess")
     public StripInfoSearchEngine(@NonNull final Context appContext) {
         super(appContext);
     }
@@ -483,6 +474,69 @@ public class StripInfoSearchEngine
     private ArrayList<String> parseCovers(@NonNull final Document document,
                                           @Nullable final String isbn,
                                           @IntRange(from = 0) final int cIdx) {
+        final Element coverElement;
+        String url = null;
+
+        switch (cIdx) {
+            case 0:
+                coverElement = document
+                        .selectFirst("a.stripThumb > figure.stripThumbInnerWrapper > img");
+                if (coverElement != null) {
+                    url = coverElement.attr("src");
+                }
+                break;
+            case 1:
+                coverElement = document.selectFirst("a.belowImage");
+                if (coverElement != null) {
+                    url = coverElement.attr("data-ajax-url");
+                }
+                break;
+            default:
+                throw new IllegalArgumentException(ErrorMsg.UNEXPECTED_VALUE + cIdx);
+        }
+
+        final ArrayList<String> imageList = new ArrayList<>();
+
+        // if the site has no image: https://www.stripinfo.be/image.php?i=0
+        // if the cover is an 18+ image: https://www.stripinfo.be/images/mature.png
+        // 2020-08-11: parsing modified to bypass the 18+ image block but leaving the tests
+        // in place to guard against website changes.
+        if (url != null && !url.isEmpty()
+            && !url.endsWith("i=0")
+            && !url.endsWith("mature.png")) {
+
+            final String tmpName = createFilename(isbn, cIdx, null);
+            final String fileSpec = saveImage(url, tmpName);
+            if (fileSpec != null) {
+                // Some back covers will return the "no cover available" image regardless.
+                // Sadly, we need to check explicitly after the download.
+                // But we need to check on "mature content" as well anyhow.
+                final File file = new File(fileSpec);
+                final long fileLen = file.length();
+                // check the length as a quick check first
+                if (fileLen == NO_COVER_FILE_LEN
+                    || fileLen == MATURE_FILE_LEN) {
+                    // do the thorough check with md5 calculation as a second defence
+                    byte[] digest = md5(file);
+                    if (Arrays.equals(digest, NO_COVER_MD5)
+                        || Arrays.equals(digest, MATURE_COVER_MD5)) {
+                        //noinspection ResultOfMethodCallIgnored
+                        file.delete();
+                        return imageList;
+                    }
+                }
+
+                imageList.add(fileSpec);
+            }
+        }
+
+        return imageList;
+    }
+
+    @NonNull
+    private ArrayList<String> parseCovers_old(@NonNull final Document document,
+                                              @Nullable final String isbn,
+                                              @IntRange(from = 0) final int cIdx) {
         final Element coverElement;
         switch (cIdx) {
             case 0:
