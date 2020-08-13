@@ -87,13 +87,13 @@ android {
 
     // another site: https://gs.statcounter.com/
     // https://gs.statcounter.com/os-version-market-share/android/mobile-tablet/worldwide
-    // 2020-06-01 world wide:
-    // 10.0     22.06
-    // 9.0      54.49
-    // 8.1      65.96
-    // 8.0      72.95
-    // 7.0      79.06
-    // 6.0      87.50
+    // 2020-08-13 world wide:
+    // 10.0     25.32
+    // 9.0      55.73
+    // 8.1      67.22
+    // 8.0      74.00
+    // 7.0      79.79
+    // 6.0      87.93
 
     //  2020-04-11.: from Android Studio 'new project' page
     //  A       API     %
@@ -152,12 +152,12 @@ android {
         }
         beta {
             initWith release
-            versionNameSuffix "-beta_" + new Date().format('yyyy-MM-dd')
+            versionNameSuffix "beta_" + new Date().format('yyyy-MM-dd')
 
             buildConfigField('boolean', 'ENABLE_LAST_DODO', 'true')
         }
         debug {
-            versionNameSuffix "_" + new Date().format('yyyy-MM-dd_HH:mm')
+            versionNameSuffix new Date().format('yyyy-MM-dd_HH:mm')
 
             buildConfigField('boolean', 'ENABLE_LAST_DODO', 'true')
             buildConfigField('boolean', 'MENU_PICKER_USES_FRAGMENT', 'true')
