@@ -587,6 +587,7 @@ public class UpdateFieldsModel
             if (fileSpec != null) {
                 final File downloadedFile = new File(fileSpec);
                 final File destination = AppDir.getCoverFile(context, uuid, cIdx);
+                // rename will fail silently, that's ok here.
                 FileUtils.rename(downloadedFile, destination);
             }
         }

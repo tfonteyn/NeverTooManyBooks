@@ -4,14 +4,6 @@
  *
  * This file is part of NeverTooManyBooks.
  *
- * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
- *
- * Without their original creation, this project would not exist in its
- * current form. It was however largely rewritten/refactored and any
- * comments on this fork should be directed at HardBackNutter and not
- * at the original creators.
- *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -33,7 +25,6 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.OpenableColumns;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -50,6 +41,7 @@ import java.io.OutputStream;
 import java.nio.channels.FileChannel;
 import java.util.zip.CRC32;
 
+import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
@@ -106,6 +98,30 @@ public final class FileUtils {
     }
 
     /**
+     * Wrapper around {@link #renameOrThrow(File, File)}.
+     * <p>
+     * Logs errors, but returns silently.
+     *
+     * @param source      File to rename
+     * @param destination new name
+     *
+     * @return {@code true} if the rename worked.
+     */
+    public static boolean rename(@NonNull final File source,
+                                 @NonNull final File destination) {
+        try {
+            renameOrThrow(source, destination);
+            return true;
+
+        } catch (@NonNull final IOException e) {
+            Logger.error(App.getAppContext(),
+                         TAG, e, "failed to rename source=" + source
+                                 + "TO destination" + destination, e);
+            return false;
+        }
+    }
+
+    /**
      * ENHANCE: make suitable for multiple filesystems using {@link #copy(File, File)}
      * Android docs {@link File#renameTo(File)}: Both paths be on the same mount point.
      * But we use the external app directory solely, so a 'rename' works as is for now.
@@ -113,23 +129,24 @@ public final class FileUtils {
      * @param source      File to rename
      * @param destination new name
      *
-     * @return {@code true} if the rename worked, this is really a ".exists()" call.
-     * and not relying on the OS renameTo call.
+     * @throws IOException on failure
      */
-    public static boolean rename(@NonNull final File source,
-                                 @NonNull final File destination) {
-        if (source.exists()) {
-            try {
-                //noinspection ResultOfMethodCallIgnored
-                source.renameTo(destination);
-            } catch (@NonNull final RuntimeException e) {
-                if (BuildConfig.DEBUG /* always */) {
-                    Log.d(TAG, "failed to rename source=" + source
-                               + "TO destination" + destination, e);
-                }
+    public static void renameOrThrow(@NonNull final File source,
+                                     @NonNull final File destination)
+            throws IOException {
+
+        try {
+            if (source.renameTo(destination)) {
+                return;
             }
+            throw new IOException("failed to rename source=" + source
+                                  + "TO destination" + destination);
+
+        } catch (@NonNull final SecurityException | NullPointerException e) {
+            throw new IOException("failed to rename source=" + source
+                                  + "TO destination" + destination, e);
         }
-        return destination.exists();
+
     }
 
     /**
@@ -158,7 +175,7 @@ public final class FileUtils {
         try (OutputStream os = new FileOutputStream(tmpFile)) {
             copy(is, os);
             // rename to real output file
-            rename(tmpFile, destFile);
+            renameOrThrow(tmpFile, destFile);
             return destFile;
         } finally {
             delete(tmpFile);
@@ -228,10 +245,13 @@ public final class FileUtils {
      * @param source      file to rename
      * @param destination final destination file
      * @param copies      #copies of the previous one to keep
+     *
+     * @throws IOException on failure
      */
     public static void copyWithBackup(@NonNull final File source,
                                       @NonNull final File destination,
-                                      final int copies) {
+                                      final int copies)
+            throws IOException {
 
         final String parentDir = source.getParent();
         // remove the oldest copy
@@ -241,14 +261,14 @@ public final class FileUtils {
         // now bump each copy up one suffix.
         for (int i = copies - 1; i > 0; i--) {
             File current = new File(parentDir, destination + "." + i);
-            rename(current, previous);
+            renameOrThrow(current, previous);
             previous = current;
         }
 
         // Give the previous file a suffix.
-        rename(destination, previous);
+        renameOrThrow(destination, previous);
         // and write the new copy.
-        rename(source, destination);
+        renameOrThrow(source, destination);
     }
 
     /**

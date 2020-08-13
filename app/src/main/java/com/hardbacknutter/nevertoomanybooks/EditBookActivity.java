@@ -37,6 +37,7 @@ import androidx.viewpager2.adapter.FragmentStateAdapter;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.tabs.TabLayoutMediator;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -304,7 +305,7 @@ public class EditBookActivity
             mBookViewModel.saveBook(this);
             setResultsAndFinish();
 
-        } catch (@NonNull final DAO.DaoWriteException e) {
+        } catch (@NonNull final DAO.DaoWriteException | IOException e) {
             Logger.error(this, TAG, e);
             StandardDialogs.showError(this, R.string.error_storage_not_writable);
         }

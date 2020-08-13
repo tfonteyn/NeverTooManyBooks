@@ -618,7 +618,7 @@ public interface SearchEngine {
                     final File downloadedFile = new File(imageList.get(0));
                     // let the system resolve any path variations
                     final File destination = new File(downloadedFile.getAbsolutePath());
-                    FileUtils.rename(downloadedFile, destination);
+                    FileUtils.renameOrThrow(downloadedFile, destination);
                     return destination.getAbsolutePath();
                 }
 

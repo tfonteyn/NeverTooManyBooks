@@ -4,14 +4,6 @@
  *
  * This file is part of NeverTooManyBooks.
  *
- * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
- *
- * Without their original creation, this project would not exist in its
- * current form. It was however largely rewritten/refactored and any
- * comments on this fork should be directed at HardBackNutter and not
- * at the original creators.
- *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -37,6 +29,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.MutableLiveData;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -392,9 +385,10 @@ public class BookViewModel
      * @param context Current context
      *
      * @throws DAO.DaoWriteException on failure
+     * @throws IOException           on cover images failure
      */
     public void saveBook(@NonNull final Context context)
-            throws DAO.DaoWriteException {
+            throws DAO.DaoWriteException, IOException {
         if (mBook.isNew()) {
             final long id = mDb.insert(context, mBook, 0);
             putResultData(BKEY_BOOK_CREATED, true);
@@ -407,7 +401,7 @@ public class BookViewModel
                     if (uuid != null) {
                         final File downloadedFile = new File(fileSpec);
                         final File destination = AppDir.getCoverFile(context, uuid, cIdx);
-                        FileUtils.rename(downloadedFile, destination);
+                        FileUtils.renameOrThrow(downloadedFile, destination);
                     }
                 }
             }
