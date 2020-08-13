@@ -5,14 +5,6 @@
   ~
   ~ This file is part of NeverTooManyBooks.
   ~
-  ~ In August 2018, this project was forked from:
-  ~ Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
-  ~
-  ~ Without their original creation, this project would not exist in its
-  ~ current form. It was however largely rewritten/refactored and any
-  ~ comments on this fork should be directed at HardBackNutter and not
-  ~ at the original creators.
-  ~
   ~ NeverTooManyBooks is free software: you can redistribute it and/or modify
   ~ it under the terms of the GNU General Public License as published by
   ~ the Free Software Foundation, either version 3 of the License, or
@@ -175,6 +167,13 @@
             android:key="booklist.rebuild.state"
             android:title="@string/pt_bob_list_rebuild_state" />
 
+        <ListPreference
+            android:defaultValue="2"
+            android:entries="@array/pe_fastscroller_overlay"
+            android:entryValues="@array/pv_fastscroller_overlay"
+            android:icon="@drawable/ic_baseline_chat_bubble_outline_24"
+            android:key="booklist.fastscroller.overlay"
+            android:title="@string/pt_enable_fast_scroller_overlay" />
     </PreferenceCategory>
 
     <PreferenceCategory>

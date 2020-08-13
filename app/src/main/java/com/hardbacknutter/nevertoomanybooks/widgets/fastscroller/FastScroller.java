@@ -20,6 +20,7 @@
 package com.hardbacknutter.nevertoomanybooks.widgets.fastscroller;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.StateListDrawable;
@@ -30,14 +31,15 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 
 /**
  * Fast scroll drag bar height too short when there are lots of items in the recyclerview.
@@ -59,6 +61,8 @@ public class FastScroller {
         if (!(recyclerView.getLayoutManager() instanceof LinearLayoutManager)) {
             throw new IllegalArgumentException("Not a LinearLayoutManager");
         }
+        //Note: do not test the adapter here for being a PopupTextProvider,
+        // it can still be null.
 
         final Context context = recyclerView.getContext();
         final StateListDrawable verticalThumbDrawable = (StateListDrawable)
@@ -80,26 +84,33 @@ public class FastScroller {
                 resources.getDimensionPixelSize(R.dimen.cfs_minimum_range),
                 resources.getDimensionPixelOffset(R.dimen.cfs_margin));
 
-
-        //Note: do not test the adapter here for being a PopupTextProvider,
-        // it can still be null.
-
-        // Configured in build.gradle
-        //noinspection ConstantConditions
-        if (BuildConfig.FAST_SCROLLER_OVERLAY == OverlayProvider.STYLE_CLASSIC) {
-            // Static
-            fastScroller.setOverlayProvider(new ClassicOverlay(
-                    recyclerView, verticalThumbDrawable.getIntrinsicWidth()));
-        } else //noinspection ConstantConditions
-            if (BuildConfig.FAST_SCROLLER_OVERLAY == OverlayProvider.STYLE_MD2) {
-                // 'fancy?' Material Design
+        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        // Optional overlay
+        @OverlayProvider.Style
+        final int overlayType = Prefs.getIntListPref(prefs,
+                                                     Prefs.pk_booklist_fastscroller_overlay,
+                                                     OverlayProvider.STYLE_DYNAMIC);
+        switch (overlayType) {
+            case OverlayProvider.STYLE_DYNAMIC:
                 fastScroller.setOverlayProvider(new FastScrollerOverlay(
-                        recyclerView, verticalThumbDrawable.getIntrinsicWidth(), PopupStyles.MD2));
-            } else {
-                // 'standard' Material Design
+                        recyclerView, verticalThumbDrawable.getIntrinsicWidth(),
+                        PopupStyles.MD));
+                break;
+            case OverlayProvider.STYLE_MD2:
                 fastScroller.setOverlayProvider(new FastScrollerOverlay(
-                        recyclerView, verticalThumbDrawable.getIntrinsicWidth(), PopupStyles.MD));
-            }
+                        recyclerView, verticalThumbDrawable.getIntrinsicWidth(),
+                        PopupStyles.MD2));
+                break;
+
+            case OverlayProvider.STYLE_STATIC:
+                fastScroller.setOverlayProvider(new ClassicOverlay(
+                        recyclerView, verticalThumbDrawable.getIntrinsicWidth()));
+                break;
+
+            case OverlayProvider.STYLE_NONE:
+            default:
+                break;
+        }
     }
 
     /**
@@ -139,12 +150,15 @@ public class FastScroller {
 
     public interface OverlayProvider {
 
-        /** Classic BC. */
-        int STYLE_CLASSIC = 0;
-        /** Material Design. */
-        int STYLE_MD1 = 1;
-        /** Material Design 2. */
-        int STYLE_MD2 = 2;
+        /** Don't show any overlay. */
+        int STYLE_NONE = 0;
+
+        /** Show a static (non-moving) overlay. Classic BC. */
+        int STYLE_STATIC = 1;
+        /** Dynamic Material Design. */
+        int STYLE_DYNAMIC = 2;
+        /** Dynamic Material Design 2. */
+        int STYLE_MD2 = 3;
 
         /**
          * Called to draw the overlay.
@@ -155,7 +169,7 @@ public class FastScroller {
         void showOverlay(boolean isDragging,
                          int thumbCenter);
 
-        @IntDef({STYLE_CLASSIC, STYLE_MD1, STYLE_MD2})
+        @IntDef({STYLE_NONE, STYLE_STATIC, STYLE_DYNAMIC, STYLE_MD2})
         @Retention(RetentionPolicy.SOURCE)
         @interface Style {
 

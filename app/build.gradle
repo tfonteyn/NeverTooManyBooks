@@ -137,10 +137,6 @@ android {
 
         // If set, we'll use {@link MenuPickerDialogFragment} where implemented.
         buildConfigField('boolean', 'MENU_PICKER_USES_FRAGMENT', 'false')
-
-        // com/hardbacknutter/nevertoomanybooks/widgets/fastscroller/FastScroller.java
-        // OverlayProvider: 0/1/2 (classic/md1/md2)
-        buildConfigField('int', 'FAST_SCROLLER_OVERLAY', '1')
     }
 
     buildTypes {

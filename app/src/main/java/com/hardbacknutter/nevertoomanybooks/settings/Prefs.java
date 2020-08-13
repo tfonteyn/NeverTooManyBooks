@@ -76,6 +76,7 @@ public final class Prefs {
     public static final String pk_sort_author_name_given_first = "sort.author.name.given_first";
     public static final String pk_show_author_name_given_first = "show.author.name.given_first";
     public static final String pk_booklist_rebuild_state = "booklist.rebuild.state";
+    public static final String pk_booklist_fastscroller_overlay = "booklist.fastscroller.overlay";
 
 
     /** Style group preferences. */
@@ -133,9 +134,9 @@ public final class Prefs {
      *
      * @return int (stored as String) global preference
      */
-    public static int getListPreference(@NonNull final SharedPreferences preferences,
-                                        @NonNull final String key,
-                                        final int defValue) {
+    public static int getIntListPref(@NonNull final SharedPreferences preferences,
+                                     @NonNull final String key,
+                                     final int defValue) {
         final String value = preferences.getString(key, null);
         if (value == null || value.isEmpty()) {
             return defValue;

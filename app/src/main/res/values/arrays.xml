@@ -5,14 +5,6 @@
   ~
   ~ This file is part of NeverTooManyBooks.
   ~
-  ~ In August 2018, this project was forked from:
-  ~ Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
-  ~
-  ~ Without their original creation, this project would not exist in its
-  ~ current form. It was however largely rewritten/refactored and any
-  ~ comments on this fork should be directed at HardBackNutter and not
-  ~ at the original creators.
-  ~
   ~ NeverTooManyBooks is free software: you can redistribute it and/or modify
   ~ it under the terms of the GNU General Public License as published by
   ~ the Free Software Foundation, either version 3 of the License, or
@@ -99,6 +91,18 @@
         <item>0</item>
         <item>1</item>
         <item>2</item>
+    </string-array>
+
+    <!-- ListPreference - fastscroller text overlay. -->
+    <string-array name="pe_fastscroller_overlay">
+        <item>@string/dynamic</item>
+        <item>@string/statick</item>
+        <item>@string/none</item>
+    </string-array>
+    <string-array name="pv_fastscroller_overlay">
+        <item>2</item>
+        <item>1</item>
+        <item>0</item>
     </string-array>
 
     <!-- ListPreference - the barcode scanner to use - NEWTHINGS: adding a scanner-->
