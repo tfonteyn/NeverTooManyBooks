@@ -74,7 +74,7 @@ public final class NightModeUtils {
     public static int applyNightMode(@NonNull final Context context) {
         // Always read from prefs.
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        sCurrentMode = Prefs.getListPreference(prefs, Prefs.pk_ui_theme, NIGHT_MODE_IS_DAY_NIGHT);
+        sCurrentMode = Prefs.getIntListPref(prefs, Prefs.pk_ui_theme, NIGHT_MODE_IS_DAY_NIGHT);
 
         final int dnMode;
         switch (sCurrentMode) {
@@ -102,8 +102,8 @@ public final class NightModeUtils {
 
     public static boolean isChanged(@NonNull final SharedPreferences preferences,
                                     @NightModeId final int mode) {
-        sCurrentMode = Prefs.getListPreference(preferences, Prefs.pk_ui_theme,
-                                               NIGHT_MODE_IS_DAY_NIGHT);
+        sCurrentMode = Prefs.getIntListPref(preferences, Prefs.pk_ui_theme,
+                                            NIGHT_MODE_IS_DAY_NIGHT);
         return mode != sCurrentMode;
     }
 

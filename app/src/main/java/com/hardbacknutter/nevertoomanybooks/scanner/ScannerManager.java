@@ -288,7 +288,7 @@ public final class ScannerManager {
 
     private static int getPreferredScanner(@NonNull final Context context) {
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        return Prefs.getListPreference(prefs, Prefs.pk_scanner_preferred, DEFAULT);
+        return Prefs.getIntListPref(prefs, Prefs.pk_scanner_preferred, DEFAULT);
     }
 
     static boolean isBeepOnBarcodeFound(@NonNull final Context context) {
@@ -320,7 +320,7 @@ public final class ScannerManager {
         // Scanners installed
         try {
             message.append("Preferred Scanner: ")
-                   .append(Prefs.getListPreference(prefs, Prefs.pk_scanner_preferred, -1))
+                   .append(Prefs.getIntListPref(prefs, Prefs.pk_scanner_preferred, -1))
                    .append('\n');
 
             for (String scannerAction : ALL_ACTIONS) {

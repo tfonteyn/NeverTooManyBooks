@@ -99,7 +99,7 @@ public final class Logger {
                              @NonNull final String tag,
                              @NonNull final Throwable e,
                              @Nullable final Object... params) {
-        String msg;
+        final String msg;
         if (params != null) {
             msg = '|' + concat(params);
         } else {
@@ -127,8 +127,8 @@ public final class Logger {
     public static void warnWithStackTrace(@NonNull final Context context,
                                           @NonNull final String tag,
                                           @NonNull final Object... params) {
-        Throwable e = new Throwable();
-        String msg = concat(params);
+        final Throwable e = new Throwable();
+        final String msg = concat(params);
         writeToLog(context, tag, WARN, msg, e);
 
         if (BuildConfig.DEBUG /* always */) {
@@ -151,7 +151,7 @@ public final class Logger {
     public static void warn(@NonNull final Context context,
                             @NonNull final String tag,
                             @NonNull final Object... params) {
-        String msg = concat(params);
+        final String msg = concat(params);
         writeToLog(context, tag, WARN, msg, null);
 
         if (BuildConfig.DEBUG /* always */) {
@@ -168,7 +168,7 @@ public final class Logger {
      * @return String
      */
     private static String concat(@NonNull final Object... params) {
-        StringBuilder message = new StringBuilder();
+        final StringBuilder message = new StringBuilder();
         Exception e = null;
         for (Object parameter : params) {
             if (parameter instanceof Exception) {
@@ -234,8 +234,8 @@ public final class Logger {
             return "";
         }
 
-        StringWriter sw = new StringWriter();
-        PrintWriter pw = new PrintWriter(sw);
+        final StringWriter sw = new StringWriter();
+        final PrintWriter pw = new PrintWriter(sw);
         e.printStackTrace(pw);
         pw.flush();
         return sw.toString();
@@ -251,8 +251,8 @@ public final class Logger {
                             @NonNull final Object object,
                             @NonNull final InputStream inputStream) {
         try {
-            BufferedInputStream bis = new BufferedInputStream(inputStream);
-            ByteArrayOutputStream buf = new ByteArrayOutputStream();
+            final BufferedInputStream bis = new BufferedInputStream(inputStream);
+            final ByteArrayOutputStream buf = new ByteArrayOutputStream();
             int result = bis.read();
             while (result != -1) {
                 buf.write((byte) result);
@@ -273,7 +273,7 @@ public final class Logger {
                                        @SuppressWarnings("SameParameterValue")
                                        @NonNull final String methodName) {
         if (fragmentOrActivity instanceof Activity) {
-            Bundle extras = ((Activity) fragmentOrActivity).getIntent().getExtras();
+            final Bundle extras = ((Activity) fragmentOrActivity).getIntent().getExtras();
             if (extras != null) {
                 d(tag, methodName + "|extras=" + extras);
                 if (extras.containsKey(Book.BKEY_BOOK_DATA)) {
@@ -281,7 +281,7 @@ public final class Logger {
                 }
             }
         } else if (fragmentOrActivity instanceof Fragment) {
-            Bundle args = ((Fragment) fragmentOrActivity).getArguments();
+            final Bundle args = ((Fragment) fragmentOrActivity).getArguments();
             if (args != null) {
                 d(tag, methodName + "|args=" + args);
                 if (args.containsKey(Book.BKEY_BOOK_DATA)) {
@@ -301,10 +301,10 @@ public final class Logger {
      */
     @NonNull
     public static String toString(@NonNull final Bundle bundle) {
-        StringBuilder sb = new StringBuilder();
+        final StringBuilder sb = new StringBuilder();
         for (String k : bundle.keySet()) {
             sb.append(k).append("->");
-            Object o = bundle.get(k);
+            final Object o = bundle.get(k);
             if (o != null) {
                 sb.append(o.toString().trim());
             }
@@ -320,9 +320,9 @@ public final class Logger {
      */
     public static void cycleLogs(@NonNull final Context context) {
         try {
-            File logFile = AppDir.Log.getFile(context, ERROR_LOG_FILE);
+            final File logFile = AppDir.Log.getFile(context, ERROR_LOG_FILE);
             if (logFile.exists() && logFile.length() > 0) {
-                File backup = new File(logFile.getPath() + ".bak");
+                final File backup = new File(logFile.getPath() + ".bak");
                 FileUtils.copyWithBackup(logFile, backup, LOGFILE_COPIES);
             }
         } catch (@SuppressWarnings("OverlyBroadCatchBlock") @NonNull final Exception ignore) {

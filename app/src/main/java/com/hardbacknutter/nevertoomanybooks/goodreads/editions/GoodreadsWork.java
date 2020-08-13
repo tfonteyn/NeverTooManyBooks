@@ -4,14 +4,6 @@
  *
  * This file is part of NeverTooManyBooks.
  *
- * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
- *
- * Without their original creation, this project would not exist in its
- * current form. It was however largely rewritten/refactored and any
- * comments on this fork should be directed at HardBackNutter and not
- * at the original creators.
- *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -164,7 +156,7 @@ public class GoodreadsWork {
                 new GetImageTask(getBestUrl(), this)
                         .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                 // Save the work in the View for verification
-                imageView.setTag(R.id.TAG_ITEM, this);
+                imageView.setTag(R.id.TAG_GR_WORK, this);
 
             } else {
                 // We already have an image (but it could be empty!), so just expand it.
@@ -179,7 +171,7 @@ public class GoodreadsWork {
                 }
 
                 // Clear the work in the View, in case some other job was running
-                imageView.setTag(R.id.TAG_ITEM, null);
+                imageView.setTag(R.id.TAG_GR_WORK, null);
             }
         }
     }
@@ -207,7 +199,7 @@ public class GoodreadsWork {
             //noinspection SynchronizationOnLocalVariableOrMethodParameter
             synchronized (imageView) {
                 // Make sure our view is still associated with us
-                if (this.equals(imageView.getTag(R.id.TAG_ITEM))) {
+                if (this.equals(imageView.getTag(R.id.TAG_GR_WORK))) {
                     if (mImageBytes.length != 0) {
                         final Bitmap bitmap = BitmapFactory
                                 .decodeByteArray(mImageBytes, 0, mImageBytes.length,

@@ -4,14 +4,6 @@
  *
  * This file is part of NeverTooManyBooks.
  *
- * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
- *
- * Without their original creation, this project would not exist in its
- * current form. It was however largely rewritten/refactored and any
- * comments on this fork should be directed at HardBackNutter and not
- * at the original creators.
- *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -36,8 +28,6 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.Locale;
 
-import com.hardbacknutter.nevertoomanybooks.R;
-
 public abstract class BaseViewHolder {
 
     /** Container View for this item. */
@@ -46,7 +36,6 @@ public abstract class BaseViewHolder {
 
     BaseViewHolder(@NonNull final View view) {
         itemView = view;
-        itemView.setTag(R.id.TAG_VIEW_HOLDER, this);
     }
 
     /**

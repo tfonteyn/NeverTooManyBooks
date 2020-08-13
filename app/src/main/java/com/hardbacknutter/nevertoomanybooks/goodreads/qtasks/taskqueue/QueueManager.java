@@ -4,14 +4,6 @@
  *
  * This file is part of NeverTooManyBooks.
  *
- * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
- *
- * Without their original creation, this project would not exist in its
- * current form. It was however largely rewritten/refactored and any
- * comments on this fork should be directed at HardBackNutter and not
- * at the original creators.
- *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -42,6 +34,7 @@ import java.util.Map;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.BooksOnBookshelf;
+import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 
 /**
  * Class to handle service-level aspects of the queues.
@@ -113,7 +106,7 @@ public final class QueueManager {
 
     public static QueueManager getQueueManager() {
         // do not lazy initialize here. We want the QueueManager running at startup.
-        Objects.requireNonNull(sInstance, "create was not called?");
+        Objects.requireNonNull(sInstance, ErrorMsg.CREATE_WAS_NOT_CALLED);
         return sInstance;
     }
 

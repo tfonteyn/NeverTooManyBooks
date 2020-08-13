@@ -167,8 +167,8 @@ public class CropImageView
     public void initCropView(@NonNull final Bitmap bitmap) {
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
 
-        final int type = Prefs.getListPreference(prefs, Prefs.pk_image_cropper_layer_type,
-                                                 LAYER_TYPE_DEFAULT);
+        final int type = Prefs.getIntListPref(prefs, Prefs.pk_image_cropper_layer_type,
+                                              LAYER_TYPE_DEFAULT);
         if (type != LAYER_TYPE_DEFAULT) {
             setLayerType(type, null);
         }
