@@ -431,11 +431,6 @@ public class BooklistBuilder
         // Doing it here makes subsequent calls faster.
         //
         newListCursor().getCount();
-
-        // pre-count and cache these values. They are used for the header, and will not
-        // change even if the list cursor changes.
-        getBookCount();
-        getDistinctBookCount();
     }
 
     /**

@@ -35,7 +35,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
@@ -682,8 +681,12 @@ public class TableDefinition {
         } else {
             fk = mParents.get(to);
         }
-        Objects.requireNonNull(fk, "No foreign key between `" + mName
-                                   + "` and `" + to.getName() + '`');
+
+        if (fk == null) {
+            // Don't use Objects.requireNonNull() ... message is evaluated before null test.
+            throw new IllegalStateException("No foreign key between `" + mName
+                                            + "` and `" + to.getName() + '`');
+        }
 
         return fk.getPredicate();
     }

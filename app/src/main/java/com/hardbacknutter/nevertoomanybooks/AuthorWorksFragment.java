@@ -44,6 +44,7 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistBuilder;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
@@ -218,6 +219,11 @@ public class AuthorWorksFragment
         }
     }
 
+    /**
+     * Create and show a context menu for the given position.
+     *
+     * @param position in the list
+     */
     private void onCreateContextMenu(final int position) {
         final Resources res = getResources();
         final TocEntry item = mModel.getTocEntries().get(position);
@@ -296,9 +302,10 @@ public class AuthorWorksFragment
     /**
      * User tapped on an entry; get the book(s) for that entry and display.
      *
-     * @param item the TocEntry or Book
+     * @param position in the list
      */
-    private void gotoBook(@NonNull final TocEntry item) {
+    private void gotoBook(final int position) {
+        final TocEntry item = mModel.getTocEntries().get(position);
         switch (item.getType()) {
             case TocEntry.TYPE_BOOK: {
                 // open new activity to show the book, 'back' will return to this one.
@@ -407,12 +414,29 @@ public class AuthorWorksFragment
                     throw new IllegalArgumentException(ErrorMsg.UNEXPECTED_VALUE + viewType);
             }
 
-            return new Holder(itemView);
+            Holder holder = new Holder(itemView);
+
+            // click -> get the book(s) for that entry and display.
+            holder.itemView.setOnClickListener(v -> {
+                final Integer rowPos = (Integer) v.getTag(R.id.TAG_POSITION);
+                Objects.requireNonNull(rowPos, ErrorMsg.NULL_ROW_POS);
+                gotoBook(rowPos);
+            });
+
+            holder.itemView.setOnLongClickListener(v -> {
+                final Integer rowPos = (Integer) v.getTag(R.id.TAG_POSITION);
+                Objects.requireNonNull(rowPos, ErrorMsg.NULL_ROW_POS);
+                onCreateContextMenu(rowPos);
+                return true;
+            });
+
+            return holder;
         }
 
         @Override
         public void onBindViewHolder(@NonNull final Holder holder,
                                      final int position) {
+            holder.itemView.setTag(R.id.TAG_POSITION, position);
 
             final TocEntry tocEntry = mModel.getTocEntries().get(position);
 
@@ -447,14 +471,6 @@ public class AuthorWorksFragment
                     holder.titleView.setCompoundDrawableTintList(mDrawableOff);
                 }
             }
-
-            // click -> get the book(s) for that entry and display.
-            holder.itemView.setOnClickListener(v -> gotoBook(tocEntry));
-
-            holder.itemView.setOnLongClickListener(v -> {
-                onCreateContextMenu(holder.getBindingAdapterPosition());
-                return true;
-            });
         }
 
         @Override

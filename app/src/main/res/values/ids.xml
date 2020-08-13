@@ -5,14 +5,6 @@
   ~
   ~ This file is part of NeverTooManyBooks.
   ~
-  ~ In August 2018, this project was forked from:
-  ~ Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
-  ~
-  ~ Without their original creation, this project would not exist in its
-  ~ current form. It was however largely rewritten/refactored and any
-  ~ comments on this fork should be directed at HardBackNutter and not
-  ~ at the original creators.
-  ~
   ~ NeverTooManyBooks is free software: you can redistribute it and/or modify
   ~ it under the terms of the GNU General Public License as published by
   ~ the Free Software Foundation, either version 3 of the License, or
@@ -50,14 +42,17 @@
     <!-- BEGIN View tags -->
     <!-- tags a Cover Image View with the task responsible to fetch the image -->
     <item name="TAG_THUMBNAIL_TASK" type="id" />
-    <!-- Tagging a (sub) View in a list with the 'item' it represents. -->
+    <!-- Tagging a View in a list with the 'uuid' (i.e. the book) it represents. -->
+    <item name="TAG_UUID" type="id" />
+    <!-- Tagging a (sub) View in a list with a generic 'item' it represents. -->
     <item name="TAG_ITEM" type="id" />
-    <!-- Tagging a View in a list with the ViewHolder it represents. -->
-    <item name="TAG_VIEW_HOLDER" type="id" />
-    <!-- Passing a position on from the BooklistAdapter to the click-listeners. -->
-    <item name="TAG_BL_POSITION" type="id" />
+    <!-- Passing a position on from onBindViewHolder to the onClick-listeners. -->
+    <item name="TAG_POSITION" type="id" />
     <!-- Updating fields from the internet.  -->
     <item name="TAG_FIELD_USAGE" type="id" />
+
+    <!-- Tagging a (sub) View in a list with the Goodreads 'Work' it represents. -->
+    <item name="TAG_GR_WORK" type="id" />
     <!-- END View tags -->
 
     <!-- BEGIN predefined Task IDs. -->

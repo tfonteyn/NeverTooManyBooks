@@ -359,6 +359,13 @@ public class BooksOnBookshelf
         mLayoutManager = (LinearLayoutManager) mVb.list.getLayoutManager();
         mVb.list.addItemDecoration(new TopLevelItemDecoration(this));
         FastScroller.attach(mVb.list);
+
+        // TEST: Number of views to cache offscreen: default is 2
+        mVb.list.setItemViewCacheSize(20);
+        mVb.list.setDrawingCacheEnabled(true);
+        mVb.list.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
+
+
         // initialise adapter without a cursor.
         // Not creating and setting it in here, creates issues with Android internals.
         createAdapter(null);
@@ -398,8 +405,7 @@ public class BooksOnBookshelf
      * Tested several strategies, but it seems to be impossible to RELIABLY
      * flush the adapter cache of View/ViewHolder.
      * <p>
-     * URGENT: https://medium.com/androiddevelopers/restore-recyclerview-scroll-position-a8fbdc9a9334
-     * https://developer.android.com/reference/androidx/recyclerview/widget/RecyclerView.Adapter.StateRestorationPolicy
+     * URGENT: try recyclerView.setRecycledViewPool(new RecyclerView.RecycledViewPool());
      *
      * @param cursor to use, or {@code null} for initial creation.
      */
@@ -525,7 +531,7 @@ public class BooksOnBookshelf
     @Override
     @CallSuper
     public boolean onPrepareOptionsMenu(@NonNull final Menu menu) {
-        mFabMenu.hide();
+        mFabMenu.hideMenu();
 
         final boolean showECPreferred = mModel.getCurrentStyle(this).getTopLevel(this) > 1;
         menu.findItem(R.id.MENU_LEVEL_PREFERRED_COLLAPSE).setVisible(showECPreferred);
@@ -536,7 +542,7 @@ public class BooksOnBookshelf
     @Override
     @CallSuper
     public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
-        mFabMenu.hide();
+        mFabMenu.hideMenu();
 
         switch (item.getItemId()) {
             case R.id.MENU_SORT: {
@@ -1234,8 +1240,7 @@ public class BooksOnBookshelf
     @Override
     public void onBackPressed() {
         // If the FAB menu is showing, hide it and suppress the back key.
-        if (mFabMenu.isShown()) {
-            mFabMenu.show(false);
+        if (mFabMenu.hideMenu()) {
             return;
         }
 
@@ -1309,7 +1314,7 @@ public class BooksOnBookshelf
     @Override
     @CallSuper
     public void onPause() {
-        mFabMenu.hide();
+        mFabMenu.hideMenu();
         saveListPosition();
         super.onPause();
     }

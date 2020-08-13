@@ -4,14 +4,6 @@
  *
  * This file is part of NeverTooManyBooks.
  *
- * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
- *
- * Without their original creation, this project would not exist in its
- * current form. It was however largely rewritten/refactored and any
- * comments on this fork should be directed at HardBackNutter and not
- * at the original creators.
- *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -83,50 +75,8 @@ public enum AppDir {
     /** Sub directory of Root : log files. */
     private static final String LOG_SUB_DIR = "log";
 
-    /**
-     * Initialize storage needs. Called from StartupActivity.
-     * <p>
-     * All exceptions are suppressed but logged.
-     *
-     * @param context Current context
-     *
-     * @return {@code 0} for all ok, or a StringRes with the appropriate error.
-     */
-    @StringRes
-    public static int init(@NonNull final Context context) {
-
-        if (!Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {
-            return R.string.error_storage_not_accessible;
-        }
-
-        try {
-            // check we can get our root.
-            Root.get(context);
-
-            // create sub directories if needed
-            AppDir[] appDirs = {Log, Upgrades};
-            for (AppDir appDir : appDirs) {
-                File dir = appDir.get(context);
-                if (!(dir.isDirectory() || dir.mkdirs())) {
-                    return R.string.error_storage_not_writable;
-                }
-            }
-
-            // Prevent thumbnails showing up in the device Image Gallery.
-            //noinspection ResultOfMethodCallIgnored
-            Covers.getFile(context, MediaStore.MEDIA_IGNORE_FILENAME).createNewFile();
-
-            return 0;
-
-        } catch (@NonNull final ExternalStorageException e) {
-            // Don't log, we don't have a log!
-            return R.string.error_storage_not_writable;
-
-        } catch (@NonNull final IOException | SecurityException e) {
-            Logger.error(context, TAG, e, "init failed");
-            return R.string.error_storage_not_writable;
-        }
-    }
+    @Nullable
+    private File mDir;
 
     /**
      * Count size + (optional) Cleanup any purgeable files.
@@ -204,6 +154,51 @@ public enum AppDir {
     }
 
     /**
+     * Initialize storage needs. Called from StartupActivity.
+     * <p>
+     * All exceptions are suppressed but logged.
+     *
+     * @param context Current context
+     *
+     * @return {@code 0} for all ok, or a StringRes with the appropriate error.
+     */
+    @StringRes
+    public static int init(@NonNull final Context context) {
+
+        if (!Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {
+            return R.string.error_storage_not_accessible;
+        }
+
+        try {
+            // check we can get our root.
+            Root.get(context);
+
+            // create sub directories if needed
+            final AppDir[] appDirs = {Log, Upgrades};
+            for (AppDir appDir : appDirs) {
+                final File dir = appDir.get(context);
+                if (!(dir.isDirectory() || dir.mkdirs())) {
+                    return R.string.error_storage_not_writable;
+                }
+            }
+
+            // Prevent thumbnails showing up in the device Image Gallery.
+            //noinspection ResultOfMethodCallIgnored
+            Covers.getFile(context, MediaStore.MEDIA_IGNORE_FILENAME).createNewFile();
+
+            return 0;
+
+        } catch (@NonNull final ExternalStorageException e) {
+            // Don't log, we don't have a log!
+            return R.string.error_storage_not_writable;
+
+        } catch (@NonNull final IOException | SecurityException e) {
+            Logger.error(context, TAG, e, "init failed");
+            return R.string.error_storage_not_writable;
+        }
+    }
+
+    /**
      * Get the File object for this directory.
      * <p>
      * Dev. note: a device might have two (or more) external file directories of the same type.
@@ -228,33 +223,37 @@ public enum AppDir {
     @NonNull
     private File get(@NonNull final Context context)
             throws ExternalStorageException {
-        File dir = null;
+
+        if (mDir != null && mDir.exists()) {
+            return mDir;
+        }
+
         switch (this) {
             case Covers:
-                dir = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+                mDir = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
                 break;
 
             case Root:
-                dir = context.getExternalFilesDir(null);
+                mDir = context.getExternalFilesDir(null);
                 break;
 
             case Upgrades:
-                dir = new File(context.getExternalFilesDir(null), UPGRADES_SUB_DIR);
+                mDir = new File(context.getExternalFilesDir(null), UPGRADES_SUB_DIR);
                 break;
 
             case Log:
-                dir = new File(context.getExternalFilesDir(null), LOG_SUB_DIR);
+                mDir = new File(context.getExternalFilesDir(null), LOG_SUB_DIR);
                 break;
 
             case Cache:
-                dir = context.getExternalCacheDir();
+                mDir = context.getExternalCacheDir();
                 break;
         }
 
-        if (dir == null) {
+        if (mDir == null) {
             throw new ExternalStorageException(this.toString());
         }
-        return dir;
+        return mDir;
     }
 
     /**

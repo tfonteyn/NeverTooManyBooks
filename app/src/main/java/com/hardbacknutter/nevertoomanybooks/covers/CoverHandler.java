@@ -372,20 +372,24 @@ public class CoverHandler {
                     final File srcFile = mCameraHelper.getFile(mContext);
                     if (srcFile != null && srcFile.exists()) {
                         final File dstFile = getCoverFile();
-                        FileUtils.rename(srcFile, dstFile);
+                        if (!FileUtils.rename(srcFile, dstFile)) {
+                            Snackbar.make(mCoverView, R.string.error_storage_not_writable,
+                                          Snackbar.LENGTH_LONG).show();
+                            return true;
+                        }
 
                         final SharedPreferences prefs = PreferenceManager
                                 .getDefaultSharedPreferences(mContext);
                         // Should we apply an explicit rotation angle?
                         // (which would overrule the setWindowManager call)
                         final int angle = Prefs
-                                .getListPreference(prefs, Prefs.pk_camera_image_autorotate, 0);
+                                .getIntListPref(prefs, Prefs.pk_camera_image_autorotate, 0);
 
                         // What action should we take after we're done?
                         @NextAction
                         final int action = Prefs
-                                .getListPreference(prefs, Prefs.pk_camera_image_action,
-                                                   ACTION_NOTHING);
+                                .getIntListPref(prefs, Prefs.pk_camera_image_action,
+                                                ACTION_NOTHING);
 
                         showProgress(true);
                         //noinspection ConstantConditions
@@ -409,7 +413,12 @@ public class CoverHandler {
                 if (resultCode == Activity.RESULT_OK) {
                     final File srcFile = AppDir.Cache.getFile(mContext, TEMP_COVER_FILENAME);
                     final File dstFile = getCoverFile();
-                    FileUtils.rename(srcFile, dstFile);
+                    if (!FileUtils.rename(srcFile, dstFile)) {
+                        Snackbar.make(mCoverView, R.string.error_storage_not_writable,
+                                      Snackbar.LENGTH_LONG).show();
+                        return true;
+                    }
+
                     showProgress(true);
                     new TransFormTask(dstFile, mTransFormTaskViewModel)
                             .setScale(true)
@@ -434,8 +443,12 @@ public class CoverHandler {
         if (fileSpec != null && !fileSpec.isEmpty()) {
             final File srcFile = new File(fileSpec);
             final File dstFile = getCoverFile();
-            FileUtils.rename(srcFile, dstFile);
-            setImage(dstFile);
+            if (FileUtils.rename(srcFile, dstFile)) {
+                setImage(dstFile);
+            } else {
+                Snackbar.make(mCoverView, R.string.error_storage_not_writable,
+                              Snackbar.LENGTH_LONG).show();
+            }
         }
     }
 
@@ -475,7 +488,7 @@ public class CoverHandler {
      * @param file to use
      */
     private void setImage(@Nullable final File file) {
-        if (ImageUtils.isFileGood(file)) {
+        if (ImageUtils.isFileGood(file, false)) {
             mBook.putString(Book.BKEY_FILE_SPEC[mCIdx], file.getAbsolutePath());
 
             new ImageLoader(mCoverView, file, mMaxWidth, mMaxHeight, null)

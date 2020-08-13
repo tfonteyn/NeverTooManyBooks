@@ -4,14 +4,6 @@
  *
  * This file is part of NeverTooManyBooks.
  *
- * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
- *
- * Without their original creation, this project would not exist in its
- * current form. It was however largely rewritten/refactored and any
- * comments on this fork should be directed at HardBackNutter and not
- * at the original creators.
- *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -154,30 +146,40 @@ public final class ImageUtils {
      *
      * <strong>If the file is not acceptable, then it will be deleted.</strong>
      *
-     * @param srcFile to check
+     * @param srcFile        to check
+     * @param checkImageSize {@code false} for a quick check (fast, use when displaying);
+     *                       {@code true} for a full check (slower, use when import/saving).
      *
      * @return {@code true} if file is acceptable.
      */
     @AnyThread
-    public static boolean isFileGood(@Nullable final File srcFile) {
-        // light weight test first
-        if (srcFile == null || !srcFile.exists() || srcFile.length() < MIN_VALID_IMAGE_FILE_SIZE) {
+    public static boolean isFileGood(@Nullable final File srcFile,
+                                     final boolean checkImageSize) {
+        if (srcFile == null || !srcFile.exists()) {
             return false;
         }
 
-        // Read the image files to get file size
-        final BitmapFactory.Options opt = new BitmapFactory.Options();
-        opt.inJustDecodeBounds = true;
-        BitmapFactory.decodeFile(srcFile.getAbsolutePath(), opt);
-        // minimal size required
-        final boolean isGood = opt.outHeight >= MIN_VALID_IMAGE_SIDE
-                               && opt.outWidth >= MIN_VALID_IMAGE_SIDE;
+        if (checkImageSize) {
+            if (srcFile.length() < MIN_VALID_IMAGE_FILE_SIZE) {
+                FileUtils.delete(srcFile);
+                return false;
+            }
 
-        // cleanup bad files.
-        if (!isGood) {
-            FileUtils.delete(srcFile);
+            // Read the image files to get file size
+            final BitmapFactory.Options opt = new BitmapFactory.Options();
+            opt.inJustDecodeBounds = true;
+            BitmapFactory.decodeFile(srcFile.getAbsolutePath(), opt);
+            // minimal size required
+            final boolean isGood = opt.outHeight >= MIN_VALID_IMAGE_SIDE
+                                   && opt.outWidth >= MIN_VALID_IMAGE_SIDE;
+
+            // cleanup bad files.
+            if (!isGood) {
+                FileUtils.delete(srcFile);
+            }
+            return isGood;
         }
-        return isGood;
+        return true;
     }
 
     /**
@@ -341,7 +343,11 @@ public final class ImageUtils {
         // if (bitmap == null || !saveBitmap(bitmap, file)) {
         //     return null;
         // }
-        return file != null ? file.getAbsolutePath() : null;
+
+        if (isFileGood(file, true)) {
+            return file.getAbsolutePath();
+        }
+        return null;
     }
 
     /**

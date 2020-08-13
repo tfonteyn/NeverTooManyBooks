@@ -4,14 +4,6 @@
  *
  * This file is part of NeverTooManyBooks.
  *
- * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
- *
- * Without their original creation, this project would not exist in its
- * current form. It was however largely rewritten/refactored and any
- * comments on this fork should be directed at HardBackNutter and not
- * at the original creators.
- *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -56,8 +48,9 @@ public class FabMenu {
                                        final int dx,
                                        final int dy) {
                     if (dy > 0 || dy < 0 && mFab.isShown()) {
-                        hide();
-                        mFab.hide();
+                        // No animation, just make it go away
+                        showMenu(false, false);
+                        mFab.setVisibility(View.GONE);
                     }
                 }
 
@@ -68,7 +61,8 @@ public class FabMenu {
                     // we can ignore that as in practice a minuscule swipe brings the FAB back.
                     if (newState == RecyclerView.SCROLL_STATE_IDLE
                         || newState == RecyclerView.SCROLL_STATE_SETTLING) {
-                        show(false);
+                        // use standard animation
+                        showMenu(false, true);
                         mFab.show();
                     }
                     super.onScrollStateChanged(recyclerView, newState);
@@ -86,7 +80,7 @@ public class FabMenu {
                    @NonNull final View fabOverlay,
                    @Nullable final ExtendedFloatingActionButton... items) {
         mFab = fab;
-        mFab.setOnClickListener(v -> show(!mFabMenuItems[0].isShown()));
+        mFab.setOnClickListener(v -> showMenu(!mFabMenuItems[0].isShown(), true));
         mFabOverlay = fabOverlay;
 
         if (items != null && items.length > 0) {
@@ -115,25 +109,36 @@ public class FabMenu {
 
     /**
      * Hide the FAB menu if it's showing. Does not affect the FAB button itself.
+     *
+     * @return {@code true} if it was visible before. {@code false} if this was a no-operation.
      */
-    public void hide() {
+    public boolean hideMenu() {
         if (mFabMenuItems[0].isShown()) {
-            show(false);
+            showMenu(false, true);
+            return true;
         }
+        return false;
     }
 
     /**
      * When the user clicks the FAB button, we open/close the FAB menu and change the FAB icon.
      *
-     * @param show flag
+     * @param open    {@code true} to show the menu.
+     * @param animate whether to animate the action or not
      */
-    public void show(final boolean show) {
-        if (show) {
+    private void showMenu(final boolean open,
+                          final boolean animate) {
+        // don't bother
+        if (open == mFabMenuItems[0].isShown()) {
+            return;
+        }
+
+        if (open) {
             mFab.setImageResource(R.drawable.ic_close);
             // mFabOverlay overlaps the whole screen and intercepts clicks.
             // This does not include the ToolBar.
             mFabOverlay.setVisibility(View.VISIBLE);
-            mFabOverlay.setOnClickListener(v -> hide());
+            mFabOverlay.setOnClickListener(v -> hideMenu());
         } else {
             mFab.setImageResource(R.drawable.ic_add);
             mFabOverlay.setVisibility(View.GONE);
@@ -158,8 +163,12 @@ public class FabMenu {
         for (ExtendedFloatingActionButton fab : mFabMenuItems) {
             // allow for null items
             if (fab != null && fab.isEnabled()) {
-                if (show) {
-                    fab.show();
+                if (open) {
+                    if (animate) {
+                        fab.show();
+                    } else {
+                        fab.setVisibility(View.VISIBLE);
+                    }
                     if (!smallScreen) {
                         // on top of base FAB
                         fab.animate().translationX(baseX);
@@ -172,7 +181,11 @@ public class FabMenu {
                 } else {
                     fab.animate().translationX(0);
                     fab.animate().translationY(0);
-                    fab.hide();
+                    if (animate) {
+                        fab.hide();
+                    } else {
+                        fab.setVisibility(View.GONE);
+                    }
                 }
                 i++;
             }

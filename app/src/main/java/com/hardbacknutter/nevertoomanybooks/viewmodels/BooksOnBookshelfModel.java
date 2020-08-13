@@ -4,14 +4,6 @@
  *
  * This file is part of NeverTooManyBooks.
  *
- * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
- *
- * Without their original creation, this project would not exist in its
- * current form. It was however largely rewritten/refactored and any
- * comments on this fork should be directed at HardBackNutter and not
- * at the original creators.
- *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -836,9 +828,17 @@ public class BooksOnBookshelfModel
             // Build the underlying data
             builder.build(context);
 
+            // pre-count and cache (in the builder) these while we're in the background.
+            // They are used for the header, and will not change even if the list cursor changes.
+            if (style.showHeader(context, BooklistStyle.HEADER_SHOW_BOOK_COUNT)) {
+                builder.getBookCount();
+                builder.getDistinctBookCount();
+            }
+
             // Get the row(s) which will be used to determine new cursor position
             @Nullable
-            ArrayList<RowStateDAO.Node> targetRows = builder.getBookNodes(mDesiredCentralBookId);
+            final ArrayList<RowStateDAO.Node> targetRows =
+                    builder.getBookNodes(mDesiredCentralBookId);
 
             // the new build is completely done. We can safely discard the previous one.
             if (mBuilder != null) {

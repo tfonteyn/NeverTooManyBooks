@@ -47,6 +47,7 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.core.math.MathUtils;
 import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentManager;
 import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -356,24 +357,49 @@ public class BooklistAdapter
                                             @BooklistGroup.Id final int groupId) {
 
         final View itemView = createView(parent, groupId);
+        final RowViewHolder holder;
 
         // NEWTHINGS: BooklistGroup.KEY add a new holder type if needed
         switch (groupId) {
             case BooklistGroup.BOOK:
-                return new BookHolder(this, itemView, mStyle, mFieldsInUse);
+                holder = new BookHolder(this, itemView, mStyle, mFieldsInUse);
+                break;
 
             case BooklistGroup.AUTHOR:
-                return new AuthorHolder(this, itemView, mStyle.getGroupById(groupId));
+                holder = new AuthorHolder(this, itemView, mStyle.getGroupById(groupId));
+                break;
 
             case BooklistGroup.SERIES:
-                return new SeriesHolder(this, itemView, mStyle.getGroupById(groupId));
+                holder = new SeriesHolder(this, itemView, mStyle.getGroupById(groupId));
+                break;
 
             case BooklistGroup.RATING:
-                return new RatingHolder(itemView, mStyle.getGroupById(groupId));
+                holder = new RatingHolder(itemView, mStyle.getGroupById(groupId));
+                break;
 
             default:
-                return new GenericStringHolder(this, itemView, mStyle.getGroupById(groupId));
+                holder = new GenericStringHolder(this, itemView, mStyle.getGroupById(groupId));
+                break;
         }
+
+        holder.onClickTargetView.setOnClickListener(v -> {
+            if (mOnRowClickedListener != null) {
+                final Integer rowPos = (Integer) v.getTag(R.id.TAG_POSITION);
+                Objects.requireNonNull(rowPos, ErrorMsg.NULL_ROW_POS);
+                mOnRowClickedListener.onItemClick(rowPos);
+            }
+        });
+
+        holder.onClickTargetView.setOnLongClickListener(v -> {
+            if (mOnRowClickedListener != null) {
+                final Integer rowPos = (Integer) v.getTag(R.id.TAG_POSITION);
+                Objects.requireNonNull(rowPos, ErrorMsg.NULL_ROW_POS);
+                return mOnRowClickedListener.onItemLongClick(rowPos);
+            }
+            return false;
+        });
+
+        return holder;
     }
 
     /**
@@ -465,24 +491,7 @@ public class BooklistAdapter
         //noinspection ConstantConditions
         mCursor.moveToPosition(position);
 
-        holder.onClickTargetView.setTag(R.id.TAG_BL_POSITION, position);
-
-        holder.onClickTargetView.setOnClickListener(v -> {
-            if (mOnRowClickedListener != null) {
-                final Integer rowPos = (Integer) v.getTag(R.id.TAG_BL_POSITION);
-                Objects.requireNonNull(rowPos, ErrorMsg.NULL_ROW_POS);
-                mOnRowClickedListener.onItemClick(rowPos);
-            }
-        });
-
-        holder.onClickTargetView.setOnLongClickListener(v -> {
-            if (mOnRowClickedListener != null) {
-                final Integer rowPos = (Integer) v.getTag(R.id.TAG_BL_POSITION);
-                Objects.requireNonNull(rowPos, ErrorMsg.NULL_ROW_POS);
-                return mOnRowClickedListener.onItemLongClick(rowPos);
-            }
-            return false;
-        });
+        holder.onClickTargetView.setTag(R.id.TAG_POSITION, position);
 
         // further binding depends on the type of row (i.e. holder).
         //noinspection ConstantConditions
@@ -541,14 +550,7 @@ public class BooklistAdapter
     }
 
     /**
-     * Scale text in a View (and children) as per user preferences.
-     * <p>
-     * Note that ImageView experiments from the original code never worked.
-     * Bottom line is that Android will scale *down* (i.e. image to big ? make it smaller)
-     * but will NOT scale up to fill the provided space. This means scaling needs to be done
-     * at bind time (as we need <strong>actual</strong> size of the image), not at create time
-     * of the view.
-     * <br>So this method only deals with TextView instances.
+     * Scale text in a View (and recursively its children).
      *
      * @param root              the view (and its children) we'll scale
      * @param textSizeInSpUnits the text size in SP units (e.g. 14,18,32)
@@ -913,6 +915,20 @@ public class BooklistAdapter
                 // shown by default, so hide it if not in use.
                 mCoverView.setVisibility(View.GONE);
             }
+            // We do not go overkill here by adding a CoverHandler
+            // but only provide zooming by clicking on the image
+            mCoverView.setOnClickListener(v -> {
+                final String currentUuid = (String) v.getTag(R.id.TAG_UUID);
+                final File image = AppDir.getCoverFile(v.getContext(), currentUuid, 0);
+                if (image.exists()) {
+                    final FragmentManager fm =
+                            ((FragmentActivity) v.getContext()).getSupportFragmentManager();
+
+                    ZoomedImageDialogFragment
+                            .newInstance(image)
+                            .show(fm, ZoomedImageDialogFragment.TAG);
+                }
+            });
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_NODE_ID) {
                 // add a text view to display the "position/nodeId" for a book
@@ -953,7 +969,7 @@ public class BooklistAdapter
 
             final String title;
             if (mReorderTitle) {
-                String bookLanguage = rowData.getString(DBDefinitions.KEY_LANGUAGE);
+                final String bookLanguage = rowData.getString(DBDefinitions.KEY_LANGUAGE);
                 if (!bookLanguage.isEmpty()) {
                     title = ItemWithTitle.reorder(itemView.getContext(),
                                                   rowData.getString(DBDefinitions.KEY_TITLE),
@@ -992,23 +1008,8 @@ public class BooklistAdapter
             if (mInUse.cover) {
                 final String uuid = rowData.getString(DBDefinitions.KEY_BOOK_UUID);
                 // store the uuid for use in the OnClickListener
-                mCoverView.setTag(R.id.TAG_ITEM, uuid);
-                final boolean isSet = setImageView(uuid);
-                if (isSet) {
-                    // We do not go overkill here by adding a CoverHandler
-                    // but only provide zooming by clicking on the image
-                    mCoverView.setOnClickListener(v -> {
-                        final FragmentActivity activity = (FragmentActivity) v.getContext();
-                        final String currentUuid = (String) v.getTag(R.id.TAG_ITEM);
-                        final File image = AppDir.getCoverFile(activity, currentUuid, 0);
-                        if (image.exists()) {
-                            ZoomedImageDialogFragment
-                                    .newInstance(image)
-                                    .show(activity.getSupportFragmentManager(),
-                                          ZoomedImageDialogFragment.TAG);
-                        }
-                    });
-                }
+                mCoverView.setTag(R.id.TAG_UUID, uuid);
+                setImageView(uuid);
             }
 
             if (mInUse.series) {
@@ -1092,6 +1093,7 @@ public class BooklistAdapter
                 && publicationDate != null && !publicationDate.isEmpty()) {
                 // Combine Publisher and date
                 return String.format(mX_bracket_Y_bracket, publisherName, publicationDate);
+
             } else if (publisherName != null && !publisherName.isEmpty()) {
                 // there was no date, just use the publisher
                 return publisherName;
@@ -1126,11 +1128,8 @@ public class BooklistAdapter
          * Images and placeholder will always be scaled to a fixed size.
          *
          * @param uuid UUID of the book
-         *
-         * @return {@code true} if the image was displayed.
-         * {@code false} if a place holder was used.
          */
-        boolean setImageView(@NonNull final String uuid) {
+        void setImageView(@NonNull final String uuid) {
 
             final Context context = mCoverView.getContext();
 
@@ -1140,21 +1139,21 @@ public class BooklistAdapter
                 final Bitmap bitmap = CoversDAO.getImage(context, uuid, 0, mMaxWidth, mMaxHeight);
                 if (bitmap != null) {
                     ImageUtils.setImageView(mCoverView, mMaxWidth, mMaxHeight, bitmap, 0);
-                    return true;
+                    return;
                 }
             }
 
             // 2. Cache did not have it, or we were not allowed to check.
             final File file = AppDir.getCoverFile(context, uuid, 0);
             // Check if the file exists; if it does not...
-            if (!ImageUtils.isFileGood(file)) {
+            if (!ImageUtils.isFileGood(file, false)) {
                 // leave the space blank, but preserve the width BASED on the mMaxHeight!
                 final ViewGroup.LayoutParams lp = mCoverView.getLayoutParams();
                 lp.width = (int) (mMaxHeight * ImageUtils.HW_RATIO);
                 lp.height = 0;
                 mCoverView.setLayoutParams(lp);
                 mCoverView.setImageDrawable(null);
-                return false;
+                return;
             }
 
             // Once we get here, we know the file is valid
@@ -1171,7 +1170,6 @@ public class BooklistAdapter
                 new ImageLoader(mCoverView, file, mMaxWidth, mMaxHeight, null)
                         .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
             }
-            return true;
         }
     }
 
@@ -1379,7 +1377,7 @@ public class BooklistAdapter
         void onBindViewHolder(final int position,
                               @NonNull final DataHolder rowData,
                               @NonNull final BooklistStyle style) {
-            // grab the book language first
+            // grab the book language first for use in #format
             mBookLanguage = rowData.getString(DBDefinitions.KEY_LANGUAGE);
 
             super.onBindViewHolder(position, rowData, style);

@@ -4,14 +4,6 @@
  *
  * This file is part of NeverTooManyBooks.
  *
- * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
- *
- * Without their original creation, this project would not exist in its
- * current form. It was however largely rewritten/refactored and any
- * comments on this fork should be directed at HardBackNutter and not
- * at the original creators.
- *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -49,6 +41,7 @@ import com.hardbacknutter.nevertoomanybooks.backup.base.Options;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ReaderEntity;
 import com.hardbacknutter.nevertoomanybooks.backup.csv.CsvImporter;
 import com.hardbacknutter.nevertoomanybooks.backup.xml.XmlImporter;
+import com.hardbacknutter.nevertoomanybooks.covers.ImageUtils;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
@@ -291,10 +284,11 @@ public abstract class ArchiveReaderAbstract
                               @NonNull final ReaderEntity cover) {
         try {
             long coverDate = cover.getLastModifiedEpochMilli();
+            boolean exists;
 
             // see if we have this file already
             File file = AppDir.Covers.getFile(context, cover.getName());
-            final boolean exists = file.exists();
+            exists = ImageUtils.isFileGood(file, false);
             if (mHelper.isSet(ImportManager.IMPORT_ONLY_NEW_OR_UPDATED)) {
                 if (exists) {
                     if (file.lastModified() > coverDate) {
@@ -306,9 +300,11 @@ public abstract class ArchiveReaderAbstract
             file = FileUtils.copyInputStream(context, cover.getInputStream(),
                                              AppDir.Covers.getFile(context, cover.getName()));
 
-            if (file != null && file.exists()) {
+            if (ImageUtils.isFileGood(file, true)) {
                 //noinspection ResultOfMethodCallIgnored
                 file.setLastModified(cover.getLastModifiedEpochMilli());
+            } else {
+                FileUtils.delete(file);
             }
 
             if (exists) {

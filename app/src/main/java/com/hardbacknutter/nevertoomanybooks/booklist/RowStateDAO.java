@@ -501,7 +501,7 @@ public class RowStateDAO
                 node.from(cursor);
                 final String uuid = cursor.getString(Node.COLS);
                 final File file = AppDir.getCoverFile(context, uuid, 0);
-                if (!ImageUtils.isFileGood(file)) {
+                if (!ImageUtils.isFileGood(file, false)) {
                     // FIRST make the node visible
                     ensureNodeIsVisible(node);
                     // only now calculate the list position

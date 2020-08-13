@@ -4,14 +4,6 @@
  *
  * This file is part of NeverTooManyBooks.
  *
- * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
- *
- * Without their original creation, this project would not exist in its
- * current form. It was however largely rewritten/refactored and any
- * comments on this fork should be directed at HardBackNutter and not
- * at the original creators.
- *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -339,7 +331,7 @@ public class CoverBrowserDialogFragment
 
         if (imageFileInfo != null) {
             final File file = imageFileInfo.getFile();
-            if (ImageUtils.isFileGood(file)) {
+            if (ImageUtils.isFileGood(file, false)) {
                 new ImageLoader(mVb.preview, file, mPreviewMaxWidth, mPreviewMaxHeight, () -> {
                     // Set AFTER it was successfully loaded and displayed for maximum reliability
                     mModel.setSelectedFile(file);
@@ -473,7 +465,7 @@ public class CoverBrowserDialogFragment
             } else {
                 // check if it's good
                 final File file = imageFileInfo.getFile();
-                if (ImageUtils.isFileGood(file)) {
+                if (ImageUtils.isFileGood(file, false)) {
                     // YES, load it into the view.
                     new ImageLoader(holder.imageView, file, mMaxWidth, mMaxHeight, null)
                             .executeOnExecutor(mModel.getGalleryDisplayExecutor());

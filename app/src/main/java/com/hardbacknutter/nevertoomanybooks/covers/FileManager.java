@@ -4,14 +4,6 @@
  *
  * This file is part of NeverTooManyBooks.
  *
- * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
- *
- * Without their original creation, this project would not exist in its
- * current form. It was however largely rewritten/refactored and any
- * comments on this fork should be directed at HardBackNutter and not
- * at the original creators.
- *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -203,34 +195,17 @@ public class FileManager {
                             // we got a file
                             imageFileInfo = new ImageFileInfo(isbn, fileSpec, size,
                                                               searchEngine.getId());
-                            // is it any good ?
-                            final File file = imageFileInfo.getFile();
-                            if (ImageUtils.isFileGood(file)) {
-                                // YES
-                                mFiles.put(isbn, imageFileInfo);
+                            mFiles.put(isbn, imageFileInfo);
 
-                                if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVER_BROWSER) {
-                                    Log.d(TAG, "search|SUCCESS"
-                                               + "|searchEngine=" + searchEngine.getName()
-                                               + "|imageFileInfo=" + imageFileInfo);
-                                }
-                                // abort search, we got an image
-                                return imageFileInfo;
-
-                            } else {
-                                // we got a file, but it's bad
-                                FileUtils.delete(file);
-
-                                if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVER_BROWSER) {
-                                    Log.d(TAG, "search|BAD FILE"
-                                               + "|searchEngine=" + searchEngine.getName()
-                                               + "|isbn=" + isbn
-                                               + "|cIdx=" + cIdx
-                                               + "|size=" + size);
-                                }
+                            if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVER_BROWSER) {
+                                Log.d(TAG, "search|SUCCESS"
+                                           + "|searchEngine=" + searchEngine.getName()
+                                           + "|imageFileInfo=" + imageFileInfo);
                             }
+                            // abort search, we got an image
+                            return imageFileInfo;
+
                         } else {
-                            // we didn't get a file at all
                             if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVER_BROWSER) {
                                 Log.d(TAG, "search|NO FILE"
                                            + "|searchEngine=" + searchEngine.getName()
