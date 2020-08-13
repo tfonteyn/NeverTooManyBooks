@@ -5,14 +5,6 @@
   ~
   ~ This file is part of NeverTooManyBooks.
   ~
-  ~ In August 2018, this project was forked from:
-  ~ Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
-  ~
-  ~ Without their original creation, this project would not exist in its
-  ~ current form. It was however largely rewritten/refactored and any
-  ~ comments on this fork should be directed at HardBackNutter and not
-  ~ at the original creators.
-  ~
   ~ NeverTooManyBooks is free software: you can redistribute it and/or modify
   ~ it under the terms of the GNU General Public License as published by
   ~ the Free Software Foundation, either version 3 of the License, or
@@ -83,7 +75,7 @@
     <string name="action_clear">Löschen</string>
     <string name="confirm_scope_for_change">Sie haben Folgendes geändert:\n „%1$s“\n in\n „%2$s“\n\nWie wollen Sie diese Änderung übernehmen?\n\nHinweis: Die Auswahl „%3$s“ wird sofort übernommen.</string>
     <string name="confirm_delete_book">Dieser Vorgang löscht das Buch mit dem Titel „%1$s“ von „%2$s“ vollständig. Wollen Sie das Buch löschen?</string>
-    <string name="confirm_delete_series">Soll die Serie „%1$s“ gelöscht werden?\n\nDie Bücher werden nicht gelöscht.\n\n Berücksichtigen Sie, dass Sie ggf. den Namen der Serie ändern können, um die Daten der Serie zu behalten.</string>
+    <string name="confirm_delete_series">Serie „%1$s“ wirklich löschen?\n\nDie Bücher werden nicht gelöscht.\n\n Berücksichtigen Sie, dass Sie ggf. den Namen der Serie ändern können, um die Daten der Serie zu behalten.</string>
     <string name="confirm_delete_toc_entry">Den Eintrag „%1$s“ (von %2$s) wirklich löschen? Es wird aus allen Büchern gelöscht, in denen es aufgeführt ist. Die Bücher selbst werden nicht gelöscht.</string>
     <string name="confirm_duplicate_book_message">Das hinzuzufügende Buch besteht bereits in der Datenbank. Sind Sie sicher, dass Sie noch eine Kopie hinzufügen möchten?</string>
     <string name="confirm_email_export">Möchten Sie diesen Export als E-Mail versenden?</string>
@@ -670,4 +662,5 @@
     <string name="btn_not_now">Jetzt nicht</string>
     <string name="menu_reset_to_default">Auf Standard zurücksetzen</string>
     <string name="action_try_again">Noch einmal versuchen</string>
+    <string name="confirm_delete_publisher">Herausgeber „%1$s“ wirklich löschen?\n\nDie Bücher selbst werden nicht gelöscht.\n\nBetrachten Sie, den Herausgeber zu bearbeiten und den Herausgebernamen in den Namen eines anderen Herausgebers zu ändern, um diese Daten zu erhalten.</string>
 </resources>

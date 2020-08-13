@@ -5,14 +5,6 @@
   ~
   ~ This file is part of NeverTooManyBooks.
   ~
-  ~ In August 2018, this project was forked from:
-  ~ Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
-  ~
-  ~ Without their original creation, this project would not exist in its
-  ~ current form. It was however largely rewritten/refactored and any
-  ~ comments on this fork should be directed at HardBackNutter and not
-  ~ at the original creators.
-  ~
   ~ NeverTooManyBooks is free software: you can redistribute it and/or modify
   ~ it under the terms of the GNU General Public License as published by
   ~ the Free Software Foundation, either version 3 of the License, or
@@ -81,6 +73,7 @@
     <string name="action_clear">Temizle</string>
     <string name="confirm_scope_for_change">Değiştirdiniz:\n “%1$s”,\n“%2$s”\n olarak.\n\nDeğişiklikleri nasıl uygulamak istersiniz?\n\nNot: “%3$s” seçimi anında uygulanacaktır.</string>
     <string name="confirm_delete_book">Bu işlem bu kitabı tümüyle silecektir: “%1$s” - %2$s. Sürdürmek istediğinizden emin misiniz?</string>
+    <string name="confirm_delete_publisher">“%1$s” yayıncısını gerçekten silmek istiyor musunuz?\n\nKitapların kendileri silinmeyecek.\n\nBu verileri korumak için yayıncıyı düzenlemeyi ve yayıncı adını başka bir yayıncının adıyla değiştirmeyi düşünün.</string>
     <string name="confirm_delete_series">“%1$s” serisi gerçekten silinsin mi?\n\nKitabın kendisi silinmeyecektir.\n\nSeriyi düzenleyip seri adını başka bir serininkiyle değiştirip bu veriyi korumayı düşünün.</string>
     <string name="confirm_delete_toc_entry">“%1$s” girişini gerçekten sil (%2$s)? Listelendiği tüm kitaplardan silinecek. Kitapların kendisi silinmeyecek.</string>
     <string name="confirm_duplicate_book_message">Eklemeye çalıştığınız kitap veritabanında zaten var, tekrar eklemek istediğinizden emin misiniz?</string>

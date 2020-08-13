@@ -5,14 +5,6 @@
   ~
   ~ This file is part of NeverTooManyBooks.
   ~
-  ~ In August 2018, this project was forked from:
-  ~ Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
-  ~
-  ~ Without their original creation, this project would not exist in its
-  ~ current form. It was however largely rewritten/refactored and any
-  ~ comments on this fork should be directed at HardBackNutter and not
-  ~ at the original creators.
-  ~
   ~ NeverTooManyBooks is free software: you can redistribute it and/or modify
   ~ it under the terms of the GNU General Public License as published by
   ~ the Free Software Foundation, either version 3 of the License, or
@@ -82,7 +74,7 @@
     <string name="action_clear">Effacer</string>
     <string name="confirm_scope_for_change">Vous avez changé:\n «%1$s»\n en\n «%2$s»\n\nComment souhaitez-vous appliquer ce changement ?\n\nNote : votre choix «%3$s» sera pris en compte instantanément.</string>
     <string name="confirm_delete_book">Cela effacera totalement le livre intitulé «%1$s» par %2$s.\nÊtes vous sûr de vouloir poursuivre ?</string>
-    <string name="confirm_delete_series">Supprimer la série «%1$s» ?\n\nLes livres eux-mêmes ne seront pas supprimés.\n\n Envisagez de modifier la série et d\'en changer le nom pour conserver cette information.</string>
+    <string name="confirm_delete_series">Supprimer la série «%1$s» ?\n\nLes livres eux-mêmes ne seront pas supprimés.\n\n Envisagez de modifier la série et d\'en changer le nom pour conserver ces données.</string>
     <string name="confirm_delete_toc_entry">Vraiment supprimer le titre «%1$s» (par %2$s)? Il sera supprimé de tous les livres dans lesquels il est répertorié. Les livres eux-mêmes ne seront pas supprimés.</string>
     <string name="confirm_duplicate_book_message">Le livre que vous tentez d\'ajouter existe déjà dans la base de donnnées. Êtes vous certain de vouloir en ajouter une nouvelle copie ?</string>
     <string name="confirm_email_export">Souhaitez-vous envoyer cet export par courriel ?</string>
@@ -671,5 +663,6 @@
     <string name="btn_not_now">Pas maintenant</string>
     <string name="menu_reset_to_default">Rétablir param. par défaut</string>
     <string name="action_try_again">Réessayer</string>
+    <string name="confirm_delete_publisher">Supprimer l\'éditeur «%1$s»?\n\nLes livres eux-mêmes ne seront pas supprimés.\n\nEnvisagez de modifier l\'éditeur et de remplacer le nom pour conserver ces données.</string>
 
 </resources>

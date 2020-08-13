@@ -4,14 +4,6 @@
   ~
   ~ This file is part of NeverTooManyBooks.
   ~
-  ~ In August 2018, this project was forked from:
-  ~ Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
-  ~
-  ~ Without their original creation, this project would not exist in its
-  ~ current form. It was however largely rewritten/refactored and any
-  ~ comments on this fork should be directed at HardBackNutter and not
-  ~ at the original creators.
-  ~
   ~ NeverTooManyBooks is free software: you can redistribute it and/or modify
   ~ it under the terms of the GNU General Public License as published by
   ~ the Free Software Foundation, either version 3 of the License, or
@@ -82,6 +74,7 @@
     <string name="action_clear">Wissen</string>
     <string name="confirm_scope_for_change">Je wijzigde:\n „%1$s”\n naar\n „%2$s”\n\nHoe wil je deze verandering toepassen?\n\nNB: De keuze „%3$s” wordt onmiddelijk toegepast.</string>
     <string name="confirm_delete_book">Dit zal het boek met de titel „%1$s” door %2$s compleet verwijderen. Weet je zeker dat je door wilt gaan?</string>
+    <string name="confirm_delete_publisher">Wilt je werkelijk de uitgever „%1$s” verwijderen?\n\nDe boeken zelf worden niet verwijderd.\n\nOverweeg de uitgever te bewerken en de naam te veranderen om deze gegevens te behouden</string>
     <string name="confirm_delete_series">Wilt je werkelijk de reeks „%1$s” verwijderen?\n\nDe boeken zelf worden niet verwijderd.\n\nOverweeg de reeks te bewerken en de reeksnaam te veranderen om deze gegevens te behouden</string>
     <string name="confirm_delete_toc_entry">De titel „%1$s” (door %2$s) echt verwijderen? Het wordt verwijderd uit alle boeken waarin het wordt vermeld. De boeken zelf worden niet verwijderd.</string>
     <string name="confirm_duplicate_book_message">Het boek dat je wil toevoegen is al aanwezig in de database, weet je zeker dat je nog een exemplaar wilt toevoegen?</string>

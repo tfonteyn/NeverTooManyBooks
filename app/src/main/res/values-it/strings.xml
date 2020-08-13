@@ -5,14 +5,6 @@
   ~
   ~ This file is part of NeverTooManyBooks.
   ~
-  ~ In August 2018, this project was forked from:
-  ~ Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
-  ~
-  ~ Without their original creation, this project would not exist in its
-  ~ current form. It was however largely rewritten/refactored and any
-  ~ comments on this fork should be directed at HardBackNutter and not
-  ~ at the original creators.
-  ~
   ~ NeverTooManyBooks is free software: you can redistribute it and/or modify
   ~ it under the terms of the GNU General Public License as published by
   ~ the Free Software Foundation, either version 3 of the License, or
@@ -667,5 +659,6 @@
     <string name="btn_not_now">Non ora</string>
     <string name="menu_reset_to_default">Ripristina impostazioni predefinite</string>
     <string name="action_try_again">Riprova</string>
+    <string name="confirm_delete_publisher">Eliminare davvero l\'editore «%1$s»?\n\nI libri stessi non verranno eliminati.\n\nConsidera la possibilità di modificare l\'editore e di cambiare il nome dell\'editore con quello di un altro editore per conservare questi dati.</string>
 
 </resources>
