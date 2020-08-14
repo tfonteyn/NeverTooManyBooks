@@ -656,4 +656,7 @@
     <string name="menu_reset_to_default">Resetuj ustawienia</string>
     <string name="action_try_again">Spróbuj ponownie</string>
     <string name="confirm_delete_publisher">Naprawdę usunąć wydawcę „%1$s”?\n\nSame książki nie zostaną usunięte.\n\nRozważ edycję wydawcy i zmianę nazwy wydawcy na nazwę innego wydawcy, aby zachować te dane.</string>
+    <string name="action_validate">Uprawomocnić</string>
+    <string name="dynamic">Dynamiczny</string>
+    <string name="statick">Statyczny</string>
 </resources>

@@ -657,5 +657,9 @@
     <string name="menu_reset_to_default">Obnovit výchozí</string>
     <string name="action_try_again">Zkusit znovu</string>
     <string name="confirm_delete_publisher">Opravdu smazat vydavatele „%1$s“?\n\nSamotné knihy nebudou smazány.\n\nVšechny úpravy vydavatele a změna názvu vydavatele na jméno jiného vydavatele za účelem uchování těchto dat.</string>
+    <string name="action_validate">Ověřit</string>
+    <string name="dynamic">Dynamický</string>
+    <string name="statick">Statický</string>
+    <string name="pt_enable_fast_scroller_overlay">Rolování informací překrytí.</string>
 
 </resources>

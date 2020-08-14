@@ -656,5 +656,9 @@
     <string name="menu_reset_to_default">Сбросить настройки</string>
     <string name="action_try_again">Повторить попытку</string>
     <string name="confirm_delete_publisher">Действительно удалить издателя «%1$s»?\n\nСами книги не будут удалены.\n\nРассмотрите возможность изменения издателя и изменения имени издателя на имя другого издателя, чтобы сохранить эти данные.</string>
+    <string name="dynamic">динамический</string>
+    <string name="statick">статический</string>
+    <string name="action_validate">проверять</string>
+    <string name="pt_enable_fast_scroller_overlay">Наложение прокрутки информации.</string>
 
 </resources>

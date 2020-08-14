@@ -660,5 +660,8 @@
     <string name="menu_reset_to_default">Επαναφορά στις προεπιλογές</string>
     <string name="action_try_again">Δοκιμάστε ξανά</string>
     <string name="confirm_delete_publisher">Να διαγραφεί πραγματικά ο εκδότης «%1$s»;\n\nΤα ίδια τα βιβλία δεν θα διαγραφούν.\n\nΣκεφτείτε να επεξεργαστείτε τον εκδότη και να αλλάξετε το όνομα του εκδότη σε αυτό άλλου εκδότη για να διατηρήσετε αυτά τα δεδομένα.</string>
+    <string name="action_validate">Επικυρώνω</string>
+    <string name="dynamic">Δυναμικός</string>
+    <string name="statick">Στατικός</string>
 
 </resources>

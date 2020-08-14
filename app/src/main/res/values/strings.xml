@@ -5,14 +5,6 @@
   ~
   ~ This file is part of NeverTooManyBooks.
   ~
-  ~ In August 2018, this project was forked from:
-  ~ Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
-  ~
-  ~ Without their original creation, this project would not exist in its
-  ~ current form. It was however largely rewritten/refactored and any
-  ~ comments on this fork should be directed at HardBackNutter and not
-  ~ at the original creators.
-  ~
   ~ NeverTooManyBooks is free software: you can redistribute it and/or modify
   ~ it under the terms of the GNU General Public License as published by
   ~ the Free Software Foundation, either version 3 of the License, or
@@ -167,6 +159,8 @@
     <!-- you're out of Shared Storage space... buy a bigger SD Card -->
     <string name="error_storage_no_space_left">Insufficient storage available.</string>
 
+    <string name="error_bad_scanner">It looks like your existing barcode scanner app is not compatible with &APP_NAME;.</string>
+
     <!-- ####################################################################################### -->
     <!-- ========== Warning messages ========== -->
     <!-- ####################################################################################### -->
@@ -256,8 +250,6 @@
 
     <string name="txt_waiting_for_scanner">Waiting for scanner/camera</string>
 
-    <string name="error_bad_scanner">It looks like your existing barcode scanner app is not compatible with &APP_NAME;.</string>
-
     <!-- prompt to install a scanner. Shown above a menu of Scanners.
         This is used after a previous scanner selection was not working. -->
     <string name="txt_install_scanner_recommendation">We recommend installing the Zxing barcode scanner application, and if it is already installed, we recommend uninstalling it and reinstalling it.</string>
@@ -266,9 +258,6 @@
 
     <!-- Info message for the "editions" filter selection (part of the style settings). -->
     <string name="info_filter_edition">Select 0 or more options and tap “OK” to apply them, or tap “All books” to disregard all of them.</string>
-
-    <string name="confirm_registration_required">This feature requires registration with %1$s. Would you like to see more information?</string>
-    <string name="confirm_registration_benefits">This feature benefits from registration with %1$s. Would you like to see more information, or disable this message?\n You can find this information at a later date under the “%2$s” section in the settings.</string>
 
     <!-- Explanatory note of the 'import from archive' "all books" option -->
     <string name="txt_import_option_all_books">New books will be added. Existing books will be updated.</string>
@@ -304,25 +293,14 @@
     <string name="confirm_unsaved_edits">You have unsaved changes, if you exit now they will be lost.</string>
     <string name="confirm_unsaved_edits2">You have unsaved changes. Are you sure you want to continue?</string>
 
-    <string name="confirm_delete_series">
-        Really delete series “%1$s”?\n
-        \nThe books themselves will not be deleted.\n
-        \nConsider editing the series and changing the series name to that of another series to preserve this data.
-    </string>
-    <string name="confirm_delete_publisher">
-        Really delete publisher “%1$s”?\n
-        \nThe books themselves will not be deleted.\n
-        \nConsider editing the publisher and changing the publisher name to that of another publisher to preserve this data.
-    </string>
+    <string name="confirm_delete_series">Really delete series “%1$s”?\n\nThe books themselves will not be deleted.\n\nConsider editing the series and changing the series name to that of another series to preserve this data.</string>
+    <string name="confirm_delete_publisher">Really delete publisher “%1$s”?\n\nThe books themselves will not be deleted.\n\nConsider editing the publisher and changing the publisher name to that of another publisher to preserve this data.</string>
     <string name="confirm_delete_toc_entry">Really delete the title “%1$s” by %2$s? It will be deleted from all books in which it is listed. The books themselves will not be deleted.</string>
 
     <string name="confirm_delete_book">This will completely delete the book entitled “%1$s” by %2$s.\nAre you sure you want to continue?</string>
     <string name="confirm_merge_bookshelves">The bookshelf you are renaming already exists. Would you like to merge them?</string>
     <string name="confirm_duplicate_book_message">The book you are trying to add already exists in the database, are you sure you want to add another copy?</string>
-    <string name="confirm_overwrite_thumbnail">
-        This will update the selected fields as shown, but images can optionally be downloaded for ALL books.\n
-        \nDo you want to overwrite all existing images? Warning, this may take a long time.
-    </string>
+    <string name="confirm_overwrite_thumbnail">This will update the selected fields as shown, but images can optionally be downloaded for ALL books.\n\nDo you want to overwrite all existing images? Warning, this may take a long time.</string>
 
     <!-- param 1: previous and param 2: new name, each time as a single string.
          param 3: the text on the button for making a global change. e.g. "All books" -->
@@ -338,6 +316,10 @@
 
     <string name="confirm_rebuild_fts">This will rebuild the search index data when the app is restarted. Are you sure you want to continue ?</string>
     <string name="confirm_rebuild_index">This will rebuild the indexes when the app is restarted. Are you sure you want to continue ?</string>
+
+    <string name="confirm_registration_required">This feature requires registration with %1$s. Would you like to see more information?</string>
+    <string name="confirm_registration_benefits">This feature benefits from registration with %1$s. Would you like to see more information, or disable this message?\n You can find this information at a later date under the “%2$s” section in the settings.</string>
+
 
     <!-- ####################################################################################### -->
     <!-- ========== ValidatorException error messages ========== -->
@@ -418,10 +400,7 @@
     <string name="progress_end_export_result_n_covers_processed_m_missing">%1$d covers processed\n(%2$d/%3$d missing)</string>
 
     <!-- displayed when a Backup is done: 1: folder; 2: filename; 3: file size -->
-    <string name="progress_end_export_success">
-        A %3$s file called “%2$s” was created in the “%1$s” folder and you should manually copy
-        it elsewhere to protect the data in case your device is damaged, lost, or stolen.
-    </string>
+    <string name="progress_end_export_success">A %3$s file called “%2$s” was created in the “%1$s” folder and you should manually copy it elsewhere to protect the data in case your device is damaged, lost, or stolen.</string>
 
     <!-- ####################################################################################### -->
     <!-- ========== Tips which are shown in some places on how to use a screen ========== -->
@@ -1587,5 +1566,9 @@
     <!-- [VERIFIED] -->
     <string name="btn_not_now">Not now</string>
     <string name="action_validate">Validate</string>
+    <string name="pt_enable_fast_scroller_overlay">Scrolling information overlay.</string>
 
+    <string name="dynamic">Dynamic</string>
+    <!-- statick with a 'ck' because 'static' is a java reserved word (and magick) -->
+    <string name="statick">Static</string>
 </resources>

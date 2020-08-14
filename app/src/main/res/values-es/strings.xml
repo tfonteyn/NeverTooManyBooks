@@ -660,5 +660,8 @@
     <string name="menu_reset_to_default">Restablecer ajustes</string>
     <string name="action_try_again">Reintentar</string>
     <string name="confirm_delete_publisher">¿Eliminar realmente el editor «%1$s»?\n\nLos libros en sí no se eliminarán.\n\nConsidere editar el editor y cambiar el nombre del editor por el de otro editor para conservar estos datos.</string>
+    <string name="action_validate">Validar</string>
+    <string name="dynamic">Dinámica</string>
+    <string name="statick">Estático</string>
 
 </resources>

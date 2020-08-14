@@ -664,5 +664,8 @@
     <string name="menu_reset_to_default">Rétablir param. par défaut</string>
     <string name="action_try_again">Réessayer</string>
     <string name="confirm_delete_publisher">Supprimer l\'éditeur «%1$s»?\n\nLes livres eux-mêmes ne seront pas supprimés.\n\nEnvisagez de modifier l\'éditeur et de remplacer le nom pour conserver ces données.</string>
+    <string name="action_validate">Valider</string>
+    <string name="dynamic">Dynamique</string>
+    <string name="statick">Statique</string>
 
 </resources>

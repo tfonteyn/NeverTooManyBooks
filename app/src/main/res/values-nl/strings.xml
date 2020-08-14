@@ -661,5 +661,9 @@
     <string name="btn_not_now">Niet nu</string>
     <string name="menu_reset_to_default">Standaardinstellingen herstellen</string>
     <string name="action_try_again">Opnieuw proberen</string>
+    <string name="action_validate">Valideer</string>
+    <string name="dynamic">Dynamisch</string>
+    <string name="statick">Statisch</string>
+    <string name="pt_enable_fast_scroller_overlay">Scrollende informatie-overlay.</string>
 
 </resources>

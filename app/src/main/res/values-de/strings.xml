@@ -663,4 +663,7 @@
     <string name="menu_reset_to_default">Auf Standard zurücksetzen</string>
     <string name="action_try_again">Noch einmal versuchen</string>
     <string name="confirm_delete_publisher">Herausgeber „%1$s“ wirklich löschen?\n\nDie Bücher selbst werden nicht gelöscht.\n\nBetrachten Sie, den Herausgeber zu bearbeiten und den Herausgebernamen in den Namen eines anderen Herausgebers zu ändern, um diese Daten zu erhalten.</string>
+    <string name="action_validate">Bestätigen</string>
+    <string name="dynamic">Dynamisch</string>
+    <string name="statick">Statisch</string>
 </resources>
