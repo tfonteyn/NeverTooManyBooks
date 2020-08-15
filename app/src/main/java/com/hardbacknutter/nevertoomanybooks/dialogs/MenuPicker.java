@@ -241,6 +241,8 @@ public class MenuPicker {
                                      final int position) {
             if (holder.textView != null) {
                 final MenuItem item = mList.get(position);
+                holder.textView.setEnabled(item.isEnabled());
+
                 holder.textView.setText(item.getTitle());
 
                 // add a little arrow to indicate sub-menus.
@@ -251,8 +253,6 @@ public class MenuPicker {
                     holder.textView.setCompoundDrawablesRelativeWithIntrinsicBounds(
                             item.getIcon(), null, null, null);
                 }
-
-                holder.textView.setEnabled(item.isEnabled());
             }
         }
 

@@ -82,6 +82,8 @@ public class MenuPickerDialogFragment
      * @param title    (optional) for the dialog/menu
      * @param pickList the menu options to show
      * @param position of the item in a list where the context menu was initiated
+     *
+     * @return instance
      */
     public static DialogFragment newInstance(@Nullable final String title,
                                              @NonNull final ArrayList<Pick> pickList,
@@ -96,7 +98,7 @@ public class MenuPickerDialogFragment
     }
 
     /**
-     * Constructor - <strong>No support for icons</strong>.
+     * Constructor.
      *
      * @param title    (optional) for the dialog/menu
      * @param menu     the menu options to show
@@ -123,22 +125,7 @@ public class MenuPickerDialogFragment
                 subPickList = null;
             }
 
-            // Using reflection to read the icon id... this is a BAD idea...
-            int iconId = 0;
-            try {
-                final Field iconIdField = item.getClass().getDeclaredField("mIconResId");
-                iconIdField.setAccessible(true);
-                iconId = iconIdField.getInt(item);
-            } catch (@NonNull final NoSuchFieldException | IllegalAccessException ignore) {
-                // ignore
-            }
-
-            final Pick pick = new Pick(item.getItemId(),
-                                       item.getOrder(),
-                                       item.getTitle().toString(),
-                                       iconId,
-                                       subPickList);
-            pickList.add(pick);
+            pickList.add(new Pick(item, subPickList));
         }
 
         return pickList;
@@ -149,6 +136,7 @@ public class MenuPickerDialogFragment
     public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
         final Bundle args = requireArguments();
         mPosition = args.getInt(BKEY_POSITION);
+        final Iterable<Pick> menu = args.getParcelableArrayList(BKEY_MENU);
 
         final View root = getLayoutInflater().inflate(R.layout.dialog_popupmenu, null);
 
@@ -162,8 +150,7 @@ public class MenuPickerDialogFragment
         }
 
         //noinspection ConstantConditions
-        final MenuItemListAdapter adapter =
-                new MenuItemListAdapter(getContext(), args.getParcelableArrayList(BKEY_MENU));
+        final MenuItemListAdapter adapter = new MenuItemListAdapter(getContext(), menu);
         final RecyclerView listView = root.findViewById(R.id.item_list);
         listView.setAdapter(adapter);
 
@@ -207,7 +194,7 @@ public class MenuPickerDialogFragment
                          int position);
     }
 
-    /** Equivalent of a {@code MenuItem}. */
+    /** An incomplete, but "just enough", implementation of a {@code MenuItem}. */
     public static class Pick
             implements Parcelable, Comparable<Pick> {
 
@@ -229,8 +216,8 @@ public class MenuPickerDialogFragment
         private final int mItemId;
         private final int mOrder;
 
-        private boolean mIsEnabled = true;
-        private boolean mIsVisible = true;
+        private boolean mIsEnabled;
+        private boolean mIsVisible;
         @NonNull
         private String mTitle;
         @Nullable
@@ -248,18 +235,29 @@ public class MenuPickerDialogFragment
             mOrder = order;
             mTitle = title;
             mIconId = iconId;
+            mIsEnabled = true;
+            mIsVisible = true;
         }
 
-        public Pick(@IdRes final int itemId,
-                    final int order,
-                    @NonNull final String title,
-                    @DrawableRes final int iconId,
+        public Pick(@NonNull final MenuItem item,
                     @Nullable final List<Pick> subMenu) {
-            mItemId = itemId;
-            mOrder = order;
-            mTitle = title;
-            mIconId = iconId;
+            mItemId = item.getItemId();
+            mOrder = item.getOrder();
+            mTitle = item.getTitle().toString();
+
+            // Using reflection to read the icon id... this is a BAD idea...
+            try {
+                final Field iconIdField = item.getClass().getDeclaredField("mIconResId");
+                iconIdField.setAccessible(true);
+                mIconId = iconIdField.getInt(item);
+            } catch (@NonNull final NoSuchFieldException | IllegalAccessException ignore) {
+                // ignore
+            }
+
             mSubMenu = subMenu;
+
+            mIsEnabled = item.isEnabled();
+            mIsVisible = item.isVisible();
         }
 
         Pick(@NonNull final Parcel in) {
@@ -303,6 +301,9 @@ public class MenuPickerDialogFragment
             return mIsVisible;
         }
 
+        /**
+         * NOT supported after (the list of) the Pick item has been passed to the adapter.
+         */
         public Pick setVisible(final boolean visible) {
             mIsVisible = visible;
             return this;
@@ -404,29 +405,29 @@ public class MenuPickerDialogFragment
         /**
          * Constructor.
          *
-         * @param context    Current context
-         * @param choiceList Menu (list of items) to display
+         * @param context Current context
+         * @param menu    Menu (list of items) to display
          */
         MenuItemListAdapter(@NonNull final Context context,
-                            @NonNull final Iterable<Pick> choiceList) {
+                            @NonNull final Iterable<Pick> menu) {
 
             mInflater = LayoutInflater.from(context);
-            setMenu(choiceList);
+            setMenu(menu);
 
             //noinspection ConstantConditions
             mSubMenuPointer = context.getDrawable(R.drawable.ic_submenu);
         }
 
         /**
-         * Add all choices items to the adapter list.
+         * Add all menu items to the adapter list.
          * Invisible items are <strong>not added</strong>,
          * disabled items are added and will be shown disabled.
          *
-         * @param choiceList to add.
+         * @param menu to add.
          */
-        void setMenu(@NonNull final Iterable<Pick> choiceList) {
+        void setMenu(@NonNull final Iterable<Pick> menu) {
             mList.clear();
-            for (Pick item : choiceList) {
+            for (Pick item : menu) {
                 if (item.isVisible()) {
                     mList.add(item);
                 }
@@ -470,9 +471,9 @@ public class MenuPickerDialogFragment
                     getDialog().setTitle(item.getTitle());
                     setMenu(item.getSubMenu());
                 } else {
+                    dismiss();
                     OnResultListener.sendResult(MenuPickerDialogFragment.this, REQUEST_KEY,
                                                 item.getItemId(), mPosition);
-                    dismiss();
                 }
             }
         }
@@ -482,6 +483,8 @@ public class MenuPickerDialogFragment
                                      final int position) {
             if (holder.textView != null) {
                 final Pick item = mList.get(position);
+                holder.textView.setEnabled(item.isEnabled());
+
                 holder.textView.setText(item.getTitle());
 
                 // add a little arrow to indicate sub-menus.
@@ -494,8 +497,6 @@ public class MenuPickerDialogFragment
                     holder.textView.setCompoundDrawablesRelativeWithIntrinsicBounds(
                             item.getIcon(getContext()), null, null, null);
                 }
-
-                holder.textView.setEnabled(item.isEnabled());
             }
         }
 
