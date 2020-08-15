@@ -30,24 +30,32 @@
     <ImageView
         android:id="@+id/icon_read"
         style="@style/Flag.Read"
+        android:visibility="gone"
         tools:ignore="ContentDescription"
+        tools:visibility="visible"
         />
 
     <ImageView
         android:id="@+id/icon_first_edition"
         style="@style/Flag.FirstEdition"
+        android:visibility="gone"
         tools:ignore="ContentDescription"
+        tools:visibility="visible"
         />
 
     <ImageView
         android:id="@+id/icon_signed"
         style="@style/Flag.Signed"
+        android:visibility="gone"
         tools:ignore="ContentDescription"
+        tools:visibility="visible"
         />
 
     <ImageView
         android:id="@+id/icon_on_loan"
         style="@style/Flag.OnLoan"
+        android:visibility="gone"
         tools:ignore="ContentDescription"
+        tools:visibility="visible"
         />
 </LinearLayout>
