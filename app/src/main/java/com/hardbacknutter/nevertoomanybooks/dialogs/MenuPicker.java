@@ -46,8 +46,8 @@ import com.hardbacknutter.nevertoomanybooks.R;
  * Show context menu on a view.
  * <p>
  * Note this is <strong>NOT</strong> a DialogFrame and will not survive screen rotations.
- * It's easy enough to transform it into one, but due to the need of parceling the arguments,
- * it becomes impossible to use {@code getMenuInflater().inflate(R.menu.x, menu);}.
+ * It's easy enough to transform it into one, see {@link MenuPickerDialogFragment},
+ * but when using a menu inflater, it's impossible to show icons.
  * Menu building can of course be handled fully in code but the trade-off can be huge.
  */
 public class MenuPicker {
@@ -74,7 +74,7 @@ public class MenuPicker {
      * @param listener callback handler with the MenuItem the user chooses + the position
      */
     public MenuPicker(@NonNull final Context context,
-                      @Nullable final CharSequence title,
+                      @Nullable final String title,
                       @NonNull final Menu menu,
                       final int position,
                       @NonNull final MenuPickListener listener) {
@@ -84,14 +84,20 @@ public class MenuPicker {
 
         final View root = LayoutInflater.from(context).inflate(R.layout.dialog_popupmenu, null);
 
-        // list of options
-        final RecyclerView listView = root.findViewById(R.id.item_list);
+        // optional title
+        if (title != null && !title.isEmpty()) {
+            final TextView titleView = root.findViewById(R.id.alertTitle);
+            titleView.setText(title);
+        } else {
+            root.findViewById(R.id.title_template).setVisibility(View.GONE);
+        }
+
         final MenuItemListAdapter adapter = new MenuItemListAdapter(context, menu);
+        final RecyclerView listView = root.findViewById(R.id.item_list);
         listView.setAdapter(adapter);
 
         mDialog = new MaterialAlertDialogBuilder(context)
                 .setView(root)
-                .setTitle(title)
                 .create();
     }
 
@@ -191,6 +197,15 @@ public class MenuPicker {
             notifyDataSetChanged();
         }
 
+        @Override
+        public int getItemViewType(final int position) {
+            if (mList.get(position).getItemId() != R.id.MENU_DIVIDER) {
+                return MENU_ITEM;
+            } else {
+                return DIVIDER;
+            }
+        }
+
         @NonNull
         @Override
         public Holder onCreateViewHolder(@NonNull final ViewGroup parent,
@@ -201,22 +216,29 @@ public class MenuPicker {
             } else {
                 root = mInflater.inflate(R.layout.row_simple_list_divider, parent, false);
             }
-            return new Holder(viewType, root);
+            final Holder holder = new Holder(viewType, root);
+            if (holder.textView != null) {
+                holder.textView.setOnClickListener(v -> onItemClicked(holder));
+            }
+            return holder;
         }
 
-        @Override
-        public int getItemViewType(final int position) {
-            if (mList.get(position).getItemId() != R.id.MENU_DIVIDER) {
-                return MENU_ITEM;
-            } else {
-                return DIVIDER;
+        void onItemClicked(@NonNull final Holder holder) {
+            final MenuItem item = mList.get(holder.getBindingAdapterPosition());
+            if (item.isEnabled()) {
+                if (item.hasSubMenu()) {
+                    mDialog.setTitle(item.getTitle());
+                    setMenu(item.getSubMenu());
+                } else {
+                    mDialog.dismiss();
+                    mListener.onContextItemSelected(item.getItemId(), mPosition);
+                }
             }
         }
 
         @Override
         public void onBindViewHolder(@NonNull final Holder holder,
                                      final int position) {
-
             if (holder.textView != null) {
                 final MenuItem item = mList.get(position);
                 holder.textView.setText(item.getTitle());
@@ -231,17 +253,6 @@ public class MenuPicker {
                 }
 
                 holder.textView.setEnabled(item.isEnabled());
-                if (item.isEnabled()) {
-                    holder.textView.setOnClickListener(v -> {
-                        if (item.hasSubMenu()) {
-                            mDialog.setTitle(item.getTitle());
-                            setMenu(item.getSubMenu());
-                        } else {
-                            mDialog.dismiss();
-                            mListener.onContextItemSelected(item.getItemId(), mPosition);
-                        }
-                    });
-                }
             }
         }
 

@@ -221,7 +221,7 @@ public class CoverHandler {
         Menu menu = MenuPicker.createMenu(mContext);
         new MenuInflater(mContext).inflate(R.menu.image, menu);
 
-        final CharSequence title;
+        final String title;
         final File file = getCoverFile();
         if (file.exists()) {
             if (BuildConfig.DEBUG /* always */) {
@@ -237,7 +237,7 @@ public class CoverHandler {
             // there is no current image; only show the replace menu
             final MenuItem menuItem = menu.findItem(R.id.SUBMENU_THUMB_REPLACE);
             menu = menuItem.getSubMenu();
-            title = menuItem.getTitle();
+            title = menuItem.getTitle().toString();
         }
 
         // we only support alternative edition covers for the front cover.

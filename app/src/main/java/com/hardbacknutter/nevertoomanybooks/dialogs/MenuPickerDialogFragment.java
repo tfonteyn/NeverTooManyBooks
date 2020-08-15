@@ -37,7 +37,6 @@ import androidx.annotation.DrawableRes;
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentResultListener;
@@ -137,32 +136,29 @@ public class MenuPickerDialogFragment
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
-        final View root = getLayoutInflater().inflate(R.layout.dialog_popupmenu, null);
-
-        // list of options
-        final RecyclerView listView = root.findViewById(R.id.item_list);
-
-        //noinspection ConstantConditions
-        final AlertDialog mDialog = new MaterialAlertDialogBuilder(getContext())
-                .setView(root)
-                .create();
-
         final Bundle args = requireArguments();
         mPosition = args.getInt(BKEY_POSITION);
+
+        final View root = getLayoutInflater().inflate(R.layout.dialog_popupmenu, null);
 
         // optional title
         final String title = args.getString(StandardDialogs.BKEY_DIALOG_TITLE);
         if (title != null && !title.isEmpty()) {
-            mDialog.setTitle(title);
+            final TextView titleView = root.findViewById(R.id.alertTitle);
+            titleView.setText(title);
+        } else {
+            root.findViewById(R.id.title_template).setVisibility(View.GONE);
         }
 
         //noinspection ConstantConditions
         final MenuItemListAdapter adapter =
                 new MenuItemListAdapter(getContext(), args.getParcelableArrayList(BKEY_MENU));
-
+        final RecyclerView listView = root.findViewById(R.id.item_list);
         listView.setAdapter(adapter);
 
-        return mDialog;
+        return new MaterialAlertDialogBuilder(getContext())
+                .setView(root)
+                .create();
     }
 
     public interface OnResultListener
@@ -429,6 +425,15 @@ public class MenuPickerDialogFragment
             notifyDataSetChanged();
         }
 
+        @Override
+        public int getItemViewType(final int position) {
+            if (mList.get(position).getItemId() != R.id.MENU_DIVIDER) {
+                return MENU_ITEM;
+            } else {
+                return MENU_DIVIDER;
+            }
+        }
+
         @NonNull
         @Override
         public Holder onCreateViewHolder(@NonNull final ViewGroup parent,
@@ -439,22 +444,31 @@ public class MenuPickerDialogFragment
             } else {
                 root = mInflater.inflate(R.layout.row_simple_list_divider, parent, false);
             }
-            return new Holder(root, viewType);
+            final Holder holder = new Holder(root, viewType);
+            if (holder.textView != null) {
+                holder.textView.setOnClickListener(v -> onItemClicked(holder));
+            }
+            return holder;
         }
 
-        @Override
-        public int getItemViewType(final int position) {
-            if (mList.get(position).getItemId() != R.id.MENU_DIVIDER) {
-                return MENU_ITEM;
-            } else {
-                return MENU_DIVIDER;
+        void onItemClicked(@NonNull final Holder holder) {
+            final Pick item = mList.get(holder.getBindingAdapterPosition());
+            if (item.isEnabled()) {
+                if (item.hasSubMenu()) {
+                    //noinspection ConstantConditions
+                    getDialog().setTitle(item.getTitle());
+                    setMenu(item.getSubMenu());
+                } else {
+                    OnResultListener.sendResult(MenuPickerDialogFragment.this, REQUEST_KEY,
+                                                item.getItemId(), mPosition);
+                    dismiss();
+                }
             }
         }
 
         @Override
         public void onBindViewHolder(@NonNull final Holder holder,
                                      final int position) {
-
             if (holder.textView != null) {
                 final Pick item = mList.get(position);
                 holder.textView.setText(item.getTitle());
@@ -471,21 +485,6 @@ public class MenuPickerDialogFragment
                 }
 
                 holder.textView.setEnabled(item.isEnabled());
-                if (item.isEnabled()) {
-                    holder.textView.setOnClickListener(v -> {
-                        if (item.hasSubMenu()) {
-                            //noinspection ConstantConditions
-                            getDialog().setTitle(item.getTitle());
-                            setMenu(item.getSubMenu());
-                        } else {
-
-                            OnResultListener.sendResult(MenuPickerDialogFragment.this, REQUEST_KEY,
-                                                        item.getItemId(), mPosition);
-
-                            dismiss();
-                        }
-                    });
-                }
             }
         }
 
