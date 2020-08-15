@@ -64,6 +64,7 @@ import com.hardbacknutter.nevertoomanybooks.database.CoversDAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.dialogs.MenuPicker;
+import com.hardbacknutter.nevertoomanybooks.dialogs.MenuPickerDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ZoomedImageDialogFragment;
@@ -190,6 +191,12 @@ public class CoverHandler {
             return true;
         });
 
+        if (BuildConfig.MENU_PICKER_USES_FRAGMENT) {
+            mFragment.getChildFragmentManager().setFragmentResultListener(
+                    MenuPickerDialogFragment.REQUEST_KEY, mFragment,
+                    (MenuPickerDialogFragment.OnResultListener) this::onContextItemSelected);
+        }
+
         mTransFormTaskViewModel = new ViewModelProvider(fragment)
                 .get(String.valueOf(cIdx), TransFormTaskViewModel.class);
         mTransFormTaskViewModel.onFinished().observe(mFragment.getViewLifecycleOwner(), event -> {
@@ -243,8 +250,14 @@ public class CoverHandler {
         // we only support alternative edition covers for the front cover.
         menu.findItem(R.id.MENU_THUMB_ADD_ALT_EDITIONS).setVisible(mCIdx == 0);
 
-        new MenuPicker(mContext, title, menu, mCIdx, this::onContextItemSelected)
-                .show();
+        if (BuildConfig.MENU_PICKER_USES_FRAGMENT) {
+            MenuPickerDialogFragment.newInstance(title, menu, mCIdx)
+                                    .show(mFragment.getChildFragmentManager(),
+                                          MenuPickerDialogFragment.TAG);
+        } else {
+            new MenuPicker(mContext, title, menu, mCIdx, this::onContextItemSelected)
+                    .show();
+        }
     }
 
     private void showProgress(final boolean show) {

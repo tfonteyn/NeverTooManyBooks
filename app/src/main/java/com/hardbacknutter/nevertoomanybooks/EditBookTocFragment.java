@@ -121,8 +121,6 @@ public class EditBookTocFragment
     /** Stores the item position in the list while we're editing that item. */
     @Nullable
     private Integer mEditPosition;
-    private final MenuPickerDialogFragment.OnResultListener mOnMenuPickerListener =
-            this::onContextItemSelected;
     private IsfdbGetEditionsTask mIsfdbGetEditionsTask;
     /** Database Access. */
     private DAO mDb;
@@ -174,11 +172,16 @@ public class EditBookTocFragment
         super.onCreate(savedInstanceState);
 
         getChildFragmentManager().setFragmentResultListener(
-                ConfirmTocDialogFragment.REQUEST_KEY, this, mConfirmTocResultsListener);
-        getChildFragmentManager().setFragmentResultListener(
-                MenuPickerDialogFragment.REQUEST_KEY, this, mOnMenuPickerListener);
-        getChildFragmentManager().setFragmentResultListener(
                 EditTocEntryDialogFragment.REQUEST_KEY, this, mOnBookChangedListener);
+
+        getChildFragmentManager().setFragmentResultListener(
+                ConfirmTocDialogFragment.REQUEST_KEY, this, mConfirmTocResultsListener);
+
+        if (BuildConfig.MENU_PICKER_USES_FRAGMENT) {
+            getChildFragmentManager().setFragmentResultListener(
+                    MenuPickerDialogFragment.REQUEST_KEY, this,
+                    (MenuPickerDialogFragment.OnResultListener) this::onContextItemSelected);
+        }
 
         mDb = new DAO(TAG);
     }
@@ -376,6 +379,8 @@ public class EditBookTocFragment
     private void onCreateContextMenu(final int position) {
         final Resources res = getResources();
         final TocEntry item = mList.get(position);
+        //noinspection ConstantConditions
+        final String title = item.getLabel(getContext());
 
         if (BuildConfig.MENU_PICKER_USES_FRAGMENT) {
             final ArrayList<MenuPickerDialogFragment.Pick> menu = new ArrayList<>();
@@ -388,13 +393,9 @@ public class EditBookTocFragment
                     getString(R.string.action_delete),
                     R.drawable.ic_delete));
 
-            //noinspection ConstantConditions
-            final String title = item.getLabel(getContext());
-            MenuPickerDialogFragment
-                    .newInstance(title, menu, position)
-                    .show(getChildFragmentManager(), MenuPickerDialogFragment.TAG);
+            MenuPickerDialogFragment.newInstance(title, menu, position)
+                                    .show(getChildFragmentManager(), MenuPickerDialogFragment.TAG);
         } else {
-            //noinspection ConstantConditions
             final Menu menu = MenuPicker.createMenu(getContext());
             menu.add(Menu.NONE, R.id.MENU_EDIT,
                      res.getInteger(R.integer.MENU_ORDER_EDIT),
@@ -405,7 +406,6 @@ public class EditBookTocFragment
                      R.string.action_delete)
                 .setIcon(R.drawable.ic_delete);
 
-            final String title = item.getLabel(getContext());
             new MenuPicker(getContext(), title, menu, position, this::onContextItemSelected)
                     .show();
         }

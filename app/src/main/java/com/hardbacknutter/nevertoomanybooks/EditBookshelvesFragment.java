@@ -72,9 +72,6 @@ public class EditBookshelvesFragment
     /** View Binding. */
     private FragmentEditBookshelvesBinding mVb;
 
-    private final MenuPickerDialogFragment.OnResultListener mOnMenuPickerListener =
-            this::onContextItemSelected;
-
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -82,8 +79,11 @@ public class EditBookshelvesFragment
 
         getChildFragmentManager().setFragmentResultListener(
                 EditBookshelfDialogFragment.REQUEST_KEY, this, mOnEditBookshelfListener);
-        getChildFragmentManager().setFragmentResultListener(
-                MenuPickerDialogFragment.REQUEST_KEY, this, mOnMenuPickerListener);
+        if (BuildConfig.MENU_PICKER_USES_FRAGMENT) {
+            getChildFragmentManager().setFragmentResultListener(
+                    MenuPickerDialogFragment.REQUEST_KEY, this,
+                    (MenuPickerDialogFragment.OnResultListener) this::onContextItemSelected);
+        }
     }
 
     @Override
@@ -174,6 +174,7 @@ public class EditBookshelvesFragment
     private void onCreateContextMenu(final int position) {
         final Resources res = getResources();
         final Bookshelf bookshelf = mModel.getBookshelf(position);
+        final String title = bookshelf.getName();
 
         if (BuildConfig.MENU_PICKER_USES_FRAGMENT) {
             final ArrayList<MenuPickerDialogFragment.Pick> menu = new ArrayList<>();
@@ -186,10 +187,8 @@ public class EditBookshelvesFragment
                     getString(R.string.action_delete),
                     R.drawable.ic_delete));
 
-            final String title = bookshelf.getName();
-            MenuPickerDialogFragment
-                    .newInstance(title, menu, position)
-                    .show(getChildFragmentManager(), MenuPickerDialogFragment.TAG);
+            MenuPickerDialogFragment.newInstance(title, menu, position)
+                                    .show(getChildFragmentManager(), MenuPickerDialogFragment.TAG);
         } else {
             //noinspection ConstantConditions
             final Menu menu = MenuPicker.createMenu(getContext());
@@ -202,7 +201,6 @@ public class EditBookshelvesFragment
                      R.string.action_delete)
                 .setIcon(R.drawable.ic_delete);
 
-            final String title = bookshelf.getName();
             new MenuPicker(getContext(), title, menu, position, this::onContextItemSelected)
                     .show();
         }

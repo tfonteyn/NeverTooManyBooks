@@ -86,8 +86,6 @@ public class AuthorWorksFragment
     private AuthorWorksModel mModel;
     /** The Adapter. */
     private TocAdapter mAdapter;
-    private final MenuPickerDialogFragment.OnResultListener mOnMenuPickerListener =
-            this::onContextItemSelected;
     private ActionBar mActionBar;
 
     @Override
@@ -95,9 +93,11 @@ public class AuthorWorksFragment
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
 
-        getChildFragmentManager().setFragmentResultListener(
-                MenuPickerDialogFragment.REQUEST_KEY, this, mOnMenuPickerListener);
-
+        if (BuildConfig.MENU_PICKER_USES_FRAGMENT) {
+            getChildFragmentManager().setFragmentResultListener(
+                    MenuPickerDialogFragment.REQUEST_KEY, this,
+                    (MenuPickerDialogFragment.OnResultListener) this::onContextItemSelected);
+        }
     }
 
     @Nullable
@@ -226,6 +226,8 @@ public class AuthorWorksFragment
     private void onCreateContextMenu(final int position) {
         final Resources res = getResources();
         final TocEntry item = mModel.getTocEntries().get(position);
+        //noinspection ConstantConditions
+        final String title = item.getLabel(getContext());
 
         if (BuildConfig.MENU_PICKER_USES_FRAGMENT) {
             final ArrayList<MenuPickerDialogFragment.Pick> menu = new ArrayList<>();
@@ -233,21 +235,15 @@ public class AuthorWorksFragment
                                                        res.getInteger(R.integer.MENU_ORDER_DELETE),
                                                        getString(R.string.action_delete),
                                                        R.drawable.ic_delete));
-
-            //noinspection ConstantConditions
-            final String title = item.getLabel(getContext());
-            MenuPickerDialogFragment
-                    .newInstance(title, menu, position)
-                    .show(getChildFragmentManager(), MenuPickerDialogFragment.TAG);
+            MenuPickerDialogFragment.newInstance(title, menu, position)
+                                    .show(getChildFragmentManager(), MenuPickerDialogFragment.TAG);
         } else {
-            //noinspection ConstantConditions
             final Menu menu = MenuPicker.createMenu(getContext());
             menu.add(Menu.NONE, R.id.MENU_DELETE,
                      res.getInteger(R.integer.MENU_ORDER_DELETE),
                      R.string.action_delete)
                 .setIcon(R.drawable.ic_delete);
 
-            final String title = item.getLabel(getContext());
             new MenuPicker(getContext(), title, menu, position, this::onContextItemSelected)
                     .show();
         }
