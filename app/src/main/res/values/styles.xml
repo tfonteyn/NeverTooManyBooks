@@ -461,9 +461,11 @@
     </style>
 
     <style name="BoB.Group.Label.Level2">
+        <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
     </style>
 
     <style name="BoB.Group.Label.Level3">
+        <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
     </style>
 
 
