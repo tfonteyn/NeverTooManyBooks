@@ -547,6 +547,20 @@ public final class AmazonSearchEngine
             }
         }
 
+
+        // <form method="post" id="addToCart"
+        //<input type="hidden" id="ASIN" name="ASIN" value="0752853694">
+        final Element addToCart = document.getElementById("addToCart");
+        if (addToCart != null) {
+            final Element asinElement = addToCart.selectFirst("input#ASIN");
+            if (asinElement != null) {
+                final String asin = asinElement.attr("value");
+                if (asin != null) {
+                    bookData.putString(DBDefinitions.KEY_EID_ASIN, asin);
+                }
+            }
+        }
+
         if (!mAuthors.isEmpty()) {
             bookData.putParcelableArrayList(Book.BKEY_AUTHOR_ARRAY, mAuthors);
         }
