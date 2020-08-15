@@ -303,7 +303,6 @@ public class BitmaskPreference
 
             final RecyclerView listView = view.findViewById(R.id.multi_choice_items);
             listView.setAdapter(adapter);
-            adapter.notifyDataSetChanged();
         }
 
         @Override
