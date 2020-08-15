@@ -129,15 +129,10 @@
             app:constraint_referenced_ids="rating,icon_read"
             />
 
-        <!-- 2020-07-13: setting visibility="gone" from code
-                but keeping/populating as normal for now.
-                The title is ALSO visible in the ToolBar (and usually on the cover image).
-        -->
         <TextView
             android:id="@+id/title"
             style="@style/Field.BookTitle.Large"
             android:layout_marginStart="@dimen/indent_field"
-            android:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/coverImage0"
             app:layout_constraintTop_toBottomOf="@id/lend_to"

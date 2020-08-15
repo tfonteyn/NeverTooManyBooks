@@ -72,6 +72,7 @@ import com.hardbacknutter.nevertoomanybooks.databinding.BooksonbookshelfBinding;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.MenuPicker;
+import com.hardbacknutter.nevertoomanybooks.dialogs.MenuPickerDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditAuthorDialogFragment;
@@ -276,10 +277,15 @@ public class BooksOnBookshelf
                         final int level = rowData.getInt(DBDefinitions.KEY_BL_NODE_LEVEL);
                         final String title = mAdapter.getLevelText(position, level);
 
-                        // bring up the context menu
-                        new MenuPicker(BooksOnBookshelf.this, title, menu, position,
-                                       BooksOnBookshelf.this::onContextItemSelected)
-                                .show();
+                        if (BuildConfig.MENU_PICKER_USES_FRAGMENT) {
+                            MenuPickerDialogFragment.newInstance(title, menu, position)
+                                                    .show(getSupportFragmentManager(),
+                                                          MenuPickerDialogFragment.TAG);
+                        } else {
+                            new MenuPicker(BooksOnBookshelf.this, title, menu, position,
+                                           BooksOnBookshelf.this::onContextItemSelected)
+                                    .show();
+                        }
                     }
                     return true;
                 }
@@ -332,6 +338,12 @@ public class BooksOnBookshelf
 
         fm.setFragmentResultListener(StylePickerDialogFragment.REQUEST_KEY, this,
                                      mOnStylePickerListener);
+
+        if (BuildConfig.MENU_PICKER_USES_FRAGMENT) {
+            fm.setFragmentResultListener(MenuPickerDialogFragment.REQUEST_KEY, this,
+                                         (MenuPickerDialogFragment.OnResultListener)
+                                                 this::onContextItemSelected);
+        }
 
         // Does not use the full progress dialog. Instead uses the overlay progress bar.
         mModel = new ViewModelProvider(this).get(BooksOnBookshelfModel.class);
