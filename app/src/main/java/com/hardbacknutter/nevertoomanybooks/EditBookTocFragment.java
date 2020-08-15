@@ -421,15 +421,13 @@ public class EditBookTocFragment
      */
     private boolean onContextItemSelected(@IdRes final int menuItem,
                                           final int position) {
-        final TocEntry tocEntry = mList.get(position);
-
         switch (menuItem) {
             case R.id.MENU_EDIT:
-                editEntry(position, tocEntry);
+                editEntry(position);
                 return true;
 
             case R.id.MENU_DELETE:
-                deleteEntry(position, tocEntry);
+                deleteEntry(position);
                 return true;
 
             default:
@@ -440,19 +438,24 @@ public class EditBookTocFragment
     /**
      * Start the fragment dialog to edit an entry.
      *
-     * @param position the item position which will be used to update the data after editing.
-     * @param tocEntry to edit
+     * @param position the position of the item
      */
-    private void editEntry(@Nullable final Integer position,
-                           @NonNull final TocEntry tocEntry) {
+    private void editEntry(final int position) {
         mEditPosition = position;
+
+        final TocEntry tocEntry = mList.get(position);
         EditTocEntryDialogFragment
                 .newInstance(mBookViewModel.getBook(), tocEntry, mVb.cbxMultipleAuthors.isChecked())
                 .show(getChildFragmentManager(), EditTocEntryDialogFragment.TAG);
     }
 
-    private void deleteEntry(final int position,
-                             @NonNull final TocEntry tocEntry) {
+    /**
+     * Prompt the user to delete the given item.
+     *
+     * @param position the position of the item
+     */
+    private void deleteEntry(final int position) {
+        final TocEntry tocEntry = mList.get(position);
         //noinspection ConstantConditions
         StandardDialogs.deleteTocEntry(getContext(), tocEntry, () -> {
             if (mEditHelperVM.deleteTocEntry(getContext(), tocEntry.getId())) {
@@ -830,7 +833,18 @@ public class EditBookTocFragment
 
             final View view = getLayoutInflater()
                     .inflate(R.layout.row_edit_toc_entry, parent, false);
-            return new Holder(view);
+            final Holder holder = new Holder(view);
+
+            // click -> edit
+            holder.rowDetailsView.setOnClickListener(
+                    v -> editEntry(holder.getBindingAdapterPosition()));
+
+            holder.rowDetailsView.setOnLongClickListener(v -> {
+                onCreateContextMenu(holder.getBindingAdapterPosition());
+                return true;
+            });
+
+            return holder;
         }
 
         @Override
@@ -850,21 +864,12 @@ public class EditBookTocFragment
                 holder.firstPublicationView.setVisibility(View.VISIBLE);
                 holder.firstPublicationView.setText(getString(R.string.brackets, year));
             }
-
-            // click -> edit
-            holder.rowDetailsView.setOnClickListener(
-                    v -> editEntry(holder.getBindingAdapterPosition(), item));
-
-            holder.rowDetailsView.setOnLongClickListener(v -> {
-                onCreateContextMenu(holder.getBindingAdapterPosition());
-                return true;
-            });
         }
 
         @Override
         protected void onDelete(final int adapterPosition,
                                 @NonNull final TocEntry item) {
-            deleteEntry(adapterPosition, item);
+            deleteEntry(adapterPosition);
         }
     }
 }

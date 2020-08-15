@@ -65,10 +65,8 @@ public class EditBookshelvesFragment
     /** The adapter for the list. */
     private BookshelfAdapter mAdapter;
     private EditBookshelvesModel mModel;
-
-
     private final EditBookshelfDialogFragment.OnResultListener mOnEditBookshelfListener =
-            (bookshelfId, booksMoved) -> mModel.reloadList(bookshelfId);
+            (bookshelfId, booksMoved) -> mModel.reloadListAndSetSelectedPosition(bookshelfId);
     /** ViewModel. */
     private ResultDataModel mResultData;
     /** View Binding. */
@@ -109,23 +107,28 @@ public class EditBookshelvesFragment
 
         mModel = new ViewModelProvider(this).get(EditBookshelvesModel.class);
         mModel.init(getArguments());
-        mModel.getSelectedPosition().observe(getViewLifecycleOwner(), position ->
-                mAdapter.setSelectedPosition(position));
-
-        //noinspection ConstantConditions
-        mAdapter = new BookshelfAdapter(getContext());
+        mModel.onSelectedPositionChanged().observe(getViewLifecycleOwner(), positionPair -> {
+            // old position
+            mAdapter.notifyItemChanged(positionPair.first);
+            // current/new position
+            mAdapter.notifyItemChanged(positionPair.second);
+            // update the activity result.
+            mResultData.putResultData(DBDefinitions.KEY_PK_ID,
+                                      mModel.getBookshelf(positionPair.second).getId());
+        });
 
         // The FAB lives in the activity.
         final FloatingActionButton fab = getActivity().findViewById(R.id.fab);
         fab.setImageResource(R.drawable.ic_add);
         fab.setVisibility(View.VISIBLE);
+        //noinspection ConstantConditions
         fab.setOnClickListener(v -> editItem(mModel.createNewBookshelf(getContext())));
 
         //noinspection ConstantConditions
-        mVb.bookshelfList.addItemDecoration(
-                new DividerItemDecoration(getContext(), RecyclerView.VERTICAL));
-        mVb.bookshelfList.setHasFixedSize(true);
-        mVb.bookshelfList.setAdapter(mAdapter);
+        mAdapter = new BookshelfAdapter(getContext());
+        mVb.list.addItemDecoration(new DividerItemDecoration(getContext(), RecyclerView.VERTICAL));
+        mVb.list.setHasFixedSize(true);
+        mVb.list.setAdapter(mAdapter);
     }
 
     @Override
@@ -143,7 +146,7 @@ public class EditBookshelvesFragment
     public void onPrepareOptionsMenu(@NonNull final Menu menu) {
         // only enable if a shelf is selected
         menu.findItem(R.id.MENU_PURGE_BLNS)
-            .setEnabled(mModel.getSelectedBookshelf() != null);
+            .setEnabled(mModel.getSelectedPosition() != RecyclerView.NO_POSITION);
 
         super.onPrepareOptionsMenu(menu);
     }
@@ -153,11 +156,12 @@ public class EditBookshelvesFragment
         //noinspection SwitchStatementWithTooFewBranches
         switch (item.getItemId()) {
             case R.id.MENU_PURGE_BLNS: {
-                final Bookshelf bookshelf = mModel.getSelectedBookshelf();
-                if (bookshelf != null) {
+                final int position = mModel.getSelectedPosition();
+                if (position != RecyclerView.NO_POSITION) {
                     //noinspection ConstantConditions
                     StandardDialogs.purgeBLNS(getContext(), R.string.lbl_bookshelf,
-                                              bookshelf, () -> mModel.purgeBLNS());
+                                              mModel.getBookshelf(position),
+                                              () -> mModel.purgeBLNS());
                 }
                 return true;
             }
@@ -224,13 +228,13 @@ public class EditBookshelvesFragment
 
             case R.id.MENU_DELETE:
                 if (bookshelf.getId() > Bookshelf.DEFAULT) {
-                    mModel.deleteBookshelf(bookshelf);
-                    mAdapter.notifyDataSetChanged();
+                    mModel.deleteBookshelf(position);
+                    mAdapter.notifyItemRemoved(position);
 
                 } else {
                     //TODO: why not ? as long as we make sure there is another one left..
                     // e.g. count > 2, then you can delete '1'
-                    Snackbar.make(mVb.bookshelfList, R.string.warning_cannot_delete_1st_bs,
+                    Snackbar.make(mVb.list, R.string.warning_cannot_delete_1st_bs,
                                   Snackbar.LENGTH_LONG).show();
                 }
                 return true;
@@ -249,14 +253,6 @@ public class EditBookshelvesFragment
         EditBookshelfDialogFragment
                 .newInstance(bookshelf)
                 .show(getChildFragmentManager(), EditBookshelfDialogFragment.TAG);
-    }
-
-    private void setSelectedBookshelf(final int selectedPosition) {
-        mModel.setSelectedBookshelf(selectedPosition);
-        final Bookshelf selectedBookshelf = mModel.getSelectedBookshelf();
-        if (selectedBookshelf != null) {
-            mResultData.putResultData(DBDefinitions.KEY_PK_ID, selectedBookshelf.getId());
-        }
     }
 
     /**
@@ -286,11 +282,6 @@ public class EditBookshelvesFragment
         private final LayoutInflater mInflater;
 
         /**
-         * Currently selected row.
-         */
-        private int mSelectedPosition = RecyclerView.NO_POSITION;
-
-        /**
          * Constructor.
          *
          * @param context Current context
@@ -304,7 +295,17 @@ public class EditBookshelvesFragment
         public Holder onCreateViewHolder(@NonNull final ViewGroup parent,
                                          final int viewType) {
             final View view = mInflater.inflate(R.layout.row_edit_bookshelf, parent, false);
-            return new Holder(view);
+            final Holder holder = new Holder(view);
+
+            // click -> set the row as 'selected'.
+            holder.nameView.setOnClickListener(
+                    v -> mModel.setSelectedPosition(holder.getBindingAdapterPosition()));
+
+            holder.nameView.setOnLongClickListener(v -> {
+                onCreateContextMenu(holder.getBindingAdapterPosition());
+                return true;
+            });
+            return holder;
         }
 
         @Override
@@ -314,41 +315,7 @@ public class EditBookshelvesFragment
             final Bookshelf bookshelf = mModel.getBookshelf(position);
 
             holder.nameView.setText(bookshelf.getName());
-
-            // if there was nothing selected (yet), select the initial row if we have one.
-            if (mSelectedPosition == RecyclerView.NO_POSITION
-                && bookshelf.getId() == mModel.getInitialBookshelfId()) {
-                mSelectedPosition = position;
-                setSelectedBookshelf(mSelectedPosition);
-            }
-
-            // update the current row
-            holder.itemView.setSelected(mSelectedPosition == position);
-
-            // click -> set the row as 'selected'.
-            holder.nameView.setOnClickListener(v -> {
-                // update the previous, now unselected, row.
-                notifyItemChanged(mSelectedPosition);
-                // get/update the newly selected row.
-                mSelectedPosition = holder.getBindingAdapterPosition();
-                setSelectedBookshelf(mSelectedPosition);
-                notifyItemChanged(mSelectedPosition);
-            });
-
-            holder.nameView.setOnLongClickListener(v -> {
-                onCreateContextMenu(holder.getBindingAdapterPosition());
-                return true;
-            });
-        }
-
-        /**
-         * Update the selection.
-         *
-         * @param position the newly selected row
-         */
-        void setSelectedPosition(final int position) {
-            mSelectedPosition = position;
-            notifyDataSetChanged();
+            holder.itemView.setSelected(position == mModel.getSelectedPosition());
         }
 
         @Override

@@ -4,14 +4,6 @@
  *
  * This file is part of NeverTooManyBooks.
  *
- * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
- *
- * Without their original creation, this project would not exist in its
- * current form. It was however largely rewritten/refactored and any
- * comments on this fork should be directed at HardBackNutter and not
- * at the original creators.
- *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -87,31 +79,31 @@ public class RadioGroupRecyclerAdapter<ID, CS extends CharSequence>
     public Holder onCreateViewHolder(@NonNull final ViewGroup parent,
                                      final int viewType) {
         final View view = mInflater.inflate(R.layout.row_choice_single, parent, false);
-        return new Holder(view);
+        final Holder holder = new Holder(view);
+        holder.buttonView.setOnClickListener(v -> onItemCheckChanged(holder));
+        return holder;
     }
 
     @Override
     public void onBindViewHolder(@NonNull final Holder holder,
                                  final int position) {
-
         final Pair<ID, CS> item = mItems.get(position);
-        // store the item on a tag for easy retrieval
-        holder.buttonView.setTag(R.id.TAG_ITEM, item.first);
 
-        holder.buttonView.setText(item.second);
         final boolean checked = mSelection != null && mSelection == item.first;
         holder.buttonView.setChecked(checked);
-        holder.buttonView.setOnClickListener(this::itemCheckChanged);
+        holder.buttonView.setText(item.second);
     }
 
-    private void itemCheckChanged(@NonNull final View v) {
-        //noinspection unchecked
-        mSelection = (ID) v.getTag(R.id.TAG_ITEM);
-        // this triggers a bind calls for the rows, which in turn sets the checked status.
+    private void onItemCheckChanged(@NonNull final Holder holder) {
+
+        final int position = holder.getAbsoluteAdapterPosition();
+
+        mSelection = mItems.get(position).first;
+        // this triggers a bind call for all rows, which in turn (un)sets the checked row.
         notifyDataSetChanged();
         if (mOnSelectionListener != null) {
             // use a post allowing the UI to update the view first
-            v.post(() -> mOnSelectionListener.onSelected(mSelection));
+            holder.buttonView.post(() -> mOnSelectionListener.onSelected(mSelection));
         }
     }
 

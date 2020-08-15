@@ -398,8 +398,9 @@ public class BooklistBuilder
             if (!DBHelper.isCollationCaseSensitive()) {
                 // can't do this, IndexDefinition class does not support DESC columns for now.
                 // mListTable.addIndex("SDI", false, helper.getSortedDomains());
-                mSyncedDb.execSQL("CREATE INDEX " + mListTable + "_SDI ON " + mListTable
-                                  + "(" + helper.getSortedDomainsIndexColumns() + ")");
+                mSyncedDb.execSQL(
+                        "CREATE INDEX " + mListTable.getName() + "_SDI ON " + mListTable.getName()
+                        + "(" + helper.getSortedDomainsIndexColumns() + ")");
             }
 
             // The list table is now fully populated.
@@ -418,8 +419,7 @@ public class BooklistBuilder
         } finally {
             mSyncedDb.endTransaction(txLock);
 
-            // we don't catch exceptions but we do want to log the time it took here.
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_THE_BUILDER_TIMERS) {
                 Log.d(TAG, "build|insert(" + initialInsertCount + ") : "
                            + ((t1_insert - t0) / NANO_TO_MILLIS) + " ms");
             }

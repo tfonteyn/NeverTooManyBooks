@@ -412,15 +412,13 @@ public class BooksOnBookshelfModel
      * @param context       Current context
      * @param position      adapter list position; i.e. first visible position in the list
      * @param topViewOffset offset in pixels for the first visible position in the list
-     * @param rowId         the row id for that position
      */
     public void saveListPosition(@NonNull final Context context,
                                  final int position,
-                                 final int topViewOffset,
-                                 final long rowId) {
+                                 final int topViewOffset) {
         if (mListHasBeenLoaded) {
             Objects.requireNonNull(mBookshelf, ErrorMsg.NULL_BOOKSHELF);
-            mBookshelf.setTopListPosition(context, mDb, position, topViewOffset, rowId);
+            mBookshelf.setTopListPosition(context, mDb, position, topViewOffset);
         }
     }
 
@@ -692,7 +690,7 @@ public class BooksOnBookshelfModel
      * Queue a rebuild of the underlying cursor and data.
      */
     public void buildBookList() {
-        execute(R.id.TASK_ID_GET_BOOKLIST);
+        execute(R.id.TASK_ID_BOOKLIST_BUILDER);
     }
 
     /**

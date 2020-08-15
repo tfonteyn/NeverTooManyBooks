@@ -495,7 +495,14 @@ public class EditBookPublisherListDialogFragment
 
             final View view = getLayoutInflater()
                     .inflate(R.layout.row_edit_publisher_list, parent, false);
-            return new Holder(view);
+            final Holder holder = new Holder(view);
+            // click -> edit
+            holder.rowDetailsView.setOnClickListener(v -> EditPublisherForBookDialogFragment
+                    .newInstance(mBookViewModel.getBook().getTitle(),
+                                 getItem(holder.getBindingAdapterPosition()))
+                    .show(getParentFragmentManager(), EditPublisherForBookDialogFragment.TAG));
+
+            return holder;
         }
 
         @Override
@@ -505,11 +512,6 @@ public class EditBookPublisherListDialogFragment
 
             final Publisher publisher = getItem(position);
             holder.publisherView.setText(publisher.getLabel(getContext()));
-
-            // click -> edit
-            holder.rowDetailsView.setOnClickListener(v -> EditPublisherForBookDialogFragment
-                    .newInstance(mBookViewModel.getBook().getTitle(), publisher)
-                    .show(getParentFragmentManager(), EditPublisherForBookDialogFragment.TAG));
         }
     }
 }

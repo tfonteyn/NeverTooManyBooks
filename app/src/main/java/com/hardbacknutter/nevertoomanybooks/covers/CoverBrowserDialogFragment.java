@@ -470,6 +470,7 @@ public class CoverBrowserDialogFragment
                     new ImageLoader(holder.imageView, file, mMaxWidth, mMaxHeight, null)
                             .executeOnExecutor(mModel.getGalleryDisplayExecutor());
 
+                    // keep this statement here, or we would need to call isFileGood twice
                     holder.imageView.setOnClickListener(v -> onGalleryImageSelected(imageFileInfo));
 
                     //noinspection ConstantConditions

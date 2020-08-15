@@ -527,7 +527,13 @@ public class EditBookSeriesListDialogFragment
                                          final int viewType) {
             final View view = getLayoutInflater()
                     .inflate(R.layout.row_edit_series_list, parent, false);
-            return new Holder(view);
+            final Holder holder = new Holder(view);
+            // click -> edit
+            holder.rowDetailsView.setOnClickListener(v -> EditSeriesForBookDialogFragment
+                    .newInstance(mBookViewModel.getBook().getTitle(),
+                                 getItem(holder.getBindingAdapterPosition()))
+                    .show(getParentFragmentManager(), EditSeriesForBookDialogFragment.TAG));
+            return holder;
         }
 
         @Override
@@ -537,11 +543,6 @@ public class EditBookSeriesListDialogFragment
 
             final Series series = getItem(position);
             holder.seriesView.setText(series.getLabel(getContext()));
-
-            // click -> edit
-            holder.rowDetailsView.setOnClickListener(v -> EditSeriesForBookDialogFragment
-                    .newInstance(mBookViewModel.getBook().getTitle(), series)
-                    .show(getParentFragmentManager(), EditSeriesForBookDialogFragment.TAG));
         }
     }
 }

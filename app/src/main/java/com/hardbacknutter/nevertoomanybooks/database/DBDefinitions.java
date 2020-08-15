@@ -181,6 +181,8 @@ public final class DBDefinitions {
     /** Saved booklist adapter top row offset from view top. */
     public static final Domain DOM_BOOKSHELF_BL_TOP_OFFSET;
     /** Saved booklist adapter rowId of current top row. */
+    @SuppressWarnings("DeprecatedIsStillUsed")
+    @Deprecated
     public static final Domain DOM_BOOKSHELF_BL_TOP_ROW_ID;
 
     /** {@link #TBL_AUTHORS}. */
@@ -441,6 +443,8 @@ public final class DBDefinitions {
     public static final String KEY_BOOKSHELF_NAME = "bookshelf";
     public static final String KEY_BOOKSHELF_BL_TOP_POS = "bl_top_pos";
     public static final String KEY_BOOKSHELF_BL_TOP_OFFSET = "bl_top_offset";
+    @SuppressWarnings("DeprecatedIsStillUsed")
+    @Deprecated
     public static final String KEY_BOOKSHELF_BL_TOP_ROW_ID = "bl_top_row";
     /** Alias. */
     public static final String KEY_BOOKSHELF_NAME_CSV = "bs_name_csv";

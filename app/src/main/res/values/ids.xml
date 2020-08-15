@@ -21,7 +21,7 @@
 
 <resources>
 
-    <!-- BEGIN used for rows in a {@link RecyclerView} -->
+    <!-- BEGIN rows in a {@link RecyclerView} -->
 
     <!-- If present, indicates the part of the row which should have the onclick listeners set.
          If not present, the listeners are set on the entire row.
@@ -33,32 +33,31 @@
     <item name="ROW_CHECKABLE_BTN" type="id" />
     <!-- optional grabber handle, should live outside of the onclick target -->
     <item name="ROW_GRABBER_ICON" type="id" />
-    <!-- BEGIN used for rows in a {@link RecyclerView} -->
-
-    <item name="LEGACY_VIEW_1" type="id" />
-    <item name="LEGACY_VIEW_2" type="id" />
+    <!-- END rows in a {@link RecyclerView} -->
 
 
     <!-- BEGIN View tags -->
     <!-- tags a Cover Image View with the task responsible to fetch the image -->
     <item name="TAG_THUMBNAIL_TASK" type="id" />
-    <!-- Tagging a View in a list with the 'uuid' (i.e. the book) it represents. -->
-    <item name="TAG_UUID" type="id" />
-    <!-- Tagging a (sub) View in a list with a generic 'item' it represents. -->
-    <item name="TAG_ITEM" type="id" />
-    <!-- Passing a position on from onBindViewHolder to the onClick-listeners. -->
-    <item name="TAG_POSITION" type="id" />
-    <!-- Updating fields from the internet.  -->
+    <!-- tags a Cover Image View with the 'uuid' (i.e. the book) it represents. -->
+    <item name="TAG_THUMBNAIL_UUID" type="id" />
+
+    <!-- Updating fields from the internet. We keep each field usage directly on the field selector. -->
     <item name="TAG_FIELD_USAGE" type="id" />
 
     <!-- Tagging a (sub) View in a list with the Goodreads 'Work' it represents. -->
     <item name="TAG_GR_WORK" type="id" />
     <!-- END View tags -->
 
-    <!-- BEGIN predefined Task IDs. -->
-    <item name="TASK_ID_GET_BOOKLIST" type="id" />
 
+    <!-- BEGIN predefined Task IDs. -->
+
+    <!-- Building the booklist for the main(BoB) screen. -->
+    <item name="TASK_ID_BOOKLIST_BUILDER" type="id" />
+
+    <!-- Restore/Import task. -->
     <item name="TASK_ID_IMPORT" type="id" />
+    <!-- Backup/Export task. -->
     <item name="TASK_ID_EXPORT" type="id" />
 
     <!-- Cover browser single/large preview image. -->
@@ -97,6 +96,10 @@
     <item name="TASK_ID_GR_SEND_BOOKS" type="id" />
     <item name="TASK_ID_GR_IMPORT" type="id" />
     <item name="TASK_ID_GR_GET_WORKS" type="id" />
-    <!-- END predefined AsyncTask IDs -->
+    <!-- END predefined Task IDs -->
 
+
+    <!-- generic ids for the Goodreads taskqueue component. -->
+    <item name="LEGACY_VIEW_1" type="id" />
+    <item name="LEGACY_VIEW_2" type="id" />
 </resources>

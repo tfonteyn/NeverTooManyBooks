@@ -166,7 +166,20 @@ public class StyleGroupsActivity
 
             final View view = getLayoutInflater()
                     .inflate(R.layout.row_edit_style_groups, parent, false);
-            return new Holder(view);
+            final Holder holder = new Holder(view);
+            //noinspection ConstantConditions
+            holder.mCheckableButton.setOnClickListener(v -> onItemCheckChanged(holder));
+            return holder;
+        }
+
+        void onItemCheckChanged(@NonNull final Holder holder) {
+            final int position = holder.getBindingAdapterPosition();
+            final StyleGroupsModel.GroupWrapper groupWrapper = getItem(position);
+            boolean newStatus = !groupWrapper.present;
+            groupWrapper.present = newStatus;
+            //noinspection ConstantConditions
+            holder.mCheckableButton.setChecked(newStatus);
+            notifyItemChanged(position);
         }
 
         @Override
@@ -179,12 +192,6 @@ public class StyleGroupsActivity
             holder.nameView.setText(groupWrapper.group.getLabel(getContext()));
             //noinspection ConstantConditions
             holder.mCheckableButton.setChecked(groupWrapper.present);
-            holder.mCheckableButton.setOnClickListener(v -> {
-                boolean newStatus = !groupWrapper.present;
-                groupWrapper.present = newStatus;
-                holder.mCheckableButton.setChecked(newStatus);
-                notifyItemChanged(holder.getBindingAdapterPosition());
-            });
         }
     }
 }

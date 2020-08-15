@@ -115,8 +115,6 @@ public class RowStateDAO
     /** Statement cache name. */
     private static final String STMT_COUNT_VIS_ROWS = "cntVisRows";
 
-    /** divider to convert nanoseconds to milliseconds. */
-    private static final int NANO_TO_MILLIS = 1_000_000;
     /** Maintenance/debug usage. Simple clear all state data. */
     private static final String PURGE_ALL_SQL =
             "DELETE FROM " + DBDefinitions.TBL_BOOK_LIST_NODE_STATE;
@@ -202,8 +200,6 @@ public class RowStateDAO
 
         // indices will be created after the table is populated.
         mTable.create(mSyncedDb, true, false);
-
-        final long t0 = System.nanoTime();
 
         int rowsUpdated;
 
@@ -339,19 +335,10 @@ public class RowStateDAO
                 throw new IllegalArgumentException(ErrorMsg.UNEXPECTED_VALUE + listState);
         }
 
-        final long t1_insert = System.nanoTime();
-
         // Create the indexes AFTER the data got inserted. This has proven to be somewhat faster.
         mTable.createIndices(mSyncedDb);
 
         mSyncedDb.analyze(mTable);
-
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
-            Log.d(TAG, "build"
-                       + "|sql=\n" + sql
-                       + "\ninsert(" + rowsUpdated + ") : "
-                       + ((t1_insert - t0) / NANO_TO_MILLIS) + " ms");
-        }
     }
 
     @NonNull
@@ -619,8 +606,6 @@ public class RowStateDAO
                 txLock = mSyncedDb.beginTransaction(true);
             }
 
-            final long t0 = System.nanoTime();
-
             // code could be condensed somewhat, but leaving as-is making it easier to read.
             if (topLevel == 1) {
                 if (expand) {
@@ -646,11 +631,6 @@ public class RowStateDAO
 
             // Store the state of all nodes.
             saveAllNodes();
-
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
-                Log.d(TAG, "expandAllNodes"
-                           + "|completed in " + (System.nanoTime() - t0) / NANO_TO_MILLIS + " ms");
-            }
 
             if (txLock != null) {
                 mSyncedDb.setTransactionSuccessful();

@@ -129,8 +129,6 @@ public class BooklistStyle
     public static final String pk_book_show_publisher = "style.booklist.show.publisher";
     /** Show publication date for each book. */
     public static final String pk_book_show_pub_date = "style.booklist.show.publication.date";
-    /** Show ISBN for each book. */
-    public static final String pk_book_show_isbn = "style.booklist.show.isbn";
     /** Show format for each book. */
     public static final String pk_book_show_format = "style.booklist.show.format";
     /** Show location for each book. */
@@ -139,55 +137,49 @@ public class BooklistStyle
     public static final String pk_book_show_rating = "style.booklist.show.rating";
     /** Show list of bookshelves for each book. */
     public static final String pk_book_show_bookshelves = "style.booklist.show.bookshelves";
-
-
-    /** Booklist Filter - ListPreference. */
-    public static final String pk_filter_isbn = "style.booklist.filter.isbn";
-    /** Booklist Filter - ListPreference. */
-    public static final String pk_filter_read = "style.booklist.filter.read";
-    /** Booklist Filter - ListPreference. */
-    public static final String pk_filter_signed = "style.booklist.filter.signed";
-    /** Booklist Filter - ListPreference. */
-    public static final String pk_filter_loaned = "style.booklist.filter.loaned";
-    /** Booklist Filter - ListPreference. */
-    public static final String pk_filter_anthology = "style.booklist.filter.anthology";
-    /** Booklist Filter - MultiSelectListPreference. */
-    public static final String pk_filter_editions = "style.booklist.filter.editions";
-
-
-    /** Main style preferences. */
-    public static final String pk_name = "style.booklist.name";
-    public static final String pk_is_preferred = "style.booklist.preferred";
-    public static final String pk_header = "style.booklist.header";
     public static final String pk_levels_expansion = "style.booklist.levels.default";
     public static final String pk_scale_font = "style.booklist.scale.font";
     public static final String pk_scale_thumbnail = "style.booklist.scale.thumbnails";
+    /** Show ISBN for each book. */
+    static final String pk_book_show_isbn = "style.booklist.show.isbn";
+    /** Booklist Filter - ListPreference. */
+    static final String pk_filter_isbn = "style.booklist.filter.isbn";
+    /** Booklist Filter - ListPreference. */
+    static final String pk_filter_read = "style.booklist.filter.read";
+    /** Booklist Filter - ListPreference. */
+    static final String pk_filter_signed = "style.booklist.filter.signed";
+    /** Booklist Filter - ListPreference. */
+    static final String pk_filter_loaned = "style.booklist.filter.loaned";
+    /** Booklist Filter - ListPreference. */
+    static final String pk_filter_anthology = "style.booklist.filter.anthology";
+    /** Booklist Filter - MultiSelectListPreference. */
+    static final String pk_filter_editions = "style.booklist.filter.editions";
+    /**
+     * Text Scaling.
+     * NEVER change these values, they get stored in preferences.
+     * The book title in the list is by default 'medium' (see styles.xml)
+     * Other elements are always 1 size 'less' then the title.
+     */
+    static final int FONT_SCALE_0_VERY_SMALL = 0;
+    /** Text Scaling. */
+    static final int FONT_SCALE_1_SMALL = 1;
+    /** Text Scaling. */
+    static final int FONT_SCALE_2_MEDIUM = 2;
+    /** Text Scaling. */
+    static final int FONT_SCALE_3_LARGE = 3;
+    /** Text Scaling. */
+    static final int FONT_SCALE_4_VERY_LARGE = 4;
+
+    /** Main style preferences. */
+    private static final String pk_name = "style.booklist.name";
+    private static final String pk_is_preferred = "style.booklist.preferred";
+    private static final String pk_header = "style.booklist.header";
+
     /**
      * Style unique name. This is a stored in our preference file (with the same name)
      * and is used for backup/restore purposes as the 'ID'.
      */
-    public static final String PK_STYLE_UUID = "style.booklist.uuid";
-
-
-    /**
-     * Text Scaling.
-     * NEVER change these values, they get stored in preferences.
-     * <p>
-     * For reference:
-     * {@code
-     * <dimen name="text_size_large_material">22sp</dimen>
-     * <dimen name="text_size_medium_material">18sp</dimen>
-     * <dimen name="text_size_small_material">14sp</dimen>
-     * }
-     * The book title in the list is by default 'medium' (see styles.xml)
-     * Other elements are always 1 size 'less' then the title.
-     */
-    static final int FONT_SCALE_SMALL = 0;
-    /** Text Scaling. */
-    static final int FONT_SCALE_MEDIUM = 1;
-    /** Text Scaling. */
-    static final int FONT_SCALE_LARGE = 2;
-
+    private static final String PK_STYLE_UUID = "style.booklist.uuid";
     /** log tag. */
     private static final String TAG = "BooklistStyle";
     /**
@@ -230,6 +222,31 @@ public class BooklistStyle
      * Stored in global shared preferences as a CSV String of UUIDs.
      */
     private static final String PREF_BL_PREFERRED_STYLES = "bookList.style.preferred.order";
+
+    /**
+     * Padding to go with {@link #FONT_SCALING}.
+     */
+    private static final float[] FONT_PADDING = {0.77f, 0.88f, 1.0f, 1.11f, 1.22f};
+
+    /**
+     * With the header set to two lines, the toolbar fully visible,
+     * on a full-HD (1920-1080 pixels) we get:
+     * <ul>
+     *      <li>32sp: 10 lines; or 2 books</li>
+     *      <li>28sp: 11 lines</li>
+     *      <li>24sp: 12 lines</li>
+     *      <li>18sp: 13 lines; or 5-6 books</li>
+     *      <li>14sp: 19 lines; or 7 books</li>
+     * </ul>
+     * <p>
+     * For reference:
+     * {@code
+     *      <dimen name="text_size_large_material">22sp</dimen>
+     *      <dimen name="text_size_medium_material">18sp</dimen>
+     *      <dimen name="text_size_small_material">14sp</dimen>
+     * }
+     */
+    private static final float[] FONT_SCALING = {12f, 14f, 18f, 22f, 32f};
 
     /**
      * The uuid based SharedPreference name.
@@ -352,6 +369,45 @@ public class BooklistStyle
         initPrefs(context, true);
     }
 
+//    /**
+//     * Copy constructor.
+//     * The new style will have an id==0, and a new uuid.
+//     *
+//     * @param from object to copy
+//     */
+//    public BooklistStyle(@NonNull final Context context,
+//                         @NonNull final BooklistStyle from) {
+//        mId = 0;
+//        mNameResId = 0;
+//        mUuid = createUniqueName(context);
+//        initPrefs(mNameResId == 0);
+//        setName(from.getLabel(context));
+//
+//        mIsPreferred.set(from.mIsPreferred.get());
+//        mDefaultExpansionLevel.set(from.mDefaultExpansionLevel.get());
+//        mFontScale.set(from.mFontScale.get());
+//        mThumbnailScale.set(from.mThumbnailScale.get());
+//        mShowHeaderInfo.set(from.mShowHeaderInfo.get());
+//        mShowAuthorByGivenNameFirst.set(from.mShowAuthorByGivenNameFirst.get());
+//        mSortAuthorByGivenNameFirst.set(from.mSortAuthorByGivenNameFirst.get());
+//
+//        for (BooklistGroup group : from.getGroups()) {
+//            mStyleGroups.add(new BooklistGroup(group);
+//
+//        }
+//
+//        for (final Map.Entry<String, PBoolean> entry : from.mAllBookDetailFields.entrySet()) {
+//            //noinspection ConstantConditions
+//            mAllBookDetailFields.get(entry.getKey()).set(entry.getValue().get());
+//        }
+//
+//        //: copy filters
+////        for (final Map.Entry<String, Filter> entry : from.mFilters.entrySet()) {
+////            //noinspection ConstantConditions
+////            mFilters.get(entry.getKey()).
+////        }
+//    }
+
     /**
      * {@link Parcelable} Constructor.
      *
@@ -443,45 +499,6 @@ public class BooklistStyle
             filter.set(in);
         }
     }
-
-//    /**
-//     * Copy constructor.
-//     * The new style will have an id==0, and a new uuid.
-//     *
-//     * @param from object to copy
-//     */
-//    public BooklistStyle(@NonNull final Context context,
-//                         @NonNull final BooklistStyle from) {
-//        mId = 0;
-//        mNameResId = 0;
-//        mUuid = createUniqueName(context);
-//        initPrefs(mNameResId == 0);
-//        setName(from.getLabel(context));
-//
-//        mIsPreferred.set(from.mIsPreferred.get());
-//        mDefaultExpansionLevel.set(from.mDefaultExpansionLevel.get());
-//        mFontScale.set(from.mFontScale.get());
-//        mThumbnailScale.set(from.mThumbnailScale.get());
-//        mShowHeaderInfo.set(from.mShowHeaderInfo.get());
-//        mShowAuthorByGivenNameFirst.set(from.mShowAuthorByGivenNameFirst.get());
-//        mSortAuthorByGivenNameFirst.set(from.mSortAuthorByGivenNameFirst.get());
-//
-//        for (BooklistGroup group : from.getGroups()) {
-//            mStyleGroups.add(new BooklistGroup(group);
-//
-//        }
-//
-//        for (final Map.Entry<String, PBoolean> entry : from.mAllBookDetailFields.entrySet()) {
-//            //noinspection ConstantConditions
-//            mAllBookDetailFields.get(entry.getKey()).set(entry.getValue().get());
-//        }
-//
-//        //: copy filters
-////        for (final Map.Entry<String, Filter> entry : from.mFilters.entrySet()) {
-////            //noinspection ConstantConditions
-////            mFilters.get(entry.getKey()).
-////        }
-//    }
 
     /**
      * Get the specified style. If not found, the default style will be returned.
@@ -652,7 +669,7 @@ public class BooklistStyle
                                        isUserDefined, HEADER_BITMASK_ALL, HEADER_BITMASK_ALL);
 
         mFontScale = new PInteger(pk_scale_font, mUuid,
-                                  isUserDefined, FONT_SCALE_MEDIUM);
+                                  isUserDefined, FONT_SCALE_2_MEDIUM);
 
         mThumbnailScale = new PInteger(pk_scale_thumbnail, mUuid,
                                        isUserDefined, ImageScale.SCALE_3_MEDIUM);
@@ -978,48 +995,22 @@ public class BooklistStyle
      * @return scale factor
      */
     float getTextPaddingFactor(@NonNull final Context context) {
-        switch (mFontScale.getValue(context)) {
-            case FONT_SCALE_LARGE:
-                return 1.22f;
-            case FONT_SCALE_SMALL:
-                return 0.77f;
-            case FONT_SCALE_MEDIUM:
-            default:
-                return 1.0f;
-        }
+        return FONT_PADDING[mFontScale.getValue(context)];
     }
 
     /**
-     * Get the text size in SP units to apply.
-     * <p>
-     * With the header set to two lines, the toolbar fully visible,
-     * on a full-HD (1920-1080 pixels) we get:
-     * <ul>
-     *      <li>32sp: 10 lines; or 2 books</li>
-     *      <li>28sp: 11 lines</li>
-     *      <li>24sp: 12 lines</li>
-     *      <li>18sp: 13 lines; or 5-6 books</li>
-     *      <li>14sp: 19 lines; or 7 books</li>
-     * </ul>
+     * Get the text <strong>size in SP units</strong> to apply.
      *
      * @param context Current context
      *
      * @return sp units
      */
     float getTextSpUnits(@NonNull final Context context) {
-        switch (mFontScale.getValue(context)) {
-            case FONT_SCALE_LARGE:
-                return 32;
-            case FONT_SCALE_SMALL:
-                return 14;
-            case FONT_SCALE_MEDIUM:
-            default:
-                return 18;
-        }
+        return FONT_SCALING[mFontScale.getValue(context)];
     }
 
     /**
-     * Get the scale <strong>identifier</strong> for the text size preferred.
+     * Get the text scale <strong>identifier</strong> for the text size preferred.
      *
      * @param context Current context
      *
@@ -1273,7 +1264,7 @@ public class BooklistStyle
      * Equality.
      * <p>
      * - it's the same Object duh..
-     * - the uuid is the same.
+     * - the uuid is the same (and not empty).
      */
     @Override
     public boolean equals(@Nullable final Object obj) {
@@ -1492,7 +1483,11 @@ public class BooklistStyle
 
     }
 
-    @IntDef({FONT_SCALE_SMALL, FONT_SCALE_MEDIUM, FONT_SCALE_LARGE})
+    @IntDef({FONT_SCALE_0_VERY_SMALL,
+             FONT_SCALE_1_SMALL,
+             FONT_SCALE_2_MEDIUM,
+             FONT_SCALE_3_LARGE,
+             FONT_SCALE_4_VERY_LARGE})
     @Retention(RetentionPolicy.SOURCE)
     @interface FontScale {
 
@@ -2079,7 +2074,7 @@ public class BooklistStyle
                                       R.string.style_builtin_compact,
                                       BooklistGroup.AUTHOR);
             S_BUILTIN_STYLES.put(style.getUuid(), style);
-            style.setTextScale(FONT_SCALE_SMALL);
+            style.setTextScale(FONT_SCALE_1_SMALL);
             style.setUseBookDetail(BooklistStyle.pk_book_show_thumbnails, false);
 
             // Title

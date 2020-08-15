@@ -4,14 +4,6 @@
  *
  * This file is part of NeverTooManyBooks.
  *
- * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
- *
- * Without their original creation, this project would not exist in its
- * current form. It was however largely rewritten/refactored and any
- * comments on this fork should be directed at HardBackNutter and not
- * at the original creators.
- *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -50,7 +42,6 @@ import org.json.JSONObject;
 
 import com.hardbacknutter.nevertoomanybooks.BooksOnBookshelf;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.booklist.BooklistAdapter;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyle;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
@@ -58,6 +49,8 @@ import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 
 /**
  * Represents a Bookshelf.
+ * <p>
+ * FIXME: {@link DBDefinitions#KEY_BOOKSHELF_BL_TOP_ROW_ID} is no longer used and should be removed.
  */
 public class Bookshelf
         implements Parcelable, Entity {
@@ -101,12 +94,6 @@ public class Bookshelf
      */
     @NonNull
     private String mStyleUuid;
-
-    /**
-     * Saved adapter row id of top row.
-     * See {@link BooksOnBookshelf}#displayList}
-     */
-    private long mTopRowId;
 
     /**
      * Saved adapter position of top row.
@@ -163,7 +150,6 @@ public class Bookshelf
 
         mTopItemPosition = rowData.getInt(DBDefinitions.KEY_BOOKSHELF_BL_TOP_POS);
         mTopViewOffset = rowData.getInt(DBDefinitions.KEY_BOOKSHELF_BL_TOP_OFFSET);
-        mTopRowId = rowData.getLong(DBDefinitions.KEY_BOOKSHELF_BL_TOP_ROW_ID);
     }
 
     /**
@@ -180,7 +166,6 @@ public class Bookshelf
 
         mTopItemPosition = in.readInt();
         mTopViewOffset = in.readInt();
-        mTopRowId = in.readLong();
     }
 
     /**
@@ -367,33 +352,19 @@ public class Bookshelf
     }
 
     /**
-     * The rowId is of temporary use and will likely be removed soon.
-     *
-     * @return the row id which was displayed on the top position.
-     */
-    public long getTopRowId() {
-        return mTopRowId;
-    }
-
-    /**
      * Store the current position of the booklist displaying this bookshelf.
-     * <p>
-     * The rowId is of temporary use and will likely be removed soon.
      *
      * @param context       Current context
      * @param db            Database Access
      * @param position      Value of {@link LinearLayoutManager#findFirstVisibleItemPosition}
      * @param topViewOffset Value of {@link RecyclerView#getChildAt(int)} #getTop()
-     * @param rowId         Value of {@link BooklistAdapter#getItemId(int)} for position
      */
     public void setTopListPosition(@NonNull final Context context,
                                    @NonNull final DAO db,
                                    final int position,
-                                   final int topViewOffset,
-                                   final long rowId) {
+                                   final int topViewOffset) {
         mTopItemPosition = position;
         mTopViewOffset = topViewOffset;
-        mTopRowId = rowId;
 
         db.update(context, this);
     }
@@ -439,7 +410,6 @@ public class Bookshelf
 
         dest.writeInt(mTopItemPosition);
         dest.writeInt(mTopViewOffset);
-        dest.writeLong(mTopRowId);
     }
 
     /**
@@ -539,7 +509,6 @@ public class Bookshelf
                + ", mName=`" + mName + '`'
                + ", mTopItemPosition=" + mTopItemPosition
                + ", mTopViewOffset=" + mTopViewOffset
-               + ", mTopRowId=" + mTopRowId
                + ", mStyleUuid=" + mStyleUuid
                + '}';
     }

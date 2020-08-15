@@ -663,7 +663,13 @@ public class EditBookAuthorListDialogFragment
 
             final View view = getLayoutInflater()
                     .inflate(R.layout.row_edit_author_list, parent, false);
-            return new Holder(view);
+            final Holder holder = new Holder(view);
+            // click -> edit
+            holder.rowDetailsView.setOnClickListener(v -> EditAuthorForBookDialogFragment
+                    .newInstance(mBookViewModel.getBook().getTitle(),
+                                 getItem(holder.getBindingAdapterPosition()))
+                    .show(getParentFragmentManager(), EditAuthorForBookDialogFragment.TAG));
+            return holder;
         }
 
         @Override
@@ -673,11 +679,6 @@ public class EditBookAuthorListDialogFragment
 
             final Author author = getItem(position);
             mFormatter.apply(author, holder.authorView);
-
-            // click -> edit
-            holder.rowDetailsView.setOnClickListener(v -> EditAuthorForBookDialogFragment
-                    .newInstance(mBookViewModel.getBook().getTitle(), author)
-                    .show(getParentFragmentManager(), EditAuthorForBookDialogFragment.TAG));
         }
     }
 }

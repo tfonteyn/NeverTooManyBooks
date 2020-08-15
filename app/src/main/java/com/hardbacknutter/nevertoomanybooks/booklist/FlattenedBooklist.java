@@ -4,14 +4,6 @@
  *
  * This file is part of NeverTooManyBooks.
  *
- * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
- *
- * Without their original creation, this project would not exist in its
- * current form. It was however largely rewritten/refactored and any
- * comments on this fork should be directed at HardBackNutter and not
- * at the original creators.
- *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -36,7 +28,6 @@ import androidx.annotation.NonNull;
 import java.io.Closeable;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.SqlStatementManager;
@@ -119,36 +110,26 @@ public class FlattenedBooklist
                               @NonNull final RowStateDAO rowStateDAO,
                               @NonNull final TableDefinition listTable) {
 
-        TableDefinition navTable = new TableDefinition(DBDefinitions.TMP_TBL_BOOK_LIST_NAVIGATOR);
+        final TableDefinition navTable =
+                new TableDefinition(DBDefinitions.TMP_TBL_BOOK_LIST_NAVIGATOR);
         navTable.setName(navTable.getName() + instanceId);
 
         //IMPORTANT: withConstraints MUST BE false
         navTable.recreate(db, false);
 
-        final long t0 = System.nanoTime();
+        final TableDefinition rowStateTable = rowStateDAO.getTable();
+        final String sql = "INSERT INTO " + navTable.getName()
+                           + " (" + DBDefinitions.KEY_PK_ID + ',' + DBDefinitions.KEY_FK_BOOK + ")"
 
-        TableDefinition rowStateTable = rowStateDAO.getTable();
-        String sql = "INSERT INTO " + navTable.getName()
-                     + " (" + DBDefinitions.KEY_PK_ID + ',' + DBDefinitions.KEY_FK_BOOK + ")"
+                           + " SELECT " + rowStateTable.dot(DBDefinitions.KEY_PK_ID)
+                           + ',' + listTable.dot(DBDefinitions.KEY_FK_BOOK)
+                           + " FROM " + listTable.ref() + listTable.join(rowStateTable)
+                           // all rows which are NOT a book will contain null
+                           + " WHERE " + listTable.dot(DBDefinitions.KEY_FK_BOOK) + " NOT NULL"
+                           + " ORDER BY " + rowStateTable.dot(DBDefinitions.KEY_PK_ID);
 
-                     + " SELECT " + rowStateTable.dot(DBDefinitions.KEY_PK_ID)
-                     + ',' + listTable.dot(DBDefinitions.KEY_FK_BOOK)
-                     + " FROM " + listTable.ref() + listTable.join(rowStateTable)
-                     // all rows which are NOT a book will contain null
-                     + " WHERE " + listTable.dot(DBDefinitions.KEY_FK_BOOK) + " NOT NULL"
-                     + " ORDER BY " + rowStateTable.dot(DBDefinitions.KEY_PK_ID);
-
-        int rowsUpdated;
         try (SynchronizedStatement stmt = db.compileStatement(sql)) {
-            rowsUpdated = stmt.executeUpdateDelete();
-        }
-
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
-            Log.d(TAG, "createTable"
-                       + "|" + navTable.getName()
-                       + "|inserted: " + rowsUpdated
-                       + "|completed in "
-                       + (System.nanoTime() - t0) / NANO_TO_MILLIS + " ms");
+            stmt.executeUpdateDelete();
         }
 
         return navTable.getName();

@@ -1322,7 +1322,6 @@ public class DAO
         cv.put(KEY_BOOKSHELF_NAME, bookshelf.getName());
         cv.put(KEY_BOOKSHELF_BL_TOP_POS, bookshelf.getTopItemPosition());
         cv.put(KEY_BOOKSHELF_BL_TOP_OFFSET, bookshelf.getTopViewOffset());
-        cv.put(KEY_BOOKSHELF_BL_TOP_ROW_ID, bookshelf.getTopRowId());
 
         cv.put(KEY_FK_STYLE, styleId);
 
@@ -1350,7 +1349,6 @@ public class DAO
             stmt.bindLong(2, styleId);
             stmt.bindLong(3, bookshelf.getTopItemPosition());
             stmt.bindLong(4, bookshelf.getTopViewOffset());
-            stmt.bindLong(5, bookshelf.getTopRowId());
             final long iId = stmt.executeInsert();
             if (iId > 0) {
                 bookshelf.setId(iId);
@@ -5078,9 +5076,8 @@ public class DAO
                 + ',' + KEY_FK_STYLE
                 + ',' + KEY_BOOKSHELF_BL_TOP_POS
                 + ',' + KEY_BOOKSHELF_BL_TOP_OFFSET
-                + ',' + KEY_BOOKSHELF_BL_TOP_ROW_ID
 
-                + ") VALUES (?,?,?,?,?)";
+                + ") VALUES (?,?,?,?)";
 
         static final String AUTHOR =
                 INSERT_INTO_ + TBL_AUTHORS.getName()

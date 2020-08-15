@@ -208,7 +208,8 @@ public class GoodreadsSearchActivity
      * This should show editions and allow the user to select a specific edition.
      * ENHANCE: Implement edition lookup - requires access to work.editions from Goodreads
      */
-    private void onWorkSelected(@NonNull final GoodreadsWork work) {
+    private void onWorkSelected(@NonNull final Holder holder) {
+        final GoodreadsWork work = mWorks.get(holder.getBindingAdapterPosition());
         String msg = "Not implemented: requires access to work.editions from Goodreads";
         Snackbar.make(mVb.resultList, msg, Snackbar.LENGTH_LONG).show();
     }
@@ -273,7 +274,9 @@ public class GoodreadsSearchActivity
 
             final View view = getLayoutInflater()
                     .inflate(R.layout.row_goodreads_work_item, parent, false);
-            return new Holder(view);
+            final Holder holder = new Holder(view);
+            holder.itemView.setOnClickListener(v -> onWorkSelected(holder));
+            return holder;
         }
 
         @Override
@@ -281,8 +284,6 @@ public class GoodreadsSearchActivity
                                      final int position) {
 
             final GoodreadsWork item = mItems.get(position);
-
-            holder.itemView.setOnClickListener(v -> onWorkSelected(item));
 
             // get the cover (or start a background task to get it)
             item.fillImageView(holder.coverView, mMaxWidth, mMaxHeight);

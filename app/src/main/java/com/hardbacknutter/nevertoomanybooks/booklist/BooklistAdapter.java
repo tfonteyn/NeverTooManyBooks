@@ -115,6 +115,7 @@ public class BooklistAdapter
     /** List style to apply. */
     @NonNull
     private final BooklistStyle mStyle;
+    private final int mThumbnailScale;
     /** The cursor is the equivalent of the 'list of items'. */
     @Nullable
     private Cursor mCursor;
@@ -133,18 +134,31 @@ public class BooklistAdapter
      */
     public BooklistAdapter(@NonNull final Context context,
                            @NonNull final BooklistStyle style) {
+        mStyle = style;
+        mThumbnailScale = mStyle.getThumbnailScale(context);
+
         mInflater = LayoutInflater.from(context);
         mUserLocale = LocaleUtils.getUserLocale(context);
-        mStyle = style;
         mFieldsInUse = new FieldsInUse(context, style);
         mImageCachingEnabled = ImageUtils.isImageCachingEnabled(context);
-
         mLevelIndent = context.getResources().getDimensionPixelSize(R.dimen.bob_level_indent);
+
+        // getItemId is implemented.
+        setHasStableIds(true);
     }
 
-    @NonNull
+    @Override
+    public long getItemId(final int position) {
+        if (mCursor != null && mCursor.moveToPosition(position)) {
+            //noinspection ConstantConditions
+            return mNodeData.getLong(DBDefinitions.KEY_PK_ID);
+        } else {
+            return RecyclerView.NO_ID;
+        }
+    }
+
+    @Nullable
     public Cursor getCursor() {
-        Objects.requireNonNull(mCursor, ErrorMsg.NULL_CURSOR);
         return mCursor;
     }
 
@@ -163,13 +177,170 @@ public class BooklistAdapter
         notifyDataSetChanged();
     }
 
-    @NonNull
-    public Locale getUserLocale() {
-        return mUserLocale;
+    @Override
+    public int getItemCount() {
+        return mCursor != null ? mCursor.getCount() : -1;
     }
 
-    private boolean isImageCachingEnabled() {
-        return mImageCachingEnabled;
+    /**
+     * Returns a {@link BooklistGroup.Id} as the view type.
+     *
+     * @param position position to query
+     *
+     * @return integer value identifying the type of the view
+     */
+    @Override
+    @BooklistGroup.Id
+    public int getItemViewType(final int position) {
+        if (mCursor != null && mCursor.moveToPosition(position)) {
+            //noinspection ConstantConditions
+            return mNodeData.getInt(DBDefinitions.KEY_BL_NODE_GROUP);
+        } else {
+            // bogus, should not happen
+            return BooklistGroup.BOOK;
+        }
+    }
+
+    @SuppressLint("SwitchIntDef")
+    @NonNull
+    @Override
+    public RowViewHolder onCreateViewHolder(@NonNull final ViewGroup parent,
+                                            @BooklistGroup.Id final int groupId) {
+
+        final View itemView = createView(parent, groupId);
+        final RowViewHolder holder;
+
+        // NEWTHINGS: BooklistGroup.KEY add a new holder type if needed
+        switch (groupId) {
+            case BooklistGroup.BOOK:
+                holder = new BookHolder(this, itemView, mThumbnailScale, mFieldsInUse);
+                break;
+
+            case BooklistGroup.AUTHOR:
+                holder = new AuthorHolder(this, itemView, mStyle.getGroupById(groupId));
+                break;
+
+            case BooklistGroup.SERIES:
+                holder = new SeriesHolder(this, itemView, mStyle.getGroupById(groupId));
+                break;
+
+            case BooklistGroup.RATING:
+                holder = new RatingHolder(itemView, mStyle.getGroupById(groupId));
+                break;
+
+            default:
+                holder = new GenericStringHolder(this, itemView, mStyle.getGroupById(groupId));
+                break;
+        }
+
+        holder.onClickTargetView.setOnClickListener(v -> {
+            if (mOnRowClickedListener != null) {
+                mOnRowClickedListener.onItemClick(holder.getBindingAdapterPosition());
+            }
+        });
+
+        holder.onClickTargetView.setOnLongClickListener(v -> {
+            if (mOnRowClickedListener != null) {
+                return mOnRowClickedListener.onItemLongClick(holder.getBindingAdapterPosition());
+            }
+            return false;
+        });
+
+        return holder;
+    }
+
+    /**
+     * Create the View for the specified group.
+     *
+     * @param parent     The ViewGroup into which the new View will be added after it is bound to
+     *                   an adapter position.
+     * @param groupKeyId The view type of the new View == the group id
+     *
+     * @return the view
+     */
+    @SuppressLint("SwitchIntDef")
+    private View createView(@NonNull final ViewGroup parent,
+                            @BooklistGroup.Id final int groupKeyId) {
+
+        final Context context = parent.getContext();
+
+        //noinspection ConstantConditions
+        final int level = mNodeData.getInt(DBDefinitions.KEY_BL_NODE_LEVEL);
+        // Indent (0..) based on level (1..)
+        int indent = level - 1;
+
+        @LayoutRes
+        final int layoutId;
+
+        switch (groupKeyId) {
+            case BooklistGroup.BOOK: {
+                switch (mThumbnailScale) {
+                    case ImageScale.SCALE_6_MAX:
+                    case ImageScale.SCALE_5_VERY_LARGE:
+                        layoutId = R.layout.booksonbookshelf_row_book_scale_5;
+                        break;
+
+                    case ImageScale.SCALE_4_LARGE:
+                        layoutId = R.layout.booksonbookshelf_row_book_scale_4;
+                        break;
+
+                    case ImageScale.SCALE_3_MEDIUM:
+                    case ImageScale.SCALE_2_SMALL:
+                    case ImageScale.SCALE_1_VERY_SMALL:
+                    case ImageScale.SCALE_0_NOT_DISPLAYED:
+                    default:
+                        layoutId = R.layout.booksonbookshelf_row_book_scale_0_3;
+                        break;
+                }
+
+                // Don't indent books
+                indent = 0;
+                break;
+            }
+            case BooklistGroup.RATING: {
+                layoutId = R.layout.booksonbookshelf_group_rating;
+                break;
+            }
+            default: {
+                // for all other types, the level determines the view
+                switch (level) {
+                    case 1:
+                        layoutId = R.layout.booksonbookshelf_group_level_1;
+                        break;
+                    case 2:
+                        layoutId = R.layout.booksonbookshelf_group_level_2;
+                        break;
+
+                    default:
+                        // level 3 and higher all use the same layout.
+                        layoutId = R.layout.booksonbookshelf_group_level_3;
+                        break;
+                }
+                break;
+            }
+        }
+
+        final View view = mInflater.inflate(layoutId, parent, false);
+        view.setPaddingRelative(indent * mLevelIndent, 0, 0, 0);
+
+        // Scale text/padding (recursively) if required
+        if (mStyle.getTextScale(context) != BooklistStyle.FONT_SCALE_2_MEDIUM) {
+            scaleTextViews(view, mStyle.getTextSpUnits(context),
+                           mStyle.getTextPaddingFactor(context));
+        }
+        return view;
+    }
+
+    @Override
+    public void onBindViewHolder(@NonNull final RowViewHolder holder,
+                                 final int position) {
+
+        //noinspection ConstantConditions
+        mCursor.moveToPosition(position);
+
+        // further binding depends on the type of row (i.e. holder).
+        //noinspection ConstantConditions
+        holder.onBindViewHolder(position, mNodeData, mStyle);
     }
 
     /**
@@ -346,192 +517,6 @@ public class BooklistAdapter
         }
     }
 
-    public void setOnRowClickedListener(@Nullable final OnRowClickedListener onRowClickedListener) {
-        mOnRowClickedListener = onRowClickedListener;
-    }
-
-    @SuppressLint("SwitchIntDef")
-    @NonNull
-    @Override
-    public RowViewHolder onCreateViewHolder(@NonNull final ViewGroup parent,
-                                            @BooklistGroup.Id final int groupId) {
-
-        final View itemView = createView(parent, groupId);
-        final RowViewHolder holder;
-
-        // NEWTHINGS: BooklistGroup.KEY add a new holder type if needed
-        switch (groupId) {
-            case BooklistGroup.BOOK:
-                holder = new BookHolder(this, itemView, mStyle, mFieldsInUse);
-                break;
-
-            case BooklistGroup.AUTHOR:
-                holder = new AuthorHolder(this, itemView, mStyle.getGroupById(groupId));
-                break;
-
-            case BooklistGroup.SERIES:
-                holder = new SeriesHolder(this, itemView, mStyle.getGroupById(groupId));
-                break;
-
-            case BooklistGroup.RATING:
-                holder = new RatingHolder(itemView, mStyle.getGroupById(groupId));
-                break;
-
-            default:
-                holder = new GenericStringHolder(this, itemView, mStyle.getGroupById(groupId));
-                break;
-        }
-
-        holder.onClickTargetView.setOnClickListener(v -> {
-            if (mOnRowClickedListener != null) {
-                final Integer rowPos = (Integer) v.getTag(R.id.TAG_POSITION);
-                Objects.requireNonNull(rowPos, ErrorMsg.NULL_ROW_POS);
-                mOnRowClickedListener.onItemClick(rowPos);
-            }
-        });
-
-        holder.onClickTargetView.setOnLongClickListener(v -> {
-            if (mOnRowClickedListener != null) {
-                final Integer rowPos = (Integer) v.getTag(R.id.TAG_POSITION);
-                Objects.requireNonNull(rowPos, ErrorMsg.NULL_ROW_POS);
-                return mOnRowClickedListener.onItemLongClick(rowPos);
-            }
-            return false;
-        });
-
-        return holder;
-    }
-
-    /**
-     * Create the View for the specified group.
-     *
-     * @param parent     The ViewGroup into which the new View will be added after it is bound to
-     *                   an adapter position.
-     * @param groupKeyId The view type of the new View == the group id
-     *
-     * @return the view
-     */
-    @SuppressLint("SwitchIntDef")
-    private View createView(@NonNull final ViewGroup parent,
-                            @BooklistGroup.Id final int groupKeyId) {
-
-        final Context context = parent.getContext();
-
-        //noinspection ConstantConditions
-        final int level = mNodeData.getInt(DBDefinitions.KEY_BL_NODE_LEVEL);
-        // Indent (0..) based on level (1..)
-        int indent = level - 1;
-
-        @LayoutRes
-        final int layoutId;
-
-        switch (groupKeyId) {
-            case BooklistGroup.BOOK: {
-                switch (mStyle.getThumbnailScale(context)) {
-                    case ImageScale.SCALE_6_MAX:
-                    case ImageScale.SCALE_5_VERY_LARGE:
-                        layoutId = R.layout.booksonbookshelf_row_book_scale_5;
-                        break;
-
-                    case ImageScale.SCALE_4_LARGE:
-                        layoutId = R.layout.booksonbookshelf_row_book_scale_4;
-                        break;
-
-                    case ImageScale.SCALE_3_MEDIUM:
-                    case ImageScale.SCALE_2_SMALL:
-                    case ImageScale.SCALE_1_VERY_SMALL:
-                    case ImageScale.SCALE_0_NOT_DISPLAYED:
-                    default:
-                        layoutId = R.layout.booksonbookshelf_row_book_scale_0_3;
-                        break;
-                }
-
-                // Don't indent books
-                indent = 0;
-                break;
-            }
-            case BooklistGroup.RATING: {
-                layoutId = R.layout.booksonbookshelf_group_rating;
-                break;
-            }
-            default: {
-                // for all other types, the level determines the view
-                switch (level) {
-                    case 1:
-                        layoutId = R.layout.booksonbookshelf_group_level_1;
-                        break;
-                    case 2:
-                        layoutId = R.layout.booksonbookshelf_group_level_2;
-                        break;
-
-                    default:
-                        // level 3 and higher all use the same layout.
-                        layoutId = R.layout.booksonbookshelf_group_level_3;
-                        break;
-                }
-                break;
-            }
-        }
-
-        final View view = mInflater.inflate(layoutId, parent, false);
-        view.setPaddingRelative(indent * mLevelIndent, 0, 0, 0);
-
-        // Scale text/padding (recursively) if required
-        if (mStyle.getTextScale(context) != BooklistStyle.FONT_SCALE_MEDIUM) {
-            scaleTextViews(view, mStyle.getTextSpUnits(context),
-                           mStyle.getTextPaddingFactor(context));
-        }
-        return view;
-    }
-
-    @Override
-    public void onBindViewHolder(@NonNull final RowViewHolder holder,
-                                 final int position) {
-
-        //noinspection ConstantConditions
-        mCursor.moveToPosition(position);
-
-        holder.onClickTargetView.setTag(R.id.TAG_POSITION, position);
-
-        // further binding depends on the type of row (i.e. holder).
-        //noinspection ConstantConditions
-        holder.onBindViewHolder(position, mNodeData, mStyle);
-    }
-
-    /**
-     * Returns a {@link BooklistGroup.Id} as the view type.
-     *
-     * @param position position to query
-     *
-     * @return integer value identifying the type of the view
-     */
-    @Override
-    @BooklistGroup.Id
-    public int getItemViewType(final int position) {
-        if (mCursor != null && mCursor.moveToPosition(position)) {
-            //noinspection ConstantConditions
-            return mNodeData.getInt(DBDefinitions.KEY_BL_NODE_GROUP);
-        } else {
-            // bogus, should not happen
-            return BooklistGroup.BOOK;
-        }
-    }
-
-    @Override
-    public int getItemCount() {
-        return mCursor != null ? mCursor.getCount() : -1;
-    }
-
-    @Override
-    public long getItemId(final int position) {
-        if (hasStableIds() && mCursor != null && mCursor.moveToPosition(position)) {
-            //noinspection ConstantConditions
-            return mNodeData.getLong(DBDefinitions.KEY_PK_ID);
-        } else {
-            return RecyclerView.NO_ID;
-        }
-    }
-
     /**
      * Get the level for the given position.
      *
@@ -540,13 +525,21 @@ public class BooklistAdapter
      * @return the level, or {@code 0} if unknown
      */
     int getLevel(final int position) {
-        //noinspection ConstantConditions
-        if (mCursor.moveToPosition(position)) {
+        if (mCursor != null && mCursor.moveToPosition(position)) {
             //noinspection ConstantConditions
             return mNodeData.getInt(DBDefinitions.KEY_BL_NODE_LEVEL);
         } else {
             return 0;
         }
+    }
+
+    @NonNull
+    public Locale getUserLocale() {
+        return mUserLocale;
+    }
+
+    private boolean isImageCachingEnabled() {
+        return mImageCachingEnabled;
     }
 
     /**
@@ -612,8 +605,7 @@ public class BooklistAdapter
 
         // make sure it's still in range.
         final int clampedPosition = MathUtils.clamp(position, 0, getItemCount() - 1);
-        //noinspection ConstantConditions
-        if (!mCursor.moveToPosition(clampedPosition)) {
+        if (mCursor == null || !mCursor.moveToPosition(clampedPosition)) {
             return null;
         }
 
@@ -639,6 +631,10 @@ public class BooklistAdapter
             }
         }
         return null;
+    }
+
+    public void setOnRowClickedListener(@Nullable final OnRowClickedListener onRowClickedListener) {
+        mOnRowClickedListener = onRowClickedListener;
     }
 
     /**
@@ -795,7 +791,7 @@ public class BooklistAdapter
          * @param rowData  with data to bind
          * @param style    to use
          */
-        abstract void onBindViewHolder(final int position,
+        abstract void onBindViewHolder(int position,
                                        @NonNull DataHolder rowData,
                                        @NonNull BooklistStyle style);
     }
@@ -863,14 +859,14 @@ public class BooklistAdapter
          * <strong>Note:</strong> the itemView can be re-used.
          * Hence make sure to explicitly set visibility.
          *
-         * @param adapter     the hosting adapter
-         * @param itemView    the view specific for this holder
-         * @param style       to use
-         * @param fieldsInUse which fields are used
+         * @param adapter        the hosting adapter
+         * @param itemView       the view specific for this holder
+         * @param thumbnailScale to use
+         * @param fieldsInUse    which fields are used
          */
         BookHolder(@NonNull final BooklistAdapter adapter,
                    @NonNull final View itemView,
-                   @NonNull final BooklistStyle style,
+                   final int thumbnailScale,
                    @NonNull final FieldsInUse fieldsInUse) {
             super(itemView);
             final Context context = itemView.getContext();
@@ -907,7 +903,7 @@ public class BooklistAdapter
             mBookshelvesView = itemView.findViewById(R.id.shelves);
 
             // We use a square space for the image so both portrait/landscape images work out.
-            final int longestSide = ImageScale.toPixels(context, style.getThumbnailScale(context));
+            final int longestSide = ImageScale.toPixels(context, thumbnailScale);
             mMaxWidth = longestSide;
             mMaxHeight = longestSide;
             mCoverView = itemView.findViewById(R.id.coverImage0);
@@ -917,18 +913,7 @@ public class BooklistAdapter
             }
             // We do not go overkill here by adding a CoverHandler
             // but only provide zooming by clicking on the image
-            mCoverView.setOnClickListener(v -> {
-                final String currentUuid = (String) v.getTag(R.id.TAG_UUID);
-                final File image = AppDir.getCoverFile(v.getContext(), currentUuid, 0);
-                if (image.exists()) {
-                    final FragmentManager fm =
-                            ((FragmentActivity) v.getContext()).getSupportFragmentManager();
-
-                    ZoomedImageDialogFragment
-                            .newInstance(image)
-                            .show(fm, ZoomedImageDialogFragment.TAG);
-                }
-            });
+            mCoverView.setOnClickListener(this::onZoomCover);
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_NODE_ID) {
                 // add a text view to display the "position/nodeId" for a book
@@ -955,6 +940,24 @@ public class BooklistAdapter
                 // if (mDbgRowIdView != null) {
                 //     mDbgRowIdView.setVisibility(View.VISIBLE);
                 // }
+            }
+        }
+
+        /**
+         * Zoom the given cover.
+         *
+         * @param coverView passed in to allow for future expansion
+         */
+        private void onZoomCover(@NonNull final View coverView) {
+            final String uuid = (String) coverView.getTag(R.id.TAG_THUMBNAIL_UUID);
+            final File image = AppDir.getCoverFile(coverView.getContext(), uuid, 0);
+            if (image.exists()) {
+                final FragmentManager fm =
+                        ((FragmentActivity) coverView.getContext()).getSupportFragmentManager();
+
+                ZoomedImageDialogFragment
+                        .newInstance(image)
+                        .show(fm, ZoomedImageDialogFragment.TAG);
             }
         }
 
@@ -1008,7 +1011,7 @@ public class BooklistAdapter
             if (mInUse.cover) {
                 final String uuid = rowData.getString(DBDefinitions.KEY_BOOK_UUID);
                 // store the uuid for use in the OnClickListener
-                mCoverView.setTag(R.id.TAG_UUID, uuid);
+                mCoverView.setTag(R.id.TAG_THUMBNAIL_UUID, uuid);
                 setImageView(uuid);
             }
 
@@ -1259,8 +1262,11 @@ public class BooklistAdapter
             // Debugger help: color the row according to state
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_NODE_STATE) {
                 final int rowId = rowData.getInt(DBDefinitions.KEY_PK_ID);
-                final RowStateDAO.Node node = ((BooklistCursor) mAdapter.getCursor())
-                        .getBooklistBuilder().getNodeByNodeId(rowId);
+
+                final BooklistCursor cursor = ((BooklistCursor) mAdapter.getCursor());
+                Objects.requireNonNull(cursor, ErrorMsg.NULL_CURSOR);
+
+                final RowStateDAO.Node node = cursor.getBooklistBuilder().getNodeByNodeId(rowId);
                 if (node.isExpanded) {
                     itemView.setBackgroundColor(Color.GREEN);
                 } else {

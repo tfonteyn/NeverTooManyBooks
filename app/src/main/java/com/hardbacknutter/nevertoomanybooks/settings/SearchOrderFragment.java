@@ -184,7 +184,17 @@ public class SearchOrderFragment
                                          final int viewType) {
             final View view = getLayoutInflater()
                     .inflate(R.layout.row_edit_searchsite, parent, false);
-            return new Holder(view);
+            final Holder holder = new Holder(view);
+            //noinspection ConstantConditions
+            holder.mCheckableButton.setOnClickListener(v -> onItemCheckChanged(holder));
+            return holder;
+        }
+
+        void onItemCheckChanged(@NonNull final Holder holder) {
+            final Site site = getItem(holder.getBindingAdapterPosition());
+            site.setEnabled(!site.isEnabled());
+            //noinspection ConstantConditions
+            holder.mCheckableButton.setChecked(site.isEnabled());
         }
 
         @Override
@@ -199,6 +209,9 @@ public class SearchOrderFragment
             final SearchEngine searchEngine = site.getSearchEngine(context);
 
             holder.nameView.setText(searchEngine.getName());
+
+            //noinspection ConstantConditions
+            holder.mCheckableButton.setChecked(site.isEnabled());
 
             // only show the info for Data lists. Irrelevant for others.
             if (site.getType() == Site.Type.Data) {
@@ -223,15 +236,6 @@ public class SearchOrderFragment
             } else {
                 holder.infoView.setVisibility(View.GONE);
             }
-
-            //noinspection ConstantConditions
-            holder.mCheckableButton.setChecked(site.isEnabled());
-
-            // Set the click listener for the 'enable' site checkable
-            holder.mCheckableButton.setOnClickListener(v -> {
-                site.setEnabled(!site.isEnabled());
-                holder.mCheckableButton.setChecked(site.isEnabled());
-            });
         }
     }
 

@@ -4,14 +4,6 @@
  *
  * This file is part of NeverTooManyBooks.
  *
- * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
- *
- * Without their original creation, this project would not exist in its
- * current form. It was however largely rewritten/refactored and any
- * comments on this fork should be directed at HardBackNutter and not
- * at the original creators.
- *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -73,10 +65,10 @@ public class ChecklistRecyclerAdapter<ID, CS extends CharSequence>
      * @param selection (optional) the pre-selected items
      * @param listener  (optional) to send a selection to
      */
-    public ChecklistRecyclerAdapter(@NonNull final Context context,
-                                    @NonNull final List<Pair<ID, CS>> items,
-                                    @Nullable final Set<ID> selection,
-                                    @Nullable final SelectionListener<ID> listener) {
+    ChecklistRecyclerAdapter(@NonNull final Context context,
+                             @NonNull final List<Pair<ID, CS>> items,
+                             @Nullable final Set<ID> selection,
+                             @Nullable final SelectionListener<ID> listener) {
 
         mInflater = LayoutInflater.from(context);
         mItems = items;
@@ -89,29 +81,29 @@ public class ChecklistRecyclerAdapter<ID, CS extends CharSequence>
     public Holder onCreateViewHolder(@NonNull final ViewGroup parent,
                                      final int viewType) {
         final View view = mInflater.inflate(R.layout.row_choice_multi, parent, false);
-        return new Holder(view);
+        final Holder holder = new Holder(view);
+        holder.buttonView.setOnClickListener(v -> onItemCheckChanged(holder));
+        return holder;
     }
 
     @Override
     public void onBindViewHolder(@NonNull final Holder holder,
                                  final int position) {
         final Pair<ID, CS> item = mItems.get(position);
-        // store the id on a tag for easy retrieval
-        holder.buttonView.setTag(R.id.TAG_ITEM, item.first);
 
-        holder.buttonView.setText(item.second);
         final boolean checked = mSelection.contains(item.first);
         holder.buttonView.setChecked(checked);
-        holder.buttonView.setOnClickListener(this::itemCheckChanged);
+        holder.buttonView.setText(item.second);
     }
 
-    private void itemCheckChanged(@NonNull final View v) {
-        final CheckedTextView ctv = (CheckedTextView) v;
-        final boolean selected = !ctv.isChecked();
-        ctv.setChecked(selected);
+    private void onItemCheckChanged(@NonNull final Holder holder) {
 
-        //noinspection unchecked
-        final ID itemId = (ID) ctv.getTag(R.id.TAG_ITEM);
+        final int position = holder.getAbsoluteAdapterPosition();
+
+        final boolean selected = !holder.buttonView.isChecked();
+        holder.buttonView.setChecked(selected);
+
+        final ID itemId = mItems.get(position).first;
         if (selected) {
             mSelection.add(itemId);
         } else {
@@ -120,7 +112,7 @@ public class ChecklistRecyclerAdapter<ID, CS extends CharSequence>
 
         if (mOnSelectionListener != null) {
             // use a post allowing the UI to update view first
-            v.post(() -> mOnSelectionListener.onSelected(itemId, selected));
+            holder.buttonView.post(() -> mOnSelectionListener.onSelected(itemId, selected));
         }
     }
 

@@ -237,19 +237,20 @@ public abstract class BasePreferenceFragment
         preference = findPreference("psk_purge_files");
         if (preference != null) {
             preference.setOnPreferenceClickListener(p -> {
+                final Context context = getContext();
                 //noinspection ConstantConditions
-                final long bytes = AppDir.purge(getContext(), false);
+                final long bytes = AppDir.purge(context, false);
                 final String msg = getString(R.string.txt_cleanup_files,
-                                             FileUtils.formatFileSize(getContext(), bytes),
+                                             FileUtils.formatFileSize(context, bytes),
                                              getString(R.string.lbl_send_debug));
 
-                new MaterialAlertDialogBuilder(getContext())
+                new MaterialAlertDialogBuilder(context)
                         .setIcon(R.drawable.ic_warning)
                         .setTitle(R.string.lbl_purge_files)
                         .setMessage(msg)
                         .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
                         .setPositiveButton(android.R.string.ok, (d, w) ->
-                                AppDir.purge(getContext(), true))
+                                AppDir.purge(context, true))
                         .create()
                         .show();
                 return true;

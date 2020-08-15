@@ -4,14 +4,6 @@
  *
  * This file is part of NeverTooManyBooks.
  *
- * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
- *
- * Without their original creation, this project would not exist in its
- * current form. It was however largely rewritten/refactored and any
- * comments on this fork should be directed at HardBackNutter and not
- * at the original creators.
- *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -255,7 +247,7 @@ public class SearchCoordinator
                      @Nullable final Bundle args) {
 
         if (mAllSites == null) {
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR_TIMERS) {
                 mSearchTasksStartTime = new SparseLongArray();
                 mSearchTasksEndTime = new SparseLongArray();
             }
@@ -330,7 +322,7 @@ public class SearchCoordinator
      */
     private void onSearchTaskFinished(final int taskId,
                                       @Nullable final Bundle result) {
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR_TIMERS) {
             mSearchTasksEndTime.put(taskId, System.nanoTime());
         }
 
@@ -415,7 +407,7 @@ public class SearchCoordinator
                            + "|wasCancelled=" + mIsCancelled
                            + "|searchErrors=" + searchErrors);
 
-                if (DEBUG_SWITCHES.TIMERS) {
+                if (DEBUG_SWITCHES.SEARCH_COORDINATOR_TIMERS) {
                     for (int i = 0; i < mSearchTasksStartTime.size(); i++) {
                         final long start = mSearchTasksStartTime.valueAt(i);
                         // use the key, not the index!
@@ -667,7 +659,7 @@ public class SearchCoordinator
      * @param context Current context
      */
     private void prepareSearch(@NonNull final Context context) {
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR_TIMERS) {
             mSearchStartTime = System.nanoTime();
         }
 
@@ -714,7 +706,7 @@ public class SearchCoordinator
                        + "|mPublisher=" + mPublisherSearchText);
         }
 
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR_TIMERS) {
             mSearchTasksStartTime.clear();
             mSearchTasksEndTime.clear();
         }
@@ -816,7 +808,7 @@ public class SearchCoordinator
             return false;
         }
 
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR_TIMERS) {
             mSearchTasksStartTime.put(task.getTaskId(), System.nanoTime());
         }
 

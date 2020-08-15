@@ -171,7 +171,7 @@
             android:defaultValue="2"
             android:entries="@array/pe_fastscroller_overlay"
             android:entryValues="@array/pv_fastscroller_overlay"
-            android:icon="@drawable/ic_baseline_chat_bubble_outline_24"
+            android:icon="@drawable/ic_chat_bubble_outline"
             android:key="booklist.fastscroller.overlay"
             android:title="@string/pt_enable_fast_scroller_overlay" />
     </PreferenceCategory>

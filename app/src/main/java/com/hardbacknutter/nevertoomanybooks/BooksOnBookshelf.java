@@ -223,11 +223,13 @@ public class BooksOnBookshelf
                 @Override
                 public void onItemClick(final int position) {
                     final Cursor cursor = mAdapter.getCursor();
+                    Objects.requireNonNull(cursor, ErrorMsg.NULL_CURSOR);
                     // Move the cursor, so we can read the data for this row.
                     // Paranoia: if the user can click it, then this move should be fine.
                     if (!cursor.moveToPosition(position)) {
                         return;
                     }
+
                     final DataHolder rowData = new CursorRow(cursor);
 
                     // If it's a book, open the details screen.
@@ -258,11 +260,13 @@ public class BooksOnBookshelf
                 @Override
                 public boolean onItemLongClick(final int position) {
                     final Cursor cursor = mAdapter.getCursor();
+                    Objects.requireNonNull(cursor, ErrorMsg.NULL_CURSOR);
                     // Move the cursor, so we can read the data for this row.
                     // Paranoia: if the user can click it, then this move should be fine.
                     if (!cursor.moveToPosition(position)) {
                         return false;
                     }
+
                     final DataHolder rowData = new CursorRow(cursor);
 
                     // build the menu for this row
@@ -401,20 +405,23 @@ public class BooksOnBookshelf
      *
      * <strong>Developer note:</strong>
      * There seems to be no other solution but to always create the adapter
-     * in {@link #onCreate} (with an empty cursor) and RECREATE it when we have a valid cursor.
+     * in {@link #onCreate} (with null cursor) and RECREATE it when we have a valid cursor.
      * Tested several strategies, but it seems to be impossible to RELIABLY
      * flush the adapter cache of View/ViewHolder.
+     * i.e. {@link RecyclerView#getRecycledViewPool().clear()} is not enough!
      * <p>
-     * URGENT: try recyclerView.setRecycledViewPool(new RecyclerView.RecycledViewPool());
+     * Not setting an adapter at all in {@link #onCreate} is not a solution either...
+     * crashes assured! Also see {@link #buildBookList}.
      *
      * @param cursor to use, or {@code null} for initial creation.
      */
     public void createAdapter(@Nullable final Cursor cursor) {
         mAdapter = new BooklistAdapter(this, mModel.getCurrentStyle(this));
-        mAdapter.setOnRowClickedListener(mOnRowClickedListener);
         mVb.list.setAdapter(mAdapter);
-
+        // No, we do NOT have a fixed size for each row
+        //mVb.list.setHasFixedSize(false);
         if (cursor != null) {
+            mAdapter.setOnRowClickedListener(mOnRowClickedListener);
             mAdapter.setCursor(cursor);
         }
     }
@@ -728,6 +735,7 @@ public class BooksOnBookshelf
                                           final int position) {
 
         final Cursor cursor = mAdapter.getCursor();
+        Objects.requireNonNull(cursor, ErrorMsg.NULL_CURSOR);
         // Move the cursor, so we can read the data for this row.
         // The majority of the time this is not needed, but a fringe case (toggle node)
         // showed it should indeed be done.
@@ -1349,8 +1357,13 @@ public class BooksOnBookshelf
 
         if (!mModel.isRunning()) {
             mVb.progressBar.setVisibility(View.VISIBLE);
+            // Invisible... theoretically this means the page should not re-layout
+            mVb.listHeader.getRoot().setVisibility(View.INVISIBLE);
+            mVb.list.setVisibility(View.INVISIBLE);
+
             // force the adapter to stop displaying by disabling its cursor.
-            // DO NOT SET IT TO NULL or REMOVE FROM THE VIEW here... crashes assured when doing so.
+            // DO NOT REMOVE THE ADAPTER FROM FROM THE VIEW;
+            // i.e. do NOT call mVb.list.setAdapter(null)... crashes assured when doing so.
             mAdapter.setCursor(null);
             mModel.buildBookList();
         }
@@ -1436,7 +1449,7 @@ public class BooksOnBookshelf
                 topViewOffset = 0;
             }
 
-            mModel.saveListPosition(this, position, topViewOffset, mAdapter.getItemId(position));
+            mModel.saveListPosition(this, position, topViewOffset);
         }
     }
 
@@ -1467,6 +1480,11 @@ public class BooksOnBookshelf
         mVb.listHeader.bookCount.setText(header);
         mVb.listHeader.bookCount.setVisibility(header != null ? View.VISIBLE : View.GONE);
 
+        // just show the root container... if no fields in it are shown that's still fine.
+        mVb.listHeader.getRoot().setVisibility(View.VISIBLE);
+
+        mVb.list.setVisibility(View.VISIBLE);
+
         createAdapter(cursor);
         scrollToSavedPosition(targetNodes);
     }
@@ -1486,24 +1504,6 @@ public class BooksOnBookshelf
             mLayoutManager.scrollToPosition(position);
 
         } else if (position != RecyclerView.NO_POSITION) {
-            // need to map the row id to the new adapter/cursor. Ideally they will be the same.
-            final long actualRowId = mAdapter.getItemId(position);
-            final long desiredRowId = bookshelf.getTopRowId();
-            // but if they are not equal, TODO: TRY to FIND the correct position
-            if (actualRowId != desiredRowId) {
-                if (BuildConfig.DEBUG /* always */) {
-                    Log.d(TAG, "position=" + position
-                               + "|desiredRowId=" + desiredRowId
-                               + "|actualRowId=" + actualRowId);
-                }
-                // --/++ are placeholders only / do not work
-                // if (actualRowId < desiredRowId) {
-                //      position++;
-                // } else {
-                //      position--;
-                // }
-            }
-
             // sanity check
             if (position < 0) {
                 position = 0;

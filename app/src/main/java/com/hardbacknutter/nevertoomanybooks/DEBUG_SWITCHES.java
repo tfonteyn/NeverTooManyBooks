@@ -53,15 +53,15 @@ public final class DEBUG_SWITCHES {
 
     /** {@link com.hardbacknutter.nevertoomanybooks.booklist.BooklistBuilder}. */
     public static final boolean BOB_THE_BUILDER = false;
+    /** enable timers for rough performance measurements. */
+    public static final boolean BOB_THE_BUILDER_TIMERS = false;
+
     /** {@link BooksOnBookshelfModel}. */
     public static final boolean BOB_INIT_BOOK_LIST = false;
     /** {@link BooksOnBookshelfModel} Expand/Collapsing nodes. */
     public static final boolean BOB_NODE_STATE = false;
     /** {@link BooksOnBookshelfModel} Display the position and node id. Adds a View from code. */
     public static final boolean BOB_NODE_ID = false;
-
-    /** enable timers for rough performance measurements. */
-    public static final boolean TIMERS = false;
 
     /** track the flow & values on startActivityForResult & onActivityResult. */
     public static final boolean ON_ACTIVITY_RESULT = false;
@@ -79,6 +79,8 @@ public final class DEBUG_SWITCHES {
 
     /** {@link com.hardbacknutter.nevertoomanybooks.searches.SearchCoordinator}. */
     public static final boolean SEARCH_COORDINATOR = false;
+    /** enable timers for rough performance measurements. */
+    public static final boolean SEARCH_COORDINATOR_TIMERS = false;
 
     /** {@link com.hardbacknutter.nevertoomanybooks.goodreads}. */
     public static final boolean GOODREADS_HTTP_XML = false;

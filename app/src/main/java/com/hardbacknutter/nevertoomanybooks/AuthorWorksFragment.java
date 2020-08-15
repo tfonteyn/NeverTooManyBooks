@@ -44,7 +44,6 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
-import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistBuilder;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
@@ -414,19 +413,13 @@ public class AuthorWorksFragment
                     throw new IllegalArgumentException(ErrorMsg.UNEXPECTED_VALUE + viewType);
             }
 
-            Holder holder = new Holder(itemView);
+            final Holder holder = new Holder(itemView);
 
             // click -> get the book(s) for that entry and display.
-            holder.itemView.setOnClickListener(v -> {
-                final Integer rowPos = (Integer) v.getTag(R.id.TAG_POSITION);
-                Objects.requireNonNull(rowPos, ErrorMsg.NULL_ROW_POS);
-                gotoBook(rowPos);
-            });
+            holder.itemView.setOnClickListener(v -> gotoBook(holder.getBindingAdapterPosition()));
 
             holder.itemView.setOnLongClickListener(v -> {
-                final Integer rowPos = (Integer) v.getTag(R.id.TAG_POSITION);
-                Objects.requireNonNull(rowPos, ErrorMsg.NULL_ROW_POS);
-                onCreateContextMenu(rowPos);
+                onCreateContextMenu(holder.getBindingAdapterPosition());
                 return true;
             });
 
@@ -436,12 +429,9 @@ public class AuthorWorksFragment
         @Override
         public void onBindViewHolder(@NonNull final Holder holder,
                                      final int position) {
-            holder.itemView.setTag(R.id.TAG_POSITION, position);
-
-            final TocEntry tocEntry = mModel.getTocEntries().get(position);
-
             final Context context = getContext();
 
+            final TocEntry tocEntry = mModel.getTocEntries().get(position);
             //noinspection ConstantConditions
             holder.titleView.setText(tocEntry.getLabel(context));
 

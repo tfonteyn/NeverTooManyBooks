@@ -314,7 +314,7 @@ public class PreferredStylesActivity
 
             case R.id.MENU_DELETE:
                 mModel.deleteStyle(this, style);
-                mListAdapter.notifyDataSetChanged();
+                mListAdapter.notifyItemRemoved(position);
                 return true;
 
             case R.id.MENU_DUPLICATE:
@@ -399,7 +399,28 @@ public class PreferredStylesActivity
 
             final View view = getLayoutInflater()
                     .inflate(R.layout.row_edit_preferred_styles, parent, false);
-            return new Holder(view);
+            final Holder holder = new Holder(view);
+
+            // click -> set the row as 'selected'.
+            // Do not modify the 'preferred' state of the row.
+            holder.rowDetailsView.setOnClickListener(v -> {
+                // first update the previous, now unselected, row.
+                notifyItemChanged(mSelectedPosition);
+                // get and update the newly selected row.
+                mSelectedPosition = holder.getBindingAdapterPosition();
+                notifyItemChanged(mSelectedPosition);
+            });
+
+            holder.rowDetailsView.setOnLongClickListener(v -> {
+                onCreateContextMenu(holder.getBindingAdapterPosition());
+                return true;
+            });
+
+            // click the checkbox -> set as 'preferred'
+            //noinspection ConstantConditions
+            holder.mCheckableButton.setOnClickListener(v -> onItemCheckChanged(holder));
+
+            return holder;
         }
 
         @Override
@@ -418,10 +439,9 @@ public class PreferredStylesActivity
                 holder.typeView.setText(R.string.style_is_builtin);
             }
 
-            // handle the 'preferred style' checkable
+            // set the 'preferred style' checkable
             //noinspection ConstantConditions
             holder.mCheckableButton.setChecked(style.isPreferred(getContext()));
-            holder.mCheckableButton.setOnClickListener(v -> setPreferred(holder));
 
             // select the original row if there was nothing selected (yet).
             if (mSelectedPosition == RecyclerView.NO_POSITION
@@ -429,23 +449,8 @@ public class PreferredStylesActivity
                 mSelectedPosition = position;
             }
 
-            // update the current row
+            // finally update the new current row
             holder.itemView.setSelected(mSelectedPosition == position);
-
-            // click -> set the row as 'selected'.
-            // Do not modify the 'preferred' state of the row.
-            holder.rowDetailsView.setOnClickListener(v -> {
-                // update the previous, now unselected, row.
-                notifyItemChanged(mSelectedPosition);
-                // get/update the newly selected row.
-                mSelectedPosition = holder.getBindingAdapterPosition();
-                notifyItemChanged(mSelectedPosition);
-            });
-
-            holder.rowDetailsView.setOnLongClickListener(v -> {
-                onCreateContextMenu(holder.getBindingAdapterPosition());
-                return true;
-            });
         }
 
         /**
@@ -460,7 +465,7 @@ public class PreferredStylesActivity
          *
          * @param holder for the checked row.
          */
-        private void setPreferred(@NonNull final Holder holder) {
+        private void onItemCheckChanged(@NonNull final Holder holder) {
             // current row/style
             final int position = holder.getBindingAdapterPosition();
             final BooklistStyle style = getItem(position);
