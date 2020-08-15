@@ -44,6 +44,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -121,11 +122,21 @@ public class MenuPickerDialogFragment
             } else {
                 subPickList = null;
             }
-            final int id = item.getItemId();
-            final Pick pick = new Pick(id,
+
+            // Using reflection to read the icon id... this is a BAD idea...
+            int iconId = 0;
+            try {
+                final Field iconIdField = item.getClass().getDeclaredField("mIconResId");
+                iconIdField.setAccessible(true);
+                iconId = iconIdField.getInt(item);
+            } catch (@NonNull final NoSuchFieldException | IllegalAccessException ignore) {
+                // ignore
+            }
+
+            final Pick pick = new Pick(item.getItemId(),
                                        item.getOrder(),
                                        item.getTitle().toString(),
-                                       0,
+                                       iconId,
                                        subPickList);
             pickList.add(pick);
         }
