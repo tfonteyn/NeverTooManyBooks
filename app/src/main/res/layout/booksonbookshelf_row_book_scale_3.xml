@@ -46,8 +46,8 @@
             android:contentDescription="@string/lbl_cover"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            tools:layout_height="@dimen/tools_cover_scale_2_height"
-            tools:layout_width="@dimen/tools_cover_scale_2_width"
+            tools:layout_height="@dimen/tools_cover_scale_3_height"
+            tools:layout_width="@dimen/tools_cover_scale_3_width"
             tools:src="@sample/covers"
             />
 

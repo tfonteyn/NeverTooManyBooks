@@ -22,6 +22,7 @@ package com.hardbacknutter.nevertoomanybooks.goodreads.editions;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.TypedArray;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
@@ -43,7 +44,7 @@ import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.covers.ImageScale;
+import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyle;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.databinding.ActivityGoodreadsSearchBinding;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
@@ -262,7 +263,13 @@ public class GoodreadsSearchActivity
         WorksAdapter(@NonNull final Context context,
                      @NonNull final List<GoodreadsWork> items) {
             mItems = items;
-            final int longestSide = ImageScale.toPixels(context, ImageScale.SCALE_3_MEDIUM);
+            final TypedArray coverSizes =
+                    context.getResources()
+                           .obtainTypedArray(R.array.cover_book_list_longest_side);
+            final int longestSide = coverSizes.getDimensionPixelSize(
+                    BooklistStyle.IMAGE_SCALE_DEFAULT, 0);
+            coverSizes.recycle();
+
             mMaxWidth = longestSide;
             mMaxHeight = longestSide;
         }

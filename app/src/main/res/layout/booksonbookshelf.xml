@@ -81,7 +81,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/list_header"
-                tools:listitem="@layout/booksonbookshelf_row_book_scale_0_3"
+                tools:listitem="@layout/booksonbookshelf_row_book_scale_3"
                 />
 
         </androidx.constraintlayout.widget.ConstraintLayout>

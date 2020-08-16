@@ -5,14 +5,6 @@
   ~
   ~ This file is part of NeverTooManyBooks.
   ~
-  ~ In August 2018, this project was forked from:
-  ~ Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
-  ~
-  ~ Without their original creation, this project would not exist in its
-  ~ current form. It was however largely rewritten/refactored and any
-  ~ comments on this fork should be directed at HardBackNutter and not
-  ~ at the original creators.
-  ~
   ~ NeverTooManyBooks is free software: you can redistribute it and/or modify
   ~ it under the terms of the GNU General Public License as published by
   ~ the Free Software Foundation, either version 3 of the License, or
@@ -96,21 +88,19 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/preview"
                 app:layout_constraintTop_toBottomOf="@id/statusMessage"
-                tools:itemCount="3"
+                tools:itemCount="10"
                 tools:listitem="@layout/row_cover_browser_gallery"
                 />
 
             <ImageView
                 android:id="@+id/preview"
-                style="@style/CoverImage"
+                style="@style/CoverImage.Preview"
                 android:layout_marginTop="?attr/dialogPreferredPadding"
                 android:visibility="invisible"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
                 tools:ignore="ContentDescription"
-                tools:layout_height="@dimen/tools_cover_scale_3_height"
-                tools:layout_width="@dimen/tools_cover_scale_3_width"
                 tools:src="@sample/covers"
                 tools:visibility="visible"
                 />

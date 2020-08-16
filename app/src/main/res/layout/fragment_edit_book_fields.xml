@@ -5,14 +5,6 @@
   ~
   ~ This file is part of NeverTooManyBooks.
   ~
-  ~ In August 2018, this project was forked from:
-  ~ Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
-  ~
-  ~ Without their original creation, this project would not exist in its
-  ~ current form. It was however largely rewritten/refactored and any
-  ~ comments on this fork should be directed at HardBackNutter and not
-  ~ at the original creators.
-  ~
   ~ NeverTooManyBooks is free software: you can redistribute it and/or modify
   ~ it under the terms of the GNU General Public License as published by
   ~ the Free Software Foundation, either version 3 of the License, or
@@ -50,8 +42,8 @@
             app:layout_constraintEnd_toStartOf="@id/coverImage1"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            tools:layout_height="@dimen/tools_cover_scale_3_height"
-            tools:layout_width="@dimen/tools_cover_scale_3_width"
+            tools:layout_height="@dimen/cover_edit_0_height"
+            tools:layout_width="@dimen/cover_edit_0_width"
             tools:src="@sample/covers"
             />
 
@@ -63,8 +55,8 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/coverImage0"
             app:layout_constraintTop_toTopOf="parent"
-            tools:layout_height="@dimen/tools_cover_scale_3_height"
-            tools:layout_width="@dimen/tools_cover_scale_3_width"
+            tools:layout_height="@dimen/cover_edit_1_height"
+            tools:layout_width="@dimen/cover_edit_1_width"
             tools:src="@drawable/ic_image"
             tools:background="@drawable/outline_rounded"
             />

@@ -366,13 +366,15 @@ public class BookDetailsFragment
         }
 
         if (DBDefinitions.isUsed(prefs, DBDefinitions.PREFS_IS_USED_THUMBNAIL)) {
-            final int[] scale = getResources().getIntArray(R.array.cover_scale_details);
+            final Resources res = getResources();
 
-            mCoverHandler[0] = new CoverHandler(this, mProgressBar, book, mVb.isbn,
-                                                0, mVb.coverImage0, scale[0]);
+            mCoverHandler[0] = new CoverHandler(
+                    this, mProgressBar, book, mVb.isbn, 0, mVb.coverImage0,
+                    res.getDimensionPixelSize(R.dimen.cover_details_0_height));
 
-            mCoverHandler[1] = new CoverHandler(this, mProgressBar, book, mVb.isbn,
-                                                1, mVb.coverImage1, scale[1]);
+            mCoverHandler[1] = new CoverHandler(
+                    this, mProgressBar, book, mVb.isbn, 1, mVb.coverImage1,
+                    res.getDimensionPixelSize(R.dimen.cover_details_1_height));
         }
 
         // hide unwanted and empty fields

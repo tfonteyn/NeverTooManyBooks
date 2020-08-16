@@ -22,6 +22,7 @@ package com.hardbacknutter.nevertoomanybooks.booklist;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.res.TypedArray;
 import android.database.Cursor;
 import android.database.CursorIndexOutOfBoundsException;
 import android.graphics.Bitmap;
@@ -62,7 +63,6 @@ import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageLoader;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageLoaderWithCacheWrite;
-import com.hardbacknutter.nevertoomanybooks.covers.ImageScale;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageUtils;
 import com.hardbacknutter.nevertoomanybooks.database.CoversDAO;
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
@@ -116,6 +116,8 @@ public class BooklistAdapter
     @NonNull
     private final BooklistStyle mStyle;
     private final int mThumbnailScale;
+    /** Longest side for a cover in pixels. */
+    private final int mCoverLongestSide;
     /** The cursor is the equivalent of the 'list of items'. */
     @Nullable
     private Cursor mCursor;
@@ -135,7 +137,15 @@ public class BooklistAdapter
     public BooklistAdapter(@NonNull final Context context,
                            @NonNull final BooklistStyle style) {
         mStyle = style;
+        // scale defines the layout to use
         mThumbnailScale = mStyle.getThumbnailScale(context);
+        // and is used to retrieve the cover dimensions
+        // We use a square space for the image so both portrait/landscape images work out.
+        final TypedArray coverSizes = context.getResources()
+                                             .obtainTypedArray(
+                                                     R.array.cover_book_list_longest_side);
+        mCoverLongestSide = coverSizes.getDimensionPixelSize(mThumbnailScale, 0);
+        coverSizes.recycle();
 
         mInflater = LayoutInflater.from(context);
         mUserLocale = LocaleUtils.getUserLocale(context);
@@ -213,7 +223,8 @@ public class BooklistAdapter
         // NEWTHINGS: BooklistGroup.KEY add a new holder type if needed
         switch (groupId) {
             case BooklistGroup.BOOK:
-                holder = new BookHolder(this, itemView, mThumbnailScale, mFieldsInUse);
+                holder = new BookHolder(this, itemView, mFieldsInUse,
+                                        mCoverLongestSide, mCoverLongestSide);
                 break;
 
             case BooklistGroup.AUTHOR:
@@ -274,22 +285,24 @@ public class BooklistAdapter
 
         switch (groupKeyId) {
             case BooklistGroup.BOOK: {
+                // the layout names ending in 3/4/5 are ONLY the references, they are not
+                // hard coded in the layout files themselves (other then in 'tools' settings)
                 switch (mThumbnailScale) {
-                    case ImageScale.SCALE_6_MAX:
-                    case ImageScale.SCALE_5_VERY_LARGE:
+                    case BooklistStyle.IMAGE_SCALE_6_MAX:
+                    case BooklistStyle.IMAGE_SCALE_5_VERY_LARGE:
                         layoutId = R.layout.booksonbookshelf_row_book_scale_5;
                         break;
 
-                    case ImageScale.SCALE_4_LARGE:
+                    case BooklistStyle.IMAGE_SCALE_4_LARGE:
                         layoutId = R.layout.booksonbookshelf_row_book_scale_4;
                         break;
 
-                    case ImageScale.SCALE_3_MEDIUM:
-                    case ImageScale.SCALE_2_SMALL:
-                    case ImageScale.SCALE_1_VERY_SMALL:
-                    case ImageScale.SCALE_0_NOT_DISPLAYED:
+                    case BooklistStyle.IMAGE_SCALE_3_MEDIUM:
+                    case BooklistStyle.IMAGE_SCALE_2_SMALL:
+                    case BooklistStyle.IMAGE_SCALE_1_VERY_SMALL:
+                    case BooklistStyle.IMAGE_SCALE_0_NOT_DISPLAYED:
                     default:
-                        layoutId = R.layout.booksonbookshelf_row_book_scale_0_3;
+                        layoutId = R.layout.booksonbookshelf_row_book_scale_3;
                         break;
                 }
 
@@ -312,6 +325,7 @@ public class BooklistAdapter
                         break;
 
                     default:
+                        // level 0 is a book, see above
                         // level 3 and higher all use the same layout.
                         layoutId = R.layout.booksonbookshelf_group_level_3;
                         break;
@@ -859,15 +873,15 @@ public class BooklistAdapter
          * <strong>Note:</strong> the itemView can be re-used.
          * Hence make sure to explicitly set visibility.
          *
-         * @param adapter        the hosting adapter
-         * @param itemView       the view specific for this holder
-         * @param thumbnailScale to use
-         * @param fieldsInUse    which fields are used
+         * @param adapter     the hosting adapter
+         * @param itemView    the view specific for this holder
+         * @param fieldsInUse which fields are used
          */
         BookHolder(@NonNull final BooklistAdapter adapter,
                    @NonNull final View itemView,
-                   final int thumbnailScale,
-                   @NonNull final FieldsInUse fieldsInUse) {
+                   @NonNull final FieldsInUse fieldsInUse,
+                   final int coverMaxWidth,
+                   final int coverMaxHeight) {
             super(itemView);
             final Context context = itemView.getContext();
 
@@ -902,10 +916,8 @@ public class BooklistAdapter
             mLocationView = itemView.findViewById(R.id.location);
             mBookshelvesView = itemView.findViewById(R.id.shelves);
 
-            // We use a square space for the image so both portrait/landscape images work out.
-            final int longestSide = ImageScale.toPixels(context, thumbnailScale);
-            mMaxWidth = longestSide;
-            mMaxHeight = longestSide;
+            mMaxWidth = coverMaxWidth;
+            mMaxHeight = coverMaxHeight;
             mCoverView = itemView.findViewById(R.id.coverImage0);
             if (!mInUse.cover) {
                 // shown by default, so hide it if not in use.
@@ -1263,7 +1275,7 @@ public class BooklistAdapter
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_NODE_STATE) {
                 final int rowId = rowData.getInt(DBDefinitions.KEY_PK_ID);
 
-                final BooklistCursor cursor = ((BooklistCursor) mAdapter.getCursor());
+                final BooklistCursor cursor = (BooklistCursor) mAdapter.getCursor();
                 Objects.requireNonNull(cursor, ErrorMsg.NULL_CURSOR);
 
                 final RowStateDAO.Node node = cursor.getBooklistBuilder().getNodeByNodeId(rowId);

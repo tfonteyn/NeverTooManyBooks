@@ -355,6 +355,16 @@
         <item name="android:adjustViewBounds">true</item>
     </style>
 
+
+    <style name="CoverImage.Preview">
+        <item name="android:layout_width">@dimen/cover_browser_preview_width</item>
+        <item name="android:layout_height">@dimen/cover_browser_preview_height</item>
+    </style>
+
+    <style name="CoverImage.Gallery">
+        <item name="android:layout_width">@dimen/cover_browser_gallery_width</item>
+        <item name="android:layout_height">@dimen/cover_browser_gallery_height</item>
+    </style>
     <!-- *************************************************************************************** -->
     <!-- Read-only boolean Flags. GONE when false, VISIBLE when true.  -->
     <!-- *************************************************************************************** -->

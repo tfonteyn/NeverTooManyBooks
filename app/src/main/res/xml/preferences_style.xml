@@ -96,7 +96,7 @@
             android:title="@string/pt_bob_thumbnails_show"
             />
 
-        <!-- default ImageUtils.SCALE_MEDIUM == 3 -->
+        <!-- default BooklistStyle.IMAGE_SCALE_3_MEDIUM == 3 -->
         <SeekBarPreference
             android:defaultValue="3"
             android:icon="@drawable/ic_photo_size_select_large"

@@ -61,18 +61,18 @@
             app:layout_constraintEnd_toStartOf="@id/coverImage1"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lend_to"
-            tools:layout_height="@dimen/tools_cover_scale_4_height"
-            tools:layout_width="@dimen/tools_cover_scale_4_width"
+            tools:layout_height="@dimen/cover_details_0_height"
+            tools:layout_width="@dimen/cover_details_0_width"
             tools:src="@sample/covers"
             />
         <!--
         Normal, portrait:
-            tools:layout_height="@dimen/tools_cover_scale_4_height"
-            tools:layout_width="@dimen/tools_cover_scale_4_width"
+            tools:layout_height="@dimen/cover_details_0_height"
+            tools:layout_width="@dimen/cover_details_0_width"
             tools:src="@sample/covers"
         Normal, landscape:
-            tools:layout_height="@dimen/tools_cover_scale_4_width"
-            tools:layout_width="@dimen/tools_cover_scale_4_height"
+            tools:layout_height="@dimen/cover_details_0_width"
+            tools:layout_width="@dimen/cover_details_0_height"
             tools:src="@sample/landscape"
         Placeholder:
             tools:background="@drawable/outline_rounded"
@@ -84,18 +84,18 @@
             android:contentDescription="@string/lbl_cover"
             app:layout_constraintStart_toEndOf="@id/coverImage0"
             app:layout_constraintTop_toBottomOf="@id/title"
-            tools:layout_height="@dimen/tools_cover_scale_2_height"
-            tools:layout_width="@dimen/tools_cover_scale_2_width"
+            tools:layout_height="@dimen/cover_details_1_height"
+            tools:layout_width="@dimen/cover_details_1_width"
             tools:src="@sample/covers"
             />
         <!--
         Normal, portrait:
-            tools:layout_height="@dimen/tools_cover_scale_2_height"
-            tools:layout_width="@dimen/tools_cover_scale_2_width"
+            tools:layout_height="@dimen/cover_details_1_height"
+            tools:layout_width="@dimen/cover_details_1_width"
             tools:src="@sample/covers"
         Normal, landscape:
-            tools:layout_height="@dimen/tools_cover_scale_2_width"
-            tools:layout_width="@dimen/tools_cover_scale_2_height"
+            tools:layout_height="@dimen/cover_details_1_width"
+            tools:layout_width="@dimen/cover_details_1_height"
             tools:src="@sample/landscape"
         Placeholder:
             tools:background="@drawable/outline_rounded"

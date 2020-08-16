@@ -5,14 +5,6 @@
   ~
   ~ This file is part of NeverTooManyBooks.
   ~
-  ~ In August 2018, this project was forked from:
-  ~ Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
-  ~
-  ~ Without their original creation, this project would not exist in its
-  ~ current form. It was however largely rewritten/refactored and any
-  ~ comments on this fork should be directed at HardBackNutter and not
-  ~ at the original creators.
-  ~
   ~ NeverTooManyBooks is free software: you can redistribute it and/or modify
   ~ it under the terms of the GNU General Public License as published by
   ~ the Free Software Foundation, either version 3 of the License, or
@@ -27,35 +19,12 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<!--
-     https://www.vogella.com/tutorials/AndroidStylesThemes/article.html
-     Section 1.2: w600, w800, w1000 can be seen as switching/margin points
-     -->
 <resources>
-    <dimen name="cover_base_size">70dp</dimen>
-    <integer name="cover_zoom_screen_percentage">80</integer>
+    <dimen name="cover_details_0_height">400dp</dimen>
+    <dimen name="cover_details_0_width">256dp</dimen>
+    <dimen name="cover_details_1_height">200dp</dimen>
+    <dimen name="cover_details_1_width">128dp</dimen>
 
-    <!-- tools only; used to mock reasonable sized images.
-        SCALE_FACTOR = {0, 1, 2, 3, 5, 8, 12}; * 70dp
-        Width is set at a ratio 0.64.
-        (0.60 is common for paperbacks)
-    -->
-    <dimen name="tools_cover_scale_1_height">70dp</dimen>
-    <dimen name="tools_cover_scale_1_width">45dp</dimen>
-
-    <dimen name="tools_cover_scale_2_height">140dp</dimen>
-    <dimen name="tools_cover_scale_2_width">84dp</dimen>
-
-    <dimen name="tools_cover_scale_3_height">210dp</dimen>
-    <dimen name="tools_cover_scale_3_width">126dp</dimen>
-
-    <dimen name="tools_cover_scale_4_height">350dp</dimen>
-    <dimen name="tools_cover_scale_4_width">210dp</dimen>
-
-    <dimen name="tools_cover_scale_5_height">560dp</dimen>
-    <dimen name="tools_cover_scale_5_width">336dp</dimen>
-
-    <dimen name="tools_cover_scale_6_height">840dp</dimen>
-    <dimen name="tools_cover_scale_6_width">505dp</dimen>
-
+    <dimen name="cover_browser_preview_height">500dp</dimen>
+    <dimen name="cover_browser_preview_width">320dp</dimen>
 </resources>

@@ -146,7 +146,6 @@ public class CoverHandler {
      * @param isbnView    the view to read the *current* ISBN from
      * @param cIdx        0..n image index
      * @param coverView   the views to populate
-     * @param scale       image scale to apply
      */
     public CoverHandler(@NonNull final Fragment fragment,
                         @Nullable final ProgressBar progressBar,
@@ -154,7 +153,7 @@ public class CoverHandler {
                         @NonNull final TextView isbnView,
                         @IntRange(from = 0) final int cIdx,
                         @NonNull final ImageView coverView,
-                        final int scale) {
+                        final int maxHeight) {
 
         mFragment = fragment;
         //noinspection ConstantConditions
@@ -165,10 +164,10 @@ public class CoverHandler {
         mIsbnView = isbnView;
         mCIdx = cIdx;
         mCoverView = coverView;
-        //noinspection ConstantConditions
-        final int longestSide = ImageScale.toPixels(mContext, scale);
-        mMaxWidth = longestSide;
-        mMaxHeight = longestSide;
+        // we use a square, and adjust when we got the image figured out
+        //noinspection SuspiciousNameCombination
+        mMaxWidth = maxHeight;
+        mMaxHeight = maxHeight;
 
         // Allow zooming by clicking on the image;
         mCoverView.setOnClickListener(v -> {
@@ -193,7 +192,7 @@ public class CoverHandler {
 
         if (BuildConfig.MENU_PICKER_USES_FRAGMENT) {
             mFragment.getChildFragmentManager().setFragmentResultListener(
-                    MenuPickerDialogFragment.REQUEST_KEY, mFragment,
+                    MenuPickerDialogFragment.getRequestKey(mCIdx), mFragment,
                     (MenuPickerDialogFragment.OnResultListener) this::onContextItemSelected);
         }
 

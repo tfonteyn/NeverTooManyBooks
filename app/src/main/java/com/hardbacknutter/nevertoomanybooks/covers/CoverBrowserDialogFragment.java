@@ -131,9 +131,8 @@ public class CoverBrowserDialogFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        final int scalePreview = getResources().getInteger(R.integer.cover_scale_browser_preview);
-        //noinspection ConstantConditions
-        final int longestSide = ImageScale.toPixels(getContext(), scalePreview);
+        final int longestSide = getResources()
+                .getDimensionPixelSize(R.dimen.cover_browser_preview_height);
         mPreviewMaxWidth = longestSide;
         mPreviewMaxHeight = longestSide;
     }
@@ -422,9 +421,8 @@ public class CoverBrowserDialogFragment
          */
         @SuppressWarnings("SameParameterValue")
         GalleryAdapter() {
-            final int scale = getResources().getInteger(R.integer.cover_scale_browser_gallery);
-            //noinspection ConstantConditions
-            final int longestSide = ImageScale.toPixels(getContext(), scale);
+            final int longestSide = getResources()
+                    .getDimensionPixelSize(R.dimen.cover_browser_gallery_height);
             mMaxWidth = longestSide;
             mMaxHeight = longestSide;
         }

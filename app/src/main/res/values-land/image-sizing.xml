@@ -5,14 +5,6 @@
   ~
   ~ This file is part of NeverTooManyBooks.
   ~
-  ~ In August 2018, this project was forked from:
-  ~ Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
-  ~
-  ~ Without their original creation, this project would not exist in its
-  ~ current form. It was however largely rewritten/refactored and any
-  ~ comments on this fork should be directed at HardBackNutter and not
-  ~ at the original creators.
-  ~
   ~ NeverTooManyBooks is free software: you can redistribute it and/or modify
   ~ it under the terms of the GNU General Public License as published by
   ~ the Free Software Foundation, either version 3 of the License, or
@@ -28,17 +20,6 @@
   -->
 
 <resources>
-    <!-- displayed side by side. -->
-    <integer-array name="cover_scale_details">
-        <item>4</item>
-        <item>2</item>
-    </integer-array>
-    <!-- displayed side by side. -->
-    <integer-array name="cover_scale_edit">
-        <item>2</item>
-        <item>2</item>
-    </integer-array>
-
-    <integer name="cover_scale_browser_preview">3</integer>
-
+    <dimen name="cover_browser_preview_height">200dp</dimen>
+    <dimen name="cover_browser_preview_width">132dp</dimen>
 </resources>

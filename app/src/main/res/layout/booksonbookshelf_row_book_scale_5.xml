@@ -45,6 +45,7 @@
             style="@style/CoverImage"
             android:contentDescription="@string/lbl_cover"
             app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:layout_height="@dimen/tools_cover_scale_5_height"
             tools:layout_width="@dimen/tools_cover_scale_5_width"

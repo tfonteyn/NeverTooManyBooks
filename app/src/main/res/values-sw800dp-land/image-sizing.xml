@@ -20,11 +20,4 @@
   -->
 
 <resources>
-    <dimen name="cover_details_0_height">500dp</dimen>
-    <dimen name="cover_details_0_width">320dp</dimen>
-    <dimen name="cover_details_1_height">300dp</dimen>
-    <dimen name="cover_details_1_width">192dp</dimen>
-
-    <dimen name="cover_browser_preview_height">600dp</dimen>
-    <dimen name="cover_browser_preview_width">384dp</dimen>
 </resources>

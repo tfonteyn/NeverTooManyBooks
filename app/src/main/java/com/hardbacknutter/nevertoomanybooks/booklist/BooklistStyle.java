@@ -61,7 +61,6 @@ import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PIntList;
 import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PInteger;
 import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PPref;
 import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PString;
-import com.hardbacknutter.nevertoomanybooks.covers.ImageScale;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
@@ -140,6 +139,7 @@ public class BooklistStyle
     public static final String pk_levels_expansion = "style.booklist.levels.default";
     public static final String pk_scale_font = "style.booklist.scale.font";
     public static final String pk_scale_thumbnail = "style.booklist.scale.thumbnails";
+
     /** Show ISBN for each book. */
     static final String pk_book_show_isbn = "style.booklist.show.isbn";
     /** Booklist Filter - ListPreference. */
@@ -154,6 +154,23 @@ public class BooklistStyle
     static final String pk_filter_anthology = "style.booklist.filter.anthology";
     /** Booklist Filter - MultiSelectListPreference. */
     static final String pk_filter_editions = "style.booklist.filter.editions";
+
+    /** Thumbnail Scaling. */
+    static final int IMAGE_SCALE_0_NOT_DISPLAYED = 0;
+    /** Thumbnail Scaling. */
+    static final int IMAGE_SCALE_1_VERY_SMALL = 1;
+    /** Thumbnail Scaling. */
+    static final int IMAGE_SCALE_2_SMALL = 2;
+    /** Thumbnail Scaling. */
+    static final int IMAGE_SCALE_3_MEDIUM = 3;
+    /** Thumbnail Scaling. */
+    public static final int IMAGE_SCALE_DEFAULT = IMAGE_SCALE_3_MEDIUM;
+    /** Thumbnail Scaling. */
+    static final int IMAGE_SCALE_4_LARGE = 4;
+    /** Thumbnail Scaling. */
+    static final int IMAGE_SCALE_5_VERY_LARGE = 5;
+    /** Thumbnail Scaling. */
+    static final int IMAGE_SCALE_6_MAX = 6;
     /**
      * Text Scaling.
      * NEVER change these values, they get stored in preferences.
@@ -163,7 +180,7 @@ public class BooklistStyle
     static final int FONT_SCALE_0_VERY_SMALL = 0;
     /** Text Scaling. */
     static final int FONT_SCALE_1_SMALL = 1;
-    /** Text Scaling. */
+    /** Text Scaling. This is the default. */
     static final int FONT_SCALE_2_MEDIUM = 2;
     /** Text Scaling. */
     static final int FONT_SCALE_3_LARGE = 3;
@@ -672,7 +689,7 @@ public class BooklistStyle
                                   isUserDefined, FONT_SCALE_2_MEDIUM);
 
         mThumbnailScale = new PInteger(pk_scale_thumbnail, mUuid,
-                                       isUserDefined, ImageScale.SCALE_3_MEDIUM);
+                                       isUserDefined, IMAGE_SCALE_DEFAULT);
 
 
         mShowAuthorByGivenName = new PBoolean(Prefs.pk_show_author_name_given_first, mUuid,
@@ -1038,13 +1055,13 @@ public class BooklistStyle
      *
      * @return scale id
      */
-    @ImageScale.Scale
+    @CoverScale
     public int getThumbnailScale(@NonNull final Context context) {
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         if (useBookDetail(context, prefs, pk_book_show_thumbnails)) {
             return mThumbnailScale.getValue(context);
         }
-        return ImageScale.SCALE_0_NOT_DISPLAYED;
+        return IMAGE_SCALE_0_NOT_DISPLAYED;
     }
 
     /**
@@ -1490,6 +1507,14 @@ public class BooklistStyle
              FONT_SCALE_4_VERY_LARGE})
     @Retention(RetentionPolicy.SOURCE)
     @interface FontScale {
+
+    }
+
+    @IntDef({IMAGE_SCALE_0_NOT_DISPLAYED,
+             IMAGE_SCALE_1_VERY_SMALL, IMAGE_SCALE_2_SMALL, IMAGE_SCALE_3_MEDIUM,
+             IMAGE_SCALE_4_LARGE, IMAGE_SCALE_5_VERY_LARGE, IMAGE_SCALE_6_MAX})
+    @Retention(RetentionPolicy.SOURCE)
+    @interface CoverScale {
 
     }
 

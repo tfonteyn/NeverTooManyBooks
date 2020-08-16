@@ -22,6 +22,7 @@ package com.hardbacknutter.nevertoomanybooks;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -251,15 +252,15 @@ public class EditBookFieldsFragment
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
 
         if (DBDefinitions.isUsed(prefs, DBDefinitions.PREFS_IS_USED_THUMBNAIL)) {
-            final int[] scale = getResources().getIntArray(R.array.cover_scale_edit);
+            final Resources res = getResources();
 
-            mCoverHandler[0] = new CoverHandler(this, mProgressBar,
-                                                book, mVb.isbn, 0, mVb.coverImage0,
-                                                scale[0]);
+            mCoverHandler[0] = new CoverHandler(
+                    this, mProgressBar, book, mVb.isbn, 0, mVb.coverImage0,
+                    res.getDimensionPixelSize(R.dimen.cover_edit_0_height));
 
-            mCoverHandler[1] = new CoverHandler(this, mProgressBar,
-                                                book, mVb.isbn, 1, mVb.coverImage1,
-                                                scale[1]);
+            mCoverHandler[1] = new CoverHandler(
+                    this, mProgressBar, book, mVb.isbn, 1, mVb.coverImage1,
+                    res.getDimensionPixelSize(R.dimen.cover_edit_1_height));
         }
 
         // hide unwanted fields
