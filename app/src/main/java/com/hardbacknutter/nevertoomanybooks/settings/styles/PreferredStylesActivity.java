@@ -108,7 +108,7 @@ public class PreferredStylesActivity
 
         if (BuildConfig.MENU_PICKER_USES_FRAGMENT) {
             getSupportFragmentManager().setFragmentResultListener(
-                    MenuPickerDialogFragment.REQUEST_KEY, this,
+                    MenuPickerDialogFragment.getRequestKey(0), this,
                     (MenuPickerDialogFragment.OnResultListener) this::onContextItemSelected);
         }
 

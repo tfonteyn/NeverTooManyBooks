@@ -68,13 +68,19 @@ public class MenuPickerDialogFragment
 
     /** Log tag. */
     public static final String TAG = "MenuPickerDialogFrag";
-    public static final String REQUEST_KEY = TAG + ":rk";
+
+    // Use #getRequestKey(final int position) instead
+    //private static final String REQUEST_KEY = TAG + ":rk";
 
     private static final String BKEY_MENU = TAG + ":menu";
     private static final String BKEY_POSITION = TAG + ":pos";
 
     /** Cached position of the item in the list this menu was invoked on. */
     private int mPosition;
+
+    public static String getRequestKey(final int position) {
+        return TAG + ":rk:" + position;
+    }
 
     /**
      * Constructor.
@@ -472,7 +478,8 @@ public class MenuPickerDialogFragment
                     setMenu(item.getSubMenu());
                 } else {
                     dismiss();
-                    OnResultListener.sendResult(MenuPickerDialogFragment.this, REQUEST_KEY,
+                    OnResultListener.sendResult(MenuPickerDialogFragment.this,
+                                                getRequestKey(mPosition),
                                                 item.getItemId(), mPosition);
                 }
             }

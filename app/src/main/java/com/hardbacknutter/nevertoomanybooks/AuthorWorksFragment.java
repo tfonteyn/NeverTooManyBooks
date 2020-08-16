@@ -95,7 +95,7 @@ public class AuthorWorksFragment
 
         if (BuildConfig.MENU_PICKER_USES_FRAGMENT) {
             getChildFragmentManager().setFragmentResultListener(
-                    MenuPickerDialogFragment.REQUEST_KEY, this,
+                    MenuPickerDialogFragment.getRequestKey(0), this,
                     (MenuPickerDialogFragment.OnResultListener) this::onContextItemSelected);
         }
     }

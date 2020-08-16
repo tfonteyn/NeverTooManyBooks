@@ -290,6 +290,9 @@ public class BooksOnBookshelf
                     return true;
                 }
             };
+    /** React to the user selecting a context menu option. (MENU_PICKER_USES_FRAGMENT). */
+    private final MenuPickerDialogFragment.OnResultListener mMenuPickerListener =
+            this::onContextItemSelected;
     /** Encapsulates the FAB button/menu. */
     private FabMenu mFabMenu;
     /** The adapter used to fill the mBookshelfSpinner. */
@@ -340,9 +343,8 @@ public class BooksOnBookshelf
                                      mOnStylePickerListener);
 
         if (BuildConfig.MENU_PICKER_USES_FRAGMENT) {
-            fm.setFragmentResultListener(MenuPickerDialogFragment.REQUEST_KEY, this,
-                                         (MenuPickerDialogFragment.OnResultListener)
-                                                 this::onContextItemSelected);
+            fm.setFragmentResultListener(MenuPickerDialogFragment.getRequestKey(0), this,
+                                         mMenuPickerListener);
         }
 
         // Does not use the full progress dialog. Instead uses the overlay progress bar.
@@ -420,7 +422,7 @@ public class BooksOnBookshelf
      * in {@link #onCreate} (with null cursor) and RECREATE it when we have a valid cursor.
      * Tested several strategies, but it seems to be impossible to RELIABLY
      * flush the adapter cache of View/ViewHolder.
-     * i.e. {@link RecyclerView#getRecycledViewPool().clear()} is not enough!
+     * i.e. {@link RecyclerView#getRecycledViewPool()} .clear() is not enough!
      * <p>
      * Not setting an adapter at all in {@link #onCreate} is not a solution either...
      * crashes assured! Also see {@link #buildBookList}.
