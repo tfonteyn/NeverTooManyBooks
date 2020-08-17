@@ -267,7 +267,6 @@ public final class ImageUtils {
      *
      * @param source of the image (normally a SearchEngine specific code)
      * @param bookId (optional) either the native id, or the isbn
-     *               If not set, a timestamp will be used
      * @param cIdx   0..n image index
      * @param size   (optional) size of the image
      *               Omitted if not set
@@ -279,17 +278,13 @@ public final class ImageUtils {
                                         @Nullable final String bookId,
                                         @IntRange(from = 0) final int cIdx,
                                         @Nullable final ImageFileInfo.Size size) {
-        final String tmpBookId;
-        if (bookId != null && !bookId.isEmpty()) {
-            tmpBookId = bookId;
-        } else {
-            // just use something...
-            tmpBookId = String.valueOf(System.currentTimeMillis());
-        }
-        return tmpBookId
+
+        return System.currentTimeMillis()
+               // keep '_' even for empty parts. Easier to parse the name if needed.
                + '_' + source
+               + '_' + (bookId != null && !bookId.isEmpty() ? bookId : "")
                + '_' + cIdx
-               + (size != null ? "_" + size : "")
+               + '_' + (size != null ? size : "")
                + ".jpg";
     }
 
