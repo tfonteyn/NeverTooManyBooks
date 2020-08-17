@@ -19,6 +19,7 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
+<!-- 7" screen -->
 <resources>
     <dimen name="cover_details_0_height">400dp</dimen>
     <dimen name="cover_details_0_width">256dp</dimen>

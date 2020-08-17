@@ -81,11 +81,12 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:orientation="horizontal"
-                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/statusMessage"
-                tools:itemCount="10"
+                app:spanCount="@integer/cover_browser_gallery_span_count"
+                tools:itemCount="20"
                 tools:listitem="@layout/row_cover_browser_gallery"
                 />
 

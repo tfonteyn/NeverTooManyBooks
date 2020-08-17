@@ -20,4 +20,7 @@
   -->
 
 <resources>
+    <integer name="cover_browser_gallery_span_count">3</integer>
+    <dimen name="cover_browser_gallery_height">150dp</dimen>
+    <dimen name="cover_browser_gallery_width">96dp</dimen>
 </resources>
