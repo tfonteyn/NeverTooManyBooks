@@ -139,7 +139,8 @@ public class BooklistStyle
     public static final String pk_levels_expansion = "style.booklist.levels.default";
     public static final String pk_scale_font = "style.booklist.scale.font";
     public static final String pk_scale_thumbnail = "style.booklist.scale.thumbnails";
-
+    /** Main style preferences. */
+    public static final String pk_name = "style.booklist.name";
     /** Show ISBN for each book. */
     static final String pk_book_show_isbn = "style.booklist.show.isbn";
     /** Booklist Filter - ListPreference. */
@@ -154,7 +155,6 @@ public class BooklistStyle
     static final String pk_filter_anthology = "style.booklist.filter.anthology";
     /** Booklist Filter - MultiSelectListPreference. */
     static final String pk_filter_editions = "style.booklist.filter.editions";
-
     /** Thumbnail Scaling. */
     static final int IMAGE_SCALE_0_NOT_DISPLAYED = 0;
     /** Thumbnail Scaling. */
@@ -186,9 +186,6 @@ public class BooklistStyle
     static final int FONT_SCALE_3_LARGE = 3;
     /** Text Scaling. */
     static final int FONT_SCALE_4_VERY_LARGE = 4;
-
-    /** Main style preferences. */
-    private static final String pk_name = "style.booklist.name";
     private static final String pk_is_preferred = "style.booklist.preferred";
     private static final String pk_header = "style.booklist.header";
 
@@ -329,6 +326,8 @@ public class BooklistStyle
      * All filters in an <strong>ordered</strong> map.
      */
     private Map<String, Filter<?>> mFilters;
+    @SuppressWarnings("FieldNotUsedInToString")
+    private SharedPreferences mStylePrefs;
 
     /**
      * Global defaults constructor.
@@ -364,26 +363,8 @@ public class BooklistStyle
         mNameResId = nameId;
         initPrefs(context, mNameResId == 0);
         for (@BooklistGroup.Id int groupId : groupIds) {
-            mStyleGroups.add(context, BooklistGroup.newInstance(context, groupId, this));
+            mStyleGroups.add(BooklistGroup.newInstance(context, groupId, this));
         }
-    }
-
-    /**
-     * Constructor for user-defined styles.
-     * <p>
-     * Only used when styles are loaded from storage or imported from xml.
-     * Real new styles are created by cloning an existing style.
-     *
-     * @param context Current context
-     * @param id      the row id of the style
-     * @param uuid    UUID of the style
-     */
-    public BooklistStyle(@NonNull final Context context,
-                         final long id,
-                         @NonNull final String uuid) {
-        mId = id;
-        mUuid = uuid;
-        initPrefs(context, true);
     }
 
 //    /**
@@ -424,6 +405,24 @@ public class BooklistStyle
 ////            mFilters.get(entry.getKey()).
 ////        }
 //    }
+
+    /**
+     * Constructor for user-defined styles.
+     * <p>
+     * Only used when styles are loaded from storage or imported from xml.
+     * Real new styles are created by cloning an existing style.
+     *
+     * @param context Current context
+     * @param id      the row id of the style
+     * @param uuid    UUID of the style
+     */
+    public BooklistStyle(@NonNull final Context context,
+                         final long id,
+                         @NonNull final String uuid) {
+        mId = id;
+        mUuid = uuid;
+        initPrefs(context, true);
+    }
 
     /**
      * {@link Parcelable} Constructor.
@@ -675,27 +674,33 @@ public class BooklistStyle
     private void initPrefs(@NonNull final Context context,
                            final boolean isUserDefined) {
 
-        mName = new PString(pk_name, mUuid, isUserDefined);
+        if (!mUuid.isEmpty()) {
+            mStylePrefs = context.getSharedPreferences(mUuid, Context.MODE_PRIVATE);
+        } else {
+            mStylePrefs = PreferenceManager.getDefaultSharedPreferences(context);
+        }
 
-        mIsPreferred = new PBoolean(pk_is_preferred, mUuid, isUserDefined);
+        mName = new PString(mStylePrefs, pk_name, isUserDefined);
 
-        mDefaultExpansionLevel = new PInteger(pk_levels_expansion, mUuid,
+        mIsPreferred = new PBoolean(mStylePrefs, pk_is_preferred, isUserDefined);
+
+        mDefaultExpansionLevel = new PInteger(mStylePrefs, pk_levels_expansion,
                                               isUserDefined, 1);
 
-        mShowHeaderInfo = new PBitmask(pk_header, mUuid,
+        mShowHeaderInfo = new PBitmask(mStylePrefs, pk_header,
                                        isUserDefined, HEADER_BITMASK_ALL, HEADER_BITMASK_ALL);
 
-        mFontScale = new PInteger(pk_scale_font, mUuid,
+        mFontScale = new PInteger(mStylePrefs, pk_scale_font,
                                   isUserDefined, FONT_SCALE_2_MEDIUM);
 
-        mThumbnailScale = new PInteger(pk_scale_thumbnail, mUuid,
+        mThumbnailScale = new PInteger(mStylePrefs, pk_scale_thumbnail,
                                        isUserDefined, IMAGE_SCALE_DEFAULT);
 
 
-        mShowAuthorByGivenName = new PBoolean(Prefs.pk_show_author_name_given_first, mUuid,
+        mShowAuthorByGivenName = new PBoolean(mStylePrefs, Prefs.pk_show_author_name_given_first,
                                               isUserDefined);
 
-        mSortAuthorByGivenName = new PBoolean(Prefs.pk_sort_author_name_given_first, mUuid,
+        mSortAuthorByGivenName = new PBoolean(mStylePrefs, Prefs.pk_sort_author_name_given_first,
                                               isUserDefined);
 
         // all groups in this style
@@ -705,74 +710,74 @@ public class BooklistStyle
         mAllBookDetailFields = new LinkedHashMap<>();
 
         mAllBookDetailFields.put(pk_book_show_thumbnails,
-                                 new PBoolean(pk_book_show_thumbnails,
-                                              mUuid, isUserDefined, true));
+                                 new PBoolean(mStylePrefs, pk_book_show_thumbnails,
+                                              isUserDefined, true));
 
         mAllBookDetailFields.put(pk_book_show_author,
-                                 new PBoolean(pk_book_show_author,
-                                              mUuid, isUserDefined));
+                                 new PBoolean(mStylePrefs, pk_book_show_author,
+                                              isUserDefined));
 
         mAllBookDetailFields.put(pk_book_show_publisher,
-                                 new PBoolean(pk_book_show_publisher,
-                                              mUuid, isUserDefined));
+                                 new PBoolean(mStylePrefs, pk_book_show_publisher,
+                                              isUserDefined));
 
         mAllBookDetailFields.put(pk_book_show_pub_date,
-                                 new PBoolean(pk_book_show_pub_date,
-                                              mUuid, isUserDefined));
+                                 new PBoolean(mStylePrefs, pk_book_show_pub_date,
+                                              isUserDefined));
 
         mAllBookDetailFields.put(pk_book_show_isbn,
-                                 new PBoolean(pk_book_show_isbn,
-                                              mUuid, isUserDefined));
+                                 new PBoolean(mStylePrefs, pk_book_show_isbn,
+                                              isUserDefined));
 
         mAllBookDetailFields.put(pk_book_show_format,
-                                 new PBoolean(pk_book_show_format,
-                                              mUuid, isUserDefined));
+                                 new PBoolean(mStylePrefs, pk_book_show_format,
+                                              isUserDefined));
 
         mAllBookDetailFields.put(pk_book_show_location,
-                                 new PBoolean(pk_book_show_location,
-                                              mUuid, isUserDefined));
+                                 new PBoolean(mStylePrefs, pk_book_show_location,
+                                              isUserDefined));
 
         mAllBookDetailFields.put(pk_book_show_rating,
-                                 new PBoolean(pk_book_show_rating,
-                                              mUuid, isUserDefined));
+                                 new PBoolean(mStylePrefs, pk_book_show_rating,
+                                              isUserDefined));
 
         mAllBookDetailFields.put(pk_book_show_bookshelves,
-                                 new PBoolean(pk_book_show_bookshelves,
-                                              mUuid, isUserDefined));
+                                 new PBoolean(mStylePrefs, pk_book_show_bookshelves,
+                                              isUserDefined));
 
         // all filters
         mFilters = new LinkedHashMap<>();
 
         mFilters.put(pk_filter_read,
-                     new BooleanFilter(R.string.lbl_read,
+                     new BooleanFilter(mStylePrefs, R.string.lbl_read,
                                        pk_filter_read,
-                                       mUuid, isUserDefined,
+                                       isUserDefined,
                                        DBDefinitions.TBL_BOOKS,
                                        DBDefinitions.KEY_READ));
 
         mFilters.put(pk_filter_signed,
-                     new BooleanFilter(R.string.lbl_signed,
+                     new BooleanFilter(mStylePrefs, R.string.lbl_signed,
                                        pk_filter_signed,
-                                       mUuid, isUserDefined,
+                                       isUserDefined,
                                        DBDefinitions.TBL_BOOKS,
                                        DBDefinitions.KEY_SIGNED));
 
         mFilters.put(pk_filter_anthology,
-                     new BooleanFilter(R.string.lbl_anthology,
+                     new BooleanFilter(mStylePrefs, R.string.lbl_anthology,
                                        pk_filter_anthology,
-                                       mUuid, isUserDefined,
+                                       isUserDefined,
                                        DBDefinitions.TBL_BOOKS,
                                        DBDefinitions.KEY_TOC_BITMASK));
 
         mFilters.put(pk_filter_loaned,
-                     new BooleanFilter(R.string.lbl_loaned,
+                     new BooleanFilter(mStylePrefs, R.string.lbl_loaned,
                                        pk_filter_loaned,
-                                       mUuid, isUserDefined,
+                                       isUserDefined,
                                        DBDefinitions.TBL_BOOKS,
                                        DBDefinitions.KEY_LOANEE));
 
         mFilters.put(pk_filter_editions,
-                     new BitmaskFilter(R.string.lbl_edition,
+                     new BitmaskFilter(mStylePrefs, R.string.lbl_edition,
                                        pk_filter_editions,
                                        mUuid, isUserDefined,
                                        0, Book.Edition.BITMASK_ALL,
@@ -780,9 +785,9 @@ public class BooklistStyle
                                        DBDefinitions.KEY_EDITION_BITMASK));
 
         mFilters.put(pk_filter_isbn,
-                     new NotEmptyFilter(R.string.lbl_isbn,
+                     new NotEmptyFilter(mStylePrefs, R.string.lbl_isbn,
                                         pk_filter_isbn,
-                                        mUuid, isUserDefined,
+                                        isUserDefined,
                                         DBDefinitions.TBL_BOOKS,
                                         DBDefinitions.KEY_ISBN));
     }
@@ -829,6 +834,11 @@ public class BooklistStyle
     @NonNull
     public String getUuid() {
         return mUuid;
+    }
+
+    @NonNull
+    SharedPreferences getStyleSharedPreferences() {
+        return mStylePrefs;
     }
 
     /**
@@ -962,8 +972,7 @@ public class BooklistStyle
      */
     public void updatePreferences(@NonNull final Context context,
                                   @NonNull final Map<String, PPref> newPrefs) {
-        final SharedPreferences.Editor ed =
-                context.getSharedPreferences(mUuid, Context.MODE_PRIVATE).edit();
+        final SharedPreferences.Editor ed = mStylePrefs.edit();
         updatePreferences(context, ed, newPrefs);
         ed.apply();
     }
@@ -1079,23 +1088,19 @@ public class BooklistStyle
     /**
      * Add an already existing instance.
      *
-     * @param context Current context
-     * @param group   to add
+     * @param group to add
      */
-    public void addGroup(@NonNull final Context context,
-                         @NonNull final BooklistGroup group) {
-        mStyleGroups.add(context, group);
+    public void addGroup(@NonNull final BooklistGroup group) {
+        mStyleGroups.add(group);
     }
 
     /**
      * Remove a group from this style.
      *
-     * @param context Current context
-     * @param group   to remove.
+     * @param group to remove.
      */
-    public void removeGroup(@NonNull final Context context,
-                            @NonNull final BooklistGroup group) {
-        mStyleGroups.remove(context, group.getId());
+    public void removeGroup(@NonNull final BooklistGroup group) {
+        mStyleGroups.remove(group.getId());
     }
 
     /**
@@ -1535,7 +1540,7 @@ public class BooklistStyle
          */
         PStyleGroups(@NonNull final Context context,
                      @NonNull final BooklistStyle style) {
-            super(Prefs.pk_style_groups, style.getUuid(), style.isUserDefined());
+            super(style.getStyleSharedPreferences(), Prefs.pk_style_groups, style.isUserDefined());
 
             // load the group ID's from the SharedPreference and populates the Group object list.
             mGroups.clear();
@@ -1600,18 +1605,15 @@ public class BooklistStyle
         /**
          * Add a new group to the end of the list.
          *
-         * @param context Current context
-         * @param group   to add
+         * @param group to add
          */
-        void add(@NonNull final Context context,
-                 @NonNull final BooklistGroup group) {
+        void add(@NonNull final BooklistGroup group) {
             mGroups.put(group.getId(), group);
-            super.add(context, group.getId());
+            super.add(group.getId());
         }
 
         @Override
-        public void add(@NonNull final Context context,
-                        @NonNull final Integer element) {
+        public void add(@NonNull final Integer element) {
             // we need the actual group to add it to mGroups
             throw new IllegalStateException("use add(BooklistGroup) instead");
         }
@@ -1619,13 +1621,12 @@ public class BooklistStyle
         /**
          * Remove the given group.
          *
-         * @param context Current context
-         * @param id      of group to remove
+         * @param id of group to remove
          */
-        public void remove(@NonNull final Context context,
-                           @BooklistGroup.Id @NonNull final Integer id) {
+        @Override
+        public void remove(@BooklistGroup.Id @NonNull final Integer id) {
             mGroups.remove(id);
-            super.remove(context, id);
+            super.remove(id);
         }
 
 
@@ -1636,7 +1637,7 @@ public class BooklistStyle
          */
         @Override
         public void set(@NonNull final Parcel in) {
-            clear(App.getAppContext());
+            clear();
             final List<BooklistGroup> list = new ArrayList<>();
             in.readList(list, getClass().getClassLoader());
             // (faster) equivalent of add(@NonNull final BooklistGroup group)
@@ -1654,9 +1655,9 @@ public class BooklistStyle
         }
 
         @Override
-        public void clear(@NonNull final Context context) {
+        public void clear() {
             mGroups.clear();
-            super.clear(context);
+            super.clear();
         }
     }
 

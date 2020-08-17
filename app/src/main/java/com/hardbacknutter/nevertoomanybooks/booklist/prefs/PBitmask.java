@@ -4,14 +4,6 @@
  *
  * This file is part of NeverTooManyBooks.
  *
- * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
- *
- * Without their original creation, this project would not exist in its
- * current form. It was however largely rewritten/refactored and any
- * comments on this fork should be directed at HardBackNutter and not
- * at the original creators.
- *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -57,18 +49,18 @@ public class PBitmask
      * Constructor. Uses the global setting as the default value,
      * or the passed default if there is no global default.
      *
+     * @param sp           Style preferences reference.
      * @param key          key of preference
-     * @param uuid         UUID of the style
      * @param isPersistent {@code true} to persist the value, {@code false} for in-memory only.
      * @param defValue     in memory default
      * @param mask         valid values bitmask
      */
-    public PBitmask(@NonNull final String key,
-                    @NonNull final String uuid,
+    public PBitmask(@NonNull final SharedPreferences sp,
+                    @NonNull final String key,
                     final boolean isPersistent,
                     @NonNull final Integer defValue,
                     final int mask) {
-        super(key, uuid, isPersistent, defValue);
+        super(sp, key, isPersistent, defValue);
         mMask = mask;
     }
 
@@ -100,7 +92,7 @@ public class PBitmask
     @Override
     public Integer getValue(@NonNull final Context context) {
         if (mIsPersistent) {
-            Set<String> value = getPrefs(context).getStringSet(getKey(), null);
+            Set<String> value = mStylePrefs.getStringSet(getKey(), null);
             if (value != null) {
                 return BitUtils.from(value) & mMask;
             }

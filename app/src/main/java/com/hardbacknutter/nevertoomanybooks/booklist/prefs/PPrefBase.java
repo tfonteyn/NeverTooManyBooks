@@ -4,14 +4,6 @@
  *
  * This file is part of NeverTooManyBooks.
  *
- * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
- *
- * Without their original creation, this project would not exist in its
- * current form. It was however largely rewritten/refactored and any
- * comments on this fork should be directed at HardBackNutter and not
- * at the original creators.
- *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -27,15 +19,14 @@
  */
 package com.hardbacknutter.nevertoomanybooks.booklist.prefs;
 
-import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Parcel;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.preference.PreferenceManager;
 
 import com.hardbacknutter.nevertoomanybooks.App;
+import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyle;
 
 /**
  * Base class for a generic Preference stored as a {@code String}.
@@ -49,6 +40,14 @@ public abstract class PPrefBase<T>
         implements PPref<T> {
 
     /**
+     * The SharedPreferences references for the BooklistStyle this preference belongs to.
+     * This can be the global SharedPreferences if this is the global/default BooklistStyle.
+     */
+    @SuppressWarnings("FieldNotUsedInToString")
+    @NonNull
+    protected final SharedPreferences mStylePrefs;
+
+    /**
      * Flag to indicate the value is persisted.
      * (This is used for builtin style properties)
      */
@@ -56,16 +55,6 @@ public abstract class PPrefBase<T>
     /** in-memory default to use when value==null, or when the backend does not contain the key. */
     @NonNull
     final T mDefaultValue;
-
-    /**
-     * Copy of the style uuid this Preference belongs to.
-     * Convenience only and not locally preserved.
-     * Must be set in the constructor.
-     * <p>
-     * When set to the empty string, the global preferences will be used.
-     */
-    @NonNull
-    private final String mUuid;
 
     /** key for the Preference. */
     @NonNull
@@ -77,35 +66,19 @@ public abstract class PPrefBase<T>
     /**
      * Constructor.
      *
+     * @param sp           Style preferences reference.
      * @param key          key of preference
-     * @param uuid         UUID of the style
      * @param isPersistent {@code true} to persist the value, {@code false} for in-memory only.
      * @param defValue     in memory default
      */
-    PPrefBase(@NonNull final String key,
-              @NonNull final String uuid,
+    PPrefBase(@NonNull final SharedPreferences sp,
+              @NonNull final String key,
               final boolean isPersistent,
               @NonNull final T defValue) {
+        mStylePrefs = sp;
         mKey = key;
-        mUuid = uuid;
         mIsPersistent = isPersistent;
         mDefaultValue = defValue;
-    }
-
-    /**
-     * Get the style preferences, or if the UUID is not set, the global preferences.
-     *
-     * @param context Current context
-     *
-     * @return preferences
-     */
-    @NonNull
-    protected SharedPreferences getPrefs(@NonNull final Context context) {
-        if (!mUuid.isEmpty()) {
-            return context.getSharedPreferences(mUuid, Context.MODE_PRIVATE);
-        } else {
-            return PreferenceManager.getDefaultSharedPreferences(context);
-        }
     }
 
     @NonNull
@@ -116,7 +89,7 @@ public abstract class PPrefBase<T>
 
     public void set(@Nullable final T value) {
         if (mIsPersistent) {
-            SharedPreferences.Editor ed = getPrefs(App.getAppContext()).edit();
+            final SharedPreferences.Editor ed = mStylePrefs.edit();
             if (value == null) {
                 ed.remove(getKey());
             } else {
@@ -135,7 +108,7 @@ public abstract class PPrefBase<T>
      */
     public void set(@NonNull final Parcel in) {
         //noinspection unchecked
-        T tmp = (T) in.readValue(getClass().getClassLoader());
+        final T tmp = (T) in.readValue(getClass().getClassLoader());
         if (tmp != null) {
             set(tmp);
         }
@@ -157,7 +130,7 @@ public abstract class PPrefBase<T>
     @NonNull
     public String toString() {
         return "mKey=" + mKey
-               + ", mUuid=" + mUuid
+               + ", style=" + mStylePrefs.getString(BooklistStyle.pk_name, "????")
                + ", type=" + mDefaultValue.getClass().getSimpleName()
                + ", mDefaultValue=`" + mDefaultValue + '`'
                + ", mIsPersistent=" + mIsPersistent

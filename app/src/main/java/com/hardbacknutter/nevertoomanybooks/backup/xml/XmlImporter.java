@@ -974,7 +974,7 @@ public class XmlImporter
         @Override
         public void putString(@NonNull final String key,
                               @NonNull final String value) {
-            PPref<String> p = (PString) mStylePrefs.get(key);
+            final PPref<String> p = (PString) mStylePrefs.get(key);
             if (p != null) {
                 p.set(value);
             }
@@ -983,7 +983,7 @@ public class XmlImporter
         @Override
         public void putBoolean(@NonNull final String key,
                                final boolean value) {
-            PPref<Boolean> p = (PBoolean) mStylePrefs.get(key);
+            final PPref<Boolean> p = (PBoolean) mStylePrefs.get(key);
             if (p != null) {
                 p.set(value);
             }
@@ -992,7 +992,7 @@ public class XmlImporter
         @Override
         public void putInt(@NonNull final String key,
                            final int value) {
-            PInt p = (PInt) mStylePrefs.get(key);
+            final PInt p = (PInt) mStylePrefs.get(key);
             if (p != null) {
                 p.set(value);
             }
@@ -1001,18 +1001,18 @@ public class XmlImporter
         @Override
         public void putStringSet(@NonNull final String key,
                                  @NonNull final Iterable<String> value) {
-            PCsvString p = (PCsvString) mStylePrefs.get(key);
+            final PCsvString p = (PCsvString) mStylePrefs.get(key);
             if (p != null) {
-                p.set(mContext, TextUtils.join(PCollectionBase.DELIM, value));
+                p.set(TextUtils.join(PCollectionBase.DELIM, value));
             }
         }
 
         @Override
         public void putStringList(@NonNull final String key,
                                   @NonNull final Iterable<String> value) {
-            PCsvString p = (PCsvString) mStylePrefs.get(key);
+            final PCsvString p = (PCsvString) mStylePrefs.get(key);
             if (p != null) {
-                p.set(mContext, TextUtils.join(PCollectionBase.DELIM, value));
+                p.set(TextUtils.join(PCollectionBase.DELIM, value));
             }
         }
     }

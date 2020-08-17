@@ -4,14 +4,6 @@
  *
  * This file is part of NeverTooManyBooks.
  *
- * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
- *
- * Without their original creation, this project would not exist in its
- * current form. It was however largely rewritten/refactored and any
- * comments on this fork should be directed at HardBackNutter and not
- * at the original creators.
- *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -53,21 +45,21 @@ public abstract class IntStringFilter
      * Constructor.
      * Default value is {@code P_NOT_USED}.
      *
+     * @param sp           Style preferences reference.
      * @param labelId      string resource id to use as a display label
      * @param key          of the preference
-     * @param uuid         UUID of the style
      * @param isPersistent {@code true} to have the value persisted.
      *                     {@code false} for in-memory only.
      * @param table        to use by the expression
-     * @param domainKey       to use by the expression
+     * @param domainKey    to use by the expression
      */
-    IntStringFilter(@StringRes final int labelId,
+    IntStringFilter(@NonNull final SharedPreferences sp,
+                    @StringRes final int labelId,
                     @NonNull final String key,
-                    @NonNull final String uuid,
                     final boolean isPersistent,
                     @SuppressWarnings("SameParameterValue") @NonNull final TableDefinition table,
                     @NonNull final String domainKey) {
-        super(key, uuid, isPersistent, P_NOT_USED);
+        super(sp, key, isPersistent, P_NOT_USED);
         mLabelId = labelId;
         mTable = table;
         mDomainKey = domainKey;
@@ -81,8 +73,8 @@ public abstract class IntStringFilter
 
     @Override
     public boolean isActive(@NonNull final Context context) {
-        final SharedPreferences prefs = getPrefs(context);
-        return !P_NOT_USED.equals(getValue(context)) && DBDefinitions.isUsed(prefs, mDomainKey);
+        return !P_NOT_USED.equals(getValue(context))
+               && DBDefinitions.isUsed(mStylePrefs, mDomainKey);
     }
 
     @Override

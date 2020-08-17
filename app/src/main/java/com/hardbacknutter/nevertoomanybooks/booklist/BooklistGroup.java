@@ -4,14 +4,6 @@
  *
  * This file is part of NeverTooManyBooks.
  *
- * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
- *
- * Without their original creation, this project would not exist in its
- * current form. It was however largely rewritten/refactored and any
- * comments on this fork should be directed at HardBackNutter and not
- * at the original creators.
- *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -29,6 +21,7 @@ package com.hardbacknutter.nevertoomanybooks.booklist;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -212,9 +205,9 @@ public class BooklistGroup
     @VisibleForTesting
     static final int GROUP_KEY_MAX = 31;
 
-    /** The UUID for the style. */
+    /** The UUID for the style. Needed to reconstruct the {@link #mStylePrefs} after parcelling. */
     @NonNull
-    final String mUuid;
+    private final String mUuid;
     /** Flag: is the style user-defined. */
     final boolean mIsUserDefinedStyle;
     /** The type of row/group we represent, see {@link GroupKey}. */
@@ -230,6 +223,10 @@ public class BooklistGroup
     @Nullable
     private ArrayList<Domain> mAccumulatedDomains;
 
+    @SuppressWarnings("FieldNotUsedInToString")
+    @NonNull
+    SharedPreferences mStylePrefs;
+
     /**
      * Constructor.
      *
@@ -243,6 +240,8 @@ public class BooklistGroup
         mId = id;
         mGroupKey = GroupKey.getGroupKey(mId);
         mUuid = style.getUuid();
+        mStylePrefs = style.getStyleSharedPreferences();
+
         mIsUserDefinedStyle = style.isUserDefined();
     }
 
@@ -256,6 +255,14 @@ public class BooklistGroup
         mGroupKey = GroupKey.getGroupKey(mId);
         //noinspection ConstantConditions
         mUuid = in.readString();
+        // reconstruct the preference reference.
+        //noinspection ConstantConditions
+        if (!mUuid.isEmpty()) {
+            mStylePrefs = App.getAppContext().getSharedPreferences(mUuid, Context.MODE_PRIVATE);
+        } else {
+            mStylePrefs = PreferenceManager.getDefaultSharedPreferences(App.getAppContext());
+        }
+
         mIsUserDefinedStyle = in.readInt() != 0;
         mAccumulatedDomains = new ArrayList<>();
         in.readList(mAccumulatedDomains, getClass().getClassLoader());
@@ -678,11 +685,11 @@ public class BooklistGroup
         }
 
         void initPrefs() {
-            mAllAuthors = new PBoolean(PK_SHOW_BOOKS_UNDER_EACH,
-                                       mUuid, mIsUserDefinedStyle);
+            mAllAuthors = new PBoolean(mStylePrefs, PK_SHOW_BOOKS_UNDER_EACH,
+                                       mIsUserDefinedStyle);
 
-            mPrimaryType = new PBitmask(PK_PRIMARY_TYPE,
-                                        mUuid, mIsUserDefinedStyle,
+            mPrimaryType = new PBitmask(mStylePrefs, PK_PRIMARY_TYPE,
+                                        mIsUserDefinedStyle,
                                         Author.TYPE_UNKNOWN, Author.TYPE_BITMASK_ALL);
         }
 
@@ -821,8 +828,8 @@ public class BooklistGroup
         }
 
         private void initPrefs() {
-            mAllSeries = new PBoolean(PK_SHOW_BOOKS_UNDER_EACH,
-                                      mUuid, mIsUserDefinedStyle);
+            mAllSeries = new PBoolean(mStylePrefs, PK_SHOW_BOOKS_UNDER_EACH,
+                                      mIsUserDefinedStyle);
         }
 
         @NonNull
@@ -963,8 +970,8 @@ public class BooklistGroup
 
         private void initPrefs() {
             mAllPublishers = new PBoolean(
-                    PK_SHOW_BOOKS_UNDER_EACH,
-                    mUuid, mIsUserDefinedStyle);
+                    mStylePrefs, PK_SHOW_BOOKS_UNDER_EACH,
+                    mIsUserDefinedStyle);
         }
 
         @NonNull

@@ -4,14 +4,6 @@
  *
  * This file is part of NeverTooManyBooks.
  *
- * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
- *
- * Without their original creation, this project would not exist in its
- * current form. It was however largely rewritten/refactored and any
- * comments on this fork should be directed at HardBackNutter and not
- * at the original creators.
- *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -27,7 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.booklist.prefs;
 
-import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Parcel;
 import android.text.TextUtils;
@@ -65,16 +56,16 @@ public abstract class PCollectionBase<E, T extends Collection<E>>
     /**
      * Constructor.
      *
+     * @param sp           Style preferences reference.
      * @param key          key of preference
-     * @param uuid         UUID of the style
      * @param isPersistent {@code true} to persist the value, {@code false} for in-memory only.
      * @param defValue     in memory default
      */
-    PCollectionBase(@NonNull final String key,
-                    @NonNull final String uuid,
+    PCollectionBase(@NonNull final SharedPreferences sp,
+                    @NonNull final String key,
                     final boolean isPersistent,
                     @NonNull final T defValue) {
-        super(key, uuid, isPersistent, defValue);
+        super(sp, key, isPersistent, defValue);
     }
 
     @Override
@@ -84,10 +75,9 @@ public abstract class PCollectionBase<E, T extends Collection<E>>
     }
 
     @Override
-    public void set(@NonNull final Context context,
-                    @Nullable final String values) {
+    public void set(@Nullable final String values) {
         if (mIsPersistent) {
-            getPrefs(context).edit().putString(getKey(), values).apply();
+            mStylePrefs.edit().putString(getKey(), values).apply();
         } else {
             // Not implemented for now, and in fact not needed/used for now (2020-03-11)
             // Problem is that we'd need to split the incoming CSV string, and re-create the list.
@@ -103,7 +93,7 @@ public abstract class PCollectionBase<E, T extends Collection<E>>
     @Override
     public void set(@Nullable final T value) {
         if (mIsPersistent) {
-            SharedPreferences.Editor ed = getPrefs(App.getAppContext()).edit();
+            SharedPreferences.Editor ed = mStylePrefs.edit();
             if (value == null) {
                 ed.remove(getKey());
             } else {
@@ -119,9 +109,9 @@ public abstract class PCollectionBase<E, T extends Collection<E>>
         }
     }
 
-    public void clear(@NonNull final Context context) {
+    public void clear() {
         if (mIsPersistent) {
-            getPrefs(context).edit().remove(getKey()).apply();
+            mStylePrefs.edit().remove(getKey()).apply();
         } else {
             Objects.requireNonNull(mNonPersistedValue, ErrorMsg.NULL_NON_PERSISTED_VALUE);
             mNonPersistedValue.clear();
@@ -131,14 +121,12 @@ public abstract class PCollectionBase<E, T extends Collection<E>>
     /**
      * Add a new element to the end of the list. The updated list is stored immediately.
      *
-     * @param context Current context
      * @param element Element to add
      */
-    public void add(@NonNull final Context context,
-                    @NonNull final E element) {
+    public void add(@NonNull final E element) {
         if (mIsPersistent) {
-            SharedPreferences.Editor ed = getPrefs(context).edit();
-            add(ed, getPrefs(context).getString(getKey(), null), element);
+            SharedPreferences.Editor ed = mStylePrefs.edit();
+            add(ed, mStylePrefs.getString(getKey(), null), element);
             ed.apply();
         } else {
             Objects.requireNonNull(mNonPersistedValue, ErrorMsg.NULL_NON_PERSISTED_VALUE);
@@ -172,13 +160,11 @@ public abstract class PCollectionBase<E, T extends Collection<E>>
     /**
      * Remove an element from the list. The updated list is stored immediately.
      *
-     * @param context Current context
      * @param element to remove
      */
-    public void remove(@NonNull final Context context,
-                       @NonNull final E element) {
+    public void remove(@NonNull final E element) {
         if (mIsPersistent) {
-            String list = getPrefs(context).getString(getKey(), null);
+            String list = mStylePrefs.getString(getKey(), null);
             if (list != null && !list.isEmpty()) {
                 Collection<String> newList = new ArrayList<>();
                 for (String e : list.split(DELIM)) {
@@ -187,7 +173,7 @@ public abstract class PCollectionBase<E, T extends Collection<E>>
                     }
                 }
 
-                final SharedPreferences.Editor ed = getPrefs(context).edit();
+                final SharedPreferences.Editor ed = mStylePrefs.edit();
                 if (newList.isEmpty()) {
                     ed.remove(getKey());
                 } else {
