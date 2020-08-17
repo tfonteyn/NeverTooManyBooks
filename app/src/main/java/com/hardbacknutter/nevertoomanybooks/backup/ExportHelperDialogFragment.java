@@ -4,14 +4,6 @@
  *
  * This file is part of NeverTooManyBooks.
  *
- * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
- *
- * Without their original creation, this project would not exist in its
- * current form. It was however largely rewritten/refactored and any
- * comments on this fork should be directed at HardBackNutter and not
- * at the original creators.
- *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -63,11 +55,18 @@ public class ExportHelperDialogFragment
     /**
      * Constructor.
      *
+     * @param requestKey for use with the FragmentResultListener
+     *
      * @return instance
      */
     @NonNull
-    public static DialogFragment newInstance() {
-        return new ExportHelperDialogFragment();
+    public static DialogFragment newInstance(@SuppressWarnings("SameParameterValue")
+                                             @NonNull final String requestKey) {
+        final DialogFragment frag = new ExportHelperDialogFragment();
+        final Bundle args = new Bundle(1);
+        args.putString(BKEY_REQUEST_KEY, requestKey);
+        frag.setArguments(args);
+        return frag;
     }
 
     @Override

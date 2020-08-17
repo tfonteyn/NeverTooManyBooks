@@ -4,14 +4,6 @@
  *
  * This file is part of NeverTooManyBooks.
  *
- * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
- *
- * Without their original creation, this project would not exist in its
- * current form. It was however largely rewritten/refactored and any
- * comments on this fork should be directed at HardBackNutter and not
- * at the original creators.
- *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -67,16 +59,15 @@ public class EditLenderDialogFragment
 
     /** Fragment/Log tag. */
     public static final String TAG = "LendBookDialogFrag";
-    public static final String REQUEST_KEY = TAG + ":rk";
-
+    private static final String BKEY_REQUEST_KEY = TAG + ":rk";
     private static final String BKEY_NEW_LOANEE = TAG + ':' + DBDefinitions.KEY_LOANEE;
-
     private static final String[] PROJECTION = {
             ContactsContract.Contacts._ID,
             ContactsContract.Contacts.LOOKUP_KEY,
             ContactsContract.Contacts.DISPLAY_NAME_PRIMARY,
             };
-
+    /** FragmentResultListener request key to use for our response. */
+    private String mRequestKey;
     /** Database Access. */
     private DAO mDb;
     /** View Binding. */
@@ -112,15 +103,19 @@ public class EditLenderDialogFragment
     /**
      * Constructor.
      *
-     * @param bookId    to lend
-     * @param bookTitle displayed for info only
+     * @param requestKey for use with the FragmentResultListener
+     * @param bookId     to lend
+     * @param bookTitle  displayed for info only
      *
      * @return instance
      */
-    public static DialogFragment newInstance(final long bookId,
+    public static DialogFragment newInstance(@SuppressWarnings("SameParameterValue")
+                                             @NonNull final String requestKey,
+                                             final long bookId,
                                              @NonNull final String bookTitle) {
         final DialogFragment frag = new EditLenderDialogFragment();
-        final Bundle args = new Bundle(2);
+        final Bundle args = new Bundle(3);
+        args.putString(BKEY_REQUEST_KEY, requestKey);
         args.putLong(DBDefinitions.KEY_PK_ID, bookId);
         args.putString(DBDefinitions.KEY_TITLE, bookTitle);
         frag.setArguments(args);
@@ -130,13 +125,17 @@ public class EditLenderDialogFragment
     /**
      * Constructor.
      *
-     * @param book to lend
+     * @param requestKey for use with the FragmentResultListener
+     * @param book       to lend
      *
      * @return instance
      */
-    public static DialogFragment newInstance(@NonNull final Book book) {
+    public static DialogFragment newInstance(@SuppressWarnings("SameParameterValue")
+                                             @NonNull final String requestKey,
+                                             @NonNull final Book book) {
         final DialogFragment frag = new EditLenderDialogFragment();
-        final Bundle args = new Bundle(2);
+        final Bundle args = new Bundle(3);
+        args.putString(BKEY_REQUEST_KEY, requestKey);
         args.putLong(DBDefinitions.KEY_PK_ID, book.getId());
         args.putString(DBDefinitions.KEY_TITLE, book.getString(DBDefinitions.KEY_TITLE));
         frag.setArguments(args);
@@ -150,6 +149,7 @@ public class EditLenderDialogFragment
         mDb = new DAO(TAG);
 
         final Bundle args = requireArguments();
+        mRequestKey = args.getString(BKEY_REQUEST_KEY);
         mBookId = args.getLong(DBDefinitions.KEY_PK_ID);
         mBookTitle = args.getString(DBDefinitions.KEY_TITLE);
 
@@ -272,7 +272,7 @@ public class EditLenderDialogFragment
         }
 
         if (success) {
-            BookChangedListener.sendResult(this, REQUEST_KEY, mBookId,
+            BookChangedListener.sendResult(this, mRequestKey, mBookId,
                                            BookChangedListener.BOOK_LOANEE, result);
             return true;
         }

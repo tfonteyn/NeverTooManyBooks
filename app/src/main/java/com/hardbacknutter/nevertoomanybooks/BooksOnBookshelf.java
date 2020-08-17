@@ -28,6 +28,7 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Debug;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -53,8 +54,11 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.snackbar.Snackbar;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.backup.base.ImportResults;
@@ -143,6 +147,32 @@ public class BooksOnBookshelf
 
     /** Log tag. */
     private static final String TAG = "BooksOnBookshelf";
+
+    /** FragmentResultListener request key. */
+    private static final String RK_MENU_PICKER = MenuPickerDialogFragment.TAG + ":rk";
+    /** FragmentResultListener request key. */
+    private static final String RK_STYLE_PICKER = StylePickerDialogFragment.TAG + ":rk";
+
+    /** FragmentResultListener request key. */
+    private static final String RK_EDIT_LENDER = EditLenderDialogFragment.TAG + ":rk";
+
+    /** FragmentResultListener request key. */
+    private static final String RK_EDIT_AUTHOR = EditAuthorDialogFragment.TAG + ":rk";
+    /** FragmentResultListener request key. */
+    private static final String RK_EDIT_SERIES = EditSeriesDialogFragment.TAG + ":rk";
+    /** FragmentResultListener request key. */
+    private static final String RK_EDIT_PUBLISHER = EditPublisherDialogFragment.TAG + ":rk";
+
+    /** FragmentResultListener request key. */
+    private static final String RK_EDIT_COLOR = EditColorDialogFragment.TAG + ":rk";
+    /** FragmentResultListener request key. */
+    private static final String RK_EDIT_FORMAT = EditFormatDialogFragment.TAG + ":rk";
+    /** FragmentResultListener request key. */
+    private static final String RK_EDIT_GENRE = EditGenreDialogFragment.TAG + ":rk";
+    /** FragmentResultListener request key. */
+    private static final String RK_EDIT_LANGUAGE = EditLanguageDialogFragment.TAG + ":rk";
+    /** FragmentResultListener request key. */
+    private static final String RK_EDIT_LOCATION = EditLocationDialogFragment.TAG + ":rk";
 
     /** Goodreads authorization task. */
     private GrAuthTask mGrAuthTask;
@@ -278,9 +308,10 @@ public class BooksOnBookshelf
                         final String title = mAdapter.getLevelText(position, level);
 
                         if (BuildConfig.MENU_PICKER_USES_FRAGMENT) {
-                            MenuPickerDialogFragment.newInstance(title, menu, position)
-                                                    .show(getSupportFragmentManager(),
-                                                          MenuPickerDialogFragment.TAG);
+                            MenuPickerDialogFragment
+                                    .newInstance(RK_MENU_PICKER, title, menu, position)
+                                    .show(getSupportFragmentManager(),
+                                          MenuPickerDialogFragment.TAG);
                         } else {
                             new MenuPicker(BooksOnBookshelf.this, title, menu, position,
                                            BooksOnBookshelf.this::onContextItemSelected)
@@ -318,33 +349,22 @@ public class BooksOnBookshelf
 
         final FragmentManager fm = getSupportFragmentManager();
 
-        fm.setFragmentResultListener(EditAuthorDialogFragment.REQUEST_KEY, this,
-                                     mBookChangedListener);
-        fm.setFragmentResultListener(EditSeriesDialogFragment.REQUEST_KEY, this,
-                                     mBookChangedListener);
-        fm.setFragmentResultListener(EditPublisherDialogFragment.REQUEST_KEY, this,
-                                     mBookChangedListener);
+        fm.setFragmentResultListener(RK_EDIT_AUTHOR, this, mBookChangedListener);
+        fm.setFragmentResultListener(RK_EDIT_SERIES, this, mBookChangedListener);
+        fm.setFragmentResultListener(RK_EDIT_PUBLISHER, this, mBookChangedListener);
 
-        fm.setFragmentResultListener(EditColorDialogFragment.REQUEST_KEY, this,
-                                     mBookChangedListener);
-        fm.setFragmentResultListener(EditFormatDialogFragment.REQUEST_KEY, this,
-                                     mBookChangedListener);
-        fm.setFragmentResultListener(EditGenreDialogFragment.REQUEST_KEY, this,
-                                     mBookChangedListener);
-        fm.setFragmentResultListener(EditLanguageDialogFragment.REQUEST_KEY, this,
-                                     mBookChangedListener);
-        fm.setFragmentResultListener(EditLocationDialogFragment.REQUEST_KEY, this,
-                                     mBookChangedListener);
+        fm.setFragmentResultListener(RK_EDIT_COLOR, this, mBookChangedListener);
+        fm.setFragmentResultListener(RK_EDIT_FORMAT, this, mBookChangedListener);
+        fm.setFragmentResultListener(RK_EDIT_GENRE, this, mBookChangedListener);
+        fm.setFragmentResultListener(RK_EDIT_LANGUAGE, this, mBookChangedListener);
+        fm.setFragmentResultListener(RK_EDIT_LOCATION, this, mBookChangedListener);
 
-        fm.setFragmentResultListener(EditLenderDialogFragment.REQUEST_KEY, this,
-                                     mBookChangedListener);
+        fm.setFragmentResultListener(RK_EDIT_LENDER, this, mBookChangedListener);
 
-        fm.setFragmentResultListener(StylePickerDialogFragment.REQUEST_KEY, this,
-                                     mOnStylePickerListener);
+        fm.setFragmentResultListener(RK_STYLE_PICKER, this, mOnStylePickerListener);
 
         if (BuildConfig.MENU_PICKER_USES_FRAGMENT) {
-            fm.setFragmentResultListener(MenuPickerDialogFragment.getRequestKey(0), this,
-                                         mMenuPickerListener);
+            fm.setFragmentResultListener(RK_MENU_PICKER, this, mMenuPickerListener);
         }
 
         // Does not use the full progress dialog. Instead uses the overlay progress bar.
@@ -568,7 +588,8 @@ public class BooksOnBookshelf
         switch (item.getItemId()) {
             case R.id.MENU_SORT: {
                 StylePickerDialogFragment
-                        .newInstance(mModel.getCurrentStyle(this), false)
+                        .newInstance(RK_STYLE_PICKER,
+                                     mModel.getCurrentStyle(this), false)
                         .show(getSupportFragmentManager(), StylePickerDialogFragment.TAG);
                 return true;
             }
@@ -805,7 +826,8 @@ public class BooksOnBookshelf
             case R.id.MENU_BOOK_LOAN_ADD: {
                 final long bookId = rowData.getLong(DBDefinitions.KEY_FK_BOOK);
                 EditLenderDialogFragment
-                        .newInstance(bookId, rowData.getString(DBDefinitions.KEY_TITLE))
+                        .newInstance(RK_EDIT_LENDER,
+                                     bookId, rowData.getString(DBDefinitions.KEY_TITLE))
                         .show(getSupportFragmentManager(), EditLenderDialogFragment.TAG);
                 return true;
             }
@@ -896,7 +918,7 @@ public class BooksOnBookshelf
                 final Series series = mModel.getSeries(rowData);
                 if (series != null) {
                     EditSeriesDialogFragment
-                            .newInstance(series)
+                            .newInstance(RK_EDIT_SERIES, series)
                             .show(getSupportFragmentManager(), EditSeriesDialogFragment.TAG);
                 }
                 return true;
@@ -937,7 +959,7 @@ public class BooksOnBookshelf
                 final Author author = mModel.getAuthor(rowData);
                 if (author != null) {
                     EditAuthorDialogFragment
-                            .newInstance(author)
+                            .newInstance(RK_EDIT_AUTHOR, author)
                             .show(getSupportFragmentManager(), EditAuthorDialogFragment.TAG);
                 }
                 return true;
@@ -958,7 +980,7 @@ public class BooksOnBookshelf
                 final Publisher publisher = mModel.getPublisher(rowData);
                 if (publisher != null) {
                     EditPublisherDialogFragment
-                            .newInstance(publisher)
+                            .newInstance(RK_EDIT_PUBLISHER, publisher)
                             .show(getSupportFragmentManager(), EditPublisherDialogFragment.TAG);
                 }
                 return true;
@@ -977,31 +999,33 @@ public class BooksOnBookshelf
 
             case R.id.MENU_FORMAT_EDIT: {
                 EditFormatDialogFragment
-                        .newInstance(rowData.getString(DBDefinitions.KEY_FORMAT))
+                        .newInstance(RK_EDIT_FORMAT, rowData.getString(DBDefinitions.KEY_FORMAT))
                         .show(getSupportFragmentManager(), EditFormatDialogFragment.TAG);
                 return true;
             }
             case R.id.MENU_COLOR_EDIT: {
                 EditColorDialogFragment
-                        .newInstance(rowData.getString(DBDefinitions.KEY_COLOR))
+                        .newInstance(RK_EDIT_COLOR, rowData.getString(DBDefinitions.KEY_COLOR))
                         .show(getSupportFragmentManager(), EditColorDialogFragment.TAG);
                 return true;
             }
             case R.id.MENU_GENRE_EDIT: {
                 EditGenreDialogFragment
-                        .newInstance(rowData.getString(DBDefinitions.KEY_GENRE))
+                        .newInstance(RK_EDIT_GENRE, rowData.getString(DBDefinitions.KEY_GENRE))
                         .show(getSupportFragmentManager(), EditGenreDialogFragment.TAG);
                 return true;
             }
             case R.id.MENU_LANGUAGE_EDIT: {
                 EditLanguageDialogFragment
-                        .newInstance(this, rowData.getString(DBDefinitions.KEY_LANGUAGE))
+                        .newInstance(RK_EDIT_LANGUAGE, this,
+                                     rowData.getString(DBDefinitions.KEY_LANGUAGE))
                         .show(getSupportFragmentManager(), EditLanguageDialogFragment.TAG);
                 return true;
             }
             case R.id.MENU_LOCATION_EDIT: {
                 EditLocationDialogFragment
-                        .newInstance(rowData.getString(DBDefinitions.KEY_LOCATION))
+                        .newInstance(RK_EDIT_LOCATION,
+                                     rowData.getString(DBDefinitions.KEY_LOCATION))
                         .show(getSupportFragmentManager(), EditLocationDialogFragment.TAG);
                 return true;
             }
@@ -1375,6 +1399,11 @@ public class BooksOnBookshelf
             mVb.listHeader.getRoot().setVisibility(View.INVISIBLE);
             mVb.list.setVisibility(View.INVISIBLE);
 
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_THE_BUILDER_TIMERS) {
+                final SimpleDateFormat dateFormat =
+                        new SimpleDateFormat("yyyy_MM_dd_hh_mm_ss", Locale.getDefault());
+                Debug.startMethodTracing("trace-" + dateFormat.format(new Date()));
+            }
             // force the adapter to stop displaying by disabling its cursor.
             // DO NOT REMOVE THE ADAPTER FROM FROM THE VIEW;
             // i.e. do NOT call mVb.list.setAdapter(null)... crashes assured when doing so.
@@ -1391,6 +1420,9 @@ public class BooksOnBookshelf
     private void onBuildFinished(@NonNull final FinishedMessage<List<RowStateDAO.Node>> message) {
         mVb.progressBar.setVisibility(View.GONE);
         if (message.isNewEvent()) {
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_THE_BUILDER_TIMERS) {
+                Debug.stopMethodTracing();
+            }
             displayList(mModel.getListCursor(), message.result);
         }
     }

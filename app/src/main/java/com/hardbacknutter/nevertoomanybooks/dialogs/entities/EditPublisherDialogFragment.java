@@ -4,14 +4,6 @@
  *
  * This file is part of NeverTooManyBooks.
  *
- * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
- *
- * Without their original creation, this project would not exist in its
- * current form. It was however largely rewritten/refactored and any
- * comments on this fork should be directed at HardBackNutter and not
- * at the original creators.
- *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -56,7 +48,10 @@ public class EditPublisherDialogFragment
 
     /** Fragment/Log tag. */
     public static final String TAG = "EditPublisherDialogFrag";
-    public static final String REQUEST_KEY = TAG + ":rk";
+    private static final String BKEY_REQUEST_KEY = TAG + ":rk";
+
+    /** FragmentResultListener request key to use for our response. */
+    private String mRequestKey;
 
     /** Database Access. */
     private DAO mDb;
@@ -79,13 +74,17 @@ public class EditPublisherDialogFragment
     /**
      * Constructor.
      *
-     * @param publisher to edit.
+     * @param requestKey for use with the FragmentResultListener
+     * @param publisher  to edit.
      *
      * @return instance
      */
-    public static DialogFragment newInstance(@NonNull final Publisher publisher) {
+    public static DialogFragment newInstance(@SuppressWarnings("SameParameterValue")
+                                             @NonNull final String requestKey,
+                                             @NonNull final Publisher publisher) {
         final DialogFragment frag = new EditPublisherDialogFragment();
-        final Bundle args = new Bundle(1);
+        final Bundle args = new Bundle(2);
+        args.putString(BKEY_REQUEST_KEY, requestKey);
         args.putParcelable(DBDefinitions.KEY_FK_PUBLISHER, publisher);
         frag.setArguments(args);
         return frag;
@@ -98,6 +97,7 @@ public class EditPublisherDialogFragment
         mDb = new DAO(TAG);
 
         final Bundle args = requireArguments();
+        mRequestKey = args.getString(BKEY_REQUEST_KEY);
         mPublisher = args.getParcelable(DBDefinitions.KEY_FK_PUBLISHER);
         Objects.requireNonNull(mPublisher, ErrorMsg.NULL_PUBLISHER);
 
@@ -159,7 +159,7 @@ public class EditPublisherDialogFragment
             success = mDb.update(getContext(), mPublisher, bookLocale);
         }
         if (success) {
-            BookChangedListener.sendResult(this, REQUEST_KEY, BookChangedListener.PUBLISHER);
+            BookChangedListener.sendResult(this, mRequestKey, BookChangedListener.PUBLISHER);
             return true;
         }
         return false;

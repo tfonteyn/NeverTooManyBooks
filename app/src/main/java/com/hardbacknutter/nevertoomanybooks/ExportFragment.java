@@ -4,14 +4,6 @@
  *
  * This file is part of NeverTooManyBooks.
  *
- * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
- *
- * Without their original creation, this project would not exist in its
- * current form. It was however largely rewritten/refactored and any
- * comments on this fork should be directed at HardBackNutter and not
- * at the original creators.
- *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -68,6 +60,8 @@ public class ExportFragment
 
     /** Log tag. */
     public static final String TAG = "ExportFragment";
+    /** FragmentResultListener request key. */
+    private static final String RK_EXPORT_HELPER = ExportHelperDialogFragment.TAG + ":rk:";
 
     /** Export. */
     private ArchiveExportTask mArchiveExportTask;
@@ -91,8 +85,8 @@ public class ExportFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        getChildFragmentManager().setFragmentResultListener(
-                ExportHelperDialogFragment.REQUEST_KEY, this, mExportOptionsListener);
+        getChildFragmentManager()
+                .setFragmentResultListener(RK_EXPORT_HELPER, this, mExportOptionsListener);
     }
 
     @Nullable
@@ -200,7 +194,7 @@ public class ExportFragment
                 .setNeutralButton(R.string.btn_options, (d, w) -> {
                     d.dismiss();
                     ExportHelperDialogFragment
-                            .newInstance()
+                            .newInstance(RK_EXPORT_HELPER)
                             .show(getChildFragmentManager(), ExportHelperDialogFragment.TAG);
                 })
                 .setPositiveButton(android.R.string.ok, (d, w) ->
@@ -214,7 +208,7 @@ public class ExportFragment
      *
      * @param helper export configuration
      */
-    void exportPickUri(@NonNull final ExportManager helper) {
+    private void exportPickUri(@NonNull final ExportManager helper) {
         // save the configured helper
         mArchiveExportTask.setHelper(helper);
         //noinspection ConstantConditions

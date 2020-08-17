@@ -54,11 +54,12 @@ public class StylePickerDialogFragment
 
     /** Log tag. */
     public static final String TAG = "StylePickerDialogFrag";
-    public static final String REQUEST_KEY = TAG + ":rk";
-
+    private static final String BKEY_REQUEST_KEY = TAG + ":rk";
     private static final String BKEY_SHOW_ALL_STYLES = TAG + ":showAllStyles";
     /** The styles get transformed into Pair records which are passed to the adapter. */
     private final List<Pair<String, String>> mAdapterItemList = new ArrayList<>();
+    /** FragmentResultListener request key to use for our response. */
+    private String mRequestKey;
     /** Show all styles, or only the preferred styles. */
     private boolean mShowAllStyles;
     /** The map with all styles as loaded from the database. */
@@ -75,15 +76,19 @@ public class StylePickerDialogFragment
     /**
      * Constructor.
      *
+     * @param requestKey   for use with the FragmentResultListener
      * @param currentStyle the currently active style
      * @param all          if {@code true} show all styles, otherwise only the preferred ones.
      *
      * @return instance
      */
-    public static DialogFragment newInstance(@NonNull final BooklistStyle currentStyle,
+    public static DialogFragment newInstance(@SuppressWarnings("SameParameterValue")
+                                             @NonNull final String requestKey,
+                                             @NonNull final BooklistStyle currentStyle,
                                              final boolean all) {
         final DialogFragment frag = new StylePickerDialogFragment();
-        final Bundle args = new Bundle(2);
+        final Bundle args = new Bundle(3);
+        args.putString(BKEY_REQUEST_KEY, requestKey);
         args.putString(BooklistStyle.BKEY_STYLE_UUID, currentStyle.getUuid());
         args.putBoolean(BKEY_SHOW_ALL_STYLES, all);
         frag.setArguments(args);
@@ -95,6 +100,7 @@ public class StylePickerDialogFragment
         super.onCreate(savedInstanceState);
 
         final Bundle args = requireArguments();
+        mRequestKey = args.getString(BKEY_REQUEST_KEY);
         mCurrentStyleUuid = args.getString(BooklistStyle.BKEY_STYLE_UUID);
         Objects.requireNonNull(mCurrentStyleUuid, ErrorMsg.NULL_STYLE);
         mShowAllStyles = args.getBoolean(BKEY_SHOW_ALL_STYLES, false);
@@ -153,7 +159,7 @@ public class StylePickerDialogFragment
             return;
         }
 
-        OnResultListener.sendResult(this, REQUEST_KEY, mCurrentStyleUuid);
+        OnResultListener.sendResult(this, mRequestKey, mCurrentStyleUuid);
 
         dismiss();
     }

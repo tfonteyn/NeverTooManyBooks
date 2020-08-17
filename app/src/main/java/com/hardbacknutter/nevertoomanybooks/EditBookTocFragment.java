@@ -40,6 +40,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentResultListener;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DividerItemDecoration;
@@ -95,6 +96,15 @@ public class EditBookTocFragment
 
     /** Log tag. */
     private static final String TAG = "EditBookTocFragment";
+
+    /** FragmentResultListener request key. */
+    private static final String RK_MENU_PICKER = MenuPickerDialogFragment.TAG + ":rk";
+    /** FragmentResultListener request key. */
+    private static final String RK_EDIT_TOC = EditTocEntryDialogFragment.TAG + ":rk";
+    /** FragmentResultListener request key. */
+    private static final String RK_CONFIRM_TOC = ConfirmTocDialogFragment.TAG + ":rk";
+
+
     /** If the list changes, the book is dirty. */
     private final SimpleAdapterDataObserver mAdapterDataObserver =
             new SimpleAdapterDataObserver() {
@@ -171,15 +181,14 @@ public class EditBookTocFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        getChildFragmentManager().setFragmentResultListener(
-                EditTocEntryDialogFragment.REQUEST_KEY, this, mOnBookChangedListener);
+        final FragmentManager fm = getChildFragmentManager();
 
-        getChildFragmentManager().setFragmentResultListener(
-                ConfirmTocDialogFragment.REQUEST_KEY, this, mConfirmTocResultsListener);
+        fm.setFragmentResultListener(RK_EDIT_TOC, this, mOnBookChangedListener);
+        fm.setFragmentResultListener(RK_CONFIRM_TOC, this, mConfirmTocResultsListener);
 
         if (BuildConfig.MENU_PICKER_USES_FRAGMENT) {
-            getChildFragmentManager().setFragmentResultListener(
-                    MenuPickerDialogFragment.getRequestKey(0), this,
+            fm.setFragmentResultListener(
+                    RK_MENU_PICKER, this,
                     (MenuPickerDialogFragment.OnResultListener) this::onContextItemSelected);
         }
 
@@ -393,7 +402,7 @@ public class EditBookTocFragment
                     getString(R.string.action_delete),
                     R.drawable.ic_delete));
 
-            MenuPickerDialogFragment.newInstance(title, menu, position)
+            MenuPickerDialogFragment.newInstance(RK_MENU_PICKER, title, menu, position)
                                     .show(getChildFragmentManager(), MenuPickerDialogFragment.TAG);
         } else {
             final Menu menu = MenuPicker.createMenu(getContext());
@@ -445,7 +454,8 @@ public class EditBookTocFragment
 
         final TocEntry tocEntry = mList.get(position);
         EditTocEntryDialogFragment
-                .newInstance(mBookViewModel.getBook(), tocEntry, mVb.cbxMultipleAuthors.isChecked())
+                .newInstance(RK_EDIT_TOC, mBookViewModel.getBook(),
+                             tocEntry, mVb.cbxMultipleAuthors.isChecked())
                 .show(getChildFragmentManager(), EditTocEntryDialogFragment.TAG);
     }
 
@@ -605,7 +615,7 @@ public class EditBookTocFragment
             // finally the TOC itself:  display it for the user to approve
             // If there are more editions, the neutral button will allow to fetch the next one.
             ConfirmTocDialogFragment
-                    .newInstance(message.result, !mIsfdbEditions.isEmpty())
+                    .newInstance(RK_CONFIRM_TOC, message.result, !mIsfdbEditions.isEmpty())
                     .show(getChildFragmentManager(), ConfirmTocDialogFragment.TAG);
         }
     }
@@ -656,10 +666,10 @@ public class EditBookTocFragment
         /** Log tag. */
         @SuppressWarnings("InnerClassFieldHidesOuterClassField")
         private static final String TAG = "ConfirmTocDialogFrag";
-        public static final String REQUEST_KEY = TAG + ":rk";
-
+        private static final String BKEY_REQUEST_KEY = TAG + ":rk";
         private static final String BKEY_HAS_OTHER_EDITIONS = TAG + ":hasOtherEditions";
-
+        /** FragmentResultListener request key to use for our response. */
+        private String mRequestKey;
         private boolean mHasOtherEditions;
         @Book.TocBits
         private long mTocBitMask;
@@ -668,13 +678,17 @@ public class EditBookTocFragment
         /**
          * Constructor.
          *
+         * @param requestKey       for use with the FragmentResultListener
          * @param hasOtherEditions flag
          *
          * @return instance
          */
-        static DialogFragment newInstance(@NonNull final Bundle bookData,
+        static DialogFragment newInstance(@SuppressWarnings("SameParameterValue")
+                                          @NonNull final String requestKey,
+                                          @NonNull final Bundle bookData,
                                           final boolean hasOtherEditions) {
             final DialogFragment frag = new ConfirmTocDialogFragment();
+            bookData.putString(BKEY_REQUEST_KEY, requestKey);
             bookData.putBoolean(BKEY_HAS_OTHER_EDITIONS, hasOtherEditions);
             frag.setArguments(bookData);
             return frag;
@@ -685,6 +699,7 @@ public class EditBookTocFragment
             super.onCreate(savedInstanceState);
 
             final Bundle args = requireArguments();
+            mRequestKey = args.getString(BKEY_REQUEST_KEY);
             mTocEntries = args.getParcelableArrayList(Book.BKEY_TOC_ARRAY);
             Objects.requireNonNull(mTocEntries, ErrorMsg.NULL_TOC_ENTRY);
 
@@ -735,13 +750,13 @@ public class EditBookTocFragment
 
         private void onCommitToc(@SuppressWarnings("unused") @NonNull final DialogInterface d,
                                  @SuppressWarnings("unused") final int which) {
-            OnResultListener.sendResult(this, REQUEST_KEY, mTocBitMask, mTocEntries);
+            OnResultListener.sendResult(this, mRequestKey, mTocBitMask, mTocEntries);
         }
 
         private void onSearchNextEdition(@SuppressWarnings("unused")
                                          @NonNull final DialogInterface d,
                                          @SuppressWarnings("unused") final int which) {
-            OnResultListener.searchNextEdition(this, REQUEST_KEY);
+            OnResultListener.searchNextEdition(this, mRequestKey);
         }
 
         public interface OnResultListener

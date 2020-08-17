@@ -4,14 +4,6 @@
  *
  * This file is part of NeverTooManyBooks.
  *
- * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
- *
- * Without their original creation, this project would not exist in its
- * current form. It was however largely rewritten/refactored and any
- * comments on this fork should be directed at HardBackNutter and not
- * at the original creators.
- *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -46,25 +38,28 @@ public class EditFormatDialogFragment
 
     /** Fragment/Log tag. */
     public static final String TAG = "EditFormatDialogFrag";
-    public static final String REQUEST_KEY = TAG + ":rk";
 
     /**
      * No-arg constructor for OS use.
      */
     public EditFormatDialogFragment() {
-        super(REQUEST_KEY, R.string.lbl_format, R.string.lbl_format, BookChangedListener.FORMAT);
+        super(R.string.lbl_format, R.string.lbl_format, BookChangedListener.FORMAT);
     }
 
     /**
      * Constructor.
      *
-     * @param text to edit.
+     * @param requestKey for use with the FragmentResultListener
+     * @param text       to edit.
      *
      * @return instance
      */
-    public static DialogFragment newInstance(@NonNull final String text) {
+    public static DialogFragment newInstance(@SuppressWarnings("SameParameterValue")
+                                             @NonNull final String requestKey,
+                                             @NonNull final String text) {
         final DialogFragment frag = new EditFormatDialogFragment();
-        final Bundle args = new Bundle(1);
+        final Bundle args = new Bundle(2);
+        args.putString(BKEY_REQUEST_KEY, requestKey);
         args.putString(BKEY_TEXT, text);
         frag.setArguments(args);
         return frag;

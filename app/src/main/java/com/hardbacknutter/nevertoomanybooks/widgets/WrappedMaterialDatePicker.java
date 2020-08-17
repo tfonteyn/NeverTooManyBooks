@@ -4,14 +4,6 @@
  *
  * This file is part of NeverTooManyBooks.
  *
- * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
- *
- * Without their original creation, this project would not exist in its
- * current form. It was however largely rewritten/refactored and any
- * comments on this fork should be directed at HardBackNutter and not
- * at the original creators.
- *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -50,7 +42,7 @@ import java.util.Objects;
  * <pre>
  *     {@code
  *
- *     private static final String REQUEST_KEY_DATE_PICKER_SINGLE = "datePickerSingle";
+ *     private static final String RK_DATE_PICKER_SINGLE = "datePickerSingle";
  *     private final WrappedMaterialDatePicker.OnResultListener mDatePickerListener
  *         = new WrappedMaterialDatePicker.OnResultListener() {
  *         @Override
@@ -66,7 +58,7 @@ import java.util.Objects;
  *     public void onCreate(@Nullable final Bundle savedInstanceState) {
  *         super.onCreate(savedInstanceState);
  *         getChildFragmentManager().setFragmentResultListener(
- *                 REQUEST_KEY_DATE_PICKER_SINGLE, this, mDatePickerListener);
+ *                 RK_DATE_PICKER_SINGLE, this, mDatePickerListener);
  *         ...
  *     }
  *
@@ -77,7 +69,7 @@ import java.util.Objects;
  *                            .setTitleText(dialogTitleId)
  *                            .setSelection(selection)
  *                            .build())
- *                  .show(getChildFragmentManager(), REQUEST_KEY_DATE_PICKER_SINGLE);
+ *                  .show(getChildFragmentManager(), RK_DATE_PICKER_SINGLE);
  *     }
  * </pre>
  *
@@ -107,7 +99,7 @@ public class WrappedMaterialDatePicker<S>
      *                   {@link FragmentTransaction#add(Fragment, String) FragmentTransaction.add}.
      */
     public void show(@NonNull FragmentManager manager,
-                     @Nullable String requestKey) {
+                     @NonNull String requestKey) {
         mRequestKey = requestKey;
 
         mPicker.addOnPositiveButtonClickListener(this);

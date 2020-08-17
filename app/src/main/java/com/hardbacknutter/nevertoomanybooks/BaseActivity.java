@@ -23,7 +23,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.res.Configuration;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -296,14 +295,6 @@ public abstract class BaseActivity
     @CallSuper
     protected void onResume() {
         super.onResume();
-        if (BuildConfig.DEBUG /* always */) {
-            Log.d(TAG, "onResume|sActivityRecreateStatus=" + sActivityRecreateStatus);
-            final Configuration configuration = getResources().getConfiguration();
-            Log.d(TAG,
-                  "config.smallestScreenWidthDp=" + configuration.smallestScreenWidthDp
-                  + "|config.screenWidthDp=" + configuration.screenWidthDp
-                  + "|config.screenHeightDp=" + configuration.screenHeightDp);
-        }
         recreateIfNeeded();
     }
 
@@ -384,7 +375,6 @@ public abstract class BaseActivity
                 startActivityForResult(searchIntent, RequestCode.ADVANCED_LOCAL_SEARCH);
                 return true;
             }
-
             case R.id.nav_manage_bookshelves: {
                 final Intent intent = new Intent(this, AdminActivity.class)
                         .putExtra(BKEY_FRAGMENT_TAG, EditBookshelvesFragment.TAG);

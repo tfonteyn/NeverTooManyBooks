@@ -4,14 +4,6 @@
  *
  * This file is part of NeverTooManyBooks.
  *
- * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
- *
- * Without their original creation, this project would not exist in its
- * current form. It was however largely rewritten/refactored and any
- * comments on this fork should be directed at HardBackNutter and not
- * at the original creators.
- *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -68,14 +60,18 @@ public class ImportHelperDialogFragment
     /**
      * Constructor.
      *
-     * @param manager import configuration; must have a valid Uri set.
+     * @param requestKey for use with the FragmentResultListener
+     * @param manager    import configuration; must have a valid Uri set.
      *
      * @return instance
      */
     @NonNull
-    public static DialogFragment newInstance(@NonNull final ImportManager manager) {
+    public static DialogFragment newInstance(@SuppressWarnings("SameParameterValue")
+                                             @NonNull final String requestKey,
+                                             @NonNull final ImportManager manager) {
         final DialogFragment frag = new ImportHelperDialogFragment();
-        final Bundle args = new Bundle(1);
+        final Bundle args = new Bundle(2);
+        args.putString(BKEY_REQUEST_KEY, requestKey);
         args.putParcelable(BKEY_OPTIONS, manager);
         frag.setArguments(args);
         return frag;

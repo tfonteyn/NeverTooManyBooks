@@ -71,6 +71,8 @@ public class EditBookFieldsFragment
 
     /** Log tag. */
     private static final String TAG = "EditBookFieldsFragment";
+    /** FragmentResultListener request key. */
+    private static final String RK_EDIT_BOOKSHELVES = CheckListDialogFragment.TAG + ":rk";
 
     private final CheckListDialogFragment.OnResultListener mOnCheckListListener = selectedItems -> {
         final int fieldId = mEditHelperVM.getCurrentDialogFieldId()[0];
@@ -103,8 +105,8 @@ public class EditBookFieldsFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        getChildFragmentManager().setFragmentResultListener(
-                CheckListDialogFragment.REQUEST_KEY, this, mOnCheckListListener);
+        getChildFragmentManager()
+                .setFragmentResultListener(RK_EDIT_BOOKSHELVES, this, mOnCheckListListener);
 
         //noinspection ConstantConditions
         mScannerModel = new ViewModelProvider(getActivity()).get(ScannerViewModel.class);
@@ -166,11 +168,12 @@ public class EditBookFieldsFragment
             mVb.bookshelves.setOnClickListener(v -> {
                 mEditHelperVM.setCurrentDialogFieldId(R.id.bookshelves);
                 CheckListDialogFragment
-                        .newInstance(
-                                getString(R.string.lbl_bookshelves_long),
-                                new ArrayList<>(mEditHelperVM.getAllBookshelves()),
-                                new ArrayList<>(mBookViewModel.getBook().getParcelableArrayList(
-                                        Book.BKEY_BOOKSHELF_ARRAY)))
+                        .newInstance(RK_EDIT_BOOKSHELVES,
+                                     getString(R.string.lbl_bookshelves_long),
+                                     new ArrayList<>(mEditHelperVM.getAllBookshelves()),
+                                     new ArrayList<>(
+                                             mBookViewModel.getBook().getParcelableArrayList(
+                                                     Book.BKEY_BOOKSHELF_ARRAY)))
                         .show(getChildFragmentManager(), CheckListDialogFragment.TAG);
             });
         }

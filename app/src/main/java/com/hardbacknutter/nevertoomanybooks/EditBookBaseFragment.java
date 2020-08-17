@@ -70,10 +70,14 @@ public abstract class EditBookBaseFragment
     /** Log tag. */
     private static final String TAG = "EditBookBaseFragment";
 
+    /** FragmentResultListener request key. */
+    private static final String RK_DATE_PICKER_PARTIAL =
+            PartialDatePickerDialogFragment.TAG + ":rk";
+
     /** Tag/requestKey for WrappedMaterialDatePicker. */
-    private static final String REQUEST_KEY_DATE_PICKER_SINGLE = TAG + ":rk:datePickerSingle";
+    private static final String RK_DATE_PICKER_SINGLE = TAG + ":rk:datePickerSingle";
     /** Tag/requestKey for WrappedMaterialDatePicker. */
-    private static final String REQUEST_KEY_DATE_PICKER_RANGE = TAG + ":rk:datePickerRange";
+    private static final String RK_DATE_PICKER_RANGE = TAG + ":rk:datePickerRange";
 
     /** The view model. */
     EditBookFragmentViewModel mEditHelperVM;
@@ -129,11 +133,11 @@ public abstract class EditBookBaseFragment
 
         final FragmentManager fm = getChildFragmentManager();
 
-        fm.setFragmentResultListener(PartialDatePickerDialogFragment.REQUEST_KEY, this,
+        fm.setFragmentResultListener(RK_DATE_PICKER_PARTIAL, this,
                                      mPartialDatePickerListener);
-        fm.setFragmentResultListener(REQUEST_KEY_DATE_PICKER_SINGLE, this,
+        fm.setFragmentResultListener(RK_DATE_PICKER_SINGLE, this,
                                      mDatePickerListener);
-        fm.setFragmentResultListener(REQUEST_KEY_DATE_PICKER_RANGE, this,
+        fm.setFragmentResultListener(RK_DATE_PICKER_RANGE, this,
                                      mDatePickerListener);
 
         final String fragmentTag = getTag();
@@ -324,7 +328,7 @@ public abstract class EditBookBaseFragment
                                 .setTitleText(dialogTitleIdSpan)
                                 .setSelection(new Pair<>(startSelection, endSelection))
                                 .build()
-                ).show(getChildFragmentManager(), REQUEST_KEY_DATE_PICKER_RANGE);
+                ).show(getChildFragmentManager(), RK_DATE_PICKER_RANGE);
             });
 
         } else if (fieldStartDate.isUsed(prefs)) {
@@ -360,7 +364,7 @@ public abstract class EditBookBaseFragment
                                 .setTitleText(dialogTitleId)
                                 .setSelection(selection)
                                 .build())
-                        .show(getChildFragmentManager(), REQUEST_KEY_DATE_PICKER_SINGLE);
+                        .show(getChildFragmentManager(), RK_DATE_PICKER_SINGLE);
             });
         }
     }
@@ -384,7 +388,8 @@ public abstract class EditBookBaseFragment
             field.getAccessor().getView().setOnClickListener(v -> {
                 mEditHelperVM.setCurrentDialogFieldId(field.getId());
                 PartialDatePickerDialogFragment
-                        .newInstance(dialogTitleId, field.getAccessor().getValue(), todayIfNone)
+                        .newInstance(RK_DATE_PICKER_PARTIAL, dialogTitleId,
+                                     field.getAccessor().getValue(), todayIfNone)
                         .show(getChildFragmentManager(), PartialDatePickerDialogFragment.TAG);
             });
         }

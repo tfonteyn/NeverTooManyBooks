@@ -4,14 +4,6 @@
  *
  * This file is part of NeverTooManyBooks.
  *
- * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
- *
- * Without their original creation, this project would not exist in its
- * current form. It was however largely rewritten/refactored and any
- * comments on this fork should be directed at HardBackNutter and not
- * at the original creators.
- *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -54,6 +46,7 @@ public abstract class EditStringBaseDialogFragment
     private static final String TAG = "EditStringBaseDialog";
     /** Argument. */
     static final String BKEY_TEXT = TAG + ":text";
+    protected static final String BKEY_REQUEST_KEY = TAG + ":rk";
 
     @StringRes
     private final int mDialogTitleId;
@@ -61,7 +54,8 @@ public abstract class EditStringBaseDialogFragment
     private final int mLabelId;
     @BookChangedListener.FieldChanges
     private final int mFieldChanges;
-    private final String mRequestKey;
+    /** FragmentResultListener request key to use for our response. */
+    private String mRequestKey;
     /** Database Access. */
     @Nullable
     DAO mDb;
@@ -75,18 +69,14 @@ public abstract class EditStringBaseDialogFragment
     /**
      * Constructor; only used by the child class no-args constructor.
      *
-     * @param requestKey   for the fragment result listener
      * @param titleId      for the dialog (i.e. the toolbar)
      * @param label        to use for the 'hint' of the input field
      * @param fieldChanges one of the {@link BookChangedListener.FieldChanges} bits
      */
-    EditStringBaseDialogFragment(@NonNull final String requestKey,
-                                 @StringRes final int titleId,
+    EditStringBaseDialogFragment(@StringRes final int titleId,
                                  @StringRes final int label,
                                  @BookChangedListener.FieldChanges final int fieldChanges) {
         super(R.layout.dialog_edit_string);
-
-        mRequestKey = requestKey;
 
         mDialogTitleId = titleId;
         mLabelId = label;
@@ -98,8 +88,9 @@ public abstract class EditStringBaseDialogFragment
         super.onCreate(savedInstanceState);
 
         mDb = new DAO(TAG);
-
-        mOriginalText = requireArguments().getString(BKEY_TEXT, "");
+        final Bundle args = requireArguments();
+        mRequestKey = args.getString(BKEY_REQUEST_KEY);
+        mOriginalText = args.getString(BKEY_TEXT, "");
 
         if (savedInstanceState == null) {
             mCurrentText = mOriginalText;

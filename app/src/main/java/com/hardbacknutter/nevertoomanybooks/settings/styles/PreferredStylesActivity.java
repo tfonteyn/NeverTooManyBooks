@@ -77,6 +77,9 @@ public class PreferredStylesActivity
     /** Log tag. */
     private static final String TAG = "PreferredStylesActivity";
 
+    /** FragmentResultListener request key. */
+    private static final String RK_MENU_PICKER = MenuPickerDialogFragment.TAG + ":rk";
+
     /** The adapter for the list. */
     private BooklistStylesAdapter mListAdapter;
     /** The View for the list. */
@@ -108,7 +111,7 @@ public class PreferredStylesActivity
 
         if (BuildConfig.MENU_PICKER_USES_FRAGMENT) {
             getSupportFragmentManager().setFragmentResultListener(
-                    MenuPickerDialogFragment.getRequestKey(0), this,
+                    RK_MENU_PICKER, this,
                     (MenuPickerDialogFragment.OnResultListener) this::onContextItemSelected);
         }
 
@@ -261,7 +264,7 @@ public class PreferredStylesActivity
                     getString(R.string.action_duplicate),
                     R.drawable.ic_content_copy));
 
-            MenuPickerDialogFragment.newInstance(title, menu, position)
+            MenuPickerDialogFragment.newInstance(RK_MENU_PICKER, title, menu, position)
                                     .show(getSupportFragmentManager(),
                                           MenuPickerDialogFragment.TAG);
         } else {

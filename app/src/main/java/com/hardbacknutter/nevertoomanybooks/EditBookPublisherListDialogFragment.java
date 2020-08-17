@@ -70,6 +70,8 @@ public class EditBookPublisherListDialogFragment
 
     /** Fragment/Log tag. */
     static final String TAG = "EditBookPubListDlg";
+    /** FragmentResultListener request key. */
+    private static final String RK_EDIT_PUBLISHER = EditPublisherForBookDialogFragment.TAG + ":rk";
     /** Database Access. */
     private DAO mDb;
     /** The book. Must be in the Activity scope. */
@@ -115,9 +117,8 @@ public class EditBookPublisherListDialogFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        getParentFragmentManager().setFragmentResultListener(
-                EditPublisherForBookDialogFragment.REQUEST_KEY, this,
-                mOnEditPublisherListener);
+        getParentFragmentManager()
+                .setFragmentResultListener(RK_EDIT_PUBLISHER, this, mOnEditPublisherListener);
 
         mDb = new DAO(TAG);
     }
@@ -344,7 +345,10 @@ public class EditBookPublisherListDialogFragment
         /** Fragment/Log tag. */
         @SuppressWarnings("InnerClassFieldHidesOuterClassField")
         private static final String TAG = "EditPublisherForBookDlg";
-        private static final String REQUEST_KEY = TAG + ":rk";
+        private static final String BKEY_REQUEST_KEY = TAG + ":rk";
+
+        /** FragmentResultListener request key to use for our response. */
+        private String mRequestKey;
 
         /** Database Access. */
         private DAO mDb;
@@ -370,15 +374,19 @@ public class EditBookPublisherListDialogFragment
         /**
          * Constructor.
          *
-         * @param bookTitle displayed for info only
-         * @param publisher to edit
+         * @param requestKey for use with the FragmentResultListener
+         * @param bookTitle  displayed for info only
+         * @param publisher  to edit
          *
          * @return instance
          */
-        static DialogFragment newInstance(@NonNull final String bookTitle,
+        static DialogFragment newInstance(@SuppressWarnings("SameParameterValue")
+                                          @NonNull final String requestKey,
+                                          @NonNull final String bookTitle,
                                           @NonNull final Publisher publisher) {
             final DialogFragment frag = new EditPublisherForBookDialogFragment();
-            final Bundle args = new Bundle(2);
+            final Bundle args = new Bundle(3);
+            args.putString(BKEY_REQUEST_KEY, requestKey);
             args.putString(DBDefinitions.KEY_TITLE, bookTitle);
             args.putParcelable(DBDefinitions.KEY_FK_PUBLISHER, publisher);
             frag.setArguments(args);
@@ -392,6 +400,7 @@ public class EditBookPublisherListDialogFragment
             mDb = new DAO(TAG);
 
             final Bundle args = requireArguments();
+            mRequestKey = args.getString(BKEY_REQUEST_KEY);
             mPublisher = args.getParcelable(DBDefinitions.KEY_FK_PUBLISHER);
             Objects.requireNonNull(mPublisher, ErrorMsg.NULL_PUBLISHER);
 
@@ -443,7 +452,7 @@ public class EditBookPublisherListDialogFragment
             final Publisher tmpPublisher = Publisher.from(mName);
 
             EditBookBaseFragment.OnResultListener.sendResult(
-                    this, REQUEST_KEY, mPublisher, tmpPublisher);
+                    this, mRequestKey, mPublisher, tmpPublisher);
             return true;
         }
 
@@ -498,7 +507,7 @@ public class EditBookPublisherListDialogFragment
             final Holder holder = new Holder(view);
             // click -> edit
             holder.rowDetailsView.setOnClickListener(v -> EditPublisherForBookDialogFragment
-                    .newInstance(mBookViewModel.getBook().getTitle(),
+                    .newInstance(RK_EDIT_PUBLISHER, mBookViewModel.getBook().getTitle(),
                                  getItem(holder.getBindingAdapterPosition()))
                     .show(getParentFragmentManager(), EditPublisherForBookDialogFragment.TAG));
 

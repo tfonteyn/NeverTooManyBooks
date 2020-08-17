@@ -4,14 +4,6 @@
  *
  * This file is part of NeverTooManyBooks.
  *
- * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
- *
- * Without their original creation, this project would not exist in its
- * current form. It was however largely rewritten/refactored and any
- * comments on this fork should be directed at HardBackNutter and not
- * at the original creators.
- *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -61,13 +53,13 @@ public class CheckListDialogFragment
 
     /** Fragment/Log tag. */
     public static final String TAG = "CheckListDialogFragment";
-    public static final String REQUEST_KEY = TAG + ":rk";
-
+    private static final String BKEY_REQUEST_KEY = TAG + ":rk";
     /** Argument. */
     private static final String BKEY_ALL = TAG + ":all";
     /** Argument. */
     private static final String BKEY_SELECTED = TAG + ":selected";
-
+    /** FragmentResultListener request key to use for our response. */
+    private String mRequestKey;
     @Nullable
     private String mDialogTitle;
 
@@ -79,18 +71,22 @@ public class CheckListDialogFragment
     /**
      * Constructor.
      *
+     * @param requestKey    for use with the FragmentResultListener
      * @param dialogTitle   the dialog title
      * @param allItems      list of all possible items
      * @param selectedItems list of item which are currently selected
      *
      * @return instance
      */
-    public static DialogFragment newInstance(@NonNull final String dialogTitle,
+    public static DialogFragment newInstance(@SuppressWarnings("SameParameterValue")
+                                             @NonNull final String requestKey,
+                                             @NonNull final String dialogTitle,
                                              @NonNull final ArrayList<Entity> allItems,
                                              @NonNull final ArrayList<Entity> selectedItems) {
 
         final DialogFragment frag = new CheckListDialogFragment();
-        final Bundle args = new Bundle(3);
+        final Bundle args = new Bundle(4);
+        args.putString(BKEY_REQUEST_KEY, requestKey);
         args.putString(StandardDialogs.BKEY_DIALOG_TITLE, dialogTitle);
         args.putParcelableArrayList(BKEY_ALL, allItems);
         args.putParcelableArrayList(BKEY_SELECTED, selectedItems);
@@ -103,6 +99,7 @@ public class CheckListDialogFragment
         super.onCreate(savedInstanceState);
 
         Bundle args = requireArguments();
+        mRequestKey = args.getString(BKEY_REQUEST_KEY);
         mDialogTitle = args.getString(StandardDialogs.BKEY_DIALOG_TITLE,
                                       getString(R.string.action_edit));
 
@@ -147,7 +144,7 @@ public class CheckListDialogFragment
     }
 
     private void saveChanges() {
-        OnResultListener.sendResult(this, REQUEST_KEY, mSelectedItems);
+        OnResultListener.sendResult(this, mRequestKey, mSelectedItems);
     }
 
     @Override

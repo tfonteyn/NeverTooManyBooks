@@ -4,14 +4,6 @@
  *
  * This file is part of NeverTooManyBooks.
  *
- * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
- *
- * Without their original creation, this project would not exist in its
- * current form. It was however largely rewritten/refactored and any
- * comments on this fork should be directed at HardBackNutter and not
- * at the original creators.
- *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -70,23 +62,21 @@ public class PartialDatePickerDialogFragment
 
     /** Log tag. */
     public static final String TAG = "PartialDatePickerDialog";
-    public static final String REQUEST_KEY = TAG + ":rk";
-
+    private static final String BKEY_REQUEST_KEY = TAG + ":rk";
     /** a standard sql style date string, must be correct. */
     private static final String BKEY_DATE = TAG + ":date";
-
     /** Displayed to user: unset month. */
     private static final String UNKNOWN_MONTH = "---";
     /** Displayed to user: unset day. */
     private static final String UNKNOWN_DAY = "--";
-
     /** or the date split into components, which can be partial. */
     private static final String SIS_YEAR = TAG + ":year";
     /** range: 0: 'not set' or 1..12. */
     private static final String SIS_MONTH = TAG + ":month";
     /** range: 0: 'not set' or 1..31. */
     private static final String SIS_BKEY_DAY = TAG + ":day";
-
+    /** FragmentResultListener request key to use for our response. */
+    private String mRequestKey;
     /** Currently displayed; {@code 0} if empty/invalid. */
     private int mYear;
     /**
@@ -141,13 +131,16 @@ public class PartialDatePickerDialogFragment
     /**
      * Constructor.
      *
+     * @param requestKey    for use with the FragmentResultListener
      * @param dialogTitleId resource id for the dialog title
      * @param currentValue  the current value of the field
      * @param todayIfNone   {@code true} if we should use 'today' if the field was empty.
      *
      * @return instance
      */
-    public static DialogFragment newInstance(@StringRes final int dialogTitleId,
+    public static DialogFragment newInstance(@SuppressWarnings("SameParameterValue")
+                                             @NonNull final String requestKey,
+                                             @StringRes final int dialogTitleId,
                                              @Nullable final String currentValue,
                                              final boolean todayIfNone) {
         final String dateStr;
@@ -160,7 +153,8 @@ public class PartialDatePickerDialogFragment
         }
 
         final DialogFragment frag = new PartialDatePickerDialogFragment();
-        final Bundle args = new Bundle(2);
+        final Bundle args = new Bundle(3);
+        args.putString(BKEY_REQUEST_KEY, requestKey);
         args.putInt(StandardDialogs.BKEY_DIALOG_TITLE, dialogTitleId);
         args.putString(BKEY_DATE, dateStr);
         frag.setArguments(args);
@@ -171,10 +165,9 @@ public class PartialDatePickerDialogFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        final Bundle args = getArguments();
-        if (args != null) {
-            mDialogTitleId = args.getInt(StandardDialogs.BKEY_DIALOG_TITLE);
-        }
+        final Bundle args = requireArguments();
+        mRequestKey = args.getString(BKEY_REQUEST_KEY);
+        mDialogTitleId = args.getInt(StandardDialogs.BKEY_DIALOG_TITLE);
 
         setupDate(savedInstanceState);
         // can't have a 0 year. (but month/day can be 0)
@@ -252,7 +245,7 @@ public class PartialDatePickerDialogFragment
                           Snackbar.LENGTH_LONG).show();
 
         } else {
-            OnResultListener.sendResult(this, REQUEST_KEY, mYear, mMonth, mDay);
+            OnResultListener.sendResult(this, mRequestKey, mYear, mMonth, mDay);
             return true;
         }
 

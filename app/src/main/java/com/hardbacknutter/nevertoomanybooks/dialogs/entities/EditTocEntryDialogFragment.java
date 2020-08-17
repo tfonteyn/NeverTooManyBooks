@@ -4,14 +4,6 @@
  *
  * This file is part of NeverTooManyBooks.
  *
- * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
- *
- * Without their original creation, this project would not exist in its
- * current form. It was however largely rewritten/refactored and any
- * comments on this fork should be directed at HardBackNutter and not
- * at the original creators.
- *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -56,12 +48,12 @@ public class EditTocEntryDialogFragment
 
     /** Log tag. */
     public static final String TAG = "EditTocEntryDialogFrag";
-    public static final String REQUEST_KEY = TAG + ":rk";
-
     public static final String BKEY_HAS_MULTIPLE_AUTHORS = TAG + ":hasMultipleAuthors";
     public static final String BKEY_TOC_ENTRY = TAG + ":tocEntry";
+    private static final String BKEY_REQUEST_KEY = TAG + ":rk";
     private static final String BKEY_BOOK_ID = TAG + ":bookId";
-
+    /** FragmentResultListener request key to use for our response. */
+    private String mRequestKey;
     /** Database Access. */
     private DAO mDb;
     /** View Binding. */
@@ -96,17 +88,21 @@ public class EditTocEntryDialogFragment
     /**
      * Constructor.
      *
+     * @param requestKey         for use with the FragmentResultListener
      * @param book               the entry belongs to
      * @param tocEntry           to edit.
      * @param hasMultipleAuthors Flag that will enable/disable the author edit field
      *
      * @return instance
      */
-    public static DialogFragment newInstance(@NonNull final Book book,
+    public static DialogFragment newInstance(@SuppressWarnings("SameParameterValue")
+                                             @NonNull final String requestKey,
+                                             @NonNull final Book book,
                                              @NonNull final TocEntry tocEntry,
                                              final boolean hasMultipleAuthors) {
         final DialogFragment frag = new EditTocEntryDialogFragment();
-        final Bundle args = new Bundle(4);
+        final Bundle args = new Bundle(5);
+        args.putString(BKEY_REQUEST_KEY, requestKey);
         args.putString(DBDefinitions.KEY_TITLE, book.getTitle());
         args.putLong(BKEY_BOOK_ID, book.getId());
         args.putBoolean(BKEY_HAS_MULTIPLE_AUTHORS, hasMultipleAuthors);
@@ -122,6 +118,7 @@ public class EditTocEntryDialogFragment
         mDb = new DAO(TAG);
 
         final Bundle args = requireArguments();
+        mRequestKey = args.getString(BKEY_REQUEST_KEY);
         mBookTitle = args.getString(DBDefinitions.KEY_TITLE);
         mBookId = args.getLong(BKEY_BOOK_ID);
         mTocEntry = args.getParcelable(BKEY_TOC_ENTRY);
@@ -219,7 +216,7 @@ public class EditTocEntryDialogFragment
         result.putParcelable(BKEY_TOC_ENTRY, mTocEntry);
         result.putBoolean(BKEY_HAS_MULTIPLE_AUTHORS, mHasMultipleAuthors);
 
-        BookChangedListener.sendResult(this, REQUEST_KEY, mBookId,
+        BookChangedListener.sendResult(this, mRequestKey, mBookId,
                                        BookChangedListener.TOC_ENTRY, result);
         return true;
     }

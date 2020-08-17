@@ -4,14 +4,6 @@
  *
  * This file is part of NeverTooManyBooks.
  *
- * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
- *
- * Without their original creation, this project would not exist in its
- * current form. It was however largely rewritten/refactored and any
- * comments on this fork should be directed at HardBackNutter and not
- * at the original creators.
- *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -50,29 +42,30 @@ import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
  * and a manual edit *will* be needed.
  */
 public class EditLanguageDialogFragment
-        extends EditStringBaseDialogFragment{
+        extends EditStringBaseDialogFragment {
 
     /** Fragment/Log tag. */
     public static final String TAG = "EditLanguageDialogFrag";
-    public static final String REQUEST_KEY = TAG + ":rk";
 
     /**
      * No-arg constructor for OS use.
      */
     public EditLanguageDialogFragment() {
-        super(REQUEST_KEY, R.string.lbl_language, R.string.lbl_language,
-              BookChangedListener.LANGUAGE);
+        super(R.string.lbl_language, R.string.lbl_language, BookChangedListener.LANGUAGE);
     }
 
     /**
      * Constructor.
      *
-     * @param context Current context
-     * @param text    to edit.
+     * @param requestKey for use with the FragmentResultListener
+     * @param context    Current context
+     * @param text       to edit.
      *
      * @return instance
      */
-    public static DialogFragment newInstance(@NonNull final Context context,
+    public static DialogFragment newInstance(@SuppressWarnings("SameParameterValue")
+                                             @NonNull final String requestKey,
+                                             @NonNull final Context context,
                                              @NonNull final String text) {
         final String editLang;
         if (text.length() > 3) {
@@ -87,7 +80,8 @@ public class EditLanguageDialogFragment
         }
 
         final DialogFragment frag = new EditLanguageDialogFragment();
-        final Bundle args = new Bundle(1);
+        final Bundle args = new Bundle(2);
+        args.putString(BKEY_REQUEST_KEY, requestKey);
         args.putString(BKEY_TEXT, editLang);
         frag.setArguments(args);
         return frag;

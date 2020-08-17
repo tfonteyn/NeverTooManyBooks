@@ -62,6 +62,10 @@ public class EditBookshelvesFragment
     /** Log tag. */
     static final String TAG = "EditBookshelvesFragment";
 
+    /** FragmentResultListener request key. */
+    private static final String RK_EDIT_BOOKSHELF = EditBookshelfDialogFragment.TAG + ":rk";
+    /** FragmentResultListener request key. */
+    private static final String RK_MENU_PICKER = MenuPickerDialogFragment.TAG + ":rk";
     /** The adapter for the list. */
     private BookshelfAdapter mAdapter;
     private EditBookshelvesModel mModel;
@@ -77,11 +81,11 @@ public class EditBookshelvesFragment
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
 
-        getChildFragmentManager().setFragmentResultListener(
-                EditBookshelfDialogFragment.REQUEST_KEY, this, mOnEditBookshelfListener);
+        getChildFragmentManager()
+                .setFragmentResultListener(RK_EDIT_BOOKSHELF, this, mOnEditBookshelfListener);
         if (BuildConfig.MENU_PICKER_USES_FRAGMENT) {
             getChildFragmentManager().setFragmentResultListener(
-                    MenuPickerDialogFragment.getRequestKey(0), this,
+                    RK_MENU_PICKER, this,
                     (MenuPickerDialogFragment.OnResultListener) this::onContextItemSelected);
         }
     }
@@ -187,7 +191,7 @@ public class EditBookshelvesFragment
                     getString(R.string.action_delete),
                     R.drawable.ic_delete));
 
-            MenuPickerDialogFragment.newInstance(title, menu, position)
+            MenuPickerDialogFragment.newInstance(RK_MENU_PICKER, title, menu, position)
                                     .show(getChildFragmentManager(), MenuPickerDialogFragment.TAG);
         } else {
             //noinspection ConstantConditions
@@ -249,7 +253,7 @@ public class EditBookshelvesFragment
      */
     private void editItem(@NonNull final Bookshelf bookshelf) {
         EditBookshelfDialogFragment
-                .newInstance(bookshelf)
+                .newInstance(RK_EDIT_BOOKSHELF, bookshelf)
                 .show(getChildFragmentManager(), EditBookshelfDialogFragment.TAG);
     }
 

@@ -88,6 +88,10 @@ public class BookDetailsFragment
 
     /** Log tag. */
     public static final String TAG = "BookDetailsFragment";
+
+    /** FragmentResultListener request key. */
+    private static final String RK_EDIT_LENDER = EditLenderDialogFragment.TAG + ":rk";
+
     /** Registered with the Activity to deliver us gestures. */
     private View.OnTouchListener mOnTouchListener;
     /** Handle next/previous paging in the flattened booklist; called by mOnTouchListener. */
@@ -127,8 +131,8 @@ public class BookDetailsFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        getChildFragmentManager().setFragmentResultListener(
-                EditLenderDialogFragment.REQUEST_KEY, this, mBookChangedListener);
+        getChildFragmentManager()
+                .setFragmentResultListener(RK_EDIT_LENDER, this, mBookChangedListener);
     }
 
     @Override
@@ -597,7 +601,7 @@ public class BookDetailsFragment
             }
             case R.id.MENU_BOOK_LOAN_ADD: {
                 EditLenderDialogFragment
-                        .newInstance(book)
+                        .newInstance(RK_EDIT_LENDER, book)
                         .show(getChildFragmentManager(), EditLenderDialogFragment.TAG);
                 return true;
             }

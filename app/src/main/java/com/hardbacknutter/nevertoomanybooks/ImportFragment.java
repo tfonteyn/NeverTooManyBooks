@@ -60,6 +60,8 @@ public class ImportFragment
 
     /** Log tag. */
     public static final String TAG = "ImportFragment";
+    /** FragmentResultListener request key. */
+    private static final String RK_IMPORT_HELPER = ImportHelperDialogFragment.TAG + ":rk:";
     /** Import. */
     private ArchiveImportTask mArchiveImportTask;
     private final FragmentResultListener mImportOptionsListener =
@@ -84,8 +86,8 @@ public class ImportFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        getChildFragmentManager().setFragmentResultListener(
-                ImportHelperDialogFragment.REQUEST_KEY, this, mImportOptionsListener);
+        getChildFragmentManager()
+                .setFragmentResultListener(RK_IMPORT_HELPER, this, mImportOptionsListener);
     }
 
     @Nullable
@@ -232,7 +234,7 @@ public class ImportFragment
                     .setMessage(R.string.warning_import_be_cautious)
                     .setNegativeButton(android.R.string.cancel, (d, w) -> getActivity().finish())
                     .setPositiveButton(android.R.string.ok, (d, w) -> ImportHelperDialogFragment
-                            .newInstance(helper)
+                            .newInstance(RK_IMPORT_HELPER, helper)
                             .show(getChildFragmentManager(), ImportHelperDialogFragment.TAG))
                     .create()
                     .show();
@@ -246,7 +248,7 @@ public class ImportFragment
                     .setMessage(R.string.txt_import_option_all_books)
                     .setNegativeButton(android.R.string.cancel, (d, w) -> getActivity().finish())
                     .setNeutralButton(R.string.btn_options, (d, w) -> ImportHelperDialogFragment
-                            .newInstance(helper)
+                            .newInstance(RK_IMPORT_HELPER, helper)
                             .show(getChildFragmentManager(), ImportHelperDialogFragment.TAG))
                     .setPositiveButton(android.R.string.ok, (d, w) -> mArchiveImportTask
                             .startImport(helper))

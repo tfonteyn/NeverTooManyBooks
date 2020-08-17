@@ -57,6 +57,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.List;
 import java.util.Objects;
 
+import com.hardbacknutter.nevertoomanybooks.BookBaseFragment;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.RequestCode;
@@ -89,6 +90,9 @@ public class CoverHandler {
 
     /** Log tag. */
     private static final String TAG = "CoverHandler";
+
+    /** FragmentResultListener request key. Append the mCIdx value! */
+    private static final String RK_MENU_PICKER = MenuPickerDialogFragment.TAG + ":rk:";
 
     /**
      * After taking a picture, do nothing. Never change the value.
@@ -164,7 +168,7 @@ public class CoverHandler {
         mIsbnView = isbnView;
         mCIdx = cIdx;
         mCoverView = coverView;
-        // we use a square, and adjust when we got the image figured out
+        // we use a square, and adjust when we get the image/placeholder sizes figured out
         //noinspection SuspiciousNameCombination
         mMaxWidth = maxHeight;
         mMaxHeight = maxHeight;
@@ -192,7 +196,7 @@ public class CoverHandler {
 
         if (BuildConfig.MENU_PICKER_USES_FRAGMENT) {
             mFragment.getChildFragmentManager().setFragmentResultListener(
-                    MenuPickerDialogFragment.getRequestKey(mCIdx), mFragment,
+                    RK_MENU_PICKER + mCIdx, mFragment,
                     (MenuPickerDialogFragment.OnResultListener) this::onContextItemSelected);
         }
 
@@ -250,9 +254,9 @@ public class CoverHandler {
         menu.findItem(R.id.MENU_THUMB_ADD_ALT_EDITIONS).setVisible(mCIdx == 0);
 
         if (BuildConfig.MENU_PICKER_USES_FRAGMENT) {
-            MenuPickerDialogFragment.newInstance(title, menu, mCIdx)
-                                    .show(mFragment.getChildFragmentManager(),
-                                          MenuPickerDialogFragment.TAG);
+            MenuPickerDialogFragment
+                    .newInstance(RK_MENU_PICKER + mCIdx, title, menu, mCIdx)
+                    .show(mFragment.getChildFragmentManager(), MenuPickerDialogFragment.TAG);
         } else {
             new MenuPicker(mContext, title, menu, mCIdx, this::onContextItemSelected)
                     .show();
@@ -276,9 +280,6 @@ public class CoverHandler {
     private boolean onContextItemSelected(@IdRes final int menuItem,
                                           final int position) {
 
-        // prepare the fragment for results.
-        // This is needed as for example when we start the camera, we can't tell afterwards
-        // which index we're handling. So let the fragment know BEFORE.
         if (mFragment instanceof HostingFragment) {
             ((HostingFragment) mFragment).setCurrentCoverIndex(mCIdx);
         }
@@ -562,7 +563,7 @@ public class CoverHandler {
             final ISBN isbn = ISBN.createISBN(isbnStr);
             if (isbn.isValid(true)) {
                 CoverBrowserDialogFragment
-                        .newInstance(isbn.asText(), mCIdx)
+                        .newInstance(BookBaseFragment.RK_COVER_BROWSER, isbn.asText(), mCIdx)
                         .show(mFragment.getChildFragmentManager(), CoverBrowserDialogFragment.TAG);
                 return;
             }
@@ -671,6 +672,13 @@ public class CoverHandler {
 
     public interface HostingFragment {
 
+        /**
+         * Prepare the fragment for results.
+         * This is needed as for example when we start the camera, we can't tell afterwards
+         * which index we're handling. So let the fragment know BEFORE.
+         *
+         * @param cIdx 0..n image index
+         */
         void setCurrentCoverIndex(@IntRange(from = 0) int cIdx);
     }
 

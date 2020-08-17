@@ -4,14 +4,6 @@
  *
  * This file is part of NeverTooManyBooks.
  *
- * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
- *
- * Without their original creation, this project would not exist in its
- * current form. It was however largely rewritten/refactored and any
- * comments on this fork should be directed at HardBackNutter and not
- * at the original creators.
- *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -35,6 +27,7 @@ import android.view.ViewGroup;
 
 import androidx.annotation.DimenRes;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentResultListener;
@@ -46,7 +39,18 @@ public abstract class OptionsDialogBase<T extends Parcelable>
 
     /** Log tag. */
     private static final String TAG = "OptionsDialogBase";
-    public static final String REQUEST_KEY = TAG + ":rk";
+    protected static final String BKEY_REQUEST_KEY = TAG + ":rk";
+
+    /** FragmentResultListener request key to use for our response. */
+    private String mRequestKey;
+
+    @Override
+    public void onCreate(@Nullable final Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        final Bundle args = requireArguments();
+        mRequestKey = args.getString(BKEY_REQUEST_KEY);
+    }
 
     protected void fixDialogWidth(@DimenRes final int dimenId) {
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
@@ -62,11 +66,11 @@ public abstract class OptionsDialogBase<T extends Parcelable>
     }
 
     protected void onOptionsSet(@NonNull final T options) {
-        OnOptionsListener.sendResult(this, REQUEST_KEY, options);
+        OnOptionsListener.sendResult(this, mRequestKey, options);
     }
 
     protected void onCancelled() {
-        OnOptionsListener.sendCancelled(this, REQUEST_KEY);
+        OnOptionsListener.sendCancelled(this, mRequestKey);
     }
 
     /**

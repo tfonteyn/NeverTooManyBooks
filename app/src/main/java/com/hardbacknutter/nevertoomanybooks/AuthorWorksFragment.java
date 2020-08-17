@@ -80,6 +80,10 @@ public class AuthorWorksFragment
     public static final String BKEY_WITH_TOC = TAG + ":tocs";
     /** Optional. Show the books. Defaults to {@code true}. */
     public static final String BKEY_WITH_BOOKS = TAG + ":books";
+
+    /** FragmentResultListener request key. */
+    private static final String RK_MENU_PICKER = MenuPickerDialogFragment.TAG + ":rk";
+
     /** the ViewModel. */
     private ResultDataModel mResultData;
     /** The ViewModel. */
@@ -95,7 +99,7 @@ public class AuthorWorksFragment
 
         if (BuildConfig.MENU_PICKER_USES_FRAGMENT) {
             getChildFragmentManager().setFragmentResultListener(
-                    MenuPickerDialogFragment.getRequestKey(0), this,
+                    RK_MENU_PICKER, this,
                     (MenuPickerDialogFragment.OnResultListener) this::onContextItemSelected);
         }
     }
@@ -235,7 +239,7 @@ public class AuthorWorksFragment
                                                        res.getInteger(R.integer.MENU_ORDER_DELETE),
                                                        getString(R.string.action_delete),
                                                        R.drawable.ic_delete));
-            MenuPickerDialogFragment.newInstance(title, menu, position)
+            MenuPickerDialogFragment.newInstance(RK_MENU_PICKER, title, menu, position)
                                     .show(getChildFragmentManager(), MenuPickerDialogFragment.TAG);
         } else {
             final Menu menu = MenuPicker.createMenu(getContext());

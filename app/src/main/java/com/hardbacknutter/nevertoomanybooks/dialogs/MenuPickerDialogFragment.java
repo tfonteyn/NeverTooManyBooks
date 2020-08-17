@@ -69,33 +69,35 @@ public class MenuPickerDialogFragment
     /** Log tag. */
     public static final String TAG = "MenuPickerDialogFrag";
 
-    // Use #getRequestKey(final int position) instead
-    //private static final String REQUEST_KEY = TAG + ":rk";
 
     private static final String BKEY_MENU = TAG + ":menu";
     private static final String BKEY_POSITION = TAG + ":pos";
+    private static final String BKEY_REQUEST_KEY = TAG + ":rk";
+
+    /** FragmentResultListener request key to use for our response. */
+    private String mRequestKey;
 
     /** Cached position of the item in the list this menu was invoked on. */
     private int mPosition;
 
-    public static String getRequestKey(final int position) {
-        return TAG + ":rk:" + position;
-    }
-
     /**
      * Constructor.
      *
-     * @param title    (optional) for the dialog/menu
-     * @param pickList the menu options to show
-     * @param position of the item in a list where the context menu was initiated
+     * @param requestKey for use with the FragmentResultListener
+     * @param title      (optional) for the dialog/menu
+     * @param pickList   the menu options to show
+     * @param position   of the item in a list where the context menu was initiated
      *
      * @return instance
      */
-    public static DialogFragment newInstance(@Nullable final String title,
+    public static DialogFragment newInstance(@SuppressWarnings("SameParameterValue")
+                                             @NonNull final String requestKey,
+                                             @Nullable final String title,
                                              @NonNull final ArrayList<Pick> pickList,
                                              final int position) {
         final DialogFragment frag = new MenuPickerDialogFragment();
         final Bundle args = new Bundle(4);
+        args.putString(BKEY_REQUEST_KEY, requestKey);
         args.putString(StandardDialogs.BKEY_DIALOG_TITLE, title);
         args.putParcelableArrayList(BKEY_MENU, pickList);
         args.putInt(BKEY_POSITION, position);
@@ -106,16 +108,19 @@ public class MenuPickerDialogFragment
     /**
      * Constructor.
      *
-     * @param title    (optional) for the dialog/menu
-     * @param menu     the menu options to show
-     * @param position of the item in a list where the context menu was initiated
+     * @param requestKey for use with the FragmentResultListener
+     * @param title      (optional) for the dialog/menu
+     * @param menu       the menu options to show
+     * @param position   of the item in a list where the context menu was initiated
      *
      * @return instance
      */
-    public static DialogFragment newInstance(@Nullable final String title,
+    public static DialogFragment newInstance(@SuppressWarnings("SameParameterValue")
+                                             @NonNull final String requestKey,
+                                             @Nullable final String title,
                                              @NonNull final Menu menu,
                                              final int position) {
-        return newInstance(title, convert(menu), position);
+        return newInstance(requestKey, title, convert(menu), position);
     }
 
     private static ArrayList<Pick> convert(@NonNull final Menu menu) {
@@ -141,7 +146,9 @@ public class MenuPickerDialogFragment
     @Override
     public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
         final Bundle args = requireArguments();
+        mRequestKey = args.getString(BKEY_REQUEST_KEY);
         mPosition = args.getInt(BKEY_POSITION);
+
         final Iterable<Pick> menu = args.getParcelableArrayList(BKEY_MENU);
 
         final View root = getLayoutInflater().inflate(R.layout.dialog_popupmenu, null);
@@ -479,8 +486,7 @@ public class MenuPickerDialogFragment
                 } else {
                     dismiss();
                     OnResultListener.sendResult(MenuPickerDialogFragment.this,
-                                                getRequestKey(mPosition),
-                                                item.getItemId(), mPosition);
+                                                mRequestKey, item.getItemId(), mPosition);
                 }
             }
         }

@@ -75,6 +75,8 @@ public abstract class BookBaseFragment
 
     /** Log tag. */
     private static final String TAG = "BookBaseFragment";
+    /** FragmentResultListener request key. */
+    public static final String RK_COVER_BROWSER = CoverBrowserDialogFragment.TAG + ":rk:";
 
     /** Handles cover replacement, rotation, etc. */
     final CoverHandler[] mCoverHandler = new CoverHandler[2];
@@ -113,8 +115,8 @@ public abstract class BookBaseFragment
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
 
-        getChildFragmentManager().setFragmentResultListener(
-                CoverBrowserDialogFragment.REQUEST_KEY, this, mOnCoverBrowserListener);
+        getChildFragmentManager()
+                .setFragmentResultListener(RK_COVER_BROWSER, this, mOnCoverBrowserListener);
     }
 
     @Override

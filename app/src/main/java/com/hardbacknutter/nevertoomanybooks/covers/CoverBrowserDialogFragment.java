@@ -75,7 +75,10 @@ public class CoverBrowserDialogFragment
 
     /** Log tag. */
     public static final String TAG = "CoverBrowserFragment";
-    public static final String REQUEST_KEY = TAG + ":rk";
+    private static final String BKEY_REQUEST_KEY = TAG + ":rk";
+
+    /** FragmentResultListener request key to use for our response. */
+    private String mRequestKey;
 
     /** The adapter for the horizontal scrolling covers list. */
     @Nullable
@@ -108,16 +111,20 @@ public class CoverBrowserDialogFragment
     /**
      * Constructor.
      *
-     * @param isbn ISBN of book
-     * @param cIdx 0..n image index
+     * @param requestKey for use with the FragmentResultListener
+     * @param isbn       ISBN of book
+     * @param cIdx       0..n image index
      *
      * @return instance
      */
     @NonNull
-    public static DialogFragment newInstance(@NonNull final String isbn,
+    public static DialogFragment newInstance(@SuppressWarnings("SameParameterValue")
+                                             @NonNull final String requestKey,
+                                             @NonNull final String isbn,
                                              @IntRange(from = 0) final int cIdx) {
         final DialogFragment frag = new CoverBrowserDialogFragment();
-        final Bundle args = new Bundle(2);
+        final Bundle args = new Bundle(3);
+        args.putString(BKEY_REQUEST_KEY, requestKey);
         args.putString(DBDefinitions.KEY_ISBN, isbn);
         args.putInt(CoverBrowserViewModel.BKEY_FILE_INDEX, cIdx);
         frag.setArguments(args);
@@ -130,6 +137,9 @@ public class CoverBrowserDialogFragment
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        final Bundle args = requireArguments();
+        mRequestKey = args.getString(BKEY_REQUEST_KEY);
 
         final int longestSide = getResources()
                 .getDimensionPixelSize(R.dimen.cover_browser_preview_height);
@@ -167,7 +177,7 @@ public class CoverBrowserDialogFragment
             }
 
             if (mModel.getSelectedFileAbsPath() != null) {
-                OnResultListener.sendResult(this, REQUEST_KEY, mModel.getImageIndex(),
+                OnResultListener.sendResult(this, mRequestKey, mModel.getImageIndex(),
                                             mModel.getSelectedFileAbsPath());
             }
             // close the CoverBrowserDialogFragment
@@ -375,7 +385,7 @@ public class CoverBrowserDialogFragment
         /**
          * Callback handler with the user's selection.
          *
-         * @param cIdx     cover index as passed in
+         * @param cIdx     0..n image index
          * @param fileSpec for the selected file
          */
         void onResult(@IntRange(from = 0) int cIdx,

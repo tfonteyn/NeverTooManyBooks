@@ -77,6 +77,9 @@ public class EditBookAuthorListDialogFragment
 
     /** Fragment/Log tag. */
     static final String TAG = "EditBookAuthorListDlg";
+    /** FragmentResultListener request key. */
+    private static final String RK_EDIT_AUTHOR = EditAuthorForBookDialogFragment.TAG + ":rk";
+
     /** Database Access. */
     private DAO mDb;
     /** The book. Must be in the Activity scope. */
@@ -123,8 +126,8 @@ public class EditBookAuthorListDialogFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        getParentFragmentManager().setFragmentResultListener(
-                EditAuthorForBookDialogFragment.REQUEST_KEY, this, mOnEditAuthorListener);
+        getParentFragmentManager()
+                .setFragmentResultListener(RK_EDIT_AUTHOR, this, mOnEditAuthorListener);
 
         mDb = new DAO(TAG);
     }
@@ -383,14 +386,14 @@ public class EditBookAuthorListDialogFragment
         /** Fragment/Log tag. */
         @SuppressWarnings("InnerClassFieldHidesOuterClassField")
         private static final String TAG = "EditAuthorForBookDialog";
-        private static final String REQUEST_KEY = TAG + ":rk";
-
+        private static final String BKEY_REQUEST_KEY = TAG + ":rk";
         /**
          * We create a list of all the Type checkboxes for easy handling.
          * The key is the Type.
          */
         private final SparseArray<CompoundButton> mTypeButtons = new SparseArray<>();
-
+        /** FragmentResultListener request key to use for our response. */
+        private String mRequestKey;
         /** Database Access. */
         private DAO mDb;
         /** Displayed for info only. */
@@ -423,15 +426,19 @@ public class EditBookAuthorListDialogFragment
         /**
          * Constructor.
          *
-         * @param bookTitle displayed for info only
-         * @param author    to edit
+         * @param requestKey for use with the FragmentResultListener
+         * @param bookTitle  displayed for info only
+         * @param author     to edit
          *
          * @return instance
          */
-        static DialogFragment newInstance(@NonNull final String bookTitle,
+        static DialogFragment newInstance(@SuppressWarnings("SameParameterValue")
+                                          @NonNull final String requestKey,
+                                          @NonNull final String bookTitle,
                                           @NonNull final Author author) {
             final DialogFragment frag = new EditAuthorForBookDialogFragment();
-            final Bundle args = new Bundle(2);
+            final Bundle args = new Bundle(3);
+            args.putString(BKEY_REQUEST_KEY, requestKey);
             args.putString(DBDefinitions.KEY_TITLE, bookTitle);
             args.putParcelable(DBDefinitions.KEY_FK_AUTHOR, author);
             frag.setArguments(args);
@@ -445,6 +452,7 @@ public class EditBookAuthorListDialogFragment
             mDb = new DAO(TAG);
 
             final Bundle args = requireArguments();
+            mRequestKey = args.getString(BKEY_REQUEST_KEY);
             mAuthor = args.getParcelable(DBDefinitions.KEY_FK_AUTHOR);
             Objects.requireNonNull(mAuthor, ErrorMsg.NULL_AUTHOR);
 
@@ -595,7 +603,7 @@ public class EditBookAuthorListDialogFragment
                 tmpAuthor.setType(Author.TYPE_UNKNOWN);
             }
 
-            EditBookBaseFragment.OnResultListener.sendResult(this, REQUEST_KEY, mAuthor, tmpAuthor);
+            EditBookBaseFragment.OnResultListener.sendResult(this, mRequestKey, mAuthor, tmpAuthor);
             return true;
         }
 
@@ -666,7 +674,7 @@ public class EditBookAuthorListDialogFragment
             final Holder holder = new Holder(view);
             // click -> edit
             holder.rowDetailsView.setOnClickListener(v -> EditAuthorForBookDialogFragment
-                    .newInstance(mBookViewModel.getBook().getTitle(),
+                    .newInstance(RK_EDIT_AUTHOR, mBookViewModel.getBook().getTitle(),
                                  getItem(holder.getBindingAdapterPosition()))
                     .show(getParentFragmentManager(), EditAuthorForBookDialogFragment.TAG));
             return holder;
