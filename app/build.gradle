@@ -133,10 +133,10 @@ android {
         buildConfigField('boolean', 'ENABLE_GOOGLE_BOOKS', 'true')
 
         // needs more testing
-        buildConfigField('boolean', 'ENABLE_LAST_DODO', 'false')
+        buildConfigField('boolean', 'ENABLE_LAST_DODO', 'true')
 
         // If set, we'll use {@link MenuPickerDialogFragment} where implemented.
-        buildConfigField('boolean', 'MENU_PICKER_USES_FRAGMENT', 'false')
+        buildConfigField('boolean', 'MENU_PICKER_USES_FRAGMENT', 'true')
     }
 
     buildTypes {
@@ -145,18 +145,17 @@ android {
             shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'),
                     'proguard-rules.pro'
+
+            // uses reflection to access a private variable
+            buildConfigField('boolean', 'MENU_PICKER_USES_FRAGMENT', 'false')
+
         }
         beta {
             initWith release
             versionNameSuffix "beta_" + new Date().format('yyyy-MM-dd')
-
-            buildConfigField('boolean', 'ENABLE_LAST_DODO', 'true')
         }
         debug {
             versionNameSuffix new Date().format('yyyy-MM-dd_HH:mm')
-
-            buildConfigField('boolean', 'ENABLE_LAST_DODO', 'true')
-            buildConfigField('boolean', 'MENU_PICKER_USES_FRAGMENT', 'true')
         }
     }
 
