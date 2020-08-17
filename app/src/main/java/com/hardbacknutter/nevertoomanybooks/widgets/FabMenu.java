@@ -48,9 +48,8 @@ public class FabMenu {
                                        final int dx,
                                        final int dy) {
                     if (dy > 0 || dy < 0 && mFab.isShown()) {
-                        // No animation, just make it go away
-                        showMenu(false, false);
-                        mFab.setVisibility(View.GONE);
+                        hideMenu();
+                        mFab.hide();
                     }
                 }
 
@@ -61,8 +60,7 @@ public class FabMenu {
                     // we can ignore that as in practice a minuscule swipe brings the FAB back.
                     if (newState == RecyclerView.SCROLL_STATE_IDLE
                         || newState == RecyclerView.SCROLL_STATE_SETTLING) {
-                        // use standard animation
-                        showMenu(false, true);
+                        hideMenu();
                         mFab.show();
                     }
                     super.onScrollStateChanged(recyclerView, newState);
@@ -80,7 +78,7 @@ public class FabMenu {
                    @NonNull final View fabOverlay,
                    @Nullable final ExtendedFloatingActionButton... items) {
         mFab = fab;
-        mFab.setOnClickListener(v -> showMenu(!mFabMenuItems[0].isShown(), true));
+        mFab.setOnClickListener(v -> show(!mFabMenuItems[0].isShown()));
         mFabOverlay = fabOverlay;
 
         if (items != null && items.length > 0) {
@@ -114,7 +112,7 @@ public class FabMenu {
      */
     public boolean hideMenu() {
         if (mFabMenuItems[0].isShown()) {
-            showMenu(false, true);
+            show(false);
             return true;
         }
         return false;
@@ -123,17 +121,10 @@ public class FabMenu {
     /**
      * When the user clicks the FAB button, we open/close the FAB menu and change the FAB icon.
      *
-     * @param open    {@code true} to show the menu.
-     * @param animate whether to animate the action or not
+     * @param show {@code true} to show the menu.
      */
-    private void showMenu(final boolean open,
-                          final boolean animate) {
-        // don't bother
-        if (open == mFabMenuItems[0].isShown()) {
-            return;
-        }
-
-        if (open) {
+    public void show(final boolean show) {
+        if (show) {
             mFab.setImageResource(R.drawable.ic_close);
             // mFabOverlay overlaps the whole screen and intercepts clicks.
             // This does not include the ToolBar.
@@ -163,12 +154,8 @@ public class FabMenu {
         for (ExtendedFloatingActionButton fab : mFabMenuItems) {
             // allow for null items
             if (fab != null && fab.isEnabled()) {
-                if (open) {
-                    if (animate) {
-                        fab.show();
-                    } else {
-                        fab.setVisibility(View.VISIBLE);
-                    }
+                if (show) {
+                    fab.show();
                     if (!smallScreen) {
                         // on top of base FAB
                         fab.animate().translationX(baseX);
@@ -181,11 +168,7 @@ public class FabMenu {
                 } else {
                     fab.animate().translationX(0);
                     fab.animate().translationY(0);
-                    if (animate) {
-                        fab.hide();
-                    } else {
-                        fab.setVisibility(View.GONE);
-                    }
+                    fab.hide();
                 }
                 i++;
             }
