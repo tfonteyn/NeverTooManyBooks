@@ -42,11 +42,11 @@ public interface Filter<T> {
      *
      * @param context Current context
      *
-     * @return a human readable label/name for this filter, or {@code null} if none.
+     * @return a human readable label/name for this filter.
      */
-    @Nullable
+    @NonNull
     default String getLabel(@NonNull final Context context) {
-        return null;
+        throw new UnsupportedOperationException();
     }
 
     /**
