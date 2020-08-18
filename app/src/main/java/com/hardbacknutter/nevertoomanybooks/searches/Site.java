@@ -367,6 +367,7 @@ public class Site
         @VisibleForTesting
         public static List<Site> reorder(@NonNull final Collection<Site> sites,
                                          @NonNull final String order) {
+
             final List<Site> reorderedList = new ArrayList<>();
             for (String idStr : order.split(",")) {
                 final int id = Integer.parseInt(idStr);

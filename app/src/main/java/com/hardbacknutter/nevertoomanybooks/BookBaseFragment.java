@@ -249,12 +249,6 @@ public abstract class BookBaseFragment
     public void onCreateOptionsMenu(@NonNull final Menu menu,
                                     @NonNull final MenuInflater inflater) {
 
-        if (menu.findItem(R.id.MENU_SEARCH) == null) {
-            inflater.inflate(R.menu.sm_search, menu);
-            //noinspection ConstantConditions
-            MenuHandler.setupSearch(getActivity(), menu);
-        }
-
         if (menu.findItem(R.id.SUBMENU_VIEW_BOOK_AT_SITE) == null) {
             inflater.inflate(R.menu.sm_view_on_site, menu);
         }

@@ -5,14 +5,6 @@
   ~
   ~ This file is part of NeverTooManyBooks.
   ~
-  ~ In August 2018, this project was forked from:
-  ~ Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
-  ~
-  ~ Without their original creation, this project would not exist in its
-  ~ current form. It was however largely rewritten/refactored and any
-  ~ comments on this fork should be directed at HardBackNutter and not
-  ~ at the original creators.
-  ~
   ~ NeverTooManyBooks is free software: you can redistribute it and/or modify
   ~ it under the terms of the GNU General Public License as published by
   ~ the Free Software Foundation, either version 3 of the License, or
@@ -31,7 +23,18 @@
      All menu items related to a book.
      Used for the options and context menus.
 -->
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <!-- Reminder: we let the SearchView handle it's own icons.
+      The hint text is defined in xml/searchable.xml
+ -->
+    <item
+        android:id="@id/MENU_SEARCH"
+        android:orderInCategory="@integer/MENU_ORDER_SEARCH"
+        android:title="@android:string/search_go"
+        app:actionViewClass="android.widget.SearchView"
+        app:showAsAction="ifRoom" />
+
     <item
         android:id="@id/MENU_BOOK_READ"
         android:icon="@drawable/ic_check_box"

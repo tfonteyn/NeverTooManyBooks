@@ -23,8 +23,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@id/MENU_SAVE"
-        android:icon="@drawable/ic_toolbar_save_button_48"
-        android:title="@string/action_save"
+        android:title="@string/action_select"
         app:showAsAction="always" />
     <item
         android:id="@id/MENU_EDIT"

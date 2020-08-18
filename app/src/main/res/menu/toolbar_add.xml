@@ -23,7 +23,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/action_add"
-        android:icon="@drawable/ic_add_circle_outline"
         android:title="@string/action_add"
         app:showAsAction="always" />
 </menu>
