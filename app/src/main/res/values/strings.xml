@@ -995,6 +995,8 @@
     <string name="action_clear">Clear</string>
     <!-- [VERIFIED] -->
     <string name="action_show_all">Show all</string>
+    <!-- [VERIFIED] -->
+    <string name="action_select">Select</string>
 
     <!-- merging two bookshelves -->
     <string name="action_merge">Merge</string>
@@ -1547,6 +1549,7 @@
     <string name="X_pg_internet_search">Web Searches</string>
 
     <string name="X_anthology_titles">Anthology Titles</string>
+    <!-- [VERIFIED] -->
     <string name="X_use_default_setting">Use default values</string>
     <string name="X_gr_tq_requested_task_is_already_queued">Requested task is already queued</string>
 
@@ -1571,4 +1574,5 @@
     <string name="dynamic">Dynamic</string>
     <!-- statick with a 'ck' because 'static' is a java reserved word (and magick) -->
     <string name="statick">Static</string>
+
 </resources>

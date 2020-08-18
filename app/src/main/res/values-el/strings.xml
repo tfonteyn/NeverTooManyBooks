@@ -33,7 +33,7 @@
     <string name="X_lbl_select_fields_to_update">Επιλεγξτε πεδία για ενημέρωση</string>
     <string name="X_action_swap">ανταλλάσσω</string>
     <string name="X_tip_booklist_global_properties">Μπορείτε να χρησιμοποιήσετε αυτήν την οθόνη για να ορίσετε τα προεπιλεγμένα χαρακτηριστικά όλων των μορφών λίστας βιβλίων. Οι περισσότερες ιδιότητες μπορούν να αντικατασταθούν από μεμονωμένα στυλ, αλλά οι προεπιλεγμένες τιμές ορίζονται εδώ. Μπορείτε να αλλάξετε τον τρόπο εμφάνισης των λιστών κατά την εκκίνηση και να προσαρμόσετε διάφορες άλλες προτιμήσεις που θα εφαρμοστούν σε όλα τα στυλ σας, όταν είναι δυνατόν.</string>
-    <string name="X_use_default_setting">Χρήση προεπιλεγμένης ρύθμισης</string>
+    <string name="X_use_default_setting">Χρήση προεπιλεγμένων ρυθμίσεων</string>
     <string name="X_warning_cover_corrupt">Το εξώφυλλο είναι κατεστραμμένο</string>
     <string name="X_warning_required_field_x">%1$s δεν πρέπει να είναι κενό</string>
     <string name="a_bracket_b_bracket">%1$s (%2$s)</string>
@@ -663,5 +663,6 @@
     <string name="action_validate">Επικυρώνω</string>
     <string name="dynamic">Δυναμικός</string>
     <string name="statick">Στατικός</string>
+    <string name="action_select">Επιλογή</string>
 
 </resources>

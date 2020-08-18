@@ -659,6 +659,6 @@
     <string name="dynamic">динамический</string>
     <string name="statick">статический</string>
     <string name="action_validate">проверять</string>
-    <string name="pt_enable_fast_scroller_overlay">Наложение прокрутки информации.</string>
+    <string name="action_select">Выбрать</string>
 
 </resources>

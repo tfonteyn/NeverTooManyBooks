@@ -33,7 +33,7 @@
     <string name="X_lbl_select_fields_to_update">Seleccione campos para actualizar</string>
     <string name="X_action_swap">Intercambiar</string>
     <string name="X_tip_booklist_global_properties">Puede usar esta pantalla para configurar las características predeterminadas de todos los estilos de listas de libros. La mayoría de las propiedades pueden ser reemplazadas por estilos individuales, pero los valores predeterminados se definen aquí. Puede cambiar la forma en que se muestran las listas al inicio y ajustar una variedad de otras preferencias que se aplicarán a todos sus estilos cuando sea posible.</string>
-    <string name="X_use_default_setting">Utilizar configuración por defecto</string>
+    <string name="X_use_default_setting">Usar configuración predeterminada</string>
     <string name="X_warning_cover_corrupt">La imagen de portada está dañada</string>
     <string name="X_warning_required_field_x">%1$s no puede ser blanco</string>
     <string name="a_bracket_b_bracket">%1$s (%2$s)</string>
@@ -663,5 +663,6 @@
     <string name="action_validate">Validar</string>
     <string name="dynamic">Dinámica</string>
     <string name="statick">Estático</string>
+    <string name="action_select">Seleccionar</string>
 
 </resources>

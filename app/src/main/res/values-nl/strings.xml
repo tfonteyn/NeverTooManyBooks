@@ -32,7 +32,7 @@
     <string name="X_lbl_select_fields_to_update">Selecteer bij te werken velden</string>
     <string name="X_action_swap">Wisselen</string>
     <string name="X_tip_booklist_global_properties">Je kan dit scherm gebruiken om de standaardkenmerken van alle stijlen van de boekenlijst in te stellen. De meeste eigenschappen kunnen worden overschreven door afzonderlijke stijlen, maar de standaardwaarden worden hier gedefinieerd. Je kan de manier wijzigen waarop lijsten worden weergegeven bij het opstarten en een aantal andere voorkeuren aanpassen die indien mogelijk op al uw stijlen worden toegepast.</string>
-    <string name="X_use_default_setting">Gebruik de standaard waarden</string>
+    <string name="X_use_default_setting">Standaardinstellingen gebruiken</string>
     <string name="X_warning_cover_corrupt">Omslagafbeelding is niet geldig</string>
     <string name="X_warning_required_field_x">%1$s mag niet leeg zijn</string>
     <string name="a_bracket_b_bracket">%1$s (%2$s)</string>
@@ -664,6 +664,6 @@
     <string name="action_validate">Valideer</string>
     <string name="dynamic">Dynamisch</string>
     <string name="statick">Statisch</string>
-    <string name="pt_enable_fast_scroller_overlay">Scrollende informatie-overlay.</string>
+    <string name="action_select">Selecteren</string>
 
 </resources>

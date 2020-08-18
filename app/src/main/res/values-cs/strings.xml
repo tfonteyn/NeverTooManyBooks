@@ -33,7 +33,7 @@
     <string name="X_lbl_select_fields_to_update">Zvolit pole k aktualizaci</string>
     <string name="X_action_swap">Vyměnit</string>
     <string name="X_tip_booklist_global_properties">Na této obrazovce můžete nastavit výchozí charakteristiky všech stylů seznamu knih. Většina vlastností může být potlačena jednotlivými styly, ale zde jsou definovány výchozí hodnoty. Můžete změnit způsob zobrazení seznamů při spuštění a upravit řadu dalších preferencí, které budou použity na všechny vaše styly, pokud to bude možné.</string>
-    <string name="X_use_default_setting">Použít defaultní nastavení</string>
+    <string name="X_use_default_setting">Použít výchozí nastavení</string>
     <string name="X_warning_cover_corrupt">Obálka je poškozena</string>
     <string name="X_warning_required_field_x">%1$s nemůže být prázdné</string>
     <string name="a_bracket_b_bracket">%1$s (%2$s)</string>
@@ -660,6 +660,6 @@
     <string name="action_validate">Ověřit</string>
     <string name="dynamic">Dynamický</string>
     <string name="statick">Statický</string>
-    <string name="pt_enable_fast_scroller_overlay">Rolování informací překrytí.</string>
+    <string name="action_select">Vybrat</string>
 
 </resources>

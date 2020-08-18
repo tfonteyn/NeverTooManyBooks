@@ -34,7 +34,7 @@
     <string name="X_lbl_select_fields_to_update">Felder für Aktualisierung auswählen</string>
     <string name="X_action_swap">Tauschen</string>
     <string name="X_tip_booklist_global_properties">In diesem Bildschirm können Sie die Standardeigenschaften aller Buchlistenstile festlegen. Die meisten Eigenschaften können von einzelnen Stilen überschrieben werden, aber die Standardwerte werden hier definiert. Sie können ändern, wie Listen beim Start angezeigt werden, und eine Reihe anderer Einstellungen vornehmen, die nach Möglichkeit auf alle Ihre Stile angewendet werden.</string>
-    <string name="X_use_default_setting">Standardeinstellung verwenden</string>
+    <string name="X_use_default_setting">Standardeinstellungen verwenden</string>
     <string name="X_warning_cover_corrupt">Das Cover ist unbrauchbar</string>
     <string name="X_warning_required_field_x">%1$s darf nicht leer sein</string>
     <string name="a_bracket_b_bracket">%1$s (%2$s)</string>
@@ -666,4 +666,5 @@
     <string name="action_validate">Bestätigen</string>
     <string name="dynamic">Dynamisch</string>
     <string name="statick">Statisch</string>
+    <string name="action_select">Auswählen</string>
 </resources>

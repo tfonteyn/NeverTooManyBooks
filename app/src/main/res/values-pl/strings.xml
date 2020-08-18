@@ -33,7 +33,7 @@
     <string name="X_lbl_select_fields_to_update">Wybierz pola do aktualizacji</string>
     <string name="X_action_swap">Wymieniać</string>
     <string name="X_tip_booklist_global_properties">Możesz użyć tego ekranu, aby ustawić domyślną charakterystykę wszystkich stylów listy książek. Większość właściwości może być nadpisana przez poszczególne style, ale tutaj są zdefiniowane wartości domyślne. Możesz zmienić sposób wyświetlania list przy starcie i dostosować różne inne preferencje, które będą stosowane do wszystkich twoich stylów, jeśli to możliwe. Możesz także edytować menu stylów i same style.</string>
-    <string name="X_use_default_setting">Zastosowanie domyślne</string>
+    <string name="X_use_default_setting">Użyj ustawień domyślnych</string>
     <string name="X_warning_cover_corrupt">Okładka jest uszkodzona</string>
     <string name="X_warning_required_field_x">%1$s nie może być pusty</string>
     <string name="a_bracket_b_bracket">%1$s (%2$s)</string>
@@ -659,4 +659,5 @@
     <string name="action_validate">Uprawomocnić</string>
     <string name="dynamic">Dynamiczny</string>
     <string name="statick">Statyczny</string>
+    <string name="action_select">Wybierz</string>
 </resources>

@@ -33,7 +33,7 @@
     <string name="X_lbl_select_fields_to_update">Güncellenecek alanları seçin</string>
     <string name="X_action_swap">Değiştirmek</string>
     <string name="X_tip_booklist_global_properties">Tüm kitap listesi stillerinin varsayılan özelliklerini ayarlamak için bu ekranı kullanabilirsiniz. Çoğu özellik bireysel stiller tarafından geçersiz kılınabilir, ancak varsayılan değerler burada tanımlanır. Listelerin başlangıçta nasıl görüntüleneceğini değiştirebilir ve mümkün olduğunda tüm stillerinize uygulanacak çeşitli diğer tercihleri ayarlayabilirsiniz.</string>
-    <string name="X_use_default_setting">Öntanımlı ayarları kullan</string>
+    <string name="X_use_default_setting">Varsayılan ayarları kullan</string>
     <string name="X_warning_cover_corrupt">Kapak hasarlı</string>
     <string name="X_warning_required_field_x">%1$s boş olamaz</string>
     <string name="a_bracket_b_bracket">%1$s (%2$s)</string>
@@ -660,5 +660,6 @@
     <string name="action_validate">Doğrulama</string>
     <string name="dynamic">Dinamik</string>
     <string name="statick">Statik</string>
+    <string name="action_select">Seç</string>
 
 </resources>
