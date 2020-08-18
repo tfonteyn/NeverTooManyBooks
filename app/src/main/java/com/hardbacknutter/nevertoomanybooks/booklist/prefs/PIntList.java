@@ -28,7 +28,9 @@ import androidx.annotation.NonNull;
 import androidx.preference.PreferenceManager;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 
@@ -103,19 +105,18 @@ public class PIntList
      */
     @NonNull
     private List<Integer> getAsList(@NonNull final String values) {
-        List<Integer> list = new ArrayList<>();
-        for (String s : values.split(DELIM)) {
-            try {
-                list.add(Integer.parseInt(s));
-            } catch (@NonNull final NumberFormatException e) {
-                // should not happen unless we had a bug while previously writing the pref.
-                if (BuildConfig.DEBUG /* always */) {
-                    Log.d(TAG, "key=" + getKey() + "|values=`" + values + '`', e);
-                }
+        try {
+            return Arrays.stream(values.split(DELIM))
+                         .map(Integer::parseInt)
+                         .collect(Collectors.toList());
+
+        } catch (@NonNull final NumberFormatException e) {
+            // should not happen unless we had a bug while previously writing the pref.
+            if (BuildConfig.DEBUG /* always */) {
+                Log.d(TAG, "key=" + getKey() + "|values=`" + values + '`', e);
             }
+            // in which case we bail out gracefully
+            return new ArrayList<>();
         }
-        return list;
     }
-
-
 }

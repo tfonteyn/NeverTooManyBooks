@@ -133,12 +133,9 @@ public abstract class EditBookBaseFragment
 
         final FragmentManager fm = getChildFragmentManager();
 
-        fm.setFragmentResultListener(RK_DATE_PICKER_PARTIAL, this,
-                                     mPartialDatePickerListener);
-        fm.setFragmentResultListener(RK_DATE_PICKER_SINGLE, this,
-                                     mDatePickerListener);
-        fm.setFragmentResultListener(RK_DATE_PICKER_RANGE, this,
-                                     mDatePickerListener);
+        fm.setFragmentResultListener(RK_DATE_PICKER_PARTIAL, this, mPartialDatePickerListener);
+        fm.setFragmentResultListener(RK_DATE_PICKER_SINGLE, this, mDatePickerListener);
+        fm.setFragmentResultListener(RK_DATE_PICKER_RANGE, this, mDatePickerListener);
 
         final String fragmentTag = getTag();
         Objects.requireNonNull(fragmentTag, ErrorMsg.NULL_FRAGMENT_TAG);

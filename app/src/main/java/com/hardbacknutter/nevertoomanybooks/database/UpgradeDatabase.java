@@ -4,14 +4,6 @@
  *
  * This file is part of NeverTooManyBooks.
  *
- * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
- *
- * Without their original creation, this project would not exist in its
- * current form. It was however largely rewritten/refactored and any
- * comments on this fork should be directed at HardBackNutter and not
- * at the original creators.
- *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -111,9 +103,9 @@ final class UpgradeDatabase {
                                         @NonNull final String destination,
                                         @NonNull final String... toRemove) {
         // Get the source info
-        TableInfo sourceTable = new TableInfo(db, source);
+        final TableInfo sourceTable = new TableInfo(db, source);
         // Build the column list
-        StringBuilder columns = new StringBuilder();
+        final StringBuilder columns = new StringBuilder();
         boolean first = true;
         for (ColumnInfo ci : sourceTable.getColumns()) {
             boolean isNeeded = true;
@@ -132,9 +124,9 @@ final class UpgradeDatabase {
                 columns.append(ci.name);
             }
         }
-        String colList = columns.toString();
-        String sql = "INSERT INTO " + destination + '(' + colList + ") SELECT "
-                     + colList + " FROM " + source;
+        final String colList = columns.toString();
+        final String sql = "INSERT INTO " + destination + '(' + colList + ") SELECT "
+                           + colList + " FROM " + source;
         try (SynchronizedStatement stmt = db.compileStatement(sql)) {
             stmt.executeInsert();
         }
@@ -160,13 +152,15 @@ final class UpgradeDatabase {
         db.execSQL("ALTER TABLE " + table.getName()
                    + " ADD " + destination.getName() + " text NOT NULL default ''");
 
-        String updateSql = "UPDATE " + table.getName() + " SET " + destination.getName() + "=?"
-                           + " WHERE " + DBDefinitions.KEY_PK_ID + "=?";
+        final String updateSql =
+                "UPDATE " + table.getName() + " SET " + destination.getName() + "=?"
+                + " WHERE " + DBDefinitions.KEY_PK_ID + "=?";
 
-        try (SQLiteStatement update = db.compileStatement(updateSql);
-             Cursor cursor = db.rawQuery("SELECT " + DBDefinitions.KEY_PK_ID
-                                         + ',' + source.getName() + " FROM " + table.getName(),
-                                         null)) {
+        try (final SQLiteStatement update = db.compileStatement(updateSql);
+             final Cursor cursor = db.rawQuery(
+                     "SELECT " + DBDefinitions.KEY_PK_ID
+                     + ',' + source.getName() + " FROM " + table.getName(),
+                     null)) {
 
             final Locale userLocale = LocaleUtils.getUserLocale(context);
             while (cursor.moveToNext()) {

@@ -42,6 +42,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -96,10 +97,9 @@ public class IsfdbSearchEngine
     /** Preferences prefix. */
     static final String PREF_KEY = "isfdb";
     /** Type: {@code boolean}. */
-    static final String PREFS_SERIES_FROM_TOC = PREF_KEY + ".search.toc.series";
-    /** Type: {@code boolean}. */
     public static final String PREFS_USE_PUBLISHER = PREF_KEY + ".search.uses.publisher";
-
+    /** Type: {@code boolean}. */
+    static final String PREFS_SERIES_FROM_TOC = PREF_KEY + ".search.toc.series";
     /**
      * The site claims to use ISO-8859-1.
      * <pre>
@@ -375,16 +375,12 @@ public class IsfdbSearchEngine
     public List<String> searchAlternativeEditions(@NonNull final String validIsbn)
             throws IOException {
 
-        final List<Edition> editions = fetchEditionsByIsbn(validIsbn);
-
         // transform the Edition list to a simple isbn list
-        final List<String> isbnList = new ArrayList<>();
-        for (Edition edition : editions) {
-            if (edition.getIsbn() != null) {
-                isbnList.add(edition.getIsbn());
-            }
-        }
-        return isbnList;
+        return fetchEditionsByIsbn(validIsbn)
+                .stream()
+                .filter(edition -> edition.getIsbn() != null)
+                .map(Edition::getIsbn)
+                .collect(Collectors.toList());
     }
 
 
@@ -1255,57 +1251,50 @@ public class IsfdbSearchEngine
      * @param elements LI elements
      * @param bookData Bundle to update
      */
-    private void processExternalIdElements(@NonNull final Iterable<Element> elements,
+    private void processExternalIdElements(@NonNull final Collection<Element> elements,
                                            @NonNull final Bundle bookData) {
-        final Collection<String> externalIdUrls = new ArrayList<>();
-        for (Element extIdLi : elements) {
-            final Element extIdLink = extIdLi.select("a").first();
-            externalIdUrls.add(extIdLink.attr("href"));
-        }
-        if (!externalIdUrls.isEmpty()) {
-            for (String url : externalIdUrls) {
-                if (url.contains("www.worldcat.org")) {
-                    // http://www.worldcat.org/oclc/60560136
-                    bookData.putString(DBDefinitions.KEY_EID_WORLDCAT, stripString(url, '/'));
+        elements.stream()
+                .map(element -> element.select("a").first().attr("href"))
+                .forEach(url -> {
+                    if (url.contains("www.worldcat.org")) {
+                        // http://www.worldcat.org/oclc/60560136
+                        bookData.putString(DBDefinitions.KEY_EID_WORLDCAT, stripString(url, '/'));
 
-                } else if (url.contains("amazon")) {
-                    int start = url.lastIndexOf('/');
-                    if (start != -1) {
-                        int end = url.indexOf('?', start);
-                        if (end == -1) {
-                            end = url.length();
+                    } else if (url.contains("amazon")) {
+                        int start = url.lastIndexOf('/');
+                        if (start != -1) {
+                            int end = url.indexOf('?', start);
+                            if (end == -1) {
+                                end = url.length();
+                            }
+                            final String asin = url.substring(start + 1, end);
+                            bookData.putString(DBDefinitions.KEY_EID_ASIN, asin);
                         }
-                        final String asin = url.substring(start + 1, end);
-                        bookData.putString(DBDefinitions.KEY_EID_ASIN, asin);
+                    } else if (url.contains("lccn.loc.gov")) {
+                        // Library of Congress (USA)
+                        // http://lccn.loc.gov/2008299472
+                        // http://lccn.loc.gov/95-22691
+                        bookData.putString(DBDefinitions.KEY_EID_LCCN, stripString(url, '/'));
+
+                        //            } else if (url.contains("explore.bl.uk")) {
+                        // http://explore.bl.uk/primo_library/libweb/action/dlDisplay.do?
+                        // vid=BLVU1&docId=BLL01014057142
+                        // British Library
+
+                        //            } else if (url.contains("d-nb.info")) {
+                        // http://d-nb.info/986851329
+                        // DEUTSCHEN NATIONALBIBLIOTHEK
+
+                        //            } else if (url.contains("picarta.pica.nl")) {
+                        // http://picarta.pica.nl/xslt/DB=3.9/XMLPRS=Y/PPN?PPN=802041833
+                        // Nederlandse Bibliografie
+
+
+                        //           } else if (url.contains("tercerafundacion.net")) {
+                        // Spanish
+                        // https://tercerafundacion.net/biblioteca/ver/libro/2329
                     }
-                } else if (url.contains("lccn.loc.gov")) {
-                    // Library of Congress (USA)
-                    // http://lccn.loc.gov/2008299472
-                    // http://lccn.loc.gov/95-22691
-                    bookData.putString(DBDefinitions.KEY_EID_LCCN, stripString(url, '/'));
-
-                    //            } else if (url.contains("explore.bl.uk")) {
-                    // http://explore.bl.uk/primo_library/libweb/action/dlDisplay.do?
-                    // vid=BLVU1&docId=BLL01014057142
-                    // British Library
-
-                    //            } else if (url.contains("d-nb.info")) {
-                    // http://d-nb.info/986851329
-                    // DEUTSCHEN NATIONALBIBLIOTHEK
-
-                    //            } else if (url.contains("picarta.pica.nl")) {
-                    // http://picarta.pica.nl/xslt/DB=3.9/XMLPRS=Y/PPN?PPN=802041833
-                    // Nederlandse Bibliografie
-
-
-                    //           } else if (url.contains("tercerafundacion.net")) {
-                    // Spanish
-                    // https://tercerafundacion.net/biblioteca/ver/libro/2329
-
-
-                }
-            }
-        }
+                });
     }
 
     @NonNull

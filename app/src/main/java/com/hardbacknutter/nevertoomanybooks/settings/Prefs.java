@@ -31,7 +31,7 @@ import androidx.preference.ListPreference;
 import androidx.preference.PreferenceManager;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -153,20 +153,18 @@ public final class Prefs {
     @SuppressLint("LogConditional")
     public static void dumpPreferences(@NonNull final Context context,
                                        @Nullable final String uuid) {
-        Map<String, ?> map;
+        final Map<String, ?> map;
         if (uuid != null) {
             map = context.getSharedPreferences(uuid, Context.MODE_PRIVATE).getAll();
         } else {
             map = PreferenceManager.getDefaultSharedPreferences(context).getAll();
         }
-        List<String> keyList = new ArrayList<>(map.keySet());
-        //noinspection ZeroLengthArrayAllocation
-        String[] keys = keyList.toArray(new String[]{});
-        Arrays.sort(keys);
+        final List<String> keyList = new ArrayList<>(map.keySet());
+        Collections.sort(keyList);
 
-        StringBuilder sb = new StringBuilder("\n\nSharedPreferences: "
-                                             + (uuid != null ? uuid : "global"));
-        for (String key : keys) {
+        final StringBuilder sb = new StringBuilder("\n\nSharedPreferences: "
+                                                   + (uuid != null ? uuid : "global"));
+        for (String key : keyList) {
             Object value = map.get(key);
             sb.append('\n').append(key).append('=').append(value);
         }

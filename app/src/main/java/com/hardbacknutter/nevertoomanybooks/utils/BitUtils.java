@@ -4,14 +4,6 @@
  *
  * This file is part of NeverTooManyBooks.
  *
- * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
- *
- * Without their original creation, this project would not exist in its
- * current form. It was however largely rewritten/refactored and any
- * comments on this fork should be directed at HardBackNutter and not
- * at the original creators.
- *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -39,6 +31,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Bitmask converter routines.
@@ -124,13 +117,11 @@ public final class BitUtils {
     public static List<String> toListOfStrings(@NonNull final Context context,
                                                @NonNull final Map<Integer, Integer> map,
                                                final long bitmask) {
-        List<String> list = new ArrayList<>();
-        for (Map.Entry<Integer, Integer> entry : map.entrySet()) {
-            if ((entry.getKey() & bitmask) != 0) {
-                list.add(context.getString(entry.getValue()));
-            }
-        }
-        return list;
+        return map.entrySet()
+                  .stream()
+                  .filter(entry -> (entry.getKey() & bitmask) != 0)
+                  .map(entry -> context.getString(entry.getValue()))
+                  .collect(Collectors.toList());
     }
 
     /**
@@ -143,13 +134,11 @@ public final class BitUtils {
      */
     public static List<String> toListOfStrings(@NonNull final Map<Integer, String> map,
                                                final long bitmask) {
-        List<String> list = new ArrayList<>();
-        for (Map.Entry<Integer, String> entry : map.entrySet()) {
-            if ((entry.getKey() & bitmask) != 0) {
-                list.add(entry.getValue());
-            }
-        }
-        return list;
+        return map.entrySet()
+                  .stream()
+                  .filter(entry -> (entry.getKey() & bitmask) != 0)
+                  .map(Map.Entry::getValue)
+                  .collect(Collectors.toList());
     }
 
     /**
@@ -162,7 +151,7 @@ public final class BitUtils {
     public static List<String> toListOfStrings(@NonNull final Context context,
                                                @NonNull final SparseArray<Integer> map,
                                                final long bitmask) {
-        List<String> list = new ArrayList<>();
+        final List<String> list = new ArrayList<>();
         for (int i = 0; i < map.size(); i++) {
             if ((map.keyAt(i) & bitmask) != 0) {
                 list.add(context.getString(map.valueAt(i)));
@@ -181,7 +170,7 @@ public final class BitUtils {
      */
     public static List<String> toListOfStrings(@NonNull final SparseArray<String> map,
                                                final long bitmask) {
-        List<String> list = new ArrayList<>();
+        final List<String> list = new ArrayList<>();
         for (int i = 0; i < map.size(); i++) {
             if ((map.keyAt(i) & bitmask) != 0) {
                 list.add(map.valueAt(i));
@@ -204,7 +193,7 @@ public final class BitUtils {
             throw new IllegalArgumentException(BITMASK + bitmask);
         }
 
-        List<Integer> set = new LinkedList<>();
+        final List<Integer> set = new LinkedList<>();
         int tmp = bitmask;
         int bit = 1;
         while (tmp != 0) {

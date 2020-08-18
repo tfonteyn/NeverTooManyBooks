@@ -48,6 +48,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -1195,13 +1196,9 @@ public class BooklistStyle
      */
     @NonNull
     public Collection<Filter<?>> getActiveFilters(@NonNull final Context context) {
-        final Collection<Filter<?>> activeFilters = new ArrayList<>();
-        for (Filter<?> filter : mFilters.values()) {
-            if (filter.isActive(context)) {
-                activeFilters.add(filter);
-            }
-        }
-        return activeFilters;
+        return mFilters.values().stream()
+                       .filter(f -> f.isActive(context))
+                       .collect(Collectors.toList());
     }
 
     /**
@@ -1214,14 +1211,12 @@ public class BooklistStyle
      */
     public List<String> getFilterLabels(@NonNull final Context context,
                                         final boolean all) {
-        final List<String> labels = new ArrayList<>();
-        for (Filter<?> filter : mFilters.values()) {
-            if (filter.isActive(context) || all) {
-                labels.add(filter.getLabel(context));
-            }
-        }
-        Collections.sort(labels);
-        return labels;
+
+        return mFilters.values().stream()
+                       .filter(f -> f.isActive(context) || all)
+                       .map(f -> f.getLabel(context))
+                       .sorted()
+                       .collect(Collectors.toList());
     }
 
     /**
@@ -1848,13 +1843,14 @@ public class BooklistStyle
          * @param styles  full list of preferred styles to save 'in order'
          */
         public static void save(@NonNull final Context context,
-                                @NonNull final Iterable<BooklistStyle> styles) {
-            final Collection<String> list = new LinkedHashSet<>();
-            for (BooklistStyle style : styles) {
-                if (style.isPreferred(context)) {
-                    list.add(style.getUuid());
-                }
-            }
+                                @NonNull final List<BooklistStyle> styles) {
+
+            final Collection<String> list = styles
+                    .stream()
+                    .filter(style -> style.isPreferred(context))
+                    .map(BooklistStyle::getUuid)
+                    .collect(Collectors.toList());
+
             set(context, list);
         }
 

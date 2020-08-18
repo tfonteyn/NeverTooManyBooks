@@ -4,14 +4,6 @@
  *
  * This file is part of NeverTooManyBooks.
  *
- * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
- *
- * Without their original creation, this project would not exist in its
- * current form. It was however largely rewritten/refactored and any
- * comments on this fork should be directed at HardBackNutter and not
- * at the original creators.
- *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -47,6 +39,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -213,13 +206,12 @@ public final class DebugReport {
                     file.getName().startsWith(DB_EXPORT_FILE_PREFIX)));
 
             // Build the attachment list
-            final ArrayList<Uri> uriList = new ArrayList<>();
-            for (File file : files) {
-                if (file.exists() && file.length() > 0) {
-                    Uri uri = GenericFileProvider.getUriForFile(context, file);
-                    uriList.add(uri);
-                }
-            }
+            final ArrayList<Uri> uriList = files
+                    .stream()
+                    .filter(file -> file.exists() && file.length() > 0)
+                    .map(file -> GenericFileProvider.getUriForFile(context, file))
+                    .collect(Collectors.toCollection(ArrayList::new));
+
 
             // setup the mail message
             final String subject = '[' + context.getString(R.string.app_name) + "] "

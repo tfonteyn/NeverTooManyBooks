@@ -38,6 +38,7 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
@@ -413,11 +414,11 @@ public class RowStateDAO
         final int count;
         //noinspection SynchronizationOnLocalVariableOrMethodParameter
         synchronized (stmt) {
-            stmt.bindLong(1, node.rowId);
+            stmt.bindLong(1, node.getRowId());
             count = (int) stmt.simpleQueryForLongOrZero();
         }
-        int pos;
-        if (node.isVisible) {
+        final int pos;
+        if (node.isVisible()) {
             // If the specified row is visible, then the count _is_ the position.
             pos = count;
         } else {
@@ -435,8 +436,8 @@ public class RowStateDAO
      */
     private void ensureNodeIsVisible(@NonNull final Node node) {
 
-        node.isExpanded = true;
-        node.isVisible = true;
+        node.setExpanded(true);
+        node.setVisible(true);
 
         final String sql = SELECT_ + KEY_PK_ID + _FROM_ + mTable.getName()
                            // follow the node hierarchy
@@ -444,11 +445,11 @@ public class RowStateDAO
                            // we'll loop for all levels
                            + _AND_ + KEY_BL_NODE_LEVEL + "=?";
 
-        String nodeKey = node.key;
+        String nodeKey = node.getKey();
 
         // levels are 1.. based; start with lowest level above books, working up to root.
         final Deque<Pair<Long, Integer>> nodes = new ArrayDeque<>();
-        for (int level = node.level - 1; level >= 1; level--) {
+        for (int level = node.getLevel() - 1; level >= 1; level--) {
             try (Cursor cursor = mSyncedDb.rawQuery(sql, new String[]{
                     nodeKey + "%", String.valueOf(level)})) {
                 while (cursor.moveToNext()) {
@@ -561,12 +562,11 @@ public class RowStateDAO
         }
 
         // We have nodes; first get the ones that are currently visible
-        final ArrayList<Node> visibleNodes = new ArrayList<>();
-        for (Node node : nodeList) {
-            if (node.isVisible) {
-                visibleNodes.add(node);
-            }
-        }
+        final ArrayList<Node> visibleNodes =
+                nodeList.stream()
+                        .filter(Node::isVisible)
+                        .collect(Collectors.toCollection(ArrayList::new));
+
 
         // If we have nodes already visible, return them
         if (!visibleNodes.isEmpty()) {
@@ -574,15 +574,14 @@ public class RowStateDAO
 
         } else {
             // Make them all visible
-            for (Node node : nodeList) {
-                if (!node.isVisible && node.rowId >= 0) {
-                    ensureNodeIsVisible(node);
-                }
-            }
+            nodeList.stream()
+                    .filter(node -> node.isVisible() && node.getRowId() >= 0)
+                    .forEach(this::ensureNodeIsVisible);
+
             // Recalculate all positions
-            for (Node node : nodeList) {
-                findAndSetListPosition(node);
-            }
+            //noinspection SimplifyStreamApiCallChains
+            nodeList.stream()
+                    .forEach(this::findAndSetListPosition);
 
             return nodeList;
         }
@@ -923,7 +922,7 @@ public class RowStateDAO
                     + _AND_ + KEY_BL_NODE_LEVEL + "<?");
         }
 
-        int rowsUpdated;
+        final int rowsUpdated;
         //noinspection SynchronizationOnLocalVariableOrMethodParameter
         synchronized (stmt) {
             stmt.bindBoolean(1, expandAndVisible);
@@ -1160,11 +1159,13 @@ public class RowStateDAO
         static final int NEXT_STATE_COLLAPSED = 2;
         /** Number of columns used in {@link #getColumns(TableDefinition)}. */
         static final int COLS = 5;
-        public boolean isExpanded;
-        long rowId;
-        String key;
-        int level;
-        boolean isVisible;
+
+        private long mRowId;
+        private String mKey;
+        private int mLevel;
+        private boolean mIsExpanded;
+        private boolean mIsVisible;
+
         /**
          * Will be calculated/set if the list changed.
          * {@code row.listPosition = RowStateDAO#getListPosition(row.rowId); }
@@ -1186,11 +1187,11 @@ public class RowStateDAO
          * @param cursor to read from
          */
         Node(@NonNull final Cursor cursor) {
-            rowId = cursor.getInt(0);
-            key = cursor.getString(1);
-            level = cursor.getInt(2);
-            isExpanded = cursor.getInt(3) != 0;
-            isVisible = cursor.getInt(4) != 0;
+            mRowId = cursor.getInt(0);
+            mKey = cursor.getString(1);
+            mLevel = cursor.getInt(2);
+            mIsExpanded = cursor.getInt(3) != 0;
+            mIsVisible = cursor.getInt(4) != 0;
         }
 
         /**
@@ -1200,12 +1201,43 @@ public class RowStateDAO
          *
          * @return CSV list of node columns
          */
+        @NonNull
         static String getColumns(@NonNull final TableDefinition table) {
             return table.dot(KEY_PK_ID)
                    + ',' + table.dot(KEY_BL_NODE_KEY)
                    + ',' + table.dot(KEY_BL_NODE_LEVEL)
                    + ',' + table.dot(KEY_BL_NODE_EXPANDED)
                    + ',' + table.dot(KEY_BL_NODE_VISIBLE);
+        }
+
+        public boolean isExpanded() {
+            return mIsExpanded;
+        }
+
+        public void setExpanded(final boolean expanded) {
+            mIsExpanded = expanded;
+        }
+
+        public boolean isVisible() {
+            return mIsVisible;
+        }
+
+        public void setVisible(final boolean visible) {
+            mIsVisible = visible;
+        }
+
+        @SuppressWarnings("WeakerAccess")
+        public long getRowId() {
+            return mRowId;
+        }
+
+        @NonNull
+        public String getKey() {
+            return mKey;
+        }
+
+        public int getLevel() {
+            return mLevel;
         }
 
         /**
@@ -1216,11 +1248,11 @@ public class RowStateDAO
          * @param cursor to read from
          */
         void from(@NonNull final Cursor cursor) {
-            rowId = cursor.getInt(0);
-            key = cursor.getString(1);
-            level = cursor.getInt(2);
-            isExpanded = cursor.getInt(3) != 0;
-            isVisible = cursor.getInt(4) != 0;
+            mRowId = cursor.getInt(0);
+            mKey = cursor.getString(1);
+            mLevel = cursor.getInt(2);
+            mIsExpanded = cursor.getInt(3) != 0;
+            mIsVisible = cursor.getInt(4) != 0;
         }
 
         /**
@@ -1231,22 +1263,22 @@ public class RowStateDAO
         void setNextState(@NodeNextState final int nextState) {
             switch (nextState) {
                 case Node.NEXT_STATE_COLLAPSED:
-                    isExpanded = false;
+                    mIsExpanded = false;
                     break;
+
                 case Node.NEXT_STATE_EXPANDED:
-                    isExpanded = true;
+                    mIsExpanded = true;
                     break;
 
                 case Node.NEXT_STATE_TOGGLE:
                 default:
-                    isExpanded = !isExpanded;
+                    mIsExpanded = !mIsExpanded;
                     break;
             }
         }
 
         public int getListPosition() {
-            Objects.requireNonNull(mListPosition);
-            return mListPosition;
+            return Objects.requireNonNull(mListPosition);
         }
 
         void setListPosition(final int listPosition) {
@@ -1257,11 +1289,11 @@ public class RowStateDAO
         @NonNull
         public String toString() {
             return "Node{"
-                   + "rowId=" + rowId
-                   + ", key=" + key
-                   + ", level=" + level
-                   + ", isExpanded=" + isExpanded
-                   + ", isVisible=" + isVisible
+                   + "rowId=" + mRowId
+                   + ", key=" + mKey
+                   + ", level=" + mLevel
+                   + ", isExpanded=" + mIsExpanded
+                   + ", isVisible=" + mIsVisible
                    + ", mListPosition=" + mListPosition
                    + '}';
         }

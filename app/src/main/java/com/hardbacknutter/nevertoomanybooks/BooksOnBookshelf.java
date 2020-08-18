@@ -1629,7 +1629,7 @@ public class BooksOnBookshelf
             // first scroll to the requested position
             mLayoutManager.scrollToPosition(pos);
             mVb.list.post(() -> {
-                if (node.isExpanded) {
+                if (node.isExpanded()) {
                     int position = node.getListPosition();
                     // if we are at the bottom of the screen,
                     if (position == mLayoutManager.findLastCompletelyVisibleItemPosition()) {

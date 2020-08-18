@@ -4,14 +4,6 @@
  *
  * This file is part of NeverTooManyBooks.
  *
- * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
- *
- * Without their original creation, this project would not exist in its
- * current form. It was however largely rewritten/refactored and any
- * comments on this fork should be directed at HardBackNutter and not
- * at the original creators.
- *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -77,11 +69,10 @@ public final class ParseUtils {
      *
      * @return encoded string
      */
-    @SuppressWarnings("WeakerAccess")
     public static String escape(final char elementSeparator,
                                 final char objectSeparator,
                                 @NonNull final CharSequence source,
-                                final char... escapeChars) {
+                                @NonNull final char... escapeChars) {
 
         final StringBuilder sb = new StringBuilder();
         for (int i = 0; i < source.length(); i++) {
@@ -354,12 +345,10 @@ public final class ParseUtils {
 
         // we check in order - first match returns.
         // US is used for '.' as decimal; ',' as thousands separator.
-        Locale[] locales = {sourceLocale, LocaleUtils.getSystemLocale(), Locale.US};
-
+        final Locale[] locales = {sourceLocale, LocaleUtils.getSystemLocale(), Locale.US};
         for (Locale locale : locales) {
             try {
-                final DecimalFormat nf = (DecimalFormat) DecimalFormat.getInstance(locale);
-                final Number number = nf.parse(source);
+                final Number number = DecimalFormat.getInstance(locale).parse(source);
                 if (number != null) {
                     return number.floatValue();
                 }

@@ -1279,7 +1279,7 @@ public class BooklistAdapter
                 Objects.requireNonNull(cursor, ErrorMsg.NULL_CURSOR);
 
                 final RowStateDAO.Node node = cursor.getBooklistBuilder().getNodeByNodeId(rowId);
-                if (node.isExpanded) {
+                if (node.isExpanded()) {
                     itemView.setBackgroundColor(Color.GREEN);
                 } else {
                     itemView.setBackgroundColor(Color.TRANSPARENT);

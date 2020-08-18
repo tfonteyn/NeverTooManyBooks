@@ -204,28 +204,26 @@ public class BooklistGroup
      */
     @VisibleForTesting
     static final int GROUP_KEY_MAX = 31;
-
+    /** Flag: is the style user-defined. */
+    final boolean mIsUserDefinedStyle;
     /** The UUID for the style. Needed to reconstruct the {@link #mStylePrefs} after parcelling. */
     @NonNull
     private final String mUuid;
-    /** Flag: is the style user-defined. */
-    final boolean mIsUserDefinedStyle;
     /** The type of row/group we represent, see {@link GroupKey}. */
     @Id
     private final int mId;
     /** The underlying group key object. */
     @NonNull
     private final GroupKey mGroupKey;
+    @SuppressWarnings("FieldNotUsedInToString")
+    @NonNull
+    SharedPreferences mStylePrefs;
     /**
      * The domains represented by this group.
      * Set at runtime by builder based on current group <strong>and its outer groups</strong>
      */
     @Nullable
     private ArrayList<Domain> mAccumulatedDomains;
-
-    @SuppressWarnings("FieldNotUsedInToString")
-    @NonNull
-    SharedPreferences mStylePrefs;
 
     /**
      * Constructor.

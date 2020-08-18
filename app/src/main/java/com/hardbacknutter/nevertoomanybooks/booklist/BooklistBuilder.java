@@ -439,7 +439,7 @@ public class BooklistBuilder
      *
      * @param sortedDomains the domains we need to sort by, in order.
      */
-    private void createTriggers(@NonNull final Iterable<VirtualDomain> sortedDomains) {
+    private void createTriggers(@NonNull final List<VirtualDomain> sortedDomains) {
 
         mTriggerHelperTable = new TableDefinition(mListTable + "_th")
                 .setAlias("tht");
@@ -456,18 +456,17 @@ public class BooklistBuilder
         final Collection<String> sortedDomainNames = new HashSet<>();
 
         // Build the 'current' header table definition and the sort column list
-        for (VirtualDomain sdi : sortedDomains) {
-            // don't add duplicate domains
-            if (!sortedDomainNames.contains(sdi.getName())) {
-                sortedDomainNames.add(sdi.getName());
-
-                if (valuesColumns.length() > 0) {
-                    valuesColumns.append(",");
-                }
-                valuesColumns.append("NEW.").append(sdi.getName());
-                mTriggerHelperTable.addDomain(sdi.getDomain());
-            }
-        }
+        sortedDomains.stream()
+                     // don't add duplicate domains
+                     .filter(sdi -> !sortedDomainNames.contains(sdi.getName()))
+                     .forEach(sdi -> {
+                         sortedDomainNames.add(sdi.getName());
+                         if (valuesColumns.length() > 0) {
+                             valuesColumns.append(",");
+                         }
+                         valuesColumns.append("NEW.").append(sdi.getName());
+                         mTriggerHelperTable.addDomain(sdi.getDomain());
+                     });
 
         /*
          * Create a temp table to store the most recent header details from the last row.
@@ -740,7 +739,8 @@ public class BooklistBuilder
                                        final int relativeChildLevel) {
         final RowStateDAO.Node node = mRowStateDAO.getNodeByNodeId(nodeRowId);
         node.setNextState(nextState);
-        mRowStateDAO.setNode(node.rowId, node.level, node.isExpanded, relativeChildLevel);
+        mRowStateDAO.setNode(node.getRowId(), node.getLevel(),
+                             node.isExpanded(), relativeChildLevel);
         mRowStateDAO.findAndSetListPosition(node);
         return node;
     }
@@ -1174,15 +1174,15 @@ public class BooklistBuilder
         private String buildWhere(@NonNull final Context context) {
             final StringBuilder where = new StringBuilder();
 
-            for (Filter<?> filter : mFilters) {
-                // Theoretically all filters should be active here, but paranoia...
-                if (filter.isActive(context)) {
-                    if (where.length() != 0) {
-                        where.append(_AND_);
-                    }
-                    where.append(' ').append(filter.getExpression(context));
-                }
-            }
+            mFilters.stream()
+                    // Theoretically all filters should be active here, but paranoia...
+                    .filter(filter -> filter.isActive(context))
+                    .forEach(filter -> {
+                        if (where.length() != 0) {
+                            where.append(_AND_);
+                        }
+                        where.append(' ').append(filter.getExpression(context));
+                    });
 
             if (where.length() > 0) {
                 return _WHERE_ + where;

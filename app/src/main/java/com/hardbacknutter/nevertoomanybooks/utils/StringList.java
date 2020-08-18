@@ -4,14 +4,6 @@
  *
  * This file is part of NeverTooManyBooks.
  *
- * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
- *
- * Without their original creation, this project would not exist in its
- * current form. It was however largely rewritten/refactored and any
- * comments on this fork should be directed at HardBackNutter and not
- * at the original creators.
- *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -113,8 +105,8 @@ public class StringList<E> {
     public ArrayList<E> decode(@Nullable final CharSequence stringList,
                                final char delimiter,
                                final boolean allowBlank) {
-        StringBuilder sb = new StringBuilder();
-        ArrayList<E> list = new ArrayList<>();
+        final StringBuilder sb = new StringBuilder();
+        final ArrayList<E> list = new ArrayList<>();
         if (stringList == null) {
             return list;
         }
@@ -152,7 +144,7 @@ public class StringList<E> {
 
                 } else if (c == delimiter) {
                     // we reached the end of an element
-                    String element = sb.toString().trim();
+                    final String element = sb.toString().trim();
                     if (allowBlank || !element.isEmpty()) {
                         // decode it using the objects factory and add it to the list
                         list.add(mFactory.decode(element));
@@ -167,7 +159,7 @@ public class StringList<E> {
         }
 
         // It's important to send back even an empty item.
-        String element = sb.toString().trim();
+        final String element = sb.toString().trim();
         if (allowBlank || !element.isEmpty()) {
             list.add(mFactory.decode(element));
         }
@@ -263,7 +255,7 @@ public class StringList<E> {
          * @return encoded string
          */
         default String escape(@NonNull final String source,
-                              final char... escapeChars) {
+                              @NonNull final char... escapeChars) {
             // add the factory specific separators
             return ParseUtils.escape(getElementSeparator(), getObjectSeparator(),
                                      source, escapeChars);

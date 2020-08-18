@@ -259,7 +259,7 @@ public class UpdateFieldsModel
     /**
      * Add a FieldUsage for a <strong>simple</strong> field if it has not been hidden by the user.
      *
-     * @param preferences        SharedPreferences
+     * @param preferences  SharedPreferences
      * @param fieldId      Field name to use in FieldUsages, and as key for preferences.
      * @param nameStringId Field label string resource ID
      * @param defValue     default Usage for this field
@@ -477,6 +477,7 @@ public class UpdateFieldsModel
      *
      * @return {@code true} if a search was started.
      */
+    @SuppressWarnings("UnusedReturnValue")
     public boolean processSearchResults(@NonNull final Context context,
                                         @Nullable final Bundle bookData) {
 
@@ -485,7 +486,7 @@ public class UpdateFieldsModel
             // Filter the data to remove keys we don't care about
             final Collection<String> toRemove = new ArrayList<>();
             for (String key : bookData.keySet()) {
-                FieldUsage fieldUsage = mCurrentFieldsWanted.get(key);
+                final FieldUsage fieldUsage = mCurrentFieldsWanted.get(key);
                 if (fieldUsage == null || !fieldUsage.isWanted()) {
                     toRemove.add(key);
                 }
@@ -497,33 +498,35 @@ public class UpdateFieldsModel
             final Locale bookLocale = mCurrentBook.getLocale(context);
 
             // For each field, process it according the usage.
-            for (FieldUsage usage : mCurrentFieldsWanted.values()) {
-                if (bookData.containsKey(usage.fieldId)) {
-                    // Handle thumbnail specially
-                    if (usage.fieldId.equals(Book.BKEY_FILE_SPEC[0])) {
-                        processSearchResultsCoverImage(context, bookData, usage, 0);
-                    } else if (usage.fieldId.equals(Book.BKEY_FILE_SPEC[1])) {
-                        processSearchResultsCoverImage(context, bookData, usage, 1);
-                    } else {
-                        switch (usage.getUsage()) {
-                            case CopyIfBlank:
-                                // remove unneeded fields from the new data
-                                if (hasField(usage.fieldId)) {
-                                    bookData.remove(usage.fieldId);
-                                }
-                                break;
+            mCurrentFieldsWanted
+                    .values()
+                    .stream()
+                    .filter(usage -> bookData.containsKey(usage.fieldId))
+                    .forEach(usage -> {
+                        // Handle thumbnail specially
+                        if (usage.fieldId.equals(Book.BKEY_FILE_SPEC[0])) {
+                            processSearchResultsCoverImage(context, bookData, usage, 0);
+                        } else if (usage.fieldId.equals(Book.BKEY_FILE_SPEC[1])) {
+                            processSearchResultsCoverImage(context, bookData, usage, 1);
+                        } else {
+                            switch (usage.getUsage()) {
+                                case CopyIfBlank:
+                                    // remove unneeded fields from the new data
+                                    if (hasField(usage.fieldId)) {
+                                        bookData.remove(usage.fieldId);
+                                    }
+                                    break;
 
-                            case Append:
-                                appendLists(context, usage.fieldId, bookLocale, bookData);
-                                break;
+                                case Append:
+                                    appendLists(context, usage.fieldId, bookLocale, bookData);
+                                    break;
 
-                            case Overwrite:
-                            case Skip:
-                                break;
+                                case Overwrite:
+                                case Skip:
+                                    break;
+                            }
                         }
-                    }
-                }
-            }
+                    });
 
             // Commit the new data
             if (!bookData.isEmpty()) {
