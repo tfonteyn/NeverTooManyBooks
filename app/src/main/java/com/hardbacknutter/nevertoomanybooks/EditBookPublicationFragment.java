@@ -19,6 +19,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,6 +28,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.preference.PreferenceManager;
 
 import java.util.List;
 
@@ -94,14 +96,16 @@ public class EditBookPublicationFragment
         super.onResume();
         // With all Views populated, (re-)add the helpers which rely on fields having valid views
 
-        addAutocomplete(R.id.format, mEditHelperVM.getAllFormats());
-        addAutocomplete(R.id.color, mEditHelperVM.getAllColors());
-        addAutocomplete(R.id.price_listed_currency, mEditHelperVM.getAllListPriceCurrencyCodes());
+        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+        addAutocomplete(prefs, getField(R.id.format), mEditHelperVM.getAllFormats());
+        addAutocomplete(prefs, getField(R.id.color), mEditHelperVM.getAllColors());
+        addAutocomplete(prefs, getField(R.id.price_listed_currency),
+                        mEditHelperVM.getAllListPriceCurrencyCodes());
 
-        addPartialDatePicker(getField(R.id.date_published),
+        addPartialDatePicker(prefs, getField(R.id.date_published),
                              R.string.lbl_date_published, false);
 
-        addPartialDatePicker(getField(R.id.first_publication),
+        addPartialDatePicker(prefs, getField(R.id.first_publication),
                              R.string.lbl_first_publication, false);
     }
 

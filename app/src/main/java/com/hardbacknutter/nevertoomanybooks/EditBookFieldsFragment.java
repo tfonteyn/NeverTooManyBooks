@@ -197,8 +197,9 @@ public class EditBookFieldsFragment
         super.onResume();
         // With all Views populated, (re-)add the helpers which rely on fields having valid views
 
-        addAutocomplete(R.id.genre, mEditHelperVM.getAllGenres());
-        addAutocomplete(R.id.language, mEditHelperVM.getAllLanguagesCodes());
+        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+        addAutocomplete(prefs, getField(R.id.genre), mEditHelperVM.getAllGenres());
+        addAutocomplete(prefs, getField(R.id.language), mEditHelperVM.getAllLanguagesCodes());
     }
 
     @Override

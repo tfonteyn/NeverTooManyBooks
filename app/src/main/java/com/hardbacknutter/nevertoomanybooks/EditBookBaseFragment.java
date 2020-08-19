@@ -39,7 +39,6 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentResultListener;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.preference.PreferenceManager;
 
 import com.google.android.material.datepicker.MaterialDatePicker;
 
@@ -249,23 +248,22 @@ public abstract class EditBookBaseFragment
     /**
      * Setup an adapter for the AutoCompleteTextView, using the (optional) formatter.
      *
-     * @param fieldId view to connect
-     * @param list    with auto complete values
+     * @param prefs SharedPreferences
+     * @param field to setup
+     * @param list  with auto complete values
      */
-    void addAutocomplete(@IdRes final int fieldId,
+    void addAutocomplete(@NonNull final SharedPreferences prefs,
+                         @NonNull final Field<String, AutoCompleteTextView> field,
                          @NonNull final List<String> list) {
-        //noinspection ConstantConditions
-        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
 
-        final Field<?, ?> field = getField(fieldId);
         // only bother when it's in use and we have a list
         if (field.isUsed(prefs) && !list.isEmpty()) {
-            final AutoCompleteTextView view = (AutoCompleteTextView) field.getAccessor().getView();
-            //noinspection unchecked
+            final FieldFormatter<String> formatter = field.getAccessor().getFormatter();
+            //noinspection ConstantConditions
             final Fields.FormattedDiacriticArrayAdapter adapter =
-                    new Fields.FormattedDiacriticArrayAdapter(
-                            getContext(), list,
-                            (FieldFormatter<String>) field.getAccessor().getFormatter());
+                    new Fields.FormattedDiacriticArrayAdapter(getContext(), list, formatter);
+
+            final AutoCompleteTextView view = field.getAccessor().getView();
             //noinspection ConstantConditions
             view.setAdapter(adapter);
         }
@@ -287,19 +285,18 @@ public abstract class EditBookBaseFragment
      * @param todayIfNone        if true, and if the field was empty, we'll default to today's date.
      */
     @SuppressWarnings("SameParameterValue")
-    void addDateRangePicker(@StringRes final int dialogTitleIdSpan,
+    void addDateRangePicker(@NonNull final SharedPreferences prefs,
+                            @StringRes final int dialogTitleIdSpan,
                             @StringRes final int dialogTitleIdStart,
                             @NonNull final Field<String, TextView> fieldStartDate,
                             @StringRes final int dialogTitleIdEnd,
                             @NonNull final Field<String, TextView> fieldEndDate,
                             final boolean todayIfNone) {
-        //noinspection ConstantConditions
-        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
 
         if (fieldStartDate.isUsed(prefs) && fieldEndDate.isUsed(prefs)) {
 
             // single date picker for the start-date
-            addDatePicker(fieldStartDate, dialogTitleIdStart, true);
+            addDatePicker(prefs, fieldStartDate, dialogTitleIdStart, true);
 
             // date-span for the end-date
             //noinspection ConstantConditions
@@ -328,26 +325,24 @@ public abstract class EditBookBaseFragment
                 ).show(getChildFragmentManager(), RK_DATE_PICKER_RANGE);
             });
 
-        } else if (fieldStartDate.isUsed(prefs)) {
-            addDatePicker(fieldStartDate, dialogTitleIdStart, todayIfNone);
-        } else if (fieldEndDate.isUsed(prefs)) {
-            addDatePicker(fieldEndDate, dialogTitleIdEnd, todayIfNone);
+        } else {
+            addDatePicker(prefs, fieldStartDate, dialogTitleIdStart, todayIfNone);
+            addDatePicker(prefs, fieldEndDate, dialogTitleIdEnd, todayIfNone);
         }
     }
 
     /**
      * Setup a date picker for selecting a single, full date.
      *
+     * @param prefs         SharedPreferences
      * @param field         to setup
      * @param dialogTitleId title of the dialog box.
      * @param todayIfNone   if true, and if the field was empty, we'll default to today's date.
      */
-    void addDatePicker(@NonNull final Field<String, TextView> field,
+    void addDatePicker(@NonNull final SharedPreferences prefs,
+                       @NonNull final Field<String, TextView> field,
                        @StringRes final int dialogTitleId,
                        final boolean todayIfNone) {
-        //noinspection ConstantConditions
-        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
-
         if (field.isUsed(prefs)) {
             //noinspection ConstantConditions
             field.getAccessor().getView().setOnClickListener(v -> {
@@ -374,12 +369,10 @@ public abstract class EditBookBaseFragment
      * @param todayIfNone   if true, and if the field was empty, we'll default to today's date.
      */
     @SuppressWarnings("SameParameterValue")
-    void addPartialDatePicker(@NonNull final Field<String, TextView> field,
+    void addPartialDatePicker(@NonNull final SharedPreferences prefs,
+                              @NonNull final Field<String, TextView> field,
                               @StringRes final int dialogTitleId,
                               final boolean todayIfNone) {
-        //noinspection ConstantConditions
-        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
-
         if (field.isUsed(prefs)) {
             //noinspection ConstantConditions
             field.getAccessor().getView().setOnClickListener(v -> {

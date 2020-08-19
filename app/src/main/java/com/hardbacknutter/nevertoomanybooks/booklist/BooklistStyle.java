@@ -626,14 +626,12 @@ public class BooklistStyle
     /**
      * store the current style as the global default one.
      *
-     * @param context Current context
-     * @param uuid    style to set
+     * @param preferences SharedPreferences
+     * @param uuid        style to set
      */
-    public static void setDefault(@NonNull final Context context,
+    public static void setDefault(@NonNull final SharedPreferences preferences,
                                   @NonNull final String uuid) {
-        PreferenceManager.getDefaultSharedPreferences(context)
-                         .edit().putString(PREF_BL_STYLE_CURRENT_DEFAULT, uuid)
-                         .apply();
+        preferences.edit().putString(PREF_BL_STYLE_CURRENT_DEFAULT, uuid).apply();
     }
 
     /**
@@ -911,15 +909,6 @@ public class BooklistStyle
      */
     public void setPreferred(final boolean isPreferred) {
         mIsPreferred.set(isPreferred);
-    }
-
-    /**
-     * store the current style as the global default one.
-     *
-     * @param context Current context
-     */
-    public void setDefault(@NonNull final Context context) {
-        setDefault(context, mUuid);
     }
 
     /**
@@ -1843,7 +1832,7 @@ public class BooklistStyle
          * @param styles  full list of preferred styles to save 'in order'
          */
         public static void save(@NonNull final Context context,
-                                @NonNull final List<BooklistStyle> styles) {
+                                @NonNull final Collection<BooklistStyle> styles) {
 
             final Collection<String> list = styles
                     .stream()

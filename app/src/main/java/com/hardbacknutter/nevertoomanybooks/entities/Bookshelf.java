@@ -20,6 +20,7 @@
 package com.hardbacknutter.nevertoomanybooks.entities;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -116,7 +117,6 @@ public class Bookshelf
     public Bookshelf(@NonNull final String name,
                      @NonNull final BooklistStyle style) {
         mName = name.trim();
-
         mStyleUuid = style.getUuid();
     }
 
@@ -132,7 +132,6 @@ public class Bookshelf
                       @NonNull final BooklistStyle style) {
         mId = id;
         mName = name.trim();
-
         mStyleUuid = style.getUuid();
     }
 
@@ -185,7 +184,7 @@ public class Bookshelf
                                          final long id,
                                          @PredefinedBookshelf final long fallbackId) {
 
-        Bookshelf bookshelf = getBookshelf(context, db, id);
+        final Bookshelf bookshelf = getBookshelf(context, db, id);
         if (bookshelf != null) {
             return bookshelf;
         }
@@ -215,8 +214,8 @@ public class Bookshelf
                                  BooklistStyle.getDefault(context, db));
 
         } else if (id == PREFERRED) {
-            String name = PreferenceManager.getDefaultSharedPreferences(context)
-                                           .getString(PREF_BOOKSHELF_CURRENT, null);
+            final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+            final String name = getPreferred(prefs);
             if (name != null && !name.isEmpty()) {
                 return db.getBookshelfByName(name);
             }
@@ -260,14 +259,17 @@ public class Bookshelf
         return listModified;
     }
 
+    public static String getPreferred(@NonNull final SharedPreferences preferences) {
+        return preferences.getString(PREF_BOOKSHELF_CURRENT, null);
+    }
+
     /**
      * Set this bookshelf as the current/preferred.
      *
-     * @param context Current context
+     * @param preferences SharedPreferences
      */
-    public void setAsPreferred(@NonNull final Context context) {
-        PreferenceManager.getDefaultSharedPreferences(context)
-                         .edit().putString(PREF_BOOKSHELF_CURRENT, mName).apply();
+    public void setAsPreferred(@NonNull final SharedPreferences preferences) {
+        preferences.edit().putString(PREF_BOOKSHELF_CURRENT, mName).apply();
     }
 
     @Override

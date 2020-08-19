@@ -340,7 +340,8 @@ public class BooksOnBookshelfModel
             mBookshelf = Bookshelf.getBookshelf(context, mDb, Bookshelf.PREFERRED,
                                                 Bookshelf.ALL_BOOKS);
         }
-        mBookshelf.setAsPreferred(context);
+        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        mBookshelf.setAsPreferred(prefs);
     }
 
     @SuppressWarnings("UnusedReturnValue")
@@ -396,11 +397,11 @@ public class BooksOnBookshelfModel
         // Always validate first
         final BooklistStyle style = BooklistStyle.getStyleOrDefault(context, mDb, uuid);
 
+        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         // set as the global default.
-        BooklistStyle.setDefault(context, style.getUuid());
-
+        BooklistStyle.setDefault(prefs, style.getUuid());
         // save the new bookshelf/style combination
-        mBookshelf.setAsPreferred(context);
+        mBookshelf.setAsPreferred(prefs);
         mBookshelf.setStyle(context, mDb, style);
     }
 
