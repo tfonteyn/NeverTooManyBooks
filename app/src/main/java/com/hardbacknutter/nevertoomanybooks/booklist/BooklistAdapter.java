@@ -128,6 +128,8 @@ public class BooklistAdapter
     @Nullable
     private OnRowClickedListener mOnRowClickedListener;
 
+    private final boolean mReorderTitleForDisplaying;
+
     /**
      * Constructor.
      *
@@ -152,6 +154,8 @@ public class BooklistAdapter
         mFieldsInUse = new FieldsInUse(context, style);
         mImageCachingEnabled = ImageUtils.isImageCachingEnabled(context);
         mLevelIndent = context.getResources().getDimensionPixelSize(R.dimen.bob_level_indent);
+
+        mReorderTitleForDisplaying = ItemWithTitle.isReorderTitleForDisplaying(context);
 
         // getItemId is implemented.
         setHasStableIds(true);
@@ -394,7 +398,7 @@ public class BooklistAdapter
                 if (text == null || text.isEmpty()) {
                     return context.getString(R.string.hint_empty_series);
 
-                } else if (ItemWithTitle.isReorderTitleForDisplaying(context)) {
+                } else if (mReorderTitleForDisplaying) {
                     return ItemWithTitle.reorder(context, text, tmpLocale);
                 } else {
                     return text;
@@ -404,7 +408,7 @@ public class BooklistAdapter
                 if (text == null || text.isEmpty()) {
                     return context.getString(R.string.hint_empty_publisher);
 
-                } else if (ItemWithTitle.isReorderTitleForDisplaying(context)) {
+                } else if (mReorderTitleForDisplaying) {
                     return ItemWithTitle.reorder(context, text, tmpLocale);
                 } else {
                     return text;
