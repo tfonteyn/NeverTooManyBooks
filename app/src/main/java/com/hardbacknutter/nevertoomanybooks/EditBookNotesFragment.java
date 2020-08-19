@@ -136,7 +136,7 @@ public class EditBookNotesFragment
               .setRelatedFields(R.id.lbl_location, R.id.lbl_location_long);
 
         fields.add(R.id.edition,
-                   new BitmaskChipGroupAccessor(Book.Edition.getEditions(getContext()), true),
+                   new BitmaskChipGroupAccessor(() -> Book.Edition.getEditions(getContext()), true),
                    DBDefinitions.KEY_EDITION_BITMASK)
               .setRelatedFields(R.id.lbl_edition);
 

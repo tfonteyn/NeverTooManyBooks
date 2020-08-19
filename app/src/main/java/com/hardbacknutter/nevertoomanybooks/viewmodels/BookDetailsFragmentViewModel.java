@@ -197,8 +197,9 @@ public class BookDetailsFragmentViewModel
                    DBDefinitions.KEY_DATE_ACQUIRED)
               .setRelatedFields(R.id.lbl_date_acquired);
 
-        fields.add(R.id.edition, new BitmaskChipGroupAccessor(
-                Book.Edition.getEditions(context), false), DBDefinitions.KEY_EDITION_BITMASK);
+        fields.add(R.id.edition,
+                   new BitmaskChipGroupAccessor(() -> Book.Edition.getEditions(context), false),
+                   DBDefinitions.KEY_EDITION_BITMASK);
 
         fields.add(R.id.location, new TextViewAccessor<>(), DBDefinitions.KEY_LOCATION)
               .setRelatedFields(R.id.lbl_location, R.id.lbl_location_long);
