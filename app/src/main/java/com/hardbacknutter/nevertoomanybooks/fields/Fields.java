@@ -4,14 +4,6 @@
  *
  * This file is part of NeverTooManyBooks.
  *
- * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
- *
- * Without their original creation, this project would not exist in its
- * current form. It was however largely rewritten/refactored and any
- * comments on this fork should be directed at HardBackNutter and not
- * at the original creators.
- *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -28,12 +20,14 @@
 package com.hardbacknutter.nevertoomanybooks.fields;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.util.SparseArray;
 import android.view.View;
 
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.preference.PreferenceManager;
 
 import java.util.List;
 
@@ -229,8 +223,10 @@ public class Fields {
      * @param parentView for the view of each field
      */
     public void setParentView(@NonNull final View parentView) {
+        final SharedPreferences prefs = PreferenceManager
+                .getDefaultSharedPreferences(parentView.getContext());
         for (int f = 0; f < mAllFields.size(); f++) {
-            mAllFields.valueAt(f).setParentView(parentView);
+            mAllFields.valueAt(f).setParentView(prefs, parentView);
         }
     }
 
