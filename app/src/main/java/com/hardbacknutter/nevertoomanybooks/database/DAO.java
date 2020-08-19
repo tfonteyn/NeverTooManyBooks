@@ -2907,6 +2907,7 @@ public class DAO
      *
      * @return list with book ID's
      */
+    @NonNull
     public ArrayList<Long> getBookIdsByAuthor(final long authorId) {
         final ArrayList<Long> list = new ArrayList<>();
         try (Cursor cursor = sSyncedDb.rawQuery(SqlSelectList.BOOK_IDS_BY_AUTHOR_ID,
@@ -2925,6 +2926,7 @@ public class DAO
      *
      * @return list with book ID's
      */
+    @NonNull
     public ArrayList<Long> getBookIdsBySeries(final long seriesId) {
         final ArrayList<Long> list = new ArrayList<>();
         try (Cursor cursor = sSyncedDb.rawQuery(SqlSelectList.BOOK_IDS_BY_SERIES_ID,
@@ -2943,6 +2945,7 @@ public class DAO
      *
      * @return list with book ID's
      */
+    @NonNull
     public ArrayList<Long> getBookIdsByPublisher(final long publisherId) {
         final ArrayList<Long> list = new ArrayList<>();
         try (Cursor cursor = sSyncedDb.rawQuery(SqlSelectList.BOOK_IDS_BY_PUBLISHER_ID,
@@ -2961,6 +2964,7 @@ public class DAO
      *
      * @return list with book ID's
      */
+    @NonNull
     public ArrayList<Long> getBookIdsByTocEntry(final long tocId) {
         final ArrayList<Long> list = new ArrayList<>();
         try (Cursor cursor = sSyncedDb.rawQuery(SqlSelectList.BOOK_ID_LIST_BY_TOC_ENTRY_ID,
@@ -3534,6 +3538,7 @@ public class DAO
      *
      * @return the list
      */
+    @NonNull
     public ArrayList<Bookshelf> getBookshelvesByBookId(final long bookId) {
         ArrayList<Bookshelf> list = new ArrayList<>();
         try (Cursor cursor = sSyncedDb.rawQuery(SqlSelectList.BOOKSHELVES_BY_BOOK_ID,
@@ -4234,6 +4239,7 @@ public class DAO
          *
          * @return column expression
          */
+        @NonNull
         public static String getSortAuthor(final boolean givenNameFirst) {
             if (givenNameFirst) {
                 return "CASE"
@@ -4267,6 +4273,7 @@ public class DAO
          *
          * @return column expression
          */
+        @NonNull
         public static String getDisplayAuthor(@NonNull final String tableAlias,
                                               final boolean givenNameFirst) {
             if (givenNameFirst) {

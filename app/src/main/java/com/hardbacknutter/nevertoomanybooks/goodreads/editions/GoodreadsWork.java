@@ -75,22 +75,35 @@ public class GoodreadsWork {
 
     /** {@link ByteArrayOutputStream} use. */
     private static final int BUFFER_SIZE = 65535;
-    public Long grBookId;
-    public Long workId;
+    @Nullable
     public String title;
-    public Long authorId;
-    public String authorName;
-    public String authorRole;
-    public Long pubDay;
-    public Long pubMonth;
-    public Long pubYear;
+    @Nullable
     public Double rating;
-    public String imageUrl;
-    public String smallImageUrl;
+    @Nullable
+    Long grBookId;
+    @Nullable
+    Long workId;
+    @Nullable
+    Long authorId;
+    @Nullable
+    String authorName;
+    @Nullable
+    String authorRole;
+    @Nullable
+    Long pubDay;
+    @Nullable
+    Long pubMonth;
+    @Nullable
+    Long pubYear;
+    @Nullable
+    String imageUrl;
+    @Nullable
+    String smallImageUrl;
 
 
     @Nullable
     private byte[] mImageBytes;
+    @Nullable
     private WeakReference<ImageView> mImageView;
     private int mMaxWidth;
     private int mMaxHeight;
@@ -153,10 +166,13 @@ public class GoodreadsWork {
                 // Save the view so we know where the image is going to be displayed
                 mImageView = new WeakReference<>(imageView);
                 // run task to get the image. Use parallel executor.
-                new GetImageTask(getBestUrl(), this)
-                        .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-                // Save the work in the View for verification
-                imageView.setTag(R.id.TAG_GR_WORK, this);
+                final String bestUrl = getBestUrl();
+                if (bestUrl != null) {
+                    new GetImageTask(bestUrl, this)
+                            .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                    // Save the work in the View for verification
+                    imageView.setTag(R.id.TAG_GR_WORK, this);
+                }
 
             } else {
                 // We already have an image (but it could be empty!), so just expand it.
@@ -179,6 +195,7 @@ public class GoodreadsWork {
     /**
      * @return the 'best' (largest image) URL we have.
      */
+    @Nullable
     private String getBestUrl() {
         if (imageUrl != null && !imageUrl.isEmpty()) {
             return imageUrl;
@@ -193,22 +210,23 @@ public class GoodreadsWork {
     @UiThread
     private void onGetImageTaskFinished(@NonNull final byte[] bytes) {
         mImageBytes = bytes;
-
-        final ImageView imageView = mImageView.get();
-        if (imageView != null) {
-            //noinspection SynchronizationOnLocalVariableOrMethodParameter
-            synchronized (imageView) {
-                // Make sure our view is still associated with us
-                if (this.equals(imageView.getTag(R.id.TAG_GR_WORK))) {
-                    if (mImageBytes.length != 0) {
-                        final Bitmap bitmap = BitmapFactory
-                                .decodeByteArray(mImageBytes, 0, mImageBytes.length,
-                                                 new BitmapFactory.Options());
-                        ImageUtils.setImageView(imageView, mMaxWidth, mMaxHeight, bitmap, 0);
-                    } else {
-                        ImageUtils.setPlaceholder(imageView, R.drawable.ic_broken_image, 0,
-                                                  (int) (mMaxHeight * ImageUtils.HW_RATIO),
-                                                  mMaxHeight);
+        if (mImageView != null) {
+            final ImageView imageView = mImageView.get();
+            if (imageView != null) {
+                //noinspection SynchronizationOnLocalVariableOrMethodParameter
+                synchronized (imageView) {
+                    // Make sure our view is still associated with us
+                    if (this.equals(imageView.getTag(R.id.TAG_GR_WORK))) {
+                        if (mImageBytes.length != 0) {
+                            final Bitmap bitmap = BitmapFactory
+                                    .decodeByteArray(mImageBytes, 0, mImageBytes.length,
+                                                     new BitmapFactory.Options());
+                            ImageUtils.setImageView(imageView, mMaxWidth, mMaxHeight, bitmap, 0);
+                        } else {
+                            ImageUtils.setPlaceholder(imageView, R.drawable.ic_broken_image, 0,
+                                                      (int) (mMaxHeight * ImageUtils.HW_RATIO),
+                                                      mMaxHeight);
+                        }
                     }
                 }
             }

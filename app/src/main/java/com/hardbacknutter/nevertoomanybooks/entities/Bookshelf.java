@@ -259,7 +259,8 @@ public class Bookshelf
         return listModified;
     }
 
-    public static String getPreferred(@NonNull final SharedPreferences preferences) {
+    @Nullable
+    private static String getPreferred(@NonNull final SharedPreferences preferences) {
         return preferences.getString(PREF_BOOKSHELF_CURRENT, null);
     }
 
@@ -281,6 +282,7 @@ public class Bookshelf
         mId = id;
     }
 
+    @NonNull
     @Override
     public String getLabel(@NonNull final Context context) {
         return mName;

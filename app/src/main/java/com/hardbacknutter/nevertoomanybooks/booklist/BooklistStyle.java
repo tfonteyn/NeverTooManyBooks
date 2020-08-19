@@ -1198,6 +1198,7 @@ public class BooklistStyle
      *
      * @return the list of in-use filter names in a human readable format.
      */
+    @NonNull
     public List<String> getFilterLabels(@NonNull final Context context,
                                         final boolean all) {
 

@@ -405,6 +405,7 @@ public final class FileUtils {
      *
      * @throws IOException on failure
      */
+    @NonNull
     public static CRC32 getCrc32(@NonNull final File file)
             throws IOException {
         final CRC32 crc32 = new CRC32();

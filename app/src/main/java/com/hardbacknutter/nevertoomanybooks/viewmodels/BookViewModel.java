@@ -215,6 +215,7 @@ public class BookViewModel
      *
      * @return list
      */
+    @NonNull
     public Collection<String> getUnfinishedEdits() {
         return mFragmentsWithUnfinishedEdits;
     }

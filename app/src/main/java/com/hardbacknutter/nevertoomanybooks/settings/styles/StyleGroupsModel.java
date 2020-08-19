@@ -71,12 +71,14 @@ public class StyleGroupsModel
         }
     }
 
+    @NonNull
     public BooklistStyle getStyle() {
-        return mStyle;
+        return Objects.requireNonNull(mStyle);
     }
 
+    @NonNull
     public ArrayList<GroupWrapper> getList() {
-        return mList;
+        return Objects.requireNonNull(mList);
     }
 
     /**

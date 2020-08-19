@@ -112,7 +112,7 @@ public class EntityListChipGroupAccessor
         final ChipGroup chipGroup = getView();
         if (chipGroup != null) {
             chipGroup.removeAllViews();
-            Context context = chipGroup.getContext();
+            final Context context = chipGroup.getContext();
 
             // *all* values
             for (Entity entity : mListSupplier.get()) {

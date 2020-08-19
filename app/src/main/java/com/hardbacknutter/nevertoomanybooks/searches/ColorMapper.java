@@ -45,6 +45,7 @@ public final class ColorMapper
         MAPPER.put("ongekleurd", R.string.book_color_uncolored);
     }
 
+    @NonNull
     @Override
     public String getKey() {
         return DBDefinitions.KEY_COLOR;

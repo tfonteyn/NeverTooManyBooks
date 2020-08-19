@@ -4,14 +4,6 @@
  *
  * This file is part of NeverTooManyBooks.
  *
- * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
- *
- * Without their original creation, this project would not exist in its
- * current form. It was however largely rewritten/refactored and any
- * comments on this fork should be directed at HardBackNutter and not
- * at the original creators.
- *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -152,8 +144,9 @@ public final class LanguageUtils {
      * @return a language code that can be used with {@code new Locale(x)},
      * or the incoming string if conversion failed.
      */
-    public static String getLocaleIsoFromISO3(@NonNull final Context context,
-                                              @NonNull final String iso3) {
+    @NonNull
+    static String getLocaleIsoFromISO3(@NonNull final Context context,
+                                       @NonNull final String iso3) {
         // create the map on first usage
         if (LANG3_TO_LANG2_MAP == null) {
             final String[] languages = Locale.getISOLanguages();
@@ -364,6 +357,7 @@ public final class LanguageUtils {
      *
      * @return the SharedPreferences representing the language mapper
      */
+    @NonNull
     public static SharedPreferences getLanguageCache(@NonNull final Context context) {
         return context.getSharedPreferences(LANGUAGE_MAP, Context.MODE_PRIVATE);
     }

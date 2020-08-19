@@ -151,6 +151,7 @@ public final class DBHelper
      *
      * @return the instance
      */
+    @NonNull
     public static DBHelper getInstance(@NonNull final Context context,
                                        @SuppressWarnings("SameParameterValue")
                                        @NonNull final SQLiteDatabase.CursorFactory factory,
@@ -171,6 +172,7 @@ public final class DBHelper
      *
      * @return path
      */
+    @NonNull
     public static File getDatabasePath(@NonNull final Context context) {
         return context.getDatabasePath(DATABASE_NAME);
     }

@@ -104,6 +104,7 @@ public final class QueueManager {
         }
     }
 
+    @NonNull
     public static QueueManager getQueueManager() {
         // do not lazy initialize here. We want the QueueManager running at startup.
         Objects.requireNonNull(sInstance, ErrorMsg.CREATE_WAS_NOT_CALLED);

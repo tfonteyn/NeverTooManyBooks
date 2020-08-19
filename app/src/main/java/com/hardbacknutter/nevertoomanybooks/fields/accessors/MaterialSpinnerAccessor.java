@@ -67,7 +67,7 @@ public class MaterialSpinnerAccessor
      * Constructor.
      *
      * @param context    Current context
-     * @param arrayResId to use; the array <strong>must</strong> not be empty
+     * @param arrayResId to use; the array <strong>must not</strong> be empty
      */
     public MaterialSpinnerAccessor(@NonNull final Context context,
                                    @ArrayRes final int arrayResId) {

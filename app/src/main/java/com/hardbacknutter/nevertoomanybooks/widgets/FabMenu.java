@@ -93,6 +93,7 @@ public class FabMenu {
         }
     }
 
+    @NonNull
     public ExtendedFloatingActionButton getItem(final int index) {
         return mFabMenuItems[index];
     }

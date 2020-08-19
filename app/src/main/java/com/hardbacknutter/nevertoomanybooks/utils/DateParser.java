@@ -4,14 +4,6 @@
  *
  * This file is part of NeverTooManyBooks.
  *
- * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
- *
- * Without their original creation, this project would not exist in its
- * current form. It was however largely rewritten/refactored and any
- * comments on this fork should be directed at HardBackNutter and not
- * at the original creators.
- *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -109,6 +101,7 @@ public class DateParser
      *
      * @return instance
      */
+    @NonNull
     public static DateParser getInstance(@NonNull final Context context) {
         synchronized (DateParser.class) {
             if (INSTANCE == null) {
@@ -130,6 +123,7 @@ public class DateParser
      * @return instance
      */
     @VisibleForTesting
+    @NonNull
     public static DateParser createForTesting(@NonNull final Locale... locales) {
         INSTANCE = new DateParser();
         INSTANCE.create(locales);

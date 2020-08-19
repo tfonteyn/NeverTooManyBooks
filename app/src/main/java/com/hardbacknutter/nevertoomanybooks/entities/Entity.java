@@ -52,6 +52,7 @@ public interface Entity
      *
      * @return the label to use.
      */
+    @NonNull
     String getLabel(@NonNull Context context);
 
     @Retention(RetentionPolicy.SOURCE)

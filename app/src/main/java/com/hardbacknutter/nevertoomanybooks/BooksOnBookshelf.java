@@ -1771,6 +1771,7 @@ public class BooksOnBookshelf
         }
 
         @Override
+        @NonNull
         public View getDropDownView(final int position,
                                     @Nullable final View convertView,
                                     @NonNull final ViewGroup parent) {
@@ -1778,6 +1779,7 @@ public class BooksOnBookshelf
                                     R.layout.dropdown_menu_popup_item);
         }
 
+        @NonNull
         private View getPopulatedView(final int position,
                                       @Nullable final View convertView,
                                       @NonNull final ViewGroup parent,

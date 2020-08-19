@@ -32,6 +32,7 @@ import androidx.preference.PreferenceManager;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.util.Map;
+import java.util.Objects;
 
 import oauth.signpost.OAuth;
 import oauth.signpost.OAuthConsumer;
@@ -231,12 +232,13 @@ public class GoodreadsAuth {
     }
 
     @SuppressWarnings("unused")
+    @NonNull
     public String getUserName() {
         // don't call hasCredentials(), if we don't have them at this time, blame the developer.
         if (!sCredentialsValidated) {
             throw new IllegalStateException(INVALID_CREDENTIALS);
         }
-        return sUsername;
+        return Objects.requireNonNull(sUsername);
     }
 
     public long getUserId() {

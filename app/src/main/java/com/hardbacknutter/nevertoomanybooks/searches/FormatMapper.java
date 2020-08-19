@@ -73,6 +73,7 @@ public final class FormatMapper
         return preferences.getBoolean(Prefs.pk_search_reformat_format, false);
     }
 
+    @NonNull
     @Override
     public String getKey() {
         return DBDefinitions.KEY_FORMAT;

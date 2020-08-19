@@ -439,7 +439,7 @@ public class BooklistBuilder
      *
      * @param sortedDomains the domains we need to sort by, in order.
      */
-    private void createTriggers(@NonNull final List<VirtualDomain> sortedDomains) {
+    private void createTriggers(@NonNull final Collection<VirtualDomain> sortedDomains) {
 
         mTriggerHelperTable = new TableDefinition(mListTable + "_th")
                 .setAlias("tht");
@@ -1233,6 +1233,7 @@ public class BooklistBuilder
          *
          * @return column list clause
          */
+        @NonNull
         String getSortedDomainsIndexColumns() {
             final StringBuilder indexCols = new StringBuilder();
 

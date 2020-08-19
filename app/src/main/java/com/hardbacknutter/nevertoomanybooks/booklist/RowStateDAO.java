@@ -1092,6 +1092,7 @@ public class RowStateDAO
      *
      * @return sql insert
      */
+    @NonNull
     private String getNodesInsertSql() {
         return ("INSERT INTO " + TBL_BOOK_LIST_NODE_STATE + " ("
                 + KEY_BL_NODE_KEY

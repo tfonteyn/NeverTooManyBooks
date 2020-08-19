@@ -1,16 +1,8 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
- *
- * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
- *
- * Without their original creation, this project would not exist in its
- * current form. It was however largely rewritten/refactored and any
- * comments on this fork should be directed at HardBackNutter and not
- * at the original creators.
  *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -57,6 +49,7 @@ public class GenericFileProvider
      *
      * @return the uri
      */
+    @NonNull
     public static Uri getUriForFile(@NonNull final Context context,
                                     @NonNull final File file) {
         return getUriForFile(context, BuildConfig.APPLICATION_ID + ".GenericFileProvider",

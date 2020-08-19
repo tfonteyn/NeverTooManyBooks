@@ -216,6 +216,7 @@ public class CoverBrowserViewModel
         return mGalleryDisplayExecutor;
     }
 
+    @NonNull
     String getBaseIsbn() {
         return mBaseIsbn;
     }
