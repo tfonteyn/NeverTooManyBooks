@@ -146,20 +146,12 @@ public class BookSearchByTextFragment
         viewToModel();
 
         final String authorSearchText = mCoordinator.getAuthorSearchText();
-        final String titleSearchText = mCoordinator.getTitleSearchText();
-        final String publisherSearchText = mCoordinator.getPublisherSearchText();
-
         if (!authorSearchText.isEmpty()) {
-            // Always add the current search text to the list of recent searches.
+            // Always add the current search text (if not already present)
+            // to the list of recent searches.
             if (mAuthorAdapter.getPosition(authorSearchText) < 0) {
-                boolean found = false;
-                for (String s : mRecentAuthorNames) {
-                    if (s.equalsIgnoreCase(authorSearchText)) {
-                        found = true;
-                        break;
-                    }
-                }
-                if (!found) {
+                if (mRecentAuthorNames.stream().noneMatch(
+                        s -> s.equalsIgnoreCase(authorSearchText))) {
                     // Keep a list of names as typed to use when we recreate list
                     mRecentAuthorNames.add(authorSearchText);
                     // Add to adapter, in case search produces no results
@@ -168,17 +160,13 @@ public class BookSearchByTextFragment
             }
         }
 
+        final String publisherSearchText = mCoordinator.getPublisherSearchText();
         if (mUsePublisher && !publisherSearchText.isEmpty()) {
-            // Always add the current search text to the list of recent searches.
+            // Always add the current search text (if not already present)
+            // to the list of recent searches.
             if (mPublisherAdapter.getPosition(publisherSearchText) < 0) {
-                boolean found = false;
-                for (String s : mRecentPublisherNames) {
-                    if (s.equalsIgnoreCase(publisherSearchText)) {
-                        found = true;
-                        break;
-                    }
-                }
-                if (!found) {
+                if (mRecentPublisherNames.stream().noneMatch(
+                        s -> s.equalsIgnoreCase(publisherSearchText))) {
                     // Keep a list of names as typed to use when we recreate list
                     mRecentPublisherNames.add(publisherSearchText);
                     // Add to adapter, in case search produces no results
@@ -189,6 +177,7 @@ public class BookSearchByTextFragment
 
 
         //sanity check
+        final String titleSearchText = mCoordinator.getTitleSearchText();
         if (authorSearchText.isEmpty() && titleSearchText.isEmpty()) {
             Snackbar.make(mVb.getRoot(), R.string.warning_requires_at_least_one_field,
                           Snackbar.LENGTH_LONG).show();

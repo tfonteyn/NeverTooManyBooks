@@ -4,14 +4,6 @@
  *
  * This file is part of NeverTooManyBooks.
  *
- * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
- *
- * Without their original creation, this project would not exist in its
- * current form. It was however largely rewritten/refactored and any
- * comments on this fork should be directed at HardBackNutter and not
- * at the original creators.
- *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -34,6 +26,7 @@ import androidx.annotation.NonNull;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 
@@ -49,21 +42,18 @@ public abstract class MapperBase
 
         String value = bookData.getString(getKey());
         if (value != null && !value.isEmpty()) {
-            Integer resId = null;
-            String lcValue = value.toLowerCase(LocaleUtils.getUserLocale(context));
-            int len = 0;
-            for (final Map.Entry<String, Integer> entry : MAPPER.entrySet()) {
-                if (lcValue.startsWith(entry.getKey())) {
-                    resId = entry.getValue();
-                    len = entry.getKey().length();
-                    break;
-                }
-            }
+            final String lcValue = value.toLowerCase(LocaleUtils.getUserLocale(context));
+            final Optional<String> oKey = MAPPER.keySet().stream()
+                                                .filter(lcValue::startsWith)
+                                                .findFirst();
 
-            if (resId != null) {
-                value = (context.getString(resId) + ' ' + value.substring(len).trim()).trim();
+            if (oKey.isPresent()) {
+                //noinspection ConstantConditions
+                value = (context.getString(MAPPER.get(oKey.get()))
+                         + ' ' + value.substring(oKey.get().length()).trim())
+                        .trim();
             }
-
+            // return either the found mapping, or the incoming value.
             bookData.putString(getKey(), value);
         }
     }

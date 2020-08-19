@@ -40,6 +40,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -378,8 +379,8 @@ public class IsfdbSearchEngine
         // transform the Edition list to a simple isbn list
         return fetchEditionsByIsbn(validIsbn)
                 .stream()
-                .filter(edition -> edition.getIsbn() != null)
                 .map(Edition::getIsbn)
+                .filter(Objects::nonNull)
                 .collect(Collectors.toList());
     }
 
@@ -1019,7 +1020,8 @@ public class IsfdbSearchEngine
     @NonNull
     private ArrayList<String> parseCovers(@NonNull final Document document,
                                           @Nullable final String isbn,
-                                          @IntRange(from = 0) final int cIdx) {
+                                          @SuppressWarnings("SameParameterValue")
+                                              @IntRange(from = 0) final int cIdx) {
         /* First "ContentBox" contains all basic details.
          * <pre>
          *   {@code

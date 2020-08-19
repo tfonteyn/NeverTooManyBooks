@@ -4,14 +4,6 @@
  *
  * This file is part of NeverTooManyBooks.
  *
- * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
- *
- * Without their original creation, this project would not exist in its
- * current form. It was however largely rewritten/refactored and any
- * comments on this fork should be directed at HardBackNutter and not
- * at the original creators.
- *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -32,12 +24,12 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModel;
 
 import java.util.ArrayList;
 import java.util.Objects;
+import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyle;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
@@ -109,15 +101,9 @@ public class PreferredStylesViewModel
         return mList;
     }
 
-    @Nullable
-    private BooklistStyle getBooklistStyle(final long styleId) {
-
-        for (BooklistStyle style : mList) {
-            if (style.getId() == styleId) {
-                return style;
-            }
-        }
-        return null;
+    @NonNull
+    private Optional<BooklistStyle> getBooklistStyle(final long styleId) {
+        return mList.stream().filter(style -> style.getId() == styleId).findFirst();
     }
 
     /**
@@ -194,10 +180,7 @@ public class PreferredStylesViewModel
         if (templateId < 0) {
             // We're assuming the user wanted to 'replace' the builtin style,
             // so remove the builtin style from the preferred styles.
-            final BooklistStyle templateStyle = getBooklistStyle(templateId);
-            if (templateStyle != null) {
-                templateStyle.setPreferred(false);
-            }
+            getBooklistStyle(templateId).ifPresent(s -> s.setPreferred(false));
         }
 
         return editedRow;

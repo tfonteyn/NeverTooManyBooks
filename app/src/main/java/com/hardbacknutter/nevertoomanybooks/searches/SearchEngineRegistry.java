@@ -4,14 +4,6 @@
  *
  * This file is part of NeverTooManyBooks.
  *
- * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
- *
- * Without their original creation, this project would not exist in its
- * current form. It was however largely rewritten/refactored and any
- * comments on this fork should be directed at HardBackNutter and not
- * at the original creators.
- *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -37,13 +29,14 @@ import androidx.annotation.VisibleForTesting;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
@@ -104,31 +97,32 @@ public final class SearchEngineRegistry {
         return SITE_CONFIGS_MAP.get(engineId);
     }
 
-    @Nullable
-    public static Config getByViewId(@IdRes final int viewId) {
-        for (Config config : SITE_CONFIGS_MAP.values()) {
-            if (config.getDomainViewId() == viewId) {
-                return config;
-            }
-        }
-        return null;
+    /**
+     * Search for the configuration defined by the given viewId.
+     *
+     * @param viewId for the engine
+     *
+     * @return Optional Config
+     */
+    @NonNull
+    public static Optional<Config> getByViewId(@IdRes final int viewId) {
+        return SITE_CONFIGS_MAP.values().stream()
+                               .filter(config -> config.getDomainViewId() == viewId)
+                               .findFirst();
     }
 
     /**
-     * Search for the configuration containing the given menuId.
+     * Search for the configuration defined by the given menuId.
      *
      * @param menuId to get
      *
-     * @return Config, or {@link null} if not found
+     * @return Optional Config
      */
-    @Nullable
-    public static Config getByMenuId(@IdRes final int menuId) {
-        for (Config config : SITE_CONFIGS_MAP.values()) {
-            if (config.getDomainMenuId() == menuId) {
-                return config;
-            }
-        }
-        return null;
+    @NonNull
+    public static Optional<Config> getByMenuId(@IdRes final int menuId) {
+        return SITE_CONFIGS_MAP.values().stream()
+                               .filter(config -> config.getDomainMenuId() == menuId)
+                               .findFirst();
     }
 
     @NonNull
@@ -145,14 +139,10 @@ public final class SearchEngineRegistry {
      */
     @NonNull
     public static List<Domain> getExternalIdDomains() {
-        final List<Domain> externalIds = new ArrayList<>();
-        for (Config config : SITE_CONFIGS_MAP.values()) {
-            final Domain domain = config.getExternalIdDomain();
-            if (domain != null) {
-                externalIds.add(domain);
-            }
-        }
-        return externalIds;
+        return SITE_CONFIGS_MAP.values().stream()
+                               .map(Config::getExternalIdDomain)
+                               .filter(Objects::nonNull)
+                               .collect(Collectors.toList());
     }
 
     /**
@@ -237,7 +227,7 @@ public final class SearchEngineRegistry {
         }
 
         @NonNull
-        public String getPreferenceKey() {
+        String getPreferenceKey() {
             return mSEConfig.prefKey();
         }
 

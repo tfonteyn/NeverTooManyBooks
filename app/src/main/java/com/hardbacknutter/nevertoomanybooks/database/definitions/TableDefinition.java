@@ -403,12 +403,10 @@ public class TableDefinition {
      */
     @Nullable
     public Domain getDomain(@NonNull final String key) {
-        for (Domain domain : mDomains) {
-            if (domain.getName().equals(key)) {
-                return domain;
-            }
-        }
-        return null;
+        return mDomains.stream()
+                       .filter(domain -> domain.getName().equals(key))
+                       .findFirst()
+                       .orElse(null);
     }
 
     /**
