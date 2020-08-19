@@ -23,4 +23,7 @@
     <integer name="cover_browser_gallery_span_count">3</integer>
     <dimen name="cover_browser_gallery_height">150dp</dimen>
     <dimen name="cover_browser_gallery_width">96dp</dimen>
+
+    <dimen name="cover_browser_preview_height">600dp</dimen>
+    <dimen name="cover_browser_preview_width">384dp</dimen>
 </resources>

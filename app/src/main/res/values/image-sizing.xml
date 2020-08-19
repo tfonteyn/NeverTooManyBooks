@@ -19,6 +19,23 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
+<!--
+    <dimen name="cover_browser_gallery_height">50dp</dimen>
+    <dimen name="cover_browser_gallery_width">32dp</dimen>
+
+    <dimen name="cover_browser_gallery_height">100dp</dimen>
+    <dimen name="cover_browser_gallery_width">64dp</dimen>
+
+    <dimen name="cover_browser_gallery_height">125dp</dimen>
+    <dimen name="cover_browser_gallery_width">80dp</dimen>
+
+    <dimen name="cover_browser_gallery_height">150dp</dimen>
+    <dimen name="cover_browser_gallery_width">96dp</dimen>
+
+    <dimen name="cover_browser_gallery_height">200dp</dimen>
+    <dimen name="cover_browser_gallery_width">128dp</dimen>
+-->
+
 <!-- Base file is a 4" screen. -->
 <resources>
     <!-- Maximum space a zoomed cover can use of the screen; 0..100 -->
@@ -36,12 +53,12 @@
     <dimen name="cover_edit_1_height">150dp</dimen>
     <dimen name="cover_edit_1_width">96dp</dimen>
 
-    <integer name="cover_browser_gallery_span_count">2</integer>
-    <dimen name="cover_browser_gallery_height">60dp</dimen>
-    <dimen name="cover_browser_gallery_width">40dp</dimen>
+    <integer name="cover_browser_gallery_span_count">1</integer>
+    <dimen name="cover_browser_gallery_height">100dp</dimen>
+    <dimen name="cover_browser_gallery_width">64dp</dimen>
 
-    <dimen name="cover_browser_preview_height">200dp</dimen>
-    <dimen name="cover_browser_preview_width">128dp</dimen>
+    <dimen name="cover_browser_preview_height">250dp</dimen>
+    <dimen name="cover_browser_preview_width">160dp</dimen>
 
     <!-- BoB screen. We use a square space for the image so both portrait/landscape cover images work out.
          The sizes are calculated at {0, 1, 2, 3, 5, 8, 12} * 50dp
@@ -58,6 +75,9 @@
         <item>400dp</item>
         <item>600dp</item>
     </array>
+
+    <dimen name="tools_cover_scale_2_height">100dp</dimen>
+    <dimen name="tools_cover_scale_2_width">64dp</dimen>
 
     <dimen name="tools_cover_scale_3_height">150dp</dimen>
     <dimen name="tools_cover_scale_3_width">96dp</dimen>
