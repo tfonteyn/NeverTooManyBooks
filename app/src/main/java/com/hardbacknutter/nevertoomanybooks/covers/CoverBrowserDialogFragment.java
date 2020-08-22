@@ -150,6 +150,8 @@ public class CoverBrowserDialogFragment
     @Override
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
+        // special case, override the standard minimum width.
+        setFloatingDialogWidth(R.dimen.floating_dialogs_min_width_cover_browser);
         super.onViewCreated(view, savedInstanceState);
 
         mVb = DialogCoverBrowserBinding.bind(view);
@@ -160,7 +162,6 @@ public class CoverBrowserDialogFragment
         mBookViewModel.init(getContext(), getArguments());
 
         mVb.toolbar.setSubtitle(mBookViewModel.getBook().getTitle());
-        mVb.toolbar.setNavigationOnClickListener(v -> dismiss());
 
         // LayoutManager is set in the layout xml
         final LinearLayoutManager galleryLM = (LinearLayoutManager) mVb.gallery.getLayoutManager();
@@ -183,7 +184,6 @@ public class CoverBrowserDialogFragment
             // close the CoverBrowserDialogFragment
             dismiss();
         });
-
 
         mSearchEditionsTask = new ViewModelProvider(this).get(SearchEditionsTask.class);
         // dismiss silently

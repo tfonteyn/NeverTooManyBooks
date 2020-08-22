@@ -43,6 +43,7 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
+    <!-- always full-screen. -->
     <androidx.core.widget.NestedScrollView
         android:id="@+id/body_frame"
         style="@style/Dialog.Frame.Fullscreen"

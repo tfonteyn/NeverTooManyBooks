@@ -532,14 +532,14 @@
     </style>
 
     <!-- FrameLayout for a DialogFragment based on a CoordinatorLayout/Toolbar/FrameLayout.
-         FLOATING and FULLSCREEN dialog -->
+         FLOATING and FULLSCREEN dialog
+         Important: in FLOATING mode, the margins are set by code to 0,0,0,"?attr/actionBarSize"
+         See com/hardbacknutter/nevertoomanybooks/dialogs/BaseDialogFragment.java#onViewCreated
+         -->
     <style name="Dialog.Frame.FloatingAndFullscreen" parent="">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="layout_behavior">@string/appbar_scrolling_view_behavior</item>
-        <!-- layout_marginBottom: compensates for the toolbar
-         when this dialog is used as a floating dialog as opposed to full-screen. -->
-        <item name="android:layout_marginBottom">?attr/actionBarSize</item>
     </style>
 
     <!-- Dialog body (content) for a DialogFragment based on a CoordinatorLayout/Toolbar/FrameLayout.
@@ -555,7 +555,7 @@
     <!-- Dialog body (content) for a plain AlertDialog/DialogFragment.
          FLOATING dialog ONLY -->
     <style name="Dialog.Body.Floating" parent="MaterialAlertDialog.MaterialComponents.Body.Text">
-        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:paddingStart">?attr/dialogPreferredPadding</item>
         <item name="android:paddingEnd">?attr/dialogPreferredPadding</item>
@@ -623,8 +623,12 @@
     </style>
 
     <!-- Override for the default to allow 2 lines of text. -->
-    <style name="SnackbarText" parent="@style/Widget.MaterialComponents.Snackbar.TextView">
+    <style name="SnackbarText" parent="Widget.MaterialComponents.Snackbar.TextView">
         <item name="android:maxLines">2</item>
+    </style>
+
+    <style name="ButtonBarButtons" parent="Widget.MaterialComponents.Button.TextButton.Dialog">
+        <item name="android:textColor">?attr/appDialogButtonTextColor</item>
     </style>
 
     <style name="NavigationView" parent="Widget.MaterialComponents.NavigationView">

@@ -5,14 +5,6 @@
   ~
   ~ This file is part of NeverTooManyBooks.
   ~
-  ~ In August 2018, this project was forked from:
-  ~ Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
-  ~
-  ~ Without their original creation, this project would not exist in its
-  ~ current form. It was however largely rewritten/refactored and any
-  ~ comments on this fork should be directed at HardBackNutter and not
-  ~ at the original creators.
-  ~
   ~ NeverTooManyBooks is free software: you can redistribute it and/or modify
   ~ it under the terms of the GNU General Public License as published by
   ~ the Free Software Foundation, either version 3 of the License, or
@@ -27,12 +19,10 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<!-- On screens larger than sw600 (a 7" tablet)
-
-     https://www.vogella.com/tutorials/AndroidStylesThemes/article.html
-     Section 1.2: w600, w800, w1000 can be seen as switching/margin points
- -->
-<resources>
-    <!-- DialogFrame's which might show the onscreen keyboard, are FLOATING. -->
-    <bool name="useFloatingDialogs">true</bool>
-</resources>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@id/MENU_ACTION_CONFIRM"
+        android:title="@string/lbl_import"
+        app:showAsAction="always" />
+</menu>

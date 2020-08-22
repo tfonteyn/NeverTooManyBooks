@@ -4,14 +4,6 @@
  *
  * This file is part of NeverTooManyBooks.
  *
- * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
- *
- * Without their original creation, this project would not exist in its
- * current form. It was however largely rewritten/refactored and any
- * comments on this fork should be directed at HardBackNutter and not
- * at the original creators.
- *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -38,7 +30,6 @@ import androidx.annotation.AttrRes;
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 
-@SuppressWarnings("unused")
 public final class AttrUtils {
 
     private AttrUtils() {
@@ -121,7 +112,7 @@ public final class AttrUtils {
         theme.resolveAttribute(attr, tv, true);
 
         final DisplayMetrics metrics = new DisplayMetrics();
-        WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+        final WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
         //noinspection ConstantConditions
         wm.getDefaultDisplay().getMetrics(metrics);
 

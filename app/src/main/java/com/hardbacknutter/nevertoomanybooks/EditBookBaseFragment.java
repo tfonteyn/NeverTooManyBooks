@@ -181,7 +181,7 @@ public abstract class EditBookBaseFragment
     public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
         //noinspection SwitchStatementWithTooFewBranches
         switch (item.getItemId()) {
-            case R.id.MENU_SAVE:
+            case R.id.MENU_ACTION_CONFIRM:
                 //noinspection ConstantConditions
                 ((EditBookActivity) getActivity()).prepareSave(true);
                 return true;

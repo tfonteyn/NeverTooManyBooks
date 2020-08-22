@@ -19,8 +19,8 @@
  */
 package com.hardbacknutter.nevertoomanybooks.backup;
 
-import android.app.Dialog;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -30,8 +30,6 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
-
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -51,6 +49,13 @@ public class ExportHelperDialogFragment
     private ExportHelperViewModel mModel;
     /** View Binding. */
     private DialogExportOptionsBinding mVb;
+
+    /**
+     * No-arg constructor for OS use.
+     */
+    public ExportHelperDialogFragment() {
+        super(R.layout.dialog_export_options);
+    }
 
     /**
      * Constructor.
@@ -77,27 +82,28 @@ public class ExportHelperDialogFragment
         mModel.init();
     }
 
-    @NonNull
     @Override
-    public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
+    public void onViewCreated(@NonNull final View view,
+                              @Nullable final Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
-        mVb = DialogExportOptionsBinding.inflate(getLayoutInflater());
+        mVb = DialogExportOptionsBinding.bind(view);
 
         setupOptions();
-
-        //noinspection ConstantConditions
-        return new MaterialAlertDialogBuilder(getContext())
-                .setView(mVb.getRoot())
-                .setTitle(R.string.lbl_export_options)
-                .setNegativeButton(android.R.string.cancel, (d, w) -> onCancelled())
-                .setPositiveButton(android.R.string.ok, (d, w) -> onOptionsSet(mModel.getHelper()))
-                .create();
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
-        fixDialogWidth(R.dimen.export_dialog_landscape_width);
+    protected void onToolbarNavigationClick(@NonNull final View v) {
+        onCancelled();
+    }
+
+    @Override
+    protected boolean onToolbarMenuItemClick(@NonNull final MenuItem item) {
+        if (item.getItemId() == R.id.MENU_ACTION_CONFIRM) {
+            onOptionsSet(mModel.getHelper());
+            return true;
+        }
+        return false;
     }
 
     /**

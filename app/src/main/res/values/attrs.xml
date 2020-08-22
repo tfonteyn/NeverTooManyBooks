@@ -45,6 +45,9 @@
     <!-- Color for a boolean status. -->
     <attr name="appColorCompleted" format="reference|color" />
 
+    <!-- Color for a button on a dialog. -->
+    <attr name="appDialogButtonTextColor" format="reference|color" />
+
     <declare-styleable name="ExtGroup">
         <attr name="groupApply">
             <flag name="visibility" value="0x1" />

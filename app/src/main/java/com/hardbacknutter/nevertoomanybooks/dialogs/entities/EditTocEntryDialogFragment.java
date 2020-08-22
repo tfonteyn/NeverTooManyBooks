@@ -20,6 +20,7 @@
 package com.hardbacknutter.nevertoomanybooks.dialogs.entities;
 
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
 
 import androidx.annotation.NonNull;
@@ -147,16 +148,6 @@ public class EditTocEntryDialogFragment
         mVb = DialogEditBookTocBinding.bind(view);
 
         mVb.toolbar.setSubtitle(mBookTitle);
-        mVb.toolbar.setNavigationOnClickListener(v -> dismiss());
-        mVb.toolbar.setOnMenuItemClickListener(item -> {
-            if (item.getItemId() == R.id.MENU_SAVE) {
-                if (saveChanges()) {
-                    dismiss();
-                }
-                return true;
-            }
-            return false;
-        });
 
         mVb.title.setText(mTitle);
         mVb.firstPublication.setText(mFirstPublication);
@@ -164,6 +155,17 @@ public class EditTocEntryDialogFragment
         updateMultiAuthor(mHasMultipleAuthors);
         mVb.cbxMultipleAuthors.setOnCheckedChangeListener(
                 (v, isChecked) -> updateMultiAuthor(isChecked));
+    }
+
+    @Override
+    protected boolean onToolbarMenuItemClick(@NonNull final MenuItem item) {
+        if (item.getItemId() == R.id.MENU_ACTION_CONFIRM) {
+            if (saveChanges()) {
+                dismiss();
+            }
+            return true;
+        }
+        return false;
     }
 
     private void updateMultiAuthor(final boolean isChecked) {

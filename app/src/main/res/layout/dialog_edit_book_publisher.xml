@@ -5,14 +5,6 @@
   ~
   ~ This file is part of NeverTooManyBooks.
   ~
-  ~ In August 2018, this project was forked from:
-  ~ Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
-  ~
-  ~ Without their original creation, this project would not exist in its
-  ~ current form. It was however largely rewritten/refactored and any
-  ~ comments on this fork should be directed at HardBackNutter and not
-  ~ at the original creators.
-  ~
   ~ NeverTooManyBooks is free software: you can redistribute it and/or modify
   ~ it under the terms of the GNU General Public License as published by
   ~ the Free Software Foundation, either version 3 of the License, or
@@ -55,34 +47,47 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <androidx.core.widget.NestedScrollView
+    <FrameLayout
         android:id="@+id/body_frame"
         style="@style/Dialog.Frame.FloatingAndFullscreen"
         >
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            style="@style/Dialog.Body.FloatingAndFullscreen"
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
             >
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/lbl_name"
-                style="@style/Envelope.AutoCompleteTextView"
-                android:hint="@string/lbl_name"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
+            <androidx.constraintlayout.widget.ConstraintLayout
+                style="@style/Dialog.Body.FloatingAndFullscreen"
                 >
 
-                <AutoCompleteTextView
-                    android:id="@+id/name"
-                    style="@style/personalNameTextEntry"
-                    android:layout_width="match_parent"
-                    android:imeOptions="actionNext"
-                    tools:ignore="LabelFor"
-                    />
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/lbl_name"
+                    style="@style/Envelope.AutoCompleteTextView"
+                    android:hint="@string/lbl_name"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    >
 
-            </com.google.android.material.textfield.TextInputLayout>
+                    <AutoCompleteTextView
+                        android:id="@+id/name"
+                        style="@style/personalNameTextEntry"
+                        android:layout_width="match_parent"
+                        android:imeOptions="actionNext"
+                        tools:ignore="LabelFor"
+                        />
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
-    </androidx.core.widget.NestedScrollView>
+                </com.google.android.material.textfield.TextInputLayout>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <include
+                layout="@layout/inc_dialog_buttonbar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                />
+        </LinearLayout>
+    </FrameLayout>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -20,6 +20,7 @@
 package com.hardbacknutter.nevertoomanybooks.dialogs.entities;
 
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 
@@ -106,16 +107,6 @@ public abstract class EditStringBaseDialogFragment
         mVb = DialogEditStringBinding.bind(view);
 
         mVb.toolbar.setTitle(mDialogTitleId);
-        mVb.toolbar.setNavigationOnClickListener(v -> dismiss());
-        mVb.toolbar.setOnMenuItemClickListener(item -> {
-            if (item.getItemId() == R.id.MENU_SAVE) {
-                if (saveChanges()) {
-                    dismiss();
-                }
-                return true;
-            }
-            return false;
-        });
 
         mVb.lblEditString.setHint(getString(mLabelId));
         mVb.lblEditString.setErrorEnabled(true);
@@ -140,6 +131,17 @@ public abstract class EditStringBaseDialogFragment
                     getContext(), R.layout.dropdown_menu_popup_item, objects);
             mVb.editString.setAdapter(adapter);
         }
+    }
+
+    @Override
+    protected boolean onToolbarMenuItemClick(@NonNull final MenuItem item) {
+        if (item.getItemId() == R.id.MENU_ACTION_CONFIRM) {
+            if (saveChanges()) {
+                dismiss();
+            }
+            return true;
+        }
+        return false;
     }
 
     /**

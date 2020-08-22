@@ -18,113 +18,149 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<androidx.core.widget.NestedScrollView
+
+<androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    style="@style/Dialog.Body.Floating"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
     >
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        app:elevation="0dp"
         >
 
-        <com.hardbacknutter.nevertoomanybooks.widgets.ConstraintRadioGroup
-            android:id="@+id/rb_books_group"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            app:constraint_referenced_ids="rb_books_all,rb_books_sync"
-            tools:ignore="MissingConstraints"
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/toolbar"
+            style="@style/Toolbar.Dialog"
+            app:menu="@menu/toolbar_import"
+            app:subtitle="@string/lbl_import_options"
+            app:title="@string/btn_options"
             />
 
-        <com.hardbacknutter.nevertoomanybooks.widgets.ExtGroup
-            android:id="@+id/cbx_group"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            app:groupApply="visibility"
-            app:constraint_referenced_ids="cbx_books,cbx_covers,cbx_prefs_and_styles"
-            tools:ignore="MissingConstraints"
-            />
+    </com.google.android.material.appbar.AppBarLayout>
 
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/middle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+    <FrameLayout
+        android:id="@+id/body_frame"
+        style="@style/Dialog.Frame.FloatingAndFullscreen"
+        >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:orientation="vertical"
-            app:layout_constraintGuide_percent="0.5"
-            />
+            >
 
-        <CheckBox
-            android:id="@+id/cbx_books"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:checked="true"
-            android:text="@string/lbl_books"
-            app:layout_constraintEnd_toStartOf="@id/middle"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            />
+            <androidx.constraintlayout.widget.ConstraintLayout
+                style="@style/Dialog.Body.FloatingAndFullscreen"
+                >
 
-        <RadioButton
-            android:id="@+id/rb_books_all"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/indent_radio_button"
-            android:checked="true"
-            android:text="@string/bookshelf_all_books"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/cbx_books"
-            />
+                <com.hardbacknutter.nevertoomanybooks.widgets.ConstraintRadioGroup
+                    android:id="@+id/rb_books_group"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    app:constraint_referenced_ids="rb_books_all,rb_books_sync"
+                    tools:ignore="MissingConstraints"
+                    />
 
-        <ImageButton
-            android:id="@+id/info_btn_rb_books_all"
-            style="@style/InfoButton"
-            android:contentDescription="@string/txt_import_option_all_books"
-            app:layout_constraintStart_toEndOf="@id/rb_books_all"
-            app:layout_constraintTop_toTopOf="@id/rb_books_all"
-            />
+                <com.hardbacknutter.nevertoomanybooks.widgets.ExtGroup
+                    android:id="@+id/cbx_group"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    app:constraint_referenced_ids="cbx_books,cbx_covers,cbx_prefs_and_styles"
+                    app:groupApply="visibility"
+                    tools:ignore="MissingConstraints"
+                    />
 
-        <RadioButton
-            android:id="@+id/rb_books_sync"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/indent_radio_button"
-            android:text="@string/lbl_import_option_new_and_changed_books"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/rb_books_all"
-            />
+                <androidx.constraintlayout.widget.Guideline
+                    android:id="@+id/middle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    app:layout_constraintGuide_percent="0.5"
+                    />
 
-        <ImageButton
-            android:id="@+id/info_btn_rb_books_sync"
-            style="@style/InfoButton"
-            android:contentDescription="@string/txt_import_option_new_and_changed_books"
-            app:layout_constraintStart_toEndOf="@id/rb_books_sync"
-            app:layout_constraintTop_toTopOf="@id/rb_books_sync"
-            />
+                <CheckBox
+                    android:id="@+id/cbx_books"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:checked="true"
+                    android:text="@string/lbl_books"
+                    app:layout_constraintEnd_toStartOf="@id/middle"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    />
 
-        <CheckBox
-            android:id="@+id/cbx_covers"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:checked="true"
-            android:text="@string/lbl_covers_long"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/middle"
-            app:layout_constraintTop_toTopOf="parent"
-            />
+                <RadioButton
+                    android:id="@+id/rb_books_all"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/indent_radio_button"
+                    android:checked="true"
+                    android:text="@string/bookshelf_all_books"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/cbx_books"
+                    />
 
-        <CheckBox
-            android:id="@+id/cbx_prefs_and_styles"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:checked="true"
-            android:text="@string/lbl_settings"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/middle"
-            app:layout_constraintTop_toBottomOf="@id/cbx_covers"
-            />
+                <ImageButton
+                    android:id="@+id/info_btn_rb_books_all"
+                    style="@style/InfoButton"
+                    android:contentDescription="@string/txt_import_option_all_books"
+                    app:layout_constraintStart_toEndOf="@id/rb_books_all"
+                    app:layout_constraintTop_toTopOf="@id/rb_books_all"
+                    />
+
+                <RadioButton
+                    android:id="@+id/rb_books_sync"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/indent_radio_button"
+                    android:text="@string/lbl_import_option_new_and_changed_books"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/rb_books_all"
+                    />
+
+                <ImageButton
+                    android:id="@+id/info_btn_rb_books_sync"
+                    style="@style/InfoButton"
+                    android:contentDescription="@string/txt_import_option_new_and_changed_books"
+                    app:layout_constraintStart_toEndOf="@id/rb_books_sync"
+                    app:layout_constraintTop_toTopOf="@id/rb_books_sync"
+                    />
+
+                <CheckBox
+                    android:id="@+id/cbx_covers"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:checked="true"
+                    android:text="@string/lbl_covers_long"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/middle"
+                    app:layout_constraintTop_toTopOf="parent"
+                    />
+
+                <CheckBox
+                    android:id="@+id/cbx_prefs_and_styles"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:checked="true"
+                    android:text="@string/lbl_settings"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/middle"
+                    app:layout_constraintTop_toBottomOf="@id/cbx_covers"
+                    />
 
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
-</androidx.core.widget.NestedScrollView>
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <include
+                layout="@layout/inc_dialog_buttonbar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                />
+        </LinearLayout>
+    </FrameLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -5,14 +5,6 @@
   ~
   ~ This file is part of NeverTooManyBooks.
   ~
-  ~ In August 2018, this project was forked from:
-  ~ Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
-  ~
-  ~ Without their original creation, this project would not exist in its
-  ~ current form. It was however largely rewritten/refactored and any
-  ~ comments on this fork should be directed at HardBackNutter and not
-  ~ at the original creators.
-  ~
   ~ NeverTooManyBooks is free software: you can redistribute it and/or modify
   ~ it under the terms of the GNU General Public License as published by
   ~ the Free Software Foundation, either version 3 of the License, or
@@ -55,36 +47,49 @@
         style="@style/Dialog.Frame.FloatingAndFullscreen"
         >
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            style="@style/Dialog.Body.FloatingAndFullscreen"
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
             >
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/lbl_publisher"
-                style="@style/Envelope.AutoCompleteTextView"
-                android:hint="@string/lbl_publisher"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
+            <androidx.constraintlayout.widget.ConstraintLayout
+                style="@style/Dialog.Body.FloatingAndFullscreen"
                 >
 
-                <AutoCompleteTextView
-                    android:id="@+id/publisher"
-                    style="@style/personalNameTextEntry"
-                    android:layout_width="match_parent"
-                    android:imeOptions="actionDone"
-                    tools:ignore="LabelFor"
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/lbl_publisher"
+                    style="@style/Envelope.AutoCompleteTextView"
+                    android:hint="@string/lbl_publisher"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    >
+
+                    <AutoCompleteTextView
+                        android:id="@+id/publisher"
+                        style="@style/personalNameTextEntry"
+                        android:layout_width="match_parent"
+                        android:imeOptions="actionDone"
+                        tools:ignore="LabelFor"
+                        />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <TextView
+                    android:id="@+id/blurb"
+                    style="@style/Text.Blurb.Small"
+                    android:text="@string/warning_immediate_global_changes"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/lbl_publisher"
                     />
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <TextView
-                android:id="@+id/blurb"
-                style="@style/Text.Blurb.Small"
-                android:text="@string/warning_immediate_global_changes"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/lbl_publisher"
+            <include
+                layout="@layout/inc_dialog_buttonbar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 />
-        </androidx.constraintlayout.widget.ConstraintLayout>
+        </LinearLayout>
     </FrameLayout>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

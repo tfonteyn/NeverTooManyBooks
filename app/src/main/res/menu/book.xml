@@ -23,18 +23,7 @@
      All menu items related to a book.
      Used for the options and context menus.
 -->
-<menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
-    <!-- Reminder: we let the SearchView handle it's own icons.
-      The hint text is defined in xml/searchable.xml
- -->
-    <item
-        android:id="@id/MENU_SEARCH"
-        android:orderInCategory="@integer/MENU_ORDER_SEARCH"
-        android:title="@android:string/search_go"
-        app:actionViewClass="android.widget.SearchView"
-        app:showAsAction="ifRoom" />
-
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@id/MENU_BOOK_READ"
         android:icon="@drawable/ic_check_box"

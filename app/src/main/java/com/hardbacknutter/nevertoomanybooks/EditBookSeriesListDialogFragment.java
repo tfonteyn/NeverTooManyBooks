@@ -21,6 +21,7 @@ package com.hardbacknutter.nevertoomanybooks;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
@@ -102,8 +103,8 @@ public class EditBookSeriesListDialogFragment
      * No-arg constructor for OS use.
      */
     public EditBookSeriesListDialogFragment() {
-        // Always force full screen as this dialog is to large/complicated.
-        super(R.layout.dialog_edit_book_series_list, true);
+        super(R.layout.dialog_edit_book_series_list);
+        setForceFullscreen();
     }
 
     /**
@@ -138,18 +139,6 @@ public class EditBookSeriesListDialogFragment
         mBookViewModel.init(getContext(), getArguments());
 
         mVb.toolbar.setSubtitle(mBookViewModel.getBook().getTitle());
-        mVb.toolbar.setNavigationOnClickListener(v -> {
-            if (saveChanges()) {
-                dismiss();
-            }
-        });
-        mVb.toolbar.setOnMenuItemClickListener(item -> {
-            if (item.getItemId() == R.id.action_add) {
-                onAdd();
-                return true;
-            }
-            return false;
-        });
 
         final DiacriticArrayAdapter<String> nameAdapter = new DiacriticArrayAdapter<>(
                 getContext(), R.layout.dropdown_menu_popup_item,
@@ -184,6 +173,22 @@ public class EditBookSeriesListDialogFragment
                 new SimpleItemTouchHelperCallback(mListAdapter);
         mItemTouchHelper = new ItemTouchHelper(sitHelperCallback);
         mItemTouchHelper.attachToRecyclerView(mVb.seriesList);
+    }
+
+    @Override
+    protected void onToolbarNavigationClick(@NonNull final View v) {
+        if (saveChanges()) {
+            dismiss();
+        }
+    }
+
+    @Override
+    protected boolean onToolbarMenuItemClick(@NonNull final MenuItem item) {
+        if (item.getItemId() == R.id.MENU_ACTION_CONFIRM) {
+            onAdd();
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -446,16 +451,6 @@ public class EditBookSeriesListDialogFragment
             mVb = DialogEditBookSeriesBinding.bind(view);
 
             mVb.toolbar.setSubtitle(mBookTitle);
-            mVb.toolbar.setNavigationOnClickListener(v -> dismiss());
-            mVb.toolbar.setOnMenuItemClickListener(item -> {
-                if (item.getItemId() == R.id.MENU_SAVE) {
-                    if (saveChanges()) {
-                        dismiss();
-                    }
-                    return true;
-                }
-                return false;
-            });
 
             //noinspection ConstantConditions
             final DiacriticArrayAdapter<String> seriesNameAdapter = new DiacriticArrayAdapter<>(
@@ -465,6 +460,17 @@ public class EditBookSeriesListDialogFragment
 
             mVb.cbxIsComplete.setChecked(mIsComplete);
             mVb.seriesNum.setText(mNumber);
+        }
+
+        @Override
+        protected boolean onToolbarMenuItemClick(@NonNull final MenuItem item) {
+            if (item.getItemId() == R.id.MENU_ACTION_CONFIRM) {
+                if (saveChanges()) {
+                    dismiss();
+                }
+                return true;
+            }
+            return false;
         }
 
         private boolean saveChanges() {

@@ -21,7 +21,37 @@
 
 <resources>
 
+    <!-- Specific Theme for the startup activity so it looks like a dialog as intended. -->
+    <style name="Theme.App.Startup" parent="Theme.MaterialComponents.DayNight.Dialog">
+
+        <!--  ======================== -->
+        <!-- Component theme overrides -->
+        <!--  ======================== -->
+        <item name="snackbarTextViewStyle">@style/SnackbarText</item>
+
+        <item name="materialAlertDialogTheme">@style/ThemeOverlay.App.MaterialAlertDialog</item>
+        <item name="buttonBarButtonStyle">@style/ButtonBarButtons</item>
+        <item name="buttonBarNegativeButtonStyle">@style/ButtonBarButtons</item>
+        <item name="buttonBarPositiveButtonStyle">@style/ButtonBarButtons</item>
+
+        <!-- ==================== -->
+        <!-- Application specific -->
+        <!-- ==================== -->
+        <item name="appDialogButtonTextColor">@color/blue_grey_600</item>
+    </style>
+
+    <!-- Main theme. -->
     <style name="Theme.App" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+
+        <!--  ======================== -->
+        <!-- Component theme overrides -->
+        <!--  ======================== -->
+        <item name="snackbarTextViewStyle">@style/SnackbarText</item>
+
+        <item name="materialAlertDialogTheme">@style/ThemeOverlay.App.MaterialAlertDialog</item>
+        <item name="buttonBarButtonStyle">@style/ButtonBarButtons</item>
+        <item name="buttonBarNegativeButtonStyle">@style/ButtonBarButtons</item>
+        <item name="buttonBarPositiveButtonStyle">@style/ButtonBarButtons</item>
 
         <!-- =================== -->
         <!-- Theme Color palette -->
@@ -41,12 +71,6 @@
 
         <!--        <item name="colorControlNormal">?attr/colorOnPrimary</item>-->
 
-        <!--  ======================== -->
-        <!-- Component theme overrides -->
-        <!--  ======================== -->
-        <item name="materialAlertDialogTheme">@style/ThemeOverlay.App.MaterialAlertDialog</item>
-        <item name="snackbarTextViewStyle">@style/SnackbarText</item>
-
         <!-- ==================== -->
         <!-- Application specific -->
         <!-- ==================== -->
@@ -64,16 +88,23 @@
         <item name="appColorChecked">@color/green_300</item>
         <item name="appColorCompleted">@color/teal_300</item>
 
+        <!-- button text. "colorPrimary" as set to "blue_grey_600" works fine. -->
+        <item name="appDialogButtonTextColor">?attr/colorPrimary</item>
     </style>
 
     <style name="ThemeOverlay.App.MaterialAlertDialog" parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog">
-        <!-- button text. "colorPrimary" as set to "blue_grey_600" works fine. No need to override. -->
-        <!--  <item name="colorPrimary">@color/blue_grey_600</item>-->
+        <!--  ======================== -->
+        <!-- Component theme overrides -->
+        <!--  ======================== -->
+        <item name="buttonBarButtonStyle">@style/ButtonBarButtons</item>
+        <item name="buttonBarNegativeButtonStyle">@style/ButtonBarButtons</item>
+        <item name="buttonBarPositiveButtonStyle">@style/ButtonBarButtons</item>
+
+        <!-- ==================== -->
+        <!-- Application specific -->
+        <!-- ==================== -->
+        <!-- button text. "colorPrimary" as set to "blue_grey_600" works fine. -->
+        <item name="appDialogButtonTextColor">?attr/colorPrimary</item>
     </style>
 
-    <!-- Specific Theme for the startup activity so it looks like a dialog as intended. -->
-    <style name="Theme.App.Startup" parent="Theme.MaterialComponents.DayNight.Dialog">
-        <!-- button text. Use the same as in "ThemeOverlay.App.MaterialAlertDialog" -->
-        <item name="colorPrimary">@color/blue_grey_600</item>
-    </style>
 </resources>

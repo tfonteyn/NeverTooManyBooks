@@ -21,6 +21,7 @@ package com.hardbacknutter.nevertoomanybooks;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
@@ -100,8 +101,8 @@ public class EditBookPublisherListDialogFragment
      * No-arg constructor for OS use.
      */
     public EditBookPublisherListDialogFragment() {
-        // Always force full screen as this dialog is to large/complicated.
-        super(R.layout.dialog_edit_book_publisher_list, true);
+        super(R.layout.dialog_edit_book_publisher_list);
+        setForceFullscreen();
     }
 
     /**
@@ -136,18 +137,6 @@ public class EditBookPublisherListDialogFragment
         mBookViewModel.init(getContext(), getArguments());
 
         mVb.toolbar.setSubtitle(mBookViewModel.getBook().getTitle());
-        mVb.toolbar.setNavigationOnClickListener(v -> {
-            if (saveChanges()) {
-                dismiss();
-            }
-        });
-        mVb.toolbar.setOnMenuItemClickListener(item -> {
-            if (item.getItemId() == R.id.action_add) {
-                onAdd();
-                return true;
-            }
-            return false;
-        });
 
         final DiacriticArrayAdapter<String> nameAdapter = new DiacriticArrayAdapter<>(
                 getContext(), R.layout.dropdown_menu_popup_item,
@@ -181,6 +170,22 @@ public class EditBookPublisherListDialogFragment
                 new SimpleItemTouchHelperCallback(mListAdapter);
         mItemTouchHelper = new ItemTouchHelper(sitHelperCallback);
         mItemTouchHelper.attachToRecyclerView(mVb.publisherList);
+    }
+
+    @Override
+    protected void onToolbarNavigationClick(@NonNull final View v) {
+        if (saveChanges()) {
+            dismiss();
+        }
+    }
+
+    @Override
+    protected boolean onToolbarMenuItemClick(@NonNull final MenuItem item) {
+        if (item.getItemId() == R.id.MENU_ACTION_CONFIRM) {
+            onAdd();
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -421,22 +426,23 @@ public class EditBookPublisherListDialogFragment
             mVb = DialogEditBookPublisherBinding.bind(view);
 
             mVb.toolbar.setSubtitle(mBookTitle);
-            mVb.toolbar.setNavigationOnClickListener(v -> dismiss());
-            mVb.toolbar.setOnMenuItemClickListener(item -> {
-                if (item.getItemId() == R.id.MENU_SAVE) {
-                    if (saveChanges()) {
-                        dismiss();
-                    }
-                    return true;
-                }
-                return false;
-            });
 
             //noinspection ConstantConditions
             final DiacriticArrayAdapter<String> mNameAdapter = new DiacriticArrayAdapter<>(
                     getContext(), R.layout.dropdown_menu_popup_item, mDb.getPublisherNames());
             mVb.name.setText(mName);
             mVb.name.setAdapter(mNameAdapter);
+        }
+
+        @Override
+        protected boolean onToolbarMenuItemClick(@NonNull final MenuItem item) {
+            if (item.getItemId() == R.id.MENU_ACTION_CONFIRM) {
+                if (saveChanges()) {
+                    dismiss();
+                }
+                return true;
+            }
+            return false;
         }
 
         private boolean saveChanges() {

@@ -19,23 +19,21 @@
  */
 package com.hardbacknutter.nevertoomanybooks.backup.base;
 
-import android.app.Dialog;
-import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Parcelable;
-import android.view.ViewGroup;
 
-import androidx.annotation.DimenRes;
+import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentResultListener;
 
 import java.util.Objects;
 
+import com.hardbacknutter.nevertoomanybooks.dialogs.BaseDialogFragment;
+
 public abstract class OptionsDialogBase<T extends Parcelable>
-        extends DialogFragment {
+        extends BaseDialogFragment {
 
     /** Log tag. */
     private static final String TAG = "OptionsDialogBase";
@@ -43,6 +41,10 @@ public abstract class OptionsDialogBase<T extends Parcelable>
 
     /** FragmentResultListener request key to use for our response. */
     private String mRequestKey;
+
+    public OptionsDialogBase(@LayoutRes final int layoutId) {
+        super(layoutId);
+    }
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -52,21 +54,22 @@ public abstract class OptionsDialogBase<T extends Parcelable>
         mRequestKey = args.getString(BKEY_REQUEST_KEY);
     }
 
-    protected void fixDialogWidth(@DimenRes final int dimenId) {
-        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            // force the dialog to be big enough
-            Dialog dialog = getDialog();
-            if (dialog != null) {
-                int width = getResources().getDimensionPixelSize(dimenId);
-                int height = ViewGroup.LayoutParams.WRAP_CONTENT;
-                //noinspection ConstantConditions
-                dialog.getWindow().setLayout(width, height);
-            }
-        }
-    }
+//    protected void fixDialogWidth(@DimenRes final int dimenId) {
+//       if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+//            // force the dialog to be big enough
+//            Dialog dialog = getDialog();
+//            if (dialog != null) {
+//                int width = getResources().getDimensionPixelSize(dimenId);
+//                int height = ViewGroup.LayoutParams.WRAP_CONTENT;
+//                //noinspection ConstantConditions
+//                dialog.getWindow().setLayout(width, height);
+//            }
+//        }
+//    }
 
     protected void onOptionsSet(@NonNull final T options) {
         OnOptionsListener.sendResult(this, mRequestKey, options);
+        dismiss();
     }
 
     protected void onCancelled() {

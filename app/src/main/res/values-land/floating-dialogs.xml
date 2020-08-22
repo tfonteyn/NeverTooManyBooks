@@ -19,10 +19,10 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
-    <item
-        android:id="@id/MENU_ACTION_CONFIRM"
-        android:title="@string/action_save"
-        app:showAsAction="always" />
-</menu>
+<!--
+    4WVGA (480 x 800; hdpi) - 240dpi - sw320dp
+    port: w320dp h509dp
+    land: w533dp h296dp
+-->
+<resources>
+</resources>

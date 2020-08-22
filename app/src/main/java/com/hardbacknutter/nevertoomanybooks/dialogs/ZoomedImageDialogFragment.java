@@ -4,14 +4,6 @@
  *
  * This file is part of NeverTooManyBooks.
  *
- * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
- *
- * Without their original creation, this project would not exist in its
- * current form. It was however largely rewritten/refactored and any
- * comments on this fork should be directed at HardBackNutter and not
- * at the original creators.
- *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -31,9 +23,7 @@ import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
@@ -64,6 +54,13 @@ public class ZoomedImageDialogFragment
 
     /**
      * Constructor.
+     */
+    public ZoomedImageDialogFragment() {
+        super(R.layout.dialog_zoomed_image);
+    }
+
+    /**
+     * Constructor.
      *
      * @param image to display
      *
@@ -88,13 +85,11 @@ public class ZoomedImageDialogFragment
     }
 
     @Override
-    public View onCreateView(@NonNull final LayoutInflater inflater,
-                             @Nullable final ViewGroup container,
-                             @Nullable final Bundle savedInstanceState) {
-        final View root = inflater.inflate(R.layout.dialog_zoomed_image, container);
-        mImageView = root.findViewById(R.id.coverImage0);
+    public void onViewCreated(@NonNull final View view,
+                              @Nullable final Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        mImageView = view.findViewById(R.id.coverImage0);
         mImageView.setOnClickListener(v -> dismiss());
-        return root;
     }
 
     @Override

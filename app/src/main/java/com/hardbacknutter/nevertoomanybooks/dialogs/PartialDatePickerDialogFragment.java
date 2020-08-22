@@ -22,6 +22,7 @@ package com.hardbacknutter.nevertoomanybooks.dialogs;
 import android.os.Bundle;
 import android.text.format.DateFormat;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.NumberPicker;
@@ -187,20 +188,8 @@ public class PartialDatePickerDialogFragment
         //noinspection ConstantConditions
         reorderPickers(root);
 
-
         final Toolbar toolbar = root.findViewById(R.id.toolbar);
-        toolbar.setNavigationOnClickListener(v -> dismiss());
-        toolbar.setOnMenuItemClickListener(item -> {
-            if (item.getItemId() == R.id.MENU_SAVE) {
-                if (saveChanges()) {
-                    dismiss();
-                }
-                return true;
-            }
-            return false;
-        });
         toolbar.setTitle(mDialogTitleId != 0 ? mDialogTitleId : R.string.action_edit);
-
 
         final NumberPicker yearPicker = root.findViewById(R.id.year);
         // 0: 'not set'
@@ -231,6 +220,17 @@ public class PartialDatePickerDialogFragment
         monthPicker.setValue(mMonth);
         mDayPicker.setValue(mDay);
         updateDaysInMonth();
+    }
+
+    @Override
+    protected boolean onToolbarMenuItemClick(@NonNull final MenuItem item) {
+        if (item.getItemId() == R.id.MENU_ACTION_CONFIRM) {
+            if (saveChanges()) {
+                dismiss();
+            }
+            return true;
+        }
+        return false;
     }
 
     private boolean saveChanges() {

@@ -19,7 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.dialogs;
 
-import android.app.Dialog;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -42,8 +41,6 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentResultListener;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -56,9 +53,8 @@ import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 /**
  * Show context menu on a view.
  * <p>
- * Experimental: manual menu construction fully supported,
- * using a menu inflater works but will ignore icons (can't extract the icon ID from the MenuItem,
- * only the Drawable)
+ * Experimental: manual menu construction fully supported.
+ * When using a menu inflater we use reflection to read the icon id... this is a BAD idea...
  * <p>
  * See build.gradle for app module; android/defaultConfig
  * buildConfigField("boolean", "MENU_PICKER_USES_FRAGMENT", "false")
@@ -79,6 +75,13 @@ public class MenuPickerDialogFragment
 
     /** Cached position of the item in the list this menu was invoked on. */
     private int mPosition;
+
+    /**
+     * Constructor.
+     */
+    public MenuPickerDialogFragment() {
+        super(R.layout.dialog_popupmenu);
+    }
 
     /**
      * Constructor.
@@ -142,34 +145,30 @@ public class MenuPickerDialogFragment
         return pickList;
     }
 
-    @NonNull
     @Override
-    public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
+    public void onViewCreated(@NonNull final View view,
+                              @Nullable final Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
         final Bundle args = requireArguments();
         mRequestKey = args.getString(BKEY_REQUEST_KEY);
         mPosition = args.getInt(BKEY_POSITION);
 
         final Iterable<Pick> menu = args.getParcelableArrayList(BKEY_MENU);
 
-        final View root = getLayoutInflater().inflate(R.layout.dialog_popupmenu, null);
-
         // optional title
         final String title = args.getString(StandardDialogs.BKEY_DIALOG_TITLE);
         if (title != null && !title.isEmpty()) {
-            final TextView titleView = root.findViewById(R.id.alertTitle);
+            final TextView titleView = view.findViewById(R.id.alertTitle);
             titleView.setText(title);
         } else {
-            root.findViewById(R.id.title_template).setVisibility(View.GONE);
+            view.findViewById(R.id.title_template).setVisibility(View.GONE);
         }
 
         //noinspection ConstantConditions
         final MenuItemListAdapter adapter = new MenuItemListAdapter(getContext(), menu);
-        final RecyclerView listView = root.findViewById(R.id.item_list);
+        final RecyclerView listView = view.findViewById(R.id.item_list);
         listView.setAdapter(adapter);
-
-        return new MaterialAlertDialogBuilder(getContext())
-                .setView(root)
-                .create();
     }
 
     public interface OnResultListener
@@ -336,9 +335,9 @@ public class MenuPickerDialogFragment
             return this;
         }
 
-        @NonNull
+        @Nullable
         Drawable getIcon(@NonNull final Context context) {
-            if (mIcon == null) {
+            if (mIcon == null && mIconId != 0) {
                 mIcon = context.getDrawable(mIconId);
                 Objects.requireNonNull(mIcon, ErrorMsg.NULL_DRAWABLE);
             }

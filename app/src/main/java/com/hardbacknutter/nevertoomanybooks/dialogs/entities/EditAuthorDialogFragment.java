@@ -21,6 +21,7 @@ package com.hardbacknutter.nevertoomanybooks.dialogs.entities;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
 
 import androidx.annotation.NonNull;
@@ -71,8 +72,8 @@ public class EditAuthorDialogFragment
      * No-arg constructor for OS use.
      */
     public EditAuthorDialogFragment() {
-        // Always force full screen as this dialog is to large/complicated.
-        super(R.layout.dialog_edit_author, true);
+        super(R.layout.dialog_edit_author);
+        setForceFullscreen();
     }
 
     /**
@@ -123,17 +124,6 @@ public class EditAuthorDialogFragment
         super.onViewCreated(view, savedInstanceState);
         mVb = DialogEditAuthorBinding.bind(view);
 
-        mVb.toolbar.setNavigationOnClickListener(v -> dismiss());
-        mVb.toolbar.setOnMenuItemClickListener(item -> {
-            if (item.getItemId() == R.id.MENU_SAVE) {
-                if (saveChanges()) {
-                    dismiss();
-                }
-                return true;
-            }
-            return false;
-        });
-
         final Context context = getContext();
 
         //noinspection ConstantConditions
@@ -149,6 +139,17 @@ public class EditAuthorDialogFragment
         mVb.givenNames.setText(mGivenNames);
         mVb.givenNames.setAdapter(givenNameAdapter);
         mVb.cbxIsComplete.setChecked(mIsComplete);
+    }
+
+    @Override
+    protected boolean onToolbarMenuItemClick(@NonNull final MenuItem item) {
+        if (item.getItemId() == R.id.MENU_ACTION_CONFIRM) {
+            if (saveChanges()) {
+                dismiss();
+            }
+            return true;
+        }
+        return false;
     }
 
     private boolean saveChanges() {

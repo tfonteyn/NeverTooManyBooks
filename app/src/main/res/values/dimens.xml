@@ -4,14 +4,6 @@
   ~
   ~ This file is part of NeverTooManyBooks.
   ~
-  ~ In August 2018, this project was forked from:
-  ~ Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
-  ~
-  ~ Without their original creation, this project would not exist in its
-  ~ current form. It was however largely rewritten/refactored and any
-  ~ comments on this fork should be directed at HardBackNutter and not
-  ~ at the original creators.
-  ~
   ~ NeverTooManyBooks is free software: you can redistribute it and/or modify
   ~ it under the terms of the GNU General Public License as published by
   ~ the Free Software Foundation, either version 3 of the License, or
@@ -28,23 +20,27 @@
 
 <!-- The layout and button sizes in dimens.xml were tested with:
 
-    Generic 7" tablet (600 x 1024) - 160dpi - sw600
+    Generic 10.1" (800 x 1280) - 160dpi - sw800
+    Generic  7.0" (600 x 1024) - 160dpi - sw600
 
-    Pixel2 (1080 x 1920) - 420dpi - sw411dp
+    Pixel2 - 5.0" (1080 x 1920) - 420dpi - sw411dp
     port: w411dp h659dp
     land: w683dp h387dp
 
-    Samsung A5-2017 (1080 x 1920; xxhdpi) -  480dpi - sw360dp
+    Samsung A5-2017 - 5.2" (1080 x 1920) - 480dpi - sw360dp
     port:  w360dp h616dp
     land:  w640dp h336dp
 
-    4WVGA (480 x 800; hdpi) - 240dpi - sw320dp
+    4WVGA 4.0" (480 x 800) - 240dpi - sw320dp
     port: w320dp h509dp
     land: w533dp h296dp
-
 -->
 
-<!-- base: 4WVGA (480 x 800; hdpi) - 240dpi -->
+<!--
+    4WVGA 4.0" (480 x 800) - 240dpi - sw320dp
+    port: w320dp h509dp
+    land: w533dp h296dp
+-->
 <resources>
 
     <!-- Application icon size on the nav panel and startup splash-->

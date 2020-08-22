@@ -23,6 +23,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
 
 import androidx.annotation.NonNull;
@@ -114,33 +115,6 @@ public class StylePickerDialogFragment
 
         final DialogStylesMenuBinding vb = DialogStylesMenuBinding.bind(view);
 
-        vb.toolbar.setNavigationOnClickListener(v -> dismiss());
-        vb.toolbar.setOnMenuItemClickListener(item -> {
-            switch (item.getItemId()) {
-                case R.id.MENU_SAVE:
-                    onStyleSelected();
-                    return true;
-                case R.id.MENU_EDIT:
-                    onEditStyle();
-                    return true;
-                case R.id.MENU_LEVEL_TOGGLE:
-                    mShowAllStyles = !mShowAllStyles;
-                    if (mShowAllStyles) {
-                        item.setTitle(R.string.btn_less_ellipsis);
-                        item.setIcon(R.drawable.ic_unfold_less);
-                    } else {
-                        item.setTitle(R.string.btn_more_ellipsis);
-                        item.setIcon(R.drawable.ic_unfold_more);
-                    }
-                    loadStyles();
-                    mAdapter.notifyDataSetChanged();
-                    return true;
-
-                default:
-                    return false;
-            }
-        });
-
         loadStyles();
 
         //noinspection ConstantConditions
@@ -148,6 +122,33 @@ public class StylePickerDialogFragment
                                                    mAdapterItemList, mCurrentStyleUuid,
                                                    uuid -> mCurrentStyleUuid = uuid);
         vb.styles.setAdapter(mAdapter);
+    }
+
+    @Override
+    protected boolean onToolbarMenuItemClick(@NonNull final MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.MENU_ACTION_CONFIRM:
+                onStyleSelected();
+                return true;
+            case R.id.MENU_EDIT:
+                onEditStyle();
+                return true;
+            case R.id.MENU_LEVEL_TOGGLE:
+                mShowAllStyles = !mShowAllStyles;
+                if (mShowAllStyles) {
+                    item.setTitle(R.string.btn_less_ellipsis);
+                    item.setIcon(R.drawable.ic_unfold_less);
+                } else {
+                    item.setTitle(R.string.btn_more_ellipsis);
+                    item.setIcon(R.drawable.ic_unfold_more);
+                }
+                loadStyles();
+                mAdapter.notifyDataSetChanged();
+                return true;
+
+            default:
+                return false;
+        }
     }
 
     /**

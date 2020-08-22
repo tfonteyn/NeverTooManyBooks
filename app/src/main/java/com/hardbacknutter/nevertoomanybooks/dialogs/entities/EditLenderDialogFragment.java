@@ -25,6 +25,7 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.provider.ContactsContract;
+import android.view.MenuItem;
 import android.view.View;
 
 import androidx.annotation.NonNull;
@@ -170,16 +171,6 @@ public class EditLenderDialogFragment
         mVb = DialogEditLoanBinding.bind(view);
 
         mVb.toolbar.setSubtitle(mBookTitle);
-        mVb.toolbar.setNavigationOnClickListener(v -> dismiss());
-        mVb.toolbar.setOnMenuItemClickListener(item -> {
-            if (item.getItemId() == R.id.MENU_SAVE) {
-                if (saveChanges()) {
-                    dismiss();
-                }
-                return true;
-            }
-            return false;
-        });
 
         mVb.lendTo.setText(mLoanee);
 
@@ -187,6 +178,17 @@ public class EditLenderDialogFragment
         if (contacts != null) {
             initAdapter(contacts);
         }
+    }
+
+    @Override
+    protected boolean onToolbarMenuItemClick(@NonNull final MenuItem item) {
+        if (item.getItemId() == R.id.MENU_ACTION_CONFIRM) {
+            if (saveChanges()) {
+                dismiss();
+            }
+            return true;
+        }
+        return false;
     }
 
     /**

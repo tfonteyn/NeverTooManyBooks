@@ -6,14 +6,6 @@
   ~
   ~ This file is part of NeverTooManyBooks.
   ~
-  ~ In August 2018, this project was forked from:
-  ~ Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
-  ~
-  ~ Without their original creation, this project would not exist in its
-  ~ current form. It was however largely rewritten/refactored and any
-  ~ comments on this fork should be directed at HardBackNutter and not
-  ~ at the original creators.
-  ~
   ~ NeverTooManyBooks is free software: you can redistribute it and/or modify
   ~ it under the terms of the GNU General Public License as published by
   ~ the Free Software Foundation, either version 3 of the License, or
@@ -62,55 +54,68 @@
         style="@style/Dialog.Frame.FloatingAndFullscreen"
         >
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            style="@style/Dialog.Body.FloatingAndFullscreen"
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
             >
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/lbl_series_title"
-                style="@style/Envelope.AutoCompleteTextView"
-                android:hint="@string/lbl_series"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
+            <androidx.constraintlayout.widget.ConstraintLayout
+                style="@style/Dialog.Body.FloatingAndFullscreen"
                 >
 
-                <AutoCompleteTextView
-                    android:id="@+id/series_title"
-                    style="@style/titleTextEntryAutoComplete"
-                    android:layout_width="match_parent"
-                    android:imeOptions="actionNext"
-                    tools:ignore="LabelFor"
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/lbl_series_title"
+                    style="@style/Envelope.AutoCompleteTextView"
+                    android:hint="@string/lbl_series"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    >
+
+                    <AutoCompleteTextView
+                        android:id="@+id/series_title"
+                        style="@style/titleTextEntryAutoComplete"
+                        android:layout_width="match_parent"
+                        android:imeOptions="actionNext"
+                        tools:ignore="LabelFor"
+                        />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/lbl_series_num"
+                    style="@style/Envelope.EditText.SeriesNum"
+                    android:hint="@string/lbl_series_num"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/lbl_series_title"
+                    >
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/series_num"
+                        style="@style/EditText.SeriesNumber"
+                        android:layout_width="match_parent"
+                        android:imeOptions="actionDone"
+                        tools:ignore="Autofill"
+                        />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <CheckBox
+                    android:id="@+id/cbx_is_complete"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/lbl_is_complete"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/lbl_series_num"
                     />
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/lbl_series_num"
-                style="@style/Envelope.EditText.SeriesNum"
-                android:hint="@string/lbl_series_num"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/lbl_series_title"
-                >
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/series_num"
-                    style="@style/EditText.SeriesNumber"
-                    android:layout_width="match_parent"
-                    android:imeOptions="actionDone"
-                    tools:ignore="Autofill"
-                    />
-
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <CheckBox
-                android:id="@+id/cbx_is_complete"
-                android:layout_width="0dp"
+            <include
+                layout="@layout/inc_dialog_buttonbar"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/lbl_is_complete"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/lbl_series_num"
                 />
-        </androidx.constraintlayout.widget.ConstraintLayout>
+        </LinearLayout>
     </FrameLayout>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

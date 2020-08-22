@@ -5,14 +5,6 @@
   ~
   ~ This file is part of NeverTooManyBooks.
   ~
-  ~ In August 2018, this project was forked from:
-  ~ Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
-  ~
-  ~ Without their original creation, this project would not exist in its
-  ~ current form. It was however largely rewritten/refactored and any
-  ~ comments on this fork should be directed at HardBackNutter and not
-  ~ at the original creators.
-  ~
   ~ NeverTooManyBooks is free software: you can redistribute it and/or modify
   ~ it under the terms of the GNU General Public License as published by
   ~ the Free Software Foundation, either version 3 of the License, or
@@ -27,7 +19,18 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
+<!--
+    4WVGA (480 x 800; hdpi) - 240dpi - sw320dp
+    port: w320dp h509dp
+    land: w533dp h296dp
+-->
 <resources>
-    <!-- DialogFrame's which might show the onscreen keyboard, are FULLSCREEN. -->
-    <bool name="useFloatingDialogs">false</bool>
+    <!-- com/hardbacknutter/nevertoomanybooks/dialogs/BaseDialogFragment.java
+         FULLSCREEN.
+    -->
+    <bool name="floating_dialogs_enabled">false</bool>
+    <!-- not active, as FULLSCREEN -->
+    <dimen name="floating_dialogs_min_width">0</dimen>
+    <dimen name="floating_dialogs_min_width_cover_browser">0</dimen>
+
 </resources>

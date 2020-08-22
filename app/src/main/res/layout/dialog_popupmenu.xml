@@ -22,8 +22,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    style="@style/Dialog.Body.Floating"
     android:orientation="vertical"
     >
 
@@ -34,9 +33,7 @@
         android:layout_height="wrap_content"
         android:gravity="center_vertical|start"
         android:orientation="horizontal"
-        android:paddingStart="?attr/dialogPreferredPadding"
         android:paddingTop="18dp"
-        android:paddingEnd="?attr/dialogPreferredPadding"
         >
 
         <ImageView
@@ -52,7 +49,7 @@
 
         <TextView
             android:id="@+id/alertTitle"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:ellipsize="end"
             android:fontFamily="sans-serif-medium"
@@ -67,7 +64,8 @@
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/item_list"
-        style="@style/Dialog.Body.Floating"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:paddingTop="18dp"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         tools:itemCount="8"

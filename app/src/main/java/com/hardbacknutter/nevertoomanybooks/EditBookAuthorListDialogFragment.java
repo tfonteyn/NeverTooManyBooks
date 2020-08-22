@@ -23,6 +23,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.SparseArray;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
@@ -31,7 +32,6 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.DialogFragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.preference.PreferenceManager;
@@ -54,7 +54,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.AuthorFormatter;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
-import com.hardbacknutter.nevertoomanybooks.utils.AttrUtils;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.BookViewModel;
 import com.hardbacknutter.nevertoomanybooks.widgets.DiacriticArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.widgets.ItemTouchHelperViewHolderBase;
@@ -109,8 +108,8 @@ public class EditBookAuthorListDialogFragment
      * No-arg constructor for OS use.
      */
     public EditBookAuthorListDialogFragment() {
-        // Always force full screen as this dialog is to large/complicated.
-        super(R.layout.dialog_edit_book_author_list, true);
+        super(R.layout.dialog_edit_book_author_list);
+        setForceFullscreen();
     }
 
     /**
@@ -145,18 +144,6 @@ public class EditBookAuthorListDialogFragment
         mBookViewModel.init(getContext(), getArguments());
 
         mVb.toolbar.setSubtitle(mBookViewModel.getBook().getTitle());
-        mVb.toolbar.setNavigationOnClickListener(v -> {
-            if (saveChanges()) {
-                dismiss();
-            }
-        });
-        mVb.toolbar.setOnMenuItemClickListener(item -> {
-            if (item.getItemId() == R.id.action_add) {
-                onAdd();
-                return true;
-            }
-            return false;
-        });
 
         final DiacriticArrayAdapter<String> nameAdapter = new DiacriticArrayAdapter<>(
                 getContext(), R.layout.dropdown_menu_popup_item,
@@ -190,6 +177,22 @@ public class EditBookAuthorListDialogFragment
                 new SimpleItemTouchHelperCallback(mListAdapter);
         mItemTouchHelper = new ItemTouchHelper(sitHelperCallback);
         mItemTouchHelper.attachToRecyclerView(mVb.authorList);
+    }
+
+    @Override
+    protected void onToolbarNavigationClick(@NonNull final View v) {
+        if (saveChanges()) {
+            dismiss();
+        }
+    }
+
+    @Override
+    protected boolean onToolbarMenuItemClick(@NonNull final MenuItem item) {
+        if (item.getItemId() == R.id.MENU_ACTION_CONFIRM) {
+            onAdd();
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -419,8 +422,8 @@ public class EditBookAuthorListDialogFragment
          * No-arg constructor for OS use.
          */
         public EditAuthorForBookDialogFragment() {
-            // Always force full screen as this dialog is to large/complicated.
-            super(R.layout.dialog_edit_book_author, true);
+            super(R.layout.dialog_edit_book_author);
+            setForceFullscreen();
         }
 
         /**
@@ -483,16 +486,6 @@ public class EditBookAuthorListDialogFragment
             mVb = DialogEditBookAuthorBinding.bind(view);
 
             mVb.toolbar.setSubtitle(mBookTitle);
-            mVb.toolbar.setNavigationOnClickListener(v -> dismiss());
-            mVb.toolbar.setOnMenuItemClickListener(item -> {
-                if (item.getItemId() == R.id.MENU_SAVE) {
-                    if (saveChanges()) {
-                        dismiss();
-                    }
-                    return true;
-                }
-                return false;
-            });
 
             final DiacriticArrayAdapter<String> mFamilyNameAdapter = new DiacriticArrayAdapter<>(
                     getContext(), R.layout.dropdown_menu_popup_item,
@@ -539,35 +532,6 @@ public class EditBookAuthorListDialogFragment
                 } else {
                     setTypeEnabled(false);
                 }
-
-                /*
-                    This is a hack/workaround: the style used on the FrameLayout
-                    uses a workaround for an issue with the Toolbar.
-                    Here we need to workaround the former workaround depending on
-                    displaying the dialog in full-screen mode or not.
-
-                    android:layout_marginBottom:
-                        screen +sw600: ?attr/actionBarSize
-                        screen -sw600: 0dp
-                 */
-                final int marginBottom;
-                if (getResources().getBoolean(R.bool.useFloatingDialogs)) {
-                    marginBottom = AttrUtils.getDimen(getContext(), R.attr.actionBarSize);
-                } else {
-                    marginBottom = 0;
-                }
-
-                // guard against a unpredicted change in the xml.
-                //noinspection ConstantConditions
-                if (!(mVb.bodyFrame instanceof NestedScrollView)) {
-                    throw new IllegalStateException("mVb.bodyFrame instanceof NestedScrollView");
-                }
-
-                final ViewGroup.MarginLayoutParams marginParams =
-                        (ViewGroup.MarginLayoutParams) mVb.bodyFrame.getLayoutParams();
-                marginParams.bottomMargin = marginBottom;
-                mVb.bodyFrame.setLayoutParams(marginParams);
-                mVb.bodyFrame.setFillViewport(true);
             }
         }
 
@@ -583,6 +547,17 @@ public class EditBookAuthorListDialogFragment
             for (int i = 0; i < mTypeButtons.size(); i++) {
                 mTypeButtons.valueAt(i).setEnabled(enable);
             }
+        }
+
+        @Override
+        protected boolean onToolbarMenuItemClick(@NonNull final MenuItem item) {
+            if (item.getItemId() == R.id.MENU_ACTION_CONFIRM) {
+                if (saveChanges()) {
+                    dismiss();
+                }
+                return true;
+            }
+            return false;
         }
 
         private boolean saveChanges() {

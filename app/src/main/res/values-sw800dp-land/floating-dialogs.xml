@@ -19,10 +19,6 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
-    <item
-        android:id="@id/MENU_ACTION_CONFIRM"
-        android:title="@string/action_save"
-        app:showAsAction="always" />
-</menu>
+<resources>
+    <dimen name="floating_dialogs_min_width_cover_browser">900dp</dimen>
+</resources>

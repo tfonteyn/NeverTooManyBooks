@@ -176,7 +176,8 @@
 
     <!-- options menu -->
     <item name="MENU_RESET" type="id" />
-    <item name="MENU_SAVE" type="id" />
+    <!-- Options menu, confirming the main action; e.g. Save/Add/Select/... -->
+    <item name="MENU_ACTION_CONFIRM" type="id" />
 
     <!-- Scanner pick list -->
     <item name="MENU_SCANNER_EMBEDDED_ZXING" type="id" />

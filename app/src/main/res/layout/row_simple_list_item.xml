@@ -5,14 +5,6 @@
   ~
   ~ This file is part of NeverTooManyBooks.
   ~
-  ~ In August 2018, this project was forked from:
-  ~ Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
-  ~
-  ~ Without their original creation, this project would not exist in its
-  ~ current form. It was however largely rewritten/refactored and any
-  ~ comments on this fork should be directed at HardBackNutter and not
-  ~ at the original creators.
-  ~
   ~ NeverTooManyBooks is free software: you can redistribute it and/or modify
   ~ it under the terms of the GNU General Public License as published by
   ~ the Free Software Foundation, either version 3 of the License, or
@@ -27,25 +19,19 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<LinearLayout
+<!-- what the user sees, with an optional drawable at the 'start' added from code -->
+<TextView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical"
+    android:id="@+id/menu_item"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    >
+    android:layout_margin="@dimen/border2"
+    android:drawablePadding="@dimen/drawable_padding1"
+    android:maxLines="2"
+    android:text=""
+    android:textAppearance="?attr/textAppearanceListItem"
+    tools:drawableStart="@drawable/ic_image"
+    tools:text="@sample/data.json/context_menu/name"
+    />
 
-    <!-- what the user sees, with an optional drawable at the 'start' added from code -->
-    <TextView
-        android:id="@+id/menu_item"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/border2"
-        android:drawablePadding="@dimen/drawable_padding1"
-        android:text=""
-        android:textAppearance="?attr/textAppearanceListItem"
-        tools:drawableStart="@drawable/ic_image"
-        tools:text="@sample/data.json/context_menu/name"
-        />
-
-</LinearLayout>

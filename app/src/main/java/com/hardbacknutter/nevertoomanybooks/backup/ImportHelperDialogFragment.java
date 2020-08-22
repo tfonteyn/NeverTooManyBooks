@@ -19,9 +19,9 @@
  */
 package com.hardbacknutter.nevertoomanybooks.backup;
 
-import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
 
 import androidx.annotation.NonNull;
@@ -29,8 +29,6 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
-
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -58,6 +56,13 @@ public class ImportHelperDialogFragment
     private boolean mIsCsvBooks;
 
     /**
+     * No-arg constructor for OS use.
+     */
+    public ImportHelperDialogFragment() {
+        super(R.layout.dialog_import_options);
+    }
+
+    /**
      * Constructor.
      *
      * @param requestKey for use with the FragmentResultListener
@@ -77,35 +82,34 @@ public class ImportHelperDialogFragment
         return frag;
     }
 
-    @NonNull
     @Override
-    public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
+    public void onViewCreated(@NonNull final View view,
+                              @Nullable final Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
         mModel = new ViewModelProvider(this).get(ImportHelperViewModel.class);
         //noinspection ConstantConditions
         mModel.init(getContext(), requireArguments());
 
-        mVb = DialogImportOptionsBinding.inflate(getLayoutInflater());
+        mVb = DialogImportOptionsBinding.bind(view);
 
         mIsCsvBooks = mModel.isCsvContainer(getContext());
-        setupOptions();
 
-        return new MaterialAlertDialogBuilder(getContext())
-                .setView(mVb.getRoot())
-                .setTitle(R.string.lbl_import_options)
-                .setNegativeButton(android.R.string.cancel, (d, w) -> onCancelled())
-                .setPositiveButton(android.R.string.ok, (d, w) ->
-                        onOptionsSet(mModel.getHelper()))
-                .create();
+        setupOptions();
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
-        // do NOT adjust the dialog if we're doing CSV... it's big enough
-        if (!mIsCsvBooks) {
-            fixDialogWidth(R.dimen.import_dialog_landscape_width);
+    protected void onToolbarNavigationClick(@NonNull final View v) {
+        onCancelled();
+    }
+
+    @Override
+    protected boolean onToolbarMenuItemClick(@NonNull final MenuItem item) {
+        if (item.getItemId() == R.id.MENU_ACTION_CONFIRM) {
+            onOptionsSet(mModel.getHelper());
+            return true;
         }
+        return false;
     }
 
     /**

@@ -269,7 +269,7 @@ public class ExportManager
     /**
      * Get the temporary File to write to.
      * When writing is done (success <strong>and</strong> failure),
-     * {@link #onSuccess} / {@link #onFail} must be called as needed.
+     * {@link #onSuccess} / {@link #onCleanup} must be called as needed.
      *
      * @param context Current context
      *
@@ -332,7 +332,7 @@ public class ExportManager
      *
      * @param context Current context
      */
-    public void onFail(@NonNull final Context context) {
+    public void onCleanup(@NonNull final Context context) {
         FileUtils.delete(AppDir.Cache.getFile(context, TEMP_FILE_NAME));
     }
 

@@ -19,6 +19,9 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
+<!-- Generic  7.0" (600 x 1024) - 160dpi - sw600 -->
 <resources>
-    <dimen name="isbn_key_pad_height">280dp</dimen>
+    <!-- based on w640dp being the next smaller screen supported. -->
+    <dimen name="floating_dialogs_min_width">640dp</dimen>
+    <dimen name="floating_dialogs_min_width_cover_browser">800dp</dimen>
 </resources>

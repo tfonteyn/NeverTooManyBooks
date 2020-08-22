@@ -23,6 +23,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@id/MENU_ACTION_CONFIRM"
-        android:title="@string/action_save"
+        android:title="@string/lbl_backup"
         app:showAsAction="always" />
 </menu>
