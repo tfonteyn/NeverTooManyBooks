@@ -30,9 +30,11 @@ import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.preference.PreferenceManager;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Deque;
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
@@ -151,23 +153,47 @@ public class Site
      * @param sites          the list to check
      * @param callerIdString String used to flag in preferences if we showed the alert from
      *                       that caller already or not.
+     * @param onFinished     (optional) Runnable to call when all sites have been processed.
      */
     public static void promptToRegister(@NonNull final Context context,
                                         @NonNull final Collection<Site> sites,
                                         @NonNull final String callerIdString,
                                         @Nullable final Runnable onFinished) {
-        for (Site site : sites) {
+
+        final Deque<Site> stack = new ArrayDeque<>(sites);
+        promptToRegister(context, stack, callerIdString, onFinished);
+    }
+
+    /**
+     * Recursive stack-based version of
+     * {@link #promptToRegister(Context, Collection, String, Runnable)}.
+     *
+     * @param context        Current context
+     * @param sites          the stack of sites to check
+     * @param callerIdString String used to flag in preferences if we showed the alert from
+     *                       that caller already or not.
+     * @param onFinished     (optional) Runnable to call when all sites have been processed.
+     */
+    private static void promptToRegister(@NonNull final Context context,
+                                         @NonNull final Deque<Site> sites,
+                                         @NonNull final String callerIdString,
+                                         @Nullable final Runnable onFinished) {
+        while (!sites.isEmpty()) {
+            final Site site = sites.poll();
+            //noinspection ConstantConditions
             if (site.isEnabled()) {
                 final SearchEngine searchEngine = site.getSearchEngine(context);
                 if (searchEngine.promptToRegister(context, false, callerIdString, action -> {
                     switch (action) {
                         case Register:
                             throw new IllegalStateException("Engine must handle Register");
+
                         case NotNow:
                         case NotEver:
-                            // run the loop again, it will skip the disabled engine
+                            // restart the loop with the remaining sites to check.
                             promptToRegister(context, sites, callerIdString, onFinished);
                             return;
+
                         case Cancelled:
                             // user explicitly cancelled, we're done here
                             if (onFinished != null) {
@@ -182,7 +208,7 @@ public class Site
             }
         }
 
-        // all engines that need registration, have it, or were cancelled/disabled.
+        // all engines have registration, or were dismissed.
         if (onFinished != null) {
             onFinished.run();
         }
