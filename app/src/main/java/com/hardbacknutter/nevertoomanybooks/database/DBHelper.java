@@ -622,12 +622,13 @@ public final class DBHelper
         }
 
         if (oldVersion != newVersion) {
-
             final String backup = DB_UPGRADE_FILE_PREFIX + "-" + oldVersion + '-' + newVersion;
             try {
                 final File destFile = AppDir.Upgrades.getFile(context, backup);
-                // rename the existing file
-                FileUtils.renameOrThrow(destFile, new File(destFile.getPath() + ".bak"));
+                // rename the existing file if there is one
+                if (destFile.exists()) {
+                    FileUtils.rename(destFile, new File(destFile.getPath() + ".bak"));
+                }
                 // and create a new copy
                 FileUtils.copy(new File(db.getPath()), destFile);
             } catch (@NonNull final IOException e) {
