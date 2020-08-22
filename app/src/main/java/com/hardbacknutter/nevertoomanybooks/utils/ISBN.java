@@ -944,6 +944,8 @@ public class ISBN {
                                      @NonNull final TextInputEditText editText,
                                      @Validity final int isbnValidityCheck) {
             mLayout = layoutView;
+            mLayout.setStartIconVisible(false);
+
             mEditText = editText;
             mIsbnValidityCheck = isbnValidityCheck;
         }
