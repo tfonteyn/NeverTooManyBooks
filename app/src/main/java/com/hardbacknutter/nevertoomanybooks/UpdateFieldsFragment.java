@@ -144,9 +144,13 @@ public class UpdateFieldsFragment
         if (savedInstanceState == null) {
             TipManager.display(getContext(), R.string.tip_update_fields_from_internet, () ->
                     Site.promptToRegister(getContext(), mUpdateFieldsModel.getSiteList(),
-                                          "update_from_internet", null));
+                                          "update_from_internet", this::afterOnViewCreated));
+        } else {
+            afterOnViewCreated();
         }
+    }
 
+    private void afterOnViewCreated() {
         // Warn the user, but don't abort.
         //noinspection ConstantConditions
         if (!NetworkUtils.isNetworkAvailable(getContext())) {
