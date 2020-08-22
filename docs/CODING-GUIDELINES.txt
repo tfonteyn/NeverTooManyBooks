@@ -1,8 +1,10 @@
-Original guidelines for the project:
+Some notes (with a pinch of salt... as I change my own mind from time to time)
 
-https://github.com/eleybourn/Book-Catalogue/wiki/Developer-Notes-Suggestions-Guidelines
+* Use java docs + and doc links
 
-Small notes in addition (with a pinch of salt... as I change my own mind from time to time)
+* Always use brackets in if..then...else
+
+* If you rely on defaults, make them explicit.
 
 * trimming
     Wherever a View is READ as a String, a trim should be done
@@ -22,20 +24,23 @@ Small notes in addition (with a pinch of salt... as I change my own mind from ti
 * Switch() with a single case/default
   Yes, I prefer the uniformity.
 
-* pedantic but I hope polite request:
+* pedantic but polite request:
   Single character variables names are best left to BASIC style from the 1980's
   (Android itself uses a lot of 'v' ... so who am I to talk...)
+
+* Tags used; always followed with a colon
+  - URGENT: not a show-stopper, but really needs attention
+  - TEST: work done and minimal testing shows it works; but full testing should still be done
+
+  - RELEASE: things that must be checked before doing a public release
+  - NEWTHINGS: where a list of 'items' is processed -> you can/should add 'items' to that list
+
+  - FIXME: work around present or situation acceptable, but should be properly fixed
+  - TODO: time...
+  - ENHANCE: more time...
+
 
 * handy regular expressions:
 
     Find all places where we forgot to add the trim when getting text from a View:
         getText\(\).toString\(\)(?!\.trim)
-
-
-* Tags used; always followed with a colon
-  - TODO:
-  - FIXME:
-  - ENHANCE:
-  - TEST: work done, but needs proper testing
-  - RELEASE: things that must be checked before doing a public release
-  - NEWTHINGS: where a list of 'items' is processed -> where you can/should add 'items' to that list
