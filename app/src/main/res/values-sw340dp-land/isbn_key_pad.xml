@@ -20,20 +20,12 @@
   -->
 
 <!--
-    4WVGA 4.0" (480 x 800) - 240dpi - sw320dp
-    port: w320dp h509dp
-    land: w533dp h296dp
+    Samsung A5-2017 - 5.2" (1080 x 1920) - 480dpi - sw360dp
+    port:  w360dp h616dp
+    land:  w640dp h336dp
 -->
 <resources>
-    <!-- The ISBN keypad should not stretch beyond a reasonable width. -->
-    <dimen name="isbn_key_pad_max_width">320dp</dimen>
-    <!-- The ISBN keypad should not stretch beyond a reasonable height.  -->
-    <dimen name="isbn_key_pad_max_height">320dp</dimen>
-
-    <!-- The ISBN keypad margin for the keys. -->
-    <dimen name="isbn_key_pad_key_margin">4dp</dimen>
-    <!-- The ISBN keypad backspace button width: 2x icon width. -->
-    <dimen name="isbn_key_pad_backspace_button_width">48dp</dimen>
-    <!-- The ISBN keypad backspace button (no text): center the icon: 1/2 icon width -->
-    <dimen name="isbn_key_pad_backspace_button_icon_padding_left">12dp</dimen>
+    <!-- Reminder: standard toolbar height is 56dp.
+         i.e. 336 - 56 = 240 -->
+    <dimen name="isbn_key_pad_max_height">280dp</dimen>
 </resources>
