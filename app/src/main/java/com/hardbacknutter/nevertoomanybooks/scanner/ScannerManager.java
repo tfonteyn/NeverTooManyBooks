@@ -41,6 +41,7 @@ import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.RequestCode;
@@ -145,10 +146,10 @@ public final class ScannerManager {
      * Checks and/or prompts to install the preferred Scanner.
      *
      * @param activity       Calling activity
-     * @param resultListener will be called with the outcome
+     * @param resultConsumer will be called with the outcome
      */
     public static void installScanner(@NonNull final Activity activity,
-                                      @NonNull final OnResultListener resultListener) {
+                                      @NonNull final Consumer<Boolean> resultConsumer) {
         ScannerFactory sf = null;
         try {
             sf = SCANNER_FACTORIES.get(getPreferredScanner(activity)).newInstance();
@@ -157,9 +158,9 @@ public final class ScannerManager {
         }
         //noinspection ConstantConditions
         if (!sf.isAvailable(activity)) {
-            installScanner(activity, sf, resultListener);
+            installScanner(activity, sf, resultConsumer);
         } else {
-            resultListener.onResult(true);
+            resultConsumer.accept(true);
         }
     }
 
@@ -168,14 +169,14 @@ public final class ScannerManager {
      *
      * @param activity       Calling activity
      * @param sf             ScannerFactory for the desired scanner
-     * @param resultListener will be called with the outcome
+     * @param resultConsumer will be called with the outcome
      */
     private static void installScanner(@NonNull final Activity activity,
                                        @NonNull final ScannerFactory sf,
-                                       @NonNull final OnResultListener resultListener) {
+                                       @NonNull final Consumer<Boolean> resultConsumer) {
 
         if (sf.getMenuId() == R.id.MENU_SCANNER_GOOGLE_PLAY) {
-            updateGooglePlayServices(activity, resultListener);
+            updateGooglePlayServices(activity, resultConsumer);
 
         } else {
             // without the store, we can't do any automatic installs.
@@ -187,12 +188,12 @@ public final class ScannerManager {
                     try {
                         activity.startActivity(intent);
                         // returning true is not a guarantee for the install working...
-                        resultListener.onResult(true);
+                        resultConsumer.accept(true);
                         return;
                     } catch (@NonNull final ActivityNotFoundException ignore) {
                         // ignore
                     }
-                    googlePlayStoreMissing(activity, resultListener);
+                    googlePlayStoreMissing(activity, resultConsumer);
                 }
             }
         }
@@ -204,17 +205,17 @@ public final class ScannerManager {
      * If anything fails or the user cancels, we set the default scanner to ZXING_COMPATIBLE.
      *
      * @param activity       Calling activity
-     * @param resultListener will be called with the outcome
+     * @param resultConsumer will be called with the outcome
      */
     private static void updateGooglePlayServices(@NonNull final Activity activity,
-                                                 @NonNull final OnResultListener resultListener) {
+                                                 @NonNull final Consumer<Boolean> resultConsumer) {
 
         final GoogleApiAvailability gApi = GoogleApiAvailability.getInstance();
         final int status = gApi.isGooglePlayServicesAvailable(activity);
 
         if (status == ConnectionResult.SUCCESS) {
             // up-to-date, ready to use.
-            resultListener.onResult(true);
+            resultConsumer.accept(true);
 
         } else {
             final Dialog dialog = gApi.getErrorDialog(activity, status,
@@ -222,11 +223,11 @@ public final class ScannerManager {
                                                       d -> {
                                                           setPreferredScanner(activity,
                                                                               ZXING_COMPATIBLE);
-                                                          resultListener.onResult(false);
+                                                          resultConsumer.accept(false);
                                                       });
             // Paranoia...
             if (dialog == null) {
-                resultListener.onResult(true);
+                resultConsumer.accept(true);
                 return;
             }
 
@@ -256,10 +257,10 @@ public final class ScannerManager {
      * to install manually.
      *
      * @param context        Current context
-     * @param resultListener will be called with the outcome
+     * @param resultConsumer will be called with the outcome
      */
     private static void googlePlayStoreMissing(@NonNull final Context context,
-                                               @NonNull final OnResultListener resultListener) {
+                                               @NonNull final Consumer<Boolean> resultConsumer) {
 
         final String msg = context.getString(R.string.error_google_play_store_missing) + '\n'
                            + context.getString(R.string.txt_install_scanner_recommendation);
@@ -268,7 +269,7 @@ public final class ScannerManager {
                 .setIcon(R.drawable.ic_warning)
                 .setTitle(R.string.pg_barcode_scanner)
                 .setMessage(msg)
-                .setOnCancelListener(d -> resultListener.onResult(false))
+                .setOnCancelListener(d -> resultConsumer.accept(false))
                 .setNegativeButton(android.R.string.cancel, (d, w) -> d.cancel())
                 .create()
                 .show();
@@ -355,10 +356,5 @@ public final class ScannerManager {
         }
 
         return message.toString();
-    }
-
-    public interface OnResultListener {
-
-        void onResult(boolean success);
     }
 }

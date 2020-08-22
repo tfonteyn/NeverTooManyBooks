@@ -4,14 +4,6 @@
  *
  * This file is part of NeverTooManyBooks.
  *
- * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
- *
- * Without their original creation, this project would not exist in its
- * current form. It was however largely rewritten/refactored and any
- * comments on this fork should be directed at HardBackNutter and not
- * at the original creators.
- *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -37,6 +29,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
+import java.util.function.Consumer;
 
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 
@@ -60,12 +53,12 @@ public class XmlFilter {
     private final Locale mSystemLocale;
     /** Action to perform, if any, when the associated tag is started. */
     @Nullable
-    private XmlHandler mStartAction;
+    private Consumer<ElementContext> mStartAction;
     /** Optional parameter put in context before action is called. */
     private Object mStartArg;
     /** Action to perform, if any, when the associated tag is finished. */
     @Nullable
-    private XmlHandler mEndAction;
+    private Consumer<ElementContext> mEndAction;
     /** Optional parameter put in context before action is called. */
     private Object mEndArg;
 
@@ -195,7 +188,7 @@ public class XmlFilter {
     void processStart(@NonNull final ElementContext context) {
         if (mStartAction != null) {
             context.setUserArg(mStartArg);
-            mStartAction.process(context);
+            mStartAction.accept(context);
         }
     }
 
@@ -207,7 +200,7 @@ public class XmlFilter {
     void processEnd(@NonNull final ElementContext context) {
         if (mEndAction != null) {
             context.setUserArg(mEndArg);
-            mEndAction.process(context);
+            mEndAction.accept(context);
         }
     }
 
@@ -227,13 +220,12 @@ public class XmlFilter {
      * @return XmlFilter (for chaining)
      */
     @NonNull
-    public XmlFilter setStartAction(@NonNull final XmlHandler startAction) {
+    public XmlFilter setStartAction(@NonNull final Consumer<ElementContext> startAction) {
         return setStartAction(startAction, null);
     }
 
-    @SuppressWarnings("WeakerAccess")
     @NonNull
-    public XmlFilter setStartAction(@NonNull final XmlHandler startAction,
+    public XmlFilter setStartAction(@NonNull final Consumer<ElementContext> startAction,
                                     @Nullable final Object userArg) {
         if (mStartAction != null) {
             throw new IllegalStateException("Start Action already set");
@@ -252,12 +244,12 @@ public class XmlFilter {
      */
     @SuppressWarnings("UnusedReturnValue")
     @NonNull
-    public XmlFilter setEndAction(@NonNull final XmlHandler endAction) {
+    public XmlFilter setEndAction(@NonNull final Consumer<ElementContext> endAction) {
         return setEndAction(endAction, null);
     }
 
     @NonNull
-    public XmlFilter setEndAction(@NonNull final XmlHandler endAction,
+    public XmlFilter setEndAction(@NonNull final Consumer<ElementContext> endAction,
                                   @Nullable final Object userArg) {
         if (mEndAction != null) {
             throw new IllegalStateException("End Action already set");
@@ -280,11 +272,4 @@ public class XmlFilter {
         mSubFilterHash.put(lcPat, filter);
         mSubFilters.add(filter);
     }
-
-    /** Interface definition for filter handlers. */
-    public interface XmlHandler {
-
-        void process(@NonNull ElementContext elementContext);
-    }
-
 }

@@ -46,6 +46,7 @@ import java.lang.annotation.Target;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.function.Consumer;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -96,7 +97,7 @@ public interface SearchEngine {
     default boolean showRegistrationDialog(@NonNull final Context context,
                                            final boolean required,
                                            @Nullable final String callerIdString,
-                                           @NonNull final RegistrationCallback callback) {
+                                           @NonNull final Consumer<RegistrationAction> onResult) {
 
         final SearchEngineRegistry.Config config = getConfig();
         final String key;
@@ -121,11 +122,11 @@ public interface SearchEngine {
                     .setIcon(R.drawable.ic_warning)
                     .setTitle(context.getString(R.string.lbl_registration, siteName))
                     .setNegativeButton(R.string.btn_not_now, (d, w) ->
-                            callback.onRegistration(RegistrationCallback.Code.NotNow))
+                            onResult.accept(RegistrationAction.NotNow))
                     .setPositiveButton(R.string.btn_learn_more, (d, w) ->
-                            callback.onRegistration(RegistrationCallback.Code.Register))
+                            onResult.accept(RegistrationAction.Register))
                     .setOnCancelListener(
-                            d -> callback.onRegistration(RegistrationCallback.Code.Cancelled));
+                            d -> onResult.accept(RegistrationAction.Cancelled));
 
             if (required) {
                 dialogBuilder.setMessage(context.getString(
@@ -143,7 +144,7 @@ public interface SearchEngine {
                             R.string.btn_disable_message), (d, w) -> {
                         PreferenceManager.getDefaultSharedPreferences(context)
                                          .edit().putBoolean(key, true).apply();
-                        callback.onRegistration(RegistrationCallback.Code.NotEver);
+                        onResult.accept(RegistrationAction.NotEver);
                     });
                 }
             }
@@ -268,13 +269,13 @@ public interface SearchEngine {
      * <p>
      * Check if we have a key/account; if not alert the user.
      *
-     * @param context              Current context; <strong>MUST</strong> be passed in
-     *                             as this call might do UI interaction.
-     * @param required             {@code true} if we <strong>must</strong> have access to the site.
-     *                             {@code false} if it would be beneficial but not mandatory.
-     * @param callerIdString       String used to flag in preferences if we showed the alert from
-     *                             that caller already or not.
-     * @param registrationCallback called after user selects an outcome
+     * @param context        Current context; <strong>MUST</strong> be passed in
+     *                       as this call might do UI interaction.
+     * @param required       {@code true} if we <strong>must</strong> have access to the site.
+     *                       {@code false} if it would be beneficial but not mandatory.
+     * @param callerIdString String used to flag in preferences if we showed the alert from
+     *                       that caller already or not.
+     * @param onResult       called after user selects an outcome
      *
      * @return {@code true} if an alert is currently shown
      */
@@ -282,7 +283,7 @@ public interface SearchEngine {
     default boolean promptToRegister(@NonNull final Context context,
                                      final boolean required,
                                      @Nullable final String callerIdString,
-                                     @Nullable final RegistrationCallback registrationCallback) {
+                                     @Nullable final Consumer<RegistrationAction> onResult) {
         return false;
     }
 
@@ -350,6 +351,17 @@ public interface SearchEngine {
                                     config.getConnectTimeoutMs(),
                                     config.getReadTimeoutMs(),
                                     getThrottler());
+    }
+
+    enum RegistrationAction {
+        /** User selected to 'learn more' and register on the given site. */
+        Register,
+        /** User does not want to bother now, but wants to be reminded later. */
+        NotNow,
+        /** Not interested, don't bother the user again. */
+        NotEver,
+        /** Cancelled without selecting any option. */
+        Cancelled
     }
 
     /** Optional. */
@@ -649,27 +661,6 @@ public interface SearchEngine {
         @NonNull
         List<String> searchAlternativeEditions(@NonNull String validIsbn)
                 throws CredentialsException, IOException;
-    }
-
-    interface RegistrationCallback {
-
-        /**
-         * Call back with the action the user selected.
-         *
-         * @param action selected
-         */
-        void onRegistration(@NonNull Code action);
-
-        enum Code {
-            /** User selected to 'learn more' and register on the given site. */
-            Register,
-            /** User does not want to bother now, but wants to be reminded later. */
-            NotNow,
-            /** Not interested, don't bother the user again. */
-            NotEver,
-            /** Cancelled without selecting any option. */
-            Cancelled
-        }
     }
 
     @Target(ElementType.TYPE)

@@ -30,6 +30,7 @@ import androidx.annotation.WorkerThread;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.function.Consumer;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageFileInfo;
@@ -118,19 +119,19 @@ public class GoodreadsSearchEngine
     public boolean promptToRegister(@NonNull final Context context,
                                     final boolean required,
                                     @Nullable final String callerIdString,
-                                    @Nullable final RegistrationCallback registrationCallback) {
+                                    @Nullable final Consumer<RegistrationAction> onResult) {
         // sanity check
         if (isAvailable()) {
             return false;
         }
 
         return showRegistrationDialog(context, required, callerIdString, action -> {
-            if (action == RegistrationCallback.Code.Register) {
+            if (action == RegistrationAction.Register) {
                 final Intent intent = new Intent(context, GoodreadsRegistrationActivity.class);
                 context.startActivity(intent);
 
-            } else if (registrationCallback != null) {
-                registrationCallback.onRegistration(action);
+            } else if (onResult != null) {
+                onResult.accept(action);
             }
         });
     }

@@ -191,8 +191,8 @@ public class BookSearchByExternalIdFragment
         if (!mSelectedSearchEngine.isAvailable()) {
             // If the selected site needs registration, prompt the user.
             mSelectedSearchEngine.promptToRegister(getContext(), true, null, action -> {
-                if (action == SearchEngine.RegistrationCallback.Code.NotNow
-                    || action == SearchEngine.RegistrationCallback.Code.Cancelled) {
+                if (action == SearchEngine.RegistrationAction.NotNow
+                    || action == SearchEngine.RegistrationAction.Cancelled) {
                     // Clear the selection.
                     // Do not disable the button, allowing the user to change their mind.
                     mVb.sitesGroup.clearCheck();

@@ -45,6 +45,7 @@ import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Consumer;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
@@ -276,7 +277,7 @@ public class XmlImporter
                  .setEndAction(elementContext -> accessor.endElement());
 
         // typed tag starts. for both attribute and body based elements.
-        final XmlFilter.XmlHandler startTypedTag = elementContext -> {
+        final Consumer<ElementContext> startTypedTag = elementContext -> {
             mTagStack.push(mTag);
             mTag = new TagInfo(elementContext);
 
@@ -324,7 +325,7 @@ public class XmlImporter
         };
 
         // the end of a typed tag with a body
-        final XmlFilter.XmlHandler endTypedTag = elementContext -> {
+        final Consumer<ElementContext> endTypedTag = elementContext -> {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.XML) {
                 Log.d(TAG, "fromXml|endTypedTag"
                            + "|localName=" + elementContext.getLocalName()
@@ -398,7 +399,7 @@ public class XmlImporter
          * but importing an Element in a Collection is always done as a String in a List (for now?)
          */
         // set/list elements with attributes.
-        XmlFilter.XmlHandler startElementInCollection = elementContext -> {
+        Consumer<ElementContext> startElementInCollection = elementContext -> {
             mTagStack.push(mTag);
             mTag = new TagInfo(elementContext);
 
@@ -430,7 +431,7 @@ public class XmlImporter
         };
 
         // set/list elements with bodies.
-        final XmlFilter.XmlHandler endElementInCollection = elementContext -> {
+        final Consumer<ElementContext> endElementInCollection = elementContext -> {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.XML) {
                 Log.d(TAG, "fromXml|endElementInCollection"
                            + "|localName=`" + elementContext.getLocalName()

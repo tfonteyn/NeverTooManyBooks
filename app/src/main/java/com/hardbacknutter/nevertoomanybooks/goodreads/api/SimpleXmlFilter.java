@@ -29,12 +29,12 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.function.Consumer;
 
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.xml.ElementContext;
 import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlFilter;
-import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlFilter.XmlHandler;
 
 /**
  * Class layered on top of {@link XmlFilter} to implement a simple set of XML filters to extract
@@ -43,7 +43,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlFilter.XmlHandler;
 public class SimpleXmlFilter {
 
     @NonNull
-    private static final XmlHandler mHandleStart = elementContext -> {
+    private static final Consumer<ElementContext> mHandleStart = elementContext -> {
         BuilderContext bc = (BuilderContext) elementContext.getUserArg();
         if (bc.isArray()) {
             bc.initArray();
@@ -70,10 +70,10 @@ public class SimpleXmlFilter {
     };
 
     @NonNull
-    private static final XmlHandler mHandleFinish = elementContext -> {
+    private static final Consumer<ElementContext> mHandleFinish = elementContext -> {
         final BuilderContext bc = (BuilderContext) elementContext.getUserArg();
         if (bc.finishHandler != null) {
-            bc.finishHandler.process(elementContext);
+            bc.finishHandler.accept(elementContext);
         }
         if (bc.listener != null) {
             bc.listener.onFinish(bc, elementContext);
@@ -88,13 +88,13 @@ public class SimpleXmlFilter {
     };
 
     @NonNull
-    private static final XmlHandler mTextHandler = elementContext -> {
+    private static final Consumer<ElementContext> mTextHandler = elementContext -> {
         final BuilderContext c = (BuilderContext) elementContext.getUserArg();
         c.getData().putString(c.collectField, elementContext.getBody());
     };
 
     @NonNull
-    private static final XmlHandler mLongHandler = elementContext -> {
+    private static final Consumer<ElementContext> mLongHandler = elementContext -> {
         final BuilderContext bc = (BuilderContext) elementContext.getUserArg();
         final String name = bc.collectField;
         try {
@@ -105,7 +105,7 @@ public class SimpleXmlFilter {
         }
     };
     @NonNull
-    private static final XmlHandler mBooleanHandler = elementContext -> {
+    private static final Consumer<ElementContext> mBooleanHandler = elementContext -> {
         final BuilderContext bc = (BuilderContext) elementContext.getUserArg();
         final String name = bc.collectField;
         try {
@@ -117,7 +117,7 @@ public class SimpleXmlFilter {
     };
     /** See constructor. */
     @NonNull
-    private final XmlHandler mDoubleHandler;
+    private final Consumer<ElementContext> mDoubleHandler;
     @Nullable
     private final Locale mLocale;
     @NonNull
@@ -276,14 +276,14 @@ public class SimpleXmlFilter {
     }
 
     private void setCollector(@NonNull final String tag,
-                              @NonNull final XmlHandler handler,
+                              @NonNull final Consumer<ElementContext> handler,
                               @NonNull final String fieldName) {
         s(tag);
         setCollector(handler, fieldName);
         pop();
     }
 
-    private void setCollector(@NonNull final XmlHandler handler,
+    private void setCollector(@NonNull final Consumer<ElementContext> handler,
                               @NonNull final String fieldName) {
         BuilderContext c = mContexts.get(mContexts.size() - 1);
         c.collectField = fieldName;
@@ -377,7 +377,7 @@ public class SimpleXmlFilter {
         @Nullable
         XmlListener listener;
         @Nullable
-        XmlHandler finishHandler;
+        Consumer<ElementContext> finishHandler;
 
         @Nullable
         private Bundle mLocalBundle;

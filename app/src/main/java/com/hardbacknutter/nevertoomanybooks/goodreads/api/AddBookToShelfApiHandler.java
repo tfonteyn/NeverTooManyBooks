@@ -4,14 +4,6 @@
  *
  * This file is part of NeverTooManyBooks.
  *
- * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
- *
- * Without their original creation, this project would not exist in its
- * current form. It was however largely rewritten/refactored and any
- * comments on this fork should be directed at HardBackNutter and not
- * at the original creators.
- *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -35,14 +27,15 @@ import androidx.annotation.NonNull;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Consumer;
 
 import org.xml.sax.helpers.DefaultHandler;
 
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsAuth;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsManager;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
+import com.hardbacknutter.nevertoomanybooks.utils.xml.ElementContext;
 import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlFilter;
-import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlFilter.XmlHandler;
 import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlResponseParser;
 
 /**
@@ -73,21 +66,19 @@ public class AddBookToShelfApiHandler
     /** Add multiple books to multiple shelves. */
     private static final String URL_X_X =
             GoodreadsManager.BASE_URL + "/shelf/add_books_to_shelves.xml";
-
+    /** XmlFilter root object. Used in extracting data file XML results. */
+    @NonNull
+    private final XmlFilter mRootFilter = new XmlFilter("");
     /** Resulting review-id after the request. */
     private long mReviewId;
     /** Handler for the review-id. */
-    private final XmlHandler mHandleReviewId = elementContext -> {
+    private final Consumer<ElementContext> mHandleReviewId = elementContext -> {
         try {
             mReviewId = Long.parseLong(elementContext.getBody());
         } catch (@NonNull final NumberFormatException ignore) {
             mReviewId = 0;
         }
     };
-
-    /** XmlFilter root object. Used in extracting data file XML results. */
-    @NonNull
-    private final XmlFilter mRootFilter = new XmlFilter("");
 
     /**
      * Constructor.
@@ -117,7 +108,7 @@ public class AddBookToShelfApiHandler
      * @return reviewId
      *
      * @throws CredentialsException with GoodReads
-     * @throws Http404Exception    the requested item was not found
+     * @throws Http404Exception     the requested item was not found
      * @throws IOException          on other failures
      */
     public long add(final long grBookId,
@@ -146,7 +137,7 @@ public class AddBookToShelfApiHandler
      * @return reviewId
      *
      * @throws CredentialsException with GoodReads
-     * @throws Http404Exception    the requested item was not found
+     * @throws Http404Exception     the requested item was not found
      * @throws IOException          on other failures
      */
     public long add(final long grBookId,
@@ -170,7 +161,7 @@ public class AddBookToShelfApiHandler
      * @param shelfName GoodReads shelf name
      *
      * @throws CredentialsException with GoodReads
-     * @throws Http404Exception    the requested item was not found
+     * @throws Http404Exception     the requested item was not found
      * @throws IOException          on other failures
      */
     public void remove(final long grBookId,
@@ -190,7 +181,7 @@ public class AddBookToShelfApiHandler
      * @return reviewId
      *
      * @throws CredentialsException with GoodReads
-     * @throws Http404Exception    the requested item was not found
+     * @throws Http404Exception     the requested item was not found
      * @throws IOException          on other failures
      */
     private long send(final long grBookId,

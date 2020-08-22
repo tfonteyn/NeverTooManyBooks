@@ -1,15 +1,8 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
- *
- * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
- *
- * Without their original creation, this project would not exist in its current form.
- * It was however largely rewritten/refactored and any comments on this fork
- * should be directed at HardBackNutter and not at the original creator.
  *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,6 +21,8 @@ package com.hardbacknutter.nevertoomanybooks.utils.xml;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
+import java.util.function.Consumer;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.helpers.AttributesImpl;
@@ -67,8 +62,8 @@ public class ElementContext {
     private XmlFilter mFilter;
 
     /**
-     * the user argument fed into the {@link XmlFilter#setStartAction(XmlFilter.XmlHandler, Object)}
-     * and {@link XmlFilter#setEndAction(XmlFilter.XmlHandler, Object)}.
+     * the user argument fed into the {@link XmlFilter#setStartAction(Consumer, Object)}
+     * and {@link XmlFilter#setEndAction(Consumer, Object)}.
      */
     private Object mUserArg;
 

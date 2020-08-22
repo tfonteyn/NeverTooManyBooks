@@ -4,14 +4,6 @@
  *
  * This file is part of NeverTooManyBooks.
  *
- * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
- *
- * Without their original creation, this project would not exist in its
- * current form. It was however largely rewritten/refactored and any
- * comments on this fork should be directed at HardBackNutter and not
- * at the original creators.
- *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -38,6 +30,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 
 import org.xml.sax.helpers.DefaultHandler;
 
@@ -47,8 +40,8 @@ import com.hardbacknutter.nevertoomanybooks.goodreads.api.ApiHandler;
 import com.hardbacknutter.nevertoomanybooks.goodreads.api.Http404Exception;
 import com.hardbacknutter.nevertoomanybooks.goodreads.api.XmlTags;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
+import com.hardbacknutter.nevertoomanybooks.utils.xml.ElementContext;
 import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlFilter;
-import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlFilter.XmlHandler;
 import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlResponseParser;
 
 /**
@@ -76,66 +69,66 @@ public class SearchWorksApiHandler
     /**
      * At the START of a "work" tag, we create a new work.
      */
-    private final XmlHandler mHandleWorkStart =
+    private final Consumer<ElementContext> mHandleWorkStart =
             elementContext -> mCurrentWork = new GoodreadsWork();
     /**
      * At the END of a "work" tag, we add it to list and reset the pointer.
      */
-    private final XmlHandler mHandleWorkEnd = elementContext -> {
+    private final Consumer<ElementContext> mHandleWorkEnd = elementContext -> {
         mWorks.add(mCurrentWork);
         mCurrentWork = null;
     };
-    private final XmlHandler mHandleWorkId =
+    private final Consumer<ElementContext> mHandleWorkId =
             elementContext -> mCurrentWork.workId = Long.parseLong(elementContext.getBody());
-    private final XmlHandler mHandlePubDay = elementContext -> {
+    private final Consumer<ElementContext> mHandlePubDay = elementContext -> {
         try {
             mCurrentWork.pubDay = Long.parseLong(elementContext.getBody());
         } catch (@NonNull final NumberFormatException ignore) {
         }
     };
-    private final XmlHandler mHandlePubMonth = elementContext -> {
+    private final Consumer<ElementContext> mHandlePubMonth = elementContext -> {
         try {
             mCurrentWork.pubMonth = Long.parseLong(elementContext.getBody());
         } catch (@NonNull final NumberFormatException ignore) {
         }
     };
-    private final XmlHandler mHandlePubYear = elementContext -> {
+    private final Consumer<ElementContext> mHandlePubYear = elementContext -> {
         try {
             mCurrentWork.pubYear = Long.parseLong(elementContext.getBody());
         } catch (@NonNull final NumberFormatException ignore) {
         }
     };
-    private final XmlHandler mHandleBookId =
+    private final Consumer<ElementContext> mHandleBookId =
             elementContext -> mCurrentWork.grBookId = Long.parseLong(elementContext.getBody());
-    private final XmlHandler mHandleBookTitle =
+    private final Consumer<ElementContext> mHandleBookTitle =
             elementContext -> mCurrentWork.title = elementContext.getBody();
-    private final XmlHandler mHandleAuthorId =
+    private final Consumer<ElementContext> mHandleAuthorId =
             elementContext -> mCurrentWork.authorId = Long.parseLong(elementContext.getBody());
-    private final XmlHandler mHandleAuthorName =
+    private final Consumer<ElementContext> mHandleAuthorName =
             elementContext -> mCurrentWork.authorName = elementContext.getBody();
-    private final XmlHandler mHandleAuthorRole =
+    private final Consumer<ElementContext> mHandleAuthorRole =
             elementContext -> mCurrentWork.authorRole = elementContext.getBody();
-    private final XmlHandler mHandleImageUrl =
+    private final Consumer<ElementContext> mHandleImageUrl =
             elementContext -> mCurrentWork.imageUrl = elementContext.getBody();
-    private final XmlHandler mHandleSmallImageUrl =
+    private final Consumer<ElementContext> mHandleSmallImageUrl =
             elementContext -> mCurrentWork.smallImageUrl = elementContext.getBody();
     /**
      * Starting result # (for multi-page result sets). We don't use it (yet).
      */
     private Long mResultsStart;
-    private final XmlHandler mHandleResultsStart =
+    private final Consumer<ElementContext> mHandleResultsStart =
             elementContext -> mResultsStart = Long.parseLong(elementContext.getBody());
     /**
      * Ending result # (for multi-page result sets). We don't use it (yet).
      */
     private Long mResultsEnd;
-    private final XmlHandler mHandleResultsEnd =
+    private final Consumer<ElementContext> mHandleResultsEnd =
             elementContext -> mResultsEnd = Long.parseLong(elementContext.getBody());
     /**
      * Total results available, as opposed to number returned on first page.
      */
     private Long mTotalResults;
-    private final XmlHandler mHandleTotalResults =
+    private final Consumer<ElementContext> mHandleTotalResults =
             elementContext -> mTotalResults = Long.parseLong(elementContext.getBody());
 
 
@@ -148,8 +141,8 @@ public class SearchWorksApiHandler
      * @throws CredentialsException with GoodReads
      */
     @WorkerThread
-    public SearchWorksApiHandler(@NonNull final Context appContext,
-                                 @NonNull final GoodreadsAuth grAuth)
+    SearchWorksApiHandler(@NonNull final Context appContext,
+                          @NonNull final GoodreadsAuth grAuth)
             throws CredentialsException {
         super(appContext, grAuth);
         mGrAuth.hasValidCredentialsOrThrow(appContext);

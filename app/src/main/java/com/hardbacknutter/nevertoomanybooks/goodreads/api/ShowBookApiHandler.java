@@ -4,14 +4,6 @@
  *
  * This file is part of NeverTooManyBooks.
  *
- * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
- *
- * Without their original creation, this project would not exist in its
- * current form. It was however largely rewritten/refactored and any
- * comments on this fork should be directed at HardBackNutter and not
- * at the original creators.
- *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -38,6 +30,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
+import java.util.function.Consumer;
 
 import org.xml.sax.helpers.DefaultHandler;
 
@@ -55,8 +48,8 @@ import com.hardbacknutter.nevertoomanybooks.utils.LanguageUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
+import com.hardbacknutter.nevertoomanybooks.utils.xml.ElementContext;
 import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlFilter;
-import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlFilter.XmlHandler;
 import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlResponseParser;
 
 /**
@@ -112,20 +105,20 @@ public abstract class ShowBookApiHandler
     /**
      * Current Shelves being processed.
      */
-    private final XmlHandler mHandleShelvesStart = ec -> mGoodreadsShelves.clear();
-    private final XmlHandler mHandleShelf = ec -> {
+    private final Consumer<ElementContext> mHandleShelvesStart = ec -> mGoodreadsShelves.clear();
+    private final Consumer<ElementContext> mHandleShelf = ec -> {
         // Leave "name" as string... it's an attribute for THIS tag.
         final String name = ec.getAttributes().getValue("name");
         if (name != null) {
             mGoodreadsShelves.add(name);
         }
     };
-    private final XmlHandler mHandleAuthorListStart = ec -> mAuthors.clear();
-    private final XmlHandler mHandleSeriesListStart = ec -> mSeries.clear();
+    private final Consumer<ElementContext> mHandleAuthorListStart = ec -> mAuthors.clear();
+    private final Consumer<ElementContext> mHandleSeriesListStart = ec -> mSeries.clear();
     /**
      * Current Publisher being processed.
      */
-    private final XmlHandler mHandlePublisher = ec -> {
+    private final Consumer<ElementContext> mHandlePublisher = ec -> {
         final String name = ec.getBody();
         if (!name.isEmpty()) {
             final Publisher publisher = Publisher.from(name);
@@ -140,11 +133,11 @@ public abstract class ShowBookApiHandler
     /**
      * Generic handlers.
      */
-    private final XmlHandler mHandleText = ec -> {
+    private final Consumer<ElementContext> mHandleText = ec -> {
         final String name = (String) ec.getUserArg();
         mBookData.putString(name, ec.getBody());
     };
-    private final XmlHandler mHandleLong = ec -> {
+    private final Consumer<ElementContext> mHandleLong = ec -> {
         final String name = (String) ec.getUserArg();
         try {
             long l = Long.parseLong(ec.getBody());
@@ -153,7 +146,7 @@ public abstract class ShowBookApiHandler
             // Ignore but don't add
         }
     };
-    private final XmlHandler mHandleDouble = ec -> {
+    private final Consumer<ElementContext> mHandleDouble = ec -> {
         final String name = (String) ec.getUserArg();
         try {
             double d = ParseUtils.parseDouble(ec.getBody(), GoodreadsManager.SITE_LOCALE);
@@ -162,7 +155,7 @@ public abstract class ShowBookApiHandler
             // Ignore but don't add
         }
     };
-    private final XmlHandler mHandleBoolean = ec -> {
+    private final Consumer<ElementContext> mHandleBoolean = ec -> {
         final String name = (String) ec.getUserArg();
         try {
             final boolean b = ParseUtils.parseBoolean(ec.getBody(), true);
@@ -175,7 +168,7 @@ public abstract class ShowBookApiHandler
      * The highest rated popular shelf name can optionally be used as the genre.
      * We weed out commonly used non-genre names.
      */
-    private final XmlHandler mHandlePopularShelf = ec -> {
+    private final Consumer<ElementContext> mHandlePopularShelf = ec -> {
         // only accept one
         if (!mBookData.containsKey(DBDefinitions.KEY_GENRE)) {
             // Leave "name" as string... it's an attribute for THIS tag.
@@ -190,11 +183,13 @@ public abstract class ShowBookApiHandler
      */
     @Nullable
     private String mCurrentAuthorName;
-    private final XmlHandler mHandleAuthorName = ec -> mCurrentAuthorName = ec.getBody();
+    private final Consumer<ElementContext> mHandleAuthorName = ec -> mCurrentAuthorName = ec
+            .getBody();
     @Nullable
     private String mCurrentAuthorRole;
-    private final XmlHandler mHandleAuthorRole = ec -> mCurrentAuthorRole = ec.getBody();
-    private final XmlHandler mHandleAuthorEnd = ec -> {
+    private final Consumer<ElementContext> mHandleAuthorRole = ec -> mCurrentAuthorRole = ec
+            .getBody();
+    private final Consumer<ElementContext> mHandleAuthorEnd = ec -> {
         if (mCurrentAuthorName != null && !mCurrentAuthorName.isEmpty()) {
             final Author author = Author.from(mCurrentAuthorName);
             if (mCurrentAuthorRole != null && !mCurrentAuthorRole.isEmpty()) {
@@ -211,17 +206,18 @@ public abstract class ShowBookApiHandler
      */
     @Nullable
     private String mCurrentSeriesName;
-    private final XmlHandler mHandleSeriesName = ec -> mCurrentSeriesName = ec.getBody();
+    private final Consumer<ElementContext> mHandleSeriesName = ec -> mCurrentSeriesName = ec
+            .getBody();
     @Nullable
     private Integer mCurrentSeriesPosition;
-    private final XmlHandler mHandleSeriesPosition = ec -> {
+    private final Consumer<ElementContext> mHandleSeriesPosition = ec -> {
         try {
             mCurrentSeriesPosition = Integer.parseInt(ec.getBody());
         } catch (@NonNull final NumberFormatException ignore) {
             // ignore
         }
     };
-    private final XmlHandler mHandleSeriesEnd = ec -> {
+    private final Consumer<ElementContext> mHandleSeriesEnd = ec -> {
         if (mCurrentSeriesName != null && !mCurrentSeriesName.isEmpty()) {
             final Series series = Series.from(mCurrentSeriesName);
             if (mCurrentSeriesPosition != null) {
