@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ @Copyright 2020 HardBackNutter
+  ~ @License GNU General Public License
+  ~
+  ~ This file is part of NeverTooManyBooks.
+  ~
+  ~ NeverTooManyBooks is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ NeverTooManyBooks is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  ~ See the GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<!-- Predefined Task IDs. -->
+<resources>
+    <!-- Building the booklist for the main(BoB) screen. -->
+    <item name="TASK_ID_BOOKLIST_BUILDER" type="id" />
+
+    <!-- Restore/Import task. -->
+    <item name="TASK_ID_IMPORT" type="id" />
+    <!-- Backup/Export task. -->
+    <item name="TASK_ID_EXPORT" type="id" />
+
+    <!-- Cover browser single/large preview image. -->
+    <item name="TASK_ID_PREVIEW_IMAGE" type="id" />
+
+    <item name="TASK_ID_UPDATE_FIELDS" type="id" />
+
+    <!-- Specific ISFDB task used in the 'edit book TOC' fragment. -->
+    <item name="TASK_ID_ISFDB_GET_BOOK" type="id" />
+
+    <!-- Fetch a list of alternative editions for a book. -->
+    <item name="TASK_ID_SEARCH_EDITIONS" type="id" />
+
+    <!-- not an actual task, but this serves to identify messages from the SearchCoordinator. -->
+    <item name="TASK_ID_SEARCH_COORDINATOR" type="id" />
+
+    <!-- not an actual task, but this serves to identify messages from the StartupViewModel. -->
+    <item name="TASK_ID_STARTUP_COORDINATOR" type="id" />
+
+    <!-- Startup task to build language cache file(s). -->
+    <item name="TASK_ID_BUILD_LANG_MAP" type="id" />
+
+    <!-- Database maintenance tasks. -->
+    <item name="TASK_ID_DB_CLEANER" type="id" />
+    <item name="TASK_ID_DB_OPTIMIZE" type="id" />
+    <item name="TASK_ID_DB_REBUILD_INDEXES" type="id" />
+    <item name="TASK_ID_DB_REBUILD_FTS" type="id" />
+    <item name="TASK_ID_DB_REBUILD_REORDER_TITLES" type="id" />
+
+    <!-- LibraryThing key test. -->
+    <item name="TASK_ID_LT_VALIDATE_KEY" type="id" />
+
+    <!-- Goodreads. -->
+    <item name="TASK_ID_GR_REQUEST_AUTH" type="id" />
+    <item name="TASK_ID_GR_SEND_ONE_BOOK" type="id" />
+    <item name="TASK_ID_GR_SEND_BOOKS" type="id" />
+    <item name="TASK_ID_GR_IMPORT" type="id" />
+    <item name="TASK_ID_GR_GET_WORKS" type="id" />
+</resources>
