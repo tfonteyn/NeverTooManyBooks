@@ -82,15 +82,23 @@ public class ArchiveExportTask
         //noinspection ConstantConditions
         try (ArchiveWriter exporter = mHelper.getArchiveWriter(context)) {
             mHelper.setResults(exporter.write(context, this));
+        } catch (@NonNull final IOException e) {
+            // The zip archiver (maybe others as well?) can throw an IOException
+            // when the user cancels, so only throw when this is not the case
+            if (!isCancelled()) {
+                // it's a real exception, cleanup and let the caller handle it.
+                mHelper.onCleanup(context);
+                throw e;
+            }
         }
 
-        // The output file is now properly closed, export it to the user Uri
-        if (!isCancelled()) {
+        if (isCancelled()) {
+            mHelper.onCleanup(context);
+        } else {
+            // The output file is now properly closed, export it to the user Uri
             mHelper.onSuccess(context);
-            return mHelper;
         }
 
-        mHelper.onFail(context);
         return mHelper;
     }
 }
