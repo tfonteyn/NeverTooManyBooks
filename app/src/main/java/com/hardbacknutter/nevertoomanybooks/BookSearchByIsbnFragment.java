@@ -150,13 +150,13 @@ public class BookSearchByIsbnFragment
         if (savedInstanceState == null) {
             //noinspection ConstantConditions
             Site.promptToRegister(getContext(), mCoordinator.getSiteList(),
-                                  "searchByIsbn", this::afterOnViewCreatedStartScanner);
+                                  "searchByIsbn", this::afterOnViewCreated);
         } else {
-            afterOnViewCreatedStartScanner();
+            afterOnViewCreated();
         }
     }
 
-    private void afterOnViewCreatedStartScanner() {
+    private void afterOnViewCreated() {
         // auto-start scanner first time.
         if (mInScanMode && mScannerModel != null && mScannerModel.isFirstStart()) {
             mInScanMode = mScannerModel.scan(this, RequestCode.SCAN_BARCODE);
