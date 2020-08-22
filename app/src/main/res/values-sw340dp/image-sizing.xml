@@ -19,14 +19,22 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<!-- 5" screen -->
+<!--
+    Pixel2 - 5.0" (1080 x 1920) - 420dpi - sw411dp
+    port: w411dp h659dp
+    land: w683dp h387dp
+
+    Samsung A5-2017 - 5.2" (1080 x 1920) - 480dpi - sw360dp
+    port:  w360dp h616dp
+    land:  w640dp h336dp
+-->
 <resources>
     <dimen name="cover_details_0_height">250dp</dimen>
     <dimen name="cover_details_0_width">160dp</dimen>
     <dimen name="cover_details_1_height">150dp</dimen>
     <dimen name="cover_details_1_width">96dp</dimen>
 
-    <integer name="cover_browser_gallery_span_count">1</integer>
+    <integer name="cover_browser_gallery_span_count">2</integer>
     <dimen name="cover_browser_gallery_height">100dp</dimen>
     <dimen name="cover_browser_gallery_width">64dp</dimen>
 

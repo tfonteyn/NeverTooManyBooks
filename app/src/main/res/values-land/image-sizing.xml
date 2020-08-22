@@ -19,6 +19,11 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
+<!--
+    4WVGA 4.0" (480 x 800) - 240dpi - sw320dp
+    port: w320dp h509dp
+    land: w533dp h296dp
+-->
 <resources>
     <integer name="cover_browser_gallery_span_count">1</integer>
     <dimen name="cover_browser_gallery_height">100dp</dimen>

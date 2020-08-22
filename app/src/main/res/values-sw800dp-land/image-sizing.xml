@@ -19,6 +19,7 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
+<!-- Generic 10.1" (800 x 1280) - 160dpi - sw800 -->
 <resources>
     <integer name="cover_browser_gallery_span_count">3</integer>
     <dimen name="cover_browser_gallery_height">150dp</dimen>

@@ -36,7 +36,11 @@
     <dimen name="cover_browser_gallery_width">128dp</dimen>
 -->
 
-<!-- Base file is a 4" screen. -->
+<!--
+    4WVGA 4.0" (480 x 800) - 240dpi - sw320dp
+    port: w320dp h509dp
+    land: w533dp h296dp
+-->
 <resources>
     <!-- Maximum space a zoomed cover can use of the screen; 0..100 -->
     <integer name="cover_zoom_screen_percentage">95</integer>
@@ -56,6 +60,7 @@
     <integer name="cover_browser_gallery_span_count">1</integer>
     <dimen name="cover_browser_gallery_height">100dp</dimen>
     <dimen name="cover_browser_gallery_width">64dp</dimen>
+    <dimen name="cover_browser_gallery_text_size">10sp</dimen>
 
     <dimen name="cover_browser_preview_height">250dp</dimen>
     <dimen name="cover_browser_preview_width">160dp</dimen>
