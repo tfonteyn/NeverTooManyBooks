@@ -4,14 +4,6 @@
  *
  * This file is part of NeverTooManyBooks.
  *
- * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
- *
- * Without their original creation, this project would not exist in its
- * current form. It was however largely rewritten/refactored and any
- * comments on this fork should be directed at HardBackNutter and not
- * at the original creators.
- *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -32,6 +24,8 @@ import java.util.Locale;
 
 import org.junit.jupiter.api.Test;
 
+import com.hardbacknutter.nevertoomanybooks.Base;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -42,7 +36,8 @@ import static org.junit.jupiter.api.Assertions.assertNull;
  * <p>
  * DateParser also needs to put the userLocale into account.
  */
-class DateParserTest {
+class DateParserTest
+        extends Base {
 
     // 1987-02-25; i.e. the day > possible month number (1..12)
     private final LocalDateTime w_2017_01_12 = LocalDateTime.of(2017, 1, 12, 0, 0);
@@ -161,7 +156,6 @@ class DateParserTest {
         assertEquals(s_1987_06_01, parser.parse("Juni 1987"));
     }
 
-
     /**
      * ISO formatted.
      * <p>
@@ -172,7 +166,7 @@ class DateParserTest {
      */
     @Test
     void iso() {
-        final Locale[] locales = new Locale[]{LocaleUtils.getSystemLocale()};
+        final Locale[] locales = new Locale[]{Locale.getDefault()};
         final DateParser parser = DateParser.createForTesting(locales);
 
         assertEquals(LocalDateTime.of(1987, 6, 25,
@@ -215,5 +209,28 @@ class DateParserTest {
         assertNull(parser.parseISO("1987-25-11 11:57:41"));
         assertNull(parser.parseISO("1987-11-11 4:57:41"));
         assertNull(parser.parseISO("1987-11-32 04:57:41"));
+    }
+
+    /**
+     * ISO formatted.
+     * <p>
+     * JDK 'T' variations
+     */
+    @Test
+    void iso2() {
+        final Locale[] locales = new Locale[]{Locale.getDefault()};
+        final DateParser parser = DateParser.createForTesting(locales);
+
+        assertEquals(LocalDateTime.of(2020, 8, 12,
+                                      14, 29, 9, 414_000_000),
+                     parser.parseISO("2020-08-12T14:29:09.414"));
+
+        assertEquals(LocalDateTime.of(2020, 8, 12,
+                                      14, 29, 9),
+                     parser.parseISO("2020-08-12T14:29:09"));
+
+        assertEquals(LocalDateTime.of(2020, 8, 12,
+                                      14, 29),
+                     parser.parseISO("2020-08-12T14:29"));
     }
 }

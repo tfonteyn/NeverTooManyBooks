@@ -140,12 +140,25 @@ public class DateParser
 
         ALL_PARSERS.clear();
         addParsers(ALL_PARSERS, NUMERICAL, systemLocale);
-        addParsers(ALL_PARSERS, ISO_PATTERNS, systemLocale);
+        addIsoPatterns(ALL_PARSERS, systemLocale);
         addParsers(ALL_PARSERS, TEXT, locales);
         addEnglish(ALL_PARSERS, TEXT, locales);
 
         ISO_PARSERS.clear();
-        addParsers(ISO_PARSERS, ISO_PATTERNS, systemLocale);
+        addIsoPatterns(ISO_PARSERS, systemLocale);
+    }
+
+    private void addIsoPatterns(@NonNull final Collection<DateTimeFormatter> group,
+                                @NonNull final Locale systemLocale) {
+        // '2011-12-03T10:15:30',
+        // '2011-12-03T10:15:30+01:00'
+        // '2011-12-03T10:15:30+01:00[Europe/Paris]'
+        group.add(DateTimeFormatter.ISO_DATE_TIME);
+        // '2011-12-03'
+        // '2011-12-03+01:00'
+        group.add(DateTimeFormatter.ISO_DATE);
+        // custom
+        addParsers(group, ISO_PATTERNS, systemLocale);
     }
 
     /**
