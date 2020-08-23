@@ -73,7 +73,6 @@ public class EditAuthorDialogFragment
      */
     public EditAuthorDialogFragment() {
         super(R.layout.dialog_edit_author);
-        setForceFullscreen();
     }
 
     /**
