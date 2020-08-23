@@ -52,9 +52,6 @@ import com.hardbacknutter.nevertoomanybooks.utils.AttrUtils;
 /**
  * Provides fullscreen or floating dialog support.
  * Does <strong>not</strong> support AlertDialog style title bar and buttons.
- * <p>
- * Usage: from the no-args constructor, call the provided constructor with the layout id to use.
- * Implement {@link #onViewCreated(View, Bundle)} to setup.
  */
 public abstract class BaseDialogFragment
         extends DialogFragment {
