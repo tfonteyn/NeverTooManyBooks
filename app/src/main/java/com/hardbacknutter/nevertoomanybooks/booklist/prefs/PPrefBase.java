@@ -43,7 +43,6 @@ public abstract class PPrefBase<T>
      * The SharedPreferences references for the BooklistStyle this preference belongs to.
      * This can be the global SharedPreferences if this is the global/default BooklistStyle.
      */
-    @SuppressWarnings("FieldNotUsedInToString")
     @NonNull
     protected final SharedPreferences mStylePrefs;
 

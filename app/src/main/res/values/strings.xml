@@ -1202,19 +1202,19 @@
     <string name="bookshelf_my_books">My Books</string>
 
     <!-- ####################################################################################### -->
-    <!-- == TAB labels - need to be very short; 4 tabs should fit on a screen. Ideally 5.  -->
+    <!-- == TAB labels - need to be very short; 4 tabs should fit on a screen. Ideally 5. -->
     <!-- ####################################################################################### -->
 
     <!-- Edit book: Name of the 'Details' tab -->
     <string name="tab_lbl_details">Details</string>
     <!-- Edit book: Name of the 'Publication' tab. -->
-    <string name="tab_lbl_publication">Pub.</string>
+    <string name="tab_lbl_publication">Publication</string>
     <!-- Edit book: Name of the 'Notes' tab.-->
     <string name="tab_lbl_notes">Notes</string>
     <!-- Edit book: Name of the 'Table Of Content' (formerly 'Anthology') tab. -->
     <string name="tab_lbl_content">TOC</string>
     <!-- Edit book: Name of the 'External website id' tab.-->
-    <string name="tab_lbl_ext_id">Ext. ID</string>
+    <string name="tab_lbl_ext_id">External ID</string>
 
     <!-- SearchAdmin page: Name of the 'Alternative Editions' tab. -->
     <string name="tab_lbl_alternative_editions">Alt. Ed.</string>

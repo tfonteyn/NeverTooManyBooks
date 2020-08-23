@@ -93,7 +93,7 @@ public abstract class PCollectionBase<E, T extends Collection<E>>
     @Override
     public void set(@Nullable final T value) {
         if (mIsPersistent) {
-            SharedPreferences.Editor ed = mStylePrefs.edit();
+            final SharedPreferences.Editor ed = mStylePrefs.edit();
             if (value == null) {
                 ed.remove(getKey());
             } else {
@@ -125,7 +125,7 @@ public abstract class PCollectionBase<E, T extends Collection<E>>
      */
     public void add(@NonNull final E element) {
         if (mIsPersistent) {
-            SharedPreferences.Editor ed = mStylePrefs.edit();
+            final SharedPreferences.Editor ed = mStylePrefs.edit();
             add(ed, mStylePrefs.getString(getKey(), null), element);
             ed.apply();
         } else {
@@ -147,7 +147,7 @@ public abstract class PCollectionBase<E, T extends Collection<E>>
                       @Nullable final String list,
                       @NonNull final E element) {
 
-        StringBuilder result = new StringBuilder();
+        final StringBuilder result = new StringBuilder();
         if (list == null) {
             result.append(element);
         } else {
@@ -164,9 +164,9 @@ public abstract class PCollectionBase<E, T extends Collection<E>>
      */
     public void remove(@NonNull final E element) {
         if (mIsPersistent) {
-            String list = mStylePrefs.getString(getKey(), null);
+            final String list = mStylePrefs.getString(getKey(), null);
             if (list != null && !list.isEmpty()) {
-                Collection<String> newList = new ArrayList<>();
+                final Collection<String> newList = new ArrayList<>();
                 for (String e : list.split(DELIM)) {
                     if (!e.equals(String.valueOf(element))) {
                         newList.add(e);

@@ -4,14 +4,6 @@
  *
  * This file is part of NeverTooManyBooks.
  *
- * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
- *
- * Without their original creation, this project would not exist in its
- * current form. It was however largely rewritten/refactored and any
- * comments on this fork should be directed at HardBackNutter and not
- * at the original creators.
- *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -50,37 +42,37 @@ import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 final class XmlUtils {
 
     /** File header. */
-    public static final String XML_VERSION_1_0_ENCODING_UTF_8 =
+    static final String XML_VERSION_1_0_ENCODING_UTF_8 =
             "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n";
 
     /** item, value stored in the item body. */
-    public static final String TAG_STRING = "string";
+    static final String TAG_STRING = "string";
     /** item; value is an attribute. */
-    public static final String TAG_BOOLEAN = "boolean";
+    static final String TAG_BOOLEAN = "boolean";
     /** item; value is an attribute. */
-    public static final String TAG_INT = "int";
+    static final String TAG_INT = "int";
     /** item; value is an attribute. */
-    public static final String TAG_LONG = "long";
+    static final String TAG_LONG = "long";
     /** item; value is an attribute. */
-    public static final String TAG_FLOAT = "float";
+    static final String TAG_FLOAT = "float";
     /** item; value is an attribute. */
-    public static final String TAG_DOUBLE = "double";
+    static final String TAG_DOUBLE = "double";
     /** item, value stored in the item body. */
-    public static final String TAG_SET = "set";
+    static final String TAG_SET = "set";
     /** item, value stored in the item body. */
-    public static final String TAG_LIST = "list";
+    static final String TAG_LIST = "list";
     /** item, value stored in the item body. */
-    public static final String TAG_SERIALIZABLE = "serializable";
-    public static final String ATTR_VERSION = "version";
+    static final String TAG_SERIALIZABLE = "serializable";
+    static final String ATTR_VERSION = "version";
     /** Database row ID. */
-    public static final String ATTR_ID = "id";
+    static final String ATTR_ID = "id";
     /** the size of the list of elements. */
     @SuppressWarnings("WeakerAccess")
-    public static final String ATTR_SIZE = "size";
+    static final String ATTR_SIZE = "size";
     /** element name attribute; i.e. the "thing" we are reading/writing. */
-    public static final String ATTR_NAME = "name";
+    static final String ATTR_NAME = "name";
     /** the value of the individual item of the "thing". */
-    public static final String ATTR_VALUE = "value";
+    static final String ATTR_VALUE = "value";
 
     private static final Pattern QUOT_LITERAL = Pattern.compile("&quot;", Pattern.LITERAL);
     private static final Pattern APOS_LITERAL = Pattern.compile("&apos;", Pattern.LITERAL);
@@ -101,7 +93,7 @@ final class XmlUtils {
                              @NonNull final Object value)
             throws IOException {
         if (value instanceof String) {
-            String valueString = value.toString();
+            final String valueString = value.toString();
             if (!valueString.isEmpty()) {
                 // strings are encoded
                 return '<' + tag + nameAttr(name) + attr(ATTR_VALUE, String.valueOf(value))
@@ -126,7 +118,7 @@ final class XmlUtils {
                                      @Nullable final String name,
                                      @NonNull final Object value) {
 
-        String valueString = value.toString();
+        final String valueString = value.toString();
         if (!valueString.isEmpty()) {
             return '<' + tag + nameAttr(name) + '>' + value + "</" + tag + ">\n";
         } else {
@@ -216,7 +208,7 @@ final class XmlUtils {
      */
     private static String typedCollection(@NonNull final Iterable<?> values)
             throws IOException {
-        StringBuilder sb = new StringBuilder("\n");
+        final StringBuilder sb = new StringBuilder("\n");
         for (Object value : values) {
             sb.append(typedTag(null, value));
         }
@@ -265,7 +257,7 @@ final class XmlUtils {
             }
 
             final StringBuilder sb = new StringBuilder();
-            int endPos = data.length() - 1;
+            final int endPos = data.length() - 1;
             int pos = 0;
             while (pos <= endPos) {
                 char c = data.charAt(pos);

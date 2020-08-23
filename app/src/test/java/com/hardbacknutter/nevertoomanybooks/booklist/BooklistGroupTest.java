@@ -4,14 +4,6 @@
  *
  * This file is part of NeverTooManyBooks.
  *
- * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
- *
- * Without their original creation, this project would not exist in its
- * current form. It was however largely rewritten/refactored and any
- * comments on this fork should be directed at HardBackNutter and not
- * at the original creators.
- *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -43,12 +35,12 @@ class BooklistGroupTest {
         // loop starting at 1 must exclude BOOK
         assertEquals(0, BooklistGroup.BOOK);
 
-        Collection<String> prefixes = new HashSet<>();
+        final Collection<String> prefixes = new HashSet<>();
         for (int id = 0; id <= BooklistGroup.GROUP_KEY_MAX; id++) {
-            BooklistGroup.GroupKey groupKey = BooklistGroup.GroupKey.getGroupKey(id);
+            final BooklistGroup.GroupKey groupKey = BooklistGroup.GroupKey.getGroupKey(id);
             assertNotNull(groupKey, "Missing id: " + id);
 
-            String prefix = groupKey.getKeyPrefix();
+            final String prefix = groupKey.getKeyPrefix();
             if (!prefixes.add(prefix)) {
                 fail("Duplicate keyPrefix: " + prefix);
             }

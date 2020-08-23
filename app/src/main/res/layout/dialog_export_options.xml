@@ -65,6 +65,7 @@
                     tools:ignore="MissingConstraints"
                     />
 
+                <!-- Not present in landscape layout; displayed as the subtitle of the toolbar. -->
                 <TextView
                     android:id="@+id/info"
                     style="@style/TextAppearance.MaterialComponents.Subtitle1"
@@ -75,6 +76,7 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
+                    tools:ignore="InconsistentLayout"
                     />
 
                 <CheckBox

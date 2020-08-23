@@ -215,9 +215,8 @@ public class BooklistGroup
     /** The underlying group key object. */
     @NonNull
     private final GroupKey mGroupKey;
-    @SuppressWarnings("FieldNotUsedInToString")
     @NonNull
-    SharedPreferences mStylePrefs;
+    final SharedPreferences mStylePrefs;
     /**
      * The domains represented by this group.
      * Set at runtime by builder based on current group <strong>and its outer groups</strong>
@@ -480,6 +479,7 @@ public class BooklistGroup
     public String toString() {
         return "BooklistGroup{"
                + "mUuid=`'`" + mUuid + '`'
+               + ", style=" + mStylePrefs.getString(BooklistStyle.pk_name, "????")
                + ", mIsUserDefinedStyle=" + mIsUserDefinedStyle
                + ", mId=" + mId
                + ", mGroupKey=" + mGroupKey
