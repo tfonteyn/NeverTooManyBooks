@@ -252,12 +252,14 @@ public class CsvImporter
         // need a title.
         requireColumnOrThrow(context, book, DBDefinitions.KEY_TITLE);
 
-        final boolean updateOnlyIfNewer;
+        // Overwrite (forceUpdate=true) existing data; or (forceUpdate=false) only
+        // if the incoming data is newer.
+        final boolean forceUpdate;
         if ((mOptions & ImportManager.IMPORT_ONLY_NEW_OR_UPDATED) != 0) {
             requireColumnOrThrow(context, book, DBDefinitions.KEY_UTC_LAST_UPDATED);
-            updateOnlyIfNewer = true;
+            forceUpdate = false;
         } else {
-            updateOnlyIfNewer = false;
+            forceUpdate = true;
         }
 
         // See if we can deduce the kind of escaping to use based on column names.
@@ -311,7 +313,7 @@ public class CsvImporter
                     }
 
                     // do the actual import.
-                    importBook(context, book, updateOnlyIfNewer);
+                    importBook(context, book, forceUpdate);
 
                 } catch (@NonNull final DAO.DaoWriteException
                         | SQLiteDoneException
@@ -388,15 +390,17 @@ public class CsvImporter
     /**
      * insert or update a single book.
      *
-     * @param context           Current context
-     * @param book              to import
-     * @param updateOnlyIfNewer flag
+     * @param context     Current context
+     * @param book        to import
+     * @param forceUpdate Flag for existing books:
+     *                    {@code true} to always update
+     *                    {@code false} to only update if the incoming data is newer
      *
      * @throws DAO.DaoWriteException on failure
      */
     private void importBook(@NonNull final Context context,
                             @NonNull final Book book,
-                            final boolean updateOnlyIfNewer)
+                            final boolean forceUpdate)
             throws DAO.DaoWriteException {
 
         // check/fix the language
@@ -410,93 +414,120 @@ public class CsvImporter
         handleAnthology(context, mDb, book, bookLocale);
         handleBookshelves(mDb, book);
 
-        // Do we have a UUID in the import ?
-        @Nullable
-        final String uuid = handleUuid(book);
-        final boolean hasUuid = uuid != null && !uuid.isEmpty();
-
-        // Do we have a numeric id in the import ?
-        // String: see book init, we copied all fields we find in the import file as text.
-        final String idStr = book.getString(DBDefinitions.KEY_PK_ID);
-        // ALWAYS remove here to avoid type-issues further down. We'll re-add if needed.
-        book.remove(DBDefinitions.KEY_PK_ID);
-
-        long importBookId = 0;
-        if (!idStr.isEmpty()) {
-            try {
-                importBookId = Long.parseLong(idStr);
-            } catch (@NonNull final NumberFormatException ignore) {
-                // don't log, it's fine.
-            }
-        }
-
-        // Always import books which have no UUID/ID, even if the book is a potential duplicate.
-        // We don't try and search/match but leave it to the user.
-        if (!hasUuid && (importBookId <= 0)) {
-            mDb.insert(context, book, DAO.BOOK_FLAG_IS_BATCH_OPERATION);
-            mResults.booksCreated++;
-            // we're done with this book.
-            return;
-        }
-
-        // We have a UUID and/or a numeric ID.
-
         // ALWAYS let the UUID trump the ID; we may be importing someone else's list
+        // Do we have a DBDefinitions.KEY_BOOK_UUID in the import ?
+        @Nullable
+        final String importUuid = handleUuid(book);
+        final boolean hasUuid = importUuid != null && !importUuid.isEmpty();
+
+        // Do we have a DBDefinitions.KEY_PK_ID in the import ?
+        final long importNumericId = handleNumericId(book);
+        final boolean hasNumericId = importNumericId > 0;
+
         if (hasUuid) {
-            final long databaseBookId = mDb.getBookIdFromUuid(uuid);
+            // check if the book exists in our database, and fetch it's id.
+            final long databaseBookId = mDb.getBookIdFromUuid(importUuid);
             if (databaseBookId > 0) {
-                // We already have this book (matching UUID)
-                // Explicitly set the existing id on the book
+                // The book exists in our database (matching UUID).
+
+                // Explicitly set the EXISTING id on the book (the importBookId is IGNORED)
                 book.putLong(DBDefinitions.KEY_PK_ID, databaseBookId);
+
                 // and UPDATE the existing book (if allowed)
-                if (!updateOnlyIfNewer || updateOnlyIfNewer(context, mDb, book, databaseBookId)) {
+                if (forceUpdate || isImportNewer(context, mDb, book, databaseBookId)) {
                     mDb.update(context, book, DAO.BOOK_FLAG_IS_BATCH_OPERATION
                                               | DAO.BOOK_FLAG_USE_UPDATE_DATE_IF_PRESENT);
                     mResults.booksUpdated++;
+                    if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CSV_BOOKS) {
+                        Log.d(TAG, "UUID=" + importUuid
+                                   + "|databaseBookId=" + databaseBookId
+                                   + "|update|" + book.getTitle());
+                    }
 
                 } else {
                     mResults.booksSkipped++;
+                    if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CSV_BOOKS) {
+                        Log.d(TAG, "UUID=" + importUuid
+                                   + "|databaseBookId=" + databaseBookId
+                                   + "|skipped|" + book.getTitle());
+                    }
                 }
 
             } else {
-                // The book does not exist in our database (no match for the UUID)
-                if (importBookId > 0) {
-                    // reuse the id, if it does not already exist
-                    if (!mDb.bookExists(importBookId)) {
-                        book.putLong(DBDefinitions.KEY_PK_ID, importBookId);
-                    }
-                    // the Book object will contain:
-                    // - valid DBDefinitions.KEY_BOOK_UUID not existent in the database
-                    // - NO id, OR an id which does not exist in the database yet.
-                    // INSERT, explicitly allowing the id to be reused if present
-                    mDb.insert(context, book, DAO.BOOK_FLAG_IS_BATCH_OPERATION
-                                              | DAO.BOOK_FLAG_USE_ID_IF_PRESENT);
-                    mResults.booksCreated++;
+                // The book does NOT exist in our database (no match for the UUID),
+                // so we definitively want to insert it.
+
+                // If we have an importBookId, and it does not already exist, we reuse it.
+                if (hasNumericId && !mDb.bookExists(importNumericId)) {
+                    book.putLong(DBDefinitions.KEY_PK_ID, importNumericId);
+                }
+
+                // the Book object will contain:
+                // - valid DBDefinitions.KEY_BOOK_UUID not existent in the database
+                // - NO id, OR an id which does not exist in the database yet.
+                // INSERT, explicitly allowing the id to be reused if present
+                long insId = mDb.insert(context, book, DAO.BOOK_FLAG_IS_BATCH_OPERATION
+                                                       | DAO.BOOK_FLAG_USE_ID_IF_PRESENT);
+                mResults.booksCreated++;
+                if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CSV_BOOKS) {
+                    Log.d(TAG, "UUID=" + importUuid
+                               + "|importNumericId=" + importNumericId
+                               + "|insert=" + insId
+                               + "|" + book.getTitle());
                 }
             }
-        } else {
-            // We don't have a UUID; check for the ID instead.
-            // This is more risky as we might overwrite a different book which happens
-            // to have the same id, but other then skipping there is no other option.
-            // Ideally, we should ask the user presenting a choice "keep/overwrite"
-            if (mDb.bookExists(importBookId)) {
-                // UPDATE the existing book (if allowed)
-                if (!updateOnlyIfNewer || updateOnlyIfNewer(context, mDb, book, importBookId)) {
-                    mDb.update(context, book, DAO.BOOK_FLAG_IS_BATCH_OPERATION
-                                              | DAO.BOOK_FLAG_USE_UPDATE_DATE_IF_PRESENT);
-                    mResults.booksUpdated++;
 
-                } else {
-                    mResults.booksSkipped++;
+        } else if (hasNumericId) {
+            // Add the importNumericId back to the book.
+            book.putLong(DBDefinitions.KEY_PK_ID, importNumericId);
+
+            // Is that id already in use ?
+            if (!mDb.bookExists(importNumericId)) {
+                // The id is not in use, simply insert the book using the given importNumericId,
+                // explicitly allowing the id to be reused
+                long insId = mDb.insert(context, book, DAO.BOOK_FLAG_IS_BATCH_OPERATION
+                                                       | DAO.BOOK_FLAG_USE_ID_IF_PRESENT);
+                mResults.booksCreated++;
+                if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CSV_BOOKS) {
+                    Log.d(TAG, "importNumericId=" + importNumericId
+                               + "|insert=" + insId
+                               + "|" + book.getTitle());
                 }
 
             } else {
-                // the id is not in use, re-use it
-                book.putLong(DBDefinitions.KEY_PK_ID, importBookId);
-                // INSERT, explicitly allowing the id to be used
-                mDb.insert(context, book, DAO.BOOK_FLAG_IS_BATCH_OPERATION
-                                          | DAO.BOOK_FLAG_USE_ID_IF_PRESENT);
-                mResults.booksCreated++;
+                // The id IS in use, we will be updating an existing book (if allowed).
+
+                // This is risky as we might overwrite a different book which happens
+                // to have the same id, but other then skipping there is no other option for now.
+                // Ideally, we should ask the user presenting a choice "keep/overwrite"
+
+                if (forceUpdate || isImportNewer(context, mDb, book, importNumericId)) {
+                    mDb.update(context, book, DAO.BOOK_FLAG_IS_BATCH_OPERATION
+                                              | DAO.BOOK_FLAG_USE_UPDATE_DATE_IF_PRESENT);
+                    mResults.booksUpdated++;
+                    if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CSV_BOOKS) {
+                        Log.d(TAG, "importNumericId=" + importNumericId
+                                   + "|update|" + book.getTitle());
+                    }
+                } else {
+                    mResults.booksSkipped++;
+                    if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CSV_BOOKS) {
+                        Log.d(TAG, "importNumericId=" + importNumericId
+                                   + "|skipped|" + book.getTitle());
+                    }
+                }
+            }
+
+        } else {
+            // Always import books which have no UUID/ID, even if the book is a potential duplicate.
+            // We don't try and search/match but leave it to the user.
+            long insId = mDb.insert(context, book, DAO.BOOK_FLAG_IS_BATCH_OPERATION);
+            mResults.booksCreated++;
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CSV_BOOKS) {
+                Log.d(TAG, "UUID=''"
+                           + "|ID=0"
+                           + "|insert=" + insId
+                           + "|" + book.getTitle());
             }
         }
     }
@@ -510,11 +541,11 @@ public class CsvImporter
      * @param book    the book we're updating
      * @param bookId  the book id to lookup in our database
      */
-    private boolean updateOnlyIfNewer(@NonNull final Context context,
-                                      @NonNull final DAO db,
-                                      @SuppressWarnings("TypeMayBeWeakened")
-                                      @NonNull final Book book,
-                                      final long bookId) {
+    private boolean isImportNewer(@NonNull final Context context,
+                                  @NonNull final DAO db,
+                                  @SuppressWarnings("TypeMayBeWeakened")
+                                  @NonNull final Book book,
+                                  final long bookId) {
         final LocalDateTime utcImportDate =
                 DateParser.getInstance(context)
                           .parseISO(book.getString(DBDefinitions.KEY_UTC_LAST_UPDATED));
@@ -535,7 +566,7 @@ public class CsvImporter
      * @return the uuid, if any.
      */
     @Nullable
-    private String handleUuid(@NonNull final Book /* in/out */ book) {
+    private String handleUuid(@NonNull final Book book) {
 
         final String uuid;
 
@@ -560,6 +591,30 @@ public class CsvImporter
         }
 
         return uuid;
+    }
+
+    /**
+     * Process the ID if present.
+     *
+     * @param book the book
+     *
+     * @return the id, if any.
+     */
+    private long handleNumericId(@NonNull final Book book) {
+        // Do we have a numeric id in the import ?
+        // String: see book init, we copied all fields we find in the import file as text.
+        final String idStr = book.getString(DBDefinitions.KEY_PK_ID);
+        // ALWAYS remove here to avoid type-issues further down. We'll re-add if needed.
+        book.remove(DBDefinitions.KEY_PK_ID);
+
+        if (!idStr.isEmpty()) {
+            try {
+                return Long.parseLong(idStr);
+            } catch (@NonNull final NumberFormatException ignore) {
+                // don't log, it's fine.
+            }
+        }
+        return 0;
     }
 
     /**
@@ -917,7 +972,7 @@ public class CsvImporter
         } catch (@NonNull final StackOverflowError e) {
             // StackOverflowError has been seen when the StringBuilder overflows.
             // The stack at the time was 1040kb. Not reproduced as yet.
-            Logger.warn(context, "line.length=" + line.length() + "\n" + line);
+            Log.e(TAG, "line.length=" + line.length() + "\n" + line, e);
             throw new ImportException(context.getString(R.string.error_csv_line_to_long,
                                                         row, line.length()), e);
         }
