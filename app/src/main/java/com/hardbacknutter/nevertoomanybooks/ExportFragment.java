@@ -198,7 +198,7 @@ public class ExportFragment
                             .show(getChildFragmentManager(), ExportHelperDialogFragment.TAG);
                 })
                 .setPositiveButton(android.R.string.ok, (d, w) ->
-                        exportPickUri(new ExportManager(Options.ALL)))
+                        exportPickUri(new ExportManager(Options.ENTITIES)))
                 .create()
                 .show();
     }

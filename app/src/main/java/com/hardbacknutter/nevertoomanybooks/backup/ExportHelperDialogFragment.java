@@ -100,7 +100,11 @@ public class ExportHelperDialogFragment
     @Override
     protected boolean onToolbarMenuItemClick(@NonNull final MenuItem item) {
         if (item.getItemId() == R.id.MENU_ACTION_CONFIRM) {
-            onOptionsSet(mModel.getHelper());
+            if (mModel.getHelper().hasEntityOption()) {
+                onOptionsSet(mModel.getHelper());
+            } else {
+                onCancelled();
+            }
             return true;
         }
         return false;
@@ -227,7 +231,7 @@ public class ExportHelperDialogFragment
 
         public void init() {
             if (mHelper == null) {
-                mHelper = new ExportManager(Options.ALL);
+                mHelper = new ExportManager(Options.ENTITIES);
             }
         }
 

@@ -54,6 +54,7 @@ public class ImportHelperDialogFragment
     private DialogImportOptionsBinding mVb;
     /** Indicates if we're importing from a CSV file. */
     private boolean mIsCsvBooks;
+    private boolean mAllowSetEnableOnBooksGroup;
 
     /**
      * No-arg constructor for OS use.
@@ -106,7 +107,11 @@ public class ImportHelperDialogFragment
     @Override
     protected boolean onToolbarMenuItemClick(@NonNull final MenuItem item) {
         if (item.getItemId() == R.id.MENU_ACTION_CONFIRM) {
-            onOptionsSet(mModel.getHelper());
+            if (mModel.getHelper().hasEntityOption()) {
+                onOptionsSet(mModel.getHelper());
+            } else {
+                onCancelled();
+            }
             return true;
         }
         return false;
@@ -128,7 +133,9 @@ public class ImportHelperDialogFragment
             mVb.cbxBooks.setOnCheckedChangeListener(
                     (buttonView, isChecked) -> {
                         helper.setOption(Options.BOOKS, isChecked);
-                        mVb.rbBooksGroup.setEnabled(isChecked);
+                        if (mAllowSetEnableOnBooksGroup) {
+                            mVb.rbBooksGroup.setEnabled(isChecked);
+                        }
                     });
 
             mVb.cbxCovers.setChecked(helper.isSet(Options.COVERS));
@@ -143,9 +150,11 @@ public class ImportHelperDialogFragment
                     });
         }
 
-        // enable or disable the sync option
         //noinspection ConstantConditions
-        if (mIsCsvBooks || mModel.getArchiveCreationDate(getContext()) != null) {
+        final LocalDateTime archiveCreationDate = mModel.getArchiveCreationDate(getContext());
+        // enable or disable the sync option
+        if (mIsCsvBooks || archiveCreationDate != null) {
+            mAllowSetEnableOnBooksGroup = true;
             final boolean allBooks = !helper.isSet(ImportManager.IMPORT_ONLY_NEW_OR_UPDATED);
             mVb.rbBooksAll.setChecked(allBooks);
             mVb.infoBtnRbBooksAll.setOnClickListener(StandardDialogs::infoPopup);
@@ -160,6 +169,8 @@ public class ImportHelperDialogFragment
             // If the archive does not have a valid creation-date field, then we can't use sync
             // TODO Maybe change string to "... archive is missing a creation date field.
             mVb.rbBooksGroup.setEnabled(false);
+            mAllowSetEnableOnBooksGroup = false;
+
             mVb.rbBooksAll.setChecked(true);
             mVb.rbBooksSync.setChecked(false);
             helper.setOption(ImportManager.IMPORT_ONLY_NEW_OR_UPDATED, false);

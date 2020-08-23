@@ -68,7 +68,7 @@ public class ImportManager
     /**
      * all defined flags.
      */
-    private static final int MASK = Options.ALL | IMPORT_ONLY_NEW_OR_UPDATED;
+    private static final int MASK = Options.ENTITIES | IMPORT_ONLY_NEW_OR_UPDATED;
     @NonNull
     private final Uri mUri;
     /**
@@ -150,6 +150,15 @@ public class ImportManager
     /** Called <strong>after</strong> the export/import to report back what was handled. */
     public void setOptions(final int options) {
         mOptions = options;
+    }
+
+    /**
+     * Are there any options set that will cause us to import anything?
+     *
+     * @return {@code true} if something will be imported
+     */
+    boolean hasEntityOption() {
+        return (mOptions & Options.ENTITIES) != 0;
     }
 
     /**

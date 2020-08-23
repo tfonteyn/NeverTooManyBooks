@@ -207,7 +207,7 @@ public class ImportFragment
      */
     private void importShowOptions(@NonNull final Uri uri) {
         // options will be overridden if the import is a CSV.
-        final ImportManager helper = new ImportManager(Options.ALL, uri);
+        final ImportManager helper = new ImportManager(Options.ENTITIES, uri);
 
         //noinspection ConstantConditions
         final ArchiveContainer container = helper.getContainer(getContext());

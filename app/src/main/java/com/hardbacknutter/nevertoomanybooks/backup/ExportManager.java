@@ -82,7 +82,7 @@ public class ExportManager
     /**
      * all defined flags.
      */
-    private static final int MASK = Options.ALL | EXPORT_SINCE_LAST_BACKUP;
+    private static final int MASK = Options.ENTITIES | EXPORT_SINCE_LAST_BACKUP;
     /** Log tag. */
     private static final String TAG = "ExportHelper";
     /** Write to this temp file first. */
@@ -172,11 +172,6 @@ public class ExportManager
         } else {
             mOptions &= ~optionBit;
         }
-    }
-
-    /** Called <strong>after</strong> the export/import to report back what was handled. */
-    public void setOptions(final int options) {
-        mOptions = options;
     }
 
     @NonNull
@@ -417,5 +412,23 @@ public class ExportManager
 
     public boolean isSet(final int optionBit) {
         return (mOptions & optionBit) != 0;
+    }
+
+    public int getOptions() {
+        return mOptions;
+    }
+
+    /** Called <strong>after</strong> the export/import to report back what was handled. */
+    public void setOptions(final int options) {
+        mOptions = options;
+    }
+
+    /**
+     * Are there any options set that will cause us to export anything?
+     *
+     * @return {@code true} if something will be exported
+     */
+    boolean hasEntityOption() {
+        return (mOptions & Options.ENTITIES) != 0;
     }
 }

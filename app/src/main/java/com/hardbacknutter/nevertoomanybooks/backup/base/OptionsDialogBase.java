@@ -74,6 +74,7 @@ public abstract class OptionsDialogBase<T extends Parcelable>
 
     protected void onCancelled() {
         OnOptionsListener.sendCancelled(this, mRequestKey);
+        dismiss();
     }
 
     /**
