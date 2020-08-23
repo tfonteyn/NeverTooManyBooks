@@ -586,6 +586,8 @@ public class DAO
             if (newBookId > 0) {
                 // set the new id/uuid on the Book itself
                 book.putLong(KEY_PK_ID, newBookId);
+                // always lookup the UUID (even if we inserted with a uuid... to protect against
+                // future changes)
                 //noinspection ConstantConditions
                 book.putString(KEY_BOOK_UUID, getBookUuid(newBookId));
 

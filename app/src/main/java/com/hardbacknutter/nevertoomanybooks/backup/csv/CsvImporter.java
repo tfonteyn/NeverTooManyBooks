@@ -4,14 +4,6 @@
  *
  * This file is part of NeverTooManyBooks.
  *
- * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
- *
- * Without their original creation, this project would not exist in its
- * current form. It was however largely rewritten/refactored and any
- * comments on this fork should be directed at HardBackNutter and not
- * at the original creators.
- *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -237,7 +229,7 @@ public class CsvImporter
         // Store the names so we can check what is present
         for (int i = 0; i < csvColumnNames.length; i++) {
             csvColumnNames[i] = csvColumnNames[i].toLowerCase(mUserLocale);
-            // add a place holder to the book.
+            // temporary add to the book; used to check columns before starting actual import
             book.putString(csvColumnNames[i], "");
         }
 
@@ -328,11 +320,13 @@ public class CsvImporter
                     //TODO: see if we can give a meaningful user-displaying string.
                     mResults.failedLinesMessage.add(mUnknownString);
                     mResults.failedLinesNr.add(row);
+
                     if (BuildConfig.DEBUG /* always */) {
                         if (DEBUG_SWITCHES.IMPORT_CSV_BOOKS) {
-                            Logger.warn(context, TAG, ERROR_IMPORT_FAILED_AT_ROW + row);
+                            Logger.warn(context, TAG, "e=" + e.getMessage(),
+                                        ERROR_IMPORT_FAILED_AT_ROW + row);
                         } else if (DEBUG_SWITCHES.IMPORT_CSV_BOOKS_EXT) {
-                            // logging with the exception is VERY HEAVY
+                            // logging with the full exception is VERY HEAVY
                             Logger.error(context, TAG, e, ERROR_IMPORT_FAILED_AT_ROW + row);
                         }
                     }
@@ -341,9 +335,11 @@ public class CsvImporter
                     // an ImportException has a user-displayable message.
                     mResults.failedLinesMessage.add(e.getLocalizedMessage());
                     mResults.failedLinesNr.add(row);
+
                     if (BuildConfig.DEBUG /* always */) {
                         if (DEBUG_SWITCHES.IMPORT_CSV_BOOKS) {
-                            Logger.warn(context, TAG, ERROR_IMPORT_FAILED_AT_ROW + row);
+                            Logger.warn(context, TAG, "e=" + e.getMessage(),
+                                        ERROR_IMPORT_FAILED_AT_ROW + row);
                         } else if (DEBUG_SWITCHES.IMPORT_CSV_BOOKS_EXT) {
                             // logging with the exception is VERY HEAVY
                             Logger.error(context, TAG, e, ERROR_IMPORT_FAILED_AT_ROW + row);
@@ -420,75 +416,88 @@ public class CsvImporter
         final boolean hasUuid = uuid != null && !uuid.isEmpty();
 
         // Do we have a numeric id in the import ?
-        long bookId = 0;
-        // why String ? See book init, we copied all fields we find in the import file as text.
+        // String: see book init, we copied all fields we find in the import file as text.
         final String idStr = book.getString(DBDefinitions.KEY_PK_ID);
-        // ALWAYS remove here to avoid type-issues further down
+        // ALWAYS remove here to avoid type-issues further down. We'll re-add if needed.
         book.remove(DBDefinitions.KEY_PK_ID);
+
+        long importBookId = 0;
         if (!idStr.isEmpty()) {
             try {
-                bookId = Long.parseLong(idStr);
+                importBookId = Long.parseLong(idStr);
             } catch (@NonNull final NumberFormatException ignore) {
                 // don't log, it's fine.
             }
         }
 
-        // Always import empty ID's even if the book is a potential duplicate.
+        // Always import books which have no UUID/ID, even if the book is a potential duplicate.
         // We don't try and search/match but leave it to the user.
-        if (!hasUuid && (bookId <= 0)) {
+        if (!hasUuid && (importBookId <= 0)) {
             mDb.insert(context, book, DAO.BOOK_FLAG_IS_BATCH_OPERATION);
             mResults.booksCreated++;
+            // we're done with this book.
             return;
         }
 
-        // We have a UUID and/or a numeric ID. Check if we already have the book.
-        boolean exists = false;
+        // We have a UUID and/or a numeric ID.
 
-        // Let the UUID trump the ID; we may be importing someone else's list with bogus ID's
+        // ALWAYS let the UUID trump the ID; we may be importing someone else's list
         if (hasUuid) {
-            final long existingBookId = mDb.getBookIdFromUuid(uuid);
-            if (existingBookId > 0) {
+            final long databaseBookId = mDb.getBookIdFromUuid(uuid);
+            if (databaseBookId > 0) {
                 // We already have this book (matching UUID)
-                exists = true;
-                // Make sure to override whatever id (if any) the import had.
-                bookId = existingBookId;
+                // Explicitly set the existing id on the book
+                book.putLong(DBDefinitions.KEY_PK_ID, databaseBookId);
+                // and UPDATE the existing book (if allowed)
+                if (!updateOnlyIfNewer || updateOnlyIfNewer(context, mDb, book, databaseBookId)) {
+                    mDb.update(context, book, DAO.BOOK_FLAG_IS_BATCH_OPERATION
+                                              | DAO.BOOK_FLAG_USE_UPDATE_DATE_IF_PRESENT);
+                    mResults.booksUpdated++;
+
+                } else {
+                    mResults.booksSkipped++;
+                }
 
             } else {
                 // The book does not exist in our database (no match for the UUID)
-                // We will create a book using the provided id if possible.
-                if (bookId > 0) {
-                    exists = mDb.bookExists(bookId);
-                    if (exists) {
-                        // the id is already in use, so we'll need to create a new id
-                        bookId = 0;
+                if (importBookId > 0) {
+                    // reuse the id, if it does not already exist
+                    if (!mDb.bookExists(importBookId)) {
+                        book.putLong(DBDefinitions.KEY_PK_ID, importBookId);
                     }
+                    // the Book object will contain:
+                    // - valid DBDefinitions.KEY_BOOK_UUID not existent in the database
+                    // - NO id, OR an id which does not exist in the database yet.
+                    // INSERT, explicitly allowing the id to be reused if present
+                    mDb.insert(context, book, DAO.BOOK_FLAG_IS_BATCH_OPERATION
+                                              | DAO.BOOK_FLAG_USE_ID_IF_PRESENT);
+                    mResults.booksCreated++;
                 }
             }
         } else {
-            exists = mDb.bookExists(bookId);
-            if (exists) {
-                // the id is already in use, so we'll need to create a new id
-                bookId = 0;
+            // We don't have a UUID; check for the ID instead.
+            // This is more risky as we might overwrite a different book which happens
+            // to have the same id, but other then skipping there is no other option.
+            // Ideally, we should ask the user presenting a choice "keep/overwrite"
+            if (mDb.bookExists(importBookId)) {
+                // UPDATE the existing book (if allowed)
+                if (!updateOnlyIfNewer || updateOnlyIfNewer(context, mDb, book, importBookId)) {
+                    mDb.update(context, book, DAO.BOOK_FLAG_IS_BATCH_OPERATION
+                                              | DAO.BOOK_FLAG_USE_UPDATE_DATE_IF_PRESENT);
+                    mResults.booksUpdated++;
+
+                } else {
+                    mResults.booksSkipped++;
+                }
+
+            } else {
+                // the id is not in use, re-use it
+                book.putLong(DBDefinitions.KEY_PK_ID, importBookId);
+                // INSERT, explicitly allowing the id to be used
+                mDb.insert(context, book, DAO.BOOK_FLAG_IS_BATCH_OPERATION
+                                          | DAO.BOOK_FLAG_USE_ID_IF_PRESENT);
+                mResults.booksCreated++;
             }
-        }
-
-        // If we have a valid id, assign it to the book.
-        if (bookId > 0) {
-            book.putLong(DBDefinitions.KEY_PK_ID, bookId);
-        }
-
-        // both UUID and ID is now set correctly or removed,
-        // so we know for certain if we want an insert or an update.
-        if (!exists) {
-            // Explicitly allow the id to be used.
-            mDb.insert(context, book, DAO.BOOK_FLAG_IS_BATCH_OPERATION
-                                      | DAO.BOOK_FLAG_USE_ID_IF_PRESENT);
-            mResults.booksCreated++;
-
-        } else if (!updateOnlyIfNewer || updateOnlyIfNewer(context, mDb, book, bookId)) {
-            mDb.update(context, book, DAO.BOOK_FLAG_IS_BATCH_OPERATION
-                                      | DAO.BOOK_FLAG_USE_UPDATE_DATE_IF_PRESENT);
-            mResults.booksUpdated++;
         }
     }
 
@@ -773,102 +782,75 @@ public class CsvImporter
                            @NonNull final String line,
                            final boolean fullEscaping)
             throws ImportException {
-        // Fields found in row
-        final Collection<String> fields = new ArrayList<>();
-        // Temporary storage for current field
-        final StringBuilder sb = new StringBuilder();
+        try {
+            // Fields found in row
+            final Collection<String> fields = new ArrayList<>();
+            // Temporary storage for current field
+            final StringBuilder sb = new StringBuilder();
 
-        // Current position
-        int pos = 0;
-        // In a quoted string
-        boolean inQuotes = false;
-        // Found an escape char
-        boolean isEsc = false;
-        // 'Current' char
-        char c;
-        // Last position in row
-        int endPos = line.length() - 1;
-        // 'Next' char
-        char next = (line.isEmpty()) ? '\0' : line.charAt(0);
+            // Current position
+            int pos = 0;
+            // In a quoted string
+            boolean inQuotes = false;
+            // Found an escape char
+            boolean isEsc = false;
+            // 'Current' char
+            char c;
+            // Last position in row
+            int endPos = line.length() - 1;
+            // 'Next' char
+            char next = (line.isEmpty()) ? '\0' : line.charAt(0);
 
-        // '\0' is used as (and artificial) null character indicating end-of-string.
-        while (next != '\0') {
-            // Get current and next char
-            c = next;
-            if (pos < endPos) {
-                next = line.charAt(pos + 1);
-            } else {
-                next = '\0';
-            }
-
-            if (isEsc) {
-                switch (c) {
-                    case '\\':
-                        sb.append('\\');
-                        break;
-
-                    case 'r':
-                        sb.append('\r');
-                        break;
-
-                    case 't':
-                        sb.append('\t');
-                        break;
-
-                    case 'n':
-                        sb.append('\n');
-                        break;
-
-                    default:
-                        sb.append(c);
-                        break;
+            // '\0' is used as (and artificial) null character indicating end-of-string.
+            while (next != '\0') {
+                // Get current and next char
+                c = next;
+                if (pos < endPos) {
+                    next = line.charAt(pos + 1);
+                } else {
+                    next = '\0';
                 }
-                isEsc = false;
 
-            } else if (inQuotes) {
-                switch (c) {
-                    case '"':
-                        if (next == '"') {
-                            // substitute two successive quotes with one quote
-                            pos++;
-                            if (pos < endPos) {
-                                next = line.charAt(pos + 1);
-                            } else {
-                                next = '\0';
-                            }
+                if (isEsc) {
+                    switch (c) {
+                        case '\\':
+                            sb.append('\\');
+                            break;
+
+                        case 'r':
+                            sb.append('\r');
+                            break;
+
+                        case 't':
+                            sb.append('\t');
+                            break;
+
+                        case 'n':
+                            sb.append('\n');
+                            break;
+
+                        default:
                             sb.append(c);
+                            break;
+                    }
+                    isEsc = false;
 
-                        } else {
-                            // end of quoted string
-                            inQuotes = false;
-                        }
-                        break;
-
-                    case '\\':
-                        if (fullEscaping) {
-                            isEsc = true;
-                        } else {
-                            sb.append(c);
-                        }
-                        break;
-
-                    default:
-                        sb.append(c);
-                        break;
-                }
-            } else {
-                // This is just a raw string; no escape or quote active.
-                // Ignore leading whitespace.
-                if ((c != ' ' && c != '\t') || sb.length() != 0) {
+                } else if (inQuotes) {
                     switch (c) {
                         case '"':
-                            if (sb.length() > 0) {
-                                // Fields with inner quotes MUST be escaped
-                                final String msg = context.getString(
-                                        R.string.warning_import_unescaped_quote, row, pos);
-                                throw new ImportException(msg);
+                            if (next == '"') {
+                                // substitute two successive quotes with one quote
+                                pos++;
+                                if (pos < endPos) {
+                                    next = line.charAt(pos + 1);
+                                } else {
+                                    next = '\0';
+                                }
+                                sb.append(c);
+
                             } else {
-                                inQuotes = true;
+                                // end of quoted string
+                                inQuotes = false;
                             }
                             break;
 
@@ -880,29 +862,65 @@ public class CsvImporter
                             }
                             break;
 
-                        case ',':
-                            // Add this field and reset for the next.
-                            fields.add(sb.toString());
-                            sb.setLength(0);
-                            break;
-
                         default:
                             sb.append(c);
                             break;
                     }
+                } else {
+                    // This is just a raw string; no escape or quote active.
+                    // Ignore leading whitespace.
+                    if ((c != ' ' && c != '\t') || sb.length() != 0) {
+                        switch (c) {
+                            case '"':
+                                if (sb.length() > 0) {
+                                    // Fields with inner quotes MUST be escaped
+                                    final String msg = context.getString(
+                                            R.string.warning_import_unescaped_quote, row, pos);
+                                    throw new ImportException(msg);
+                                } else {
+                                    inQuotes = true;
+                                }
+                                break;
+
+                            case '\\':
+                                if (fullEscaping) {
+                                    isEsc = true;
+                                } else {
+                                    sb.append(c);
+                                }
+                                break;
+
+                            case ',':
+                                // Add this field and reset for the next.
+                                fields.add(sb.toString());
+                                sb.setLength(0);
+                                break;
+
+                            default:
+                                sb.append(c);
+                                break;
+                        }
+                    }
                 }
+                pos++;
             }
-            pos++;
+
+            // Add the remaining chunk
+            fields.add(sb.toString());
+
+            // Return the result as a String[].
+            final String[] columns = new String[fields.size()];
+            fields.toArray(columns);
+
+            return columns;
+
+        } catch (@NonNull final StackOverflowError e) {
+            // StackOverflowError has been seen when the StringBuilder overflows.
+            // The stack at the time was 1040kb. Not reproduced as yet.
+            Logger.warn(context, "line.length=" + line.length() + "\n" + line);
+            throw new ImportException(context.getString(R.string.error_csv_line_to_long,
+                                                        row, line.length()), e);
         }
-
-        // Add the remaining chunk
-        fields.add(sb.toString());
-
-        // Return the result as a String[].
-        final String[] imported = new String[fields.size()];
-        fields.toArray(imported);
-
-        return imported;
     }
 
     /**
