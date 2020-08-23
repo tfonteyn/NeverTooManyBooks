@@ -31,6 +31,7 @@
 
         <item name="materialAlertDialogTheme">@style/ThemeOverlay.App.MaterialAlertDialog</item>
         <item name="buttonBarButtonStyle">@style/ButtonBarButtons</item>
+        <item name="buttonBarNeutralButtonStyle">@style/ButtonBarButtons</item>
         <item name="buttonBarNegativeButtonStyle">@style/ButtonBarButtons</item>
         <item name="buttonBarPositiveButtonStyle">@style/ButtonBarButtons</item>
 
@@ -50,6 +51,7 @@
 
         <item name="materialAlertDialogTheme">@style/ThemeOverlay.App.MaterialAlertDialog</item>
         <item name="buttonBarButtonStyle">@style/ButtonBarButtons</item>
+        <item name="buttonBarNeutralButtonStyle">@style/ButtonBarButtons</item>
         <item name="buttonBarNegativeButtonStyle">@style/ButtonBarButtons</item>
         <item name="buttonBarPositiveButtonStyle">@style/ButtonBarButtons</item>
 
@@ -97,6 +99,7 @@
         <!-- Component theme overrides -->
         <!--  ======================== -->
         <item name="buttonBarButtonStyle">@style/ButtonBarButtons</item>
+        <item name="buttonBarNeutralButtonStyle">@style/ButtonBarButtons</item>
         <item name="buttonBarNegativeButtonStyle">@style/ButtonBarButtons</item>
         <item name="buttonBarPositiveButtonStyle">@style/ButtonBarButtons</item>
 
