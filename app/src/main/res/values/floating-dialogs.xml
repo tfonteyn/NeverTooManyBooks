@@ -30,7 +30,7 @@
     -->
     <bool name="floating_dialogs_enabled">false</bool>
     <!-- not active, as FULLSCREEN -->
-    <dimen name="floating_dialogs_min_width">0</dimen>
-    <dimen name="floating_dialogs_min_width_cover_browser">0</dimen>
+    <dimen name="floating_dialogs_min_width">0dp</dimen>
+    <dimen name="floating_dialogs_min_width_cover_browser">0dp</dimen>
 
 </resources>
