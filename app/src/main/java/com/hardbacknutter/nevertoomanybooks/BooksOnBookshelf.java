@@ -472,7 +472,7 @@ public class BooksOnBookshelf
         setIntent(intent);
 
         handleStandardSearchIntent(intent);
-        buildBookList();
+        mModel.setForceRebuildInOnResume(true);
     }
 
     /**

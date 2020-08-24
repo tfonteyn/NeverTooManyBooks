@@ -754,6 +754,9 @@ public class BooklistBuilder
      */
     @Override
     public void close() {
+        if (BuildConfig.DEBUG /* always */) {
+            Log.d(TAG, "|close|mInstanceId=" + mInstanceId);
+        }
         mCloseWasCalled = true;
 
         if (mRowStateDAO != null) {
