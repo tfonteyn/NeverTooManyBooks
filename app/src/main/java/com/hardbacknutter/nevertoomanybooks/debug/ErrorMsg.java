@@ -56,9 +56,7 @@ public final class ErrorMsg {
     public static final String NULL_MENU = "Menu";
     public static final String NULL_NON_PERSISTED_VALUE = "NonPersistedValue";
     public static final String NULL_PUBLISHER = "Publisher";
-    public static final String NULL_ROW_POS = "rowPos";
     public static final String NULL_SCANNER_MODEL = "ScannerModel";
-    public static final String NULL_SEARCH_ENGINE_CONFIG = "Config";
     public static final String NULL_SERIES = "Series";
     public static final String NULL_STYLE = "Style";
     public static final String NULL_TASK_RESULTS = "Task result";
@@ -69,6 +67,7 @@ public final class ErrorMsg {
     public static final String BUNDLE_NOT_PUSHED = "Bundle not pushed!";
     public static final String BUNDLE_ALREADY_PUSHED = "Bundle already pushed!";
     public static final String CREATE_WAS_NOT_CALLED = "create was not called?";
+    public static final String IMPORT_NOT_SUPPORTED = "Import not supported";
 
     private ErrorMsg() {
     }
