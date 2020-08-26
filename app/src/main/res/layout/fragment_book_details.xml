@@ -347,7 +347,7 @@
             android:layout_marginStart="@dimen/indent_field_inline"
             android:contentDescription="@string/lbl_anthology"
             android:src="@drawable/ic_check"
-            android:tint="?attr/appColorChecked"
+            android:tint="?attr/colorSecondaryVariant"
             app:layout_constraintStart_toEndOf="@id/lbl_anthology"
             app:layout_constraintTop_toBottomOf="@id/series_title"
             />
@@ -477,7 +477,7 @@
             android:layout_marginStart="@dimen/indent_field_inline"
             android:contentDescription="@string/lbl_signed"
             android:src="@drawable/ic_check"
-            android:tint="?attr/appColorChecked"
+            android:tint="?attr/colorSecondaryVariant"
             app:layout_constraintStart_toEndOf="@id/lbl_signed"
             app:layout_constraintTop_toBottomOf="@id/notes"
             />

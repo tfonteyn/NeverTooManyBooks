@@ -55,7 +55,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 final class PopupStyles {
 
     @AttrRes
-    private static final int TEXT_COLOR = R.attr.appFsOverlayTextColor;
+    private static final int TEXT_COLOR = R.attr.colorOnPrimary;
 
     static final Consumer<TextView> MD = popupView -> {
         final Resources res = popupView.getResources();

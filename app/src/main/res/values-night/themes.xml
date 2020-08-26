@@ -77,18 +77,12 @@
         <!-- Application specific -->
         <!-- ==================== -->
 
-        <item name="appHeaderBackgroundColor">@color/blue_grey_800</item>
+        <!-- in dark mode, the default of colorSurface is fine. -->
         <item name="appBookCardBackgroundColor">?attr/colorSurface</item>
 
-        <item name="appFsOverlayTextColor">?attr/colorOnPrimary</item>
-        <item name="appFsOverlayBackgroundColor">?attr/colorPrimary</item>
-
         <item name="appNavBarColorStart">@color/blue_grey_800</item>
-        <item name="appNavBarColorCenter">@color/blue_grey_500</item>
+        <item name="appNavBarColorCenter">@color/blue_grey_600</item>
         <item name="appNavBarColorEnd">@color/blue_grey_400</item>
-
-        <item name="appColorChecked">@color/green_300</item>
-        <item name="appColorCompleted">@color/teal_300</item>
 
         <!-- button text. "colorPrimary" as set to "blue_grey_600" works fine. -->
         <item name="appDialogButtonTextColor">?attr/colorPrimary</item>

@@ -31,7 +31,7 @@
     <TextView
         android:id="@+id/name"
         style="@style/BoB.Group.Label.Level1"
-        android:drawableTint="?attr/appColorCompleted"
+        android:drawableTint="?attr/colorSecondaryVariant"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"

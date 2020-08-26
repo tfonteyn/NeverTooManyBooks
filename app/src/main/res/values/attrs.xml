@@ -25,25 +25,13 @@
 -->
 <resources>
 
-    <!-- The header on the BoB screen.
-         Default was using the surfaceColor, we override here. -->
-    <attr name="appHeaderBackgroundColor" format="reference|color" />
     <!-- The card "cardBackgroundColor" for a book on the BoB screen. -->
     <attr name="appBookCardBackgroundColor" format="reference|color" />
-
-    <!-- The fast-scroller overlay -->
-    <attr name="appFsOverlayTextColor" format="reference|color" />
-    <attr name="appFsOverlayBackgroundColor" format="reference|color" />
 
     <!-- Color gradient used in the Navigation side bar. -->
     <attr name="appNavBarColorStart" format="reference|color" />
     <attr name="appNavBarColorCenter" format="reference|color" />
     <attr name="appNavBarColorEnd" format="reference|color" />
-
-    <!-- Color for a boolean status. -->
-    <attr name="appColorChecked" format="reference|color" />
-    <!-- Color for a boolean status. -->
-    <attr name="appColorCompleted" format="reference|color" />
 
     <!-- Color for a button on a dialog. -->
     <attr name="appDialogButtonTextColor" format="reference|color" />

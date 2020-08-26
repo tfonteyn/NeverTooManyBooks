@@ -75,7 +75,7 @@ class Md2PopupBackground
     Md2PopupBackground(@NonNull final Context context) {
         mPaint = new Paint();
         mPaint.setAntiAlias(true);
-        mPaint.setColor(FastScroller.getColorInt(context, R.attr.appFsOverlayBackgroundColor));
+        mPaint.setColor(FastScroller.getColorInt(context, R.attr.colorPrimary));
         mPaint.setStyle(Paint.Style.FILL);
         final Resources resources = context.getResources();
         mPaddingStart = resources.getDimensionPixelOffset(R.dimen.afs_md2_popup_padding_start);
