@@ -310,8 +310,6 @@ public class EditBookTocFragment
         mList.addAll(book.getParcelableArrayList(Book.BKEY_TOC_ARRAY));
         mListAdapter.notifyDataSetChanged();
 
-
-
         populateTocBits(book);
 
         // hide unwanted fields
@@ -331,7 +329,7 @@ public class EditBookTocFragment
 
         // The toc list is not a 'real' field. Hence the need to store it manually here.
         // It requires no special validation.
-        //book.putParcelableArrayList(Book.BKEY_TOC_ARRAY, mList);
+        book.putParcelableArrayList(Book.BKEY_TOC_ARRAY, mList);
     }
 
     @Override
