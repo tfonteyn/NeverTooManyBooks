@@ -190,9 +190,8 @@
     <string name="isfdb_warning_limited_to">(yalnızca ISFDB web sitesi tarafından desteklenir)</string>
     <string name="kilobytes">%.2fkB</string>
     <string name="lbl_about_contact">İletişim:</string>
-    <string name="lbl_about_creators">İlk olarak:</string>
     <string name="lbl_about_sourcecode">Kaynak kodu</string>
-    <string name="lbl_about_special_thanks">Teşekkürlerimizle</string>
+    <string name="X_lbl_about_special_thanks">Teşekkürlerimizle</string>
     <string name="lbl_about_website">İnteret Sayfası</string>
     <string name="lbl_added_day">Eklenen gün</string>
     <string name="lbl_added_month">Eklenen ay</string>

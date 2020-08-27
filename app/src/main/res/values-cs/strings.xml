@@ -188,9 +188,8 @@
     <string name="isfdb_warning_limited_to">(podporuje pouze webová stránka ISFDB)</string>
     <string name="kilobytes">%.2fkB</string>
     <string name="lbl_about_contact">Kontakt:</string>
-    <string name="lbl_about_creators">Původně:</string>
     <string name="lbl_about_sourcecode">Zdrojový kód:</string>
-    <string name="lbl_about_special_thanks">Zvláštní poděkování</string>
+    <string name="X_lbl_about_special_thanks">Zvláštní poděkování</string>
     <string name="lbl_about_website">WWW stránky:</string>
     <string name="lbl_added_day">Den přidání</string>
     <string name="lbl_added_month">Měsíc přidání</string>

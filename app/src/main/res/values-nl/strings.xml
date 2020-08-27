@@ -195,9 +195,8 @@
     <string name="isfdb_warning_limited_to">(alleen ondersteund door de ISFDB-website)</string>
     <string name="kilobytes">%.2fkB</string>
     <string name="lbl_about_contact">Contact:</string>
-    <string name="lbl_about_creators">Oorspronkelijk door:</string>
     <string name="lbl_about_sourcecode">Broncode:</string>
-    <string name="lbl_about_special_thanks">Speciale dankbetuiging</string>
+    <string name="X_lbl_about_special_thanks">Speciale dankbetuiging</string>
     <string name="lbl_about_website">Webpagina:</string>
     <string name="lbl_added_day">Dag</string>
     <string name="lbl_added_month">Maand</string>

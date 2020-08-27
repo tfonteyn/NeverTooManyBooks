@@ -189,9 +189,8 @@
     <string name="isfdb_warning_limited_to">(υποστηρίζεται μόνο από την τοποθεσία ISFDB)</string>
     <string name="kilobytes">%.2fkB</string>
     <string name="lbl_about_contact">Επαφές:</string>
-    <string name="lbl_about_creators">Αρχικά από:</string>
     <string name="lbl_about_sourcecode">Πηγαίος Κώδικας:</string>
-    <string name="lbl_about_special_thanks">Ειδικές Ευχαριστίες</string>
+    <string name="X_lbl_about_special_thanks">Ειδικές Ευχαριστίες</string>
     <string name="lbl_about_website">Ιστοσελίδα:</string>
     <string name="lbl_added_day">Ημέρα Πρόσθεσης</string>
     <string name="lbl_added_month">Μήνας Πρόσθεσης</string>

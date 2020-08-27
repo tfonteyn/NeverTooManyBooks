@@ -1473,9 +1473,6 @@
     <string name="lbl_about_website">Web page</string>
     <string name="lbl_about_sourcecode">Source Code</string>
     <string name="lbl_about_contact">Contact:</string>
-    <string name="lbl_about_special_thanks">Special Thanks</string>
-    <string name="lbl_about_creators">Originally by:</string>
-    <!-- Credits in the 'about' dialog -->
 
     <!-- ####################################################################################### -->
     <!-- === Unused, but not removing as we have translations which might be useful later == -->
@@ -1487,6 +1484,8 @@
         defined here. You can change how lists are displayed at startup, and adjust a
         variety of other preferences that will be applied to all your styles when possible.
     </string>
+
+    <string name="X_lbl_about_special_thanks">Special Thanks</string>
 
     <!-- hint shown when the user invokes the standard search form (single line, top of screen) -->
 

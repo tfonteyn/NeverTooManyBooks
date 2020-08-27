@@ -189,9 +189,8 @@
     <string name="isfdb_warning_limited_to">(supportato solo dal sito Web ISFDB)</string>
     <string name="kilobytes">%.2fkB</string>
     <string name="lbl_about_contact">Contatti:</string>
-    <string name="lbl_about_creators">Originariamente da:</string>
     <string name="lbl_about_sourcecode">Codice sorgente:</string>
-    <string name="lbl_about_special_thanks">Ringraziamenti speciali</string>
+    <string name="X_lbl_about_special_thanks">Ringraziamenti speciali</string>
     <string name="lbl_about_website">Pagina web:</string>
     <string name="lbl_added_day">Giorno di inserimento</string>
     <string name="lbl_added_month">Mese di inserimento</string>
