@@ -20,52 +20,48 @@
   -->
 
 <resources>
-
     <style name="Theme.App" parent="Base.Theme.App">
         <!-- ====================================== -->
         <!-- Material color attributes (dark theme) -->
         <!-- ====================================== -->
-        <item name="android:statusBarColor">@color/blue_grey_800</item>
+        <item name="android:statusBarColor">@color/blue_grey_300</item>
 
-        <item name="colorPrimary">@color/blue_grey_600</item>
-        <item name="colorPrimaryVariant">@color/blue_grey_700</item>
+        <item name="colorPrimary">@color/blue_grey_200</item>
+        <item name="colorPrimaryVariant">@color/blue_grey_300</item>
         <item name="colorOnPrimary">@color/white</item>
 
-        <item name="colorSecondary">@color/cyan_500</item>
-        <item name="colorSecondaryVariant">@color/cyan_600</item>
+        <item name="colorSecondary">@color/cyan_200</item>
+        <item name="colorSecondaryVariant">@color/cyan_300</item>
         <item name="colorOnSecondary">@color/black</item>
 
         <!--        <item name="colorSurface">#121212</item>-->
         <!--        <item name="colorOnSurface">@color/white</item>-->
 
-        <!--        <item name="colorControlNormal">?attr/colorOnPrimary</item>-->
-
         <!-- ==================== -->
         <!-- Application specific -->
         <!-- ==================== -->
-        <!-- in dark mode, the default of colorSurface is fine. -->
+        <item name="appDialogButtonTextColor">?attr/colorPrimary</item>
+        <!-- the default colorSurface #121212 -->
         <item name="appBookCardBackgroundColor">?attr/colorSurface</item>
+
         <!-- gradient used in the Navigation side bar. -->
         <item name="appNavBarColorStart">@color/blue_grey_800</item>
         <item name="appNavBarColorCenter">@color/blue_grey_600</item>
         <item name="appNavBarColorEnd">@color/blue_grey_400</item>
-        <!-- button text. "colorPrimary" as set to "blue_grey_600" works fine. -->
-        <item name="appDialogButtonTextColor">?attr/colorPrimary</item>
     </style>
 
     <style name="Theme.App.Startup" parent="Base.Theme.App.Startup">
         <!-- ==================== -->
         <!-- Application specific -->
         <!-- ==================== -->
-        <item name="appDialogButtonTextColor">@color/blue_grey_600</item>
+        <item name="appBookCardBackgroundColor">?attr/colorSurface</item>
     </style>
 
     <style name="ThemeOverlay.App.MaterialAlertDialog" parent="Base.ThemeOverlay.App.MaterialAlertDialog">
         <!-- ==================== -->
         <!-- Application specific -->
         <!-- ==================== -->
-        <!-- button text. "colorPrimary" as set to "blue_grey_600" works fine. -->
-        <item name="appDialogButtonTextColor">?attr/colorPrimary</item>
+        <item name="appBookCardBackgroundColor">?attr/colorSurface</item>
     </style>
 
 </resources>
