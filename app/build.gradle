@@ -121,7 +121,6 @@ android {
             buildConfigField('String', 'GOODREADS_PRIVATE_KEY', '""')
         }
 
-
         // 2020-03-27. Started getting "APIs Temporarily disabled" on LIBRARY_THING
         // searches and "Temporarily down on images.
         // Last checked: 2020-05-21
@@ -129,14 +128,16 @@ android {
         // but the alternative edition link still works (for now?).
         buildConfigField('boolean', 'ENABLE_LIBRARY_THING_ALT_ED', 'true')
 
-
         buildConfigField('boolean', 'ENABLE_GOOGLE_BOOKS', 'true')
-
-        // needs more testing
         buildConfigField('boolean', 'ENABLE_LAST_DODO', 'true')
 
+
         // If set, we'll use {@link MenuPickerDialogFragment} where implemented.
-        buildConfigField('boolean', 'MENU_PICKER_USES_FRAGMENT', 'true')
+        // uses reflection to access a private variable
+        buildConfigField('boolean', 'MENU_PICKER_USES_FRAGMENT', 'false')
+
+        // under development
+        buildConfigField('boolean', 'IMPORT_CALIBRE', 'false')
     }
 
     buildTypes {
@@ -145,17 +146,18 @@ android {
             shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'),
                     'proguard-rules.pro'
-
-            // uses reflection to access a private variable
-            buildConfigField('boolean', 'MENU_PICKER_USES_FRAGMENT', 'false')
-
         }
         beta {
             initWith release
             versionNameSuffix "beta_" + new Date().format('yyyy-MM-dd')
+
+            buildConfigField('boolean', 'MENU_PICKER_USES_FRAGMENT', 'true')
         }
         debug {
             versionNameSuffix new Date().format('yyyy-MM-dd_HH:mm')
+
+            buildConfigField('boolean', 'MENU_PICKER_USES_FRAGMENT', 'true')
+            buildConfigField('boolean', 'IMPORT_CALIBRE', 'true')
         }
     }
 

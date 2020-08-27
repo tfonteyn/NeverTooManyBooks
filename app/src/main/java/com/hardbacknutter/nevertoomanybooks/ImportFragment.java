@@ -246,27 +246,41 @@ public class ImportFragment
 
             case Zip:
             case Tar:
+                showQuickOptions(helper);
+                break;
+
             case SqLiteDb:
-                // Show a quick-options dialog first.
-                // The user can divert to the full options dialog if needed.
-                //noinspection ConstantConditions
-                new MaterialAlertDialogBuilder(getContext())
-                        .setTitle(R.string.lbl_import)
-                        .setMessage(R.string.txt_import_option_all_books)
-                        .setNegativeButton(android.R.string.cancel,
-                                           (d, w) -> getActivity().finish())
-                        .setNeutralButton(R.string.btn_options, (d, w) -> ImportHelperDialogFragment
-                                .newInstance(RK_IMPORT_HELPER, helper)
-                                .show(getChildFragmentManager(), ImportHelperDialogFragment.TAG))
-                        .setPositiveButton(android.R.string.ok, (d, w) -> mArchiveImportTask
-                                .startImport(helper))
-                        .create()
-                        .show();
+                if (BuildConfig.IMPORT_CALIBRE) {
+                    showQuickOptions(helper);
+                } else {
+                    throw new IllegalStateException("unsupported: " + container);
+                }
                 break;
 
             default:
                 throw new IllegalStateException("unsupported: " + container);
         }
+    }
+
+    /**
+     * Show a quick-options dialog first.
+     * The user can divert to the full options dialog if needed.
+     *
+     * @param helper ImportManager
+     */
+    private void showQuickOptions(@NonNull final ImportManager helper) {
+        //noinspection ConstantConditions
+        new MaterialAlertDialogBuilder(getContext())
+                .setTitle(R.string.lbl_import)
+                .setMessage(R.string.txt_import_option_all_books)
+                .setNegativeButton(android.R.string.cancel, (d, w) -> getActivity().finish())
+                .setNeutralButton(R.string.btn_options, (d, w) -> ImportHelperDialogFragment
+                        .newInstance(RK_IMPORT_HELPER, helper)
+                        .show(getChildFragmentManager(), ImportHelperDialogFragment.TAG))
+                .setPositiveButton(android.R.string.ok, (d, w) -> mArchiveImportTask
+                        .startImport(helper))
+                .create()
+                .show();
     }
 
     private void onImportFailure(@NonNull final FinishedMessage<Exception> message) {

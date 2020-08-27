@@ -30,6 +30,7 @@ import androidx.annotation.Nullable;
 import java.io.IOException;
 import java.util.Objects;
 
+import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveImportTask;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveInfo;
@@ -175,8 +176,10 @@ public class ImportManager
             case CsvBooks:
             case Zip:
             case Tar:
-            case SqLiteDb:
                 return true;
+
+            case SqLiteDb:
+                return BuildConfig.IMPORT_CALIBRE;
 
             case Xml:
             case Unknown:
@@ -255,7 +258,11 @@ public class ImportManager
                 break;
 
             case SqLiteDb:
-                reader = new DbArchiveReader(context, this);
+                if (BuildConfig.IMPORT_CALIBRE) {
+                    reader = new DbArchiveReader(context, this);
+                } else {
+                    throw new InvalidArchiveException(ErrorMsg.IMPORT_NOT_SUPPORTED);
+                }
                 break;
 
             case Xml:
