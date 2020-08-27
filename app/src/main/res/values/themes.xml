@@ -54,20 +54,19 @@ TODO: these + the night variants need optimizing.
         <item name="colorSecondaryVariant">@color/cyan_300</item>
         <item name="colorOnSecondary">@color/black</item>
 
-        <!--        <item name="colorSurface">@color/white</item>-->
-        <!--        <item name="colorOnSurface">@color/black</item>-->
+        <!--    <item name="colorSurface">@color/white</item>-->
+        <!--    <item name="colorOnSurface">@color/black</item>-->
 
         <!-- framework - The color applied to icons/controls in their normal state. -->
-        <!--        <item name="colorControlNormal">?attr/colorOnPrimary</item>-->
+        <!--    <item name="colorControlNormal">?attr/colorOnPrimary</item>-->
         <!-- framework - The color applied to icons/controls in their activated state (e.g. checked). -->
-        <!--        <item name="colorControlActivated">?attr/colorPrimary</item>-->
+        <!--    <item name="colorControlActivated">?attr/colorPrimary</item>-->
         <!-- framework - The color applied to control highlights (e.g. ripples, list selectors). -->
-        <!--        <item name="colorControlHighlight">DEFAULT</item>-->
+        <!--    <item name="colorControlHighlight">DEFAULT</item>-->
 
         <!-- ==================== -->
         <!-- Application specific -->
         <!-- ==================== -->
-        <item name="appDialogButtonTextColor">?attr/colorPrimary</item>
         <!-- the default colorSurface is "too white". -->
         <item name="appBookCardBackgroundColor">@color/grey_50</item>
 
@@ -79,10 +78,6 @@ TODO: these + the night variants need optimizing.
 
     <style name="Base.Theme.App" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <item name="materialAlertDialogTheme">@style/ThemeOverlay.App.MaterialAlertDialog</item>
-        <item name="buttonBarButtonStyle">@style/App.ButtonBarButtons</item>
-        <item name="buttonBarNeutralButtonStyle">@style/App.ButtonBarButtons</item>
-        <item name="buttonBarNegativeButtonStyle">@style/App.ButtonBarButtons</item>
-        <item name="buttonBarPositiveButtonStyle">@style/App.ButtonBarButtons</item>
         <item name="snackbarTextViewStyle">@style/App.SnackbarTextView</item>
         <item name="textAppearanceBody1">@style/App.TextAppearance.Body1</item>
         <item name="textAppearanceBody2">@style/App.TextAppearance.Body2</item>
@@ -99,18 +94,10 @@ TODO: these + the night variants need optimizing.
         <item name="colorSecondary">@color/cyan_500</item>
         <item name="colorSecondaryVariant">@color/cyan_300</item>
         <item name="colorOnSecondary">@color/black</item>
-        <!-- ==================== -->
-        <!-- Application specific -->
-        <!-- ==================== -->
-        <item name="appDialogButtonTextColor">?attr/colorPrimary</item>
     </style>
 
     <style name="Base.Theme.App.Startup" parent="Theme.MaterialComponents.DayNight.Dialog">
         <item name="materialAlertDialogTheme">@style/ThemeOverlay.App.MaterialAlertDialog</item>
-        <item name="buttonBarButtonStyle">@style/App.ButtonBarButtons</item>
-        <item name="buttonBarNeutralButtonStyle">@style/App.ButtonBarButtons</item>
-        <item name="buttonBarNegativeButtonStyle">@style/App.ButtonBarButtons</item>
-        <item name="buttonBarPositiveButtonStyle">@style/App.ButtonBarButtons</item>
         <item name="snackbarTextViewStyle">@style/App.SnackbarTextView</item>
         <item name="textAppearanceBody1">@style/App.TextAppearance.Body1</item>
         <item name="textAppearanceBody2">@style/App.TextAppearance.Body2</item>
@@ -126,18 +113,11 @@ TODO: these + the night variants need optimizing.
         <item name="colorSecondary">@color/cyan_500</item>
         <item name="colorSecondaryVariant">@color/cyan_300</item>
         <item name="colorOnSecondary">@color/black</item>
-        <!-- ==================== -->
-        <!-- Application specific -->
-        <!-- ==================== -->
-        <item name="appDialogButtonTextColor">?attr/colorPrimary</item>
     </style>
 
-    <style name="Base.ThemeOverlay.App.MaterialAlertDialog" parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog">
+    <style name="Base.ThemeOverlay.App.MaterialAlertDialog"
+        parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog">
         <item name="materialAlertDialogTheme">@style/ThemeOverlay.App.MaterialAlertDialog</item>
-        <item name="buttonBarButtonStyle">@style/App.ButtonBarButtons</item>
-        <item name="buttonBarNeutralButtonStyle">@style/App.ButtonBarButtons</item>
-        <item name="buttonBarNegativeButtonStyle">@style/App.ButtonBarButtons</item>
-        <item name="buttonBarPositiveButtonStyle">@style/App.ButtonBarButtons</item>
         <item name="snackbarTextViewStyle">@style/App.SnackbarTextView</item>
         <item name="textAppearanceBody1">@style/App.TextAppearance.Body1</item>
         <item name="textAppearanceBody2">@style/App.TextAppearance.Body2</item>

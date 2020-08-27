@@ -20,6 +20,7 @@
   -->
 
 <resources>
+
     <style name="Theme.App" parent="Base.Theme.App">
         <!-- ====================================== -->
         <!-- Material color attributes (dark theme) -->
@@ -34,13 +35,12 @@
         <item name="colorSecondaryVariant">@color/cyan_300</item>
         <item name="colorOnSecondary">@color/black</item>
 
-        <!--        <item name="colorSurface">#121212</item>-->
-        <!--        <item name="colorOnSurface">@color/white</item>-->
+        <!--    <item name="colorSurface">#121212</item>-->
+        <!--    <item name="colorOnSurface">@color/white</item>-->
 
         <!-- ==================== -->
         <!-- Application specific -->
         <!-- ==================== -->
-        <item name="appDialogButtonTextColor">?attr/colorPrimary</item>
         <!-- the default colorSurface #121212 -->
         <item name="appBookCardBackgroundColor">?attr/colorSurface</item>
 

@@ -129,11 +129,6 @@
     -->
     <dimen name="large_menu_button">320dp</dimen>
 
-    <!-- Import options dialog in landscape mode showing all options.-->
-    <dimen name="import_dialog_landscape_width">560dp</dimen>
-    <!-- Export options dialog in landscape mode showing all options.-->
-    <dimen name="export_dialog_landscape_width">560dp</dimen>
-
     <!-- the width for a Button displaying an icon (24dp) and no text. -->
     <dimen name="icon_button_width">48dp</dimen>
 

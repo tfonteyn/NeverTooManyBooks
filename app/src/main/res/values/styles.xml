@@ -614,10 +614,6 @@
         <item name="android:maxLines">2</item>
     </style>
 
-    <style name="App.ButtonBarButtons" parent="Widget.MaterialComponents.Button.TextButton.Dialog">
-        <item name="android:textColor">?attr/appDialogButtonTextColor</item>
-    </style>
-
     <style name="NavigationView" parent="Widget.MaterialComponents.NavigationView">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">match_parent</item>
