@@ -125,7 +125,6 @@
                 android:layout_height="wrap_content"
                 android:inputType="textMultiLine"
                 android:imeOptions="actionSearch"
-                android:textAppearance="?android:attr/textAppearanceMedium"
                 tools:ignore="Autofill"
                 />
 
@@ -146,12 +145,14 @@
             android:id="@+id/works_found"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textAppearance="?attr/textAppearanceHeadline6"
             android:textIsSelectable="true"
             android:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/btn_search"
+            tools:text="works_found"
+            tools:visibility="visible"
             />
 
         <androidx.recyclerview.widget.RecyclerView

@@ -31,7 +31,7 @@
     android:minHeight="?attr/listPreferredItemHeightSmall"
     android:paddingStart="20dp"
     android:paddingEnd="?attr/dialogPreferredPadding"
-    android:textAppearance="?android:attr/textAppearanceMedium"
+    android:textAppearance="?attr/textAppearanceListItem"
     android:textColor="?attr/textColorAlertDialogListItem"
     tools:text="@sample/data.json/styles/name"
     />

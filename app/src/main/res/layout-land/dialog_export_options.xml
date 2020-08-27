@@ -168,7 +168,7 @@
 
                 <TextView
                     android:id="@+id/archive_format_info"
-                    style="@style/Text.Blurb.Small"
+                    style="@style/Text.Body.Small"
                     app:layout_constraintStart_toStartOf="@id/archive_format"
                     app:layout_constraintTop_toBottomOf="@id/archive_format"
                     tools:ignore="SelectableText"

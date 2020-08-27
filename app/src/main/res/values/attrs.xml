@@ -27,12 +27,10 @@
 
     <!-- The card "cardBackgroundColor" for a book on the BoB screen. -->
     <attr name="appBookCardBackgroundColor" format="reference|color" />
-
     <!-- Color gradient used in the Navigation side bar. -->
     <attr name="appNavBarColorStart" format="reference|color" />
     <attr name="appNavBarColorCenter" format="reference|color" />
     <attr name="appNavBarColorEnd" format="reference|color" />
-
     <!-- Color for a button on a dialog. -->
     <attr name="appDialogButtonTextColor" format="reference|color" />
 

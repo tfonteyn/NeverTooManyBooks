@@ -50,24 +50,26 @@
 
         <TextView
             android:id="@+id/b1"
-            style="@style/Text.Blurb"
+            style="@style/Text.Body"
             android:text="@string/lt_info"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             />
 
-        <TextView
+        <Button
             android:id="@+id/register_url"
-            style="@style/Url"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:text="@string/lt_url_text_register"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/b1"
             />
 
-        <TextView
+        <Button
             android:id="@+id/dev_key_url"
-            style="@style/Url"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:text="@string/lt_url_text_dev_key"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -76,7 +78,7 @@
 
         <TextView
             android:id="@+id/b2"
-            style="@style/Text.Blurb"
+            style="@style/Text.Body"
             android:text="@string/lt_lbl_key"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/dev_key_url"

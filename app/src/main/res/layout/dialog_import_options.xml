@@ -77,11 +77,11 @@
                 <!-- Not present in landscape layout; displayed as the subtitle of the toolbar. -->
                 <TextView
                     android:id="@+id/info"
-                    style="@style/TextAppearance.MaterialComponents.Subtitle1"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="?attr/dialogPreferredPadding"
                     android:text="@string/lbl_import_options"
+                    android:textAppearance="?attr/textAppearanceSubtitle1"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"

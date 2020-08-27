@@ -91,7 +91,7 @@
 
     <TextView
         android:id="@+id/info"
-        style="@style/Text.Small"
+        style="@style/Text.Body.Small"
         android:focusable="false"
         android:textIsSelectable="false"
         app:layout_constraintStart_toStartOf="@id/title"

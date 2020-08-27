@@ -46,8 +46,6 @@
     <TextView
         android:id="@+id/app"
         style="@style/AppName"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
         android:text="@string/app_name"
         app:layout_constraintBottom_toBottomOf="@id/logo"
         app:layout_constraintEnd_toEndOf="parent"
@@ -58,12 +56,11 @@
 
     <TextView
         android:id="@+id/version"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textIsSelectable="true"
+        style="@style/AppVersion"
         app:layout_constraintEnd_toEndOf="@id/app"
         app:layout_constraintTop_toBottomOf="@id/app"
         tools:text="1.1.0"
+        tools:ignore="SelectableText"
         />
 
     <TextView
@@ -71,7 +68,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/progress_msg_starting_up"
-        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:textAppearance="?attr/textAppearanceSubtitle2"
         android:textIsSelectable="true"
         app:layout_constraintBottom_toTopOf="@id/progressBar"
         app:layout_constraintTop_toBottomOf="@id/logo"

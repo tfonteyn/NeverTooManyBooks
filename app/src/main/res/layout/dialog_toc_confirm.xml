@@ -30,7 +30,7 @@
         android:id="@+id/content"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:textAppearance="?attr/textAppearanceBody2"
         android:textIsSelectable="true"
         tools:text="@tools:sample/lorem/random"
         />

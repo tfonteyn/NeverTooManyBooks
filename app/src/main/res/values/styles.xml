@@ -37,14 +37,13 @@
     <!-- Field labels. -->
     <style name="Field.Label">
         <item name="android:layout_width">wrap_content</item>
-        <item name="android:textStyle">bold</item>
-        <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
+        <item name="android:textAppearance">?attr/textAppearanceSubtitle2</item>
     </style>
 
     <!-- 'medium' detail field; for example Series title, ... -->
     <style name="Field.Generic">
         <item name="android:layout_marginStart">@dimen/indent_field</item>
-        <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
+        <item name="android:textAppearance">?attr/textAppearanceBody1</item>
     </style>
 
     <style name="Field.Generic.Inline">
@@ -54,22 +53,23 @@
 
     <!-- 'minor' detail field; for example format, isbn,... -->
     <style name="Field.Generic.Small">
-        <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
+        <item name="android:textAppearance">?attr/textAppearanceBody2</item>
     </style>
 
     <style name="Field.Generic.Inline.Small">
-        <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
+        <item name="android:textAppearance">?attr/textAppearanceBody2</item>
     </style>
 
     <!-- Book title (also used for TOC titles) gets a distinct style. -->
     <style name="Field.BookTitle">
         <item name="android:textStyle">italic</item>
-        <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
+        <item name="android:textAppearance">?attr/textAppearanceBody1</item>
     </style>
 
     <!-- Book title gets a distinct style. -->
     <style name="Field.BookTitle.Large">
-        <item name="android:textAppearance">?android:attr/textAppearanceLarge</item>
+        <item name="android:textAppearance">?attr/textAppearanceBody1</item>
+        <item name="android:textSize">22sp</item>
     </style>
 
     <style name="Field.Isbn" parent="Field.Generic">
@@ -77,17 +77,17 @@
     </style>
 
     <style name="Field.Isbn.Small">
-        <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
+        <item name="android:textAppearance">?attr/textAppearanceBody2</item>
     </style>
 
     <!-- Book personal notes. -->
     <style name="Field.Notes">
-        <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
+        <item name="android:textAppearance">?attr/textAppearanceBody1</item>
     </style>
 
     <!-- Book Description. -->
     <style name="Field.Description">
-        <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
+        <item name="android:textAppearance">?attr/textAppearanceBody1</item>
         <item name="android:background">@drawable/outline_rounded</item>
     </style>
 
@@ -95,8 +95,9 @@
     <style name="Field.OnLoanBar">
         <item name="android:paddingStart">@dimen/indent2</item>
         <item name="android:paddingEnd">@dimen/indent2</item>
-        <item name="android:background">?attr/colorOnBackground</item>
-        <item name="android:textAppearance">?android:attr/textAppearanceLargeInverse</item>
+        <item name="android:background">?attr/colorOnSurface</item>
+        <item name="android:textAppearance">?attr/textAppearanceBody1</item>
+        <item name="android:textColor">?attr/colorSurface</item>
     </style>
 
     <!-- *************************************************************************************** -->
@@ -110,24 +111,16 @@
         <item name="android:textIsSelectable">true</item>
     </style>
 
-    <style name="Text.Small">
-        <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
-    </style>
-
     <style name="Text.Header">
+        <item name="android:textAppearance">?attr/textAppearanceSubtitle1</item>
     </style>
 
-    <style name="Text.Header.Large">
-        <item name="android:textAppearance">?android:attr/textAppearanceLarge</item>
+    <style name="Text.Body">
+        <item name="android:textAppearance">?attr/textAppearanceBody1</item>
     </style>
 
-    <!-- informational piece of text -->
-    <style name="Text.Blurb">
-    </style>
-
-    <!-- informational piece of text -->
-    <style name="Text.Blurb.Small">
-        <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
+    <style name="Text.Body.Small">
+        <item name="android:textAppearance">?attr/textAppearanceBody2</item>
     </style>
 
     <!-- *************************************************************************************** -->
@@ -186,7 +179,6 @@
     <style name="EditText">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
     </style>
 
     <style name="EditText.Spinner">
@@ -243,11 +235,8 @@
         <item name="android:singleLine">true</item>
     </style>
 
-    <!-- The textAppearanceMedium here is suited for the smallest screen (both portrait/landscape)
-        For all bigger screens, we will use textAppearanceLarge: See the "w340dp-h330dp" styles.xml
-    -->
+    <!-- On bigger screens, we increase the text size: See the "w340dp-h330dp" styles.xml -->
     <style name="EditText.Isbn">
-        <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
         <item name="android:digits">1234567890xX</item>
         <!-- the inputType is IGNORED when the field is a {@link EditIsbn} -->
         <item name="android:inputType">textCapCharacters|textNoSuggestions</item>
@@ -267,11 +256,10 @@
 
     <!-- 0..9 and X -->
     <style name="IsbnKeyPad.NumberButton">
-        <item name="android:textAppearance">?android:attr/textAppearanceLarge</item>
+        <item name="android:textSize">22sp</item>
     </style>
 
     <style name="IsbnKeyPad.SearchButton">
-        <item name="android:textStyle">bold</item>
     </style>
 
     <style name="IsbnKeyPad.BackspaceButton">
@@ -355,7 +343,6 @@
         <item name="android:adjustViewBounds">true</item>
     </style>
 
-
     <style name="CoverImage.Preview">
         <item name="android:layout_width">@dimen/cover_browser_preview_width</item>
         <item name="android:layout_height">@dimen/cover_browser_preview_height</item>
@@ -420,7 +407,7 @@
     </style>
 
     <style name="BoB.Header.Small">
-        <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
+        <item name="android:textAppearance">?attr/textAppearanceSubtitle2</item>
     </style>
 
     <!-- The Group rows in the booklist. -->
@@ -467,15 +454,16 @@
 
     <style name="BoB.Group.Label.Level1">
         <item name="android:paddingTop">@dimen/border1</item>
-        <item name="android:textAppearance">?android:attr/textAppearanceLarge</item>
+        <item name="android:textAppearance">?attr/textAppearanceSubtitle1</item>
+        <item name="android:textSize">22sp</item>
     </style>
 
     <style name="BoB.Group.Label.Level2">
-        <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
+        <item name="android:textAppearance">?attr/textAppearanceSubtitle1</item>
     </style>
 
     <style name="BoB.Group.Label.Level3">
-        <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
+        <item name="android:textAppearance">?attr/textAppearanceSubtitle2</item>
     </style>
 
 
@@ -498,7 +486,7 @@
     <style name="BoB.Book.Text">
         <item name="android:layout_width">0dp</item>
         <item name="android:textIsSelectable">false</item>
-        <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
+        <item name="android:textAppearance">?attr/textAppearanceBody2</item>
     </style>
 
     <style name="BoB.Book.Text.Isbn">
@@ -515,7 +503,7 @@
     <style name="BoB.Book.Text.Title">
         <item name="android:padding">@dimen/border1</item>
         <item name="android:textStyle">italic</item>
-        <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
+        <item name="android:textAppearance">?attr/textAppearanceBody1</item>
     </style>
 
     <!-- *************************************************************************************** -->
@@ -544,7 +532,7 @@
 
     <!-- Dialog body (content) for a DialogFragment based on a CoordinatorLayout/Toolbar/FrameLayout.
          FLOATING and FULLSCREEN dialog -->
-    <style name="Dialog.Body.FloatingAndFullscreen" parent="MaterialAlertDialog.MaterialComponents.Body.Text">
+    <style name="Dialog.Body.FloatingAndFullscreen" parent="">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">match_parent</item>
         <item name="android:paddingStart">?attr/dialogPreferredPadding</item>
@@ -554,7 +542,7 @@
 
     <!-- Dialog body (content) for a plain AlertDialog/DialogFragment.
          FLOATING dialog ONLY -->
-    <style name="Dialog.Body.Floating" parent="MaterialAlertDialog.MaterialComponents.Body.Text">
+    <style name="Dialog.Body.Floating" parent="">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:paddingStart">?attr/dialogPreferredPadding</item>
@@ -588,17 +576,17 @@
     <!-- *************************************************************************************** -->
 
     <style name="AppName">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
         <item name="android:fontFamily">cursive</item>
         <item name="android:textAppearance">?attr/textAppearanceHeadline5</item>
     </style>
 
-    <!-- clickable URL -->
-    <style name="Url">
+    <style name="AppVersion">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:padding">4dp</item>
-        <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
-        <item name="android:textColor">?android:attr/textColorPrimaryNoDisable</item>
+        <item name="android:textIsSelectable">true</item>
+        <item name="android:textAppearance">?attr/textAppearanceSubtitle1</item>
     </style>
 
     <!-- ImageButton -->
@@ -616,18 +604,17 @@
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textColor">?attr/colorError</item>
-        <item name="android:textStyle">bold</item>
         <item name="android:focusable">false</item>
         <item name="android:textIsSelectable">false</item>
-        <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
+        <item name="android:textAppearance">?attr/textAppearanceCaption</item>
     </style>
 
     <!-- Override for the default to allow 2 lines of text. -->
-    <style name="SnackbarText" parent="Widget.MaterialComponents.Snackbar.TextView">
+    <style name="App.SnackbarTextView" parent="Widget.MaterialComponents.Snackbar.TextView">
         <item name="android:maxLines">2</item>
     </style>
 
-    <style name="ButtonBarButtons" parent="Widget.MaterialComponents.Button.TextButton.Dialog">
+    <style name="App.ButtonBarButtons" parent="Widget.MaterialComponents.Button.TextButton.Dialog">
         <item name="android:textColor">?attr/appDialogButtonTextColor</item>
     </style>
 
@@ -667,7 +654,7 @@
     </style>
 
     <!-- The switch on the book details screen to show/hide the TOC. -->
-    <style name="TocSwitch">
+    <style name="TocSwitch" parent="Widget.MaterialComponents.CompoundButton.Switch">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:buttonTint">@android:color/transparent</item>
@@ -676,4 +663,16 @@
     </style>
 
     <!-- *************************************************************************************** -->
+
+    <style name="App.TextAppearance.Body1" parent="TextAppearance.MaterialComponents.Body1">
+        <!-- text size: 16sp -->
+        <!--Your custom type style here-->
+    </style>
+
+    <style name="App.TextAppearance.Body2" parent="TextAppearance.MaterialComponents.Body2">
+        <!-- text size: 14sp -->
+        <!--Your custom type style here-->
+    </style>
+
+
 </resources>

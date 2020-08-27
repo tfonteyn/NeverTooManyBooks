@@ -27,7 +27,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_margin="@dimen/screenBorder"
-    android:textAppearance="?android:attr/textAppearanceMedium"
     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:listitem="@layout/row_edit_bookshelf"

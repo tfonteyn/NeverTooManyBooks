@@ -61,7 +61,7 @@
 
         <TextView
             android:id="@+id/lbl_site"
-            style="@style/Text.Header.Large"
+            style="@style/Text.Header"
             android:text="@string/lbl_select_website"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"

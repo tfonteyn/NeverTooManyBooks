@@ -159,7 +159,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginEnd="24dp"
-            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textAppearance="?attr/textAppearanceSubtitle1"
             android:textIsSelectable="true"
             app:layout_constraintEnd_toStartOf="@id/btn_search"
             app:layout_constraintBaseline_toBaselineOf="@id/btn_search"

@@ -37,7 +37,7 @@
 
         <TextView
             android:id="@+id/select_fields_blurb"
-            style="@style/Text.Blurb.Small"
+            style="@style/Text.Body.Small"
             android:layout_marginStart="@dimen/indent2"
             android:text="@string/txt_select_fields_to_update"
             app:layout_constraintStart_toStartOf="parent"

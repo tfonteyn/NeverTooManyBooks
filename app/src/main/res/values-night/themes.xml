@@ -21,43 +21,10 @@
 
 <resources>
 
-    <!-- Specific Theme for the startup activity so it looks like a dialog as intended. -->
-    <style name="Theme.App.Startup" parent="Theme.MaterialComponents.DayNight.Dialog">
-
-        <!--  ======================== -->
-        <!-- Component theme overrides -->
-        <!--  ======================== -->
-        <item name="snackbarTextViewStyle">@style/SnackbarText</item>
-
-        <item name="materialAlertDialogTheme">@style/ThemeOverlay.App.MaterialAlertDialog</item>
-        <item name="buttonBarButtonStyle">@style/ButtonBarButtons</item>
-        <item name="buttonBarNeutralButtonStyle">@style/ButtonBarButtons</item>
-        <item name="buttonBarNegativeButtonStyle">@style/ButtonBarButtons</item>
-        <item name="buttonBarPositiveButtonStyle">@style/ButtonBarButtons</item>
-
-        <!-- ==================== -->
-        <!-- Application specific -->
-        <!-- ==================== -->
-        <item name="appDialogButtonTextColor">@color/blue_grey_600</item>
-    </style>
-
-    <!-- Main theme. -->
-    <style name="Theme.App" parent="Theme.MaterialComponents.DayNight.NoActionBar">
-
-        <!--  ======================== -->
-        <!-- Component theme overrides -->
-        <!--  ======================== -->
-        <item name="snackbarTextViewStyle">@style/SnackbarText</item>
-
-        <item name="materialAlertDialogTheme">@style/ThemeOverlay.App.MaterialAlertDialog</item>
-        <item name="buttonBarButtonStyle">@style/ButtonBarButtons</item>
-        <item name="buttonBarNeutralButtonStyle">@style/ButtonBarButtons</item>
-        <item name="buttonBarNegativeButtonStyle">@style/ButtonBarButtons</item>
-        <item name="buttonBarPositiveButtonStyle">@style/ButtonBarButtons</item>
-
-        <!-- =================== -->
-        <!-- Theme Color palette -->
-        <!-- =================== -->
+    <style name="Theme.App" parent="Base.Theme.App">
+        <!-- ====================================== -->
+        <!-- Material color attributes (dark theme) -->
+        <!-- ====================================== -->
         <item name="android:statusBarColor">@color/blue_grey_800</item>
 
         <item name="colorPrimary">@color/blue_grey_600</item>
@@ -76,27 +43,24 @@
         <!-- ==================== -->
         <!-- Application specific -->
         <!-- ==================== -->
-
         <!-- in dark mode, the default of colorSurface is fine. -->
         <item name="appBookCardBackgroundColor">?attr/colorSurface</item>
-
+        <!-- gradient used in the Navigation side bar. -->
         <item name="appNavBarColorStart">@color/blue_grey_800</item>
         <item name="appNavBarColorCenter">@color/blue_grey_600</item>
         <item name="appNavBarColorEnd">@color/blue_grey_400</item>
-
         <!-- button text. "colorPrimary" as set to "blue_grey_600" works fine. -->
         <item name="appDialogButtonTextColor">?attr/colorPrimary</item>
     </style>
 
-    <style name="ThemeOverlay.App.MaterialAlertDialog" parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog">
-        <!--  ======================== -->
-        <!-- Component theme overrides -->
-        <!--  ======================== -->
-        <item name="buttonBarButtonStyle">@style/ButtonBarButtons</item>
-        <item name="buttonBarNeutralButtonStyle">@style/ButtonBarButtons</item>
-        <item name="buttonBarNegativeButtonStyle">@style/ButtonBarButtons</item>
-        <item name="buttonBarPositiveButtonStyle">@style/ButtonBarButtons</item>
+    <style name="Theme.App.Startup" parent="Base.Theme.App.Startup">
+        <!-- ==================== -->
+        <!-- Application specific -->
+        <!-- ==================== -->
+        <item name="appDialogButtonTextColor">@color/blue_grey_600</item>
+    </style>
 
+    <style name="ThemeOverlay.App.MaterialAlertDialog" parent="Base.ThemeOverlay.App.MaterialAlertDialog">
         <!-- ==================== -->
         <!-- Application specific -->
         <!-- ==================== -->

@@ -62,8 +62,6 @@
         <TextView
             android:id="@+id/app_name"
             style="@style/AppName"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
             android:text="@string/app_name"
             app:layout_constraintEnd_toEndOf="parent"
@@ -74,13 +72,11 @@
 
         <TextView
             android:id="@+id/version"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textIsSelectable="true"
-            android:textStyle="bold"
+            style="@style/AppVersion"
             app:layout_constraintEnd_toEndOf="@id/app_name"
             app:layout_constraintTop_toBottomOf="@id/app_name"
             tools:text="1.1.0"
+            tools:ignore="SelectableText"
             />
 
         <androidx.constraintlayout.widget.Barrier
@@ -113,8 +109,6 @@
             android:id="@+id/debug_section_lbl"
             style="@style/Text.Header"
             android:layout_marginTop="@dimen/border2"
-            android:textAllCaps="true"
-            android:textStyle="bold"
             android:text="@string/debug"
             app:layout_constraintStart_toEndOf="@id/indents"
             app:layout_constraintTop_toBottomOf="@id/sepBar"
@@ -156,21 +150,18 @@
         <TextView
             android:id="@+id/contacts"
             style="@style/Text.Header"
-            android:layout_marginTop="@dimen/border2"
-            android:textAllCaps="true"
-            android:textStyle="bold"
             android:text="@string/lbl_about_contact"
             app:layout_constraintStart_toEndOf="@id/indents"
             app:layout_constraintTop_toBottomOf="@id/debug_dump_temp_tables"
             />
 
-        <TextView
+        <Button
             android:id="@+id/sourcecode6"
-            style="@style/Url"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/border2"
             app:layout_constraintStart_toStartOf="@id/contacts"
             app:layout_constraintTop_toBottomOf="@id/contacts"
-            tools:ignore="SelectableText"
             tools:text="sourcecode url"
             />
 

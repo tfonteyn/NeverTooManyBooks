@@ -56,25 +56,25 @@
             >
 
             <TextView
-                style="@style/Text.Blurb"
+                style="@style/Text.Body"
                 android:text="@string/gr_auth_blurb_part1"
                 />
 
-            <TextView
+            <Button
                 android:id="@+id/goodreads_url"
-                style="@style/Url"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
-                tools:ignore="SelectableText"
                 tools:text="https://www.goodreads.com"
                 />
 
             <TextView
-                style="@style/Text.Blurb"
+                style="@style/Text.Body"
                 android:text="@string/gr_auth_blurb_part2"
                 />
 
             <TextView
-                style="@style/Text.Blurb"
+                style="@style/Text.Body"
                 android:text="@string/gr_auth_blurb_part3"
                 />
 
@@ -88,7 +88,7 @@
 
             <TextView
                 android:id="@+id/lbl_delete_credentials"
-                style="@style/Text.Blurb"
+                style="@style/Text.Body"
                 android:text="@string/gr_auth_blurb_part4"
                 android:visibility="gone"
                 tools:visibility="visible"

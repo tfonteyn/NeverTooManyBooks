@@ -49,7 +49,6 @@
                 style="@style/personalNameTextEntry"
                 android:layout_width="match_parent"
                 android:imeOptions="actionNext"
-                android:textAppearance="?android:attr/textAppearanceLarge"
                 tools:ignore="LabelFor"
                 />
 
@@ -69,7 +68,6 @@
                 style="@style/titleTextEntry"
                 android:imeOptions="actionNext"
                 android:layout_width="match_parent"
-                android:textAppearance="?android:attr/textAppearanceLarge"
                 tools:ignore="Autofill"
                 />
 
@@ -93,7 +91,6 @@
                 style="@style/personalNameTextEntry"
                 android:layout_width="match_parent"
                 android:imeOptions="actionSearch"
-                android:textAppearance="?android:attr/textAppearanceLarge"
                 tools:ignore="LabelFor"
                 />
 

@@ -32,51 +32,13 @@ https://material.io/design/material-theming/implementing-your-theme.html#color
 TODO: these + the night variants need optimizing.
 -->
 <resources>
+    <!--Top level DayNight theme to be used in AndroidManifest.xml-->
+    <style name="Theme.App" parent="Base.Theme.App" />
 
-    <!-- Specific Theme for full screen usage. DayNight independent. -->
-    <style name="Theme.App.FullScreen">
-        <item name="android:windowFullscreen">true</item>
-        <item name="android:windowContentOverlay">@null</item>
-        <item name="android:windowIsFloating">false</item>
-    </style>
-
-    <!-- Specific Theme for the startup activity so it looks like a dialog as intended. -->
-    <style name="Theme.App.Startup" parent="Theme.MaterialComponents.DayNight.Dialog">
-
-        <!--  ======================== -->
-        <!-- Component theme overrides -->
-        <!--  ======================== -->
-        <item name="snackbarTextViewStyle">@style/SnackbarText</item>
-
-        <item name="materialAlertDialogTheme">@style/ThemeOverlay.App.MaterialAlertDialog</item>
-        <item name="buttonBarButtonStyle">@style/ButtonBarButtons</item>
-        <item name="buttonBarNeutralButtonStyle">@style/ButtonBarButtons</item>
-        <item name="buttonBarNegativeButtonStyle">@style/ButtonBarButtons</item>
-        <item name="buttonBarPositiveButtonStyle">@style/ButtonBarButtons</item>
-
-        <!-- ==================== -->
-        <!-- Application specific -->
-        <!-- ==================== -->
-        <item name="appDialogButtonTextColor">@color/blue_grey_900</item>
-    </style>
-
-    <!-- Main theme. -->
-    <style name="Theme.App" parent="Theme.MaterialComponents.DayNight.NoActionBar">
-
-        <!--  ======================== -->
-        <!-- Component theme overrides -->
-        <!--  ======================== -->
-        <item name="snackbarTextViewStyle">@style/SnackbarText</item>
-
-        <item name="materialAlertDialogTheme">@style/ThemeOverlay.App.MaterialAlertDialog</item>
-        <item name="buttonBarButtonStyle">@style/ButtonBarButtons</item>
-        <item name="buttonBarNeutralButtonStyle">@style/ButtonBarButtons</item>
-        <item name="buttonBarNegativeButtonStyle">@style/ButtonBarButtons</item>
-        <item name="buttonBarPositiveButtonStyle">@style/ButtonBarButtons</item>
-
-        <!-- =================== -->
-        <!-- Theme Color palette -->
-        <!-- =================== -->
+    <style name="Base.Theme.App" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <!-- ======================================= -->
+        <!-- Material color attributes (light theme) -->
+        <!-- ======================================= -->
         <item name="android:statusBarColor">@color/blue_grey_300</item>
 
         <item name="colorPrimary">@color/blue_grey_100</item>
@@ -101,34 +63,71 @@ TODO: these + the night variants need optimizing.
         <!-- ==================== -->
         <!-- Application specific -->
         <!-- ==================== -->
-
         <!-- In light mode, the default colorSurface is "too white". -->
         <item name="appBookCardBackgroundColor">@color/grey_50</item>
-
         <!-- gradient used in the Navigation side bar. -->
         <item name="appNavBarColorStart">@color/blue_grey_400</item>
         <item name="appNavBarColorCenter">@color/blue_grey_100</item>
         <item name="appNavBarColorEnd">@color/blue_grey_50</item>
-
         <!-- button text. The default colorPrimary (blue_grey_100) is to light on the white background. -->
         <item name="appDialogButtonTextColor">@color/blue_grey_900</item>
 
+        <!-- ================ -->
+        <!-- Component styles -->
+        <!-- ================ -->
+        <item name="materialAlertDialogTheme">@style/ThemeOverlay.App.MaterialAlertDialog</item>
+        <item name="buttonBarButtonStyle">@style/App.ButtonBarButtons</item>
+        <item name="buttonBarNeutralButtonStyle">@style/App.ButtonBarButtons</item>
+        <item name="buttonBarNegativeButtonStyle">@style/App.ButtonBarButtons</item>
+        <item name="buttonBarPositiveButtonStyle">@style/App.ButtonBarButtons</item>
+        <item name="snackbarTextViewStyle">@style/App.SnackbarTextView</item>
+        <item name="textAppearanceBody1">@style/App.TextAppearance.Body1</item>
+        <item name="textAppearanceBody2">@style/App.TextAppearance.Body2</item>
     </style>
 
-    <style name="ThemeOverlay.App.MaterialAlertDialog" parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog">
-        <!--  ======================== -->
-        <!-- Component theme overrides -->
-        <!--  ======================== -->
-        <item name="buttonBarButtonStyle">@style/ButtonBarButtons</item>
-        <item name="buttonBarNeutralButtonStyle">@style/ButtonBarButtons</item>
-        <item name="buttonBarNegativeButtonStyle">@style/ButtonBarButtons</item>
-        <item name="buttonBarPositiveButtonStyle">@style/ButtonBarButtons</item>
+    <!-- Specific Theme for the startup activity so it looks like a dialog as intended. -->
+    <style name="Theme.App.Startup" parent="Base.Theme.App.Startup" />
 
+    <style name="Base.Theme.App.Startup" parent="Theme.MaterialComponents.DayNight.Dialog">
+        <!-- ==================== -->
+        <!-- Application specific -->
+        <!-- ==================== -->
+        <item name="appDialogButtonTextColor">@color/blue_grey_900</item>
+
+        <!-- ================ -->
+        <!-- Component styles -->
+        <!-- ================ -->
+        <item name="materialAlertDialogTheme">@style/ThemeOverlay.App.MaterialAlertDialog</item>
+        <item name="buttonBarButtonStyle">@style/App.ButtonBarButtons</item>
+        <item name="buttonBarNeutralButtonStyle">@style/App.ButtonBarButtons</item>
+        <item name="buttonBarNegativeButtonStyle">@style/App.ButtonBarButtons</item>
+        <item name="buttonBarPositiveButtonStyle">@style/App.ButtonBarButtons</item>
+        <item name="snackbarTextViewStyle">@style/App.SnackbarTextView</item>
+    </style>
+
+    <style name="ThemeOverlay.App.MaterialAlertDialog" parent="Base.ThemeOverlay.App.MaterialAlertDialog" />
+
+    <style name="Base.ThemeOverlay.App.MaterialAlertDialog" parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog">
         <!-- ==================== -->
         <!-- Application specific -->
         <!-- ==================== -->
         <!-- button text. The default colorPrimary (blue_grey_100) is to light on the white background. -->
         <item name="appDialogButtonTextColor">@color/blue_grey_900</item>
+
+        <!-- ================ -->
+        <!-- Component styles -->
+        <!-- ================ -->
+        <item name="buttonBarButtonStyle">@style/App.ButtonBarButtons</item>
+        <item name="buttonBarNeutralButtonStyle">@style/App.ButtonBarButtons</item>
+        <item name="buttonBarNegativeButtonStyle">@style/App.ButtonBarButtons</item>
+        <item name="buttonBarPositiveButtonStyle">@style/App.ButtonBarButtons</item>
+
     </style>
 
+    <!-- Specific Theme for full screen usage. -->
+    <style name="Theme.App.FullScreen" parent="Base.Theme.App">
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowIsFloating">false</item>
+    </style>
 </resources>
