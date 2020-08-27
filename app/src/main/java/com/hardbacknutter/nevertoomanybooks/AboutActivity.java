@@ -23,9 +23,9 @@ import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.text.method.LinkMovementMethod;
 import android.view.View;
 
 import androidx.annotation.NonNull;
@@ -39,7 +39,6 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.debug.SqliteShellActivity;
 import com.hardbacknutter.nevertoomanybooks.debug.SqliteShellFragment;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
-import com.hardbacknutter.nevertoomanybooks.utils.LinkifyUtils;
 
 /**
  * This is the About page, showing some info and giving (semi-hidden) access to debug options.
@@ -89,9 +88,8 @@ public class AboutActivity
             // ignore
         }
 
-        mVb.sourcecode6.setText(LinkifyUtils.fromHtml(
-                getString(R.string.url_sourcecode, getString(R.string.lbl_about_sourcecode))));
-        mVb.sourcecode6.setMovementMethod(LinkMovementMethod.getInstance());
+        mVb.btnSourcecodeUrl.setOnClickListener(v -> startActivity(
+                new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.sourcecode_url)))));
 
         mVb.icon.setOnClickListener(v -> {
             mDebugClicks++;
@@ -104,7 +102,7 @@ public class AboutActivity
         });
 
         mVb.debugSqShell.setOnClickListener(v -> {
-            Intent intent = new Intent(this, SqliteShellActivity.class)
+            final Intent intent = new Intent(this, SqliteShellActivity.class)
                     .putExtra(SqliteShellFragment.BKEY_ALLOW_UPDATES, mSqLiteAllowUpdates);
             startActivity(intent);
         });
@@ -114,11 +112,6 @@ public class AboutActivity
         mVb.debugDumpTempTables.setOnClickListener(
                 v -> DBHelper.dumpTempTableNames(DAO.getSyncDb()));
 
-//
-//        view = findViewById(R.id.website);
-//        view.setText(LinkifyUtils.fromHtml(
-//                getString(R.string.url_website, getString(R.string.lbl_about_website))));
-//        view.setMovementMethod(LinkMovementMethod.getInstance());
     }
 
     /**

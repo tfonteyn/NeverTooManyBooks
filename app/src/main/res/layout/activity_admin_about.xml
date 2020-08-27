@@ -156,50 +156,14 @@
             />
 
         <Button
-            android:id="@+id/sourcecode6"
+            android:id="@+id/btn_sourcecode_url"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/border2"
+            android:text="@string/lbl_sourcecode_url"
             app:layout_constraintStart_toStartOf="@id/contacts"
             app:layout_constraintTop_toBottomOf="@id/contacts"
-            tools:text="sourcecode url"
             />
 
-
-        <!--                <TextView-->
-        <!--                    android:id="@+id/lbl_creators"-->
-        <!--                    style="@style/Text.Header"-->
-        <!--                    android:text="@string/lbl_about_creators"-->
-        <!--                    app:layout_constraintStart_toStartOf="parent"-->
-        <!--                    app:layout_constraintTop_toBottomOf="@id/sourcecode6"-->
-        <!--                    />-->
-
-        <!--                <TextView-->
-        <!--                    android:id="@+id/creators"-->
-        <!--                    style="@style/Text.Blurb.Small"-->
-        <!--                    android:text="@string/original_creators"-->
-        <!--                    app:layout_constraintStart_toStartOf="@id/indents"-->
-        <!--                    app:layout_constraintTop_toBottomOf="@id/lbl_creators"-->
-        <!--                    />-->
-
-        <!--                <TextView-->
-        <!--                    android:id="@+id/website"-->
-        <!--                    style="@style/Url"-->
-        <!--                    app:layout_constraintStart_toStartOf="@id/indents"-->
-        <!--                    app:layout_constraintTop_toBottomOf="@id/creators"-->
-        <!--                    tools:ignore="SelectableText"-->
-        <!--                    tools:text="website url"-->
-        <!--                    />-->
-
-        <!--                <TextView-->
-        <!--                    android:id="@+id/sourcecode"-->
-        <!--                    style="@style/Url"-->
-        <!--                    app:layout_constraintStart_toStartOf="@id/indents"-->
-        <!--                    app:layout_constraintTop_toBottomOf="@id/website"-->
-        <!--                    tools:ignore="SelectableText"-->
-        <!--                    tools:text="sourcecode url"-->
-        <!--                    />-->
-
     </androidx.constraintlayout.widget.ConstraintLayout>
-
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

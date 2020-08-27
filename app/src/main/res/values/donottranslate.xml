@@ -28,27 +28,10 @@
 
     <string name="app_name" translatable="false">&APP_NAME;</string>
 
-    <string name="url_sourcecode" translatable="false">
-        <![CDATA[
-            <a href="https://github.com/tfonteyn/Book-Catalogue/tree/v6">%1s</a>
-        ]]>
-    </string>
+    <string name="lbl_sourcecode_url" translatable="false">https://github.com</string>
+    <string name="sourcecode_url" translatable="false">https://github.com/tfonteyn/NeverTooManyBooks</string>
 
     <string name="email_debug" translatable="false">debug@email</string>
-
-    <!-- Credits in the 'about' dialog -->
-    <string name="original_creators" translatable="false">Evan Leybourn &amp; Philip Warner</string>
-
-    <string name="url_bc_website" translatable="false">
-        <![CDATA[
-            <a href="https://github.com/eleybourn/Book-Catalogue/wiki/">%1s</a>
-        ]]>
-    </string>
-    <string name="url_bc_sourcecode" translatable="false">
-        <![CDATA[
-            <a href="https://github.com/eleybourn/Book-Catalogue/">%1s</a>
-        ]]>
-    </string>
 
     <!--  acronyms -->
     <string name="lbl_isbn" translatable="false">ISBN</string>
