@@ -327,7 +327,7 @@
     <string name="lt_key_is_correct">Twój klucz deweloperski LibraryThing jest poprawny.</string>
     <string name="lt_key_is_incorrect">Weryfikacja klucza deweloperskiego LibraryThing się nie powiodła - jest niepoprawny lub nie masz połączenia z siecią</string>
     <string name="lt_lbl_key">Po uzyskaniu klucza programisty wprowadź go poniżej i zostanie on użyty do uzyskania dodatkowych danych.</string>
-    <string name="lt_url_text_dev_key">Pobierz klucz deweloperski LibraryThing</string>
+    <string name="lt_url_text_dev_key">Pobierz klucz\ndeweloperski LibraryThing</string>
     <string name="lt_url_text_register">Zarejestruj się w LibraryThing</string>
     <string name="megabytes">%.2fMB</string>
     <string name="lbl_about">O programie</string>

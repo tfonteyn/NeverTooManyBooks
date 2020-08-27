@@ -330,7 +330,7 @@
     <string name="lt_key_is_correct">LibraryThing geliştirici anahtarınız geçerli.</string>
     <string name="lt_key_is_incorrect">Ya LibraryThing geliştirici anahtarınız yanlış ya da biz doğrulama için ağa bağlanamadık.</string>
     <string name="lt_lbl_key">Geliştirici anahtarını aldığınızda yalnızca aşağıdaki alana girin, sonrasında bu anahtar ek verileri almak için kullanılacaktır.</string>
-    <string name="lt_url_text_dev_key">LibraryThing geliştirici anahtarı iste</string>
+    <string name="lt_url_text_dev_key">LibraryThing geliştirici\nanahtarı iste</string>
     <string name="lt_url_text_register">LibraryThing\'e kayıt ol</string>
     <string name="megabytes">%.2fMB</string>
     <string name="lbl_about">Uygulama hakkında</string>

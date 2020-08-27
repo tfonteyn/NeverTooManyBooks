@@ -329,7 +329,7 @@
     <string name="lt_key_is_correct">Chiave sviluppatore LibraryThing valida.</string>
     <string name="lt_key_is_incorrect">Chiave sviluppatore LibraryThing errata, o impossibile connettersi alla rete per verificarla.</string>
     <string name="lt_lbl_key">Una volta ottenuta la chiave sviluppatore, inseriscila qui sotto e verrà utilizzata per ottenere dati aggiuntivi.</string>
-    <string name="lt_url_text_dev_key">Richiedi la chiave sviluppatore LibraryThing</string>
+    <string name="lt_url_text_dev_key">Richiedi la chiave\nsviluppatore LibraryThing</string>
     <string name="lt_url_text_register">Registrati su LibraryThing</string>
     <string name="megabytes">%.2fMB</string>
     <string name="lbl_about">Riguardo questa app</string>
