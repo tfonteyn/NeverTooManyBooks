@@ -297,10 +297,14 @@ public class ImportGrTask
             Logger.d(TAG, "processReview|grId=" + grBookId);
         }
 
-        // Find the book in our local database - there may be more than one!
-        // First look by Goodreads book ID
-        Cursor cursor = db.fetchBooksByGoodreadsBookId(grBookId);
+        Cursor cursor = null;
+
         try {
+            // Find the book in our local database - there may be more than one!
+            // First look by Goodreads book ID
+            cursor = db.fetchBooksByKey(DBDefinitions.KEY_EID_GOODREADS_BOOK,
+                                        String.valueOf(grBookId));
+
             boolean found = cursor.getCount() > 0;
             if (!found) {
                 // Not found by Goodreads id, try again using the ISBNs

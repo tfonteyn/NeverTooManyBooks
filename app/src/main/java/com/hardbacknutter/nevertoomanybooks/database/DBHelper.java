@@ -102,7 +102,7 @@ public final class DBHelper
         extends SQLiteOpenHelper {
 
     /** Current version. */
-    public static final int DATABASE_VERSION = 8;
+    public static final int DATABASE_VERSION = 9;
 
     /**
      * Prefix for the filename of a database backup before doing an upgrade.
@@ -723,7 +723,6 @@ public final class DBHelper
         }
 
         if (curVersion < newVersion && curVersion == 7) {
-            //noinspection UnusedAssignment
             curVersion = 8;
             // pref key name changes
             final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
@@ -739,6 +738,12 @@ public final class DBHelper
                   .apply();
 
             TBL_BOOKS.alterTableAddColumn(syncedDb, DBDefinitions.DOM_EID_LAST_DODO_NL);
+        }
+
+        if (curVersion < newVersion && curVersion == 8) {
+            //noinspection UnusedAssignment
+            curVersion = 9;
+            TBL_BOOKS.alterTableAddColumn(syncedDb, DBDefinitions.DOM_EID_CALIBRE);
         }
 
         // TODO: if at a future time we make a change that requires to copy/reload the books table,

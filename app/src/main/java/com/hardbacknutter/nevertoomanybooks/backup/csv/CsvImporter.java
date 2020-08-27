@@ -144,9 +144,9 @@ public class CsvImporter
     @NonNull
     private final String mBooksString;
     @NonNull
-    private final String mUnknownString;
-    @NonNull
     private final String mProgressMessage;
+    @NonNull
+    private final String mUnknownString;
     @NonNull
     private final ImportResults mResults = new ImportResults();
 
@@ -167,9 +167,6 @@ public class CsvImporter
     @AnyThread
     public CsvImporter(@NonNull final Context context,
                        final int options) {
-        mBooksString = context.getString(R.string.lbl_books);
-        mProgressMessage = context.getString(R.string.progress_msg_x_created_y_updated_z_skipped);
-        mUnknownString = context.getString(R.string.unknown);
 
         mOptions = options;
 
@@ -177,6 +174,10 @@ public class CsvImporter
         mBookshelfCoder = new StringList<>(
                 new BookshelfCoder(BooklistStyle.getDefault(context, mDb)));
         mUserLocale = LocaleUtils.getUserLocale(context);
+
+        mBooksString = context.getString(R.string.lbl_books);
+        mProgressMessage = context.getString(R.string.progress_msg_x_created_y_updated_z_skipped);
+        mUnknownString = context.getString(R.string.unknown);
     }
 
     /**
@@ -312,8 +313,26 @@ public class CsvImporter
                         throw new ImportException(msg);
                     }
 
+                    // Do we have a DBDefinitions.KEY_BOOK_UUID in the import ?
+                    @Nullable
+                    final String importUuid = handleUuid(book);
+
+                    // Do we have a DBDefinitions.KEY_PK_ID in the import ?
+                    final long importNumericId = handleNumericId(book);
+
+                    // check/fix the language
+                    final Locale bookLocale = book.getLocale(context);
+
+                    // cleanup/handle the list elements.
+                    // Database access is strictly limited to fetching ID's for the list elements.
+                    handleAuthors(context, mDb, book, bookLocale);
+                    handleSeries(context, mDb, book, bookLocale);
+                    handlePublishers(context, mDb, book, bookLocale);
+                    handleAnthology(context, mDb, book, bookLocale);
+                    handleBookshelves(mDb, book);
+
                     // do the actual import.
-                    importBook(context, book, forceUpdate);
+                    importBook(context, forceUpdate, book, importUuid, importNumericId);
 
                 } catch (@NonNull final DAO.DaoWriteException
                         | SQLiteDoneException
@@ -391,39 +410,24 @@ public class CsvImporter
      * insert or update a single book.
      *
      * @param context     Current context
-     * @param book        to import
      * @param forceUpdate Flag for existing books:
      *                    {@code true} to always update
      *                    {@code false} to only update if the incoming data is newer
+     * @param book        to import
      *
      * @throws DAO.DaoWriteException on failure
      */
     private void importBook(@NonNull final Context context,
+                            final boolean forceUpdate,
                             @NonNull final Book book,
-                            final boolean forceUpdate)
+                            @Nullable final String importUuid,
+                            final long importNumericId)
             throws DAO.DaoWriteException {
 
-        // check/fix the language
-        final Locale bookLocale = book.getLocale(context);
-
-        // cleanup/handle the list elements.
-        // Database access is strictly limited to fetching ID's for the list elements.
-        handleAuthors(context, mDb, book, bookLocale);
-        handleSeries(context, mDb, book, bookLocale);
-        handlePublishers(context, mDb, book, bookLocale);
-        handleAnthology(context, mDb, book, bookLocale);
-        handleBookshelves(mDb, book);
-
-        // ALWAYS let the UUID trump the ID; we may be importing someone else's list
-        // Do we have a DBDefinitions.KEY_BOOK_UUID in the import ?
-        @Nullable
-        final String importUuid = handleUuid(book);
         final boolean hasUuid = importUuid != null && !importUuid.isEmpty();
-
-        // Do we have a DBDefinitions.KEY_PK_ID in the import ?
-        final long importNumericId = handleNumericId(book);
         final boolean hasNumericId = importNumericId > 0;
 
+        // ALWAYS let the UUID trump the ID; we may be importing someone else's list
         if (hasUuid) {
             // check if the book exists in our database, and fetch it's id.
             final long databaseBookId = mDb.getBookIdFromUuid(importUuid);
@@ -454,11 +458,10 @@ public class CsvImporter
                 }
 
             } else {
-                // The book does NOT exist in our database (no match for the UUID),
-                // so we definitively want to insert it.
+                // The book does NOT exist in our database (no match for the UUID), insert it.
 
                 // If we have an importBookId, and it does not already exist, we reuse it.
-                if (hasNumericId && !mDb.bookExists(importNumericId)) {
+                if (hasNumericId && !mDb.bookExistsById(importNumericId)) {
                     book.putLong(DBDefinitions.KEY_PK_ID, importNumericId);
                 }
 
@@ -482,7 +485,7 @@ public class CsvImporter
             book.putLong(DBDefinitions.KEY_PK_ID, importNumericId);
 
             // Is that id already in use ?
-            if (!mDb.bookExists(importNumericId)) {
+            if (!mDb.bookExistsById(importNumericId)) {
                 // The id is not in use, simply insert the book using the given importNumericId,
                 // explicitly allowing the id to be reused
                 long insId = mDb.insert(context, book, DAO.BOOK_FLAG_IS_BATCH_OPERATION

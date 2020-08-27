@@ -39,8 +39,10 @@ import com.hardbacknutter.nevertoomanybooks.backup.base.ImportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.base.InvalidArchiveException;
 import com.hardbacknutter.nevertoomanybooks.backup.base.Options;
 import com.hardbacknutter.nevertoomanybooks.backup.csv.CsvArchiveReader;
+import com.hardbacknutter.nevertoomanybooks.backup.db.DbArchiveReader;
 import com.hardbacknutter.nevertoomanybooks.backup.tar.TarArchiveReader;
 import com.hardbacknutter.nevertoomanybooks.backup.zip.ZipArchiveReader;
+import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 
 public class ImportManager
@@ -173,10 +175,10 @@ public class ImportManager
             case CsvBooks:
             case Zip:
             case Tar:
+            case SqLiteDb:
                 return true;
 
             case Xml:
-            case SqLiteDb:
             case Unknown:
             default:
                 return false;
@@ -252,11 +254,14 @@ public class ImportManager
                 reader = new CsvArchiveReader(this);
                 break;
 
-            case Xml:
             case SqLiteDb:
+                reader = new DbArchiveReader(context, this);
+                break;
+
+            case Xml:
             case Unknown:
             default:
-                throw new InvalidArchiveException("Import not supported");
+                throw new InvalidArchiveException(ErrorMsg.IMPORT_NOT_SUPPORTED);
         }
 
         reader.validate(context);

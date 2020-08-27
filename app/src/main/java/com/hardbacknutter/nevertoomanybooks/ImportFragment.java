@@ -222,38 +222,50 @@ public class ImportFragment
             return;
         }
 
-        if (ArchiveContainer.CsvBooks.equals(container)) {
-            // use more prudent default options for Csv files.
-            helper.setOptions(Options.BOOKS | ImportManager.IMPORT_ONLY_NEW_OR_UPDATED);
+        //noinspection EnumSwitchStatementWhichMissesCases
+        switch (container) {
+            case CsvBooks:
+                // use more prudent default options for Csv files.
+                helper.setOptions(Options.BOOKS | ImportManager.IMPORT_ONLY_NEW_OR_UPDATED);
 
-            //URGENT: make a backup before ANY csv import!
-            //noinspection ConstantConditions
-            new MaterialAlertDialogBuilder(getContext())
-                    .setIcon(R.drawable.ic_warning)
-                    .setTitle(R.string.lbl_import_book_data)
-                    .setMessage(R.string.warning_import_be_cautious)
-                    .setNegativeButton(android.R.string.cancel, (d, w) -> getActivity().finish())
-                    .setPositiveButton(android.R.string.ok, (d, w) -> ImportHelperDialogFragment
-                            .newInstance(RK_IMPORT_HELPER, helper)
-                            .show(getChildFragmentManager(), ImportHelperDialogFragment.TAG))
-                    .create()
-                    .show();
+                //URGENT: make a backup before ANY csv import!
+                //noinspection ConstantConditions
+                new MaterialAlertDialogBuilder(getContext())
+                        .setIcon(R.drawable.ic_warning)
+                        .setTitle(R.string.lbl_import_book_data)
+                        .setMessage(R.string.warning_import_be_cautious)
+                        .setNegativeButton(android.R.string.cancel,
+                                           (d, w) -> getActivity().finish())
+                        .setPositiveButton(android.R.string.ok, (d, w) -> ImportHelperDialogFragment
+                                .newInstance(RK_IMPORT_HELPER, helper)
+                                .show(getChildFragmentManager(), ImportHelperDialogFragment.TAG))
+                        .create()
+                        .show();
 
-        } else {
-            // Show a quick-options dialog first.
-            // The user can divert to the full options dialog if needed.
-            //noinspection ConstantConditions
-            new MaterialAlertDialogBuilder(getContext())
-                    .setTitle(R.string.lbl_import)
-                    .setMessage(R.string.txt_import_option_all_books)
-                    .setNegativeButton(android.R.string.cancel, (d, w) -> getActivity().finish())
-                    .setNeutralButton(R.string.btn_options, (d, w) -> ImportHelperDialogFragment
-                            .newInstance(RK_IMPORT_HELPER, helper)
-                            .show(getChildFragmentManager(), ImportHelperDialogFragment.TAG))
-                    .setPositiveButton(android.R.string.ok, (d, w) -> mArchiveImportTask
-                            .startImport(helper))
-                    .create()
-                    .show();
+                break;
+
+            case Zip:
+            case Tar:
+            case SqLiteDb:
+                // Show a quick-options dialog first.
+                // The user can divert to the full options dialog if needed.
+                //noinspection ConstantConditions
+                new MaterialAlertDialogBuilder(getContext())
+                        .setTitle(R.string.lbl_import)
+                        .setMessage(R.string.txt_import_option_all_books)
+                        .setNegativeButton(android.R.string.cancel,
+                                           (d, w) -> getActivity().finish())
+                        .setNeutralButton(R.string.btn_options, (d, w) -> ImportHelperDialogFragment
+                                .newInstance(RK_IMPORT_HELPER, helper)
+                                .show(getChildFragmentManager(), ImportHelperDialogFragment.TAG))
+                        .setPositiveButton(android.R.string.ok, (d, w) -> mArchiveImportTask
+                                .startImport(helper))
+                        .create()
+                        .show();
+                break;
+
+            default:
+                throw new IllegalStateException("unsupported: " + container);
         }
     }
 
@@ -268,7 +280,7 @@ public class ImportFragment
                     .setIcon(R.drawable.ic_error)
                     .setTitle(R.string.error_import_failed)
                     .setMessage(ImportManager.createErrorReport(getContext(), message.result))
-                    .setPositiveButton(android.R.string.ok, (d, w) -> d.dismiss())
+                    .setPositiveButton(android.R.string.ok, (d, w) -> getActivity().finish())
                     .create()
                     .show();
         }
@@ -284,6 +296,8 @@ public class ImportFragment
                 //noinspection ConstantConditions
                 Snackbar.make(getView(), R.string.warning_task_cancelled, Snackbar.LENGTH_LONG)
                         .show();
+                //noinspection ConstantConditions
+                getView().postDelayed(() -> getActivity().finish(), BaseActivity.ERROR_DELAY_MS);
             }
         }
     }

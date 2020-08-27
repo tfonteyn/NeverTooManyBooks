@@ -299,6 +299,8 @@ public final class DBDefinitions {
     public static final Domain DOM_EID_STRIP_INFO_BE;
     /** {@link #TBL_BOOKS}. */
     public static final Domain DOM_EID_LAST_DODO_NL;
+    /** {@link #TBL_BOOKS}. */
+    public static final Domain DOM_EID_CALIBRE;
 
     /** {@link #TBL_BOOK_LOANEE}. */
     public static final Domain DOM_LOANEE;
@@ -438,6 +440,10 @@ public final class DBDefinitions {
     public static final String KEY_EID_WORLDCAT = "worldcat_oclc_book_id";
     /** External id. - String. ENHANCE: set by search engines when found, but not stored yet. */
     public static final String KEY_EID_LCCN = "lccn_book_id";
+
+
+    /** External id. - String. */
+    public static final String KEY_EID_CALIBRE_UUID = "clb_uuid";
 
     /** {@link #TBL_BOOKSHELF}. */
     public static final String KEY_BOOKSHELF_NAME = "bookshelf";
@@ -985,6 +991,11 @@ public final class DBDefinitions {
         DOM_EID_LAST_DODO_NL =
                 new Domain.Builder(KEY_EID_LAST_DODO_NL, ColumnInfo.TYPE_INTEGER).build();
 
+
+        // Used for imports; not an actual website
+        DOM_EID_CALIBRE =
+                new Domain.Builder(KEY_EID_CALIBRE_UUID, ColumnInfo.TYPE_TEXT).build();
+
         /* ======================================================================================
          *  Loanee domains
          * ====================================================================================== */
@@ -1156,6 +1167,7 @@ public final class DBDefinitions {
                              // optional: add engine specific DOM
                              DOM_UTC_LAST_SYNC_DATE_GOODREADS,
 
+                             DOM_EID_CALIBRE,
                              // internal data
                              DOM_BOOK_UUID,
                              DOM_UTC_ADDED,
@@ -1168,16 +1180,13 @@ public final class DBDefinitions {
                  .addIndex(KEY_BOOK_UUID, true, DOM_BOOK_UUID)
                  //NEWTHINGS: adding a new search engine: optional: add indexes as needed.
 
-                 // needed.
                  .addIndex(KEY_EID_GOODREADS_BOOK, false, DOM_EID_GOODREADS_BOOK)
-                 // do we need this one?
                  .addIndex(KEY_EID_ISFDB, false, DOM_EID_ISFDB)
-                 // we probably do not need this one (and have not created it)
-                 //.addIndex(KEY_EID_LIBRARY_THING, false, DOM_EID_LIBRARY_THING)
-                 // do we need this one?
                  .addIndex(KEY_EID_OPEN_LIBRARY, false, DOM_EID_OPEN_LIBRARY)
-                 // do we need this one?
                  .addIndex(KEY_EID_STRIP_INFO_BE, false, DOM_EID_STRIP_INFO_BE)
+                 .addIndex(KEY_EID_CALIBRE_UUID, false, DOM_EID_CALIBRE)
+        // we probably do not need this one (and have not created it)
+        //.addIndex(KEY_EID_LIBRARY_THING, false, DOM_EID_LIBRARY_THING)
         ;
         ALL_TABLES.put(TBL_BOOKS.getName(), TBL_BOOKS);
 

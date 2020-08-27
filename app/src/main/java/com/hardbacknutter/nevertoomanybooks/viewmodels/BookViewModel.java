@@ -44,7 +44,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 
 /**
  * Holds the {@link Book} and whether it's dirty or not + some direct support functions.
@@ -262,8 +261,7 @@ public class BookViewModel
         if (mBook.isNew()) {
             final String isbnStr = mBook.getString(DBDefinitions.KEY_ISBN);
             if (!isbnStr.isEmpty()) {
-                final ISBN isbn = ISBN.createISBN(isbnStr);
-                return mDb.getBookIdFromIsbn(isbn) > 0;
+                return mDb.bookExistsByIsbn(isbnStr);
             }
         }
 

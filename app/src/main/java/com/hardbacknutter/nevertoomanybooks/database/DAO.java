@@ -118,6 +118,7 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_DA
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_DATE_PUBLISHED;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_DESCRIPTION;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_EDITION_BITMASK;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_EID_CALIBRE_UUID;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_EID_GOODREADS_BOOK;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FK_AUTHOR;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FK_BOOK;
@@ -279,8 +280,6 @@ public class DAO
     private static final String STMT_GET_BOOK_TITLE = "GetBookTitle";
     private static final String STMT_GET_BOOK_UPDATE_DATE = "GetBookUpdateDate";
     private static final String STMT_GET_BOOK_UUID = "GetBookUuid";
-    private static final String STMT_GET_BOOK_ID_FROM_ISBN = "GetIdFromIsbn1";
-    private static final String STMT_GET_BOOK_ID_FROM_VALID_ISBN = "GetIdFromIsbn2";
     private static final String STMT_GET_BOOK_ID_FROM_UUID = "GetBookIdFromUuid";
     private static final String STMT_GET_BOOKSHELF_ID_BY_NAME = "GetBookshelfIdByName";
     private static final String STMT_GET_LOANEE_BY_BOOK_ID = "GetLoaneeByBookId";
@@ -2256,6 +2255,22 @@ public class DAO
     }
 
     /**
+     * Return an Cursor with all Books for the given external book ID.
+     * <strong>Note:</strong> MAY RETURN MORE THAN ONE BOOK
+     *
+     * @param key   to use
+     * @param extId to retrieve
+     *
+     * @return A Book Cursor with 0..n rows; ordered by book id
+     */
+    @NonNull
+    public TypedCursor fetchBooksByKey(@NonNull final String key,
+                                       @NonNull final String extId) {
+        return getBookCursor(TBL_BOOKS.dot(key) + "=?", new String[]{extId},
+                             TBL_BOOKS.dot(KEY_PK_ID));
+    }
+
+    /**
      * Return an Cursor with all Books for the given list of {@link Book} ID's.
      *
      * @param idList List of book ID's to retrieve; should not be empty!
@@ -2347,21 +2362,6 @@ public class DAO
                     TBL_BOOKS.dot(KEY_PK_ID));
         }
 
-    }
-
-    /**
-     * Return an Cursor with all Books for the given Goodreads book ID.
-     * <strong>Note:</strong> MAY RETURN MORE THAN ONE BOOK
-     *
-     * @param grBookId to retrieve
-     *
-     * @return A Book Cursor with 0..n rows; ordered by book id
-     */
-    @NonNull
-    public TypedCursor fetchBooksByGoodreadsBookId(final long grBookId) {
-        return getBookCursor(TBL_BOOKS.dot(KEY_EID_GOODREADS_BOOK) + "=?",
-                             new String[]{String.valueOf(grBookId)},
-                             TBL_BOOKS.dot(KEY_PK_ID));
     }
 
     /**
@@ -2978,49 +2978,60 @@ public class DAO
         return list;
     }
 
-
     /**
-     * Search for a book by the given ISBN.
+     * Get a list of book ID's (most often just the one) for the given ISBN.
      *
      * @param isbn to search for; can be generic/non-valid
      *
-     * @return book id, or 0 if not found
+     * @return list with book ID's
      */
-    public long getBookIdFromIsbn(@NonNull final ISBN isbn) {
+    public ArrayList<Long> getBookIdsByIsbn(@NonNull final ISBN isbn) {
+        final ArrayList<Long> list = new ArrayList<>();
         // if the string is ISBN-10 compatible, i.e. an actual ISBN-10,
         // or an ISBN-13 in the 978 range, we search on both formats
         if (isbn.isIsbn10Compat()) {
-            SynchronizedStatement stmt =
-                    mSqlStatementManager.get(STMT_GET_BOOK_ID_FROM_VALID_ISBN);
-            if (stmt == null) {
-                stmt = mSqlStatementManager.add(STMT_GET_BOOK_ID_FROM_VALID_ISBN,
-                                                SqlGetBookId.BY_VALID_ISBN);
+            // the asText for ISBN10/ISBN13 is always uppercase
+            // URGENT: is this true? and their values in the database are also always uppercase.
+            try (Cursor cursor = sSyncedDb.rawQuery(SqlSelectList.BY_VALID_ISBN,
+                                                    new String[]{isbn.asText(ISBN.TYPE_ISBN10),
+                                                                 isbn.asText(ISBN.TYPE_ISBN13)})) {
+                while (cursor.moveToNext()) {
+                    list.add(cursor.getLong(0));
+                }
             }
-            //noinspection SynchronizationOnLocalVariableOrMethodParameter
-            synchronized (stmt) {
-                // the asText for ISBN10/ISBN13 is always uppercase
-                // and their values in the database are also always uppercase.
-                stmt.bindString(1, isbn.asText(ISBN.TYPE_ISBN10));
-                stmt.bindString(2, isbn.asText(ISBN.TYPE_ISBN13));
-                return stmt.simpleQueryForLongOrZero();
-            }
+            return list;
 
         } else {
             // otherwise just search on the string as-is; regardless of validity
             // (this would actually include valid ISBN-13 in the 979 range).
-            SynchronizedStatement stmt =
-                    mSqlStatementManager.get(STMT_GET_BOOK_ID_FROM_ISBN);
-            if (stmt == null) {
-                stmt = mSqlStatementManager.add(STMT_GET_BOOK_ID_FROM_ISBN,
-                                                SqlGetBookId.BY_ISBN);
+
+            try (Cursor cursor = sSyncedDb.rawQuery(SqlSelectList.BY_ISBN,
+                                                    new String[]{isbn.asText()})) {
+                while (cursor.moveToNext()) {
+                    list.add(cursor.getLong(0));
+                }
             }
-            //noinspection SynchronizationOnLocalVariableOrMethodParameter
-            synchronized (stmt) {
-                // The generic asText can contain mixed case characters!
-                // This is covered by the SQL, which is using 'upper()'.
-                stmt.bindString(1, isbn.asText());
-                return stmt.simpleQueryForLongOrZero();
-            }
+            return list;
+        }
+    }
+
+
+    /**
+     * Check that a book with the passed key=value exists and return the id of the book, or zero.
+     *
+     * @param key   column name
+     * @param value id/value for the key
+     *
+     * @return id of the book, or 0 'new' if not found
+     */
+    public long getBookIdFromKey(@NonNull final String key,
+                                 @NonNull final String value) {
+        final String sql = SELECT_ + KEY_PK_ID + _FROM_ + TBL_BOOKS.getName()
+                           + _WHERE_ + key + "=?";
+
+        try (SynchronizedStatement stmt = sSyncedDb.compileStatement(sql)) {
+            stmt.bindString(1, value);
+            return stmt.simpleQueryForLongOrZero();
         }
     }
 
@@ -3043,7 +3054,6 @@ public class DAO
             return stmt.simpleQueryForLongOrZero();
         }
     }
-
 
     /**
      * Return the book UUID based on the id.
@@ -3403,7 +3413,8 @@ public class DAO
      *
      * @return {@code true} if exists
      */
-    public boolean bookExists(final long bookId) {
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
+    public boolean bookExistsById(final long bookId) {
         SynchronizedStatement stmt = mSqlStatementManager.get(STMT_CHECK_BOOK_EXISTS);
         if (stmt == null) {
             stmt = mSqlStatementManager.add(STMT_CHECK_BOOK_EXISTS, SqlSelect.BOOK_EXISTS);
@@ -3413,6 +3424,19 @@ public class DAO
             stmt.bindLong(1, bookId);
             return stmt.simpleQueryForLongOrZero() == 1;
         }
+    }
+
+    /**
+     * Check that a book with the passed isbn exists.
+     *
+     * @param isbnStr of the book
+     *
+     * @return {@code true} if exists
+     */
+    public boolean bookExistsByIsbn(@NonNull final String isbnStr) {
+        //TODO: optimize this call
+        final ISBN isbn = ISBN.createISBN(isbnStr);
+        return !getBookIdsByIsbn(isbn).isEmpty();
     }
 
     /**
@@ -4402,24 +4426,6 @@ public class DAO
     private static final class SqlGetBookId {
 
         /**
-         * Find the {@link Book} id based on a search for the ISBN (both 10 & 13).
-         * The arguments MUST be bound in uppercase,
-         * as valid ISBN numbers are always stored in uppercase (the 'X').
-         */
-        static final String BY_VALID_ISBN =
-                SELECT_ + KEY_PK_ID + _FROM_ + TBL_BOOKS.getName()
-                + _WHERE_ + KEY_ISBN + " IN (?,?)";
-
-        /**
-         * Find the {@link Book} id based on a search for the ISBN.
-         * The isbn need not be valid and can in fact be any code whatsoever
-         * with mixed case characters (we use 'upper()' on BOTH sides).
-         */
-        static final String BY_ISBN =
-                SELECT_ + KEY_PK_ID + _FROM_ + TBL_BOOKS.getName()
-                + _WHERE_ + "upper(" + KEY_ISBN + ")=upper(?)";
-
-        /**
          * Find the {@link Book} id based on a search for the UUID.
          */
         static final String BY_UUID =
@@ -4748,6 +4754,8 @@ public class DAO
             //NEWTHINGS: adding a new search engine: optional: add engine specific keys
             sqlBookTmp.append(',').append(TBL_BOOKS.dotAs(KEY_UTC_LAST_SYNC_DATE_GOODREADS));
 
+            sqlBookTmp.append(',').append(TBL_BOOKS.dotAs(KEY_EID_CALIBRE_UUID));
+
             SQL_BOOK = sqlBookTmp.toString()
                        // COALESCE nulls to "" for the LEFT OUTER JOIN'ed tables
                        + ',' + "COALESCE(" + TBL_BOOK_LOANEE.dot(KEY_LOANEE) + ", '')" + _AS_
@@ -4765,6 +4773,22 @@ public class DAO
         static final String BOOK_ID_LIST_BY_TOC_ENTRY_ID =
                 SELECT_ + KEY_FK_BOOK + _FROM_ + TBL_BOOK_TOC_ENTRIES.getName()
                 + _WHERE_ + KEY_FK_TOC_ENTRY + "=?";
+        /**
+         * Find the {@link Book} id based on a search for the ISBN (both 10 & 13).
+         * The arguments MUST be bound in uppercase,
+         * as valid ISBN numbers are always stored in uppercase (the 'X').
+         */
+        static final String BY_VALID_ISBN =
+                SELECT_ + KEY_PK_ID + _FROM_ + TBL_BOOKS.getName()
+                + _WHERE_ + KEY_ISBN + " IN (?,?)";
+        /**
+         * Find the {@link Book} id based on a search for the ISBN.
+         * The isbn need not be valid and can in fact be any code whatsoever
+         * with mixed case characters (we use 'upper()' on BOTH sides).
+         */
+        static final String BY_ISBN =
+                SELECT_ + KEY_PK_ID + _FROM_ + TBL_BOOKS.getName()
+                + _WHERE_ + "upper(" + KEY_ISBN + ")=upper(?)";
 
         /**
          * All Bookshelves for a Book; ordered by name.

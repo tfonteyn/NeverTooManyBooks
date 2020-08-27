@@ -52,8 +52,8 @@ public class ImportHelperDialogFragment
     private ImportHelperViewModel mModel;
     /** View Binding. */
     private DialogImportOptionsBinding mVb;
-    /** Indicates if we're importing from a CSV file. */
-    private boolean mIsCsvBooks;
+    /** Indicates if we're importing from a file only containing books. */
+    private boolean mIsBooksOnly;
     private boolean mAllowSetEnableOnBooksGroup;
 
     /**
@@ -94,7 +94,7 @@ public class ImportHelperDialogFragment
 
         mVb = DialogImportOptionsBinding.bind(view);
 
-        mIsCsvBooks = mModel.isCsvContainer(getContext());
+        mIsBooksOnly = mModel.isBooksOnlyContainer(getContext());
 
         setupOptions();
     }
@@ -123,7 +123,7 @@ public class ImportHelperDialogFragment
     private void setupOptions() {
         final ImportManager helper = mModel.getHelper();
 
-        if (mIsCsvBooks) {
+        if (mIsBooksOnly) {
             // CSV files don't have options other then the books.
             mVb.cbxGroup.setVisibility(View.GONE);
 
@@ -153,7 +153,7 @@ public class ImportHelperDialogFragment
         //noinspection ConstantConditions
         final LocalDateTime archiveCreationDate = mModel.getArchiveCreationDate(getContext());
         // enable or disable the sync option
-        if (mIsCsvBooks || archiveCreationDate != null) {
+        if (mIsBooksOnly || archiveCreationDate != null) {
             mAllowSetEnableOnBooksGroup = true;
             final boolean allBooks = !helper.isSet(ImportManager.IMPORT_ONLY_NEW_OR_UPDATED);
             mVb.rbBooksAll.setChecked(allBooks);
@@ -227,8 +227,11 @@ public class ImportHelperDialogFragment
             }
         }
 
-        boolean isCsvContainer(@NonNull final Context context) {
-            return ArchiveContainer.CsvBooks.equals(mHelper.getContainer(context));
+        // TODO: split this up into one check for each entity we could import.
+        boolean isBooksOnlyContainer(@NonNull final Context context) {
+            final ArchiveContainer container = mHelper.getContainer(context);
+            return ArchiveContainer.CsvBooks.equals(container)
+                   || ArchiveContainer.SqLiteDb.equals(container);
         }
     }
 }

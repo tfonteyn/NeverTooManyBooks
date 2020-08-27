@@ -61,7 +61,7 @@ public class CsvArchiveReader
             throws IOException, ImportException {
 
         @Nullable
-        InputStream is = context.getContentResolver().openInputStream(mHelper.getUri());
+        final InputStream is = context.getContentResolver().openInputStream(mHelper.getUri());
         if (is == null) {
             // openInputStream can return null, just pretend we couldn't find the file.
             // Should never happen - flw
@@ -69,7 +69,7 @@ public class CsvArchiveReader
         }
 
         try (Importer importer = new CsvImporter(context, Options.BOOKS)) {
-            ReaderEntity entity = new CsvReaderEntity(is);
+            final ReaderEntity entity = new CsvReaderEntity(is);
             return importer.read(context, entity, progressListener);
         } finally {
             is.close();

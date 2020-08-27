@@ -356,10 +356,12 @@ public class BookSearchByIsbnFragment
         }
 
         // See if ISBN already exists in our database, if not then start the search.
-        final long existingId = mDb.getBookIdFromIsbn(code);
-        if (existingId == 0) {
+        final ArrayList<Long> existingIds = mDb.getBookIdsByIsbn(code);
+        if (existingIds.isEmpty()) {
             startSearch();
         } else {
+            // we always use the first one... really should offer the user a choice.
+            final long firstFound = existingIds.get(0);
             //noinspection ConstantConditions
             new MaterialAlertDialogBuilder(getContext())
                     .setIcon(R.drawable.ic_warning)
@@ -378,7 +380,7 @@ public class BookSearchByIsbnFragment
                     // User wants to review the existing book
                     .setNeutralButton(R.string.action_edit, (d, w) -> {
                         final Intent intent = new Intent(getContext(), EditBookActivity.class)
-                                .putExtra(DBDefinitions.KEY_PK_ID, existingId);
+                                .putExtra(DBDefinitions.KEY_PK_ID, firstFound);
                         startActivityForResult(intent, RequestCode.BOOK_EDIT);
                     })
                     // User wants to add regardless

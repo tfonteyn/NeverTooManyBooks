@@ -44,7 +44,7 @@ public enum ArchiveContainer {
 
     /** XML <strong>Export only</strong>. */
     Xml,
-    /** Database. <strong>Export only</strong>. */
+    /** Database. */
     SqLiteDb,
 
     /** The legacy full backup/restore support. NOT compressed. */
@@ -91,6 +91,7 @@ public enum ArchiveContainer {
                 }
 
                 // sqlite v3, offset 0, 53 51 4c 69 74 65 20 66 6f 72 6d 61 74 20 33 00
+                // the string "SQLite format 3"
                 if (len > 16
                     && b[0] == 0x53 && b[1] == 0x51 && b[2] == 0x4c && b[3] == 0x69
                     && b[4] == 0x74 && b[5] == 0x65 && b[6] == 0x20 && b[7] == 0x66

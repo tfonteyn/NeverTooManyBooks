@@ -95,6 +95,8 @@ public final class DEBUG_SWITCHES {
     /** {@link com.hardbacknutter.nevertoomanybooks.backup.csv.CsvImporter}. Extensive. */
     public static final boolean IMPORT_CSV_BOOKS_EXT = false;
 
+    public static final boolean IMPORT_CALIBRE_BOOKS = true;
+
     /** Dump SQL. */
     public static final boolean DB_EXEC_SQL = false;
 
