@@ -42,7 +42,6 @@ import com.hardbacknutter.nevertoomanybooks.searches.Site;
 import static com.hardbacknutter.nevertoomanybooks.searches.isfdb.IsfdbSearchEngine.PREFS_SERIES_FROM_TOC;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
@@ -183,13 +182,13 @@ class IsfdbBookHandlerTest
         assertEquals("4", series.get(1).getNumber());
 
         final ArrayList<TocEntry> toc = mRawData.getParcelableArrayList(Book.BKEY_TOC_ARRAY);
-        assertNull(toc);
-//        assertEquals(1, toc.size());
-//        TocEntry entry = toc.get(0);
-//        assertEquals("Mort", entry.getTitle());
-//        assertEquals("1987", entry.getFirstPublication());
-//        assertEquals("Pratchett", entry.getAuthor().getFamilyName());
-//        assertEquals("Terry", entry.getAuthor().getGivenNames());
+        assertNotNull(toc);
+        assertEquals(1, toc.size());
+        TocEntry entry = toc.get(0);
+        assertEquals("Mort", entry.getTitle());
+        assertEquals("1987", entry.getFirstPublication());
+        assertEquals("Pratchett", entry.getAuthor().getFamilyName());
+        assertEquals("Terry", entry.getAuthor().getGivenNames());
     }
 
     @Test
