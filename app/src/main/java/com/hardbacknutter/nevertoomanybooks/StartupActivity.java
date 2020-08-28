@@ -42,8 +42,8 @@ import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.goodreads.qtasks.taskqueue.QueueManager;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineRegistry;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
-import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.NightModeUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
+import com.hardbacknutter.nevertoomanybooks.utils.NightMode;
 import com.hardbacknutter.nevertoomanybooks.utils.Notifier;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.StartupViewModel;
 
@@ -75,7 +75,7 @@ public class StartupActivity
 
     @Override
     protected void attachBaseContext(@NonNull final Context base) {
-        super.attachBaseContext(LocaleUtils.applyLocale(base));
+        super.attachBaseContext(AppLocale.getInstance().apply(base));
 
         // create self-reference for DBHelper callbacks.
         sStartupActivity = new WeakReference<>(this);
@@ -84,7 +84,7 @@ public class StartupActivity
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         // apply the user-preferred Theme before super.onCreate is called.
-        NightModeUtils.applyNightMode(this);
+        NightMode.getInstance().apply(this);
 
         super.onCreate(savedInstanceState);
 

@@ -67,8 +67,8 @@ import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
+import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.DateParser;
-import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.StringList;
 
 /**
@@ -173,7 +173,7 @@ public class CsvImporter
         mDb = new DAO(TAG);
         mBookshelfCoder = new StringList<>(
                 new BookshelfCoder(BooklistStyle.getDefault(context, mDb)));
-        mUserLocale = LocaleUtils.getUserLocale(context);
+        mUserLocale = AppLocale.getInstance().getUserLocale(context);
 
         mBooksString = context.getString(R.string.lbl_books);
         mProgressMessage = context.getString(R.string.progress_msg_x_created_y_updated_z_skipped);

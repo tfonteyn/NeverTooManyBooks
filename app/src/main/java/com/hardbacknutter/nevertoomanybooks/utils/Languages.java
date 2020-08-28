@@ -23,7 +23,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import java.util.HashMap;
@@ -38,8 +37,10 @@ import java.util.MissingResourceException;
  *      <li>ISO 639-2: three-letter codes, for the same languages as 639-1</li>
  * </ul>
  * The JDK uses "ISO3" for the 3-character ISO 639-2 format (not to be confused with ISO 639-3)
+ * <p>
+ * Singleton.
  */
-public final class LanguageUtils {
+public class Languages {
 
     /**
      * The SharedPreferences name where we'll maintain our language to ISO mappings.
@@ -48,10 +49,36 @@ public final class LanguageUtils {
      */
     @VisibleForTesting
     public static final String LANGUAGE_MAP = "language2iso3";
-    @Nullable
-    private static Map<String, String> LANG3_TO_LANG2_MAP;
+    /** Singleton. */
+    private static Languages sInstance;
+    @NonNull
+    private final Map<String, String> mLang3ToLang2Map;
 
-    private LanguageUtils() {
+    /**
+     * Constructor. Use {@link #getInstance()}.
+     */
+    private Languages() {
+        final String[] languages = Locale.getISOLanguages();
+        mLang3ToLang2Map = new HashMap<>(languages.length);
+        for (String language : languages) {
+            final Locale locale = new Locale(language);
+            mLang3ToLang2Map.put(locale.getISO3Language(), language);
+        }
+    }
+
+    /**
+     * Get/create the singleton instance.
+     *
+     * @return instance
+     */
+    @NonNull
+    public static Languages getInstance() {
+        synchronized (Languages.class) {
+            if (sInstance == null) {
+                sInstance = new Languages();
+            }
+            return sInstance;
+        }
     }
 
     /**
@@ -64,13 +91,13 @@ public final class LanguageUtils {
      * or the input string itself if it was an invalid ISO code
      */
     @NonNull
-    public static String getDisplayNameFromISO3(@NonNull final Context context,
-                                                @NonNull final String iso3) {
-        final Locale langLocale = LocaleUtils.getLocale(context, iso3);
+    public String getDisplayNameFromISO3(@NonNull final Context context,
+                                         @NonNull final String iso3) {
+        final Locale langLocale = AppLocale.getInstance().getLocale(context, iso3);
         if (langLocale == null) {
             return iso3;
         }
-        return langLocale.getDisplayLanguage(LocaleUtils.getUserLocale(context));
+        return langLocale.getDisplayLanguage(AppLocale.getInstance().getUserLocale(context));
     }
 
     /**
@@ -86,15 +113,15 @@ public final class LanguageUtils {
      * @return the ISO code, or if conversion failed, the input string
      */
     @NonNull
-    public static String getISO3FromDisplayName(@NonNull final Context context,
-                                                @NonNull final Locale locale,
-                                                @NonNull final String displayName) {
+    public String getISO3FromDisplayName(@NonNull final Context context,
+                                         @NonNull final Locale locale,
+                                         @NonNull final String displayName) {
 
         final String source = displayName.trim().toLowerCase(locale);
         if (source.isEmpty()) {
             return "";
         }
-        return getLanguageCache(context).getString(source, source);
+        return getCacheFile(context).getString(source, source);
     }
 
     /**
@@ -105,13 +132,13 @@ public final class LanguageUtils {
      * @return the ISO code, or if conversion failed, the input string
      */
     @NonNull
-    public static String getISO3FromCode(@NonNull final String code) {
+    public String getISO3FromCode(@NonNull final String code) {
         // shortcut for English "en", "en-GB", etc
         if ("en".equals(code) || code.startsWith("en_") || code.startsWith("en-")) {
             return "eng";
         } else {
             try {
-                return LocaleUtils.createLocale(code).getISO3Language();
+                return AppLocale.getInstance().create(code).getISO3Language();
             } catch (@NonNull final MissingResourceException ignore) {
                 return code;
             }
@@ -145,35 +172,26 @@ public final class LanguageUtils {
      * or the incoming string if conversion failed.
      */
     @NonNull
-    static String getLocaleIsoFromISO3(@NonNull final Context context,
-                                       @NonNull final String iso3) {
-        // create the map on first usage
-        if (LANG3_TO_LANG2_MAP == null) {
-            final String[] languages = Locale.getISOLanguages();
-            LANG3_TO_LANG2_MAP = new HashMap<>(languages.length);
-            for (String language : languages) {
-                final Locale locale = new Locale(language);
-                LANG3_TO_LANG2_MAP.put(locale.getISO3Language(), language);
-            }
-        }
+    String getLocaleIsoFromISO3(@NonNull final Context context,
+                                @NonNull final String iso3) {
 
-        String iso2 = LANG3_TO_LANG2_MAP.get(iso3);
+        String iso2 = mLang3ToLang2Map.get(iso3);
         if (iso2 != null) {
             return iso2;
         }
 
-        final Locale locale = LocaleUtils.getUserLocale(context);
+        final Locale locale = AppLocale.getInstance().getUserLocale(context);
 
         // try again ('terminology' seems to be preferred/standard on Android (ICU?)
-        String lang = LanguageUtils.toTerminology(locale, iso3);
-        iso2 = LANG3_TO_LANG2_MAP.get(lang);
+        String lang = toTerminology(locale, iso3);
+        iso2 = mLang3ToLang2Map.get(lang);
         if (iso2 != null) {
             return iso2;
         }
 
         // desperate and last attempt using 'bibliographic'.
-        lang = LanguageUtils.toBibliographic(locale, iso3);
-        iso2 = LANG3_TO_LANG2_MAP.get(lang);
+        lang = toBibliographic(locale, iso3);
+        iso2 = mLang3ToLang2Map.get(lang);
         if (iso2 != null) {
             return iso2;
         }
@@ -192,8 +210,8 @@ public final class LanguageUtils {
      * @param iso3 ISO 639-2 (3-char) language code (either bibliographic or terminology coded)
      */
     @NonNull
-    public static String toBibliographic(@NonNull final Locale locale,
-                                         @NonNull final String iso3) {
+    public String toBibliographic(@NonNull final Locale locale,
+                                  @NonNull final String iso3) {
         final String source = iso3.trim().toLowerCase(locale);
         if (source.length() != 3) {
             return source;
@@ -277,8 +295,8 @@ public final class LanguageUtils {
      */
     @SuppressWarnings({"unused", "WeakerAccess"})
     @NonNull
-    public static String toTerminology(@NonNull final Locale locale,
-                                       @NonNull final String iso3) {
+    public String toTerminology(@NonNull final Locale locale,
+                                @NonNull final String iso3) {
         final String source = iso3.trim().toLowerCase(locale);
         if (source.length() != 3) {
             return source;
@@ -358,7 +376,7 @@ public final class LanguageUtils {
      * @return the SharedPreferences representing the language mapper
      */
     @NonNull
-    public static SharedPreferences getLanguageCache(@NonNull final Context context) {
+    public SharedPreferences getCacheFile(@NonNull final Context context) {
         return context.getSharedPreferences(LANGUAGE_MAP, Context.MODE_PRIVATE);
     }
 
@@ -375,10 +393,10 @@ public final class LanguageUtils {
      *
      * @return {@code true} if sites should be enabled by default.
      */
-    public static boolean isLang(@NonNull final Locale systemLocale,
-                                 @NonNull final Locale userLocale,
-                                 @SuppressWarnings("SameParameterValue")
-                                 @NonNull final String iso) {
+    public boolean isLang(@NonNull final Locale systemLocale,
+                          @NonNull final Locale userLocale,
+                          @SuppressWarnings("SameParameterValue")
+                          @NonNull final String iso) {
         return iso.equals(systemLocale.getISO3Language())
                || iso.equals(userLocale.getISO3Language());
     }

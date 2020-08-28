@@ -40,8 +40,8 @@ import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
-import com.hardbacknutter.nevertoomanybooks.utils.LanguageUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
+import com.hardbacknutter.nevertoomanybooks.utils.Languages;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOK_AUTHOR_POSITION;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOK_PUBLISHER_POSITION;
@@ -91,10 +91,11 @@ public class DBCleaner {
                 final String iso;
                 if (lang.length() > 3) {
                     // It's likely a 'display' name of a language.
-                    iso = LanguageUtils.getISO3FromDisplayName(context, userLocale, lang);
+                    iso = Languages
+                            .getInstance().getISO3FromDisplayName(context, userLocale, lang);
                 } else {
                     // It's almost certainly a language code
-                    iso = LanguageUtils.getISO3FromCode(lang);
+                    iso = Languages.getInstance().getISO3FromCode(lang);
                 }
 
                 if (BuildConfig.DEBUG /* always */) {
@@ -199,7 +200,7 @@ public class DBCleaner {
                            + ", rows=" + bookIds.size());
             }
             // ENHANCE: we really should fetch each book individually
-            final Locale bookLocale = LocaleUtils.getUserLocale(context);
+            final Locale bookLocale = AppLocale.getInstance().getUserLocale(context);
 
             Synchronizer.SyncLock txLock = null;
             if (!mDb.inTransaction()) {
@@ -249,7 +250,7 @@ public class DBCleaner {
                            + ", rows=" + bookIds.size());
             }
             // ENHANCE: we really should fetch each book individually
-            final Locale bookLocale = LocaleUtils.getUserLocale(context);
+            final Locale bookLocale = AppLocale.getInstance().getUserLocale(context);
 
             Synchronizer.SyncLock txLock = null;
             if (!mDb.inTransaction()) {
@@ -298,7 +299,7 @@ public class DBCleaner {
                            + ", rows=" + bookIds.size());
             }
             // ENHANCE: we really should fetch each book individually
-            final Locale bookLocale = LocaleUtils.getUserLocale(context);
+            final Locale bookLocale = AppLocale.getInstance().getUserLocale(context);
 
             Synchronizer.SyncLock txLock = null;
             if (!mDb.inTransaction()) {
@@ -348,7 +349,7 @@ public class DBCleaner {
                            + ", rows=" + bookIds.size());
             }
             // ENHANCE: we really should fetch each book individually
-            final Locale bookLocale = LocaleUtils.getUserLocale(context);
+            final Locale bookLocale = AppLocale.getInstance().getUserLocale(context);
 
             Synchronizer.SyncLock txLock = null;
             if (!mDb.inTransaction()) {

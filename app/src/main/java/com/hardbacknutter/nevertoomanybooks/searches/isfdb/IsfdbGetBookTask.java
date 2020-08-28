@@ -32,7 +32,7 @@ import java.io.IOException;
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.tasks.VMTask;
-import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 /**
  * Hard coded not to fetch any images.
@@ -81,7 +81,7 @@ public class IsfdbGetBookTask
     protected Bundle doWork()
             throws IOException {
         Thread.currentThread().setName(TAG);
-        final Context context = LocaleUtils.applyLocale(App.getTaskContext());
+        final Context context = AppLocale.getInstance().apply(App.getTaskContext());
 
         final IsfdbSearchEngine searchEngine = new IsfdbSearchEngine(context);
         searchEngine.setCaller(this);

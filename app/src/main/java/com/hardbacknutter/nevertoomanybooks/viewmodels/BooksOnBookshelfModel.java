@@ -64,7 +64,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineRegistry;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.tasks.VMTask;
-import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 public class BooksOnBookshelfModel
         extends VMTask<List<RowStateDAO.Node>> {
@@ -706,7 +706,7 @@ public class BooksOnBookshelfModel
         Objects.requireNonNull(mBookshelf, ErrorMsg.NULL_BOOKSHELF);
 
         Thread.currentThread().setName(TAG);
-        final Context context = LocaleUtils.applyLocale(App.getTaskContext());
+        final Context context = AppLocale.getInstance().apply(App.getTaskContext());
 
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         final BooklistStyle style = mBookshelf.getStyle(context, mDb);

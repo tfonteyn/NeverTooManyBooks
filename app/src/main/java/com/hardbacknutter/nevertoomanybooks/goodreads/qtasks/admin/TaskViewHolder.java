@@ -34,7 +34,7 @@ import com.hardbacknutter.nevertoomanybooks.goodreads.GrStatus;
 import com.hardbacknutter.nevertoomanybooks.goodreads.qtasks.BaseTQTask;
 import com.hardbacknutter.nevertoomanybooks.goodreads.qtasks.taskqueue.TQTask;
 import com.hardbacknutter.nevertoomanybooks.goodreads.qtasks.taskqueue.TQTaskCursorRow;
-import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 /**
  * Holder to maintain {@link BaseTQTask} views.
@@ -71,7 +71,7 @@ public class TaskViewHolder
                      @NonNull final BaseTQTask task) {
 
         final Context context = itemView.getContext();
-        final Locale userLocale = LocaleUtils.getUserLocale(context);
+        final Locale userLocale = AppLocale.getInstance().getUserLocale(context);
 
         descriptionView.setText(task.getDescription(context));
         final String statusCode = rowData.getStatusCode();

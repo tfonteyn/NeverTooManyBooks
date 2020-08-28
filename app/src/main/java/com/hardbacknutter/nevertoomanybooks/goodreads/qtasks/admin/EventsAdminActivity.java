@@ -57,7 +57,7 @@ public class EventsAdminActivity
         setTitle(R.string.gr_tq_title_task_errors);
 
         //When any event is added/changed/deleted, we'll update the Cursor.
-        QueueManager.getQueueManager().registerEventListener(mOnChangeListener);
+        QueueManager.getInstance().registerEventListener(mOnChangeListener);
 
         if (savedInstanceState == null) {
             TipManager.display(this, R.string.tip_background_task_events, null);
@@ -83,7 +83,7 @@ public class EventsAdminActivity
                         .setMessage(R.string.gr_tq_btn_cleanup_old_events)
                         .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
                         .setPositiveButton(android.R.string.ok, (d, w) -> {
-                            QueueManager.getQueueManager().cleanupOldEvents();
+                            QueueManager.getInstance().cleanupOldEvents();
                             refreshData();
                         })
                         .create()
@@ -109,9 +109,9 @@ public class EventsAdminActivity
     protected EventCursorAdapter getListAdapter(@NonNull final DAO db) {
         final Cursor cursor;
         if (mTaskId == 0) {
-            cursor = QueueManager.getQueueManager().getEvents();
+            cursor = QueueManager.getInstance().getEvents();
         } else {
-            cursor = QueueManager.getQueueManager().getEvents(mTaskId);
+            cursor = QueueManager.getInstance().getEvents(mTaskId);
         }
 
         return new EventCursorAdapter(this, cursor, db);
@@ -120,7 +120,7 @@ public class EventsAdminActivity
     @Override
     @CallSuper
     protected void onDestroy() {
-        QueueManager.getQueueManager().unregisterEventListener(mOnChangeListener);
+        QueueManager.getInstance().unregisterEventListener(mOnChangeListener);
         super.onDestroy();
     }
 }

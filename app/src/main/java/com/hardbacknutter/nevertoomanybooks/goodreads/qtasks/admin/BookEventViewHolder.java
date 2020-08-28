@@ -34,7 +34,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.goodreads.qtasks.taskqueue.TQEventCursorRow;
-import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 public class BookEventViewHolder
         extends BaseViewHolder {
@@ -66,7 +66,7 @@ public class BookEventViewHolder
                      @NonNull final SendBookEvent event,
                      @NonNull final DAO db) {
         final Context context = itemView.getContext();
-        final Locale userLocale = LocaleUtils.getUserLocale(context);
+        final Locale userLocale = AppLocale.getInstance().getUserLocale(context);
 
         errorView.setText(event.getDescription(context));
         infoView.setText(infoView.getContext().getString(

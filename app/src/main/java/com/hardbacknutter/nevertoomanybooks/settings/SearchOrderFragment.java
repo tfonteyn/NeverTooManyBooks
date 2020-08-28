@@ -48,7 +48,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentEditSearchOrderBinding;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searches.Site;
-import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.widgets.ItemTouchHelperViewHolderBase;
 import com.hardbacknutter.nevertoomanybooks.widgets.RecyclerViewAdapterBase;
 import com.hardbacknutter.nevertoomanybooks.widgets.ddsupport.SimpleItemTouchHelperCallback;
@@ -143,9 +143,9 @@ public class SearchOrderFragment
         //noinspection SwitchStatementWithTooFewBranches
         switch (item.getItemId()) {
             case R.id.MENU_RESET: {
-                final Locale systemLocale = LocaleUtils.getSystemLocale();
+                final Locale systemLocale = AppLocale.getInstance().getSystemLocale();
                 //noinspection ConstantConditions
-                final Locale userLocale = LocaleUtils.getUserLocale(getContext());
+                final Locale userLocale = AppLocale.getInstance().getUserLocale(getContext());
 
                 // Reset the global/original list for the type.
                 mType.resetList(getContext(), systemLocale, userLocale);

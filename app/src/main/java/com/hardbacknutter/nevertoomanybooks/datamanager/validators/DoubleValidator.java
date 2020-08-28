@@ -28,7 +28,7 @@ import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
-import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 
 /**
@@ -52,7 +52,7 @@ public class DoubleValidator
      */
     public DoubleValidator() {
         mDefaultValue = 0d;
-        mSystemLocale = LocaleUtils.getSystemLocale();
+        mSystemLocale = AppLocale.getInstance().getSystemLocale();
     }
 
     @Override

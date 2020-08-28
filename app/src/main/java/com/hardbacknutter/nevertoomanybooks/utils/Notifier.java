@@ -39,8 +39,8 @@ import java.lang.annotation.RetentionPolicy;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 
-public final class Notifier
-        implements LocaleUtils.OnLocaleChangedListener {
+public class Notifier
+        implements AppLocale.OnLocaleChangedListener {
 
     public static final int ID_GENERIC = 0;
     public static final int ID_GOODREADS = 1;
@@ -53,7 +53,7 @@ public final class Notifier
     private static final String CHANNEL_INFO = "Info";
 
     /** Singleton. */
-    private static Notifier INSTANCE;
+    private static Notifier sInstance;
 
     /**
      * Constructor. Use {@link #getInstance(Context)}.
@@ -94,11 +94,11 @@ public final class Notifier
     @NonNull
     public static Notifier getInstance(@NonNull final Context context) {
         synchronized (DateParser.class) {
-            if (INSTANCE == null) {
-                INSTANCE = new Notifier(context);
-                LocaleUtils.registerOnLocaleChangedListener(INSTANCE);
+            if (sInstance == null) {
+                sInstance = new Notifier(context);
+                AppLocale.getInstance().registerOnLocaleChangedListener(sInstance);
             }
-            return INSTANCE;
+            return sInstance;
         }
     }
 
@@ -249,7 +249,7 @@ public final class Notifier
 
     @IntDef({ID_GENERIC, ID_GOODREADS})
     @Retention(RetentionPolicy.SOURCE)
-    public @interface NotificationId {
+    @interface NotificationId {
 
     }
 }

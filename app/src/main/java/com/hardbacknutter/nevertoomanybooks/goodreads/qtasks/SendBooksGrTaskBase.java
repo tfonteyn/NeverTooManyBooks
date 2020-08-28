@@ -38,7 +38,7 @@ import com.hardbacknutter.nevertoomanybooks.goodreads.GrStatus;
 import com.hardbacknutter.nevertoomanybooks.goodreads.api.Http404Exception;
 import com.hardbacknutter.nevertoomanybooks.goodreads.qtasks.admin.SendBookEvent;
 import com.hardbacknutter.nevertoomanybooks.goodreads.qtasks.taskqueue.QueueManager;
-import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.NetworkUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 
@@ -85,7 +85,7 @@ public abstract class SendBooksGrTaskBase
      */
     @Override
     public boolean run(@NonNull final QueueManager queueManager) {
-        final Context context = LocaleUtils.applyLocale(App.getTaskContext());
+        final Context context = AppLocale.getInstance().apply(App.getTaskContext());
         try {
             // can we reach the site at all ?
             NetworkUtils.ping(context, GoodreadsManager.BASE_URL);

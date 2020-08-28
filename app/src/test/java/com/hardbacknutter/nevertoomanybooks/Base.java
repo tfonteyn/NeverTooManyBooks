@@ -48,9 +48,9 @@ import com.hardbacknutter.nevertoomanybooks._mocks.os.SharedPreferencesMock;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.searches.amazon.AmazonSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
+import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.DateParser;
-import com.hardbacknutter.nevertoomanybooks.utils.LanguageUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.Languages;
 
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
@@ -152,7 +152,7 @@ public class Base {
          */
         final SharedPreferences mLanguageMap = SharedPreferencesMock.create();
 
-        when(context.getSharedPreferences(eq(LanguageUtils.LANGUAGE_MAP), anyInt()))
+        when(context.getSharedPreferences(eq(Languages.LANGUAGE_MAP), anyInt()))
                 .thenReturn(mLanguageMap);
 
         mLanguageMap.edit()
@@ -181,7 +181,7 @@ public class Base {
 
     protected void setupSearchEnginePreferences(@NonNull final SharedPreferences preferences) {
         preferences.edit()
-                   .putString(Prefs.pk_ui_locale, LocaleUtils.SYSTEM_LANGUAGE)
+                   .putString(Prefs.pk_ui_locale, AppLocale.SYSTEM_LANGUAGE)
                    // random some at true, some at false.
                    .putBoolean("search.site.amazon.data.enabled", true)
                    .putBoolean("search.site.goodreads.data.enabled", true)

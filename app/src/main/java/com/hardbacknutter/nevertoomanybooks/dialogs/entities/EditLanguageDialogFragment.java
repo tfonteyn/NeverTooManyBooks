@@ -31,8 +31,8 @@ import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.BookChangedListener;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.utils.LanguageUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
+import com.hardbacknutter.nevertoomanybooks.utils.Languages;
 
 /**
  * Dialog to edit an <strong>in-line in Books table</strong> Language.
@@ -71,7 +71,7 @@ public class EditLanguageDialogFragment
         if (text.length() > 3) {
             editLang = text;
         } else {
-            final Locale locale = LocaleUtils.getLocale(context, text);
+            final Locale locale = AppLocale.getInstance().getLocale(context, text);
             if (locale == null) {
                 editLang = text;
             } else {
@@ -99,9 +99,9 @@ public class EditLanguageDialogFragment
     Bundle onSave(@NonNull final String originalText,
                   @NonNull final String currentText) {
         //noinspection ConstantConditions
-        final Locale userLocale = LocaleUtils.getUserLocale(getContext());
-        final String iso = LanguageUtils
-                .getISO3FromDisplayName(getContext(), userLocale, currentText);
+        final Locale userLocale = AppLocale.getInstance().getUserLocale(getContext());
+        final String iso = Languages.getInstance()
+                                    .getISO3FromDisplayName(getContext(), userLocale, currentText);
         //noinspection ConstantConditions
         mDb.renameLanguage(originalText, iso);
         return null;

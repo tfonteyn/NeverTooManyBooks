@@ -68,7 +68,7 @@ import com.hardbacknutter.nevertoomanybooks.tasks.TerminatorConnection;
         url = "https://books.google.com",
         prefKey = "googlebooks"
 )
-public final class GoogleBooksSearchEngine
+public class GoogleBooksSearchEngine
         extends SearchEngineBase
         implements SearchEngine.ByIsbn,
                    SearchEngine.ByText {

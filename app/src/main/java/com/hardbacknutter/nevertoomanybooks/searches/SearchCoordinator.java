@@ -67,11 +67,11 @@ import com.hardbacknutter.nevertoomanybooks.tasks.Canceller;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.FinishedMessage;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.ProgressMessage;
+import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.Csv;
 import com.hardbacknutter.nevertoomanybooks.utils.DateParser;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
-import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.NetworkUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.BooksOnBookshelfModel;
@@ -178,7 +178,7 @@ public class SearchCoordinator
             synchronized (mSearchProgressMessages) {
                 mSearchProgressMessages.put(message.taskId, message);
             }
-            final Context context = LocaleUtils.applyLocale(App.getAppContext());
+            final Context context = AppLocale.getInstance().apply(App.getAppContext());
             // forward the accumulated progress
             mSearchCoordinatorProgress.setValue(accumulateProgress(context));
         }
@@ -326,7 +326,7 @@ public class SearchCoordinator
             mSearchTasksEndTime.put(taskId, System.nanoTime());
         }
 
-        final Context appContext = LocaleUtils.applyLocale(App.getAppContext());
+        final Context appContext = AppLocale.getInstance().apply(App.getAppContext());
 
         // clear obsolete progress status
         synchronized (mSearchProgressMessages) {

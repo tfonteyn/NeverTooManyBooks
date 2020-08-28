@@ -47,7 +47,7 @@ import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 /**
  * DialogFragment class to allow for selection of partial dates from 0AD to 9999AD.
@@ -258,7 +258,7 @@ public class PartialDatePickerDialogFragment
      */
     private String[] getMonthAbbr() {
         //noinspection ConstantConditions
-        final Locale userLocale = LocaleUtils.getUserLocale(getContext());
+        final Locale userLocale = AppLocale.getInstance().getUserLocale(getContext());
         final String[] monthNames = new String[13];
         monthNames[0] = UNKNOWN_MONTH;
         for (int i = 1; i <= 12; i++) {

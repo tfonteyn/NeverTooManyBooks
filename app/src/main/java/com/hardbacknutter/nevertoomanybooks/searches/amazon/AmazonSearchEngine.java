@@ -58,10 +58,10 @@ import com.hardbacknutter.nevertoomanybooks.searches.JsoupSearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineRegistry;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
+import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
-import com.hardbacknutter.nevertoomanybooks.utils.LanguageUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.Languages;
 import com.hardbacknutter.nevertoomanybooks.utils.Money;
 
 /**
@@ -95,7 +95,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.Money;
 //        domainMenuId = R.id.MENU_VIEW_BOOK_AT_AMAZON,
         filenameSuffix = "AMZ"
 )
-public final class AmazonSearchEngine
+public class AmazonSearchEngine
         extends JsoupSearchEngineBase
         implements SearchEngine.ByIsbn,
                    SearchEngine.CoverByIsbn {
@@ -300,7 +300,7 @@ public final class AmazonSearchEngine
 
             default:
                 // other amazon sites are (should be ?) just the country code.
-                final Locale locale = LocaleUtils.getLocale(mAppContext, root);
+                final Locale locale = AppLocale.getInstance().getLocale(mAppContext, root);
                 if (BuildConfig.DEBUG /* always */) {
                     Logger.d(TAG, "getLocale=" + locale);
                 }
@@ -478,7 +478,8 @@ public final class AmazonSearchEngine
                 case "langue":
                 case "sprache":
                 case "taal":
-                    data = LanguageUtils.getISO3FromDisplayName(mAppContext, siteLocale, data);
+                    data = Languages
+                            .getInstance().getISO3FromDisplayName(mAppContext, siteLocale, data);
                     bookData.putString(DBDefinitions.KEY_LANGUAGE, data);
                     break;
 

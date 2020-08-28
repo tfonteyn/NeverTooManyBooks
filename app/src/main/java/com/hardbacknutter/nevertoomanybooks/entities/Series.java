@@ -41,7 +41,7 @@ import org.json.JSONObject;
 
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
-import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 
 /**
@@ -561,10 +561,10 @@ public class Series
     @NonNull
     public String getLabel(@NonNull final Context context) {
 
-        final Locale userLocale = LocaleUtils.getUserLocale(context);
+        final Locale userLocale = AppLocale.getInstance().getUserLocale(context);
         // overkill...  see the getLocale method for more comments
         // try (DAO db = new DAO(TAG)) {
-        //     locale = getLocale(context, db, LocaleUtils.getUserLocale(context));
+        //     locale = getLocale(context, db, AppLocale.getUserLocale(context));
         // }
         final String title = reorderTitleForDisplaying(context, userLocale);
 
@@ -655,7 +655,7 @@ public class Series
         // entering the book language mandatory.
         final String lang = db.getSeriesLanguage(mId);
         if (!lang.isEmpty()) {
-            final Locale seriesLocale = LocaleUtils.getLocale(context, lang);
+            final Locale seriesLocale = AppLocale.getInstance().getLocale(context, lang);
             if (seriesLocale != null) {
                 return seriesLocale;
             }

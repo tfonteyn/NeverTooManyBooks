@@ -38,7 +38,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
-import com.hardbacknutter.nevertoomanybooks.utils.LanguageUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.Languages;
 
 /**
  * An XML handler for the Amazon return.
@@ -457,10 +457,10 @@ class AmazonXmlHandler
                 addIfNotPresent(DBDefinitions.KEY_FORMAT, mBuilder.toString());
 
             } else if (mInLanguage && localName.equalsIgnoreCase(XML_NAME)) {
-                addIfNotPresent(DBDefinitions.KEY_LANGUAGE,
-                                LanguageUtils.getISO3FromDisplayName(mSearchEngine.getAppContext(),
-                                                                     mSearchEngine.getLocale(),
-                                                                     mBuilder.toString()));
+                addIfNotPresent(DBDefinitions.KEY_LANGUAGE, Languages
+                        .getInstance().getISO3FromDisplayName(mSearchEngine.getAppContext(),
+                                                              mSearchEngine.getLocale(),
+                                                              mBuilder.toString()));
 
             } else if (mInListPrice && localName.equalsIgnoreCase(XML_AMOUNT)) {
                 mCurrencyAmount = mBuilder.toString();

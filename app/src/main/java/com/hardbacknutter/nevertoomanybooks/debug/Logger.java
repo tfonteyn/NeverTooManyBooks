@@ -199,8 +199,10 @@ public final class Logger {
                                    @NonNull final String message,
                                    @Nullable final Throwable e) {
         // do not write to the file if we're running in a JUnit test.
-        if (isJUnitTest) {
-            return;
+        if (BuildConfig.DEBUG /* always */) {
+            if (isJUnitTest) {
+                return;
+            }
         }
 
         final String exMsg;

@@ -93,7 +93,7 @@ public class ProgressDialogFragment
                                                      final boolean isIndeterminate,
                                                      final boolean preventSleep) {
         final ProgressDialogFragment frag = new ProgressDialogFragment();
-        final Bundle args = new Bundle(4);
+        final Bundle args = new Bundle(3);
         args.putString(StandardDialogs.BKEY_DIALOG_TITLE, title);
         args.putBoolean(BKEY_IS_INDETERMINATE, isIndeterminate);
         args.putBoolean(BKEY_PREVENT_SLEEP, preventSleep);

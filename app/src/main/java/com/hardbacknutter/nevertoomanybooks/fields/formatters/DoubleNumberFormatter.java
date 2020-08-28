@@ -25,7 +25,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.Money;
 import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 
@@ -73,7 +73,7 @@ public class DoubleNumberFormatter
 
         try {
             // getSystemLocale: the user types it in
-            return ParseUtils.parseDouble(sv, LocaleUtils.getSystemLocale());
+            return ParseUtils.parseDouble(sv, AppLocale.getInstance().getSystemLocale());
         } catch (@NonNull final NumberFormatException e) {
             // this should never happen... flw
             return 0;

@@ -34,7 +34,7 @@ import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
-import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 /**
  * Represents a Publisher.
@@ -176,7 +176,7 @@ public class Publisher
      */
     @NonNull
     public String getLabel(@NonNull final Context context) {
-        final Locale userLocale = LocaleUtils.getUserLocale(context);
+        final Locale userLocale = AppLocale.getInstance().getUserLocale(context);
         return reorderTitleForDisplaying(context, getLocale(context, userLocale));
     }
 

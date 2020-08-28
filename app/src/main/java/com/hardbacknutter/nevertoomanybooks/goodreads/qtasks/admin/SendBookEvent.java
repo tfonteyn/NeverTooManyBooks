@@ -73,7 +73,7 @@ public class SendBookEvent
      * @param context Current context
      */
     public void retry(@NonNull final Context context) {
-        final QueueManager qm = QueueManager.getQueueManager();
+        final QueueManager qm = QueueManager.getInstance();
 
         final String desc = context.getString(R.string.gr_send_book_to_goodreads, getBookId());
         final TQTask task = new SendOneBookGrTask(desc, getBookId());

@@ -35,8 +35,9 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Locale;
 
+/** Singleton. */
 public class DateParser
-        implements LocaleUtils.OnLocaleChangedListener {
+        implements AppLocale.OnLocaleChangedListener {
 
     /** ISO patterns only. */
     private static final String[] ISO_PATTERNS = {
@@ -82,7 +83,7 @@ public class DateParser
             "MMMM yyyy",
             };
     /** Singleton. */
-    private static DateParser INSTANCE;
+    private static DateParser sInstance;
     /** List of patterns we'll use to parse dates. */
     private final Collection<DateTimeFormatter> ALL_PARSERS = new ArrayList<>();
     /** List of patterns we'll use to parse ISO datetime stamps.. */
@@ -97,19 +98,20 @@ public class DateParser
     /**
      * Get/create the singleton instance.
      *
-     * @param context Current context
+     * @param context Current context; only used the single time the instance gets created.
      *
      * @return instance
      */
     @NonNull
     public static DateParser getInstance(@NonNull final Context context) {
         synchronized (DateParser.class) {
-            if (INSTANCE == null) {
-                INSTANCE = new DateParser();
-                INSTANCE.create(LocaleUtils.getUserLocale(context), LocaleUtils.getSystemLocale());
-                LocaleUtils.registerOnLocaleChangedListener(INSTANCE);
+            if (sInstance == null) {
+                sInstance = new DateParser();
+                sInstance.create(AppLocale.getInstance().getUserLocale(context),
+                                 AppLocale.getInstance().getSystemLocale());
+                AppLocale.getInstance().registerOnLocaleChangedListener(sInstance);
             }
-            return INSTANCE;
+            return sInstance;
         }
     }
 
@@ -125,9 +127,9 @@ public class DateParser
     @VisibleForTesting
     @NonNull
     public static DateParser createForTesting(@NonNull final Locale... locales) {
-        INSTANCE = new DateParser();
-        INSTANCE.create(locales);
-        return INSTANCE;
+        sInstance = new DateParser();
+        sInstance.create(locales);
+        return sInstance;
     }
 
     /**
@@ -136,7 +138,7 @@ public class DateParser
      * @param locales the locales to use
      */
     private void create(@NonNull final Locale... locales) {
-        final Locale systemLocale = LocaleUtils.getSystemLocale();
+        final Locale systemLocale = AppLocale.getInstance().getSystemLocale();
 
         ALL_PARSERS.clear();
         addParsers(ALL_PARSERS, NUMERICAL, systemLocale);
@@ -318,6 +320,7 @@ public class DateParser
 
     @Override
     public void onLocaleChanged(@NonNull final Context context) {
-        create(LocaleUtils.getUserLocale(context), LocaleUtils.getSystemLocale());
+        create(AppLocale.getInstance().getUserLocale(context),
+               AppLocale.getInstance().getSystemLocale());
     }
 }

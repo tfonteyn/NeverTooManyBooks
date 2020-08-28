@@ -41,8 +41,8 @@ import java.util.Locale;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
+import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.LinkifyUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 
 /**
  * Original 'hints' renamed to 'tips' to avoid confusion with "android:hint".
@@ -162,7 +162,7 @@ public final class TipManager {
                              @NonNull final String prefix) {
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         final SharedPreferences.Editor ed = prefs.edit();
-        final Locale systemLocale = LocaleUtils.getSystemLocale();
+        final Locale systemLocale = AppLocale.getInstance().getSystemLocale();
         for (String key : prefs.getAll().keySet()) {
             if (key.toLowerCase(systemLocale).startsWith(prefix.toLowerCase(systemLocale))) {
                 ed.remove(key);

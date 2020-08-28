@@ -74,7 +74,7 @@ public class TQEvent
                                     @NonNull final List<ContextDialogItem> menuItems,
                                     @NonNull final DAO db) {
         menuItems.add(new ContextDialogItem(context.getString(R.string.gr_tq_menu_delete_event),
-                                            () -> QueueManager.getQueueManager()
+                                            () -> QueueManager.getInstance()
                                                               .deleteEvent(getId())));
     }
 

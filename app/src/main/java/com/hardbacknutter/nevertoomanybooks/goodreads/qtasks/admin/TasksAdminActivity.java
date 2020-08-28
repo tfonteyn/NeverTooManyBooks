@@ -51,7 +51,7 @@ public class TasksAdminActivity
         setTitle(R.string.gr_tq_menu_background_tasks);
 
         //When any task is added/changed/deleted, we'll update the Cursor.
-        QueueManager.getQueueManager().registerTaskListener(mOnChangeListener);
+        QueueManager.getInstance().registerTaskListener(mOnChangeListener);
 
         if (savedInstanceState == null) {
             TipManager.display(this, R.string.tip_background_tasks, null);
@@ -77,7 +77,7 @@ public class TasksAdminActivity
                         .setMessage(R.string.gr_tq_btn_cleanup_old_tasks)
                         .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
                         .setPositiveButton(android.R.string.ok, (d, w) -> {
-                            QueueManager.getQueueManager().cleanupOldTasks();
+                            QueueManager.getInstance().cleanupOldTasks();
                             refreshData();
                         })
                         .create()
@@ -97,7 +97,7 @@ public class TasksAdminActivity
     @NonNull
     @Override
     protected TaskCursorAdapter getListAdapter(@NonNull final DAO db) {
-        return new TaskCursorAdapter(this, QueueManager.getQueueManager().getTasks());
+        return new TaskCursorAdapter(this, QueueManager.getInstance().getTasks());
     }
 
     @Override
@@ -115,7 +115,7 @@ public class TasksAdminActivity
     @Override
     @CallSuper
     protected void onDestroy() {
-        QueueManager.getQueueManager().unregisterTaskListener(mOnChangeListener);
+        QueueManager.getInstance().unregisterTaskListener(mOnChangeListener);
         super.onDestroy();
     }
 }

@@ -26,7 +26,7 @@ import androidx.annotation.Nullable;
 
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 /**
  * Thrown when for some reason a website rejects our requests.
@@ -54,7 +54,7 @@ public class CredentialsException
     @Nullable
     @Override
     public String getLocalizedMessage() {
-        final Context context = LocaleUtils.applyLocale(App.getAppContext());
+        final Context context = AppLocale.getInstance().apply(App.getAppContext());
         return context.getString(R.string.error_site_authentication_failed, mSite);
     }
 }

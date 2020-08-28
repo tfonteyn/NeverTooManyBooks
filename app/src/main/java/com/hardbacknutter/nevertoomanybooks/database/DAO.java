@@ -84,12 +84,12 @@ import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsManager;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineRegistry;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
+import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.Csv;
 import com.hardbacknutter.nevertoomanybooks.utils.DateParser;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
-import com.hardbacknutter.nevertoomanybooks.utils.LanguageUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.Languages;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_AUTHOR_FAMILY_NAME;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_AUTHOR_FAMILY_NAME_OB;
@@ -1404,8 +1404,8 @@ public class DAO
     public boolean update(@NonNull final Context context,
                           @NonNull final Author author) {
 
-        final Locale authorLocale = author.getLocale(context, this,
-                                                     LocaleUtils.getUserLocale(context));
+        final Locale authorLocale =
+                author.getLocale(context, this, AppLocale.getInstance().getUserLocale(context));
 
         final ContentValues cv = new ContentValues();
         cv.put(KEY_AUTHOR_FAMILY_NAME, author.getFamilyName());
@@ -1432,8 +1432,8 @@ public class DAO
     public long insert(@NonNull final Context context,
                        @NonNull final Author /* in/out */ author) {
 
-        final Locale authorLocale = author.getLocale(context, this,
-                                                     LocaleUtils.getUserLocale(context));
+        final Locale authorLocale =
+                author.getLocale(context, this, AppLocale.getInstance().getUserLocale(context));
 
         SynchronizedStatement stmt = mSqlStatementManager.get(STMT_INSERT_AUTHOR);
         if (stmt == null) {
@@ -2588,7 +2588,7 @@ public class DAO
             while (cursor.moveToNext()) {
                 final String name = cursor.getString(0);
                 if (name != null && !name.isEmpty()) {
-                    set.add(LanguageUtils.getDisplayNameFromISO3(context, name));
+                    set.add(Languages.getInstance().getDisplayNameFromISO3(context, name));
                 }
             }
             return new ArrayList<>(set);
@@ -4112,9 +4112,9 @@ public class DAO
             int langIdx = cursor.getColumnIndex(KEY_LANGUAGE);
             while (cursor.moveToNext()) {
                 language = cursor.getString(langIdx);
-                bookLocale = LocaleUtils.getLocale(context, language);
+                bookLocale = AppLocale.getInstance().getLocale(context, language);
                 if (bookLocale == null) {
-                    bookLocale = LocaleUtils.getUserLocale(context);
+                    bookLocale = AppLocale.getInstance().getUserLocale(context);
                 }
                 rebuildOrderByTitleColumns(context, bookLocale, reorder, cursor,
                                            TBL_BOOKS, KEY_TITLE_OB);
@@ -4122,7 +4122,7 @@ public class DAO
         }
 
         // Series and TOC Entries use the user Locale.
-        final Locale userLocale = LocaleUtils.getUserLocale(context);
+        final Locale userLocale = AppLocale.getInstance().getUserLocale(context);
 
         // We should use the locale from the 1st book in the series... but that is a huge overhead.
         try (Cursor cursor = sSyncedDb.rawQuery(SqlSelectFullTable.SERIES_TITLES, null)) {

@@ -48,7 +48,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.searches.Site;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
-import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.BooksOnBookshelfModel;
 import com.hardbacknutter.nevertoomanybooks.widgets.DiacriticArrayAdapter;
 
@@ -206,7 +206,7 @@ public class BookSearchByTextFragment
     private ArrayList<String> getAuthorNames(@NonNull final Iterable<String> authorNames) {
 
         //noinspection ConstantConditions
-        final Locale userLocale = LocaleUtils.getUserLocale(getContext());
+        final Locale userLocale = AppLocale.getInstance().getUserLocale(getContext());
 
         final ArrayList<String> authors =
                 mDb.getAuthorNames(DBDefinitions.KEY_AUTHOR_FORMATTED_GIVEN_FIRST);
@@ -243,7 +243,7 @@ public class BookSearchByTextFragment
     private ArrayList<String> getPublisherNames(@NonNull final Iterable<String> publisherNames) {
 
         //noinspection ConstantConditions
-        final Locale userLocale = LocaleUtils.getUserLocale(getContext());
+        final Locale userLocale = AppLocale.getInstance().getUserLocale(getContext());
 
         final ArrayList<String> publishers = mDb.getPublisherNames();
 

@@ -104,8 +104,13 @@ public final class QueueManager {
         }
     }
 
+    /**
+     * Get the singleton.
+     *
+     * @return instance
+     */
     @NonNull
-    public static QueueManager getQueueManager() {
+    public static QueueManager getInstance() {
         // do not lazy initialize here. We want the QueueManager running at startup.
         Objects.requireNonNull(sInstance, ErrorMsg.CREATE_WAS_NOT_CALLED);
         return sInstance;

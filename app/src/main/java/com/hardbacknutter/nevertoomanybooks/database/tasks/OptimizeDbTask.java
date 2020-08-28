@@ -35,7 +35,7 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.tasks.LTask;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.ProgressMessage;
-import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 /**
  * Run 'PRAGMA optimize' on our databases.
@@ -60,7 +60,7 @@ public class OptimizeDbTask
     @Override
     protected Boolean doInBackground(@Nullable final Void... voids) {
         Thread.currentThread().setName(TAG);
-        final Context context = LocaleUtils.applyLocale(App.getTaskContext());
+        final Context context = AppLocale.getInstance().apply(App.getTaskContext());
 
         publishProgress(new ProgressMessage(getTaskId(), context.getString(
                 R.string.progress_msg_optimizing)));

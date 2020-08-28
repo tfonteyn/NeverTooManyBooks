@@ -156,7 +156,7 @@ public abstract class TQTask
     }
 
     protected void storeEvent(@NonNull final TQEvent event) {
-        QueueManager.getQueueManager().storeTaskEvent(mId, event);
+        QueueManager.getInstance().storeTaskEvent(mId, event);
     }
 
     protected void resetRetryCounter() {
@@ -171,7 +171,7 @@ public abstract class TQTask
                                     @NonNull final DAO db) {
         menuItems.add(new ContextDialogItem(
                 context.getString(R.string.gr_tq_menu_delete_task),
-                () -> QueueManager.getQueueManager().deleteTask(getId())));
+                () -> QueueManager.getInstance().deleteTask(getId())));
     }
 
     @Override

@@ -32,8 +32,8 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.tasks.LTask;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
+import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
-import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 
 /**
  * Fetch an image from the {@link FileManager}.
@@ -92,7 +92,7 @@ class FetchImageTask
     @WorkerThread
     protected ImageFileInfo doInBackground(@Nullable final Void... voids) {
         Thread.currentThread().setName(TAG + mIsbn);
-        final Context context = LocaleUtils.applyLocale(App.getTaskContext());
+        final Context context = AppLocale.getInstance().apply(App.getTaskContext());
 
         try {
             return mFileManager.search(context, this, mIsbn, mCIdx, mSizes);

@@ -36,7 +36,7 @@ import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.BooksOnBookshelf;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.Notifier;
 
 /**
@@ -98,7 +98,7 @@ public class GoodreadsAuthorizationActivity
 
         @Override
         protected void onPostExecute(@NonNull final Boolean result) {
-            final Context context = LocaleUtils.applyLocale(App.getAppContext());
+            final Context context = AppLocale.getInstance().apply(App.getAppContext());
 
             if (result) {
                 final PendingIntent pendingIntent = Notifier

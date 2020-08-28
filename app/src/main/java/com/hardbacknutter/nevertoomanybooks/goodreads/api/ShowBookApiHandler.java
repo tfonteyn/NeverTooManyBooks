@@ -44,8 +44,8 @@ import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsAuth;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsManager;
 import com.hardbacknutter.nevertoomanybooks.searches.AuthorTypeMapper;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineBase;
-import com.hardbacknutter.nevertoomanybooks.utils.LanguageUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
+import com.hardbacknutter.nevertoomanybooks.utils.Languages;
 import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.utils.xml.ElementContext;
@@ -254,7 +254,7 @@ public abstract class ShowBookApiHandler
         mEBookString = appContext.getString(R.string.book_format_ebook);
 
         // Ideally we should use the Book locale
-        mBookLocale = LocaleUtils.getUserLocale(appContext);
+        mBookLocale = AppLocale.getInstance().getUserLocale(appContext);
 
         buildFilters();
     }
@@ -367,11 +367,11 @@ public abstract class ShowBookApiHandler
         if (mBookData.containsKey(DBDefinitions.KEY_LANGUAGE)) {
             String source = mBookData.getString(DBDefinitions.KEY_LANGUAGE);
             if (source != null && !source.isEmpty()) {
-                final Locale userLocale = LocaleUtils.getUserLocale(mAppContext);
+                final Locale userLocale = AppLocale.getInstance().getUserLocale(mAppContext);
                 // Goodreads sometimes uses the 2-char code with region code (e.g. "en_GB")
-                source = LanguageUtils.getISO3FromCode(source);
+                source = Languages.getInstance().getISO3FromCode(source);
                 // and sometimes the alternative 3-char code for specific languages.
-                source = LanguageUtils.toBibliographic(userLocale, source);
+                source = Languages.getInstance().toBibliographic(userLocale, source);
                 // store the iso3
                 mBookData.putString(DBDefinitions.KEY_LANGUAGE, source);
             }

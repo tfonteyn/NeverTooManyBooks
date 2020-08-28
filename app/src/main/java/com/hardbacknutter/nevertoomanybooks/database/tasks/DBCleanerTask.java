@@ -37,7 +37,7 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.tasks.LTask;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.ProgressMessage;
-import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 /**
  * Data cleaning. Done on each startup.
@@ -69,8 +69,8 @@ public class DBCleanerTask
     @Override
     protected Boolean doInBackground(@Nullable final Void... voids) {
         Thread.currentThread().setName(TAG);
-        final Context context = LocaleUtils.applyLocale(App.getTaskContext());
-        final Locale userLocale = LocaleUtils.getUserLocale(context);
+        final Context context = AppLocale.getInstance().apply(App.getTaskContext());
+        final Locale userLocale = AppLocale.getInstance().getUserLocale(context);
 
         publishProgress(new ProgressMessage(getTaskId(), context.getString(
                 R.string.progress_msg_optimizing)));

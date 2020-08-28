@@ -345,7 +345,9 @@ public final class ParseUtils {
 
         // we check in order - first match returns.
         // US is used for '.' as decimal; ',' as thousands separator.
-        final Locale[] locales = {sourceLocale, LocaleUtils.getSystemLocale(), Locale.US};
+        final Locale[] locales = {sourceLocale,
+                                  AppLocale.getInstance().getSystemLocale(),
+                                  Locale.US};
         for (Locale locale : locales) {
             try {
                 final Number number = DecimalFormat.getInstance(locale).parse(source);
@@ -426,7 +428,9 @@ public final class ParseUtils {
 
         // we check in order - first match returns.
         // Locale.US is used for '.' as decimal and ',' as thousands separator.
-        final Locale[] locales = {sourceLocale, LocaleUtils.getSystemLocale(), Locale.US};
+        final Locale[] locales = {sourceLocale,
+                                  AppLocale.getInstance().getSystemLocale(),
+                                  Locale.US};
 
         for (Locale locale : locales) {
             try {

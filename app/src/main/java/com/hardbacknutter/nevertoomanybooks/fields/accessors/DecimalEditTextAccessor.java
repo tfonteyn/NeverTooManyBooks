@@ -32,7 +32,7 @@ import java.text.DecimalFormatSymbols;
 import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
-import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 /**
  * For Locales which use ',' as the decimal separator, the input panel only allows '.'.
@@ -101,7 +101,7 @@ public class DecimalEditTextAccessor
 
         DecimalTextWatcher(@NonNull final EditText view) {
             mView = view;
-            final Locale userLocale = LocaleUtils.getUserLocale(mView.getContext());
+            final Locale userLocale = AppLocale.getInstance().getUserLocale(mView.getContext());
             final DecimalFormat nf = (DecimalFormat) DecimalFormat.getInstance(userLocale);
             final DecimalFormatSymbols symbols = nf.getDecimalFormatSymbols();
             mDecimalSeparator = Character.toString(symbols.getDecimalSeparator());
@@ -149,7 +149,7 @@ public class DecimalEditTextAccessor
 //                                            final int digitsBeforeZero,
 //                                            final int digitsAfterZero) {
 //                DecimalFormatSymbols d =
-//                        new DecimalFormatSymbols(LocaleUtils.getUserLocale(context));
+//                        new DecimalFormatSymbols(AppLocale.getUserLocale(context));
 //                String s = "\\\\" + d.getDecimalSeparator();
 //                mPattern = Pattern.compile(
 //                        "[0-9]{0," + (digitsBeforeZero - 1) + "}+"

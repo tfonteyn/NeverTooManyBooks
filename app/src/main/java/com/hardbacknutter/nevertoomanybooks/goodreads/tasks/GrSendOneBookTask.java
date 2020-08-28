@@ -40,7 +40,7 @@ import com.hardbacknutter.nevertoomanybooks.goodreads.GrStatus;
 import com.hardbacknutter.nevertoomanybooks.goodreads.api.Http404Exception;
 import com.hardbacknutter.nevertoomanybooks.goodreads.qtasks.SendOneBookGrTask;
 import com.hardbacknutter.nevertoomanybooks.tasks.VMTask;
-import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.NetworkUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 
@@ -74,7 +74,7 @@ public class GrSendOneBookTask
     @WorkerThread
     protected GrStatus doWork() {
         Thread.currentThread().setName(TAG + mBookId);
-        final Context context = LocaleUtils.applyLocale(App.getTaskContext());
+        final Context context = AppLocale.getInstance().apply(App.getTaskContext());
 
         try {
             if (!NetworkUtils.isNetworkAvailable(context)) {

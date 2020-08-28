@@ -77,7 +77,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
-import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.xml.ElementContext;
 import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlFilter;
@@ -138,7 +138,7 @@ public class XmlImporter
                        final int options) {
         mOptions = options;
         mDb = new DAO(TAG);
-        mUserLocale = LocaleUtils.getUserLocale(context);
+        mUserLocale = AppLocale.getInstance().getUserLocale(context);
     }
 
     @Override

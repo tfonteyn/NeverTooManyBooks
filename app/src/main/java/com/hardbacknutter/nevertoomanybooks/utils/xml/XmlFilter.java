@@ -31,7 +31,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.function.Consumer;
 
-import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 /**
  * A class to help parsing Sax Xml output. For Goodreads XML output, 90% of the XML can be
@@ -70,7 +70,7 @@ public class XmlFilter {
     public XmlFilter(@NonNull final String pattern) {
         mTagName = pattern;
 
-        mSystemLocale = LocaleUtils.getSystemLocale();
+        mSystemLocale = AppLocale.getInstance().getSystemLocale();
     }
 
     /**

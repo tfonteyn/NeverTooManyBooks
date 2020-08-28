@@ -31,8 +31,8 @@ import java.time.format.DateTimeFormatter;
 import com.hardbacknutter.nevertoomanybooks.dialogs.PartialDatePickerDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.fields.accessors.EditTextAccessor;
 import com.hardbacknutter.nevertoomanybooks.fields.accessors.TextAccessor;
+import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.DateParser;
-import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 
 /**
  * FieldFormatter for 'date' fields.
@@ -65,7 +65,7 @@ public class DateFieldFormatter
         if (rawValue == null || rawValue.isEmpty()) {
             return "";
         } else {
-            return LocaleUtils.toPrettyDate(context, rawValue);
+            return AppLocale.getInstance().toPrettyDate(context, rawValue);
         }
     }
 

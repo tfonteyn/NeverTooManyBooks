@@ -38,7 +38,7 @@ import java.util.Map;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
-import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 /**
  * Represent a single title within an TOC(Anthology).
@@ -332,10 +332,10 @@ public class TocEntry
 
     @NonNull
     public String getLabel(@NonNull final Context context) {
-        final Locale userLocale = LocaleUtils.getUserLocale(context);
+        final Locale userLocale = AppLocale.getInstance().getUserLocale(context);
         // overkill...  see the getLocale method for more comments
         // try (DAO db = new DAO(TAG)) {
-        //     locale = getLocale(context, db, LocaleUtils.getUserLocale(context));
+        //     locale = getLocale(context, db, AppLocale.getUserLocale(context));
         // }
         return reorderTitleForDisplaying(context, userLocale);
     }

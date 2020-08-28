@@ -44,7 +44,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.searches.JsoupSearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
-import com.hardbacknutter.nevertoomanybooks.utils.LanguageUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.Languages;
 
 /**
  * Current hardcoded to only search comics; could be extended to also search generic books.
@@ -442,7 +442,8 @@ public class LastDodoSearchEngine
         processText(td, DBDefinitions.KEY_LANGUAGE, bookData);
         String lang = bookData.getString(DBDefinitions.KEY_LANGUAGE);
         if (lang != null && !lang.isEmpty()) {
-            lang = LanguageUtils.getISO3FromDisplayName(mAppContext, getLocale(), lang);
+            lang = Languages
+                    .getInstance().getISO3FromDisplayName(mAppContext, getLocale(), lang);
             bookData.putString(DBDefinitions.KEY_LANGUAGE, lang);
         }
     }

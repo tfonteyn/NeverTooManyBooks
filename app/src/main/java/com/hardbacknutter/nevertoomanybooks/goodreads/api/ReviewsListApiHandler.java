@@ -36,7 +36,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsAuth;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsManager;
 import com.hardbacknutter.nevertoomanybooks.goodreads.api.SimpleXmlFilter.XmlListener;
-import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlFilter;
 import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlResponseParser;
@@ -465,7 +465,8 @@ public class ReviewsListApiHandler
 
         /** Date format used for parsing the date fields. */
         private static final DateTimeFormatter DATE_PARSER = DateTimeFormatter
-                .ofPattern("EEE MMM dd HH:mm:ss ZZZZ yyyy", LocaleUtils.getSystemLocale());
+                .ofPattern("EEE MMM dd HH:mm:ss ZZZZ yyyy",
+                           AppLocale.getInstance().getSystemLocale());
 
         private Review() {
         }

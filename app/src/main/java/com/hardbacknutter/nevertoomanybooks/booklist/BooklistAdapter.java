@@ -74,8 +74,8 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.entities.ItemWithTitle;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
-import com.hardbacknutter.nevertoomanybooks.utils.LanguageUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
+import com.hardbacknutter.nevertoomanybooks.utils.Languages;
 import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 import com.hardbacknutter.nevertoomanybooks.widgets.fastscroller.FastScroller;
 
@@ -150,7 +150,7 @@ public class BooklistAdapter
         coverSizes.recycle();
 
         mInflater = LayoutInflater.from(context);
-        mUserLocale = LocaleUtils.getUserLocale(context);
+        mUserLocale = AppLocale.getInstance().getUserLocale(context);
         mFieldsInUse = new FieldsInUse(context, style);
         mImageCachingEnabled = ImageUtils.isImageCachingEnabled(context);
         mLevelIndent = context.getResources().getDimensionPixelSize(R.dimen.bob_level_indent);
@@ -429,7 +429,7 @@ public class BooklistAdapter
                 if (text == null || text.isEmpty()) {
                     return context.getString(R.string.hint_empty_language);
                 } else {
-                    return LanguageUtils.getDisplayNameFromISO3(context, text);
+                    return Languages.getInstance().getDisplayNameFromISO3(context, text);
                 }
             }
             case BooklistGroup.CONDITION: {
@@ -1095,7 +1095,7 @@ public class BooklistAdapter
         String getPublisherAndPubDateText(@NonNull final DataHolder rowData) {
             final String publicationDate;
             if (mInUse.pubDate) {
-                publicationDate = LocaleUtils.toPrettyDate(
+                publicationDate = AppLocale.getInstance().toPrettyDate(
                         itemView.getContext(), rowData.getString(DBDefinitions.KEY_DATE_PUBLISHED));
             } else {
                 publicationDate = null;
@@ -1412,7 +1412,7 @@ public class BooklistAdapter
             // It should be done using the Series language
             // but as long as we don't store the Series language there is no point
             @Nullable
-            Locale bookLocale = LocaleUtils.getLocale(context, mBookLanguage);
+            Locale bookLocale = AppLocale.getInstance().getLocale(context, mBookLanguage);
             return mAdapter.format(context, mGroupKeyId, text, bookLocale);
         }
     }

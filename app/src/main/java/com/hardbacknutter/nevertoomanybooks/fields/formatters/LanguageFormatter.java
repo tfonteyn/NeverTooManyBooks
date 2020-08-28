@@ -27,8 +27,8 @@ import androidx.annotation.Nullable;
 
 import java.util.Locale;
 
-import com.hardbacknutter.nevertoomanybooks.utils.LanguageUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
+import com.hardbacknutter.nevertoomanybooks.utils.Languages;
 
 /**
  * FieldFormatter for language fields.
@@ -47,7 +47,7 @@ public class LanguageFormatter
         if (rawValue == null || rawValue.isEmpty()) {
             return "";
         } else {
-            return LanguageUtils.getDisplayNameFromISO3(context, rawValue);
+            return Languages.getInstance().getDisplayNameFromISO3(context, rawValue);
         }
     }
 
@@ -59,8 +59,9 @@ public class LanguageFormatter
     @NonNull
     @Override
     public String extract(@NonNull final TextView view) {
-        final Locale userLocale = LocaleUtils.getUserLocale(view.getContext());
+        final Locale userLocale = AppLocale.getInstance().getUserLocale(view.getContext());
         final String text = view.getText().toString().trim();
-        return LanguageUtils.getISO3FromDisplayName(view.getContext(), userLocale, text);
+        return Languages
+                .getInstance().getISO3FromDisplayName(view.getContext(), userLocale, text);
     }
 }

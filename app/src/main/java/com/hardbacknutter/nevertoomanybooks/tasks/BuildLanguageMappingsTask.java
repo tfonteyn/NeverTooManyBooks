@@ -31,8 +31,8 @@ import java.util.Locale;
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
-import com.hardbacknutter.nevertoomanybooks.utils.LanguageUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
+import com.hardbacknutter.nevertoomanybooks.utils.Languages;
 
 /**
  * Build the dedicated SharedPreferences file with the language mappings.
@@ -55,13 +55,13 @@ public class BuildLanguageMappingsTask
     protected Boolean doInBackground(@Nullable final Void... voids) {
         Thread.currentThread().setName(TAG);
         final Context context = App.getTaskContext();
-        final SharedPreferences prefs = LanguageUtils.getLanguageCache(context);
+        final SharedPreferences prefs = Languages.getInstance().getCacheFile(context);
 
         try {
             // the one the user is using our app in (can be different from the system one)
-            createLanguageMappingCache(prefs, LocaleUtils.getUserLocale(context));
+            createLanguageMappingCache(prefs, AppLocale.getInstance().getUserLocale(context));
             // the system default
-            createLanguageMappingCache(prefs, LocaleUtils.getSystemLocale());
+            createLanguageMappingCache(prefs, AppLocale.getInstance().getSystemLocale());
             // Always add English
             createLanguageMappingCache(prefs, Locale.ENGLISH);
 

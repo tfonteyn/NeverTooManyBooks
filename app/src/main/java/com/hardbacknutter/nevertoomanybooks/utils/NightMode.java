@@ -33,22 +33,44 @@ import java.lang.annotation.RetentionPolicy;
 
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 
-public final class NightModeUtils {
+/** Singleton. */
+public class NightMode {
 
     /**
      * We're not using the actual {@link AppCompatDelegate} mode constants
      * due to 'day-night' being different depending on the OS version.
      */
-    private static final int NIGHT_MODE_IS_NOT_SET = -1;
-    private static final int NIGHT_MODE_IS_DAY_NIGHT = 0;
-    private static final int NIGHT_MODE_IS_LIGHT = 1;
-    private static final int NIGHT_MODE_IS_DARK = 2;
+    private static final int MODE_NOT_SET = -1;
+    private static final int MODE_DAY_NIGHT = 0;
+    private static final int MODE_LIGHT = 1;
+    private static final int MODE_DARK = 2;
+
+    /** Singleton. */
+    private static NightMode sInstance;
 
     /** Cache the User-specified theme currently in use. '-1' to force an update at App startup. */
     @NightModeId
-    private static int sCurrentMode = NIGHT_MODE_IS_NOT_SET;
+    private int mCurrentMode = MODE_NOT_SET;
 
-    private NightModeUtils() {
+    /**
+     * Constructor. Use {@link #getInstance()}.
+     */
+    private NightMode() {
+    }
+
+    /**
+     * Get/create the singleton instance.
+     *
+     * @return instance
+     */
+    @NonNull
+    public static NightMode getInstance() {
+        synchronized (NightMode.class) {
+            if (sInstance == null) {
+                sInstance = new NightMode();
+            }
+            return sInstance;
+        }
     }
 
     /**
@@ -59,7 +81,7 @@ public final class NightModeUtils {
      * {@code
      *    public void onCreate(@Nullable final Bundle savedInstanceState) {
      *        // apply the user-preferred Theme before super.onCreate is called.
-     *        applyNightMode(this);
+     *        NightMode.getInstance().apply(this);
      *
      *        super.onCreate(savedInstanceState);
      *    }
@@ -71,15 +93,15 @@ public final class NightModeUtils {
      * @return the applied mode
      */
     @NightModeId
-    public static int applyNightMode(@NonNull final Context context) {
+    public int apply(@NonNull final Context context) {
         // Always read from prefs.
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        sCurrentMode = Prefs.getIntListPref(prefs, Prefs.pk_ui_theme, NIGHT_MODE_IS_DAY_NIGHT);
+        mCurrentMode = Prefs.getIntListPref(prefs, Prefs.pk_ui_theme, MODE_DAY_NIGHT);
 
         final int dnMode;
-        switch (sCurrentMode) {
-            case NIGHT_MODE_IS_NOT_SET:
-            case NIGHT_MODE_IS_DAY_NIGHT:
+        switch (mCurrentMode) {
+            case MODE_NOT_SET:
+            case MODE_DAY_NIGHT:
                 if (Build.VERSION.SDK_INT >= 29) {
                     dnMode = AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM;
                 } else {
@@ -87,30 +109,26 @@ public final class NightModeUtils {
                 }
                 break;
 
-            case NIGHT_MODE_IS_DARK:
+            case MODE_DARK:
                 dnMode = AppCompatDelegate.MODE_NIGHT_YES;
                 break;
 
-            case NIGHT_MODE_IS_LIGHT:
+            case MODE_LIGHT:
             default:
                 dnMode = AppCompatDelegate.MODE_NIGHT_NO;
                 break;
         }
         AppCompatDelegate.setDefaultNightMode(dnMode);
-        return sCurrentMode;
+        return mCurrentMode;
     }
 
-    public static boolean isChanged(@NonNull final SharedPreferences preferences,
-                                    @NightModeId final int mode) {
-        sCurrentMode = Prefs.getIntListPref(preferences, Prefs.pk_ui_theme,
-                                            NIGHT_MODE_IS_DAY_NIGHT);
-        return mode != sCurrentMode;
+    public boolean isChanged(@NonNull final SharedPreferences preferences,
+                             @NightModeId final int mode) {
+        mCurrentMode = Prefs.getIntListPref(preferences, Prefs.pk_ui_theme, MODE_DAY_NIGHT);
+        return mode != mCurrentMode;
     }
 
-    @IntDef({NIGHT_MODE_IS_NOT_SET,
-             NIGHT_MODE_IS_DAY_NIGHT,
-             NIGHT_MODE_IS_DARK,
-             NIGHT_MODE_IS_LIGHT})
+    @IntDef({MODE_NOT_SET, MODE_DAY_NIGHT, MODE_DARK, MODE_LIGHT})
     @Retention(RetentionPolicy.SOURCE)
     public @interface NightModeId {
 

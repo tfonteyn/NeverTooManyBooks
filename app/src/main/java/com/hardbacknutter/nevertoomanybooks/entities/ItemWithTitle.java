@@ -31,7 +31,7 @@ import java.util.Map;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
-import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 /**
  * Encapsulates getting the title and whether to reorder it.
@@ -71,8 +71,8 @@ public interface ItemWithTitle {
         // 3. the user device Locale
         // 4. ENGLISH.
         final Locale[] locales = {titleLocale,
-                                  LocaleUtils.getUserLocale(context),
-                                  LocaleUtils.getSystemLocale(),
+                                  AppLocale.getInstance().getUserLocale(context),
+                                  AppLocale.getInstance().getSystemLocale(),
                                   Locale.ENGLISH};
 
         for (Locale locale : locales) {
@@ -83,7 +83,8 @@ public interface ItemWithTitle {
             String words = LOCALE_PREFIX_MAP.get(locale);
             if (words == null) {
                 // the resources bundle in the language that the book (item) is written in.
-                Resources localeResources = LocaleUtils.getLocalizedResources(context, locale);
+                final Resources localeResources =
+                        AppLocale.getInstance().getLocalizedResources(context, locale);
                 words = localeResources.getString(R.string.pv_reformat_titles_prefixes);
                 LOCALE_PREFIX_MAP.put(locale, words);
             }
@@ -108,7 +109,7 @@ public interface ItemWithTitle {
     static String reorder(@NonNull final Context context,
                           @NonNull final String title,
                           @NonNull final String language) {
-        final Locale locale = LocaleUtils.getLocale(context, language);
+        final Locale locale = AppLocale.getInstance().getLocale(context, language);
         if (locale != null) {
             return reorder(context, title, locale);
         } else {

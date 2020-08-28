@@ -28,7 +28,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 public abstract class MapperBase
         implements Mapper {
@@ -42,7 +42,8 @@ public abstract class MapperBase
 
         String value = bookData.getString(getKey());
         if (value != null && !value.isEmpty()) {
-            final String lcValue = value.toLowerCase(LocaleUtils.getUserLocale(context));
+            final String lcValue = value
+                    .toLowerCase(AppLocale.getInstance().getUserLocale(context));
             final Optional<String> oKey = MAPPER.keySet().stream()
                                                 .filter(lcValue::startsWith)
                                                 .findFirst();

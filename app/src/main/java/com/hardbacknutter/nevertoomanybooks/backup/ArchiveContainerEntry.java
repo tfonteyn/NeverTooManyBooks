@@ -26,7 +26,7 @@ import java.util.regex.Pattern;
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
-import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 /**
  * Supported archive entry types.
@@ -104,7 +104,7 @@ public enum ArchiveContainerEntry {
      */
     @NonNull
     public static ArchiveContainerEntry getType(@NonNull final String entityName) {
-        String name = entityName.toLowerCase(LocaleUtils.getSystemLocale());
+        String name = entityName.toLowerCase(AppLocale.getInstance().getSystemLocale());
 
         if (name.endsWith(".jpg") || name.endsWith(".png")) {
             return Cover;

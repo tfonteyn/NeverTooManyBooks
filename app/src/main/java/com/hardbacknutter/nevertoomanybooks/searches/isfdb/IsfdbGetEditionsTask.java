@@ -32,8 +32,8 @@ import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.tasks.VMTask;
+import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
-import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 
 /**
  * This task is bypassing {@link SearchEngine.AlternativeEditions}
@@ -59,7 +59,7 @@ public class IsfdbGetEditionsTask
     protected List<Edition> doWork()
             throws IOException {
         Thread.currentThread().setName(TAG + mIsbn);
-        final Context context = LocaleUtils.applyLocale(App.getTaskContext());
+        final Context context = AppLocale.getInstance().apply(App.getTaskContext());
 
         final IsfdbSearchEngine searchEngine = new IsfdbSearchEngine(context);
         searchEngine.setCaller(this);

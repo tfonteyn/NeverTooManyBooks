@@ -30,7 +30,7 @@ import java.util.Locale;
 import java.util.Map;
 
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
-import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 /**
  * Details of a database table.
@@ -55,7 +55,7 @@ public class TableInfo {
      */
     public TableInfo(@NonNull final SynchronizedDb db,
                      @NonNull final String tableName) {
-        mSystemLocale = LocaleUtils.getSystemLocale();
+        mSystemLocale = AppLocale.getInstance().getSystemLocale();
 
         mTableName = tableName;
         mColumns = describeTable(db, mTableName);

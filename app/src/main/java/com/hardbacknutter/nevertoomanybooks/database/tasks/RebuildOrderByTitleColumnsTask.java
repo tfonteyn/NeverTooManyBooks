@@ -34,7 +34,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.ItemWithTitle;
 import com.hardbacknutter.nevertoomanybooks.tasks.LTask;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.ProgressMessage;
-import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 /**
  * Rebuild all OrderBy columns. Can take several seconds.
@@ -66,7 +66,7 @@ public class RebuildOrderByTitleColumnsTask
     @WorkerThread
     protected Boolean doInBackground(@Nullable final Void... voids) {
         Thread.currentThread().setName(TAG);
-        final Context context = LocaleUtils.applyLocale(App.getTaskContext());
+        final Context context = AppLocale.getInstance().apply(App.getTaskContext());
 
         // incorrect progress message, but it's half-true.
         publishProgress(new ProgressMessage(getTaskId(), context.getString(

@@ -51,7 +51,7 @@ import com.hardbacknutter.nevertoomanybooks.datamanager.validators.ValidatorExce
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineRegistry;
-import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.Money;
 
 /**
@@ -437,7 +437,7 @@ public class Book
      */
     @NonNull
     public Locale getLocale(@NonNull final Context context) {
-        return getAndUpdateLocale(context, LocaleUtils.getUserLocale(context), false);
+        return getAndUpdateLocale(context, AppLocale.getInstance().getUserLocale(context), false);
     }
 
     /**
@@ -458,7 +458,7 @@ public class Book
         if (contains(DBDefinitions.KEY_LANGUAGE)) {
             final String lang = getString(DBDefinitions.KEY_LANGUAGE);
 
-            bookLocale = LocaleUtils.getLocale(context, lang);
+            bookLocale = AppLocale.getInstance().getLocale(context, lang);
             if (bookLocale == null) {
                 return fallbackLocale;
 
@@ -692,7 +692,7 @@ public class Book
 
         // Handle Language field FIRST, we need it for _OB fields.
         final Locale bookLocale = getAndUpdateLocale(
-                context, LocaleUtils.getUserLocale(context), true);
+                context, AppLocale.getInstance().getUserLocale(context), true);
 
         // Handle TITLE
         if (contains(DBDefinitions.KEY_TITLE)) {

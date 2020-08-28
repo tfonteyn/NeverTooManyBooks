@@ -63,6 +63,7 @@ public abstract class BookSearchBaseFragment
 
     /** Log tag. */
     private static final String TAG = "BookSearchBaseFrag";
+    /** Database Access. */
     DAO mDb;
     SearchCoordinator mCoordinator;
 

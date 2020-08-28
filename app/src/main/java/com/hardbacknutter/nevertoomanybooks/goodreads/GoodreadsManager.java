@@ -51,8 +51,8 @@ import com.hardbacknutter.nevertoomanybooks.goodreads.api.ShelvesListApiHandler;
 import com.hardbacknutter.nevertoomanybooks.goodreads.api.ShowBookApiHandler;
 import com.hardbacknutter.nevertoomanybooks.goodreads.api.ShowBookByIdApiHandler;
 import com.hardbacknutter.nevertoomanybooks.goodreads.api.ShowBookByIsbnApiHandler;
+import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
-import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 
 /**
@@ -260,7 +260,7 @@ public class GoodreadsManager {
         final Collection<String> shelves = new ArrayList<>();
         final Collection<String> canonicalShelves = new ArrayList<>();
 
-        final Locale userLocale = LocaleUtils.getUserLocale(mAppContext);
+        final Locale userLocale = AppLocale.getInstance().getUserLocale(mAppContext);
 
         // Build the list of shelves for the book that we have in the local database
         int exclusiveCount = 0;

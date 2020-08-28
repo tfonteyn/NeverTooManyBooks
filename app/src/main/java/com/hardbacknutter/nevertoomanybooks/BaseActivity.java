@@ -59,8 +59,8 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsAdminFragment;
 import com.hardbacknutter.nevertoomanybooks.settings.SettingsActivity;
 import com.hardbacknutter.nevertoomanybooks.settings.styles.PreferredStylesActivity;
-import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.NightModeUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
+import com.hardbacknutter.nevertoomanybooks.utils.NightMode;
 
 /**
  * Base class for all Activity's (except the startup activity).
@@ -131,7 +131,7 @@ public abstract class BaseActivity
     private String mInitialLocaleSpec;
 
     /** Night-mode at {@link #onCreate} time. */
-    @NightModeUtils.NightModeId
+    @NightMode.NightModeId
     private int mInitialNightModeId;
 
     /** Optional - The side/navigation panel. */
@@ -161,12 +161,12 @@ public abstract class BaseActivity
     @Override
     protected void attachBaseContext(@NonNull final Context base) {
         // apply the user-preferred Locale before onCreate is called.
-        final Context localizedContext = LocaleUtils.applyLocale(base);
+        final Context localizedContext = AppLocale.getInstance().apply(base);
         super.attachBaseContext(localizedContext);
         // preserve, so we can check for changes in onResume.
         final SharedPreferences prefs =
                 PreferenceManager.getDefaultSharedPreferences(localizedContext);
-        mInitialLocaleSpec = LocaleUtils.getPersistedLocaleSpec(prefs);
+        mInitialLocaleSpec = AppLocale.getInstance().getPersistedLocaleSpec(prefs);
     }
 
     /**
@@ -180,7 +180,7 @@ public abstract class BaseActivity
     protected void onCreate(@Nullable final Bundle savedInstanceState) {
         // apply the user-preferred Theme before super.onCreate is called.
         // We preserve it, so we can check for changes in onResume.
-        mInitialNightModeId = NightModeUtils.applyNightMode(this);
+        mInitialNightModeId = NightMode.getInstance().apply(this);
 
         super.onCreate(savedInstanceState);
         onSetContentView();
@@ -308,8 +308,8 @@ public abstract class BaseActivity
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
 
         if (sActivityRecreateStatus == ACTIVITY_REQUIRES_RECREATE
-            || LocaleUtils.isChanged(prefs, mInitialLocaleSpec)
-            || NightModeUtils.isChanged(prefs, mInitialNightModeId)) {
+            || AppLocale.getInstance().isChanged(prefs, mInitialLocaleSpec)
+            || NightMode.getInstance().isChanged(prefs, mInitialNightModeId)) {
 
             sActivityRecreateStatus = ACTIVITY_IS_RECREATING;
             recreate();

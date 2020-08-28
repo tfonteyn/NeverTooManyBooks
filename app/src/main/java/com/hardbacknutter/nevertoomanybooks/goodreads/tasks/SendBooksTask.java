@@ -33,7 +33,7 @@ import com.hardbacknutter.nevertoomanybooks.goodreads.qtasks.SendBooksGrTask;
 import com.hardbacknutter.nevertoomanybooks.goodreads.qtasks.taskqueue.QueueManager;
 import com.hardbacknutter.nevertoomanybooks.goodreads.qtasks.taskqueue.TQTask;
 import com.hardbacknutter.nevertoomanybooks.tasks.VMTask;
-import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.NetworkUtils;
 
 /**
@@ -76,17 +76,17 @@ public class SendBooksTask
     @WorkerThread
     protected GrStatus doWork() {
         Thread.currentThread().setName(TAG);
-        final Context context = LocaleUtils.applyLocale(App.getTaskContext());
+        final Context context = AppLocale.getInstance().apply(App.getTaskContext());
 
         if (!NetworkUtils.isNetworkAvailable(context)) {
             return new GrStatus(GrStatus.FAILED_NETWORK_UNAVAILABLE);
         }
 
         // Check that no other sync-related jobs are queued
-        if (QueueManager.getQueueManager().hasActiveTasks(TQTask.CAT_EXPORT)) {
+        if (QueueManager.getInstance().hasActiveTasks(TQTask.CAT_EXPORT)) {
             return new GrStatus(GrStatus.FAILED_EXPORT_TASK_ALREADY_QUEUED);
         }
-        if (QueueManager.getQueueManager().hasActiveTasks(TQTask.CAT_IMPORT)) {
+        if (QueueManager.getInstance().hasActiveTasks(TQTask.CAT_IMPORT)) {
             return new GrStatus(GrStatus.FAILED_IMPORT_TASK_ALREADY_QUEUED);
         }
 
@@ -101,7 +101,7 @@ public class SendBooksTask
 
         final String desc = context.getString(R.string.gr_title_send_book);
         final TQTask task = new SendBooksGrTask(desc, mFromLastBookId, mUpdatesOnly);
-        QueueManager.getQueueManager().enqueueTask(QueueManager.Q_MAIN, task);
+        QueueManager.getInstance().enqueueTask(QueueManager.Q_MAIN, task);
 
         return new GrStatus(GrStatus.SUCCESS_TASK_QUEUED);
     }

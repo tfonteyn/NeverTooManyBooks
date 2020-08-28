@@ -58,8 +58,8 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineRegistry;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
+import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOKSHELF_NAME;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOK_PUBLISHER_POSITION;
@@ -554,7 +554,7 @@ public final class DBHelper
 
     @Override
     public void onCreate(@NonNull final SQLiteDatabase db) {
-        final Context context = LocaleUtils.applyLocale(App.getAppContext());
+        final Context context = AppLocale.getInstance().apply(App.getAppContext());
 
         final SynchronizedDb syncedDb = new SynchronizedDb(sSynchronizer, db);
 
@@ -693,9 +693,9 @@ public final class DBHelper
                     final String lang = cursor.getString(2);
                     final long pubId;
                     if (!pubs.containsKey(publisherName)) {
-                        Locale locale = LocaleUtils.getLocale(context, lang);
+                        Locale locale = AppLocale.getInstance().getLocale(context, lang);
                         if (locale == null) {
-                            locale = LocaleUtils.getUserLocale(context);
+                            locale = AppLocale.getInstance().getUserLocale(context);
                         }
                         cv.clear();
                         cv.put(KEY_PUBLISHER_NAME, publisherName);

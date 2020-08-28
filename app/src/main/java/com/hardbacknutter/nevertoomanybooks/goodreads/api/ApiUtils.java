@@ -32,7 +32,7 @@ import com.hardbacknutter.nevertoomanybooks.covers.ImageUtils;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsManager;
 import com.hardbacknutter.nevertoomanybooks.searches.goodreads.GoodreadsSearchEngine;
-import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 public final class ApiUtils {
 
@@ -129,7 +129,7 @@ public final class ApiUtils {
         if (url == null) {
             return false;
         }
-        final String name = url.toLowerCase(LocaleUtils.getSystemLocale());
+        final String name = url.toLowerCase(AppLocale.getInstance().getSystemLocale());
         // these string can be part of an image 'name' indicating there is no cover image.
         return !name.contains("nophoto") && !name.contains("nocover");
     }

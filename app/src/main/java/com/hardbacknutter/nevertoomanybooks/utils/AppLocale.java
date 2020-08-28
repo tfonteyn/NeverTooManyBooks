@@ -51,8 +51,7 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 
 /**
- * A fresh and new approach to setting the custom Locale.
- * <p>
+ * Manage the custom Locale our app can run in, independently from the system Locale.
  * <pre>
  *  {@code
  *      public class MyActivity extends AppCompatActivity {
@@ -60,24 +59,26 @@ import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
  *
  *          protected void onCreate(@Nullable final Bundle savedInstanceState) {
  *              super.onCreate(savedInstanceState);
- *              mInitialLocaleSpec = LocaleUtils.getPersistedLocaleSpec(this);
+ *              mInitialLocaleSpec = AppLocale.getInstance().getPersistedLocaleSpec(this);
  *          }
  *
  *          protected void applyLocale(@NonNull final Context base) {
- *              super.applyLocale(LocaleUtils.applyLocale(base));
+ *              super.applyLocale(AppLocale.getInstance().apply(base));
  *          }
  *
  *          protected void onResume() {
  *              super.onResume();
- *              if (LocaleUtils.isChanged(this, mInitialLocaleSpec)) {
+ *              if (AppLocale.getInstance().isChanged(this, mInitialLocaleSpec)) {
  *                  setIsRecreating();
  *              }
  *          }
  *      }
  *  }
  * </pre>
+ * <p>
+ * Singleton.
  */
-public final class LocaleUtils {
+public class AppLocale {
 
     /**
      * Value stored in preferences if the user runs our app in the default device language.
@@ -87,29 +88,157 @@ public final class LocaleUtils {
     @VisibleForTesting
     public static final String SYSTEM_LANGUAGE = "system";
     /** Log tag. */
-    private static final String TAG = "LocaleUtils";
+    private static final String TAG = "AppLocale";
+    /** Singleton. */
+    private static AppLocale sInstance;
     @NonNull
-    private static final Collection<WeakReference<OnLocaleChangedListener>>
+    private final Collection<WeakReference<OnLocaleChangedListener>>
             ON_LOCALE_CHANGED_LISTENERS = new ArrayList<>();
-
     /** Cache for Locales; key: the BOOK language (ISO3). */
-    private static final Map<String, Locale> LOCALE_MAP = new HashMap<>();
-
+    private final Map<String, Locale> LOCALE_MAP = new HashMap<>();
     /**
      * The currently active/preferred user Locale.
-     * See {@link #applyLocale}.
+     * See {@link #apply} for why we keep store it.
      */
     @Nullable
-    private static Locale sPreferredLocale;
+    private Locale sPreferredLocale;
 
     /**
      * Remember the current Locale spec to detect when language is switched.
-     * See {@link #applyLocale}.
+     * See {@link #apply}.
      */
     @NonNull
-    private static String sPreferredLocaleSpec = SYSTEM_LANGUAGE;
+    private String sPreferredLocaleSpec = SYSTEM_LANGUAGE;
 
-    private LocaleUtils() {
+    /**
+     * Constructor. Use {@link #getInstance()}.
+     */
+    private AppLocale() {
+    }
+
+    /**
+     * Get/create the singleton instance.
+     *
+     * @return instance
+     */
+    @NonNull
+    public static AppLocale getInstance() {
+        synchronized (AppLocale.class) {
+            if (sInstance == null) {
+                sInstance = new AppLocale();
+            }
+            return sInstance;
+        }
+    }
+
+    /**
+     * Create a new Locale as specified by the localeSpec string.
+     *
+     * @param localeSpec a Locale specification as used for Android resources;
+     *                   or {@link #SYSTEM_LANGUAGE} to use the system settings
+     *
+     * @return a new Locale
+     */
+    @NonNull
+    Locale create(@Nullable final String localeSpec) {
+
+        if (localeSpec == null || localeSpec.isEmpty() || SYSTEM_LANGUAGE.equals(localeSpec)) {
+            return getSystemLocale();
+        } else {
+            // Create a Locale from a concatenated Locale string (e.g. 'de', 'en_AU')
+            final String[] parts;
+            if (localeSpec.contains("_")) {
+                parts = localeSpec.split("_");
+            } else {
+                parts = localeSpec.split("-");
+            }
+            switch (parts.length) {
+                case 1:
+                    return new Locale(parts[0]);
+                case 2:
+                    return new Locale(parts[0], parts[1]);
+                default:
+                    return new Locale(parts[0], parts[1], parts[2]);
+            }
+        }
+    }
+
+    /**
+     * Return the device Locale.
+     * <p>
+     * When running a JUnit test, this method will always return {@code Locale.ENGLISH}.
+     *
+     * @return Locale
+     */
+    @NonNull
+    public Locale getSystemLocale() {
+        // While running JUnit tests we cannot get access or mock Resources.getSystem(),
+        // ... so we need to cheat.
+        if (BuildConfig.DEBUG /* always */) {
+            if (Logger.isJUnitTest) {
+                return Locale.ENGLISH;
+            }
+        }
+
+        if (Build.VERSION.SDK_INT >= 24) {
+            return Resources.getSystem().getConfiguration().getLocales().get(0);
+        } else {
+            //noinspection deprecation
+            return Resources.getSystem().getConfiguration().locale;
+        }
+    }
+
+    /**
+     * Return the user preferred Locale.
+     * <p>
+     * When running a JUnit test, this method will always use the API 24 getLocales().get(0).
+     *
+     * @param context Current context
+     *
+     * @return Locale
+     */
+    @SuppressLint("NewApi")
+    @NonNull
+    public Locale getUserLocale(@NonNull final Context context) {
+        // While running JUnit tests, we're always mocking the getLocales().get(0) call.
+        if (BuildConfig.DEBUG /* always */) {
+            if (Logger.isJUnitTest) {
+                return context.getResources().getConfiguration().getLocales().get(0);
+            }
+        }
+
+        if (Build.VERSION.SDK_INT >= 24) {
+            return context.getResources().getConfiguration().getLocales().get(0);
+        } else {
+            //noinspection deprecation
+            return context.getResources().getConfiguration().locale;
+        }
+    }
+
+    /**
+     * Load a Resources set for the specified Locale.
+     * This is an expensive lookup; we do not cache the Resources here,
+     * but it's advisable to cache the strings (map of Locale/String for example) being looked up.
+     *
+     * @param context       Current context
+     * @param desiredLocale the desired Locale, e.g. the Locale of a Book,Series,TOC,...
+     *
+     * @return the Resources
+     */
+    @NonNull
+    public Resources getLocalizedResources(@NonNull final Context context,
+                                           @NonNull final Locale desiredLocale) {
+        final Configuration deltaConfig = new Configuration();
+        final String lang = desiredLocale.getLanguage();
+        if (lang.length() == 2) {
+            deltaConfig.setLocale(desiredLocale);
+        } else {
+            // any 3-char code might need to be converted to 2-char be able to find the resource.
+            final String iso = Languages.getInstance().getLocaleIsoFromISO3(context, lang);
+            deltaConfig.setLocale(new Locale(iso));
+        }
+
+        return context.createConfigurationContext(deltaConfig).getResources();
     }
 
     /**
@@ -121,7 +250,7 @@ public final class LocaleUtils {
      * or {@link #SYSTEM_LANGUAGE} to use the system settings
      */
     @NonNull
-    public static String getPersistedLocaleSpec(@NonNull final SharedPreferences preferences) {
+    public String getPersistedLocaleSpec(@NonNull final SharedPreferences preferences) {
         return preferences.getString(Prefs.pk_ui_locale, SYSTEM_LANGUAGE);
     }
 
@@ -133,7 +262,7 @@ public final class LocaleUtils {
      *
      * @return {@code true} if valid
      */
-    private static boolean isValid(@Nullable final Locale locale) {
+    private boolean isValid(@Nullable final Locale locale) {
         if (locale == null) {
             return false;
         }
@@ -183,8 +312,8 @@ public final class LocaleUtils {
      *
      * @return {@code true} if different
      */
-    public static boolean isChanged(@NonNull final SharedPreferences preferences,
-                                    @Nullable final String localeSpec) {
+    public boolean isChanged(@NonNull final SharedPreferences preferences,
+                             @Nullable final String localeSpec) {
         return localeSpec == null || !localeSpec.equals(getPersistedLocaleSpec(preferences));
     }
 
@@ -198,7 +327,7 @@ public final class LocaleUtils {
      * @return updated context
      */
     @NonNull
-    public static Context applyLocale(@NonNull final Context context) {
+    public Context apply(@NonNull final Context context) {
         boolean changed = false;
 
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
@@ -207,7 +336,7 @@ public final class LocaleUtils {
         final String localeSpec = getPersistedLocaleSpec(prefs);
         if (sPreferredLocale == null || !sPreferredLocaleSpec.equals(localeSpec)) {
             sPreferredLocaleSpec = localeSpec;
-            sPreferredLocale = createLocale(localeSpec);
+            sPreferredLocale = create(localeSpec);
             changed = true;
         }
 
@@ -232,92 +361,12 @@ public final class LocaleUtils {
     }
 
     /**
-     * Create a new Locale as specified by the localeSpec string.
-     *
-     * @param localeSpec a Locale specification as used for Android resources;
-     *                   or {@link #SYSTEM_LANGUAGE} to use the system settings
-     *
-     * @return a new Locale
-     */
-    @NonNull
-    static Locale createLocale(@Nullable final String localeSpec) {
-
-        if (localeSpec == null || localeSpec.isEmpty() || SYSTEM_LANGUAGE.equals(localeSpec)) {
-            return getSystemLocale();
-        } else {
-            // Create a Locale from a concatenated Locale string (e.g. 'de', 'en_AU')
-            final String[] parts;
-            if (localeSpec.contains("_")) {
-                parts = localeSpec.split("_");
-            } else {
-                parts = localeSpec.split("-");
-            }
-            switch (parts.length) {
-                case 1:
-                    return new Locale(parts[0]);
-                case 2:
-                    return new Locale(parts[0], parts[1]);
-                default:
-                    return new Locale(parts[0], parts[1], parts[2]);
-            }
-        }
-    }
-
-    /**
-     * Return the device Locale.
-     * <p>
-     * When running a JUnit test, this method will always return {@code Locale.ENGLISH}.
-     *
-     * @return Locale
-     */
-    @NonNull
-    public static Locale getSystemLocale() {
-        // While running JUnit tests we cannot get access or mock Resources.getSystem(),
-        // ... so we need to cheat.
-        if (BuildConfig.DEBUG && Logger.isJUnitTest) {
-            return Locale.ENGLISH;
-        }
-
-        if (Build.VERSION.SDK_INT >= 24) {
-            return Resources.getSystem().getConfiguration().getLocales().get(0);
-        } else {
-            //noinspection deprecation
-            return Resources.getSystem().getConfiguration().locale;
-        }
-    }
-
-    /**
-     * Return the user preferred Locale.
-     * <p>
-     * When running a JUnit test, this method will always use the API 24 getLocales().get(0).
-     *
-     * @param context Current context
-     *
-     * @return Locale
-     */
-    @SuppressLint("NewApi")
-    @NonNull
-    public static Locale getUserLocale(@NonNull final Context context) {
-        // While running JUnit tests, we're mocking the getLocales().get(0) call.
-        if (BuildConfig.DEBUG && Logger.isJUnitTest) {
-            return context.getResources().getConfiguration().getLocales().get(0);
-        }
-
-        if (Build.VERSION.SDK_INT >= 24) {
-            return context.getResources().getConfiguration().getLocales().get(0);
-        } else {
-            //noinspection deprecation
-            return context.getResources().getConfiguration().locale;
-        }
-    }
-
-    /**
      * Add the specified listener. There is no protection against adding twice.
      *
      * @param listener to add
      */
     @SuppressWarnings({"unused", "WeakerAccess"})
-    public static void registerOnLocaleChangedListener(
+    public void registerOnLocaleChangedListener(
             @NonNull final OnLocaleChangedListener listener) {
         synchronized (ON_LOCALE_CHANGED_LISTENERS) {
             ON_LOCALE_CHANGED_LISTENERS.add(new WeakReference<>(listener));
@@ -330,7 +379,7 @@ public final class LocaleUtils {
      * @param listener to remove
      */
     @SuppressWarnings("unused")
-    public static void unregisterOnLocaleChangedListener(
+    public void unregisterOnLocaleChangedListener(
             @NonNull final OnLocaleChangedListener listener) {
         synchronized (ON_LOCALE_CHANGED_LISTENERS) {
             Iterator<WeakReference<OnLocaleChangedListener>> it =
@@ -348,7 +397,7 @@ public final class LocaleUtils {
     /**
      * Broadcast to registered listener. Dead listeners are removed.
      */
-    private static void onLocaleChanged(@NonNull final Context context) {
+    private void onLocaleChanged(@NonNull final Context context) {
         synchronized (ON_LOCALE_CHANGED_LISTENERS) {
             Iterator<WeakReference<OnLocaleChangedListener>> it =
                     ON_LOCALE_CHANGED_LISTENERS.iterator();
@@ -380,27 +429,27 @@ public final class LocaleUtils {
      * OR {@code null} if the inputLang was invalid.
      */
     @Nullable
-    public static Locale getLocale(@NonNull final Context context,
-                                   @NonNull final String inputLang) {
+    public Locale getLocale(@NonNull final Context context,
+                            @NonNull final String inputLang) {
 
         if (inputLang.isEmpty()) {
             return null;
         }
 
-        final Locale userLocale = LocaleUtils.getUserLocale(context);
+        final Locale userLocale = getUserLocale(context);
         String lang = inputLang.trim().toLowerCase(userLocale);
         final int len = lang.length();
         if (len > 3) {
-            lang = LanguageUtils.getISO3FromDisplayName(context, userLocale, lang);
+            lang = Languages.getInstance().getISO3FromDisplayName(context, userLocale, lang);
         }
 
         // THIS IS A MUST
-        lang = LanguageUtils.getLocaleIsoFromISO3(context, lang);
+        lang = Languages.getInstance().getLocaleIsoFromISO3(context, lang);
 
         // lang should now be an ISO (2 or 3 characters) code (or an invalid string)
         Locale locale = LOCALE_MAP.get(lang);
         if (locale == null) {
-            locale = createLocale(lang);
+            locale = create(lang);
             if (isValid(locale)) {
                 LOCALE_MAP.put(lang, locale);
             } else {
@@ -409,31 +458,6 @@ public final class LocaleUtils {
         }
 
         return locale;
-    }
-
-    /**
-     * Load a Resources set for the specified Locale.
-     * This is an expensive lookup; we do not cache the Resources here,
-     * but it's advisable to cache the strings (map of Locale/String for example) being looked up.
-     *
-     * @param context       Current context
-     * @param desiredLocale the desired Locale, e.g. the Locale of a Book,Series,TOC,...
-     *
-     * @return the Resources
-     */
-    @NonNull
-    public static Resources getLocalizedResources(@NonNull final Context context,
-                                                  @NonNull final Locale desiredLocale) {
-        final Configuration deltaConfig = new Configuration();
-        final String lang = desiredLocale.getLanguage();
-        if (lang.length() == 2) {
-            deltaConfig.setLocale(desiredLocale);
-        } else {
-            // any 3-char code might need to be converted to 2-char be able to find the resource.
-            deltaConfig.setLocale(new Locale(LanguageUtils.getLocaleIsoFromISO3(context, lang)));
-        }
-
-        return context.createConfigurationContext(deltaConfig).getResources();
     }
 
     /**
@@ -449,8 +473,8 @@ public final class LocaleUtils {
      * @return human readable date string.
      */
     @NonNull
-    public static String toPrettyDate(@NonNull final Context context,
-                                      @NonNull final String isoDateStr) {
+    public String toPrettyDate(@NonNull final Context context,
+                               @NonNull final String isoDateStr) {
         final int len = isoDateStr.length();
 
         // YYYY-MM

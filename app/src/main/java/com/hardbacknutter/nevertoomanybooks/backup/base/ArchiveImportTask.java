@@ -31,7 +31,7 @@ import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportManager;
 import com.hardbacknutter.nevertoomanybooks.tasks.VMTask;
-import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 /**
  * Input: {@link ImportManager}.
@@ -65,7 +65,7 @@ public class ArchiveImportTask
     protected ImportManager doWork()
             throws IOException, ImportException, InvalidArchiveException {
         Thread.currentThread().setName(TAG);
-        final Context context = LocaleUtils.applyLocale(App.getTaskContext());
+        final Context context = AppLocale.getInstance().apply(App.getTaskContext());
 
         try (ArchiveReader reader = mHelper.getArchiveReader(context)) {
             mHelper.setResults(reader.read(context, this));

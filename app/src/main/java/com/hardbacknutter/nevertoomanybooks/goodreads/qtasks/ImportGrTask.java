@@ -67,9 +67,9 @@ import com.hardbacknutter.nevertoomanybooks.goodreads.qtasks.taskqueue.QueueMana
 import com.hardbacknutter.nevertoomanybooks.goodreads.qtasks.taskqueue.TQTask;
 import com.hardbacknutter.nevertoomanybooks.searches.AuthorTypeMapper;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
+import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.DateParser;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 
 /**
@@ -151,7 +151,7 @@ public class ImportGrTask
      */
     @Override
     public boolean run(@NonNull final QueueManager queueManager) {
-        final Context context = LocaleUtils.applyLocale(App.getTaskContext());
+        final Context context = AppLocale.getInstance().apply(App.getTaskContext());
         try (DAO db = new DAO(TAG)) {
             // Load the Goodreads reviews
             final boolean ok = importReviews(context, db, queueManager);
@@ -160,7 +160,7 @@ public class ImportGrTask
             if (mIsSync) {
                 final String desc = context.getString(R.string.gr_title_send_book);
                 final TQTask task = new SendBooksGrTask(desc, false, true);
-                QueueManager.getQueueManager().enqueueTask(QueueManager.Q_MAIN, task);
+                QueueManager.getInstance().enqueueTask(QueueManager.Q_MAIN, task);
 
                 final String lastSyncDateStr;
                 if (mStartDate != null) {
@@ -616,7 +616,7 @@ public class ImportGrTask
         final ArrayList<Bundle> grShelves = goodreadsData.getParcelableArrayList(Review.SHELVES);
         if (grShelves != null) {
             // Explicitly use the user locale to handle shelf names
-            final Locale userLocale = LocaleUtils.getUserLocale(context);
+            final Locale userLocale = AppLocale.getInstance().getUserLocale(context);
 
             final ArrayList<Bookshelf> bookshelfList =
                     localData.getParcelableArrayList(Book.BKEY_BOOKSHELF_ARRAY);

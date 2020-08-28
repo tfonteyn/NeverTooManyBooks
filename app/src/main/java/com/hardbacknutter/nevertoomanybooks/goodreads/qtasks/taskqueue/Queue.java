@@ -30,7 +30,7 @@ import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.goodreads.qtasks.BaseTQTask;
 import com.hardbacknutter.nevertoomanybooks.goodreads.qtasks.taskqueue.QueueDAO.ScheduledTask;
-import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 /**
  * Represents a thread that runs tasks from a related named queue.
@@ -93,7 +93,7 @@ class Queue
      * Main worker thread logic.
      */
     public void run() {
-        final Context context = LocaleUtils.applyLocale(App.getTaskContext());
+        final Context context = AppLocale.getInstance().apply(App.getTaskContext());
         try (QueueDAO queueDAO = new QueueDAO(context)) {
             while (!mTerminate) {
                 final ScheduledTask scheduledTask;

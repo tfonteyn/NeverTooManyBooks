@@ -38,7 +38,7 @@ import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditPublisherBindi
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.dialogs.BaseDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
-import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.widgets.DiacriticArrayAdapter;
 
 /**
@@ -148,7 +148,7 @@ public class EditPublisherDialogFragment
 
         // There is no book involved here, so use the users Locale instead
         //noinspection ConstantConditions
-        final Locale bookLocale = LocaleUtils.getUserLocale(getContext());
+        final Locale bookLocale = AppLocale.getInstance().getUserLocale(getContext());
 
         // store changes
         mPublisher.setName(mName);

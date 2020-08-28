@@ -40,7 +40,7 @@ import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
-import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 /**
  * A registry of all {@link SearchEngine} classes and their {@link SearchEngine.Configuration}.
@@ -57,8 +57,8 @@ public final class SearchEngineRegistry {
 
         SearchSites.registerSearchEngineClasses();
 
-        final Locale systemLocale = LocaleUtils.getSystemLocale();
-        final Locale userLocale = LocaleUtils.getUserLocale(context);
+        final Locale systemLocale = AppLocale.getInstance().getSystemLocale();
+        final Locale userLocale = AppLocale.getInstance().getUserLocale(context);
 
         for (Site.Type type : Site.Type.values()) {
             type.createList(context, systemLocale, userLocale);

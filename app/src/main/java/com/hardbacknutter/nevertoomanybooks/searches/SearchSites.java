@@ -38,7 +38,7 @@ import com.hardbacknutter.nevertoomanybooks.searches.librarything.LibraryThingSe
 import com.hardbacknutter.nevertoomanybooks.searches.openlibrary.OpenLibrarySearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searches.stripinfo.StripInfoSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.settings.sites.IsfdbPreferencesFragment;
-import com.hardbacknutter.nevertoomanybooks.utils.LanguageUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.Languages;
 
 /**
  * Manages the setup of {@link SearchEngine}'s.
@@ -166,7 +166,8 @@ public final class SearchSites {
         // Certain sites are only enabled by default if the device or user set language
         // matches the site language.
         // Dutch websites:
-        final boolean enableIfDutch = LanguageUtils.isLang(systemLocale, userLocale, "nld");
+        final boolean enableIfDutch = Languages
+                .getInstance().isLang(systemLocale, userLocale, "nld");
 
         //NEWTHINGS: add new search engine: add to the 3 lists as needed.
 

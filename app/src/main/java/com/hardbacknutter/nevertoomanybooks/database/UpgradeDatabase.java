@@ -34,7 +34,7 @@ import com.hardbacknutter.nevertoomanybooks.database.definitions.ColumnInfo;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.TableInfo;
-import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 final class UpgradeDatabase {
 
@@ -162,7 +162,7 @@ final class UpgradeDatabase {
                      + ',' + source.getName() + " FROM " + table.getName(),
                      null)) {
 
-            final Locale userLocale = LocaleUtils.getUserLocale(context);
+            final Locale userLocale = AppLocale.getInstance().getUserLocale(context);
             while (cursor.moveToNext()) {
                 final long id = cursor.getLong(0);
                 final String in = cursor.getString(1);

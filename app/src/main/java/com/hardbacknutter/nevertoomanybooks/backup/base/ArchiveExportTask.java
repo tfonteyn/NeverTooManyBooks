@@ -33,7 +33,7 @@ import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportManager;
 import com.hardbacknutter.nevertoomanybooks.tasks.VMTask;
-import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 /**
  * Input: {@link ExportManager}.
@@ -77,7 +77,7 @@ public class ArchiveExportTask
     protected ExportManager doWork()
             throws IOException {
         Thread.currentThread().setName(TAG);
-        final Context context = LocaleUtils.applyLocale(App.getTaskContext());
+        final Context context = AppLocale.getInstance().apply(App.getTaskContext());
 
         //noinspection ConstantConditions
         try (ArchiveWriter exporter = mHelper.getArchiveWriter(context)) {
