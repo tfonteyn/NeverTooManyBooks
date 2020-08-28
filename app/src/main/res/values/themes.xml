@@ -71,8 +71,8 @@ TODO: these + the night variants need optimizing.
         <item name="appBookCardBackgroundColor">@color/grey_50</item>
 
         <!-- gradient used in the Navigation side bar. -->
-        <item name="appNavBarColorStart">@color/blue_grey_400</item>
-        <item name="appNavBarColorCenter">@color/blue_grey_100</item>
+        <item name="appNavBarColorStart">@color/blue_grey_500</item>
+        <item name="appNavBarColorCenter">@color/blue_grey_300</item>
         <item name="appNavBarColorEnd">@color/blue_grey_50</item>
     </style>
 
