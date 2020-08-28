@@ -239,6 +239,7 @@ public class DAO
      */
     public static final String _COLLATION = " Collate LOCALIZED";
 
+    private static final String SELECT_DISTINCT_ = "SELECT DISTINCT ";
     private static final String SELECT_ = "SELECT ";
     private static final String _AS_ = " AS ";
     private static final String _FROM_ = " FROM ";
@@ -955,7 +956,8 @@ public class DAO
      * @param bookId  of the book
      * @param list    the list of bookshelves
      *
-     * @throws DaoWriteException on failure
+     * @throws DaoWriteException    on failure
+     * @throws TransactionException a transaction must be started before calling this method
      */
     private void insertBookBookshelf(@NonNull final Context context,
                                      @IntRange(from = 1) final long bookId,
@@ -1038,7 +1040,8 @@ public class DAO
      * @param bookLocale   Locale to use if the item has none set,
      *                     or if lookupLocale was {@code false}
      *
-     * @throws DaoWriteException on failure
+     * @throws DaoWriteException    on failure
+     * @throws TransactionException a transaction must be started before calling this method
      */
     void insertBookAuthors(@NonNull final Context context,
                            final long bookId,
@@ -1127,7 +1130,8 @@ public class DAO
      * @param bookLocale   Locale to use if the item has none set,
      *                     or if lookupLocale was {@code false}
      *
-     * @throws DaoWriteException on failure
+     * @throws DaoWriteException    on failure
+     * @throws TransactionException a transaction must be started before calling this method
      */
     void insertBookSeries(@NonNull final Context context,
                           final long bookId,
@@ -1216,7 +1220,8 @@ public class DAO
      * @param bookLocale   Locale to use if the item has none set,
      *                     or if lookupLocale was {@code false}
      *
-     * @throws DaoWriteException on failure
+     * @throws DaoWriteException    on failure
+     * @throws TransactionException a transaction must be started before calling this method
      */
     void insertBookPublishers(@NonNull final Context context,
                               final long bookId,
@@ -1742,7 +1747,8 @@ public class DAO
      * @param bookLocale   Locale to use if the item has none set,
      *                     or if lookupLocale was {@code false}
      *
-     * @throws DaoWriteException on failure
+     * @throws DaoWriteException    on failure
+     * @throws TransactionException a transaction must be started before calling this method
      */
     void saveTocList(@NonNull final Context context,
                      final long bookId,
@@ -1974,7 +1980,7 @@ public class DAO
         SynchronizedStatement stmt = mSqlStatementManager.get(STMT_GET_LOANEE_BY_BOOK_ID);
         if (stmt == null) {
             stmt = mSqlStatementManager.add(STMT_GET_LOANEE_BY_BOOK_ID,
-                                            SqlGetById.LOANEE_BY_BOOK_ID);
+                                            SqlGet.LOANEE_BY_BOOK_ID);
         }
         //noinspection SynchronizationOnLocalVariableOrMethodParameter
         synchronized (stmt) {
@@ -2383,6 +2389,7 @@ public class DAO
      */
     @NonNull
     public Cursor fetchBookshelves() {
+        // >0: the user created shelves.
         String sql = SqlSelectFullTable.BOOKSHELVES
                      + _WHERE_ + TBL_BOOKSHELF.dot(KEY_PK_ID) + ">0"
                      + _ORDER_BY_ + KEY_BOOKSHELF_NAME + _COLLATION;
@@ -2694,7 +2701,7 @@ public class DAO
         SynchronizedStatement stmt = mSqlStatementManager.get(STMT_GET_BOOKSHELF_ID_BY_NAME);
         if (stmt == null) {
             stmt = mSqlStatementManager.add(STMT_GET_BOOKSHELF_ID_BY_NAME,
-                                            SqlGet.BOOKSHELF_ID_BY_NAME);
+                                            SqlGetId.BOOKSHELF_ID_BY_NAME);
         }
         //noinspection SynchronizationOnLocalVariableOrMethodParameter
         synchronized (stmt) {
@@ -2714,7 +2721,7 @@ public class DAO
      */
     @Nullable
     public Bookshelf getBookshelf(final long id) {
-        try (Cursor cursor = sSyncedDb.rawQuery(SqlGetById.BOOKSHELF,
+        try (Cursor cursor = sSyncedDb.rawQuery(SqlGet.BOOKSHELF,
                                                 new String[]{String.valueOf(id)})) {
             if (cursor.moveToFirst()) {
                 return new Bookshelf(id, new CursorRow(cursor));
@@ -2753,7 +2760,7 @@ public class DAO
 
         SynchronizedStatement stmt = mSqlStatementManager.get(STMT_GET_AUTHOR_ID);
         if (stmt == null) {
-            stmt = mSqlStatementManager.add(STMT_GET_AUTHOR_ID, SqlGet.AUTHOR_ID_BY_NAME);
+            stmt = mSqlStatementManager.add(STMT_GET_AUTHOR_ID, SqlGetId.AUTHOR_ID_BY_NAME);
         }
 
         //noinspection SynchronizationOnLocalVariableOrMethodParameter
@@ -2773,7 +2780,7 @@ public class DAO
      */
     @Nullable
     public Author getAuthor(final long id) {
-        try (Cursor cursor = sSyncedDb.rawQuery(SqlGetById.AUTHOR,
+        try (Cursor cursor = sSyncedDb.rawQuery(SqlGet.AUTHOR,
                                                 new String[]{String.valueOf(id)})) {
             if (cursor.moveToFirst()) {
                 return new Author(id, new CursorRow(cursor));
@@ -2809,7 +2816,7 @@ public class DAO
 
         SynchronizedStatement stmt = mSqlStatementManager.get(STMT_GET_SERIES_ID);
         if (stmt == null) {
-            stmt = mSqlStatementManager.add(STMT_GET_SERIES_ID, SqlGet.SERIES_ID_BY_NAME);
+            stmt = mSqlStatementManager.add(STMT_GET_SERIES_ID, SqlGetId.SERIES_ID_BY_NAME);
         }
 
         final String obTitle = series.reorderTitleForSorting(context, seriesLocale);
@@ -2831,7 +2838,7 @@ public class DAO
      */
     @Nullable
     public Series getSeries(final long id) {
-        try (Cursor cursor = sSyncedDb.rawQuery(SqlGetById.SERIES,
+        try (Cursor cursor = sSyncedDb.rawQuery(SqlGet.SERIES,
                                                 new String[]{String.valueOf(id)})) {
             if (cursor.moveToFirst()) {
                 final DataHolder rowData = new CursorRow(cursor);
@@ -2868,7 +2875,7 @@ public class DAO
 
         SynchronizedStatement stmt = mSqlStatementManager.get(STMT_GET_PUBLISHER_ID);
         if (stmt == null) {
-            stmt = mSqlStatementManager.add(STMT_GET_PUBLISHER_ID, SqlGet.PUBLISHER_ID_BY_NAME);
+            stmt = mSqlStatementManager.add(STMT_GET_PUBLISHER_ID, SqlGetId.PUBLISHER_ID_BY_NAME);
         }
 
         final String obTitle = publisher.reorderTitleForSorting(context, publisherLocale);
@@ -2890,7 +2897,7 @@ public class DAO
      */
     @Nullable
     public Publisher getPublisher(final long id) {
-        try (Cursor cursor = sSyncedDb.rawQuery(SqlGetById.PUBLISHER,
+        try (Cursor cursor = sSyncedDb.rawQuery(SqlGet.PUBLISHER,
                                                 new String[]{String.valueOf(id)})) {
             if (cursor.moveToFirst()) {
                 final DataHolder rowData = new CursorRow(cursor);
@@ -2912,7 +2919,7 @@ public class DAO
     @NonNull
     public ArrayList<Long> getBookIdsByAuthor(final long authorId) {
         final ArrayList<Long> list = new ArrayList<>();
-        try (Cursor cursor = sSyncedDb.rawQuery(SqlSelectList.BOOK_IDS_BY_AUTHOR_ID,
+        try (Cursor cursor = sSyncedDb.rawQuery(SqlSelect.BOOK_IDS_BY_AUTHOR_ID,
                                                 new String[]{String.valueOf(authorId)})) {
             while (cursor.moveToNext()) {
                 list.add(cursor.getLong(0));
@@ -2931,7 +2938,7 @@ public class DAO
     @NonNull
     public ArrayList<Long> getBookIdsBySeries(final long seriesId) {
         final ArrayList<Long> list = new ArrayList<>();
-        try (Cursor cursor = sSyncedDb.rawQuery(SqlSelectList.BOOK_IDS_BY_SERIES_ID,
+        try (Cursor cursor = sSyncedDb.rawQuery(SqlSelect.BOOK_IDS_BY_SERIES_ID,
                                                 new String[]{String.valueOf(seriesId)})) {
             while (cursor.moveToNext()) {
                 list.add(cursor.getLong(0));
@@ -2950,7 +2957,7 @@ public class DAO
     @NonNull
     public ArrayList<Long> getBookIdsByPublisher(final long publisherId) {
         final ArrayList<Long> list = new ArrayList<>();
-        try (Cursor cursor = sSyncedDb.rawQuery(SqlSelectList.BOOK_IDS_BY_PUBLISHER_ID,
+        try (Cursor cursor = sSyncedDb.rawQuery(SqlSelect.BOOK_IDS_BY_PUBLISHER_ID,
                                                 new String[]{String.valueOf(publisherId)})) {
             while (cursor.moveToNext()) {
                 list.add(cursor.getLong(0));
@@ -2969,7 +2976,7 @@ public class DAO
     @NonNull
     public ArrayList<Long> getBookIdsByTocEntry(final long tocId) {
         final ArrayList<Long> list = new ArrayList<>();
-        try (Cursor cursor = sSyncedDb.rawQuery(SqlSelectList.BOOK_ID_LIST_BY_TOC_ENTRY_ID,
+        try (Cursor cursor = sSyncedDb.rawQuery(SqlSelect.BOOK_ID_LIST_BY_TOC_ENTRY_ID,
                                                 new String[]{String.valueOf(tocId)})) {
             while (cursor.moveToNext()) {
                 list.add(cursor.getLong(0));
@@ -2990,9 +2997,7 @@ public class DAO
         // if the string is ISBN-10 compatible, i.e. an actual ISBN-10,
         // or an ISBN-13 in the 978 range, we search on both formats
         if (isbn.isIsbn10Compat()) {
-            // the asText for ISBN10/ISBN13 is always uppercase
-            // URGENT: is this true? and their values in the database are also always uppercase.
-            try (Cursor cursor = sSyncedDb.rawQuery(SqlSelectList.BY_VALID_ISBN,
+            try (Cursor cursor = sSyncedDb.rawQuery(SqlSelect.BY_VALID_ISBN,
                                                     new String[]{isbn.asText(ISBN.TYPE_ISBN10),
                                                                  isbn.asText(ISBN.TYPE_ISBN13)})) {
                 while (cursor.moveToNext()) {
@@ -3004,8 +3009,7 @@ public class DAO
         } else {
             // otherwise just search on the string as-is; regardless of validity
             // (this would actually include valid ISBN-13 in the 979 range).
-
-            try (Cursor cursor = sSyncedDb.rawQuery(SqlSelectList.BY_ISBN,
+            try (Cursor cursor = sSyncedDb.rawQuery(SqlSelect.BY_ISBN,
                                                     new String[]{isbn.asText()})) {
                 while (cursor.moveToNext()) {
                     list.add(cursor.getLong(0));
@@ -3045,7 +3049,7 @@ public class DAO
     public long getBookIdFromUuid(@NonNull final String uuid) {
         SynchronizedStatement stmt = mSqlStatementManager.get(STMT_GET_BOOK_ID_FROM_UUID);
         if (stmt == null) {
-            stmt = mSqlStatementManager.add(STMT_GET_BOOK_ID_FROM_UUID, SqlGetBookId.BY_UUID);
+            stmt = mSqlStatementManager.add(STMT_GET_BOOK_ID_FROM_UUID, SqlGetId.BY_UUID);
         }
 
         //noinspection SynchronizationOnLocalVariableOrMethodParameter
@@ -3070,7 +3074,7 @@ public class DAO
         }
         SynchronizedStatement stmt = mSqlStatementManager.get(STMT_GET_BOOK_UUID);
         if (stmt == null) {
-            stmt = mSqlStatementManager.add(STMT_GET_BOOK_UUID, SqlGetById.BOOK_UUID_BY_ID);
+            stmt = mSqlStatementManager.add(STMT_GET_BOOK_UUID, SqlGet.BOOK_UUID_BY_ID);
         }
         //noinspection SynchronizationOnLocalVariableOrMethodParameter
         synchronized (stmt) {
@@ -3090,7 +3094,7 @@ public class DAO
     public String getBookTitle(final long bookId) {
         SynchronizedStatement stmt = mSqlStatementManager.get(STMT_GET_BOOK_TITLE);
         if (stmt == null) {
-            stmt = mSqlStatementManager.add(STMT_GET_BOOK_TITLE, SqlGetById.BOOK_TITLE_BY_BOOK_ID);
+            stmt = mSqlStatementManager.add(STMT_GET_BOOK_TITLE, SqlGet.BOOK_TITLE_BY_BOOK_ID);
         }
         //noinspection SynchronizationOnLocalVariableOrMethodParameter
         synchronized (stmt) {
@@ -3110,7 +3114,7 @@ public class DAO
     public String getBookIsbn(final long bookId) {
         SynchronizedStatement stmt = mSqlStatementManager.get(STMT_GET_BOOK_ISBN);
         if (stmt == null) {
-            stmt = mSqlStatementManager.add(STMT_GET_BOOK_ISBN, SqlGetById.BOOK_ISBN_BY_BOOK_ID);
+            stmt = mSqlStatementManager.add(STMT_GET_BOOK_ISBN, SqlGet.BOOK_ISBN_BY_BOOK_ID);
         }
         //noinspection SynchronizationOnLocalVariableOrMethodParameter
         synchronized (stmt) {
@@ -3134,7 +3138,7 @@ public class DAO
         SynchronizedStatement stmt = mSqlStatementManager.get(STMT_GET_BOOK_UPDATE_DATE);
         if (stmt == null) {
             stmt = mSqlStatementManager.add(STMT_GET_BOOK_UPDATE_DATE,
-                                            SqlSelect.LAST_UPDATE_DATE_BY_BOOK_ID);
+                                            SqlGet.LAST_UPDATE_DATE_BY_BOOK_ID);
         }
 
         //noinspection SynchronizationOnLocalVariableOrMethodParameter
@@ -3155,7 +3159,7 @@ public class DAO
     @NonNull
     public ArrayList<Author> getAuthorsByBookId(final long bookId) {
         final ArrayList<Author> list = new ArrayList<>();
-        try (Cursor cursor = sSyncedDb.rawQuery(SqlSelectList.AUTHORS_BY_BOOK_ID,
+        try (Cursor cursor = sSyncedDb.rawQuery(SqlSelect.AUTHORS_BY_BOOK_ID,
                                                 new String[]{String.valueOf(bookId)})) {
             final DataHolder rowData = new CursorRow(cursor);
             while (cursor.moveToNext()) {
@@ -3175,7 +3179,7 @@ public class DAO
     @NonNull
     public ArrayList<Series> getSeriesByBookId(final long bookId) {
         final ArrayList<Series> list = new ArrayList<>();
-        try (Cursor cursor = sSyncedDb.rawQuery(SqlSelectList.SERIES_BY_BOOK_ID,
+        try (Cursor cursor = sSyncedDb.rawQuery(SqlSelect.SERIES_BY_BOOK_ID,
                                                 new String[]{String.valueOf(bookId)})) {
             final DataHolder rowData = new CursorRow(cursor);
             while (cursor.moveToNext()) {
@@ -3195,7 +3199,7 @@ public class DAO
      */
     @NonNull
     public String getSeriesLanguage(final long id) {
-        try (Cursor cursor = sSyncedDb.rawQuery(SqlSelect.SERIES_LANGUAGE,
+        try (Cursor cursor = sSyncedDb.rawQuery(SqlGet.SERIES_LANGUAGE,
                                                 new String[]{String.valueOf(id)})) {
             if (cursor.moveToFirst()) {
                 return cursor.getString(0);
@@ -3214,7 +3218,7 @@ public class DAO
     @NonNull
     public ArrayList<Publisher> getPublishersByBookId(final long bookId) {
         final ArrayList<Publisher> list = new ArrayList<>();
-        try (Cursor cursor = sSyncedDb.rawQuery(SqlSelectList.PUBLISHER_BY_BOOK_ID,
+        try (Cursor cursor = sSyncedDb.rawQuery(SqlSelect.PUBLISHER_BY_BOOK_ID,
                                                 new String[]{String.valueOf(bookId)})) {
             final DataHolder rowData = new CursorRow(cursor);
             while (cursor.moveToNext()) {
@@ -3234,7 +3238,7 @@ public class DAO
     @NonNull
     public ArrayList<TocEntry> getTocEntryByBook(final long bookId) {
         final ArrayList<TocEntry> list = new ArrayList<>();
-        try (Cursor cursor = sSyncedDb.rawQuery(SqlSelectList.TOC_ENTRIES_BY_BOOK_ID,
+        try (Cursor cursor = sSyncedDb.rawQuery(SqlSelect.TOC_ENTRIES_BY_BOOK_ID,
                                                 new String[]{String.valueOf(bookId)})) {
             final DataHolder rowData = new CursorRow(cursor);
             while (cursor.moveToNext()) {
@@ -3278,7 +3282,7 @@ public class DAO
         SynchronizedStatement stmt = mSqlStatementManager.get(STMT_GET_TOC_ENTRY_ID);
         if (stmt == null) {
             stmt = mSqlStatementManager.add(STMT_GET_TOC_ENTRY_ID,
-                                            SqlGet.TOC_ENTRY_ID_BY_TITLE_AND_AUTHOR);
+                                            SqlGetId.TOC_ENTRY_ID_BY_TITLE_AND_AUTHOR);
         }
 
         final String obTitle = tocEntry.reorderTitleForSorting(context, tocLocale);
@@ -3325,7 +3329,7 @@ public class DAO
         // MUST be toc first, books second; otherwise the GROUP BY is done on the whole
         // UNION instead of on the toc only; and SqLite rejects () around the sub selects.
         if (withTocEntries) {
-            sql += SqlSelectList.TOC_ENTRIES_BY_AUTHOR_ID
+            sql += SqlSelect.TOC_ENTRIES_BY_AUTHOR_ID
                    // join with the books, so we can group by toc id, and get the number of books.
                    + _FROM_ + TBL_TOC_ENTRIES.ref() + TBL_TOC_ENTRIES.join(TBL_BOOK_TOC_ENTRIES)
                    + (byShelf ? " JOIN " + TBL_BOOK_BOOKSHELF.ref()
@@ -3347,7 +3351,7 @@ public class DAO
         }
 
         if (withBooks) {
-            sql += SqlSelectList.BOOK_TITLES_BY_AUTHOR_ID
+            sql += SqlSelect.BOOK_TITLES_BY_AUTHOR_ID
                    + _FROM_ + TBL_BOOKS.ref() + TBL_BOOKS.join(TBL_BOOK_AUTHOR)
                    + (byShelf ? TBL_BOOKS.join(TBL_BOOK_BOOKSHELF)
                               : "")
@@ -3417,7 +3421,7 @@ public class DAO
     public boolean bookExistsById(final long bookId) {
         SynchronizedStatement stmt = mSqlStatementManager.get(STMT_CHECK_BOOK_EXISTS);
         if (stmt == null) {
-            stmt = mSqlStatementManager.add(STMT_CHECK_BOOK_EXISTS, SqlSelect.BOOK_EXISTS);
+            stmt = mSqlStatementManager.add(STMT_CHECK_BOOK_EXISTS, SqlCount.BOOK_EXISTS);
         }
         //noinspection SynchronizationOnLocalVariableOrMethodParameter
         synchronized (stmt) {
@@ -3546,7 +3550,7 @@ public class DAO
     @Nullable
     public Bookshelf getBookshelfByName(@NonNull final String name) {
 
-        try (Cursor cursor = sSyncedDb.rawQuery(SqlSelect.BOOKSHELF_BY_NAME,
+        try (Cursor cursor = sSyncedDb.rawQuery(SqlGet.BOOKSHELF_BY_NAME,
                                                 new String[]{name})) {
             if (cursor.moveToFirst()) {
                 final DataHolder rowData = new CursorRow(cursor);
@@ -3567,7 +3571,7 @@ public class DAO
     @NonNull
     public ArrayList<Bookshelf> getBookshelvesByBookId(final long bookId) {
         ArrayList<Bookshelf> list = new ArrayList<>();
-        try (Cursor cursor = sSyncedDb.rawQuery(SqlSelectList.BOOKSHELVES_BY_BOOK_ID,
+        try (Cursor cursor = sSyncedDb.rawQuery(SqlSelect.BOOKSHELVES_BY_BOOK_ID,
                                                 new String[]{String.valueOf(bookId)})) {
             final DataHolder rowData = new CursorRow(cursor);
             while (cursor.moveToNext()) {
@@ -3649,7 +3653,7 @@ public class DAO
         SynchronizedStatement stmt = mSqlStatementManager.get(STMT_GET_BOOKLIST_STYLE);
         if (stmt == null) {
             stmt = mSqlStatementManager.add(STMT_GET_BOOKLIST_STYLE,
-                                            SqlGet.BOOKLIST_STYLE_ID_BY_UUID);
+                                            SqlGetId.BOOKLIST_STYLE_ID_BY_UUID);
         }
         //noinspection SynchronizationOnLocalVariableOrMethodParameter
         synchronized (stmt) {
@@ -3668,7 +3672,7 @@ public class DAO
      */
     @NonNull
     public Cursor fetchBookColumnsForGoodreadsSearch(@IntRange(from = 1) final long bookId) {
-        return sSyncedDb.rawQuery(SqlSelectList.BOOK_COLUMNS_FOR_GOODREADS_SEARCH,
+        return sSyncedDb.rawQuery(SqlSelect.BOOK_COLUMNS_FOR_GOODREADS_SEARCH,
                                   new String[]{String.valueOf(bookId)});
     }
 
@@ -3848,6 +3852,8 @@ public class DAO
      *
      * @param cursor Cursor of books to update
      * @param stmt   Statement to execute (insert or update)
+     *
+     * @throws TransactionException a transaction must be started before calling this method
      */
     private void ftsSendBooks(@NonNull final Cursor cursor,
                               @NonNull final SynchronizedStatement stmt) {
@@ -3970,6 +3976,8 @@ public class DAO
      *
      * @param context Current context
      * @param bookId  the book to add to FTS
+     *
+     * @throws TransactionException a transaction must be started before calling this method
      */
     private void ftsInsert(@NonNull final Context context,
                            final long bookId) {
@@ -4001,6 +4009,8 @@ public class DAO
      *
      * @param context Application context
      * @param bookId  the book id
+     *
+     * @throws TransactionException a transaction must be started before calling this method
      */
     private void ftsUpdate(@NonNull final Context context,
                            final long bookId) {
@@ -4210,24 +4220,6 @@ public class DAO
     public static final class SqlColumns {
 
         /**
-         * SQL column: return 1 if the book is available, 0 if not.
-         * {@link DBDefinitions#KEY_LOANEE_AS_BOOLEAN}
-         */
-        public static final String EXP_LOANEE_AS_BOOLEAN =
-                "CASE"
-                + " WHEN " + TBL_BOOK_LOANEE.dot(KEY_LOANEE) + " IS NULL THEN 1"
-                + " ELSE 0"
-                + " END";
-        /**
-         * SQL column: return "" if the book is available, "loanee name" if not.
-         */
-        public static final String EXP_BOOK_LOANEE_OR_EMPTY =
-                "CASE"
-                + " WHEN " + TBL_BOOK_LOANEE.dot(KEY_LOANEE) + " IS NULL THEN ''"
-                + " ELSE " + TBL_BOOK_LOANEE.dot(KEY_LOANEE)
-                + " END";
-
-        /**
          * Expression for the domain {@link DBDefinitions#DOM_BOOKSHELF_NAME_CSV}.
          * <p>
          * The order of the returned names will be arbitrary.
@@ -4251,6 +4243,28 @@ public class DAO
                 + _FROM_ + TBL_PUBLISHERS.ref() + TBL_PUBLISHERS.join(TBL_BOOK_PUBLISHER)
                 + _WHERE_ + TBL_BOOKS.dot(KEY_PK_ID) + "=" + TBL_BOOK_PUBLISHER.dot(KEY_FK_BOOK)
                 + ")";
+        private static final String _WHEN_ = " WHEN ";
+        private static final String CASE = "CASE";
+        private static final String _THEN_ = " THEN ";
+        private static final String _ELSE_ = " ELSE ";
+        private static final String _END = " END";
+        /**
+         * SQL column: return 1 if the book is available, 0 if not.
+         * {@link DBDefinitions#KEY_LOANEE_AS_BOOLEAN}
+         */
+        public static final String EXP_LOANEE_AS_BOOLEAN =
+                CASE
+                + _WHEN_ + TBL_BOOK_LOANEE.dot(KEY_LOANEE) + " IS NULL THEN 1"
+                + " ELSE 0"
+                + _END;
+        /**
+         * SQL column: return "" if the book is available, "loanee name" if not.
+         */
+        public static final String EXP_BOOK_LOANEE_OR_EMPTY =
+                CASE
+                + _WHEN_ + TBL_BOOK_LOANEE.dot(KEY_LOANEE) + " IS NULL THEN ''"
+                + _ELSE_ + TBL_BOOK_LOANEE.dot(KEY_LOANEE)
+                + _END;
 
         /**
          * Single column, with the formatted name of the Author.
@@ -4268,21 +4282,21 @@ public class DAO
         @NonNull
         public static String getSortAuthor(final boolean givenNameFirst) {
             if (givenNameFirst) {
-                return "CASE"
-                       + " WHEN " + TBL_AUTHORS.dot(KEY_AUTHOR_GIVEN_NAMES_OB) + "=''"
-                       + " THEN " + TBL_AUTHORS.dot(KEY_AUTHOR_FAMILY_NAME_OB)
+                return CASE
+                       + _WHEN_ + TBL_AUTHORS.dot(KEY_AUTHOR_GIVEN_NAMES_OB) + "=''"
+                       + _THEN_ + TBL_AUTHORS.dot(KEY_AUTHOR_FAMILY_NAME_OB)
 
-                       + " ELSE " + TBL_AUTHORS.dot(KEY_AUTHOR_GIVEN_NAMES_OB)
+                       + _ELSE_ + TBL_AUTHORS.dot(KEY_AUTHOR_GIVEN_NAMES_OB)
                        + "||" + TBL_AUTHORS.dot(KEY_AUTHOR_FAMILY_NAME_OB)
-                       + " END";
+                       + _END;
             } else {
-                return "CASE"
-                       + " WHEN " + TBL_AUTHORS.dot(KEY_AUTHOR_GIVEN_NAMES_OB) + "=''"
-                       + " THEN " + TBL_AUTHORS.dot(KEY_AUTHOR_FAMILY_NAME_OB)
+                return CASE
+                       + _WHEN_ + TBL_AUTHORS.dot(KEY_AUTHOR_GIVEN_NAMES_OB) + "=''"
+                       + _THEN_ + TBL_AUTHORS.dot(KEY_AUTHOR_FAMILY_NAME_OB)
 
-                       + " ELSE " + TBL_AUTHORS.dot(KEY_AUTHOR_FAMILY_NAME_OB)
+                       + _ELSE_ + TBL_AUTHORS.dot(KEY_AUTHOR_FAMILY_NAME_OB)
                        + "||" + TBL_AUTHORS.dot(KEY_AUTHOR_GIVEN_NAMES_OB)
-                       + " END";
+                       + _END;
             }
         }
 
@@ -4303,21 +4317,21 @@ public class DAO
         public static String getDisplayAuthor(@NonNull final String tableAlias,
                                               final boolean givenNameFirst) {
             if (givenNameFirst) {
-                return "CASE"
-                       + " WHEN " + tableAlias + '.' + KEY_AUTHOR_GIVEN_NAMES + "=''"
-                       + " THEN " + tableAlias + '.' + KEY_AUTHOR_FAMILY_NAME
-                       + " ELSE "
+                return CASE
+                       + _WHEN_ + tableAlias + '.' + KEY_AUTHOR_GIVEN_NAMES + "=''"
+                       + _THEN_ + tableAlias + '.' + KEY_AUTHOR_FAMILY_NAME
+                       + _ELSE_
                        + tableAlias + '.' + KEY_AUTHOR_GIVEN_NAMES
                        + "||' '||" + tableAlias + '.' + KEY_AUTHOR_FAMILY_NAME
-                       + " END";
+                       + _END;
             } else {
-                return "CASE"
-                       + " WHEN " + tableAlias + '.' + KEY_AUTHOR_GIVEN_NAMES + "=''"
-                       + " THEN " + tableAlias + '.' + KEY_AUTHOR_FAMILY_NAME
-                       + " ELSE "
+                return CASE
+                       + _WHEN_ + tableAlias + '.' + KEY_AUTHOR_GIVEN_NAMES + "=''"
+                       + _THEN_ + tableAlias + '.' + KEY_AUTHOR_FAMILY_NAME
+                       + _ELSE_
                        + tableAlias + '.' + KEY_AUTHOR_FAMILY_NAME
                        + "||', '||" + tableAlias + '.' + KEY_AUTHOR_GIVEN_NAMES
-                       + " END";
+                       + _END;
             }
         }
 
@@ -4326,14 +4340,18 @@ public class DAO
          * This deals with legacy 'date-only' dates.
          * The logic being that IF they had a time part then it would be UTC.
          * Without a time part, we assume the zone is local (or irrelevant).
+         *
+         * @param fieldSpec fully qualified field name
+         *
+         * @return expression
          */
         @NonNull
         private static String localDateTimeExpression(@NonNull final String fieldSpec) {
-            return "CASE"
-                   + " WHEN " + fieldSpec + " GLOB '*-*-* *' "
+            return CASE
+                   + _WHEN_ + fieldSpec + " GLOB '*-*-* *' "
                    + " THEN datetime(" + fieldSpec + ", 'localtime')"
-                   + " ELSE " + fieldSpec
-                   + " END";
+                   + _ELSE_ + fieldSpec
+                   + _END;
         }
 
         /**
@@ -4357,7 +4375,7 @@ public class DAO
                 fieldSpec = localDateTimeExpression(fieldSpec);
             }
             return "(CASE"
-                   + " WHEN " + fieldSpec + " GLOB '[0-9][0-9][0-9][0-9]*'"
+                   + _WHEN_ + fieldSpec + " GLOB '[0-9][0-9][0-9][0-9]*'"
                    + " THEN SUBSTR(" + fieldSpec + ",1,4)"
                    + " ELSE ''"
                    + " END)";
@@ -4380,13 +4398,13 @@ public class DAO
             if (toLocal) {
                 fieldSpec = localDateTimeExpression(fieldSpec);
             }
-            return "CASE"
-                   + " WHEN " + fieldSpec + " GLOB '[0-9][0-9][0-9][0-9]-[0-9][0-9]*'"
+            return CASE
+                   + _WHEN_ + fieldSpec + " GLOB '[0-9][0-9][0-9][0-9]-[0-9][0-9]*'"
                    + " THEN SUBSTR(" + fieldSpec + ",6,2)"
-                   + " WHEN " + fieldSpec + " GLOB '[0-9][0-9][0-9][0-9]-[0-9]*'"
+                   + _WHEN_ + fieldSpec + " GLOB '[0-9][0-9][0-9][0-9]-[0-9]*'"
                    + " THEN SUBSTR(" + fieldSpec + ",6,1)"
                    + " ELSE ''"
-                   + " END";
+                   + _END;
         }
 
         /**
@@ -4409,30 +4427,23 @@ public class DAO
             }
             // Just look for 4 leading numbers followed by 2 or 1 digit then another 2 or 1 digit.
             // We don't care about anything else.
-            return "CASE"
-                   + " WHEN " + fieldSpec + " GLOB '[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]*'"
+            return CASE
+                   + _WHEN_ + fieldSpec + " GLOB '[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]*'"
                    + " THEN SUBSTR(" + fieldSpec + ",9,2)"
-                   + " WHEN " + fieldSpec + " GLOB '[0-9][0-9][0-9][0-9]-[0-9]-[0-9][0-9]*'"
+                   + _WHEN_ + fieldSpec + " GLOB '[0-9][0-9][0-9][0-9]-[0-9]-[0-9][0-9]*'"
                    + " THEN SUBSTR(" + fieldSpec + ",8,2)"
-                   + " WHEN " + fieldSpec + " GLOB '[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9]*'"
+                   + _WHEN_ + fieldSpec + " GLOB '[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9]*'"
                    + " THEN SUBSTR(" + fieldSpec + ",9,1)"
-                   + " WHEN " + fieldSpec + " GLOB '[0-9][0-9][0-9][0-9]-[0-9]-[0-9]*'"
+                   + _WHEN_ + fieldSpec + " GLOB '[0-9][0-9][0-9][0-9]-[0-9]-[0-9]*'"
                    + " THEN SUBSTR(" + fieldSpec + ",8,1)"
                    + " ELSE ''"
-                   + " END";
+                   + _END;
         }
     }
 
-    private static final class SqlGetBookId {
-
-        /**
-         * Find the {@link Book} id based on a search for the UUID.
-         */
-        static final String BY_UUID =
-                SELECT_ + KEY_PK_ID + _FROM_ + TBL_BOOKS.getName()
-                + _WHERE_ + KEY_BOOK_UUID + "=?";
-    }
-
+    /**
+     * Count/exist statements.
+     */
     private static final class SqlCount {
 
         /**
@@ -4468,105 +4479,20 @@ public class DAO
         static final String TOC_ENTRIES_BY_AUTHOR =
                 "SELECT COUNT(" + KEY_PK_ID + ") FROM " + TBL_TOC_ENTRIES.getName()
                 + _WHERE_ + KEY_FK_AUTHOR + "=?";
+
+        /**
+         * Check if a {@link Book} exists.
+         */
+        static final String BOOK_EXISTS =
+                "SELECT COUNT(*) " + _FROM_ + TBL_BOOKS.getName()
+                + _WHERE_ + KEY_PK_ID + "=?";
     }
+
 
     /**
-     * Return a single text column for use with {@link AutoCompleteTextView}.
+     * Sql SELECT to lookup a single item.
      */
-    private static final class SqlAutoCompleteText {
-
-        /** name only. */
-        private static final String LOANEE =
-                "SELECT DISTINCT " + KEY_LOANEE
-                + _FROM_ + TBL_BOOK_LOANEE.getName()
-                + _WHERE_ + KEY_LOANEE + "<> ''"
-                + _ORDER_BY_ + KEY_LOANEE + _COLLATION;
-
-        /** name only. */
-        private static final String AUTHORS_FAMILY_NAMES =
-                "SELECT DISTINCT " + KEY_AUTHOR_FAMILY_NAME + ',' + KEY_AUTHOR_FAMILY_NAME_OB
-                + _FROM_ + TBL_AUTHORS.getName()
-                + _ORDER_BY_ + KEY_AUTHOR_FAMILY_NAME_OB + _COLLATION;
-
-        /** name only. */
-        private static final String AUTHORS_GIVEN_NAMES =
-                "SELECT DISTINCT " + KEY_AUTHOR_GIVEN_NAMES + ',' + KEY_AUTHOR_GIVEN_NAMES_OB
-                + _FROM_ + TBL_AUTHORS.getName()
-                + _WHERE_ + KEY_AUTHOR_GIVEN_NAMES_OB + "<> ''"
-                + _ORDER_BY_ + KEY_AUTHOR_GIVEN_NAMES_OB + _COLLATION;
-
-        /** name only. */
-        private static final String AUTHORS_FORMATTED_NAMES =
-                SELECT_
-                + SqlColumns.getDisplayAuthor(TBL_AUTHORS.getAlias(), false)
-                + _AS_ + KEY_AUTHOR_FORMATTED
-                + ',' + KEY_AUTHOR_FAMILY_NAME_OB
-                + ',' + KEY_AUTHOR_GIVEN_NAMES_OB
-                + _FROM_ + TBL_AUTHORS.ref()
-                + _ORDER_BY_ + KEY_AUTHOR_FAMILY_NAME_OB + _COLLATION
-                + ',' + KEY_AUTHOR_GIVEN_NAMES_OB + _COLLATION;
-
-        /** name only. */
-        private static final String AUTHORS_FORMATTED_NAMES_GIVEN_FIRST =
-                SELECT_ + SqlColumns.getDisplayAuthor(TBL_AUTHORS.getAlias(), true)
-                + _AS_ + KEY_AUTHOR_FORMATTED_GIVEN_FIRST
-                + ',' + KEY_AUTHOR_FAMILY_NAME_OB
-                + ',' + KEY_AUTHOR_GIVEN_NAMES_OB
-                + _FROM_ + TBL_AUTHORS.ref()
-                + _ORDER_BY_ + KEY_AUTHOR_FAMILY_NAME_OB + _COLLATION
-                + ',' + KEY_AUTHOR_GIVEN_NAMES_OB + _COLLATION;
-
-        /** name only. */
-        private static final String SERIES_NAME =
-                SELECT_ + KEY_SERIES_TITLE
-                + ',' + KEY_SERIES_TITLE_OB
-                + _FROM_ + TBL_SERIES.getName()
-                + _ORDER_BY_ + KEY_SERIES_TITLE_OB + _COLLATION;
-
-        /** name only. */
-        private static final String PUBLISHERS_NAME =
-                "SELECT DISTINCT " + KEY_PUBLISHER_NAME
-                + ',' + KEY_PUBLISHER_NAME_OB
-                + _FROM_ + TBL_PUBLISHERS.getName()
-                + _ORDER_BY_ + KEY_PUBLISHER_NAME_OB + _COLLATION;
-
-        /** name only. */
-        private static final String FORMATS =
-                "SELECT DISTINCT " + KEY_FORMAT
-                + _FROM_ + TBL_BOOKS.getName()
-                + _WHERE_ + KEY_FORMAT + "<> ''"
-                + _ORDER_BY_ + KEY_FORMAT + _COLLATION;
-
-        /** name only. */
-        private static final String COLORS =
-                "SELECT DISTINCT " + KEY_COLOR
-                + _FROM_ + TBL_BOOKS.getName()
-                + _WHERE_ + KEY_COLOR + "<> ''"
-                + _ORDER_BY_ + KEY_COLOR + _COLLATION;
-
-        /** name only. */
-        private static final String GENRES =
-                "SELECT DISTINCT " + KEY_GENRE
-                + _FROM_ + TBL_BOOKS.getName()
-                + _WHERE_ + KEY_GENRE + "<> ''"
-                + _ORDER_BY_ + KEY_GENRE + _COLLATION;
-
-        /** name only. */
-        private static final String LANGUAGES =
-                "SELECT DISTINCT " + KEY_LANGUAGE
-                + _FROM_ + TBL_BOOKS.getName()
-                + _WHERE_ + KEY_LANGUAGE + "<> ''"
-                + _ORDER_BY_ + KEY_UTC_LAST_UPDATED + _COLLATION;
-
-        /** name only. */
-        private static final String LOCATIONS =
-                "SELECT DISTINCT " + KEY_LOCATION
-                + _FROM_ + TBL_BOOKS.getName()
-                + _WHERE_ + KEY_LOCATION + "<> ''"
-                + _ORDER_BY_ + KEY_LOCATION + _COLLATION;
-    }
-
-    private static final class SqlGetById {
+    private static final class SqlGet {
 
         /**
          * Get an {@link Author} by the Author id.
@@ -4623,8 +4549,194 @@ public class DAO
         static final String LOANEE_BY_BOOK_ID =
                 SELECT_ + KEY_LOANEE + _FROM_ + TBL_BOOK_LOANEE.getName()
                 + _WHERE_ + KEY_FK_BOOK + "=?";
+        /**
+         * Get a {@link Bookshelf} by its name.
+         */
+        static final String BOOKSHELF_BY_NAME =
+                SqlSelectFullTable.BOOKSHELVES
+                + _WHERE_ + TBL_BOOKSHELF.dot(KEY_BOOKSHELF_NAME) + "=?" + _COLLATION;
+        /**
+         * Get the language (ISO3) code for a Series.
+         * This is defined as the language code for the first book in the Series.
+         */
+        static final String SERIES_LANGUAGE =
+                SELECT_ + TBL_BOOKS.dotAs(KEY_LANGUAGE)
+                + _FROM_ + TBL_BOOK_SERIES.ref() + TBL_BOOK_SERIES.join(TBL_BOOKS)
+                + _WHERE_ + TBL_BOOK_SERIES.dot(KEY_FK_SERIES) + "=?"
+                + _ORDER_BY_ + TBL_BOOK_SERIES.dot(KEY_BOOK_NUM_IN_SERIES)
+                + " LIMIT 1";
+        /**
+         * Get the last-update-date for a {@link Book} by its id.
+         */
+        static final String LAST_UPDATE_DATE_BY_BOOK_ID =
+                SELECT_ + KEY_UTC_LAST_UPDATED + _FROM_ + TBL_BOOKS.getName()
+                + _WHERE_ + KEY_PK_ID + "=?";
     }
 
+    /**
+     * Sql SELECT to lookup an ID.
+     */
+    private static final class SqlGetId {
+
+        /**
+         * Get the id of a {@link Book} by UUID.
+         */
+        static final String BY_UUID =
+                SELECT_ + KEY_PK_ID + _FROM_ + TBL_BOOKS.getName()
+                + _WHERE_ + KEY_BOOK_UUID + "=?";
+
+        /**
+         * Get the id of a {@link BooklistStyle} by UUID.
+         */
+        static final String BOOKLIST_STYLE_ID_BY_UUID =
+                SELECT_ + KEY_PK_ID + _FROM_ + TBL_BOOKLIST_STYLES.getName()
+                + _WHERE_ + KEY_UUID + "=?";
+
+        /**
+         * Get the id of a {@link Bookshelf} by name.
+         * The lookup is by EQUALITY and CASE-SENSITIVE.
+         */
+        static final String BOOKSHELF_ID_BY_NAME =
+                SELECT_ + KEY_PK_ID + _FROM_ + TBL_BOOKSHELF.getName()
+                + _WHERE_ + KEY_BOOKSHELF_NAME + "=?" + _COLLATION;
+
+        /**
+         * Get the id of a {@link Author} by name.
+         * The lookup is by EQUALITY and CASE-SENSITIVE.
+         * Can return more then one row if the KEY_AUTHOR_GIVEN_NAMES_OB is empty.
+         */
+        static final String AUTHOR_ID_BY_NAME =
+                SELECT_ + KEY_PK_ID + _FROM_ + TBL_AUTHORS.getName()
+                + _WHERE_ + KEY_AUTHOR_FAMILY_NAME_OB + "=?" + _COLLATION
+                + " AND " + KEY_AUTHOR_GIVEN_NAMES_OB + "=?" + _COLLATION;
+
+        /**
+         * Get the id of a {@link Series} by Title.
+         * The lookup is by EQUALITY and CASE-SENSITIVE.
+         * Searches KEY_SERIES_TITLE_OB on both "The Title" and "Title, The"
+         */
+        static final String SERIES_ID_BY_NAME =
+                SELECT_ + KEY_PK_ID + _FROM_ + TBL_SERIES.getName()
+                + _WHERE_ + KEY_SERIES_TITLE_OB + "=?" + _COLLATION
+                + " OR " + KEY_SERIES_TITLE_OB + "=?" + _COLLATION;
+
+        /**
+         * Get the id of a {@link Publisher} by name.
+         * The lookup is by EQUALITY and CASE-SENSITIVE.
+         */
+        static final String PUBLISHER_ID_BY_NAME =
+                SELECT_ + KEY_PK_ID + _FROM_ + TBL_PUBLISHERS.getName()
+                + _WHERE_ + KEY_PUBLISHER_NAME_OB + "=?" + _COLLATION
+                + " OR " + KEY_PUBLISHER_NAME_OB + "=?" + _COLLATION;
+
+        /**
+         * Get the id of a {@link TocEntry} by Title.
+         * The lookup is by EQUALITY and CASE-SENSITIVE.
+         * Search KEY_TITLE_OB on both "The Title" and "Title, The"
+         */
+        static final String TOC_ENTRY_ID_BY_TITLE_AND_AUTHOR =
+                SELECT_ + KEY_PK_ID + _FROM_ + TBL_TOC_ENTRIES.getName()
+                + _WHERE_ + KEY_FK_AUTHOR + "=?"
+                + " AND (" + KEY_TITLE_OB + "=? " + _COLLATION
+                + " OR " + KEY_TITLE_OB + "=?" + _COLLATION + ')';
+    }
+
+
+    /**
+     * Return a single text column for use with {@link AutoCompleteTextView}.
+     */
+    private static final class SqlAutoCompleteText {
+
+        /** name only. */
+        private static final String LOANEE =
+                SELECT_DISTINCT_ + KEY_LOANEE
+                + _FROM_ + TBL_BOOK_LOANEE.getName()
+                + _WHERE_ + KEY_LOANEE + "<> ''"
+                + _ORDER_BY_ + KEY_LOANEE + _COLLATION;
+
+        /** name only. */
+        private static final String AUTHORS_FAMILY_NAMES =
+                SELECT_DISTINCT_ + KEY_AUTHOR_FAMILY_NAME + ',' + KEY_AUTHOR_FAMILY_NAME_OB
+                + _FROM_ + TBL_AUTHORS.getName()
+                + _ORDER_BY_ + KEY_AUTHOR_FAMILY_NAME_OB + _COLLATION;
+
+        /** name only. */
+        private static final String AUTHORS_GIVEN_NAMES =
+                SELECT_DISTINCT_ + KEY_AUTHOR_GIVEN_NAMES + ',' + KEY_AUTHOR_GIVEN_NAMES_OB
+                + _FROM_ + TBL_AUTHORS.getName()
+                + _WHERE_ + KEY_AUTHOR_GIVEN_NAMES_OB + "<> ''"
+                + _ORDER_BY_ + KEY_AUTHOR_GIVEN_NAMES_OB + _COLLATION;
+
+        /** name only. */
+        private static final String AUTHORS_FORMATTED_NAMES =
+                SELECT_
+                + SqlColumns.getDisplayAuthor(TBL_AUTHORS.getAlias(), false)
+                + _AS_ + KEY_AUTHOR_FORMATTED
+                + ',' + KEY_AUTHOR_FAMILY_NAME_OB
+                + ',' + KEY_AUTHOR_GIVEN_NAMES_OB
+                + _FROM_ + TBL_AUTHORS.ref()
+                + _ORDER_BY_ + KEY_AUTHOR_FAMILY_NAME_OB + _COLLATION
+                + ',' + KEY_AUTHOR_GIVEN_NAMES_OB + _COLLATION;
+
+        /** name only. */
+        private static final String AUTHORS_FORMATTED_NAMES_GIVEN_FIRST =
+                SELECT_ + SqlColumns.getDisplayAuthor(TBL_AUTHORS.getAlias(), true)
+                + _AS_ + KEY_AUTHOR_FORMATTED_GIVEN_FIRST
+                + ',' + KEY_AUTHOR_FAMILY_NAME_OB
+                + ',' + KEY_AUTHOR_GIVEN_NAMES_OB
+                + _FROM_ + TBL_AUTHORS.ref()
+                + _ORDER_BY_ + KEY_AUTHOR_FAMILY_NAME_OB + _COLLATION
+                + ',' + KEY_AUTHOR_GIVEN_NAMES_OB + _COLLATION;
+
+        /** name only. */
+        private static final String SERIES_NAME =
+                SELECT_ + KEY_SERIES_TITLE
+                + ',' + KEY_SERIES_TITLE_OB
+                + _FROM_ + TBL_SERIES.getName()
+                + _ORDER_BY_ + KEY_SERIES_TITLE_OB + _COLLATION;
+
+        /** name only. */
+        private static final String PUBLISHERS_NAME =
+                SELECT_DISTINCT_ + KEY_PUBLISHER_NAME
+                + ',' + KEY_PUBLISHER_NAME_OB
+                + _FROM_ + TBL_PUBLISHERS.getName()
+                + _ORDER_BY_ + KEY_PUBLISHER_NAME_OB + _COLLATION;
+
+        /** name only. */
+        private static final String FORMATS =
+                SELECT_DISTINCT_ + KEY_FORMAT
+                + _FROM_ + TBL_BOOKS.getName()
+                + _WHERE_ + KEY_FORMAT + "<> ''"
+                + _ORDER_BY_ + KEY_FORMAT + _COLLATION;
+
+        /** name only. */
+        private static final String COLORS =
+                SELECT_DISTINCT_ + KEY_COLOR
+                + _FROM_ + TBL_BOOKS.getName()
+                + _WHERE_ + KEY_COLOR + "<> ''"
+                + _ORDER_BY_ + KEY_COLOR + _COLLATION;
+
+        /** name only. */
+        private static final String GENRES =
+                SELECT_DISTINCT_ + KEY_GENRE
+                + _FROM_ + TBL_BOOKS.getName()
+                + _WHERE_ + KEY_GENRE + "<> ''"
+                + _ORDER_BY_ + KEY_GENRE + _COLLATION;
+
+        /** name only. */
+        private static final String LANGUAGES =
+                SELECT_DISTINCT_ + KEY_LANGUAGE
+                + _FROM_ + TBL_BOOKS.getName()
+                + _WHERE_ + KEY_LANGUAGE + "<> ''"
+                + _ORDER_BY_ + KEY_UTC_LAST_UPDATED + _COLLATION;
+
+        /** name only. */
+        private static final String LOCATIONS =
+                SELECT_DISTINCT_ + KEY_LOCATION
+                + _FROM_ + TBL_BOOKS.getName()
+                + _WHERE_ + KEY_LOCATION + "<> ''"
+                + _ORDER_BY_ + KEY_LOCATION + _COLLATION;
+    }
 
     /**
      * Sql SELECT of a single table, without a WHERE clause.
@@ -4768,33 +4880,30 @@ public class DAO
     /**
      * Sql SELECT returning a list, with a WHERE clause.
      */
-    private static final class SqlSelectList {
+    private static final class SqlSelect {
 
         static final String BOOK_ID_LIST_BY_TOC_ENTRY_ID =
                 SELECT_ + KEY_FK_BOOK + _FROM_ + TBL_BOOK_TOC_ENTRIES.getName()
                 + _WHERE_ + KEY_FK_TOC_ENTRY + "=?";
         /**
          * Find the {@link Book} id based on a search for the ISBN (both 10 & 13).
-         * The arguments MUST be bound in uppercase,
-         * as valid ISBN numbers are always stored in uppercase (the 'X').
          */
         static final String BY_VALID_ISBN =
                 SELECT_ + KEY_PK_ID + _FROM_ + TBL_BOOKS.getName()
-                + _WHERE_ + KEY_ISBN + " IN (?,?)";
+                + _WHERE_ + KEY_ISBN + " LIKE ? OR " + KEY_ISBN + " LIKE ?";
         /**
          * Find the {@link Book} id based on a search for the ISBN.
-         * The isbn need not be valid and can in fact be any code whatsoever
-         * with mixed case characters (we use 'upper()' on BOTH sides).
+         * The isbn need not be valid and can in fact be any code whatsoever.
          */
         static final String BY_ISBN =
                 SELECT_ + KEY_PK_ID + _FROM_ + TBL_BOOKS.getName()
-                + _WHERE_ + "upper(" + KEY_ISBN + ")=upper(?)";
+                + _WHERE_ + KEY_ISBN + " LIKE ?";
 
         /**
          * All Bookshelves for a Book; ordered by name.
          */
         private static final String BOOKSHELVES_BY_BOOK_ID =
-                "SELECT DISTINCT "
+                SELECT_DISTINCT_
                 + TBL_BOOKSHELF.dotAs(KEY_PK_ID)
                 + ',' + TBL_BOOKSHELF.dotAs(KEY_BOOKSHELF_NAME)
                 + ',' + TBL_BOOKSHELF.dotAs(KEY_BOOKSHELF_BL_TOP_POS)
@@ -4813,7 +4922,7 @@ public class DAO
          * All Authors for a Book; ordered by position, family, given.
          */
         private static final String AUTHORS_BY_BOOK_ID =
-                "SELECT DISTINCT " + TBL_AUTHORS.dotAs(KEY_PK_ID)
+                SELECT_DISTINCT_ + TBL_AUTHORS.dotAs(KEY_PK_ID)
                 + ',' + TBL_AUTHORS.dotAs(KEY_AUTHOR_FAMILY_NAME)
                 + ',' + TBL_AUTHORS.dotAs(KEY_AUTHOR_FAMILY_NAME_OB)
                 + ',' + TBL_AUTHORS.dotAs(KEY_AUTHOR_GIVEN_NAMES)
@@ -4835,7 +4944,7 @@ public class DAO
          * All Series for a Book; ordered by position, name.
          */
         private static final String SERIES_BY_BOOK_ID =
-                "SELECT DISTINCT " + TBL_SERIES.dotAs(KEY_PK_ID)
+                SELECT_DISTINCT_ + TBL_SERIES.dotAs(KEY_PK_ID)
                 + ',' + TBL_SERIES.dotAs(KEY_SERIES_TITLE)
                 + ',' + TBL_SERIES.dotAs(KEY_SERIES_TITLE_OB)
                 + ',' + TBL_SERIES.dotAs(KEY_SERIES_IS_COMPLETE)
@@ -4851,7 +4960,7 @@ public class DAO
          * All Publishers for a Book; ordered by position, name.
          */
         private static final String PUBLISHER_BY_BOOK_ID =
-                "SELECT DISTINCT " + TBL_PUBLISHERS.dotAs(KEY_PK_ID)
+                SELECT_DISTINCT_ + TBL_PUBLISHERS.dotAs(KEY_PK_ID)
                 + ',' + TBL_PUBLISHERS.dotAs(KEY_PUBLISHER_NAME)
                 + ',' + TBL_PUBLISHERS.dotAs(KEY_PUBLISHER_NAME_OB)
                 + ',' + TBL_BOOK_PUBLISHER.dotAs(KEY_BOOK_PUBLISHER_POSITION)
@@ -4957,96 +5066,10 @@ public class DAO
                 + _WHERE_ + TBL_BOOKS.dot(KEY_PK_ID) + "=?";
     }
 
-    /**
-     * Sql SELECT that returns a single ID/UUID.
-     */
-    private static final class SqlGet {
-
-        static final String BOOKLIST_STYLE_ID_BY_UUID =
-                SELECT_ + KEY_PK_ID + _FROM_ + TBL_BOOKLIST_STYLES.getName()
-                + _WHERE_ + KEY_UUID + "=?";
-
-        /**
-         * Can return more then one row if the KEY_AUTHOR_GIVEN_NAMES_OB is empty.
-         */
-        static final String AUTHOR_ID_BY_NAME =
-                SELECT_ + KEY_PK_ID + _FROM_ + TBL_AUTHORS.getName()
-                + _WHERE_ + KEY_AUTHOR_FAMILY_NAME_OB + "=?" + _COLLATION
-                + " AND " + KEY_AUTHOR_GIVEN_NAMES_OB + "=?" + _COLLATION;
-
-        static final String BOOKSHELF_ID_BY_NAME =
-                SELECT_ + KEY_PK_ID + _FROM_ + TBL_BOOKSHELF.getName()
-                + _WHERE_ + KEY_BOOKSHELF_NAME + "=?" + _COLLATION;
-
-        /**
-         * Get the id of a {@link Series} by its Title.
-         * Search KEY_SERIES_TITLE_OB on both "The Title" and "Title, The"
-         */
-        static final String SERIES_ID_BY_NAME =
-                SELECT_ + KEY_PK_ID + _FROM_ + TBL_SERIES.getName()
-                + _WHERE_ + KEY_SERIES_TITLE_OB + "=?" + _COLLATION
-                + " OR " + KEY_SERIES_TITLE_OB + "=?" + _COLLATION;
-
-        /**
-         * Get the id of a {@link Publisher} by its name.
-         */
-        static final String PUBLISHER_ID_BY_NAME =
-                SELECT_ + KEY_PK_ID + _FROM_ + TBL_PUBLISHERS.getName()
-                + _WHERE_ + KEY_PUBLISHER_NAME_OB + "=?" + _COLLATION
-                + " OR " + KEY_PUBLISHER_NAME_OB + "=?" + _COLLATION;
-
-
-        /**
-         * Get the id of a {@link TocEntry} by its Title.
-         * Search KEY_TITLE_OB on both "The Title" and "Title, The"
-         */
-        static final String TOC_ENTRY_ID_BY_TITLE_AND_AUTHOR =
-                SELECT_ + KEY_PK_ID + _FROM_ + TBL_TOC_ENTRIES.getName()
-                + _WHERE_ + KEY_FK_AUTHOR + "=?"
-                + " AND (" + KEY_TITLE_OB + "=? " + _COLLATION
-                + " OR " + KEY_TITLE_OB + "=?" + _COLLATION + ')';
-
-    }
 
     /**
-     * Sql SELECT to get Objects by their id; and related queries.
+     * Sql specific for syncing books with Goodreads.
      */
-    private static final class SqlSelect {
-
-        /**
-         * Get a {@link Bookshelf} by its name.
-         */
-        static final String BOOKSHELF_BY_NAME =
-                SqlSelectFullTable.BOOKSHELVES
-                + _WHERE_ + TBL_BOOKSHELF.dot(KEY_BOOKSHELF_NAME) + "=?" + _COLLATION;
-
-        /**
-         * Get the language (ISO3) code for a Series.
-         * This is defined as the language code for the first book in the Series.
-         */
-        static final String SERIES_LANGUAGE =
-                SELECT_ + TBL_BOOKS.dotAs(KEY_LANGUAGE)
-                + _FROM_ + TBL_BOOK_SERIES.ref() + TBL_BOOK_SERIES.join(TBL_BOOKS)
-                + _WHERE_ + TBL_BOOK_SERIES.dot(KEY_FK_SERIES) + "=?"
-                + _ORDER_BY_ + TBL_BOOK_SERIES.dot(KEY_BOOK_NUM_IN_SERIES)
-                + " LIMIT 1";
-
-        /**
-         * Get the last-update-date for a {@link Book} by its id.
-         */
-        static final String LAST_UPDATE_DATE_BY_BOOK_ID =
-                SELECT_ + KEY_UTC_LAST_UPDATED + _FROM_ + TBL_BOOKS.getName()
-                + _WHERE_ + KEY_PK_ID + "=?";
-
-        /**
-         * Check if a {@link Book} exists.
-         */
-        static final String BOOK_EXISTS =
-                "SELECT COUNT(*) " + _FROM_ + TBL_BOOKS.getName()
-                + _WHERE_ + KEY_PK_ID + "=?";
-    }
-
-
     private static final class SqlGoodreadsSendBook {
 
         /**
@@ -5072,6 +5095,7 @@ public class DAO
          */
         static final String SINGLE_BOOK =
                 BASE_SELECT + _WHERE_ + KEY_PK_ID + "=?";
+
         /**
          * Get the needed {@link Book} fields for sending to Goodreads.
          * <p>
@@ -5095,6 +5119,7 @@ public class DAO
                 + " AND " + KEY_UTC_LAST_UPDATED + '>' + KEY_UTC_LAST_SYNC_DATE_GOODREADS
                 + _ORDER_BY_ + KEY_PK_ID;
     }
+
 
     /**
      * Sql INSERT.
