@@ -116,7 +116,7 @@ public final class FileUtils {
         } catch (@NonNull final IOException e) {
             Logger.error(App.getAppContext(),
                          TAG, e, "failed to rename source=" + source
-                                 + "TO destination" + destination, e);
+                                 + " TO destination" + destination, e);
             return false;
         }
     }
@@ -140,11 +140,11 @@ public final class FileUtils {
                 return;
             }
             throw new IOException("failed to rename source=" + source
-                                  + "TO destination" + destination);
+                                  + " TO destination" + destination);
 
         } catch (@NonNull final SecurityException | NullPointerException e) {
             throw new IOException("failed to rename source=" + source
-                                  + "TO destination" + destination, e);
+                                  + " TO destination" + destination, e);
         }
 
     }
@@ -171,7 +171,8 @@ public final class FileUtils {
         if (is == null) {
             return null;
         }
-        final File tmpFile = AppDir.Cache.getFile(context, "stream.jpg");
+        final File tmpFile =
+                AppDir.Cache.getFile(context, System.currentTimeMillis() + "_stream.jpg");
         try (OutputStream os = new FileOutputStream(tmpFile)) {
             copy(is, os);
             // rename to real output file
