@@ -603,6 +603,10 @@ public class OpenLibrarySearchEngine
         if (a != null && a.length() > 0) {
             bookData.putLong(DBDefinitions.KEY_EID_GOODREADS_BOOK, a.getLong(0));
         }
+        a = element.optJSONArray("google");
+        if (a != null && a.length() > 0) {
+            bookData.putString(DBDefinitions.KEY_EID_GOOGLE, a.getString(0));
+        }
         a = element.optJSONArray("lccn");
         if (a != null && a.length() > 0) {
             bookData.putString(DBDefinitions.KEY_EID_LCCN, a.getString(0));

@@ -437,6 +437,8 @@ public final class DBDefinitions {
     /** External id. - String. ENHANCE: set by search engines when found, but not stored yet. */
     public static final String KEY_EID_ASIN = "asin";
     /** External id. - String. ENHANCE: set by search engines when found, but not stored yet. */
+    public static final String KEY_EID_GOOGLE = "google";
+    /** External id. - String. ENHANCE: set by search engines when found, but not stored yet. */
     public static final String KEY_EID_WORLDCAT = "worldcat_oclc_book_id";
     /** External id. - String. ENHANCE: set by search engines when found, but not stored yet. */
     public static final String KEY_EID_LCCN = "lccn_book_id";
@@ -1452,7 +1454,7 @@ public final class DBDefinitions {
     /**
      * Is the field in use; i.e. is it enabled in the user-preferences.
      *
-     * @param preferences prefs object
+     * @param preferences SharedPreferences
      * @param key         DBDefinitions.KEY_x to lookup
      *
      * @return {@code true} if the user wants to use this field.
