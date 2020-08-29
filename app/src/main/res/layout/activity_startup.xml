@@ -59,8 +59,8 @@
         style="@style/AppVersion"
         app:layout_constraintEnd_toEndOf="@id/app"
         app:layout_constraintTop_toBottomOf="@id/app"
-        tools:text="1.1.0"
         tools:ignore="SelectableText"
+        tools:text="1.1.1"
         />
 
     <TextView
