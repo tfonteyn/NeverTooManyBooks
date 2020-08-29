@@ -87,6 +87,7 @@
 
     <!-- Book Description. -->
     <style name="Field.Description">
+        <item name="android:layout_marginTop">@dimen/border1</item>
         <item name="android:textAppearance">?attr/textAppearanceBody1</item>
         <item name="android:background">@drawable/outline_rounded</item>
     </style>
