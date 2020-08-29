@@ -640,7 +640,7 @@ class LibraryThingHandler
             String v = value.trim();
             if (v.startsWith("![CDATA[")) {
                 v = v.substring(8);
-                // sanity test
+                // sanity check
                 if (v.endsWith("]]>")) {
                     v = v.substring(0, v.length() - 3);
                 }

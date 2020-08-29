@@ -33,6 +33,7 @@ import java.util.List;
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.tasks.VMTask;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
@@ -63,7 +64,7 @@ public class SearchEditionsTask
         // sanity check
         if (BuildConfig.DEBUG /* always */) {
             if (!ISBN.isValidIsbn(isbnStr)) {
-                throw new IllegalStateException("isbn must be valid");
+                throw new IllegalStateException(ErrorMsg.INVALID_ISBN);
             }
         }
 

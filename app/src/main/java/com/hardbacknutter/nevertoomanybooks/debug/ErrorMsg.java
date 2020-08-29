@@ -50,6 +50,7 @@ public final class ErrorMsg {
     public static final String NULL_GALLERY_ADAPTER = "GalleryAdapter";
     public static final String NULL_LAYOUT_MANAGER = "LinearLayoutManager";
     public static final String NULL_IMAGE_PATH = "ImagePath";
+    public static final String NULL_INPUT_STREAM = "InputStream was NULL";
     public static final String NULL_INTENT_DATA = "Intent data";
     public static final String NULL_ISBN = "ISBN";
     public static final String NULL_ISBN_STR = "IsbnStr";
@@ -68,6 +69,9 @@ public final class ErrorMsg {
     public static final String BUNDLE_ALREADY_PUSHED = "Bundle already pushed!";
     public static final String CREATE_WAS_NOT_CALLED = "create was not called?";
     public static final String IMPORT_NOT_SUPPORTED = "Import not supported";
+    public static final String OPTIONS_NOT_SET = "options not set";
+    public static final String ONLY_ONE_OPTION_ALLOWED = "only one option allowed";
+    public static final String NULL_OUTPUT_STREAM = "OutputStream was NULL";
 
     private ErrorMsg() {
     }

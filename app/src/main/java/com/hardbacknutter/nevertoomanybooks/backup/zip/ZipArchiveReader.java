@@ -42,6 +42,7 @@ import com.hardbacknutter.nevertoomanybooks.backup.base.InvalidArchiveException;
 import com.hardbacknutter.nevertoomanybooks.backup.base.Options;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ReaderEntity;
 import com.hardbacknutter.nevertoomanybooks.backup.xml.XmlImporter;
+import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 
 /**
  * Implementation of ZIP-specific reader functions.
@@ -172,7 +173,7 @@ public class ZipArchiveReader
         if (mInputStream == null) {
             final InputStream is = mContentResolver.openInputStream(getUri());
             if (is == null) {
-                throw new IOException("InputStream was NULL");
+                throw new IOException(ErrorMsg.NULL_INPUT_STREAM);
             }
             mInputStream = new ZipInputStream(new BufferedInputStream(is, BUFFER_SIZE));
         }

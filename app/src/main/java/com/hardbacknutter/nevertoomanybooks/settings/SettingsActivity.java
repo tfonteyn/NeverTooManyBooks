@@ -173,7 +173,7 @@ public class SettingsActivity
         try {
             fragment = caller.getClass().newInstance();
         } catch (IllegalAccessException | InstantiationException e) {
-            throw new IllegalStateException();
+            throw new IllegalStateException(e);
         }
 
         // and set it to start with the new root key (screen)

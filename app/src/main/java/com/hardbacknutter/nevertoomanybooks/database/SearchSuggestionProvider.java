@@ -29,6 +29,8 @@ import android.net.Uri;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
+
 public class SearchSuggestionProvider
         extends ContentProvider {
 
@@ -110,7 +112,7 @@ public class SearchSuggestionProvider
             }
         }
 
-        throw new IllegalArgumentException("Unknown Uri");
+        throw new IllegalArgumentException(ErrorMsg.UNEXPECTED_VALUE + uri);
     }
 
     @Nullable

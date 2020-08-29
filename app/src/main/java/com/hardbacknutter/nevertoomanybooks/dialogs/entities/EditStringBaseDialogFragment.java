@@ -55,11 +55,11 @@ public abstract class EditStringBaseDialogFragment
     private final int mLabelId;
     @BookChangedListener.FieldChanges
     private final int mFieldChanges;
-    /** FragmentResultListener request key to use for our response. */
-    private String mRequestKey;
     /** Database Access. */
     @Nullable
     DAO mDb;
+    /** FragmentResultListener request key to use for our response. */
+    private String mRequestKey;
     /** View Binding. */
     private DialogEditStringBinding mVb;
     /** The text we're editing. */
@@ -145,7 +145,9 @@ public abstract class EditStringBaseDialogFragment
     }
 
     /**
-     * @return (optional) list of strings for the auto-complete.
+     * Get the (optional) list of strings for the auto-complete.
+     *
+     * @return list, or {@code null} if there is none
      */
     @Nullable
     protected List<String> getList() {
@@ -177,11 +179,14 @@ public abstract class EditStringBaseDialogFragment
     /**
      * Save data.
      *
+     * @param originalText the original text which was passed in to be edited
+     * @param currentText  the modified text
+     *
      * @return the bundle to pass back to
      */
     @Nullable
-    abstract Bundle onSave(final String originalText,
-                           final String currentText);
+    abstract Bundle onSave(String originalText,
+                           String currentText);
 
     @Override
     public void onSaveInstanceState(@NonNull final Bundle outState) {

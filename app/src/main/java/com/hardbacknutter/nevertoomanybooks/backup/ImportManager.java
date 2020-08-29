@@ -290,7 +290,7 @@ public class ImportManager
      */
     public void validate() {
         if ((mOptions & MASK) == 0) {
-            throw new IllegalStateException("options not set");
+            throw new IllegalStateException(ErrorMsg.OPTIONS_NOT_SET);
         }
     }
 

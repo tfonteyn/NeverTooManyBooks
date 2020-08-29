@@ -257,7 +257,7 @@ public class BooklistBuilder
 
         } else {
             // adding a duplicate here is a bug.
-            throw new IllegalArgumentException("Duplicate domain=`" + vDomain.getName() + '`');
+            throw new IllegalArgumentException("Duplicate domain=" + vDomain.getName());
         }
     }
 

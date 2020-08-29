@@ -209,7 +209,7 @@ public class ExportManager
      */
     @Nullable
     public LocalDateTime getUtcDateTimeSince() {
-        if (((mOptions & EXPORT_SINCE_LAST_BACKUP) != 0)) {
+        if ((mOptions & EXPORT_SINCE_LAST_BACKUP) != 0) {
             return mFromUtcDateTime;
         } else {
             return null;
@@ -282,10 +282,10 @@ public class ExportManager
      */
     public void validate(@NonNull final Context context) {
         if ((mOptions & MASK) == 0) {
-            throw new IllegalStateException("options not set");
+            throw new IllegalStateException(ErrorMsg.OPTIONS_NOT_SET);
         }
         if (mUri == null) {
-            throw new IllegalStateException("Uri was NULL");
+            throw new IllegalStateException(ErrorMsg.NULL_URI);
         }
         if ((mOptions & EXPORT_SINCE_LAST_BACKUP) != 0) {
             mFromUtcDateTime = getLastFullBackupDate(context);
@@ -424,7 +424,7 @@ public class ExportManager
     }
 
     /**
-     * Are there any options set that will cause us to export anything?
+     * Check if there any options set that will cause us to export anything.
      *
      * @return {@code true} if something will be exported
      */

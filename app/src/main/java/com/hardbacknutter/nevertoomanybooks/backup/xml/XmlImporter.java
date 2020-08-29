@@ -540,8 +540,8 @@ public class XmlImporter
                                  break;
 
                              default:
-                                 throw new IllegalArgumentException(
-                                         ErrorMsg.UNEXPECTED_VALUE + mTag.type);
+                                 throw new IllegalArgumentException(ErrorMsg.UNEXPECTED_VALUE
+                                                                    + mTag.type);
                          }
 
                      } catch (@NonNull final NumberFormatException e) {

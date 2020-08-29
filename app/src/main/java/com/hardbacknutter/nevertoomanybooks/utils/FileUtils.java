@@ -44,6 +44,7 @@ import java.util.zip.CRC32;
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
 
@@ -140,11 +141,11 @@ public final class FileUtils {
                 return;
             }
             throw new IOException("failed to rename source=" + source
-                                  + " TO destination" + destination);
+                                  + " TO destination=" + destination);
 
         } catch (@NonNull final SecurityException | NullPointerException e) {
             throw new IOException("failed to rename source=" + source
-                                  + " TO destination" + destination, e);
+                                  + " TO destination=" + destination, e);
         }
 
     }
@@ -202,14 +203,14 @@ public final class FileUtils {
 
         final DocumentFile destinationFile = destDir.createFile(mimeType, file.getName());
         if (destinationFile == null) {
-            throw new IOException("destination file was NULL");
+            throw new IOException(ErrorMsg.NULL_OUTPUT_STREAM);
         }
 
         final Uri destinationUri = destinationFile.getUri();
         try (InputStream is = new FileInputStream(file);
              OutputStream os = context.getContentResolver().openOutputStream(destinationUri)) {
             if (os == null) {
-                throw new IOException("OutputStream was NULL");
+                throw new IOException(ErrorMsg.NULL_OUTPUT_STREAM);
             }
             copy(is, os);
         }

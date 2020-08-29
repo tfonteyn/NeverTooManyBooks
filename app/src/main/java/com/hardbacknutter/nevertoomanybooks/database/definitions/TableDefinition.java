@@ -374,7 +374,7 @@ public class TableDefinition {
         final int nameHash = domain.getName().hashCode();
         // Make sure one with the same name is not already in table, can't ignore that, go crash.
         if (mDomainNameCheck.contains(nameHash)) {
-            throw new IllegalArgumentException("A domain '" + domain + "' has already been added");
+            throw new IllegalArgumentException("Duplicate domain=" + domain);
         }
         // Add it
         mDomains.add(domain);

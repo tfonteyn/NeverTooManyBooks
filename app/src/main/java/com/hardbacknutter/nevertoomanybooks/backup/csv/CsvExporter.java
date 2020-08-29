@@ -47,6 +47,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyle;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
+import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
@@ -171,7 +172,7 @@ public class CsvExporter
             // This is by choice so debug is easier.
             //TODO: restructure and allow multi-writes
             if (Integer.bitCount(options) > 1) {
-                throw new IllegalStateException("only one option allowed");
+                throw new IllegalStateException(ErrorMsg.ONLY_ONE_OPTION_ALLOWED);
             }
         }
 

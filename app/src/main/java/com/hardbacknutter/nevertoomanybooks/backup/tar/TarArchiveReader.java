@@ -41,6 +41,7 @@ import com.hardbacknutter.nevertoomanybooks.backup.base.InvalidArchiveException;
 import com.hardbacknutter.nevertoomanybooks.backup.base.Options;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ReaderEntity;
 import com.hardbacknutter.nevertoomanybooks.backup.xml.XmlImporter;
+import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 
 /**
  * Implementation of TAR-specific reader functions.
@@ -177,7 +178,7 @@ public class TarArchiveReader
         if (mInputStream == null) {
             final InputStream is = mContentResolver.openInputStream(getUri());
             if (is == null) {
-                throw new IOException("InputStream was NULL");
+                throw new IOException(ErrorMsg.NULL_INPUT_STREAM);
             }
             mInputStream = new TarArchiveInputStream(new BufferedInputStream(is, BUFFER_SIZE));
         }

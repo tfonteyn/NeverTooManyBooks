@@ -253,12 +253,12 @@ public class ImportFragment
                 if (BuildConfig.IMPORT_CALIBRE) {
                     showQuickOptions(helper);
                 } else {
-                    throw new IllegalStateException("unsupported: " + container);
+                    throw new IllegalArgumentException(ErrorMsg.UNEXPECTED_VALUE + container);
                 }
                 break;
 
             default:
-                throw new IllegalStateException("unsupported: " + container);
+                throw new IllegalArgumentException(ErrorMsg.UNEXPECTED_VALUE + container);
         }
     }
 

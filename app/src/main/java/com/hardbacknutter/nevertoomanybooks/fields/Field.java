@@ -142,13 +142,13 @@ public class Field<T, V extends View> {
      * <p>
      * Unused fields (as configured in the user preferences) will be hidden after this step.
      *
-     * @param prefs  SharedPreferences
-     * @param parent of the field View
+     * @param preferences SharedPreferences
+     * @param parent      of the field View
      */
-    void setParentView(@NonNull final SharedPreferences prefs,
+    void setParentView(@NonNull final SharedPreferences preferences,
                        @NonNull final View parent) {
         mFieldViewAccessor.setView(parent.findViewById(mId));
-        if (isUsed(prefs)) {
+        if (isUsed(preferences)) {
             if (mErrorViewId != 0) {
                 mFieldViewAccessor.setErrorView(parent.findViewById(mErrorViewId));
             }

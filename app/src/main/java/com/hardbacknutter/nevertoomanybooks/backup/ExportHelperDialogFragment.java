@@ -211,8 +211,7 @@ public class ExportHelperDialogFragment
                         break;
 
                     default:
-                        throw new IllegalArgumentException(ErrorMsg.UNEXPECTED_VALUE
-                                                           + position);
+                        throw new IllegalArgumentException(ErrorMsg.UNEXPECTED_VALUE + position);
                 }
             }
 

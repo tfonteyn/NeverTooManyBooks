@@ -369,11 +369,10 @@ public class EditBookActivity
             try {
                 return mTabs.get(position).clazz.newInstance();
 
-            } catch (@NonNull final IllegalAccessException | InstantiationException ignore) {
-                // ignore
+            } catch (@NonNull final IllegalAccessException | InstantiationException e) {
+                // We'll never get here...
+                throw new IllegalStateException(e);
             }
-            // We'll never get here...
-            throw new IllegalStateException();
         }
 
         /** Value class to match up a tab fragment class and the title to use for the tab. */
