@@ -65,7 +65,7 @@ public class EditBookNotesFragment
     @NonNull
     @Override
     Fields getFields() {
-        return mEditHelperVM.getFields(TAG);
+        return mFragmentVM.getFields(TAG);
     }
 
     @Override
@@ -88,9 +88,9 @@ public class EditBookNotesFragment
         addReadCheckboxOnClickListener(prefs);
 
         addAutocomplete(prefs, getField(R.id.price_paid_currency),
-                        mEditHelperVM.getAllPricePaidCurrencyCodes());
+                        () -> mFragmentVM.getAllPricePaidCurrencyCodes());
         addAutocomplete(prefs, getField(R.id.location),
-                        mEditHelperVM.getAllLocations());
+                        () -> mFragmentVM.getAllLocations());
 
         addDatePicker(prefs, getField(R.id.date_acquired), R.string.lbl_date_acquired, true);
 

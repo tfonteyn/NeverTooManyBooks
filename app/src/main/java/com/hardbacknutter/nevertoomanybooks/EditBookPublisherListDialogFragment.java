@@ -428,10 +428,10 @@ public class EditBookPublisherListDialogFragment
             mVb.toolbar.setSubtitle(mBookTitle);
 
             //noinspection ConstantConditions
-            final DiacriticArrayAdapter<String> mNameAdapter = new DiacriticArrayAdapter<>(
+            final DiacriticArrayAdapter<String> nameAdapter = new DiacriticArrayAdapter<>(
                     getContext(), R.layout.dropdown_menu_popup_item, mDb.getPublisherNames());
             mVb.name.setText(mName);
-            mVb.name.setAdapter(mNameAdapter);
+            mVb.name.setAdapter(nameAdapter);
         }
 
         @Override

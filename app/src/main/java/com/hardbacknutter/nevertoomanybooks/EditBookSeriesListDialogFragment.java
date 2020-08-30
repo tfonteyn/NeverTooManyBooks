@@ -453,10 +453,10 @@ public class EditBookSeriesListDialogFragment
             mVb.toolbar.setSubtitle(mBookTitle);
 
             //noinspection ConstantConditions
-            final DiacriticArrayAdapter<String> seriesNameAdapter = new DiacriticArrayAdapter<>(
+            final DiacriticArrayAdapter<String> nameAdapter = new DiacriticArrayAdapter<>(
                     getContext(), R.layout.dropdown_menu_popup_item, mDb.getSeriesTitles());
             mVb.seriesTitle.setText(mTitle);
-            mVb.seriesTitle.setAdapter(seriesNameAdapter);
+            mVb.seriesTitle.setAdapter(nameAdapter);
 
             mVb.cbxIsComplete.setChecked(mIsComplete);
             mVb.seriesNum.setText(mNumber);

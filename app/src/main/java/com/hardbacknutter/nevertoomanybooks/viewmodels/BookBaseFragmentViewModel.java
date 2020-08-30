@@ -73,10 +73,6 @@ public abstract class BookBaseFragmentViewModel
         }
     }
 
-    public DAO getDb() {
-        return mDb;
-    }
-
     @NonNull
     public Fields getFields(@Nullable final String key) {
         Fields fields;

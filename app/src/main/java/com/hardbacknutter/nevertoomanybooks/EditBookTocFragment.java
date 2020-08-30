@@ -174,7 +174,7 @@ public class EditBookTocFragment
     @NonNull
     @Override
     Fields getFields() {
-        return mEditHelperVM.getFields(TAG);
+        return mFragmentVM.getFields(TAG);
     }
 
     @Override
@@ -466,7 +466,7 @@ public class EditBookTocFragment
         final TocEntry tocEntry = mList.get(position);
         //noinspection ConstantConditions
         StandardDialogs.deleteTocEntry(getContext(), tocEntry, () -> {
-            if (mEditHelperVM.deleteTocEntry(getContext(), tocEntry.getId())) {
+            if (mFragmentVM.deleteTocEntry(getContext(), tocEntry.getId())) {
                 mList.remove(tocEntry);
                 mListAdapter.notifyItemRemoved(position);
             }
@@ -487,7 +487,7 @@ public class EditBookTocFragment
                 //noinspection ConstantConditions
                 mAuthorAdapter = new DiacriticArrayAdapter<>(
                         getContext(), R.layout.dropdown_menu_popup_item,
-                        mEditHelperVM.getAllAuthorNames());
+                        mFragmentVM.getAllAuthorNames());
                 mVb.author.setAdapter(mAuthorAdapter);
             }
 
@@ -766,7 +766,7 @@ public class EditBookTocFragment
 
             static void searchNextEdition(@NonNull final Fragment fragment,
                                           @NonNull final String requestKey) {
-                final Bundle result = new Bundle();
+                final Bundle result = new Bundle(1);
                 result.putBoolean(SEARCH_NEXT_EDITION, true);
                 fragment.getParentFragmentManager().setFragmentResult(requestKey, result);
             }
@@ -775,7 +775,7 @@ public class EditBookTocFragment
                                    @NonNull final String requestKey,
                                    @Book.TocBits long tocBitMask,
                                    @NonNull ArrayList<TocEntry> tocEntries) {
-                final Bundle result = new Bundle();
+                final Bundle result = new Bundle(2);
                 result.putLong(TOC_BIT_MASK, tocBitMask);
                 result.putParcelableArrayList(TOC_LIST, tocEntries);
                 fragment.getParentFragmentManager().setFragmentResult(requestKey, result);

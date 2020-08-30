@@ -384,7 +384,7 @@ public class EditBookActivity
             final int titleId;
 
             TabInfo(@NonNull final Class<? extends Fragment> clazz,
-                    final int titleId) {
+                    @StringRes final int titleId) {
                 this.clazz = clazz;
                 this.titleId = titleId;
             }

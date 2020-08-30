@@ -57,7 +57,7 @@ public class EditBookPublicationFragment
     @NonNull
     @Override
     Fields getFields() {
-        return mEditHelperVM.getFields(TAG);
+        return mFragmentVM.getFields(TAG);
     }
 
     @Override
@@ -97,10 +97,10 @@ public class EditBookPublicationFragment
         // With all Views populated, (re-)add the helpers which rely on fields having valid views
 
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
-        addAutocomplete(prefs, getField(R.id.format), mEditHelperVM.getAllFormats());
-        addAutocomplete(prefs, getField(R.id.color), mEditHelperVM.getAllColors());
+        addAutocomplete(prefs, getField(R.id.format), () -> mFragmentVM.getAllFormats());
+        addAutocomplete(prefs, getField(R.id.color), () -> mFragmentVM.getAllColors());
         addAutocomplete(prefs, getField(R.id.price_listed_currency),
-                        mEditHelperVM.getAllListPriceCurrencyCodes());
+                        () -> mFragmentVM.getAllListPriceCurrencyCodes());
 
         addPartialDatePicker(prefs, getField(R.id.date_published),
                              R.string.lbl_date_published, false);

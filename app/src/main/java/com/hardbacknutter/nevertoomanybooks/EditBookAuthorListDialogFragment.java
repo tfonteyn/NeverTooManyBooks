@@ -487,17 +487,17 @@ public class EditBookAuthorListDialogFragment
 
             mVb.toolbar.setSubtitle(mBookTitle);
 
-            final DiacriticArrayAdapter<String> mFamilyNameAdapter = new DiacriticArrayAdapter<>(
+            final DiacriticArrayAdapter<String> familyNameAdapter = new DiacriticArrayAdapter<>(
                     getContext(), R.layout.dropdown_menu_popup_item,
                     mDb.getAuthorNames(DBDefinitions.KEY_AUTHOR_FAMILY_NAME));
             mVb.familyName.setText(mFamilyName);
-            mVb.familyName.setAdapter(mFamilyNameAdapter);
+            mVb.familyName.setAdapter(familyNameAdapter);
 
-            final DiacriticArrayAdapter<String> mGivenNameAdapter = new DiacriticArrayAdapter<>(
+            final DiacriticArrayAdapter<String> givenNameAdapter = new DiacriticArrayAdapter<>(
                     getContext(), R.layout.dropdown_menu_popup_item,
                     mDb.getAuthorNames(DBDefinitions.KEY_AUTHOR_GIVEN_NAMES));
             mVb.givenNames.setText(mGivenNames);
-            mVb.givenNames.setAdapter(mGivenNameAdapter);
+            mVb.givenNames.setAdapter(givenNameAdapter);
 
             mVb.cbxIsComplete.setChecked(mIsComplete);
 

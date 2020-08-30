@@ -43,7 +43,7 @@ public class EditBookExternalIdFragment
     @NonNull
     @Override
     Fields getFields() {
-        return mEditHelperVM.getFields(TAG);
+        return mFragmentVM.getFields(TAG);
     }
 
     @Override

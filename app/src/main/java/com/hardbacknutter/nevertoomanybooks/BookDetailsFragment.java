@@ -96,8 +96,8 @@ public class BookDetailsFragment
     private View.OnTouchListener mOnTouchListener;
     /** Handle next/previous paging in the flattened booklist; called by mOnTouchListener. */
     private GestureDetector mGestureDetector;
-    /** The details helper View model. Must be in the Activity scope. */
-    private BookDetailsFragmentViewModel mDetailsHelperVM;
+    /** The details helper View model. */
+    private BookDetailsFragmentViewModel mFragmentVM;
     /** View Binding. */
     private FragmentBookDetailsBinding mVb;
     /** Listen for changes coming from child (dialog) fragments. */
@@ -124,7 +124,7 @@ public class BookDetailsFragment
     @NonNull
     @Override
     Fields getFields() {
-        return mDetailsHelperVM.getFields(null);
+        return mFragmentVM.getFields(null);
     }
 
     @Override
@@ -174,9 +174,9 @@ public class BookDetailsFragment
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        mDetailsHelperVM = new ViewModelProvider(this).get(BookDetailsFragmentViewModel.class);
+        mFragmentVM = new ViewModelProvider(this).get(BookDetailsFragmentViewModel.class);
         //noinspection ConstantConditions
-        mDetailsHelperVM.init(getContext(), getArguments(), mBookViewModel.getBook());
+        mFragmentVM.init(getContext(), getArguments(), mBookViewModel.getBook());
 
         mGrSendOneBookTask = new ViewModelProvider(this).get(GrSendOneBookTask.class);
         mGrSendOneBookTask.onProgressUpdate().observe(getViewLifecycleOwner(), this::onProgress);
@@ -311,7 +311,7 @@ public class BookDetailsFragment
 
             default: {
                 // handle any cover image request codes
-                final int cIdx = mDetailsHelperVM.getAndClearCurrentCoverHandlerIndex();
+                final int cIdx = mFragmentVM.getAndClearCurrentCoverHandlerIndex();
                 if (cIdx >= 0 && cIdx < mCoverHandler.length) {
                     if (mCoverHandler[cIdx] != null) {
                         if (mCoverHandler[cIdx].onActivityResult(requestCode, resultCode, data)) {
@@ -341,7 +341,7 @@ public class BookDetailsFragment
     /** Called by the CoverHandler when a context menu is selected. */
     @Override
     public void setCurrentCoverIndex(@IntRange(from = 0) final int cIdx) {
-        mDetailsHelperVM.setCurrentCoverHandlerIndex(cIdx);
+        mFragmentVM.setCurrentCoverHandlerIndex(cIdx);
     }
 
     /**
@@ -679,12 +679,12 @@ public class BookDetailsFragment
             }
 
             if ((e1.getX() - e2.getX()) > SENSITIVITY) {
-                if (mDetailsHelperVM.move(mBookViewModel.getBook(), true)) {
+                if (mFragmentVM.move(mBookViewModel.getBook(), true)) {
                     populateViews(getFields());
                     return true;
                 }
             } else if ((e2.getX() - e1.getX()) > SENSITIVITY) {
-                if (mDetailsHelperVM.move(mBookViewModel.getBook(), false)) {
+                if (mFragmentVM.move(mBookViewModel.getBook(), false)) {
                     populateViews(getFields());
                     return true;
                 }
