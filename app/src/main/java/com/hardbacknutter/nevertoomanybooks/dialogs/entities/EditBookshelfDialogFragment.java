@@ -231,7 +231,7 @@ public class EditBookshelfDialogFragment
                                @NonNull final String requestKey,
                                final long bookshelfId,
                                final int booksMoved) {
-            final Bundle result = new Bundle();
+            final Bundle result = new Bundle(2);
             result.putLong(BOOKSHELF_ID, bookshelfId);
             result.putInt(BOOKS_MOVED, booksMoved);
             fragment.getParentFragmentManager().setFragmentResult(requestKey, result);

@@ -214,7 +214,7 @@ public class EditTocEntryDialogFragment
 
         // We don't update/insert to the database here, but just send the data back.
         // TOCs are updated in bulk/list per Book
-        final Bundle result = new Bundle();
+        final Bundle result = new Bundle(2);
         result.putParcelable(BKEY_TOC_ENTRY, mTocEntry);
         result.putBoolean(BKEY_HAS_MULTIPLE_AUTHORS, mHasMultipleAuthors);
 

@@ -369,7 +369,7 @@ public class CoverBrowserDialogFragment
                                @NonNull final String requestKey,
                                @IntRange(from = 0) final int cIdx,
                                @NonNull final String fileSpec) {
-            final Bundle result = new Bundle();
+            final Bundle result = new Bundle(2);
             result.putInt(COVER_INDEX, cIdx);
             result.putString(COVER_FILE_SPEC, fileSpec);
             fragment.getParentFragmentManager().setFragmentResult(requestKey, result);

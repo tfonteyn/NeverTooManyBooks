@@ -73,7 +73,7 @@ public interface BookChangedListener
     static void sendResult(@NonNull final Fragment fragment,
                            @NonNull final String requestKey,
                            @FieldChanges int fieldChanges) {
-        final Bundle result = new Bundle();
+        final Bundle result = new Bundle(1);
         result.putInt(FIELDS, fieldChanges);
         fragment.getParentFragmentManager().setFragmentResult(requestKey, result);
     }
@@ -83,7 +83,7 @@ public interface BookChangedListener
                            final long bookId,
                            @FieldChanges int fieldChanges,
                            @Nullable final Bundle data) {
-        final Bundle result = new Bundle();
+        final Bundle result = new Bundle(3);
         result.putLong(BOOK_ID, bookId);
         result.putInt(FIELDS, fieldChanges);
         result.putBundle(DATA, data);

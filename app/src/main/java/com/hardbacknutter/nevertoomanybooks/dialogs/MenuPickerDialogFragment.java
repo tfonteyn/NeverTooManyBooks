@@ -181,7 +181,7 @@ public class MenuPickerDialogFragment
                                @NonNull final String requestKey,
                                @IdRes final int menuItemId,
                                final int position) {
-            final Bundle result = new Bundle();
+            final Bundle result = new Bundle(2);
             result.putInt(MENU_ITEM, menuItemId);
             result.putInt(POSITION, position);
             fragment.getParentFragmentManager().setFragmentResult(requestKey, result);

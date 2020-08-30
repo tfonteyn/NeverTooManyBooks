@@ -88,7 +88,7 @@ public abstract class OptionsDialogBase<T extends Parcelable>
 
         static void sendCancelled(@NonNull final Fragment fragment,
                                   @NonNull final String requestKey) {
-            final Bundle result = new Bundle();
+            final Bundle result = new Bundle(1);
             result.putBoolean(CANCELLED, true);
             fragment.getParentFragmentManager().setFragmentResult(requestKey, result);
         }
@@ -96,7 +96,7 @@ public abstract class OptionsDialogBase<T extends Parcelable>
         static <T extends Parcelable> void sendResult(@NonNull final Fragment fragment,
                                                       @NonNull final String requestKey,
                                                       @NonNull final T options) {
-            final Bundle result = new Bundle();
+            final Bundle result = new Bundle(1);
             result.putParcelable(OPTIONS, options);
             fragment.getParentFragmentManager().setFragmentResult(requestKey, result);
         }

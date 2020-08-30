@@ -219,7 +219,7 @@ public class StylePickerDialogFragment
         static void sendResult(@NonNull final Fragment fragment,
                                @NonNull final String requestKey,
                                @NonNull final String uuid) {
-            final Bundle result = new Bundle();
+            final Bundle result = new Bundle(1);
             result.putString(UUID, uuid);
             fragment.getParentFragmentManager().setFragmentResult(requestKey, result);
         }
