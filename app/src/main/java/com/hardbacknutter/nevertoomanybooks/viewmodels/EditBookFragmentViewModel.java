@@ -21,7 +21,6 @@ package com.hardbacknutter.nevertoomanybooks.viewmodels;
 
 import android.content.Context;
 
-import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 
 import java.util.List;
@@ -53,18 +52,6 @@ public class EditBookFragmentViewModel
 
     /** Field drop down list. */
     private List<String> mAuthorNames;
-
-    @IdRes
-    private int[] mCurrentDialogFieldId;
-
-    @IdRes
-    public int[] getCurrentDialogFieldId() {
-        return mCurrentDialogFieldId;
-    }
-
-    public void setCurrentDialogFieldId(@IdRes final int... currentDialogFieldId) {
-        mCurrentDialogFieldId = currentDialogFieldId;
-    }
 
     @NonNull
     public List<Bookshelf> getAllBookshelves() {

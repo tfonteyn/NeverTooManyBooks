@@ -50,6 +50,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.function.Supplier;
 
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataEditor;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
@@ -77,15 +78,14 @@ public abstract class EditBookBaseFragment
     private static final String RK_DATE_PICKER_SINGLE = TAG + ":rk:datePickerSingle";
     /** Tag/requestKey for WrappedMaterialDatePicker. */
     private static final String RK_DATE_PICKER_RANGE = TAG + ":rk:datePickerRange";
-
-    /** The view model. */
-    EditBookFragmentViewModel mEditHelperVM;
-
     /** Dialog listener (strong reference). */
     private final PartialDatePickerDialogFragment.OnResultListener mPartialDatePickerListener =
             this::onPartialDateSet;
     /** Dialog listener (strong reference). */
-    private final WrappedMaterialDatePicker.OnResultListener mDatePickerListener = this::onDateSet;
+    private final WrappedMaterialDatePicker.OnResultListener mDatePickerListener =
+            this::onDateSet;
+    /** The view model. */
+    EditBookFragmentViewModel mFragmentVM;
 
     /**
      * Convert a LocalDate to an Instant in time.
@@ -140,10 +140,10 @@ public abstract class EditBookBaseFragment
         Objects.requireNonNull(fragmentTag, ErrorMsg.NULL_FRAGMENT_TAG);
 
         //noinspection ConstantConditions
-        mEditHelperVM = new ViewModelProvider(getActivity())
+        mFragmentVM = new ViewModelProvider(getActivity())
                 .get(fragmentTag, EditBookFragmentViewModel.class);
 
-        mEditHelperVM.init();
+        mFragmentVM.init();
     }
 
     @Override
@@ -151,9 +151,9 @@ public abstract class EditBookBaseFragment
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        if (mEditHelperVM.shouldInitFields()) {
+        if (mFragmentVM.shouldInitFields()) {
             onInitFields(getFields());
-            mEditHelperVM.setFieldsAreInitialised();
+            mFragmentVM.setFieldsAreInitialised();
         }
     }
 
@@ -250,18 +250,18 @@ public abstract class EditBookBaseFragment
      *
      * @param preferences SharedPreferences
      * @param field       to setup
-     * @param list        with auto complete values
+     * @param list        supplier with auto complete values
      */
     void addAutocomplete(@NonNull final SharedPreferences preferences,
                          @NonNull final Field<String, AutoCompleteTextView> field,
-                         @NonNull final List<String> list) {
+                         @NonNull final Supplier<List<String>> list) {
 
-        // only bother when it's in use and we have a list
-        if (field.isUsed(preferences) && !list.isEmpty()) {
+        // only bother when it's in use
+        if (field.isUsed(preferences)) {
             final FieldFormatter<String> formatter = field.getAccessor().getFormatter();
             //noinspection ConstantConditions
             final Fields.FormattedDiacriticArrayAdapter adapter =
-                    new Fields.FormattedDiacriticArrayAdapter(getContext(), list, formatter);
+                    new Fields.FormattedDiacriticArrayAdapter(getContext(), list.get(), formatter);
 
             final AutoCompleteTextView view = field.getAccessor().getView();
             //noinspection ConstantConditions
@@ -315,14 +315,14 @@ public abstract class EditBookBaseFragment
                     startSelection = endSelection;
                     endSelection = tmp;
                 }
-                mEditHelperVM.setCurrentDialogFieldId(fieldStartDate.getId(), fieldEndDate.getId());
 
                 new WrappedMaterialDatePicker<>(
                         MaterialDatePicker.Builder
                                 .dateRangePicker()
                                 .setTitleText(dialogTitleIdSpan)
                                 .setSelection(new Pair<>(startSelection, endSelection))
-                                .build()
+                                .build(),
+                        fieldStartDate.getId(), fieldEndDate.getId()
                 ).show(getChildFragmentManager(), RK_DATE_PICKER_RANGE);
             });
 
@@ -349,14 +349,14 @@ public abstract class EditBookBaseFragment
             field.getAccessor().getView().setOnClickListener(v -> {
                 final Instant time = getInstant(field, todayIfNone);
                 final Long selection = time != null ? time.toEpochMilli() : null;
-                mEditHelperVM.setCurrentDialogFieldId(field.getId());
 
                 new WrappedMaterialDatePicker<>(
                         MaterialDatePicker.Builder
                                 .datePicker()
                                 .setTitleText(dialogTitleId)
                                 .setSelection(selection)
-                                .build())
+                                .build(),
+                        field.getId())
                         .show(getChildFragmentManager(), RK_DATE_PICKER_SINGLE);
             });
         }
@@ -378,16 +378,17 @@ public abstract class EditBookBaseFragment
         if (field.isUsed(preferences)) {
             //noinspection ConstantConditions
             field.getAccessor().getView().setOnClickListener(v -> {
-                mEditHelperVM.setCurrentDialogFieldId(field.getId());
                 PartialDatePickerDialogFragment
                         .newInstance(RK_DATE_PICKER_PARTIAL, dialogTitleId,
+                                     field.getId(),
                                      field.getAccessor().getValue(), todayIfNone)
                         .show(getChildFragmentManager(), PartialDatePickerDialogFragment.TAG);
             });
         }
     }
 
-    private void onPartialDateSet(@Nullable final Integer year,
+    private void onPartialDateSet(@IdRes final int fieldId,
+                                  @Nullable final Integer year,
                                   @Nullable final Integer month,
                                   @Nullable final Integer day) {
         String date;
@@ -413,28 +414,25 @@ public abstract class EditBookBaseFragment
             }
         }
 
-        onDateSet(0, date);
+        onDateSet(fieldId, date);
     }
 
-    private void onDateSet(@NonNull final long... selections) {
-        int index = 0;
-        for (long selection : selections) {
-            if (selection == WrappedMaterialDatePicker.NO_SELECTION) {
-                onDateSet(index, "");
+    private void onDateSet(@NonNull final int[] fieldIds,
+                           @NonNull final long[] selections) {
+
+        for (int i = 0; i < fieldIds.length; i++) {
+            if (selections[i] == WrappedMaterialDatePicker.NO_SELECTION) {
+                onDateSet(fieldIds[i], "");
             } else {
-                onDateSet(index, Instant.ofEpochMilli(selection)
-                                        .atZone(ZoneId.systemDefault())
-                                        .format(DateTimeFormatter.ISO_LOCAL_DATE));
+                onDateSet(fieldIds[i], Instant.ofEpochMilli(selections[i])
+                                              .atZone(ZoneId.systemDefault())
+                                              .format(DateTimeFormatter.ISO_LOCAL_DATE));
             }
-            index++;
         }
     }
 
-    private void onDateSet(@IdRes final int fieldIndex,
+    private void onDateSet(@IdRes final int fieldId,
                            @NonNull final String value) {
-
-        @IdRes
-        final int fieldId = mEditHelperVM.getCurrentDialogFieldId()[fieldIndex];
 
         final Field<String, TextView> field = getField(fieldId);
         field.getAccessor().setValue(value);
@@ -455,7 +453,7 @@ public abstract class EditBookBaseFragment
                                                       @NonNull final String requestKey,
                                                       @NonNull final T original,
                                                       @NonNull final T modified) {
-            final Bundle result = new Bundle();
+            final Bundle result = new Bundle(2);
             result.putParcelable(ORIGINAL, original);
             result.putParcelable(MODIFIED, modified);
             fragment.getParentFragmentManager().setFragmentResult(requestKey, result);

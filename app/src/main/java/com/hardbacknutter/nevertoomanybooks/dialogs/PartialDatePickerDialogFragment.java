@@ -28,6 +28,7 @@ import android.view.ViewGroup;
 import android.widget.NumberPicker;
 
 import androidx.annotation.CallSuper;
+import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
@@ -66,6 +67,9 @@ public class PartialDatePickerDialogFragment
     private static final String BKEY_REQUEST_KEY = TAG + ":rk";
     /** a standard sql style date string, must be correct. */
     private static final String BKEY_DATE = TAG + ":date";
+    /** Argument. */
+    private static final String BKEY_FIELD_ID = TAG + ":fieldId";
+
     /** Displayed to user: unset month. */
     private static final String UNKNOWN_MONTH = "---";
     /** Displayed to user: unset day. */
@@ -78,6 +82,8 @@ public class PartialDatePickerDialogFragment
     private static final String SIS_BKEY_DAY = TAG + ":day";
     /** FragmentResultListener request key to use for our response. */
     private String mRequestKey;
+    @IdRes
+    private int mFieldId;
     /** Currently displayed; {@code 0} if empty/invalid. */
     private int mYear;
     /**
@@ -134,6 +140,7 @@ public class PartialDatePickerDialogFragment
      *
      * @param requestKey    for use with the FragmentResultListener
      * @param dialogTitleId resource id for the dialog title
+     * @param fieldId       this dialog operates on
      * @param currentValue  the current value of the field
      * @param todayIfNone   {@code true} if we should use 'today' if the field was empty.
      *
@@ -142,6 +149,7 @@ public class PartialDatePickerDialogFragment
     public static DialogFragment newInstance(@SuppressWarnings("SameParameterValue")
                                              @NonNull final String requestKey,
                                              @StringRes final int dialogTitleId,
+                                             @IdRes final int fieldId,
                                              @Nullable final String currentValue,
                                              final boolean todayIfNone) {
         final String dateStr;
@@ -154,9 +162,10 @@ public class PartialDatePickerDialogFragment
         }
 
         final DialogFragment frag = new PartialDatePickerDialogFragment();
-        final Bundle args = new Bundle(3);
+        final Bundle args = new Bundle(4);
         args.putString(BKEY_REQUEST_KEY, requestKey);
         args.putInt(StandardDialogs.BKEY_DIALOG_TITLE, dialogTitleId);
+        args.putInt(BKEY_FIELD_ID, fieldId);
         args.putString(BKEY_DATE, dateStr);
         frag.setArguments(args);
         return frag;
@@ -169,6 +178,7 @@ public class PartialDatePickerDialogFragment
         final Bundle args = requireArguments();
         mRequestKey = args.getString(BKEY_REQUEST_KEY);
         mDialogTitleId = args.getInt(StandardDialogs.BKEY_DIALOG_TITLE);
+        mFieldId = args.getInt(BKEY_FIELD_ID);
 
         setupDate(savedInstanceState);
         // can't have a 0 year. (but month/day can be 0)
@@ -245,7 +255,7 @@ public class PartialDatePickerDialogFragment
                           Snackbar.LENGTH_LONG).show();
 
         } else {
-            OnResultListener.sendResult(this, mRequestKey, mYear, mMonth, mDay);
+            OnResultListener.sendResult(this, mRequestKey, mFieldId, mYear, mMonth, mDay);
             return true;
         }
 
@@ -421,16 +431,19 @@ public class PartialDatePickerDialogFragment
     public interface OnResultListener
             extends FragmentResultListener {
 
+        /* private. */ String FIELD_ID = "fieldId";
         /* private. */ String YEAR = "year";
         /* private. */ String MONTH = "month";
         /* private. */ String DAY = "day";
 
         static void sendResult(@NonNull final Fragment fragment,
                                @NonNull final String requestKey,
+                               @IdRes final int fieldId,
                                final int year,
                                final int month,
                                final int day) {
-            final Bundle result = new Bundle();
+            final Bundle result = new Bundle(4);
+            result.putInt(FIELD_ID, fieldId);
             result.putInt(YEAR, year);
             result.putInt(MONTH, month);
             result.putInt(DAY, day);
@@ -441,7 +454,10 @@ public class PartialDatePickerDialogFragment
         @Override
         default void onFragmentResult(@NonNull final String requestKey,
                                       @NonNull final Bundle result) {
-            onResult(result.getInt(YEAR), result.getInt(MONTH), result.getInt(DAY));
+            onResult(result.getInt(FIELD_ID),
+                     result.getInt(YEAR),
+                     result.getInt(MONTH),
+                     result.getInt(DAY));
         }
 
         /**
@@ -451,7 +467,8 @@ public class PartialDatePickerDialogFragment
          * @param month 1..12 based, or {@code 0} for none
          * @param day   1..31 based, or {@code 0} for none
          */
-        void onResult(int year,
+        void onResult(@IdRes int fieldId,
+                      int year,
                       int month,
                       int day);
     }

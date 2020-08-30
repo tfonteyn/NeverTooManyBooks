@@ -21,6 +21,7 @@ package com.hardbacknutter.nevertoomanybooks.widgets;
 
 import android.os.Bundle;
 
+import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.util.Pair;
@@ -83,11 +84,15 @@ public class WrappedMaterialDatePicker<S>
 
     /** The wrapped picker. */
     private final MaterialDatePicker<S> mPicker;
+    @IdRes
+    private final int[] mFieldIds;
     /** key to use for the FragmentResultListener. */
     private String mRequestKey;
 
-    public WrappedMaterialDatePicker(@NonNull final MaterialDatePicker<S> picker) {
+    public WrappedMaterialDatePicker(@NonNull final MaterialDatePicker<S> picker,
+                                     @NonNull @IdRes final int... fieldIds) {
         mPicker = picker;
+        mFieldIds = fieldIds;
     }
 
     /**
@@ -109,18 +114,18 @@ public class WrappedMaterialDatePicker<S>
     @Override
     public void onPositiveButtonClick(@Nullable final S selection) {
         if (selection == null) {
-            OnResultListener.sendResult(mPicker, mRequestKey, NO_SELECTION);
+            OnResultListener.sendResult(mPicker, mRequestKey, mFieldIds, NO_SELECTION);
 
         } else if (selection instanceof Long) {
             final long date = (Long) selection;
-            OnResultListener.sendResult(mPicker, mRequestKey, date);
+            OnResultListener.sendResult(mPicker, mRequestKey, mFieldIds, date);
 
         } else if (selection instanceof Pair) {
             //noinspection unchecked
             final Pair<Long, Long> range = (Pair<Long, Long>) selection;
             final long start = range.first != null ? range.first : NO_SELECTION;
             final long end = range.second != null ? range.second : NO_SELECTION;
-            OnResultListener.sendResult(mPicker, mRequestKey, start, end);
+            OnResultListener.sendResult(mPicker, mRequestKey, mFieldIds, start, end);
 
         } else {
             throw new IllegalStateException(selection.toString());
@@ -130,12 +135,15 @@ public class WrappedMaterialDatePicker<S>
     public interface OnResultListener
             extends FragmentResultListener {
 
+        /* private. */ String FIELD_ID = "fieldId";
         /* private. */ String SELECTIONS = "selections";
 
         static void sendResult(@NonNull final Fragment fragment,
                                @NonNull final String requestKey,
+                               @NonNull final int[] fieldIds,
                                @Nullable final long... selection) {
-            final Bundle result = new Bundle();
+            final Bundle result = new Bundle(2);
+            result.putIntArray(FIELD_ID, fieldIds);
             result.putLongArray(SELECTIONS, selection);
             fragment.getParentFragmentManager().setFragmentResult(requestKey, result);
         }
@@ -143,9 +151,11 @@ public class WrappedMaterialDatePicker<S>
         @Override
         default void onFragmentResult(@NonNull final String requestKey,
                                       @NonNull final Bundle result) {
-            onResult(Objects.requireNonNull(result.getLongArray(SELECTIONS)));
+            onResult(Objects.requireNonNull(result.getIntArray(FIELD_ID)),
+                     Objects.requireNonNull(result.getLongArray(SELECTIONS)));
         }
 
-        void onResult(@NonNull final long... selections);
+        void onResult(@NonNull int[] fieldIds,
+                      @NonNull long[] selections);
     }
 }

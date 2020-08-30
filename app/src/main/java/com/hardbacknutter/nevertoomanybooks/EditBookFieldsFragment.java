@@ -74,13 +74,13 @@ public class EditBookFieldsFragment
     /** FragmentResultListener request key. */
     private static final String RK_EDIT_BOOKSHELVES = CheckListDialogFragment.TAG + ":rk";
 
-    private final CheckListDialogFragment.OnResultListener mOnCheckListListener = selectedItems -> {
-        final int fieldId = mEditHelperVM.getCurrentDialogFieldId()[0];
-        final Field<List<Entity>, TextView> field = getField(fieldId);
-        mBookViewModel.getBook().putParcelableArrayList(field.getKey(), selectedItems);
-        field.getAccessor().setValue(selectedItems);
-        field.onChanged(true);
-    };
+    private final CheckListDialogFragment.OnResultListener mOnCheckListListener =
+            (fieldId, selectedItems) -> {
+                final Field<List<Entity>, TextView> field = getField(fieldId);
+                mBookViewModel.getBook().putParcelableArrayList(field.getKey(), selectedItems);
+                field.getAccessor().setValue(selectedItems);
+                field.onChanged(true);
+            };
 
     /** manage the validation check next to the ISBN field. */
     private ISBN.ValidationTextWatcher mIsbnValidationTextWatcher;
@@ -98,7 +98,7 @@ public class EditBookFieldsFragment
     @NonNull
     @Override
     Fields getFields() {
-        return mEditHelperVM.getFields(TAG);
+        return mFragmentVM.getFields(TAG);
     }
 
     @Override
@@ -166,14 +166,16 @@ public class EditBookFieldsFragment
         // Bookshelves editor (dialog)
         if (getField(R.id.bookshelves).isUsed(prefs)) {
             mVb.bookshelves.setOnClickListener(v -> {
-                mEditHelperVM.setCurrentDialogFieldId(R.id.bookshelves);
+                final ArrayList<Entity> allItems =
+                        new ArrayList<>(mFragmentVM.getAllBookshelves());
+                final ArrayList<Entity> selectedItems =
+                        new ArrayList<>(mBookViewModel.getBook().getParcelableArrayList(
+                                Book.BKEY_BOOKSHELF_ARRAY));
                 CheckListDialogFragment
                         .newInstance(RK_EDIT_BOOKSHELVES,
                                      getString(R.string.lbl_bookshelves_long),
-                                     new ArrayList<>(mEditHelperVM.getAllBookshelves()),
-                                     new ArrayList<>(
-                                             mBookViewModel.getBook().getParcelableArrayList(
-                                                     Book.BKEY_BOOKSHELF_ARRAY)))
+                                     R.id.bookshelves,
+                                     allItems, selectedItems)
                         .show(getChildFragmentManager(), CheckListDialogFragment.TAG);
             });
         }
@@ -198,8 +200,8 @@ public class EditBookFieldsFragment
         // With all Views populated, (re-)add the helpers which rely on fields having valid views
 
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
-        addAutocomplete(prefs, getField(R.id.genre), mEditHelperVM.getAllGenres());
-        addAutocomplete(prefs, getField(R.id.language), mEditHelperVM.getAllLanguagesCodes());
+        addAutocomplete(prefs, getField(R.id.genre), () -> mFragmentVM.getAllGenres());
+        addAutocomplete(prefs, getField(R.id.language), () -> mFragmentVM.getAllLanguagesCodes());
     }
 
     @Override
@@ -275,7 +277,7 @@ public class EditBookFieldsFragment
     /** Called by the CoverHandler when a context menu is selected. */
     @Override
     public void setCurrentCoverIndex(@IntRange(from = 0) final int cIdx) {
-        mEditHelperVM.setCurrentCoverHandlerIndex(cIdx);
+        mFragmentVM.setCurrentCoverHandlerIndex(cIdx);
     }
 
     @Override
@@ -366,7 +368,7 @@ public class EditBookFieldsFragment
 
             default: {
                 // handle any cover image request codes
-                final int cIdx = mEditHelperVM.getAndClearCurrentCoverHandlerIndex();
+                final int cIdx = mFragmentVM.getAndClearCurrentCoverHandlerIndex();
                 if (cIdx >= 0 && cIdx < mCoverHandler.length) {
                     if (mCoverHandler[cIdx] != null) {
                         if (mCoverHandler[cIdx].onActivityResult(requestCode, resultCode, data)) {
