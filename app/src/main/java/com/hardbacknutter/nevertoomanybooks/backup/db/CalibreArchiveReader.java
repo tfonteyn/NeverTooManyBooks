@@ -43,6 +43,7 @@ import com.hardbacknutter.nevertoomanybooks.database.dbsync.Synchronizer;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
@@ -168,6 +169,10 @@ class CalibreArchiveReader
         final ArrayList<Series> mSeries = new ArrayList<>();
         final ArrayList<Publisher> mPublishers = new ArrayList<>();
 
+        // The default Bookshelf to which all books will be added.
+        final Bookshelf bookshelf = Bookshelf.getBookshelf(context, mDb, Bookshelf.PREFERRED,
+                                                           Bookshelf.DEFAULT);
+
         int txRowCount = 0;
         long lastUpdate = 0;
         // we only update progress every PROGRESS_UPDATE_INTERVAL ms.
@@ -223,9 +228,9 @@ class CalibreArchiveReader
                                source.getString(colLastModified));
 
                 if (!source.isNull(colSeriesName)) {
-                    String seriesNr = source.getString(colSeriesIndex);
-                    String seriesName = source.getString(colSeriesName);
-                    Series series = Series.from(seriesName);
+                    final String seriesNr = source.getString(colSeriesIndex);
+                    final String seriesName = source.getString(colSeriesName);
+                    final Series series = Series.from(seriesName);
                     if (!seriesNr.isEmpty() && !"0.0".equals(seriesNr)) {
                         series.setNumber(seriesNr);
                     }
@@ -236,14 +241,14 @@ class CalibreArchiveReader
 
                 try (Cursor cursor = mCalibreDb.rawQuery(SQL_SELECT_AUTHORS, calibreParam)) {
                     while (cursor.moveToNext()) {
-                        String name = cursor.getString(0);
+                        final String name = cursor.getString(0);
                         mAuthors.add(Author.from(name));
                     }
                 }
 
                 try (Cursor cursor = mCalibreDb.rawQuery(SQL_SELECT_PUBLISHERS, calibreParam)) {
                     while (cursor.moveToNext()) {
-                        String name = cursor.getString(0);
+                        final String name = cursor.getString(0);
                         mPublishers.add(Publisher.from(name));
                     }
                 }
@@ -284,6 +289,7 @@ class CalibreArchiveReader
                         }
                     }
                 }
+
                 if (!mAuthors.isEmpty()) {
                     book.putParcelableArrayList(Book.BKEY_AUTHOR_ARRAY, mAuthors);
                 }
@@ -295,6 +301,8 @@ class CalibreArchiveReader
                 }
 
                 book.putString(DBDefinitions.KEY_FORMAT, mEBookString);
+
+                book.getParcelableArrayList(Book.BKEY_BOOKSHELF_ARRAY).add(bookshelf);
 
                 try {
                     // check if the book exists in our database, and fetch it's id.
@@ -336,7 +344,8 @@ class CalibreArchiveReader
 
                     } else {
                         // The book does NOT exist in our database
-                        long insId = mDb.insert(context, book, DAO.BOOK_FLAG_IS_BATCH_OPERATION);
+                        final long insId = mDb.insert(context, book,
+                                                      DAO.BOOK_FLAG_IS_BATCH_OPERATION);
                         importResults.booksCreated++;
                         if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CALIBRE_BOOKS) {
                             Log.d(TAG, "calibreUuid=" + calibreUuid
