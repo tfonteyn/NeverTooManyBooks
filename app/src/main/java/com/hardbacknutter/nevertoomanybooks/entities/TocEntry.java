@@ -363,6 +363,8 @@ public class TocEntry
     /**
      * Lazy load the book id/title pair list this TOC entry is published in.
      *
+     * @param db Database Access
+     *
      * @return list of id/titles of books.
      */
     @NonNull

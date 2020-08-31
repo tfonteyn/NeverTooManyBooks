@@ -46,7 +46,8 @@ import java.util.Collection;
  * saved at the end of a long list. For some reason this caused lots of 'skip_rows' messages
  * from 'Cursor', and a *very* jittery backwards scroll.
  * <p>
- * 3. FUD: SQLite cursors seem to use memory based on the number of rows in the cursor. They do
+ * 3. [HardBackNutter: this statement is FUD, ignore]:
+ * SQLite cursors seem to use memory based on the number of rows in the cursor. They do
  * not *seem* to refer back to the database and cache a window. If true, with lots of a books and
  * a small device memory, this would lead to problems.
  * <p>
