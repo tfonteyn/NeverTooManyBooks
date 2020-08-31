@@ -143,6 +143,23 @@ public class RowStateDAO
     /** DEBUG: Indicates close() has been called. Also see {@link Closeable#close()}. */
     private boolean mCloseWasCalled;
 
+    /** Constructed during {@link #build} for {@link #getOffsetCursor}. */
+    private String mSqlGetOffsetCursor;
+    /** Constructed during {@link #build} for {@link #ensureNodeIsVisible}. */
+    private String mSqlEnsureNodeIsVisible;
+    /** Constructed during {@link #build} for {@link #getNextBookWithoutCover}. */
+    private String mSqlGetNextBookWithoutCover;
+    /** Constructed during {@link #build} for {@link #getNodeByNodeId}. */
+    private String mSqlGetNodeByNodeId;
+    /** Constructed during {@link #build} for {@link #getBookNodes}. */
+    private String mSqlGetBookNodes;
+    /**
+     * Constructed during {@link #build}:
+     * Base insert statement for {@link #saveAllNodes} and {@link #saveNodesBetween}.
+     */
+    private String mSqlNodesInsertBase;
+
+
     /**
      * Constructor. Defines, but does not create the table. See {@link #build}.
      *
@@ -202,6 +219,10 @@ public class RowStateDAO
         // indices will be created after the table is populated.
         mTable.create(mSyncedDb, true, false);
 
+        // build a set of SQL statements which will be reused.
+        buildReusableSqlStrings(listTable);
+
+        // Populate the table according to the user preferred rebuild-state
         int rowsUpdated;
 
         // the table is ordered at insert time, so the row id *is* the order.
@@ -342,36 +363,91 @@ public class RowStateDAO
         mSyncedDb.analyze(mTable);
     }
 
+    /**
+     * Build a set of SQL statements which will be reused.
+     *
+     * @param listTable the list-table to be referenced
+     */
+    private void buildReusableSqlStrings(@NonNull final TableDefinition listTable) {
+        // Build the SQL for #getOffsetCursor,
+        // adding an alias for TMP_TBL_BOOK_LIST_ROW_STATE#KEY_PK_ID
+        mSqlGetOffsetCursor =
+                SELECT_
+                + Csv.join(listTable.getDomains(), domain -> listTable.dot(domain.getName()))
+                + ',' + (mTable.dot(KEY_PK_ID) + " AS " + KEY_BL_LIST_VIEW_NODE_ROW_ID)
+                + _FROM_ + listTable.ref() + listTable.join(mTable)
+                + _WHERE_ + mTable.dot(KEY_BL_NODE_VISIBLE) + "=1"
+                + _ORDER_BY_ + mTable.dot(KEY_PK_ID);
+
+        mSqlEnsureNodeIsVisible =
+                SELECT_ + KEY_PK_ID + _FROM_ + mTable.getName()
+                // follow the node hierarchy
+                + _WHERE_ + KEY_BL_NODE_KEY + " LIKE ?"
+                // we'll loop for all levels
+                + _AND_ + KEY_BL_NODE_LEVEL + "=?";
+
+        mSqlGetNextBookWithoutCover =
+                SELECT_ + Node.getColumns(mTable)
+                + ',' + listTable.dot(DBDefinitions.KEY_BOOK_UUID)
+                + _FROM_ + listTable.ref() + listTable.join(mTable)
+                + _WHERE_ + listTable.dot(KEY_BL_NODE_GROUP) + "=?"
+                + _AND_ + listTable.dot(KEY_PK_ID) + ">?";
+
+        mSqlGetNodeByNodeId =
+                SELECT_ + Node.getColumns(mTable)
+                + _FROM_ + mTable.ref()
+                + _WHERE_ + mTable.dot(KEY_PK_ID) + "=?";
+
+        mSqlGetBookNodes =
+                SELECT_ + Node.getColumns(mTable)
+                + _FROM_ + listTable.ref() + listTable.join(mTable)
+                + _WHERE_ + listTable.dot(KEY_FK_BOOK) + "=?";
+
+        mSqlNodesInsertBase =
+                "INSERT INTO " + TBL_BOOK_LIST_NODE_STATE + " ("
+                + KEY_BL_NODE_KEY
+                + ',' + KEY_BL_NODE_LEVEL
+                + ',' + KEY_BL_NODE_GROUP
+                + ',' + KEY_BL_NODE_EXPANDED
+
+                + ',' + KEY_FK_BOOKSHELF
+                + ',' + KEY_FK_STYLE
+                + ')'
+                + " SELECT DISTINCT "
+                + KEY_BL_NODE_KEY
+                + ',' + KEY_BL_NODE_LEVEL
+                + ',' + KEY_BL_NODE_GROUP
+                + ',' + KEY_BL_NODE_EXPANDED
+
+                + ",?,?"
+
+                + _FROM_ + mTable.getName()
+                // only store visible rows; all others will be
+                // considered non-visible and collapsed.
+                + _WHERE_ + KEY_BL_NODE_VISIBLE + "=1";
+    }
+
     @NonNull
     public TableDefinition getTable() {
         return mTable;
     }
 
     /**
-     * Gets a 'window' on the result set, starting at 'position' and 'size' rows.
+     * Gets a 'window' on the result set, starting at 'offset' and 'pageSize' rows.
      * We only retrieve visible rows.
      *
-     * @param offset   the offset position
+     * @param offset   the offset position (SQL OFFSET clause)
      * @param pageSize the amount of results maximum to return (SQL LIMIT clause)
      *
      * @return a list cursor starting at a given offset, using a given limit.
      */
     @NonNull
-    Cursor getOffsetCursor(@NonNull final TableDefinition listTable,
-                           final int offset,
+    Cursor getOffsetCursor(final int offset,
                            @SuppressWarnings("SameParameterValue") final int pageSize) {
 
-        // Build the SQL, adding an alias for TMP_TBL_BOOK_LIST_ROW_STATE#KEY_PK_ID
-        final String sql = SELECT_
-                           + Csv.join(listTable.getDomains(),
-                                      domain -> listTable.dot(domain.getName()))
-                           + ',' + (mTable.dot(KEY_PK_ID) + " AS " + KEY_BL_LIST_VIEW_NODE_ROW_ID)
-                           + _FROM_ + listTable.ref() + listTable.join(mTable)
-                           + _WHERE_ + mTable.dot(KEY_BL_NODE_VISIBLE) + "=1"
-                           + _ORDER_BY_ + mTable.dot(KEY_PK_ID)
-                           + " LIMIT " + pageSize + " OFFSET " + offset;
-
-        return mSyncedDb.rawQuery(sql, null);
+        return mSyncedDb.rawQuery(mSqlGetOffsetCursor
+                                  + " LIMIT " + pageSize + " OFFSET " + offset,
+                                  null);
     }
 
     /**
@@ -439,19 +515,14 @@ public class RowStateDAO
         node.setExpanded(true);
         node.setVisible(true);
 
-        final String sql = SELECT_ + KEY_PK_ID + _FROM_ + mTable.getName()
-                           // follow the node hierarchy
-                           + _WHERE_ + KEY_BL_NODE_KEY + " LIKE ?"
-                           // we'll loop for all levels
-                           + _AND_ + KEY_BL_NODE_LEVEL + "=?";
-
         String nodeKey = node.getKey();
 
         // levels are 1.. based; start with lowest level above books, working up to root.
         final Deque<Pair<Long, Integer>> nodes = new ArrayDeque<>();
         for (int level = node.getLevel() - 1; level >= 1; level--) {
-            try (Cursor cursor = mSyncedDb.rawQuery(sql, new String[]{
-                    nodeKey + "%", String.valueOf(level)})) {
+            try (Cursor cursor = mSyncedDb.rawQuery(mSqlEnsureNodeIsVisible,
+                                                    new String[]{nodeKey + "%",
+                                                                 String.valueOf(level)})) {
                 while (cursor.moveToNext()) {
                     final long rowId = cursor.getLong(0);
                     nodes.push(new Pair<>(rowId, level));
@@ -472,18 +543,11 @@ public class RowStateDAO
 
     @Nullable
     Node getNextBookWithoutCover(@NonNull final Context context,
-                                 @NonNull final TableDefinition listTable,
                                  final long rowId) {
 
-        try (Cursor cursor = mSyncedDb.rawQuery(
-                SELECT_ + Node.getColumns(mTable)
-                + ',' + listTable.dot(DBDefinitions.KEY_BOOK_UUID)
-                + _FROM_ + listTable.ref() + listTable.join(mTable)
-                + _WHERE_ + listTable.dot(KEY_BL_NODE_GROUP) + "=?"
-                + _AND_ + listTable.dot(KEY_PK_ID) + ">?",
-                new String[]{String.valueOf(BooklistGroup.BOOK),
-                             String.valueOf(rowId)})) {
-
+        try (Cursor cursor = mSyncedDb.rawQuery(mSqlGetNextBookWithoutCover,
+                                                new String[]{String.valueOf(BooklistGroup.BOOK),
+                                                             String.valueOf(rowId)})) {
             final Node node = new Node();
             while (cursor.moveToNext()) {
                 node.from(cursor);
@@ -512,11 +576,8 @@ public class RowStateDAO
      */
     @NonNull
     Node getNodeByNodeId(final long nodeId) {
-        final String sql = SELECT_ + Node.getColumns(mTable)
-                           + _FROM_ + mTable.ref()
-                           + _WHERE_ + mTable.dot(KEY_PK_ID) + "=?";
-
-        try (Cursor cursor = mSyncedDb.rawQuery(sql, new String[]{String.valueOf(nodeId)})) {
+        try (Cursor cursor = mSyncedDb.rawQuery(mSqlGetNodeByNodeId,
+                                                new String[]{String.valueOf(nodeId)})) {
             if (cursor.moveToFirst()) {
                 final Node node = new Node(cursor);
                 findAndSetListPosition(node);
@@ -537,8 +598,7 @@ public class RowStateDAO
      * @return the node(s), or {@code null} if none
      */
     @Nullable
-    ArrayList<Node> getBookNodes(@NonNull final TableDefinition listTable,
-                                 final long bookId) {
+    ArrayList<Node> getBookNodes(final long bookId) {
         // sanity check
         if (bookId == 0) {
             return null;
@@ -546,11 +606,9 @@ public class RowStateDAO
 
         // get all positions of the book
         final ArrayList<Node> nodeList = new ArrayList<>();
-        final String sql = SELECT_ + Node.getColumns(mTable)
-                           + _FROM_ + listTable.ref() + listTable.join(mTable)
-                           + _WHERE_ + listTable.dot(KEY_FK_BOOK) + "=?";
 
-        try (Cursor cursor = mSyncedDb.rawQuery(sql, new String[]{String.valueOf(bookId)})) {
+        try (Cursor cursor = mSyncedDb.rawQuery(mSqlGetBookNodes,
+                                                new String[]{String.valueOf(bookId)})) {
             while (cursor.moveToNext()) {
                 final Node node = new Node(cursor);
                 findAndSetListPosition(node);
@@ -722,7 +780,7 @@ public class RowStateDAO
 
             stmt = mStatementManager.get(STMT_SAVE_ALL_NODES);
             if (stmt == null) {
-                stmt = mStatementManager.add(STMT_SAVE_ALL_NODES, getNodesInsertSql());
+                stmt = mStatementManager.add(STMT_SAVE_ALL_NODES, mSqlNodesInsertBase);
             }
 
             // Read all visible nodes, and send them to the permanent table.
@@ -1049,7 +1107,7 @@ public class RowStateDAO
             stmt = mStatementManager.get(STMT_SAVE_NODES_BETWEEN);
             if (stmt == null) {
                 stmt = mStatementManager.add(STMT_SAVE_NODES_BETWEEN,
-                                             getNodesInsertSql()
+                                             mSqlNodesInsertBase
                                              + _AND_ + KEY_PK_ID + ">=? AND " + KEY_PK_ID + "<?");
             }
 
@@ -1084,37 +1142,6 @@ public class RowStateDAO
                 mSyncedDb.endTransaction(txLock);
             }
         }
-    }
-
-
-    /**
-     * Get the base insert statement for {@link #saveAllNodes} and {@link #saveNodesBetween}.
-     *
-     * @return sql insert
-     */
-    @NonNull
-    private String getNodesInsertSql() {
-        return ("INSERT INTO " + TBL_BOOK_LIST_NODE_STATE + " ("
-                + KEY_BL_NODE_KEY
-                + ',' + KEY_BL_NODE_LEVEL
-                + ',' + KEY_BL_NODE_GROUP
-                + ',' + KEY_BL_NODE_EXPANDED
-
-                + ',' + KEY_FK_BOOKSHELF
-                + ',' + KEY_FK_STYLE
-                + ')'
-                + " SELECT DISTINCT "
-                + KEY_BL_NODE_KEY
-                + ',' + KEY_BL_NODE_LEVEL
-                + ',' + KEY_BL_NODE_GROUP
-                + ',' + KEY_BL_NODE_EXPANDED
-
-                + ",?,?"
-               )
-               + _FROM_ + mTable.getName()
-               // only store visible rows; all others will be
-               // considered non-visible and collapsed.
-               + _WHERE_ + KEY_BL_NODE_VISIBLE + "=1";
     }
 
     /**

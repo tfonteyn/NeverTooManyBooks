@@ -574,7 +574,7 @@ public class BooklistBuilder
     Cursor getOffsetCursor(final int offset,
                            @SuppressWarnings("SameParameterValue") final int pageSize) {
 
-        return mRowStateDAO.getOffsetCursor(mListTable, offset, pageSize);
+        return mRowStateDAO.getOffsetCursor(offset, pageSize);
     }
 
     /**
@@ -604,7 +604,7 @@ public class BooklistBuilder
 
     @Nullable
     public ArrayList<RowStateDAO.Node> getBookNodes(final long bookId) {
-        return mRowStateDAO.getBookNodes(mListTable, bookId);
+        return mRowStateDAO.getBookNodes(bookId);
     }
 
     /**
@@ -637,7 +637,7 @@ public class BooklistBuilder
     @Nullable
     public RowStateDAO.Node getNextBookWithoutCover(@NonNull final Context context,
                                                     final long rowId) {
-        return mRowStateDAO.getNextBookWithoutCover(context, mListTable, rowId);
+        return mRowStateDAO.getNextBookWithoutCover(context, rowId);
     }
 
     /**
@@ -798,7 +798,7 @@ public class BooklistBuilder
         if (obj == null || getClass() != obj.getClass()) {
             return false;
         }
-        BooklistBuilder that = (BooklistBuilder) obj;
+        final BooklistBuilder that = (BooklistBuilder) obj;
         return mInstanceId == that.mInstanceId;
     }
 
@@ -1014,9 +1014,9 @@ public class BooklistBuilder
         String build(@NonNull final Context context) {
 
             // List of column names for the INSERT INTO... clause
-            StringBuilder destColumns = new StringBuilder();
+            final StringBuilder destColumns = new StringBuilder();
             // List of expressions for the SELECT... clause.
-            StringBuilder sourceColumns = new StringBuilder();
+            final StringBuilder sourceColumns = new StringBuilder();
 
             boolean first = true;
             for (VirtualDomain domain : mDomains) {
@@ -1039,10 +1039,11 @@ public class BooklistBuilder
                          // 'AS' for SQL readability/debug only
                          .append(" AS ").append(DOM_BL_NODE_KEY);
 
-            String sql = "INSERT INTO " + mDestinationTable.getName() + " (" + destColumns + ')'
-                         + " SELECT " + sourceColumns
-                         + _FROM_ + buildFrom(context) + buildWhere(context)
-                         + _ORDER_BY_ + buildOrderBy();
+            final String sql =
+                    "INSERT INTO " + mDestinationTable.getName() + " (" + destColumns + ')'
+                    + " SELECT " + sourceColumns
+                    + _FROM_ + buildFrom(context) + buildWhere(context)
+                    + _ORDER_BY_ + buildOrderBy();
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_THE_BUILDER) {
                 Log.d(TAG, "build|sql=" + sql);
@@ -1059,7 +1060,7 @@ public class BooklistBuilder
          * @return column expression
          */
         private String buildNodeKey() {
-            StringBuilder keyColumn = new StringBuilder();
+            final StringBuilder keyColumn = new StringBuilder();
             for (BooklistGroup group : mStyle.getGroups()) {
                 keyColumn.append(group.getNodeKeyExpression()).append("||");
             }
