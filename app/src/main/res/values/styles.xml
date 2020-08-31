@@ -400,6 +400,7 @@
     <style name="BoB.Header">
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_width">0dp</item>
+        <item name="android:textAppearance">?attr/textAppearanceSubtitle1</item>
         <item name="android:textIsSelectable">true</item>
         <item name="android:layout_marginStart">@dimen/indent2</item>
         <item name="android:layout_marginEnd">@dimen/indent2</item>
