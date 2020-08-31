@@ -134,10 +134,10 @@ android {
 
         // If set, we'll use {@link MenuPickerDialogFragment} where implemented.
         // uses reflection to access a private variable
-        buildConfigField('boolean', 'MENU_PICKER_USES_FRAGMENT', 'false')
+        buildConfigField('boolean', 'MENU_PICKER_USES_FRAGMENT', 'true')
 
         // under development
-        buildConfigField('boolean', 'IMPORT_CALIBRE', 'false')
+        buildConfigField('boolean', 'IMPORT_CALIBRE', 'true')
     }
 
     buildTypes {
@@ -146,18 +146,18 @@ android {
             shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'),
                     'proguard-rules.pro'
+
+            buildConfigField('boolean', 'MENU_PICKER_USES_FRAGMENT', 'false')
+            buildConfigField('boolean', 'IMPORT_CALIBRE', 'false')
         }
         beta {
             initWith release
             versionNameSuffix "beta_" + new Date().format('yyyy-MM-dd')
 
-            buildConfigField('boolean', 'MENU_PICKER_USES_FRAGMENT', 'true')
+
         }
         debug {
             versionNameSuffix new Date().format('yyyy-MM-dd_HH:mm')
-
-            buildConfigField('boolean', 'MENU_PICKER_USES_FRAGMENT', 'true')
-            buildConfigField('boolean', 'IMPORT_CALIBRE', 'true')
         }
     }
 
@@ -233,11 +233,14 @@ dependencies {
     // barcode decoder using https://developers.google.com/android/guides/setup
     implementation 'com.google.android.gms:play-services-vision:20.1.2'
 
+    // https://github.com/ACRA/acra/wiki/BasicSetup
     implementation 'ch.acra:acra-mail:5.7.0'
     implementation 'ch.acra:acra-toast:5.7.0'
     implementation 'ch.acra:acra-dialog:5.7.0'
+
     // OAuth for Goodreads secure access. https://github.com/mttkay/signpost
     implementation 'oauth.signpost:signpost-core:2.1.1'
+
     // Tar file support for backups
     // http://commons.apache.org/proper/commons-compress/
     implementation 'org.apache.commons:commons-compress:1.20'
@@ -254,9 +257,17 @@ dependencies {
     // supporting API 24+
     //implementation 'com.journeyapps:zxing-android-embedded:4.0.0'
 
-    testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.6.2'
+    testImplementation 'org.json:json:20200518'
+
     testImplementation 'org.mockito:mockito-core:3.5.7'
     testImplementation 'org.mockito:mockito-junit-jupiter:3.5.7'
+    testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.6.2'
 
-    testImplementation 'org.json:json:20200518'
+    androidTestImplementation 'androidx.test:core:1.3.0'
+    androidTestImplementation 'androidx.test:runner:1.3.0'
+    androidTestImplementation 'androidx.test:rules:1.3.0'
+    androidTestImplementation 'org.junit.jupiter:junit-jupiter-engine:5.6.2'
+
+//    testImplementation 'org.robolectric:robolectric:4.4'
+//    androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
 }
