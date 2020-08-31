@@ -640,6 +640,20 @@ public class Book
         return old;
     }
 
+    /**
+     * Ensure the book has a bookshelf.
+     * If the book is not on any Bookshelf, add the preferred/current bookshelf
+     *
+     * @param context Current context
+     * @param db      Database Access
+     */
+    public void ensureBookshelf(@NonNull final Context context,
+                                @NonNull final DAO db) {
+        final ArrayList<Bookshelf> list = getParcelableArrayList(Book.BKEY_BOOKSHELF_ARRAY);
+        if (list.isEmpty()) {
+            list.add(Bookshelf.getBookshelf(context, db, Bookshelf.PREFERRED, Bookshelf.DEFAULT));
+        }
+    }
 
     /**
      * Add validators.

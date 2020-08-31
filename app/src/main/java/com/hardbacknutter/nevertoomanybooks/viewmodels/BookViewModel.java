@@ -39,7 +39,6 @@ import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
-import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
@@ -137,9 +136,8 @@ public class BookViewModel
                 mBook = new Book();
             }
 
-            // If the new book is not on any Bookshelf, add the preferred/current bookshelf
             if (mBook.isNew()) {
-                ensureBookshelf(context);
+                mBook.ensureBookshelf(context, mDb);
             }
         }
     }
@@ -175,20 +173,7 @@ public class BookViewModel
             }
         }
 
-        // If the book is not on any Bookshelf, add the preferred/current bookshelf
-        ensureBookshelf(context);
-    }
-
-    /**
-     * Ensure the book has a bookshelf.
-     *
-     * @param context Current context
-     */
-    private void ensureBookshelf(@NonNull final Context context) {
-        final ArrayList<Bookshelf> list = mBook.getParcelableArrayList(Book.BKEY_BOOKSHELF_ARRAY);
-        if (list.isEmpty()) {
-            list.add(Bookshelf.getBookshelf(context, mDb, Bookshelf.PREFERRED, Bookshelf.DEFAULT));
-        }
+        mBook.ensureBookshelf(context, mDb);
     }
 
     /**
