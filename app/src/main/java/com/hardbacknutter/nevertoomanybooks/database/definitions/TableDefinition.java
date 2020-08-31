@@ -583,7 +583,7 @@ public class TableDefinition {
         if (mIndexNameCheck.contains(nameSuffix)) {
             throw new IllegalStateException("Index suffix '" + nameSuffix + "' already defined");
         }
-        mIndexes.add(new IndexDefinition(this, nameSuffix + '_' + (mIndexes.size() + 1),
+        mIndexes.add(new IndexDefinition(this, nameSuffix + "_" + (mIndexes.size() + 1),
                                          unique, domains));
         mIndexNameCheck.add(nameSuffix);
         return this;

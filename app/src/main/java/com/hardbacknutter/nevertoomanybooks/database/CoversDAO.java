@@ -167,7 +167,7 @@ public final class CoversDAO
                 .setPrimaryKey(DOM_PK_ID)
                 .addIndex("id", true, DOM_PK_ID)
                 .addIndex(CKEY_CACHE_ID, true, DOM_CACHE_ID)
-                .addIndex(CKEY_CACHE_ID + '_' + CKEY_UTC_DATETIME,
+                .addIndex(CKEY_CACHE_ID + "_" + CKEY_UTC_DATETIME,
                           true, DOM_CACHE_ID, DOM_UTC_DATETIME);
     }
 

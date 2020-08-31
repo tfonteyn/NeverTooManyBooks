@@ -280,13 +280,12 @@ public final class ImageUtils {
                                         @IntRange(from = 0) final int cIdx,
                                         @Nullable final ImageFileInfo.Size size) {
 
-        // keep all '_' even for empty parts. Easier to parse the name if needed.
+        // keep all "_" even for empty parts. Easier to parse the name if needed.
         return System.currentTimeMillis()
-               // a string.. not a '' or it becomes a number!
                + "_" + source
-               + '_' + (bookId != null && !bookId.isEmpty() ? bookId : "")
-               + '_' + cIdx
-               + '_' + (size != null ? size : "")
+               + "_" + (bookId != null && !bookId.isEmpty() ? bookId : "")
+               + "_" + cIdx
+               + "_" + (size != null ? size : "")
                + ".jpg";
     }
 
