@@ -88,6 +88,7 @@ final class XmlUtils {
      *
      * @throws IOException on failure
      */
+    @NonNull
     public static String tag(@NonNull final String tag,
                              @Nullable final String name,
                              @NonNull final Object value)
@@ -114,6 +115,7 @@ final class XmlUtils {
      * @return the tag, or an empty string if the value was empty.
      */
     @SuppressWarnings("WeakerAccess")
+    @NonNull
     public static String tagWithBody(@NonNull final String tag,
                                      @Nullable final String name,
                                      @NonNull final Object value) {
@@ -131,9 +133,11 @@ final class XmlUtils {
      *
      * @return the tag, or an empty string if the value was empty.
      */
-    public static String tagWithCData(@NonNull final String tag,
-                                      @Nullable final String name,
-                                      @NonNull final String value) {
+    @NonNull
+
+    static String tagWithCData(@NonNull final String tag,
+                               @Nullable final String name,
+                               @NonNull final String value) {
         if (!value.isEmpty()) {
             return '<' + tag + nameAttr(name) + ">\n"
                    + "<![CDATA[" + value + "]]>\n"
@@ -165,8 +169,9 @@ final class XmlUtils {
      *
      * @throws IOException on failure
      */
-    public static String typedTag(@Nullable final String name,
-                                  @NonNull final Object value)
+    @NonNull
+    static String typedTag(@Nullable final String name,
+                           @NonNull final Object value)
             throws IOException {
         if (value instanceof String) {
             return tagWithCData(TAG_STRING, name, String.valueOf(value));
@@ -206,6 +211,7 @@ final class XmlUtils {
      *
      * @throws IOException on failure
      */
+    @NonNull
     private static String typedCollection(@NonNull final Iterable<?> values)
             throws IOException {
         final StringBuilder sb = new StringBuilder("\n");
@@ -224,6 +230,7 @@ final class XmlUtils {
      *
      * @throws IOException on failure
      */
+    @NonNull
     private static byte[] convertToBytes(@NonNull final Object object)
             throws IOException {
         try (ByteArrayOutputStream bos = new ByteArrayOutputStream();
@@ -311,6 +318,7 @@ final class XmlUtils {
      * decode the bare essentials only. To decode all possible entities we could add the Apache
      * 'lang' library I suppose.... maybe some day.
      */
+    @NonNull
     public static String decode(@Nullable final String data) {
         if (data == null || "null".equalsIgnoreCase(data) || data.trim().isEmpty()) {
             return "";
@@ -336,6 +344,7 @@ final class XmlUtils {
      * @return string representation of the attribute, with leading space; or an empty string.
      */
     @SuppressWarnings("SameParameterValue")
+    @NonNull
     public static String attr(@NonNull final String attr,
                               final double value) {
         if (value != 0) {
@@ -354,6 +363,7 @@ final class XmlUtils {
      *
      * @return string representation of the attribute, with leading space; or an empty string.
      */
+    @NonNull
     public static String attr(@NonNull final String attr,
                               final long value) {
         if (value != 0) {
@@ -373,6 +383,7 @@ final class XmlUtils {
      *
      * @return string representation of the attribute, with leading space; or an empty string.
      */
+    @NonNull
     public static String attr(@NonNull final String attr,
                               final boolean value) {
         if (value) {
@@ -392,6 +403,7 @@ final class XmlUtils {
      *
      * @return string representation of the attribute, with leading space; or an empty string.
      */
+    @NonNull
     public static String attr(@NonNull final String attr,
                               @Nullable final String value) {
         if (value != null && !value.isEmpty()) {
@@ -409,7 +421,8 @@ final class XmlUtils {
      *
      * @return string representation of the attribute, with leading space; or an empty string.
      */
-    public static String nameAttr(@Nullable final String value) {
+    @NonNull
+    static String nameAttr(@Nullable final String value) {
         if (value != null && !value.isEmpty()) {
             return ' ' + ATTR_NAME + "=\"" + value + '"';
         } else {
@@ -417,7 +430,8 @@ final class XmlUtils {
         }
     }
 
-    public static String versionAttr(final long version) {
+    @NonNull
+    static String versionAttr(final long version) {
         return attr(ATTR_VERSION, version);
     }
 
@@ -428,7 +442,8 @@ final class XmlUtils {
      *
      * @return string representation of the attribute, with leading space.
      */
-    public static String idAttr(final long id) {
+    @NonNull
+    static String idAttr(final long id) {
         return attr(ATTR_ID, id);
     }
 
@@ -439,7 +454,8 @@ final class XmlUtils {
      *
      * @return string representation of the attribute, with leading space.
      */
-    public static String sizeAttr(final long value) {
+    @NonNull
+    static String sizeAttr(final long value) {
         return attr(ATTR_SIZE, value);
     }
 }
