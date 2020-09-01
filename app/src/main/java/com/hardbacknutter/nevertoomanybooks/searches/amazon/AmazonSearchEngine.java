@@ -245,7 +245,7 @@ public class AmazonSearchEngine
     }
 
     /**
-     * The external id for Amazon is the isbn. // ENHANCE: support ASIN
+     * The external id for Amazon is the isbn.
      *
      * @param isbn to search for
      *
@@ -310,7 +310,7 @@ public class AmazonSearchEngine
 
     /**
      * The external ID is the ASIN.
-     * The ASIN for books is identical to the ISBN10 code. // ENHANCE: support ASIN
+     * The ASIN for books is identical to the ISBN10 code.
      */
     @NonNull
 //    @Override

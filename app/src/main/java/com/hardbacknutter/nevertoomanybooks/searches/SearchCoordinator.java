@@ -271,9 +271,6 @@ public class SearchCoordinator
 
                 mIsbnSearchText = args.getString(DBDefinitions.KEY_ISBN, "");
 
-                //TODO: (maybe) implement external id as argument
-                //mExternalIdSearchText = args.get...
-
                 mTitleSearchText = args.getString(DBDefinitions.KEY_TITLE, "");
 
                 mAuthorSearchText = args.getString(

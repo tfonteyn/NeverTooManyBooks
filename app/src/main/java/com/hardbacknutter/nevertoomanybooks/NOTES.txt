@@ -5,11 +5,6 @@ ENHANCE: usage "profile": comics versus fiction books versus non-fiction books.
 
 TODO: move Location, Format ... to separate tables ?
 
-ENHANCE: database using 'lower()' in WHERE and ORDER BY clauses.
- * check indexes for using all lower case, then eliminate the lower() for all that uses
-   those indexes.
- * 'order by' columns have been added to TITLE (book, series, tocEntry) and AUTHOR name fields.
-
 ENHANCE: image url loading... keep DIY, or move to Glide (v4.10.0 is using androidx)
 
 TODO: task-queue - minimalistic traditional database backed 'MessageQueue' like product
