@@ -206,12 +206,10 @@ public class ImportFragment
      * @param uri file to read from
      */
     private void importShowOptions(@NonNull final Uri uri) {
-        // options will be overridden if the import is a CSV.
-        final ImportManager helper = new ImportManager(Options.ENTITIES, uri);
+        final ImportManager helper = new ImportManager(uri);
 
         //noinspection ConstantConditions
-        final ArchiveContainer container = helper.getContainer(getContext());
-        if (!helper.isSupported(container)) {
+        if (!helper.isSupported(getContext())) {
             //noinspection ConstantConditions
             new MaterialAlertDialogBuilder(getContext())
                     .setIcon(R.drawable.ic_error)
@@ -222,10 +220,10 @@ public class ImportFragment
             return;
         }
 
+        final ArchiveContainer container = helper.getContainer(getContext());
         //noinspection EnumSwitchStatementWhichMissesCases
         switch (container) {
             case CsvBooks:
-                // use more prudent default options for Csv files.
                 helper.setOptions(Options.BOOKS | ImportManager.IMPORT_ONLY_NEW_OR_UPDATED);
 
                 //URGENT: make a backup before ANY csv import!
@@ -246,12 +244,18 @@ public class ImportFragment
 
             case Zip:
             case Tar:
-                showQuickOptions(helper);
+                helper.setOptions(Options.ENTITIES | ImportManager.IMPORT_ONLY_NEW_OR_UPDATED);
+                ImportHelperDialogFragment
+                        .newInstance(RK_IMPORT_HELPER, helper)
+                        .show(getChildFragmentManager(), ImportHelperDialogFragment.TAG);
                 break;
 
             case SqLiteDb:
                 if (BuildConfig.IMPORT_CALIBRE) {
-                    showQuickOptions(helper);
+                    helper.setOptions(Options.ENTITIES | ImportManager.IMPORT_ONLY_NEW_OR_UPDATED);
+                    ImportHelperDialogFragment
+                            .newInstance(RK_IMPORT_HELPER, helper)
+                            .show(getChildFragmentManager(), ImportHelperDialogFragment.TAG);
                 } else {
                     throw new IllegalArgumentException(ErrorMsg.UNEXPECTED_VALUE + container);
                 }
@@ -260,27 +264,6 @@ public class ImportFragment
             default:
                 throw new IllegalArgumentException(ErrorMsg.UNEXPECTED_VALUE + container);
         }
-    }
-
-    /**
-     * Show a quick-options dialog first.
-     * The user can divert to the full options dialog if needed.
-     *
-     * @param helper ImportManager
-     */
-    private void showQuickOptions(@NonNull final ImportManager helper) {
-        //noinspection ConstantConditions
-        new MaterialAlertDialogBuilder(getContext())
-                .setTitle(R.string.lbl_import)
-                .setMessage(R.string.txt_import_option_all_books)
-                .setNegativeButton(android.R.string.cancel, (d, w) -> getActivity().finish())
-                .setNeutralButton(R.string.btn_options, (d, w) -> ImportHelperDialogFragment
-                        .newInstance(RK_IMPORT_HELPER, helper)
-                        .show(getChildFragmentManager(), ImportHelperDialogFragment.TAG))
-                .setPositiveButton(android.R.string.ok, (d, w) -> mArchiveImportTask
-                        .startImport(helper))
-                .create()
-                .show();
     }
 
     private void onImportFailure(@NonNull final FinishedMessage<Exception> message) {

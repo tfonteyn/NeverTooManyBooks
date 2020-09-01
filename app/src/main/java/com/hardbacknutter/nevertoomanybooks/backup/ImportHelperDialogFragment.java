@@ -130,7 +130,7 @@ public class ImportHelperDialogFragment
 
         } else {
             // Populate the options.
-            mVb.cbxBooks.setChecked(helper.isSet(Options.BOOKS));
+            mVb.cbxBooks.setChecked(helper.isOptionSet(Options.BOOKS));
             mVb.cbxBooks.setOnCheckedChangeListener(
                     (buttonView, isChecked) -> {
                         helper.setOption(Options.BOOKS, isChecked);
@@ -139,11 +139,11 @@ public class ImportHelperDialogFragment
                         }
                     });
 
-            mVb.cbxCovers.setChecked(helper.isSet(Options.COVERS));
+            mVb.cbxCovers.setChecked(helper.isOptionSet(Options.COVERS));
             mVb.cbxCovers.setOnCheckedChangeListener(
                     (buttonView, isChecked) -> helper.setOption(Options.COVERS, isChecked));
 
-            mVb.cbxPrefsAndStyles.setChecked(helper.isSet(Options.PREFS | Options.STYLES));
+            mVb.cbxPrefsAndStyles.setChecked(helper.isOptionSet(Options.PREFS | Options.STYLES));
             mVb.cbxPrefsAndStyles.setOnCheckedChangeListener(
                     (buttonView, isChecked) -> {
                         helper.setOption(Options.PREFS, isChecked);
@@ -156,7 +156,7 @@ public class ImportHelperDialogFragment
         // enable or disable the sync option
         if (mIsBooksOnly || archiveCreationDate != null) {
             mAllowSetEnableOnBooksGroup = true;
-            final boolean allBooks = !helper.isSet(ImportManager.IMPORT_ONLY_NEW_OR_UPDATED);
+            final boolean allBooks = !helper.isOptionSet(ImportManager.IMPORT_ONLY_NEW_OR_UPDATED);
             mVb.rbBooksAll.setChecked(allBooks);
             mVb.infoBtnRbBooksAll.setOnClickListener(StandardDialogs::infoPopup);
             mVb.rbBooksSync.setChecked(!allBooks);

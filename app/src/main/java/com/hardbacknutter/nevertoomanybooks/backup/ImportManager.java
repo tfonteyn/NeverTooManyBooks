@@ -74,6 +74,10 @@ public class ImportManager
     private static final int MASK = Options.ENTITIES | IMPORT_ONLY_NEW_OR_UPDATED;
     @NonNull
     private final Uri mUri;
+    @Nullable
+    private ArchiveContainer mArchiveContainer;
+    @Nullable
+    private ArchiveInfo mArchiveInfo;
     /**
      * Bitmask.
      * Contains the user selected options before doing the import/export.
@@ -82,21 +86,13 @@ public class ImportManager
     private int mOptions;
     @Nullable
     private ImportResults mResults;
-    @Nullable
-    private ArchiveContainer mArchiveContainer;
-
-    @Nullable
-    private ArchiveInfo mArchiveInfo;
 
     /**
      * Constructor.
      *
-     * @param options to import
-     * @param uri     to read from
+     * @param uri to read from
      */
-    public ImportManager(final int options,
-                         @NonNull final Uri uri) {
-        mOptions = options;
+    public ImportManager(@NonNull final Uri uri) {
         mUri = uri;
     }
 
@@ -146,11 +142,14 @@ public class ImportManager
         }
     }
 
+    boolean isOptionSet(final int optionBit) {
+        return (mOptions & optionBit) != 0;
+    }
+
     public int getOptions() {
         return mOptions;
     }
 
-    /** Called <strong>after</strong> the export/import to report back what was handled. */
     public void setOptions(final int options) {
         mOptions = options;
     }
@@ -170,9 +169,8 @@ public class ImportManager
      * @return {@code true} if supported
      */
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
-    public boolean isSupported(@NonNull final ArchiveContainer type) {
-
-        switch (type) {
+    public boolean isSupported(@NonNull final Context context) {
+        switch (getContainer(context)) {
             case CsvBooks:
             case Zip:
             case Tar:
@@ -198,6 +196,13 @@ public class ImportManager
         return mUri;
     }
 
+    /**
+     * Get the archive container as read from the uri.
+     *
+     * @param context Current context
+     *
+     * @return container
+     */
     @NonNull
     public ArchiveContainer getContainer(@NonNull final Context context) {
         if (mArchiveContainer == null) {
@@ -317,9 +322,5 @@ public class ImportManager
                + ", mArchiveInfo=" + mArchiveInfo
                + ", mResults=" + mResults
                + '}';
-    }
-
-    public boolean isSet(final int optionBit) {
-        return (mOptions & optionBit) != 0;
     }
 }

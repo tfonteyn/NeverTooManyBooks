@@ -114,10 +114,10 @@ public abstract class ArchiveReaderAbstract
         // keep track of what we read from the archive
         int entitiesRead = Options.NOTHING;
 
-        boolean readStyles = mHelper.isSet(Options.STYLES);
-        boolean readPrefs = mHelper.isSet(Options.PREFS);
-        final boolean readBooks = mHelper.isSet(Options.BOOKS);
-        final boolean readCovers = mHelper.isSet(Options.COVERS);
+        boolean readStyles = mHelper.isOptionSet(Options.STYLES);
+        boolean readPrefs = mHelper.isOptionSet(Options.PREFS);
+        final boolean readBooks = mHelper.isOptionSet(Options.BOOKS);
+        final boolean readCovers = mHelper.isOptionSet(Options.COVERS);
 
         // progress counters
         int estimatedSteps = 1;
@@ -293,7 +293,7 @@ public abstract class ArchiveReaderAbstract
             // see if we have this file already
             File file = AppDir.Covers.getFile(context, cover.getName());
             exists = ImageUtils.isFileGood(file, false);
-            if (mHelper.isSet(ImportManager.IMPORT_ONLY_NEW_OR_UPDATED)) {
+            if (mHelper.isOptionSet(ImportManager.IMPORT_ONLY_NEW_OR_UPDATED)) {
                 if (exists) {
                     if (file.lastModified() > coverDate) {
                         return false;
