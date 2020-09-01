@@ -87,7 +87,7 @@ public class JsoupLoader {
      *
      * @param userAgent string to use
      */
-    @SuppressWarnings({"WeakerAccess", "unused"})
+    @SuppressWarnings("unused")
     public void setUserAgent(@Nullable final String userAgent) {
         mUserAgent = userAgent;
     }
@@ -98,8 +98,8 @@ public class JsoupLoader {
      *
      * @param charSetName to use
      */
-    public void setCharSetName(@SuppressWarnings("SameParameterValue")
-                               @NonNull final String charSetName) {
+    void setCharSetName(@SuppressWarnings("SameParameterValue")
+                        @NonNull final String charSetName) {
         mCharSetName = charSetName;
     }
 
@@ -127,9 +127,9 @@ public class JsoupLoader {
      */
     @WorkerThread
     @Nullable
-    public Document loadDocument(@NonNull final Context context,
-                                 @NonNull final String url,
-                                 @NonNull final SearchEngine searchEngine)
+    Document loadDocument(@NonNull final Context context,
+                          @NonNull final String url,
+                          @NonNull final SearchEngine searchEngine)
             throws IOException {
 
         // are we requesting the same url again ?

@@ -260,7 +260,7 @@ public class ExportFragment
             Objects.requireNonNull(message.result, ErrorMsg.NULL_TASK_RESULTS);
 
             //noinspection ConstantConditions
-            MaterialAlertDialogBuilder dialogBuilder =
+            final MaterialAlertDialogBuilder dialogBuilder =
                     new MaterialAlertDialogBuilder(getContext())
                             .setIcon(R.drawable.ic_info)
                             .setTitle(R.string.progress_end_backup_success)
