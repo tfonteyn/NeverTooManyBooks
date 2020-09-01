@@ -104,10 +104,10 @@
         <item>british</item>
     </string-array>
 
-    <!-- used for dev. as placeholder text. Can't seem to use "@tools:sample/lorem/random" here. -->
-    <string-array name="tools_placeholder">
-        <item>Placeholder 1</item>
-        <item>Placeholder 2</item>
+    <!-- used for Spinners as placeholder text. Can't seem to use "@tools:sample/" there. -->
+    <string-array name="tools_spinner_title">
+        <item>Spinner entry 1</item>
+        <item>Spinner entry 2</item>
     </string-array>
 
 </resources>

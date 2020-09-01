@@ -50,7 +50,7 @@
                     android:id="@+id/bookshelf_spinner"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    tools:entries="@array/tools_placeholder"
+                    tools:entries="@array/tools_spinner_title"
                     />
 
             </com.google.android.material.appbar.MaterialToolbar>

@@ -163,7 +163,7 @@
                     android:layout_marginStart="@dimen/indent2"
                     app:layout_constraintStart_toStartOf="@id/lbl_archive_format"
                     app:layout_constraintTop_toBottomOf="@id/lbl_archive_format"
-                    tools:entries="@array/tools_placeholder"
+                    tools:entries="@array/tools_spinner_title"
                     />
 
                 <TextView
