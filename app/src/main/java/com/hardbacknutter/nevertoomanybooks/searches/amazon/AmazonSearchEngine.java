@@ -152,7 +152,6 @@ public class AmazonSearchEngine
      *
      * @param appContext Application context
      */
-    @SuppressWarnings("WeakerAccess")
     public AmazonSearchEngine(@NonNull final Context appContext) {
         super(appContext);
 
@@ -599,7 +598,8 @@ public class AmazonSearchEngine
     @NonNull
     private ArrayList<String> parseCovers(@NonNull final Document document,
                                           @Nullable final String isbn,
-                                          @IntRange(from = 0) final int cIdx) {
+                                          @SuppressWarnings("SameParameterValue")
+                                              @IntRange(from = 0) final int cIdx) {
 
         final Element coverElement = document.selectFirst("img#imgBlkFront");
         String url;

@@ -340,13 +340,11 @@ public abstract class EditBookBaseFragment
                               final boolean todayIfNone) {
         if (field.isUsed(preferences)) {
             //noinspection ConstantConditions
-            field.getAccessor().getView().setOnClickListener(v -> {
-                PartialDatePickerDialogFragment
-                        .newInstance(RK_DATE_PICKER_PARTIAL, dialogTitleId,
-                                     field.getId(),
-                                     field.getAccessor().getValue(), todayIfNone)
-                        .show(getChildFragmentManager(), PartialDatePickerDialogFragment.TAG);
-            });
+            field.getAccessor().getView().setOnClickListener(v -> PartialDatePickerDialogFragment
+                    .newInstance(RK_DATE_PICKER_PARTIAL, dialogTitleId,
+                                 field.getId(),
+                                 field.getAccessor().getValue(), todayIfNone)
+                    .show(getChildFragmentManager(), PartialDatePickerDialogFragment.TAG));
         }
     }
 
