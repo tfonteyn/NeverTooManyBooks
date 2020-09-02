@@ -176,7 +176,7 @@ public class AppLocale {
         // ... so we need to cheat.
         if (BuildConfig.DEBUG /* always */) {
             if (Logger.isJUnitTest) {
-                return Locale.ENGLISH;
+                return Locale.US;
             }
         }
 

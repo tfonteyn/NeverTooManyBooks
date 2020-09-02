@@ -25,6 +25,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Year;
 import java.time.format.DateTimeFormatter;
@@ -35,17 +36,13 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Locale;
 
-/** Singleton. */
+/**
+ * //URGENT: DateTimeParseException https://issuetracker.google.com/issues/158417777
+ * Singleton.
+ */
 public class DateParser
         implements AppLocale.OnLocaleChangedListener {
 
-    /** ISO patterns only. */
-    private static final String[] ISO_PATTERNS = {
-            "yyyy-MM-dd HH:mm:ss",
-            "yyyy-MM-dd HH:mm",
-            "yyyy-MM-dd",
-            "yyyy-MM",
-            };
     /** All numerical (i.e. Locale independent) patterns. */
     private static final String[] NUMERICAL = {
             // US format first
@@ -85,7 +82,8 @@ public class DateParser
     /** Singleton. */
     private static DateParser sInstance;
     /** List of patterns we'll use to parse dates. */
-    private final Collection<DateTimeFormatter> ALL_PARSERS = new ArrayList<>();
+    private final Collection<DateTimeFormatter> TEXT_PARSERS = new ArrayList<>();
+    private final Collection<DateTimeFormatter> NUMERICAL_PARSERS = new ArrayList<>();
     /** List of patterns we'll use to parse ISO datetime stamps.. */
     private final Collection<DateTimeFormatter> ISO_PARSERS = new ArrayList<>();
 
@@ -140,27 +138,45 @@ public class DateParser
     private void create(@NonNull final Locale... locales) {
         final Locale systemLocale = AppLocale.getInstance().getSystemLocale();
 
-        ALL_PARSERS.clear();
-        addParsers(ALL_PARSERS, NUMERICAL, systemLocale);
-        addIsoPatterns(ALL_PARSERS, systemLocale);
-        addParsers(ALL_PARSERS, TEXT, locales);
-        addEnglish(ALL_PARSERS, TEXT, locales);
+        createIsoParsers(systemLocale);
 
-        ISO_PARSERS.clear();
-        addIsoPatterns(ISO_PARSERS, systemLocale);
+        NUMERICAL_PARSERS.clear();
+        addParsers(NUMERICAL_PARSERS, NUMERICAL, systemLocale);
+
+        TEXT_PARSERS.clear();
+        addParsers(TEXT_PARSERS, TEXT, locales);
+        addEnglish(TEXT_PARSERS, TEXT, locales);
     }
 
-    private void addIsoPatterns(@NonNull final Collection<DateTimeFormatter> group,
-                                @NonNull final Locale systemLocale) {
+    private void createIsoParsers(@NonNull final Locale systemLocale) {
+        // allow recreating
+        ISO_PARSERS.clear();
+
         // '2011-12-03T10:15:30',
         // '2011-12-03T10:15:30+01:00'
         // '2011-12-03T10:15:30+01:00[Europe/Paris]'
-        group.add(DateTimeFormatter.ISO_DATE_TIME);
-        // '2011-12-03'
-        // '2011-12-03+01:00'
-        group.add(DateTimeFormatter.ISO_DATE);
-        // custom
-        addParsers(group, ISO_PATTERNS, systemLocale);
+        // Uses ResolverStyle.STRICT / IsoChronology.INSTANCE
+        ISO_PARSERS.add(DateTimeFormatter.ISO_DATE_TIME);
+
+        // Variant of DateTimeFormatter.ISO_DATE_TIME using a space instead of the normal 'T'
+        // '2011-12-03 10:15:30',
+        // '2011-12-03 10:15:30+01:00'
+        // '2011-12-03 10:15:30+01:00[Europe/Paris]'
+        ISO_PARSERS.add(new DateTimeFormatterBuilder()
+                                .parseCaseInsensitive()
+                                .append(DateTimeFormatter.ISO_LOCAL_DATE)
+                                // A space instead of the normal 'T'
+                                .appendLiteral(' ')
+                                .append(DateTimeFormatter.ISO_LOCAL_TIME)
+                                .optionalStart()
+                                .appendOffsetId()
+                                .optionalStart()
+                                .appendLiteral('[')
+                                .parseCaseSensitive()
+                                .appendZoneRegionId()
+                                .appendLiteral(']')
+                                // Uses ResolverStyle.SMART and 'null' Chronology
+                                .toFormatter(systemLocale));
     }
 
     /**
@@ -182,8 +198,9 @@ public class DateParser
                     final DateTimeFormatterBuilder builder = new DateTimeFormatterBuilder()
                             .parseCaseInsensitive()
                             .appendPattern(pattern)
-                            .parseDefaulting(ChronoField.MONTH_OF_YEAR, 1)
+                            // Allow the day of the month to be missing and use '1'
                             .parseDefaulting(ChronoField.DAY_OF_MONTH, 1)
+                            // Allow the time to be completely missing.
                             .parseDefaulting(ChronoField.HOUR_OF_DAY, 0)
                             .parseDefaulting(ChronoField.MINUTE_OF_HOUR, 0)
                             .parseDefaulting(ChronoField.SECOND_OF_MINUTE, 0);
@@ -204,7 +221,7 @@ public class DateParser
                             @NonNull final Locale[] locales) {
         boolean hasEnglish = false;
         for (Locale locale : locales) {
-            if (Locale.ENGLISH.equals(locale)) {
+            if (Locale.ENGLISH.getISO3Language().equals(locale.getISO3Language())) {
                 hasEnglish = true;
                 break;
             }
@@ -212,6 +229,109 @@ public class DateParser
         if (!hasEnglish) {
             addParsers(group, patterns, Locale.ENGLISH);
         }
+    }
+
+    /**
+     * Attempt to parse a date string.
+     *
+     * @param dateStr String to parse
+     *
+     * @return Resulting date if parsed, otherwise {@code null}
+     */
+    @Nullable
+    public LocalDateTime parse(@Nullable final String dateStr) {
+        return parse(dateStr, null);
+    }
+
+    /**
+     * Attempt to parse a date string using the passed locale.
+     * This method is meant to be used by site-specific code where the site Locale is known.
+     *
+     * @param dateStr String to parse
+     * @param locale  to try first; i.e. before the pre-defined list.
+     *
+     * @return Resulting date if successfully parsed, otherwise {@code null}
+     */
+    @Nullable
+    public LocalDateTime parse(@Nullable final String dateStr,
+                               @Nullable final Locale locale) {
+        if (dateStr == null || dateStr.isEmpty()) {
+            return null;
+        }
+
+        LocalDateTime result = parseISO(dateStr);
+        if (result == null) {
+            result = parse(NUMERICAL_PARSERS, dateStr, locale);
+            if (result == null) {
+                result = parse(TEXT_PARSERS, dateStr, locale);
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * Attempt to parse a date string using ISO parsers.
+     * Any missing parts of the pattern will get set to default: 1-Jan, 00:00:00
+     * If the year is missing, {@code null} is returned.
+     *
+     * @param dateStr String to parse
+     *
+     * @return Resulting date if parsed, otherwise {@code null}
+     */
+    @Nullable
+    public LocalDateTime parseISO(@Nullable final String dateStr) {
+        if (dateStr == null) {
+            return null;
+        }
+
+        final int len = dateStr.length();
+        // invalid lengths
+        if (len < 4 || len == 5 || len == 6 || len == 8 || len == 9) {
+            return null;
+        }
+
+        // Check the fixed patterns first. This has proven to be easier/faster then
+        // trying to use DateTimeFormatter for date-strings without a time part.
+        switch (len) {
+            case 4:
+                // yyyy
+                try {
+                    return Year.parse(dateStr).atDay(1).atStartOfDay();
+//            } catch (@NonNull final DateTimeParseException ignore) {
+                } catch (@NonNull final RuntimeException ignore) {
+                    // ignore and try the next one
+                }
+                break;
+
+            // yyyy-MM
+            case 7:
+                try {
+                    final Year year = Year.parse(dateStr.substring(0, 4));
+                    final int mont = Integer.parseInt(dateStr.substring(5, 7));
+                    return year.atMonth(mont).atDay(1).atStartOfDay();
+//            } catch (@NonNull final DateTimeParseException ignore) {
+                } catch (@NonNull final RuntimeException ignore) {
+                    // ignore and try the next one
+                }
+                break;
+
+            // yyyy-MM-dd
+            case 10:
+                try {
+                    return LocalDate.parse(dateStr).atStartOfDay();
+//            } catch (@NonNull final DateTimeParseException ignore) {
+                } catch (@NonNull final RuntimeException ignore) {
+                    // ignore and try the next one
+                }
+                break;
+
+            default:
+                break;
+        }
+
+        // try full date+time strings
+        return parse(ISO_PARSERS, dateStr, null);
     }
 
     /**
@@ -226,21 +346,8 @@ public class DateParser
      */
     @Nullable
     private LocalDateTime parse(@NonNull final Iterable<DateTimeFormatter> parsers,
-                                @Nullable final String dateStr,
+                                @NonNull final CharSequence dateStr,
                                 @Nullable final Locale locale) {
-        if (dateStr == null || dateStr.isEmpty()) {
-            return null;
-        }
-        // shortcut for plain 4 digit years.
-        if (dateStr.length() == 4) {
-            try {
-                return Year.parse(dateStr).atDay(1).atTime(0, 0);
-                //URGENT: DateTimeParseException https://issuetracker.google.com/issues/158417777
-//            } catch (@NonNull final DateTimeParseException ignore) {
-            } catch (@NonNull final RuntimeException ignore) {
-                // ignore and try the next one
-            }
-        }
 
         // Try the specified Locale first
         if (locale != null) {
@@ -254,7 +361,7 @@ public class DateParser
             }
         }
 
-        // Parse using the default ResolverStyle
+        // Parse with the default locales, using the default ResolverStyle
         for (DateTimeFormatter dtf : parsers) {
             try {
                 return LocalDateTime.parse(dateStr, dtf);
@@ -275,47 +382,8 @@ public class DateParser
 //            }
 //        }
 
+        // give up
         return null;
-    }
-
-    /**
-     * Attempt to parse a date string.
-     *
-     * @param dateStr String to parse
-     *
-     * @return Resulting date if parsed, otherwise {@code null}
-     */
-    @Nullable
-    public LocalDateTime parse(@Nullable final String dateStr) {
-        return parse(ALL_PARSERS, dateStr, null);
-    }
-
-    /**
-     * Attempt to parse a date string using the passed locale.
-     * This method is meant to be used by site-specific code where the site Locale is known.
-     *
-     * @param locale  to try first; i.e. before the pre-defined list.
-     * @param dateStr String to parse
-     *
-     * @return Resulting date if successfully parsed, otherwise {@code null}
-     */
-    public LocalDateTime parse(@NonNull final Locale locale,
-                               @NonNull final String dateStr) {
-        return parse(ALL_PARSERS, dateStr, locale);
-    }
-
-    /**
-     * Attempt to parse a date string using ISO parsers.
-     * Any missing parts of the pattern will get set to default: 1-Jan, 00:00:00
-     * If the year is missing, {@code null} is returned.
-     *
-     * @param dateStr String to parse
-     *
-     * @return Resulting date if parsed, otherwise {@code null}
-     */
-    @Nullable
-    public LocalDateTime parseISO(@Nullable final String dateStr) {
-        return parse(ISO_PARSERS, dateStr, null);
     }
 
     @Override
