@@ -45,12 +45,16 @@ public abstract class BookBaseFragmentViewModel
     /** Log tag. */
     private static final String TAG = "BookBaseFragmentVM";
 
-    /** The fields collection handled in this model. They key is the fragment tag. */
+    /**
+     * The fields collection handled in this model. They key is the fragment tag.
+     * We're not actually using this as a map, as we're only ever storing one
+     * set of fields. The Map setup is a left-over from a previous approach and might
+     * make a comeback. So... keeping it for now.
+     */
     private final Map<String, Fields> mFieldsMap = new HashMap<>();
     /** Database Access. */
     protected DAO mDb;
-    /** Prevent needless re-init of fields after a fragment was recreated (screen rotation etc.) */
-    private boolean mFieldsAreInitialised;
+
     /** Track on which cover view the context menu was used. */
     @IntRange(from = -1)
     private int mCurrentCoverHandlerIndex = -1;
@@ -86,13 +90,6 @@ public abstract class BookBaseFragmentViewModel
         return fields;
     }
 
-    public boolean shouldInitFields() {
-        return !mFieldsAreInitialised;
-    }
-
-    public void setFieldsAreInitialised() {
-        mFieldsAreInitialised = true;
-    }
 
     /**
      * Retrieve the previously set cover handler index.
