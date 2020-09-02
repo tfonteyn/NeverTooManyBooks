@@ -25,7 +25,6 @@ public final class ErrorMsg {
 
     public static final String INVALID_ISBN = "isbn must be valid";
 
-    public static final String LISTENER_WAS_NULL = "Listener was NULL";
     public static final String LISTENER_WAS_DEAD = "Listener was dead";
 
     public static final String EMPTY_ARRAY_OR_LIST = "Empty array/list";

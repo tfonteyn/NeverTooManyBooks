@@ -162,7 +162,7 @@ public class Field<T, V extends View> {
     }
 
     void setAfterFieldChangeListener(@Nullable final Fields.AfterChangeListener listener) {
-        mAfterFieldChangeListener = new WeakReference<>(listener);
+        mAfterFieldChangeListener = listener != null ? new WeakReference<>(listener) : null;
     }
 
     /**
@@ -343,9 +343,13 @@ public class Field<T, V extends View> {
 
         } else {
             if (BuildConfig.DEBUG /* always */) {
-                Log.w(TAG, "onChanged|" +
-                           (mAfterFieldChangeListener == null ? ErrorMsg.LISTENER_WAS_NULL
-                                                              : ErrorMsg.LISTENER_WAS_DEAD));
+                // mAfterFieldChangeListener == null is perfectly fine.
+                // i.e. it will be null during population of fields.
+                if (mAfterFieldChangeListener != null) {
+                    // The REFERENT being dead is however not fine, so log this in debug.
+                    // flw: this message should never be seen!
+                    Log.w(TAG, "onChanged|" + ErrorMsg.LISTENER_WAS_DEAD);
+                }
             }
         }
     }
