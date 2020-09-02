@@ -41,6 +41,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
+import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 
@@ -445,11 +446,27 @@ public class BookViewModel
                                        context, mDb, true, mBook.getLocale(context));
     }
 
+    /**
+     * Get the primary book Author.
+     *
+     * @param context Current context
+     *
+     * @return primary book author (or 'unknown' if none)
+     */
+    public Author getPrimaryAuthor(@NonNull final Context context) {
+        final Author author = mBook.getPrimaryAuthor();
+        if (author != null) {
+            return author;
+        } else {
+            return Author.createUnknownAuthor(context);
+        }
+    }
+
     public MutableLiveData<ArrayList<Author>> getAuthorList() {
         return mAuthorList;
     }
 
-    public void updateAuthors(final ArrayList<Author> list) {
+    public void updateAuthors(@NonNull final ArrayList<Author> list) {
         mBook.putParcelableArrayList(Book.BKEY_AUTHOR_ARRAY, list);
         mAuthorList.setValue(list);
     }
@@ -467,8 +484,13 @@ public class BookViewModel
         return mPublisherList;
     }
 
-    public void updatePublishers(final ArrayList<Publisher> list) {
+    public void updatePublishers(@NonNull final ArrayList<Publisher> list) {
         mBook.putParcelableArrayList(Book.BKEY_PUBLISHER_ARRAY, list);
         mPublisherList.setValue(list);
+    }
+
+    public void fixTocEntryId(@NonNull final Context context,
+                              @NonNull final TocEntry tocEntry) {
+        tocEntry.fixId(context, mDb, true, mBook.getLocale(context));
     }
 }

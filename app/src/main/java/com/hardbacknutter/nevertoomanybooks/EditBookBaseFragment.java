@@ -25,7 +25,6 @@ import android.os.Parcelable;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.AutoCompleteTextView;
 import android.widget.TextView;
 
@@ -110,20 +109,10 @@ public abstract class EditBookBaseFragment
         return Instant.now();
     }
 
-    /**
-     * Convenience wrapper.
-     * <p>
-     * Return the Field associated with the passed ID.
-     *
-     * @param <T> type of Field value.
-     * @param <V> type of View for this field.
-     * @param id  Field/View ID
-     *
-     * @return Associated Field.
-     */
     @NonNull
-    <T, V extends View> Field<T, V> getField(@IdRes final int id) {
-        return getFields().getField(id);
+    @Override
+    Fields getFields() {
+        return mFragmentVM.getFields(getTag());
     }
 
     @Override
@@ -131,7 +120,6 @@ public abstract class EditBookBaseFragment
         super.onCreate(savedInstanceState);
 
         final FragmentManager fm = getChildFragmentManager();
-
         fm.setFragmentResultListener(RK_DATE_PICKER_PARTIAL, this, mPartialDatePickerListener);
         fm.setFragmentResultListener(RK_DATE_PICKER_SINGLE, this, mDatePickerListener);
         fm.setFragmentResultListener(RK_DATE_PICKER_RANGE, this, mDatePickerListener);
@@ -142,32 +130,7 @@ public abstract class EditBookBaseFragment
         //noinspection ConstantConditions
         mFragmentVM = new ViewModelProvider(getActivity())
                 .get(fragmentTag, EditBookFragmentViewModel.class);
-
         mFragmentVM.init();
-    }
-
-    @Override
-    public void onViewCreated(@NonNull final View view,
-                              @Nullable final Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
-        if (mFragmentVM.shouldInitFields()) {
-            onInitFields(getFields());
-            mFragmentVM.setFieldsAreInitialised();
-        }
-    }
-
-    /**
-     * Init all Fields, and add them the fields collection.
-     * <p>
-     * Note that Field views are <strong>NOT AVAILABLE</strong>.
-     * <p>
-     * The fields will be populated in {@link #onPopulateViews}
-     *
-     * @param fields the local fields collection to add your fields to
-     */
-    @CallSuper
-    void onInitFields(@NonNull final Fields fields) {
     }
 
     @Override

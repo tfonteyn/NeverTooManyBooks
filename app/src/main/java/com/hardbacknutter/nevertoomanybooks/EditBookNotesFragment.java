@@ -52,21 +52,12 @@ import com.hardbacknutter.nevertoomanybooks.fields.validators.FieldValidator;
 public class EditBookNotesFragment
         extends EditBookBaseFragment {
 
-    /** Log tag. */
-    private static final String TAG = "EditBookNotesFragment";
-
     /**
      * The cross validator for read-start and read-end date fields.
      * The error is always shown on the 'end' field.
      */
     private final FieldValidator<String, TextView> mReadStartEndValidator =
             this::validateReadStartAndEndFields;
-
-    @NonNull
-    @Override
-    Fields getFields() {
-        return mFragmentVM.getFields(TAG);
-    }
 
     @Override
     @Nullable
@@ -103,7 +94,6 @@ public class EditBookNotesFragment
 
     @Override
     protected void onInitFields(@NonNull final Fields fields) {
-        super.onInitFields(fields);
 
         fields.add(R.id.cbx_read, new CompoundButtonAccessor(), DBDefinitions.KEY_READ);
         fields.add(R.id.cbx_signed, new CompoundButtonAccessor(), DBDefinitions.KEY_SIGNED);

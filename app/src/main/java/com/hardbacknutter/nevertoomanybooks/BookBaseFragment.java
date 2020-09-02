@@ -53,6 +53,7 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
+import com.hardbacknutter.nevertoomanybooks.fields.Field;
 import com.hardbacknutter.nevertoomanybooks.fields.Fields;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GrStatus;
 import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.GrAuthTask;
@@ -73,11 +74,10 @@ public abstract class BookBaseFragment
         extends Fragment
         implements PermissionsHelper.RequestHandler {
 
-    /** Log tag. */
-    private static final String TAG = "BookBaseFragment";
     /** FragmentResultListener request key. */
     public static final String RK_COVER_BROWSER = CoverBrowserDialogFragment.TAG + ":rk:";
-
+    /** Log tag. */
+    private static final String TAG = "BookBaseFragment";
     /** Handles cover replacement, rotation, etc. */
     final CoverHandler[] mCoverHandler = new CoverHandler[2];
 
@@ -85,6 +85,7 @@ public abstract class BookBaseFragment
     private final CoverBrowserDialogFragment.OnResultListener mOnCoverBrowserListener =
             (cIdx, fileSpec) -> mCoverHandler[cIdx].onFileSelected(fileSpec);
 
+    /** Goodreads authorization task. */
     GrAuthTask mGrAuthTask;
     /** simple indeterminate progress spinner to show while doing lengthy work. */
     ProgressBar mProgressBar;
@@ -102,6 +103,34 @@ public abstract class BookBaseFragment
     @NonNull
     abstract Fields getFields();
 
+    /**
+     * Convenience wrapper.
+     * <p>
+     * Return the Field associated with the passed ID.
+     *
+     * @param <T> type of Field value.
+     * @param <V> type of View for this field.
+     * @param id  Field/View ID
+     *
+     * @return Associated Field.
+     */
+    @NonNull
+    <T, V extends View> Field<T, V> getField(@IdRes final int id) {
+        return getFields().getField(id);
+    }
+
+    /**
+     * Init all Fields, and add them the fields collection.
+     * <p>
+     * Note that Field views are <strong>NOT AVAILABLE</strong>.
+     * <p>
+     * Called from {@link #onViewCreated}.
+     * The fields will be populated in {@link #onPopulateViews}
+     *
+     * @param fields collection to add to
+     */
+    abstract void onInitFields(@NonNull Fields fields);
+
     @Override
     public void onRequestPermissionsResult(final int requestCode,
                                            @NonNull final String[] permissions,
@@ -117,6 +146,11 @@ public abstract class BookBaseFragment
 
         getChildFragmentManager()
                 .setFragmentResultListener(RK_COVER_BROWSER, this, mOnCoverBrowserListener);
+
+        //noinspection ConstantConditions
+        mBookViewModel = new ViewModelProvider(getActivity()).get(BookViewModel.class);
+        //noinspection ConstantConditions
+        mBookViewModel.init(getContext(), getArguments());
     }
 
     @Override
@@ -125,11 +159,13 @@ public abstract class BookBaseFragment
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        //noinspection ConstantConditions
-        mBookViewModel = new ViewModelProvider(getActivity()).get(BookViewModel.class);
-        //noinspection ConstantConditions
-        mBookViewModel.init(getContext(), getArguments());
+        final Fields fields = getFields();
+        if (fields.shouldInitFields()) {
+            onInitFields(fields);
+            fields.setFieldsAreInitialised();
+        }
 
+        //noinspection ConstantConditions
         mProgressBar = getActivity().findViewById(R.id.progressBar);
 
         mGrAuthTask = new ViewModelProvider(this).get(GrAuthTask.class);
@@ -175,13 +211,12 @@ public abstract class BookBaseFragment
         }
     }
 
-
     @Override
     @CallSuper
     public void onResume() {
         super.onResume();
         // hook up the Views, and calls {@link #onPopulateViews}
-        populateViews(getFields());
+        populateViews();
     }
 
     /**
@@ -192,10 +227,10 @@ public abstract class BookBaseFragment
      * but can explicitly be called after {@link Book#reload}.
      * <p>
      * This is final; Inheritors should implement {@link #onPopulateViews}.
-     *
-     * @param fields current field collection
      */
-    final void populateViews(@NonNull final Fields fields) {
+    final void populateViews() {
+        final Fields fields = getFields();
+
         final Book book = mBookViewModel.getBook();
         //noinspection ConstantConditions
         fields.setParentView(getView());
@@ -234,7 +269,7 @@ public abstract class BookBaseFragment
      * The base class (this one) manages all the actual fields, but 'special' fields can/should
      * be handled in overrides, calling super as the first step.
      * <p>
-     * Do not call this method directly, instead call {@link #populateViews(Fields)}.
+     * Do not call this method directly, instead call {@link #populateViews}.
      *
      * @param fields current field collection
      * @param book   loaded book

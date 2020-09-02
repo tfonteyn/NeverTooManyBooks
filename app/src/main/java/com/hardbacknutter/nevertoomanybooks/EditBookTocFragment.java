@@ -53,10 +53,8 @@ import com.google.android.material.snackbar.Snackbar;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Locale;
 import java.util.Objects;
 
-import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogTocConfirmBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentEditBookTocBinding;
@@ -104,7 +102,6 @@ public class EditBookTocFragment
     /** FragmentResultListener request key. */
     private static final String RK_CONFIRM_TOC = ConfirmTocDialogFragment.TAG + ":rk";
 
-
     /** If the list changes, the book is dirty. */
     private final SimpleAdapterDataObserver mAdapterDataObserver =
             new SimpleAdapterDataObserver() {
@@ -131,9 +128,6 @@ public class EditBookTocFragment
     /** Stores the item position in the list while we're editing that item. */
     @Nullable
     private Integer mEditPosition;
-    private IsfdbGetEditionsTask mIsfdbGetEditionsTask;
-    /** Database Access. */
-    private DAO mDb;
     /** Listen for the results of the entry edit-dialog. */
     private final BookChangedListener mOnBookChangedListener = (bookId, fieldChanges, data) -> {
         Objects.requireNonNull(data, ErrorMsg.NULL_INTENT_DATA);
@@ -155,6 +149,8 @@ public class EditBookTocFragment
         }
 
     };
+
+    private IsfdbGetEditionsTask mIsfdbGetEditionsTask;
     private IsfdbGetBookTask mIsfdbGetBookTask;
 
     private final FragmentResultListener mConfirmTocResultsListener =
@@ -171,18 +167,11 @@ public class EditBookTocFragment
                 }
             };
 
-    @NonNull
-    @Override
-    Fields getFields() {
-        return mFragmentVM.getFields(TAG);
-    }
-
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         final FragmentManager fm = getChildFragmentManager();
-
         fm.setFragmentResultListener(RK_EDIT_TOC, this, mOnBookChangedListener);
         fm.setFragmentResultListener(RK_CONFIRM_TOC, this, mConfirmTocResultsListener);
 
@@ -191,8 +180,6 @@ public class EditBookTocFragment
                     RK_MENU_PICKER, this,
                     (MenuPickerDialogFragment.OnResultListener) this::onContextItemSelected);
         }
-
-        mDb = new DAO(TAG);
     }
 
     @Override
@@ -254,7 +241,6 @@ public class EditBookTocFragment
         mItemTouchHelper = new ItemTouchHelper(sitHelperCallback);
         mItemTouchHelper.attachToRecyclerView(mVb.tocList);
 
-
         mVb.cbxMultipleAuthors.setOnCheckedChangeListener(
                 (v, isChecked) -> updateMultiAuthor(isChecked));
         // adding a new entry
@@ -284,20 +270,9 @@ public class EditBookTocFragment
         }
     }
 
-    /**
-     * Convenience method to get the primary book Author.
-     *
-     * @return primary book author (or 'unknown' if none)
-     */
-    private Author getBookAuthor() {
-        final List<Author> authorList = mBookViewModel
-                .getBook().getParcelableArrayList(Book.BKEY_AUTHOR_ARRAY);
-        if (!authorList.isEmpty()) {
-            return authorList.get(0);
-        } else {
-            //noinspection ConstantConditions
-            return Author.createUnknownAuthor(getContext());
-        }
+    @Override
+    void onInitFields(@NonNull final Fields fields) {
+
     }
 
     @Override
@@ -476,8 +451,7 @@ public class EditBookTocFragment
     private void populateTocBits(@NonNull final Book book) {
         mVb.cbxIsAnthology.setChecked(book.isBitSet(DBDefinitions.KEY_TOC_BITMASK,
                                                     Book.TOC_MULTIPLE_WORKS));
-        updateMultiAuthor(book.isBitSet(DBDefinitions.KEY_TOC_BITMASK,
-                                        Book.TOC_MULTIPLE_AUTHORS));
+        updateMultiAuthor(book.isBitSet(DBDefinitions.KEY_TOC_BITMASK, Book.TOC_MULTIPLE_AUTHORS));
     }
 
     private void updateMultiAuthor(final boolean isChecked) {
@@ -492,7 +466,8 @@ public class EditBookTocFragment
             }
 
             //noinspection ConstantConditions
-            mVb.author.setText(getBookAuthor().getLabel(getContext()));
+            final Author author = mBookViewModel.getPrimaryAuthor(getContext());
+            mVb.author.setText(author.getLabel(getContext()));
             mVb.author.selectAll();
             mVb.lblAuthor.setVisibility(View.VISIBLE);
             mVb.author.setVisibility(View.VISIBLE);
@@ -503,7 +478,6 @@ public class EditBookTocFragment
             mVb.title.requestFocus();
         }
     }
-
 
     /**
      * Add a new entry to the list based on the on-screen fields. (i.e. not from the edit-dialog).
@@ -523,7 +497,8 @@ public class EditBookTocFragment
         if (mVb.cbxMultipleAuthors.isChecked()) {
             author = Author.from(mVb.author.getText().toString().trim());
         } else {
-            author = getBookAuthor();
+            //noinspection ConstantConditions
+            author = mBookViewModel.getPrimaryAuthor(getContext());
         }
         //noinspection ConstantConditions
         final TocEntry newTocEntry = new TocEntry(author,
@@ -539,11 +514,9 @@ public class EditBookTocFragment
      * @param tocEntry to add
      */
     private void addNewEntry(@NonNull final TocEntry tocEntry) {
-        //noinspection ConstantConditions
-        final Locale bookLocale = mBookViewModel.getBook().getLocale(getContext());
-
         // see if it already exists
-        tocEntry.fixId(getContext(), mDb, true, bookLocale);
+        //noinspection ConstantConditions
+        mBookViewModel.fixTocEntryId(getContext(), tocEntry);
         // and check it's not already in the list.
         if (mList.contains(tocEntry)) {
             mVb.lblTitle.setError(getString(R.string.warning_already_in_list));
@@ -551,7 +524,8 @@ public class EditBookTocFragment
             mList.add(tocEntry);
             // clear the form for next entry and scroll to the new item
             if (mVb.cbxMultipleAuthors.isChecked()) {
-                mVb.author.setText(getBookAuthor().getLabel(getContext()));
+                final Author author = mBookViewModel.getPrimaryAuthor(getContext());
+                mVb.author.setText(author.getLabel(getContext()));
                 mVb.author.selectAll();
             }
             mVb.title.setText("");
@@ -643,14 +617,6 @@ public class EditBookTocFragment
             Snackbar.make(mVb.getRoot(), R.string.warning_no_editions,
                           Snackbar.LENGTH_LONG).show();
         }
-    }
-
-    @Override
-    public void onDestroy() {
-        if (mDb != null) {
-            mDb.close();
-        }
-        super.onDestroy();
     }
 
     /**

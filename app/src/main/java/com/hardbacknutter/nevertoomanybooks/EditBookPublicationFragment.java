@@ -48,17 +48,8 @@ import com.hardbacknutter.nevertoomanybooks.fields.formatters.DoubleNumberFormat
 public class EditBookPublicationFragment
         extends EditBookBaseFragment {
 
-    /** Log tag. */
-    private static final String TAG = "EditBookPublicationFrag";
-
     /** View Binding. */
     private FragmentEditBookPublicationBinding mVb;
-
-    @NonNull
-    @Override
-    Fields getFields() {
-        return mFragmentVM.getFields(TAG);
-    }
 
     @Override
     @Nullable
@@ -111,7 +102,6 @@ public class EditBookPublicationFragment
 
     @Override
     protected void onInitFields(@NonNull final Fields fields) {
-        super.onInitFields(fields);
 
         fields.add(R.id.pages, new EditTextAccessor<>(), DBDefinitions.KEY_PAGES)
               .setRelatedFields(R.id.lbl_pages);

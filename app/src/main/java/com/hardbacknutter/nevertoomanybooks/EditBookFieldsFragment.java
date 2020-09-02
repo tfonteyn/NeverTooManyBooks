@@ -95,12 +95,6 @@ public class EditBookFieldsFragment
     /** View Binding. */
     private FragmentEditBookFieldsBinding mVb;
 
-    @NonNull
-    @Override
-    Fields getFields() {
-        return mFragmentVM.getFields(TAG);
-    }
-
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -206,7 +200,6 @@ public class EditBookFieldsFragment
 
     @Override
     protected void onInitFields(@NonNull final Fields fields) {
-        super.onInitFields(fields);
 
         final String nonBlankRequired = getString(R.string.vldt_non_blank_required);
 
