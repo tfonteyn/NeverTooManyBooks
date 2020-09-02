@@ -57,7 +57,7 @@ public class StartupActivity
     /** Self reference for use by database upgrades. */
     private static WeakReference<StartupActivity> sStartupActivity;
 
-    /** The ViewModel. */
+    /** The Activity ViewModel. */
     private StartupViewModel mModel;
     /** The View binding. */
     private ActivityStartupBinding mVb;

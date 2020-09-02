@@ -341,7 +341,6 @@ public class EditBookActivity
 
             // Build the tab class/title list.
             mTabs.add(new TabInfo(EditBookFieldsFragment.class, R.string.tab_lbl_details));
-
             mTabs.add(new TabInfo(EditBookPublicationFragment.class, R.string.tab_lbl_publication));
             mTabs.add(new TabInfo(EditBookNotesFragment.class, R.string.tab_lbl_notes));
 

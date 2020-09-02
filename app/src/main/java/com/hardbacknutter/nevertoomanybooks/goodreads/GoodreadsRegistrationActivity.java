@@ -48,8 +48,10 @@ import com.hardbacknutter.nevertoomanybooks.viewmodels.LiveDataEvent;
 public class GoodreadsRegistrationActivity
         extends BaseActivity {
 
+    /** View binding. */
     private ActivityGoodreadsRegisterBinding mVb;
 
+    /** Goodreads authorization task. */
     private GrAuthTask mGrAuthTask;
 
     @Override

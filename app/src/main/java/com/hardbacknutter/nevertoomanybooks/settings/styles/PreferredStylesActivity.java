@@ -88,7 +88,7 @@ public class PreferredStylesActivity
 
     /** Drag and drop support for the list view. */
     private ItemTouchHelper mItemTouchHelper;
-    /** The ViewModel. */
+    /** The Activity ViewModel. */
     private PreferredStylesViewModel mModel;
 
     /** Saves the order after each change. */

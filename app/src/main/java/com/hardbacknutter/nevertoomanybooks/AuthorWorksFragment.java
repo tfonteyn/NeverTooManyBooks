@@ -86,7 +86,7 @@ public class AuthorWorksFragment
 
     /** the ViewModel. */
     private ResultDataModel mResultData;
-    /** The ViewModel. */
+    /** The Fragment ViewModel. */
     private AuthorWorksModel mModel;
     /** The Adapter. */
     private TocAdapter mAdapter;

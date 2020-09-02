@@ -475,7 +475,6 @@ public class Book
         }
     }
 
-
     /**
      * Get the first author in the list of authors for this book.
      *
@@ -485,15 +484,6 @@ public class Book
     public Author getPrimaryAuthor() {
         final ArrayList<Author> authors = getParcelableArrayList(BKEY_AUTHOR_ARRAY);
         return authors.isEmpty() ? null : authors.get(0);
-    }
-
-    /**
-     * Check if this Book has just a single Author.
-     *
-     * @return {@code true} if exactly 1 Author
-     */
-    public boolean isSingleAuthor() {
-        return getParcelableArrayList(BKEY_AUTHOR_ARRAY).size() == 1;
     }
 
     /**

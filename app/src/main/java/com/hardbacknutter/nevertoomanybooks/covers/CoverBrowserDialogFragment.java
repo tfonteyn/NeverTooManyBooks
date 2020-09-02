@@ -93,7 +93,7 @@ public class CoverBrowserDialogFragment
     @SuppressWarnings("FieldCanBeLocal")
     private BookViewModel mBookViewModel;
 
-    /** The ViewModel. */
+    /** The Fragment ViewModel. */
     private CoverBrowserViewModel mModel;
     /** Editions. */
     private SearchEditionsTask mSearchEditionsTask;

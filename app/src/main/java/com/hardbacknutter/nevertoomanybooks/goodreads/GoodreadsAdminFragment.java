@@ -60,6 +60,7 @@ public class GoodreadsAdminFragment
     /** Fragment manager tag. */
     public static final String TAG = "GoodreadsAdminFragment";
 
+    /** Goodreads authorization task. */
     private GrAuthTask mGrAuthTask;
     private ImportTask mImportTask;
     private SendBooksTask mSendBooksTask;

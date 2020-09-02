@@ -178,7 +178,7 @@ public class BooksOnBookshelf
     private GrAuthTask mGrAuthTask;
     /** Multi-type adapter to manage list connection to cursor. */
     private BooklistAdapter mAdapter;
-    /** The ViewModel. */
+    /** The Activity ViewModel. */
     private BooksOnBookshelfModel mModel;
     /** Goodreads send-book task. */
     private GrSendOneBookTask mGrSendOneBookTask;
