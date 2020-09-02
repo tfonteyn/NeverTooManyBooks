@@ -616,7 +616,7 @@ public class IsfdbSearchEngine
                     // e.g. "1975-04-00" or "1974-00-00" Cut that part off.
                     tmpString = UNKNOWN_M_D_LITERAL.matcher(tmpString).replaceAll("");
                     // and we're paranoid...
-                    final LocalDateTime date = dateParser.parse(tmpString);
+                    final LocalDateTime date = dateParser.parse(tmpString, getLocale());
                     if (date != null) {
                         // Note that partial dates, e.g. "1987", "1978-03"
                         // will get 'completed' to "1987-01-01", "1978-03-01"
