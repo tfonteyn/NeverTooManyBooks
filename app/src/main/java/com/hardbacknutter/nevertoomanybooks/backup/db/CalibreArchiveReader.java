@@ -29,6 +29,8 @@ import androidx.annotation.NonNull;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
@@ -49,6 +51,24 @@ import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.utils.DateParser;
 
+/**
+ * Copies the standard fields (book, author, publisher, series).
+ * Supports custom columns:
+ * <ul>
+ *     <li>read (boolean)</li>
+ *     <li>read_start (datetime)</li>
+ *     <li>read_end (datetime)</li>
+ *     <li>date_read (datetime) -> read_end</li>
+ * </ul>
+ *
+ * <p>
+ * Note we're not taking "books.pubdate"; most metadata downloaded by Calibre contains
+ * bad/incorrect dates (at least the ones we've seen)
+ * <p>
+ * Not copying "ratings" either. The source is rather unclear. Amazon or Goodreads? or?
+ * <p>
+ * ENHANCE: tags... this would require implementing a full tag system in our own database.
+ */
 class CalibreArchiveReader
         implements ArchiveReader {
 
@@ -60,14 +80,6 @@ class CalibreArchiveReader
 
     /**
      * The main fields from the books table.
-     * <p>
-     * Note we're not taking "books.pubdate"; most metadata downloaded by Calibre contains
-     * bad/incorrect dates (at least the ones we've seen)
-     * <p>
-     * Not copying "ratings" either. The source is unclear.
-     * <p>
-     * ENHANCE: tags... this would require implementing a full tag system in our own database.
-     * ENHANCE: custom fields ? Maybe detect/guess fields like "read" etc ?
      */
     private static final String SQL_SELECT_BOOKS =
             "SELECT books.id AS id,"
@@ -104,6 +116,14 @@ class CalibreArchiveReader
             "SELECT identifiers.type, identifiers.val FROM identifiers "
             + " WHERE identifiers.book=?";
 
+    /** Read all custom column definitions. */
+    private static final String SQL_SELECT_CUSTOM_COLUMNS =
+            "SELECT id, label, datatype FROM custom_columns";
+
+    /** Read a single custom column. The index must be string-substituted. */
+    private static final String SQL_SELECT_CUSTOM_COLUMN_X =
+            "SELECT value FROM custom_column_%s WHERE book=?";
+
     /** Database Access. */
     @NonNull
     private final DAO mDb;
@@ -119,6 +139,8 @@ class CalibreArchiveReader
     private final String mProgressMessage;
 
     private final boolean mForceUpdate;
+
+    private Collection<CustomColumn> mCustomColumns;
 
     /**
      * Constructor.
@@ -154,6 +176,11 @@ class CalibreArchiveReader
                               @NonNull final ProgressListener progressListener) {
 
         final ImportResults importResults = new ImportResults();
+        final Book book = new Book();
+
+        // The default Bookshelf to which all books will be added.
+        final Bookshelf bookshelf = Bookshelf.getBookshelf(context, mDb, Bookshelf.PREFERRED,
+                                                           Bookshelf.DEFAULT);
 
         int colId = -2;
         int colUuid = -2;
@@ -164,20 +191,13 @@ class CalibreArchiveReader
         int colSeriesIndex = -2;
         int colSeriesName = -2;
 
-        final Book book = new Book();
-        final ArrayList<Author> mAuthors = new ArrayList<>();
-        final ArrayList<Series> mSeries = new ArrayList<>();
-        final ArrayList<Publisher> mPublishers = new ArrayList<>();
-
-        // The default Bookshelf to which all books will be added.
-        final Bookshelf bookshelf = Bookshelf.getBookshelf(context, mDb, Bookshelf.PREFERRED,
-                                                           Bookshelf.DEFAULT);
-
         int txRowCount = 0;
         long lastUpdate = 0;
         // we only update progress every PROGRESS_UPDATE_INTERVAL ms.
         // Count the nr of books in between.
         int delta = 0;
+
+        mCustomColumns = readCustomColumns();
 
         Synchronizer.SyncLock txLock = null;
 
@@ -210,13 +230,11 @@ class CalibreArchiveReader
                     colSeriesIndex = source.getColumnIndex("nr_in_series");
                     colSeriesName = source.getColumnIndex("series_title");
                 }
+
                 book.clear();
-                mAuthors.clear();
-                mSeries.clear();
-                mPublishers.clear();
 
                 // We're not keeping the Calibre id other then for lookups during import
-                final String calibreId = source.getString(colId);
+                final int calibreId = source.getInt(colId);
                 // keep the Calibre UUID
                 final String calibreUuid = source.getString(colUuid);
                 book.putString(DBDefinitions.KEY_EID_CALIBRE_UUID, calibreUuid);
@@ -227,6 +245,15 @@ class CalibreArchiveReader
                 book.putString(DBDefinitions.KEY_UTC_LAST_UPDATED,
                                source.getString(colLastModified));
 
+                // it's an eBook - duh!
+                book.putString(DBDefinitions.KEY_FORMAT, mEBookString);
+                // assign to current shelf.
+                book.getParcelableArrayList(Book.BKEY_BOOKSHELF_ARRAY).add(bookshelf);
+
+                // There is a "books_series_link" table which indicates you could have a book
+                // belong to multiple series, BUT the Calibre UI does not support this and
+                // the book number in the series is stored in the books table.
+                // (2020-09-01) hence (for now)... we only read a single Series.
                 if (!source.isNull(colSeriesName)) {
                     final String seriesNr = source.getString(colSeriesIndex);
                     final String seriesName = source.getString(colSeriesName);
@@ -234,76 +261,17 @@ class CalibreArchiveReader
                     if (!seriesNr.isEmpty() && !"0.0".equals(seriesNr)) {
                         series.setNumber(seriesNr);
                     }
-                    mSeries.add(series);
+                    final ArrayList<Series> seriesList = new ArrayList<>();
+                    seriesList.add(series);
+                    book.putParcelableArrayList(Book.BKEY_SERIES_ARRAY, seriesList);
                 }
 
-                final String[] calibreParam = new String[]{calibreId};
+                handleAuthor(book, calibreId);
+                handlePublishers(book, calibreId);
+                handleIdentifiers(book, calibreId);
+                handleCustomColumns(book, calibreId);
 
-                try (Cursor cursor = mCalibreDb.rawQuery(SQL_SELECT_AUTHORS, calibreParam)) {
-                    while (cursor.moveToNext()) {
-                        final String name = cursor.getString(0);
-                        mAuthors.add(Author.from(name));
-                    }
-                }
-
-                try (Cursor cursor = mCalibreDb.rawQuery(SQL_SELECT_PUBLISHERS, calibreParam)) {
-                    while (cursor.moveToNext()) {
-                        final String name = cursor.getString(0);
-                        mPublishers.add(Publisher.from(name));
-                    }
-                }
-
-                try (Cursor cursor = mCalibreDb.rawQuery(SQL_SELECT_IDENTIFIERS, calibreParam)) {
-                    while (cursor.moveToNext()) {
-                        String name = cursor.getString(0);
-                        if (name != null) {
-                            name = name.trim();
-                            switch (name) {
-                                case "isbn":
-                                    book.putString(DBDefinitions.KEY_ISBN,
-                                                   cursor.getString(1));
-                                    break;
-                                case "amazon":
-                                    book.putString(DBDefinitions.KEY_EID_ASIN,
-                                                   cursor.getString(1));
-                                    break;
-                                case "goodreads":
-                                    book.putLong(DBDefinitions.KEY_EID_GOODREADS_BOOK,
-                                                 cursor.getLong(1));
-                                    break;
-                                case "google":
-                                    book.putString(DBDefinitions.KEY_EID_GOOGLE,
-                                                   cursor.getString(1));
-                                    break;
-
-                                // There are many more (free-form) ...
-                                default:
-                                    // Other than strict "amazon", there are variants
-                                    // for local sites; e.g. "amazon_nl", "amazon_fr",...
-                                    if (name.startsWith("amazon")) {
-                                        book.putString(DBDefinitions.KEY_EID_ASIN,
-                                                       cursor.getString(1));
-                                    }
-                                    break;
-                            }
-                        }
-                    }
-                }
-
-                if (!mAuthors.isEmpty()) {
-                    book.putParcelableArrayList(Book.BKEY_AUTHOR_ARRAY, mAuthors);
-                }
-                if (!mSeries.isEmpty()) {
-                    book.putParcelableArrayList(Book.BKEY_SERIES_ARRAY, mSeries);
-                }
-                if (!mPublishers.isEmpty()) {
-                    book.putParcelableArrayList(Book.BKEY_PUBLISHER_ARRAY, mPublishers);
-                }
-
-                book.putString(DBDefinitions.KEY_FORMAT, mEBookString);
-
-                book.getParcelableArrayList(Book.BKEY_BOOKSHELF_ARRAY).add(bookshelf);
-
+                // process the book
                 try {
                     // check if the book exists in our database, and fetch it's id.
                     long databaseBookId = mDb.getBookIdFromKey(DBDefinitions.KEY_EID_CALIBRE_UUID,
@@ -384,6 +352,169 @@ class CalibreArchiveReader
         return importResults;
     }
 
+    private void handleAuthor(@NonNull final Book book,
+                              final int calibreId) {
+        final ArrayList<Author> mAuthors = new ArrayList<>();
+        try (Cursor cursor = mCalibreDb.rawQuery(SQL_SELECT_AUTHORS,
+                                                 new String[]{String.valueOf(calibreId)})) {
+            while (cursor.moveToNext()) {
+                final String name = cursor.getString(0);
+                mAuthors.add(Author.from(name));
+            }
+        }
+        if (!mAuthors.isEmpty()) {
+            book.putParcelableArrayList(Book.BKEY_AUTHOR_ARRAY, mAuthors);
+        }
+    }
+
+    private void handlePublishers(@NonNull final Book book,
+                                  final int calibreId) {
+        final ArrayList<Publisher> mPublishers = new ArrayList<>();
+        try (Cursor cursor = mCalibreDb.rawQuery(SQL_SELECT_PUBLISHERS,
+                                                 new String[]{String.valueOf(calibreId)})) {
+            while (cursor.moveToNext()) {
+                final String name = cursor.getString(0);
+                mPublishers.add(Publisher.from(name));
+            }
+        }
+        if (!mPublishers.isEmpty()) {
+            book.putParcelableArrayList(Book.BKEY_PUBLISHER_ARRAY, mPublishers);
+        }
+    }
+
+    private void handleIdentifiers(@NonNull final Book book,
+                                   final int calibreId) {
+        try (Cursor cursor = mCalibreDb.rawQuery(SQL_SELECT_IDENTIFIERS,
+                                                 new String[]{String.valueOf(calibreId)})) {
+            while (cursor.moveToNext()) {
+                String name = cursor.getString(0);
+                if (name != null) {
+                    name = name.trim();
+                    switch (name) {
+                        case "isbn":
+                            book.putString(DBDefinitions.KEY_ISBN,
+                                           cursor.getString(1));
+                            break;
+                        case "amazon":
+                            book.putString(DBDefinitions.KEY_EID_ASIN,
+                                           cursor.getString(1));
+                            break;
+                        case "goodreads":
+                            book.putLong(DBDefinitions.KEY_EID_GOODREADS_BOOK,
+                                         cursor.getLong(1));
+                            break;
+                        case "google":
+                            book.putString(DBDefinitions.KEY_EID_GOOGLE,
+                                           cursor.getString(1));
+                            break;
+
+                        // There are many more (free-form) ...
+                        default:
+                            // Other than strict "amazon", there are variants
+                            // for local sites; e.g. "amazon_nl", "amazon_fr",...
+                            if (name.startsWith("amazon")) {
+                                book.putString(DBDefinitions.KEY_EID_ASIN,
+                                               cursor.getString(1));
+                            }
+                            break;
+                    }
+                }
+            }
+        }
+    }
+
+    private void handleCustomColumns(@NonNull final Book book,
+                                     final int calibreId) {
+        for (CustomColumn cc : mCustomColumns) {
+            switch (cc.label) {
+                case DBDefinitions.KEY_READ:
+                    customBoolean(cc.id, calibreId).ifPresent(
+                            read -> book.putBoolean(DBDefinitions.KEY_READ, read));
+                    break;
+
+                case DBDefinitions.KEY_READ_START:
+                    customString(cc.id, calibreId).ifPresent(
+                            date -> book.putString(DBDefinitions.KEY_READ_START, date));
+                    break;
+
+                case DBDefinitions.KEY_READ_END:
+                case "date_read":
+                    customString(cc.id, calibreId).ifPresent(
+                            date -> book.putString(DBDefinitions.KEY_READ_END, date));
+                    break;
+
+                default:
+                    break;
+            }
+        }
+    }
+
+    @NonNull
+    private Collection<CustomColumn> readCustomColumns() {
+        final Collection<CustomColumn> customColumns = new ArrayList<>();
+        try (Cursor cursor = mCalibreDb.rawQuery(SQL_SELECT_CUSTOM_COLUMNS, null)) {
+            int id;
+            String label;
+            String datatype;
+            while (cursor.moveToNext()) {
+                id = cursor.getInt(0);
+                label = cursor.getString(1);
+                datatype = cursor.getString(2);
+
+                final CustomColumn cc = new CustomColumn(id, label);
+                switch (cc.label) {
+                    case DBDefinitions.KEY_READ:
+                        if ("bool".equals(datatype)) {
+                            customColumns.add(cc);
+                        }
+                        break;
+
+                    case DBDefinitions.KEY_READ_START:
+                    case DBDefinitions.KEY_READ_END:
+                    case "date_read":
+                        if ("datetime".equals(datatype)) {
+                            customColumns.add(cc);
+                        }
+                        break;
+
+                    default:
+                        // skip others
+                        break;
+                }
+            }
+        } catch (@NonNull final RuntimeException ignore) {
+            // ignore, maybe the table is not there
+        }
+
+        return customColumns;
+    }
+
+    @NonNull
+    private Optional<String> customString(final int customColumnId,
+                                          final int calibreId) {
+        try (Cursor cursor = mCalibreDb.rawQuery(
+                String.format(SQL_SELECT_CUSTOM_COLUMN_X, customColumnId),
+                new String[]{String.valueOf(calibreId)})) {
+            if (cursor.moveToFirst()) {
+                return Optional.of(cursor.getString(0));
+            }
+        }
+        return Optional.empty();
+    }
+
+    @NonNull
+    private Optional<Boolean> customBoolean(final int customColumnId,
+                                            final int calibreId) {
+        try (Cursor cursor = mCalibreDb.rawQuery(
+                String.format(SQL_SELECT_CUSTOM_COLUMN_X, customColumnId),
+                new String[]{String.valueOf(calibreId)})) {
+            if (cursor.moveToFirst()) {
+                return Optional.of(cursor.getInt(0) == 1);
+            }
+        }
+        return Optional.empty();
+    }
+
     /**
      * Check if the incoming book is newer then the stored book data.
      *
@@ -413,5 +544,18 @@ class CalibreArchiveReader
     public void close() {
         mDb.purge();
         mDb.close();
+    }
+
+    /** Value class. */
+    private static class CustomColumn {
+
+        final int id;
+        final String label;
+
+        CustomColumn(final int id,
+                     final String label) {
+            this.id = id;
+            this.label = label;
+        }
     }
 }
