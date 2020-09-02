@@ -90,7 +90,7 @@
     <string name="error_auto_toc_population_failed">Автоматическое заполнение названий не удалось</string>
     <string name="error_backup_failed">Резервное копирование не удалось</string>
     <string name="error_cannot_import">Выбранный файл не может быть импортирован.</string>
-    <string name="error_column_is_blank">Столбец %1$s в строке %2$d пуст</string>
+    <string name="error_csv_column_is_blank">Столбец %1$s в строке %2$d пуст</string>
     <string name="error_email_failed">Не удалось отправить электронное письмо.</string>
     <string name="error_google_play_store_missing">Google Play Store не установлен</string>
     <string name="error_if_the_problem_persists">Если проблема не устранена, обратитесь в службу поддержки через опцию «%1$s» внизу страницы настроек.</string>
@@ -659,5 +659,6 @@
     <string name="statick">статический</string>
     <string name="action_validate">проверять</string>
     <string name="action_select">Выбрать</string>
+    <string name="error_csv_line_to_long">Строка слишком длинная (строка=%1$d, длина=%2$d)</string>
 
 </resources>

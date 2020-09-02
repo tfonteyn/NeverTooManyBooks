@@ -91,7 +91,7 @@
     <string name="error_auto_toc_population_failed">Η αυτόματη συμπλήρωση τίτλων απέτυχε</string>
     <string name="error_backup_failed">Αντίγραφο απέτυχε</string>
     <string name="error_cannot_import">Δεν είναι δυνατή η εισαγωγή του επιλεγμένου αρχείου.</string>
-    <string name="error_column_is_blank">Η στήλη %1$s είναι κενή στη σειρά %2$d</string>
+    <string name="error_csv_column_is_blank">Η στήλη %1$s είναι κενή στη σειρά %2$d</string>
     <string name="error_email_failed">Αποτυχία αποστολής του μηνύματος ηλεκτρονικού ταχυδρομείου.</string>
     <string name="error_google_play_store_missing">Το Google Play Store δεν είναι εγκατεστημένο</string>
     <string name="error_if_the_problem_persists">Εάν το πρόβλημα παραμένει, επικοινωνήστε με την υποστήριξη μέσω της επιλογής «%1$s» στο κάτω μέρος της σελίδας ρυθμίσεων.</string>
@@ -663,5 +663,6 @@
     <string name="dynamic">Δυναμικός</string>
     <string name="statick">Στατικός</string>
     <string name="action_select">Επιλογή</string>
+    <string name="error_csv_line_to_long">Η γραμμή είναι πολύ μεγάλη (σειρά=%1$d, μήκος=%2$d)</string>
 
 </resources>

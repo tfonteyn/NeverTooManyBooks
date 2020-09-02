@@ -92,7 +92,7 @@
     <string name="error_auto_toc_population_failed">La recherche automatique des titres a échoué.</string>
     <string name="error_backup_failed">Sauvegarde échouée</string>
     <string name="error_cannot_import">Le fichier sélectionné ne peut pas être importé.</string>
-    <string name="error_column_is_blank">La colonne %1$s est vide à la ligne %2$d</string>
+    <string name="error_csv_column_is_blank">La colonne %1$s est vide à la ligne %2$d</string>
     <string name="error_email_failed">L\'envoi de l\'e-mail a échoué.</string>
     <string name="error_google_play_store_missing">Google Play Store n\'est pas installé</string>
     <string name="error_if_the_problem_persists">Si le problème persiste, contactez le support technique via l\'option «%1$s» en bas de la page de paramètres.</string>
@@ -667,5 +667,6 @@
     <string name="dynamic">Dynamique</string>
     <string name="statick">Statique</string>
     <string name="action_select">Sélectionner</string>
+    <string name="error_csv_line_to_long">La ligne est trop longue (ligne=%1$d, longueur=%2$d)</string>
 
 </resources>

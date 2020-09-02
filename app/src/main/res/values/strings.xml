@@ -133,7 +133,9 @@
 
     <string name="error_search_failed_network">Please open the Settings and check your network and Search Site preferences.\nAlso check your device network settings.</string>
 
-    <string name="error_column_is_blank">Column “%1$s” is blank at row %2$d.</string>
+    <string name="error_csv_column_is_blank">Column “%1$s” is blank at row %2$d.</string>
+    <string name="error_csv_line_to_long">Line too long (row=%1$d, length=%2$d)</string>
+
     <string name="error_auto_toc_population_failed">Automatic Population of Titles Failed.</string>
 
     <string name="error_no_image_editor">No picture editor found.</string>
@@ -745,6 +747,7 @@
          Allow the user to lookup books using such an ID, and manually modify them. -->
     <string name="pt_allow_edit_external_id">Allow editing website book id</string>
 
+    <string name="pt_enable_fast_scroller_overlay">Scrolling information overlay.</string>
 
     <string name="pt_primary_author_type">Primary author type</string>
     <string name="pt_maintenance">Maintenance</string>
@@ -997,6 +1000,10 @@
     <string name="action_show_all">Show all</string>
     <!-- [VERIFIED] -->
     <string name="action_select">Select</string>
+    <!-- [VERIFIED] -->
+    <string name="action_skip">Skip</string>
+
+    <string name="action_validate">Validate</string>
 
     <!-- merging two bookshelves -->
     <string name="action_merge">Merge</string>
@@ -1227,7 +1234,8 @@
     <string name="yes">Yes</string>
     <!-- [VERIFIED] -->
     <string name="no">No</string>
-
+    <!-- [VERIFIED] -->
+    <string name="btn_not_now">Not now</string>
     <!-- [VERIFIED] -->
     <string name="warning_task_cancelled">Cancelled</string>
 
@@ -1250,6 +1258,10 @@
     <!-- [VERIFIED] buttons on the "sorting / styles" dialog -->
     <string name="btn_more_ellipsis">More…</string>
     <string name="btn_less_ellipsis">Less…</string>
+
+    <string name="dynamic">Dynamic</string>
+    <!-- statick with a 'ck' because 'static' is a java reserved word (and magick) -->
+    <string name="statick">Static</string>
 
     <!-- ####################################################################################### -->
     <!-- == Field labels == -->
@@ -1302,6 +1314,8 @@
     <string name="lbl_covers_long">Cover images</string>
     <!-- Preference Category -->
     <string name="lbl_thumbnails">Thumbnails</string>
+    <!-- [VERIFIED] -->
+    <string name="image">Image</string>
 
     <!-- number of pages; this is a field-label. -->
     <string name="lbl_pages">Pages</string>
@@ -1367,8 +1381,6 @@
     <string name="lbl_field_usage_copy_if_blank">Copy if blank</string>
     <string name="lbl_field_usage_append">Appends extra data</string>
     <string name="lbl_field_usage_overwrite">Overwrites existing data</string>
-    <!-- [VERIFIED] -->
-    <string name="action_skip">Skip</string>
 
     <string name="lbl_search_filtered_on_x">Filtered on: %1$s</string>
 
@@ -1562,18 +1574,4 @@
     <string name="info_purge_blns_all">Purge all BLNS</string>
     <!-- param 1: type of item; param 2: item name.  Example: "Purge BLNS for Bookshelf “ToRead” " -->
     <string name="info_purge_blns_item_name">Purge BLNS for %1$s “%2$s” ?</string>
-
-    <!-- [VERIFIED] -->
-    <string name="image">Image</string>
-    <!-- [VERIFIED] -->
-    <string name="btn_not_now">Not now</string>
-    <string name="action_validate">Validate</string>
-    <string name="pt_enable_fast_scroller_overlay">Scrolling information overlay.</string>
-
-    <string name="dynamic">Dynamic</string>
-    <!-- statick with a 'ck' because 'static' is a java reserved word (and magick) -->
-    <string name="statick">Static</string>
-
-    <string name="error_csv_line_to_long">Line too long (row=%1$d, length=%2$d)</string>
-
 </resources>

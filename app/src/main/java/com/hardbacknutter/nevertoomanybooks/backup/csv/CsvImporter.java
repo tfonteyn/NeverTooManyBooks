@@ -309,7 +309,7 @@ public class CsvImporter
                     // check we have a title
                     if (book.getString(DBDefinitions.KEY_TITLE).isEmpty()) {
                         final String msg = context.getString(
-                                R.string.error_column_is_blank, DBDefinitions.KEY_TITLE, row);
+                                R.string.error_csv_column_is_blank, DBDefinitions.KEY_TITLE, row);
                         throw new ImportException(msg);
                     }
 

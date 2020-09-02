@@ -90,7 +90,7 @@
     <string name="error_auto_toc_population_failed">Automatické naplnění titulů selhalo</string>
     <string name="error_backup_failed">Zálohování selhalo</string>
     <string name="error_cannot_import">Vybraný soubor nelze importovat.</string>
-    <string name="error_column_is_blank">Sloupec %1$s je prázdný na řádku %2$d</string>
+    <string name="error_csv_column_is_blank">Sloupec %1$s je prázdný na řádku %2$d</string>
     <string name="error_email_failed">Odeslání e-mailu se nezdařilo.</string>
     <string name="error_google_play_store_missing">Google Play Store není nainstalován</string>
     <string name="error_if_the_problem_persists">Pokud problém přetrvává, obraťte se na podporu prostřednictvím možnosti „%1$s“ v dolní části stránky nastavení.</string>
@@ -660,5 +660,6 @@
     <string name="dynamic">Dynamický</string>
     <string name="statick">Statický</string>
     <string name="action_select">Vybrat</string>
+    <string name="error_csv_line_to_long">Řádek je příliš dlouhý (řádek=%1$d, délka=%2$d)</string>
 
 </resources>

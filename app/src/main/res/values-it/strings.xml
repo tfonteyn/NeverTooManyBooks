@@ -91,7 +91,7 @@
     <string name="error_auto_toc_population_failed">Inserimento titoli in automatico fallito</string>
     <string name="error_backup_failed">Backup fallito</string>
     <string name="error_cannot_import">Il file selezionato non può essere importato.</string>
-    <string name="error_column_is_blank">La colonna %1$s è vuota alla riga %2$d</string>
+    <string name="error_csv_column_is_blank">La colonna %1$s è vuota alla riga %2$d</string>
     <string name="error_email_failed">L\'invio dell\'email non è riuscito.</string>
     <string name="error_google_play_store_missing">Google Play Store non è installato</string>
     <string name="error_if_the_problem_persists">Se il problema persiste, contattare l\'assistenza tramite l\'opzione «%1$s» nella parte inferiore della pagina delle impostazioni.</string>
@@ -663,5 +663,6 @@
     <string name="dynamic">Dinamico</string>
     <string name="statick">Statico</string>
     <string name="action_select">Seleziona</string>
+    <string name="error_csv_line_to_long">La riga è troppo lunga (riga=%1$d, lunghezza=%2$d)</string>
 
 </resources>

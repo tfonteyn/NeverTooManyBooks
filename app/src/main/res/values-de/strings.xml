@@ -93,7 +93,7 @@
     <string name="error_auto_toc_population_failed">Das automatische Ausfüllen der Anthologie-Titel ist fehlgeschlagen</string>
     <string name="error_backup_failed">Sicherungskopie erstellen fehlgeschlagen</string>
     <string name="error_cannot_import">Die ausgewählte Datei kann nicht importiert werden.</string>
-    <string name="error_column_is_blank">Die Spalte %1$s ist in Zeile %2$d leer</string>
+    <string name="error_csv_column_is_blank">Die Spalte %1$s ist in Zeile %2$d leer</string>
     <string name="error_email_failed">Das Senden der E-Mail ist fehlgeschlagen.</string>
     <string name="error_google_play_store_missing">Google Play Store ist nicht installiert</string>
     <string name="error_if_the_problem_persists">Wenn das Problem weiterhin besteht, wenden Sie sich über die Option „%1$s“ unten auf der Einstellungsseite an den Support.</string>
@@ -666,4 +666,5 @@
     <string name="dynamic">Dynamisch</string>
     <string name="statick">Statisch</string>
     <string name="action_select">Auswählen</string>
+    <string name="error_csv_line_to_long">Zeile ist zu lang (Zeile=%1$d, Länge=%2$d)</string>
 </resources>

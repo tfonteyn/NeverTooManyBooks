@@ -92,7 +92,7 @@
     <string name="error_auto_toc_population_failed">La actualización automática de títulos ha fallado</string>
     <string name="error_backup_failed">Copia de seguridad errónea</string>
     <string name="error_cannot_import">El archivo seleccionado no se puede importar.</string>
-    <string name="error_column_is_blank">La columna %1$s tiene en blanco la fila %2$d</string>
+    <string name="error_csv_column_is_blank">La columna %1$s tiene en blanco la fila %2$d</string>
     <string name="error_email_failed">El envío del correo electrónico falló.</string>
     <string name="error_google_play_store_missing">Google Play Store no está instalado</string>
     <string name="error_if_the_problem_persists">Si el problema persiste, comuníquese con el soporte a través de la opción «%1$s» en la parte inferior de la página de configuración.</string>
@@ -663,5 +663,6 @@
     <string name="dynamic">Dinámica</string>
     <string name="statick">Estático</string>
     <string name="action_select">Seleccionar</string>
+    <string name="error_csv_line_to_long">La línea es demasiado larga (fila=%1$d, longitud=%2$d)</string>
 
 </resources>

@@ -90,7 +90,7 @@
     <string name="error_auto_toc_population_failed">Automatyczne obsadzanie pozycji antologii nie powiodło się</string>
     <string name="error_backup_failed">Kopia zapasowa nie powiodła się</string>
     <string name="error_cannot_import">Wybranego pliku nie można zaimportować.</string>
-    <string name="error_column_is_blank">Pole %1$s jest puste w linii %2$d</string>
+    <string name="error_csv_column_is_blank">Pole %1$s jest puste w linii %2$d</string>
     <string name="error_email_failed">E-mail nie mógł zostać wysłany.</string>
     <string name="error_google_play_store_missing">Google Play Store nie jest zainstalowany</string>
     <string name="error_if_the_problem_persists">Jeśli problem będzie się powtarzał, skontaktuj się z pomocą techniczną za pomocą opcji „%1$s” u dołu strony ustawień.</string>
@@ -659,4 +659,5 @@
     <string name="dynamic">Dynamiczny</string>
     <string name="statick">Statyczny</string>
     <string name="action_select">Wybierz</string>
+    <string name="error_csv_line_to_long">Linia jest za długa (wiersz=%1$d, długość=%2$d)</string>
 </resources>
