@@ -79,7 +79,10 @@
     <string name="confirm_delete_toc_entry">Den Eintrag „%1$s“ (von %2$s) wirklich löschen? Es wird aus allen Büchern gelöscht, in denen es aufgeführt ist. Die Bücher selbst werden nicht gelöscht.</string>
     <string name="confirm_duplicate_book_message">Das hinzuzufügende Buch besteht bereits in der Datenbank. Sind Sie sicher, dass Sie noch eine Kopie hinzufügen möchten?</string>
     <string name="confirm_email_export">Möchten Sie diesen Export als E-Mail versenden?</string>
-    <string name="confirm_merge_bookshelves">Das Regal, das Sie umbenennen, ist bereits vorhanden. Möchten Sie sie zusammenführen?</string>
+    <string name="confirm_merge_bookshelves">Das Bücherregal, das Sie umbenennen, ist bereits vorhanden. Möchten Sie sie zusammenführen?</string>
+    <string name="confirm_merge_authors">Der Autor, das Sie umbenennen, ist bereits vorhanden. Möchten Sie sie zusammenführen?</string>
+    <string name="confirm_merge_series">Die Serie, das Sie umbenennen, ist bereits vorhanden. Möchten Sie sie zusammenführen?</string>
+    <string name="confirm_merge_publishers">Der Verlag, das Sie umbenennen, ist bereits vorhanden. Möchten Sie sie zusammenführen?</string>
     <string name="confirm_overwrite_thumbnail">Die ausgewählten Felder werden wie gezeigt aktualisiert. Die Cover-Bilder können optional für ALLE Bücher heruntergeladen werden.\n\nSollen alle bestehenden Cover-Bilder überschrieben werden? Warnung, die Aktualisierung kann lange dauern.</string>
     <string name="confirm_unsaved_edits">Einige Änderungen wurden noch nicht gespeichert. Beim Beenden gehen diese Änderungen verloren.</string>
     <string name="confirm_unsaved_edits2">Es bestehen nicht gespeicherte Änderungen. Sind Sie sicher, dass sie fortfahren wollen?</string>

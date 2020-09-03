@@ -77,6 +77,9 @@
     <string name="confirm_duplicate_book_message">Kniha, kterou se pokoušíte přidat, se již v databázi nachází - určitě si přejete přidat její další kopii?</string>
     <string name="confirm_email_export">Přejete si odeslat tento export prostřednictvím mailu?</string>
     <string name="confirm_merge_bookshelves">Knihovna, kterou přejmenujete, již existuje. Chcete je sloučit?</string>
+    <string name="confirm_merge_authors">Autor, kterou přejmenujete, již existuje. Chcete je sloučit?</string>
+    <string name="confirm_merge_series">Série, kterou přejmenujete, již existuje. Chcete je sloučit?</string>
+    <string name="confirm_merge_publishers">Vydavatel, kterou přejmenujete, již existuje. Chcete je sloučit?</string>
     <string name="confirm_overwrite_thumbnail">Toto aktualizuje pouze vybraná pole, ale náhledy budou staženy pro VŠECHNY knihy.\n\nChcete přepsat všechny existující náhledy? Pozor, může to chvíli trvat…</string>
     <string name="confirm_unsaved_edits">Máte neuložené změny, pokud nyní ukončíte, budou ztraceny.</string>
     <string name="confirm_unsaved_edits2">Změny nejsou uloženy. Určitě si přejete pokračovat?</string>

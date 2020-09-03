@@ -221,7 +221,7 @@
     <string name="lbl_barcode">Barcode</string>
     <string name="lbl_book">Βιβλίο</string>
     <string name="lbl_books">Βιβλία</string>
-    <string name="lbl_bookshelf">Ράφι</string>
+    <string name="lbl_bookshelf">Βιβλιοθήκης</string>
     <string name="lbl_bookshelves_long">Ράφια Βιβλιοθήκης</string>
     <string name="X_lbl_by_author_s">κατα %1$s</string>
     <string name="lbl_color">Χρώμα</string>

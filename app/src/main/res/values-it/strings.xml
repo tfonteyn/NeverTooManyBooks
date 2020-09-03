@@ -78,6 +78,9 @@
     <string name="confirm_duplicate_book_message">Il libro che stai cercando di aggiungere è già presente nel database, vuoi aggiungerne un\'altra copia?</string>
     <string name="confirm_email_export">Inviare il file di esportazione per email?</string>
     <string name="confirm_merge_bookshelves">La libreria che stai rinominando esiste già. Ti piacerebbe unirli?</string>
+    <string name="confirm_merge_authors">L\'autore che stai rinominando esiste già. Ti piacerebbe unirli?</string>
+    <string name="confirm_merge_series">La serie che stai rinominando esiste già. Ti piacerebbe unirli?</string>
+    <string name="confirm_merge_publishers">L\'editore che stai rinominando esiste già. Ti piacerebbe unirli?</string>
     <string name="confirm_overwrite_thumbnail">Verranno aggiornati i campi selezionati come indicato, ma opzionalmente è possibile aggiornare anche le miniature di TUTTI i libri.\n\nVuoi sovrascrivere tutte le miniature esistenti? Attenzione, potrebbero occorrere diversi minuti. </string>
     <string name="confirm_unsaved_edits">Vi sono modifiche non salvate, se esci adesso saranno perse.</string>
     <string name="confirm_unsaved_edits2">Non hai salvato le modifiche. Vuoi continuare comunque?</string>

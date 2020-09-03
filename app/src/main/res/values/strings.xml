@@ -300,7 +300,12 @@
     <string name="confirm_delete_toc_entry">Really delete the title “%1$s” by %2$s? It will be deleted from all books in which it is listed. The books themselves will not be deleted.</string>
 
     <string name="confirm_delete_book">This will completely delete the book entitled “%1$s” by %2$s.\nAre you sure you want to continue?</string>
-    <string name="confirm_merge_bookshelves">The bookshelf you are renaming already exists. Would you like to merge them?</string>
+
+    <string name="confirm_merge_bookshelves">The bookshelf you are modifying already exists. Would you like to merge them?</string>
+    <string name="confirm_merge_authors">The author you are modifying already exists. Would you like to merge them?</string>
+    <string name="confirm_merge_series">The series you are modifying already exists. Would you like to merge them?</string>
+    <string name="confirm_merge_publishers">The publisher you are modifying already exists. Would you like to merge them?</string>
+
     <string name="confirm_duplicate_book_message">The book you are trying to add already exists in the database, are you sure you want to add another copy?</string>
     <string name="confirm_overwrite_thumbnail">This will update the selected fields as shown, but images can optionally be downloaded for ALL books.\n\nDo you want to overwrite all existing images? Warning, this may take a long time.</string>
 

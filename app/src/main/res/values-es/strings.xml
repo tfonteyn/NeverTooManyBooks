@@ -78,7 +78,10 @@
     <string name="confirm_delete_toc_entry">¿Realmente elimina la entrada «%1$s» (por %2$s)? Se eliminará de todos los libros en los que figura. Los libros en sí no serán borrados.</string>
     <string name="confirm_duplicate_book_message">El libro que intenta añadir ya está en la base de datos. ¿Desea añadir otra copia?</string>
     <string name="confirm_email_export">¿Desea enviar por correo electrónico el fichero exportado?</string>
-    <string name="confirm_merge_bookshelves">El estante al que está renombrando ya existe. ¿Te gustaría fusionarlos?</string>
+    <string name="confirm_merge_bookshelves">La estantería al que está renombrando ya existe. ¿Te gustaría fusionarlos?</string>
+    <string name="confirm_merge_authors">El autor al que está renombrando ya existe. ¿Te gustaría fusionarlos?</string>
+    <string name="confirm_merge_series">Las series al que está renombrando ya existe. ¿Te gustaría fusionarlos?</string>
+    <string name="confirm_merge_publishers">El editor al que está renombrando ya existe. ¿Te gustaría fusionarlos?</string>
     <string name="confirm_overwrite_thumbnail">Los campos seleccionados se actualizarán tal y como se muestra, pero las imágenes de portadas se pueden descargar, si lo desea, para TODOS los libros.\n\n¿Desea sobreescribir todas las portadas existentes? ¡Atención!, esto puede requerir un tiempo considerable.</string>
     <string name="confirm_unsaved_edits">Hay cambios que no se han guardado. Si sale ahora, se perderán.</string>
     <string name="confirm_unsaved_edits2">No ha guardado los cambios. ¿Está seguro de que desea continuar?</string>

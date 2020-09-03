@@ -76,7 +76,10 @@
     <string name="confirm_delete_toc_entry">Naprawdę usuń wpis „%1$s” (przez %2$s)? Zostanie usunięty ze wszystkich książek, w których jest wymieniony. Same książki nie zostaną usunięte.</string>
     <string name="confirm_duplicate_book_message">Książka, którą próbujesz dodać już istnieje w katalogu, czy na pewno chcesz dodać jeszcze jeden egzemplarz?</string>
     <string name="confirm_email_export">Czy chcesz wysłać ten eksport jako e-mail?</string>
-    <string name="confirm_merge_bookshelves">Zmieniona nazwa półki na książki już istnieje. Czy chcesz je połączyć?</string>
+    <string name="confirm_merge_bookshelves">Półka o zmienionej nazwie już istnieje. Czy chcesz je połączyć?</string>
+    <string name="confirm_merge_authors">Autor o zmienionej nazwie już istnieje. Czy chcesz je połączyć?</string>
+    <string name="confirm_merge_series">Seria o zmienionej nazwie już istnieje. Czy chcesz je połączyć?</string>
+    <string name="confirm_merge_publishers">Wydawca o zmienionej nazwie już istnieje.. Czy chcesz je połączyć?</string>
     <string name="confirm_overwrite_thumbnail">Wybrane pola zostaną zaktualizowane, natomiast okładki mogą by opcjonalnie pobrane dla wszystkich książek.\n\nCzy chcesz zastąpić wszystkie istniejące okładki? Uwaga - może to zająć sporo czasu…</string>
     <string name="confirm_unsaved_edits">Masz niezapisane zmiany, jeśli wyjdziesz teraz, zostaną utracone.</string>
     <string name="confirm_unsaved_edits2">Nie zapisałeś zmian. Czy na pewno chcesz kontynuować?</string>

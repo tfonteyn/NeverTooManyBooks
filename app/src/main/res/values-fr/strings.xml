@@ -79,6 +79,9 @@
     <string name="confirm_duplicate_book_message">Le livre que vous tentez d\'ajouter existe déjà dans la base de donnnées. Êtes vous certain de vouloir en ajouter une nouvelle copie ?</string>
     <string name="confirm_email_export">Souhaitez-vous envoyer cet export par courriel ?</string>
     <string name="confirm_merge_bookshelves">La bibliothèque que vous renommez existe déjà. Voulez-vous les fusionner?</string>
+    <string name="confirm_merge_authors">L\'auteur que vous renommez existe déjà. Voulez-vous les fusionner?</string>
+    <string name="confirm_merge_series">L\'éditeur que vous renommez existe déjà. Voulez-vous les fusionner?</string>
+    <string name="confirm_merge_publishers">La bibliothèque que vous renommez existe déjà. Voulez-vous les fusionner?</string>
     <string name="confirm_overwrite_thumbnail">Les champs sélectionnés vont être mis à jour tels que montré ; en option, les vignettes peuvent être téléchargées pour tous les livres.\n\nVoulez-vous remplacer toutes les vignettes existantes ? Attention, cela peut prendre du temps.</string>
     <string name="confirm_unsaved_edits">Des modifications ne sont pas sauvées, si vous quittez maintenant elles seront perdues.</string>
     <string name="confirm_unsaved_edits2">Des modifications n\'ont pas été sauvegardées. Voulez-vous vraiment continuer ?</string>

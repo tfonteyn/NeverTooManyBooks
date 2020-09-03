@@ -80,6 +80,9 @@
     <string name="confirm_duplicate_book_message">Het boek dat je wil toevoegen is al aanwezig in de database, weet je zeker dat je nog een exemplaar wilt toevoegen?</string>
     <string name="confirm_email_export">Wil je dit exportbestand als e-mail ergens heen sturen?</string>
     <string name="confirm_merge_bookshelves">De boekenplank die je hernoemt bestaat al. Wil je ze samenvoegen?</string>
+    <string name="confirm_merge_authors">De auteur die je hernoemt bestaat al. Wil je ze samenvoegen?</string>
+    <string name="confirm_merge_series">De reeks die je hernoemt bestaat al. Wil je ze samenvoegen?</string>
+    <string name="confirm_merge_publishers">De uitgever die je hernoemt bestaat al. Wil je ze samenvoegen?</string>
     <string name="confirm_overwrite_thumbnail">Dit zal de geselecteerde velden zoals getoond bijwerken, maar miniaturen kunnen desgewenst voor alle boeken worden gedownload.\n\nWil je alle miniaturen overschrijven? Waarschuwing: dit kan een lange tijd in beslag nemen.</string>
     <string name="confirm_unsaved_edits">Je hebt niet opgeslagen veranderingen. Als je nu afsluit gaan die verloren.</string>
     <string name="confirm_unsaved_edits2">De gemaakte veranderingen zijn niet opgeslagen. Wil je toch doorgaan?</string>

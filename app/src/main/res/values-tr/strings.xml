@@ -78,7 +78,10 @@
     <string name="confirm_delete_toc_entry">“%1$s” girişini gerçekten sil (%2$s)? Listelendiği tüm kitaplardan silinecek. Kitapların kendisi silinmeyecek.</string>
     <string name="confirm_duplicate_book_message">Eklemeye çalıştığınız kitap veritabanında zaten var, tekrar eklemek istediğinizden emin misiniz?</string>
     <string name="confirm_email_export">Dışarı aktarılan veriyi e-posta ile göndermemizi ister misiniz?</string>
-    <string name="confirm_merge_bookshelves">Yeniden adlandırdığınız kitaplık zaten var. Onları birleştirmek ister misiniz?</string>
+    <string name="confirm_merge_bookshelves">Yeniden adlandırılan kitap rafı zaten var. Onları birleştirmek ister misiniz?</string>
+    <string name="confirm_merge_authors">Yeniden adlandırılan yazar zaten var. Onları birleştirmek ister misiniz?</string>
+    <string name="confirm_merge_series">Yeniden adlandırılan seri zaten var. Onları birleştirmek ister misiniz?</string>
+    <string name="confirm_merge_publishers">Yeniden adlandırılan yayıncı zaten var. Onları birleştirmek ister misiniz?</string>
     <string name="confirm_overwrite_thumbnail">Bu işlem seçili alanları gösterildiği biçimde güncelleyecektir, ancak küçük resimler seçime bağlı olarak tüm kitaplar için de indirilebilir.\n\nVar olan tüm küçük resimlerin üzerine yazmak istiyor musunuz? Bu işlem uzun sürebilir. </string>
     <string name="confirm_unsaved_edits">Saklanmamış değişiklikler var, şimdi çıkarsanız hepsi silinecektir.</string>
     <string name="confirm_unsaved_edits2">Kaydedilmemiş değişiklikleriniz var. Sürdürmek istediğinizden emin misiniz?</string>
