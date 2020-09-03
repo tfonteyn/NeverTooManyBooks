@@ -32,7 +32,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
-import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBHelper;
 import com.hardbacknutter.nevertoomanybooks.databinding.ActivityAdminAboutBinding;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
@@ -108,10 +107,6 @@ public class AboutActivity
         });
 
         mVb.debugPrefs.setOnClickListener(v -> Prefs.dumpPreferences(this, null));
-
-        mVb.debugDumpTempTables.setOnClickListener(
-                v -> DBHelper.dumpTempTableNames(DAO.getSyncDb()));
-
     }
 
     /**

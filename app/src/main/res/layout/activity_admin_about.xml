@@ -101,7 +101,7 @@
             android:layout_height="0dp"
             app:groupApply="visibility"
             android:visibility="gone"
-            app:constraint_referenced_ids="debug_section_lbl,debug_sq_shell,debug_prefs,debug_dump_temp_tables"
+            app:constraint_referenced_ids="debug_section_lbl,debug_sq_shell,debug_prefs"
             tools:visibility="visible"
             />
 
@@ -136,23 +136,12 @@
             app:layout_constraintTop_toBottomOf="@id/debug_sq_shell"
             />
 
-        <Button
-            android:id="@+id/debug_dump_temp_tables"
-            style="@style/MenuButton"
-            android:layout_width="0dp"
-            android:text="@string/debug_dump_temp_tables"
-            app:icon="@drawable/ic_details"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="@id/debug_section_lbl"
-            app:layout_constraintTop_toBottomOf="@id/debug_prefs"
-            />
-
         <TextView
             android:id="@+id/contacts"
             style="@style/Text.Header"
             android:text="@string/lbl_about_contact"
             app:layout_constraintStart_toEndOf="@id/indents"
-            app:layout_constraintTop_toBottomOf="@id/debug_dump_temp_tables"
+            app:layout_constraintTop_toBottomOf="@id/debug_prefs"
             />
 
         <Button
