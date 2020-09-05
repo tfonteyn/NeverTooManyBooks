@@ -374,15 +374,16 @@ public class BookViewModel
     public void saveBook(@NonNull final Context context)
             throws DAO.DaoWriteException, IOException {
         if (mBook.isNew()) {
-            final long id = mDb.insert(context, mBook, 0);
+            mDb.insert(context, mBook, 0);
             putResultData(BKEY_BOOK_CREATED, true);
 
-            // if the user added a cover to the new book, make it permanent
-            for (int cIdx = 0; cIdx < 2; cIdx++) {
-                final String fileSpec = mBook.getString(Book.BKEY_FILE_SPEC[cIdx]);
-                if (!fileSpec.isEmpty()) {
-                    final String uuid = mDb.getBookUuid(id);
-                    if (uuid != null) {
+            final String uuid = mBook.getString(DBDefinitions.KEY_BOOK_UUID);
+            // sanity check
+            if (!uuid.isEmpty()) {
+                // if the user added a cover to the new book, make it permanent
+                for (int cIdx = 0; cIdx < 2; cIdx++) {
+                    final String fileSpec = mBook.getString(Book.BKEY_FILE_SPEC[cIdx]);
+                    if (!fileSpec.isEmpty()) {
                         final File downloadedFile = new File(fileSpec);
                         final File destination = AppDir.getCoverFile(context, uuid, cIdx);
                         FileUtils.renameOrThrow(downloadedFile, destination);
