@@ -455,8 +455,7 @@
     </style>
 
     <style name="BoB.Group.Label.Level1">
-        <item name="android:textAppearance">?attr/textAppearanceSubtitle1</item>
-        <item name="android:textSize">20sp</item>
+        <item name="android:textAppearance">?attr/textAppearanceHeadline6</item>
     </style>
 
     <style name="BoB.Group.Label.Level2">
