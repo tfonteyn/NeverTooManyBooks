@@ -25,12 +25,15 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:minHeight="?attr/listPreferredItemHeightSmall"
     >
 
     <ImageButton
         android:id="@id/ROW_DELETE_BTN"
         style="@style/RowButton.Delete"
+        android:layout_height="0dp"
         android:contentDescription="@string/action_delete"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/ROW_ONCLICK_TARGET"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -40,10 +43,10 @@
         android:id="@id/ROW_ONCLICK_TARGET"
         style="@style/RowTextSection"
         android:longClickable="true"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/ROW_GRABBER_ICON"
         app:layout_constraintStart_toEndOf="@id/ROW_DELETE_BTN"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
         >
 
         <TextView
@@ -80,6 +83,7 @@
         android:id="@id/ROW_GRABBER_ICON"
         style="@style/RowButton.DragHandle"
         android:contentDescription="@string/hint_btn_drag_handle"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/ROW_ONCLICK_TARGET"
         app:layout_constraintTop_toTopOf="parent"

@@ -40,6 +40,7 @@
         android:id="@+id/name"
         style="@style/BoB.Group.Label.Level2"
         android:drawableTint="?attr/colorSecondaryVariant"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/bullet"
         app:layout_constraintTop_toTopOf="parent"
