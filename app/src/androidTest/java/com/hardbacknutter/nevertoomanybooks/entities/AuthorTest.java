@@ -26,7 +26,8 @@ import androidx.test.filters.SmallTest;
 
 import org.junit.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.Assert.assertEquals;
+
 
 @SmallTest
 public class AuthorTest {
