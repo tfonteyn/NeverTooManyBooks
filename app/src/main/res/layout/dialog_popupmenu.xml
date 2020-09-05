@@ -26,41 +26,20 @@
     android:orientation="vertical"
     >
 
-    <!-- title_template is a copy of the material AlertDialog with modifications -->
-    <LinearLayout
-        android:id="@+id/title_template"
+    <TextView
+        android:id="@+id/alertTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:ellipsize="end"
+        android:fontFamily="sans-serif-medium"
         android:gravity="center_vertical|start"
-        android:orientation="horizontal"
+        android:maxLines="2"
         android:paddingTop="18dp"
-        >
-
-        <ImageView
-            android:id="@+id/icon"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:layout_marginEnd="8dp"
-            android:scaleType="fitCenter"
-            android:src="@null"
-            tools:ignore="ContentDescription"
-            tools:src="@drawable/ic_warning"
-            />
-
-        <TextView
-            android:id="@+id/alertTitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:ellipsize="end"
-            android:fontFamily="sans-serif-medium"
-            android:maxLines="2"
-            android:shadowRadius="0"
-            android:textAppearance="?android:textAppearanceMedium"
-            android:textColor="?android:attr/textColorPrimary"
-            android:textIsSelectable="true"
-            tools:text="alertTitle"
-            />
-    </LinearLayout>
+        android:shadowRadius="0"
+        android:textAppearance="?attr/textAppearanceHeadline6"
+        android:textIsSelectable="true"
+        tools:text="alertTitle"
+        />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/item_list"

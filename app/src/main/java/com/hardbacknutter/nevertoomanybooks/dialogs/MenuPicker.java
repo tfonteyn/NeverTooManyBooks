@@ -82,22 +82,23 @@ public class MenuPicker {
         mPosition = position;
         mListener = listener;
 
-        final View root = LayoutInflater.from(context).inflate(R.layout.dialog_popupmenu, null);
+        final View view = LayoutInflater.from(context).inflate(R.layout.dialog_popupmenu, null);
 
         // optional title
+        final TextView titleView = view.findViewById(R.id.alertTitle);
         if (title != null && !title.isEmpty()) {
-            final TextView titleView = root.findViewById(R.id.alertTitle);
+            titleView.setVisibility(View.VISIBLE);
             titleView.setText(title);
         } else {
-            root.findViewById(R.id.title_template).setVisibility(View.GONE);
+            titleView.setVisibility(View.GONE);
         }
 
         final MenuItemListAdapter adapter = new MenuItemListAdapter(context, menu);
-        final RecyclerView listView = root.findViewById(R.id.item_list);
+        final RecyclerView listView = view.findViewById(R.id.item_list);
         listView.setAdapter(adapter);
 
         mDialog = new MaterialAlertDialogBuilder(context)
-                .setView(root)
+                .setView(view)
                 .create();
     }
 

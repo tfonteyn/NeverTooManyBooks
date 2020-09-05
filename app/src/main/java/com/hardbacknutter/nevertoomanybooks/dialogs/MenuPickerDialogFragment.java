@@ -158,11 +158,12 @@ public class MenuPickerDialogFragment
 
         // optional title
         final String title = args.getString(StandardDialogs.BKEY_DIALOG_TITLE);
+        final TextView titleView = view.findViewById(R.id.alertTitle);
         if (title != null && !title.isEmpty()) {
-            final TextView titleView = view.findViewById(R.id.alertTitle);
+            titleView.setVisibility(View.VISIBLE);
             titleView.setText(title);
         } else {
-            view.findViewById(R.id.title_template).setVisibility(View.GONE);
+            titleView.setVisibility(View.GONE);
         }
 
         //noinspection ConstantConditions
