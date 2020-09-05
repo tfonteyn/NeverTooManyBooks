@@ -77,7 +77,7 @@ public class EditLocationDialogFragment
     Bundle onSave(@NonNull final String originalText,
                   @NonNull final String currentText) {
         //noinspection ConstantConditions
-        mDb.renameLocation(originalText, currentText);
+        mDb.updateLocation(originalText, currentText);
         return null;
     }
 }

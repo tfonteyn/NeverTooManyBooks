@@ -265,7 +265,7 @@ public class Book
         putParcelableArrayList(BKEY_AUTHOR_ARRAY, db.getAuthorsByBookId(bookId));
         putParcelableArrayList(BKEY_SERIES_ARRAY, db.getSeriesByBookId(bookId));
         putParcelableArrayList(BKEY_PUBLISHER_ARRAY, db.getPublishersByBookId(bookId));
-        putParcelableArrayList(BKEY_TOC_ARRAY, db.getTocEntryByBook(bookId));
+        putParcelableArrayList(BKEY_TOC_ARRAY, db.getTocEntryByBookId(bookId));
     }
 
 

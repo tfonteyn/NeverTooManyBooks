@@ -937,7 +937,7 @@ public class BooksOnBookshelf
                 final Series series = mModel.getSeries(rowData);
                 if (series != null) {
                     StandardDialogs.deleteSeries(this, series, () -> {
-                        mModel.getDb().deleteSeries(this, series.getId());
+                        mModel.getDb().delete(this, series);
                         onBookChange(0, BookChangedListener.SERIES, null);
                     });
                 }
@@ -989,7 +989,7 @@ public class BooksOnBookshelf
                 final Publisher publisher = mModel.getPublisher(rowData);
                 if (publisher != null) {
                     StandardDialogs.deletePublisher(this, publisher, () -> {
-                        mModel.getDb().deletePublisher(this, publisher.getId());
+                        mModel.getDb().delete(this, publisher);
                         onBookChange(0, BookChangedListener.PUBLISHER, null);
                     });
                 }

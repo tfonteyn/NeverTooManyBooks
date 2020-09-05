@@ -77,7 +77,7 @@ public class EditColorDialogFragment
     Bundle onSave(@NonNull final String originalText,
                   @NonNull final String currentText) {
         //noinspection ConstantConditions
-        mDb.renameColor(originalText, currentText);
+        mDb.updateColor(originalText, currentText);
         return null;
     }
 }

@@ -28,6 +28,10 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
@@ -57,9 +61,13 @@ public class SynchronizedDb {
     /** Log tag. */
     private static final String TAG = "SynchronizedDb";
 
-    /** Underlying database. */
+    /** Instance map. */
+    private static final Map<Synchronizer, SynchronizedDb> DB_MAP = new HashMap<>(2);
+
+    /** Underlying (and open for writing) database. */
     @NonNull
     private final SQLiteDatabase mSqlDb;
+
     /** Sync object to use. */
     @NonNull
     private final Synchronizer mSynchronizer;
@@ -73,7 +81,8 @@ public class SynchronizedDb {
     private Synchronizer.SyncLock mTxLock;
 
     /**
-     * Constructor. ONLY to be used by {@link DBHelper#onCreate} and {@link DBHelper#onUpgrade}.
+     * Constructor. ONLY to be used by {@link DBHelper#onCreate} and {@link DBHelper#onUpgrade}
+     * where we have an already open database we need to wrap.
      *
      * @param synchronizer Synchronizer to use
      * @param db           Underlying database
@@ -85,40 +94,74 @@ public class SynchronizedDb {
     }
 
     /**
-     * Constructor.
+     * Private Constructor. Use {@link #getInstance(Synchronizer, SQLiteOpenHelper)} instead.
      *
      * @param synchronizer     Synchronizer to use
-     * @param sqLiteOpenHelper SQLiteOpenHelper to open underlying database
+     * @param sqLiteOpenHelper SQLiteOpenHelper to open the underlying database
      */
-    public SynchronizedDb(@NonNull final Synchronizer synchronizer,
-                          @NonNull final SQLiteOpenHelper sqLiteOpenHelper) {
+    private SynchronizedDb(@NonNull final Synchronizer synchronizer,
+                           @NonNull final SQLiteOpenHelper sqLiteOpenHelper) {
         mSynchronizer = synchronizer;
         mSqlDb = open(sqLiteOpenHelper);
     }
 
     /**
-     * Constructor.
+     * Use from DAO constructors.
      *
-     * @param synchronizer      Synchronizer to use
-     * @param sqLiteOpenHelper  SQLiteOpenHelper to open underlying database
-     * @param preparedStmtCache the number or prepared statements to cache.
-     *                          The javadoc for setMaxSqlCacheSize says the default is 10,
-     *                          but if you follow the source code, you end up in
-     *                          android.database.sqlite.SQLiteDatabaseConfiguration
-     *                          where the default is in fact 25!
+     * @param synchronizer     Synchronizer to use
+     * @param sqLiteOpenHelper SQLiteOpenHelper to open the underlying database
+     *
+     * @return instance matching the passed synchronizer
      */
-    public SynchronizedDb(@NonNull final Synchronizer synchronizer,
-                          @NonNull final SQLiteOpenHelper sqLiteOpenHelper,
-                          final int preparedStmtCache) {
-        mSynchronizer = synchronizer;
-        mSqlDb = open(sqLiteOpenHelper);
-
-        // only set when bigger than default
-        if ((preparedStmtCache > 25)
-            && (preparedStmtCache < SQLiteDatabase.MAX_SQL_CACHE_SIZE)) {
-            mSqlDb.setMaxSqlCacheSize(preparedStmtCache);
+    @NonNull
+    public static SynchronizedDb getInstance(@NonNull final Synchronizer synchronizer,
+                                             @NonNull final SQLiteOpenHelper sqLiteOpenHelper) {
+        synchronized (DB_MAP) {
+            SynchronizedDb db = DB_MAP.get(synchronizer);
+            if (db == null) {
+                db = new SynchronizedDb(synchronizer, sqLiteOpenHelper);
+                DB_MAP.put(synchronizer, db);
+            }
+            return db;
         }
     }
+
+    /**
+     * Use when it's 100% certain that we've been created before.
+     *
+     * @param synchronizer Synchronizer to use
+     *
+     * @return instance matching the passed synchronizer
+     */
+    @NonNull
+    public static SynchronizedDb getInstance(@NonNull final Synchronizer synchronizer) {
+        synchronized (DB_MAP) {
+            return Objects.requireNonNull(DB_MAP.get(synchronizer));
+        }
+    }
+
+//    /**
+//     * Constructor.
+//     *
+//     * @param synchronizer      Synchronizer to use
+//     * @param sqLiteOpenHelper  SQLiteOpenHelper to open the underlying database
+//     * @param preparedStmtCache the number or prepared statements to cache.
+//     *                          The javadoc for setMaxSqlCacheSize says the default is 10,
+//     *                          but if you follow the source code, you end up in
+//     *                          android.database.sqlite.SQLiteDatabaseConfiguration
+//     *                          where the default is in fact 25!
+//     */
+//    public SynchronizedDb(@NonNull final Synchronizer synchronizer,
+//                          @NonNull final SQLiteOpenHelper sqLiteOpenHelper,
+//                          final int preparedStmtCache) {
+//        this(synchronizer, sqLiteOpenHelper);
+//
+//        // only set when bigger than default
+//        if ((preparedStmtCache > 25)
+//            && (preparedStmtCache < SQLiteDatabase.MAX_SQL_CACHE_SIZE)) {
+//            mSqlDb.setMaxSqlCacheSize(preparedStmtCache);
+//        }
+//    }
 
     /**
      * Open the actual database.
@@ -492,4 +535,5 @@ public class SynchronizedDb {
             }
         }
     }
+
 }

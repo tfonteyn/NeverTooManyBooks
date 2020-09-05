@@ -19,6 +19,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.dialogs.entities;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
@@ -26,6 +27,8 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
+
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import java.util.Locale;
 import java.util.Objects;
@@ -36,7 +39,9 @@ import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditSeriesBinding;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
+import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.BaseDialogFragment;
+import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.widgets.DiacriticArrayAdapter;
@@ -153,23 +158,51 @@ public class EditSeriesDialogFragment
             return true;
         }
 
-        // There is no book involved here, so use the users Locale instead
-        //noinspection ConstantConditions
-        final Locale bookLocale = AppLocale.getInstance().getUserLocale(getContext());
-
         // store changes
         mSeries.setTitle(mTitle);
         mSeries.setComplete(mIsComplete);
 
-        final boolean success;
-        if (mSeries.getId() == 0) {
-            success = mDb.insert(getContext(), mSeries, bookLocale) > 0;
+        final Context context = getContext();
+
+        // There is no book involved here, so use the users Locale instead
+        //noinspection ConstantConditions
+        final Locale bookLocale = AppLocale.getInstance().getUserLocale(context);
+
+        // check if it already exists (will be 0 if not)
+        final long existingId = mDb.getSeriesId(context, mSeries, true, bookLocale);
+
+        if (existingId == 0) {
+            final boolean success;
+            if (mSeries.getId() == 0) {
+                success = mDb.insert(context, mSeries, bookLocale) > 0;
+            } else {
+                success = mDb.update(context, mSeries, bookLocale);
+            }
+            if (success) {
+                BookChangedListener.sendResult(this, mRequestKey, BookChangedListener.SERIES);
+                return true;
+            }
         } else {
-            success = mDb.update(getContext(), mSeries, bookLocale);
-        }
-        if (success) {
-            BookChangedListener.sendResult(this, mRequestKey, BookChangedListener.SERIES);
-            return true;
+            // Merge the 2
+            new MaterialAlertDialogBuilder(context)
+                    .setIcon(R.drawable.ic_warning)
+                    .setTitle(mSeries.getTitle())
+                    .setMessage(R.string.confirm_merge_series)
+                    .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
+                    .setPositiveButton(R.string.action_merge, (d, w) -> {
+                        dismiss();
+                        // move all books from the one being edited to the existing one
+                        try {
+                            mDb.merge(context, mSeries, existingId);
+                            BookChangedListener.sendResult(this, mRequestKey,
+                                                           BookChangedListener.SERIES);
+                        } catch (@NonNull final DAO.DaoWriteException e) {
+                            Logger.error(context, TAG, e);
+                            StandardDialogs.showError(context, R.string.error_storage_not_writable);
+                        }
+                    })
+                    .create()
+                    .show();
         }
         return false;
     }

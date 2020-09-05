@@ -1691,7 +1691,7 @@ public class BooklistStyle
             // check if the style already exists.
             final long existingId = db.getStyleIdByUuid(style.getUuid());
             if (existingId == 0) {
-                if (db.insertStyle(style) > 0) {
+                if (db.insert(style) > 0) {
                     S_USER_STYLES.put(style.getUuid(), style);
                 }
             } else {
@@ -1734,7 +1734,7 @@ public class BooklistStyle
             }
 
             S_USER_STYLES.remove(style.getUuid());
-            db.deleteStyle(style.getId());
+            db.delete(style);
 
             if (Build.VERSION.SDK_INT >= 24) {
                 context.deleteSharedPreferences(style.getUuid());

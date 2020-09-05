@@ -54,6 +54,10 @@ import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
  * when last book is gone? or keep them for adding to new books / wish list?
  * - consider to add a purge based on book for orphaned TocEntry
  * - a purge based on Author is already done)
+ *
+ * URGENT: the 'type' of the entry... and it being a Book a rather messy.
+ * Extract an interface and clean this up. This is mainly (only?) because of
+ * {@link com.hardbacknutter.nevertoomanybooks.AuthorWorksFragment}.
  */
 public class TocEntry
         implements Entity, ItemWithTitle {

@@ -28,6 +28,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+
+import java.util.Locale;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.BookChangedListener;
@@ -36,8 +39,11 @@ import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditAuthorBinding;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
+import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.BaseDialogFragment;
+import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
+import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.widgets.DiacriticArrayAdapter;
 
 /**
@@ -169,17 +175,47 @@ public class EditAuthorDialogFragment
         mAuthor.setName(mFamilyName, mGivenNames);
         mAuthor.setComplete(mIsComplete);
 
-        final boolean success;
-        if (mAuthor.getId() == 0) {
-            //noinspection ConstantConditions
-            success = mDb.insert(getContext(), mAuthor) > 0;
+        final Context context = getContext();
+
+        // There is no book involved here, so use the users Locale instead
+        //noinspection ConstantConditions
+        final Locale bookLocale = AppLocale.getInstance().getUserLocale(context);
+
+        // check if it already exists (will be 0 if not)
+        final long existingId = mDb.getAuthorId(context, mAuthor, true, bookLocale);
+
+        if (existingId == 0) {
+            final boolean success;
+            if (mAuthor.getId() == 0) {
+                success = mDb.insert(context, mAuthor) > 0;
+            } else {
+                success = mDb.update(context, mAuthor);
+            }
+            if (success) {
+                BookChangedListener.sendResult(this, mRequestKey, BookChangedListener.AUTHOR);
+                return true;
+            }
         } else {
-            //noinspection ConstantConditions
-            success = mDb.update(getContext(), mAuthor);
-        }
-        if (success) {
-            BookChangedListener.sendResult(this, mRequestKey, BookChangedListener.AUTHOR);
-            return true;
+            // Merge the 2
+            new MaterialAlertDialogBuilder(context)
+                    .setIcon(R.drawable.ic_warning)
+                    .setTitle(mAuthor.getLabel(context))
+                    .setMessage(R.string.confirm_merge_authors)
+                    .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
+                    .setPositiveButton(R.string.action_merge, (d, w) -> {
+                        dismiss();
+                        // move all books from the one being edited to the existing one
+                        try {
+                            mDb.merge(context, mAuthor, existingId);
+                            BookChangedListener.sendResult(this, mRequestKey,
+                                                           BookChangedListener.AUTHOR);
+                        } catch (@NonNull final DAO.DaoWriteException e) {
+                            Logger.error(context, TAG, e);
+                            StandardDialogs.showError(context, R.string.error_storage_not_writable);
+                        }
+                    })
+                    .create()
+                    .show();
         }
         return false;
     }

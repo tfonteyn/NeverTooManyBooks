@@ -441,7 +441,7 @@ public class EditBookTocFragment
         final TocEntry tocEntry = mList.get(position);
         //noinspection ConstantConditions
         StandardDialogs.deleteTocEntry(getContext(), tocEntry, () -> {
-            if (mFragmentVM.deleteTocEntry(getContext(), tocEntry.getId())) {
+            if (mFragmentVM.deleteTocEntry(getContext(), tocEntry)) {
                 mList.remove(tocEntry);
                 mListAdapter.notifyItemRemoved(position);
             }

@@ -104,7 +104,7 @@ public class DBCleaner {
                                + "|to=" + iso);
                 }
                 if (!iso.equals(lang)) {
-                    mDb.renameLanguage(lang, iso);
+                    mDb.updateLanguage(lang, iso);
                 }
             }
         }
@@ -156,7 +156,7 @@ public class DBCleaner {
                               + " WHERE lower(" + column + ") IN ";
         String sql;
         sql = update + "('true','t','yes')";
-        try (SynchronizedStatement stmt = DAO.getSyncDb().compileStatement(sql)) {
+        try (SynchronizedStatement stmt = mDb.getSyncDb().compileStatement(sql)) {
             stmt.bindLong(1, 1);
             final int count = stmt.executeUpdateDelete();
             if (BuildConfig.DEBUG /* always */) {
@@ -167,7 +167,7 @@ public class DBCleaner {
         }
 
         sql = update + "('false','f','no')";
-        try (SynchronizedStatement stmt = DAO.getSyncDb().compileStatement(sql)) {
+        try (SynchronizedStatement stmt = mDb.getSyncDb().compileStatement(sql)) {
             stmt.bindLong(1, 0);
             final int count = stmt.executeUpdateDelete();
             if (BuildConfig.DEBUG /* always */) {
@@ -357,7 +357,7 @@ public class DBCleaner {
             }
             try {
                 for (long bookId : bookIds) {
-                    final ArrayList<TocEntry> list = mDb.getTocEntryByBook(bookId);
+                    final ArrayList<TocEntry> list = mDb.getTocEntryByBookId(bookId);
                     mDb.saveTocList(context, bookId, list, false, bookLocale);
                 }
                 if (txLock != null) {
@@ -403,7 +403,7 @@ public class DBCleaner {
         if (!dryRun) {
             final String sql = "DELETE " + TBL_BOOK_BOOKSHELF
                                + " WHERE " + KEY_FK_BOOKSHELF + "=NULL";
-            try (SynchronizedStatement stmt = DAO.getSyncDb().compileStatement(sql)) {
+            try (SynchronizedStatement stmt = mDb.getSyncDb().compileStatement(sql)) {
                 stmt.executeUpdateDelete();
             }
             toLog("bookBookshelf|EXIT", select);
@@ -428,7 +428,7 @@ public class DBCleaner {
         if (!dryRun) {
             final String sql = "UPDATE " + table + " SET " + column + "=''"
                                + " WHERE " + column + "=NULL";
-            try (SynchronizedStatement stmt = DAO.getSyncDb().compileStatement(sql)) {
+            try (SynchronizedStatement stmt = mDb.getSyncDb().compileStatement(sql)) {
                 stmt.executeUpdateDelete();
             }
             toLog("nullString2empty|EXIT", select);
@@ -445,7 +445,7 @@ public class DBCleaner {
     private void toLog(@NonNull final String state,
                        @NonNull final String query) {
         if (BuildConfig.DEBUG) {
-            try (SynchronizedCursor cursor = DAO.getSyncDb().rawQuery(query, null)) {
+            try (SynchronizedCursor cursor = mDb.getSyncDb().rawQuery(query, null)) {
                 Log.d(TAG, state + "|row count=" + cursor.getCount());
                 while (cursor.moveToNext()) {
                     final String field = cursor.getColumnName(0);

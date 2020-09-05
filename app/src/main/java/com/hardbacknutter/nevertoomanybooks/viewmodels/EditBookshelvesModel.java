@@ -129,7 +129,7 @@ public class EditBookshelvesModel
 
     public void deleteBookshelf(final int position) {
         final Bookshelf bookshelf = mList.get(position);
-        mDb.deleteBookshelf(bookshelf.getId());
+        mDb.delete(bookshelf);
         mList.remove(bookshelf);
     }
 

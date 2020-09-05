@@ -77,7 +77,7 @@ public class EditGenreDialogFragment
     Bundle onSave(@NonNull final String originalText,
                   @NonNull final String currentText) {
         //noinspection ConstantConditions
-        mDb.renameGenre(originalText, currentText);
+        mDb.updateGenre(originalText, currentText);
         return null;
     }
 }

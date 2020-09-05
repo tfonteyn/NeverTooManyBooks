@@ -189,7 +189,7 @@ public class RowStateDAO
      * Purge <strong>all</strong> Booklist node state data.
      */
     public static void clearAll() {
-        DAO.getSyncDb().execSQL(PURGE_ALL_SQL);
+        SynchronizedDb.getInstance(DAO.SYNCHRONIZER).execSQL(PURGE_ALL_SQL);
     }
 
     /**

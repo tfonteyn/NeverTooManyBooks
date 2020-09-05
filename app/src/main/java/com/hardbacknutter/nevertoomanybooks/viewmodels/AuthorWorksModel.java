@@ -136,12 +136,13 @@ public class AuthorWorksModel
                             @NonNull final TocEntry item) {
         switch (item.getType()) {
             case TocEntry.TYPE_TOC:
-                if (mDb.deleteTocEntry(context, item.getId())) {
+                if (mDb.delete(context, item)) {
                     mTocEntries.remove(item);
                 }
                 break;
 
             case TocEntry.TYPE_BOOK:
+                // see class doc for TocEntry
                 if (mDb.deleteBook(context, item.getId())) {
                     mTocEntries.remove(item);
                 }

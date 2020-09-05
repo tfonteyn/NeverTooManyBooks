@@ -67,6 +67,9 @@ public final class AttrUtils {
         final TypedValue tv = new TypedValue();
         theme.resolveAttribute(attr, tv, true);
 
+        // Calling this returns the tv.data
+        //int c = MaterialColors.getColor(context, attr, "");
+        // but calling this returns the color state list resolution
         return context.getResources().getColor(tv.resourceId, theme);
     }
 

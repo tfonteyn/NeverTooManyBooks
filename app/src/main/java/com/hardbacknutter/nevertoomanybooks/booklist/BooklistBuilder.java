@@ -222,7 +222,7 @@ public class BooklistBuilder
             mFilters.add(c -> '(' + TBL_BOOKSHELF.dot(KEY_PK_ID) + '=' + bookshelf.getId() + ')');
         }
 
-        mSyncedDb = DAO.getSyncDb();
+        mSyncedDb = SynchronizedDb.getInstance(DAO.SYNCHRONIZER);
     }
 
     /**

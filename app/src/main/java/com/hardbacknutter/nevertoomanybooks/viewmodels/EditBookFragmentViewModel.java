@@ -27,6 +27,7 @@ import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
+import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 
 public class EditBookFragmentViewModel
         extends BookBaseFragmentViewModel {
@@ -165,13 +166,13 @@ public class EditBookFragmentViewModel
     /**
      * Delete an individual TocEntry.
      *
-     * @param context Current context
-     * @param id      to delete.
+     * @param context  Current context
+     * @param tocEntry to delete.
      *
      * @return {@code true} if a row was deleted
      */
     public boolean deleteTocEntry(@NonNull final Context context,
-                                  final long id) {
-        return mDb.deleteTocEntry(context, id);
+                                  @NonNull final TocEntry tocEntry) {
+        return mDb.delete(context, tocEntry);
     }
 }

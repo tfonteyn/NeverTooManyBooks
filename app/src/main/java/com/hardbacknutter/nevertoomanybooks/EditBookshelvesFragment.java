@@ -70,7 +70,7 @@ public class EditBookshelvesFragment
     private BookshelfAdapter mAdapter;
     private EditBookshelvesModel mModel;
     private final EditBookshelfDialogFragment.OnResultListener mOnEditBookshelfListener =
-            (bookshelfId, booksMoved) -> mModel.reloadListAndSetSelectedPosition(bookshelfId);
+            bookshelfId -> mModel.reloadListAndSetSelectedPosition(bookshelfId);
     /** ViewModel. */
     private ResultDataModel mResultData;
     /** View Binding. */

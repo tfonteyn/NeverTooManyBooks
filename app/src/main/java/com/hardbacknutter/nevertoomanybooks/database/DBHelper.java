@@ -94,9 +94,8 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_SE
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_TOC_ENTRIES;
 
 /**
- * Our version of {@link SQLiteOpenHelper} handling {@link #onCreate} and {@link #onUpgrade}.
+ * Singleton {@link SQLiteOpenHelper} for the main database.
  * Uses the application context.
- * Singleton.
  */
 public final class DBHelper
         extends SQLiteOpenHelper {
@@ -262,7 +261,7 @@ public final class DBHelper
      *
      * @param db the database
      */
-    void recreateIndices(@NonNull final SynchronizedDb db) {
+    public void recreateIndices(@NonNull final SynchronizedDb db) {
         // Delete all indices.
         // We read the index names from the database, so we can delete
         // indexes which were removed from the TableDefinition objects.
@@ -348,7 +347,7 @@ public final class DBHelper
      *
      * @param db the database
      */
-    void createTriggers(@NonNull final SynchronizedDb db) {
+    public void createTriggers(@NonNull final SynchronizedDb db) {
 
         String name;
         String body;

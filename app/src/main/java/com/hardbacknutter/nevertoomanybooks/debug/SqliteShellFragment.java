@@ -69,6 +69,8 @@ public class SqliteShellFragment
     /** View binding. */
     private FragmentSqliteShellBinding mVb;
 
+    private DAO mDb;
+
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -78,6 +80,8 @@ public class SqliteShellFragment
         if (args != null) {
             mAllowUpdates = args.getBoolean(BKEY_ALLOW_UPDATES);
         }
+
+        mDb = new DAO(TAG);
     }
 
     @Override
@@ -147,7 +151,7 @@ public class SqliteShellFragment
                 getActivity().setTitle("");
 
                 if (mAllowUpdates) {
-                    try (SynchronizedStatement stmt = DAO.getSyncDb().compileStatement(sql)) {
+                    try (SynchronizedStatement stmt = mDb.getSyncDb().compileStatement(sql)) {
                         final int rowsAffected = stmt.executeUpdateDelete();
                         final String result = STR_ROWS_AFFECTED + rowsAffected;
                         mVb.output.loadDataWithBaseURL(null, result,
@@ -158,7 +162,7 @@ public class SqliteShellFragment
                                                    TEXT_HTML, UTF_8, null);
                 }
             } else {
-                try (Cursor cursor = DAO.getSyncDb().rawQuery(sql, null)) {
+                try (Cursor cursor = mDb.getSyncDb().rawQuery(sql, null)) {
                     final String title = STR_LAST_COUNT + cursor.getCount();
                     //noinspection ConstantConditions
                     getActivity().setTitle(title);
@@ -192,5 +196,13 @@ public class SqliteShellFragment
             mVb.output.loadDataWithBaseURL(null, e.getLocalizedMessage(),
                                            TEXT_HTML, UTF_8, null);
         }
+    }
+
+    @Override
+    public void onDestroy() {
+        if (mDb != null) {
+            mDb.close();
+        }
+        super.onDestroy();
     }
 }

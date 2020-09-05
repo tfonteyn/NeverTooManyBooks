@@ -144,11 +144,14 @@ public class EditBookshelfDialogFragment
             return true;
         }
 
-        // check if a shelf with this name already exists (will be null if not)
-        final Bookshelf existingShelfWithSameName = mDb.getBookshelfByName(mName);
+        // store changes
+        mBookshelf.setName(mName);
 
-        // are we adding a new Bookshelf but trying to use an existing name?
-        if ((mBookshelf.getId() == 0) && (existingShelfWithSameName != null)) {
+        // check if it already exists (will be 0 if not)
+        final long existingId = mDb.getBookshelfId(mBookshelf);
+
+        // are we adding a new one but trying to use an existing name?
+        if ((mBookshelf.getId() == 0) && (existingId != 0)) {
             final Context context = getContext();
 
             //noinspection ConstantConditions
@@ -158,10 +161,7 @@ public class EditBookshelfDialogFragment
             return false;
         }
 
-        if (existingShelfWithSameName == null) {
-            // It's a simple rename, store changes
-            mBookshelf.setName(mName);
-
+        if (existingId == 0) {
             final boolean success;
             if (mBookshelf.getId() == 0) {
                 //noinspection ConstantConditions
@@ -171,11 +171,11 @@ public class EditBookshelfDialogFragment
                 success = mDb.update(getContext(), mBookshelf);
             }
             if (success) {
-                OnResultListener.sendResult(this, mRequestKey, mBookshelf.getId(), 0);
+                OnResultListener.sendResult(this, mRequestKey, mBookshelf.getId());
                 return true;
             }
         } else {
-            // Merge the 2 shelves
+            // Merge the 2
             //noinspection ConstantConditions
             new MaterialAlertDialogBuilder(getContext())
                     .setIcon(R.drawable.ic_warning)
@@ -183,11 +183,10 @@ public class EditBookshelfDialogFragment
                     .setMessage(R.string.confirm_merge_bookshelves)
                     .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
                     .setPositiveButton(R.string.action_merge, (d, w) -> {
-                        // move all books from the shelf being edited to the existing shelf
-                        final long toShelfId = existingShelfWithSameName.getId();
-                        final int booksMoved = mDb.mergeBookshelves(mBookshelf.getId(), toShelfId);
+                        // move all books from the one being edited to the existing one
+                        mDb.merge(mBookshelf, existingId);
 
-                        OnResultListener.sendResult(this, mRequestKey, toShelfId, booksMoved);
+                        OnResultListener.sendResult(this, mRequestKey, existingId);
                         dismiss();
                     })
                     .create()
@@ -225,31 +224,26 @@ public class EditBookshelfDialogFragment
             extends FragmentResultListener {
 
         /* private. */ String BOOKSHELF_ID = "bookshelfId";
-        /* private. */ String BOOKS_MOVED = "booksMoved";
 
         static void sendResult(@NonNull final Fragment fragment,
                                @NonNull final String requestKey,
-                               final long bookshelfId,
-                               final int booksMoved) {
-            final Bundle result = new Bundle(2);
+                               final long bookshelfId) {
+            final Bundle result = new Bundle(1);
             result.putLong(BOOKSHELF_ID, bookshelfId);
-            result.putInt(BOOKS_MOVED, booksMoved);
             fragment.getParentFragmentManager().setFragmentResult(requestKey, result);
         }
 
         @Override
         default void onFragmentResult(@NonNull final String requestKey,
                                       @NonNull final Bundle result) {
-            onResult(result.getLong(BOOKSHELF_ID), result.getInt(BOOKS_MOVED));
+            onResult(result.getLong(BOOKSHELF_ID));
         }
 
         /**
          * Callback handler with the user's selection.
          *
          * @param bookshelfId the id of the updated shelf, or of the newly inserted shelf.
-         * @param booksMoved  if a merge took place, the amount of books moved (otherwise 0).
          */
-        void onResult(long bookshelfId,
-                      int booksMoved);
+        void onResult(long bookshelfId);
     }
 }

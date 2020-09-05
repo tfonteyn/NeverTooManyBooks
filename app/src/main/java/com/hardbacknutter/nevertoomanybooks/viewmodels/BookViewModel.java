@@ -290,12 +290,11 @@ public class BookViewModel
      * @param context Current context
      */
     public void deleteBook(@NonNull final Context context) {
-        if (mDb.deleteBook(context, mBook.getId())) {
+        if (mDb.delete(context, mBook)) {
             putResultData(BKEY_BOOK_DELETED, true);
             mBook = null;
         }
     }
-
 
     /**
      * Check if the passed Author is only used by this book.

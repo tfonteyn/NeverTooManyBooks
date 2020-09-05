@@ -103,7 +103,7 @@ public class EditLanguageDialogFragment
         final String iso = Languages.getInstance()
                                     .getISO3FromDisplayName(getContext(), userLocale, currentText);
         //noinspection ConstantConditions
-        mDb.renameLanguage(originalText, iso);
+        mDb.updateLanguage(originalText, iso);
         return null;
     }
 }

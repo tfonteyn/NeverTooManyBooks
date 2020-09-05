@@ -28,7 +28,6 @@ import androidx.annotation.NonNull;
 import java.io.Closeable;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.SqlStatementManager;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
@@ -55,9 +54,6 @@ public class FlattenedBooklist
 
     /** Log tag. */
     private static final String TAG = "FlattenedBooklist";
-
-    /** divider to convert nanoseconds to milliseconds. */
-    private static final int NANO_TO_MILLIS = 1_000_000;
 
     /** Name for the 'next' statement. */
     private static final String STMT_NEXT = "next";
@@ -87,8 +83,9 @@ public class FlattenedBooklist
      *
      * @param navTableName Name of underlying and <strong>existing</strong> table
      */
-    public FlattenedBooklist(@NonNull final String navTableName) {
-        mSyncedDb = DAO.getSyncDb();
+    public FlattenedBooklist(@NonNull final SynchronizedDb syncDb,
+                             @NonNull final String navTableName) {
+        mSyncedDb = syncDb;
         mTable = new TableDefinition(DBDefinitions.TMP_TBL_BOOK_LIST_NAVIGATOR);
         mTable.setName(navTableName);
 

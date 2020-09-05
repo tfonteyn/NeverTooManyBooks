@@ -64,14 +64,14 @@ public class OptimizeDbTask
 
         publishProgress(new ProgressMessage(getTaskId(), context.getString(
                 R.string.progress_msg_optimizing)));
-        try {
+        try (DAO db = new DAO(TAG)) {
             // small hack to make sure we always update the triggers.
             // Makes creating/modifying triggers MUCH easier.
             if (BuildConfig.DEBUG /* always */) {
-                DAO.rebuildTriggers();
+                db.getDBHelper().createTriggers(db.getSyncDb());
             }
 
-            DAO.getSyncDb().optimize();
+            db.getSyncDb().optimize();
             if (ImageUtils.isImageCachingEnabled(context)) {
                 CoversDAO.optimize(context);
             }
