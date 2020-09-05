@@ -843,6 +843,10 @@ public class DAO
                               @IntRange(from = 1) final long bookId) {
 
         final String uuid = getBookUuid(bookId);
+        // sanity check
+        if (uuid == null) {
+            return false;
+        }
 
         int rowsAffected = 0;
         final SyncLock txLock = mSyncedDb.beginTransaction(true);
@@ -858,14 +862,14 @@ public class DAO
             }
 
             if (rowsAffected > 0) {
-                // delete the thumbnail (if any).
-                if (uuid != null && !uuid.isEmpty()) {
-                    // remove from file system
+                // sanity check
+                if (!uuid.isEmpty()) {
+                    // delete the thumbnail (if any) from file system
                     for (int cIdx = 0; cIdx < 2; cIdx++) {
                         final File thumb = AppDir.getCoverFile(context, uuid, cIdx);
                         FileUtils.delete(thumb);
                     }
-                    // remove from cache
+                    // delete the thumbnail (if any) from cache
                     CoversDAO.delete(context, uuid);
                 }
             }
@@ -3126,6 +3130,7 @@ public class DAO
      * @return id of the book, or 0 'new' if not found
      */
     public long getBookIdFromUuid(@NonNull final String uuid) {
+        // This method is called from a loop during import, so caching the statement is essential.
         SynchronizedStatement stmt = mSqlStatementManager.get(STMT_GET_BOOK_ID_FROM_UUID);
         if (stmt == null) {
             stmt = mSqlStatementManager.add(STMT_GET_BOOK_ID_FROM_UUID, SqlGetId.BY_UUID);
@@ -3146,11 +3151,14 @@ public class DAO
      * @return the book UUID, or {@code null} if not found/failure
      */
     @Nullable
-    public String getBookUuid(final long bookId) {
+    private String getBookUuid(final long bookId) {
         // sanity check
         if (bookId == 0) {
             throw new IllegalArgumentException(ErrorMsg.ZERO_ID_FOR_BOOK);
         }
+
+        // This method is called from a loop during import (via 'insert' of a Book),
+        // so caching the statement is essential.
         SynchronizedStatement stmt = mSqlStatementManager.get(STMT_GET_BOOK_UUID);
         if (stmt == null) {
             stmt = mSqlStatementManager.add(STMT_GET_BOOK_UUID, SqlGet.BOOK_UUID_BY_ID);
@@ -3667,6 +3675,8 @@ public class DAO
      * @param context Current context
      * @param source  from where to move
      * @param destId  to move to
+     *
+     * @throws DaoWriteException on failure
      */
     public void merge(@NonNull final Context context,
                       @NonNull final Author source,
@@ -3726,6 +3736,8 @@ public class DAO
      * @param context Current context
      * @param source  from where to move
      * @param destId  to move to
+     *
+     * @throws DaoWriteException on failure
      */
     public void merge(@NonNull final Context context,
                       @NonNull final Series source,
@@ -3773,6 +3785,8 @@ public class DAO
      * @param context Current context
      * @param source  from where to move
      * @param destId  to move to
+     *
+     * @throws DaoWriteException on failure
      */
     public void merge(@NonNull final Context context,
                       @NonNull final Publisher source,
