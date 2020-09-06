@@ -193,7 +193,7 @@ public class Bookshelf
     }
 
     /**
-     * Get the specified bookshelf. If not found, returns the {@code null}.
+     * Get the specified bookshelf.
      *
      * @param context Current context
      * @param db      Database Access
