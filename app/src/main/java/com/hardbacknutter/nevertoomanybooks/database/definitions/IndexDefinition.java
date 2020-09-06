@@ -26,7 +26,7 @@ import androidx.annotation.NonNull;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.hardbacknutter.nevertoomanybooks.database.DAO;
+import com.hardbacknutter.nevertoomanybooks.database.DAOSql;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.utils.Csv;
 
@@ -124,7 +124,7 @@ class IndexDefinition {
            .append(" ON ").append(mTable.getName())
            .append('(').append(Csv.join(mDomains, element -> {
             if (element.isCollationLocalized()) {
-                return element.getName() + DAO._COLLATION;
+                return element.getName() + DAOSql._COLLATION;
             } else {
                 return element.getName();
             }

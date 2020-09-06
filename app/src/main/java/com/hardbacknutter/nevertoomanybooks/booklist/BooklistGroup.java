@@ -48,7 +48,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PBitmask;
 import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PBoolean;
 import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PPref;
-import com.hardbacknutter.nevertoomanybooks.database.DAO;
+import com.hardbacknutter.nevertoomanybooks.database.DAOSql;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.ColumnInfo;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
@@ -644,7 +644,7 @@ public class BooklistGroup
         @NonNull
         private VirtualDomain createDisplayDomain() {
             // Not sorted; sort as defined in #createSortDomain
-            return new VirtualDomain(DOM_AUTHOR_FORMATTED, DAO.SqlColumns
+            return new VirtualDomain(DOM_AUTHOR_FORMATTED, DAOSql.SqlColumns
                     .getDisplayAuthor(TBL_AUTHORS.getAlias(), mShowAuthorWithGivenNameFirst));
         }
 
@@ -652,7 +652,7 @@ public class BooklistGroup
         private VirtualDomain createSortDomain() {
             // Sorting depends on user preference
             return new VirtualDomain(DOM_BL_AUTHOR_SORT,
-                                     DAO.SqlColumns.getSortAuthor(mSortAuthorByGivenNameFirst),
+                                     DAOSql.SqlColumns.getSortAuthor(mSortAuthorByGivenNameFirst),
                                      VirtualDomain.SORT_ASC);
         }
 
@@ -1256,7 +1256,7 @@ public class BooklistGroup
                 // the others here below are custom key domains
                 case ON_LOAN: {
                     return new GroupKey(R.string.lbl_loaned, "l",
-                                        DOM_LOANEE, DAO.SqlColumns.EXP_BOOK_LOANEE_OR_EMPTY,
+                                        DOM_LOANEE, DAOSql.SqlColumns.EXP_BOOK_LOANEE_OR_EMPTY,
                                         VirtualDomain.SORT_ASC);
                 }
                 case READ_STATUS: {
@@ -1295,7 +1295,7 @@ public class BooklistGroup
                     return new GroupKey(R.string.lbl_publication_year, "yrp",
                                         new Domain.Builder("blg_pub_y", ColumnInfo.TYPE_INTEGER)
                                                 .build(),
-                                        DAO.SqlColumns
+                                        DAOSql.SqlColumns
                                                 .year(TBL_BOOKS.dot(KEY_DATE_PUBLISHED), false),
                                         VirtualDomain.SORT_DESC)
                             .addBaseDomain(DATE_PUBLISHED);
@@ -1305,7 +1305,7 @@ public class BooklistGroup
                     return new GroupKey(R.string.lbl_publication_month, "mp",
                                         new Domain.Builder("blg_pub_m", ColumnInfo.TYPE_INTEGER)
                                                 .build(),
-                                        DAO.SqlColumns
+                                        DAOSql.SqlColumns
                                                 .month(TBL_BOOKS.dot(KEY_DATE_PUBLISHED), false),
                                         VirtualDomain.SORT_DESC)
                             .addBaseDomain(DATE_PUBLISHED);
@@ -1316,7 +1316,7 @@ public class BooklistGroup
                     return new GroupKey(R.string.lbl_first_pub_year, "yfp",
                                         new Domain.Builder("blg_1pub_y", ColumnInfo.TYPE_INTEGER)
                                                 .build(),
-                                        DAO.SqlColumns
+                                        DAOSql.SqlColumns
                                                 .year(TBL_BOOKS.dot(KEY_DATE_FIRST_PUBLICATION),
                                                       false),
                                         VirtualDomain.SORT_DESC)
@@ -1327,7 +1327,7 @@ public class BooklistGroup
                     return new GroupKey(R.string.lbl_first_pub_month, "mfp",
                                         new Domain.Builder("blg_1pub_m", ColumnInfo.TYPE_INTEGER)
                                                 .build(),
-                                        DAO.SqlColumns
+                                        DAOSql.SqlColumns
                                                 .month(TBL_BOOKS.dot(KEY_DATE_FIRST_PUBLICATION),
                                                        false),
                                         VirtualDomain.SORT_DESC)
@@ -1339,7 +1339,8 @@ public class BooklistGroup
                     return new GroupKey(R.string.lbl_date_acquired_year, "yac",
                                         new Domain.Builder("blg_acq_y", ColumnInfo.TYPE_INTEGER)
                                                 .build(),
-                                        DAO.SqlColumns.year(TBL_BOOKS.dot(KEY_DATE_ACQUIRED), true),
+                                        DAOSql.SqlColumns
+                                                .year(TBL_BOOKS.dot(KEY_DATE_ACQUIRED), true),
                                         VirtualDomain.SORT_DESC)
                             .addBaseDomain(DATE_ACQUIRED);
                 }
@@ -1348,7 +1349,7 @@ public class BooklistGroup
                     return new GroupKey(R.string.lbl_date_acquired_month, "mac",
                                         new Domain.Builder("blg_acq_m", ColumnInfo.TYPE_INTEGER)
                                                 .build(),
-                                        DAO.SqlColumns
+                                        DAOSql.SqlColumns
                                                 .month(TBL_BOOKS.dot(KEY_DATE_ACQUIRED), true),
                                         VirtualDomain.SORT_DESC)
                             .addBaseDomain(DATE_ACQUIRED);
@@ -1358,7 +1359,8 @@ public class BooklistGroup
                     return new GroupKey(R.string.lbl_date_acquired_day, "dac",
                                         new Domain.Builder("blg_acq_d", ColumnInfo.TYPE_INTEGER)
                                                 .build(),
-                                        DAO.SqlColumns.day(TBL_BOOKS.dot(KEY_DATE_ACQUIRED), true),
+                                        DAOSql.SqlColumns
+                                                .day(TBL_BOOKS.dot(KEY_DATE_ACQUIRED), true),
                                         VirtualDomain.SORT_DESC)
                             .addBaseDomain(DATE_ACQUIRED);
                 }
@@ -1369,7 +1371,7 @@ public class BooklistGroup
                     return new GroupKey(R.string.lbl_added_year, "ya",
                                         new Domain.Builder("blg_add_y", ColumnInfo.TYPE_INTEGER)
                                                 .build(),
-                                        DAO.SqlColumns.year(TBL_BOOKS.dot(KEY_UTC_ADDED), true),
+                                        DAOSql.SqlColumns.year(TBL_BOOKS.dot(KEY_UTC_ADDED), true),
                                         VirtualDomain.SORT_DESC)
                             .addBaseDomain(DATE_ADDED);
                 }
@@ -1378,7 +1380,7 @@ public class BooklistGroup
                     return new GroupKey(R.string.lbl_added_month, "ma",
                                         new Domain.Builder("blg_add_m", ColumnInfo.TYPE_INTEGER)
                                                 .build(),
-                                        DAO.SqlColumns.month(TBL_BOOKS.dot(KEY_UTC_ADDED), true),
+                                        DAOSql.SqlColumns.month(TBL_BOOKS.dot(KEY_UTC_ADDED), true),
                                         VirtualDomain.SORT_DESC)
                             .addBaseDomain(DATE_ADDED);
                 }
@@ -1387,7 +1389,7 @@ public class BooklistGroup
                     return new GroupKey(R.string.lbl_added_day, "da",
                                         new Domain.Builder("blg_add_d", ColumnInfo.TYPE_INTEGER)
                                                 .build(),
-                                        DAO.SqlColumns.day(TBL_BOOKS.dot(KEY_UTC_ADDED), true),
+                                        DAOSql.SqlColumns.day(TBL_BOOKS.dot(KEY_UTC_ADDED), true),
                                         VirtualDomain.SORT_DESC)
                             .addBaseDomain(DATE_ADDED);
                 }
@@ -1397,7 +1399,7 @@ public class BooklistGroup
                     return new GroupKey(R.string.lbl_update_year, "yu",
                                         new Domain.Builder("blg_upd_y", ColumnInfo.TYPE_INTEGER)
                                                 .build(),
-                                        DAO.SqlColumns
+                                        DAOSql.SqlColumns
                                                 .year(TBL_BOOKS.dot(KEY_UTC_LAST_UPDATED), true),
                                         VirtualDomain.SORT_DESC)
                             .addBaseDomain(DATE_LAST_UPDATED);
@@ -1407,7 +1409,7 @@ public class BooklistGroup
                     return new GroupKey(R.string.lbl_update_month, "mu",
                                         new Domain.Builder("blg_upd_m", ColumnInfo.TYPE_INTEGER)
                                                 .build(),
-                                        DAO.SqlColumns
+                                        DAOSql.SqlColumns
                                                 .month(TBL_BOOKS.dot(KEY_UTC_LAST_UPDATED), true),
                                         VirtualDomain.SORT_DESC)
                             .addBaseDomain(DATE_LAST_UPDATED);
@@ -1417,7 +1419,7 @@ public class BooklistGroup
                     return new GroupKey(R.string.lbl_update_day, "du",
                                         new Domain.Builder("blg_upd_d", ColumnInfo.TYPE_INTEGER)
                                                 .build(),
-                                        DAO.SqlColumns
+                                        DAOSql.SqlColumns
                                                 .day(TBL_BOOKS.dot(KEY_UTC_LAST_UPDATED), true),
                                         VirtualDomain.SORT_DESC)
                             .addBaseDomain(DATE_LAST_UPDATED);
@@ -1428,7 +1430,7 @@ public class BooklistGroup
                     return new GroupKey(R.string.lbl_read_year, "yr",
                                         new Domain.Builder("blg_rd_y", ColumnInfo.TYPE_INTEGER)
                                                 .build(),
-                                        DAO.SqlColumns.year(TBL_BOOKS.dot(KEY_READ_END), true),
+                                        DAOSql.SqlColumns.year(TBL_BOOKS.dot(KEY_READ_END), true),
                                         VirtualDomain.SORT_DESC)
                             .addBaseDomain(DATE_READ_END)
                             .addGroupDomain(BOOK_IS_READ);
@@ -1438,7 +1440,7 @@ public class BooklistGroup
                     return new GroupKey(R.string.lbl_read_month, "mr",
                                         new Domain.Builder("blg_rd_m", ColumnInfo.TYPE_INTEGER)
                                                 .build(),
-                                        DAO.SqlColumns.month(TBL_BOOKS.dot(KEY_READ_END), true),
+                                        DAOSql.SqlColumns.month(TBL_BOOKS.dot(KEY_READ_END), true),
                                         VirtualDomain.SORT_DESC)
                             .addBaseDomain(DATE_READ_END)
                             .addGroupDomain(BOOK_IS_READ);
@@ -1448,7 +1450,7 @@ public class BooklistGroup
                     return new GroupKey(R.string.lbl_read_day, "dr",
                                         new Domain.Builder("blg_rd_d", ColumnInfo.TYPE_INTEGER)
                                                 .build(),
-                                        DAO.SqlColumns.day(TBL_BOOKS.dot(KEY_READ_END), true),
+                                        DAOSql.SqlColumns.day(TBL_BOOKS.dot(KEY_READ_END), true),
                                         VirtualDomain.SORT_DESC)
                             .addBaseDomain(DATE_READ_END)
                             .addGroupDomain(BOOK_IS_READ);

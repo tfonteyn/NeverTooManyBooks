@@ -227,7 +227,7 @@ public final class DBHelper
 
             String s;
             try (Cursor c = db.rawQuery("SELECT t,i FROM collation_cs_check"
-                                        + " ORDER BY t " + DAO._COLLATION + ",i",
+                                        + " ORDER BY t " + DAOSql._COLLATION + ",i",
                                         null)) {
                 c.moveToFirst();
                 s = c.getString(0);

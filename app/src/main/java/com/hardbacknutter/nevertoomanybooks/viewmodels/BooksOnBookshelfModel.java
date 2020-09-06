@@ -51,6 +51,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.RowStateDAO;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.Filter;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
+import com.hardbacknutter.nevertoomanybooks.database.DAOSql;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.VirtualDomain;
@@ -745,7 +746,7 @@ public class BooksOnBookshelfModel
             if (DBDefinitions.isUsed(prefs, DBDefinitions.KEY_LOANEE)) {
                 builder.addDomain(new VirtualDomain(
                         DBDefinitions.DOM_BL_LOANEE_AS_BOOL,
-                        DAO.SqlColumns.EXP_LOANEE_AS_BOOLEAN));
+                        DAOSql.SqlColumns.EXP_LOANEE_AS_BOOLEAN));
             }
 
             // Add the conditional domains; style level.
@@ -754,15 +755,16 @@ public class BooksOnBookshelfModel
                 // This collects a CSV list of the bookshelves the book is on.
                 builder.addDomain(new VirtualDomain(
                         DBDefinitions.DOM_BOOKSHELF_NAME_CSV,
-                        DAO.SqlColumns.EXP_BOOKSHELF_NAME_CSV));
+                        DAOSql.SqlColumns.EXP_BOOKSHELF_NAME_CSV));
             }
 
             // we fetch ONLY the primary author
             if (style.useBookDetail(context, prefs, BooklistStyle.pk_book_show_author)) {
                 builder.addDomain(new VirtualDomain(
                         DBDefinitions.DOM_AUTHOR_FORMATTED,
-                        DAO.SqlColumns.getDisplayAuthor(DBDefinitions.TBL_AUTHORS.getAlias(),
-                                                        style.isShowAuthorByGivenName(context))));
+                        DAOSql.SqlColumns.getDisplayAuthor(DBDefinitions.TBL_AUTHORS.getAlias(),
+                                                           style.isShowAuthorByGivenName(
+                                                                   context))));
             }
 
             // for now, don't get the author type.
@@ -777,7 +779,7 @@ public class BooksOnBookshelfModel
                 // Collect a CSV list of the publishers of the book
                 builder.addDomain(new VirtualDomain(
                         DBDefinitions.DOM_PUBLISHER_NAME_CSV,
-                        DAO.SqlColumns.EXP_PUBLISHER_NAME_CSV));
+                        DAOSql.SqlColumns.EXP_PUBLISHER_NAME_CSV));
             }
             if (style.useBookDetail(context, prefs, BooklistStyle.pk_book_show_pub_date)) {
                 builder.addDomain(new VirtualDomain(

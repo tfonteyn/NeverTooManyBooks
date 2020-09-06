@@ -48,6 +48,7 @@ import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.Filter;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.ListOfValuesFilter;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
+import com.hardbacknutter.nevertoomanybooks.database.DAOSql;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBHelper;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
@@ -278,8 +279,8 @@ public class BooklistBuilder
                           @Nullable final String publisherName,
                           @Nullable final String keywords) {
 
-        final String query = DAO.SqlFTS.createMatchString(author, title, seriesTitle,
-                                                          publisherName, keywords);
+        final String query = DAOSql.SqlFTS.createMatchString(author, title, seriesTitle,
+                                                             publisherName, keywords);
         if (!query.isEmpty()) {
             mFilters.add(context ->
                                  '(' + TBL_BOOKS.dot(KEY_PK_ID) + " IN ("
@@ -520,7 +521,7 @@ public class BooklistBuilder
                                .append(",'')=COALESCE(NEW.")
                                .append(groupDomain.getName())
                                .append(",'')")
-                               .append(DAO._COLLATION);
+                               .append(DAOSql._COLLATION);
                 }
             }
 
@@ -1220,7 +1221,7 @@ public class BooklistBuilder
                         orderBy.append(sd.getName());
                     }
 
-                    orderBy.append(DAO._COLLATION);
+                    orderBy.append(DAOSql._COLLATION);
                 } else {
                     orderBy.append(sd.getName());
                 }
@@ -1244,7 +1245,7 @@ public class BooklistBuilder
             for (VirtualDomain sd : mOrderByDomains) {
                 indexCols.append(sd.getName());
                 if (sd.getDomain().isText()) {
-                    indexCols.append(DAO._COLLATION);
+                    indexCols.append(DAOSql._COLLATION);
                 }
                 indexCols.append(sd.getSortedExpression()).append(',');
             }
