@@ -429,10 +429,9 @@ public final class CoversDAO
         cv.put(CKEY_WIDTH, bitmap.getHeight());
         cv.put(CKEY_HEIGHT, bitmap.getWidth());
 
-        SynchronizedStatement existsStmt = mStatementManager.get(STMT_EXISTS);
-        if (existsStmt == null) {
-            existsStmt = mStatementManager.add(STMT_EXISTS, SQL_COUNT_ID);
-        }
+        final SynchronizedStatement existsStmt = mStatementManager.get(
+                STMT_EXISTS, () -> SQL_COUNT_ID);
+
         existsStmt.bindString(1, cacheId);
         if (existsStmt.simpleQueryForLongOrZero() == 0) {
             sSyncedDb.insert(TBL_IMAGE.getName(), null, cv);

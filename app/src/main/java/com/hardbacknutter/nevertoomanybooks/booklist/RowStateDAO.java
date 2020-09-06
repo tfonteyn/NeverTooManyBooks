@@ -456,12 +456,10 @@ public class RowStateDAO
      * @return count
      */
     int countVisibleRows() {
-        SynchronizedStatement stmt = mStatementManager.get(STMT_COUNT_VIS_ROWS);
-        if (stmt == null) {
-            stmt = mStatementManager.add(STMT_COUNT_VIS_ROWS,
-                                         "SELECT COUNT(*) FROM " + mTable.getName()
-                                         + _WHERE_ + KEY_BL_NODE_VISIBLE + "=1");
-        }
+        final SynchronizedStatement stmt = mStatementManager.get(STMT_COUNT_VIS_ROWS, () ->
+                "SELECT COUNT(*) FROM " + mTable.getName()
+                + _WHERE_ + KEY_BL_NODE_VISIBLE + "=1");
+
         final int count;
         // no params here, so don't need synchronized... but leave as reminder
         //        synchronized (stmt) {
@@ -477,13 +475,11 @@ public class RowStateDAO
      * @param node to set
      */
     void findAndSetListPosition(@NonNull final Node node) {
-        SynchronizedStatement stmt = mStatementManager.get(STMT_COUNT_VIS_ROWS_BEFORE);
-        if (stmt == null) {
-            stmt = mStatementManager.add(STMT_COUNT_VIS_ROWS_BEFORE,
-                                         "SELECT COUNT(*) FROM " + mTable.getName()
-                                         + _WHERE_ + KEY_BL_NODE_VISIBLE + "=1"
-                                         + _AND_ + KEY_PK_ID + "<?");
-        }
+        final SynchronizedStatement stmt = mStatementManager.get(STMT_COUNT_VIS_ROWS_BEFORE, () ->
+                "SELECT COUNT(*) FROM " + mTable.getName()
+                + _WHERE_ + KEY_BL_NODE_VISIBLE + "=1"
+                + _AND_ + KEY_PK_ID + "<?");
+
         // We need to count the visible rows between the start of the list,
         // and the given row, to determine the ACTUAL row we want.
         // Remember that a position == rowId -1
@@ -755,15 +751,11 @@ public class RowStateDAO
                 txLock = mSyncedDb.beginTransaction(true);
             }
 
-            SynchronizedStatement stmt = mStatementManager.get(STMT_DEL_ALL_NODES);
-            if (stmt == null) {
-                stmt = mStatementManager.add(
-                        STMT_DEL_ALL_NODES,
-                        // delete all rows for the current bookshelf/style
-                        "DELETE FROM " + TBL_BOOK_LIST_NODE_STATE.getName()
-                        + _WHERE_ + KEY_FK_BOOKSHELF + "=?"
-                        + _AND_ + KEY_FK_STYLE + "=?");
-            }
+            SynchronizedStatement stmt = mStatementManager.get(STMT_DEL_ALL_NODES, () ->
+                    // delete all rows for the current bookshelf/style
+                    "DELETE FROM " + TBL_BOOK_LIST_NODE_STATE.getName()
+                    + _WHERE_ + KEY_FK_BOOKSHELF + "=?"
+                    + _AND_ + KEY_FK_STYLE + "=?");
 
             //noinspection SynchronizationOnLocalVariableOrMethodParameter
             synchronized (stmt) {
@@ -778,10 +770,7 @@ public class RowStateDAO
                 }
             }
 
-            stmt = mStatementManager.get(STMT_SAVE_ALL_NODES);
-            if (stmt == null) {
-                stmt = mStatementManager.add(STMT_SAVE_ALL_NODES, mSqlNodesInsertBase);
-            }
+            stmt = mStatementManager.get(STMT_SAVE_ALL_NODES, () -> mSqlNodesInsertBase);
 
             // Read all visible nodes, and send them to the permanent table.
             //noinspection SynchronizationOnLocalVariableOrMethodParameter
@@ -891,14 +880,10 @@ public class RowStateDAO
     private void updateNode(final long rowId,
                             final boolean expand,
                             @SuppressWarnings("SameParameterValue") final boolean visible) {
-        SynchronizedStatement stmt = mStatementManager.get(STMT_UPDATE_NODE);
-        if (stmt == null) {
-            stmt = mStatementManager.add(
-                    STMT_UPDATE_NODE,
-                    UPDATE_ + mTable.getName() + _SET_
-                    + KEY_BL_NODE_EXPANDED + "=?" + ',' + KEY_BL_NODE_VISIBLE + "=?"
-                    + _WHERE_ + KEY_PK_ID + "=?");
-        }
+        final SynchronizedStatement stmt = mStatementManager.get(STMT_UPDATE_NODE, () ->
+                UPDATE_ + mTable.getName() + _SET_
+                + KEY_BL_NODE_EXPANDED + "=?" + ',' + KEY_BL_NODE_VISIBLE + "=?"
+                + _WHERE_ + KEY_PK_ID + "=?");
 
         final int rowsUpdated;
         //noinspection SynchronizationOnLocalVariableOrMethodParameter
@@ -928,14 +913,11 @@ public class RowStateDAO
     private long findNextNode(final long rowId,
                               final int level) {
 
-        SynchronizedStatement stmt = mStatementManager.get(STMT_GET_NEXT_NODE_AT_SAME_LEVEL);
-        if (stmt == null) {
-            stmt = mStatementManager.add(
-                    STMT_GET_NEXT_NODE_AT_SAME_LEVEL,
-                    SELECT_ + KEY_PK_ID + _FROM_ + mTable.getName()
-                    + _WHERE_ + KEY_PK_ID + ">?" + _AND_ + KEY_BL_NODE_LEVEL + "<=?"
-                    + _ORDER_BY_ + KEY_PK_ID + " LIMIT 1");
-        }
+        final SynchronizedStatement stmt = mStatementManager.get(
+                STMT_GET_NEXT_NODE_AT_SAME_LEVEL, () ->
+                        SELECT_ + KEY_PK_ID + _FROM_ + mTable.getName()
+                        + _WHERE_ + KEY_PK_ID + ">?" + _AND_ + KEY_BL_NODE_LEVEL + "<=?"
+                        + _ORDER_BY_ + KEY_PK_ID + " LIMIT 1");
 
         final long nextRowId;
         //noinspection SynchronizationOnLocalVariableOrMethodParameter
@@ -969,16 +951,12 @@ public class RowStateDAO
         final int maxLevel = Math.max(level, mStyle.getGroupCount() - 1);
 
         // handle all levels except the lowest level.
-        SynchronizedStatement stmt = mStatementManager.get(STMT_UPDATE_NODES_BETWEEN_1);
-        if (stmt == null) {
-            stmt = mStatementManager.add(
-                    STMT_UPDATE_NODES_BETWEEN_1,
-                    UPDATE_ + mTable.getName() + _SET_
-                    + KEY_BL_NODE_VISIBLE + "=?,"
-                    + KEY_BL_NODE_EXPANDED + "=?"
-                    + _WHERE_ + KEY_PK_ID + ">?" + _AND_ + KEY_PK_ID + "<?"
-                    + _AND_ + KEY_BL_NODE_LEVEL + "<?");
-        }
+        SynchronizedStatement stmt = mStatementManager.get(STMT_UPDATE_NODES_BETWEEN_1, () ->
+                UPDATE_ + mTable.getName() + _SET_
+                + KEY_BL_NODE_VISIBLE + "=?,"
+                + KEY_BL_NODE_EXPANDED + "=?"
+                + _WHERE_ + KEY_PK_ID + ">?" + _AND_ + KEY_PK_ID + "<?"
+                + _AND_ + KEY_BL_NODE_LEVEL + "<?");
 
         final int rowsUpdated;
         //noinspection SynchronizationOnLocalVariableOrMethodParameter
@@ -1004,16 +982,12 @@ public class RowStateDAO
 
         if (expandAndVisible) {
             // the lowest level we want visible should never be expanded.
-            stmt = mStatementManager.get(STMT_UPDATE_NODES_BETWEEN_2);
-            if (stmt == null) {
-                stmt = mStatementManager.add(
-                        STMT_UPDATE_NODES_BETWEEN_2,
-                        UPDATE_ + mTable.getName() + _SET_
-                        + KEY_BL_NODE_VISIBLE + "=?,"
-                        + KEY_BL_NODE_EXPANDED + "=?"
-                        + _WHERE_ + KEY_PK_ID + ">?" + _AND_ + KEY_PK_ID + "<?"
-                        + _AND_ + KEY_BL_NODE_LEVEL + "=?");
-            }
+            stmt = mStatementManager.get(STMT_UPDATE_NODES_BETWEEN_2, () ->
+                    UPDATE_ + mTable.getName() + _SET_
+                    + KEY_BL_NODE_VISIBLE + "=?,"
+                    + KEY_BL_NODE_EXPANDED + "=?"
+                    + _WHERE_ + KEY_PK_ID + ">?" + _AND_ + KEY_PK_ID + "<?"
+                    + _AND_ + KEY_BL_NODE_LEVEL + "=?");
 
             //noinspection SynchronizationOnLocalVariableOrMethodParameter
             synchronized (stmt) {
@@ -1063,21 +1037,17 @@ public class RowStateDAO
                                    KEY_PK_ID);
             }
 
-            SynchronizedStatement stmt = mStatementManager.get(STMT_DEL_NODES_BETWEEN);
-            if (stmt == null) {
-                stmt = mStatementManager.add(
-                        STMT_DEL_NODES_BETWEEN,
-                        "DELETE FROM " + TBL_BOOK_LIST_NODE_STATE.getName()
-                        + _WHERE_ + KEY_FK_BOOKSHELF + "=?"
-                        + _AND_ + KEY_FK_STYLE + "=?"
+            SynchronizedStatement stmt = mStatementManager.get(STMT_DEL_NODES_BETWEEN, () ->
+                    "DELETE FROM " + TBL_BOOK_LIST_NODE_STATE.getName()
+                    + _WHERE_ + KEY_FK_BOOKSHELF + "=?"
+                    + _AND_ + KEY_FK_STYLE + "=?"
 
-                        // leave the parent levels untouched
-                        + _AND_ + KEY_BL_NODE_LEVEL + ">=?"
+                    // leave the parent levels untouched
+                    + _AND_ + KEY_BL_NODE_LEVEL + ">=?"
 
-                        + _AND_ + KEY_BL_NODE_KEY + " IN ("
-                        + " SELECT DISTINCT " + KEY_BL_NODE_KEY + _FROM_ + mTable.getName()
-                        + _WHERE_ + KEY_PK_ID + ">=? AND " + KEY_PK_ID + "<? )");
-            }
+                    + _AND_ + KEY_BL_NODE_KEY + " IN ("
+                    + " SELECT DISTINCT " + KEY_BL_NODE_KEY + _FROM_ + mTable.getName()
+                    + _WHERE_ + KEY_PK_ID + ">=? AND " + KEY_PK_ID + "<? )");
 
             // delete the given rows (inc. start, excl. end) and level
             // for the current bookshelf/style
@@ -1104,12 +1074,8 @@ public class RowStateDAO
                                    KEY_PK_ID);
             }
 
-            stmt = mStatementManager.get(STMT_SAVE_NODES_BETWEEN);
-            if (stmt == null) {
-                stmt = mStatementManager.add(STMT_SAVE_NODES_BETWEEN,
-                                             mSqlNodesInsertBase
-                                             + _AND_ + KEY_PK_ID + ">=? AND " + KEY_PK_ID + "<?");
-            }
+            stmt = mStatementManager.get(STMT_SAVE_NODES_BETWEEN, () ->
+                    mSqlNodesInsertBase + _AND_ + KEY_PK_ID + ">=? AND " + KEY_PK_ID + "<?");
 
             // Read all nodes below the given node (again inc. start, excl. end),
             // and send them to the permanent table.

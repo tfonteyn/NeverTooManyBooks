@@ -21,11 +21,11 @@ package com.hardbacknutter.nevertoomanybooks.database;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Supplier;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
@@ -38,23 +38,6 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
  * The purpose is not the actual caching of the statement for re-use in loops
  * (Android does that anyhow), but the handling of properly closing statements.
  * You do get extra caching across individual calls, but not sure if that makes any impact.
- * <p>
- * Typical usage:
- * <pre>
- *     {@code
- *     SynchronizedStatement stmt = mStatementManager.get(STMT_1);
- *     if (stmt == null) {
- *         stmt = mStatementManager.add(STMT_1, "SELECT id FROM table WHERE col=?");
- *         long id;
- *         // Be cautious; other threads may use the cached stmt, and set parameters.
- *         synchronized (stmt) {
- *             stmt.bindLong(1, value);
- *             id = stmt.simpleQueryForLongOrZero();
- *         }
- *         ...
- *     }
- *     }
- * </pre>
  */
 public class SqlStatementManager
         implements AutoCloseable {
@@ -84,35 +67,21 @@ public class SqlStatementManager
     }
 
     /**
-     * Get a statement from the cache.
+     * Get a statement from the cache. Create it if needed.
      *
-     * @param name of the statement
+     * @param name        of the statement
+     * @param sqlSupplier a Supplier to get the SQL for the statement if compiling is needed
      *
-     * @return the statement, or {@code null} if it did not exist.
-     */
-    @Nullable
-    public SynchronizedStatement get(@NonNull final String name) {
-        return mStatements.get(name);
-    }
-
-    /**
-     * Add a statement to the cache.
-     * If already present, will close the old one and replace it with the new one.
-     *
-     * @param name of the statement
-     * @param sql  of the statement
-     *
-     * @return the statement
+     * @return the statement.
      */
     @NonNull
-    public SynchronizedStatement add(@NonNull final String name,
-                                     @NonNull final String sql) {
-        final SynchronizedStatement old = mStatements.get(name);
-        if (old != null) {
-            old.close();
+    public SynchronizedStatement get(@NonNull final String name,
+                                     @NonNull final Supplier<String> sqlSupplier) {
+        SynchronizedStatement stmt = mStatements.get(name);
+        if (stmt == null) {
+            stmt = mSyncedDb.compileStatement(sqlSupplier.get());
+            mStatements.put(name, stmt);
         }
-        final SynchronizedStatement stmt = mSyncedDb.compileStatement(sql);
-        mStatements.put(name, stmt);
         return stmt;
     }
 

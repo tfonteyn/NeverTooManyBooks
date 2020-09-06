@@ -851,10 +851,9 @@ public class DAO
         int rowsAffected = 0;
         final SyncLock txLock = mSyncedDb.beginTransaction(true);
         try {
-            SynchronizedStatement stmt = mSqlStatementManager.get(STMT_DELETE_BOOK);
-            if (stmt == null) {
-                stmt = mSqlStatementManager.add(STMT_DELETE_BOOK, SqlDelete.BOOK_BY_ID);
-            }
+            final SynchronizedStatement stmt = mSqlStatementManager.get(
+                    STMT_DELETE_BOOK, () -> SqlDelete.BOOK_BY_ID);
+
             //noinspection SynchronizationOnLocalVariableOrMethodParameter
             synchronized (stmt) {
                 stmt.bindLong(1, bookId);
@@ -991,10 +990,8 @@ public class DAO
             return;
         }
 
-        SynchronizedStatement stmt = mSqlStatementManager.get(STMT_INSERT_BOOK_BOOKSHELF);
-        if (stmt == null) {
-            stmt = mSqlStatementManager.add(STMT_INSERT_BOOK_BOOKSHELF, SqlInsert.BOOK_BOOKSHELF);
-        }
+        final SynchronizedStatement stmt = mSqlStatementManager.get(
+                STMT_INSERT_BOOK_BOOKSHELF, () -> SqlInsert.BOOK_BOOKSHELF);
 
         for (Bookshelf bookshelf : list) {
             // create if needed - do NOT do updates here
@@ -1022,11 +1019,9 @@ public class DAO
      * @param bookId id of the book
      */
     private void deleteBookBookshelfByBookId(@IntRange(from = 1) final long bookId) {
-        SynchronizedStatement stmt = mSqlStatementManager.get(STMT_DELETE_BOOK_BOOKSHELF);
-        if (stmt == null) {
-            stmt = mSqlStatementManager.add(STMT_DELETE_BOOK_BOOKSHELF,
-                                            SqlDelete.BOOK_BOOKSHELF_BY_BOOK_ID);
-        }
+        final SynchronizedStatement stmt = mSqlStatementManager.get(
+                STMT_DELETE_BOOK_BOOKSHELF, () -> SqlDelete.BOOK_BOOKSHELF_BY_BOOK_ID);
+
         //noinspection SynchronizationOnLocalVariableOrMethodParameter
         synchronized (stmt) {
             stmt.bindLong(1, bookId);
@@ -1077,10 +1072,8 @@ public class DAO
             return;
         }
 
-        SynchronizedStatement stmt = mSqlStatementManager.get(STMT_INSERT_BOOK_AUTHORS);
-        if (stmt == null) {
-            stmt = mSqlStatementManager.add(STMT_INSERT_BOOK_AUTHORS, SqlInsert.BOOK_AUTHOR);
-        }
+        final SynchronizedStatement stmt = mSqlStatementManager.get(
+                STMT_INSERT_BOOK_AUTHORS, () -> SqlInsert.BOOK_AUTHOR);
 
         int position = 0;
         for (Author author : list) {
@@ -1112,11 +1105,9 @@ public class DAO
      * @param bookId id of the book
      */
     private void deleteBookAuthorByBookId(@IntRange(from = 1) final long bookId) {
-        SynchronizedStatement stmt = mSqlStatementManager.get(STMT_DELETE_BOOK_AUTHORS);
-        if (stmt == null) {
-            stmt = mSqlStatementManager.add(STMT_DELETE_BOOK_AUTHORS,
-                                            SqlDelete.BOOK_AUTHOR_BY_BOOK_ID);
-        }
+        final SynchronizedStatement stmt = mSqlStatementManager.get(
+                STMT_DELETE_BOOK_AUTHORS, () -> SqlDelete.BOOK_AUTHOR_BY_BOOK_ID);
+
         //noinspection SynchronizationOnLocalVariableOrMethodParameter
         synchronized (stmt) {
             stmt.bindLong(1, bookId);
@@ -1167,10 +1158,8 @@ public class DAO
             return;
         }
 
-        SynchronizedStatement stmt = mSqlStatementManager.get(STMT_INSERT_BOOK_SERIES);
-        if (stmt == null) {
-            stmt = mSqlStatementManager.add(STMT_INSERT_BOOK_SERIES, SqlInsert.BOOK_SERIES);
-        }
+        final SynchronizedStatement stmt = mSqlStatementManager.get(
+                STMT_INSERT_BOOK_SERIES, () -> SqlInsert.BOOK_SERIES);
 
         int position = 0;
         for (Series series : list) {
@@ -1202,11 +1191,9 @@ public class DAO
      * @param bookId id of the book
      */
     private void deleteBookSeriesByBookId(@IntRange(from = 1) final long bookId) {
-        SynchronizedStatement stmt = mSqlStatementManager.get(STMT_DELETE_BOOK_SERIES);
-        if (stmt == null) {
-            stmt = mSqlStatementManager.add(STMT_DELETE_BOOK_SERIES,
-                                            SqlDelete.BOOK_SERIES_BY_BOOK_ID);
-        }
+        final SynchronizedStatement stmt = mSqlStatementManager.get(
+                STMT_DELETE_BOOK_SERIES, () -> SqlDelete.BOOK_SERIES_BY_BOOK_ID);
+
         //noinspection SynchronizationOnLocalVariableOrMethodParameter
         synchronized (stmt) {
             stmt.bindLong(1, bookId);
@@ -1257,10 +1244,8 @@ public class DAO
             return;
         }
 
-        SynchronizedStatement stmt = mSqlStatementManager.get(STMT_INSERT_BOOK_PUBLISHER);
-        if (stmt == null) {
-            stmt = mSqlStatementManager.add(STMT_INSERT_BOOK_PUBLISHER, SqlInsert.BOOK_PUBLISHER);
-        }
+        final SynchronizedStatement stmt = mSqlStatementManager.get(
+                STMT_INSERT_BOOK_PUBLISHER, () -> SqlInsert.BOOK_PUBLISHER);
 
         int position = 0;
         for (Publisher publisher : list) {
@@ -1291,11 +1276,9 @@ public class DAO
      * @param bookId id of the book
      */
     private void deleteBookPublishersByBookId(@IntRange(from = 1) final long bookId) {
-        SynchronizedStatement stmt = mSqlStatementManager.get(STMT_DELETE_BOOK_PUBLISHER);
-        if (stmt == null) {
-            stmt = mSqlStatementManager.add(STMT_DELETE_BOOK_PUBLISHER,
-                                            SqlDelete.BOOK_PUBLISHER_BY_BOOK_ID);
-        }
+        final SynchronizedStatement stmt = mSqlStatementManager.get(
+                STMT_DELETE_BOOK_PUBLISHER, () -> SqlDelete.BOOK_PUBLISHER_BY_BOOK_ID);
+
         //noinspection SynchronizationOnLocalVariableOrMethodParameter
         synchronized (stmt) {
             stmt.bindLong(1, bookId);
@@ -1310,11 +1293,9 @@ public class DAO
      * @param bookId id of the book
      */
     private void deleteBookTocEntryByBookId(@IntRange(from = 1) final long bookId) {
-        SynchronizedStatement stmt = mSqlStatementManager.get(STMT_DELETE_BOOK_TOC_ENTRIES);
-        if (stmt == null) {
-            stmt = mSqlStatementManager.add(STMT_DELETE_BOOK_TOC_ENTRIES,
-                                            SqlDelete.BOOK_TOC_ENTRIES_BY_BOOK_ID);
-        }
+        final SynchronizedStatement stmt = mSqlStatementManager.get(
+                STMT_DELETE_BOOK_TOC_ENTRIES, () -> SqlDelete.BOOK_TOC_ENTRIES_BY_BOOK_ID);
+
         //noinspection SynchronizationOnLocalVariableOrMethodParameter
         synchronized (stmt) {
             stmt.bindLong(1, bookId);
@@ -1452,10 +1433,9 @@ public class DAO
         final Locale authorLocale =
                 author.getLocale(context, this, AppLocale.getInstance().getUserLocale(context));
 
-        SynchronizedStatement stmt = mSqlStatementManager.get(STMT_INSERT_AUTHOR);
-        if (stmt == null) {
-            stmt = mSqlStatementManager.add(STMT_INSERT_AUTHOR, SqlInsert.AUTHOR);
-        }
+        final SynchronizedStatement stmt = mSqlStatementManager.get(
+                STMT_INSERT_AUTHOR, () -> SqlInsert.AUTHOR);
+
         //noinspection SynchronizationOnLocalVariableOrMethodParameter
         synchronized (stmt) {
             stmt.bindString(1, author.getFamilyName());
@@ -1545,10 +1525,8 @@ public class DAO
 
         final Locale seriesLocale = series.getLocale(context, this, bookLocale);
 
-        SynchronizedStatement stmt = mSqlStatementManager.get(STMT_INSERT_SERIES);
-        if (stmt == null) {
-            stmt = mSqlStatementManager.add(STMT_INSERT_SERIES, SqlInsert.SERIES);
-        }
+        final SynchronizedStatement stmt = mSqlStatementManager.get(
+                STMT_INSERT_SERIES, () -> SqlInsert.SERIES);
 
         final String obTitle = series.reorderTitleForSorting(context, seriesLocale);
 
@@ -1665,10 +1643,8 @@ public class DAO
 
         final Locale publisherLocale = publisher.getLocale(context, bookLocale);
 
-        SynchronizedStatement stmt = mSqlStatementManager.get(STMT_INSERT_PUBLISHER);
-        if (stmt == null) {
-            stmt = mSqlStatementManager.add(STMT_INSERT_PUBLISHER, SqlInsert.PUBLISHER);
-        }
+        final SynchronizedStatement stmt = mSqlStatementManager.get(
+                STMT_INSERT_PUBLISHER, () -> SqlInsert.PUBLISHER);
 
         final String obTitle = publisher.reorderTitleForSorting(context, publisherLocale);
 
@@ -1816,10 +1792,8 @@ public class DAO
             return;
         }
 
-        SynchronizedStatement stmt = mSqlStatementManager.get(STMT_INSERT_BOOK_TOC_ENTRY);
-        if (stmt == null) {
-            stmt = mSqlStatementManager.add(STMT_INSERT_BOOK_TOC_ENTRY, SqlInsert.BOOK_TOC_ENTRY);
-        }
+        final SynchronizedStatement stmt = mSqlStatementManager.get(
+                STMT_INSERT_BOOK_TOC_ENTRY, () -> SqlInsert.BOOK_TOC_ENTRY);
 
         long position = 0;
         for (TocEntry tocEntry : list) {
@@ -1924,10 +1898,8 @@ public class DAO
 
         final Locale tocLocale = tocEntry.getLocale(context, this, bookLocale);
 
-        SynchronizedStatement stmt = mSqlStatementManager.get(STMT_INSERT_TOC_ENTRY);
-        if (stmt == null) {
-            stmt = mSqlStatementManager.add(STMT_INSERT_TOC_ENTRY, SqlInsert.TOC_ENTRY);
-        }
+        final SynchronizedStatement stmt = mSqlStatementManager.get(
+                STMT_INSERT_TOC_ENTRY, () -> SqlInsert.TOC_ENTRY);
 
         final String obTitle = tocEntry.reorderTitleForSorting(context, tocLocale);
 
@@ -2018,11 +1990,9 @@ public class DAO
      */
     @Nullable
     public String getLoaneeByBookId(final long bookId) {
-        SynchronizedStatement stmt = mSqlStatementManager.get(STMT_GET_LOANEE_BY_BOOK_ID);
-        if (stmt == null) {
-            stmt = mSqlStatementManager.add(STMT_GET_LOANEE_BY_BOOK_ID,
-                                            SqlGet.LOANEE_BY_BOOK_ID);
-        }
+        final SynchronizedStatement stmt = mSqlStatementManager.get(
+                STMT_GET_LOANEE_BY_BOOK_ID, () -> SqlGet.LOANEE_BY_BOOK_ID);
+
         //noinspection SynchronizationOnLocalVariableOrMethodParameter
         synchronized (stmt) {
             stmt.bindLong(1, bookId);
@@ -2737,11 +2707,9 @@ public class DAO
      * @return the id, or 0 (i.e. 'new') when not found
      */
     public long getBookshelfId(@NonNull final Bookshelf bookshelf) {
-        SynchronizedStatement stmt = mSqlStatementManager.get(STMT_GET_BOOKSHELF_ID_BY_NAME);
-        if (stmt == null) {
-            stmt = mSqlStatementManager.add(STMT_GET_BOOKSHELF_ID_BY_NAME,
-                                            SqlGetId.BOOKSHELF_ID_BY_NAME);
-        }
+        final SynchronizedStatement stmt = mSqlStatementManager.get(
+                STMT_GET_BOOKSHELF_ID_BY_NAME, () -> SqlGetId.BOOKSHELF_ID_BY_NAME);
+
         //noinspection SynchronizationOnLocalVariableOrMethodParameter
         synchronized (stmt) {
             stmt.bindString(1, bookshelf.getName());
@@ -2841,10 +2809,8 @@ public class DAO
             authorLocale = bookLocale;
         }
 
-        SynchronizedStatement stmt = mSqlStatementManager.get(STMT_GET_AUTHOR_ID);
-        if (stmt == null) {
-            stmt = mSqlStatementManager.add(STMT_GET_AUTHOR_ID, SqlGetId.AUTHOR_ID_BY_NAME);
-        }
+        final SynchronizedStatement stmt = mSqlStatementManager.get(
+                STMT_GET_AUTHOR_ID, () -> SqlGetId.AUTHOR_ID_BY_NAME);
 
         //noinspection SynchronizationOnLocalVariableOrMethodParameter
         synchronized (stmt) {
@@ -2898,10 +2864,8 @@ public class DAO
             seriesLocale = bookLocale;
         }
 
-        SynchronizedStatement stmt = mSqlStatementManager.get(STMT_GET_SERIES_ID);
-        if (stmt == null) {
-            stmt = mSqlStatementManager.add(STMT_GET_SERIES_ID, SqlGetId.SERIES_ID_BY_NAME);
-        }
+        final SynchronizedStatement stmt = mSqlStatementManager.get(
+                STMT_GET_SERIES_ID, () -> SqlGetId.SERIES_ID_BY_NAME);
 
         final String obTitle = series.reorderTitleForSorting(context, seriesLocale);
 
@@ -2957,10 +2921,8 @@ public class DAO
             publisherLocale = bookLocale;
         }
 
-        SynchronizedStatement stmt = mSqlStatementManager.get(STMT_GET_PUBLISHER_ID);
-        if (stmt == null) {
-            stmt = mSqlStatementManager.add(STMT_GET_PUBLISHER_ID, SqlGetId.PUBLISHER_ID_BY_NAME);
-        }
+        final SynchronizedStatement stmt = mSqlStatementManager.get(
+                STMT_GET_PUBLISHER_ID, () -> SqlGetId.PUBLISHER_ID_BY_NAME);
 
         final String obName = publisher.reorderTitleForSorting(context, publisherLocale);
 
@@ -3130,11 +3092,8 @@ public class DAO
      * @return id of the book, or 0 'new' if not found
      */
     public long getBookIdFromUuid(@NonNull final String uuid) {
-        // This method is called from a loop during import, so caching the statement is essential.
-        SynchronizedStatement stmt = mSqlStatementManager.get(STMT_GET_BOOK_ID_FROM_UUID);
-        if (stmt == null) {
-            stmt = mSqlStatementManager.add(STMT_GET_BOOK_ID_FROM_UUID, SqlGetId.BY_UUID);
-        }
+        final SynchronizedStatement stmt = mSqlStatementManager.get(
+                STMT_GET_BOOK_ID_FROM_UUID, () -> SqlGetId.BY_UUID);
 
         //noinspection SynchronizationOnLocalVariableOrMethodParameter
         synchronized (stmt) {
@@ -3157,12 +3116,9 @@ public class DAO
             throw new IllegalArgumentException(ErrorMsg.ZERO_ID_FOR_BOOK);
         }
 
-        // This method is called from a loop during import (via 'insert' of a Book),
-        // so caching the statement is essential.
-        SynchronizedStatement stmt = mSqlStatementManager.get(STMT_GET_BOOK_UUID);
-        if (stmt == null) {
-            stmt = mSqlStatementManager.add(STMT_GET_BOOK_UUID, SqlGet.BOOK_UUID_BY_ID);
-        }
+        final SynchronizedStatement stmt = mSqlStatementManager.get(
+                STMT_GET_BOOK_UUID, () -> SqlGet.BOOK_UUID_BY_ID);
+
         //noinspection SynchronizationOnLocalVariableOrMethodParameter
         synchronized (stmt) {
             stmt.bindLong(1, bookId);
@@ -3179,10 +3135,9 @@ public class DAO
      */
     @Nullable
     public String getBookTitle(final long bookId) {
-        SynchronizedStatement stmt = mSqlStatementManager.get(STMT_GET_BOOK_TITLE);
-        if (stmt == null) {
-            stmt = mSqlStatementManager.add(STMT_GET_BOOK_TITLE, SqlGet.BOOK_TITLE_BY_BOOK_ID);
-        }
+        final SynchronizedStatement stmt = mSqlStatementManager.get(
+                STMT_GET_BOOK_TITLE, () -> SqlGet.BOOK_TITLE_BY_BOOK_ID);
+
         //noinspection SynchronizationOnLocalVariableOrMethodParameter
         synchronized (stmt) {
             stmt.bindLong(1, bookId);
@@ -3199,10 +3154,9 @@ public class DAO
      */
     @Nullable
     public String getBookIsbn(final long bookId) {
-        SynchronizedStatement stmt = mSqlStatementManager.get(STMT_GET_BOOK_ISBN);
-        if (stmt == null) {
-            stmt = mSqlStatementManager.add(STMT_GET_BOOK_ISBN, SqlGet.BOOK_ISBN_BY_BOOK_ID);
-        }
+        final SynchronizedStatement stmt = mSqlStatementManager.get(
+                STMT_GET_BOOK_ISBN, () -> SqlGet.BOOK_ISBN_BY_BOOK_ID);
+
         //noinspection SynchronizationOnLocalVariableOrMethodParameter
         synchronized (stmt) {
             stmt.bindLong(1, bookId);
@@ -3343,11 +3297,8 @@ public class DAO
             tocLocale = bookLocale;
         }
 
-        SynchronizedStatement stmt = mSqlStatementManager.get(STMT_GET_TOC_ENTRY_ID);
-        if (stmt == null) {
-            stmt = mSqlStatementManager.add(STMT_GET_TOC_ENTRY_ID,
-                                            SqlGetId.TOC_ENTRY_ID_BY_TITLE_AND_AUTHOR);
-        }
+        final SynchronizedStatement stmt = mSqlStatementManager.get(
+                STMT_GET_TOC_ENTRY_ID, () -> SqlGetId.TOC_ENTRY_ID_BY_TITLE_AND_AUTHOR);
 
         final String obTitle = tocEntry.reorderTitleForSorting(context, tocLocale);
 
@@ -3487,11 +3438,8 @@ public class DAO
     @Nullable
     public LocalDateTime getBookLastUpdateUtcDate(@NonNull final Context context,
                                                   final long bookId) {
-        SynchronizedStatement stmt = mSqlStatementManager.get(STMT_GET_BOOK_UPDATE_DATE);
-        if (stmt == null) {
-            stmt = mSqlStatementManager.add(STMT_GET_BOOK_UPDATE_DATE,
-                                            SqlGet.LAST_UPDATE_DATE_BY_BOOK_ID);
-        }
+        final SynchronizedStatement stmt = mSqlStatementManager.get(
+                STMT_GET_BOOK_UPDATE_DATE, () -> SqlGet.LAST_UPDATE_DATE_BY_BOOK_ID);
 
         //noinspection SynchronizationOnLocalVariableOrMethodParameter
         synchronized (stmt) {
@@ -3510,10 +3458,9 @@ public class DAO
      */
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public boolean bookExistsById(final long bookId) {
-        SynchronizedStatement stmt = mSqlStatementManager.get(STMT_CHECK_BOOK_EXISTS);
-        if (stmt == null) {
-            stmt = mSqlStatementManager.add(STMT_CHECK_BOOK_EXISTS, SqlCount.BOOK_EXISTS);
-        }
+        final SynchronizedStatement stmt = mSqlStatementManager.get(
+                STMT_CHECK_BOOK_EXISTS, () -> SqlCount.BOOK_EXISTS);
+
         //noinspection SynchronizationOnLocalVariableOrMethodParameter
         synchronized (stmt) {
             stmt.bindLong(1, bookId);
@@ -3597,11 +3544,9 @@ public class DAO
      * @param bookId the book
      */
     public void setGoodreadsSyncDate(final long bookId) {
-        SynchronizedStatement stmt = mSqlStatementManager.get(STMT_UPDATE_GOODREADS_SYNC_DATE);
-        if (stmt == null) {
-            stmt = mSqlStatementManager.add(STMT_UPDATE_GOODREADS_SYNC_DATE,
-                                            SqlUpdate.GOODREADS_LAST_SYNC_DATE);
-        }
+        final SynchronizedStatement stmt = mSqlStatementManager.get(
+                STMT_UPDATE_GOODREADS_SYNC_DATE, () -> SqlUpdate.GOODREADS_LAST_SYNC_DATE);
+
         //noinspection SynchronizationOnLocalVariableOrMethodParameter
         synchronized (stmt) {
             stmt.bindLong(1, bookId);
@@ -3618,11 +3563,9 @@ public class DAO
     public void setGoodreadsBookId(final long bookId,
                                    final long goodreadsBookId) {
 
-        SynchronizedStatement stmt = mSqlStatementManager.get(STMT_UPDATE_GOODREADS_BOOK_ID);
-        if (stmt == null) {
-            stmt = mSqlStatementManager.add(STMT_UPDATE_GOODREADS_BOOK_ID,
-                                            SqlUpdate.GOODREADS_BOOK_ID);
-        }
+        final SynchronizedStatement stmt = mSqlStatementManager.get(
+                STMT_UPDATE_GOODREADS_BOOK_ID, () -> SqlUpdate.GOODREADS_BOOK_ID);
+
         //noinspection SynchronizationOnLocalVariableOrMethodParameter
         synchronized (stmt) {
             stmt.bindLong(1, goodreadsBookId);
@@ -3866,11 +3809,9 @@ public class DAO
      * @return id
      */
     public long getStyleIdByUuid(@NonNull final String uuid) {
-        SynchronizedStatement stmt = mSqlStatementManager.get(STMT_GET_BOOKLIST_STYLE);
-        if (stmt == null) {
-            stmt = mSqlStatementManager.add(STMT_GET_BOOKLIST_STYLE,
-                                            SqlGetId.BOOKLIST_STYLE_ID_BY_UUID);
-        }
+        final SynchronizedStatement stmt = mSqlStatementManager.get(
+                STMT_GET_BOOKLIST_STYLE, () -> SqlGetId.BOOKLIST_STYLE_ID_BY_UUID);
+
         //noinspection SynchronizationOnLocalVariableOrMethodParameter
         synchronized (stmt) {
             stmt.bindString(1, uuid);
@@ -4203,10 +4144,8 @@ public class DAO
         }
 
         try {
-            SynchronizedStatement stmt = mSqlStatementManager.get(STMT_INSERT_FTS);
-            if (stmt == null) {
-                stmt = mSqlStatementManager.add(STMT_INSERT_FTS, SqlFTS.INSERT);
-            }
+            final SynchronizedStatement stmt = mSqlStatementManager.get(
+                    STMT_INSERT_FTS, () -> SqlFTS.INSERT);
 
             try (Cursor cursor = mSyncedDb.rawQuery(SqlFTS.BOOK_BY_ID,
                                                     new String[]{String.valueOf(bookId)})) {
@@ -4236,10 +4175,9 @@ public class DAO
         }
 
         try {
-            SynchronizedStatement stmt = mSqlStatementManager.get(STMT_UPDATE_FTS);
-            if (stmt == null) {
-                stmt = mSqlStatementManager.add(STMT_UPDATE_FTS, SqlFTS.UPDATE);
-            }
+            final SynchronizedStatement stmt = mSqlStatementManager.get(
+                    STMT_UPDATE_FTS, () -> SqlFTS.UPDATE);
+
             try (Cursor cursor = mSyncedDb.rawQuery(SqlFTS.BOOK_BY_ID,
                                                     new String[]{String.valueOf(bookId)})) {
                 ftsProcessBooks(cursor, stmt);

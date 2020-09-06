@@ -152,14 +152,11 @@ public class FlattenedBooklist
      * @return {@code true} on success
      */
     public boolean moveTo(final long rowId) {
-        SynchronizedStatement stmt = mSqlStatementManager.get(STMT_MOVE);
-        if (stmt == null) {
-            String sql = "SELECT "
-                         + DBDefinitions.KEY_PK_ID + "||'/'||" + DBDefinitions.KEY_FK_BOOK
-                         + " FROM " + mTable.getName()
-                         + " WHERE " + DBDefinitions.KEY_PK_ID + "=?";
-            stmt = mSqlStatementManager.add(STMT_MOVE, sql);
-        }
+        final SynchronizedStatement stmt = mSqlStatementManager.get(STMT_MOVE, () ->
+                "SELECT "
+                + DBDefinitions.KEY_PK_ID + "||'/'||" + DBDefinitions.KEY_FK_BOOK
+                + " FROM " + mTable.getName()
+                + " WHERE " + DBDefinitions.KEY_PK_ID + "=?");
         stmt.bindLong(1, rowId);
         return execAndParse(stmt);
     }
@@ -185,16 +182,14 @@ public class FlattenedBooklist
      * @return {@code true} on success
      */
     private boolean moveNext() {
-        SynchronizedStatement stmt = mSqlStatementManager.get(STMT_NEXT);
-        if (stmt == null) {
-            String sql = "SELECT "
-                         + DBDefinitions.KEY_PK_ID + "||'/'||" + DBDefinitions.KEY_FK_BOOK
-                         + " FROM " + mTable.getName()
-                         + " WHERE " + DBDefinitions.KEY_PK_ID + ">?"
-                         + " AND " + DBDefinitions.KEY_FK_BOOK + "<>COALESCE(?,-1)"
-                         + " ORDER BY " + DBDefinitions.KEY_PK_ID + " ASC LIMIT 1";
-            stmt = mSqlStatementManager.add(STMT_NEXT, sql);
-        }
+        final SynchronizedStatement stmt = mSqlStatementManager.get(STMT_NEXT, () ->
+                "SELECT "
+                + DBDefinitions.KEY_PK_ID + "||'/'||" + DBDefinitions.KEY_FK_BOOK
+                + " FROM " + mTable.getName()
+                + " WHERE " + DBDefinitions.KEY_PK_ID + ">?"
+                + " AND " + DBDefinitions.KEY_FK_BOOK + "<>COALESCE(?,-1)"
+                + " ORDER BY " + DBDefinitions.KEY_PK_ID + " ASC LIMIT 1");
+
         stmt.bindLong(1, mRowId);
         if (mBookId > 0) {
             stmt.bindLong(2, mBookId);
@@ -210,16 +205,14 @@ public class FlattenedBooklist
      * @return {@code true} on success
      */
     private boolean movePrev() {
-        SynchronizedStatement stmt = mSqlStatementManager.get(STMT_PREV);
-        if (stmt == null) {
-            String sql = "SELECT "
-                         + DBDefinitions.KEY_PK_ID + "||'/'||" + DBDefinitions.KEY_FK_BOOK
-                         + " FROM " + mTable.getName()
-                         + " WHERE " + DBDefinitions.KEY_PK_ID + "<?"
-                         + " AND " + DBDefinitions.KEY_FK_BOOK + "<>COALESCE(?,-1)"
-                         + " ORDER BY " + DBDefinitions.KEY_PK_ID + " DESC LIMIT 1";
-            stmt = mSqlStatementManager.add(STMT_PREV, sql);
-        }
+        final SynchronizedStatement stmt = mSqlStatementManager.get(STMT_PREV, () ->
+                "SELECT "
+                + DBDefinitions.KEY_PK_ID + "||'/'||" + DBDefinitions.KEY_FK_BOOK
+                + " FROM " + mTable.getName()
+                + " WHERE " + DBDefinitions.KEY_PK_ID + "<?"
+                + " AND " + DBDefinitions.KEY_FK_BOOK + "<>COALESCE(?,-1)"
+                + " ORDER BY " + DBDefinitions.KEY_PK_ID + " DESC LIMIT 1");
+
         stmt.bindLong(1, mRowId);
         if (mBookId > 0) {
             stmt.bindLong(2, mBookId);
