@@ -36,6 +36,9 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+/**
+ * Very basic test of insert/update/delete an Author.
+ */
 @SmallTest
 public class AuthorTest {
 

@@ -21,51 +21,63 @@ package com.hardbacknutter.nevertoomanybooks.database;
 
 import android.content.Context;
 
-import androidx.test.filters.SmallTest;
 import androidx.test.platform.app.InstrumentationRegistry;
 
 import java.util.ArrayList;
-import java.util.Locale;
 
 import org.junit.Before;
-import org.junit.Test;
 
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
+import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_AUTHOR_FAMILY_NAME;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_TITLE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_AUTHORS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKS;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_TOC_ENTRIES;
 
 /**
+ * a0: b0, b3
+ * a1: b0, b1, b4
+ * a2: b2, b3, b4
+ * <p>
+ * a1: t0, t1
+ * a2: t2, t3
+ * <p>
  * b0: a0, a1
  * b1: a1
  * b2: a2
  * b3: a0, a2
  * b4: a1, a2
  * <p>
+ * b4: t0, t1, t2, t3
+ *
+ * <p>
  * Note we don't follow best practice by starting with an empty database.
  * Instead we add 'easy-recognised' names/titles.
  * Pro: easier to simultaneously do manual testing.
  * Con: cannot test id's (but in a sense this is a 'pro' imho as id's should be unpredictable).
  */
-@SmallTest
-public class BookTest {
+public abstract class BaseSetup {
 
-    private final Author[] author = new Author[5];
-    private final Book[] book = new Book[5];
-    private final long[] bookId = new long[5];
+    protected final Author[] author = new Author[5];
+    protected final Book[] book = new Book[5];
+    protected final TocEntry[] tocEntry = new TocEntry[5];
+    protected final long[] bookId = new long[5];
+
+    protected Bookshelf mBookshelf;
 
     @Before
     public void setup()
             throws DAO.DaoWriteException {
 
         final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
-        try (DAO db = new DAO(context, "clean")) {
+        try (DAO db = new DAO(context, "setup")) {
+
+            db.getSyncDb().delete(TBL_TOC_ENTRIES.getName(),
+                                  KEY_TITLE + " LIKE 'TocEntry%'", null);
 
             db.getSyncDb().delete(TBL_BOOKS.getName(),
                                   KEY_TITLE + " LIKE 'Book%'", null);
@@ -73,7 +85,13 @@ public class BookTest {
             db.getSyncDb().delete(TBL_AUTHORS.getName(),
                                   KEY_AUTHOR_FAMILY_NAME + " LIKE 'Author%'", null);
 
+            ArrayList<Bookshelf> bookshelves;
             ArrayList<Author> authorList;
+            ArrayList<TocEntry> tocList;
+
+            mBookshelf = Bookshelf.getBookshelf(context, db, Bookshelf.DEFAULT);
+            bookshelves = new ArrayList<>();
+            bookshelves.add(mBookshelf);
 
             // Create, don't insert yet
             author[0] = Author.from("Test0 Author0");
@@ -82,6 +100,7 @@ public class BookTest {
 
 
             book[0] = new Book();
+            book[0].putParcelableArrayList(Book.BKEY_BOOKSHELF_ARRAY, bookshelves);
             book[0].putString(KEY_TITLE, "Book0");
             book[0].putString(DBDefinitions.KEY_LANGUAGE, "eng");
             authorList = new ArrayList<>();
@@ -91,6 +110,7 @@ public class BookTest {
             bookId[0] = db.insert(context, book[0], 0);
 
             book[1] = new Book();
+            book[1].putParcelableArrayList(Book.BKEY_BOOKSHELF_ARRAY, bookshelves);
             book[1].putString(KEY_TITLE, "Book1");
             book[1].putString(DBDefinitions.KEY_LANGUAGE, "ger");
             authorList = new ArrayList<>();
@@ -99,6 +119,7 @@ public class BookTest {
             bookId[1] = db.insert(context, book[1], 0);
 
             book[2] = new Book();
+            book[2].putParcelableArrayList(Book.BKEY_BOOKSHELF_ARRAY, bookshelves);
             book[2].putString(KEY_TITLE, "Book2");
             book[2].putString(DBDefinitions.KEY_LANGUAGE, "eng");
             authorList = new ArrayList<>();
@@ -107,6 +128,7 @@ public class BookTest {
             bookId[2] = db.insert(context, book[2], 0);
 
             book[3] = new Book();
+            book[3].putParcelableArrayList(Book.BKEY_BOOKSHELF_ARRAY, bookshelves);
             book[3].putString(KEY_TITLE, "Book3");
             book[3].putString(DBDefinitions.KEY_LANGUAGE, "eng");
             authorList = new ArrayList<>();
@@ -116,100 +138,25 @@ public class BookTest {
             bookId[3] = db.insert(context, book[3], 0);
 
             book[4] = new Book();
+            book[4].putParcelableArrayList(Book.BKEY_BOOKSHELF_ARRAY, bookshelves);
             book[4].putString(KEY_TITLE, "Book4");
             book[4].putString(DBDefinitions.KEY_LANGUAGE, "eng");
             authorList = new ArrayList<>();
             authorList.add(author[1]);
             authorList.add(author[2]);
             book[4].putParcelableArrayList(Book.BKEY_AUTHOR_ARRAY, authorList);
+            tocList = new ArrayList<>();
+            tocEntry[0] = new TocEntry(author[1], "TocEntry0", null);
+            tocList.add(tocEntry[0]);
+            tocEntry[1] = new TocEntry(author[1], "TocEntry1", null);
+            tocList.add(tocEntry[1]);
+            tocEntry[2] = new TocEntry(author[2], "TocEntry2", null);
+            tocList.add(tocEntry[2]);
+            tocEntry[3] = new TocEntry(author[2], "TocEntry3", null);
+            tocList.add(tocEntry[3]);
+            book[4].putParcelableArrayList(Book.BKEY_TOC_ARRAY, tocList);
             bookId[4] = db.insert(context, book[4], 0);
         }
     }
 
-    @Test
-    public void book()
-            throws DAO.DaoWriteException {
-
-        ArrayList<Long> bookIdList;
-
-        long idBefore;
-        long existingId;
-        Author tmpAuthor;
-
-        final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
-        try (DAO db = new DAO(context, "book")) {
-
-            // The objects should have been updated with their id
-            assertTrue(author[0].getId() > 0);
-            assertTrue(author[1].getId() > 0);
-            assertTrue(author[2].getId() > 0);
-
-            assertEquals(book[0].getId(), bookId[0]);
-            assertEquals(book[1].getId(), bookId[1]);
-            assertEquals(book[2].getId(), bookId[2]);
-            assertEquals(book[3].getId(), bookId[3]);
-            assertEquals(book[4].getId(), bookId[4]);
-
-            // a0 is present in b0, b3
-            bookIdList = db.getBookIdsByAuthor(author[0].getId());
-            assertEquals(2, bookIdList.size());
-            assertEquals(bookId[0], (long) bookIdList.get(0));
-            assertEquals(bookId[3], (long) bookIdList.get(1));
-
-            // a1 is present in b0, b1, b4
-            bookIdList = db.getBookIdsByAuthor(author[1].getId());
-            assertEquals(3, bookIdList.size());
-            assertEquals(bookId[0], (long) bookIdList.get(0));
-            assertEquals(bookId[1], (long) bookIdList.get(1));
-            assertEquals(bookId[4], (long) bookIdList.get(2));
-
-            // a2 is present in b2, b3, b4
-            bookIdList = db.getBookIdsByAuthor(author[2].getId());
-            assertEquals(3, bookIdList.size());
-            assertEquals(bookId[2], (long) bookIdList.get(0));
-            assertEquals(bookId[3], (long) bookIdList.get(1));
-            assertEquals(bookId[4], (long) bookIdList.get(2));
-
-
-            // rename an author; must keep same id; no changes to anything else
-            idBefore = author[0].getId();
-            author[0].setName("Author0ren", "FirstName");
-            db.update(context, author[0]);
-            assertEquals(author[0].getId(), idBefore);
-            author[0].fixId(context, db, false, Locale.getDefault());
-            assertEquals(author[0].getId(), idBefore);
-
-            // rename an Author to another EXISTING name; id in memory will change;
-            // no changes to anything else
-            idBefore = author[1].getId();
-            author[1].setName("Author0ren", "FirstName");
-            author[1].fixId(context, db, false, Locale.getDefault());
-            // should have become author[0]
-            assertEquals(author[0].getId(), author[1].getId());
-            // original should still be there with original name
-            tmpAuthor = db.getAuthor(idBefore);
-            assertNotNull(tmpAuthor);
-            assertEquals("Author1", tmpAuthor.getFamilyName());
-
-            // rename an Author to another EXISTING name and MERGE books
-            author[2].setName("Author0ren", "FirstName");
-            existingId = db.getAuthorId(context, author[2], false, Locale.getDefault());
-            db.merge(context, author[2], existingId);
-
-            // - the renamed author[2] will have been deleted
-            assertEquals(0, author[2].getId());
-            // find the author[2] again...
-            existingId = db.getAuthorId(context, author[2], false, Locale.getDefault());
-            // should be recognized as author[0]
-            assertEquals(author[0].getId(), existingId);
-
-            // - all books of author[2] will now belong to author[0]
-            bookIdList = db.getBookIdsByAuthor(author[0].getId());
-            assertEquals(4, bookIdList.size());
-            assertEquals(bookId[0], (long) bookIdList.get(0));
-            assertEquals(bookId[2], (long) bookIdList.get(1));
-            assertEquals(bookId[3], (long) bookIdList.get(2));
-            assertEquals(bookId[4], (long) bookIdList.get(3));
-        }
-    }
 }
