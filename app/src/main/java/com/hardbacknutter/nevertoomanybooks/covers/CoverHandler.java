@@ -607,7 +607,7 @@ public class CoverHandler {
         // Ensure that the cached images for this book are deleted (if present).
         // Yes, this means we also delete the ones where != index, but we don't care; it's a cache.
         final String uuid = mBook.getString(DBDefinitions.KEY_BOOK_UUID);
-        if (!uuid.isEmpty()) {
+        if (ImageUtils.isImageCachingEnabled(context) && !uuid.isEmpty()) {
             CoversDAO.delete(context, uuid);
         }
         setPlaceholder(null);
