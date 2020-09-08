@@ -53,7 +53,7 @@ public class ZoomedImageDialogFragment
     private ImageView mImageView;
 
     /**
-     * Constructor.
+     * No-arg constructor for OS use.
      */
     public ZoomedImageDialogFragment() {
         super(R.layout.dialog_zoomed_image);
