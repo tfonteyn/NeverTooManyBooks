@@ -70,6 +70,9 @@ public class StylePickerDialogFragment
     @Nullable
     private String mCurrentStyleUuid;
 
+    /**
+     * No-arg constructor for OS use.
+     */
     public StylePickerDialogFragment() {
         super(R.layout.dialog_styles_menu);
     }
