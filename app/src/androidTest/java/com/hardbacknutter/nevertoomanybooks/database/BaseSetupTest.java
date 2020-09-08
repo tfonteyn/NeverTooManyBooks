@@ -28,7 +28,7 @@ import java.util.ArrayList;
 
 import org.junit.Test;
 
-import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
+import com.hardbacknutter.nevertoomanybooks.entities.AuthorWork;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -44,7 +44,7 @@ public class BaseSetupTest
     public void basic() {
 
         ArrayList<Long> bookIdList;
-        ArrayList<TocEntry> tocList;
+        ArrayList<AuthorWork> works;
 
         final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
         try (DAO db = new DAO(context, "basic")) {
@@ -85,20 +85,20 @@ public class BaseSetupTest
             assertEquals(bookId[3], (long) bookIdList.get(1));
             assertEquals(bookId[4], (long) bookIdList.get(2));
 
-            tocList = db.getTocEntryByAuthor(author[1], mBookshelf.getId(), true, false);
-            assertEquals(2, tocList.size());
-            tocList = db.getTocEntryByAuthor(author[2], mBookshelf.getId(), true, false);
-            assertEquals(2, tocList.size());
+            works = db.getAuthorWorks(author[1], mBookshelf.getId(), true, false);
+            assertEquals(2, works.size());
+            works = db.getAuthorWorks(author[2], mBookshelf.getId(), true, false);
+            assertEquals(2, works.size());
 
-            tocList = db.getTocEntryByAuthor(author[1], mBookshelf.getId(), true, true);
-            assertEquals(5, tocList.size());
-            tocList = db.getTocEntryByAuthor(author[2], mBookshelf.getId(), true, true);
-            assertEquals(5, tocList.size());
+            works = db.getAuthorWorks(author[1], mBookshelf.getId(), true, true);
+            assertEquals(5, works.size());
+            works = db.getAuthorWorks(author[2], mBookshelf.getId(), true, true);
+            assertEquals(5, works.size());
 
-            tocList = db.getTocEntryByAuthor(author[1], mBookshelf.getId(), false, true);
-            assertEquals(3, tocList.size());
-            tocList = db.getTocEntryByAuthor(author[2], mBookshelf.getId(), false, true);
-            assertEquals(3, tocList.size());
+            works = db.getAuthorWorks(author[1], mBookshelf.getId(), false, true);
+            assertEquals(3, works.size());
+            works = db.getAuthorWorks(author[2], mBookshelf.getId(), false, true);
+            assertEquals(3, works.size());
         }
     }
 }

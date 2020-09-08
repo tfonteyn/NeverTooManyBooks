@@ -30,7 +30,7 @@ import java.util.Locale;
 import org.junit.Test;
 
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
-import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
+import com.hardbacknutter.nevertoomanybooks.entities.AuthorWork;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -109,7 +109,7 @@ public class AuthorRenameTest
             throws DAO.DaoWriteException {
 
         ArrayList<Long> bookIdList;
-        ArrayList<TocEntry> tocList;
+        ArrayList<AuthorWork> works;
 
         long idBefore;
         long existingId;
@@ -149,12 +149,12 @@ public class AuthorRenameTest
             assertEquals(bookId[4], (long) bookIdList.get(4));
 
             // - all tocs of author[2] will now belong to author[1]
-            tocList = db.getTocEntryByAuthor(author[1], mBookshelf.getId(), true, false);
-            assertEquals(4, tocList.size());
-            assertEquals(tocEntry[0].getId(), (long) tocList.get(0).getId());
-            assertEquals(tocEntry[1].getId(), (long) tocList.get(1).getId());
-            assertEquals(tocEntry[2].getId(), (long) tocList.get(2).getId());
-            assertEquals(tocEntry[3].getId(), (long) tocList.get(3).getId());
+            works = db.getAuthorWorks(author[1], mBookshelf.getId(), true, false);
+            assertEquals(4, works.size());
+            assertEquals(tocEntry[0].getId(), (long) works.get(0).getId());
+            assertEquals(tocEntry[1].getId(), (long) works.get(1).getId());
+            assertEquals(tocEntry[2].getId(), (long) works.get(2).getId());
+            assertEquals(tocEntry[3].getId(), (long) works.get(3).getId());
         }
     }
 }

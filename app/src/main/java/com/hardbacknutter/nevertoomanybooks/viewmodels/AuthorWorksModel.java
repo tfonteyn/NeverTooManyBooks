@@ -37,6 +37,8 @@ import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
+import com.hardbacknutter.nevertoomanybooks.entities.AuthorWork;
+import com.hardbacknutter.nevertoomanybooks.entities.BookAsWork;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 
@@ -45,7 +47,7 @@ public class AuthorWorksModel
 
     /** Log tag. */
     private static final String TAG = "AuthorWorksModel";
-    private final ArrayList<TocEntry> mTocEntries = new ArrayList<>();
+    private final ArrayList<AuthorWork> mWorkList = new ArrayList<>();
     /** Database Access. */
     private DAO mDb;
     /** Author is set in {@link #init}. */
@@ -92,22 +94,21 @@ public class AuthorWorksModel
 
             mWithTocEntries = args.getBoolean(AuthorWorksFragment.BKEY_WITH_TOC, mWithTocEntries);
             mWithBooks = args.getBoolean(AuthorWorksFragment.BKEY_WITH_BOOKS, mWithBooks);
-            reloadTocEntries();
+            reloadWorkList();
         }
     }
 
-    public void reloadTocEntries(final boolean withTocEntries,
-                                 final boolean withBooks) {
+    public void reloadWorkList(final boolean withTocEntries,
+                               final boolean withBooks) {
         mWithTocEntries = withTocEntries;
         mWithBooks = withBooks;
-        reloadTocEntries();
+        reloadWorkList();
     }
 
-    public void reloadTocEntries() {
-        mTocEntries.clear();
+    public void reloadWorkList() {
+        mWorkList.clear();
         final long bookshelfId = mAllBookshelves ? Bookshelf.ALL_BOOKS : mBookshelf.getId();
-        mTocEntries.addAll(mDb.getTocEntryByAuthor(mAuthor, bookshelfId,
-                                                   mWithTocEntries, mWithBooks));
+        mWorkList.addAll(mDb.getAuthorWorks(mAuthor, bookshelfId, mWithTocEntries, mWithBooks));
     }
 
     public long getBookshelfId() {
@@ -123,34 +124,42 @@ public class AuthorWorksModel
     }
 
     @NonNull
-    public ArrayList<TocEntry> getTocEntries() {
-        return mTocEntries;
+    public ArrayList<AuthorWork> getWorks() {
+        return mWorkList;
     }
 
     @NonNull
-    public ArrayList<Long> getBookIds(@NonNull final TocEntry item) {
-        return mDb.getBookIdsByTocEntry(item.getId());
+    public ArrayList<Long> getBookIds(@NonNull final TocEntry tocEntry) {
+        return mDb.getBookIdsByTocEntry(tocEntry.getId());
     }
 
-    public void delTocEntry(@NonNull final Context context,
-                            @NonNull final TocEntry item) {
-        switch (item.getType()) {
-            case TocEntry.TYPE_TOC:
-                if (mDb.delete(context, item)) {
-                    mTocEntries.remove(item);
-                }
-                break;
+    /**
+     * Delete the given AuthorWork.
+     *
+     * @param context Current context
+     * @param work    to delete
+     *
+     * @return {@code true} if a row was deleted
+     */
+    public boolean delete(@NonNull final Context context,
+                          @NonNull final AuthorWork work) {
+        final boolean success;
+        if (work instanceof TocEntry) {
+            success = mDb.deleteTocEntry(context, work.getId());
 
-            case TocEntry.TYPE_BOOK:
-                // see class doc for TocEntry
-                if (mDb.deleteBook(context, item.getId())) {
-                    mTocEntries.remove(item);
-                }
-                break;
+        } else if (work instanceof BookAsWork) {
+            success = mDb.deleteBook(context, work.getId());
 
-            default:
-                throw new IllegalArgumentException(ErrorMsg.UNEXPECTED_VALUE + item.getType());
+        } else {
+            throw new IllegalStateException(ErrorMsg.UNEXPECTED_VALUE + work);
         }
+
+        if (success) {
+            work.setId(0);
+
+            mWorkList.remove(work);
+        }
+        return success;
     }
 
     /**
@@ -163,7 +172,7 @@ public class AuthorWorksModel
     @NonNull
     public String getScreenTitle(@NonNull final Context context) {
         return context.getString(R.string.name_hash_nr,
-                                 mAuthor.getLabel(context), getTocEntries().size());
+                                 mAuthor.getLabel(context), getWorks().size());
     }
 
     /**

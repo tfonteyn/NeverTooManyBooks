@@ -59,6 +59,7 @@ import java.util.regex.Pattern;
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyle;
+import com.hardbacknutter.nevertoomanybooks.covers.ImageUtils;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedCursor;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedStatement;
@@ -72,7 +73,9 @@ import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
+import com.hardbacknutter.nevertoomanybooks.entities.AuthorWork;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.entities.BookAsWork;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.entities.ItemWithTitle;
@@ -763,8 +766,13 @@ public class DAO
      * @return {@code true} if a row was deleted
      */
     public boolean delete(@NonNull final Context context,
+                          @SuppressWarnings("TypeMayBeWeakened")
                           @NonNull final Book book) {
-        return deleteBook(context, book.getId());
+        final boolean success = deleteBook(context, book.getId());
+        if (success) {
+            book.setId(0);
+        }
+        return success;
     }
 
     /**
@@ -805,7 +813,9 @@ public class DAO
                         FileUtils.delete(thumb);
                     }
                     // delete the thumbnail (if any) from cache
-                    CoversDAO.delete(context, uuid);
+                    if (ImageUtils.isImageCachingEnabled(context)) {
+                        CoversDAO.delete(context, uuid);
+                    }
                 }
             }
             mSyncedDb.setTransactionSuccessful();
@@ -1320,10 +1330,8 @@ public class DAO
         }
 
         if (rowsAffected > 0) {
-            // and make the object 'new'
             bookshelf.setId(0);
         }
-
         return rowsAffected == 1;
     }
 
@@ -1531,10 +1539,10 @@ public class DAO
         }
 
         if (rowsAffected > 0) {
+            series.setId(0);
+
             // look for books affected by the delete, and re-position their book/series links.
             new DBCleaner(this).bookSeries(context);
-            // and make the object 'new'
-            series.setId(0);
         }
         return rowsAffected == 1;
     }
@@ -1649,10 +1657,10 @@ public class DAO
         }
 
         if (rowsAffected > 0) {
+            author.setId(0);
+
             // look for books affected by the delete, and re-position their book/author links.
             new DBCleaner(this).bookAuthor(context);
-            // and make the object 'new'
-            author.setId(0);
         }
         return rowsAffected == 1;
     }
@@ -1677,10 +1685,10 @@ public class DAO
         }
 
         if (rowsAffected > 0) {
+            publisher.setId(0);
+
             // look for books affected by the delete, and re-position their book/publisher links.
             new DBCleaner(this).bookPublisher(context);
-            // and make the object 'new'
-            publisher.setId(0);
         }
         return rowsAffected == 1;
     }
@@ -1739,7 +1747,7 @@ public class DAO
             // Author must be handled separately; the id will already have been 'fixed'
             // during the TocEntry.pruneList call.
             // Create if needed - do NOT do updates here
-            final Author author = tocEntry.getAuthor();
+            final Author author = tocEntry.getPrimaryAuthor();
             if (author.getId() == 0) {
                 if (insert(context, author) == -1) {
                     throw new DaoWriteException("insert Author");
@@ -1844,7 +1852,7 @@ public class DAO
 
         //noinspection SynchronizationOnLocalVariableOrMethodParameter
         synchronized (stmt) {
-            stmt.bindLong(1, tocEntry.getAuthor().getId());
+            stmt.bindLong(1, tocEntry.getPrimaryAuthor().getId());
             stmt.bindString(2, tocEntry.getTitle());
             stmt.bindString(3, encodeOrderByColumn(obTitle, tocLocale));
             stmt.bindString(4, tocEntry.getFirstPublication());
@@ -1866,18 +1874,33 @@ public class DAO
      */
     public boolean delete(@NonNull final Context context,
                           @NonNull final TocEntry tocEntry) {
+        final boolean success = deleteTocEntry(context, tocEntry.getId());
+        if (success) {
+            tocEntry.setId(0);
+        }
+        return success;
+    }
+
+    /**
+     * Delete the passed {@link TocEntry}.
+     *
+     * @param context    Current context
+     * @param tocEntryId to delete.
+     *
+     * @return {@code true} if a row was deleted
+     */
+    public boolean deleteTocEntry(@NonNull final Context context,
+                                  @IntRange(from = 1) final long tocEntryId) {
 
         final int rowsAffected;
         try (SynchronizedStatement stmt = mSyncedDb.compileStatement(DAOSql.SqlDelete.TOC_ENTRY)) {
-            stmt.bindLong(1, tocEntry.getId());
+            stmt.bindLong(1, tocEntryId);
             rowsAffected = stmt.executeUpdateDelete();
         }
 
         if (rowsAffected > 0) {
             // look for books affected by the delete, and re-position their book/tocentry links.
             new DBCleaner(this).bookTocEntry(context);
-            // and make the object 'new'
-            tocEntry.setId(0);
         }
 
         return rowsAffected == 1;
@@ -1999,6 +2022,9 @@ public class DAO
             mSyncedDb.endTransaction(txLock);
         }
 
+        if (rowsAffected > 0) {
+            style.setId(0);
+        }
         return rowsAffected == 1;
     }
 
@@ -2714,7 +2740,7 @@ public class DAO
      */
     @NonNull
     public ArrayList<Bookshelf> getBookshelvesByBookId(final long bookId) {
-        ArrayList<Bookshelf> list = new ArrayList<>();
+        final ArrayList<Bookshelf> list = new ArrayList<>();
         try (Cursor cursor = mSyncedDb.rawQuery(DAOSql.SqlSelect.BOOKSHELVES_BY_BOOK_ID,
                                                 new String[]{String.valueOf(bookId)})) {
             final DataHolder rowData = new CursorRow(cursor);
@@ -3189,7 +3215,6 @@ public class DAO
                                       new Author(rowData.getLong(KEY_FK_AUTHOR), rowData),
                                       rowData.getString(KEY_TITLE),
                                       rowData.getString(KEY_DATE_FIRST_PUBLICATION),
-                                      TocEntry.TYPE_BOOK,
                                       rowData.getInt(KEY_BOOK_COUNT)));
             }
         }
@@ -3250,7 +3275,7 @@ public class DAO
 
         //noinspection SynchronizationOnLocalVariableOrMethodParameter
         synchronized (stmt) {
-            stmt.bindLong(1, tocEntry.getAuthor().getId());
+            stmt.bindLong(1, tocEntry.getPrimaryAuthor().getId());
             stmt.bindString(2, encodeOrderByColumn(tocEntry.getTitle(), tocLocale));
             stmt.bindString(3, encodeOrderByColumn(obTitle, tocLocale));
             return stmt.simpleQueryForLongOrZero();
@@ -3258,7 +3283,7 @@ public class DAO
     }
 
     /**
-     * Return all the {@link TocEntry} for the given {@link Author}.
+     * Return all the {@link AuthorWork} for the given {@link Author}.
      *
      * @param author         to retrieve
      * @param bookshelfId    limit the list to books on this shelf (pass -1 for all shelves)
@@ -3266,13 +3291,13 @@ public class DAO
      * @param withBooks      add books without TOC as well; i.e. the toc of a book without a toc,
      *                       is the book title itself. (makes sense?)
      *
-     * @return List of {@link TocEntry} for this {@link Author}
+     * @return List of {@link AuthorWork} for this {@link Author}
      */
     @NonNull
-    public ArrayList<TocEntry> getTocEntryByAuthor(@NonNull final Author author,
-                                                   final long bookshelfId,
-                                                   final boolean withTocEntries,
-                                                   final boolean withBooks) {
+    public ArrayList<AuthorWork> getAuthorWorks(@NonNull final Author author,
+                                                final long bookshelfId,
+                                                final boolean withTocEntries,
+                                                final boolean withBooks) {
         // sanity check
         if (!withTocEntries && !withBooks) {
             throw new IllegalArgumentException("Must specify what to fetch");
@@ -3327,19 +3352,32 @@ public class DAO
 
         sql += " ORDER BY " + KEY_TITLE_OB + DAOSql._COLLATION;
 
-        final ArrayList<TocEntry> list = new ArrayList<>();
+        final ArrayList<AuthorWork> list = new ArrayList<>();
         //noinspection ZeroLengthArrayAllocation
         try (Cursor cursor = mSyncedDb.rawQuery(sql, paramList.toArray(new String[0]))) {
             final DataHolder rowData = new CursorRow(cursor);
             while (cursor.moveToNext()) {
-                final TocEntry tocEntry =
-                        new TocEntry(rowData.getLong(KEY_PK_ID),
-                                     author,
-                                     rowData.getString(KEY_TITLE),
-                                     rowData.getString(KEY_DATE_FIRST_PUBLICATION),
-                                     rowData.getString(KEY_TOC_TYPE).charAt(0),
-                                     rowData.getInt(KEY_BOOK_COUNT));
-                list.add(tocEntry);
+
+                switch (rowData.getString(KEY_TOC_TYPE).charAt(0)) {
+                    case AuthorWork.TYPE_TOC:
+                        list.add(new TocEntry(rowData.getLong(KEY_PK_ID),
+                                              author,
+                                              rowData.getString(KEY_TITLE),
+                                              rowData.getString(KEY_DATE_FIRST_PUBLICATION),
+                                              rowData.getInt(KEY_BOOK_COUNT)));
+                        break;
+
+                    case AuthorWork.TYPE_BOOK:
+                        // Eventually we'll create a Book here...
+                        list.add(new BookAsWork(rowData.getLong(KEY_PK_ID),
+                                                author,
+                                                rowData.getString(KEY_TITLE),
+                                                rowData.getString(KEY_DATE_FIRST_PUBLICATION)));
+                        break;
+
+                    default:
+                        throw new IllegalStateException(ErrorMsg.UNEXPECTED_VALUE);
+                }
             }
         }
         return list;
@@ -3427,15 +3465,15 @@ public class DAO
      * Update the 'read' status of the book.
      *
      * @param bookId book to update
-     * @param read   the status to set
+     * @param isRead the status to set
      *
      * @return {@code true} for success.
      */
     public boolean setBookRead(final long bookId,
-                               final boolean read) {
+                               final boolean isRead) {
         final ContentValues cv = new ContentValues();
-        cv.put(KEY_READ, read);
-        if (read) {
+        cv.put(KEY_READ, isRead);
+        if (isRead) {
             cv.put(KEY_READ_END, LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE));
         } else {
             cv.put(KEY_READ_END, "");
@@ -3472,7 +3510,7 @@ public class DAO
      */
     public boolean setSeriesComplete(final long seriesId,
                                      final boolean isComplete) {
-        ContentValues cv = new ContentValues();
+        final ContentValues cv = new ContentValues();
         cv.put(KEY_SERIES_IS_COMPLETE, isComplete);
 
         return 0 < mSyncedDb.update(TBL_SERIES.getName(), cv, KEY_PK_ID + "=?",
@@ -3723,13 +3761,12 @@ public class DAO
      */
     @NonNull
     public Map<String, BooklistStyle> getUserStyles(@NonNull final Context context) {
-        Map<String, BooklistStyle> list = new LinkedHashMap<>();
-
-        String sql = DAOSql.SqlSelectFullTable.BOOKLIST_STYLES
-                     + " WHERE " + KEY_STYLE_IS_BUILTIN + "=0"
-                     // We order by the id, i.e. in the order the styles were created.
-                     // This is only done to get a reproducible and consistent order.
-                     + " ORDER BY " + KEY_PK_ID;
+        final Map<String, BooklistStyle> list = new LinkedHashMap<>();
+        final String sql = DAOSql.SqlSelectFullTable.BOOKLIST_STYLES
+                           + " WHERE " + KEY_STYLE_IS_BUILTIN + "=0"
+                           // We order by the id, i.e. in the order the styles were created.
+                           // This is only done to get a reproducible and consistent order.
+                           + " ORDER BY " + KEY_PK_ID;
 
         try (Cursor cursor = mSyncedDb.rawQuery(sql, null)) {
             final DataHolder rowData = new CursorRow(cursor);
@@ -4207,7 +4244,7 @@ public class DAO
         String language;
         Locale bookLocale;
         try (Cursor cursor = mSyncedDb.rawQuery(DAOSql.SqlSelectFullTable.BOOK_TITLES, null)) {
-            int langIdx = cursor.getColumnIndex(KEY_LANGUAGE);
+            final int langIdx = cursor.getColumnIndex(KEY_LANGUAGE);
             while (cursor.moveToNext()) {
                 language = cursor.getString(langIdx);
                 bookLocale = AppLocale.getInstance().getLocale(context, language);
@@ -4270,7 +4307,7 @@ public class DAO
         final String title = cursor.getString(1);
         final String currentObTitle = cursor.getString(2);
 
-        String rebuildObTitle;
+        final String rebuildObTitle;
         if (reorder) {
             rebuildObTitle = ItemWithTitle.reorder(context, title, locale);
         } else {

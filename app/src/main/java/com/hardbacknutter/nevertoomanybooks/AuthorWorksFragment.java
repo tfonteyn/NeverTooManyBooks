@@ -44,6 +44,8 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistBuilder;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
@@ -52,7 +54,10 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.MenuPicker;
 import com.hardbacknutter.nevertoomanybooks.dialogs.MenuPickerDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
+import com.hardbacknutter.nevertoomanybooks.entities.Author;
+import com.hardbacknutter.nevertoomanybooks.entities.AuthorWork;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.entities.BookAsWork;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.utils.AttrUtils;
@@ -188,19 +193,19 @@ public class AuthorWorksFragment
         switch (item.getItemId()) {
             case R.id.MENU_AUTHOR_WORKS_ALL: {
                 item.setChecked(true);
-                mModel.reloadTocEntries(true, true);
+                mModel.reloadWorkList(true, true);
                 mAdapter.notifyDataSetChanged();
                 return true;
             }
             case R.id.MENU_AUTHOR_WORKS_TOC: {
                 item.setChecked(true);
-                mModel.reloadTocEntries(true, false);
+                mModel.reloadWorkList(true, false);
                 mAdapter.notifyDataSetChanged();
                 return true;
             }
             case R.id.MENU_AUTHOR_WORKS_BOOKS: {
                 item.setChecked(true);
-                mModel.reloadTocEntries(false, true);
+                mModel.reloadWorkList(false, true);
                 mAdapter.notifyDataSetChanged();
                 return true;
             }
@@ -209,7 +214,7 @@ public class AuthorWorksFragment
                 final boolean checked = !item.isChecked();
                 item.setChecked(checked);
                 mModel.setAllBookshelves(checked);
-                mModel.reloadTocEntries();
+                mModel.reloadWorkList();
                 mAdapter.notifyDataSetChanged();
                 //noinspection ConstantConditions
                 mActionBar.setTitle(mModel.getScreenTitle(getContext()));
@@ -229,7 +234,7 @@ public class AuthorWorksFragment
      */
     private void onCreateContextMenu(final int position) {
         final Resources res = getResources();
-        final TocEntry item = mModel.getTocEntries().get(position);
+        final AuthorWork item = mModel.getWorks().get(position);
         //noinspection ConstantConditions
         final String title = item.getLabel(getContext());
 
@@ -263,38 +268,41 @@ public class AuthorWorksFragment
      */
     private boolean onContextItemSelected(@IdRes final int menuItem,
                                           final int position) {
-        final TocEntry item = mModel.getTocEntries().get(position);
+        final AuthorWork work = mModel.getWorks().get(position);
 
         //noinspection SwitchStatementWithTooFewBranches
         switch (menuItem) {
             case R.id.MENU_DELETE:
-                switch (item.getType()) {
-                    case TocEntry.TYPE_BOOK: {
-                        //noinspection ConstantConditions
-                        StandardDialogs.deleteBook(getContext(), item.getLabel(getContext()),
-                                                   item.getAuthors(), () -> {
-                                    mModel.delTocEntry(getContext(), item);
-                                    mAdapter.notifyItemRemoved(position);
-                                    mResultData.putResultData(BookViewModel.BKEY_BOOK_DELETED,
-                                                              true);
-                                });
-                        break;
-                    }
-                    case TocEntry.TYPE_TOC: {
-                        //noinspection ConstantConditions
-                        StandardDialogs.deleteTocEntry(getContext(), item, () -> {
-                            mModel.delTocEntry(getContext(), item);
-                            mAdapter.notifyItemRemoved(position);
-                        });
-                        break;
-                    }
-                    default:
-                        throw new IllegalArgumentException(ErrorMsg.UNEXPECTED_VALUE + item);
-                }
+                deleteWork(position, work);
                 return true;
 
             default:
                 return false;
+        }
+    }
+
+    private void deleteWork(final int position,
+                            @NonNull final AuthorWork work) {
+        if (work instanceof TocEntry) {
+            //noinspection ConstantConditions
+            StandardDialogs.deleteTocEntry(
+                    getContext(), work.getLabel(getContext()),
+                    work.getPrimaryAuthor(), () -> {
+                        mModel.delete(getContext(), work);
+                        mAdapter.notifyItemRemoved(position);
+                    });
+
+        } else if (work instanceof BookAsWork) {
+            //noinspection ConstantConditions
+            StandardDialogs.deleteBook(
+                    getContext(), work.getLabel(getContext()),
+                    Collections.singletonList(work.getPrimaryAuthor()), () -> {
+                        mModel.delete(getContext(), work);
+                        mAdapter.notifyItemRemoved(position);
+                        mResultData.putResultData(BookViewModel.BKEY_BOOK_DELETED, true);
+                    });
+        } else {
+            throw new IllegalStateException(ErrorMsg.UNEXPECTED_VALUE + work);
         }
     }
 
@@ -304,45 +312,42 @@ public class AuthorWorksFragment
      * @param position in the list
      */
     private void gotoBook(final int position) {
-        final TocEntry item = mModel.getTocEntries().get(position);
-        switch (item.getType()) {
-            case TocEntry.TYPE_BOOK: {
+        final AuthorWork work = mModel.getWorks().get(position);
+
+        if (work instanceof TocEntry) {
+            final TocEntry tocEntry = (TocEntry) work;
+            final ArrayList<Long> bookIdList = mModel.getBookIds(tocEntry);
+            if (bookIdList.size() == 1) {
                 // open new activity to show the book, 'back' will return to this one.
                 final Intent intent = new Intent(getContext(), BookDetailsActivity.class)
-                        .putExtra(DBDefinitions.KEY_PK_ID, item.getId());
+                        .putExtra(DBDefinitions.KEY_PK_ID, bookIdList.get(0));
                 startActivity(intent);
-                break;
-            }
-            case TocEntry.TYPE_TOC: {
-                final ArrayList<Long> bookIdList = mModel.getBookIds(item);
-                if (bookIdList.size() == 1) {
-                    // open new activity to show the book, 'back' will return to this one.
-                    final Intent intent = new Intent(getContext(), BookDetailsActivity.class)
-                            .putExtra(DBDefinitions.KEY_PK_ID, bookIdList.get(0));
-                    startActivity(intent);
-                    break;
 
-                } else {
-                    // multiple books, open the list as a NEW ACTIVITY
-                    final Intent intent = new Intent(getContext(), BooksOnBookshelf.class)
-                            .putExtra(Book.BKEY_BOOK_ID_ARRAY, bookIdList)
-                            // Open the list expanded, as otherwise you end up with
-                            // the author as a single line, and no books shown at all,
-                            // which can be quite confusing to the user.
-                            .putExtra(BooksOnBookshelfModel.BKEY_LIST_STATE,
-                                      BooklistBuilder.PREF_REBUILD_ALWAYS_EXPANDED);
+            } else {
+                // multiple books, open the list as a NEW ACTIVITY
+                final Intent intent = new Intent(getContext(), BooksOnBookshelf.class)
+                        .putExtra(Book.BKEY_BOOK_ID_ARRAY, bookIdList)
+                        // Open the list expanded, as otherwise you end up with
+                        // the author as a single line, and no books shown at all,
+                        // which can be quite confusing to the user.
+                        .putExtra(BooksOnBookshelfModel.BKEY_LIST_STATE,
+                                  BooklistBuilder.PREF_REBUILD_ALWAYS_EXPANDED);
 
-                    if (mModel.isAllBookshelves()) {
-                        intent.putExtra(BooksOnBookshelfModel.BKEY_BOOKSHELF, Bookshelf.ALL_BOOKS);
-                    }
-
-                    startActivity(intent);
-                    break;
+                if (mModel.isAllBookshelves()) {
+                    intent.putExtra(BooksOnBookshelfModel.BKEY_BOOKSHELF, Bookshelf.ALL_BOOKS);
                 }
+
+                startActivity(intent);
             }
 
-            default:
-                break;
+        } else if (work instanceof BookAsWork) {
+            // open new activity to show the book, 'back' will return to this one.
+            final Intent intent = new Intent(getContext(), BookDetailsActivity.class)
+                    .putExtra(DBDefinitions.KEY_PK_ID, work.getId());
+            startActivity(intent);
+
+        } else {
+            throw new IllegalStateException(ErrorMsg.UNEXPECTED_VALUE + work);
         }
     }
 
@@ -403,10 +408,10 @@ public class AuthorWorksFragment
             final char type = (char) viewType;
             final View itemView;
             switch (type) {
-                case TocEntry.TYPE_TOC:
+                case AuthorWork.TYPE_TOC:
                     itemView = mInflater.inflate(R.layout.row_toc_entry, parent, false);
                     break;
-                case TocEntry.TYPE_BOOK:
+                case AuthorWork.TYPE_BOOK:
                     itemView = mInflater.inflate(R.layout.row_toc_entry_book, parent, false);
                     break;
                 default:
@@ -431,17 +436,19 @@ public class AuthorWorksFragment
                                      final int position) {
             final Context context = getContext();
 
-            final TocEntry tocEntry = mModel.getTocEntries().get(position);
+            final AuthorWork work = mModel.getWorks().get(position);
             //noinspection ConstantConditions
-            holder.titleView.setText(tocEntry.getLabel(context));
+            holder.titleView.setText(work.getLabel(context));
 
             // optional
             if (holder.authorView != null) {
-                holder.authorView.setText(tocEntry.getAuthor().getLabel(context));
+                final Author author = work.getPrimaryAuthor();
+                Objects.requireNonNull(author, ErrorMsg.NULL_AUTHOR);
+                holder.authorView.setText(author.getLabel(context));
             }
             // optional
             if (holder.firstPublicationView != null) {
-                final String date = tocEntry.getFirstPublication();
+                final String date = work.getFirstPublication();
                 // "< 4" covers empty and illegal dates
                 if (date.length() < 4) {
                     holder.firstPublicationView.setVisibility(View.GONE);
@@ -454,8 +461,8 @@ public class AuthorWorksFragment
                 }
             }
 
-            if (tocEntry.getType() == TocEntry.TYPE_TOC) {
-                if (tocEntry.getBookCount() > 1) {
+            if (work instanceof TocEntry) {
+                if (work.getBookCount() > 1) {
                     holder.titleView.setCompoundDrawableTintList(mDrawableOn);
                 } else {
                     holder.titleView.setCompoundDrawableTintList(mDrawableOff);
@@ -465,18 +472,18 @@ public class AuthorWorksFragment
 
         @Override
         public int getItemViewType(final int position) {
-            return mModel.getTocEntries().get(position).getType();
+            return mModel.getWorks().get(position).getType();
         }
 
         @Override
         public int getItemCount() {
-            return mModel.getTocEntries().size();
+            return mModel.getWorks().size();
         }
 
         @NonNull
         @Override
         public String[] getPopupText(final int position) {
-            final String title = mModel.getTocEntries().get(position)
+            final String title = mModel.getWorks().get(position)
                                        .getLabel(mInflater.getContext());
             return new String[]{title};
         }

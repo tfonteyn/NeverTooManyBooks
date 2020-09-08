@@ -38,8 +38,8 @@ import com.hardbacknutter.nevertoomanybooks.database.definitions.ColumnInfo;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition.TableType;
+import com.hardbacknutter.nevertoomanybooks.entities.AuthorWork;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
-import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 
 /**
  * Static definitions of database objects.
@@ -582,9 +582,9 @@ public final class DBDefinitions {
      * ====================================================================================== */
     /**
      * Column alias.
-     * <ul>The type of a TOC entry.
-     *     <li>{@link TocEntry#TYPE_TOC}</li>
-     *     <li>{@link TocEntry#TYPE_BOOK}</li>
+     * <ul>The type of an {@link AuthorWork} entry.
+     *     <li>{@link AuthorWork#TYPE_TOC}</li>
+     *     <li>{@link AuthorWork#TYPE_BOOK}</li>
      * </ul>
      */
     public static final String KEY_TOC_TYPE = "type";

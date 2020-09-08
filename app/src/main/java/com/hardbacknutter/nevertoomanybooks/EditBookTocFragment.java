@@ -440,12 +440,14 @@ public class EditBookTocFragment
     private void deleteEntry(final int position) {
         final TocEntry tocEntry = mList.get(position);
         //noinspection ConstantConditions
-        StandardDialogs.deleteTocEntry(getContext(), tocEntry, () -> {
-            if (mFragmentVM.deleteTocEntry(getContext(), tocEntry)) {
-                mList.remove(tocEntry);
-                mListAdapter.notifyItemRemoved(position);
-            }
-        });
+        StandardDialogs.deleteTocEntry(getContext(),
+                                       tocEntry.getTitle(),
+                                       tocEntry.getPrimaryAuthor(), () -> {
+                    if (mFragmentVM.deleteTocEntry(getContext(), tocEntry)) {
+                        mList.remove(tocEntry);
+                        mListAdapter.notifyItemRemoved(position);
+                    }
+                });
     }
 
     private void populateTocBits(@NonNull final Book book) {
@@ -834,7 +836,7 @@ public class EditBookTocFragment
             final TocEntry item = getItem(position);
 
             holder.titleView.setText(item.getTitle());
-            holder.authorView.setText(item.getAuthor().getLabel(getContext()));
+            holder.authorView.setText(item.getPrimaryAuthor().getLabel(getContext()));
 
             final String year = item.getFirstPublication();
             if (year.isEmpty()) {

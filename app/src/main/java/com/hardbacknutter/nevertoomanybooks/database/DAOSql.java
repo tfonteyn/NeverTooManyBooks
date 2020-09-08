@@ -28,6 +28,7 @@ import androidx.annotation.Nullable;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyle;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
+import com.hardbacknutter.nevertoomanybooks.entities.AuthorWork;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
@@ -968,7 +969,7 @@ public class DAOSql {
          * We need KEY_TITLE_OB as it will be used to ORDER BY
          */
         static final String TOC_ENTRIES_BY_AUTHOR_ID =
-                SELECT_ + "'" + TocEntry.TYPE_TOC + "' AS " + KEY_TOC_TYPE
+                SELECT_ + "'" + AuthorWork.TYPE_TOC + "' AS " + KEY_TOC_TYPE
                 + ',' + TBL_TOC_ENTRIES.dotAs(KEY_PK_ID)
                 + ',' + TBL_TOC_ENTRIES.dotAs(KEY_TITLE)
                 + ',' + TBL_TOC_ENTRIES.dotAs(KEY_TITLE_OB)
@@ -984,7 +985,7 @@ public class DAOSql {
          * We need KEY_TITLE_OB as it will be used to ORDER BY
          */
         static final String BOOK_TITLES_BY_AUTHOR_ID =
-                SELECT_ + "'" + TocEntry.TYPE_BOOK + "' AS " + KEY_TOC_TYPE
+                SELECT_ + "'" + AuthorWork.TYPE_BOOK + "' AS " + KEY_TOC_TYPE
                 + ',' + TBL_BOOKS.dotAs(KEY_PK_ID)
                 + ',' + TBL_BOOKS.dotAs(KEY_TITLE)
                 + ',' + TBL_BOOKS.dotAs(KEY_TITLE_OB)
