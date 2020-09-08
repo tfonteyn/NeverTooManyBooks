@@ -299,6 +299,31 @@ public class RowStateDAO
                 break;
             }
             case BooklistBuilder.PREF_REBUILD_SAVED_STATE: {
+                //URGENT: RowStateDAO data gets out of sync when a book is add/deleted/changed
+                // which affects the list.
+                // Example scenario: switch to "Books", style: "Read date".
+                // Expand all, then collapse all, then expand first node so first book is visible
+                // Switch to style "author,series"
+                // select a random book not read before. Edit, and set date-read (today)
+                // save, back.
+                // switch style to "Read Date" ==> the newly read book is NOT visible.
+                // ==> it's in the list table (with all header rows ok)
+                // ==> ... an expand-all will show it.
+                // The problem is that the new row visibility depends on the visibility of
+                // the higher level(s) being visible in OTHER rows.
+                // i.e.
+                // row 1: /yr=2020/mr=09/dr=07/a=271	5	0	0	0  <== row was not present
+                // row 2: /yr=2020/mr=08/dr=06/a=356	5	0	1	0  <== row WAS present
+                // ... find visible rows, then 'walk' up the table looking for closest
+                // matching level and make that level + 1 visible=1 and expanded=0
+                // .... need to think about this.
+                // ...
+                // Basically ... each time we add/delete (and sometimes just modify as in
+                // the scenario above!) a book we'd have to purge ALL row-state data...
+                // For all bookshelves those books are on
+                // ... which defeats the whole purpose of preserving row-state across
+                // app restarts.
+
                 // The more nodes expanded, the slower this is.
                 // **ad-hoc** measurements: 31 top-level nodes, 9260 rows running in emulator.
                 // fully collapsed: 117 ms
@@ -321,6 +346,10 @@ public class RowStateDAO
                         // KEY_BL_NODE_EXPANDED
                         // If the row is not present, collapse it. Otherwise use stored state.
                         + ",COALESCE(" + TBL_BOOK_LIST_NODE_STATE.dot(KEY_BL_NODE_EXPANDED) + ",0)"
+//                        + ",CASE"
+//                        + " WHEN "+ TBL_BOOK_LIST_NODE_STATE.dot(KEY_BL_NODE_EXPANDED) +" IS NULL"
+//                        + " THEN 0 ELSE " + TBL_BOOK_LIST_NODE_STATE.dot(KEY_BL_NODE_EXPANDED)
+//                        + " END"
                         // 'AS' for SQL readability/debug only
                         + " AS " + KEY_BL_NODE_EXPANDED
                         + "\n"
