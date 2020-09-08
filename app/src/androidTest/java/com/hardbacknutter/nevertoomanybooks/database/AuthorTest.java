@@ -21,7 +21,7 @@ package com.hardbacknutter.nevertoomanybooks.database;
 
 import android.content.Context;
 
-import androidx.test.filters.SmallTest;
+import androidx.test.filters.MediumTest;
 import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.junit.Before;
@@ -39,7 +39,7 @@ import static org.junit.Assert.assertTrue;
 /**
  * Very basic test of insert/update/delete an Author.
  */
-@SmallTest
+@MediumTest
 public class AuthorTest {
 
     private final Author[] author = new Author[5];
