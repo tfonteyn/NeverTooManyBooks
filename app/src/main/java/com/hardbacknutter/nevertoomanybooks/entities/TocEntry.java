@@ -28,7 +28,6 @@ import androidx.annotation.Nullable;
 import androidx.core.util.Pair;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -54,13 +53,9 @@ import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
  * when last book is gone? or keep them for adding to new books / wish list?
  * - consider to add a purge based on book for orphaned TocEntry
  * - a purge based on Author is already done)
- *
- * URGENT: the 'type' of the entry... and it being a Book a rather messy.
- * Extract an interface and clean this up. This is mainly (only?) because of
- * {@link com.hardbacknutter.nevertoomanybooks.AuthorWorksFragment}.
  */
 public class TocEntry
-        implements Entity, ItemWithTitle {
+        implements Entity, ItemWithTitle, AuthorWork {
 
     /** {@link Parcelable}. */
     public static final Creator<TocEntry> CREATOR = new Creator<TocEntry>() {
@@ -75,11 +70,6 @@ public class TocEntry
         }
     };
 
-    /** As used by the DAO. */
-    public static final char TYPE_TOC = 'T';
-    /** As used by the DAO. */
-    public static final char TYPE_BOOK = 'B';
-
     /** Row ID. */
     private long mId;
     @NonNull
@@ -88,12 +78,11 @@ public class TocEntry
     private String mTitle;
     @NonNull
     private String mFirstPublicationDate;
-    /** in-memory use only. Type of entry. */
-    private char mType;
-    /** in-memory use only. Number of books this TocEntry appears in. */
-    private int mBookCount;
     @Nullable
     private List<Pair<Long, String>> mBookTitles;
+
+    /** in-memory use only. Number of books this TocEntry appears in. */
+    private int mBookCount;
 
     /**
      * Constructor.
@@ -108,31 +97,27 @@ public class TocEntry
         mAuthor = author;
         mTitle = title.trim();
         mFirstPublicationDate = publicationDate != null ? publicationDate : "";
-        mType = TYPE_TOC;
         mBookCount = 1;
     }
 
     /**
-     * Constructor used during a JOIN of a Toc and its book(s).
+     * Constructor.
      *
      * @param id              row id
      * @param author          Author of title
      * @param title           Title
      * @param publicationDate year of first publication
-     * @param type            {@link TocEntry#TYPE_TOC} or {@link TocEntry#TYPE_BOOK}
      * @param bookCount       number of books this TocEntry appears in
      */
     public TocEntry(final long id,
                     @NonNull final Author author,
                     @NonNull final String title,
                     @Nullable final String publicationDate,
-                    final char type,
                     final int bookCount) {
         mId = id;
         mAuthor = author;
         mTitle = title.trim();
         mFirstPublicationDate = publicationDate != null ? publicationDate : "";
-        mType = type;
         mBookCount = bookCount;
     }
 
@@ -150,7 +135,6 @@ public class TocEntry
         //noinspection ConstantConditions
         mFirstPublicationDate = in.readString();
 
-        mType = (char) in.readInt();
         mBookCount = in.readInt();
     }
 
@@ -257,24 +241,15 @@ public class TocEntry
     public static boolean hasMultipleAuthors(@NonNull final List<TocEntry> list) {
         if (list.size() > 1) {
             // use the first one as the comparator.
-            Author firstAuthor = list.get(0).getAuthor();
+            Author firstAuthor = list.get(0).getPrimaryAuthor();
             for (int i = 1, listSize = list.size(); i < listSize; i++) {
-                if (!firstAuthor.equals(list.get(i).getAuthor())) {
+                if (!firstAuthor.equals(list.get(i).getPrimaryAuthor())) {
                     return true;
                 }
             }
         }
 
         return false;
-    }
-
-    /**
-     * Get the type of this entry.
-     *
-     * @return type
-     */
-    public char getType() {
-        return mType;
     }
 
     /**
@@ -295,7 +270,6 @@ public class TocEntry
         mAuthor = source.mAuthor;
         mTitle = source.mTitle;
         mFirstPublicationDate = source.mFirstPublicationDate;
-        mType = source.mType;
         mBookCount = source.mBookCount;
     }
 
@@ -312,12 +286,17 @@ public class TocEntry
         dest.writeParcelable(mAuthor, flags);
         dest.writeString(mTitle);
         dest.writeString(mFirstPublicationDate);
-        dest.writeInt(mType);
         dest.writeInt(mBookCount);
     }
 
+    @Override
     public long getId() {
         return mId;
+    }
+
+    @Override
+    public char getType() {
+        return AuthorWork.TYPE_TOC;
     }
 
     public void setId(final long id) {
@@ -335,6 +314,7 @@ public class TocEntry
     }
 
     @NonNull
+    @Override
     public String getLabel(@NonNull final Context context) {
         final Locale userLocale = AppLocale.getInstance().getUserLocale(context);
         // overkill...  see the getLocale method for more comments
@@ -345,24 +325,14 @@ public class TocEntry
     }
 
     @NonNull
-    public Author getAuthor() {
+    public Author getPrimaryAuthor() {
         return mAuthor;
     }
 
-    public void setAuthor(@NonNull final Author author) {
+    public void setPrimaryAuthor(@NonNull final Author author) {
         mAuthor = author;
     }
 
-    /**
-     * Convenience method.
-     *
-     * @return list of Authors.
-     */
-    @NonNull
-    public List<Author> getAuthors() {
-        Author[] authors = {mAuthor};
-        return Arrays.asList(authors);
-    }
 
     /**
      * Lazy load the book id/title pair list this TOC entry is published in.
@@ -475,7 +445,6 @@ public class TocEntry
                + ", mAuthor=" + mAuthor
                + ", mTitle=`" + mTitle + '`'
                + ", mFirstPublicationDate=`" + mFirstPublicationDate + '`'
-               + ", mType=`" + mType + '`'
                + ", mBookCount=`" + mBookCount + '`'
                + ", mBookTitles=" + mBookTitles
                + '}';

@@ -80,7 +80,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.Money;
  */
 public class Book
         extends DataManager
-        implements ItemWithTitle {
+        implements ItemWithTitle, AuthorWork {
 
     /**
      * {@link DBDefinitions#KEY_TOC_BITMASK}
@@ -383,6 +383,16 @@ public class Book
         return bookData;
     }
 
+    @Override
+    public char getType() {
+        return AuthorWork.TYPE_BOOK;
+    }
+
+    @NonNull
+    @Override
+    public String getFirstPublication() {
+        return getString(DBDefinitions.KEY_DATE_FIRST_PUBLICATION);
+    }
 
     /**
      * Check if this book has not been saved to the database yet.
@@ -400,6 +410,15 @@ public class Book
      */
     public long getId() {
         return getLong(DBDefinitions.KEY_PK_ID);
+    }
+
+    /**
+     * Convenience Accessor.
+     *
+     * @param id the book id.
+     */
+    public void setId(final long id) {
+        putLong(DBDefinitions.KEY_PK_ID, id);
     }
 
     /**
