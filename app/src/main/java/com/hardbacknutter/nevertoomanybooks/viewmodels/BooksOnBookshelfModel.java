@@ -159,15 +159,6 @@ public class BooksOnBookshelfModel
     @Nullable
     private BooklistBuilder mBuilder;
 
-    /**
-     * NEVER close this database.
-     *
-     * @return the DAO
-     */
-    public DAO getDb() {
-        return mDb;
-    }
-
     @Override
     protected void onCleared() {
         if (mBuilder != null) {
@@ -715,7 +706,7 @@ public class BooksOnBookshelfModel
         BooklistBuilder builder = null;
         try {
             // get a new builder and add the required domains
-            builder = new BooklistBuilder(style, mBookshelf, mRebuildState);
+            builder = new BooklistBuilder(mDb.getSyncDb(), style, mBookshelf, mRebuildState);
 
             // Add the fixed list of domains we always need.
             for (VirtualDomain domainDetails : FIXED_DOMAIN_LIST) {
@@ -891,6 +882,61 @@ public class BooksOnBookshelfModel
     public BooklistCursor newListCursor() {
         Objects.requireNonNull(mBuilder, ErrorMsg.NULL_BUILDER);
         return mBuilder.newListCursor();
+    }
+
+    public List<Author> getAuthorsByBookId(final long bookId) {
+        return mDb.getAuthorsByBookId(bookId);
+    }
+
+    @NonNull
+    public ArrayList<Long> getBookIdsByAuthor(final long authorId) {
+        return mDb.getBookIdsByAuthor(authorId);
+    }
+
+    @NonNull
+    public ArrayList<Long> getBookIdsBySeries(final long seriesId) {
+        return mDb.getBookIdsBySeries(seriesId);
+    }
+
+    @NonNull
+    public ArrayList<Long> getBookIdsByPublisher(final long publisherId) {
+        return mDb.getBookIdsByPublisher(publisherId);
+    }
+
+    public boolean setAuthorComplete(final long authorId,
+                                     final boolean isComplete) {
+        return mDb.setAuthorComplete(authorId, isComplete);
+    }
+
+    public boolean setSeriesComplete(final long seriesId,
+                                     final boolean isComplete) {
+        return mDb.setSeriesComplete(seriesId, isComplete);
+    }
+
+    public boolean setBookRead(final long bookId,
+                               final boolean isRead) {
+        return mDb.setBookRead(bookId, isRead);
+    }
+
+    public boolean delete(@NonNull final Context context,
+                          @NonNull final Series series) {
+        return mDb.delete(context, series);
+    }
+
+    public boolean delete(@NonNull final Context context,
+                          @NonNull final Publisher publisher) {
+        return mDb.delete(context, publisher);
+    }
+
+    @SuppressWarnings("UnusedReturnValue")
+    public boolean lendBook(final long bookId,
+                            @Nullable final String loanee) {
+        return mDb.lendBook(bookId, loanee);
+    }
+
+    public boolean deleteBook(@NonNull final Context context,
+                              @IntRange(from = 1) final long bookId) {
+        return mDb.deleteBook(context, bookId);
     }
 
     /**

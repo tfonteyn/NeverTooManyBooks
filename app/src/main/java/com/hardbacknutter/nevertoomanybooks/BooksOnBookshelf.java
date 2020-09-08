@@ -792,9 +792,9 @@ public class BooksOnBookshelf
             case R.id.MENU_BOOK_DELETE: {
                 final long bookId = rowData.getLong(DBDefinitions.KEY_FK_BOOK);
                 final String title = rowData.getString(DBDefinitions.KEY_TITLE);
-                final List<Author> authors = mModel.getDb().getAuthorsByBookId(bookId);
+                final List<Author> authors = mModel.getAuthorsByBookId(bookId);
                 StandardDialogs.deleteBook(this, title, authors, () -> {
-                    if (mModel.getDb().deleteBook(this, bookId)) {
+                    if (mModel.deleteBook(this, bookId)) {
                         onBookChange(bookId, BookChangedListener.BOOK_DELETED, null);
                     }
                 });
@@ -815,7 +815,7 @@ public class BooksOnBookshelf
                 // toggle the read status
                 final boolean status = !rowData.getBoolean(DBDefinitions.KEY_READ);
                 final long bookId = rowData.getLong(DBDefinitions.KEY_FK_BOOK);
-                if (mModel.getDb().setBookRead(bookId, status)) {
+                if (mModel.setBookRead(bookId, status)) {
                     onBookChange(bookId, BookChangedListener.BOOK_READ, null);
                 }
                 return true;
@@ -833,7 +833,7 @@ public class BooksOnBookshelf
             }
             case R.id.MENU_BOOK_LOAN_DELETE: {
                 final long bookId = rowData.getLong(DBDefinitions.KEY_FK_BOOK);
-                mModel.getDb().lendBook(bookId, null);
+                mModel.lendBook(bookId, null);
                 onBookChange(bookId, BookChangedListener.BOOK_LOANEE, null);
                 return true;
             }
@@ -878,7 +878,7 @@ public class BooksOnBookshelf
                         intent.putExtra(StandardDialogs.BKEY_DIALOG_TITLE,
                                         rowData.getString(DBDefinitions.KEY_AUTHOR_FORMATTED))
                               .putExtra(Book.BKEY_BOOK_ID_ARRAY,
-                                        mModel.getDb().getBookIdsByAuthor(authorId));
+                                        mModel.getBookIdsByAuthor(authorId));
                         break;
                     }
                     case BooklistGroup.SERIES: {
@@ -886,7 +886,7 @@ public class BooksOnBookshelf
                         intent.putExtra(StandardDialogs.BKEY_DIALOG_TITLE,
                                         rowData.getString(DBDefinitions.KEY_SERIES_TITLE))
                               .putExtra(Book.BKEY_BOOK_ID_ARRAY,
-                                        mModel.getDb().getBookIdsBySeries(seriesId));
+                                        mModel.getBookIdsBySeries(seriesId));
                         break;
                     }
                     case BooklistGroup.PUBLISHER: {
@@ -894,7 +894,7 @@ public class BooksOnBookshelf
                         intent.putExtra(StandardDialogs.BKEY_DIALOG_TITLE,
                                         rowData.getString(DBDefinitions.KEY_PUBLISHER_NAME))
                               .putExtra(Book.BKEY_BOOK_ID_ARRAY,
-                                        mModel.getDb().getBookIdsByPublisher(publisherId));
+                                        mModel.getBookIdsByPublisher(publisherId));
                         break;
                     }
                     default: {
@@ -928,7 +928,7 @@ public class BooksOnBookshelf
                 final long seriesId = rowData.getLong(DBDefinitions.KEY_FK_SERIES);
                 // toggle the complete status
                 final boolean status = !rowData.getBoolean(DBDefinitions.KEY_SERIES_IS_COMPLETE);
-                if (mModel.getDb().setSeriesComplete(seriesId, status)) {
+                if (mModel.setSeriesComplete(seriesId, status)) {
                     onBookChange(0, BookChangedListener.SERIES, null);
                 }
                 return true;
@@ -937,7 +937,7 @@ public class BooksOnBookshelf
                 final Series series = mModel.getSeries(rowData);
                 if (series != null) {
                     StandardDialogs.deleteSeries(this, series, () -> {
-                        mModel.getDb().delete(this, series);
+                        mModel.delete(this, series);
                         onBookChange(0, BookChangedListener.SERIES, null);
                     });
                 }
@@ -969,7 +969,7 @@ public class BooksOnBookshelf
                 final long authorId = rowData.getLong(DBDefinitions.KEY_FK_AUTHOR);
                 // toggle the complete status
                 final boolean status = !rowData.getBoolean(DBDefinitions.KEY_AUTHOR_IS_COMPLETE);
-                if (mModel.getDb().setAuthorComplete(authorId, status)) {
+                if (mModel.setAuthorComplete(authorId, status)) {
                     onBookChange(0, BookChangedListener.AUTHOR, null);
                 }
                 return true;
@@ -989,7 +989,7 @@ public class BooksOnBookshelf
                 final Publisher publisher = mModel.getPublisher(rowData);
                 if (publisher != null) {
                     StandardDialogs.deletePublisher(this, publisher, () -> {
-                        mModel.getDb().delete(this, publisher);
+                        mModel.delete(this, publisher);
                         onBookChange(0, BookChangedListener.PUBLISHER, null);
                     });
                 }

@@ -201,9 +201,10 @@ public class BooklistBuilder
      * @param bookshelf    the current bookshelf
      * @param rebuildState booklist state to use in next rebuild.
      */
-    public BooklistBuilder(@NonNull final BooklistStyle style,
+    public BooklistBuilder(@NonNull final SynchronizedDb syncDb,
+                           @NonNull final BooklistStyle style,
                            @NonNull final Bookshelf bookshelf,
-                           @BooklistBuilder.ListRebuildMode final int rebuildState) {
+                           @ListRebuildMode final int rebuildState) {
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_THE_BUILDER) {
             Log.d(TAG, "ENTER|BooklistBuilder"
@@ -211,19 +212,19 @@ public class BooklistBuilder
                        + "|instances: " + DEBUG_INSTANCE_COUNTER.incrementAndGet(),
                   new Throwable());
         }
+
         // Allocate ID
         mInstanceId = ID_COUNTER.incrementAndGet();
-
-        mRebuildState = rebuildState;
+        mSyncedDb = syncDb;
         mStyle = style;
-        // Filter on the specified Bookshelf.
         mBookshelf = bookshelf;
-        // The filter will only be added if the current style does not contain the Bookshelf group.
-        if (!bookshelf.isAllBooks() && !mStyle.containsGroup(BooklistGroup.BOOKSHELF)) {
-            mFilters.add(c -> '(' + TBL_BOOKSHELF.dot(KEY_PK_ID) + '=' + bookshelf.getId() + ')');
-        }
+        mRebuildState = rebuildState;
 
-        mSyncedDb = SynchronizedDb.getInstance(DAO.SYNCHRONIZER);
+        // Filter on the specified Bookshelf.
+        // The filter will only be added if the current style does not contain the Bookshelf group.
+        if (!mBookshelf.isAllBooks() && !mStyle.containsGroup(BooklistGroup.BOOKSHELF)) {
+            mFilters.add(c -> '(' + TBL_BOOKSHELF.dot(KEY_PK_ID) + '=' + mBookshelf.getId() + ')');
+        }
     }
 
     /**
