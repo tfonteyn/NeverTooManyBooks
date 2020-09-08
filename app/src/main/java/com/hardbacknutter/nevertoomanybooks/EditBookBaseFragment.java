@@ -210,10 +210,12 @@ public abstract class EditBookBaseFragment
 
     /**
      * Setup an adapter for the AutoCompleteTextView, using the (optional) formatter.
+     * <p>
+     * Dev. note: a Supplier is used so we don't load the list if the Field is actually not in use
      *
      * @param preferences SharedPreferences
      * @param field       to setup
-     * @param list        supplier with auto complete values
+     * @param list        Supplier with auto complete values
      */
     void addAutocomplete(@NonNull final SharedPreferences preferences,
                          @NonNull final Field<String, AutoCompleteTextView> field,
