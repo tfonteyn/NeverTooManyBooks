@@ -110,6 +110,6 @@ public class TocEntryCoder
                + ' ' + getObjectSeparator()
                // we only use the name here
                + ' ' + new StringList<>(new AuthorCoder())
-                       .encodeElement(tocEntry.getAuthor());
+                       .encodeElement(tocEntry.getPrimaryAuthor());
     }
 }

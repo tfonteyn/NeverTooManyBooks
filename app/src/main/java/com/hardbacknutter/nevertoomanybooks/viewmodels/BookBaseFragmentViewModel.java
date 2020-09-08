@@ -26,10 +26,12 @@ import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModel;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
+import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.fields.Fields;
 
 /**
@@ -46,7 +48,7 @@ public abstract class BookBaseFragmentViewModel
     private static final String TAG = "BookBaseFragmentVM";
 
     /**
-     * The fields collection handled in this model. They key is the fragment tag.
+     * The fields collection handled in this model. The key is the fragment tag.
      * We're not actually using this as a map, as we're only ever storing one
      * set of fields. The Map setup is a left-over from a previous approach and might
      * make a comeback. So... keeping it for now.
@@ -90,6 +92,12 @@ public abstract class BookBaseFragmentViewModel
         return fields;
     }
 
+    @NonNull
+    public List<Bookshelf> getAllBookshelves() {
+        // not cached.
+        // This allows the user to edit the global list of shelves while editing a book.
+        return mDb.getBookshelves();
+    }
 
     /**
      * Retrieve the previously set cover handler index.

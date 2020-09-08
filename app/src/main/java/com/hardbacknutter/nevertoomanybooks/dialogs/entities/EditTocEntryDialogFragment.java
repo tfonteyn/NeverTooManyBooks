@@ -129,7 +129,7 @@ public class EditTocEntryDialogFragment
             mTitle = mTocEntry.getTitle();
             mFirstPublication = mTocEntry.getFirstPublication();
             //noinspection ConstantConditions
-            mAuthorName = mTocEntry.getAuthor().getLabel(getContext());
+            mAuthorName = mTocEntry.getPrimaryAuthor().getLabel(getContext());
         } else {
             mTitle = savedInstanceState.getString(DBDefinitions.KEY_TITLE);
             mFirstPublication = savedInstanceState
@@ -201,7 +201,7 @@ public class EditTocEntryDialogFragment
         //noinspection ConstantConditions
         if (mTocEntry.getTitle().equals(mTitle)
             && mTocEntry.getFirstPublication().equals(mFirstPublication)
-            && mTocEntry.getAuthor().getLabel(getContext()).equals(mAuthorName)) {
+            && mTocEntry.getPrimaryAuthor().getLabel(getContext()).equals(mAuthorName)) {
             return true;
         }
 
@@ -209,7 +209,7 @@ public class EditTocEntryDialogFragment
         mTocEntry.setTitle(mTitle);
         mTocEntry.setFirstPublication(mFirstPublication);
         if (mHasMultipleAuthors) {
-            mTocEntry.setAuthor(Author.from(mAuthorName));
+            mTocEntry.setPrimaryAuthor(Author.from(mAuthorName));
         }
 
         // We don't update/insert to the database here, but just send the data back.

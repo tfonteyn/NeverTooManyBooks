@@ -121,8 +121,8 @@ class OpenLibrarySearchEngineTest
         assertEquals("The psychology of slow reading", tocs.get(3).getTitle());
         assertEquals("The practice of slow reading.", tocs.get(4).getTitle());
 
-        assertEquals("Miedema", tocs.get(0).getAuthor().getFamilyName());
-        assertEquals("John", tocs.get(0).getAuthor().getGivenNames());
+        assertEquals("Miedema", tocs.get(0).getPrimaryAuthor().getFamilyName());
+        assertEquals("John", tocs.get(0).getPrimaryAuthor().getGivenNames());
         assertEquals(Author.TYPE_UNKNOWN, authors.get(0).getType());
     }
 }

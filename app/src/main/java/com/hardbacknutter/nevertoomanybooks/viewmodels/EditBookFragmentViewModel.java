@@ -26,7 +26,6 @@ import androidx.annotation.NonNull;
 import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
-import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 
 public class EditBookFragmentViewModel
@@ -53,13 +52,6 @@ public class EditBookFragmentViewModel
 
     /** Field drop down list. */
     private List<String> mAuthorNames;
-
-    @NonNull
-    public List<Bookshelf> getAllBookshelves() {
-        // not cached.
-        // This allows the user to edit the global list of shelves while editing a book.
-        return mDb.getBookshelves();
-    }
 
     @NonNull
     public List<String> getAllAuthorNames() {
@@ -112,19 +104,6 @@ public class EditBookFragmentViewModel
     }
 
     /**
-     * Load a currency list.
-     *
-     * @return List of ISO currency codes
-     */
-    @NonNull
-    public List<String> getAllListPriceCurrencyCodes() {
-        if (mListPriceCurrencies == null) {
-            mListPriceCurrencies = mDb.getCurrencyCodes(DBDefinitions.KEY_PRICE_LISTED_CURRENCY);
-        }
-        return mListPriceCurrencies;
-    }
-
-    /**
      * Load a genre list.
      *
      * @return List of genres
@@ -148,6 +127,19 @@ public class EditBookFragmentViewModel
             mLocations = mDb.getLocations();
         }
         return mLocations;
+    }
+
+    /**
+     * Load a currency list.
+     *
+     * @return List of ISO currency codes
+     */
+    @NonNull
+    public List<String> getAllListPriceCurrencyCodes() {
+        if (mListPriceCurrencies == null) {
+            mListPriceCurrencies = mDb.getCurrencyCodes(DBDefinitions.KEY_PRICE_LISTED_CURRENCY);
+        }
+        return mListPriceCurrencies;
     }
 
     /**

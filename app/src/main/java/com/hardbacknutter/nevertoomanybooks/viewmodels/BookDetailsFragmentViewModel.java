@@ -24,13 +24,14 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.util.Pair;
 import androidx.fragment.app.Fragment;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.FlattenedBooklist;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
-import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
+import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 
 public class BookDetailsFragmentViewModel
         extends BookBaseFragmentViewModel {
@@ -110,7 +111,7 @@ public class BookDetailsFragmentViewModel
     }
 
     @NonNull
-    public ArrayList<Bookshelf> getBookshelves() {
-        return mDb.getBookshelves();
+    public List<Pair<Long, String>> getBookTitles(@NonNull final TocEntry tocEntry) {
+        return tocEntry.getBookTitles(mDb);
     }
 }

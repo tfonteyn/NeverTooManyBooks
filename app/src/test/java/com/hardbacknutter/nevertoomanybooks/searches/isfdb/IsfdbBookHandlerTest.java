@@ -132,8 +132,8 @@ class IsfdbBookHandlerTest
         assertEquals("1957", entry.getFirstPublication());
         // don't do this, the first pub date is read as a year-string only.
         //assertEquals("1957-01-01", entry.getFirstPublication());
-        assertEquals("Russell", entry.getAuthor().getFamilyName());
-        assertEquals("Eric Frank", entry.getAuthor().getGivenNames());
+        assertEquals("Russell", entry.getPrimaryAuthor().getFamilyName());
+        assertEquals("Eric Frank", entry.getPrimaryAuthor().getGivenNames());
     }
 
     @Test
@@ -187,8 +187,8 @@ class IsfdbBookHandlerTest
         TocEntry entry = toc.get(0);
         assertEquals("Mort", entry.getTitle());
         assertEquals("1987", entry.getFirstPublication());
-        assertEquals("Pratchett", entry.getAuthor().getFamilyName());
-        assertEquals("Terry", entry.getAuthor().getGivenNames());
+        assertEquals("Pratchett", entry.getPrimaryAuthor().getFamilyName());
+        assertEquals("Terry", entry.getPrimaryAuthor().getGivenNames());
     }
 
     @Test
@@ -243,12 +243,12 @@ class IsfdbBookHandlerTest
         TocEntry entry = toc.get(0);
         assertEquals("The Shepherd's Crown", entry.getTitle());
         assertEquals("2015", entry.getFirstPublication());
-        assertEquals("Pratchett", entry.getAuthor().getFamilyName());
-        assertEquals("Terry", entry.getAuthor().getGivenNames());
+        assertEquals("Pratchett", entry.getPrimaryAuthor().getFamilyName());
+        assertEquals("Terry", entry.getPrimaryAuthor().getGivenNames());
         entry = toc.get(1);
         assertEquals("Afterword (The Shepherd's Crown)", entry.getTitle());
         assertEquals("2015", entry.getFirstPublication());
-        assertEquals("Wilkins", entry.getAuthor().getFamilyName());
-        assertEquals("Rob", entry.getAuthor().getGivenNames());
+        assertEquals("Wilkins", entry.getPrimaryAuthor().getFamilyName());
+        assertEquals("Rob", entry.getPrimaryAuthor().getGivenNames());
     }
 }

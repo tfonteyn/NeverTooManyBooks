@@ -42,7 +42,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Entity;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
-import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 public final class StandardDialogs {
@@ -167,18 +166,20 @@ public final class StandardDialogs {
      * Ask the user to confirm a delete.
      *
      * @param context   Current context
-     * @param tocEntry  TocEntry we're about to delete
+     * @param title     Title of the item we're about to delete
+     * @param author    of the item we're about to delete
      * @param onConfirm Runnable to execute if the user clicks the confirm button.
      */
     public static void deleteTocEntry(@NonNull final Context context,
-                                      @NonNull final TocEntry tocEntry,
+                                      @NonNull final String title,
+                                      @NonNull final Author author,
                                       @NonNull final Runnable onConfirm) {
         new MaterialAlertDialogBuilder(context)
                 .setIcon(R.drawable.ic_warning)
                 .setTitle(R.string.action_delete)
                 .setMessage(context.getString(R.string.confirm_delete_toc_entry,
-                                              tocEntry.getLabel(context),
-                                              tocEntry.getAuthor().getLabel(context)))
+                                              title,
+                                              author.getLabel(context)))
                 .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
                 .setPositiveButton(android.R.string.ok, (d, w) -> onConfirm.run())
                 .create()

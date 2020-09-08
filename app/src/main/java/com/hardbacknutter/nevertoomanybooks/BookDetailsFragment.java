@@ -333,7 +333,7 @@ public class BookDetailsFragment
 
         // Personal fields
         fields.add(R.id.bookshelves, new EntityListChipGroupAccessor(
-                           () -> new ArrayList<>(mFragmentVM.getBookshelves()),
+                           () -> new ArrayList<>(mFragmentVM.getAllBookshelves()),
                            false), Book.BKEY_BOOKSHELF_ARRAY,
                    DBDefinitions.KEY_FK_BOOKSHELF)
               .setRelatedFields(R.id.lbl_bookshelves);
@@ -597,15 +597,14 @@ public class BookDetailsFragment
 
                 //noinspection ConstantConditions
                 rowVb.title.setText(tocEntry.getLabel(context));
-                rowVb.author.setText(tocEntry.getAuthor().getLabel(context));
+                rowVb.author.setText(tocEntry.getPrimaryAuthor().getLabel(context));
 
                 final boolean isSet = tocEntry.getBookCount() > 1;
                 if (isSet) {
                     rowVb.cbxMultipleBooks.setVisibility(View.VISIBLE);
                     rowVb.cbxMultipleBooks.setOnClickListener(v -> {
                         final String titles =
-                                Csv.textList(context,
-                                             tocEntry.getBookTitles(mBookViewModel.getDb()),
+                                Csv.textList(context, mFragmentVM.getBookTitles(tocEntry),
                                              element -> element.second);
                         StandardDialogs.infoPopup(rowVb.cbxMultipleBooks, titles);
                     });

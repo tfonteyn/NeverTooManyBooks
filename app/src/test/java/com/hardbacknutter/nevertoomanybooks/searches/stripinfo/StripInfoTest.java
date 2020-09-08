@@ -292,7 +292,7 @@ class StripInfoTest
         assertEquals("16 De nacht van de Magiërs", tocs.get(2).getTitle());
         assertEquals("17 De Woestijnroos", tocs.get(3).getTitle());
 
-        assertEquals("Culliford", tocs.get(0).getAuthor().getFamilyName());
+        assertEquals("Culliford", tocs.get(0).getPrimaryAuthor().getFamilyName());
 
         final ArrayList<Series> allSeries = mRawData.getParcelableArrayList(Book.BKEY_SERIES_ARRAY);
         assertNotNull(allSeries);
@@ -349,7 +349,7 @@ class StripInfoTest
         assertEquals("2 De afrekening", tocs.get(1).getTitle());
         assertEquals("3 De ontmaskering", tocs.get(2).getTitle());
 
-        assertEquals("Greg", tocs.get(0).getAuthor().getFamilyName());
+        assertEquals("Greg", tocs.get(0).getPrimaryAuthor().getFamilyName());
 
         final ArrayList<Series> allSeries = mRawData.getParcelableArrayList(Book.BKEY_SERIES_ARRAY);
         assertNotNull(allSeries);

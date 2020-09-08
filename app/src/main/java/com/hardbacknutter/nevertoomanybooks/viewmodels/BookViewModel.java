@@ -143,10 +143,6 @@ public class BookViewModel
         }
     }
 
-    public DAO getDb() {
-        return mDb;
-    }
-
     /**
      * Add the DATA validators (not field validators) to the book.
      * This cannot be undone during an edit session.
