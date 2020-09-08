@@ -437,7 +437,7 @@ public class BooklistAdapter
                     return context.getString(R.string.unknown);
                 } else {
                     try {
-                        int i = Integer.parseInt(text);
+                        final int i = Integer.parseInt(text);
                         return context.getResources().getStringArray(R.array.conditions_book)[i];
                     } catch (@NonNull final NumberFormatException
                             | IndexOutOfBoundsException ignore) {
@@ -452,7 +452,7 @@ public class BooklistAdapter
                 } else {
                     try {
                         // Locale independent.
-                        int i = Integer.parseInt(text);
+                        final int i = Integer.parseInt(text);
                         // If valid, get the name
                         if (i >= 0 && i <= Book.RATING_STARS) {
                             return context.getResources()
@@ -495,7 +495,7 @@ public class BooklistAdapter
                     return context.getString(R.string.hint_empty_month);
                 } else {
                     try {
-                        int m = Integer.parseInt(text);
+                        final int m = Integer.parseInt(text);
                         // If valid, get the short name
                         if (m > 0 && m <= 12) {
                             return Month.of(m).getDisplayName(TextStyle.FULL_STANDALONE, tmpLocale);
@@ -1217,8 +1217,7 @@ public class BooklistAdapter
         void onBindViewHolder(final int position,
                               @NonNull final DataHolder rowData,
                               @NonNull final BooklistStyle style) {
-            final int rating = rowData.getInt(mKey);
-            mRatingBar.setRating(rating);
+            mRatingBar.setRating(rowData.getInt(mKey));
         }
     }
 
@@ -1412,7 +1411,7 @@ public class BooklistAdapter
             // It should be done using the Series language
             // but as long as we don't store the Series language there is no point
             @Nullable
-            Locale bookLocale = AppLocale.getInstance().getLocale(context, mBookLanguage);
+            final Locale bookLocale = AppLocale.getInstance().getLocale(context, mBookLanguage);
             return mAdapter.format(context, mGroupKeyId, text, bookLocale);
         }
     }
