@@ -200,7 +200,8 @@ public class BooksOnBookshelfModel
         // Set the last/preferred bookshelf if not explicitly set above
         if (mBookshelf == null) {
             mBookshelf = Bookshelf.getBookshelf(context, mDb, Bookshelf.PREFERRED,
-                                                Bookshelf.ALL_BOOKS);
+                                                // or use the default == first start
+                                                Bookshelf.DEFAULT);
         }
 
 
