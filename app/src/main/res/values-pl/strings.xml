@@ -110,7 +110,7 @@
     <string name="error_site_authentication_failed">Uwierzytelnienie %1$s nie powiodło się</string>
     <string name="error_site_authorization_failed">Autoryzacja %1$s spowodowała błąd.</string>
     <string name="error_storage_no_space_left">Niewystarczająca pamięć dostępna</string>
-    <string name="error_storage_not_accessible">Pamięć niedostępna</string>
+    <string name="error_storage_not_accessible">Pamięć niedostępna: %1$s</string>
     <string name="error_storage_not_readable">Sprawdź, czy pamięć jest dostępna.</string>
     <string name="error_storage_not_writable">Sprawdź, czy pamięć jest zapisywalna i czy ma wystarczającą ilość miejsca.</string>
     <string name="error_unexpected_error">Wystąpił nieoczekiwany błąd, wyślij szczegóły do pomocy poprzez stronę „Administracja” z menu głównego.</string>

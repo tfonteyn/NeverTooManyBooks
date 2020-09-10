@@ -89,9 +89,9 @@ public class StartupActivity
         super.onCreate(savedInstanceState);
 
         // can't function without access to custom directories
-        final int msgId = AppDir.init(this);
-        if (msgId != 0) {
-            showFatalErrorAndFinish(getString(msgId));
+        final String msg = AppDir.init(this);
+        if (msg != null) {
+            showFatalErrorAndFinish(msg);
             return;
         }
 

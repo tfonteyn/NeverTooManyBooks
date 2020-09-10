@@ -110,7 +110,7 @@
     <string name="error_site_authentication_failed">Ověření %1$s se nezdařilo</string>
     <string name="error_site_authorization_failed">%1$s autorizace skončila chybou.</string>
     <string name="error_storage_no_space_left">Nedostatečné úložiště</string>
-    <string name="error_storage_not_accessible">Úložiště není přístupné</string>
+    <string name="error_storage_not_accessible">Úložiště není přístupné: %1$s</string>
     <string name="error_storage_not_readable">Zkontrolujte, zda je úložiště přístupné.</string>
     <string name="error_storage_not_writable">Zkontrolujte, zda je úložiště zapisovatelné a má dostatek místa.</string>
     <string name="error_unexpected_error">Došlo k neočekávané chybě, prosím zašlete nám detaily o této chybě prostřednictvím „Admin“ v hlavním menu.</string>

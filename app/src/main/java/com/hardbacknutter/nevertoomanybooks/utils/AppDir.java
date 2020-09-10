@@ -27,7 +27,6 @@ import android.provider.MediaStore;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -160,13 +159,14 @@ public enum AppDir {
      *
      * @param context Current context
      *
-     * @return {@code 0} for all ok, or a StringRes with the appropriate error.
+     * @return {@code null} for all ok, or a user displayable error.
      */
-    @StringRes
-    public static int init(@NonNull final Context context) {
+    @Nullable
+    public static String init(@NonNull final Context context) {
 
         if (!Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {
-            return R.string.error_storage_not_accessible;
+            return context.getString(R.string.error_storage_not_accessible,
+                                     context.getString(R.string.unknown));
         }
 
         try {
@@ -178,7 +178,7 @@ public enum AppDir {
             for (AppDir appDir : appDirs) {
                 final File dir = appDir.get(context);
                 if (!(dir.isDirectory() || dir.mkdirs())) {
-                    return R.string.error_storage_not_writable;
+                    return context.getString(R.string.error_storage_not_writable);
                 }
             }
 
@@ -186,15 +186,15 @@ public enum AppDir {
             //noinspection ResultOfMethodCallIgnored
             Covers.getFile(context, MediaStore.MEDIA_IGNORE_FILENAME).createNewFile();
 
-            return 0;
+            return null;
 
         } catch (@NonNull final ExternalStorageException e) {
             // Don't log, we don't have a log!
-            return R.string.error_storage_not_writable;
+            return context.getString(R.string.error_storage_not_writable);
 
         } catch (@NonNull final IOException | SecurityException e) {
             Logger.error(context, TAG, e, "init failed");
-            return R.string.error_storage_not_writable;
+            return context.getString(R.string.error_storage_not_writable);
         }
     }
 
@@ -251,7 +251,9 @@ public enum AppDir {
         }
 
         if (mDir == null) {
-            throw new ExternalStorageException(this.toString());
+            final String msg = context.getString(R.string.error_storage_not_accessible,
+                                                 this.toString());
+            throw new ExternalStorageException(msg);
         }
         return mDir;
     }

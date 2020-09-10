@@ -111,7 +111,7 @@
     <string name="error_site_authentication_failed">Autenticazione %1$s non riuscita</string>
     <string name="error_site_authorization_failed">Errore durante l\'autorizzazione di %1$s.</string>
     <string name="error_storage_no_space_left">Spazio disponibile insufficiente</string>
-    <string name="error_storage_not_accessible">Archiviazione non accessibile</string>
+    <string name="error_storage_not_accessible">Archiviazione non accessibile: %1$s</string>
     <string name="error_storage_not_readable">Si prega di verificare che lo spazio di archiviazione sia accessibile.</string>
     <string name="error_storage_not_writable">Verifica che lo spazio di archiviazione sia scrivibile e che disponga di spazio sufficiente.</string>
     <string name="error_unexpected_error">Si è verificato un errore inatteso, per favore invia i dettagli all\'Assistenza usando l\'opzione «Amministratore» nel menu principale</string>

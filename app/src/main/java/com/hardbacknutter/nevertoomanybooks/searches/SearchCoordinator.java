@@ -74,6 +74,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.NetworkUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.BooksOnBookshelfModel;
 
 /**
@@ -1136,12 +1137,13 @@ public class SearchCoordinator
 
                 final String error;
                 if (exception == null) {
-                    error = context.getString(R.string.warning_task_cancelled);
+                    error = context.getString(R.string.error_search_x_failed_y, engineName,
+                                              context.getString(R.string.warning_task_cancelled));
                 } else {
                     error = createSiteError(context, engineName, exception);
                 }
 
-                sb.append(context.getString(R.string.error_search_x_failed_y, engineName, error))
+                sb.append(error)
                   .append('\n');
             }
             errorMessage = sb.toString();
@@ -1160,21 +1162,29 @@ public class SearchCoordinator
      * @return user-friendly error message for the given site
      */
     private String createSiteError(@NonNull final Context context,
-                                   @NonNull final String siteName,
+                                   @NonNull final String engineName,
                                    @NonNull final Exception exception) {
         final String text;
         if (exception instanceof CredentialsException) {
-            text = context.getString(R.string.error_site_authentication_failed, siteName);
+            text = context.getString(R.string.error_site_authentication_failed, engineName);
+
         } else if (exception instanceof SocketTimeoutException) {
             text = context.getString(R.string.error_network_timeout);
+
         } else if (exception instanceof MalformedURLException) {
             text = context.getString(R.string.error_search_failed_network);
+
         } else if (exception instanceof UnknownHostException) {
             text = context.getString(R.string.error_search_failed_network);
+
+        } else if (exception instanceof ExternalStorageException) {
+            text = exception.getLocalizedMessage();
+
         } else if (exception instanceof IOException) {
             //ENHANCE: if (exception.getCause() instanceof ErrnoException) {
             //           int errno = ((ErrnoException) exception.getCause()).errno;
             text = context.getString(R.string.error_search_failed_network);
+
         } else {
             if (BuildConfig.DEBUG /* always */) {
                 // in debug mode we add the raw exception
@@ -1188,7 +1198,7 @@ public class SearchCoordinator
             }
         }
 
-        return text;
+        return context.getString(R.string.error_search_x_failed_y, engineName, text);
     }
 
     /**

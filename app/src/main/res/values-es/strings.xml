@@ -112,7 +112,7 @@
     <string name="error_site_authentication_failed">%1$s autenticación fallida</string>
     <string name="error_site_authorization_failed">Error de autorización en %1$s.</string>
     <string name="error_storage_no_space_left">Almacenamiento insuficiente disponible</string>
-    <string name="error_storage_not_accessible">Almacenamiento no accesible</string>
+    <string name="error_storage_not_accessible">Almacenamiento no accesible: %1$s</string>
     <string name="error_storage_not_readable">Por favor, compruebe que el almacenamiento es accesible.</string>
     <string name="error_storage_not_writable">Por favor, compruebe que el almacenamiento es grabable y tiene espacio suficiente.</string>
     <string name="error_unexpected_error">Se ha producido un error inesperado. Por favor, envíe los detalles a soporte utilizando la opción «Admin» del menú principal</string>

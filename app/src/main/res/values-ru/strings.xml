@@ -110,7 +110,7 @@
     <string name="error_site_authentication_failed">%1$s аутентификация не удалась</string>
     <string name="error_site_authorization_failed">Авторизация %1$s завершилась с ошибкой.</string>
     <string name="error_storage_no_space_left">Недостаточно места</string>
-    <string name="error_storage_not_accessible">Хранение недоступно</string>
+    <string name="error_storage_not_accessible">Хранение недоступно: %1$s</string>
     <string name="error_storage_not_readable">Пожалуйста, проверьте, что хранилище доступно.</string>
     <string name="error_storage_not_writable">Пожалуйста, проверьте, что хранилище доступно для записи и имеет достаточно места.</string>
     <string name="error_unexpected_error">Случилась неожиданная ошибка, пожалуйста, отошлите детали в поддержку, используя меню «Настройки» из Главного меню</string>

@@ -113,7 +113,7 @@
     <string name="error_site_authentication_failed">Authentifizierung bei %1$s fehlgeschlagen</string>
     <string name="error_site_authorization_failed">Die Autorisierung bei %1$s endete fehlerhaft</string>
     <string name="error_storage_no_space_left">Nicht genügend Speicher verfügbar</string>
-    <string name="error_storage_not_accessible">Speicher nicht zugänglich</string>
+    <string name="error_storage_not_accessible">Speicher nicht zugänglich: %1$s</string>
     <string name="error_storage_not_readable">Bitte überprüfen Sie, ob der Speicher verfügbar ist.</string>
     <string name="error_storage_not_writable">Bitte überprüfen Sie, ob der Speicher beschreibbar ist und über ausreichend Speicherplatz verfügt.</string>
     <string name="error_unexpected_error">Ein unerwarteter Fehler ist aufgetreten. Bitte senden Sie die Details an den Support über den  Eintrag „Verwaltung“ in Hauptmenü</string>
