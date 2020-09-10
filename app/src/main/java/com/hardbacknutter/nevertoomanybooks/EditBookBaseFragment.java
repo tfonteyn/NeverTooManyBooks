@@ -137,6 +137,7 @@ public abstract class EditBookBaseFragment
     public void onCreateOptionsMenu(@NonNull final Menu menu,
                                     @NonNull final MenuInflater inflater) {
         inflater.inflate(R.menu.toolbar_save, menu);
+        MenuHandler.prepareMenuSelectButton(menu, this::onOptionsItemSelected);
         super.onCreateOptionsMenu(menu, inflater);
     }
 

@@ -33,6 +33,7 @@ import androidx.preference.PreferenceManager;
 import com.google.android.material.snackbar.Snackbar;
 
 import com.hardbacknutter.nevertoomanybooks.BaseActivity;
+import com.hardbacknutter.nevertoomanybooks.MenuHandler;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.databinding.ActivityLibrarythingRegisterBinding;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineRegistry;
@@ -108,6 +109,7 @@ public class LibraryThingRegistrationActivity
     @Override
     public boolean onCreateOptionsMenu(@NonNull final Menu menu) {
         getMenuInflater().inflate(R.menu.toolbar_validate, menu);
+        MenuHandler.prepareMenuSelectButton(menu, this::onOptionsItemSelected);
         return super.onCreateOptionsMenu(menu);
     }
 

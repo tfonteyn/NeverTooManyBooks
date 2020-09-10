@@ -46,6 +46,7 @@ import com.google.android.material.textfield.TextInputLayout;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.BaseActivity;
+import com.hardbacknutter.nevertoomanybooks.MenuHandler;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.utils.AttrUtils;
 
@@ -145,6 +146,7 @@ public abstract class BaseDialogFragment
         final Toolbar toolbar = Objects.requireNonNull(view.findViewById(R.id.toolbar));
         toolbar.setNavigationOnClickListener(this::onToolbarNavigationClick);
         toolbar.setOnMenuItemClickListener(this::onToolbarMenuItemClick);
+        MenuHandler.prepareMenuSelectButton(toolbar.getMenu(), this::onToolbarMenuItemClick);
 
         @Nullable
         final View buttonPanel = view.findViewById(R.id.buttonPanel);

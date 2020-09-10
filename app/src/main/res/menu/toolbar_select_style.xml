@@ -24,6 +24,7 @@
     <item
         android:id="@id/MENU_ACTION_CONFIRM"
         android:title="@string/action_select"
+        app:actionLayout="@layout/mnu_btn_confirm"
         app:showAsAction="always" />
     <item
         android:id="@id/MENU_EDIT"
