@@ -31,10 +31,5 @@
         <item name="android:inputType">textCapSentences</item>
     </style>
 
-    <!-- The book format field. -->
-    <style name="bookFormatTextEntry" parent="@style/EditText.AutoComplete">
-        <item name="android:inputType">textCapSentences</item>
-    </style>
-
 </resources>
 
