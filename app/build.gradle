@@ -83,17 +83,19 @@ if (project.hasProperty("NeverTooManyBooks.apiKeys")
 }
 
 android {
+    // show-stopper bug preventing to use API 30:
+    // https://issuetracker.google.com/issues/162838995
     compileSdkVersion 29
 
     // another site: https://gs.statcounter.com/
     // https://gs.statcounter.com/os-version-market-share/android/mobile-tablet/worldwide
-    // 2020-08-13 world wide:
-    // 10.0     25.32
-    // 9.0      55.73
-    // 8.1      67.22
-    // 8.0      74.00
-    // 7.0      79.79
-    // 6.0      87.93
+    // 2020-09-08 world wide:
+    // 10.0     29.04
+    // 9.0      57.23
+    // 8.1      68.43
+    // 8.0      74.98
+    // 7.0      80.53
+    // 6.0      88.40
 
     //  2020-04-11.: from Android Studio 'new project' page
     //  A       API     %
@@ -110,6 +112,8 @@ android {
     defaultConfig {
         applicationId 'com.hardbacknutter.nevertoomanybooks'
         minSdkVersion 23
+        // show-stopper bug preventing to use API 30:
+        // https://issuetracker.google.com/issues/162838995
         targetSdkVersion 29
         multiDexEnabled true
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
