@@ -543,6 +543,7 @@ public class RowStateDAO
         String nodeKey = node.getKey();
 
         // levels are 1.. based; start with lowest level above books, working up to root.
+        // Pair: rowId/Level
         final Deque<Pair<Long, Integer>> nodes = new ArrayDeque<>();
         for (int level = node.getLevel() - 1; level >= 1; level--) {
             try (Cursor cursor = mSyncedDb.rawQuery(mSqlEnsureNodeIsVisible,
@@ -561,7 +562,7 @@ public class RowStateDAO
             setNode(n.first, n.second,
                     // Expand (and make visible) the given node
                     true,
-                    // do this for only ONE level below the current node
+                    // do this for only ONE level
                     1);
         }
     }
