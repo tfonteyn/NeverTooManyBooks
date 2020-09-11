@@ -860,19 +860,6 @@ public class BooksOnBookshelfModel
     }
 
     /**
-     * Get the list cursor.
-     * <p>
-     * Note this is a {@link BooklistCursor}
-     *
-     * @return cursor
-     */
-    @NonNull
-    public BooklistCursor getListCursor() {
-        Objects.requireNonNull(mBuilder, ErrorMsg.NULL_BUILDER);
-        return mBuilder.getListCursor();
-    }
-
-    /**
      * Create a new list cursor.
      * <p>
      * Note this is a {@link BooklistCursor}

@@ -254,7 +254,6 @@ public class BooksOnBookshelf
                 @Override
                 public void onItemClick(final int position) {
                     final Cursor cursor = mAdapter.getCursor();
-                    Objects.requireNonNull(cursor, ErrorMsg.NULL_CURSOR);
                     // Move the cursor, so we can read the data for this row.
                     // Paranoia: if the user can click it, then this move should be fine.
                     if (!cursor.moveToPosition(position)) {
@@ -291,7 +290,6 @@ public class BooksOnBookshelf
                 @Override
                 public boolean onItemLongClick(final int position) {
                     final Cursor cursor = mAdapter.getCursor();
-                    Objects.requireNonNull(cursor, ErrorMsg.NULL_CURSOR);
                     // Move the cursor, so we can read the data for this row.
                     // Paranoia: if the user can click it, then this move should be fine.
                     if (!cursor.moveToPosition(position)) {
@@ -450,13 +448,13 @@ public class BooksOnBookshelf
      * @param cursor to use, or {@code null} for initial creation.
      */
     public void createAdapter(@Nullable final Cursor cursor) {
-        mAdapter = new BooklistAdapter(this, mModel.getCurrentStyle(this));
+        mAdapter = new BooklistAdapter(this);
         mVb.list.setAdapter(mAdapter);
         // No, we do NOT have a fixed size for each row
         //mVb.list.setHasFixedSize(false);
         if (cursor != null) {
             mAdapter.setOnRowClickedListener(mOnRowClickedListener);
-            mAdapter.setCursor(cursor);
+            mAdapter.setCursor(this, cursor, mModel.getCurrentStyle(this));
         }
     }
 
@@ -770,7 +768,6 @@ public class BooksOnBookshelf
                                           final int position) {
 
         final Cursor cursor = mAdapter.getCursor();
-        Objects.requireNonNull(cursor, ErrorMsg.NULL_CURSOR);
         // Move the cursor, so we can read the data for this row.
         // The majority of the time this is not needed, but a fringe case (toggle node)
         // showed it should indeed be done.
@@ -1348,7 +1345,7 @@ public class BooksOnBookshelf
                 Log.d(TAG, "onResume|reusing existing list");
             }
             // no rebuild needed/done, just let the system redisplay the list state
-            displayList(mModel.getListCursor(), null);
+            displayList(mModel.newListCursor(), null);
         }
     }
 
@@ -1407,7 +1404,7 @@ public class BooksOnBookshelf
             // force the adapter to stop displaying by disabling its cursor.
             // DO NOT REMOVE THE ADAPTER FROM FROM THE VIEW;
             // i.e. do NOT call mVb.list.setAdapter(null)... crashes assured when doing so.
-            mAdapter.setCursor(null);
+            mAdapter.clearCursor();
             mModel.buildBookList();
         }
     }
@@ -1423,7 +1420,7 @@ public class BooksOnBookshelf
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_THE_BUILDER_TIMERS) {
                 Debug.stopMethodTracing();
             }
-            displayList(mModel.getListCursor(), message.result);
+            displayList(mModel.newListCursor(), message.result);
         }
     }
 
@@ -1436,7 +1433,7 @@ public class BooksOnBookshelf
         mVb.progressBar.setVisibility(View.GONE);
         if (message.isNewEvent()) {
             if (mModel.isListLoaded()) {
-                displayList(mModel.getListCursor(), null);
+                displayList(mModel.newListCursor(), null);
             } else {
                 // Something is REALLY BAD
                 throw new IllegalStateException();

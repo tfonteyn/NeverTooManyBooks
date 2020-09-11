@@ -107,17 +107,16 @@ public class BooklistAdapter
     /** Cached inflater. */
     @NonNull
     private final LayoutInflater mInflater;
-    /** A collection of 'in-use' flags for the fields we might display. */
-    @NonNull
-    private final FieldsInUse mFieldsInUse;
     /** Whether to use the covers DAO caching. */
     private final boolean mImageCachingEnabled;
+    private final boolean mReorderTitleForDisplaying;
+    /** A collection of 'in-use' flags for the fields we might display. */
+    private FieldsInUse mFieldsInUse;
     /** List style to apply. */
-    @NonNull
-    private final BooklistStyle mStyle;
-    private final int mThumbnailScale;
+    private BooklistStyle mStyle;
+    private int mThumbnailScale;
     /** Longest side for a cover in pixels. */
-    private final int mCoverLongestSide;
+    private int mCoverLongestSide;
     /** The cursor is the equivalent of the 'list of items'. */
     @Nullable
     private Cursor mCursor;
@@ -128,30 +127,15 @@ public class BooklistAdapter
     @Nullable
     private OnRowClickedListener mOnRowClickedListener;
 
-    private final boolean mReorderTitleForDisplaying;
-
     /**
      * Constructor.
      *
      * @param context Current context
-     * @param style   to use
      */
-    public BooklistAdapter(@NonNull final Context context,
-                           @NonNull final BooklistStyle style) {
-        mStyle = style;
-        // scale defines the layout to use
-        mThumbnailScale = mStyle.getThumbnailScale(context);
-        // and is used to retrieve the cover dimensions
-        // We use a square space for the image so both portrait/landscape images work out.
-        final TypedArray coverSizes = context.getResources()
-                                             .obtainTypedArray(
-                                                     R.array.cover_book_list_longest_side);
-        mCoverLongestSide = coverSizes.getDimensionPixelSize(mThumbnailScale, 0);
-        coverSizes.recycle();
+    public BooklistAdapter(@NonNull final Context context) {
 
         mInflater = LayoutInflater.from(context);
         mUserLocale = AppLocale.getInstance().getUserLocale(context);
-        mFieldsInUse = new FieldsInUse(context, style);
         mImageCachingEnabled = ImageUtils.isImageCachingEnabled(context);
         mLevelIndent = context.getResources().getDimensionPixelSize(R.dimen.bob_level_indent);
 
@@ -159,6 +143,63 @@ public class BooklistAdapter
 
         // getItemId is implemented.
         setHasStableIds(true);
+    }
+
+    /**
+     * Set the Cursor and related BooklistStyle.
+     *
+     * @param cursor cursor with the 'list of items'
+     * @param style  to use.
+     */
+    public void setCursor(@NonNull final Context context,
+                          @NonNull final Cursor cursor,
+                          @NonNull final BooklistStyle style) {
+        // First set the style and prepare the related data
+        mStyle = style;
+        // scale defines the layout to use
+        mThumbnailScale = mStyle.getThumbnailScale(context);
+        // and is used to retrieve the cover dimensions
+        // We use a square space for the image so both portrait/landscape images work out.
+        final TypedArray coverSizes = context
+                .getResources().obtainTypedArray(R.array.cover_book_list_longest_side);
+        mCoverLongestSide = coverSizes.getDimensionPixelSize(mThumbnailScale, 0);
+        coverSizes.recycle();
+        mFieldsInUse = new FieldsInUse(context, mStyle);
+
+        // now the actual new cursor
+        mCursor = cursor;
+        mNodeData = new CursorRow(mCursor);
+
+        notifyDataSetChanged();
+    }
+
+    public void clearCursor() {
+        mCursor = null;
+        mNodeData = null;
+        notifyDataSetChanged();
+    }
+
+    /**
+     * Check if the adapter is ready to serve data.
+     * i.e. if it has a valid Cursor.
+     *
+     * @return cursor
+     */
+    boolean hasCursor() {
+        return mCursor != null;
+    }
+
+    /**
+     * Get the cursor.
+     *
+     * @return cursor
+     *
+     * @throws NullPointerException if the cursor is not initialised - which would be a bug.
+     */
+    @NonNull
+    public Cursor getCursor() {
+        Objects.requireNonNull(mCursor, ErrorMsg.NULL_CURSOR);
+        return mCursor;
     }
 
     @Override
@@ -169,26 +210,6 @@ public class BooklistAdapter
         } else {
             return RecyclerView.NO_ID;
         }
-    }
-
-    @Nullable
-    public Cursor getCursor() {
-        return mCursor;
-    }
-
-    /**
-     * Set or clear the cursor.
-     *
-     * @param cursor cursor with the 'list of items', or {@code null} to clear
-     */
-    public void setCursor(@Nullable final Cursor cursor) {
-        mCursor = cursor;
-        if (mCursor != null) {
-            mNodeData = new CursorRow(mCursor);
-        } else {
-            mNodeData = null;
-        }
-        notifyDataSetChanged();
     }
 
     @Override
@@ -1279,8 +1300,6 @@ public class BooklistAdapter
                 final int rowId = rowData.getInt(DBDefinitions.KEY_PK_ID);
 
                 final BooklistCursor cursor = (BooklistCursor) mAdapter.getCursor();
-                Objects.requireNonNull(cursor, ErrorMsg.NULL_CURSOR);
-
                 final RowStateDAO.Node node = cursor.getBooklistBuilder().getNodeByNodeId(rowId);
                 if (node.isExpanded()) {
                     itemView.setBackgroundColor(Color.GREEN);

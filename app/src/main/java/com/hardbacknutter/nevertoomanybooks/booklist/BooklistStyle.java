@@ -1145,9 +1145,20 @@ public class BooklistStyle
     @NonNull
     BooklistGroup getGroupById(@BooklistGroup.Id final int id) {
         final BooklistGroup group = mStyleGroups.getGroupById(id);
-        //TODO: the group being null has been seen (2020-04-29), but not reproduced yet.
-        // The style definition xml was likely broken, so dump it for investigating.
         if (group == null) {
+            // at BooklistStyle.getGroupById(BooklistStyle.java:1152)
+            // at BooklistAdapter.onCreateViewHolder(BooklistAdapter.java:247)
+            // at BooklistAdapter.onCreateViewHolder(BooklistAdapter.java:96)
+            //
+            // the STYLE is the wrong one...
+            // 2020-09-11: java.lang.IllegalArgumentException: Group was NULL: id=14
+            // 14 is READ_YEAR
+            // but the style dumped was "Books - Author, Series"
+            // so it's the STYLE itself which was wrong...
+            // URGENT: TEST: instead of getListCursor, we're using newListCursor everywhere now.
+            // Seems 'get' -> existing cursor, with link to builder with link to style
+            // while elsewhere we already have a new builder/style.
+            //
             // Don't use Objects.requireNonNull() ... message is evaluated before null test.
             throw new IllegalArgumentException("Group was NULL: id=" + id + ", " + this.toString());
         }

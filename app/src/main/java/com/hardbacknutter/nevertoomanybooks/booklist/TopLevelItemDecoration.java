@@ -67,7 +67,7 @@ public class TopLevelItemDecoration
             return;
         }
         final BooklistAdapter adapter = (BooklistAdapter) parent.getAdapter();
-        if (adapter == null || adapter.getCursor() == null) {
+        if (adapter == null || !adapter.hasCursor()) {
             return;
         }
 

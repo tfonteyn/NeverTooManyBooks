@@ -432,7 +432,7 @@ public class BooklistBuilder
         // block the UI thread while it pages through the entire cursor.
         // Doing it here makes subsequent calls faster.
         //
-        newListCursor().getCount();
+        //newListCursor().getCount();
     }
 
     /**
@@ -580,20 +580,12 @@ public class BooklistBuilder
     }
 
     /**
-     * Get the list cursor. Will be created if needed.
+     * Get the list cursor.
      * <p>
      * Note this is a {@link BooklistCursor}
      *
      * @return cursor
      */
-    @NonNull
-    public BooklistCursor getListCursor() {
-        if (mCursor == null) {
-            mCursor = new BooklistCursor(this);
-        }
-        return mCursor;
-    }
-
     @NonNull
     public BooklistCursor newListCursor() {
         if (mCursor != null) {
