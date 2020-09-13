@@ -57,18 +57,23 @@ import com.hardbacknutter.nevertoomanybooks.database.dbsync.Synchronizer.SyncLoc
 import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.VirtualDomain;
+import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BL_NODE_EXPANDED;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BL_NODE_GROUP;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BL_NODE_KEY;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BL_NODE_LEVEL;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BL_NODE_VISIBLE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_FK_BOOK;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_PK_ID;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BL_LIST_VIEW_NODE_ROW_ID;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BL_NODE_EXPANDED;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BL_NODE_GROUP;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BL_NODE_KEY;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BL_NODE_LEVEL;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BL_NODE_VISIBLE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOK_AUTHOR_POSITION;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOK_AUTHOR_TYPE_BITMASK;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOK_PUBLISHER_POSITION;
@@ -245,7 +250,7 @@ public class BooklistBuilder
     @NonNull
     public String createFlattenedBooklist() {
         // reminder: do not drop this table. It needs to survive beyond the booklist screen.
-        return FlattenedBooklist.createTable(mSyncedDb, mInstanceId, mRowStateDAO, mListTable);
+        return FlattenedBooklist.createTable(mSyncedDb, mInstanceId, mListTable);
     }
 
     /**
@@ -338,6 +343,9 @@ public class BooklistBuilder
         mListTable.addDomain(DOM_PK_ID);
         // {@link BooklistGroup#GroupKey}. The actual value is set on a by-group/book basis.
         mListTable.addDomain(DOM_BL_NODE_KEY);
+        // {@link RowStateDAO}.
+        mListTable.addDomain(DOM_BL_NODE_EXPANDED);
+        mListTable.addDomain(DOM_BL_NODE_VISIBLE);
 
         // Start building the table domains
         final BuildHelper helper = new BuildHelper(context, mListTable, mStyle, mBookshelf);
@@ -371,7 +379,7 @@ public class BooklistBuilder
         helper.addFilters(mFilters);
 
         // Construct the initial insert statement components.
-        final String initialInsertSql = helper.build(context);
+        final String initialInsertSql = helper.build(context, mRebuildState);
 
         // We are good to go.
         long t0 = 0;
@@ -408,13 +416,31 @@ public class BooklistBuilder
             // The list table is now fully populated.
             mSyncedDb.analyze(mListTable);
 
-            // build the row-state table for expansion/visibility tracking
-            // clean up previously used table (if any)
+            // clean up previously used object (if any)
             if (mRowStateDAO != null) {
                 mRowStateDAO.close();
             }
-            mRowStateDAO = new RowStateDAO(mSyncedDb, mInstanceId, mStyle, mBookshelf);
-            mRowStateDAO.build(context, mListTable, mRebuildState);
+            mRowStateDAO = new RowStateDAO(mSyncedDb, mListTable, mStyle, mBookshelf);
+
+            switch (mRebuildState) {
+                case PREF_REBUILD_SAVED_STATE:
+                    // all rows will be collapsed/hidden; restore the saved state
+                    mRowStateDAO.restoreSavedState();
+                    break;
+
+                case PREF_REBUILD_PREFERRED_STATE:
+                    // all rows will be collapsed/hidden; now adjust as required.
+                    mRowStateDAO.expandAllNodes(mStyle.getTopLevel(context), false);
+                    break;
+
+                case PREF_REBUILD_ALWAYS_EXPANDED:
+                case PREF_REBUILD_ALWAYS_COLLAPSED:
+                    // handled during table creation
+                    break;
+
+                default:
+                    throw new IllegalArgumentException(ErrorMsg.UNEXPECTED_VALUE + mRebuildState);
+            }
 
             mSyncedDb.setTransactionSuccessful();
 
@@ -495,13 +521,23 @@ public class BooklistBuilder
             final StringBuilder listColumns = new StringBuilder()
                     .append(KEY_BL_NODE_LEVEL)
                     .append(',').append(KEY_BL_NODE_GROUP)
-                    .append(',').append(KEY_BL_NODE_KEY);
+                    .append(',').append(KEY_BL_NODE_KEY)
+                    .append(',').append(KEY_BL_NODE_EXPANDED)
+                    .append(',').append(KEY_BL_NODE_VISIBLE);
+
+            // PREF_REBUILD_EXPANDED must explicitly be set to 1/1
+            // All others must be set to 0/0. The actual state will be set afterwards.
+            final int expVis = (mRebuildState
+                                == BooklistBuilder.PREF_REBUILD_ALWAYS_EXPANDED) ? 1 : 0;
 
             // Create the VALUES clause for the next level up
             final StringBuilder listValues = new StringBuilder()
                     .append(level)
                     .append(',').append(group.getId())
-                    .append(",NEW.").append(KEY_BL_NODE_KEY);
+                    .append(",NEW.").append(KEY_BL_NODE_KEY)
+                    .append(",").append(expVis)
+                    // level 1 is always visible.
+                    .append(",").append(level == 1 ? 1 : expVis);
 
             // Create the where-clause to detect if the next level up is already defined
             // (by checking the 'current' record/table)
@@ -560,6 +596,7 @@ public class BooklistBuilder
 
         mSyncedDb.execSQL(currentValueTgSql);
     }
+
 
     /**
      * Get the style used by this builder.
@@ -1005,8 +1042,10 @@ public class BooklistBuilder
          * @return initial insert statement
          */
         @NonNull
-        String build(@NonNull final Context context) {
+        String build(@NonNull final Context context,
+                     @ListRebuildMode final int rebuildState) {
 
+            // 'AS' for SQL readability/debug only
             // List of column names for the INSERT INTO... clause
             final StringBuilder destColumns = new StringBuilder();
             // List of expressions for the SELECT... clause.
@@ -1023,15 +1062,36 @@ public class BooklistBuilder
 
                 destColumns.append(domain.getName());
                 sourceColumns.append(domain.getExpression())
-                             // 'AS' for SQL readability/debug only
                              .append(" AS ").append(domain.getName());
             }
 
             // add the node key column
             destColumns.append(',').append(KEY_BL_NODE_KEY);
             sourceColumns.append(',').append(buildNodeKey())
-                         // 'AS' for SQL readability/debug only
                          .append(" AS ").append(DOM_BL_NODE_KEY);
+
+            // and the node state columns
+            destColumns.append(',').append(DOM_BL_NODE_EXPANDED);
+            destColumns.append(',').append(DOM_BL_NODE_VISIBLE);
+
+            // PREF_REBUILD_EXPANDED must explicitly be set to 1/1
+            // All others must be set to 0/0. The actual state will be set afterwards.
+            switch (rebuildState) {
+                case BooklistBuilder.PREF_REBUILD_ALWAYS_COLLAPSED:
+                case BooklistBuilder.PREF_REBUILD_PREFERRED_STATE:
+                case BooklistBuilder.PREF_REBUILD_SAVED_STATE:
+                    sourceColumns.append(",0 AS ").append(DOM_BL_NODE_EXPANDED);
+                    sourceColumns.append(",0 AS ").append(DOM_BL_NODE_VISIBLE);
+                    break;
+
+                case BooklistBuilder.PREF_REBUILD_ALWAYS_EXPANDED:
+                    sourceColumns.append(",1 AS ").append(DOM_BL_NODE_EXPANDED);
+                    sourceColumns.append(",1 AS ").append(DOM_BL_NODE_VISIBLE);
+                    break;
+
+                default:
+                    throw new IllegalStateException(ErrorMsg.UNEXPECTED_VALUE + rebuildState);
+            }
 
             final String sql =
                     "INSERT INTO " + mDestinationTable.getName() + " (" + destColumns + ')'

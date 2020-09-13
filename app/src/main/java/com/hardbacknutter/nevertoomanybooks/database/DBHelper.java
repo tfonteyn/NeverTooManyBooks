@@ -101,7 +101,7 @@ public final class DBHelper
         extends SQLiteOpenHelper {
 
     /** Current version. */
-    public static final int DATABASE_VERSION = 9;
+    public static final int DATABASE_VERSION = 10;
 
     /**
      * Prefix for the filename of a database backup before doing an upgrade.
@@ -740,9 +740,15 @@ public final class DBHelper
         }
 
         if (curVersion < newVersion && curVersion == 8) {
-            //noinspection UnusedAssignment
             curVersion = 9;
             TBL_BOOKS.alterTableAddColumn(syncedDb, DBDefinitions.DOM_EID_CALIBRE);
+        }
+
+        if (curVersion < newVersion && curVersion == 9) {
+            //noinspection UnusedAssignment
+            curVersion = 10;
+            // added visibility column; just scrap the old data
+            TBL_BOOK_LIST_NODE_STATE.recreate(syncedDb, true);
         }
 
         // TODO: if at a future time we make a change that requires to copy/reload the books table,

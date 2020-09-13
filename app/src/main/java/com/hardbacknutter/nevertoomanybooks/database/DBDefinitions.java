@@ -33,7 +33,6 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistBuilder;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyle;
-import com.hardbacknutter.nevertoomanybooks.booklist.RowStateDAO;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.ColumnInfo;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition;
@@ -123,18 +122,13 @@ public final class DBDefinitions {
      * {@link TableDefinition.TableType#Temporary). NOT added to {@link #ALL_TABLES}.
      */
     public static final TableDefinition TMP_TBL_BOOK_LIST;
-    /**
-     * The temp booklist row state table. Constructed by  {@link RowStateDAO}.
-     * {@link TableDefinition.TableType#Temporary). NOT added to {@link #ALL_TABLES}.
-     */
-    public static final TableDefinition TMP_TBL_BOOK_LIST_ROW_STATE;
+
     /**
      * This table should always be created without column constraints applied,
      * with the exception of the "_id" primary key autoincrement.
      * {@link TableDefinition.TableType#Temporary). NOT added to {@link #ALL_TABLES}.
      */
     public static final TableDefinition TMP_TBL_BOOK_LIST_NAVIGATOR;
-
 
     /* ======================================================================================
      * Primary and Foreign key domain definitions.
@@ -162,12 +156,6 @@ public final class DBDefinitions {
      * {@link BooklistStyle#DEFAULT_STYLE_ID}
      */
     public static final Domain DOM_FK_STYLE;
-
-    /**
-     * Foreign key.
-     * Links {@link #TMP_TBL_BOOK_LIST_ROW_STATE} and {@link #TMP_TBL_BOOK_LIST}.
-     */
-    public static final Domain DOM_FK_BL_ROW_ID;
 
     /* ======================================================================================
      * Domain definitions.
@@ -371,7 +359,6 @@ public final class DBDefinitions {
 
     /**
      * {@link #TBL_BOOK_LIST_NODE_STATE}
-     * {@link #TMP_TBL_BOOK_LIST_ROW_STATE}
      * {@link BooklistBuilder}.
      * <p>
      * Expression from the original tables that represent the hierarchical key for the node.
@@ -380,14 +367,14 @@ public final class DBDefinitions {
     public static final Domain DOM_BL_NODE_KEY;
     /** {@link #TBL_BOOK_LIST_NODE_STATE} {@link BooklistBuilder}. */
     public static final Domain DOM_BL_NODE_GROUP;
-    /** {@link #TMP_TBL_BOOK_LIST} {@link #TMP_TBL_BOOK_LIST_ROW_STATE} {@link BooklistBuilder}. */
+    /** {@link #TMP_TBL_BOOK_LIST} {@link BooklistBuilder}. */
     public static final Domain DOM_BL_NODE_LEVEL;
     /**
-     * {@link #TMP_TBL_BOOK_LIST_ROW_STATE} {@link BooklistBuilder}.
+     * {@link BooklistBuilder}.
      * An expanded node, should always be visible!
      */
     public static final Domain DOM_BL_NODE_EXPANDED;
-    /** {@link #TMP_TBL_BOOK_LIST_ROW_STATE} {@link BooklistBuilder}. */
+    /** {@link BooklistBuilder}. */
     public static final Domain DOM_BL_NODE_VISIBLE;
 
     /* ======================================================================================
@@ -546,14 +533,10 @@ public final class DBDefinitions {
 
     public static final String KEY_BL_SERIES_NUM_FLOAT = "bl_ser_num_float";
     public static final String KEY_BL_PRIMARY_SERIES_COUNT = "bl_prim_ser_cnt";
-    /**
-     * {@link #TBL_BOOK_LIST_NODE_STATE}.
-     * The foreign key in the row-state table, pointing to the list table.
-     */
-    public static final String KEY_FK_BL_ROW_ID = "real_row_id";
+
     /** {@link #TBL_BOOK_LIST_NODE_STATE}. */
     public static final String KEY_BL_NODE_KEY = "node_key";
-    /** {@link #TBL_BOOK_LIST_NODE_STATE} + {@link #TMP_TBL_BOOK_LIST_ROW_STATE}. */
+    /** {@link #TBL_BOOK_LIST_NODE_STATE}. */
     public static final String KEY_BL_NODE_LEVEL = "node_level";
     public static final String KEY_BL_NODE_GROUP = "node_group";
     public static final String KEY_BL_NODE_VISIBLE = "node_visible";
@@ -568,7 +551,7 @@ public final class DBDefinitions {
     /**
      * Column alias.
      * <p>
-     * BooklistBuilder: an alias for the {@link #TMP_TBL_BOOK_LIST_ROW_STATE} rowId
+     * BooklistBuilder: an alias for the rowId
      * listViewRowPosition = KEY_BL_LIST_VIEW_ROW_ID - 1.
      * <p>
      * DOM_BL_LIST_VIEW_ROW_ID =
@@ -667,9 +650,6 @@ public final class DBDefinitions {
                         .withDefault(BooklistStyle.DEFAULT_STYLE_ID)
                         .references(TBL_BOOKLIST_STYLES, "ON DELETE SET DEFAULT ON UPDATE CASCADE")
                         .build();
-
-        DOM_FK_BL_ROW_ID =
-                new Domain.Builder(KEY_FK_BL_ROW_ID, ColumnInfo.TYPE_INTEGER).build();
 
         /* ======================================================================================
          *  Multi table domains
@@ -1332,11 +1312,6 @@ public final class DBDefinitions {
                         .setAlias("bl")
                         .setType(TableDefinition.TableType.Temporary);
 
-        TMP_TBL_BOOK_LIST_ROW_STATE =
-                new TableDefinition(DB_TN_BOOK_LIST_PREFIX + "_row_state_tmp_")
-                        .setAlias("bl_rs")
-                        .setType(TableDefinition.TableType.Temporary);
-
         TMP_TBL_BOOK_LIST_NAVIGATOR =
                 new TableDefinition(DB_TN_BOOK_LIST_PREFIX + "_navigator_tmp_")
                         .setAlias("bl_n")
@@ -1345,23 +1320,23 @@ public final class DBDefinitions {
         // Allow debug mode to use standard tables so we can export and inspect the content.
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOK_LIST_USES_STANDARD_TABLES) {
             TMP_TBL_BOOK_LIST.setType(TableDefinition.TableType.Standard);
-            TMP_TBL_BOOK_LIST_ROW_STATE.setType(TableType.Standard);
             TMP_TBL_BOOK_LIST_NAVIGATOR.setType(TableType.Standard);
         }
 
         // Stores the node state across application restarts.
-        TBL_BOOK_LIST_NODE_STATE.addDomains(DOM_PK_ID,
-                                            DOM_BL_NODE_KEY,
-                                            DOM_BL_NODE_LEVEL,
-                                            DOM_BL_NODE_GROUP,
-                                            DOM_BL_NODE_EXPANDED,
+        TBL_BOOK_LIST_NODE_STATE
+                .addDomains(DOM_PK_ID,
+                            DOM_FK_BOOKSHELF,
+                            DOM_FK_STYLE,
 
-                                            DOM_FK_BOOKSHELF,
-                                            DOM_FK_STYLE
-                                           )
-                                .setPrimaryKey(DOM_PK_ID)
-                                .addIndex("BOOKSHELF_STYLE", false,
-                                          DOM_FK_BOOKSHELF, DOM_FK_STYLE);
+                            DOM_BL_NODE_KEY,
+                            DOM_BL_NODE_LEVEL,
+                            DOM_BL_NODE_GROUP,
+                            DOM_BL_NODE_EXPANDED,
+                            DOM_BL_NODE_VISIBLE
+                           )
+                .setPrimaryKey(DOM_PK_ID)
+                .addIndex("BOOKSHELF_STYLE", false, DOM_FK_BOOKSHELF, DOM_FK_STYLE);
         ALL_TABLES.put(TBL_BOOK_LIST_NODE_STATE.getName(), TBL_BOOK_LIST_NODE_STATE);
 
         /*
@@ -1376,31 +1351,6 @@ public final class DBDefinitions {
                          .setPrimaryKey(DOM_PK_ID);
         //TODO: figure out indexes
 
-        /*
-         * Keep track of level/expand/visible for each row in TMP_TBL_BOOK_LIST.
-         *
-         * {@link BooklistBuilder}
-         */
-        TMP_TBL_BOOK_LIST_ROW_STATE
-                .addDomains(DOM_PK_ID,
-                            // FK to TMP_TBL_BOOK_LIST
-                            DOM_FK_BL_ROW_ID,
-                            DOM_BL_NODE_KEY,
-                            // Node data
-                            DOM_BL_NODE_LEVEL,
-                            DOM_BL_NODE_GROUP,
-                            DOM_BL_NODE_VISIBLE,
-                            DOM_BL_NODE_EXPANDED
-                           )
-                .setPrimaryKey(DOM_PK_ID)
-                .addIndex(KEY_FK_BL_ROW_ID, true, DOM_FK_BL_ROW_ID)
-                .addIndex(KEY_BL_NODE_VISIBLE, false, DOM_BL_NODE_VISIBLE)
-                .addIndex("NODE_DATA", false,
-                          DOM_BL_NODE_KEY, DOM_BL_NODE_LEVEL, DOM_BL_NODE_EXPANDED);
-
-        // do ***NOT*** add the reference here. It will be added *after* cloning in BooklistBuilder.
-        // as the TMP_TBL_BOOK_LIST name will have an instance specific suffix.
-        //.addReference(TMP_TBL_BOOK_LIST, DOM_FK_BL_ROW_ID);
 
         /*
          * FULL representation of TMP_TBL_BOOK_LIST_NAVIGATOR temp table.
