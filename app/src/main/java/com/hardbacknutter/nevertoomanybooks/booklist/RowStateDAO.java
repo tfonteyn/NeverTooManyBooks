@@ -444,7 +444,7 @@ public class RowStateDAO
         } else {
             // Make them all visible
             nodeList.stream()
-                    .filter(node -> node.isVisible() && node.getRowId() >= 0)
+                    .filter(node -> !node.isVisible() && node.getRowId() >= 0)
                     .forEach(this::ensureNodeIsVisible);
 
             // Recalculate all positions

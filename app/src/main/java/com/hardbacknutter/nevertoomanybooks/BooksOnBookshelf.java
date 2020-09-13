@@ -1345,7 +1345,7 @@ public class BooksOnBookshelf
                 Log.d(TAG, "onResume|reusing existing list");
             }
             // no rebuild needed/done, just let the system redisplay the list state
-            displayList(mModel.newListCursor(), null);
+            displayList(mModel.newListCursor(), mModel.getTargetNodes());
         }
     }
 
