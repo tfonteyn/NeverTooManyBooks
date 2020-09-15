@@ -546,7 +546,6 @@ public class CsvImporter
      */
     private boolean isImportNewer(@NonNull final Context context,
                                   @NonNull final DAO db,
-                                  @SuppressWarnings("TypeMayBeWeakened")
                                   @NonNull final Book book,
                                   final long bookId) {
         final LocalDateTime utcImportDate =
@@ -990,7 +989,6 @@ public class CsvImporter
      * @throws ImportException if no suitable column is present
      */
     private void requireColumnOrThrow(@NonNull final Context context,
-                                      @SuppressWarnings("TypeMayBeWeakened")
                                       @NonNull final Book book,
                                       @NonNull final String... names)
             throws ImportException {

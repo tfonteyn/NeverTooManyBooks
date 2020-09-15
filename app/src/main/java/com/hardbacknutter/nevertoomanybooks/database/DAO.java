@@ -766,7 +766,6 @@ public class DAO
      * @return {@code true} if a row was deleted
      */
     public boolean delete(@NonNull final Context context,
-                          @SuppressWarnings("TypeMayBeWeakened")
                           @NonNull final Book book) {
         final boolean success = deleteBook(context, book.getId());
         if (success) {

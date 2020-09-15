@@ -151,10 +151,10 @@ public class AuthorRenameTest
             // - all tocs of author[2] will now belong to author[1]
             works = db.getAuthorWorks(author[1], mBookshelf.getId(), true, false);
             assertEquals(4, works.size());
-            assertEquals(tocEntry[0].getId(), (long) works.get(0).getId());
-            assertEquals(tocEntry[1].getId(), (long) works.get(1).getId());
-            assertEquals(tocEntry[2].getId(), (long) works.get(2).getId());
-            assertEquals(tocEntry[3].getId(), (long) works.get(3).getId());
+            assertEquals(tocEntry[0].getId(), works.get(0).getId());
+            assertEquals(tocEntry[1].getId(), works.get(1).getId());
+            assertEquals(tocEntry[2].getId(), works.get(2).getId());
+            assertEquals(tocEntry[3].getId(), works.get(3).getId());
         }
     }
 }

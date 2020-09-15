@@ -525,7 +525,6 @@ class CalibreArchiveReader
      */
     private boolean isImportNewer(@NonNull final Context context,
                                   @NonNull final DAO db,
-                                  @SuppressWarnings("TypeMayBeWeakened")
                                   @NonNull final Book book,
                                   final long bookId) {
         final LocalDateTime utcImportDate =

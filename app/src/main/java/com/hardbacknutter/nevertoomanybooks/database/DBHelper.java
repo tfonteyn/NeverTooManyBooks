@@ -19,7 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.database;
 
-import android.annotation.SuppressLint;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -28,7 +27,6 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteStatement;
-import android.text.TextUtils;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -37,8 +35,6 @@ import androidx.preference.PreferenceManager;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -174,24 +170,6 @@ public final class DBHelper
     @NonNull
     public static File getDatabasePath(@NonNull final Context context) {
         return context.getDatabasePath(DATABASE_NAME);
-    }
-
-    /**
-     * DEBUG only.
-     */
-    @SuppressLint("LogConditional")
-    public static void dumpTempTableNames(@NonNull final SynchronizedDb db) {
-        final String sql = "SELECT name FROM sqlite_temp_master WHERE type='table'";
-        final Collection<String> names = new ArrayList<>();
-        try (Cursor cursor = db.rawQuery(sql, null)) {
-            while (cursor.moveToNext()) {
-                final String name = cursor.getString(0);
-                if (!name.startsWith("sqlite")) {
-                    names.add(name);
-                }
-            }
-        }
-        Log.d(TAG, TextUtils.join(", ", names));
     }
 
     /**

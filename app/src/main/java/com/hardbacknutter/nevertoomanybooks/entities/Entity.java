@@ -22,11 +22,7 @@ package com.hardbacknutter.nevertoomanybooks.entities;
 import android.content.Context;
 import android.os.Parcelable;
 
-import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
-
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 
 /**
  * An item (entity) in a database table always has an id and some user-friendly label
@@ -42,7 +38,6 @@ public interface Entity
      *
      * @return id
      */
-    @RowId
     long getId();
 
     /**
@@ -54,10 +49,4 @@ public interface Entity
      */
     @NonNull
     String getLabel(@NonNull Context context);
-
-    @Retention(RetentionPolicy.SOURCE)
-    @IntRange(from = 1)
-    @interface RowId {
-
-    }
 }

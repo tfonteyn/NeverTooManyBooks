@@ -443,9 +443,6 @@ public final class DBDefinitions {
     public static final String KEY_BOOKSHELF_BL_TOP_ROW_ID = "bl_top_row";
     /** Alias. */
     public static final String KEY_BOOKSHELF_NAME_CSV = "bs_name_csv";
-    /** Alias. */
-    public static final String KEY_BOOKSHELF_ID_CSV = "bs_id_csv";
-
 
     /** {@link #TBL_AUTHORS} {@link #TBL_BOOK_AUTHOR} */
     public static final String KEY_AUTHOR_FAMILY_NAME = "family_name";
