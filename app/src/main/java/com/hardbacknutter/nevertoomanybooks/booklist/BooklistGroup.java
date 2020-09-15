@@ -138,7 +138,7 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_SE
  * <ol>
  *      <li>add it to {@link GroupKey} and update {@link #GROUP_KEY_MAX}</li>
  *      <li>if necessary add new domain to {@link DBDefinitions}</li>
- *      <li>modify {@link BooklistBuilder#build} to add the necessary grouped/sorted domains</li>
+ *      <li>modify {@link Booklist#build} to add the necessary grouped/sorted domains</li>
  *      <li>modify {@link BooklistAdapter#onCreateViewHolder} ; If it is just a string field it can
  *          use a {@link BooklistAdapter.GenericStringHolder} otherwise add a new holder</li>
  * </ol>

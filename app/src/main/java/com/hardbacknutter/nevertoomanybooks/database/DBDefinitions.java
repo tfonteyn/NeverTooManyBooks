@@ -31,7 +31,7 @@ import java.util.Map;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
-import com.hardbacknutter.nevertoomanybooks.booklist.BooklistBuilder;
+import com.hardbacknutter.nevertoomanybooks.booklist.Booklist;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyle;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.ColumnInfo;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
@@ -118,7 +118,7 @@ public final class DBDefinitions {
     public static final TableDefinition TBL_BOOK_LIST_NODE_STATE;
 
     /**
-     * The temp booklist table. Constructed by {@link BooklistBuilder}.
+     * The temp booklist table. Constructed by {@link Booklist}.
      * {@link TableDefinition.TableType#Temporary). NOT added to {@link #ALL_TABLES}.
      */
     public static final TableDefinition TMP_TBL_BOOK_LIST;
@@ -337,44 +337,44 @@ public final class DBDefinitions {
      */
     public static final Domain DOM_FTS_AUTHOR_NAME;
     public static final Domain DOM_FTS_TOC_ENTRY_TITLE;
-    /** For sorting in the {@link BooklistBuilder}. */
+    /** For sorting in the {@link Booklist}. */
     public static final Domain DOM_BL_AUTHOR_SORT;
 
     /* ======================================================================================
-     *  {@link BooklistBuilder} domains.
+     *  {@link Booklist} domains.
      * ====================================================================================== */
-    /** For sorting in the {@link BooklistBuilder}. */
+    /** For sorting in the {@link Booklist}. */
     public static final Domain DOM_BL_SERIES_SORT;
-    /** For sorting in the {@link BooklistBuilder}. */
+    /** For sorting in the {@link Booklist}. */
     public static final Domain DOM_BL_PUBLISHER_SORT;
 
     /**
-     * Series number, cast()'d for sorting purposes in {@link BooklistBuilder}
+     * Series number, cast()'d for sorting purposes in {@link Booklist}
      * so we can sort it numerically regardless of content.
      */
     public static final Domain DOM_BL_BOOK_NUM_IN_SERIES_AS_FLOAT;
 
-    /** {@link #TMP_TBL_BOOK_LIST} {@link BooklistBuilder}. */
+    /** {@link #TMP_TBL_BOOK_LIST} {@link Booklist}. */
     public static final Domain DOM_BL_PRIMARY_SERIES_COUNT;
 
     /**
      * {@link #TBL_BOOK_LIST_NODE_STATE}
-     * {@link BooklistBuilder}.
+     * {@link Booklist}.
      * <p>
      * Expression from the original tables that represent the hierarchical key for the node.
      * Stored in each row and used to determine the expand/collapse results.
      */
     public static final Domain DOM_BL_NODE_KEY;
-    /** {@link #TBL_BOOK_LIST_NODE_STATE} {@link BooklistBuilder}. */
+    /** {@link #TBL_BOOK_LIST_NODE_STATE} {@link Booklist}. */
     public static final Domain DOM_BL_NODE_GROUP;
-    /** {@link #TMP_TBL_BOOK_LIST} {@link BooklistBuilder}. */
+    /** {@link #TMP_TBL_BOOK_LIST} {@link Booklist}. */
     public static final Domain DOM_BL_NODE_LEVEL;
     /**
-     * {@link BooklistBuilder}.
+     * {@link Booklist}.
      * An expanded node, should always be visible!
      */
     public static final Domain DOM_BL_NODE_EXPANDED;
-    /** {@link BooklistBuilder}. */
+    /** {@link Booklist}. */
     public static final Domain DOM_BL_NODE_VISIBLE;
 
     /* ======================================================================================
@@ -523,7 +523,7 @@ public final class DBDefinitions {
     public static final String KEY_FTS_TOC_ENTRY_TITLE = "toc_title";
     public static final String KEY_BOOK_COUNT = "book_count";
 
-    /** BooklistBuilder. Virtual domains. */
+    /** Booklist. Virtual domains. */
     public static final String KEY_BL_AUTHOR_SORT = "bl_aut_sort";
     public static final String KEY_BL_SERIES_SORT = "bl_ser_sort";
     public static final String KEY_BL_PUBLISHER_SORT = "bl_pub_sort";
@@ -548,7 +548,7 @@ public final class DBDefinitions {
     /**
      * Column alias.
      * <p>
-     * BooklistBuilder: an alias for the rowId
+     * Booklist: an alias for the rowId
      * listViewRowPosition = KEY_BL_LIST_VIEW_ROW_ID - 1.
      * <p>
      * DOM_BL_LIST_VIEW_ROW_ID =
@@ -1027,7 +1027,7 @@ public final class DBDefinitions {
                         .notNull().withDefault(0).build();
 
         /* ======================================================================================
-         *  BooklistBuilder domains
+         *  Booklist domains
          * ====================================================================================== */
 
         DOM_BL_AUTHOR_SORT =
@@ -1293,7 +1293,7 @@ public final class DBDefinitions {
         ALL_TABLES.put(TBL_BOOKLIST_STYLES.getName(), TBL_BOOKLIST_STYLES);
 
         /* ======================================================================================
-         *  {@link BooklistBuilder} tables keeping track of the actual list with visibility
+         *  {@link Booklist} tables keeping track of the actual list with visibility
          *  and expansion, and the flat list for the book details screen.
          * ====================================================================================== */
 
@@ -1344,7 +1344,13 @@ public final class DBDefinitions {
          * Domains are added at runtime depending on how the list is build.
          */
         TMP_TBL_BOOK_LIST.addDomains(DOM_PK_ID,
-                                     DOM_BL_NODE_KEY)
+                                     // {@link BooklistGroup#GroupKey}.
+                                     // The actual value is set on a by-group/book basis.
+                                     DOM_BL_NODE_KEY,
+                                     // {@link BooklistNodeDAO}.
+                                     DOM_BL_NODE_EXPANDED,
+                                     DOM_BL_NODE_VISIBLE
+                                    )
                          .setPrimaryKey(DOM_PK_ID);
         //TODO: figure out indexes
 

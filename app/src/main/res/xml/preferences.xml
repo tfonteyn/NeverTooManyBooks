@@ -158,7 +158,7 @@
         <!--  />-->
 
         <!-- the state of the list when starting the app. -->
-        <!-- default BooklistBuilder.PREF_REBUILD_SAVED_STATE == 0 -->
+        <!-- default Booklist.PREF_REBUILD_SAVED_STATE == 0 -->
         <ListPreference
             android:defaultValue="0"
             android:entries="@array/pe_bob_list_state"

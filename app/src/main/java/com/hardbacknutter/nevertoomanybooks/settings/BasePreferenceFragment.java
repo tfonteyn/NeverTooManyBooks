@@ -55,8 +55,8 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.RequestCode;
-import com.hardbacknutter.nevertoomanybooks.booklist.RowStateDAO;
 import com.hardbacknutter.nevertoomanybooks.database.CoversDAO;
+import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBHelper;
 import com.hardbacknutter.nevertoomanybooks.database.tasks.Scheduler;
 import com.hardbacknutter.nevertoomanybooks.debug.DebugReport;
@@ -172,7 +172,7 @@ public abstract class BasePreferenceFragment
                         .setTitle(R.string.lbl_purge_blns)
                         .setMessage(R.string.info_purge_blns_all)
                         .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
-                        .setPositiveButton(android.R.string.ok, (d, w) -> RowStateDAO.clearAll())
+                        .setPositiveButton(android.R.string.ok, (d, w) -> DAO.clearNodeStateData())
                         .create()
                         .show();
                 return true;

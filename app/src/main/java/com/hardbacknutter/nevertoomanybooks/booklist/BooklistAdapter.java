@@ -169,8 +169,6 @@ public class BooklistAdapter
         // now the actual new cursor
         mCursor = cursor;
         mNodeData = new CursorRow(mCursor);
-
-        notifyDataSetChanged();
     }
 
     public void clearCursor() {
@@ -888,7 +886,7 @@ public class BooklistAdapter
         /** View that stores the related book field. */
         private final TextView mBookshelvesView;
 
-        /** Only active when running in debug mode; displays the "position/nodeId" for a book. */
+        /** Only active when running in debug mode; displays the "position/rowId" for a book. */
         @Nullable
         private TextView mDbgRowIdView;
 
@@ -953,7 +951,7 @@ public class BooklistAdapter
             mCoverView.setOnClickListener(this::onZoomCover);
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_NODE_ID) {
-                // add a text view to display the "position/nodeId" for a book
+                // add a text view to display the "position/rowId" for a book
                 mDbgRowIdView = new TextView(context);
                 mDbgRowIdView.setId(View.generateViewId());
                 mDbgRowIdView.setTextColor(Color.BLUE);
@@ -1300,8 +1298,7 @@ public class BooklistAdapter
                 final int rowId = rowData.getInt(DBDefinitions.KEY_PK_ID);
 
                 final BooklistCursor cursor = (BooklistCursor) mAdapter.getCursor();
-                final RowStateDAO.Node node = cursor.getBooklistBuilder().getNodeByNodeId(rowId);
-                if (node.isExpanded()) {
+                if (cursor.getBooklist().isNodeExpanded(rowId)) {
                     itemView.setBackgroundColor(Color.GREEN);
                 } else {
                     itemView.setBackgroundColor(Color.TRANSPARENT);

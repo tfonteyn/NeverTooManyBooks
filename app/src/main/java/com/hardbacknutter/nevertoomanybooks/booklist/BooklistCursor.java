@@ -31,6 +31,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 
+import com.hardbacknutter.nevertoomanybooks.BuildConfig;
+
 /**
  * TODO: https://developer.android.com/topic/libraries/architecture/paging.html
  * <p>
@@ -90,7 +92,7 @@ public class BooklistCursor
 
     /** Back reference to the builder which produced this cursor. */
     @NonNull
-    private final BooklistBuilder mBooklistBuilder;
+    private final Booklist mBooklist;
     /** The Currently active cursor. */
     @SuppressWarnings("FieldNotUsedInToString")
     @Nullable
@@ -104,18 +106,26 @@ public class BooklistCursor
     /**
      * Constructor.
      *
-     * @param booklistBuilder that created the table to which this cursor refers.
+     * @param booklist that created the table to which this cursor refers.
      */
-    BooklistCursor(@NonNull final BooklistBuilder booklistBuilder) {
-        mBooklistBuilder = booklistBuilder;
+    BooklistCursor(@NonNull final Booklist booklist) {
+        mBooklist = booklist;
         for (int i = 0; i < MRU_LIST_SIZE; i++) {
             mMruList[i] = -1;
         }
     }
 
+    /**
+     * Only exposed for debug purposes.
+     *
+     * @return Booklist used to build this cursor
+     */
     @NonNull
-    BooklistBuilder getBooklistBuilder() {
-        return mBooklistBuilder;
+    Booklist getBooklist() {
+        if (BuildConfig.DEBUG /* always */) {
+            return mBooklist;
+        }
+        throw new IllegalStateException("Not in debug");
     }
 
     private void clearCursors() {
@@ -156,7 +166,7 @@ public class BooklistCursor
     @Override
     public int getCount() {
         if (mPseudoCount == null) {
-            mPseudoCount = mBooklistBuilder.countVisibleRows();
+            mPseudoCount = mBooklist.countVisibleRows();
         }
         return mPseudoCount;
     }
@@ -167,7 +177,7 @@ public class BooklistCursor
     @Override
     @NonNull
     public String[] getColumnNames() {
-        return mBooklistBuilder.getListColumnNames();
+        return mBooklist.getListColumnNames();
     }
 
     @Override
@@ -207,8 +217,11 @@ public class BooklistCursor
 
     @NonNull
     private Cursor getActiveCursor() {
-        if (mActiveCursor == null) {
-            onMove(getPosition(), getPosition());
+        // Synchronize mCursors AND mMruList!
+        synchronized (this) {
+            if (mActiveCursor == null) {
+                mActiveCursor = getCursor(getPosition());
+            }
         }
         return mActiveCursor;
     }
@@ -248,100 +261,115 @@ public class BooklistCursor
         // Note that the super class will already have checked the newPosition.
 
         // Get the id we use for the cursor at the new position
-        int cursorId = newPosition / PAGE_SIZE;
+        int cursorId = (newPosition / PAGE_SIZE);
         // Determine the actual start position offset
         int offset = cursorId * PAGE_SIZE;
 
         // Synchronize mCursors AND mMruList!
         synchronized (this) {
-            if (mCursors.get(cursorId) == null) {
-                // Create a new cursor
-                mCursors.put(cursorId, mBooklistBuilder.getOffsetCursor(offset, PAGE_SIZE));
-
-                // Add this cursor id to the 'top' of the MRU list.
-                mMruListPos = (mMruListPos + 1) % MRU_LIST_SIZE;
-                mMruList[mMruListPos] = cursorId;
-
-                // Build a list of stale cursors to purge
-                final Collection<Integer> toPurge = new ArrayList<>();
-                for (int i = 0; i < mCursors.size(); i++) {
-                    final int key = mCursors.keyAt(i);
-                    // If it is more than 3 'pages' from the current position, it's a candidate
-                    if (Math.abs(key) > PAGES_AWAY_FOR_PURGE) {
-                        // Must not be in the MRU list
-                        if (!checkMru(key)) {
-                            toPurge.add(key);
-                        }
-                    }
-                }
-
-                // Purge them
-                for (Integer i : toPurge) {
-                    final Cursor cursor = mCursors.get(i);
-                    if (cursor != null) {
-                        cursor.close();
-                        mCursors.remove(i);
-                    }
-                }
-
-            } else {
-                // Bring to top of MRU list, if present.
-                // It may not be in the MRU list if it was
-                // preserved because it was in the window
-                int oldPos = -1;
-                for (int i = 0; i < MRU_LIST_SIZE; i++) {
-                    if (mMruList[i] == cursorId) {
-                        if (oldPos >= 0) {
-                            throw new IllegalStateException("Cursor appears twice in MRU list");
-                        }
-                        oldPos = i;
-                    }
-                }
-
-                if (oldPos < 0) {
-                    // Not in MRU; just add it to the top
-                    mMruListPos = (mMruListPos + 1) % MRU_LIST_SIZE;
-
-                } else {
-
-                    int nextPosition = oldPos;
-                    if (oldPos <= mMruListPos) {
-                        // Just shuffle intervening items down
-                        int currentPosition;
-                        while (nextPosition < mMruListPos) {
-                            currentPosition = nextPosition++;
-                            mMruList[currentPosition] = mMruList[nextPosition];
-                        }
-                    } else {
-                        // Need to shuffle intervening items 'down' with a wrap;
-                        // this code would actually work for the above case, but it's slower.
-                        // Not sure it really matters.
-                        int currentPosition;
-                        // (Only really need '%' for case where oldPos<=listPos.)
-                        int rowsToMove = (MRU_LIST_SIZE - (oldPos - mMruListPos)) % MRU_LIST_SIZE;
-                        while (rowsToMove-- > 0) {
-                            currentPosition = nextPosition;
-                            nextPosition = (nextPosition + 1) % MRU_LIST_SIZE;
-                            mMruList[currentPosition] = mMruList[nextPosition];
-                        }
-                    }
-                }
-
-                mMruList[mMruListPos] = cursorId;
-            }
-
-            // Set as the active cursor
-            mActiveCursor = mCursors.get(cursorId);
-            // and finally set its position correctly
+            mActiveCursor = getCursor(newPosition);
             return mActiveCursor.moveToPosition(newPosition - offset);
         }
+    }
+
+    /**
+     * Get a cursor with a row window covering the given position.
+     *
+     * @param position that the cursor should cover.
+     *
+     * @return cursor
+     */
+    private Cursor getCursor(final int position) {
+
+        // Get the id we use for the cursor at the new position
+        int cursorId = position / PAGE_SIZE;
+        // Determine the actual start position offset
+        int offset = cursorId * PAGE_SIZE;
+
+        if (mCursors.get(cursorId) == null) {
+            // Create a new cursor
+            mCursors.put(cursorId, mBooklist.getOffsetCursor(offset, PAGE_SIZE));
+
+            // Add this cursor id to the 'top' of the MRU list.
+            mMruListPos = (mMruListPos + 1) % MRU_LIST_SIZE;
+            mMruList[mMruListPos] = cursorId;
+
+            // Build a list of stale cursors to purge
+            final Collection<Integer> toPurge = new ArrayList<>();
+            for (int i = 0; i < mCursors.size(); i++) {
+                final int key = mCursors.keyAt(i);
+                // If it is more than 3 'pages' from the current position, it's a candidate
+                if (Math.abs(key) > PAGES_AWAY_FOR_PURGE) {
+                    // Must not be in the MRU list
+                    if (!checkMru(key)) {
+                        toPurge.add(key);
+                    }
+                }
+            }
+
+            // Purge them
+            for (Integer i : toPurge) {
+                final Cursor cursor = mCursors.get(i);
+                if (cursor != null) {
+                    cursor.close();
+                    mCursors.remove(i);
+                }
+            }
+
+        } else {
+            // Bring to top of MRU list, if present.
+            // It may not be in the MRU list if it was
+            // preserved because it was in the window
+            int oldPos = -1;
+            for (int i = 0; i < MRU_LIST_SIZE; i++) {
+                if (mMruList[i] == cursorId) {
+                    if (oldPos >= 0) {
+                        throw new IllegalStateException("Cursor appears twice in MRU list");
+                    }
+                    oldPos = i;
+                }
+            }
+
+            if (oldPos < 0) {
+                // Not in MRU; just add it to the top
+                mMruListPos = (mMruListPos + 1) % MRU_LIST_SIZE;
+
+            } else {
+
+                int nextPosition = oldPos;
+                if (oldPos <= mMruListPos) {
+                    // Just shuffle intervening items down
+                    int currentPosition;
+                    while (nextPosition < mMruListPos) {
+                        currentPosition = nextPosition++;
+                        mMruList[currentPosition] = mMruList[nextPosition];
+                    }
+                } else {
+                    // Need to shuffle intervening items 'down' with a wrap;
+                    // this code would actually work for the above case, but it's slower.
+                    // Not sure it really matters.
+                    int currentPosition;
+                    // (Only really need '%' for case where oldPos<=listPos.)
+                    int rowsToMove = (MRU_LIST_SIZE - (oldPos - mMruListPos)) % MRU_LIST_SIZE;
+                    while (rowsToMove-- > 0) {
+                        currentPosition = nextPosition;
+                        nextPosition = (nextPosition + 1) % MRU_LIST_SIZE;
+                        mMruList[currentPosition] = mMruList[nextPosition];
+                    }
+                }
+            }
+
+            mMruList[mMruListPos] = cursorId;
+        }
+
+        return mCursors.get(cursorId);
     }
 
     @Override
     @NonNull
     public String toString() {
         return "BooklistCursor{"
-               + "mBooklistBuilder=" + mBooklistBuilder
+               + "mBooklist=" + mBooklist
                + ", mPseudoCount=" + mPseudoCount
                + ", mMruList=" + Arrays.toString(mMruList)
                + ", mMruListPos=" + mMruListPos

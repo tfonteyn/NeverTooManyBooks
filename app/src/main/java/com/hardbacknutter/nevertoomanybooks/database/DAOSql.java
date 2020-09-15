@@ -115,6 +115,7 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BO
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKSHELF;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_AUTHOR;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_BOOKSHELF;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_LIST_NODE_STATE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_LOANEE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_PUBLISHER;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_SERIES;
@@ -1320,6 +1321,9 @@ public class DAOSql {
         static final String BOOK_LIST_NODE_STATE_BY_STYLE =
                 DELETE_FROM_ + DBDefinitions.TBL_BOOK_LIST_NODE_STATE
                 + _WHERE_ + KEY_FK_STYLE + "=?";
+
+        /** Maintenance/debug usage. Simple clear all state data. */
+        static final String PURGE_BOOK_LIST_NODE_STATE = DELETE_FROM_ + TBL_BOOK_LIST_NODE_STATE;
 
         private SqlDelete() {
         }

@@ -19,6 +19,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks;
 
+import com.hardbacknutter.nevertoomanybooks.booklist.Booklist;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverBrowserDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.searches.JsoupLoader;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.BooksOnBookshelfModel;
@@ -46,12 +47,12 @@ public final class DEBUG_SWITCHES {
 //    }
 
     /**
-     * Make the {@link com.hardbacknutter.nevertoomanybooks.booklist.BooklistBuilder}
+     * Make the {@link Booklist}
      * use standard tables instead of Temporary ones.
      */
     public static final boolean BOOK_LIST_USES_STANDARD_TABLES = false;
 
-    /** {@link com.hardbacknutter.nevertoomanybooks.booklist.BooklistBuilder}. */
+    /** {@link Booklist}. */
     public static final boolean BOB_THE_BUILDER = false;
     /** enable timers for rough performance measurements. */
     public static final boolean BOB_THE_BUILDER_TIMERS = false;

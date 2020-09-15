@@ -44,11 +44,11 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.FTSSearchActivity;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.booklist.BooklistBuilder;
+import com.hardbacknutter.nevertoomanybooks.booklist.Booklist;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistCursor;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistGroup;
+import com.hardbacknutter.nevertoomanybooks.booklist.BooklistNode;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyle;
-import com.hardbacknutter.nevertoomanybooks.booklist.RowStateDAO;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.Filter;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DAOSql;
@@ -68,7 +68,7 @@ import com.hardbacknutter.nevertoomanybooks.tasks.VMTask;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 public class BooksOnBookshelfModel
-        extends VMTask<List<RowStateDAO.Node>> {
+        extends VMTask<List<BooklistNode>> {
 
     /** Log tag. */
     private static final String TAG = "BooksOnBookshelfModel";
@@ -152,12 +152,12 @@ public class BooksOnBookshelfModel
     private long mDesiredCentralBookId;
 
     /** Preferred booklist state in next rebuild. */
-    @BooklistBuilder.ListRebuildMode
+    @Booklist.ListRebuildMode
     private int mRebuildState;
 
     /** Current displayed list. */
     @Nullable
-    private BooklistBuilder mBuilder;
+    private Booklist mBuilder;
 
     @Override
     protected void onCleared() {
@@ -214,7 +214,7 @@ public class BooksOnBookshelfModel
         } else {
             // Unless set by the caller, preserve state when rebuilding/recreating etc
             mRebuildState = currentArgs.getInt(BKEY_LIST_STATE,
-                                               BooklistBuilder.PREF_REBUILD_SAVED_STATE);
+                                               Booklist.PREF_REBUILD_SAVED_STATE);
         }
     }
 
@@ -230,14 +230,14 @@ public class BooksOnBookshelfModel
      *
      * @return ListRebuildMode
      */
-    @BooklistBuilder.ListRebuildMode
+    @Booklist.ListRebuildMode
     private int getPreferredListRebuildState(@NonNull final Context context) {
         final String value = PreferenceManager.getDefaultSharedPreferences(context)
                                               .getString(Prefs.pk_booklist_rebuild_state, null);
         if (value != null && !value.isEmpty()) {
             return Integer.parseInt(value);
         }
-        return BooklistBuilder.PREF_REBUILD_SAVED_STATE;
+        return Booklist.PREF_REBUILD_SAVED_STATE;
     }
 
     public void setRebuildState(final int rebuildState) {
@@ -493,7 +493,7 @@ public class BooksOnBookshelfModel
      * @return the node(s), or {@code null} if none
      */
     @Nullable
-    public ArrayList<RowStateDAO.Node> getTargetNodes() {
+    public ArrayList<BooklistNode> getTargetNodes() {
         if (mDesiredCentralBookId == 0) {
             return null;
         }
@@ -514,18 +514,19 @@ public class BooksOnBookshelfModel
      *
      * @return the node
      */
+    @SuppressWarnings("UnusedReturnValue")
     @NonNull
-    public RowStateDAO.Node toggleNode(final long nodeRowId,
-                                       @RowStateDAO.Node.NodeNextState final int nextState,
-                                       final int relativeChildLevel) {
+    public BooklistNode toggleNode(final long nodeRowId,
+                                   @BooklistNode.NextState final int nextState,
+                                   final int relativeChildLevel) {
         Objects.requireNonNull(mBuilder, ErrorMsg.NULL_BUILDER);
-        return mBuilder.toggleNode(nodeRowId, nextState, relativeChildLevel);
+        return mBuilder.setNode(nodeRowId, nextState, relativeChildLevel);
     }
 
     public void expandAllNodes(@IntRange(from = 1) final int topLevel,
                                final boolean expand) {
         Objects.requireNonNull(mBuilder, ErrorMsg.NULL_BUILDER);
-        mBuilder.expandAllNodes(topLevel, expand);
+        mBuilder.setAllNodes(topLevel, expand);
     }
 
     @NonNull
@@ -535,8 +536,8 @@ public class BooksOnBookshelfModel
     }
 
     @Nullable
-    public RowStateDAO.Node getNextBookWithoutCover(@NonNull final Context context,
-                                                    final long rowId) {
+    public BooklistNode getNextBookWithoutCover(@NonNull final Context context,
+                                                final long rowId) {
         Objects.requireNonNull(mBuilder, ErrorMsg.NULL_BUILDER);
         return mBuilder.getNextBookWithoutCover(context, rowId);
     }
@@ -578,8 +579,8 @@ public class BooksOnBookshelfModel
         final BooklistStyle style = getCurrentStyle(context);
         if (style.showHeader(context, BooklistStyle.HEADER_SHOW_BOOK_COUNT)) {
             //noinspection ConstantConditions
-            final int totalBooks = mBuilder.getBookCount();
-            final int distinctBooks = mBuilder.getDistinctBookCount();
+            final int totalBooks = mBuilder.countBooks();
+            final int distinctBooks = mBuilder.countDistinctBooks();
             if (distinctBooks != totalBooks) {
                 return context.getString(R.string.txt_displaying_n_books_in_m_entries,
                                          distinctBooks, totalBooks);
@@ -695,7 +696,7 @@ public class BooksOnBookshelfModel
     @Override
     @Nullable
     @WorkerThread
-    protected List<RowStateDAO.Node> doWork() {
+    protected List<BooklistNode> doWork() {
         Objects.requireNonNull(mBookshelf, ErrorMsg.NULL_BOOKSHELF);
 
         Thread.currentThread().setName(TAG);
@@ -704,10 +705,10 @@ public class BooksOnBookshelfModel
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         final BooklistStyle style = mBookshelf.getStyle(context, mDb);
 
-        BooklistBuilder builder = null;
+        Booklist builder = null;
         try {
             // get a new builder and add the required domains
-            builder = new BooklistBuilder(mDb.getSyncDb(), style, mBookshelf, mRebuildState);
+            builder = new Booklist(mDb.getSyncDb(), style, mBookshelf, mRebuildState);
 
             // Add the fixed list of domains we always need.
             for (VirtualDomain domainDetails : FIXED_DOMAIN_LIST) {
@@ -815,7 +816,7 @@ public class BooksOnBookshelfModel
 
             // if we have any criteria set at all, the build should expand the book list.
             if (!mSearchCriteria.isEmpty()) {
-                builder.setRebuildState(BooklistBuilder.PREF_REBUILD_ALWAYS_EXPANDED);
+                builder.setRebuildState(Booklist.PREF_REBUILD_ALWAYS_EXPANDED);
             }
 
             // Build the underlying data
@@ -824,13 +825,13 @@ public class BooksOnBookshelfModel
             // pre-count and cache (in the builder) these while we're in the background.
             // They are used for the header, and will not change even if the list cursor changes.
             if (style.showHeader(context, BooklistStyle.HEADER_SHOW_BOOK_COUNT)) {
-                builder.getBookCount();
-                builder.getDistinctBookCount();
+                builder.countBooks();
+                builder.countDistinctBooks();
             }
 
             // Get the row(s) which will be used to determine new cursor position
             @Nullable
-            final ArrayList<RowStateDAO.Node> targetRows =
+            final ArrayList<BooklistNode> targetRows =
                     builder.getBookNodes(mDesiredCentralBookId);
 
             // the new build is completely done. We can safely discard the previous one.
@@ -843,7 +844,7 @@ public class BooksOnBookshelfModel
             mListHasBeenLoaded = true;
 
             // preserve the new state by default
-            mRebuildState = BooklistBuilder.PREF_REBUILD_SAVED_STATE;
+            mRebuildState = Booklist.PREF_REBUILD_SAVED_STATE;
 
             return targetRows;
 

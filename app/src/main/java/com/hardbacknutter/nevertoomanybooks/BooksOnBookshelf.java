@@ -63,11 +63,11 @@ import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.backup.base.ImportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.base.Options;
+import com.hardbacknutter.nevertoomanybooks.booklist.Booklist;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistAdapter;
-import com.hardbacknutter.nevertoomanybooks.booklist.BooklistBuilder;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistGroup;
+import com.hardbacknutter.nevertoomanybooks.booklist.BooklistNode;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyle;
-import com.hardbacknutter.nevertoomanybooks.booklist.RowStateDAO;
 import com.hardbacknutter.nevertoomanybooks.booklist.StylePickerDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.booklist.TopLevelItemDecoration;
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
@@ -280,7 +280,7 @@ public class BooksOnBookshelf
 
                     } else {
                         // it's a level, expand/collapse.
-                        toggleNode(rowData, RowStateDAO.Node.NEXT_STATE_TOGGLE, 1);
+                        toggleNode(rowData, BooklistNode.NEXT_STATE_TOGGLE, 1);
                     }
                 }
 
@@ -449,13 +449,14 @@ public class BooksOnBookshelf
      */
     public void createAdapter(@Nullable final Cursor cursor) {
         mAdapter = new BooklistAdapter(this);
-        mVb.list.setAdapter(mAdapter);
-        // No, we do NOT have a fixed size for each row
-        //mVb.list.setHasFixedSize(false);
         if (cursor != null) {
             mAdapter.setOnRowClickedListener(mOnRowClickedListener);
             mAdapter.setCursor(this, cursor, mModel.getCurrentStyle(this));
         }
+
+        // No, we do NOT have a fixed size for each row
+        //mVb.list.setHasFixedSize(false);
+        mVb.list.setAdapter(mAdapter);
     }
 
     /**
@@ -1058,16 +1059,16 @@ public class BooksOnBookshelf
             }
 
             case R.id.MENU_LEVEL_EXPAND: {
-                toggleNode(rowData, RowStateDAO.Node.NEXT_STATE_EXPANDED,
+                toggleNode(rowData, BooklistNode.NEXT_STATE_EXPANDED,
                            mModel.getCurrentStyle(this).getGroupCount());
                 return true;
             }
 
             case R.id.MENU_NEXT_MISSING_COVER: {
                 final long nodeRowId = rowData.getLong(DBDefinitions.KEY_BL_LIST_VIEW_NODE_ROW_ID);
-                final RowStateDAO.Node node = mModel.getNextBookWithoutCover(this, nodeRowId);
+                final BooklistNode node = mModel.getNextBookWithoutCover(this, nodeRowId);
                 if (node != null) {
-                    final List<RowStateDAO.Node> target = new ArrayList<>();
+                    final List<BooklistNode> target = new ArrayList<>();
                     target.add(node);
                     // pass in a NEW cursor!
                     displayList(mModel.newListCursor(), target);
@@ -1182,7 +1183,7 @@ public class BooksOnBookshelf
                         }
                         if (extras.containsKey(BooksOnBookshelfModel.BKEY_LIST_STATE)) {
                             int state = extras.getInt(BooksOnBookshelfModel.BKEY_LIST_STATE,
-                                                      BooklistBuilder.PREF_REBUILD_SAVED_STATE);
+                                                      Booklist.PREF_REBUILD_SAVED_STATE);
                             mModel.setRebuildState(state);
                             mModel.setForceRebuildInOnResume(true);
                         }
@@ -1414,7 +1415,7 @@ public class BooksOnBookshelf
      *
      * @param message from the task; contains the (optional) target rows.
      */
-    private void onBuildFinished(@NonNull final FinishedMessage<List<RowStateDAO.Node>> message) {
+    private void onBuildFinished(@NonNull final FinishedMessage<List<BooklistNode>> message) {
         mVb.progressBar.setVisibility(View.GONE);
         if (message.isNewEvent()) {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_THE_BUILDER_TIMERS) {
@@ -1442,7 +1443,7 @@ public class BooksOnBookshelf
     }
 
     private void toggleNode(@NonNull final DataHolder rowData,
-                            @RowStateDAO.Node.NodeNextState final int nextState,
+                            @BooklistNode.NextState final int nextState,
                             final int relativeChildLevel) {
         saveListPosition();
         final long nodeRowId = rowData.getLong(DBDefinitions.KEY_BL_LIST_VIEW_NODE_ROW_ID);
@@ -1505,7 +1506,7 @@ public class BooksOnBookshelf
      * @param targetNodes (optional) to re-position to
      */
     private void displayList(@NonNull final Cursor cursor,
-                             @Nullable final List<RowStateDAO.Node> targetNodes) {
+                             @Nullable final List<BooklistNode> targetNodes) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_INIT_BOOK_LIST) {
             Log.d(TAG, "displayList|called from:", new Throwable());
         }
@@ -1538,7 +1539,7 @@ public class BooksOnBookshelf
      *
      * @param targetNodes (optional) to re-position to
      */
-    private void scrollToSavedPosition(@Nullable final List<RowStateDAO.Node> targetNodes) {
+    private void scrollToSavedPosition(@Nullable final List<BooklistNode> targetNodes) {
         final Bookshelf bookshelf = mModel.getSelectedBookshelf();
         int position = bookshelf.getTopItemPosition();
 
@@ -1569,7 +1570,7 @@ public class BooksOnBookshelf
      *
      * @param targetNodes list of rows of which we want one to be visible to the user.
      */
-    private void scrollTo(@NonNull final List<RowStateDAO.Node> targetNodes) {
+    private void scrollTo(@NonNull final List<BooklistNode> targetNodes) {
         // sanity check
         if (targetNodes.isEmpty()) {
             return;
@@ -1585,13 +1586,13 @@ public class BooksOnBookshelf
         final int middle = (lastVisibleItemPosition + firstVisibleItemPosition) / 2;
 
         // Get the first 'target' and make it 'best candidate'
-        RowStateDAO.Node best = targetNodes.get(0);
+        BooklistNode best = targetNodes.get(0);
         // distance from currently visible middle row
         int distance = Math.abs(best.getListPosition() - middle);
 
         // Loop all other rows, looking for a nearer one
         for (int i = 1; i < targetNodes.size(); i++) {
-            final RowStateDAO.Node node = targetNodes.get(i);
+            final BooklistNode node = targetNodes.get(i);
             final int newDist = Math.abs(node.getListPosition() - middle);
             if (newDist < distance) {
                 distance = newDist;
@@ -1607,7 +1608,7 @@ public class BooksOnBookshelf
      *
      * @param node to scroll to
      */
-    private void scrollTo(@NonNull final RowStateDAO.Node node) {
+    private void scrollTo(@NonNull final BooklistNode node) {
 
         final int firstVisibleItemPosition = mLayoutManager.findFirstVisibleItemPosition();
         if (firstVisibleItemPosition == RecyclerView.NO_POSITION) {

@@ -190,7 +190,7 @@ public class DAO
     /**
      * Static Synchronizer to coordinate access to <strong>this</strong> database.
      */
-    public static final Synchronizer SYNCHRONIZER = new Synchronizer();
+    private static final Synchronizer SYNCHRONIZER = new Synchronizer();
 
 
     /** Log tag. */
@@ -355,6 +355,14 @@ public class DAO
     static String toAscii(@NonNull final CharSequence text) {
         return ASCII_PATTERN.matcher(Normalizer.normalize(text, Normalizer.Form.NFD))
                             .replaceAll("");
+    }
+
+    /**
+     * Purge <strong>all</strong> Booklist node state data.
+     */
+    public static void clearNodeStateData() {
+        SynchronizedDb.getInstance(SYNCHRONIZER)
+                      .execSQL(DAOSql.SqlDelete.PURGE_BOOK_LIST_NODE_STATE);
     }
 
     public DBHelper getDBHelper() {
