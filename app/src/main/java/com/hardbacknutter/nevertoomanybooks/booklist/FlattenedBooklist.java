@@ -104,7 +104,6 @@ public class FlattenedBooklist
     @NonNull
     static String createTable(@NonNull final SynchronizedDb db,
                               final int instanceId,
-                              @NonNull final RowStateDAO rowStateDAO,
                               @NonNull final TableDefinition listTable) {
 
         final TableDefinition navTable =
@@ -114,16 +113,15 @@ public class FlattenedBooklist
         //IMPORTANT: withConstraints MUST BE false
         navTable.recreate(db, false);
 
-        final TableDefinition rowStateTable = rowStateDAO.getTable();
         final String sql = "INSERT INTO " + navTable.getName()
                            + " (" + DBDefinitions.KEY_PK_ID + ',' + DBDefinitions.KEY_FK_BOOK + ")"
 
-                           + " SELECT " + rowStateTable.dot(DBDefinitions.KEY_PK_ID)
+                           + " SELECT " + listTable.dot(DBDefinitions.KEY_PK_ID)
                            + ',' + listTable.dot(DBDefinitions.KEY_FK_BOOK)
-                           + " FROM " + listTable.ref() + listTable.join(rowStateTable)
+                           + " FROM " + listTable.ref()
                            // all rows which are NOT a book will contain null
                            + " WHERE " + listTable.dot(DBDefinitions.KEY_FK_BOOK) + " NOT NULL"
-                           + " ORDER BY " + rowStateTable.dot(DBDefinitions.KEY_PK_ID);
+                           + " ORDER BY " + listTable.dot(DBDefinitions.KEY_PK_ID);
 
         try (SynchronizedStatement stmt = db.compileStatement(sql)) {
             stmt.executeUpdateDelete();
