@@ -727,6 +727,8 @@ public final class DBHelper
             curVersion = 10;
             // added visibility column; just scrap the old data
             TBL_BOOK_LIST_NODE_STATE.recreate(syncedDb, true);
+            // moved to FTS4
+            Scheduler.scheduleFtsRebuild(context, true);
         }
 
         // TODO: if at a future time we make a change that requires to copy/reload the books table,

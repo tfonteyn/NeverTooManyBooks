@@ -1299,12 +1299,12 @@ public final class DBDefinitions {
 
         TMP_TBL_BOOK_LIST =
                 new TableDefinition(DB_TN_BOOK_LIST_PREFIX + "_tmp_")
-                        .setAlias("bl")
-                        .setType(TableDefinition.TableType.Temporary);
-
-        // Allow debug mode to use standard tables so we can export and inspect the content.
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOK_LIST_USES_STANDARD_TABLES) {
+                        .setAlias("bl");
+        // Allow debug mode to use a standard table so we can export and inspect the content.
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOK_LIST_USES_STANDARD_TABLE) {
             TMP_TBL_BOOK_LIST.setType(TableDefinition.TableType.Standard);
+        } else {
+            TMP_TBL_BOOK_LIST.setType(TableDefinition.TableType.Temporary);
         }
 
         // Stores the node state across application restarts.
@@ -1346,7 +1346,8 @@ public final class DBDefinitions {
          *  FTS definitions
          *  reminder: no need for a type nor constraints: https://sqlite.org/fts3.html
          * ====================================================================================== */
-        TBL_FTS_BOOKS = new TableDefinition("books_fts").setType(TableType.FTS3);
+        TBL_FTS_BOOKS = new TableDefinition("books_fts")
+                .setType(TableType.FTS4);
 
         DOM_FTS_BOOKS_PK =
                 new Domain.Builder(KEY_FTS_BOOK_ID, ColumnInfo.TYPE_INTEGER).primaryKey().build();

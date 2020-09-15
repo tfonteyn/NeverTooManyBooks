@@ -46,11 +46,8 @@ public final class DEBUG_SWITCHES {
 //            System.setProperty("debug","true");
 //    }
 
-    /**
-     * Make the {@link Booklist}
-     * use standard tables instead of Temporary ones.
-     */
-    public static final boolean BOOK_LIST_USES_STANDARD_TABLES = false;
+    /** Make the {@link Booklist} use a standard table instead of Temporary ones. */
+    public static final boolean BOOK_LIST_USES_STANDARD_TABLE = false;
 
     /** {@link Booklist}. */
     public static final boolean BOB_THE_BUILDER = false;

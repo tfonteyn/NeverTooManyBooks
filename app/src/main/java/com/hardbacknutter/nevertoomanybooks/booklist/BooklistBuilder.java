@@ -348,13 +348,8 @@ final class BooklistBuilder {
     private void createTriggers(@NonNull final SynchronizedDb syncedDb) {
 
         mTriggerHelperTable = new TableDefinition(mListTable + "_th")
-                .setAlias("tht");
-        // Allow debug mode to use standard tables so we can export and inspect the content.
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOK_LIST_USES_STANDARD_TABLES) {
-            mTriggerHelperTable.setType(TableDefinition.TableType.Standard);
-        } else {
-            mTriggerHelperTable.setType(TableDefinition.TableType.Temporary);
-        }
+                .setAlias("tht")
+                .setType(TableDefinition.TableType.Temporary);
 
         // SQL statement to update the 'current' table
         final StringBuilder valuesColumns = new StringBuilder();
