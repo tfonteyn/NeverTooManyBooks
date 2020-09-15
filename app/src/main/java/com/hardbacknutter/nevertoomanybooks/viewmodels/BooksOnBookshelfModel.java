@@ -157,12 +157,12 @@ public class BooksOnBookshelfModel
 
     /** Current displayed list. */
     @Nullable
-    private Booklist mBuilder;
+    private Booklist mBooklist;
 
     @Override
     protected void onCleared() {
-        if (mBuilder != null) {
-            mBuilder.close();
+        if (mBooklist != null) {
+            mBooklist.close();
         }
 
         if (mDb != null) {
@@ -498,11 +498,11 @@ public class BooksOnBookshelfModel
             return null;
         }
 
-        Objects.requireNonNull(mBuilder, ErrorMsg.NULL_BUILDER);
+        Objects.requireNonNull(mBooklist, ErrorMsg.NULL_BOOK_LIST);
         final long bookId = mDesiredCentralBookId;
         mDesiredCentralBookId = 0;
 
-        return mBuilder.getBookNodes(bookId);
+        return mBooklist.getBookNodes(bookId);
     }
 
     /**
@@ -516,30 +516,30 @@ public class BooksOnBookshelfModel
      */
     @SuppressWarnings("UnusedReturnValue")
     @NonNull
-    public BooklistNode toggleNode(final long nodeRowId,
-                                   @BooklistNode.NextState final int nextState,
-                                   final int relativeChildLevel) {
-        Objects.requireNonNull(mBuilder, ErrorMsg.NULL_BUILDER);
-        return mBuilder.setNode(nodeRowId, nextState, relativeChildLevel);
+    public BooklistNode setNode(final long nodeRowId,
+                                @BooklistNode.NextState final int nextState,
+                                final int relativeChildLevel) {
+        Objects.requireNonNull(mBooklist, ErrorMsg.NULL_BOOK_LIST);
+        return mBooklist.setNode(nodeRowId, nextState, relativeChildLevel);
     }
 
     public void expandAllNodes(@IntRange(from = 1) final int topLevel,
                                final boolean expand) {
-        Objects.requireNonNull(mBuilder, ErrorMsg.NULL_BUILDER);
-        mBuilder.setAllNodes(topLevel, expand);
+        Objects.requireNonNull(mBooklist, ErrorMsg.NULL_BOOK_LIST);
+        mBooklist.setAllNodes(topLevel, expand);
     }
 
     @NonNull
     public ArrayList<Long> getCurrentBookIdList() {
-        Objects.requireNonNull(mBuilder, ErrorMsg.NULL_BUILDER);
-        return mBuilder.getCurrentBookIdList();
+        Objects.requireNonNull(mBooklist, ErrorMsg.NULL_BOOK_LIST);
+        return mBooklist.getCurrentBookIdList();
     }
 
     @Nullable
     public BooklistNode getNextBookWithoutCover(@NonNull final Context context,
                                                 final long rowId) {
-        Objects.requireNonNull(mBuilder, ErrorMsg.NULL_BUILDER);
-        return mBuilder.getNextBookWithoutCover(context, rowId);
+        Objects.requireNonNull(mBooklist, ErrorMsg.NULL_BOOK_LIST);
+        return mBooklist.getNextBookWithoutCover(context, rowId);
     }
 
 
@@ -579,8 +579,8 @@ public class BooksOnBookshelfModel
         final BooklistStyle style = getCurrentStyle(context);
         if (style.showHeader(context, BooklistStyle.HEADER_SHOW_BOOK_COUNT)) {
             //noinspection ConstantConditions
-            final int totalBooks = mBuilder.countBooks();
-            final int distinctBooks = mBuilder.countDistinctBooks();
+            final int totalBooks = mBooklist.countBooks();
+            final int distinctBooks = mBooklist.countDistinctBooks();
             if (distinctBooks != totalBooks) {
                 return context.getString(R.string.txt_displaying_n_books_in_m_entries,
                                          distinctBooks, totalBooks);
@@ -676,9 +676,9 @@ public class BooksOnBookshelfModel
     }
 
     @NonNull
-    public String createFlattenedBooklist() {
-        Objects.requireNonNull(mBuilder, ErrorMsg.NULL_BUILDER);
-        return mBuilder.createFlattenedBooklist();
+    public String getBooklistTableName() {
+        Objects.requireNonNull(mBooklist, ErrorMsg.NULL_BOOK_LIST);
+        return mBooklist.getListTableName();
     }
 
     /**
@@ -835,10 +835,10 @@ public class BooksOnBookshelfModel
                     builder.getBookNodes(mDesiredCentralBookId);
 
             // the new build is completely done. We can safely discard the previous one.
-            if (mBuilder != null) {
-                mBuilder.close();
+            if (mBooklist != null) {
+                mBooklist.close();
             }
-            mBuilder = builder;
+            mBooklist = builder;
 
             // Save a flag to say list was loaded at least once successfully
             mListHasBeenLoaded = true;
@@ -869,8 +869,8 @@ public class BooksOnBookshelfModel
      */
     @NonNull
     public BooklistCursor newListCursor() {
-        Objects.requireNonNull(mBuilder, ErrorMsg.NULL_BUILDER);
-        return mBuilder.newListCursor();
+        Objects.requireNonNull(mBooklist, ErrorMsg.NULL_BOOK_LIST);
+        return mBooklist.newListCursor();
     }
 
     public List<Author> getAuthorsByBookId(final long bookId) {

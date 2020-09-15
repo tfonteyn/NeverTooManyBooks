@@ -80,9 +80,13 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TMP_TB
 /**
  * A Builder to accumulates data while building the list table
  * and produce the initial SQL insert statement.
+ * <p>
+ * While building, the triggers will make sure that the top-level(==1) nodes
+ * are always visible. This is critical for some parts of te code which rely on this.
  */
 final class BooklistBuilder {
 
+    /** Log tag. */
     private static final String TAG = "BooklistBuilder";
 
     private static final String INSERT_INTO_ = "INSERT INTO ";
@@ -146,7 +150,6 @@ final class BooklistBuilder {
     private TableDefinition mTriggerHelperTable;
     private String mTriggerHelperLevelTriggerName;
     private String mTriggerHelperCurrentValueTriggerName;
-
 
     /**
      * Constructor.
@@ -411,7 +414,7 @@ final class BooklistBuilder {
                     .append(',').append(group.getId())
                     .append(",NEW.").append(KEY_BL_NODE_KEY)
                     .append(",").append(expVis)
-                    // level 1 is always visible.
+                    // level 1 is always visible. THIS IS CRITICAL!
                     .append(",").append(level == 1 ? 1 : expVis);
 
             // Create the where-clause to detect if the next level up is already defined

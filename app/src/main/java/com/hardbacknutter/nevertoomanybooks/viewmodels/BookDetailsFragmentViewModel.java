@@ -29,7 +29,8 @@ import androidx.fragment.app.Fragment;
 
 import java.util.List;
 
-import com.hardbacknutter.nevertoomanybooks.booklist.FlattenedBooklist;
+import com.hardbacknutter.nevertoomanybooks.booklist.Booklist;
+import com.hardbacknutter.nevertoomanybooks.booklist.BooklistNavigator;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 
@@ -39,16 +40,16 @@ public class BookDetailsFragmentViewModel
     /** Log tag. */
     private static final String TAG = "BookDetailsFragmentViewModel";
 
-    /** Table name of the {@link FlattenedBooklist}. */
-    public static final String BKEY_NAV_TABLE = TAG + ":FBLTable";
-    public static final String BKEY_NAV_ROW_ID = TAG + ":FBLRow";
+    /** Table name of the {@link Booklist} table. */
+    public static final String BKEY_LIST_TABLE_NAME = TAG + ":LTName";
+    public static final String BKEY_LIST_TABLE_ROW_ID = TAG + ":LTRow";
     @Nullable
-    private FlattenedBooklist mFlattenedBooklist;
+    private BooklistNavigator mNavHelper;
 
     @Override
     protected void onCleared() {
-        if (mFlattenedBooklist != null) {
-            mFlattenedBooklist.close();
+        if (mNavHelper != null) {
+            mNavHelper.close();
         }
         super.onCleared();
     }
@@ -62,27 +63,21 @@ public class BookDetailsFragmentViewModel
                      @NonNull final Book book) {
         super.init();
 
-        if (mFlattenedBooklist == null && args != null) {
-            initFlattenedBooklist(args, book);
-        }
-    }
-
-    private void initFlattenedBooklist(@NonNull final Bundle args,
-                                       @NonNull final Book book) {
-        // got list ?
-        final String navTableName = args.getString(BKEY_NAV_TABLE);
-        if (navTableName != null && !navTableName.isEmpty()) {
-            // ok, we have a list, get the rowId we need to be on.
-            final long rowId = args.getLong(BKEY_NAV_ROW_ID, 0);
-            if (rowId > 0) {
-                mFlattenedBooklist = new FlattenedBooklist(mDb.getSyncDb(), navTableName);
-                // move to book.
-                if (!mFlattenedBooklist.moveTo(rowId)
-                    // Paranoia: is it the book we wanted ?
-                    || mFlattenedBooklist.getBookId() != book.getId()) {
-                    // Should never happen... flw
-                    mFlattenedBooklist.closeAndDrop();
-                    mFlattenedBooklist = null;
+        if (mNavHelper == null && args != null) {
+            // got list ?
+            final String listTableName = args.getString(BKEY_LIST_TABLE_NAME);
+            if (listTableName != null && !listTableName.isEmpty()) {
+                // ok, we have a list, get the rowId we need to be on.
+                final long rowId = args.getLong(BKEY_LIST_TABLE_ROW_ID, 0);
+                if (rowId > 0) {
+                    mNavHelper = new BooklistNavigator(mDb.getSyncDb(), listTableName);
+                    // move to book.
+                    if (!mNavHelper.moveTo(rowId)
+                        // Paranoia: is it the book we wanted ?
+                        || mNavHelper.getBookId() != book.getId()) {
+                        // Should never happen... flw
+                        mNavHelper = null;
+                    }
                 }
             }
         }
@@ -91,16 +86,16 @@ public class BookDetailsFragmentViewModel
     /**
      * Called after the user swipes back/forwards through the flattened booklist.
      *
-     * @param book    Current book
-     * @param forward flag; move to the next or previous book relative to the passed book.
+     * @param book      Current book
+     * @param direction to move
      *
      * @return {@code true} if we moved
      */
     public boolean move(@NonNull final Book book,
-                        final boolean forward) {
-        if (mFlattenedBooklist != null) {
-            mFlattenedBooklist.move(forward);
-            final long bookId = mFlattenedBooklist.getBookId();
+                        @NonNull final BooklistNavigator.Direction direction) {
+
+        if (mNavHelper != null && mNavHelper.move(direction)) {
+            final long bookId = mNavHelper.getBookId();
             // reload if it's a different book
             if (bookId != book.getId()) {
                 book.load(bookId, mDb);

@@ -39,8 +39,6 @@ import com.hardbacknutter.nevertoomanybooks.viewmodels.BookViewModel;
 public class BookDetailsActivity
         extends BaseActivity {
 
-    private static final String TAG = "BookDetailsActivity";
-
     /** all registered listeners. */
     private final Collection<View.OnTouchListener> mOnTouchListeners = new ArrayList<>();
 

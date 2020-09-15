@@ -37,7 +37,7 @@ public final class ErrorMsg {
 
     // Objects.requireNonNull
     public static final String NULL_AUTHOR = "Author";
-    public static final String NULL_BUILDER = "Builder";
+    public static final String NULL_BOOK_LIST = "Booklist";
     public static final String NULL_CHECKLIST = "Checklist";
     public static final String NULL_BOOKSHELF = "Bookshelf";
     public static final String NULL_CURSOR = "Cursor";

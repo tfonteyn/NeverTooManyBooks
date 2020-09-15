@@ -123,13 +123,6 @@ public final class DBDefinitions {
      */
     public static final TableDefinition TMP_TBL_BOOK_LIST;
 
-    /**
-     * This table should always be created without column constraints applied,
-     * with the exception of the "_id" primary key autoincrement.
-     * {@link TableDefinition.TableType#Temporary). NOT added to {@link #ALL_TABLES}.
-     */
-    public static final TableDefinition TMP_TBL_BOOK_LIST_NAVIGATOR;
-
     /* ======================================================================================
      * Primary and Foreign key domain definitions.
      * ====================================================================================== */
@@ -1309,15 +1302,9 @@ public final class DBDefinitions {
                         .setAlias("bl")
                         .setType(TableDefinition.TableType.Temporary);
 
-        TMP_TBL_BOOK_LIST_NAVIGATOR =
-                new TableDefinition(DB_TN_BOOK_LIST_PREFIX + "_navigator_tmp_")
-                        .setAlias("bl_n")
-                        .setType(TableDefinition.TableType.Temporary);
-
         // Allow debug mode to use standard tables so we can export and inspect the content.
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOK_LIST_USES_STANDARD_TABLES) {
             TMP_TBL_BOOK_LIST.setType(TableDefinition.TableType.Standard);
-            TMP_TBL_BOOK_LIST_NAVIGATOR.setType(TableType.Standard);
         }
 
         // Stores the node state across application restarts.
@@ -1354,21 +1341,6 @@ public final class DBDefinitions {
                          .setPrimaryKey(DOM_PK_ID);
         //TODO: figure out indexes
 
-
-        /*
-         * FULL representation of TMP_TBL_BOOK_LIST_NAVIGATOR temp table.
-         *
-         * Get's populated after a new TMP_TBL_BOOK_LIST is created and populated.
-         * It provides the linear (flat) list of book ID's to move back and forth when
-         * the user swipes left and right on the book details screen.
-         *
-         * This table should always be created without column constraints applied,
-         * with the exception of the "_id" primary key autoincrement
-         */
-        TMP_TBL_BOOK_LIST_NAVIGATOR.addDomains(DOM_PK_ID,
-                                               DOM_FK_BOOK)
-                                   .setPrimaryKey(DOM_PK_ID);
-        // no index needed, the PK is enough
 
         /* ======================================================================================
          *  FTS definitions

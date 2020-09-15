@@ -452,6 +452,11 @@ public class Booklist
         return names;
     }
 
+    @NonNull
+    public String getListTableName() {
+        return mListTable.getName();
+    }
+
     /**
      * Gets a 'window' on the result set, starting at 'offset' and 'pageSize' rows.
      * We only retrieve visible rows.
@@ -497,19 +502,6 @@ public class Booklist
         mCursor = new BooklistCursor(this);
         return mCursor;
     }
-
-    /**
-     * Create a flattened table (a snapshot!) of ordered book ID's based on the underlying list.
-     * Any old data is removed before the new table is created.
-     *
-     * @return the name of the created table.
-     */
-    @NonNull
-    public String createFlattenedBooklist() {
-        // reminder: do not drop this table. It needs to survive beyond the booklist screen.
-        return FlattenedBooklist.createTable(mSyncedDb, mInstanceId, mListTable);
-    }
-
 
     /**
      * Find the nodes that show the given book.

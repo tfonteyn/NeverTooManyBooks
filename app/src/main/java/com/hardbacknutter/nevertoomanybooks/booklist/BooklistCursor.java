@@ -261,9 +261,9 @@ public class BooklistCursor
         // Note that the super class will already have checked the newPosition.
 
         // Get the id we use for the cursor at the new position
-        int cursorId = (newPosition / PAGE_SIZE);
+        final int cursorId = (newPosition / PAGE_SIZE);
         // Determine the actual start position offset
-        int offset = cursorId * PAGE_SIZE;
+        final int offset = cursorId * PAGE_SIZE;
 
         // Synchronize mCursors AND mMruList!
         synchronized (this) {
@@ -282,9 +282,9 @@ public class BooklistCursor
     private Cursor getCursor(final int position) {
 
         // Get the id we use for the cursor at the new position
-        int cursorId = position / PAGE_SIZE;
+        final int cursorId = position / PAGE_SIZE;
         // Determine the actual start position offset
-        int offset = cursorId * PAGE_SIZE;
+        final int offset = cursorId * PAGE_SIZE;
 
         if (mCursors.get(cursorId) == null) {
             // Create a new cursor

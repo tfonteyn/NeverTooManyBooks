@@ -172,7 +172,6 @@ class BooklistNodeDAO {
                 mSqlSaveAllNodes + _AND_ + KEY_PK_ID + ">=? AND " + KEY_PK_ID + "<?";
     }
 
-
     /**
      * Expand or collapse <strong>all</strong> nodes.
      *

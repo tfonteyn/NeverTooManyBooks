@@ -176,12 +176,16 @@ public class BooksOnBookshelf
 
     /** Goodreads authorization task. */
     private GrAuthTask mGrAuthTask;
+
     /** Multi-type adapter to manage list connection to cursor. */
     private BooklistAdapter mAdapter;
+
     /** The Activity ViewModel. */
     private BooksOnBookshelfModel mModel;
+
     /** Goodreads send-book task. */
     private GrSendOneBookTask mGrSendOneBookTask;
+
     /**
      * Full progress dialog to show while running a task.
      * Note that the {@link #mModel} does not use this dialog (i.e. never sends progress messages)
@@ -189,10 +193,13 @@ public class BooksOnBookshelf
      */
     @Nullable
     private ProgressDialogFragment mProgressDialog;
+
     /** View binding. */
     private BooksonbookshelfBinding mVb;
+
     /** List layout manager. */
     private LinearLayoutManager mLayoutManager;
+
     /** Listener for the Bookshelf Spinner. */
     private final SpinnerInteractionListener mOnBookshelfSelectionChanged =
             new SpinnerInteractionListener() {
@@ -235,11 +242,14 @@ public class BooksOnBookshelf
                     }
                 }
             };
+
     /** React to row changes made. ENHANCE: update the modified row without a rebuild. */
     private final BookChangedListener mBookChangedListener = this::onBookChange;
+
     /** React to the user selecting a style to apply. */
     private final StylePickerDialogFragment.OnResultListener mOnStylePickerListener =
             this::onStyleChanged;
+
     /** Listener for clicks on the list. */
     private final BooklistAdapter.OnRowClickedListener mOnRowClickedListener =
             new BooklistAdapter.OnRowClickedListener() {
@@ -264,23 +274,19 @@ public class BooksOnBookshelf
 
                     // If it's a book, open the details screen.
                     if (rowData.getInt(DBDefinitions.KEY_BL_NODE_GROUP) == BooklistGroup.BOOK) {
-                        final long rowId = rowData.getLong(DBDefinitions.KEY_PK_ID);
-                        final long bookId = rowData.getLong(DBDefinitions.KEY_FK_BOOK);
-                        // Note we (re)create the flat table *every time* the user click a book.
-                        // This guarantees an exact match in rowId'
-                        // (which turns out tricky if we cache the table)
-                        // ENHANCE: re-implement flat table caching
-                        final String navTableName = mModel.createFlattenedBooklist();
                         final Intent intent = new Intent(BooksOnBookshelf.this,
                                                          BookDetailsActivity.class)
-                                .putExtra(DBDefinitions.KEY_PK_ID, bookId)
-                                .putExtra(BookDetailsFragmentViewModel.BKEY_NAV_TABLE, navTableName)
-                                .putExtra(BookDetailsFragmentViewModel.BKEY_NAV_ROW_ID, rowId);
+                                .putExtra(DBDefinitions.KEY_PK_ID,
+                                          rowData.getLong(DBDefinitions.KEY_FK_BOOK))
+                                .putExtra(BookDetailsFragmentViewModel.BKEY_LIST_TABLE_NAME,
+                                          mModel.getBooklistTableName())
+                                .putExtra(BookDetailsFragmentViewModel.BKEY_LIST_TABLE_ROW_ID,
+                                          rowData.getLong(DBDefinitions.KEY_PK_ID));
                         startActivityForResult(intent, RequestCode.BOOK_VIEW);
 
                     } else {
                         // it's a level, expand/collapse.
-                        toggleNode(rowData, BooklistNode.NEXT_STATE_TOGGLE, 1);
+                        setNode(rowData, BooklistNode.NEXT_STATE_TOGGLE, 1);
                     }
                 }
 
@@ -319,9 +325,11 @@ public class BooksOnBookshelf
                     return true;
                 }
             };
+
     /** React to the user selecting a context menu option. (MENU_PICKER_USES_FRAGMENT). */
     private final MenuPickerDialogFragment.OnResultListener mMenuPickerListener =
             this::onContextItemSelected;
+
     /** Encapsulates the FAB button/menu. */
     private FabMenu mFabMenu;
     /** The adapter used to fill the mBookshelfSpinner. */
@@ -410,8 +418,7 @@ public class BooksOnBookshelf
         // Setup the Bookshelf spinner;
         // The list is initially empty here; loading the list and
         // setting/selecting the current shelf are both done in onResume
-        mBookshelfSpinnerAdapter =
-                new BookshelfSpinnerAdapter(this, mModel.getBookshelfList());
+        mBookshelfSpinnerAdapter = new BookshelfSpinnerAdapter(this, mModel.getBookshelfList());
         mVb.bookshelfSpinner.setAdapter(mBookshelfSpinnerAdapter);
         mVb.bookshelfSpinner.setOnTouchListener(mOnBookshelfSelectionChanged);
         mVb.bookshelfSpinner.setOnItemSelectedListener(mOnBookshelfSelectionChanged);
@@ -1059,8 +1066,8 @@ public class BooksOnBookshelf
             }
 
             case R.id.MENU_LEVEL_EXPAND: {
-                toggleNode(rowData, BooklistNode.NEXT_STATE_EXPANDED,
-                           mModel.getCurrentStyle(this).getGroupCount());
+                setNode(rowData, BooklistNode.NEXT_STATE_EXPANDED,
+                        mModel.getCurrentStyle(this).getGroupCount());
                 return true;
             }
 
@@ -1442,12 +1449,12 @@ public class BooksOnBookshelf
         }
     }
 
-    private void toggleNode(@NonNull final DataHolder rowData,
-                            @BooklistNode.NextState final int nextState,
-                            final int relativeChildLevel) {
+    private void setNode(@NonNull final DataHolder rowData,
+                         @BooklistNode.NextState final int nextState,
+                         final int relativeChildLevel) {
         saveListPosition();
         final long nodeRowId = rowData.getLong(DBDefinitions.KEY_BL_LIST_VIEW_NODE_ROW_ID);
-        mModel.toggleNode(nodeRowId, nextState, relativeChildLevel);
+        mModel.setNode(nodeRowId, nextState, relativeChildLevel);
         // pass in a NEW cursor!
         displayList(mModel.newListCursor(), null);
     }

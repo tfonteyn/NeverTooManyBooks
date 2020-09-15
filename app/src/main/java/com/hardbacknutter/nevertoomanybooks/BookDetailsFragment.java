@@ -52,6 +52,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
+import com.hardbacknutter.nevertoomanybooks.booklist.BooklistNavigator;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverHandler;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentBookDetailsBinding;
@@ -98,8 +99,6 @@ import com.hardbacknutter.nevertoomanybooks.viewmodels.LiveDataEvent;
  * <p>
  * Keep in mind the fragment can be re-used.
  * Do NOT assume fields are empty by default when populating them manually.
- * <p>
- * Initializing the Fields is done in the ViewModel.
  */
 public class BookDetailsFragment
         extends BookBaseFragment
@@ -809,12 +808,14 @@ public class BookDetailsFragment
             }
 
             if ((e1.getX() - e2.getX()) > SENSITIVITY) {
-                if (mFragmentVM.move(mBookViewModel.getBook(), true)) {
+                if (mFragmentVM.move(mBookViewModel.getBook(),
+                                     BooklistNavigator.Direction.Next)) {
                     populateViews();
                     return true;
                 }
             } else if ((e2.getX() - e1.getX()) > SENSITIVITY) {
-                if (mFragmentVM.move(mBookViewModel.getBook(), false)) {
+                if (mFragmentVM.move(mBookViewModel.getBook(),
+                                     BooklistNavigator.Direction.Previous)) {
                     populateViews();
                     return true;
                 }

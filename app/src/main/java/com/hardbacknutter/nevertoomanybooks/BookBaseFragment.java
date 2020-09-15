@@ -76,8 +76,10 @@ public abstract class BookBaseFragment
 
     /** FragmentResultListener request key. */
     public static final String RK_COVER_BROWSER = CoverBrowserDialogFragment.TAG + ":rk:";
+
     /** Log tag. */
     private static final String TAG = "BookBaseFragment";
+
     /** Handles cover replacement, rotation, etc. */
     final CoverHandler[] mCoverHandler = new CoverHandler[2];
 
@@ -87,10 +89,13 @@ public abstract class BookBaseFragment
 
     /** Goodreads authorization task. */
     GrAuthTask mGrAuthTask;
+
     /** simple indeterminate progress spinner to show while doing lengthy work. */
     ProgressBar mProgressBar;
+
     /** The book. Must be in the Activity scope. */
     BookViewModel mBookViewModel;
+
     /** Listener for all field changes. Must keep strong reference. */
     private final Fields.AfterChangeListener mAfterChangeListener =
             new Fields.AfterChangeListener() {
