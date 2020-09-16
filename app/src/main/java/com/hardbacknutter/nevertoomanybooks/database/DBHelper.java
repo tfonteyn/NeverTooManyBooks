@@ -297,6 +297,37 @@ public final class DBHelper
     }
 
     /**
+     * Run at installation time to add the 'all' and default shelves to the database.
+     *
+     * @param context Current context
+     * @param db      Database Access
+     */
+    private void prepareBookshelfTable(@NonNull final Context context,
+                                       @NonNull final SQLiteDatabase db) {
+        // inserts a 'All Books' bookshelf with _id==-1, see {@link Bookshelf}.
+        db.execSQL("INSERT INTO " + TBL_BOOKSHELF
+                   + '(' + KEY_PK_ID
+                   + ',' + KEY_BOOKSHELF_NAME
+                   + ',' + KEY_FK_STYLE
+                   + ") VALUES ("
+                   + Bookshelf.ALL_BOOKS
+                   + ",'" + context.getString(R.string.bookshelf_all_books)
+                   + "'," + BooklistStyle.DEFAULT_STYLE_ID
+                   + ')');
+
+        // inserts a 'Default' bookshelf with _id==1, see {@link Bookshelf}.
+        db.execSQL("INSERT INTO " + TBL_BOOKSHELF
+                   + '(' + KEY_PK_ID
+                   + ',' + KEY_BOOKSHELF_NAME
+                   + ',' + KEY_FK_STYLE
+                   + ") VALUES ("
+                   + Bookshelf.DEFAULT
+                   + ",'" + context.getString(R.string.bookshelf_my_books)
+                   + "'," + BooklistStyle.DEFAULT_STYLE_ID
+                   + ')');
+    }
+
+    /**
      * Create all database triggers.
      *
      * <p>
@@ -557,34 +588,15 @@ public final class DBHelper
 
         // insert the builtin styles so foreign key rules are possible.
         prepareStylesTable(db);
-
-        // inserts a 'All Books' bookshelf with _id==-1, see {@link Bookshelf}.
-        db.execSQL("INSERT INTO " + TBL_BOOKSHELF
-                   + '(' + KEY_PK_ID
-                   + ',' + KEY_BOOKSHELF_NAME
-                   + ',' + KEY_FK_STYLE
-                   + ") VALUES ("
-                   + Bookshelf.ALL_BOOKS
-                   + ",'" + context.getString(R.string.bookshelf_all_books)
-                   + "'," + BooklistStyle.DEFAULT_STYLE_ID
-                   + ')');
-
-        // inserts a 'Default' bookshelf with _id==1, see {@link Bookshelf}.
-        db.execSQL("INSERT INTO " + TBL_BOOKSHELF
-                   + '(' + KEY_PK_ID
-                   + ',' + KEY_BOOKSHELF_NAME
-                   + ',' + KEY_FK_STYLE
-                   + ") VALUES ("
-                   + Bookshelf.DEFAULT
-                   + ",'" + context.getString(R.string.bookshelf_my_books)
-                   + "'," + BooklistStyle.DEFAULT_STYLE_ID
-                   + ')');
+        // and the all/default shelves
+        prepareBookshelfTable(context, db);
 
         //IMPORTANT: withConstraints MUST BE false (FTS columns don't use a type/constraints)
         TBL_FTS_BOOKS.create(syncedDb, false);
 
         createTriggers(syncedDb);
     }
+
 
     @Override
     public void onUpgrade(@NonNull final SQLiteDatabase db,
@@ -748,6 +760,51 @@ public final class DBHelper
     public void onOpen(@NonNull final SQLiteDatabase db) {
         if (sIsCollationCaseSensitive == null) {
             sIsCollationCaseSensitive = collationIsCaseSensitive(db);
+        }
+    }
+
+    /**
+     * Delete al user data from the database.
+     * Tables will get their initial default data re-added (e.g. styles, shelves...)
+     *
+     * @param context  Current context
+     * @param syncedDb Underlying database
+     *
+     * @return {@code true} on success
+     */
+    @SuppressWarnings("UnusedReturnValue")
+    public boolean deleteAllContent(@NonNull final Context context,
+                                    @NonNull final SynchronizedDb syncedDb) {
+
+        Synchronizer.SyncLock syncLock = null;
+        try {
+            syncLock = syncedDb.beginTransaction(true);
+
+            syncedDb.delete(TBL_BOOK_LIST_NODE_STATE.getName(), null, null);
+            syncedDb.delete(TBL_FTS_BOOKS.getName(), null, null);
+
+            syncedDb.delete(TBL_BOOKS.getName(), null, null);
+            syncedDb.delete(TBL_PUBLISHERS.getName(), null, null);
+            syncedDb.delete(TBL_SERIES.getName(), null, null);
+            syncedDb.delete(TBL_AUTHORS.getName(), null, null);
+
+            syncedDb.delete(TBL_BOOKSHELF.getName(), null, null);
+            syncedDb.delete(TBL_BOOKLIST_STYLES.getName(), null, null);
+
+            prepareStylesTable(syncedDb.getSQLiteDatabase());
+            prepareBookshelfTable(context, syncedDb.getSQLiteDatabase());
+
+            syncedDb.setTransactionSuccessful();
+            return true;
+
+        } catch (@NonNull final Exception e) {
+            Logger.error(context, TAG, e);
+            return false;
+
+        } finally {
+            if (syncLock != null) {
+                syncedDb.endTransaction(syncLock);
+            }
         }
     }
 }

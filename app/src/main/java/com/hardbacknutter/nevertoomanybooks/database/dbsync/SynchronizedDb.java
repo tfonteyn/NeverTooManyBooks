@@ -504,7 +504,7 @@ public class SynchronizedDb {
      * @return the underlying SQLiteDatabase object.
      */
     @NonNull
-    SQLiteDatabase getSQLiteDatabase() {
+    public SQLiteDatabase getSQLiteDatabase() {
         return mSqlDb;
     }
 

@@ -75,8 +75,8 @@
             style="@style/AppVersion"
             app:layout_constraintEnd_toEndOf="@id/app_name"
             app:layout_constraintTop_toBottomOf="@id/app_name"
-            tools:text="1.1.0"
             tools:ignore="SelectableText"
+            tools:text="1.1.0"
             />
 
         <androidx.constraintlayout.widget.Barrier
@@ -99,9 +99,9 @@
             android:id="@+id/debug_group"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            app:groupApply="visibility"
             android:visibility="gone"
             app:constraint_referenced_ids="debug_section_lbl,debug_sq_shell,debug_prefs"
+            app:groupApply="visibility"
             tools:visibility="visible"
             />
 
@@ -136,12 +136,27 @@
             app:layout_constraintTop_toBottomOf="@id/debug_sq_shell"
             />
 
+        <Button
+            android:id="@+id/debug_clear_db"
+            style="@style/MenuButton"
+            android:layout_width="0dp"
+            android:backgroundTint="?attr/colorError"
+            android:text="@string/clear_all_data"
+            android:textColor="?attr/colorOnError"
+            android:visibility="gone"
+            app:icon="@drawable/ic_delete"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@id/debug_section_lbl"
+            app:layout_constraintTop_toBottomOf="@id/debug_prefs"
+            tools:visibility="visible"
+            />
+
         <TextView
             android:id="@+id/contacts"
             style="@style/Text.Header"
             android:text="@string/lbl_about_contact"
             app:layout_constraintStart_toEndOf="@id/indents"
-            app:layout_constraintTop_toBottomOf="@id/debug_prefs"
+            app:layout_constraintTop_toBottomOf="@id/debug_clear_db"
             />
 
         <Button

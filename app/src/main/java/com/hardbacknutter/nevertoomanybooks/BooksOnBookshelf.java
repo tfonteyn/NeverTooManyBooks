@@ -1281,6 +1281,15 @@ public class BooksOnBookshelf
                 break;
             }
 
+            // from BaseActivity Nav Panel
+            case RequestCode.NAV_PANEL_ABOUT:
+                if (resultCode == AboutActivity.RESULT_ALL_DATA_DESTROYED) {
+                    BooklistStyle.StyleDAO.clear();
+                    mModel.reloadSelectedBookshelf(this);
+                    mModel.setForceRebuildInOnResume(true);
+                }
+                break;
+
             default: {
                 super.onActivityResult(requestCode, resultCode, data);
                 break;

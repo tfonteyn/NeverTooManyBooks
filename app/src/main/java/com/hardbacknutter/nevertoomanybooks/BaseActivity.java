@@ -419,7 +419,8 @@ public abstract class BaseActivity
                 return true;
             }
             case R.id.nav_about: {
-                startActivity(new Intent(this, AboutActivity.class));
+                startActivityForResult(new Intent(this, AboutActivity.class),
+                                       RequestCode.NAV_PANEL_ABOUT);
                 return true;
             }
 

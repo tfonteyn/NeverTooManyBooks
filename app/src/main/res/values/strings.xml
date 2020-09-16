@@ -327,7 +327,6 @@
     <string name="confirm_registration_required">This feature requires registration with %1$s. Would you like to see more information?</string>
     <string name="confirm_registration_benefits">This feature benefits from registration with %1$s. Would you like to see more information, or disable this message?\n You can find this information at a later date under the “%2$s” section in the settings.</string>
 
-
     <!-- ####################################################################################### -->
     <!-- ========== ValidatorException error messages ========== -->
     <!-- ####################################################################################### -->
@@ -1579,4 +1578,8 @@
     <string name="info_purge_blns_all">Purge all BLNS</string>
     <!-- param 1: type of item; param 2: item name.  Example: "Purge BLNS for Bookshelf “ToRead” " -->
     <string name="info_purge_blns_item_name">Purge BLNS for %1$s “%2$s” ?</string>
+
+    <string name="clear_all_data">Clear all data</string>
+    <string name="confirm_clear_all_data">THIS WILL REMOVE ALL DATA.\n THERE IS **NO** GOING BACK\n(other than restoring from a **backup**).\n\nAre you sure you want to continue ?</string>
+
 </resources>

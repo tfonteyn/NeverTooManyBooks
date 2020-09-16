@@ -32,6 +32,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+
+import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBHelper;
 import com.hardbacknutter.nevertoomanybooks.databinding.ActivityAdminAboutBinding;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
@@ -50,11 +53,14 @@ public class AboutActivity
      * SQLite shell updates are not allowed.
      */
     private static final int DEBUG_CLICKS = 3;
+    public static final int RESULT_ALL_DATA_DESTROYED = 0xDEADBEEF;
     /** After clicking the icon 3 more times, the SQLite shell will allow updates. */
-    private static final int DEBUG_CLICKS_ALLOW_UPD = 6;
+    private static final int DEBUG_CLICKS_ALLOW_SQL_UPDATES = 6;
 
     /** Log tag. */
     private static final String TAG = "AboutActivity";
+    /** After clicking the icon another 3 times, the button to delete all data becomes visible. */
+    private static final int DEBUG_CLICKS_ALLOW_DELETE_ALL = 9;
 
     private ActivityAdminAboutBinding mVb;
 
@@ -93,10 +99,16 @@ public class AboutActivity
         mVb.icon.setOnClickListener(v -> {
             mDebugClicks++;
             if (mDebugClicks >= DEBUG_CLICKS) {
+                // show the entire group
                 mVb.debugGroup.setVisibility(View.VISIBLE);
             }
-            if (mDebugClicks >= DEBUG_CLICKS_ALLOW_UPD) {
+            if (mDebugClicks >= DEBUG_CLICKS_ALLOW_SQL_UPDATES) {
+                // no visual feedback!
                 mSqLiteAllowUpdates = true;
+            }
+            if (mDebugClicks >= DEBUG_CLICKS_ALLOW_DELETE_ALL) {
+                // show the button, it's red...
+                mVb.debugClearDb.setVisibility(View.VISIBLE);
             }
         });
 
@@ -104,6 +116,24 @@ public class AboutActivity
             final Intent intent = new Intent(this, SqliteShellActivity.class)
                     .putExtra(SqliteShellFragment.BKEY_ALLOW_UPDATES, mSqLiteAllowUpdates);
             startActivity(intent);
+        });
+
+        mVb.debugClearDb.setOnClickListener(v -> {
+            new MaterialAlertDialogBuilder(this)
+                    .setTitle(R.string.clear_all_data)
+                    .setIcon(R.drawable.ic_delete)
+                    .setMessage(R.string.confirm_clear_all_data)
+                    .setNegativeButton(R.string.no, (d, w) -> d.dismiss())
+                    .setNeutralButton(R.string.no, (d, w) -> d.dismiss())
+                    .setPositiveButton(R.string.action_delete, (d, w) -> {
+                        try (DAO db = new DAO(TAG)) {
+                            if (db.getDBHelper().deleteAllContent(this, db.getSyncDb())) {
+                                setResult(RESULT_ALL_DATA_DESTROYED);
+                            }
+                        }
+                    })
+                    .create()
+                    .show();
         });
 
         mVb.debugPrefs.setOnClickListener(v -> Prefs.dumpPreferences(this, null));
