@@ -767,27 +767,28 @@ class BooklistNodeDAO {
             }
         }
 
-        // key + level
-        final Collection<Pair<String, Integer>> keyPrefixes = new ArrayList<>();
+        // level + key
+        final Collection<Pair<Integer, String>> keyPrefixes = new ArrayList<>();
 
-        // find all branches (level 2+) with visible nodes
+        // find all branches (groups on level 2+) with visible nodes
         try (Cursor cursor = mSyncedDb.rawQuery(
                 SELECT_DISTINCT_ + KEY_BL_NODE_KEY + ',' + KEY_BL_NODE_LEVEL
                 + _FROM_ + mListTable.getName()
-                + _WHERE_ + KEY_BL_NODE_VISIBLE + "=1" + _AND_ + KEY_BL_NODE_LEVEL + ">1"
-                , null)) {
+                + _WHERE_ + KEY_BL_NODE_VISIBLE + "=1"
+                // Groups only - Don't do books
+                + _AND_ + KEY_BL_NODE_LEVEL + " BETWEEN 2 AND ?"
+                , new String[]{String.valueOf(mStyle.getGroupCount())})) {
 
             while (cursor.moveToNext()) {
                 final String key = cursor.getString(0);
                 final int level = cursor.getInt(1);
-
                 final String[] parts = key.split("=");
-                final StringBuilder prefix = new StringBuilder(parts[0] + '=');
+                final StringBuilder prefix = new StringBuilder(parts[0]);
                 for (int p = 1; p < level; p++) {
-                    prefix.append(parts[p]).append('=');
+                    prefix.append('=').append(parts[p]);
                 }
                 prefix.append('%');
-                keyPrefixes.add(new Pair<>(prefix.toString(), level));
+                keyPrefixes.add(new Pair<>(level, prefix.toString()));
             }
         }
 
@@ -795,13 +796,13 @@ class BooklistNodeDAO {
         int rows = 0;
         try (SynchronizedStatement stmt = mSyncedDb.compileStatement(
                 UPDATE_ + mListTable.getName() + _SET_ + KEY_BL_NODE_VISIBLE + "=1"
-                + _WHERE_ + KEY_BL_NODE_KEY + " LIKE ?"
+                + _WHERE_ + KEY_BL_NODE_VISIBLE + "=0"
                 + _AND_ + KEY_BL_NODE_LEVEL + "=?"
-                + _AND_ + KEY_BL_NODE_VISIBLE + "=0")) {
+                + _AND_ + KEY_BL_NODE_KEY + " LIKE ?")) {
 
-            for (Pair<String, Integer> entry : keyPrefixes) {
-                stmt.bindString(1, entry.first);
-                stmt.bindLong(2, entry.second);
+            for (Pair<Integer, String> entry : keyPrefixes) {
+                stmt.bindLong(1, entry.first);
+                stmt.bindString(2, entry.second);
                 rows += stmt.executeUpdateDelete();
             }
         }

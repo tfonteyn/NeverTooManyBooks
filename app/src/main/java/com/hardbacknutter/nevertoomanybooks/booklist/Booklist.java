@@ -526,9 +526,8 @@ public class Booklist
                     + _WHERE_ + mListTable.dot(KEY_FK_BOOK) + "=?";
         }
 
-        // get all positions of the book
+        // get all positions the book is on
         final ArrayList<BooklistNode> nodeList = new ArrayList<>();
-
         try (Cursor cursor = mSyncedDb.rawQuery(mSqlGetBookNodes, new String[]{
                 String.valueOf(bookId)})) {
 
@@ -538,7 +537,9 @@ public class Booklist
                 nodeList.add(node);
             }
         }
+
         if (nodeList.isEmpty()) {
+            // the book is not present
             return null;
         }
 
@@ -548,21 +549,18 @@ public class Booklist
                         .filter(BooklistNode::isVisible)
                         .collect(Collectors.toCollection(ArrayList::new));
 
-
-        // If we have nodes already visible, return them
+        // If we have nodes already visible, return those
         if (!visibleNodes.isEmpty()) {
             return visibleNodes;
 
         } else {
             // Make them all visible
-            nodeList.stream()
-                    .filter(node -> !node.isVisible() && node.getRowId() >= 0)
-                    .forEach(this::ensureNodeIsVisible);
+            //noinspection SimplifyStreamApiCallChains
+            nodeList.stream().forEach(this::ensureNodeIsVisible);
 
             // Recalculate all positions
             //noinspection SimplifyStreamApiCallChains
-            nodeList.stream()
-                    .forEach(this::findAndSetListPosition);
+            nodeList.stream().forEach(this::findAndSetListPosition);
 
             return nodeList;
         }
