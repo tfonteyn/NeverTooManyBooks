@@ -75,7 +75,6 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BO
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_SERIES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_PUBLISHERS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_SERIES;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TMP_TBL_BOOK_LIST;
 
 /**
  * A Builder to accumulates data while building the list table
@@ -169,7 +168,7 @@ final class BooklistBuilder {
 
         // Setup the table (but don't create it yet)
         // The base definition comes with a small set of essential domains.
-        mListTable = new TableDefinition(TMP_TBL_BOOK_LIST);
+        mListTable = new TableDefinition(DBDefinitions.TMP_TBL_BOOK_LIST);
         mListTable.setName(mListTable.getName() + instanceId);
     }
 
@@ -255,14 +254,14 @@ final class BooklistBuilder {
         // PREF_REBUILD_EXPANDED must explicitly be set to 1/1
         // All others must be set to 0/0. The actual state will be set afterwards.
         switch (mRebuildState) {
-            case Booklist.PREF_REBUILD_ALWAYS_COLLAPSED:
+            case Booklist.PREF_REBUILD_COLLAPSED:
             case Booklist.PREF_REBUILD_PREFERRED_STATE:
             case Booklist.PREF_REBUILD_SAVED_STATE:
                 sourceColumns.append(",0 AS ").append(DOM_BL_NODE_EXPANDED);
                 sourceColumns.append(",0 AS ").append(DOM_BL_NODE_VISIBLE);
                 break;
 
-            case Booklist.PREF_REBUILD_ALWAYS_EXPANDED:
+            case Booklist.PREF_REBUILD_EXPANDED:
                 sourceColumns.append(",1 AS ").append(DOM_BL_NODE_EXPANDED);
                 sourceColumns.append(",1 AS ").append(DOM_BL_NODE_VISIBLE);
                 break;
@@ -343,9 +342,9 @@ final class BooklistBuilder {
      * Build a collection of triggers on the list table designed to fill in the summary/header
      * records as the data records are added in sorted order.
      *
-     * @param syncedDb Underlying database
+     * @param db Database Access
      */
-    private void createTriggers(@NonNull final SynchronizedDb syncedDb) {
+    private void createTriggers(@NonNull final SynchronizedDb db) {
 
         mTriggerHelperTable = new TableDefinition(mListTable + "_th")
                 .setAlias("tht")
@@ -377,7 +376,7 @@ final class BooklistBuilder {
          * This is just a simple technique to provide persistent context to the trigger.
          */
         //IMPORTANT: withConstraints MUST BE false
-        mTriggerHelperTable.recreate(syncedDb, false);
+        mTriggerHelperTable.recreate(db, false);
 
         /*
          * For each grouping, starting with the lowest, build a trigger to update the next
@@ -400,8 +399,7 @@ final class BooklistBuilder {
 
             // PREF_REBUILD_EXPANDED must explicitly be set to 1/1
             // All others must be set to 0/0. The actual state will be set afterwards.
-            final int expVis = (mRebuildState == Booklist.PREF_REBUILD_ALWAYS_EXPANDED)
-                               ? 1 : 0;
+            final int expVis = (mRebuildState == Booklist.PREF_REBUILD_EXPANDED) ? 1 : 0;
 
             // Create the VALUES clause for the next level up
             final StringBuilder listValues = new StringBuilder()
@@ -437,7 +435,7 @@ final class BooklistBuilder {
 
             // (re)Create the trigger
             mTriggerHelperLevelTriggerName = mListTable.getName() + "_TG_LEVEL_" + level;
-            syncedDb.execSQL("DROP TRIGGER IF EXISTS " + mTriggerHelperLevelTriggerName);
+            db.execSQL("DROP TRIGGER IF EXISTS " + mTriggerHelperLevelTriggerName);
             final String levelTgSql =
                     "\nCREATE TEMPORARY TRIGGER " + mTriggerHelperLevelTriggerName
                     + " BEFORE INSERT ON " + mListTable.getName() + " FOR EACH ROW"
@@ -450,12 +448,12 @@ final class BooklistBuilder {
                     + /*             */ " VALUES(" + listValues + ");"
                     + "\n END";
 
-            syncedDb.execSQL(levelTgSql);
+            db.execSQL(levelTgSql);
         }
 
         // Create a trigger to maintain the 'current' value
         mTriggerHelperCurrentValueTriggerName = mListTable.getName() + "_TG_CURRENT";
-        syncedDb.execSQL("DROP TRIGGER IF EXISTS " + mTriggerHelperCurrentValueTriggerName);
+        db.execSQL("DROP TRIGGER IF EXISTS " + mTriggerHelperCurrentValueTriggerName);
         // This is a single row only, so delete the previous value, and insert the current one
         final String currentValueTgSql =
                 "\nCREATE TEMPORARY TRIGGER " + mTriggerHelperCurrentValueTriggerName
@@ -467,18 +465,23 @@ final class BooklistBuilder {
                 + /*              */ " VALUES (" + valuesColumns + ");"
                 + "\n END";
 
-        syncedDb.execSQL(currentValueTgSql);
+        db.execSQL(currentValueTgSql);
     }
 
-    private void cleanupTriggers(@NonNull final SynchronizedDb syncedDb) {
+    /**
+     * Drop the triggers and related table.
+     *
+     * @param db Database Access
+     */
+    private void cleanupTriggers(@NonNull final SynchronizedDb db) {
         if (mTriggerHelperCurrentValueTriggerName != null) {
-            syncedDb.execSQL("DROP TRIGGER IF EXISTS " + mTriggerHelperCurrentValueTriggerName);
+            db.execSQL("DROP TRIGGER IF EXISTS " + mTriggerHelperCurrentValueTriggerName);
         }
         if (mTriggerHelperLevelTriggerName != null) {
-            syncedDb.execSQL("DROP TRIGGER IF EXISTS " + mTriggerHelperLevelTriggerName);
+            db.execSQL("DROP TRIGGER IF EXISTS " + mTriggerHelperLevelTriggerName);
         }
         if (mTriggerHelperTable != null) {
-            syncedDb.drop(mTriggerHelperTable.getName());
+            db.drop(mTriggerHelperTable.getName());
         }
     }
 

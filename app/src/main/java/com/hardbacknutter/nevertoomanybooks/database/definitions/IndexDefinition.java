@@ -103,7 +103,7 @@ class IndexDefinition {
     /**
      * Create the index.
      *
-     * @param db SynchronizedDb Database
+     * @param db Database Access
      */
     public void create(@NonNull final SynchronizedDb db) {
         db.execSQL(def());

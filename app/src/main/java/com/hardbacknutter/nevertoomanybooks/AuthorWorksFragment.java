@@ -331,7 +331,7 @@ public class AuthorWorksFragment
                         // the author as a single line, and no books shown at all,
                         // which can be quite confusing to the user.
                         .putExtra(BooksOnBookshelfModel.BKEY_LIST_STATE,
-                                  Booklist.PREF_REBUILD_ALWAYS_EXPANDED);
+                                  Booklist.PREF_REBUILD_EXPANDED);
 
                 if (mModel.isAllBookshelves()) {
                     intent.putExtra(BooksOnBookshelfModel.BKEY_BOOKSHELF, Bookshelf.ALL_BOOKS);

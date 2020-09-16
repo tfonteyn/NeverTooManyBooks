@@ -813,7 +813,7 @@ public class BooksOnBookshelfModel
 
             // if we have any criteria set at all, the build should expand the book list.
             if (!mSearchCriteria.isEmpty()) {
-                builder.setRebuildState(Booklist.PREF_REBUILD_ALWAYS_EXPANDED);
+                builder.setRebuildState(Booklist.PREF_REBUILD_EXPANDED);
             }
 
             // Build the underlying data

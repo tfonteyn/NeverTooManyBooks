@@ -57,7 +57,7 @@ public class SqlStatementManager
     /**
      * Constructor.
      *
-     * @param db   the database
+     * @param db   Database Access
      * @param name instance name; used for logging
      */
     public SqlStatementManager(@NonNull final SynchronizedDb db,

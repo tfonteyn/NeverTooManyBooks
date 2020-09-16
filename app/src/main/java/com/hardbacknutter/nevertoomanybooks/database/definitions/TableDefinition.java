@@ -175,7 +175,7 @@ public class TableDefinition {
     /**
      * Create this table. Don't forget to call {@link #createIndices(SynchronizedDb)} if needed.
      *
-     * @param db              Database in which to create table
+     * @param db              Database Access
      * @param withConstraints Indicates if fields should have constraints applied
      *
      * @return TableDefinition (for chaining)
@@ -190,7 +190,7 @@ public class TableDefinition {
     /**
      * Create this table. Don't forget to call {@link #createIndices(SynchronizedDb)} if needed.
      *
-     * @param db                  Database in which to create table
+     * @param db                  Database Access
      * @param withConstraints     Indicates if fields should have constraints applied
      * @param withTableReferences Indicate if table should have constraints applied
      *
@@ -210,7 +210,7 @@ public class TableDefinition {
      * <p>
      * Drop this table (if it exists) and (re)create it including its indexes.
      *
-     * @param db              Database in which to drop/create table
+     * @param db              Database Access
      * @param withConstraints Indicates if fields should have constraints applied
      */
     public void recreate(@NonNull final SynchronizedDb db,
@@ -227,7 +227,7 @@ public class TableDefinition {
     /**
      * Create all registered indexes for this table.
      *
-     * @param db Database in which to drop/create table
+     * @param db Database Access
      */
     public void createIndices(@NonNull final SynchronizedDb db) {
         for (IndexDefinition index : mIndexes) {
@@ -692,7 +692,7 @@ public class TableDefinition {
     /**
      * Check if this table exists.
      *
-     * @param db the database
+     * @param db Database Access
      *
      * @return {@code true} if this table exists
      */
@@ -712,7 +712,7 @@ public class TableDefinition {
     /**
      * DEBUG. Dumps the content of this table to the debug output.
      *
-     * @param db      the database
+     * @param db      Database Access
      * @param tag     log tag to use
      * @param header  a header which will be logged first
      * @param limit   LIMIT limit
@@ -749,7 +749,7 @@ public class TableDefinition {
     /**
      * Get a description/info structure for this table describing the columns etc.
      *
-     * @param db the database
+     * @param db Database Access
      *
      * @return info object
      */
@@ -766,7 +766,7 @@ public class TableDefinition {
     /**
      * Alter the physical table in the database: add the given domain.
      *
-     * @param db     the database
+     * @param db     Database Access
      * @param domain to add
      */
     public void alterTableAddColumn(@NonNull final SynchronizedDb db,

@@ -237,7 +237,7 @@ public final class DBHelper
      * <p>
      * (re)Creates the indexes as defined on the tables.
      *
-     * @param db the database
+     * @param db Database Access
      */
     public void recreateIndices(@NonNull final SynchronizedDb db) {
         // Delete all indices.
@@ -354,7 +354,7 @@ public final class DBHelper
      * ENHANCE: once we allow editing of TocEntry's through the 'author detail' screen
      * this will need to be added.
      *
-     * @param db the database
+     * @param db Database Access
      */
     public void createTriggers(@NonNull final SynchronizedDb db) {
 
@@ -767,34 +767,34 @@ public final class DBHelper
      * Delete al user data from the database.
      * Tables will get their initial default data re-added (e.g. styles, shelves...)
      *
-     * @param context  Current context
-     * @param syncedDb Underlying database
+     * @param context Current context
+     * @param db      Database Access
      *
      * @return {@code true} on success
      */
     @SuppressWarnings("UnusedReturnValue")
     public boolean deleteAllContent(@NonNull final Context context,
-                                    @NonNull final SynchronizedDb syncedDb) {
+                                    @NonNull final SynchronizedDb db) {
 
         Synchronizer.SyncLock syncLock = null;
         try {
-            syncLock = syncedDb.beginTransaction(true);
+            syncLock = db.beginTransaction(true);
 
-            syncedDb.delete(TBL_BOOK_LIST_NODE_STATE.getName(), null, null);
-            syncedDb.delete(TBL_FTS_BOOKS.getName(), null, null);
+            db.delete(TBL_BOOK_LIST_NODE_STATE.getName(), null, null);
+            db.delete(TBL_FTS_BOOKS.getName(), null, null);
 
-            syncedDb.delete(TBL_BOOKS.getName(), null, null);
-            syncedDb.delete(TBL_PUBLISHERS.getName(), null, null);
-            syncedDb.delete(TBL_SERIES.getName(), null, null);
-            syncedDb.delete(TBL_AUTHORS.getName(), null, null);
+            db.delete(TBL_BOOKS.getName(), null, null);
+            db.delete(TBL_PUBLISHERS.getName(), null, null);
+            db.delete(TBL_SERIES.getName(), null, null);
+            db.delete(TBL_AUTHORS.getName(), null, null);
 
-            syncedDb.delete(TBL_BOOKSHELF.getName(), null, null);
-            syncedDb.delete(TBL_BOOKLIST_STYLES.getName(), null, null);
+            db.delete(TBL_BOOKSHELF.getName(), null, null);
+            db.delete(TBL_BOOKLIST_STYLES.getName(), null, null);
 
-            prepareStylesTable(syncedDb.getSQLiteDatabase());
-            prepareBookshelfTable(context, syncedDb.getSQLiteDatabase());
+            prepareStylesTable(db.getSQLiteDatabase());
+            prepareBookshelfTable(context, db.getSQLiteDatabase());
 
-            syncedDb.setTransactionSuccessful();
+            db.setTransactionSuccessful();
             return true;
 
         } catch (@NonNull final Exception e) {
@@ -803,7 +803,7 @@ public final class DBHelper
 
         } finally {
             if (syncLock != null) {
-                syncedDb.endTransaction(syncLock);
+                db.endTransaction(syncLock);
             }
         }
     }

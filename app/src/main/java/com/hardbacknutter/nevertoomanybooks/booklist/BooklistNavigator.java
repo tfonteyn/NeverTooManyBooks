@@ -76,12 +76,13 @@ public class BooklistNavigator
     /**
      * Constructor.
      *
+     * @param db            Database Access
      * @param listTableName Name of underlying and <strong>existing</strong> table
      */
-    public BooklistNavigator(@NonNull final SynchronizedDb syncDb,
+    public BooklistNavigator(@NonNull final SynchronizedDb db,
                              @NonNull final String listTableName) {
         mListTableName = listTableName;
-        mSqlStatementManager = new SqlStatementManager(syncDb, TAG + "|" + listTableName);
+        mSqlStatementManager = new SqlStatementManager(db, TAG + "|" + listTableName);
     }
 
     /**

@@ -78,7 +78,7 @@ class TypedCursor
     /**
      * See class docs.
      *
-     * @param db              Database Access; needed to get the real meta data for the columns.
+     * @param db              Database Access
      * @param tableDefinition to read types from
      */
     void setDb(@NonNull final SynchronizedDb db,

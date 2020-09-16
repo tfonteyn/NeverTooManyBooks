@@ -148,8 +148,9 @@ public class BooklistAdapter
     /**
      * Set the Cursor and related BooklistStyle.
      *
-     * @param cursor cursor with the 'list of items'
-     * @param style  to use.
+     * @param context Current context
+     * @param cursor  cursor with the 'list of items'
+     * @param style   to use.
      */
     public void setCursor(@NonNull final Context context,
                           @NonNull final Cursor cursor,

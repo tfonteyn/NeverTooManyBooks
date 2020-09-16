@@ -94,9 +94,9 @@ public class Booklist
 
     /** id values for state preservation property. See {@link ListRebuildMode}. */
     public static final int PREF_REBUILD_SAVED_STATE = 0;
-    public static final int PREF_REBUILD_ALWAYS_EXPANDED = 1;
+    public static final int PREF_REBUILD_EXPANDED = 1;
     @SuppressWarnings("WeakerAccess")
-    public static final int PREF_REBUILD_ALWAYS_COLLAPSED = 2;
+    public static final int PREF_REBUILD_COLLAPSED = 2;
     @SuppressWarnings("WeakerAccess")
     public static final int PREF_REBUILD_PREFERRED_STATE = 3;
 
@@ -208,12 +208,13 @@ public class Booklist
     /**
      * Constructor.
      *
+     * @param db           Database Access
      * @param style        Booklist style to use;
      *                     this is the resolved style as used by the passed bookshelf
      * @param bookshelf    the current bookshelf
      * @param rebuildState booklist state to use in next rebuild.
      */
-    public Booklist(@NonNull final SynchronizedDb syncDb,
+    public Booklist(@NonNull final SynchronizedDb db,
                     @NonNull final BooklistStyle style,
                     @NonNull final Bookshelf bookshelf,
                     @ListRebuildMode final int rebuildState) {
@@ -227,7 +228,7 @@ public class Booklist
 
         // Allocate ID
         mInstanceId = ID_COUNTER.incrementAndGet();
-        mSyncedDb = syncDb;
+        mSyncedDb = db;
         mStyle = style;
         mBookshelf = bookshelf;
         mRebuildState = rebuildState;
@@ -360,8 +361,8 @@ public class Booklist
                     mRowStateDAO.setAllNodes(mStyle.getTopLevel(context), false);
                     break;
 
-                case PREF_REBUILD_ALWAYS_EXPANDED:
-                case PREF_REBUILD_ALWAYS_COLLAPSED:
+                case PREF_REBUILD_EXPANDED:
+                case PREF_REBUILD_COLLAPSED:
                     // handled during table creation
                     break;
 
@@ -867,8 +868,8 @@ public class Booklist
 
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({PREF_REBUILD_SAVED_STATE,
-             PREF_REBUILD_ALWAYS_EXPANDED,
-             PREF_REBUILD_ALWAYS_COLLAPSED,
+             PREF_REBUILD_EXPANDED,
+             PREF_REBUILD_COLLAPSED,
              PREF_REBUILD_PREFERRED_STATE})
     public @interface ListRebuildMode {
 

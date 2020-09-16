@@ -127,18 +127,18 @@ class BooklistNodeDAO {
     /**
      * Constructor.
      *
-     * @param syncedDb    Underlying database
+     * @param db          Database Access
      * @param stmtManager to use
      * @param style       Booklist style to use;
      * @param bookshelf   to use
      */
-    BooklistNodeDAO(@NonNull final SynchronizedDb syncedDb,
+    BooklistNodeDAO(@NonNull final SynchronizedDb db,
                     @NonNull final SqlStatementManager stmtManager,
                     @NonNull final TableDefinition listTable,
                     @NonNull final BooklistStyle style,
                     @NonNull final Bookshelf bookshelf) {
 
-        mSyncedDb = syncedDb;
+        mSyncedDb = db;
         mListTable = listTable;
         mBookshelfId = bookshelf.getId();
         mStyle = style;
