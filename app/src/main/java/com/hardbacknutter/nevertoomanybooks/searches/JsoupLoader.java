@@ -47,7 +47,7 @@ public class JsoupLoader {
 
 
     /**
-     * RELEASE: Chrome 2020-07-17. Continuously update to latest version.
+     * RELEASE: Chrome 2020-09-16. Continuously update to latest version.
      * - KBNL site does not return full data unless the user agent is set to a valid browser.
      * <p>
      * Set by default. Call {@link #setUserAgent(String)} to override.
@@ -55,7 +55,7 @@ public class JsoupLoader {
     private static final String USER_AGENT_VALUE =
             "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
             + " AppleWebKit/537.36 (KHTML, like Gecko)"
-            + " Chrome/84.0.4147.89 Safari/537.36";
+            + " Chrome/86.0.4209.0 Safari/537.36";
     /** Log tag. */
     private static final String TAG = "JsoupLoader";
 
