@@ -30,13 +30,11 @@ import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
 
-import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.tasks.VMTask;
-import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.NetworkUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
@@ -73,12 +71,11 @@ public class SearchEditionsTask
         execute(R.id.TASK_ID_SEARCH_EDITIONS);
     }
 
-    @Override
     @NonNull
+    @Override
     @WorkerThread
-    protected Collection<String> doWork() {
+    protected Collection<String> doWork(@NonNull final Context context) {
         Thread.currentThread().setName(TAG + mIsbn);
-        final Context context = AppLocale.getInstance().apply(App.getTaskContext());
 
         // keep the order, but eliminate duplicates.
         final Collection<String> isbnList = new LinkedHashSet<>();

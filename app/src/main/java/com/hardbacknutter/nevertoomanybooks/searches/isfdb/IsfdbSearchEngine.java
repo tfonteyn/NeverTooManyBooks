@@ -1021,7 +1021,7 @@ public class IsfdbSearchEngine
     private ArrayList<String> parseCovers(@NonNull final Document document,
                                           @Nullable final String isbn,
                                           @SuppressWarnings("SameParameterValue")
-                                              @IntRange(from = 0) final int cIdx) {
+                                          @IntRange(from = 0) final int cIdx) {
         /* First "ContentBox" contains all basic details.
          * <pre>
          *   {@code

@@ -22,18 +22,15 @@ package com.hardbacknutter.nevertoomanybooks.database.tasks;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
 
-import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.tasks.LTask;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.ProgressMessage;
-import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 /**
  * Rebuild FTS. Can take several seconds.
@@ -61,11 +58,11 @@ public class RebuildFtsTask
         mDb = db;
     }
 
+    @NonNull
     @Override
     @WorkerThread
-    protected Boolean doInBackground(@Nullable final Void... voids) {
+    protected Boolean doWork(@NonNull final Context context) {
         Thread.currentThread().setName(TAG);
-        final Context context = AppLocale.getInstance().apply(App.getTaskContext());
 
         publishProgress(new ProgressMessage(getTaskId(), context.getString(
                 R.string.progress_msg_rebuilding_search_index)));

@@ -19,6 +19,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.tasks;
 
+import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
 
@@ -26,13 +27,16 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
+import androidx.annotation.WorkerThread;
 
 import java.lang.ref.WeakReference;
 
+import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.FinishedMessage;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.ProgressMessage;
+import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 /**
  * The base for a task which uses a {@link TaskListener} for the results.
@@ -80,6 +84,26 @@ public abstract class LTask<Result>
      */
     public int getTaskId() {
         return mTaskId;
+    }
+
+
+    @Nullable
+    @Override
+    @WorkerThread
+    protected Result doInBackground(@Nullable final Void... voids) {
+        final Context context = AppLocale.getInstance().apply(App.getTaskContext());
+        return doWork(context);
+    }
+
+    /**
+     * @param context a localized application context
+     *
+     * @return task result
+     */
+    @Nullable
+    @WorkerThread
+    protected Result doWork(@NonNull final Context context) {
+        return null;
     }
 
     @Override

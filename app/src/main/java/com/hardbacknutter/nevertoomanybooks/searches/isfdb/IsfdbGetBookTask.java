@@ -29,10 +29,8 @@ import androidx.annotation.WorkerThread;
 
 import java.io.IOException;
 
-import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.tasks.VMTask;
-import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 /**
  * Hard coded not to fetch any images.
@@ -75,13 +73,12 @@ public class IsfdbGetBookTask
         execute(R.id.TASK_ID_ISFDB_GET_BOOK);
     }
 
+    @NonNull
     @Override
-    @Nullable
     @WorkerThread
-    protected Bundle doWork()
+    protected Bundle doWork(@NonNull final Context context)
             throws IOException {
         Thread.currentThread().setName(TAG);
-        final Context context = AppLocale.getInstance().apply(App.getTaskContext());
 
         final IsfdbSearchEngine searchEngine = new IsfdbSearchEngine(context);
         searchEngine.setCaller(this);

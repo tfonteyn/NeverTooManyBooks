@@ -22,10 +22,9 @@ package com.hardbacknutter.nevertoomanybooks.database.tasks;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
+import androidx.annotation.WorkerThread;
 
-import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageUtils;
@@ -35,7 +34,6 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.tasks.LTask;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.ProgressMessage;
-import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 /**
  * Run 'PRAGMA optimize' on our databases.
@@ -57,10 +55,11 @@ public class OptimizeDbTask
         super(R.id.TASK_ID_DB_OPTIMIZE, taskListener);
     }
 
+    @NonNull
     @Override
-    protected Boolean doInBackground(@Nullable final Void... voids) {
+    @WorkerThread
+    protected Boolean doWork(@NonNull final Context context) {
         Thread.currentThread().setName(TAG);
-        final Context context = AppLocale.getInstance().apply(App.getTaskContext());
 
         publishProgress(new ProgressMessage(getTaskId(), context.getString(
                 R.string.progress_msg_optimizing)));

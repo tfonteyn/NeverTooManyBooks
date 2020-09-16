@@ -25,6 +25,7 @@ import android.os.Bundle;
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.WorkerThread;
 
 import java.io.IOException;
 import java.lang.annotation.Retention;
@@ -179,10 +180,10 @@ public class SearchTask
         Objects.requireNonNull(mBy);
     }
 
-    @Override
     @NonNull
-    protected Bundle doInBackground(@Nullable final Void... voids) {
-        final Context context = mSearchEngine.getAppContext();
+    @Override
+    @WorkerThread
+    protected Bundle doWork(@NonNull final Context context) {
         Thread.currentThread().setName(TAG + ' ' + mSearchEngine.getName());
 
         publishProgress(new ProgressMessage(getTaskId(), mProgressTitle));

@@ -19,6 +19,8 @@
  */
 package com.hardbacknutter.nevertoomanybooks.tasks;
 
+import android.content.Context;
+
 import androidx.annotation.AnyThread;
 import androidx.annotation.CallSuper;
 import androidx.annotation.IdRes;
@@ -36,6 +38,7 @@ import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.FinishedMessage;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.ProgressMessage;
+import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 /**
  * The base for a task which uses {@link MutableLiveData} for the results.
@@ -131,7 +134,6 @@ public abstract class VMTask<Result>
      */
     @MainThread
     public boolean execute(@IdRes final int taskId) {
-//        @Nullable final Callable<Result> callable) {
         synchronized (this) {
             if (mTaskId == taskId) {
                 // Duplicate request to start the same task..
@@ -154,8 +156,8 @@ public abstract class VMTask<Result>
         }
         mExecutor.execute(() -> {
             try {
-//                final Result result = callable != null ? callable.call() : doWork();
-                final Result result = doWork();
+                final Context context = AppLocale.getInstance().apply(App.getTaskContext());
+                final Result result = doWork(context);
 
                 final FinishedMessage<Result> message = new FinishedMessage<>(mTaskId, result);
                 if (mIsCancelled.get()) {
@@ -173,10 +175,16 @@ public abstract class VMTask<Result>
         return true;
     }
 
-
-    @WorkerThread
+    /**
+     * @param context a localized application context
+     *
+     * @return task result
+     *
+     * @throws Exception depending on implementation
+     */
     @Nullable
-    protected Result doWork()
+    @WorkerThread
+    protected Result doWork(@NonNull final Context context)
             throws Exception {
         return null;
     }

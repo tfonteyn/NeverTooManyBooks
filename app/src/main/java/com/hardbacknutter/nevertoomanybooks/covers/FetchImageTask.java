@@ -23,16 +23,13 @@ import android.content.Context;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
 
-import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.tasks.LTask;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
-import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 
 /**
@@ -87,12 +84,11 @@ class FetchImageTask
         mFileManager = fileManager;
     }
 
-    @Override
     @NonNull
+    @Override
     @WorkerThread
-    protected ImageFileInfo doInBackground(@Nullable final Void... voids) {
+    protected ImageFileInfo doWork(@NonNull final Context context) {
         Thread.currentThread().setName(TAG + mIsbn);
-        final Context context = AppLocale.getInstance().apply(App.getTaskContext());
 
         try {
             return mFileManager.search(context, this, mIsbn, mCIdx, mSizes);

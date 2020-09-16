@@ -27,7 +27,6 @@ import androidx.annotation.WorkerThread;
 
 import java.io.IOException;
 
-import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
@@ -40,7 +39,6 @@ import com.hardbacknutter.nevertoomanybooks.goodreads.GrStatus;
 import com.hardbacknutter.nevertoomanybooks.goodreads.api.Http404Exception;
 import com.hardbacknutter.nevertoomanybooks.goodreads.qtasks.SendOneBookGrTask;
 import com.hardbacknutter.nevertoomanybooks.tasks.VMTask;
-import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.NetworkUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 
@@ -69,12 +67,11 @@ public class GrSendOneBookTask
         execute(R.id.TASK_ID_GR_SEND_ONE_BOOK);
     }
 
-    @Override
     @NonNull
+    @Override
     @WorkerThread
-    protected GrStatus doWork() {
+    protected GrStatus doWork(@NonNull final Context context) {
         Thread.currentThread().setName(TAG + mBookId);
-        final Context context = AppLocale.getInstance().apply(App.getTaskContext());
 
         try {
             if (!NetworkUtils.isNetworkAvailable(context)) {

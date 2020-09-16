@@ -22,13 +22,11 @@ package com.hardbacknutter.nevertoomanybooks.database.tasks;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
 
 import java.util.Locale;
 
-import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBCleaner;
@@ -67,9 +65,8 @@ public class DBCleanerTask
 
     @WorkerThread
     @Override
-    protected Boolean doInBackground(@Nullable final Void... voids) {
+    protected Boolean doWork(@NonNull final Context context) {
         Thread.currentThread().setName(TAG);
-        final Context context = AppLocale.getInstance().apply(App.getTaskContext());
         final Locale userLocale = AppLocale.getInstance().getUserLocale(context);
 
         publishProgress(new ProgressMessage(getTaskId(), context.getString(

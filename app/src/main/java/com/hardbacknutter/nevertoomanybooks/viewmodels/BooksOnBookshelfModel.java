@@ -38,7 +38,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 
-import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BooksOnBookshelf;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
@@ -65,7 +64,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineRegistry;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.tasks.VMTask;
-import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 public class BooksOnBookshelfModel
         extends VMTask<List<BooklistNode>> {
@@ -693,14 +691,13 @@ public class BooksOnBookshelfModel
      *
      * @return the row(s) we want to center the new list on when displaying; can be {@code null}.
      */
-    @Override
     @Nullable
+    @Override
     @WorkerThread
-    protected List<BooklistNode> doWork() {
+    protected List<BooklistNode> doWork(@NonNull final Context context) {
         Objects.requireNonNull(mBookshelf, ErrorMsg.NULL_BOOKSHELF);
 
         Thread.currentThread().setName(TAG);
-        final Context context = AppLocale.getInstance().apply(App.getTaskContext());
 
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         final BooklistStyle style = mBookshelf.getStyle(context, mDb);

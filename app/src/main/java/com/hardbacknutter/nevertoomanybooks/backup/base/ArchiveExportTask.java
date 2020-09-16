@@ -29,11 +29,9 @@ import androidx.annotation.WorkerThread;
 import java.io.IOException;
 import java.util.Objects;
 
-import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportManager;
 import com.hardbacknutter.nevertoomanybooks.tasks.VMTask;
-import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 /**
  * Input: {@link ExportManager}.
@@ -71,13 +69,12 @@ public class ArchiveExportTask
         execute(R.id.TASK_ID_EXPORT);
     }
 
-    @Override
     @NonNull
+    @Override
     @WorkerThread
-    protected ExportManager doWork()
+    protected ExportManager doWork(@NonNull final Context context)
             throws IOException {
         Thread.currentThread().setName(TAG);
-        final Context context = AppLocale.getInstance().apply(App.getTaskContext());
 
         //noinspection ConstantConditions
         try (ArchiveWriter exporter = mHelper.getArchiveWriter(context)) {

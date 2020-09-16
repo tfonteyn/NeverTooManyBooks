@@ -23,12 +23,10 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 
 import java.util.Locale;
 
-import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
@@ -50,11 +48,11 @@ public class BuildLanguageMappingsTask
         super(R.id.TASK_ID_BUILD_LANG_MAP, taskListener);
     }
 
-    @WorkerThread
+    @NonNull
     @Override
-    protected Boolean doInBackground(@Nullable final Void... voids) {
+    @WorkerThread
+    protected Boolean doWork(@NonNull final Context context) {
         Thread.currentThread().setName(TAG);
-        final Context context = App.getTaskContext();
         final SharedPreferences prefs = Languages.getInstance().getCacheFile(context);
 
         try {

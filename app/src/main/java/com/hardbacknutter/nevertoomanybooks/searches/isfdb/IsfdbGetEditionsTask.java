@@ -22,17 +22,15 @@ package com.hardbacknutter.nevertoomanybooks.searches.isfdb;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
+import androidx.annotation.WorkerThread;
 
 import java.io.IOException;
 import java.util.List;
 
-import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.tasks.VMTask;
-import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 
 /**
@@ -54,12 +52,12 @@ public class IsfdbGetEditionsTask
         execute(R.id.TASK_ID_SEARCH_EDITIONS);
     }
 
-    @Nullable
+    @NonNull
     @Override
-    protected List<Edition> doWork()
+    @WorkerThread
+    protected List<Edition> doWork(@NonNull final Context context)
             throws IOException {
         Thread.currentThread().setName(TAG + mIsbn);
-        final Context context = AppLocale.getInstance().apply(App.getTaskContext());
 
         final IsfdbSearchEngine searchEngine = new IsfdbSearchEngine(context);
         searchEngine.setCaller(this);

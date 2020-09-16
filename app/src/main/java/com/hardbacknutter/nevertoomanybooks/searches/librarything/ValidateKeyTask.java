@@ -26,7 +26,6 @@ import androidx.annotation.WorkerThread;
 
 import java.io.File;
 
-import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageFileInfo;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageUtils;
@@ -45,12 +44,11 @@ public class ValidateKeyTask
         execute(R.id.TASK_ID_LT_VALIDATE_KEY);
     }
 
-    @Override
     @NonNull
+    @Override
     @WorkerThread
-    protected Integer doWork() {
+    protected Integer doWork(@NonNull final Context context) {
         Thread.currentThread().setName(TAG);
-        final Context context = App.getTaskContext();
 
         final SearchEngine.CoverByIsbn ltm = new LibraryThingSearchEngine(context);
         final String fileSpec = ltm

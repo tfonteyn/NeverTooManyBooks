@@ -24,7 +24,6 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 import androidx.annotation.WorkerThread;
 
-import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsAuth;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GrStatus;
@@ -33,7 +32,6 @@ import com.hardbacknutter.nevertoomanybooks.goodreads.qtasks.ImportGrTask;
 import com.hardbacknutter.nevertoomanybooks.goodreads.qtasks.taskqueue.QueueManager;
 import com.hardbacknutter.nevertoomanybooks.goodreads.qtasks.taskqueue.TQTask;
 import com.hardbacknutter.nevertoomanybooks.tasks.VMTask;
-import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.NetworkUtils;
 
 /**
@@ -63,12 +61,11 @@ public class ImportTask
         execute(R.id.TASK_ID_GR_IMPORT);
     }
 
-    @Override
     @NonNull
+    @Override
     @WorkerThread
-    protected GrStatus doWork() {
+    protected GrStatus doWork(@NonNull final Context context) {
         Thread.currentThread().setName(TAG);
-        final Context context = AppLocale.getInstance().apply(App.getTaskContext());
 
         if (!NetworkUtils.isNetworkAvailable(context)) {
             return new GrStatus(GrStatus.FAILED_NETWORK_UNAVAILABLE);

@@ -26,13 +26,13 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.WorkerThread;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.MutableLiveData;
 
 import java.io.IOException;
 import java.util.List;
 
-import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
@@ -146,12 +146,12 @@ public class GrSearchTask
         }
     }
 
-    @Override
     @NonNull
-    protected List<GoodreadsWork> doWork()
+    @Override
+    @WorkerThread
+    protected List<GoodreadsWork> doWork(@NonNull final Context context)
             throws Http404Exception, CredentialsException, IOException {
         Thread.currentThread().setName(TAG);
-        final Context context = App.getTaskContext();
 
         final GoodreadsAuth grAuth = new GoodreadsAuth(context);
         final SearchWorksApiHandler searchApi = new SearchWorksApiHandler(context, grAuth);

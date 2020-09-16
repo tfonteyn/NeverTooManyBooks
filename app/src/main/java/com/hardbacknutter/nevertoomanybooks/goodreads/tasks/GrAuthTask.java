@@ -31,7 +31,6 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import java.io.IOException;
 
-import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsAuth;
@@ -74,12 +73,11 @@ public class GrAuthTask
         execute(R.id.TASK_ID_GR_REQUEST_AUTH);
     }
 
-    @Override
     @NonNull
+    @Override
     @WorkerThread
-    protected GrStatus doWork() {
+    protected GrStatus doWork(@NonNull final Context context) {
         Thread.currentThread().setName(TAG);
-        final Context context = App.getTaskContext();
 
         try {
             if (!NetworkUtils.isNetworkAvailable(context)) {
