@@ -32,7 +32,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Locale;
 
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.backup.ArchiveContainerEntry;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ExportResults;
@@ -47,7 +46,6 @@ import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyle;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
-import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
@@ -167,23 +165,16 @@ public class CsvExporter
     public CsvExporter(@NonNull final Context context,
                        final int options,
                        @Nullable final LocalDateTime utcSinceDateTime) {
-        if (BuildConfig.DEBUG /* always */) {
-            // For now, we only want to write one entity at a time.
-            // This is by choice so debug is easier.
-            //TODO: restructure and allow multi-writes
-            if (Integer.bitCount(options) > 1) {
-                throw new IllegalStateException(ErrorMsg.ONLY_ONE_OPTION_ALLOWED);
-            }
-        }
-
-        final Locale userLocale = AppLocale.getInstance().getUserLocale(context);
-        mUnknownNameString = context.getString(R.string.unknownName).toUpperCase(userLocale);
 
         mOptions = options;
         mUtcSinceDateTime = utcSinceDateTime;
+
         mDb = new DAO(TAG);
         mBookshelfCoder = new StringList<>(
                 new BookshelfCoder(BooklistStyle.getDefault(context, mDb)));
+
+        final Locale userLocale = AppLocale.getInstance().getUserLocale(context);
+        mUnknownNameString = context.getString(R.string.unknownName).toUpperCase(userLocale);
     }
 
     @Override
@@ -197,7 +188,7 @@ public class CsvExporter
                                @NonNull final ProgressListener progressListener)
             throws IOException {
 
-        // we only support books, return empty results, ignoring other options
+        // we only support books, return empty results, ignore other entities
         boolean writeBooks = (mOptions & Options.BOOKS) != 0;
         if (!writeBooks) {
             return mResults;

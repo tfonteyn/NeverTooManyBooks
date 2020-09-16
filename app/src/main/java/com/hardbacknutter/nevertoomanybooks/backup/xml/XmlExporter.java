@@ -41,7 +41,6 @@ import java.util.Objects;
 import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.App;
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.backup.ArchiveContainerEntry;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveInfo;
@@ -56,7 +55,6 @@ import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
-import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
@@ -152,21 +150,13 @@ public class XmlExporter
     public XmlExporter(@NonNull final Context context,
                        final int options,
                        @Nullable final LocalDateTime utcSinceDateTime) {
-        if (BuildConfig.DEBUG /* always */) {
-            // For now, we only want to write one entity at a time.
-            // This is by choice so debug is easier.
-            //TODO: restructure and allow multi-writes
-            if (Integer.bitCount(options) > 1) {
-                throw new IllegalStateException(ErrorMsg.ONLY_ONE_OPTION_ALLOWED);
-            }
-        }
-
-        final Locale userLocale = AppLocale.getInstance().getUserLocale(context);
-        mUnknownNameString = context.getString(R.string.unknownName).toUpperCase(userLocale);
 
         mOptions = options;
         mUtcSinceDateTime = utcSinceDateTime;
         mDb = new DAO(TAG);
+
+        final Locale userLocale = AppLocale.getInstance().getUserLocale(context);
+        mUnknownNameString = context.getString(R.string.unknownName).toUpperCase(userLocale);
     }
 
     @Override
