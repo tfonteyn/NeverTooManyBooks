@@ -291,7 +291,7 @@ public class DateParser
             return null;
         }
 
-        // Check the fixed patterns first. This has proven to be easier/faster then
+        // Check the fixed patterns first. This has proven to be easier/faster than
         // trying to use DateTimeFormatter for date-strings without a time part.
         switch (len) {
             case 4:
@@ -371,7 +371,7 @@ public class DateParser
             }
         }
 
-        // 2020-06-02: disabled 'lenient' as it seems to cause more false results then good
+        // 2020-06-02: disabled 'lenient' as it seems to cause more false results than good
 //        // Try again being lenient (ResolverStyle.LENIENT)
 //        for (DateTimeFormatter dtf : parsers) {
 //            try {

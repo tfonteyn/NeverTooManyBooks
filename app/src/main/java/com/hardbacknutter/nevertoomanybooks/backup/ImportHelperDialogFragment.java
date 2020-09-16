@@ -125,7 +125,7 @@ public class ImportHelperDialogFragment
         final ImportManager helper = mModel.getHelper();
 
         if (mIsBooksOnly) {
-            // CSV files don't have options other then the books.
+            // CSV files don't have options other than the books.
             mVb.cbxGroup.setVisibility(View.GONE);
 
         } else {

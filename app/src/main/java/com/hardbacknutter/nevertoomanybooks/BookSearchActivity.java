@@ -117,7 +117,7 @@ public class BookSearchActivity
 
                 // Reset the scanner if it was changed.
                 // Note this creates the scanner model even if it did not exist before.
-                // Other then using memory, this is fine.
+                // Other than using memory, this is fine.
                 // We assume if the user explicitly went to settings to change the scanner
                 // they want to use it.
                 if (data.getBooleanExtra(BarcodePreferenceFragment.BKEY_SCANNER_MODIFIED, false)) {

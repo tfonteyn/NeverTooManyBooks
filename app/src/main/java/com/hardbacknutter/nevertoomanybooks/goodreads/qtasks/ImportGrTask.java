@@ -156,7 +156,7 @@ public class ImportGrTask
             // Load the Goodreads reviews
             final boolean ok = importReviews(context, db, queueManager);
 
-            // If it's a sync job, then start the 'send' part and save the last syn date
+            // If it's a sync job, start the 'send' part and save the last syn date
             if (mIsSync) {
                 final String desc = context.getString(R.string.gr_title_send_book);
                 final TQTask task = new SendBooksGrTask(desc, false, true);
@@ -431,7 +431,7 @@ public class ImportGrTask
                             @NonNull final Book book,
                             @NonNull final Bundle review) {
 
-        // If the review has an 'updated' date, then check if we should update the book
+        // If the review has an 'updated' date, check if we should update the book
         if (review.containsKey(Review.UPDATED)) {
             // the incoming review
             final LocalDateTime reviewUpd = Review.parseDate(review.getString(Review.UPDATED));
@@ -439,8 +439,8 @@ public class ImportGrTask
             final LocalDateTime lastSyncDate = DateParser.getInstance(context).parseISO(
                     book.getString(DBDefinitions.KEY_UTC_LAST_SYNC_DATE_GOODREADS));
 
-            // If last update in Goodreads was before last Goodreads sync of book,
-            // then don't bother updating book.
+            // If the last update in Goodreads was before the last Goodreads sync of book,
+            // don't bother updating book.
             // This typically happens if the last update in Goodreads was from us.
             if (reviewUpd != null && lastSyncDate != null && reviewUpd.isBefore(lastSyncDate)) {
                 // Skip this book

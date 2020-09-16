@@ -81,7 +81,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
  * Handler for a displayed Cover ImageView element.
  * Offers context menus and all operations applicable on a Cover image.
  * <p>
- * The fragment using this must implement {@link HostingFragment} if it hosts more then 1
+ * The fragment using this must implement {@link HostingFragment} if it hosts more than 1
  * instance of this class. See {@link #onContextItemSelected}.
  * It informs the fragment of the cover image index to use in its
  * {@link Fragment#onActivityResult(int, int, Intent)}
@@ -469,7 +469,7 @@ public class CoverHandler {
                                   @Nullable final File file,
                                   @NextAction final int returnCode) {
 
-        // satisfy lint: if the bitmap is good, then the file will be good.
+        // satisfy lint: if the bitmap is good, the file will be good.
         if (bitmap != null && file != null) {
             mBook.putString(Book.BKEY_FILE_SPEC[mCIdx], file.getAbsolutePath());
 

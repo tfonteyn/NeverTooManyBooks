@@ -501,7 +501,7 @@ public class CsvImporter
                 // The id IS in use, we will be updating an existing book (if allowed).
 
                 // This is risky as we might overwrite a different book which happens
-                // to have the same id, but other then skipping there is no other option for now.
+                // to have the same id, but other than skipping there is no other option for now.
                 // Ideally, we should ask the user presenting a choice "keep/overwrite"
 
                 if (forceUpdate || isImportNewer(context, mDb, book, importNumericId)) {
@@ -537,7 +537,7 @@ public class CsvImporter
 
 
     /**
-     * Check if the incoming book is newer then the stored book data.
+     * Check if the incoming book is newer than the stored book data.
      *
      * @param context Current context
      * @param db      Database Access

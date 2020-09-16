@@ -409,11 +409,11 @@ public class AmazonSearchEngine
             // If an author has a popup dialog linked, then it has an id with contributorNameID
             Element a = span.selectFirst("a.contributorNameID");
             if (a == null) {
-                // If there is no popup, then it's a simple link
+                // If there is no popup, it's a simple link
                 a = span.selectFirst("a.a-link-normal");
             }
             if (a != null) {
-                String href = a.attr("href");
+                final String href = a.attr("href");
                 if (href != null && href.contains("byline")) {
                     final Author author = Author.from(a.text());
 

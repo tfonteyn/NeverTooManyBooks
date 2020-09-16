@@ -310,7 +310,7 @@ public class BooklistAdapter
         switch (groupKeyId) {
             case BooklistGroup.BOOK: {
                 // the layout names ending in 3/4/5 are ONLY the references, they are not
-                // hard coded in the layout files themselves (other then in 'tools' settings)
+                // hard coded in the layout files themselves (other than in 'tools' settings)
                 switch (mThumbnailScale) {
                     case BooklistStyle.IMAGE_SCALE_6_MAX:
                     case BooklistStyle.IMAGE_SCALE_5_VERY_LARGE:

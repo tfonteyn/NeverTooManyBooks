@@ -776,8 +776,8 @@ class BooklistNodeDAO {
                 + _FROM_ + mListTable.getName()
                 + _WHERE_ + KEY_BL_NODE_VISIBLE + "=1"
                 // Groups only - Don't do books
-                + _AND_ + KEY_BL_NODE_LEVEL + " BETWEEN 2 AND ?"
-                , new String[]{String.valueOf(mStyle.getGroupCount())})) {
+                + _AND_ + KEY_BL_NODE_LEVEL + " BETWEEN 2 AND ?",
+                new String[]{String.valueOf(mStyle.getGroupCount())})) {
 
             while (cursor.moveToNext()) {
                 final String key = cursor.getString(0);

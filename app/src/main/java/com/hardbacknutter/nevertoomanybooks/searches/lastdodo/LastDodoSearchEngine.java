@@ -450,7 +450,7 @@ public class LastDodoSearchEngine
 
     private void processType(@NonNull final Element td,
                              @NonNull final Bundle bookData) {
-        // there might be more then one; we only grab the first one here
+        // there might be more than one; we only grab the first one here
         final Element a = td.child(0);
         if (a != null) {
             bookData.putString(SiteField.KEY_TYPE, a.text());

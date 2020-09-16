@@ -209,12 +209,12 @@ public class UpdateFieldsModel
      */
     public boolean isShowWarningAboutCovers() {
 
-        // Less then (arbitrary) 10 books, don't check/warn needed.
+        // Less than (arbitrary) 10 books, don't check/warn needed.
         if (mBookIdList != null && mBookIdList.size() < 10) {
             return false;
         }
 
-        // More then 10 books, check if they actually want covers
+        // More than 10 books, check if they actually want covers
         final FieldUsage covers = mFieldUsages.get(DBDefinitions.PREFS_IS_USED_THUMBNAIL);
         return covers != null && covers.getUsage().equals(FieldUsage.Usage.Overwrite);
     }

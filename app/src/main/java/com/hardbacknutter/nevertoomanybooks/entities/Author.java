@@ -394,7 +394,7 @@ public class Author
     }
 
     /**
-     * Get the Authors. If there is more then one, we get the first Author + an ellipsis.
+     * Get the Authors. If there is more than one, we get the first Author + an ellipsis.
      *
      * @param context Current context
      * @param authors list to condense

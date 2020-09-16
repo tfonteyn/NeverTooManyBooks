@@ -380,7 +380,7 @@ public class Site
          * The site objects are the <strong>same</strong> as in the original list.
          * The original list order is NOT modified.
          * <p>
-         * The reordered list <strong>MAY</strong> be shorter then the original,
+         * The reordered list <strong>MAY</strong> be shorter than the original,
          * as sites from the original which are not present in the order string
          * are <strong>NOT</strong> added.
          *

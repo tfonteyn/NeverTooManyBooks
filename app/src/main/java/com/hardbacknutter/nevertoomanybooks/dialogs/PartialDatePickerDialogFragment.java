@@ -322,7 +322,7 @@ public class PartialDatePickerDialogFragment
             return;
         }
 
-        // Default order is {year, month, day} so if that's the order then do nothing.
+        // Default order is {year, month, day} so if that's the order do nothing.
         if ((order[0] == 'y') && (order[1] == 'M')) {
             return;
         }

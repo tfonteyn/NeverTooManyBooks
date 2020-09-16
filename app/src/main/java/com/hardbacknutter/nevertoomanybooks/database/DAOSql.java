@@ -274,7 +274,7 @@ public class DAOSql {
         /**
          * If the field has a time part, convert it to local time.
          * This deals with legacy 'date-only' dates.
-         * The logic being that IF they had a time part then it would be UTC.
+         * The logic being that IF they had a time part it would be UTC.
          * Without a time part, we assume the zone is local (or irrelevant).
          *
          * @param fieldSpec fully qualified field name
@@ -534,7 +534,7 @@ public class DAOSql {
         /**
          * Get the id of a {@link Author} by name.
          * The lookup is by EQUALITY and CASE-SENSITIVE.
-         * Can return more then one row if the KEY_AUTHOR_GIVEN_NAMES_OB is empty.
+         * Can return more than one row if the KEY_AUTHOR_GIVEN_NAMES_OB is empty.
          */
         static final String AUTHOR_ID_BY_NAME =
                 SELECT_ + KEY_PK_ID + _FROM_ + TBL_AUTHORS.getName()

@@ -101,7 +101,7 @@ public class MoneyFormatter
     // https://developer.android.com/guide/topics/resources/internationalization
     // #versioning-nougat
     // So you need Android 9 (API level 28) and even then, the NumberFormatter
-    // is not available in android.icu.* so you still would need to bundle the full ICU lib
+    // is not available in android.icu so you still would need to bundle the full ICU lib
     // For now, this is to much overkill.
     //
     //   https://github.com/unicode-org/icu/blob/master/icu4j/main/classes/core/src/

@@ -233,7 +233,7 @@ class CalibreArchiveReader
 
                 book.clear();
 
-                // We're not keeping the Calibre id other then for lookups during import
+                // We're not keeping the Calibre id other than for lookups during import
                 final int calibreId = source.getInt(colId);
                 // keep the Calibre UUID
                 final String calibreUuid = source.getString(colUuid);
@@ -516,7 +516,7 @@ class CalibreArchiveReader
     }
 
     /**
-     * Check if the incoming book is newer then the stored book data.
+     * Check if the incoming book is newer than the stored book data.
      *
      * @param context Current context
      * @param db      Database Access

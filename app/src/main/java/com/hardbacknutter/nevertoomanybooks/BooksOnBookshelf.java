@@ -1635,7 +1635,7 @@ public class BooksOnBookshelf
         // If the node is not in view, or at the edge, scroll it into view.
         final int pos = node.getListPosition();
         if (pos <= firstVisibleItemPosition) {
-            // We always scroll up 1 more then needed for comfort.
+            // We always scroll up 1 more than needed for comfort.
             mLayoutManager.scrollToPosition(pos - 1);
             mVb.list.post(this::saveListPosition);
 

@@ -31,7 +31,7 @@ import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
  * <p>
  * A {@code null} value is always handled as {@code false}.
  *
- * <ul>{@link CompoundButton} covers more then just a Checkbox:
+ * <ul>{@link CompoundButton} covers more than just a Checkbox:
  *      <li>CheckBox</li>
  *      <li>RadioButton</li>
  *      <li>Switch</li>

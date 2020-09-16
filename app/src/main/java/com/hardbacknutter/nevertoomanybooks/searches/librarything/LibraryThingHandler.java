@@ -545,7 +545,7 @@ class LibraryThingHandler
                 }
             }
 //          } else if (localName.equalsIgnoreCase(XML_RESPONSE)){
-//              // Not really much to do; we *could* look for the <err> element, then report it.
+//              // Not really much to do; we *could* look for the <err> element, than report it.
 //              final String stat = attributes.get("", "stat");
         }
     }

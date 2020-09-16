@@ -176,7 +176,7 @@ public class BooklistStyle
      * Text Scaling.
      * NEVER change these values, they get stored in preferences.
      * The book title in the list is by default 'medium' (see styles.xml)
-     * Other elements are always 1 size 'less' then the title.
+     * Other elements are always 1 size 'less' than the title.
      */
     static final int FONT_SCALE_0_VERY_SMALL = 0;
     /** Text Scaling. */
@@ -187,6 +187,7 @@ public class BooklistStyle
     static final int FONT_SCALE_3_LARGE = 3;
     /** Text Scaling. */
     static final int FONT_SCALE_4_VERY_LARGE = 4;
+
     private static final String pk_is_preferred = "style.booklist.preferred";
     private static final String pk_header = "style.booklist.header";
 
@@ -983,7 +984,7 @@ public class BooklistStyle
             // do we have this Preference ?
             final PPref ourPPref = currentPreferences.get(p.getKey());
             if (ourPPref != null) {
-                // if we do, then update our value
+                // if we do, update our value
                 //noinspection unchecked
                 ourPPref.set(ed, p.getValue(context));
             }

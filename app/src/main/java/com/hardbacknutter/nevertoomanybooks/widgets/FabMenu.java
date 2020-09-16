@@ -146,7 +146,7 @@ public class FabMenu {
         final float deltaX = res.getDimension(R.dimen.fab_menu_translationX_delta);
 
         // Test for split-screen layouts (or really small devices?)
-        // Having more then 4 FAB buttons is not really a good UI design
+        // Having more than 4 FAB buttons is not really a good UI design
         // But this just about fits our 5...
         // It's a fringe case... resource qualifiers would be overkill.
         final boolean smallScreen = res.getConfiguration().screenHeightDp < 400;

@@ -2763,7 +2763,7 @@ public class DAO
      * Find a {@link Author} by using the appropriate fields of the passed {@link Author}.
      * The incoming object is not modified.
      *
-     * <strong>IMPORTANT:</strong> the query can return more then one row if the
+     * <strong>IMPORTANT:</strong> the query can return more than one row if the
      * given-name of the author is empty. e.g. "Asimov" and "Asimov"+"Isaac"
      * We only return the id of the  <strong>first row found</strong>.
      *

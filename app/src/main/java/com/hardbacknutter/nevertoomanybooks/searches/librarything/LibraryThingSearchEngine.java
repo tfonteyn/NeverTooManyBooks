@@ -353,7 +353,7 @@ public class LibraryThingSearchEngine
             final String msg = e.getMessage();
             // Horrible hack... but once again the underlying apache class makes life difficult.
             // Sure, the Locator could be used to see that the line==1 and column==0,
-            // but other then that it does not seem possible to get full details.
+            // but other than that it does not seem possible to get full details.
             if (msg != null && msg.contains("At line 1, column 0: syntax error")) {
                 // 2020-03-27. Started getting "APIs Temporarily disabled"
                 throw new IOException(mAppContext.getString(R.string.error_site_has_problems));

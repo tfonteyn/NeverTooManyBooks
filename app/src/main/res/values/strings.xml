@@ -173,9 +173,9 @@
         or are importing someone else\'s books, ensure the uuid field is present or the id field is blank.
     </string>
 
-    <!-- Importing a CSV book list partially failed with less then 10 lines failing -->
+    <!-- Importing a CSV book list partially failed with less than 10 lines failing -->
     <string name="warning_import_csv_failed_lines_some">CSV parsing failed for lines \n%1$s\n</string>
-    <!-- Importing a CSV book list partially failed with more then 10 lines failing.
+    <!-- Importing a CSV book list partially failed with more than 10 lines failing.
          Only 10 line numbers will be listed -->
     <string name="warning_import_csv_failed_lines_lots">CSV parsing failed for lines \n%1$s\n and others.</string>
 

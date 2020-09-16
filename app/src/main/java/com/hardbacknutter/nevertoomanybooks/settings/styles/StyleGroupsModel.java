@@ -100,7 +100,7 @@ public class StyleGroupsModel
         }
 
         // Apply any saved properties.
-        // For now we don't have any updated preferences other then the groups.
+        // For now we don't have any updated preferences other than the groups.
         mStyle.updatePreferences(context, allPreferences);
     }
 
