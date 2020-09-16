@@ -183,7 +183,8 @@ public abstract class ArchiveWriterAbstract
         mTmpBookCsvFile = File.createTempFile("books_csv_", ".tmp");
         mTmpBookCsvFile.deleteOnExit();
 
-        Exporter exporter = new CsvExporter(context, Options.BOOKS, mHelper.getUtcDateTimeSince());
+        Exporter exporter = new CsvExporter(context, mHelper.getOptions(),
+                                            mHelper.getUtcDateTimeSince());
         mResults.add(exporter.write(context, mTmpBookCsvFile, progressListener));
     }
 

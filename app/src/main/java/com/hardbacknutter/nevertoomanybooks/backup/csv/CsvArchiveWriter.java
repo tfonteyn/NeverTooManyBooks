@@ -29,7 +29,6 @@ import com.hardbacknutter.nevertoomanybooks.backup.ExportManager;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveWriter;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ExportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.base.Exporter;
-import com.hardbacknutter.nevertoomanybooks.backup.base.Options;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 
 public class CsvArchiveWriter
@@ -59,7 +58,7 @@ public class CsvArchiveWriter
                                @NonNull final ProgressListener progressListener)
             throws IOException {
 
-        try (Exporter exporter = new CsvExporter(context, Options.BOOKS,
+        try (Exporter exporter = new CsvExporter(context, mHelper.getOptions(),
                                                  mHelper.getUtcDateTimeSince())) {
             return exporter.write(context, mHelper.getTempOutputFile(context), progressListener);
         }
