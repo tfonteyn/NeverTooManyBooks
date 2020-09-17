@@ -42,6 +42,13 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 
 /**
  * Database wrapper class that performs thread synchronization on all operations.
+ *
+ * After getting a question "why?":
+ *
+ * We use syncing to allow simultaneous access by multiple threads
+ * (including e.g. goodreads sync task).
+ * This is possibly overkill since transactions where added everywhere.
+ *
  * <p>
  * About the SQLite version:
  * <a href="https://developer.android.com/reference/android/database/sqlite/package-summary">
