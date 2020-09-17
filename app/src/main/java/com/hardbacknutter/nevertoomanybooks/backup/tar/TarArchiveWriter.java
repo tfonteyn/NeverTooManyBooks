@@ -27,6 +27,7 @@ import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -62,11 +63,11 @@ public class TarArchiveWriter
      * @param context Current context
      * @param helper  export configuration
      *
-     * @throws IOException on failure
+     * @throws FileNotFoundException on failure
      */
     public TarArchiveWriter(@NonNull final Context context,
                             @NonNull final ExportManager helper)
-            throws IOException {
+            throws FileNotFoundException {
         super(context, helper);
 
         mOutputStream = new TarArchiveOutputStream(

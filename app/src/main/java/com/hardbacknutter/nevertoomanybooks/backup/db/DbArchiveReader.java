@@ -90,7 +90,7 @@ public class DbArchiveReader
 
     @Override
     public void validate(@NonNull final Context context)
-            throws InvalidArchiveException, IOException {
+            throws InvalidArchiveException, FileNotFoundException {
 
         // sanity check
         if (mSQLiteDatabase == null) {
