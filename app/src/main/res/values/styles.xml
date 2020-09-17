@@ -660,6 +660,11 @@
 
     <!-- *************************************************************************************** -->
 
+    <style name="App.MaterialCalendar.HeaderConfirmButton"
+        parent="Widget.MaterialComponents.MaterialCalendar.HeaderConfirmButton">
+        <item name="android:backgroundTint">?attr/colorButtonNormal</item>
+    </style>
+
     <style name="App.TextAppearance.Body1" parent="TextAppearance.MaterialComponents.Body1">
         <!-- text size: 16sp -->
         <!--Your custom type style here-->
