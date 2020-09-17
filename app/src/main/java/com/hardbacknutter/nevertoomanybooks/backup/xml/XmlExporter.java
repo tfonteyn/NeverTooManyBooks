@@ -124,9 +124,6 @@ public class XmlExporter
     private static final int XML_EXPORTER_STYLES_VERSION = 1;
     private static final int XML_EXPORTER_STYLES_VERSION_EXPERIMENTAL = 99;
 
-    /** Only send progress updates every 200ms. */
-    private static final int PROGRESS_UPDATE_INTERVAL = 200;
-
     /** Database Access. */
     @NonNull
     private final DAO mDb;
@@ -741,7 +738,7 @@ public class XmlExporter
                 mResults.booksExported++;
 
                 long now = System.currentTimeMillis();
-                if ((now - lastUpdate) > PROGRESS_UPDATE_INTERVAL) {
+                if ((now - lastUpdate) > progressListener.getUpdateIntervalInMs()) {
                     progressListener.publishProgress(mResults.booksExported, title);
                     lastUpdate = now;
                 }

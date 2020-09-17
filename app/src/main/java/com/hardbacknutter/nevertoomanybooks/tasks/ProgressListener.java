@@ -50,6 +50,15 @@ public interface ProgressListener {
     }
 
     /**
+     * Optional to use/override: the interval to send progress updates in milliseconds.
+     * <p>
+     * Default: 200ms. i.e. 5x a second.
+     */
+    default int getUpdateIntervalInMs() {
+        return 200;
+    }
+
+    /**
      * Check if the user wants to cancel the operation.
      *
      * @return {@code true} if operation was cancelled.

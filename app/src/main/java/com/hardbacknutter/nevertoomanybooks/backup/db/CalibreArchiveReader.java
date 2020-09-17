@@ -75,12 +75,7 @@ class CalibreArchiveReader
     /** Log tag. */
     private static final String TAG = "CalibreArchiveReader";
 
-    /** Only send progress updates every 200ms. */
-    private static final int PROGRESS_UPDATE_INTERVAL = 200;
-
-    /**
-     * The main fields from the books table.
-     */
+    /** The main fields from the books table. */
     private static final String SQL_SELECT_BOOKS =
             "SELECT books.id AS id,"
             + " books.uuid AS uuid,"
@@ -193,8 +188,7 @@ class CalibreArchiveReader
 
         int txRowCount = 0;
         long lastUpdate = 0;
-        // we only update progress every PROGRESS_UPDATE_INTERVAL ms.
-        // Count the nr of books in between.
+        // Count the nr of books in between progress updates.
         int delta = 0;
 
         mCustomColumns = readCustomColumns();
@@ -329,7 +323,7 @@ class CalibreArchiveReader
 
                 // limit the amount of progress updates, otherwise this will cause a slowdown.
                 final long now = System.currentTimeMillis();
-                if ((now - lastUpdate) > PROGRESS_UPDATE_INTERVAL
+                if ((now - lastUpdate) > progressListener.getUpdateIntervalInMs()
                     && !progressListener.isCancelled()) {
                     final String msg = String.format(mProgressMessage,
                                                      mBooksString,

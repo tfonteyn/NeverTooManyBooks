@@ -82,8 +82,6 @@ public class CsvExporter
     static final String CSV_COLUMN_PUBLISHERS = "publisher";
     /** Log tag. */
     private static final String TAG = "CsvExporter";
-    /** Only send progress updates every 200ms. */
-    private static final int PROGRESS_UPDATE_INTERVAL = 200;
 
     private static final String COMMA = ",";
     private static final String EMPTY_QUOTED_STRING = "\"\"";
@@ -318,7 +316,7 @@ public class CsvExporter
                 mResults.booksExported++;
 
                 final long now = System.currentTimeMillis();
-                if ((now - lastUpdate) > PROGRESS_UPDATE_INTERVAL) {
+                if ((now - lastUpdate) > progressListener.getUpdateIntervalInMs()) {
                     progressListener.publishProgress(mResults.booksExported, title);
                     lastUpdate = now;
                 }

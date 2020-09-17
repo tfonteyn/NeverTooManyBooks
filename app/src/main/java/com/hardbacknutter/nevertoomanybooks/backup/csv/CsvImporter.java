@@ -115,8 +115,6 @@ public class CsvImporter
     /** Log tag. */
     private static final String TAG = "CsvImporter";
 
-    /** Only send progress updates every 200ms. */
-    private static final int PROGRESS_UPDATE_INTERVAL = 200;
     /** Buffer for the Reader. */
     private static final int BUFFER_SIZE = 65535;
 
@@ -274,8 +272,7 @@ public class CsvImporter
         int row = 1;
         int txRowCount = 0;
         long lastUpdate = 0;
-        // we only update progress every PROGRESS_UPDATE_INTERVAL ms.
-        // Count the nr of books in between.
+        // Count the nr of books in between progress updates.
         int delta = 0;
 
         SyncLock txLock = null;
@@ -370,7 +367,7 @@ public class CsvImporter
 
                 // limit the amount of progress updates, otherwise this will cause a slowdown.
                 final long now = System.currentTimeMillis();
-                if ((now - lastUpdate) > PROGRESS_UPDATE_INTERVAL
+                if ((now - lastUpdate) > progressListener.getUpdateIntervalInMs()
                     && !progressListener.isCancelled()) {
                     final String msg = String.format(mProgressMessage,
                                                      mBooksString,
