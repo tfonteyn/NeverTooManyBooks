@@ -28,7 +28,6 @@
             android:id="@+id/sm_title_isbn_validity"
             android:checkable="false"
             android:enabled="false"
-            android:icon="@drawable/ic_barcode"
             android:title="@string/pt_edit_book_isbn_checks"
             />
         <item
