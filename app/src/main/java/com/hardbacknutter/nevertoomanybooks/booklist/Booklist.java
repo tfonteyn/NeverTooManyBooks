@@ -495,7 +495,7 @@ public class Booklist
      * @return cursor
      */
     @NonNull
-    public BooklistCursor newListCursor() {
+    public BooklistCursor getNewListCursor() {
         if (mCursor != null) {
             mCursor.close();
         }

@@ -858,16 +858,16 @@ public class BooksOnBookshelfModel
     }
 
     /**
-     * Create a new list cursor.
-     * <p>
+     * Wrapper to {@link Booklist#getNewListCursor()}.
+     * Get the list cursor.
      * Note this is a {@link BooklistCursor}
      *
      * @return cursor
      */
     @NonNull
-    public BooklistCursor newListCursor() {
+    public BooklistCursor getNewListCursor() {
         Objects.requireNonNull(mBooklist, ErrorMsg.NULL_BOOK_LIST);
-        return mBooklist.newListCursor();
+        return mBooklist.getNewListCursor();
     }
 
     public List<Author> getAuthorsByBookId(final long bookId) {

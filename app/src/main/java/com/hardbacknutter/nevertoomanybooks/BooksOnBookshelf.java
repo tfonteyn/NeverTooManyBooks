@@ -1077,8 +1077,7 @@ public class BooksOnBookshelf
                 if (node != null) {
                     final List<BooklistNode> target = new ArrayList<>();
                     target.add(node);
-                    // pass in a NEW cursor!
-                    displayList(mModel.newListCursor(), target);
+                    displayList(target);
                 }
                 return true;
             }
@@ -1362,7 +1361,7 @@ public class BooksOnBookshelf
                 Log.d(TAG, "onResume|reusing existing list");
             }
             // no rebuild needed/done, just let the system redisplay the list state
-            displayList(mModel.newListCursor(), mModel.getTargetNodes());
+            displayList(mModel.getTargetNodes());
         }
     }
 
@@ -1437,7 +1436,7 @@ public class BooksOnBookshelf
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_THE_BUILDER_TIMERS) {
                 Debug.stopMethodTracing();
             }
-            displayList(mModel.newListCursor(), message.result);
+            displayList(message.result);
         }
     }
 
@@ -1450,7 +1449,7 @@ public class BooksOnBookshelf
         mVb.progressBar.setVisibility(View.GONE);
         if (message.isNewEvent()) {
             if (mModel.isListLoaded()) {
-                displayList(mModel.newListCursor(), null);
+                displayList(null);
             } else {
                 // Something is REALLY BAD
                 throw new IllegalStateException();
@@ -1464,8 +1463,7 @@ public class BooksOnBookshelf
         saveListPosition();
         final long nodeRowId = rowData.getLong(DBDefinitions.KEY_BL_LIST_VIEW_NODE_ROW_ID);
         mModel.setNode(nodeRowId, nextState, relativeChildLevel);
-        // pass in a NEW cursor!
-        displayList(mModel.newListCursor(), null);
+        displayList(null);
     }
 
     /**
@@ -1481,8 +1479,7 @@ public class BooksOnBookshelf
             saveListPosition();
             // set new states
             mModel.expandAllNodes(topLevel, expand);
-            // pass in a NEW cursor!
-            displayList(mModel.newListCursor(), null);
+            displayList(null);
         }
     }
 
@@ -1518,11 +1515,9 @@ public class BooksOnBookshelf
      * Display the list based on the given cursor, and update the list headers.
      * Optionally re-position to the desired target node(s).
      *
-     * @param cursor      to use
      * @param targetNodes (optional) to re-position to
      */
-    private void displayList(@NonNull final Cursor cursor,
-                             @Nullable final List<BooklistNode> targetNodes) {
+    private void displayList(@Nullable final List<BooklistNode> targetNodes) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_INIT_BOOK_LIST) {
             Log.d(TAG, "displayList|called from:", new Throwable());
         }
@@ -1545,7 +1540,7 @@ public class BooksOnBookshelf
 
         mVb.list.setVisibility(View.VISIBLE);
 
-        createAdapter(cursor);
+        createAdapter(mModel.getNewListCursor());
         scrollToSavedPosition(targetNodes);
     }
 

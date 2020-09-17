@@ -1156,11 +1156,11 @@ public class BooklistStyle
             // 14 is READ_YEAR
             // but the style dumped was "Books - Author, Series"
             // so it's the STYLE itself which was wrong...
-            // URGENT: TEST: instead of getListCursor, we're using newListCursor everywhere now.
+            // TEST: We're using newListCursor everywhere now.
             // Seems 'get' -> existing cursor, with link to builder with link to style
             // while elsewhere we already have a new builder/style.
             //
-            // Don't use Objects.requireNonNull() ... message is evaluated before null test.
+            // Don't use a Objects.requireNonNull() ... message is evaluated before null test.
             throw new IllegalArgumentException("Group was NULL: id=" + id + ", " + this.toString());
         }
         return group;
