@@ -139,7 +139,6 @@ final class BooklistBuilder {
     /** Guards from adding duplicates. */
     private final Collection<String> mOrderByDupCheck = new HashSet<>();
 
-    @SuppressWarnings("FieldNotUsedInToString")
     @Booklist.ListRebuildMode
     private final int mRebuildState;
 

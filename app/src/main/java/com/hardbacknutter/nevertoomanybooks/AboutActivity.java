@@ -48,12 +48,12 @@ import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 public class AboutActivity
         extends BaseActivity {
 
+    public static final int RESULT_ALL_DATA_DESTROYED = 2;
     /**
      * After clicking the icon 3 times, we display the debug options.
      * SQLite shell updates are not allowed.
      */
     private static final int DEBUG_CLICKS = 3;
-    public static final int RESULT_ALL_DATA_DESTROYED = 0xDEADBEEF;
     /** After clicking the icon 3 more times, the SQLite shell will allow updates. */
     private static final int DEBUG_CLICKS_ALLOW_SQL_UPDATES = 6;
 
@@ -118,23 +118,21 @@ public class AboutActivity
             startActivity(intent);
         });
 
-        mVb.debugClearDb.setOnClickListener(v -> {
-            new MaterialAlertDialogBuilder(this)
-                    .setTitle(R.string.clear_all_data)
-                    .setIcon(R.drawable.ic_delete)
-                    .setMessage(R.string.confirm_clear_all_data)
-                    .setNegativeButton(R.string.no, (d, w) -> d.dismiss())
-                    .setNeutralButton(R.string.no, (d, w) -> d.dismiss())
-                    .setPositiveButton(R.string.action_delete, (d, w) -> {
-                        try (DAO db = new DAO(TAG)) {
-                            if (db.getDBHelper().deleteAllContent(this, db.getSyncDb())) {
-                                setResult(RESULT_ALL_DATA_DESTROYED);
-                            }
+        mVb.debugClearDb.setOnClickListener(v -> new MaterialAlertDialogBuilder(this)
+                .setTitle(R.string.clear_all_data)
+                .setIcon(R.drawable.ic_delete)
+                .setMessage(R.string.confirm_clear_all_data)
+                .setNegativeButton(R.string.no, (d, w) -> d.dismiss())
+                .setNeutralButton(R.string.no, (d, w) -> d.dismiss())
+                .setPositiveButton(R.string.action_delete, (d, w) -> {
+                    try (DAO db = new DAO(TAG)) {
+                        if (db.getDBHelper().deleteAllContent(this, db.getSyncDb())) {
+                            setResult(RESULT_ALL_DATA_DESTROYED);
                         }
-                    })
-                    .create()
-                    .show();
-        });
+                    }
+                })
+                .create()
+                .show());
 
         mVb.debugPrefs.setOnClickListener(v -> Prefs.dumpPreferences(this, null));
     }
