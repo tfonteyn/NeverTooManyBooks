@@ -167,6 +167,12 @@ public class EditBookTocFragment
                 }
             };
 
+    @NonNull
+    @Override
+    public String getFragmentId() {
+        return TAG;
+    }
+
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

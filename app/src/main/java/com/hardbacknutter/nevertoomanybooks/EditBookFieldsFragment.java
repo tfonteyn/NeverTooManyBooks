@@ -71,6 +71,7 @@ public class EditBookFieldsFragment
 
     /** Log tag. */
     private static final String TAG = "EditBookFieldsFragment";
+
     /** FragmentResultListener request key. */
     private static final String RK_EDIT_BOOKSHELVES = CheckListDialogFragment.TAG + ":rk";
 
@@ -94,6 +95,12 @@ public class EditBookFieldsFragment
     private ScannerViewModel mScannerModel;
     /** View Binding. */
     private FragmentEditBookFieldsBinding mVb;
+
+    @NonNull
+    @Override
+    public String getFragmentId() {
+        return TAG;
+    }
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {

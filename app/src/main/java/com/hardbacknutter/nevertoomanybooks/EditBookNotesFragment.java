@@ -19,6 +19,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -47,17 +48,18 @@ import com.hardbacknutter.nevertoomanybooks.fields.accessors.RatingBarAccessor;
 import com.hardbacknutter.nevertoomanybooks.fields.accessors.TextViewAccessor;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.DateFieldFormatter;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.DoubleNumberFormatter;
-import com.hardbacknutter.nevertoomanybooks.fields.validators.FieldValidator;
 
 public class EditBookNotesFragment
         extends EditBookBaseFragment {
 
-    /**
-     * The cross validator for read-start and read-end date fields.
-     * The error is always shown on the 'end' field.
-     */
-    private final FieldValidator<String, TextView> mReadStartEndValidator =
-            this::validateReadStartAndEndFields;
+    /** Log tag. */
+    private static final String TAG = "EditBookNotesFragment";
+
+    @NonNull
+    @Override
+    public String getFragmentId() {
+        return TAG;
+    }
 
     @Override
     @Nullable
@@ -95,6 +97,8 @@ public class EditBookNotesFragment
     @Override
     protected void onInitFields(@NonNull final Fields fields) {
 
+        final Context context = getContext();
+
         fields.add(R.id.cbx_read, new CompoundButtonAccessor(), DBDefinitions.KEY_READ);
         fields.add(R.id.cbx_signed, new CompoundButtonAccessor(), DBDefinitions.KEY_SIGNED);
 
@@ -114,11 +118,11 @@ public class EditBookNotesFragment
 
         //noinspection ConstantConditions
         fields.add(R.id.condition,
-                   new MaterialSpinnerAccessor(getContext(), R.array.conditions_book),
+                   new MaterialSpinnerAccessor(context, R.array.conditions_book),
                    DBDefinitions.KEY_BOOK_CONDITION)
               .setRelatedFields(R.id.lbl_condition);
         fields.add(R.id.condition_cover,
-                   new MaterialSpinnerAccessor(getContext(), R.array.conditions_dust_cover),
+                   new MaterialSpinnerAccessor(context, R.array.conditions_dust_cover),
                    DBDefinitions.KEY_BOOK_CONDITION_COVER)
               .setRelatedFields(R.id.lbl_condition_cover);
 
@@ -126,7 +130,7 @@ public class EditBookNotesFragment
               .setRelatedFields(R.id.lbl_location, R.id.lbl_location_long);
 
         fields.add(R.id.edition,
-                   new BitmaskChipGroupAccessor(() -> Book.Edition.getEditions(getContext()), true),
+                   new BitmaskChipGroupAccessor(() -> Book.Edition.getEditions(context), true),
                    DBDefinitions.KEY_EDITION_BITMASK)
               .setRelatedFields(R.id.lbl_edition);
 
@@ -137,12 +141,12 @@ public class EditBookNotesFragment
         fields.add(R.id.read_start, new TextViewAccessor<>(new DateFieldFormatter()),
                    DBDefinitions.KEY_READ_START)
               .setTextInputLayout(R.id.lbl_read_start)
-              .setFieldValidator(mReadStartEndValidator);
+              .setFieldValidator(this::validateReadStartAndEndFields);
 
         fields.add(R.id.read_end, new TextViewAccessor<>(new DateFieldFormatter()),
                    DBDefinitions.KEY_READ_END)
               .setTextInputLayout(R.id.lbl_read_end)
-              .setFieldValidator(mReadStartEndValidator);
+              .setFieldValidator(this::validateReadStartAndEndFields);
     }
 
     @Override
@@ -172,7 +176,6 @@ public class EditBookNotesFragment
                 if (cb.isChecked()) {
                     final Field<String, TextView> readEnd = getField(R.id.read_end);
                     if (readEnd.getAccessor().isEmpty()) {
-                        // Update, display and notify
                         readEnd.getAccessor().setValue(
                                 LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE));
                         readEnd.onChanged(true);

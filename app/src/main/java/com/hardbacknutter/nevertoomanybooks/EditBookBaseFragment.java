@@ -52,7 +52,6 @@ import java.util.Objects;
 import java.util.function.Supplier;
 
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataEditor;
-import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.dialogs.PartialDatePickerDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.fields.Field;
@@ -112,7 +111,7 @@ public abstract class EditBookBaseFragment
     @NonNull
     @Override
     Fields getFields() {
-        return mFragmentVM.getFields(getTag());
+        return mFragmentVM.getFields(getFragmentId());
     }
 
     @Override
@@ -124,12 +123,9 @@ public abstract class EditBookBaseFragment
         fm.setFragmentResultListener(RK_DATE_PICKER_SINGLE, this, mDatePickerListener);
         fm.setFragmentResultListener(RK_DATE_PICKER_RANGE, this, mDatePickerListener);
 
-        final String fragmentTag = getTag();
-        Objects.requireNonNull(fragmentTag, ErrorMsg.NULL_FRAGMENT_TAG);
-
         //noinspection ConstantConditions
         mFragmentVM = new ViewModelProvider(getActivity())
-                .get(fragmentTag, EditBookFragmentViewModel.class);
+                .get(getFragmentId(), EditBookFragmentViewModel.class);
         mFragmentVM.init();
     }
 
@@ -187,8 +183,7 @@ public abstract class EditBookBaseFragment
         if (!mBookViewModel.isSaved()) {
             onSaveFields(mBookViewModel.getBook());
 
-            //noinspection ConstantConditions
-            mBookViewModel.setUnfinishedEdits(getTag(), hasUnfinishedEdits());
+            mBookViewModel.setUnfinishedEdits(getFragmentId(), hasUnfinishedEdits());
         }
         super.onPause();
     }

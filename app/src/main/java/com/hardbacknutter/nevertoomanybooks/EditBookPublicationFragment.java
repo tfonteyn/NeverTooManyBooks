@@ -48,8 +48,17 @@ import com.hardbacknutter.nevertoomanybooks.fields.formatters.DoubleNumberFormat
 public class EditBookPublicationFragment
         extends EditBookBaseFragment {
 
+    /** Log tag. */
+    private static final String TAG = "EditBookPublicationFrag";
+
     /** View Binding. */
     private FragmentEditBookPublicationBinding mVb;
+
+    @NonNull
+    @Override
+    public String getFragmentId() {
+        return TAG;
+    }
 
     @Override
     @Nullable

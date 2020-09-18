@@ -142,7 +142,7 @@ public class BookDetailsFragment
     @NonNull
     @Override
     Fields getFields() {
-        return mFragmentVM.getFields(getTag());
+        return mFragmentVM.getFields(TAG);
     }
 
     @Override

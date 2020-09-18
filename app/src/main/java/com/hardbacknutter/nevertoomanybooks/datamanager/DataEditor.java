@@ -20,6 +20,7 @@
 package com.hardbacknutter.nevertoomanybooks.datamanager;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
 
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 
@@ -29,6 +30,13 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
  * @param <T> type of DataManager; normally a {@link Book}
  */
 public interface DataEditor<T extends DataManager> {
+
+    /** A non-null replacement for {@link Fragment#getTag()}. */
+    @NonNull
+    String getFragmentId();
+
+    /** {@link Fragment#isResumed()}. */
+    boolean isResumed();
 
     /**
      * Save the contents of all Fields to the {@link DataManager}.
@@ -42,6 +50,9 @@ public interface DataEditor<T extends DataManager> {
      * <p>
      * Independent of the data stored in {@link #onSaveFields}, an editor
      * can have fields with data in it which are not directly linked with a {@link DataManager}.
+     *
+     * <strong>Important:</strong> this method can and will access Views when called.
+     * It should only be called while a fragment is in resumed state.
      *
      * @return {@code true} if there are
      */

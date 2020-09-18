@@ -228,38 +228,42 @@ public class EditBookActivity
 
         final List<Fragment> fragments = getSupportFragmentManager().getFragments();
         for (int i = 0; i < fragments.size(); i++) {
-            final Fragment frag = fragments.get(i);
-
-            // 1. Fragments which went through onPause (i.e. are NOT resumed)
-            // have saved their *confirmed* data, but might have unfinished edits
-            // as previously logged in mBookViewModel.getUnfinishedEdits()
-            if (!frag.isResumed()
-                && checkUnfinishedEdits
-                && unfinishedEdits.contains(frag.getTag())) {
-                // bring it to the front; i.e. resume it; the user will see it below the dialog.
-                mVb.pager.setCurrentItem(i);
-                StandardDialogs.unsavedEdits(this,
-                                             () -> prepareSave(false),
-                                             this::setResultsAndFinish);
-                return;
-            }
-
-            // 2. Fragments in resumed state (i.e. NOT gone through onPause)
-            // must be explicitly told to save their data, and we must manually
-            // check them for unfinished edits.
-            // Note that for now, there will only ever be a single (front/visible), but this code
-            // should be able to cope with future layouts showing multiple fragments at once (flw)
-            if (frag instanceof DataEditor && frag.isResumed()) {
+            final Fragment fragment = fragments.get(i);
+            // Nor really needed to check for being a DataEditor,
+            // but this leave the possibility to add non-DataEditor fragments.
+            if (fragment instanceof DataEditor) {
                 //noinspection unchecked
-                final DataEditor<Book> dataEditor = (DataEditor<Book>) frag;
-                dataEditor.onSaveFields(book);
-                if (checkUnfinishedEdits
-                    && dataEditor.hasUnfinishedEdits()) {
+                final DataEditor<Book> dataEditor = (DataEditor<Book>) fragment;
+
+                // 1. Fragments which went through onPause (i.e. are NOT resumed)
+                // have saved their *confirmed* data, but might have unfinished edits
+                // as previously logged in mBookViewModel.getUnfinishedEdits()
+                if (!dataEditor.isResumed()
+                    && checkUnfinishedEdits
+                    && unfinishedEdits.contains(dataEditor.getFragmentId())) {
+                    // bring it to the front; i.e. resume it; the user will see it below the dialog.
                     mVb.pager.setCurrentItem(i);
                     StandardDialogs.unsavedEdits(this,
                                                  () -> prepareSave(false),
                                                  this::setResultsAndFinish);
                     return;
+                }
+
+                // 2. Fragments in resumed state (i.e. NOT gone through onPause) must be
+                // explicitly told to save their data, and we must manually check them
+                // for unfinished edits with a direct call to dataEditor.hasUnfinishedEdits()
+                // Note that for now, there will only ever be a single (front/visible),
+                // but this code should be able to cope with future layouts showing
+                // multiple fragments at once (flw)
+                if (dataEditor.isResumed()) {
+                    dataEditor.onSaveFields(book);
+                    if (checkUnfinishedEdits && dataEditor.hasUnfinishedEdits()) {
+                        mVb.pager.setCurrentItem(i);
+                        StandardDialogs.unsavedEdits(this,
+                                                     () -> prepareSave(false),
+                                                     this::setResultsAndFinish);
+                        return;
+                    }
                 }
             }
         }
