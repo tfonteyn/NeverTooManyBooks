@@ -93,21 +93,6 @@ public class Fields {
     /** the list with all fields. */
     private final SparseArray<Field<?, ? extends View>> mAllFields = new SparseArray<>();
 
-    /** Prevent needless re-init of fields after a fragment was recreated (screen rotation etc.) */
-    private boolean mFieldsAreInitialised;
-
-    public boolean shouldInitFields() {
-        return !mFieldsAreInitialised;
-    }
-
-    public boolean fieldsAreInitialised() {
-        return mFieldsAreInitialised;
-    }
-
-    public void setFieldsAreInitialised() {
-        mFieldsAreInitialised = true;
-    }
-
     public int size() {
         return mAllFields.size();
     }
@@ -181,7 +166,9 @@ public class Fields {
             return field;
         }
 
-        throw new IllegalArgumentException("fieldId= 0x" + Integer.toHexString(id));
+        throw new IllegalArgumentException(
+                "mAllFields.size()=" + mAllFields.size()
+                + "|fieldId= " + id);
     }
 
     /**
@@ -261,7 +248,6 @@ public class Fields {
     @NonNull
     public String toString() {
         return "Fields{"
-               + "mFieldsAreInitialised=" + mFieldsAreInitialised
                + ", mAllFields=" + mAllFields
                + '}';
     }

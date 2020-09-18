@@ -165,9 +165,8 @@ public abstract class BookBaseFragment
         super.onViewCreated(view, savedInstanceState);
 
         final Fields fields = getFields();
-        if (fields.shouldInitFields()) {
+        if (fields.isEmpty()) {
             onInitFields(fields);
-            fields.setFieldsAreInitialised();
         }
 
         //noinspection ConstantConditions
