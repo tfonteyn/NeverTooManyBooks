@@ -60,12 +60,12 @@
     <string name="action_save">Salva</string>
     <string name="X_btn_continue_edit">Annulla</string>
     <string name="X_btn_customize">Personalizza…</string>
-    <string name="btn_clear_credentials">Cancella credenziali</string>
+    <string name="action_clear_credentials">Cancella credenziali</string>
     <string name="btn_disable_message">Disattiva messaggio</string>
     <string name="btn_email">Invia email</string>
     <string name="X_btn_loan_returned">Restituito</string>
     <string name="btn_options">Opzioni</string>
-    <string name="btn_reset">Reimposta</string>
+    <string name="action_reset">Reimposta</string>
     <string name="btn_scan_barcode">Scansione codice a barre</string>
     <string name="btn_learn_more">Ulteriori informazioni</string>
     <string name="btn_this_book">Questo libro</string>
@@ -658,8 +658,8 @@
     <string name="image">Immagine</string>
     <string name="lbl_author_type_narrator">Narratore</string>
     <string name="unknown">Sconosciuto</string>
-    <string name="btn_not_now">Non ora</string>
-    <string name="menu_reset_to_default">Ripristina impostazioni predefinite</string>
+    <string name="action_not_now">Non ora</string>
+    <string name="action_reset_to_default">Ripristina impostazioni predefinite</string>
     <string name="action_try_again">Riprova</string>
     <string name="confirm_delete_publisher">Eliminare davvero l\'editore «%1$s»?\n\nI libri stessi non verranno eliminati.\n\nConsidera la possibilità di modificare l\'editore e di cambiare il nome dell\'editore con quello di un altro editore per conservare questi dati.</string>
     <string name="action_validate">Convalidare</string>
@@ -667,5 +667,9 @@
     <string name="statick">Statico</string>
     <string name="action_select">Seleziona</string>
     <string name="error_csv_line_to_long">La riga è troppo lunga (riga=%1$d, lunghezza=%2$d)</string>
+    <string name="clear_all_data">Elimina tutti i dati</string>
+    <string name="pt_line_spacing">Interlinea</string>
+    <string name="confirm_clear_all_data">QUESTO RIMUOVERÀ TUTTI I DATI!\n Fatta eccezione per il ripristino da un backup precedente, QUESTO NON PU ESSERE ANNULLATO!\n\n Sei sicuro di voler continuare ?</string>
+    <string name="confirm_continue">Sei sicuro di voler continuare ?</string>
 
 </resources>

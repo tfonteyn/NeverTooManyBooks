@@ -60,12 +60,12 @@
     <string name="action_save">Αποθήκευση</string>
     <string name="X_btn_continue_edit">Συνέχεια Επεξεργασίας</string>
     <string name="X_btn_customize">Προσαρμογή…</string>
-    <string name="btn_clear_credentials">Διαγραφή διαπιστευτηρίων</string>
+    <string name="action_clear_credentials">Διαγραφή διαπιστευτηρίων</string>
     <string name="btn_disable_message">Απενεργοποίηση μηνυμάτων</string>
     <string name="btn_email">Ηλεκτρονικό ταχυδρομείο</string>
     <string name="X_btn_loan_returned">Έχει επιστραφεί</string>
     <string name="btn_options">Επιλογές</string>
-    <string name="btn_reset">Επαναφορά</string>
+    <string name="action_reset">Επαναφορά</string>
     <string name="btn_scan_barcode">Σάρωση γραμμωτού κώδικα</string>
     <string name="btn_learn_more">Μάθετε περισσότερα</string>
     <string name="btn_this_book">Αυτό το βιβλίο</string>
@@ -658,8 +658,8 @@
     <string name="image">Εικόνα</string>
     <string name="lbl_author_type_narrator">Αφηγητής</string>
     <string name="unknown">Άγνωστο</string>
-    <string name="btn_not_now">Όχι τώρα</string>
-    <string name="menu_reset_to_default">Επαναφορά στις προεπιλογές</string>
+    <string name="action_not_now">Όχι τώρα</string>
+    <string name="action_reset_to_default">Επαναφορά στις προεπιλογές</string>
     <string name="action_try_again">Δοκιμάστε ξανά</string>
     <string name="confirm_delete_publisher">Να διαγραφεί πραγματικά ο εκδότης «%1$s»;\n\nΤα ίδια τα βιβλία δεν θα διαγραφούν.\n\nΣκεφτείτε να επεξεργαστείτε τον εκδότη και να αλλάξετε το όνομα του εκδότη σε αυτό άλλου εκδότη για να διατηρήσετε αυτά τα δεδομένα.</string>
     <string name="action_validate">Επικυρώνω</string>
@@ -667,5 +667,9 @@
     <string name="statick">Στατικός</string>
     <string name="action_select">Επιλογή</string>
     <string name="error_csv_line_to_long">Η γραμμή είναι πολύ μεγάλη (σειρά=%1$d, μήκος=%2$d)</string>
+    <string name="clear_all_data">Διαγραφή όλων των δεδομένων</string>
+    <string name="pt_line_spacing">Διάστιχο</string>
+    <string name="confirm_clear_all_data">ΑΥΤΑ ΑΦΑΙΡΕΣΕΙ ΟΛΑ ΤΑ ΔΕΔΟΜΕΝΑ!\n Εκτός από την επαναφορά από ένα προηγούμενο αντίγραφο ασφαλείας, ΑΥΤΟ ΔΕΝ ΜΠΟΡΕΙ ΝΑ ΚΑΝΕΤΕ ΚΑΤΩ!\n\n Εισαι σιγουρος οτι θελεις να συνεχισεις ?</string>
+    <string name="confirm_continue">Εισαι σιγουρος οτι θελεις να συνεχισεις ?</string>
 
 </resources>

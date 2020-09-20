@@ -789,6 +789,9 @@
     <!-- [VERIFIED] ListPreference - Scale text. -->
     <string name="pt_bob_font_size">Font size</string>
 
+    <!-- SwitchPreference - the height of the rows in the booklist (Small/Large) -->
+    <string name="pt_line_spacing">Line spacing</string>
+
     <!-- SwitchPreference -->
     <string name="pt_bob_list_state_expansion_level">Default booklist expansion</string>
 
@@ -998,6 +1001,8 @@
     <string name="action_retry">Retry</string>
     <!-- [VERIFIED] 'Try again' -->
     <string name="action_try_again">Try again</string>
+    <!-- [VERIFIED] -->
+    <string name="action_not_now">Not now</string>
     <!-- [VERIFIED] e.g. clearing a form. -->
     <string name="action_clear">Clear</string>
     <!-- [VERIFIED] -->
@@ -1006,6 +1011,12 @@
     <string name="action_select">Select</string>
     <!-- [VERIFIED] -->
     <string name="action_skip">Skip</string>
+    <!-- [VERIFIED] -->
+    <string name="action_reset">Reset</string>
+    <!-- [VERIFIED] -->
+    <string name="action_reset_to_default">Reset to default</string>
+    <!-- [VERIFIED] -->
+    <string name="action_clear_credentials">Clear credentials</string>
 
     <string name="action_validate">Validate</string>
 
@@ -1027,15 +1038,9 @@
     <!-- [VERIFIED] -->
     <string name="btn_learn_more">Learn more</string>
     <string name="btn_this_book">This Book</string>
-    <!-- [VERIFIED] -->
-    <string name="btn_reset">Reset</string>
-    <!-- [VERIFIED] -->
-    <string name="menu_reset_to_default">Reset to default</string>
-    <!-- [VERIFIED] -->
-    <string name="btn_clear_credentials">Clear credentials</string>
+
     <!-- [VERIFIED] -->
     <string name="btn_email">Email</string>
-
 
     <!-- Hint text for the drag handle button in re-order-able lists -->
     <string name="hint_btn_drag_handle">Drag me to reorder this list</string>
@@ -1238,8 +1243,7 @@
     <string name="yes">Yes</string>
     <!-- [VERIFIED] -->
     <string name="no">No</string>
-    <!-- [VERIFIED] -->
-    <string name="btn_not_now">Not now</string>
+
     <!-- [VERIFIED] -->
     <string name="warning_task_cancelled">Cancelled</string>
 
@@ -1580,7 +1584,7 @@
     <string name="info_purge_blns_item_name">Purge BLNS for %1$s “%2$s” ?</string>
 
     <string name="clear_all_data">Clear all data</string>
-    <string name="confirm_clear_all_data">THIS WILL REMOVE ALL DATA.\n THERE IS **NO** GOING BACK\n(other than restoring from a **backup**).\n\nAre you sure you want to continue ?</string>
-    <string name="pt_line_spacing">Line spacing</string>
+    <string name="confirm_clear_all_data">THIS WILL REMOVE ALL DATA!\n Except by restoring from a previous backup, THIS CANNOT BE UNDONE!\n\n Are you sure you want to continue ?</string>
+    <string name="confirm_continue">Are you sure you want to continue ?</string>
 
 </resources>

@@ -60,12 +60,12 @@
     <string name="action_save">Kaydet</string>
     <string name="X_btn_continue_edit">Düzenlemeyi sürdür</string>
     <string name="X_btn_customize">Kişiselleştir…</string>
-    <string name="btn_clear_credentials">Kimlik bilgilerini temizle</string>
+    <string name="action_clear_credentials">Kimlik bilgilerini temizle</string>
     <string name="btn_disable_message">İletiyi kapat</string>
     <string name="btn_email">E-posta</string>
     <string name="X_btn_loan_returned">Geri geldi</string>
     <string name="btn_options">Seçenekler</string>
-    <string name="btn_reset">Sıfırla</string>
+    <string name="action_reset">Sıfırla</string>
     <string name="btn_scan_barcode">Barkod tara</string>
     <string name="btn_learn_more">Daha fazla bilgi</string>
     <string name="btn_this_book">Bu kitap</string>
@@ -656,13 +656,17 @@
     <string name="image">Resim</string>
     <string name="lbl_author_type_narrator">Dış ses</string>
     <string name="unknown">Bilinmiyor</string>
-    <string name="btn_not_now">Şimdi değil</string>
-    <string name="menu_reset_to_default">Varsayılana sıfırla</string>
+    <string name="action_not_now">Şimdi değil</string>
+    <string name="action_reset_to_default">Varsayılana sıfırla</string>
     <string name="action_try_again">Tekrar dene</string>
     <string name="action_validate">Doğrulama</string>
     <string name="dynamic">Dinamik</string>
     <string name="statick">Statik</string>
     <string name="action_select">Seç</string>
     <string name="error_csv_line_to_long">Satır çok uzun (satır=%1$d, uzunluk=%2$d)</string>
+    <string name="clear_all_data">Tüm verileri sil</string>
+    <string name="pt_line_spacing">Satır aralığı</string>
+    <string name="confirm_clear_all_data">BU TÜM VERİLERİ KALDIRACAK!\n Önceki bir yedeklemeden geri yükleme dışında, BU GERİ ALINAMAZ!\n\n Devam etmek istediğine emin misin ?</string>
+    <string name="confirm_continue">Devam etmek istediğine emin misin ?</string>
 
 </resources>

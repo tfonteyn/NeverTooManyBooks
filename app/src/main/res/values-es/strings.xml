@@ -61,12 +61,12 @@
     <string name="action_save">Guardar</string>
     <string name="X_btn_continue_edit">Continuar editando</string>
     <string name="X_btn_customize">Configurar…</string>
-    <string name="btn_clear_credentials">Eliminar certificados</string>
+    <string name="action_clear_credentials">Eliminar certificados</string>
     <string name="btn_disable_message">Deshabilitar mensaje</string>
     <string name="btn_email">Enviar correo</string>
     <string name="X_btn_loan_returned">Devuelto</string>
     <string name="btn_options">Opciones</string>
-    <string name="btn_reset">Restablecer</string>
+    <string name="action_reset">Restablecer</string>
     <string name="btn_scan_barcode">Escanear código de barras</string>
     <string name="btn_learn_more">Más información</string>
     <string name="btn_this_book">Este libro</string>
@@ -658,8 +658,8 @@
     <string name="image">Imagen</string>
     <string name="lbl_author_type_narrator">Narrador</string>
     <string name="unknown">Desconocido</string>
-    <string name="btn_not_now">Ahora no</string>
-    <string name="menu_reset_to_default">Restablecer ajustes</string>
+    <string name="action_not_now">Ahora no</string>
+    <string name="action_reset_to_default">Restablecer ajustes</string>
     <string name="action_try_again">Reintentar</string>
     <string name="confirm_delete_publisher">¿Eliminar realmente el editor «%1$s»?\n\nLos libros en sí no se eliminarán.\n\nConsidere editar el editor y cambiar el nombre del editor por el de otro editor para conservar estos datos.</string>
     <string name="action_validate">Validar</string>
@@ -667,5 +667,9 @@
     <string name="statick">Estático</string>
     <string name="action_select">Seleccionar</string>
     <string name="error_csv_line_to_long">La línea es demasiado larga (fila=%1$d, longitud=%2$d)</string>
+    <string name="clear_all_data">Borrar todos los datos</string>
+    <string name="pt_line_spacing">Espaciado entre líneas</string>
+    <string name="confirm_clear_all_data">¡ESTO ELIMINARÁ TODOS LOS DATOS!\n Excepto restaurando desde una copia de seguridad anterior, ¡ESTO NO SE PUEDE DESHACER!\n\n Estás seguro de que quieres continuar ?</string>
+    <string name="confirm_continue">Estás seguro de que quieres continuar ?</string>
 
 </resources>

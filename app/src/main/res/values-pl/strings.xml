@@ -59,12 +59,12 @@
     <string name="action_save">Zapisz</string>
     <string name="X_btn_continue_edit">Kontynuuj edycję</string>
     <string name="X_btn_customize">Dostosuj…</string>
-    <string name="btn_clear_credentials">Wyczyść dane o certyfikatach</string>
+    <string name="action_clear_credentials">Wyczyść dane o certyfikatach</string>
     <string name="btn_disable_message">Wyłącz komunikat.</string>
     <string name="btn_email">Wyślij e-maila</string>
     <string name="X_btn_loan_returned">Zwrócona</string>
     <string name="btn_options">Opcje</string>
-    <string name="btn_reset">Resetuj</string>
+    <string name="action_reset">Resetuj</string>
     <string name="btn_scan_barcode">Zeskanuj kod kreskowy</string>
     <string name="btn_learn_more">Więcej informacji</string>
     <string name="btn_this_book">Ta książka</string>
@@ -654,8 +654,8 @@
     <string name="image">Obraz</string>
     <string name="lbl_author_type_narrator">Narrator</string>
     <string name="unknown">Brak informacji</string>
-    <string name="btn_not_now">Nie teraz</string>
-    <string name="menu_reset_to_default">Resetuj ustawienia</string>
+    <string name="action_not_now">Nie teraz</string>
+    <string name="action_reset_to_default">Resetuj ustawienia</string>
     <string name="action_try_again">Spróbuj ponownie</string>
     <string name="confirm_delete_publisher">Naprawdę usunąć wydawcę „%1$s”?\n\nSame książki nie zostaną usunięte.\n\nRozważ edycję wydawcy i zmianę nazwy wydawcy na nazwę innego wydawcy, aby zachować te dane.</string>
     <string name="action_validate">Uprawomocnić</string>
@@ -663,4 +663,8 @@
     <string name="statick">Statyczny</string>
     <string name="action_select">Wybierz</string>
     <string name="error_csv_line_to_long">Linia jest za długa (wiersz=%1$d, długość=%2$d)</string>
+    <string name="clear_all_data">Usuń wszystkie dane</string>
+    <string name="pt_line_spacing">Odstępy między wierszami</string>
+    <string name="confirm_clear_all_data">TO USUŃ WSZYSTKIE DANE!\n Z wyjątkiem przywracania z poprzedniej kopii zapasowej, TO NIE MOŻE BYĆ Cofnąć!\n\n Jesteś pewien, że chcesz kontynuować ?</string>
+    <string name="confirm_continue">Jesteś pewien, że chcesz kontynuować ?</string>
 </resources>

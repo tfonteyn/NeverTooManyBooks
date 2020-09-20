@@ -59,12 +59,12 @@
     <string name="action_save">Сохранить</string>
     <string name="X_btn_continue_edit">Продолжить редактирование</string>
     <string name="X_btn_customize">Настроить…</string>
-    <string name="btn_clear_credentials">Очистить учетные данные</string>
+    <string name="action_clear_credentials">Очистить учетные данные</string>
     <string name="btn_disable_message">Отключить сообщение</string>
     <string name="btn_email">Написать письмо</string>
     <string name="X_btn_loan_returned">Возвращена</string>
     <string name="btn_options">опции</string>
-    <string name="btn_reset">Сбросить</string>
+    <string name="action_reset">Сбросить</string>
     <string name="btn_scan_barcode">Сканирование штрих-кода</string>
     <string name="btn_learn_more">Подробнее</string>
     <string name="btn_this_book">Эта книга</string>
@@ -654,8 +654,8 @@
     <string name="image">Изображение</string>
     <string name="lbl_author_type_narrator">рассказчик</string>
     <string name="unknown">Неизвестно</string>
-    <string name="btn_not_now">Не сейчас</string>
-    <string name="menu_reset_to_default">Сбросить настройки</string>
+    <string name="action_not_now">Не сейчас</string>
+    <string name="action_reset_to_default">Сбросить настройки</string>
     <string name="action_try_again">Повторить попытку</string>
     <string name="confirm_delete_publisher">Действительно удалить издателя «%1$s»?\n\nСами книги не будут удалены.\n\nРассмотрите возможность изменения издателя и изменения имени издателя на имя другого издателя, чтобы сохранить эти данные.</string>
     <string name="dynamic">динамический</string>
@@ -663,5 +663,9 @@
     <string name="action_validate">проверять</string>
     <string name="action_select">Выбрать</string>
     <string name="error_csv_line_to_long">Строка слишком длинная (строка=%1$d, длина=%2$d)</string>
+    <string name="clear_all_data">Удалить все данные</string>
+    <string name="pt_line_spacing">Межстрочный интервал</string>
+    <string name="confirm_clear_all_data">ЭТО УДАЛЯЕТ ВСЕ ДАННЫЕ!\n ЭТО НЕ МОЖЕТ БЫТЬ ОТМЕНЕНО, кроме восстановления из предыдущей резервной копии!\n\n Вы уверены что хотите продолжить ?</string>
+    <string name="confirm_continue">Вы уверены что хотите продолжить ?</string>
 
 </resources>

@@ -61,12 +61,12 @@
     <string name="action_save">Opslaan</string>
     <string name="X_btn_continue_edit">Doorgaan met bewerken</string>
     <string name="X_btn_customize">Aanpassen…</string>
-    <string name="btn_clear_credentials">Certificaatgegevens wissen</string>
+    <string name="action_clear_credentials">Certificaatgegevens wissen</string>
     <string name="btn_disable_message">Bericht uitschakelen</string>
     <string name="btn_email">E-mailen</string>
     <string name="X_btn_loan_returned">Terug</string>
     <string name="btn_options">Opties</string>
-    <string name="btn_reset">Resetten</string>
+    <string name="action_reset">Resetten</string>
     <string name="btn_scan_barcode">Scan barcode</string>
     <string name="btn_learn_more">Meer info</string>
     <string name="btn_this_book">Dit boek</string>
@@ -660,13 +660,17 @@
     <string name="image">Afbeelding</string>
     <string name="lbl_author_type_narrator">Verteller</string>
     <string name="unknown">Onbekend</string>
-    <string name="btn_not_now">Niet nu</string>
-    <string name="menu_reset_to_default">Standaardinstellingen herstellen</string>
+    <string name="action_not_now">Niet nu</string>
+    <string name="action_reset_to_default">Standaardinstellingen herstellen</string>
     <string name="action_try_again">Opnieuw proberen</string>
     <string name="action_validate">Valideer</string>
     <string name="dynamic">Dynamisch</string>
     <string name="statick">Statisch</string>
     <string name="action_select">Selecteren</string>
     <string name="error_csv_line_to_long">Lijn is te lang (lijn=%1$d, lengte=%2$d)</string>
+    <string name="clear_all_data">Verwijder alle gegevens</string>
+    <string name="pt_line_spacing">Regelafstand</string>
+    <string name="confirm_clear_all_data">DIT ZAL ALLE GEGEVENS VERWIJDEREN!\n Behalve door te herstellen vanaf een vorige back-up, KAN DIT NIET ONGEDAAN WORDEN!\n\n Weet je zeker dat je door wilt gaan ?</string>
+    <string name="confirm_continue">Weet je zeker dat je door wilt gaan ?</string>
 
 </resources>

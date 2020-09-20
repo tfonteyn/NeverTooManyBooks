@@ -59,12 +59,12 @@
     <string name="action_save">Uložit</string>
     <string name="X_btn_continue_edit">Pokračovat v úpravách</string>
     <string name="X_btn_customize">Přizpůsobit…</string>
-    <string name="btn_clear_credentials">Vymazat pověření</string>
+    <string name="action_clear_credentials">Vymazat pověření</string>
     <string name="btn_disable_message">Zakázat zprávu</string>
     <string name="btn_email">Poslat e-mail</string>
     <string name="X_btn_loan_returned">Vráceno</string>
     <string name="btn_options">Možnosti</string>
-    <string name="btn_reset">Resetovat</string>
+    <string name="action_reset">Resetovat</string>
     <string name="btn_scan_barcode">Naskenujte čárový kód</string>
     <string name="btn_learn_more">Další informace</string>
     <string name="btn_this_book">Tato kniha</string>
@@ -655,8 +655,8 @@
     <string name="image">Obrázek</string>
     <string name="lbl_author_type_narrator">Vypravěč</string>
     <string name="unknown">Neznámé</string>
-    <string name="btn_not_now">Teď ne</string>
-    <string name="menu_reset_to_default">Obnovit výchozí</string>
+    <string name="action_not_now">Teď ne</string>
+    <string name="action_reset_to_default">Obnovit výchozí</string>
     <string name="action_try_again">Zkusit znovu</string>
     <string name="confirm_delete_publisher">Opravdu smazat vydavatele „%1$s“?\n\nSamotné knihy nebudou smazány.\n\nVšechny úpravy vydavatele a změna názvu vydavatele na jméno jiného vydavatele za účelem uchování těchto dat.</string>
     <string name="action_validate">Ověřit</string>
@@ -664,5 +664,9 @@
     <string name="statick">Statický</string>
     <string name="action_select">Vybrat</string>
     <string name="error_csv_line_to_long">Řádek je příliš dlouhý (řádek=%1$d, délka=%2$d)</string>
+    <string name="clear_all_data">Smažte všechna data</string>
+    <string name="pt_line_spacing">Řádkování</string>
+    <string name="confirm_clear_all_data">TOTO ODSTRANÍ VŠECHNY ÚDAJE!\n S výjimkou obnovy z předchozí zálohy TO NELZE ZRUŠIT!\n\n Jste si jistý, že chcete pokračovat ?</string>
+    <string name="confirm_continue">Jste si jistý, že chcete pokračovat ?</string>
 
 </resources>

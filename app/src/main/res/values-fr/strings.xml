@@ -61,12 +61,12 @@
     <string name="action_save">Enregistrer</string>
     <string name="X_btn_continue_edit">Continuer la modification</string>
     <string name="X_btn_customize">Personnaliser…</string>
-    <string name="btn_clear_credentials">Effacer les identifiants</string>
+    <string name="action_clear_credentials">Effacer les identifiants</string>
     <string name="btn_disable_message">Désactiver ce message</string>
     <string name="btn_email">Envoyer un e-mail</string>
     <string name="X_btn_loan_returned">Rendu</string>
     <string name="btn_options">Options</string>
-    <string name="btn_reset">Réinitialiser</string>
+    <string name="action_reset">Réinitialiser</string>
     <string name="btn_scan_barcode">Scan code à barres</string>
     <string name="btn_learn_more">En savoir plus</string>
     <string name="btn_this_book">Ce livre</string>
@@ -662,8 +662,8 @@
     <string name="image">Image</string>
     <string name="lbl_author_type_narrator">Narrateur</string>
     <string name="unknown">Inconnu</string>
-    <string name="btn_not_now">Pas maintenant</string>
-    <string name="menu_reset_to_default">Rétablir param. par défaut</string>
+    <string name="action_not_now">Pas maintenant</string>
+    <string name="action_reset_to_default">Rétablir param. par défaut</string>
     <string name="action_try_again">Réessayer</string>
     <string name="confirm_delete_publisher" tools:ignore="TypographyQuotes">Supprimer l\'éditeur «%1$s»?\n\nLes livres eux-mêmes ne seront pas supprimés.\n\nEnvisagez de modifier l\'éditeur et de remplacer le nom pour conserver ces données.</string>
     <string name="action_validate">Valider</string>
@@ -671,5 +671,9 @@
     <string name="statick">Statique</string>
     <string name="action_select">Sélectionner</string>
     <string name="error_csv_line_to_long">La ligne est trop longue (ligne=%1$d, longueur=%2$d)</string>
+    <string name="clear_all_data">Supprimer toutes les données</string>
+    <string name="pt_line_spacing">Interligne</string>
+    <string name="confirm_clear_all_data">CELA SUPPRIMERA TOUTES LES DONNÉES!\n Sauf en restaurant à partir d\'une sauvegarde précédente, CECI NE PEUT PAS ÊTRE ANNULÉ!\n\n Es-tu sur de vouloir continuer ?</string>
+    <string name="confirm_continue">Es-tu sur de vouloir continuer ?</string>
 
 </resources>
