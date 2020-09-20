@@ -126,7 +126,7 @@ public class GlobalPreferenceFragment
             final Drawable d = preference.getIcon().mutate();
             if (getPreferenceManager().getSharedPreferences().getBoolean(schedulerKey, false)) {
                 //noinspection ConstantConditions
-                d.setTint(getContext().getColor(R.color.red_500));
+                d.setTint(AttrUtils.getColorInt(getContext(), R.attr.appPreferenceAlertColor));
             } else {
                 //noinspection ConstantConditions
                 d.setTint(AttrUtils.getColorInt(getContext(), R.attr.colorControlNormal));
