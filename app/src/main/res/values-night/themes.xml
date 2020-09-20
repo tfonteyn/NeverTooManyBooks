@@ -41,6 +41,8 @@
         <!-- ==================== -->
         <!-- Application specific -->
         <!-- ==================== -->
+        <item name="appPreferenceAlertColor">@color/red_500</item>
+
         <!-- the default colorSurface #121212 -->
         <item name="appBookCardBackgroundColor">?attr/colorSurface</item>
 
@@ -51,16 +53,10 @@
     </style>
 
     <style name="Theme.App.Startup" parent="Base.Theme.App.Startup">
-        <!-- ==================== -->
-        <!-- Application specific -->
-        <!-- ==================== -->
         <item name="appBookCardBackgroundColor">?attr/colorSurface</item>
     </style>
 
     <style name="ThemeOverlay.App.MaterialAlertDialog" parent="Base.ThemeOverlay.App.MaterialAlertDialog">
-        <!-- ==================== -->
-        <!-- Application specific -->
-        <!-- ==================== -->
         <item name="appBookCardBackgroundColor">?attr/colorSurface</item>
     </style>
 

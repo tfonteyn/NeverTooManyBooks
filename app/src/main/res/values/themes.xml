@@ -29,17 +29,16 @@ https://medium.com/androiddevelopers/migrating-to-material-components-for-androi
 Full color list:
 https://material.io/design/material-theming/implementing-your-theme.html#color
 
-TODO: these + the night variants need optimizing.
 -->
 <resources>
-    <!-- Specific Theme for full screen usage. -->
+    <!-- Top level Theme for full screen usage. -->
     <style name="Theme.App.FullScreen" parent="Theme.App">
         <item name="android:windowFullscreen">true</item>
         <item name="android:windowContentOverlay">@null</item>
         <item name="android:windowIsFloating">false</item>
     </style>
 
-    <!--Top level DayNight theme to be used in AndroidManifest.xml-->
+    <!-- Top level Theme to be used in AndroidManifest.xml-->
     <style name="Theme.App" parent="Base.Theme.App">
         <!-- ======================================= -->
         <!-- Material color attributes (light theme) -->
@@ -67,6 +66,8 @@ TODO: these + the night variants need optimizing.
         <!-- ==================== -->
         <!-- Application specific -->
         <!-- ==================== -->
+        <item name="appPreferenceAlertColor">@color/red_500</item>
+
         <!-- the default colorSurface is "too white". -->
         <item name="appBookCardBackgroundColor">@color/grey_50</item>
 
@@ -76,6 +77,7 @@ TODO: these + the night variants need optimizing.
         <item name="appNavBarColorEnd">@color/blue_grey_50</item>
     </style>
 
+    <!-- Base theme used by both Day and Night themes. -->
     <style name="Base.Theme.App" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <item name="materialAlertDialogTheme">@style/ThemeOverlay.App.MaterialAlertDialog</item>
         <item name="materialCalendarFullscreenTheme">@style/ThemeOverlay.App.MaterialCalendar</item>
@@ -98,6 +100,7 @@ TODO: these + the night variants need optimizing.
         <item name="colorOnSecondary">@color/black</item>
     </style>
 
+    <!-- Base theme used by both Day and Night themes. -->
     <style name="Base.Theme.App.Startup" parent="Theme.MaterialComponents.DayNight.Dialog">
         <item name="materialAlertDialogTheme">@style/ThemeOverlay.App.MaterialAlertDialog</item>
         <item name="snackbarTextViewStyle">@style/App.SnackbarTextView</item>
@@ -105,6 +108,7 @@ TODO: these + the night variants need optimizing.
         <item name="textAppearanceBody2">@style/App.TextAppearance.Body2</item>
     </style>
 
+    <!-- custom ThemeOverlay used by the "materialAlertDialogTheme" attribute. -->
     <style name="ThemeOverlay.App.MaterialAlertDialog" parent="Base.ThemeOverlay.App.MaterialAlertDialog">
         <item name="android:statusBarColor">@color/blue_grey_300</item>
 
@@ -117,6 +121,7 @@ TODO: these + the night variants need optimizing.
         <item name="colorOnSecondary">@color/black</item>
     </style>
 
+    <!-- Base theme used by both Day and Night themes. -->
     <style name="Base.ThemeOverlay.App.MaterialAlertDialog"
         parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog">
         <item name="materialAlertDialogTheme">@style/ThemeOverlay.App.MaterialAlertDialog</item>
@@ -125,6 +130,7 @@ TODO: these + the night variants need optimizing.
         <item name="textAppearanceBody2">@style/App.TextAppearance.Body2</item>
     </style>
 
+    <!-- custom ThemeOverlay used by the "materialCalendarFullscreenTheme" attribute. -->
     <style name="ThemeOverlay.App.MaterialCalendar"
         parent="ThemeOverlay.MaterialComponents.MaterialCalendar.Fullscreen">
         <item name="materialCalendarHeaderConfirmButton">@style/App.MaterialCalendar.HeaderConfirmButton</item>

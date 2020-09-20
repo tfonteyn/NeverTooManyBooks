@@ -32,6 +32,9 @@
     <attr name="appNavBarColorCenter" format="reference|color" />
     <attr name="appNavBarColorEnd" format="reference|color" />
 
+    <!-- the color to give certain preferences a visual indicator. -->
+    <attr name="appPreferenceAlertColor" format="reference|color" />
+
     <declare-styleable name="ExtGroup">
         <attr name="groupApply">
             <flag name="visibility" value="0x1" />
