@@ -26,6 +26,7 @@ import android.util.DisplayMetrics;
 import android.util.TypedValue;
 import android.view.WindowManager;
 
+import androidx.annotation.AnyRes;
 import androidx.annotation.AttrRes;
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
@@ -43,6 +44,7 @@ public final class AttrUtils {
      *
      * @return resource ID
      */
+    @AnyRes
     public static int getResId(@NonNull final Context context,
                                @AttrRes final int attr) {
         final Resources.Theme theme = context.getTheme();

@@ -114,7 +114,14 @@ public class BooklistAdapter
     private FieldsInUse mFieldsInUse;
     /** List style to apply. */
     private BooklistStyle mStyle;
-    private int mThumbnailScale;
+
+    private int mGroupRowHeight;
+    /** Top margin to use for Level 1 <strong>if</strong> the {@link #mGroupRowHeight} is wrap. */
+    private int mGroupLevel1topMargin;
+
+    @LayoutRes
+    private int mBookLayoutId;
+
     /** Longest side for a cover in pixels. */
     private int mCoverLongestSide;
     /** The cursor is the equivalent of the 'list of items'. */
@@ -157,15 +164,45 @@ public class BooklistAdapter
                           @NonNull final BooklistStyle style) {
         // First set the style and prepare the related data
         mStyle = style;
-        // scale defines the layout to use
-        mThumbnailScale = mStyle.getThumbnailScale(context);
-        // and is used to retrieve the cover dimensions
+        mFieldsInUse = new FieldsInUse(context, mStyle);
+
+        mGroupRowHeight = mStyle.getGroupRowHeight(context);
+        if (mGroupRowHeight == ViewGroup.LayoutParams.WRAP_CONTENT) {
+            mGroupLevel1topMargin = context
+                    .getResources().getDimensionPixelSize(R.dimen.bob_row_level_1_top_margin);
+        }
+
+        @BooklistStyle.CoverScale
+        final int thumbnailScale = mStyle.getThumbnailScale(context);
+
+        // The thumbnail scale is used to retrieve the cover dimensions
         // We use a square space for the image so both portrait/landscape images work out.
         final TypedArray coverSizes = context
                 .getResources().obtainTypedArray(R.array.cover_book_list_longest_side);
-        mCoverLongestSide = coverSizes.getDimensionPixelSize(mThumbnailScale, 0);
+        mCoverLongestSide = coverSizes.getDimensionPixelSize(thumbnailScale, 0);
         coverSizes.recycle();
-        mFieldsInUse = new FieldsInUse(context, mStyle);
+
+        // The thumbnail scale defines the Book layout file to use.
+        // The layout names ending in 3/4/5 are ONLY the references, they are not
+        // hard coded in the layout files themselves (other than in 'tools' settings).
+        switch (thumbnailScale) {
+            case BooklistStyle.IMAGE_SCALE_6_MAX:
+            case BooklistStyle.IMAGE_SCALE_5_VERY_LARGE:
+                mBookLayoutId = R.layout.booksonbookshelf_row_book_scale_5;
+                break;
+
+            case BooklistStyle.IMAGE_SCALE_4_LARGE:
+                mBookLayoutId = R.layout.booksonbookshelf_row_book_scale_4;
+                break;
+
+            case BooklistStyle.IMAGE_SCALE_3_MEDIUM:
+            case BooklistStyle.IMAGE_SCALE_2_SMALL:
+            case BooklistStyle.IMAGE_SCALE_1_VERY_SMALL:
+            case BooklistStyle.IMAGE_SCALE_0_NOT_DISPLAYED:
+            default:
+                mBookLayoutId = R.layout.booksonbookshelf_row_book_scale_3;
+                break;
+        }
 
         // now the actual new cursor
         mCursor = cursor;
@@ -293,74 +330,57 @@ public class BooklistAdapter
      *
      * @return the view
      */
-    @SuppressLint("SwitchIntDef")
     private View createView(@NonNull final ViewGroup parent,
                             @BooklistGroup.Id final int groupKeyId) {
-
-        final Context context = parent.getContext();
-
         //noinspection ConstantConditions
         final int level = mNodeData.getInt(DBDefinitions.KEY_BL_NODE_LEVEL);
-        // Indent (0..) based on level (1..)
-        int indent = level - 1;
 
         @LayoutRes
         final int layoutId;
+        if (groupKeyId == BooklistGroup.BOOK) {
+            layoutId = mBookLayoutId;
 
-        switch (groupKeyId) {
-            case BooklistGroup.BOOK: {
-                // the layout names ending in 3/4/5 are ONLY the references, they are not
-                // hard coded in the layout files themselves (other than in 'tools' settings)
-                switch (mThumbnailScale) {
-                    case BooklistStyle.IMAGE_SCALE_6_MAX:
-                    case BooklistStyle.IMAGE_SCALE_5_VERY_LARGE:
-                        layoutId = R.layout.booksonbookshelf_row_book_scale_5;
-                        break;
+        } else if (groupKeyId == BooklistGroup.RATING) {
+            layoutId = R.layout.booksonbookshelf_group_rating;
 
-                    case BooklistStyle.IMAGE_SCALE_4_LARGE:
-                        layoutId = R.layout.booksonbookshelf_row_book_scale_4;
-                        break;
-
-                    case BooklistStyle.IMAGE_SCALE_3_MEDIUM:
-                    case BooklistStyle.IMAGE_SCALE_2_SMALL:
-                    case BooklistStyle.IMAGE_SCALE_1_VERY_SMALL:
-                    case BooklistStyle.IMAGE_SCALE_0_NOT_DISPLAYED:
-                    default:
-                        layoutId = R.layout.booksonbookshelf_row_book_scale_3;
-                        break;
-                }
-
-                // Don't indent books
-                indent = 0;
-                break;
-            }
-            case BooklistGroup.RATING: {
-                layoutId = R.layout.booksonbookshelf_group_rating;
-                break;
-            }
-            default: {
-                // for all other types, the level determines the view
-                switch (level) {
-                    case 1:
-                        layoutId = R.layout.booksonbookshelf_group_level_1;
-                        break;
-                    case 2:
-                        layoutId = R.layout.booksonbookshelf_group_level_2;
-                        break;
-
-                    default:
-                        // level 0 is a book, see above
-                        // level 3 and higher all use the same layout.
-                        layoutId = R.layout.booksonbookshelf_group_level_3;
-                        break;
-                }
-                break;
+        } else {
+            // for all other types, the level determines the view
+            switch (level) {
+                case 1:
+                    layoutId = R.layout.booksonbookshelf_group_level_1;
+                    break;
+                case 2:
+                    layoutId = R.layout.booksonbookshelf_group_level_2;
+                    break;
+                default:
+                    // level 0 is a book, see above
+                    // level 3 and higher all use the same layout.
+                    layoutId = R.layout.booksonbookshelf_group_level_3;
+                    break;
             }
         }
 
         final View view = mInflater.inflate(layoutId, parent, false);
-        view.setPaddingRelative(indent * mLevelIndent, 0, 0, 0);
 
+        if (groupKeyId == BooklistGroup.BOOK) {
+            // Don't indent books
+            view.setPaddingRelative(0, 0, 0, 0);
+
+        } else {
+            // Indent (0..) based on level (1..)
+            view.setPaddingRelative((level - 1) * mLevelIndent, 0, 0, 0);
+
+            final ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams)
+                    view.getLayoutParams();
+
+            // Adjust the line spacing as required
+            lp.height = mGroupRowHeight;
+            if (level == 1 && mGroupLevel1topMargin != 0) {
+                lp.setMargins(0, mGroupLevel1topMargin, 0, 0);
+            }
+        }
+
+        final Context context = parent.getContext();
         // Scale text/padding (recursively) if required
         if (mStyle.getTextScale(context) != BooklistStyle.FONT_SCALE_2_MEDIUM) {
             scaleTextViews(view, mStyle.getTextSpUnits(context),

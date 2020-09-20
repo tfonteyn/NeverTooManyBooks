@@ -21,10 +21,12 @@ package com.hardbacknutter.nevertoomanybooks.booklist;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.res.TypedArray;
 import android.os.Build;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.text.TextUtils;
+import android.view.ViewGroup;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.IntRange;
@@ -68,6 +70,7 @@ import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Entity;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
+import com.hardbacknutter.nevertoomanybooks.utils.AttrUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.Csv;
 
 /**
@@ -138,10 +141,18 @@ public class BooklistStyle
     /** Show list of bookshelves for each book. */
     public static final String pk_book_show_bookshelves = "style.booklist.show.bookshelves";
     public static final String pk_levels_expansion = "style.booklist.levels.default";
+
+    /** <strong>ALL</strong> text. */
     public static final String pk_scale_font = "style.booklist.scale.font";
+
+    /** Thumbnails in the list view. Only used when {@link #pk_book_show_thumbnails} is set. */
     public static final String pk_scale_thumbnail = "style.booklist.scale.thumbnails";
+
+
     /** Main style preferences. */
     public static final String pk_name = "style.booklist.name";
+    /** Style group preferences. */
+    public static final String pk_style_groups = "style.booklist.groups";
     /** Show ISBN for each book. */
     static final String pk_book_show_isbn = "style.booklist.show.isbn";
     /** Booklist Filter - ListPreference. */
@@ -156,6 +167,8 @@ public class BooklistStyle
     static final String pk_filter_anthology = "style.booklist.filter.anthology";
     /** Booklist Filter - MultiSelectListPreference. */
     static final String pk_filter_editions = "style.booklist.filter.editions";
+
+
     /** Thumbnail Scaling. */
     static final int IMAGE_SCALE_0_NOT_DISPLAYED = 0;
     /** Thumbnail Scaling. */
@@ -172,6 +185,7 @@ public class BooklistStyle
     static final int IMAGE_SCALE_5_VERY_LARGE = 5;
     /** Thumbnail Scaling. */
     static final int IMAGE_SCALE_6_MAX = 6;
+
     /**
      * Text Scaling.
      * NEVER change these values, they get stored in preferences.
@@ -190,6 +204,12 @@ public class BooklistStyle
 
     private static final String pk_is_preferred = "style.booklist.preferred";
     private static final String pk_header = "style.booklist.header";
+
+    /**
+     * The spacing used for the group/level rows.
+     * A value of {@code 0} means {@link android.view.ViewGroup.LayoutParams#WRAP_CONTENT}.
+     */
+    private static final String pk_scale_group_row = "style.booklist.group.height";
 
     /**
      * Style unique name. This is a stored in our preference file (with the same name)
@@ -240,31 +260,6 @@ public class BooklistStyle
     private static final String PREF_BL_PREFERRED_STYLES = "bookList.style.preferred.order";
 
     /**
-     * Padding to go with {@link #FONT_SCALING}.
-     */
-    private static final float[] FONT_PADDING = {0.77f, 0.88f, 1.0f, 1.11f, 1.22f};
-
-    /**
-     * With the header set to two lines, the toolbar fully visible,
-     * on a full-HD (1920-1080 pixels) we get:
-     * <ul>
-     *      <li>32sp: 10 lines; or 2 books</li>
-     *      <li>28sp: 11 lines</li>
-     *      <li>24sp: 12 lines</li>
-     *      <li>18sp: 13 lines; or 5-6 books</li>
-     *      <li>14sp: 19 lines; or 7 books</li>
-     * </ul>
-     * <p>
-     * For reference:
-     * {@code
-     *      <dimen name="text_size_large_material">22sp</dimen>
-     *      <dimen name="text_size_medium_material">18sp</dimen>
-     *      <dimen name="text_size_small_material">14sp</dimen>
-     * }
-     */
-    private static final float[] FONT_SCALING = {12f, 14f, 18f, 22f, 32f};
-
-    /**
      * The uuid based SharedPreference name.
      * <p>
      * When set to the empty string, the global preferences will be used.
@@ -311,6 +306,8 @@ public class BooklistStyle
      * ==1 being 'normal' size
      */
     private PInteger mFontScale;
+    private PBoolean mGroupRowScale;
+
     /** Scale factor to apply for thumbnails. */
     private PInteger mThumbnailScale;
     /** Local override. */
@@ -446,6 +443,7 @@ public class BooklistStyle
 
         mIsPreferred.set(in);
         mDefaultExpansionLevel.set(in);
+        mGroupRowScale.set(in);
         mFontScale.set(in);
         mThumbnailScale.set(in);
         mShowHeaderInfo.set(in);
@@ -501,6 +499,7 @@ public class BooklistStyle
         // further prefs can be set from the parcel as normal.
         mIsPreferred.set(in);
         mDefaultExpansionLevel.set(in);
+        mGroupRowScale.set(in);
         mFontScale.set(in);
         mThumbnailScale.set(in);
         mShowHeaderInfo.set(in);
@@ -690,6 +689,8 @@ public class BooklistStyle
         mShowHeaderInfo = new PBitmask(mStylePrefs, pk_header,
                                        isUserDefined, HEADER_BITMASK_ALL, HEADER_BITMASK_ALL);
 
+        mGroupRowScale = new PBoolean(mStylePrefs, pk_scale_group_row, isUserDefined, true);
+
         mFontScale = new PInteger(mStylePrefs, pk_scale_font,
                                   isUserDefined, FONT_SCALE_2_MEDIUM);
 
@@ -809,6 +810,7 @@ public class BooklistStyle
 
         mIsPreferred.writeToParcel(dest);
         mDefaultExpansionLevel.writeToParcel(dest);
+        mGroupRowScale.writeToParcel(dest);
         mFontScale.writeToParcel(dest);
         mThumbnailScale.writeToParcel(dest);
         mShowHeaderInfo.writeToParcel(dest);
@@ -927,6 +929,7 @@ public class BooklistStyle
 
         map.put(mIsPreferred.getKey(), mIsPreferred);
         map.put(mDefaultExpansionLevel.getKey(), mDefaultExpansionLevel);
+        map.put(mGroupRowScale.getKey(), mGroupRowScale);
         map.put(mFontScale.getKey(), mFontScale);
         map.put(mThumbnailScale.getKey(), mThumbnailScale);
         map.put(mShowHeaderInfo.getKey(), mShowHeaderInfo);
@@ -1012,7 +1015,13 @@ public class BooklistStyle
      * @return scale factor
      */
     float getTextPaddingFactor(@NonNull final Context context) {
-        return FONT_PADDING[mFontScale.getValue(context)];
+        final TypedArray ta = context
+                .getResources().obtainTypedArray(R.array.bob_text_padding_in_percent);
+        try {
+            return ta.getFloat(mFontScale.getValue(context), FONT_SCALE_2_MEDIUM);
+        } finally {
+            ta.recycle();
+        }
     }
 
     /**
@@ -1023,7 +1032,13 @@ public class BooklistStyle
      * @return sp units
      */
     float getTextSpUnits(@NonNull final Context context) {
-        return FONT_SCALING[mFontScale.getValue(context)];
+        final TypedArray ta = context
+                .getResources().obtainTypedArray(R.array.bob_text_size_in_sp);
+        try {
+            return ta.getFloat(mFontScale.getValue(context), FONT_SCALE_2_MEDIUM);
+        } finally {
+            ta.recycle();
+        }
     }
 
     /**
@@ -1062,6 +1077,22 @@ public class BooklistStyle
             return mThumbnailScale.getValue(context);
         }
         return IMAGE_SCALE_0_NOT_DISPLAYED;
+    }
+
+    /**
+     * Get the group row <strong>height</strong> to be applied to
+     * the {@link android.view.ViewGroup.LayoutParams}.
+     *
+     * @param context Current context
+     *
+     * @return group row height value in pixels
+     */
+    int getGroupRowHeight(@NonNull final Context context) {
+        if (mGroupRowScale.getValue(context)) {
+            return AttrUtils.getDimen(context, R.attr.listPreferredItemHeightSmall);
+        } else {
+            return ViewGroup.LayoutParams.WRAP_CONTENT;
+        }
     }
 
     /**
@@ -1315,11 +1346,16 @@ public class BooklistStyle
                + "\nmName=`" + mName + '`'
                + "\nmIsPreferred=" + mIsPreferred
                + "\nmDefaultExpansionLevel=" + mDefaultExpansionLevel
+
                + "\nmFontScale=" + mFontScale
+               + "\nmGroupRowScale=" + mGroupRowScale
+               + "\nmThumbnailScale=" + mThumbnailScale
+
                + "\nmShowHeaderInfo=" + mShowHeaderInfo
+
                + "\nmShowAuthorByGivenNameFirst=" + mShowAuthorByGivenName
                + "\nmSortAuthorByGivenNameFirst=" + mSortAuthorByGivenName
-               + "\nmThumbnailScale=" + mThumbnailScale
+
                + "\nmStyleGroups=" + mStyleGroups
 
                + "\nmAllBookDetailFields=" + mAllBookDetailFields
@@ -1537,7 +1573,7 @@ public class BooklistStyle
          */
         PStyleGroups(@NonNull final Context context,
                      @NonNull final BooklistStyle style) {
-            super(style.getStyleSharedPreferences(), Prefs.pk_style_groups, style.isUserDefined());
+            super(style.getStyleSharedPreferences(), pk_style_groups, style.isUserDefined());
 
             // load the group ID's from the SharedPreference and populates the Group object list.
             mGroups.clear();

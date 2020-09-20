@@ -84,11 +84,41 @@
     <!-- The content padding used for the CardView content displaying a Book. -->
     <dimen name="bob_book_card_padding">2dp</dimen>
     <!-- top margin for the top-level rows; also known as "fat_finger_spacer" -->
-    <dimen name="bob_row_spacer">4dp</dimen>
+    <dimen name="bob_row_level_1_top_margin">4dp</dimen>
     <!-- indent multiplier for the levels in the booklist:
-        paddingIndent = (level-1) * booklist_level_indent -->
+         paddingIndent = (level-1) * booklist_level_indent -->
     <dimen name="bob_level_indent">8dp</dimen>
 
+    <!--
+        The text size (in sp units, but in float notation) for all text in a book list row.
+        For reference:
+        {@code
+           <dimen name="text_size_small_material">14sp</dimen>
+           <dimen name="text_size_medium_material">18sp</dimen>
+           <dimen name="text_size_large_material">22sp</dimen>
+        }
+        Index 2 -> 18sp being the default.
+    -->
+    <array name="bob_text_size_in_sp">
+        <item>12.0</item>
+        <item>14.0</item>
+        <item>18.0</item>
+        <item>22.0</item>
+        <item>32.0</item>
+    </array>
+    <!--
+        Padding scale factor (we multiply this value with the actual padding settings)
+        to go with "bob_text_size_in_sp"
+
+        Index 2 -> 1x being the default.
+    -->
+    <array name="bob_text_padding_in_percent">
+        <item>0.77</item>
+        <item>0.88</item>
+        <item>1</item>
+        <item>1.11</item>
+        <item>1.22</item>
+    </array>
 
     <!-- elevation for a progress bar. -->
     <dimen name="progress_z">10dp</dimen>
@@ -134,4 +164,6 @@
 
     <!-- generic drawable padding. -->
     <dimen name="drawable_padding1">4dp</dimen>
+
+
 </resources>

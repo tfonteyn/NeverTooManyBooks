@@ -419,7 +419,7 @@
     </style>
 
     <style name="BoB.Group.Level1">
-        <item name="android:layout_marginTop">@dimen/bob_row_spacer</item>
+        <item name="android:layout_marginTop">@dimen/bob_row_level_1_top_margin</item>
     </style>
 
     <style name="BoB.Group.Level2">
@@ -614,6 +614,12 @@
         <item name="android:maxLines">2</item>
     </style>
 
+    <!-- We want the full screen calendar widget to use the same style 'actual' button. -->
+    <style name="App.MaterialCalendar.HeaderConfirmButton"
+        parent="Widget.MaterialComponents.MaterialCalendar.HeaderConfirmButton">
+        <item name="android:backgroundTint">?attr/colorButtonNormal</item>
+    </style>
+
     <style name="NavigationView" parent="Widget.MaterialComponents.NavigationView">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">match_parent</item>
@@ -660,11 +666,6 @@
 
     <!-- *************************************************************************************** -->
 
-    <style name="App.MaterialCalendar.HeaderConfirmButton"
-        parent="Widget.MaterialComponents.MaterialCalendar.HeaderConfirmButton">
-        <item name="android:backgroundTint">?attr/colorButtonNormal</item>
-    </style>
-
     <style name="App.TextAppearance.Body1" parent="TextAppearance.MaterialComponents.Body1">
         <!-- text size: 16sp -->
         <!--Your custom type style here-->
@@ -674,6 +675,5 @@
         <!-- text size: 14sp -->
         <!--Your custom type style here-->
     </style>
-
 
 </resources>

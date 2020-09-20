@@ -1581,5 +1581,6 @@
 
     <string name="clear_all_data">Clear all data</string>
     <string name="confirm_clear_all_data">THIS WILL REMOVE ALL DATA.\n THERE IS **NO** GOING BACK\n(other than restoring from a **backup**).\n\nAre you sure you want to continue ?</string>
+    <string name="pt_line_spacing">Line spacing</string>
 
 </resources>
