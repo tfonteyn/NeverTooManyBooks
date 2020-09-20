@@ -49,11 +49,6 @@ import com.hardbacknutter.nevertoomanybooks.searches.isfdb.IsfdbSearchEngine;
  */
 public final class Prefs {
 
-    /** Number of app startup's between offers to backup. */
-    public static final int STARTUP_BACKUP_COUNTDOWN = 5;
-    /** Triggers prompting for a backup when the countdown reaches 0; then gets reset. */
-    public static final String PREF_STARTUP_BACKUP_COUNTDOWN = "startup.backupCountdown";
-
     /** User preference Key. */
     public static final String pk_ui_locale = "ui.locale";
     /** Not the actual theme, but the day/night part only. */
@@ -77,10 +72,7 @@ public final class Prefs {
     public static final String pk_show_author_name_given_first = "show.author.name.given_first";
     public static final String pk_booklist_rebuild_state = "booklist.rebuild.state";
     public static final String pk_booklist_fastscroller_overlay = "booklist.fastscroller.overlay";
-
-
-    /** Style group preferences. */
-    public static final String pk_style_groups = "style.booklist.groups";
+    public static final String pk_edit_book_isbn_checks = "edit.book.isbn.checks";
 
 
     /** Style - PreferenceScreen/PreferenceCategory Key. */
@@ -89,16 +81,14 @@ public final class Prefs {
     public static final String PSK_STYLE_SERIES = "psk_style_series";
     /** Style - PreferenceScreen/PreferenceCategory Key. */
     public static final String PSK_STYLE_PUBLISHER = "psk_style_publisher";
-
-    /** Style - PreferenceScreen/PreferenceCategory Key. */
-    public static final String PSK_STYLE_SHOW_DETAILS = "psk_style_show_details";
-    /** Style - PreferenceScreen/PreferenceCategory Key. */
-    public static final String PSK_STYLE_FILTERS = "psk_style_filters";
-
     /** Global - PreferenceScreen/PreferenceCategory Key. */
     public static final String PSK_BARCODE_SCANNER = "psk_barcode_scanner";
-    public static final String pk_edit_book_isbn_checks = "edit.book.isbn.checks";
+
+
+    /** Whether to show the fragment that allows the user to edit the external id's. */
     private static final String pk_edit_book_tabs_external_id = "edit.book.tab.externalId";
+
+
     /** Log tag. */
     private static final String TAG = "Prefs";
 

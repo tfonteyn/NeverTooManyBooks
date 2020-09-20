@@ -35,9 +35,7 @@ import com.hardbacknutter.nevertoomanybooks.database.tasks.OptimizeDbTask;
 import com.hardbacknutter.nevertoomanybooks.database.tasks.RebuildFtsTask;
 import com.hardbacknutter.nevertoomanybooks.database.tasks.RebuildIndexesTask;
 import com.hardbacknutter.nevertoomanybooks.database.tasks.RebuildOrderByTitleColumnsTask;
-import com.hardbacknutter.nevertoomanybooks.database.tasks.Scheduler;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
-import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.tasks.BuildLanguageMappingsTask;
 import com.hardbacknutter.nevertoomanybooks.tasks.LTask;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
@@ -53,16 +51,32 @@ import com.hardbacknutter.nevertoomanybooks.tasks.messages.ProgressMessage;
 public class StartupViewModel
         extends VMTask<Void> {
 
-    public static final String PREF_PREFIX = "startup.";
+    /** Triggers prompting for a backup when the countdown reaches 0; then gets reset. */
+    public static final String PK_STARTUP_BACKUP_COUNTDOWN = "startup.backupCountdown";
+    /** Number of app startup's between offers to backup. */
+    public static final int STARTUP_BACKUP_COUNTDOWN = 5;
+
+
+    /** Flag to indicate OrderBy columns must be rebuild at startup. */
+    public static final String PK_REBUILD_ORDERBY_COLUMNS = "startup.rebuild.ob.title";
+
+    /** Flag to indicate all indexes must be rebuild at startup. */
+    private static final String PK_REBUILD_INDEXES = "startup.rebuild.index";
+    /** Flag to indicate FTS rebuild is required at startup. */
+    private static final String PK_REBUILD_FTS = "startup.rebuild.fts";
+
     /** Log tag. */
     private static final String TAG = "StartupViewModel";
-    /** Number of times the app has been started. */
-    private static final String PREF_STARTUP_COUNT = PREF_PREFIX + "startCount";
-    /** Triggers some actions when the countdown reaches 0; then gets reset. */
-    private static final String PREF_MAINTENANCE_COUNTDOWN = PREF_PREFIX + "startCountdown";
 
+
+    /** Triggers some actions when the countdown reaches 0; then gets reset. */
+    private static final String PK_MAINTENANCE_COUNTDOWN = "startup.startCountdown";
     /** Number of app startup's between some periodic action. */
     private static final int MAINTENANCE_COUNTDOWN = 5;
+
+    /** Number of times the app has been started. */
+    private static final String PK_STARTUP_COUNT = "startup.startCount";
+
     /** TaskId holder. Added when started. Removed when stopped. */
     @NonNull
     private final Collection<Integer> mAllTasks = new HashSet<>(6);
@@ -115,6 +129,49 @@ public class StartupViewModel
     /** Triggers periodic maintenance tasks. */
     private boolean mDoMaintenance;
 
+    /**
+     * Set the flag to indicate an FTS rebuild is required.
+     *
+     * @param context Current context
+     */
+    public static void scheduleFtsRebuild(@NonNull final Context context,
+                                          final boolean flag) {
+        schedule(context, PK_REBUILD_FTS, flag);
+    }
+
+    /**
+     * Set or remove the flag to indicate an OrderBy column rebuild is required.
+     *
+     * @param context Current context
+     */
+    public static void scheduleOrderByRebuild(@NonNull final Context context,
+                                              final boolean flag) {
+        schedule(context, PK_REBUILD_ORDERBY_COLUMNS, flag);
+    }
+
+    /**
+     * Set or remove the flag to indicate an index rebuild is required.
+     *
+     * @param context Current context
+     */
+    public static void scheduleIndexRebuild(@NonNull final Context context,
+                                            final boolean flag) {
+        schedule(context, PK_REBUILD_INDEXES, flag);
+    }
+
+    private static void schedule(@NonNull final Context context,
+                                 @NonNull final String key,
+                                 final boolean flag) {
+        final SharedPreferences.Editor ed = PreferenceManager
+                .getDefaultSharedPreferences(context).edit();
+        if (flag) {
+            ed.putBoolean(key, true);
+        } else {
+            ed.remove(key);
+        }
+        ed.apply();
+    }
+
     @Override
     protected void onCleared() {
         super.onCleared();
@@ -141,20 +198,20 @@ public class StartupViewModel
             // prepare the maintenance flags and counters.
             final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
             final int maintenanceCountdown = prefs
-                    .getInt(PREF_MAINTENANCE_COUNTDOWN, MAINTENANCE_COUNTDOWN);
+                    .getInt(PK_MAINTENANCE_COUNTDOWN, MAINTENANCE_COUNTDOWN);
             final int backupCountdown = prefs
-                    .getInt(Prefs.PREF_STARTUP_BACKUP_COUNTDOWN, Prefs.STARTUP_BACKUP_COUNTDOWN);
+                    .getInt(PK_STARTUP_BACKUP_COUNTDOWN, STARTUP_BACKUP_COUNTDOWN);
 
             prefs.edit()
-                 .putInt(PREF_MAINTENANCE_COUNTDOWN,
+                 .putInt(PK_MAINTENANCE_COUNTDOWN,
                          maintenanceCountdown == 0 ? MAINTENANCE_COUNTDOWN
                                                    : maintenanceCountdown - 1)
-                 .putInt(Prefs.PREF_STARTUP_BACKUP_COUNTDOWN,
-                         backupCountdown == 0 ? Prefs.STARTUP_BACKUP_COUNTDOWN
+                 .putInt(PK_STARTUP_BACKUP_COUNTDOWN,
+                         backupCountdown == 0 ? STARTUP_BACKUP_COUNTDOWN
                                               : backupCountdown - 1)
 
                  // The number of times the app was opened.
-                 .putInt(PREF_STARTUP_COUNT, prefs.getInt(PREF_STARTUP_COUNT, 0) + 1)
+                 .putInt(PK_STARTUP_COUNT, prefs.getInt(PK_STARTUP_COUNT, 0) + 1)
                  .apply();
 
             mDoMaintenance = maintenanceCountdown == 0;
@@ -215,19 +272,19 @@ public class StartupViewModel
         }
 
         // on demand only
-        if (prefs.getBoolean(Scheduler.PREF_REBUILD_ORDERBY_COLUMNS, false)) {
+        if (prefs.getBoolean(PK_REBUILD_ORDERBY_COLUMNS, false)) {
             startTask(new RebuildOrderByTitleColumnsTask(mDb, mTaskListener));
             optimizeDb = true;
         }
 
         // on demand only
-        if (prefs.getBoolean(Scheduler.PREF_REBUILD_INDEXES, false)) {
+        if (prefs.getBoolean(PK_REBUILD_INDEXES, false)) {
             startTask(new RebuildIndexesTask(mTaskListener));
             optimizeDb = true;
         }
 
         // on demand only
-        if (prefs.getBoolean(Scheduler.PREF_REBUILD_FTS, false)) {
+        if (prefs.getBoolean(PK_REBUILD_FTS, false)) {
             startTask(new RebuildFtsTask(mDb, mTaskListener));
             optimizeDb = true;
         }

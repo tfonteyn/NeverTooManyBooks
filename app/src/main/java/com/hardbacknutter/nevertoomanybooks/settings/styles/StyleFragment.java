@@ -42,7 +42,6 @@ import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyle;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
-import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 
 /**
  * Settings editor for a Style.
@@ -55,6 +54,11 @@ public class StyleFragment
 
     /** Fragment manager tag. */
     public static final String TAG = "StylePreferenceFragment";
+
+    /** Style - PreferenceScreen/PreferenceCategory Key. */
+    private static final String PSK_STYLE_SHOW_DETAILS = "psk_style_show_details";
+    /** Style - PreferenceScreen/PreferenceCategory Key. */
+    private static final String PSK_STYLE_FILTERS = "psk_style_filters";
 
     @Override
     public void onCreatePreferences(@Nullable final Bundle savedInstanceState,
@@ -81,7 +85,7 @@ public class StyleFragment
         Preference preference;
 
         // the 'groups' in use.
-        preference = findPreference(Prefs.pk_style_groups);
+        preference = findPreference(BooklistStyle.pk_style_groups);
         if (preference != null) {
             preference.setOnPreferenceClickListener(p -> {
                 Intent intent = new Intent(getContext(), StyleGroupsActivity.class)
@@ -107,8 +111,8 @@ public class StyleFragment
         super.onResume();
 
         // These keys are never physically present in the SharedPreferences; so handle explicitly.
-        updateSummary(Prefs.PSK_STYLE_SHOW_DETAILS);
-        updateSummary(Prefs.PSK_STYLE_FILTERS);
+        updateSummary(PSK_STYLE_SHOW_DETAILS);
+        updateSummary(PSK_STYLE_FILTERS);
     }
 
     /**
@@ -121,7 +125,7 @@ public class StyleFragment
 
         switch (key) {
             case BooklistStyle.pk_scale_font: {
-                final SeekBarPreference preference = findPreference(key);
+                final Preference preference = findPreference(key);
                 if (preference != null) {
                     //noinspection ConstantConditions
                     final String summary = getResources()
@@ -131,8 +135,9 @@ public class StyleFragment
                 }
                 break;
             }
+
             case BooklistStyle.pk_scale_thumbnail: {
-                final SeekBarPreference preference = findPreference(key);
+                final Preference preference = findPreference(key);
                 if (preference != null) {
                     //noinspection ConstantConditions
                     final String summary = getResources()
@@ -153,7 +158,7 @@ public class StyleFragment
                 break;
             }
 
-            case Prefs.pk_style_groups: {
+            case BooklistStyle.pk_style_groups: {
                 // the 'groups' in use.
                 final Preference preference = findPreference(key);
                 if (preference != null) {
@@ -164,9 +169,9 @@ public class StyleFragment
             }
 
             case BooklistStyle.pk_book_show_thumbnails:
-            case Prefs.PSK_STYLE_SHOW_DETAILS: {
+            case PSK_STYLE_SHOW_DETAILS: {
                 // the 'extra' fields in use.
-                final Preference preference = findPreference(Prefs.PSK_STYLE_SHOW_DETAILS);
+                final Preference preference = findPreference(PSK_STYLE_SHOW_DETAILS);
                 if (preference != null) {
                     //noinspection ConstantConditions
                     final List<String> labels = mStyle.getBookDetailsFieldLabels(getContext());
@@ -178,7 +183,7 @@ public class StyleFragment
                 }
                 break;
             }
-            case Prefs.PSK_STYLE_FILTERS: {
+            case PSK_STYLE_FILTERS: {
                 // the 'filters' in use
                 final Preference preference = findPreference(key);
                 if (preference != null) {

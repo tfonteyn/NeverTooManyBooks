@@ -50,10 +50,10 @@ import com.hardbacknutter.nevertoomanybooks.backup.zip.ZipArchiveWriter;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
-import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 import com.hardbacknutter.nevertoomanybooks.utils.DateParser;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
+import com.hardbacknutter.nevertoomanybooks.viewmodels.StartupViewModel;
 
 public class ExportManager
         implements Parcelable {
@@ -344,8 +344,8 @@ public class ExportManager
                 .putString(PREF_LAST_FULL_BACKUP_DATE,
                            LocalDateTime.now(ZoneOffset.UTC)
                                         .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME))
-                .putInt(Prefs.PREF_STARTUP_BACKUP_COUNTDOWN,
-                        Prefs.STARTUP_BACKUP_COUNTDOWN)
+                .putInt(StartupViewModel.PK_STARTUP_BACKUP_COUNTDOWN,
+                        StartupViewModel.STARTUP_BACKUP_COUNTDOWN)
                 .apply();
     }
 
