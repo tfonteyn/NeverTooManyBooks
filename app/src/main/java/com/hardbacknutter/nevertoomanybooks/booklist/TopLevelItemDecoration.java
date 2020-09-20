@@ -54,7 +54,7 @@ public class TopLevelItemDecoration
      * @param context Current context, it will be used to access resources.
      */
     public TopLevelItemDecoration(@NonNull final Context context) {
-        final TypedArray ta = context.obtainStyledAttributes(ATTRS);
+        final TypedArray ta = context.getTheme().obtainStyledAttributes(ATTRS);
         mDivider = Objects.requireNonNull(ta.getDrawable(0), ErrorMsg.NULL_DRAWABLE);
         ta.recycle();
     }
