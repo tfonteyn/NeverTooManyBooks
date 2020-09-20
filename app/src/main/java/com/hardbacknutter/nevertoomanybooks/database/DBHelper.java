@@ -49,13 +49,13 @@ import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.Synchronizer;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition;
-import com.hardbacknutter.nevertoomanybooks.database.tasks.Scheduler;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineRegistry;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
+import com.hardbacknutter.nevertoomanybooks.viewmodels.StartupViewModel;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOKSHELF_NAME;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOK_PUBLISHER_POSITION;
@@ -708,7 +708,7 @@ public final class DBHelper
             // we'll remove the column at a later version.
             syncedDb.execSQL("UPDATE books SET publisher=''");
 
-            Scheduler.scheduleFtsRebuild(context, true);
+            StartupViewModel.scheduleFtsRebuild(context, true);
         }
 
         if (curVersion < newVersion && curVersion == 7) {
@@ -740,7 +740,7 @@ public final class DBHelper
             // added visibility column; just scrap the old data
             TBL_BOOK_LIST_NODE_STATE.recreate(syncedDb, true);
             // moved to FTS4
-            Scheduler.scheduleFtsRebuild(context, true);
+            StartupViewModel.scheduleFtsRebuild(context, true);
         }
 
         // TODO: if at a future time we make a change that requires to copy/reload the books table,

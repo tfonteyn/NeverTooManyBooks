@@ -58,7 +58,6 @@ import com.hardbacknutter.nevertoomanybooks.RequestCode;
 import com.hardbacknutter.nevertoomanybooks.database.CoversDAO;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBHelper;
-import com.hardbacknutter.nevertoomanybooks.database.tasks.Scheduler;
 import com.hardbacknutter.nevertoomanybooks.debug.DebugReport;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
@@ -70,6 +69,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.SoundManager;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.ResultDataModel;
+import com.hardbacknutter.nevertoomanybooks.viewmodels.StartupViewModel;
 import com.hardbacknutter.nevertoomanybooks.widgets.BitmaskPreference;
 
 /**
@@ -199,11 +199,11 @@ public abstract class BasePreferenceFragment
                         .setTitle(R.string.menu_rebuild_fts)
                         .setMessage(R.string.confirm_rebuild_fts)
                         .setNegativeButton(android.R.string.cancel, (d, w) -> {
-                            Scheduler.scheduleFtsRebuild(getContext(), false);
+                            StartupViewModel.scheduleFtsRebuild(getContext(), false);
                             p.setSummary(null);
                         })
                         .setPositiveButton(android.R.string.ok, (d, w) -> {
-                            Scheduler.scheduleFtsRebuild(getContext(), true);
+                            StartupViewModel.scheduleFtsRebuild(getContext(), true);
                             p.setSummary(R.string.txt_rebuild_scheduled);
                         })
                         .create()
@@ -221,11 +221,11 @@ public abstract class BasePreferenceFragment
                         .setTitle(R.string.menu_rebuild_index)
                         .setMessage(R.string.confirm_rebuild_index)
                         .setNegativeButton(android.R.string.cancel, (d, w) -> {
-                            Scheduler.scheduleIndexRebuild(getContext(), false);
+                            StartupViewModel.scheduleIndexRebuild(getContext(), false);
                             p.setSummary(null);
                         })
                         .setPositiveButton(android.R.string.ok, (d, w) -> {
-                            Scheduler.scheduleIndexRebuild(getContext(), true);
+                            StartupViewModel.scheduleIndexRebuild(getContext(), true);
                             p.setSummary(R.string.txt_rebuild_scheduled);
                         })
                         .create()

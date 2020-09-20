@@ -31,8 +31,8 @@ import androidx.preference.SwitchPreference;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.database.tasks.Scheduler;
 import com.hardbacknutter.nevertoomanybooks.utils.AttrUtils;
+import com.hardbacknutter.nevertoomanybooks.viewmodels.StartupViewModel;
 
 /**
  * Global settings page.
@@ -67,7 +67,7 @@ public class GlobalPreferenceFragment
         }
 
         setVisualIndicator(findPreference(Prefs.pk_sort_title_reordered),
-                           Scheduler.PREF_REBUILD_ORDERBY_COLUMNS);
+                           StartupViewModel.PK_REBUILD_ORDERBY_COLUMNS);
     }
 
     @Override
@@ -94,13 +94,13 @@ public class GlobalPreferenceFragment
                         .setCancelable(false)
                         .setNegativeButton(android.R.string.cancel, (d, w) -> {
                             p.setChecked(mCurrentSortTitleReordered);
-                            Scheduler.scheduleOrderByRebuild(getContext(), false);
-                            setVisualIndicator(p, Scheduler.PREF_REBUILD_ORDERBY_COLUMNS);
+                            StartupViewModel.scheduleOrderByRebuild(getContext(), false);
+                            setVisualIndicator(p, StartupViewModel.PK_REBUILD_ORDERBY_COLUMNS);
                         })
                         .setPositiveButton(android.R.string.ok, (d, w) -> {
                             p.setChecked(!p.isChecked());
-                            Scheduler.scheduleOrderByRebuild(getContext(), true);
-                            setVisualIndicator(p, Scheduler.PREF_REBUILD_ORDERBY_COLUMNS);
+                            StartupViewModel.scheduleOrderByRebuild(getContext(), true);
+                            setVisualIndicator(p, StartupViewModel.PK_REBUILD_ORDERBY_COLUMNS);
                         })
                         .create()
                         .show();

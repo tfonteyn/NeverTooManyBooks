@@ -32,6 +32,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.ItemWithTitle;
 import com.hardbacknutter.nevertoomanybooks.tasks.LTask;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.ProgressMessage;
+import com.hardbacknutter.nevertoomanybooks.viewmodels.StartupViewModel;
 
 /**
  * Rebuild all OrderBy columns. Can take several seconds.
@@ -80,7 +81,7 @@ public class RebuildOrderByTitleColumnsTask
 
         } finally {
             // regardless of result, always disable as we do not want to rebuild/fail/rebuild...
-            Scheduler.scheduleOrderByRebuild(context, false);
+            StartupViewModel.scheduleOrderByRebuild(context, false);
         }
     }
 }
