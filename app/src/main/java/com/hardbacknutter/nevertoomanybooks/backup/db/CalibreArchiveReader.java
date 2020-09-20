@@ -437,6 +437,11 @@ class CalibreArchiveReader
                             date -> book.putString(DBDefinitions.KEY_READ_END, date));
                     break;
 
+                case DBDefinitions.KEY_PRIVATE_NOTES:
+                    customString(cc.id, calibreId).ifPresent(
+                            text -> book.putString(DBDefinitions.KEY_PRIVATE_NOTES, text));
+                    break;
+
                 default:
                     break;
             }
