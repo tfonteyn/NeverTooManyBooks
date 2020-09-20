@@ -121,7 +121,7 @@ public interface SearchEngine {
             final AlertDialog.Builder dialogBuilder = new MaterialAlertDialogBuilder(context)
                     .setIcon(R.drawable.ic_warning)
                     .setTitle(context.getString(R.string.lbl_registration, siteName))
-                    .setNegativeButton(R.string.btn_not_now, (d, w) ->
+                    .setNegativeButton(R.string.action_not_now, (d, w) ->
                             onResult.accept(RegistrationAction.NotNow))
                     .setPositiveButton(R.string.btn_learn_more, (d, w) ->
                             onResult.accept(RegistrationAction.Register))

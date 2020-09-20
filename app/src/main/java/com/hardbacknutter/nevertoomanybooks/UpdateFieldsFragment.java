@@ -222,7 +222,7 @@ public class UpdateFieldsFragment
             .setIcon(R.drawable.ic_find_in_page)
             .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
 
-        menu.add(Menu.NONE, R.id.MENU_RESET, 0, R.string.menu_reset_to_default)
+        menu.add(Menu.NONE, R.id.MENU_RESET, 0, R.string.action_reset_to_default)
             .setIcon(R.drawable.ic_undo)
             .setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
 
