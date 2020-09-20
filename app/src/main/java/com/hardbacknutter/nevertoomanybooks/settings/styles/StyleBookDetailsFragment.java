@@ -38,6 +38,6 @@ public class StyleBookDetailsFragment
                                     @Nullable final String rootKey) {
         super.onCreatePreferences(savedInstanceState, rootKey);
 
-        setPreferencesFromResource(R.xml.preferences_style_extras, rootKey);
+        setPreferencesFromResource(R.xml.preferences_style_book_details, rootKey);
     }
 }
