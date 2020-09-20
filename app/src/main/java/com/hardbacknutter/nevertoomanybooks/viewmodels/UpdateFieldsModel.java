@@ -157,22 +157,20 @@ public class UpdateFieldsModel
 
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 
-        addListField(prefs, Book.BKEY_AUTHOR_ARRAY, R.string.lbl_authors,
-                     DBDefinitions.KEY_FK_AUTHOR);
-
+        addField(prefs, DBDefinitions.PREFS_IS_USED_THUMBNAIL, R.string.lbl_cover, CopyIfBlank);
         addField(prefs, DBDefinitions.KEY_TITLE, R.string.lbl_title, CopyIfBlank);
         addField(prefs, DBDefinitions.KEY_ISBN, R.string.lbl_isbn, CopyIfBlank);
-        addField(prefs, DBDefinitions.PREFS_IS_USED_THUMBNAIL, R.string.lbl_cover, CopyIfBlank);
-
+        addListField(prefs, Book.BKEY_AUTHOR_ARRAY, R.string.lbl_authors,
+                     DBDefinitions.KEY_FK_AUTHOR);
         addListField(prefs, Book.BKEY_SERIES_ARRAY, R.string.lbl_series_multiple,
                      DBDefinitions.KEY_SERIES_TITLE);
-
-        addListField(prefs, Book.BKEY_PUBLISHER_ARRAY, R.string.lbl_publishers,
-                     DBDefinitions.KEY_PUBLISHER_NAME);
+        addField(prefs, DBDefinitions.KEY_DESCRIPTION, R.string.lbl_description, CopyIfBlank);
 
         addListField(prefs, Book.BKEY_TOC_ARRAY, R.string.lbl_table_of_content,
                      DBDefinitions.KEY_TOC_BITMASK);
 
+        addListField(prefs, Book.BKEY_PUBLISHER_ARRAY, R.string.lbl_publishers,
+                     DBDefinitions.KEY_PUBLISHER_NAME);
         addField(prefs, DBDefinitions.KEY_PRINT_RUN, R.string.lbl_print_run, CopyIfBlank);
         addField(prefs, DBDefinitions.KEY_DATE_PUBLISHED, R.string.lbl_date_published, CopyIfBlank);
         addField(prefs, DBDefinitions.KEY_DATE_FIRST_PUBLICATION, R.string.lbl_first_publication,
@@ -180,8 +178,6 @@ public class UpdateFieldsModel
 
         // list price has related DBDefinitions.KEY_PRICE_LISTED
         addField(prefs, DBDefinitions.KEY_PRICE_LISTED, R.string.lbl_price_listed, CopyIfBlank);
-
-        addField(prefs, DBDefinitions.KEY_DESCRIPTION, R.string.lbl_description, CopyIfBlank);
 
         addField(prefs, DBDefinitions.KEY_PAGES, R.string.lbl_pages, CopyIfBlank);
         addField(prefs, DBDefinitions.KEY_FORMAT, R.string.lbl_format, CopyIfBlank);
