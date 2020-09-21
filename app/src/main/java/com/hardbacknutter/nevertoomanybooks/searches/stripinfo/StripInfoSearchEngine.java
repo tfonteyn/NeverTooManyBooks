@@ -473,7 +473,7 @@ public class StripInfoSearchEngine
     @NonNull
     private ArrayList<String> parseCovers(@NonNull final Document document,
                                           @Nullable final String isbn,
-                                          @IntRange(from = 0) final int cIdx) {
+                                          @IntRange(from = 0, to = 1) final int cIdx) {
         final Element coverElement;
         String url = null;
 
@@ -536,7 +536,7 @@ public class StripInfoSearchEngine
     @NonNull
     private ArrayList<String> parseCovers_old(@NonNull final Document document,
                                               @Nullable final String isbn,
-                                              @IntRange(from = 0) final int cIdx) {
+                                              @IntRange(from = 0, to = 1) final int cIdx) {
         final Element coverElement;
         switch (cIdx) {
             case 0:

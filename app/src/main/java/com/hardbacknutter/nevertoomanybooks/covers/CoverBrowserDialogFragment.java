@@ -121,7 +121,7 @@ public class CoverBrowserDialogFragment
     public static DialogFragment newInstance(@SuppressWarnings("SameParameterValue")
                                              @NonNull final String requestKey,
                                              @NonNull final String isbn,
-                                             @IntRange(from = 0) final int cIdx) {
+                                             @IntRange(from = 0, to = 1) final int cIdx) {
         final DialogFragment frag = new CoverBrowserDialogFragment();
         final Bundle args = new Bundle(3);
         args.putString(BKEY_REQUEST_KEY, requestKey);
@@ -367,7 +367,7 @@ public class CoverBrowserDialogFragment
 
         static void sendResult(@NonNull final Fragment fragment,
                                @NonNull final String requestKey,
-                               @IntRange(from = 0) final int cIdx,
+                               @IntRange(from = 0, to = 1) final int cIdx,
                                @NonNull final String fileSpec) {
             final Bundle result = new Bundle(2);
             result.putInt(COVER_INDEX, cIdx);

@@ -155,7 +155,7 @@ public class CoverHandler {
                         @Nullable final ProgressBar progressBar,
                         @NonNull final Book book,
                         @NonNull final TextView isbnView,
-                        @IntRange(from = 0) final int cIdx,
+                        @IntRange(from = 0, to = 1) final int cIdx,
                         @NonNull final ImageView coverView,
                         final int maxHeight) {
 

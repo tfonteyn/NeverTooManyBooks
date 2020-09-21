@@ -277,7 +277,7 @@ public final class ImageUtils {
     @NonNull
     public static String createFilename(@NonNull final String source,
                                         @Nullable final String bookId,
-                                        @IntRange(from = 0) final int cIdx,
+                                        @IntRange(from = 0, to = 1) final int cIdx,
                                         @Nullable final ImageFileInfo.Size size) {
 
         // keep all "_" even for empty parts. Easier to parse the name if needed.

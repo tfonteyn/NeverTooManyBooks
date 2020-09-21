@@ -106,7 +106,7 @@ public class FileManager {
     public ImageFileInfo search(@NonNull final Context context,
                                 @NonNull final Canceller caller,
                                 @NonNull final String isbn,
-                                @IntRange(from = 0) final int cIdx,
+                                @IntRange(from = 0, to = 1) final int cIdx,
                                 @NonNull final ImageFileInfo.Size... sizes) {
 
         final List<Site> enabledSites = Site.filterForEnabled(mSiteList);

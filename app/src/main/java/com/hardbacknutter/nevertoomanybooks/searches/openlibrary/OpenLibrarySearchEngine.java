@@ -212,7 +212,7 @@ public class OpenLibrarySearchEngine
     @Override
     @WorkerThread
     public String searchCoverImageByIsbn(@NonNull final String validIsbn,
-                                         @IntRange(from = 0) final int cIdx,
+                                         @IntRange(from = 0, to = 1) final int cIdx,
                                          @Nullable final ImageFileInfo.Size size) {
         final String sizeParam;
         if (size == null) {
@@ -619,7 +619,8 @@ public class OpenLibrarySearchEngine
 
     private ArrayList<String> parseCovers(@NonNull final JSONObject element,
                                           @NonNull final String validIsbn,
-                                          @SuppressWarnings("SameParameterValue") final int cIdx) {
+                                          @SuppressWarnings("SameParameterValue")
+                                          @IntRange(from = 0, to = 1) final int cIdx) {
 
         final ArrayList<String> imageList = new ArrayList<>();
 

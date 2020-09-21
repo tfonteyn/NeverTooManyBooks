@@ -152,7 +152,7 @@ public class KbNlSearchEngine
     @Nullable
     @Override
     public String searchCoverImageByIsbn(@NonNull final String validIsbn,
-                                         @IntRange(from = 0) final int cIdx,
+                                         @IntRange(from = 0, to = 1) final int cIdx,
                                          @Nullable final ImageFileInfo.Size size) {
         final String sizeParam;
         if (size == null) {

@@ -339,7 +339,7 @@ public class IsfdbSearchEngine
     @Nullable
     @Override
     public String searchCoverImageByIsbn(@NonNull final String validIsbn,
-                                         @IntRange(from = 0) final int cIdx,
+                                         @IntRange(from = 0, to = 1) final int cIdx,
                                          @Nullable final ImageFileInfo.Size size) {
         try {
             final List<Edition> editions = fetchEditionsByIsbn(validIsbn);
@@ -1021,7 +1021,7 @@ public class IsfdbSearchEngine
     private ArrayList<String> parseCovers(@NonNull final Document document,
                                           @Nullable final String isbn,
                                           @SuppressWarnings("SameParameterValue")
-                                          @IntRange(from = 0) final int cIdx) {
+                                          @IntRange(from = 0, to = 1) final int cIdx) {
         /* First "ContentBox" contains all basic details.
          * <pre>
          *   {@code

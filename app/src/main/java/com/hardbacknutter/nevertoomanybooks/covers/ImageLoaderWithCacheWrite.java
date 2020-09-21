@@ -85,7 +85,7 @@ public class ImageLoaderWithCacheWrite
                                      final int maxHeight,
                                      @Nullable final Runnable onSuccess,
                                      @NonNull final String uuid,
-                                     @IntRange(from = 0) final int cIdx) {
+                                     @IntRange(from = 0, to = 1) final int cIdx) {
         super(imageView, file, maxWidth, maxHeight, onSuccess);
 
         mUuid = uuid;

@@ -65,7 +65,7 @@ class FetchImageTask
     @UiThread
     FetchImageTask(final int taskId,
                    @NonNull final String validIsbn,
-                   @IntRange(from = 0) final int cIdx,
+                   @IntRange(from = 0, to = 1) final int cIdx,
                    @NonNull final FileManager fileManager,
                    @NonNull final TaskListener<ImageFileInfo> taskListener,
                    @NonNull final ImageFileInfo.Size... sizes) {

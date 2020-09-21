@@ -345,7 +345,7 @@ public class AmazonSearchEngine
     @Nullable
     @Override
     public String searchCoverImageByIsbn(@NonNull final String validIsbn,
-                                         @IntRange(from = 0) final int cIdx,
+                                         @IntRange(from = 0, to = 1) final int cIdx,
                                          @Nullable final ImageFileInfo.Size size) {
         try {
             final String url = getSiteUrl() + String.format(BY_EXTERNAL_ID, validIsbn);
@@ -599,7 +599,7 @@ public class AmazonSearchEngine
     private ArrayList<String> parseCovers(@NonNull final Document document,
                                           @Nullable final String isbn,
                                           @SuppressWarnings("SameParameterValue")
-                                              @IntRange(from = 0) final int cIdx) {
+                                          @IntRange(from = 0, to = 1) final int cIdx) {
 
         final Element coverElement = document.selectFirst("img#imgBlkFront");
         String url;

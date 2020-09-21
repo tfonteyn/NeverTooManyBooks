@@ -132,7 +132,7 @@ public enum AppDir {
     @NonNull
     public static File getCoverFile(@NonNull final Context context,
                                     @NonNull final String uuid,
-                                    @IntRange(from = 0) final int cIdx)
+                                    @IntRange(from = 0, to = 1) final int cIdx)
             throws ExternalStorageException {
         final File coverDir = Covers.get(context);
 

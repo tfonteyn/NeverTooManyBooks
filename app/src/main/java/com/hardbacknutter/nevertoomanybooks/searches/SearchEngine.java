@@ -325,7 +325,7 @@ public interface SearchEngine {
 
     @NonNull
     default String createFilename(@Nullable final String bookId,
-                                  @IntRange(from = 0) final int cIdx,
+                                  @IntRange(from = 0, to = 1) final int cIdx,
                                   @Nullable final ImageFileInfo.Size size) {
         final SearchEngineRegistry.Config config = SearchEngineRegistry.getByEngineId(getId());
         //noinspection ConstantConditions
@@ -555,7 +555,8 @@ public interface SearchEngine {
         @WorkerThread
         @NonNull
         default ArrayList<String> searchBestCoverImageByIsbn(@NonNull final String validIsbn,
-                                                             @IntRange(from = 0) final int cIdx) {
+                                                             @IntRange(from = 0, to = 1)
+                                                             final int cIdx) {
 
             final ArrayList<String> imageList = new ArrayList<>();
             String fileSpec = searchCoverImageByIsbn(validIsbn, cIdx, ImageFileInfo.Size.Large);
@@ -593,7 +594,7 @@ public interface SearchEngine {
         @WorkerThread
         @Nullable
         default String searchCoverImageByIsbnFallback(@NonNull final String isbn,
-                                                      @IntRange(from = 0) final int cIdx) {
+                                                      @IntRange(from = 0, to = 1) final int cIdx) {
 
             final boolean[] fetchThumbnail = new boolean[2];
             fetchThumbnail[cIdx] = true;
