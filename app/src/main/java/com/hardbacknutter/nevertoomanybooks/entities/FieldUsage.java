@@ -77,7 +77,7 @@ public class FieldUsage {
      *
      * @param fieldId      Field name
      * @param nameStringId Field label string resource ID
-     * @param preferences  SharedPreferences to read current usage from.
+     * @param preferences  Global preferences
      * @param defValue     default Usage for this field
      *
      * @return new instance
@@ -86,7 +86,7 @@ public class FieldUsage {
                                     @StringRes final int nameStringId,
                                     @NonNull final SharedPreferences preferences,
                                     @NonNull final Usage defValue) {
-        Usage initialValue = Usage.read(preferences, fieldId, defValue);
+        final Usage initialValue = Usage.read(preferences, fieldId, defValue);
         return new FieldUsage(fieldId, nameStringId, initialValue, defValue, false);
     }
 
@@ -97,14 +97,14 @@ public class FieldUsage {
      *
      * @param fieldId      Field name
      * @param nameStringId Field label string resource ID
-     * @param preferences  SharedPreferences to read current usage from.
+     * @param preferences  Global preferences
      *
      * @return new instance
      */
     public static FieldUsage createListField(@NonNull final String fieldId,
                                              @StringRes final int nameStringId,
                                              @NonNull final SharedPreferences preferences) {
-        Usage initialValue = Usage.read(preferences, fieldId, Usage.Append);
+        final Usage initialValue = Usage.read(preferences, fieldId, Usage.Append);
         return new FieldUsage(fieldId, nameStringId, initialValue, Usage.Append, true);
     }
 
@@ -193,7 +193,7 @@ public class FieldUsage {
         public static Usage read(@NonNull final SharedPreferences preferences,
                                  @NonNull final String key,
                                  @NonNull final Usage defValue) {
-            int ordinal = preferences.getInt(PREFS_PREFIX_FIELD_USAGE + key, -1);
+            final int ordinal = preferences.getInt(PREFS_PREFIX_FIELD_USAGE + key, -1);
             if (ordinal != -1) {
                 return Usage.values()[ordinal];
             } else {

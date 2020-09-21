@@ -142,7 +142,7 @@ public class Field<T, V extends View> {
      * <p>
      * Unused fields (as configured in the user preferences) will be hidden after this step.
      *
-     * @param preferences SharedPreferences
+     * @param preferences Global preferences
      * @param parent      of the field View
      */
     void setParentView(@NonNull final SharedPreferences preferences,
@@ -312,7 +312,7 @@ public class Field<T, V extends View> {
     /**
      * Is the field in use; i.e. is it enabled in the user-preferences.
      *
-     * @param preferences SharedPreferences
+     * @param preferences Global preferences
      *
      * @return {@code true} if the field *can* be visible
      */

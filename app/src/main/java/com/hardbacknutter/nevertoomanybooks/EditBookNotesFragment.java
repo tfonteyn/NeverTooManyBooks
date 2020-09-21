@@ -164,7 +164,7 @@ public class EditBookNotesFragment
      * <p>
      * When user checks 'read', set the read-end date to today (unless set before)
      *
-     * @param preferences SharedPreferences
+     * @param preferences Global preferences
      */
     private void addReadCheckboxOnClickListener(@NonNull final SharedPreferences preferences) {
         // only bother when it's in use

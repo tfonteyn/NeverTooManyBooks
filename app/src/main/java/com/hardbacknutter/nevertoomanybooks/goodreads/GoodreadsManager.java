@@ -131,7 +131,7 @@ public class GoodreadsManager {
      * Check if Goodreads SYNC menus should be shown at all.
      * This does not affect searching on Goodreads.
      *
-     * @param preferences sharedPreferences
+     * @param preferences Global preferences
      *
      * @return {@code true} if menus should be shown
      */

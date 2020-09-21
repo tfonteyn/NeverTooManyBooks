@@ -244,7 +244,7 @@ public class AppLocale {
     /**
      * Get the user-preferred Locale as stored in the preferences.
      *
-     * @param preferences SharedPreferences
+     * @param preferences Global preferences
      *
      * @return a Locale specification as used for Android resources;
      * or {@link #SYSTEM_LANGUAGE} to use the system settings
@@ -307,7 +307,7 @@ public class AppLocale {
     /**
      * Check if the passed localeSpec is different from the user preferred Locale.
      *
-     * @param preferences SharedPreferences
+     * @param preferences Global preferences
      * @param localeSpec  to test
      *
      * @return {@code true} if different

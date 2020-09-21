@@ -118,7 +118,7 @@ public final class Prefs {
      * {@link ListPreference} stores the selected value as a String.
      * But they are really Integer values. Hence this transmogrification....
      *
-     * @param preferences SharedPreferences
+     * @param preferences SharedPreferences to read from
      * @param key         The name of the preference to retrieve.
      * @param defValue    Value to return if this preference does not exist.
      *

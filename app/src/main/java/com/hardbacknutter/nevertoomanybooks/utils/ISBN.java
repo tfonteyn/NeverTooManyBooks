@@ -286,7 +286,7 @@ public class ISBN {
     /**
      * Get the user preferred ISBN validity level check for (by the user) editing ISBN codes.
      *
-     * @param preferences SharedPreferences
+     * @param preferences Global preferences
      *
      * @return {@link Validity} level
      */
