@@ -157,7 +157,11 @@ public class UpdateFieldsModel
 
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 
-        addField(prefs, DBDefinitions.PREFS_IS_USED_THUMBNAIL, R.string.lbl_cover, CopyIfBlank);
+        addField(prefs, DBDefinitions.PREFS_IS_USED_COVER + ".0",
+                 R.string.lbl_cover, CopyIfBlank);
+        addField(prefs, DBDefinitions.PREFS_IS_USED_COVER + ".1",
+                 R.string.lbl_cover_back, CopyIfBlank);
+
         addField(prefs, DBDefinitions.KEY_TITLE, R.string.lbl_title, CopyIfBlank);
         addField(prefs, DBDefinitions.KEY_ISBN, R.string.lbl_isbn, CopyIfBlank);
         addListField(prefs, Book.BKEY_AUTHOR_ARRAY, R.string.lbl_authors,
@@ -211,14 +215,23 @@ public class UpdateFieldsModel
         }
 
         // More than 10 books, check if they actually want covers
-        final FieldUsage covers = mFieldUsages.get(DBDefinitions.PREFS_IS_USED_THUMBNAIL);
+        final FieldUsage covers = mFieldUsages.get(DBDefinitions.PREFS_IS_USED_COVER + ".0");
         return covers != null && covers.getUsage().equals(FieldUsage.Usage.Overwrite);
     }
 
-    public void setFieldUsage(@NonNull final String key,
-                              @NonNull final FieldUsage.Usage usage) {
-        //noinspection ConstantConditions
-        mFieldUsages.get(key).setUsage(usage);
+    /**
+     * Update the fields usage flag.
+     * Does nothing if the field ws not actually added before.
+     *
+     * @param key   field to update
+     * @param usage to set
+     */
+    public void updateFieldUsage(@NonNull final String key,
+                                 @NonNull final FieldUsage.Usage usage) {
+        final FieldUsage fieldUsage = mFieldUsages.get(key);
+        if (fieldUsage != null) {
+            fieldUsage.setUsage(usage);
+        }
     }
 
     /**
@@ -278,7 +291,7 @@ public class UpdateFieldsModel
      *
      * @param primaryFieldId the field to check
      * @param relatedFieldId to add if the primary field is present
-     * @param nameStringId   Field label string resource ID
+     * @param nameStringId   Field label string resource ID (not used)
      */
     private void addRelatedField(@NonNull final String primaryFieldId,
                                  @NonNull final String relatedFieldId,
@@ -331,10 +344,10 @@ public class UpdateFieldsModel
         addRelatedField(DBDefinitions.KEY_PRICE_LISTED,
                         DBDefinitions.KEY_PRICE_LISTED_CURRENCY, R.string.lbl_currency);
 
-        for (int cIdx = 0; cIdx < 2; cIdx++) {
-            addRelatedField(DBDefinitions.PREFS_IS_USED_THUMBNAIL,
-                            Book.BKEY_FILE_SPEC[cIdx], R.string.lbl_cover);
-        }
+        addRelatedField(DBDefinitions.PREFS_IS_USED_COVER + ".0",
+                        Book.BKEY_FILE_SPEC[0], R.string.lbl_cover);
+        addRelatedField(DBDefinitions.PREFS_IS_USED_COVER + ".1",
+                        Book.BKEY_FILE_SPEC[1], R.string.lbl_cover_back);
 
         mCurrentProgressCounter = 0;
 

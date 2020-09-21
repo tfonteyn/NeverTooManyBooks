@@ -40,11 +40,17 @@
 
         <SwitchPreference
             android:defaultValue="true"
-            android:key="fields.visibility.thumbnail"
+            android:key="fields.visibility.thumbnail.0"
             android:summaryOff="@string/no"
             android:summaryOn="@string/yes"
             android:title="@string/lbl_cover" />
 
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="fields.visibility.thumbnail.1"
+            android:summaryOff="@string/no"
+            android:summaryOn="@string/yes"
+            android:title="@string/lbl_cover_back" />
 
         <!-- Authors are always visible, but the user can hide the type. -->
         <SwitchPreference

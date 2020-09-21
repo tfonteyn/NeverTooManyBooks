@@ -300,13 +300,21 @@ public class UpdateFieldsFragment
                     .setMessage(R.string.confirm_overwrite_thumbnail)
                     .setNeutralButton(android.R.string.cancel, (d, w) -> d.dismiss())
                     .setNegativeButton(R.string.lbl_field_usage_copy_if_blank, (d, w) -> {
-                        mUpdateFieldsModel.setFieldUsage(DBDefinitions.PREFS_IS_USED_THUMBNAIL,
-                                                         FieldUsage.Usage.CopyIfBlank);
+                        mUpdateFieldsModel
+                                .updateFieldUsage(DBDefinitions.PREFS_IS_USED_COVER + ".0",
+                                                  FieldUsage.Usage.CopyIfBlank);
+                        mUpdateFieldsModel
+                                .updateFieldUsage(DBDefinitions.PREFS_IS_USED_COVER + ".1",
+                                                  FieldUsage.Usage.CopyIfBlank);
                         startUpdate();
                     })
                     .setPositiveButton(R.string.lbl_field_usage_overwrite, (d, w) -> {
-                        mUpdateFieldsModel.setFieldUsage(DBDefinitions.PREFS_IS_USED_THUMBNAIL,
-                                                         FieldUsage.Usage.Overwrite);
+                        mUpdateFieldsModel
+                                .updateFieldUsage(DBDefinitions.PREFS_IS_USED_COVER + ".0",
+                                                  FieldUsage.Usage.Overwrite);
+                        mUpdateFieldsModel
+                                .updateFieldUsage(DBDefinitions.PREFS_IS_USED_COVER + ".1",
+                                                  FieldUsage.Usage.Overwrite);
                         startUpdate();
                     })
                     .create()

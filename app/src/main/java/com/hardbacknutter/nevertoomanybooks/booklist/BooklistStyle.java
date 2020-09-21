@@ -1266,7 +1266,7 @@ public class BooklistStyle
 
         //noinspection ConstantConditions
         if (mAllBookDetailFields.get(pk_book_show_thumbnails).isTrue(context)) {
-            labels.add(context.getString(R.string.lbl_thumbnails));
+            labels.add(context.getString(R.string.lbl_covers));
         }
         //noinspection ConstantConditions
         if (mAllBookDetailFields.get(pk_book_show_author).isTrue(context)) {

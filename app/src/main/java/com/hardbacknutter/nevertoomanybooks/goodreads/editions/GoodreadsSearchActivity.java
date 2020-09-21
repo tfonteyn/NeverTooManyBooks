@@ -234,7 +234,7 @@ public class GoodreadsSearchActivity
             coverView = itemView.findViewById(R.id.coverImage0);
             final SharedPreferences prefs = PreferenceManager
                     .getDefaultSharedPreferences(itemView.getContext());
-            if (!DBDefinitions.isUsed(prefs, DBDefinitions.PREFS_IS_USED_THUMBNAIL)) {
+            if (!DBDefinitions.isCoverUsed(prefs, 0)) {
                 coverView.setVisibility(View.GONE);
             }
             authorView = itemView.findViewById(R.id.author);

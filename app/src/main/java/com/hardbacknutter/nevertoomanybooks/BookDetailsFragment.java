@@ -177,8 +177,10 @@ public class BookDetailsFragment
         }
 
         // Covers
-        if (!DBDefinitions.isUsed(prefs, DBDefinitions.PREFS_IS_USED_THUMBNAIL)) {
+        if (!DBDefinitions.isCoverUsed(prefs, 0)) {
             mVb.coverImage0.setVisibility(View.GONE);
+        }
+        if (!DBDefinitions.isCoverUsed(prefs, 1)) {
             mVb.coverImage1.setVisibility(View.GONE);
         }
 
@@ -499,16 +501,16 @@ public class BookDetailsFragment
             populateToc(book);
         }
 
-        if (DBDefinitions.isUsed(prefs, DBDefinitions.PREFS_IS_USED_THUMBNAIL)) {
-            final Resources res = getResources();
-
+        if (DBDefinitions.isCoverUsed(prefs, 0)) {
             mCoverHandler[0] = new CoverHandler(
                     this, mProgressBar, book, mVb.isbn, 0, mVb.coverImage0,
-                    res.getDimensionPixelSize(R.dimen.cover_details_0_height));
+                    getResources().getDimensionPixelSize(R.dimen.cover_details_0_height));
+        }
 
+        if (DBDefinitions.isCoverUsed(prefs, 1)) {
             mCoverHandler[1] = new CoverHandler(
                     this, mProgressBar, book, mVb.isbn, 1, mVb.coverImage1,
-                    res.getDimensionPixelSize(R.dimen.cover_details_1_height));
+                    getResources().getDimensionPixelSize(R.dimen.cover_details_1_height));
         }
 
         // hide unwanted and empty fields

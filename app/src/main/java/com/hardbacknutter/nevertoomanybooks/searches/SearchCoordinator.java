@@ -264,11 +264,9 @@ public class SearchCoordinator
             }
 
             if (args != null) {
-                final boolean useThumbnails = DBDefinitions
-                        .isUsed(prefs, DBDefinitions.PREFS_IS_USED_THUMBNAIL);
                 mFetchThumbnail = new boolean[2];
-                mFetchThumbnail[0] = useThumbnails;
-                mFetchThumbnail[1] = useThumbnails;
+                mFetchThumbnail[0] = DBDefinitions.isCoverUsed(prefs, 0);
+                mFetchThumbnail[1] = DBDefinitions.isCoverUsed(prefs, 1);
 
                 mIsbnSearchText = args.getString(DBDefinitions.KEY_ISBN, "");
 

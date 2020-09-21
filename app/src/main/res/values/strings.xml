@@ -1322,6 +1322,9 @@
     <string name="lbl_covers_long">Cover images</string>
     <!-- Preference Category -->
     <string name="lbl_thumbnails">Thumbnails</string>
+    <!-- Single book back/second cover. -->
+    <string name="lbl_cover_back">Back cover</string>
+
     <!-- [VERIFIED] -->
     <string name="image">Image</string>
 

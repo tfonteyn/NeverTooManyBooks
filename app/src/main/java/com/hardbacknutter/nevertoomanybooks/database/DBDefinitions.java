@@ -563,14 +563,14 @@ public final class DBDefinitions {
     public static final String KEY_TOC_TYPE = "type";
 
     /** The "field is used" key for thumbnails. */
-    public static final String PREFS_IS_USED_THUMBNAIL = "thumbnail";
+    public static final String PREFS_IS_USED_COVER = "thumbnail";
 
     /**
      * Users can select which fields they use / don't want to use.
      * Each field has an entry in the Preferences.
      * The key is suffixed with the name of the field.
      */
-    private static final String PREFS_PREFIX_FIELD_VISIBILITY = "fields.visibility.";
+    public static final String PREFS_PREFIX_FIELD_VISIBILITY = "fields.visibility.";
 
     static {
         /* ======================================================================================
@@ -1391,11 +1391,24 @@ public final class DBDefinitions {
     }
 
     /**
+     * Is the cover field in use; i.e. is it enabled in the user-preferences.
+     *
+     * @param preferences SharedPreferences
+     * @param cIdx        0..n image index
+     *
+     * @return {@code true} if the user wants to use this field.
+     */
+    public static boolean isCoverUsed(@NonNull final SharedPreferences preferences,
+                                      final int cIdx) {
+        return preferences.getBoolean(PREFS_PREFIX_FIELD_VISIBILITY
+                                      + PREFS_IS_USED_COVER + "." + cIdx, true);
+    }
+
+    /**
      * NEWTHINGS: new fields visibility.
      * Same set as on xml/preferences_field_visibility.xml
      */
-    @StringDef({PREFS_IS_USED_THUMBNAIL,
-                KEY_PUBLISHER_NAME,
+    @StringDef({KEY_PUBLISHER_NAME,
                 KEY_SERIES_TITLE,
 
                 KEY_ISBN,
