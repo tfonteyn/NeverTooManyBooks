@@ -46,21 +46,21 @@ public class BooleanFilter
      * Constructor.
      *
      * @param sp           Style preferences reference.
-     * @param labelId      string resource id to use as a display label
-     * @param key          of the preference
      * @param isPersistent {@code true} to have the value persisted.
      *                     {@code false} for in-memory only.
+     * @param labelId      string resource id to use as a display label
+     * @param key          of the preference
      * @param table        to use by the expression
      * @param domainKey    to use by the expression
      */
     public BooleanFilter(@NonNull final SharedPreferences sp,
+                         final boolean isPersistent,
                          @StringRes final int labelId,
                          @NonNull final String key,
-                         final boolean isPersistent,
                          @SuppressWarnings("SameParameterValue") @NonNull
                          final TableDefinition table,
                          @NonNull final String domainKey) {
-        super(sp, labelId, key, isPersistent, table, domainKey);
+        super(sp, isPersistent, labelId, key, table, domainKey);
     }
 
     @Override

@@ -66,17 +66,17 @@ public abstract class PPrefBase<T>
      * Constructor.
      *
      * @param sp           Style preferences reference.
-     * @param key          key of preference
      * @param isPersistent {@code true} to persist the value, {@code false} for in-memory only.
+     * @param key          key of preference
      * @param defValue     in memory default
      */
     PPrefBase(@NonNull final SharedPreferences sp,
-              @NonNull final String key,
               final boolean isPersistent,
+              @NonNull final String key,
               @NonNull final T defValue) {
         mStylePrefs = sp;
-        mKey = key;
         mIsPersistent = isPersistent;
+        mKey = key;
         mDefaultValue = defValue;
     }
 

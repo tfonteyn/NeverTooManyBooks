@@ -683,11 +683,10 @@ public class BooklistGroup
         }
 
         void initPrefs() {
-            mAllAuthors = new PBoolean(mStylePrefs, PK_SHOW_BOOKS_UNDER_EACH,
-                                       mIsUserDefinedStyle);
+            mAllAuthors = new PBoolean(mStylePrefs, mIsUserDefinedStyle, PK_SHOW_BOOKS_UNDER_EACH
+            );
 
-            mPrimaryType = new PBitmask(mStylePrefs, PK_PRIMARY_TYPE,
-                                        mIsUserDefinedStyle,
+            mPrimaryType = new PBitmask(mStylePrefs, mIsUserDefinedStyle, PK_PRIMARY_TYPE,
                                         Author.TYPE_UNKNOWN, Author.TYPE_BITMASK_ALL);
         }
 
@@ -826,8 +825,8 @@ public class BooklistGroup
         }
 
         private void initPrefs() {
-            mAllSeries = new PBoolean(mStylePrefs, PK_SHOW_BOOKS_UNDER_EACH,
-                                      mIsUserDefinedStyle);
+            mAllSeries = new PBoolean(mStylePrefs, mIsUserDefinedStyle, PK_SHOW_BOOKS_UNDER_EACH
+            );
         }
 
         @NonNull
@@ -968,8 +967,8 @@ public class BooklistGroup
 
         private void initPrefs() {
             mAllPublishers = new PBoolean(
-                    mStylePrefs, PK_SHOW_BOOKS_UNDER_EACH,
-                    mIsUserDefinedStyle);
+                    mStylePrefs, mIsUserDefinedStyle, PK_SHOW_BOOKS_UNDER_EACH
+            );
         }
 
         @NonNull

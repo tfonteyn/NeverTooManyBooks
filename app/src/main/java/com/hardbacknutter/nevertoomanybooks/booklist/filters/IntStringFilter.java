@@ -34,32 +34,30 @@ public abstract class IntStringFilter
         implements Filter<Integer> {
 
     static final Integer P_NOT_USED = -1;
-
-    @StringRes
-    private final int mLabelId;
-
     final TableDefinition mTable;
     final String mDomainKey;
+    @StringRes
+    private final int mLabelId;
 
     /**
      * Constructor.
      * Default value is {@code P_NOT_USED}.
      *
      * @param sp           Style preferences reference.
-     * @param labelId      string resource id to use as a display label
-     * @param key          of the preference
      * @param isPersistent {@code true} to have the value persisted.
      *                     {@code false} for in-memory only.
+     * @param labelId      string resource id to use as a display label
+     * @param key          of the preference
      * @param table        to use by the expression
      * @param domainKey    to use by the expression
      */
     IntStringFilter(@NonNull final SharedPreferences sp,
+                    final boolean isPersistent,
                     @StringRes final int labelId,
                     @NonNull final String key,
-                    final boolean isPersistent,
                     @SuppressWarnings("SameParameterValue") @NonNull final TableDefinition table,
                     @NonNull final String domainKey) {
-        super(sp, key, isPersistent, P_NOT_USED);
+        super(sp, isPersistent, key, P_NOT_USED);
         mLabelId = labelId;
         mTable = table;
         mDomainKey = domainKey;

@@ -36,13 +36,13 @@ public class PBoolean
      * or {@code false} if there is no global default.
      *
      * @param sp           Style preferences reference.
-     * @param key          key of preference
      * @param isPersistent {@code true} to persist the value, {@code false} for in-memory only.
+     * @param key          key of preference
      */
     public PBoolean(@NonNull final SharedPreferences sp,
-                    @NonNull final String key,
-                    final boolean isPersistent) {
-        super(sp, key, isPersistent, false);
+                    final boolean isPersistent,
+                    @NonNull final String key) {
+        super(sp, isPersistent, key, false);
     }
 
     /**
@@ -50,15 +50,15 @@ public class PBoolean
      * or the passed default if there is no global default.
      *
      * @param sp           Style preferences reference.
-     * @param key          key of preference
      * @param isPersistent {@code true} to persist the value, {@code false} for in-memory only.
+     * @param key          key of preference
      * @param defValue     in memory default
      */
     public PBoolean(final SharedPreferences sp,
-                    @NonNull final String key,
                     final boolean isPersistent,
+                    @NonNull final String key,
                     @NonNull final Boolean defValue) {
-        super(sp, key, isPersistent, defValue);
+        super(sp, isPersistent, key, defValue);
     }
 
     @NonNull

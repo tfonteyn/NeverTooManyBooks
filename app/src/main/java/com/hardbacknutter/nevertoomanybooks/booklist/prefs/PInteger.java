@@ -39,13 +39,13 @@ public class PInteger
      * or {@code 0} if there is no global default.
      *
      * @param sp           Style preferences reference.
-     * @param key          key of preference
      * @param isPersistent {@code true} to persist the value, {@code false} for in-memory only.
+     * @param key          key of preference
      */
     public PInteger(@NonNull final SharedPreferences sp,
-                    @NonNull final String key,
-                    final boolean isPersistent) {
-        super(sp, key, isPersistent, 0);
+                    final boolean isPersistent,
+                    @NonNull final String key) {
+        super(sp, isPersistent, key, 0);
     }
 
     /**
@@ -53,15 +53,15 @@ public class PInteger
      * or the passed default if there is no global default.
      *
      * @param sp           Style preferences reference.
-     * @param key          key of preference
      * @param isPersistent {@code true} to persist the value, {@code false} for in-memory only.
+     * @param key          key of preference
      * @param defValue     in memory default
      */
     public PInteger(@NonNull final SharedPreferences sp,
-                    @NonNull final String key,
                     final boolean isPersistent,
+                    @NonNull final String key,
                     @NonNull final Integer defValue) {
-        super(sp, key, isPersistent, defValue);
+        super(sp, isPersistent, key, defValue);
     }
 
     @NonNull

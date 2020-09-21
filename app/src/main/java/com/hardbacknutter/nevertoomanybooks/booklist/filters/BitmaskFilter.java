@@ -51,27 +51,25 @@ public class BitmaskFilter
      * Default value is {@code 0}, i.e. no bits set.
      *
      * @param sp           Style preferences reference.
-     * @param labelId      string resource id to use as a display label
-     * @param key          of the preference
-     * @param uuid         UUID of the style
      * @param isPersistent {@code true} to have the value persisted.
      *                     {@code false} for in-memory only.
+     * @param labelId      string resource id to use as a display label
+     * @param key          of the preference
      * @param defValue     in memory default
      * @param mask         valid values bitmask
      * @param table        to use by the expression
      * @param domainKey    to use by the expression
      */
     public BitmaskFilter(final SharedPreferences sp,
+                         final boolean isPersistent,
                          @StringRes final int labelId,
                          @NonNull final String key,
-                         @NonNull final String uuid,
-                         final boolean isPersistent,
-                         final Integer defValue,
-                         final Integer mask,
+                         @NonNull final Integer defValue,
+                         @NonNull final Integer mask,
                          @SuppressWarnings("SameParameterValue")
                          @NonNull final TableDefinition table,
                          @NonNull final String domainKey) {
-        super(sp, key, isPersistent, defValue, mask);
+        super(sp, isPersistent, key, defValue, mask);
         mLabelId = labelId;
         mTable = table;
         mDomainKey = domainKey;

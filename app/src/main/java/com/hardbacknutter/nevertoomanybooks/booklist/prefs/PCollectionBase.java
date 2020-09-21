@@ -57,15 +57,15 @@ public abstract class PCollectionBase<E, T extends Collection<E>>
      * Constructor.
      *
      * @param sp           Style preferences reference.
-     * @param key          key of preference
      * @param isPersistent {@code true} to persist the value, {@code false} for in-memory only.
+     * @param key          key of preference
      * @param defValue     in memory default
      */
     PCollectionBase(@NonNull final SharedPreferences sp,
-                    @NonNull final String key,
                     final boolean isPersistent,
+                    @NonNull final String key,
                     @NonNull final T defValue) {
-        super(sp, key, isPersistent, defValue);
+        super(sp, isPersistent, key, defValue);
     }
 
     @Override

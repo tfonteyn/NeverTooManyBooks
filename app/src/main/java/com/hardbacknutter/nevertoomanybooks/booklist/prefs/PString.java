@@ -36,13 +36,13 @@ public class PString
      * or {@code ""} if there is no global default.
      *
      * @param sp           Style preferences reference.
-     * @param key          key of preference
      * @param isPersistent {@code true} to persist the value, {@code false} for in-memory only.
+     * @param key          key of preference
      */
     public PString(@NonNull final SharedPreferences sp,
-                   @NonNull final String key,
-                   final boolean isPersistent) {
-        super(sp, key, isPersistent, "");
+                   final boolean isPersistent,
+                   @NonNull final String key) {
+        super(sp, isPersistent, key, "");
     }
 
     @NonNull
