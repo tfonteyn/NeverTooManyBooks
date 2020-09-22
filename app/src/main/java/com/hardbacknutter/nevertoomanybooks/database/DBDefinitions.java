@@ -21,6 +21,7 @@ package com.hardbacknutter.nevertoomanybooks.database;
 
 import android.content.SharedPreferences;
 
+import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.StringDef;
 
@@ -1380,26 +1381,26 @@ public final class DBDefinitions {
     /**
      * Is the field in use; i.e. is it enabled in the user-preferences.
      *
-     * @param preferences SharedPreferences
-     * @param key         DBDefinitions.KEY_x to lookup
+     * @param preferences Global preferences
+     * @param dbdKey      DBDefinitions.KEY_x to lookup
      *
      * @return {@code true} if the user wants to use this field.
      */
     public static boolean isUsed(@NonNull final SharedPreferences preferences,
-                                 @UserSelectedDomain @NonNull final String key) {
-        return preferences.getBoolean(PREFS_PREFIX_FIELD_VISIBILITY + key, true);
+                                 @UserSelectedDomain @NonNull final String dbdKey) {
+        return preferences.getBoolean(PREFS_PREFIX_FIELD_VISIBILITY + dbdKey, true);
     }
 
     /**
      * Is the cover field in use; i.e. is it enabled in the user-preferences.
      *
-     * @param preferences SharedPreferences
+     * @param preferences Global preferences
      * @param cIdx        0..n image index
      *
      * @return {@code true} if the user wants to use this field.
      */
     public static boolean isCoverUsed(@NonNull final SharedPreferences preferences,
-                                      final int cIdx) {
+                                      @IntRange(from = 0, to = 1) final int cIdx) {
         return preferences.getBoolean(PREFS_PREFIX_FIELD_VISIBILITY
                                       + PREFS_IS_USED_COVER + "." + cIdx, true);
     }

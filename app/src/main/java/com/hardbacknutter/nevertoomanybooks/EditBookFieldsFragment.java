@@ -129,11 +129,11 @@ public class EditBookFieldsFragment
         //noinspection ConstantConditions
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
 
-        if (!DBDefinitions.isCoverUsed(prefs, 0)) {
+        if (!mFragmentVM.isCoverUsed(getContext(), prefs, 0)) {
             mVb.coverImage0.setVisibility(View.GONE);
         }
 
-        if (!DBDefinitions.isCoverUsed(prefs, 1)) {
+        if (!mFragmentVM.isCoverUsed(getContext(), prefs, 1)) {
             mVb.coverImage1.setVisibility(View.GONE);
         }
 
@@ -259,26 +259,26 @@ public class EditBookFieldsFragment
         //noinspection ConstantConditions
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
 
-        if (DBDefinitions.isCoverUsed(prefs, 0)) {
+        if (mFragmentVM.isCoverUsed(getContext(), prefs, 0)) {
             mCoverHandler[0] = new CoverHandler(
                     this, mProgressBar, book, mVb.isbn, 0, mVb.coverImage0,
                     getResources().getDimensionPixelSize(R.dimen.cover_edit_0_height));
         }
 
-        if (DBDefinitions.isCoverUsed(prefs, 1)) {
+        if (mFragmentVM.isCoverUsed(getContext(), prefs, 1)) {
             mCoverHandler[1] = new CoverHandler(
                     this, mProgressBar, book, mVb.isbn, 1, mVb.coverImage1,
                     getResources().getDimensionPixelSize(R.dimen.cover_edit_1_height));
         }
 
-        // hide unwanted fields
+        // hide unwanted and empty fields
         //noinspection ConstantConditions
         fields.setVisibility(getView(), false, false);
     }
 
     /** Called by the CoverHandler when a context menu is selected. */
     @Override
-    public void setCurrentCoverIndex(@IntRange(from = 0) final int cIdx) {
+    public void setCurrentCoverIndex(@IntRange(from = 0, to = 1) final int cIdx) {
         mFragmentVM.setCurrentCoverHandlerIndex(cIdx);
     }
 
@@ -370,6 +370,7 @@ public class EditBookFieldsFragment
 
             default: {
                 // handle any cover image request codes
+                @IntRange(from = -1, to = 1)
                 final int cIdx = mFragmentVM.getAndClearCurrentCoverHandlerIndex();
                 if (cIdx >= 0 && cIdx < mCoverHandler.length) {
                     if (mCoverHandler[cIdx] != null) {

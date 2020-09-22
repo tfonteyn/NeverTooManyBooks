@@ -31,60 +31,61 @@
         android:title="@string/lbl_name"
         />
 
-    <Preference
-        android:icon="@drawable/ic_format_list_bulleted"
-        android:key="style.booklist.groups"
-        android:title="@string/pg_style_groups"
-        />
-
-    <!-- ListPreference - booklist default expanded level for the groups.
-     Higher than 3 makes little sense, but setting 4 as maximum because 'why not'.
- -->
-    <SeekBarPreference
-        android:defaultValue="1"
-        android:icon="@drawable/ic_format_indent_increase"
-        android:key="style.booklist.levels.default"
-        android:max="4"
-        android:title="@string/pt_bob_list_state_expansion_level"
-        app:min="1"
-        />
-
-    <MultiSelectListPreference
-        android:defaultValue="@array/empty_array"
-        android:entries="@array/pe_bob_header"
-        android:entryValues="@array/pv_bob_header"
-        android:icon="@drawable/ic_view_headline"
-        android:key="style.booklist.header"
-        android:title="@string/pt_bob_header"
-        />
-
-    <Preference
-        android:fragment="com.hardbacknutter.nevertoomanybooks.settings.styles.StyleFiltersFragment"
-        android:icon="@drawable/ic_filter_list"
-        android:key="psk_style_filters"
-        android:title="@string/pg_filters"
-        />
-
-    <Preference
-        android:fragment="com.hardbacknutter.nevertoomanybooks.settings.styles.StyleBookDetailsFragment"
-        android:icon="@drawable/ic_details"
-        android:key="psk_style_show_details"
-        android:title="@string/pg_bob_show_details"
-        />
-
-    <!-- Showing thumbnails fall under 'Extra Book Details', but this is more user-friendly. -->
-    <SwitchPreference
-        android:defaultValue="true"
-        android:icon="@drawable/ic_image"
-        android:key="style.booklist.show.thumbnails"
-        android:summaryOff="@string/no"
-        android:summaryOn="@string/yes"
-        android:title="@string/pt_bob_thumbnails_show"
-        />
-
     <PreferenceCategory
         android:title="@string/pg_booklist"
         >
+
+        <Preference
+            android:icon="@drawable/ic_format_list_bulleted"
+            android:key="style.booklist.groups"
+            android:title="@string/pg_style_groups"
+            />
+
+        <!-- ListPreference - booklist default expanded level for the groups.
+         Higher than 3 makes little sense, but setting 4 as maximum because 'why not'.
+     -->
+        <SeekBarPreference
+            android:defaultValue="1"
+            android:icon="@drawable/ic_format_indent_increase"
+            android:key="style.booklist.levels.default"
+            android:max="4"
+            android:title="@string/pt_bob_list_state_expansion_level"
+            app:min="1"
+            />
+
+        <MultiSelectListPreference
+            android:defaultValue="@array/empty_array"
+            android:entries="@array/pe_bob_header"
+            android:entryValues="@array/pv_bob_header"
+            android:icon="@drawable/ic_view_headline"
+            android:key="style.booklist.header"
+            android:title="@string/pt_bob_header"
+            />
+
+        <Preference
+            android:fragment="com.hardbacknutter.nevertoomanybooks.settings.styles.StyleFiltersFragment"
+            android:icon="@drawable/ic_filter_list"
+            android:key="psk_style_filters"
+            android:title="@string/pg_filters"
+            />
+
+        <Preference
+            android:fragment="com.hardbacknutter.nevertoomanybooks.settings.styles.StyleBookDetailsFragment"
+            android:icon="@drawable/ic_details"
+            android:key="psk_style_show_details"
+            android:title="@string/pg_bob_show_details"
+            />
+
+
+        <!-- Showing thumbnails fall under 'Extra Book Details', but this is more user-friendly. -->
+        <SwitchPreference
+            android:defaultValue="true"
+            android:icon="@drawable/ic_image"
+            android:key="style.booklist.show.thumbnails"
+            android:summaryOff="@string/no"
+            android:summaryOn="@string/yes"
+            android:title="@string/pt_bob_thumbnails_show"
+            />
 
         <!-- default BooklistStyle.IMAGE_SCALE_3_MEDIUM == 3 -->
         <SeekBarPreference
@@ -113,6 +114,29 @@
             android:summaryOff="@string/size_small"
             android:summaryOn="@string/size_large"
             android:title="@string/pt_line_spacing"
+            />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="@string/tab_lbl_details"
+        >
+        <SwitchPreference
+            android:defaultValue="true"
+            android:icon="@drawable/ic_image"
+            android:key="style.details.show.thumbnail.0"
+            android:summaryOff="@string/no"
+            android:summaryOn="@string/yes"
+            android:title="@string/lbl_cover"
+            />
+
+        <SwitchPreference
+            android:defaultValue="true"
+            android:icon="@drawable/ic_image"
+            android:key="style.details.show.thumbnail.1"
+            android:summaryOff="@string/no"
+            android:summaryOn="@string/yes"
+            android:title="@string/lbl_cover_back"
             />
 
     </PreferenceCategory>

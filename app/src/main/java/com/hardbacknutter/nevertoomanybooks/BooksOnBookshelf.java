@@ -274,15 +274,7 @@ public class BooksOnBookshelf
 
                     // If it's a book, open the details screen.
                     if (rowData.getInt(DBDefinitions.KEY_BL_NODE_GROUP) == BooklistGroup.BOOK) {
-                        final Intent intent = new Intent(BooksOnBookshelf.this,
-                                                         BookDetailsActivity.class)
-                                .putExtra(DBDefinitions.KEY_PK_ID,
-                                          rowData.getLong(DBDefinitions.KEY_FK_BOOK))
-                                .putExtra(BookDetailsFragmentViewModel.BKEY_LIST_TABLE_NAME,
-                                          mModel.getBooklistTableName())
-                                .putExtra(BookDetailsFragmentViewModel.BKEY_LIST_TABLE_ROW_ID,
-                                          rowData.getLong(DBDefinitions.KEY_PK_ID));
-                        startActivityForResult(intent, RequestCode.BOOK_VIEW);
+                        openBookDetails(rowData);
 
                     } else {
                         // it's a level, expand/collapse.
@@ -334,6 +326,31 @@ public class BooksOnBookshelf
     private FabMenu mFabMenu;
     /** The adapter used to fill the mBookshelfSpinner. */
     private BookshelfSpinnerAdapter mBookshelfSpinnerAdapter;
+
+    /**
+     * Open the {@link BookDetailsActivity} for the given book.
+     *
+     * @param rowData with book data
+     */
+    public void openBookDetails(@NonNull final DataHolder rowData) {
+        final Intent intent = new Intent(this, BookDetailsActivity.class)
+                // the book to display
+                .putExtra(DBDefinitions.KEY_PK_ID,
+                          rowData.getLong(DBDefinitions.KEY_FK_BOOK))
+                // the current list table, so the user can swipe
+                // to the next/previous book
+                .putExtra(BookDetailsFragmentViewModel.BKEY_LIST_TABLE_NAME,
+                          mModel.getBooklistTableName())
+                // The row id in the list table of the given book.
+                // Keep in mind a book can occur multiple times,
+                // so we need to pass the specific one.
+                .putExtra(BookDetailsFragmentViewModel.BKEY_LIST_TABLE_ROW_ID,
+                          rowData.getLong(DBDefinitions.KEY_PK_ID))
+                // some style elements are applicable for the details screen
+                .putExtra(BooklistStyle.BKEY_STYLE_UUID,
+                          mModel.getCurrentStyle(this).getUuid());
+        startActivityForResult(intent, RequestCode.BOOK_VIEW);
+    }
 
     @Override
     protected void onSetContentView() {

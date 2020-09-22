@@ -72,12 +72,14 @@ public class UpdateFieldsModel
     /** Log tag. */
     private static final String TAG = "UpdateFieldsModel";
     private static final String BKEY_LAST_BOOK_ID = TAG + ":lastId";
+
     /** which fields to update and how. */
     @NonNull
-    private final Map<String, FieldUsage> mFieldUsages = new LinkedHashMap<>();
+    private final Map<String, FieldUsage> mFields = new LinkedHashMap<>();
 
     private final MutableLiveData<FinishedMessage<Bundle>> mListFinished = new MutableLiveData<>();
     private final MutableLiveData<FinishedMessage<Exception>> mListFailed = new MutableLiveData<>();
+
     /**
      * Current and original book data.
      * The object gets cleared and reused for each iteration of the loop.
@@ -157,10 +159,8 @@ public class UpdateFieldsModel
 
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 
-        addField(prefs, DBDefinitions.PREFS_IS_USED_COVER + ".0",
-                 R.string.lbl_cover, CopyIfBlank);
-        addField(prefs, DBDefinitions.PREFS_IS_USED_COVER + ".1",
-                 R.string.lbl_cover_back, CopyIfBlank);
+        addCoverField(prefs, R.string.lbl_cover, 0);
+        addCoverField(prefs, R.string.lbl_cover_back, 1);
 
         addField(prefs, DBDefinitions.KEY_TITLE, R.string.lbl_title, CopyIfBlank);
         addField(prefs, DBDefinitions.KEY_ISBN, R.string.lbl_isbn, CopyIfBlank);
@@ -199,7 +199,7 @@ public class UpdateFieldsModel
 
     @NonNull
     public Collection<FieldUsage> getFieldUsages() {
-        return mFieldUsages.values();
+        return mFields.values();
     }
 
     /**
@@ -214,8 +214,8 @@ public class UpdateFieldsModel
             return false;
         }
 
-        // More than 10 books, check if they actually want covers
-        final FieldUsage covers = mFieldUsages.get(DBDefinitions.PREFS_IS_USED_COVER + ".0");
+        // More than 10 books, check if the user actually wants covers
+        final FieldUsage covers = mFields.get(DBDefinitions.PREFS_IS_USED_COVER + ".0");
         return covers != null && covers.getUsage().equals(FieldUsage.Usage.Overwrite);
     }
 
@@ -228,7 +228,7 @@ public class UpdateFieldsModel
      */
     public void updateFieldUsage(@NonNull final String key,
                                  @NonNull final FieldUsage.Usage usage) {
-        final FieldUsage fieldUsage = mFieldUsages.get(key);
+        final FieldUsage fieldUsage = mFields.get(key);
         if (fieldUsage != null) {
             fieldUsage.setUsage(usage);
         }
@@ -249,7 +249,7 @@ public class UpdateFieldsModel
      * Add a FieldUsage for a <strong>list</strong> field if it has not been hidden by the user.
      * <p>
      *
-     * @param preferences  SharedPreferences
+     * @param preferences  Global preferences
      * @param fieldId      List-field name to use in FieldUsages
      * @param nameStringId Field label string resource ID
      * @param key          Field name to use for preferences.
@@ -260,15 +260,32 @@ public class UpdateFieldsModel
                               @NonNull final String key) {
 
         if (DBDefinitions.isUsed(preferences, key)) {
-            mFieldUsages.put(fieldId,
-                             FieldUsage.createListField(fieldId, nameStringId, preferences));
+            mFields.put(fieldId, FieldUsage.createListField(fieldId, nameStringId, preferences));
         }
     }
 
     /**
      * Add a FieldUsage for a <strong>simple</strong> field if it has not been hidden by the user.
      *
-     * @param preferences  SharedPreferences
+     * @param preferences  Global preferences
+     * @param nameStringId Field label string resource ID
+     * @param cIdx         0..n image index
+     */
+    private void addCoverField(@NonNull final SharedPreferences preferences,
+                               @StringRes final int nameStringId,
+                               @IntRange(from = 0, to = 1) final int cIdx) {
+
+        if (DBDefinitions.isCoverUsed(preferences, cIdx)) {
+            final String fieldId = DBDefinitions.PREFS_IS_USED_COVER + "." + cIdx;
+            mFields.put(fieldId, FieldUsage.create(fieldId, nameStringId, preferences,
+                                                   CopyIfBlank));
+        }
+    }
+
+    /**
+     * Add a FieldUsage for a <strong>simple</strong> field if it has not been hidden by the user.
+     *
+     * @param preferences  Global preferences
      * @param fieldId      Field name to use in FieldUsages, and as key for preferences.
      * @param nameStringId Field label string resource ID
      * @param defValue     default Usage for this field
@@ -279,8 +296,7 @@ public class UpdateFieldsModel
                           @NonNull final FieldUsage.Usage defValue) {
 
         if (DBDefinitions.isUsed(preferences, fieldId)) {
-            mFieldUsages.put(fieldId,
-                             FieldUsage.create(fieldId, nameStringId, preferences, defValue));
+            mFields.put(fieldId, FieldUsage.create(fieldId, nameStringId, preferences, defValue));
         }
     }
 
@@ -296,11 +312,11 @@ public class UpdateFieldsModel
     private void addRelatedField(@NonNull final String primaryFieldId,
                                  @NonNull final String relatedFieldId,
                                  @StringRes final int nameStringId) {
-        final FieldUsage primaryField = mFieldUsages.get(primaryFieldId);
+        final FieldUsage primaryField = mFields.get(primaryFieldId);
 
         if (primaryField != null && primaryField.isWanted()) {
             final FieldUsage fu = primaryField.createRelatedField(relatedFieldId, nameStringId);
-            mFieldUsages.put(relatedFieldId, fu);
+            mFields.put(relatedFieldId, fu);
         }
     }
 
@@ -313,7 +329,7 @@ public class UpdateFieldsModel
         final SharedPreferences.Editor ed =
                 PreferenceManager.getDefaultSharedPreferences(context).edit();
 
-        for (FieldUsage fieldUsage : mFieldUsages.values()) {
+        for (FieldUsage fieldUsage : mFields.values()) {
             fieldUsage.getUsage().write(ed, fieldUsage.fieldId);
         }
         ed.apply();
@@ -325,7 +341,7 @@ public class UpdateFieldsModel
      * @param context Current context
      */
     public void resetPreferences(@NonNull final Context context) {
-        for (FieldUsage fieldUsage : mFieldUsages.values()) {
+        for (FieldUsage fieldUsage : mFields.values()) {
             fieldUsage.reset();
         }
         writePreferences(context);
@@ -392,7 +408,7 @@ public class UpdateFieldsModel
                 mCurrentBook.load(mCurrentBookId, mCurrentCursor, mDb);
 
                 // Check which fields this book needs.
-                mCurrentFieldsWanted = filter(context, mFieldUsages);
+                mCurrentFieldsWanted = filter(context, mFields);
 
                 final String title = mCurrentBook.getString(DBDefinitions.KEY_TITLE);
 
@@ -575,7 +591,7 @@ public class UpdateFieldsModel
     private void processSearchResultsCoverImage(@NonNull final Context context,
                                                 @NonNull final Bundle bookData,
                                                 @NonNull final FieldUsage usage,
-                                                @IntRange(from = 0) final int cIdx) {
+                                                @IntRange(from = 0, to = 1) final int cIdx) {
         final String uuid = mCurrentBook.getString(DBDefinitions.KEY_BOOK_UUID);
         Objects.requireNonNull(uuid, ErrorMsg.NULL_UUID);
         boolean copyThumb = false;
@@ -726,7 +742,7 @@ public class UpdateFieldsModel
     private void filterCoverImage(@NonNull final Context context,
                                   @NonNull final Map<String, FieldUsage> fieldUsages,
                                   @NonNull final FieldUsage usage,
-                                  @IntRange(from = 0) final int cIdx) {
+                                  @IntRange(from = 0, to = 1) final int cIdx) {
         // - If it's a thumbnail, then see if it's missing or empty.
         final String uuid = mCurrentBook.getString(DBDefinitions.KEY_BOOK_UUID);
         Objects.requireNonNull(uuid, ErrorMsg.NULL_UUID);

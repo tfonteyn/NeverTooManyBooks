@@ -126,7 +126,8 @@ public abstract class EditBookBaseFragment
         //noinspection ConstantConditions
         mFragmentVM = new ViewModelProvider(getActivity())
                 .get(getFragmentId(), EditBookFragmentViewModel.class);
-        mFragmentVM.init();
+        //noinspection ConstantConditions
+        mFragmentVM.init(getContext(), getArguments());
     }
 
     @Override
@@ -209,7 +210,7 @@ public abstract class EditBookBaseFragment
      * <p>
      * Dev. note: a Supplier is used so we don't load the list if the Field is actually not in use
      *
-     * @param preferences SharedPreferences
+     * @param preferences Global preferences
      * @param field       to setup
      * @param list        Supplier with auto complete values
      */
@@ -238,7 +239,7 @@ public abstract class EditBookBaseFragment
      * <p>
      * If only one field is used, this method diverts to {@link #addDatePicker}.
      *
-     * @param preferences        SharedPreferences
+     * @param preferences        Global preferences
      * @param dialogTitleIdSpan  title of the dialog box if both start and end-dates are used.
      * @param dialogTitleIdStart title of the dialog box if the end-date is not in use
      * @param fieldStartDate     to setup for the start-date
@@ -296,7 +297,7 @@ public abstract class EditBookBaseFragment
     /**
      * Setup a date picker for selecting a single, full date.
      *
-     * @param preferences   SharedPreferences
+     * @param preferences   Global preferences
      * @param field         to setup
      * @param dialogTitleId title of the dialog box.
      * @param todayIfNone   if true, and if the field was empty, we'll default to today's date.
@@ -326,7 +327,7 @@ public abstract class EditBookBaseFragment
     /**
      * Setup a date picker for selecting a partial date.
      *
-     * @param preferences   SharedPreferences
+     * @param preferences   Global preferences
      * @param field         to setup
      * @param dialogTitleId title of the dialog box.
      * @param todayIfNone   if true, and if the field was empty, we'll default to today's date.

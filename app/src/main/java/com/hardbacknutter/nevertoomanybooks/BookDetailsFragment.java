@@ -153,7 +153,8 @@ public class BookDetailsFragment
                 .setFragmentResultListener(RK_EDIT_LENDER, this, mBookChangedListener);
 
         mFragmentVM = new ViewModelProvider(this).get(BookDetailsFragmentViewModel.class);
-        mFragmentVM.init(getArguments(), mBookViewModel.getBook());
+        //noinspection ConstantConditions
+        mFragmentVM.init(getContext(), getArguments(), mBookViewModel.getBook());
     }
 
     @Override
@@ -177,10 +178,10 @@ public class BookDetailsFragment
         }
 
         // Covers
-        if (!DBDefinitions.isCoverUsed(prefs, 0)) {
+        if (!mFragmentVM.isCoverUsed(getContext(), prefs, 0)) {
             mVb.coverImage0.setVisibility(View.GONE);
         }
-        if (!DBDefinitions.isCoverUsed(prefs, 1)) {
+        if (!mFragmentVM.isCoverUsed(getContext(), prefs, 1)) {
             mVb.coverImage1.setVisibility(View.GONE);
         }
 
@@ -443,6 +444,7 @@ public class BookDetailsFragment
 
             default: {
                 // handle any cover image request codes
+                @IntRange(from = -1, to = 1)
                 final int cIdx = mFragmentVM.getAndClearCurrentCoverHandlerIndex();
                 if (cIdx >= 0 && cIdx < mCoverHandler.length) {
                     if (mCoverHandler[cIdx] != null) {
@@ -472,7 +474,7 @@ public class BookDetailsFragment
 
     /** Called by the CoverHandler when a context menu is selected. */
     @Override
-    public void setCurrentCoverIndex(@IntRange(from = 0) final int cIdx) {
+    public void setCurrentCoverIndex(@IntRange(from = 0, to = 1) final int cIdx) {
         mFragmentVM.setCurrentCoverHandlerIndex(cIdx);
     }
 
@@ -488,10 +490,20 @@ public class BookDetailsFragment
     protected void onPopulateViews(@NonNull final Fields fields,
                                    @NonNull final Book book) {
         super.onPopulateViews(fields, book);
-
         //noinspection ConstantConditions
-        final SharedPreferences prefs = PreferenceManager
-                .getDefaultSharedPreferences(getContext());
+        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+
+        if (mFragmentVM.isCoverUsed(getContext(), prefs, 0)) {
+            mCoverHandler[0] = new CoverHandler(
+                    this, mProgressBar, book, mVb.isbn, 0, mVb.coverImage0,
+                    getResources().getDimensionPixelSize(R.dimen.cover_details_0_height));
+        }
+
+        if (mFragmentVM.isCoverUsed(getContext(), prefs, 1)) {
+            mCoverHandler[1] = new CoverHandler(
+                    this, mProgressBar, book, mVb.isbn, 1, mVb.coverImage1,
+                    getResources().getDimensionPixelSize(R.dimen.cover_details_1_height));
+        }
 
         if (DBDefinitions.isUsed(prefs, DBDefinitions.KEY_LOANEE)) {
             populateLendToField(mBookViewModel.getLoanee());
@@ -501,19 +513,7 @@ public class BookDetailsFragment
             populateToc(book);
         }
 
-        if (DBDefinitions.isCoverUsed(prefs, 0)) {
-            mCoverHandler[0] = new CoverHandler(
-                    this, mProgressBar, book, mVb.isbn, 0, mVb.coverImage0,
-                    getResources().getDimensionPixelSize(R.dimen.cover_details_0_height));
-        }
-
-        if (DBDefinitions.isCoverUsed(prefs, 1)) {
-            mCoverHandler[1] = new CoverHandler(
-                    this, mProgressBar, book, mVb.isbn, 1, mVb.coverImage1,
-                    getResources().getDimensionPixelSize(R.dimen.cover_details_1_height));
-        }
-
-        // hide unwanted and empty fields
+        // hide unwanted but keep empty fields
         //noinspection ConstantConditions
         fields.setVisibility(getView(), true, false);
 

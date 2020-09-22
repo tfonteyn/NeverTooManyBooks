@@ -19,10 +19,16 @@
  */
 package com.hardbacknutter.nevertoomanybooks.viewmodels;
 
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.os.Bundle;
+
 import androidx.annotation.CallSuper;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModel;
 
 import java.util.HashMap;
@@ -30,7 +36,9 @@ import java.util.List;
 import java.util.Map;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
+import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyle;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
+import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.fields.Fields;
 
@@ -57,6 +65,10 @@ public abstract class BookBaseFragmentViewModel
     /** Database Access. */
     protected DAO mDb;
 
+    /** <strong>Optionally</strong> passed in via the arguments. */
+    @Nullable
+    private BooklistStyle mStyle;
+
     /** Track on which cover view the context menu was used. */
     @IntRange(from = -1)
     private int mCurrentCoverHandlerIndex = -1;
@@ -71,11 +83,57 @@ public abstract class BookBaseFragmentViewModel
 
     /**
      * Pseudo constructor.
+     *
+     * @param context current context
+     * @param args    {@link Intent#getExtras()} or {@link Fragment#getArguments()}
      */
     @CallSuper
-    public void init() {
+    public void init(@NonNull final Context context,
+                     @Nullable final Bundle args) {
         if (mDb == null) {
             mDb = new DAO(TAG);
+
+            if (args != null) {
+                final String styleUuid = args.getString(BooklistStyle.BKEY_STYLE_UUID);
+                if (styleUuid != null) {
+                    mStyle = BooklistStyle.getStyleOrDefault(context, mDb, styleUuid);
+                }
+            }
+        }
+    }
+
+    /**
+     * Check if this cover should should be shown / is used.
+     * <p>
+     * The order we use to decide:
+     * <ol>
+     *     <li>Global visibility is set to HIDE -> return {@code false}</li>
+     *     <li>The fragment has no access to the style -> return the global visibility</li>
+     *     <li>The global style is set to HIDE -> {@code false}</li>
+     *     <li>return the visibility as set in the style.</li>
+     * </ol>
+     *
+     * @param context     current context
+     * @param preferences Global preferences
+     * @param cIdx        0..n image index
+     *
+     * @return {@code true} if in use
+     */
+    public boolean isCoverUsed(@NonNull final Context context,
+                               @NonNull final SharedPreferences preferences,
+                               @IntRange(from = 0, to = 1) final int cIdx) {
+
+        // Globally disabled overrules style setting
+        if (!DBDefinitions.isCoverUsed(preferences, cIdx)) {
+            return false;
+        }
+
+        if (mStyle == null) {
+            // there is no style and the global preference was true.
+            return true;
+        } else {
+            // let the style decide
+            return mStyle.showCoverOnBookDetailScreen(context, preferences, cIdx);
         }
     }
 
@@ -105,7 +163,7 @@ public abstract class BookBaseFragmentViewModel
      *
      * @return the index; will be {@code -1} if none was set.
      */
-    @IntRange(from = -1)
+    @IntRange(from = -1, to = 1)
     public int getAndClearCurrentCoverHandlerIndex() {
         final int current = mCurrentCoverHandlerIndex;
         mCurrentCoverHandlerIndex = -1;

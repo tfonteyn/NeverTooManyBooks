@@ -19,6 +19,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.viewmodels;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -57,14 +58,17 @@ public class BookDetailsFragmentViewModel
     /**
      * Pseudo constructor.
      *
-     * @param args {@link Intent#getExtras()} or {@link Fragment#getArguments()}
+     * @param context current context
+     * @param args    {@link Intent#getExtras()} or {@link Fragment#getArguments()}
      */
-    public void init(@Nullable final Bundle args,
+    public void init(@NonNull final Context context,
+                     @Nullable final Bundle args,
                      @NonNull final Book book) {
-        super.init();
+        super.init(context, args);
 
         if (mNavHelper == null && args != null) {
-            // got list ?
+            // the list/rowId is optional
+            // If present, the user can swipe to the next/previous book in the list.
             final String listTableName = args.getString(BKEY_LIST_TABLE_NAME);
             if (listTableName != null && !listTableName.isEmpty()) {
                 // ok, we have a list, get the rowId we need to be on.

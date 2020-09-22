@@ -25,6 +25,7 @@ import android.os.Bundle;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.preference.Preference;
 import androidx.preference.SwitchPreference;
 
 import com.hardbacknutter.nevertoomanybooks.BaseActivity;
@@ -37,8 +38,10 @@ import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 public class FieldVisibilityPreferenceFragment
         extends BasePreferenceFragment {
 
-    private static final String[] COVERS = new String[]{
+    private static final String[] PREFS_COVER_VISIBILITY_KEY = new String[]{
+            // fields.visibility.thumbnail.0
             DBDefinitions.PREFS_PREFIX_FIELD_VISIBILITY + DBDefinitions.PREFS_IS_USED_COVER + ".0",
+            // fields.visibility.thumbnail.1
             DBDefinitions.PREFS_PREFIX_FIELD_VISIBILITY + DBDefinitions.PREFS_IS_USED_COVER + ".1"
     };
 
@@ -50,9 +53,9 @@ public class FieldVisibilityPreferenceFragment
         setPreferencesFromResource(R.xml.preferences_field_visibility, rootKey);
 
         // Setting cover 0 to false -> disable cover 1; also see onSharedPreferenceChanged
-        final SwitchPreference cover = findPreference(COVERS[1]);
+        final Preference cover = findPreference(PREFS_COVER_VISIBILITY_KEY[1]);
         if (cover != null) {
-            cover.setDependency(COVERS[0]);
+            cover.setDependency(PREFS_COVER_VISIBILITY_KEY[0]);
         }
     }
 
@@ -62,8 +65,10 @@ public class FieldVisibilityPreferenceFragment
                                           @NonNull final String key) {
 
         // Setting cover 0 to false -> set cover 1 to false as well
-        if (COVERS[0].equals(key) && !preferences.getBoolean(key, false)) {
-            final SwitchPreference cover = findPreference(COVERS[1]);
+        if (PREFS_COVER_VISIBILITY_KEY[0].equals(key)
+            && !preferences.getBoolean(key, false)) {
+            final SwitchPreference cover =
+                    findPreference(PREFS_COVER_VISIBILITY_KEY[1]);
             //noinspection ConstantConditions
             cover.setChecked(false);
         }
