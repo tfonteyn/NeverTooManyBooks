@@ -215,7 +215,7 @@ public class Bookshelf
 
         } else if (id == PREFERRED) {
             final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-            final String name = getPreferred(prefs);
+            final String name = prefs.getString(PREF_BOOKSHELF_CURRENT, null);
             if (name != null && !name.isEmpty()) {
                 return db.getBookshelfByName(name);
             }
@@ -259,15 +259,10 @@ public class Bookshelf
         return listModified;
     }
 
-    @Nullable
-    private static String getPreferred(@NonNull final SharedPreferences preferences) {
-        return preferences.getString(PREF_BOOKSHELF_CURRENT, null);
-    }
-
     /**
      * Set this bookshelf as the current/preferred.
      *
-     * @param preferences SharedPreferences
+     * @param preferences Global preferences
      */
     public void setAsPreferred(@NonNull final SharedPreferences preferences) {
         preferences.edit().putString(PREF_BOOKSHELF_CURRENT, mName).apply();
