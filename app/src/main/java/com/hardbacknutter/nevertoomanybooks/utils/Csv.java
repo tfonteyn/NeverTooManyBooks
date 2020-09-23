@@ -62,25 +62,6 @@ public final class Csv {
 
     /**
      * Create a CSV list String from the passed collection.
-     * Uses ',' as delimiter.
-     * A {@code null} element is morphed into "".
-     * This can be avoided by providing a {@code Function<E, String>}.
-     * Either way, empty elements <strong>are included</strong>.
-     *
-     * @param collection collection
-     * @param formatter  (optional) formatter to use on each element, or {@code null} for none.
-     * @param <E>        type of elements
-     *
-     * @return csv string, can be empty, but never {@code null}.
-     */
-    @NonNull
-    public static <E> String join(@NonNull final Iterable<E> collection,
-                                  @Nullable final Function<E, String> formatter) {
-        return join(",", collection, false, null, formatter);
-    }
-
-    /**
-     * Create a CSV list String from the passed collection.
      * A {@code null} element is morphed into "".
      * This can be avoided by providing a {@code Function<E, String>} to format the value.
      * Either way, empty elements <strong>are included</strong>.

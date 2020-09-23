@@ -80,12 +80,12 @@ class SearchSitesTest
         final ArrayList<Site> sites = Site.Type.Data.getSites();
         // 4 should be removed, 128/256 added as loadPrefs will have been called
         assertEquals("64,32,16,8,2,1,128,256",
-                     Csv.join(sites, element -> String.valueOf(element.engineId)));
+                     Csv.join(",", sites, element -> String.valueOf(element.engineId)));
 
 
         final List<Site> reordered = Site.Type.reorder(sites, "1,2,4,16,64,128,256,512");
         // 4/512 should be removed, 8/32 NOT added as loadPrefs will NOT have been called
         assertEquals("1,2,16,64,128,256",
-                     Csv.join(reordered, element -> String.valueOf(element.engineId)));
+                     Csv.join(",", reordered, element -> String.valueOf(element.engineId)));
     }
 }

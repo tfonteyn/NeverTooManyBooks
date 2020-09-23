@@ -2353,7 +2353,7 @@ public class DAO
         } else {
             return getBookCursor(
                     TBL_BOOKS.dot(KEY_ISBN)
-                    + " IN (" + Csv.join(isbnList, s -> '\'' + encodeString(s) + '\'') + ')',
+                    + " IN (" + Csv.join(",", isbnList, s -> '\'' + encodeString(s) + '\'') + ')',
                     null,
                     TBL_BOOKS.dot(KEY_PK_ID));
         }

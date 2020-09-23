@@ -561,7 +561,7 @@ public class Site
             final SharedPreferences.Editor ed =
                     PreferenceManager.getDefaultSharedPreferences(context).edit();
 
-            final String order = Csv.join(mList, site -> {
+            final String order = Csv.join(",", mList, site -> {
                 // store individual site settings
                 site.saveToPrefs(ed);
                 // and collect the id for the order string
