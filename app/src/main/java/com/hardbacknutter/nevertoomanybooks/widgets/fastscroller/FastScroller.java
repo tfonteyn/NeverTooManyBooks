@@ -46,8 +46,8 @@ import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
  * <a href="https://issuetracker.google.com/issues/64729576">64729576</a>
  * <a href="https://github.com/caarmen/RecyclerViewBug/">HackFastScroller.java</a>
  *
- * <a href="https://stackoverflow.com/questions/47846873/recyclerview-fast-scroll-thumb-height-too-small-for-large-data-set">
- * stackoverflow</a>
+ * <a href="https://stackoverflow.com/questions/47846873">
+ * recyclerview-fast-scroll-thumb-height-too-small-for-large-data-set</a>
  */
 public class FastScroller {
 

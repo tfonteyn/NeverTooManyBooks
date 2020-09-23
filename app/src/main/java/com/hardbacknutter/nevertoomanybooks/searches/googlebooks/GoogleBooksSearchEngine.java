@@ -60,7 +60,7 @@ import com.hardbacknutter.nevertoomanybooks.tasks.TerminatorConnection;
  * => so it seems if this SearchEngine is included, the entire app has to be free.
  * <p>
  * example:
- * https://stackoverflow.com/questions/7908954/google-books-api-searching-by-isbn
+ * <a href="https://stackoverflow.com/questions/7908954">google-books-api-searching-by-isbn</a>
  */
 @SearchEngine.Configuration(
         id = SearchSites.GOOGLE_BOOKS,

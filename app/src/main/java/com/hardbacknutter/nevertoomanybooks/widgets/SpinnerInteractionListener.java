@@ -27,8 +27,8 @@ import androidx.annotation.NonNull;
 /**
  * A listener/template class for the {@link android.widget.Spinner} widget.
  *
- * <a href="https://stackoverflow.com/questions/27745948/android-spinner-onitemselected-called-multiple-times-after-screen-rotation#28466764">
- * stackoverflow</a>
+ * <a href="https://stackoverflow.com/questions/27745948/">
+ *     android-spinner-onitemselected-called-multiple-times-after-screen-rotation#28466764</a>
  * <em>
  * In general, I've found that there are many different events that can trigger the
  * onItemSelected method, and it is difficult to keep track of all of them. Instead,
