@@ -21,7 +21,7 @@
 
 <!DOCTYPE resources [<!ENTITY APP_NAME "NeverTooManyBooks">]>
 
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <!-- ####################################################################################### -->
     <!-- == No translation required == -->
     <!-- ####################################################################################### -->
@@ -367,28 +367,132 @@
         <item>to-read</item>
         <item>currently-reading</item>
         <item>default</item>
-        <item>books</item>
-        <item>owned</item>
-        <item>books-i-own</item>
-        <item>my-library</item>
-        <item>owned-books</item>
-        <item>my-books</item>
-        <item>favorites</item>
-        <item>favourites</item>
-        <item>ebook</item>
-        <item>ebooks</item>
-        <item>e-books</item>
-        <item>kindle</item>
-        <item>calibre</item>
+
+        <item>1</item>
+        <item>3-stars</item>
+        <item>4-stars</item>
+        <item>4-star</item>
+        <item>5-stars</item>
+        <item>abandoned</item>
+        <item>all-books</item>
+        <item>all-time-favorites</item>
+        <item>all-time-favourites</item>
+        <item>already-read</item>
+        <item>at-home</item>
+        <item>audible</item>
+        <item>audio-books</item>
         <item>audio</item>
         <item>audiobook</item>
         <item>audiobooks</item>
-        <item>general</item>
-        <item>library</item>
-        <item>to-buy</item>
-        <item>re-read</item>
-        <item>english</item>
+        <item>best-books</item>
+        <item>best-ever</item>
+        <item>biblioteca</item>
+        <item>book-club</item>
+        <item>books-i-have</item>
+        <item>books-i-own</item>
+        <item>books-owned</item>
+        <item>books</item>
+        <item>borrowed</item>
+        <item>bought</item>
         <item>british</item>
+        <item>calibre</item>
+        <item>collection</item>
+        <item>completed</item>
+        <item>did-not-finish</item>
+        <item>dnf</item>
+        <item>done</item>
+        <item>e-books</item>
+        <item>ebook</item>
+        <item>ebooks</item>
+        <item>english</item>
+        <item>fav</item>
+        <item>faves</item>
+        <item>favorite-books</item>
+        <item>favorites</item>
+        <item>favoritos</item>
+        <item>favourites</item>
+        <item>favs</item>
+        <item>fiction-read</item>
+        <item>finished</item>
+        <item>five-stars</item>
+        <item>for-fun</item>
+        <item>gave-up-on</item>
+        <item>general</item>
+        <item>have-read</item>
+        <item>have</item>
+        <item>home-library</item>
+        <item>home</item>
+        <item>i-own</item>
+        <item>in-my-library</item>
+        <item>kindle</item>
+        <item>library</item>
+        <item>loved</item>
+        <item>maybe</item>
+        <item>meh</item>
+        <item>mine</item>
+        <item>misc</item>
+        <item>misterio</item>
+        <item tools:ignore="Typos">mistery</item>
+        <item>must-read</item>
+        <item>my-books</item>
+        <item>my-bookshelf</item>
+        <item>my-collection</item>
+        <item>my-favorites</item>
+        <item>my-library</item>
+        <item>my-shelf</item>
+        <item>never-finished</item>
+        <item>on-hold</item>
+        <item>on-my-bookshelf</item>
+        <item>on-my-shelf</item>
+        <item>on-my-shelves</item>
+        <item>other</item>
+        <item>own-a-copy</item>
+        <item>own-book</item>
+        <item>own-it</item>
+        <item>own-read</item>
+        <item>own</item>
+        <item>owned-books</item>
+        <item>owned-tbr</item>
+        <item>owned</item>
+        <item>page-turner</item>
+        <item>part-of-a-series</item>
+        <item>personal-library</item>
+        <item>physical-book</item>
+        <item>physical</item>
+        <item>previously-read</item>
+        <item>re-read</item>
+        <item>read-in-2006</item>
+        <item>read-in-2007</item>
+        <item>read-in-2008</item>
+        <item>read-in-2009</item>
+        <item>read-in-2010</item>
+        <item>read-in-2011</item>
+        <item>read-in-2012</item>
+        <item>read-in-2013</item>
+        <item>read-in-2014</item>
+        <item>read-in-2015</item>
+        <item>read-in-2016</item>
+        <item>read-in-2017</item>
+        <item>read-in-2018</item>
+        <item>read-in-2019</item>
+        <item>read-in-2020</item>
+        <item>read-in-english</item>
+        <item>read-more-than-once</item>
+        <item>recommend</item>
+        <item>recommended</item>
+        <item>reread</item>
+        <item>reviewed</item>
+        <item>shelfari-favorites</item>
+        <item>sub</item>
+        <item>tbr</item>
+        <item>tenho</item>
+        <item>to-buy</item>
+        <item>to-reread</item>
+        <item>unfinished</item>
+        <item>want-to-buy</item>
+        <item>want-to-read</item>
+        <item>wish-list</item>
+        <item>wishlist</item>
     </string-array>
 
     <!-- used for Spinners as placeholder text. Can't seem to use "@tools:sample/" there. -->
