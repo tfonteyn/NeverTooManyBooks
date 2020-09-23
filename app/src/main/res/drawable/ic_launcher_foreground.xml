@@ -1,0 +1,148 @@
+<!--
+  ~ @Copyright 2020 HardBackNutter
+  ~ @License GNU General Public License
+  ~
+  ~ This file is part of NeverTooManyBooks.
+  ~
+  ~ NeverTooManyBooks is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ NeverTooManyBooks is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  ~ See the GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<!--
+    This is the original vector icon used for about screen / navigation drawer
+    and as the origin for building the actual launcher icons.
+    The background for the launcher should be set to "@color/blue_grey_200".
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <group
+        android:scaleX="0.108"
+        android:scaleY="0.108"
+        android:translateX="29.16"
+        android:translateY="29.16">
+
+        <!-- feet -->
+        <path
+            android:fillColor="@color/blue_grey_900"
+            android:pathData="
+          M 50,420 h70 L110,430 h-50 z
+          M350,420 h70 L410,430 h-50 z" />
+
+        <!-- shelf -->
+        <path
+            android:fillColor="@color/grey_400"
+            android:pathData="M0,400 h459 L439,350 L19,350 z" />
+
+        <!-- front of shelf -->
+        <path
+            android:fillColor="@color/grey_600"
+            android:pathData="M0,420 h459 v-20 h-459 z" />
+
+        <!-- book 1 -->
+        <path
+            android:fillColor="@color/brown_500"
+            android:pathData="M145,0
+          v385
+          c0,5  -1,10   -5, 10
+          h-55
+          c-5,0 -5,-5   -5,-10
+          v-350
+          c0,-5  1,-10   5,-10
+          h55
+          c5,0   5,5     5, 10
+          z"
+            android:strokeWidth="1" />
+
+        <path
+            android:fillAlpha="1"
+            android:fillColor="@color/grey_500"
+            android:pathData="M80,65 h65 v20 h-65z"
+            android:strokeWidth="1"
+            android:strokeAlpha="1"
+            android:strokeColor="#00000000"
+            android:strokeLineCap="round"
+            android:strokeLineJoin="miter" />
+        <path
+            android:fillAlpha="1"
+            android:fillColor="@color/grey_500"
+            android:pathData="M80,340 h65 v20 h-65z"
+            android:strokeWidth="1"
+            android:strokeAlpha="1"
+            android:strokeColor="#00000000"
+            android:strokeLineCap="round"
+            android:strokeLineJoin="miter" />
+
+
+        <!-- book 2 -->
+        <path
+            android:fillColor="@color/blue_grey_600"
+            android:pathData="M235,115
+          v270
+          c 0, 4   -5, 8   -12, 8
+          h-60
+          c-7, 0  -12,-3   -12,-8
+          v-250
+          c 0,-4    5,-8    12,-8
+          h60
+          c 7, 0   12, 3    12, 8
+          z"
+            android:strokeWidth="1" />
+
+        <path
+            android:fillAlpha="1"
+            android:fillColor="@color/grey_500"
+            android:pathData="M160,145 h67 v145 h-67z"
+            android:strokeWidth="1"
+            android:strokeAlpha="1"
+            android:strokeColor="#00000000"
+            android:strokeLineCap="round"
+            android:strokeLineJoin="miter" />
+
+        <path
+            android:fillAlpha="1"
+            android:fillColor="@color/yellow_800"
+            android:pathData="M193,310
+           l 10,21
+            24,4
+           -17,17
+             4,24
+           -21,-11
+           -21,11
+             4,-24
+           -17,-17
+            24,-4z"
+            android:strokeWidth="1"
+            android:strokeAlpha="1"
+            android:strokeColor="#00000000"
+            android:strokeLineCap="round"
+            android:strokeLineJoin="miter" />
+
+        <!-- book 3 -->
+        <path
+            android:fillColor="@color/red_600"
+            android:pathData="M285,0
+          v385
+          c 0, 5 -2, 10     -5, 10
+          h-25
+          c-2, 0 -5, -5     -5,-10
+          v-285
+          c 0,-5  2,-10      5,-10
+          h25
+          c 2, 0  5,  5      5, 10
+          z"
+            android:strokeWidth="1" />
+    </group>
+</vector>
