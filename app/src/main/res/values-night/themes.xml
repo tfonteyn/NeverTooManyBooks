@@ -25,14 +25,14 @@
         <!-- ====================================== -->
         <!-- Material color attributes (dark theme) -->
         <!-- ====================================== -->
-        <item name="android:statusBarColor">@color/blue_grey_300</item>
+        <item name="android:statusBarColor">@color/night_primary_variant</item>
 
-        <item name="colorPrimary">@color/blue_grey_200</item>
-        <item name="colorPrimaryVariant">@color/blue_grey_300</item>
+        <item name="colorPrimary">@color/night_primary</item>
+        <item name="colorPrimaryVariant">@color/night_primary_variant</item>
         <item name="colorOnPrimary">@color/white</item>
 
-        <item name="colorSecondary">@color/cyan_200</item>
-        <item name="colorSecondaryVariant">@color/cyan_300</item>
+        <item name="colorSecondary">@color/night_secondary</item>
+        <item name="colorSecondaryVariant">@color/night_secondary_variant</item>
         <item name="colorOnSecondary">@color/black</item>
 
         <!--    <item name="colorSurface">#121212</item>-->

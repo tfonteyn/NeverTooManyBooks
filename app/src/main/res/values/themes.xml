@@ -43,30 +43,30 @@ https://material.io/design/material-theming/implementing-your-theme.html#color
         <!-- ======================================= -->
         <!-- Material color attributes (light theme) -->
         <!-- ======================================= -->
-        <item name="android:statusBarColor">@color/blue_grey_300</item>
+        <item name="android:statusBarColor">@color/day_primary_variant</item>
 
-        <item name="colorPrimary">@color/blue_grey_500</item>
-        <item name="colorPrimaryVariant">@color/blue_grey_300</item>
+        <item name="colorPrimary">@color/day_primary</item>
+        <item name="colorPrimaryVariant">@color/day_primary_variant</item>
         <item name="colorOnPrimary">@color/black</item>
 
-        <item name="colorSecondary">@color/cyan_500</item>
-        <item name="colorSecondaryVariant">@color/cyan_300</item>
+        <item name="colorSecondary">@color/day_secondary</item>
+        <item name="colorSecondaryVariant">@color/day_secondary_variant</item>
         <item name="colorOnSecondary">@color/black</item>
 
-        <!--    <item name="colorSurface">@color/white</item>-->
-        <!--    <item name="colorOnSurface">@color/black</item>-->
+        <!--  <item name="colorSurface">@color/white</item>-->
+        <!--  <item name="colorOnSurface">@color/black</item>-->
 
         <!-- framework - The color applied to icons/controls in their normal state. -->
-        <!--    <item name="colorControlNormal">?attr/colorOnPrimary</item>-->
+        <!--  <item name="colorControlNormal">?attr/colorOnPrimary</item>-->
         <!-- framework - The color applied to icons/controls in their activated state (e.g. checked). -->
-        <!--    <item name="colorControlActivated">?attr/colorPrimary</item>-->
+        <!--  <item name="colorControlActivated">?attr/colorPrimary</item>-->
         <!-- framework - The color applied to control highlights (e.g. ripples, list selectors). -->
-        <!--    <item name="colorControlHighlight">DEFAULT</item>-->
+        <!--  <item name="colorControlHighlight">DEFAULT</item>-->
 
         <!-- ==================== -->
         <!-- Application specific -->
         <!-- ==================== -->
-        <item name="appPreferenceAlertColor">@color/red_500</item>
+        <item name="appPreferenceAlertColor">@color/red_400</item>
 
         <!-- the default colorSurface is "too white". -->
         <item name="appBookCardBackgroundColor">@color/grey_50</item>
@@ -89,14 +89,14 @@ https://material.io/design/material-theming/implementing-your-theme.html#color
 
     <!-- Specific Theme for the startup activity so it looks like a dialog as intended. -->
     <style name="Theme.App.Startup" parent="Base.Theme.App.Startup">
-        <item name="android:statusBarColor">@color/blue_grey_300</item>
+        <item name="android:statusBarColor">@color/day_primary_variant</item>
 
-        <item name="colorPrimary">@color/blue_grey_500</item>
-        <item name="colorPrimaryVariant">@color/blue_grey_300</item>
+        <item name="colorPrimary">@color/day_primary</item>
+        <item name="colorPrimaryVariant">@color/day_primary_variant</item>
         <item name="colorOnPrimary">@color/black</item>
 
-        <item name="colorSecondary">@color/cyan_500</item>
-        <item name="colorSecondaryVariant">@color/cyan_300</item>
+        <item name="colorSecondary">@color/day_secondary</item>
+        <item name="colorSecondaryVariant">@color/day_secondary_variant</item>
         <item name="colorOnSecondary">@color/black</item>
     </style>
 
@@ -110,14 +110,14 @@ https://material.io/design/material-theming/implementing-your-theme.html#color
 
     <!-- custom ThemeOverlay used by the "materialAlertDialogTheme" attribute. -->
     <style name="ThemeOverlay.App.MaterialAlertDialog" parent="Base.ThemeOverlay.App.MaterialAlertDialog">
-        <item name="android:statusBarColor">@color/blue_grey_300</item>
+        <item name="android:statusBarColor">@color/day_primary_variant</item>
 
-        <item name="colorPrimary">@color/blue_grey_500</item>
-        <item name="colorPrimaryVariant">@color/blue_grey_300</item>
+        <item name="colorPrimary">@color/day_primary</item>
+        <item name="colorPrimaryVariant">@color/day_primary_variant</item>
         <item name="colorOnPrimary">@color/black</item>
 
-        <item name="colorSecondary">@color/cyan_500</item>
-        <item name="colorSecondaryVariant">@color/cyan_300</item>
+        <item name="colorSecondary">@color/day_secondary</item>
+        <item name="colorSecondaryVariant">@color/day_secondary_variant</item>
         <item name="colorOnSecondary">@color/black</item>
     </style>
 
