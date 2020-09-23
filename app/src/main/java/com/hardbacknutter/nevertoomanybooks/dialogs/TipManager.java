@@ -42,7 +42,7 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
-import com.hardbacknutter.nevertoomanybooks.utils.LinkifyUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.HtmlUtils;
 
 /**
  * Original 'hints' renamed to 'tips' to avoid confusion with "android:hint".
@@ -356,7 +356,7 @@ public final class TipManager {
             if (messageView != null) {
                 final String tipText = context.getString(stringId, args);
                 // allow links, start a browser (or whatever)
-                messageView.setText(LinkifyUtils.fromHtml(tipText));
+                messageView.setText(HtmlUtils.linkify(tipText));
                 messageView.setMovementMethod(LinkMovementMethod.getInstance());
             }
 

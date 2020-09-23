@@ -23,7 +23,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * A StringList contains a list of elements, separated by the {@link Factory#getElementSeparator()}.
@@ -174,9 +176,11 @@ public class StringList<E> {
      * @return Encoded string
      */
     @NonNull
-    public String encodeList(@NonNull final Iterable<E> list) {
+    public String encodeList(@NonNull final Collection<E> list) {
         // The factory will encode each element, and we simply concat all of them.
-        return Csv.join(String.valueOf(mFactory.getElementSeparator()), list, mFactory::encode);
+        return list.stream()
+                   .map(mFactory::encode)
+                   .collect(Collectors.joining(String.valueOf(mFactory.getElementSeparator())));
     }
 
     /**

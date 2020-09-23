@@ -54,6 +54,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogTocConfirmBinding;
@@ -72,7 +73,6 @@ import com.hardbacknutter.nevertoomanybooks.searches.isfdb.Edition;
 import com.hardbacknutter.nevertoomanybooks.searches.isfdb.IsfdbGetBookTask;
 import com.hardbacknutter.nevertoomanybooks.searches.isfdb.IsfdbGetEditionsTask;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.FinishedMessage;
-import com.hardbacknutter.nevertoomanybooks.utils.Csv;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.widgets.DiacriticArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.widgets.ItemTouchHelperViewHolderBase;
@@ -690,8 +690,9 @@ public class EditBookTocFragment
                 final StringBuilder message =
                         new StringBuilder(getString(R.string.warning_toc_confirm))
                                 .append("\n\n")
-                                .append(Csv.join(", ", mTocEntries,
-                                                 tocEntry -> tocEntry.getLabel(getContext())));
+                                .append(mTocEntries.stream()
+                                                   .map(entry -> entry.getLabel(getContext()))
+                                                   .collect(Collectors.joining(", ")));
                 vb.content.setText(message);
 
             } else {

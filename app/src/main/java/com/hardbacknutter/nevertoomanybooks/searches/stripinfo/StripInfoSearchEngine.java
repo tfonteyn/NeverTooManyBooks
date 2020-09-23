@@ -807,6 +807,7 @@ public class StripInfoSearchEngine
                         // merge types.
                         author.addType(currentAuthorType);
                         add = false;
+                        // keep looping
                     }
                 }
 
@@ -835,10 +836,8 @@ public class StripInfoSearchEngine
                 final String text = cleanText(as.get(i).text());
                 final Series currentSeries = Series.from3(text);
                 // check if already present
-                for (Series series : mSeries) {
-                    if (series.equals(currentSeries)) {
-                        return 1;
-                    }
+                if (mSeries.stream().anyMatch(series -> series.equals(currentSeries))) {
+                    return 1;
                 }
                 // just add
                 mSeries.add(currentSeries);
@@ -863,10 +862,8 @@ public class StripInfoSearchEngine
                 final String name = cleanText(aas.get(i).text());
                 final Publisher currentPublisher = Publisher.from(name);
                 // check if already present
-                for (Publisher publisher : mPublishers) {
-                    if (publisher.equals(currentPublisher)) {
-                        return 1;
-                    }
+                if (mPublishers.stream().anyMatch(pub -> pub.equals(currentPublisher))) {
+                    return 1;
                 }
                 // just add
                 mPublishers.add(currentPublisher);

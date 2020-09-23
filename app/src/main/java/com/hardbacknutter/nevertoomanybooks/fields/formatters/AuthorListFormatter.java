@@ -25,10 +25,11 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
-import com.hardbacknutter.nevertoomanybooks.utils.Csv;
+import com.hardbacknutter.nevertoomanybooks.utils.HtmlUtils;
 
 public class AuthorListFormatter
         extends HtmlFormatter<List<Author>> {
@@ -65,18 +66,20 @@ public class AuthorListFormatter
         switch (mDetails) {
             case Full:
                 if (mSingleLine) {
-                    return Csv.join("; ", rawValue, true, null,
-                                    element -> element.getExtLabel(context));
+                    return rawValue.stream().map(element -> element.getExtLabel(context))
+                                   .collect(Collectors.joining("; "));
                 } else {
-                    return Csv.htmlList(context, rawValue, author -> author.getExtLabel(context));
+                    return HtmlUtils.asList(context, rawValue, author ->
+                            author.getExtLabel(context));
                 }
 
             case Normal:
                 if (mSingleLine) {
-                    return Csv.join("; ", rawValue, true, null,
-                                    element -> element.getLabel(context));
+                    return rawValue.stream().map(element -> element.getLabel(context))
+                                   .collect(Collectors.joining("; "));
                 } else {
-                    return Csv.htmlList(context, rawValue, element -> element.getLabel(context));
+                    return HtmlUtils.asList(context, rawValue, author ->
+                            author.getLabel(context));
                 }
 
             case Short:

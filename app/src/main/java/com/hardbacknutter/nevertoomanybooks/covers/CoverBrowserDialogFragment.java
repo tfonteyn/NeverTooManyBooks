@@ -388,7 +388,7 @@ public class CoverBrowserDialogFragment
          * @param cIdx     0..n image index
          * @param fileSpec for the selected file
          */
-        void onResult(@IntRange(from = 0) int cIdx,
+        void onResult(@IntRange(from = 0, to = 1) int cIdx,
                       @NonNull String fileSpec);
     }
 

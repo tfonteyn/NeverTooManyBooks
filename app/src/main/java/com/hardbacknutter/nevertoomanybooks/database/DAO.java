@@ -55,6 +55,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
@@ -84,7 +85,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
-import com.hardbacknutter.nevertoomanybooks.utils.Csv;
 import com.hardbacknutter.nevertoomanybooks.utils.DateParser;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
@@ -320,9 +320,6 @@ public class DAO
      * @param value to encode
      *
      * @return escaped value.
-     * <p>
-     * <strong>Note:</strong> Using the compiled pattern is theoretically faster than using
-     * {@link String#replace(CharSequence, CharSequence)}.
      */
     @NonNull
     public static String encodeString(@NonNull final CharSequence value) {
@@ -2353,7 +2350,11 @@ public class DAO
         } else {
             return getBookCursor(
                     TBL_BOOKS.dot(KEY_ISBN)
-                    + " IN (" + Csv.join(",", isbnList, s -> '\'' + encodeString(s) + '\'') + ')',
+                    + " IN ("
+                    + isbnList.stream()
+                              .map(s -> '\'' + encodeString(s) + '\'')
+                              .collect(Collectors.joining(","))
+                    + ')',
                     null,
                     TBL_BOOKS.dot(KEY_PK_ID));
         }

@@ -43,7 +43,6 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.settings.SearchAdminActivity;
 import com.hardbacknutter.nevertoomanybooks.tasks.Canceller;
-import com.hardbacknutter.nevertoomanybooks.utils.Csv;
 
 /**
  * Encapsulates a {@link SearchEngine} instance + the current enabled/disabled state.
@@ -561,12 +560,14 @@ public class Site
             final SharedPreferences.Editor ed =
                     PreferenceManager.getDefaultSharedPreferences(context).edit();
 
-            final String order = Csv.join(",", mList, site -> {
-                // store individual site settings
-                site.saveToPrefs(ed);
-                // and collect the id for the order string
-                return String.valueOf(site.engineId);
-            });
+            final String order = mList.stream()
+                                      .map(site -> {
+                                          // store individual site settings
+                                          site.saveToPrefs(ed);
+                                          // and collect the id for the order string
+                                          return String.valueOf(site.engineId);
+                                      })
+                                      .collect(Collectors.joining(","));
 
             ed.putString(PREFS_ORDER_PREFIX + mTypeName, order);
             ed.apply();

@@ -35,11 +35,11 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedStatement;
-import com.hardbacknutter.nevertoomanybooks.utils.Csv;
 
 /**
  * Class to store table name and a list of domain definitions.
@@ -247,7 +247,7 @@ public class TableDefinition {
         mPrimaryKey.clear();
 
         // Need to make local copies to avoid 'collection modified' errors
-        Collection<TableDefinition> tmpParents = new ArrayList<>();
+        final Collection<TableDefinition> tmpParents = new ArrayList<>();
         for (FkReference fk : mParents.values()) {
             tmpParents.add(fk.mParent);
         }
@@ -256,7 +256,7 @@ public class TableDefinition {
         }
 
         // Need to make local copies to avoid 'collection modified' errors
-        Collection<TableDefinition> tmpChildren = new ArrayList<>();
+        final Collection<TableDefinition> tmpChildren = new ArrayList<>();
         for (FkReference fk : mChildren.values()) {
             tmpChildren.add(fk.mChild);
         }
@@ -832,7 +832,9 @@ public class TableDefinition {
         // add foreign key TABLE constraints if allowed/needed.
         if (withTableReferences && !mParents.isEmpty()) {
             sql.append("\n,")
-               .append(Csv.join("\n,", mParents.values(), FkReference::def));
+               .append(mParents.values().stream()
+                               .map(FkReference::def)
+                               .collect(Collectors.joining("\n,")));
         }
 
         // end of column/constraint list

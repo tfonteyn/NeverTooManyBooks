@@ -71,7 +71,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Entity;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.AttrUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.Csv;
 
 /**
  * Represents a specific style of booklist (e.g. Authors/Series).
@@ -1245,7 +1244,9 @@ public class BooklistStyle
          */
         @NonNull
         public String getSummaryText(@NonNull final Context context) {
-            return Csv.join(", ", mGroupMap.values(), element -> element.getLabel(context));
+            return mGroupMap.values().stream()
+                            .map(element -> element.getLabel(context))
+                            .collect(Collectors.joining(", "));
         }
 
         /**
@@ -2183,7 +2184,7 @@ public class BooklistStyle
          * @param uuidSet a set of style UUIDs
          */
         private static void set(@NonNull final Context context,
-                                @NonNull final Iterable<String> uuidSet) {
+                                @NonNull final Collection<String> uuidSet) {
             PreferenceManager.getDefaultSharedPreferences(context)
                              .edit()
                              .putString(PREF_BL_PREFERRED_STYLES, TextUtils.join(",", uuidSet))

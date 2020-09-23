@@ -22,12 +22,12 @@ package com.hardbacknutter.nevertoomanybooks.searches;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import com.hardbacknutter.nevertoomanybooks.Base;
-import com.hardbacknutter.nevertoomanybooks.utils.Csv;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -80,12 +80,16 @@ class SearchSitesTest
         final ArrayList<Site> sites = Site.Type.Data.getSites();
         // 4 should be removed, 128/256 added as loadPrefs will have been called
         assertEquals("64,32,16,8,2,1,128,256",
-                     Csv.join(",", sites, element -> String.valueOf(element.engineId)));
+                     sites.stream()
+                          .map(element -> String.valueOf(element.engineId))
+                          .collect(Collectors.joining(",")));
 
 
         final List<Site> reordered = Site.Type.reorder(sites, "1,2,4,16,64,128,256,512");
         // 4/512 should be removed, 8/32 NOT added as loadPrefs will NOT have been called
         assertEquals("1,2,16,64,128,256",
-                     Csv.join(",", reordered, element -> String.valueOf(element.engineId)));
+                     reordered.stream()
+                              .map(element -> String.valueOf(element.engineId))
+                              .collect(Collectors.joining(",")));
     }
 }

@@ -25,9 +25,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.entities.Entity;
-import com.hardbacknutter.nevertoomanybooks.utils.Csv;
 
 /**
  * FieldFormatter for a list field. Formats the Entity's as a CSV String.
@@ -44,9 +44,11 @@ public class CsvFormatter
                          @Nullable final List<Entity> rawValue) {
         if (rawValue == null || rawValue.isEmpty()) {
             return "";
+
         } else {
-            return Csv.join(", ", rawValue, true, null,
-                            element -> element.getLabel(context));
+            return rawValue.stream()
+                           .map(entity -> entity.getLabel(context))
+                           .collect(Collectors.joining(", "));
         }
     }
 }

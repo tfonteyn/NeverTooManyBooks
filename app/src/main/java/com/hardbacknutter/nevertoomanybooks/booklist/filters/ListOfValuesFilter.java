@@ -25,6 +25,8 @@ import android.content.SharedPreferences;
 import androidx.annotation.NonNull;
 import androidx.preference.PreferenceManager;
 
+import java.util.Collection;
+
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition;
 import com.hardbacknutter.nevertoomanybooks.utils.StringList;
@@ -49,13 +51,13 @@ public class ListOfValuesFilter<T>
     /**
      * Constructor.
      *
-     * @param table  to use by the expression
+     * @param table     to use by the expression
      * @param domainKey to use by the expression
-     * @param list   of values
+     * @param list      of values
      */
     public ListOfValuesFilter(@NonNull final TableDefinition table,
                               @NonNull final String domainKey,
-                              @NonNull final Iterable<T> list) {
+                              @NonNull final Collection<T> list) {
         mTable = table;
         mDomainKey = domainKey;
 

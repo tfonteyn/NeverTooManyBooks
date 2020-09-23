@@ -28,7 +28,6 @@ import androidx.annotation.WorkerThread;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.LinkedHashSet;
-import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -82,8 +81,7 @@ public class SearchEditionsTask
         // Always add the original isbn!
         isbnList.add(mIsbn);
 
-        final List<Site> allSites = Site.Type.AltEditions.getSites();
-        for (Site site : Site.filterForEnabled(allSites)) {
+        for (Site site : Site.filterForEnabled(Site.Type.AltEditions.getSites())) {
             final SearchEngine searchEngine = site.getSearchEngine(context, this);
             try {
                 // can we reach the site at all ?

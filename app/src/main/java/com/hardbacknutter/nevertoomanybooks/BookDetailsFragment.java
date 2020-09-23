@@ -51,6 +51,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistNavigator;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverHandler;
@@ -89,7 +90,6 @@ import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.GrSendOneBookTask;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.FinishedMessage;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.ProgressMessage;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
-import com.hardbacknutter.nevertoomanybooks.utils.Csv;
 import com.hardbacknutter.nevertoomanybooks.utils.Money;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.BookDetailsFragmentViewModel;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.LiveDataEvent;
@@ -604,9 +604,11 @@ public class BookDetailsFragment
                 if (isSet) {
                     rowVb.cbxMultipleBooks.setVisibility(View.VISIBLE);
                     rowVb.cbxMultipleBooks.setOnClickListener(v -> {
-                        final String titles =
-                                Csv.textList(context, mFragmentVM.getBookTitles(tocEntry),
-                                             element -> element.second);
+                        final String titles = mFragmentVM
+                                .getBookTitles(tocEntry)
+                                .stream()
+                                .map(bt -> context.getString(R.string.list_element, bt.second))
+                                .collect(Collectors.joining("\n"));
                         StandardDialogs.infoPopup(rowVb.cbxMultipleBooks, titles);
                     });
                 }

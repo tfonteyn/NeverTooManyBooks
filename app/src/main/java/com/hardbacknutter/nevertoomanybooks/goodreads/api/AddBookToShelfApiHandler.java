@@ -25,6 +25,7 @@ import android.text.TextUtils;
 import androidx.annotation.NonNull;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -112,15 +113,13 @@ public class AddBookToShelfApiHandler
      * @throws IOException          on other failures
      */
     public long add(final long grBookId,
-                    @NonNull final Iterable<String> shelfNames)
+                    @NonNull final Collection<String> shelfNames)
             throws CredentialsException, Http404Exception, IOException {
-
-        final String shelves = TextUtils.join(",", shelfNames);
 
         mReviewId = 0;
         final Map<String, String> parameters = new HashMap<>();
         parameters.put("bookids", String.valueOf(grBookId));
-        parameters.put("shelves", shelves);
+        parameters.put("shelves", TextUtils.join(",", shelfNames));
 
         final DefaultHandler handler = new XmlResponseParser(mRootFilter);
         executePost(URL_X_X, parameters, true, handler);

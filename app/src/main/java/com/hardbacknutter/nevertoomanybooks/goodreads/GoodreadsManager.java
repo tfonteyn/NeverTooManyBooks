@@ -476,7 +476,7 @@ public class GoodreadsManager {
      * @throws IOException          on other failures
      */
     private long addBookToShelf(final long grBookId,
-                                @NonNull final Iterable<String> shelfNames)
+                                @NonNull final Collection<String> shelfNames)
             throws CredentialsException, Http404Exception, IOException {
 
         if (mAddBookToShelfApiHandler == null) {

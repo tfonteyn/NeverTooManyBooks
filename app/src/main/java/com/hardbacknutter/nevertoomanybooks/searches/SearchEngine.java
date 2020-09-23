@@ -525,7 +525,7 @@ public interface SearchEngine {
         @WorkerThread
         @Nullable
         String searchCoverImageByIsbn(@NonNull String validIsbn,
-                                      @IntRange(from = 0) int cIdx,
+                                      @IntRange(from = 0, to = 1) int cIdx,
                                       @Nullable ImageFileInfo.Size size);
 
         /**

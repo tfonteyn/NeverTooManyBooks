@@ -26,7 +26,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.hardbacknutter.nevertoomanybooks.utils.LinkifyUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.HtmlUtils;
 
 /**
  * FieldFormatter for 'html' fields.
@@ -63,7 +63,7 @@ public class HtmlFormatter<T>
     public void apply(@Nullable final T rawValue,
                       @NonNull final TextView view) {
 
-        view.setText(LinkifyUtils.fromHtml(format(view.getContext(), rawValue)));
+        view.setText(HtmlUtils.linkify(format(view.getContext(), rawValue)));
 
         if (mEnableLinks && !view.hasOnClickListeners()) {
             view.setMovementMethod(LinkMovementMethod.getInstance());

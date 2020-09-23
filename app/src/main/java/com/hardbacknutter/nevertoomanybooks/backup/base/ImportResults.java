@@ -28,10 +28,10 @@ import androidx.annotation.NonNull;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportManager;
-import com.hardbacknutter.nevertoomanybooks.utils.Csv;
 
 /**
  * Value class to report back what was imported.
@@ -190,32 +190,32 @@ public class ImportResults
      */
     public String createReport(@NonNull final Context context) {
         //
-        final StringBuilder msg = new StringBuilder();
+        final StringBuilder report = new StringBuilder();
 
         //TODO: RTL
         if (booksCreated > 0 || booksUpdated > 0 || booksSkipped > 0) {
-            msg.append(BULLET)
-               .append(context.getString(R.string.progress_msg_x_created_y_updated_z_skipped,
-                                         context.getString(R.string.lbl_books),
-                                         booksCreated,
-                                         booksUpdated,
-                                         booksSkipped));
+            report.append(BULLET)
+                  .append(context.getString(R.string.progress_msg_x_created_y_updated_z_skipped,
+                                            context.getString(R.string.lbl_books),
+                                            booksCreated,
+                                            booksUpdated,
+                                            booksSkipped));
         }
         if (coversCreated > 0 || coversUpdated > 0 || coversSkipped > 0) {
-            msg.append(BULLET)
-               .append(context.getString(R.string.progress_msg_x_created_y_updated_z_skipped,
-                                         context.getString(R.string.lbl_covers),
-                                         coversCreated,
-                                         coversUpdated,
-                                         coversSkipped));
+            report.append(BULLET)
+                  .append(context.getString(R.string.progress_msg_x_created_y_updated_z_skipped,
+                                            context.getString(R.string.lbl_covers),
+                                            coversCreated,
+                                            coversUpdated,
+                                            coversSkipped));
         }
         if (styles > 0) {
-            msg.append(BULLET).append(context.getString(R.string.name_colon_value,
-                                                        context.getString(R.string.lbl_styles),
-                                                        String.valueOf(styles)));
+            report.append(BULLET).append(context.getString(R.string.name_colon_value,
+                                                           context.getString(R.string.lbl_styles),
+                                                           String.valueOf(styles)));
         }
         if (preferences > 0) {
-            msg.append(BULLET).append(context.getString(R.string.lbl_settings));
+            report.append(BULLET).append(context.getString(R.string.lbl_settings));
         }
 
         int failed = failedLinesNr.size();
@@ -230,15 +230,19 @@ public class ImportResults
             } else {
                 fs = R.string.warning_import_csv_failed_lines_some;
             }
+
             for (int i = 0; i < failed; i++) {
                 msgList.add(context.getString(R.string.a_bracket_b_bracket,
                                               String.valueOf(failedLinesNr.get(i)),
                                               failedLinesMessage.get(i)));
             }
 
-            msg.append("\n").append(context.getString(fs, Csv.textList(context, msgList, null)));
+            final String all = msgList.stream()
+                                      .map(s -> context.getString(R.string.list_element, s))
+                                      .collect(Collectors.joining("\n"));
+            report.append("\n").append(context.getString(fs, all));
         }
 
-        return msg.toString();
+        return report.toString();
     }
 }

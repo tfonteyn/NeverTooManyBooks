@@ -25,10 +25,11 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
-import com.hardbacknutter.nevertoomanybooks.utils.Csv;
+import com.hardbacknutter.nevertoomanybooks.utils.HtmlUtils;
 
 public class SeriesListFormatter
         extends HtmlFormatter<List<Series>> {
@@ -66,10 +67,12 @@ public class SeriesListFormatter
             case Full:
             case Normal:
                 if (mSingleLine) {
-                    return Csv.join("; ", rawValue, true, null,
-                                    element -> element.getLabel(context));
+                    return rawValue.stream()
+                                   .map(series -> series.getLabel(context))
+                                   .collect(Collectors.joining("; "));
                 } else {
-                    return Csv.htmlList(context, rawValue, element -> element.getLabel(context));
+                    return HtmlUtils.asList(context, rawValue, series ->
+                            series.getLabel(context));
                 }
 
             case Short:

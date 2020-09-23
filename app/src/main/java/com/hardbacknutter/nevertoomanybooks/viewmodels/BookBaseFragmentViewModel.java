@@ -168,6 +168,7 @@ public abstract class BookBaseFragmentViewModel
     public int getAndClearCurrentCoverHandlerIndex() {
         final int current = mCurrentCoverHandlerIndex;
         mCurrentCoverHandlerIndex = -1;
+
         if (BuildConfig.DEBUG /* always */) {
             if (current == -1) {
                 throw new IllegalStateException("getAndClearCurrentCoverHandlerIndex"
@@ -181,9 +182,9 @@ public abstract class BookBaseFragmentViewModel
      * Set the current cover handler index.
      * Call this before starting the camera and similar actions.
      *
-     * @param index to preserve
+     * @param cIdx 0..n image index
      */
-    public void setCurrentCoverHandlerIndex(@IntRange(from = 0) final int index) {
-        mCurrentCoverHandlerIndex = index;
+    public void setCurrentCoverHandlerIndex(@IntRange(from = 0, to = 1) final int cIdx) {
+        mCurrentCoverHandlerIndex = cIdx;
     }
 }

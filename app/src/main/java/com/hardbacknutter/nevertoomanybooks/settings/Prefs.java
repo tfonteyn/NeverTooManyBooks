@@ -155,8 +155,7 @@ public final class Prefs {
         final StringBuilder sb = new StringBuilder("\n\nSharedPreferences: "
                                                    + (uuid != null ? uuid : "global"));
         for (String key : keyList) {
-            Object value = map.get(key);
-            sb.append('\n').append(key).append('=').append(value);
+            sb.append('\n').append(key).append('=').append(map.get(key));
         }
         sb.append("\n\n");
 
@@ -176,14 +175,13 @@ public final class Prefs {
                                     @NonNull final String source,
                                     @NonNull final String destination,
                                     final boolean clearSource) {
-        SharedPreferences sourcePrefs =
+        final SharedPreferences sourcePrefs =
                 context.getSharedPreferences(source, Context.MODE_PRIVATE);
-        SharedPreferences destinationPrefs =
+        final SharedPreferences destinationPrefs =
                 context.getSharedPreferences(destination, Context.MODE_PRIVATE);
 
-        SharedPreferences.Editor ed = destinationPrefs.edit();
-        Map<String, ?> all = sourcePrefs.getAll();
-        for (Map.Entry<String, ?> entry : all.entrySet()) {
+        final SharedPreferences.Editor ed = destinationPrefs.edit();
+        for (Map.Entry<String, ?> entry : sourcePrefs.getAll().entrySet()) {
 
             if (entry.getValue() instanceof Boolean) {
                 ed.putBoolean(entry.getKey(), (Boolean) entry.getValue());

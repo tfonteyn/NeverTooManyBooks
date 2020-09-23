@@ -63,7 +63,6 @@ import com.hardbacknutter.nevertoomanybooks.database.definitions.VirtualDomain;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
-import com.hardbacknutter.nevertoomanybooks.utils.Csv;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BL_LIST_VIEW_NODE_ROW_ID;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BL_NODE_GROUP;
@@ -474,9 +473,9 @@ public class Booklist
 
         if (mSqlGetOffsetCursor == null) {
             mSqlGetOffsetCursor =
-                    SELECT_ + Csv.join(",",
-                                       mListTable.getDomains(),
-                                       domain -> mListTable.dot(domain.getName()))
+                    SELECT_ + mListTable.getDomains().stream()
+                                        .map(domain -> mListTable.dot(domain.getName()))
+                                        .collect(Collectors.joining(","))
                     + ',' + (mListTable.dot(KEY_PK_ID) + " AS " + KEY_BL_LIST_VIEW_NODE_ROW_ID)
                     + _FROM_ + mListTable.ref()
                     + _WHERE_ + mListTable.dot(KEY_BL_NODE_VISIBLE) + "=1"

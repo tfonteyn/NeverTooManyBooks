@@ -47,7 +47,6 @@ import com.google.android.material.snackbar.Snackbar;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.Arrays;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.BaseActivity;
@@ -523,10 +522,8 @@ public abstract class BasePreferenceFragment
                             "MultiSelectListPreference:"
                             + "\n s=" + s
                             + "\n key=" + msp.getKey()
-                            + "\n entries="
-                            + TextUtils.join(",", Arrays.asList(msp.getEntries()))
-                            + "\n entryValues="
-                            + TextUtils.join(",", Arrays.asList(msp.getEntryValues()))
+                            + "\n entries=" + TextUtils.join(",", msp.getEntries())
+                            + "\n entryValues=" + TextUtils.join(",", msp.getEntryValues())
                             + "\n values=" + msp.getValues());
                 }
 

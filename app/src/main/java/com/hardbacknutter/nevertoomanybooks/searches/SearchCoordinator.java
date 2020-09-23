@@ -55,6 +55,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
@@ -68,7 +69,6 @@ import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.FinishedMessage;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.ProgressMessage;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
-import com.hardbacknutter.nevertoomanybooks.utils.Csv;
 import com.hardbacknutter.nevertoomanybooks.utils.DateParser;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
@@ -1228,8 +1228,10 @@ public class SearchCoordinator
                     sb.append('\n');
                 }
                 // Append each task message
-                sb.append(Csv.textList(context, mSearchProgressMessages.values(),
-                                       element -> element.text));
+                sb.append(mSearchProgressMessages
+                                  .values().stream()
+                                  .map(msg -> context.getString(R.string.list_element, msg.text))
+                                  .collect(Collectors.joining("\n")));
 
                 for (ProgressMessage progressMessage : mSearchProgressMessages.values()) {
                     progressMax += progressMessage.maxPosition;

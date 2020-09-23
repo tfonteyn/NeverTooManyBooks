@@ -82,7 +82,6 @@ public class LastDodoSearchEngine
      *
      * @param appContext Application context
      */
-    @SuppressWarnings("WeakerAccess")
     public LastDodoSearchEngine(@NonNull final Context appContext) {
         super(appContext);
     }
@@ -364,26 +363,6 @@ public class LastDodoSearchEngine
     }
 
 
-    /**
-     * Found a Series.
-     *
-     * @param td data td
-     */
-    private void processSeries(@NonNull final Element td) {
-        final Elements aas = td.select("a");
-        for (Element a : aas) {
-            final String name = a.text();
-            final Series currentSeries = Series.from(name);
-            // check if already present
-            for (Series series : mSeries) {
-                if (series.equals(currentSeries)) {
-                    return;
-                }
-            }
-            // just add
-            mSeries.add(currentSeries);
-        }
-    }
 
     /**
      * Found an Author.
@@ -405,6 +384,7 @@ public class LastDodoSearchEngine
                     // merge types.
                     author.addType(currentAuthorType);
                     add = false;
+                    // keep looping
                 }
             }
 
@@ -412,6 +392,25 @@ public class LastDodoSearchEngine
                 currentAuthor.setType(currentAuthorType);
                 mAuthors.add(currentAuthor);
             }
+        }
+    }
+
+    /**
+     * Found a Series.
+     *
+     * @param td data td
+     */
+    private void processSeries(@NonNull final Element td) {
+        final Elements aas = td.select("a");
+        for (Element a : aas) {
+            final String name = a.text();
+            final Series currentSeries = Series.from(name);
+            // check if already present
+            if (mSeries.stream().anyMatch(series -> series.equals(currentSeries))) {
+                return;
+            }
+            // just add
+            mSeries.add(currentSeries);
         }
     }
 
@@ -426,10 +425,8 @@ public class LastDodoSearchEngine
             final String name = cleanText(a.text());
             final Publisher currentPublisher = Publisher.from(name);
             // check if already present
-            for (Publisher publisher : mPublishers) {
-                if (publisher.equals(currentPublisher)) {
-                    return;
-                }
+            if (mPublishers.stream().anyMatch(pub -> pub.equals(currentPublisher))) {
+                return;
             }
             // just add
             mPublishers.add(currentPublisher);

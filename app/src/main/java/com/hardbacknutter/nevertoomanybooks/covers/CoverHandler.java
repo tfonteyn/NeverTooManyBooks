@@ -114,7 +114,7 @@ public class CoverHandler {
     @NonNull
     private final ImageView mCoverView;
     /** Index of the image we're handling. */
-    @IntRange(from = 0)
+    @IntRange(from = 0, to = 1)
     private final int mCIdx;
     /** Context from the fragment, cached as used frequently. */
     @NonNull
@@ -679,7 +679,7 @@ public class CoverHandler {
          *
          * @param cIdx 0..n image index
          */
-        void setCurrentCoverIndex(@IntRange(from = 0) int cIdx);
+        void setCurrentCoverIndex(@IntRange(from = 0, to = 1) int cIdx);
     }
 
     @IntDef({ACTION_NOTHING, ACTION_CROP, ACTION_EDIT})

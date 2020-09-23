@@ -44,7 +44,6 @@ import java.util.Deque;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
 import java.util.function.Consumer;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -621,7 +620,7 @@ public class XmlImporter
          * but store should be a Set of some type.
          */
         default void putStringSet(@NonNull final K key,
-                                  @NonNull final Iterable<String> value) {
+                                  @NonNull final Collection<String> value) {
             throw new IllegalArgumentException(ErrorMsg.UNEXPECTED_VALUE + "StringSet, key=" + key);
         }
 
@@ -630,7 +629,7 @@ public class XmlImporter
          * but store should be a List of some type.
          */
         default void putStringList(@NonNull final K key,
-                                   @NonNull final Iterable<String> value) {
+                                   @NonNull final Collection<String> value) {
             throw new IllegalArgumentException(ErrorMsg.UNEXPECTED_VALUE
                                                + "StringList, key=" + key);
         }
@@ -856,17 +855,13 @@ public class XmlImporter
 
         @Override
         public void putStringSet(@NonNull final String key,
-                                 @NonNull final Iterable<String> value) {
-            Set<String> valueSet = new HashSet<>();
-            for (String s : value) {
-                valueSet.add(s);
-            }
-            mEditor.putStringSet(key, valueSet);
+                                 @NonNull final Collection<String> value) {
+            mEditor.putStringSet(key, new HashSet<>(value));
         }
 
         @Override
         public void putStringList(@NonNull final String key,
-                                  @NonNull final Iterable<String> value) {
+                                  @NonNull final Collection<String> value) {
             mEditor.putString(key, TextUtils.join(",", value));
         }
     }
@@ -1001,7 +996,7 @@ public class XmlImporter
 
         @Override
         public void putStringSet(@NonNull final String key,
-                                 @NonNull final Iterable<String> value) {
+                                 @NonNull final Collection<String> value) {
             final PCsvString p = (PCsvString) mStylePrefs.get(key);
             if (p != null) {
                 p.set(TextUtils.join(PCollectionBase.DELIM, value));
@@ -1010,7 +1005,7 @@ public class XmlImporter
 
         @Override
         public void putStringList(@NonNull final String key,
-                                  @NonNull final Iterable<String> value) {
+                                  @NonNull final Collection<String> value) {
             final PCsvString p = (PCsvString) mStylePrefs.get(key);
             if (p != null) {
                 p.set(TextUtils.join(PCollectionBase.DELIM, value));
