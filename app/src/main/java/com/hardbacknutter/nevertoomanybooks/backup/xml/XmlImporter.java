@@ -958,7 +958,7 @@ public class XmlImporter
         public void endElement() {
             // we now have the groups themselves (one of the 'flat' prefs) set on the style,
             // so transfer their specific Preferences.
-            for (BooklistGroup group : mStyle.getGroups()) {
+            for (BooklistGroup group : mStyle.getGroups().getGroupList()) {
                 mStyle.updatePreferences(mContext, group.getPreferences());
             }
             // add to the menu of preferred styles if needed.

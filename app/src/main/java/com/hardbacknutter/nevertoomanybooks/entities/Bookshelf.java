@@ -50,6 +50,10 @@ import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 
 /**
  * Represents a Bookshelf.
+ *
+ * <strong>Warning:</strong> the {@link BooklistStyle} association is LAZY.
+ * i.o.w. the stored style UUID will/must always be validated before being used.
+ * See {@link #getStyle(Context, DAO)}.
  * <p>
  * FIXME: {@link DBDefinitions#KEY_BOOKSHELF_BL_TOP_ROW_ID} is no longer used and should be removed.
  */
@@ -388,6 +392,7 @@ public class Bookshelf
      *
      * @param source Bookshelf to copy from
      */
+    @SuppressWarnings("unused")
     public void copyFrom(@NonNull final Bookshelf source) {
         mName = source.mName;
         mStyleUuid = source.mStyleUuid;

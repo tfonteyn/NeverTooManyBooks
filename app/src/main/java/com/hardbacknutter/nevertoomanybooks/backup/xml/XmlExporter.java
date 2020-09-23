@@ -291,7 +291,7 @@ public class XmlExporter
 
             // Groups with their Preferences.
             writer.write('<' + XmlTags.TAG_GROUP_LIST + '>');
-            for (BooklistGroup group : style.getGroups()) {
+            for (BooklistGroup group : style.getGroups().getGroupList()) {
                 writer.write('<' + XmlTags.TAG_GROUP);
                 writer.write(XmlUtils.idAttr(group.getId()));
                 writer.write(">\n");
@@ -304,7 +304,7 @@ public class XmlExporter
 
             // Active filters with their Preferences.
             writer.write('<' + XmlTags.TAG_FILTER_LIST + '>');
-            for (Filter<?> filter : style.getActiveFilters(context)) {
+            for (Filter<?> filter : style.getFilters().getActiveFilters(context)) {
                 if (filter.isActive(context)) {
                     writer.write(XmlUtils.tag(XmlTags.TAG_FILTER,
                                               filter.getKey(), filter.getValue(context)));

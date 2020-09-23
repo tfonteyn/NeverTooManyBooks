@@ -358,9 +358,11 @@ class BooklistNodeDAO {
                  final boolean expandNode,
                  @IntRange(from = 0) final int relativeChildLevel) {
 
-        if (relativeChildLevel > mStyle.getGroupCount()) {
+        final int groupCount = mStyle.getGroups().size();
+
+        if (relativeChildLevel > groupCount) {
             throw new IllegalArgumentException(
-                    "mStyle.getGroupCount()=" + mStyle.getGroupCount()
+                    "groupCount=" + groupCount
                     + "|relativeChildLevel=" + relativeChildLevel);
         }
 
@@ -495,7 +497,7 @@ class BooklistNodeDAO {
             }
         }
 
-        final int level = Math.min(nodeLevel + relativeChildLevel, mStyle.getGroupCount() + 1);
+        final int level = Math.min(nodeLevel + relativeChildLevel, mStyle.getGroups().size() + 1);
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_NODE_STATE) {
             Log.d(TAG, "updateNodesBetween"
@@ -777,7 +779,7 @@ class BooklistNodeDAO {
                 + _WHERE_ + KEY_BL_NODE_VISIBLE + "=1"
                 // Groups only - Don't do books
                 + _AND_ + KEY_BL_NODE_LEVEL + " BETWEEN 2 AND ?",
-                new String[]{String.valueOf(mStyle.getGroupCount())})) {
+                new String[]{String.valueOf(mStyle.getGroups().size())})) {
 
             while (cursor.moveToNext()) {
                 final String key = cursor.getString(0);

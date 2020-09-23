@@ -173,19 +173,19 @@ public class BooklistAdapter
         }
 
         @BooklistStyle.CoverScale
-        final int thumbnailScale = mStyle.getThumbnailScale(context);
+        final int frontCoverScale = mStyle.getListScreenBookFields().getCoverScale(context);
 
         // The thumbnail scale is used to retrieve the cover dimensions
         // We use a square space for the image so both portrait/landscape images work out.
         final TypedArray coverSizes = context
                 .getResources().obtainTypedArray(R.array.cover_book_list_longest_side);
-        mCoverLongestSide = coverSizes.getDimensionPixelSize(thumbnailScale, 0);
+        mCoverLongestSide = coverSizes.getDimensionPixelSize(frontCoverScale, 0);
         coverSizes.recycle();
 
         // The thumbnail scale defines the Book layout file to use.
         // The layout names ending in 3/4/5 are ONLY the references, they are not
         // hard coded in the layout files themselves (other than in 'tools' settings).
-        switch (thumbnailScale) {
+        switch (frontCoverScale) {
             case BooklistStyle.IMAGE_SCALE_6_MAX:
             case BooklistStyle.IMAGE_SCALE_5_VERY_LARGE:
                 mBookLayoutId = R.layout.booksonbookshelf_row_book_scale_5;
@@ -289,22 +289,27 @@ public class BooklistAdapter
                 break;
 
             case BooklistGroup.AUTHOR:
-                holder = new AuthorHolder(this, itemView, mStyle.getGroupById(groupId));
+                holder = new AuthorHolder(this, itemView,
+                                          mStyle.getGroups().getGroupByIdOrCrash(groupId));
                 break;
 
             case BooklistGroup.SERIES:
-                holder = new SeriesHolder(this, itemView, mStyle.getGroupById(groupId));
+                holder = new SeriesHolder(this, itemView,
+                                          mStyle.getGroups().getGroupByIdOrCrash(groupId));
                 break;
 
             case BooklistGroup.RATING:
-                holder = new RatingHolder(itemView, mStyle.getGroupById(groupId));
+                holder = new RatingHolder(itemView,
+                                          mStyle.getGroups().getGroupByIdOrCrash(groupId));
                 break;
 
             default:
-                holder = new GenericStringHolder(this, itemView, mStyle.getGroupById(groupId));
+                holder = new GenericStringHolder(this, itemView,
+                                                 mStyle.getGroups().getGroupByIdOrCrash(groupId));
                 break;
         }
 
+        // test for the mOnRowClickedListener inside the lambda, this allows changing it if needed
         holder.onClickTargetView.setOnClickListener(v -> {
             if (mOnRowClickedListener != null) {
                 mOnRowClickedListener.onItemClick(holder.getBindingAdapterPosition());
@@ -381,10 +386,12 @@ public class BooklistAdapter
         }
 
         final Context context = parent.getContext();
+        final BooklistStyle.TextStyle textStyle = mStyle.getTextStyle();
         // Scale text/padding (recursively) if required
-        if (mStyle.getTextScale(context) != BooklistStyle.FONT_SCALE_2_MEDIUM) {
-            scaleTextViews(view, mStyle.getTextSpUnits(context),
-                           mStyle.getTextPaddingFactor(context));
+        if (!textStyle.isDefaultScale(context)) {
+            scaleTextViews(view,
+                           textStyle.getFontSizeInSpUnits(context),
+                           textStyle.getPaddingFactor(context));
         }
         return view;
     }
@@ -655,9 +662,10 @@ public class BooklistAdapter
 
         // sanity check.
         if (BuildConfig.DEBUG /* always */) {
-            if (level > (mStyle.getGroupCount() + 1)) {
+            int groupCount = mStyle.getGroups().size() + 1;
+            if (level > groupCount) {
                 throw new IllegalArgumentException(
-                        "level=" + level + "> (getGroupCount+1)=" + mStyle.getGroupCount() + 1);
+                        "level=" + level + "> (getGroupCount+1)=" + groupCount);
             }
         }
 
@@ -668,14 +676,14 @@ public class BooklistAdapter
         }
 
         try {
-            if (level > (mStyle.getGroupCount())) {
+            if (level > (mStyle.getGroups().size())) {
                 // it's a book; use the title (no need to take the group.format round-trip).
                 //noinspection ConstantConditions
                 return mNodeData.getString(DBDefinitions.KEY_TITLE);
 
             } else {
                 // it's a group; use the display domain as the text
-                final BooklistGroup group = mStyle.getGroupByLevel(level);
+                final BooklistGroup group = mStyle.getGroups().getGroupByLevel(level);
                 //noinspection ConstantConditions
                 final String value = mNodeData.getString(group.getDisplayDomain().getName());
                 if (!value.isEmpty()) {
@@ -775,15 +783,35 @@ public class BooklistAdapter
             lending = DBDefinitions.isUsed(prefs, DBDefinitions.KEY_LOANEE);
             series = DBDefinitions.isUsed(prefs, DBDefinitions.KEY_SERIES_TITLE);
 
-            cover = style.useBookDetail(context, prefs, BooklistStyle.pk_book_show_thumbnails);
-            author = style.useBookDetail(context, prefs, BooklistStyle.pk_book_show_author);
-            publisher = style.useBookDetail(context, prefs, BooklistStyle.pk_book_show_publisher);
-            pubDate = style.useBookDetail(context, prefs, BooklistStyle.pk_book_show_pub_date);
-            isbn = style.useBookDetail(context, prefs, BooklistStyle.pk_book_show_isbn);
-            format = style.useBookDetail(context, prefs, BooklistStyle.pk_book_show_format);
-            location = style.useBookDetail(context, prefs, BooklistStyle.pk_book_show_location);
-            rating = style.useBookDetail(context, prefs, BooklistStyle.pk_book_show_rating);
-            bookshelf = style.useBookDetail(context, prefs, BooklistStyle.pk_book_show_bookshelves);
+            final BooklistStyle.ListScreenBookFields bookFields = style
+                    .getListScreenBookFields();
+
+            cover = bookFields
+                    .isShowField(context, prefs, BooklistStyle.ListScreenBookFields.pk_covers);
+
+            author = bookFields
+                    .isShowField(context, prefs, BooklistStyle.ListScreenBookFields.pk_author);
+
+            publisher = bookFields
+                    .isShowField(context, prefs, BooklistStyle.ListScreenBookFields.pk_publisher);
+
+            pubDate = bookFields
+                    .isShowField(context, prefs, BooklistStyle.ListScreenBookFields.pk_pub_date);
+
+            isbn = bookFields
+                    .isShowField(context, prefs, BooklistStyle.ListScreenBookFields.pk_isbn);
+
+            format = bookFields
+                    .isShowField(context, prefs, BooklistStyle.ListScreenBookFields.pk_format);
+
+            location = bookFields
+                    .isShowField(context, prefs, BooklistStyle.ListScreenBookFields.pk_location);
+
+            rating = bookFields
+                    .isShowField(context, prefs, BooklistStyle.ListScreenBookFields.pk_rating);
+
+            bookshelf = bookFields
+                    .isShowField(context, prefs, BooklistStyle.ListScreenBookFields.pk_bookshelves);
         }
 
         /**
@@ -1133,33 +1161,33 @@ public class BooklistAdapter
 
         @Nullable
         String getPublisherAndPubDateText(@NonNull final DataHolder rowData) {
-            final String publicationDate;
+            final String name;
+            if (mInUse.publisher) {
+                name = rowData.getString(DBDefinitions.KEY_PUBLISHER_NAME);
+            } else {
+                name = null;
+            }
+
+            final String date;
             if (mInUse.pubDate) {
-                publicationDate = AppLocale.getInstance().toPrettyDate(
+                date = AppLocale.getInstance().toPrettyDate(
                         itemView.getContext(), rowData.getString(DBDefinitions.KEY_DATE_PUBLISHED));
             } else {
-                publicationDate = null;
+                date = null;
             }
 
-            final String publisherName;
-            if (mInUse.publisher) {
-                publisherName = rowData.getString(DBDefinitions.KEY_PUBLISHER_NAME);
-            } else {
-                publisherName = null;
-            }
 
-            if (publisherName != null && !publisherName.isEmpty()
-                && publicationDate != null && !publicationDate.isEmpty()) {
+            if (name != null && !name.isEmpty() && date != null && !date.isEmpty()) {
                 // Combine Publisher and date
-                return String.format(mX_bracket_Y_bracket, publisherName, publicationDate);
+                return String.format(mX_bracket_Y_bracket, name, date);
 
-            } else if (publisherName != null && !publisherName.isEmpty()) {
+            } else if (name != null && !name.isEmpty()) {
                 // there was no date, just use the publisher
-                return publisherName;
+                return name;
 
-            } else if (publicationDate != null && !publicationDate.isEmpty()) {
+            } else if (date != null && !date.isEmpty()) {
                 // there was no publisher, just use the date
-                return publicationDate;
+                return date;
 
             } else {
                 // Neither is present

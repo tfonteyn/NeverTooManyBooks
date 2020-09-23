@@ -56,15 +56,17 @@ public class StyleGroupsModel
             mStyle = args.getParcelable(BooklistStyle.BKEY_STYLE);
             Objects.requireNonNull(mStyle, ErrorMsg.NULL_STYLE);
 
+            final BooklistStyle.Groups styleGroups = mStyle.getGroups();
+
             // Build an array list with the groups from the style
-            mList = new ArrayList<>(mStyle.getGroupCount());
-            for (BooklistGroup group : mStyle.getGroups()) {
+            mList = new ArrayList<>(styleGroups.size());
+            for (BooklistGroup group : styleGroups.getGroupList()) {
                 mList.add(new GroupWrapper(group, true));
             }
             // Get all other groups and add any missing ones to the list so the user can
             // add them if wanted.
             for (BooklistGroup group : BooklistGroup.getAllGroups(context, mStyle)) {
-                if (!mStyle.containsGroup(group.getId())) {
+                if (!styleGroups.contains(group.getId())) {
                     mList.add(new GroupWrapper(group, false));
                 }
             }
@@ -89,13 +91,15 @@ public class StyleGroupsModel
     void updateStyle(@NonNull final Context context) {
         final Map<String, PPref> allPreferences = mStyle.getPreferences(true);
 
+        final BooklistStyle.Groups styleGroups = mStyle.getGroups();
+
         // Loop through all groups
         for (GroupWrapper wrapper : mList) {
             // Remove it from the style
-            mStyle.removeGroup(wrapper.group);
+            styleGroups.remove(wrapper.group.getId());
             // If required, add the group back; this also takes care of the order.
             if (wrapper.present) {
-                mStyle.addGroup(wrapper.group);
+                styleGroups.add(wrapper.group);
             }
         }
 

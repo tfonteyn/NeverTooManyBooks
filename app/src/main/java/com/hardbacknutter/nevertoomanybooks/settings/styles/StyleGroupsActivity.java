@@ -110,7 +110,7 @@ public class StyleGroupsActivity
     public void onBackPressed() {
         mModel.updateStyle(this);
 
-        if (mModel.getStyle().getGroupCount() == 0) {
+        if (mModel.getStyle().getGroups().size() == 0) {
             new MaterialAlertDialogBuilder(this)
                     .setIcon(R.drawable.ic_warning)
                     .setTitle(R.string.pg_style_groups)

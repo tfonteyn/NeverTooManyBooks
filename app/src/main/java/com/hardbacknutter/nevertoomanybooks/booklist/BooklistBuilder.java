@@ -191,7 +191,7 @@ final class BooklistBuilder {
 
         // The level expression; for a book this is always 1 below the #groups obviously
         addDomain(new VirtualDomain(
-                DOM_BL_NODE_LEVEL, String.valueOf(mStyle.getGroupCount() + 1)), false);
+                DOM_BL_NODE_LEVEL, String.valueOf(mStyle.getGroups().size() + 1)), false);
 
         // The group is the book group (duh)
         addDomain(new VirtualDomain(
@@ -201,7 +201,7 @@ final class BooklistBuilder {
         addDomain(new VirtualDomain(DOM_FK_BOOK, TBL_BOOKS.dot(KEY_PK_ID)), false);
 
         // Add style-specified groups
-        for (BooklistGroup group : mStyle.getGroups()) {
+        for (BooklistGroup group : mStyle.getGroups().getGroupList()) {
             addGroup(group);
         }
 
@@ -211,7 +211,7 @@ final class BooklistBuilder {
         }
 
         // Add the active filters from the style
-        mFilters.addAll(mStyle.getActiveFilters(context));
+        mFilters.addAll(mStyle.getFilters().getActiveFilters(context));
         // And finally, add all filters to be used for the WHERE clause
         mFilters.addAll(filters);
 
@@ -377,16 +377,18 @@ final class BooklistBuilder {
         //IMPORTANT: withConstraints MUST BE false
         mTriggerHelperTable.recreate(db, false);
 
+        final int groupCount = mStyle.getGroups().size();
+
         /*
          * For each grouping, starting with the lowest, build a trigger to update the next
          * level up as necessary. i.o.w. each level has a dedicated trigger.
          */
-        for (int index = mStyle.getGroupCount() - 1; index >= 0; index--) {
+        for (int index = groupCount - 1; index >= 0; index--) {
             // Get the level number for this group
             final int level = index + 1;
 
             // Get the group
-            final BooklistGroup group = mStyle.getGroupByLevel(level);
+            final BooklistGroup group = mStyle.getGroups().getGroupByLevel(level);
 
             // Create the INSERT columns clause for the next level up
             final StringBuilder listColumns = new StringBuilder()
@@ -457,7 +459,7 @@ final class BooklistBuilder {
         final String currentValueTgSql =
                 "\nCREATE TEMPORARY TRIGGER " + mTriggerHelperCurrentValueTriggerName
                 + " AFTER INSERT ON " + mListTable.getName() + " FOR EACH ROW"
-                + "\n WHEN NEW." + KEY_BL_NODE_LEVEL + '=' + mStyle.getGroupCount()
+                + "\n WHEN NEW." + KEY_BL_NODE_LEVEL + '=' + groupCount
                 + "\n BEGIN"
                 + "\n  DELETE FROM " + mTriggerHelperTable.getName() + ';'
                 + "\n  INSERT INTO " + mTriggerHelperTable.getName()
@@ -575,7 +577,7 @@ final class BooklistBuilder {
      */
     private String buildNodeKey() {
         final StringBuilder keyColumn = new StringBuilder();
-        for (BooklistGroup group : mStyle.getGroups()) {
+        for (BooklistGroup group : mStyle.getGroups().getGroupList()) {
             keyColumn.append(group.getNodeKeyExpression()).append("||");
         }
         int len = keyColumn.length();
@@ -608,9 +610,11 @@ final class BooklistBuilder {
         // Text of join statement
         final StringBuilder sql = new StringBuilder();
 
+        final BooklistStyle.Groups styleGroups = mStyle.getGroups();
+
         // If there is a bookshelf specified (either as group or as a filter),
         // start the join there.
-        if (mStyle.containsGroup(BooklistGroup.BOOKSHELF) || mFilteredOnBookshelf) {
+        if (styleGroups.contains(BooklistGroup.BOOKSHELF) || mFilteredOnBookshelf) {
             sql.append(TBL_BOOKSHELF.ref())
                .append(TBL_BOOKSHELF.join(TBL_BOOK_BOOKSHELF))
                .append(TBL_BOOK_BOOKSHELF.join(TBL_BOOKS));
@@ -652,7 +656,7 @@ final class BooklistBuilder {
         // Join with Authors to make the names available
         sql.append(TBL_BOOK_AUTHOR.join(TBL_AUTHORS));
 
-        if (mStyle.containsGroup(BooklistGroup.SERIES)
+        if (styleGroups.contains(BooklistGroup.SERIES)
             || DBDefinitions.isUsed(prefs, DBDefinitions.KEY_SERIES_TITLE)) {
             // Join with the link table between Book and Series.
             sql.append(TBL_BOOKS.leftOuterJoin(TBL_BOOK_SERIES));
@@ -666,7 +670,7 @@ final class BooklistBuilder {
             sql.append(TBL_BOOK_SERIES.leftOuterJoin(TBL_SERIES));
         }
 
-        if (mStyle.containsGroup(BooklistGroup.PUBLISHER)
+        if (styleGroups.contains(BooklistGroup.PUBLISHER)
             || DBDefinitions.isUsed(prefs, DBDefinitions.KEY_PUBLISHER_NAME)) {
             // Join with the link table between Book and Publishers.
             sql.append(TBL_BOOKS.leftOuterJoin(TBL_BOOK_PUBLISHER));

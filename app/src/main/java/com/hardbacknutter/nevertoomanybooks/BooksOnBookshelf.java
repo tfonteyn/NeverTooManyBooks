@@ -1084,7 +1084,7 @@ public class BooksOnBookshelf
 
             case R.id.MENU_LEVEL_EXPAND: {
                 setNode(rowData, BooklistNode.NEXT_STATE_EXPANDED,
-                        mModel.getCurrentStyle(this).getGroupCount());
+                        mModel.getCurrentStyle(this).getGroups().size());
                 return true;
             }
 
@@ -1282,7 +1282,7 @@ public class BooksOnBookshelf
                         if (options != 0) {
                             if ((options & Options.STYLES) != 0) {
                                 // Force a refresh of the list of all user styles.
-                                BooklistStyle.StyleDAO.clear();
+                                BooklistStyle.StyleDAO.clearCache();
                             }
                             if ((options & Options.PREFS) != 0) {
                                 // Refresh the preferred bookshelf. This also refreshes its style.
@@ -1300,7 +1300,7 @@ public class BooksOnBookshelf
             // from BaseActivity Nav Panel
             case RequestCode.NAV_PANEL_ABOUT:
                 if (resultCode == AboutActivity.RESULT_ALL_DATA_DESTROYED) {
-                    BooklistStyle.StyleDAO.clear();
+                    BooklistStyle.StyleDAO.clearCache();
                     mModel.reloadSelectedBookshelf(this);
                     mModel.setForceRebuildInOnResume(true);
                 }

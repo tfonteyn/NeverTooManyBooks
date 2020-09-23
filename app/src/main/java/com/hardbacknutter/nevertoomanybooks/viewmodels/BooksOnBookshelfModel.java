@@ -544,9 +544,9 @@ public class BooksOnBookshelfModel
     @Nullable
     public String getHeaderFilterText(@NonNull final Context context) {
         final BooklistStyle style = getCurrentStyle(context);
-        if (style.showHeader(context, BooklistStyle.HEADER_SHOW_FILTER)) {
+        if (style.isShowHeader(context, BooklistStyle.HEADER_SHOW_FILTER)) {
             final Collection<String> filterText = new ArrayList<>();
-            for (Filter<?> filter : style.getActiveFilters(context)) {
+            for (Filter<?> filter : style.getFilters().getActiveFilters(context)) {
                 filterText.add(filter.getLabel(context));
             }
 
@@ -566,7 +566,7 @@ public class BooksOnBookshelfModel
     @Nullable
     public String getHeaderStyleName(@NonNull final Context context) {
         final BooklistStyle style = getCurrentStyle(context);
-        if (style.showHeader(context, BooklistStyle.HEADER_SHOW_STYLE_NAME)) {
+        if (style.isShowHeader(context, BooklistStyle.HEADER_SHOW_STYLE_NAME)) {
             return style.getLabel(context);
         }
         return null;
@@ -575,7 +575,7 @@ public class BooksOnBookshelfModel
     @Nullable
     public String getHeaderBookCount(@NonNull final Context context) {
         final BooklistStyle style = getCurrentStyle(context);
-        if (style.showHeader(context, BooklistStyle.HEADER_SHOW_BOOK_COUNT)) {
+        if (style.isShowHeader(context, BooklistStyle.HEADER_SHOW_BOOK_COUNT)) {
             //noinspection ConstantConditions
             final int totalBooks = mBooklist.countBooks();
             final int distinctBooks = mBooklist.countDistinctBooks();
@@ -740,8 +740,11 @@ public class BooksOnBookshelfModel
             }
 
             // Add the conditional domains; style level.
+            final BooklistStyle.ListScreenBookFields bookFields = style
+                    .getListScreenBookFields();
 
-            if (style.useBookDetail(context, prefs, BooklistStyle.pk_book_show_bookshelves)) {
+            if (bookFields.isShowField(context, prefs,
+                                       BooklistStyle.ListScreenBookFields.pk_bookshelves)) {
                 // This collects a CSV list of the bookshelves the book is on.
                 builder.addDomain(new VirtualDomain(
                         DBDefinitions.DOM_BOOKSHELF_NAME_CSV,
@@ -749,44 +752,55 @@ public class BooksOnBookshelfModel
             }
 
             // we fetch ONLY the primary author
-            if (style.useBookDetail(context, prefs, BooklistStyle.pk_book_show_author)) {
+
+            if (bookFields.isShowField(context, prefs,
+                                       BooklistStyle.ListScreenBookFields.pk_author)) {
                 builder.addDomain(new VirtualDomain(
-                        DBDefinitions.DOM_AUTHOR_FORMATTED,
-                        DAOSql.SqlColumns.getDisplayAuthor(DBDefinitions.TBL_AUTHORS.getAlias(),
-                                                           style.isShowAuthorByGivenName(
-                                                                   context))));
+                        DBDefinitions.DOM_AUTHOR_FORMATTED, DAOSql.SqlColumns
+                        .getDisplayAuthor(DBDefinitions.TBL_AUTHORS.getAlias(),
+                                          style.isShowAuthorByGivenName(context))));
             }
 
             // for now, don't get the author type.
-            //  if (style.useBookDetail(context, prefs, BooklistStyle.pk_book_show_author_type)) {
+            //  if (bookFields.isShowField(context, prefs,
+            //                             BooklistStyle.pk_book_show_author_type)) {
             //      builder.addDomain(new VirtualDomain(
             //              DBDefinitions.DOM_BOOK_AUTHOR_TYPE_BITMASK,
             //              DBDefinitions.TBL_BOOK_AUTHOR
             //              .dot(DBDefinitions.KEY_BOOK_AUTHOR_TYPE_BITMASK)));
             //  }
 
-            if (style.useBookDetail(context, prefs, BooklistStyle.pk_book_show_publisher)) {
+            if (bookFields.isShowField(context, prefs,
+                                       BooklistStyle.ListScreenBookFields.pk_publisher)) {
                 // Collect a CSV list of the publishers of the book
                 builder.addDomain(new VirtualDomain(
                         DBDefinitions.DOM_PUBLISHER_NAME_CSV,
                         DAOSql.SqlColumns.EXP_PUBLISHER_NAME_CSV));
             }
-            if (style.useBookDetail(context, prefs, BooklistStyle.pk_book_show_pub_date)) {
+
+            if (bookFields.isShowField(context, prefs,
+                                       BooklistStyle.ListScreenBookFields.pk_pub_date)) {
                 builder.addDomain(new VirtualDomain(
                         DBDefinitions.DOM_DATE_PUBLISHED,
                         DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_DATE_PUBLISHED)));
             }
-            if (style.useBookDetail(context, prefs, BooklistStyle.pk_book_show_format)) {
+
+            if (bookFields.isShowField(context, prefs,
+                                       BooklistStyle.ListScreenBookFields.pk_format)) {
                 builder.addDomain(new VirtualDomain(
                         DBDefinitions.DOM_BOOK_FORMAT,
                         DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_FORMAT)));
             }
-            if (style.useBookDetail(context, prefs, BooklistStyle.pk_book_show_location)) {
+
+            if (bookFields.isShowField(context, prefs,
+                                       BooklistStyle.ListScreenBookFields.pk_location)) {
                 builder.addDomain(new VirtualDomain(
                         DBDefinitions.DOM_BOOK_LOCATION,
                         DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_LOCATION)));
             }
-            if (style.useBookDetail(context, prefs, BooklistStyle.pk_book_show_rating)) {
+
+            if (bookFields.isShowField(context, prefs,
+                                       BooklistStyle.ListScreenBookFields.pk_rating)) {
                 builder.addDomain(new VirtualDomain(
                         DBDefinitions.DOM_BOOK_RATING,
                         DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_RATING)));
@@ -821,7 +835,7 @@ public class BooksOnBookshelfModel
 
             // pre-count and cache (in the builder) these while we're in the background.
             // They are used for the header, and will not change even if the list cursor changes.
-            if (style.showHeader(context, BooklistStyle.HEADER_SHOW_BOOK_COUNT)) {
+            if (style.isShowHeader(context, BooklistStyle.HEADER_SHOW_BOOK_COUNT)) {
                 builder.countBooks();
                 builder.countDistinctBooks();
             }

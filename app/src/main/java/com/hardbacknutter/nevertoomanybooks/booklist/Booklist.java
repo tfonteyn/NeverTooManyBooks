@@ -237,7 +237,8 @@ public class Booklist
 
         // Filter on the specified Bookshelf.
         // The filter will only be added if the current style does not contain the Bookshelf group.
-        if (!mBookshelf.isAllBooks() && !mStyle.containsGroup(BooklistGroup.BOOKSHELF)) {
+        if (!mBookshelf.isAllBooks()
+            && !mStyle.getGroups().contains(BooklistGroup.BOOKSHELF)) {
             mFilters.add(c -> '(' + TBL_BOOKSHELF.dot(KEY_PK_ID) + '=' + mBookshelf.getId() + ')');
         }
     }
@@ -473,7 +474,8 @@ public class Booklist
 
         if (mSqlGetOffsetCursor == null) {
             mSqlGetOffsetCursor =
-                    SELECT_ + Csv.join(mListTable.getDomains(),
+                    SELECT_ + Csv.join(",",
+                                       mListTable.getDomains(),
                                        domain -> mListTable.dot(domain.getName()))
                     + ',' + (mListTable.dot(KEY_PK_ID) + " AS " + KEY_BL_LIST_VIEW_NODE_ROW_ID)
                     + _FROM_ + mListTable.ref()

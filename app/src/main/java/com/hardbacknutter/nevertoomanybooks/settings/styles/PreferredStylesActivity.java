@@ -434,7 +434,7 @@ public class PreferredStylesActivity
 
             holder.nameView.setText(style.getLabel(getContext()));
 
-            holder.groupsView.setText(style.getGroupLabels(getContext()));
+            holder.groupsView.setText(style.getGroups().getSummaryText(getContext()));
             if (style.isUserDefined()) {
                 holder.typeView.setText(R.string.style_is_user_defined);
             } else {

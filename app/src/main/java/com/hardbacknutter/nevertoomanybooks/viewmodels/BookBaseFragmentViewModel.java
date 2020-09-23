@@ -133,7 +133,8 @@ public abstract class BookBaseFragmentViewModel
             return true;
         } else {
             // let the style decide
-            return mStyle.showCoverOnBookDetailScreen(context, preferences, cIdx);
+            return mStyle.getDetailScreenBookFields().isShowCover(context,
+                                                                  preferences, cIdx);
         }
     }
 

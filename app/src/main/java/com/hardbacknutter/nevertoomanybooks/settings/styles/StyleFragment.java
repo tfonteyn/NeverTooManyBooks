@@ -21,16 +21,17 @@ package com.hardbacknutter.nevertoomanybooks.settings.styles;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.text.TextUtils;
 
+import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceScreen;
 import androidx.preference.SeekBarPreference;
+import androidx.preference.SwitchPreference;
 
-import java.util.List;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
@@ -67,9 +68,20 @@ public class StyleFragment
 
         setPreferencesFromResource(R.xml.preferences_style, rootKey);
 
-        final Preference thumbScale = findPreference(BooklistStyle.pk_scale_thumbnail);
+        // Cover on LIST
+        final Preference thumbScale = findPreference(
+                BooklistStyle.ListScreenBookFields.pk_cover_scale);
         if (thumbScale != null) {
-            thumbScale.setDependency(BooklistStyle.pk_book_show_thumbnails);
+            thumbScale.setDependency(BooklistStyle.ListScreenBookFields.pk_covers);
+        }
+
+        // Covers on DETAIL screen
+        // Setting cover 0 to false -> disable cover 1; also see onSharedPreferenceChanged
+        final Preference cover = findPreference(
+                BooklistStyle.DetailScreenBookFields.pk_cover[1]);
+        if (cover != null) {
+            cover.setDependency(
+                    BooklistStyle.DetailScreenBookFields.pk_cover[0]);
         }
 
         if (savedInstanceState == null) {
@@ -85,7 +97,7 @@ public class StyleFragment
         Preference preference;
 
         // the 'groups' in use.
-        preference = findPreference(BooklistStyle.pk_style_groups);
+        preference = findPreference(BooklistStyle.Groups.pk_style_groups);
         if (preference != null) {
             preference.setOnPreferenceClickListener(p -> {
                 Intent intent = new Intent(getContext(), StyleGroupsActivity.class)
@@ -104,8 +116,10 @@ public class StyleFragment
         // Use the global style to get the groups.
         //noinspection ConstantConditions
         final BooklistStyle style = new BooklistStyle(getContext());
+        final BooklistStyle.Groups styleGroups = mStyle.getGroups();
+
         for (BooklistGroup group : BooklistGroup.getAllGroups(getContext(), style)) {
-            group.setPreferencesVisible(screen, mStyle.containsGroup(group.getId()));
+            group.setPreferencesVisible(screen, styleGroups.contains(group.getId()));
         }
 
         super.onResume();
@@ -113,6 +127,25 @@ public class StyleFragment
         // These keys are never physically present in the SharedPreferences; so handle explicitly.
         updateSummary(PSK_STYLE_SHOW_DETAILS);
         updateSummary(PSK_STYLE_FILTERS);
+    }
+
+    @Override
+    @CallSuper
+    public void onSharedPreferenceChanged(@NonNull final SharedPreferences preferences,
+                                          @NonNull final String key) {
+
+        // Covers on DETAIL screen
+        // Setting cover 0 to false -> set cover 1 to false as well
+        if (BooklistStyle.DetailScreenBookFields.pk_cover[0].equals(key)
+            && !preferences.getBoolean(key, false)) {
+            final SwitchPreference cover =
+                    findPreference(
+                            BooklistStyle.DetailScreenBookFields.pk_cover[1]);
+            //noinspection ConstantConditions
+            cover.setChecked(false);
+        }
+
+        super.onSharedPreferenceChanged(preferences, key);
     }
 
     /**
@@ -124,26 +157,22 @@ public class StyleFragment
     protected void updateSummary(@NonNull final String key) {
 
         switch (key) {
-            case BooklistStyle.pk_scale_font: {
+            case BooklistStyle.TextStyle.pk_scale_font: {
                 final Preference preference = findPreference(key);
                 if (preference != null) {
                     //noinspection ConstantConditions
-                    final String summary = getResources()
-                            .getStringArray(R.array.pe_bob_text_scale)
-                            [mStyle.getTextScale(getContext())];
-                    preference.setSummary(summary);
+                    preference.setSummary(mStyle.getTextStyle()
+                                                .getFontScaleSummaryText(getContext()));
                 }
                 break;
             }
 
-            case BooklistStyle.pk_scale_thumbnail: {
+            case BooklistStyle.ListScreenBookFields.pk_cover_scale: {
                 final Preference preference = findPreference(key);
                 if (preference != null) {
                     //noinspection ConstantConditions
-                    final String summary = getResources()
-                            .getStringArray(R.array.pe_bob_thumbnail_scale)
-                            [mStyle.getThumbnailScale(getContext())];
-                    preference.setSummary(summary);
+                    preference.setSummary(mStyle.getListScreenBookFields()
+                                                .getCoverScaleSummaryText(getContext()));
                 }
                 break;
             }
@@ -151,49 +180,40 @@ public class StyleFragment
             case BooklistStyle.pk_levels_expansion: {
                 final SeekBarPreference preference = findPreference(key);
                 if (preference != null) {
-                    preference.setMax(mStyle.getGroupCount());
+                    preference.setMax(mStyle.getGroups().size());
                     //noinspection ConstantConditions
                     preference.setSummary(String.valueOf(mStyle.getTopLevel(getContext())));
                 }
                 break;
             }
 
-            case BooklistStyle.pk_style_groups: {
+            case BooklistStyle.Groups.pk_style_groups: {
                 // the 'groups' in use.
                 final Preference preference = findPreference(key);
                 if (preference != null) {
                     //noinspection ConstantConditions
-                    preference.setSummary(mStyle.getGroupLabels(getContext()));
+                    preference.setSummary(mStyle.getGroups().getSummaryText(getContext()));
                 }
                 break;
             }
 
-            case BooklistStyle.pk_book_show_thumbnails:
+            case BooklistStyle.ListScreenBookFields.pk_covers:
             case PSK_STYLE_SHOW_DETAILS: {
                 // the 'extra' fields in use.
                 final Preference preference = findPreference(PSK_STYLE_SHOW_DETAILS);
                 if (preference != null) {
                     //noinspection ConstantConditions
-                    final List<String> labels = mStyle.getBookDetailsFieldLabels(getContext());
-                    if (labels.isEmpty()) {
-                        preference.setSummary(getString(R.string.none));
-                    } else {
-                        preference.setSummary(TextUtils.join(", ", labels));
-                    }
+                    preference.setSummary(mStyle.getListScreenBookFields()
+                                                .getSummaryText(getContext()));
                 }
                 break;
             }
             case PSK_STYLE_FILTERS: {
-                // the 'filters' in use
+                // the 'filters' in use (i.e. the actives ones)
                 final Preference preference = findPreference(key);
                 if (preference != null) {
                     //noinspection ConstantConditions
-                    final List<String> labels = mStyle.getFilterLabels(getContext(), false);
-                    if (labels.isEmpty()) {
-                        preference.setSummary(getString(R.string.none));
-                    } else {
-                        preference.setSummary(TextUtils.join(", ", labels));
-                    }
+                    preference.setSummary(mStyle.getFilters().getSummaryText(getContext(), false));
                 }
                 break;
             }
