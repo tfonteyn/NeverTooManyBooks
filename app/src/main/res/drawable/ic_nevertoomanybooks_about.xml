@@ -18,6 +18,11 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
+<!--
+    This is the original vector icon used for about screen / navigation drawer
+    and as the origin for building the actual launcher icons.
+    The background for the launcher should be set to "@color/white".
+-->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="24dp"
     android:height="24dp"

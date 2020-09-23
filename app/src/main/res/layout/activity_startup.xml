@@ -37,7 +37,7 @@
         android:id="@+id/logo"
         android:layout_width="@dimen/app_icon"
         android:layout_height="@dimen/app_icon"
-        android:src="@drawable/ic_bookshelf3"
+        android:src="@drawable/ic_nevertoomanybooks_about"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:ignore="ContentDescription"

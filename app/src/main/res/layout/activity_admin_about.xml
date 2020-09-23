@@ -54,7 +54,7 @@
             android:layout_height="@dimen/app_icon"
             android:contentDescription="@string/app_name"
             android:paddingTop="@dimen/nav_header_vertical_spacing"
-            android:src="@drawable/ic_bookshelf3"
+            android:src="@drawable/ic_nevertoomanybooks_about"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             />
