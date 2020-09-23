@@ -32,6 +32,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
+import com.google.android.material.button.MaterialButton;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
@@ -103,7 +104,7 @@ public class AboutActivity
                 mVb.debugGroup.setVisibility(View.VISIBLE);
             }
             if (mDebugClicks >= DEBUG_CLICKS_ALLOW_SQL_UPDATES) {
-                // no visual feedback!
+                ((MaterialButton) (mVb.debugSqShell)).setIconResource(R.drawable.ic_warning);
                 mSqLiteAllowUpdates = true;
             }
             if (mDebugClicks >= DEBUG_CLICKS_ALLOW_DELETE_ALL) {

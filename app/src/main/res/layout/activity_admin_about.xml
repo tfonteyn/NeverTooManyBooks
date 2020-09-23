@@ -76,7 +76,7 @@
             app:layout_constraintEnd_toEndOf="@id/app_name"
             app:layout_constraintTop_toBottomOf="@id/app_name"
             tools:ignore="SelectableText"
-            tools:text="1.1.0"
+            tools:text="1.2.0"
             />
 
         <androidx.constraintlayout.widget.Barrier
@@ -106,23 +106,30 @@
             />
 
         <TextView
-            android:id="@+id/debug_section_lbl"
+            android:id="@+id/contacts"
             style="@style/Text.Header"
-            android:layout_marginTop="@dimen/border2"
-            android:text="@string/debug"
+            android:text="@string/lbl_about_contact"
             app:layout_constraintStart_toEndOf="@id/indents"
             app:layout_constraintTop_toBottomOf="@id/sepBar"
             />
 
         <Button
-            android:id="@+id/debug_sq_shell"
-            style="@style/MenuButton"
-            android:layout_width="0dp"
-            android:text="@string/debug_sq_shell"
-            app:icon="@drawable/ic_keyboard"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="@id/debug_section_lbl"
-            app:layout_constraintTop_toBottomOf="@id/debug_section_lbl"
+            android:id="@+id/btn_sourcecode_url"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/border2"
+            android:text="@string/lbl_sourcecode_url"
+            app:layout_constraintStart_toStartOf="@id/contacts"
+            app:layout_constraintTop_toBottomOf="@id/contacts"
+            />
+
+        <TextView
+            android:id="@+id/debug_section_lbl"
+            style="@style/Text.Header"
+            android:layout_marginTop="@dimen/border2"
+            android:text="@string/debug"
+            app:layout_constraintStart_toEndOf="@id/indents"
+            app:layout_constraintTop_toBottomOf="@id/btn_sourcecode_url"
             />
 
         <Button
@@ -133,7 +140,18 @@
             app:icon="@drawable/ic_details"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@id/debug_section_lbl"
-            app:layout_constraintTop_toBottomOf="@id/debug_sq_shell"
+            app:layout_constraintTop_toBottomOf="@id/debug_section_lbl"
+            />
+
+        <Button
+            android:id="@+id/debug_sq_shell"
+            style="@style/MenuButton"
+            android:layout_width="0dp"
+            android:text="@string/debug_sq_shell"
+            app:icon="@drawable/ic_keyboard"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@id/debug_section_lbl"
+            app:layout_constraintTop_toBottomOf="@id/debug_prefs"
             />
 
         <Button
@@ -147,26 +165,8 @@
             app:icon="@drawable/ic_delete"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@id/debug_section_lbl"
-            app:layout_constraintTop_toBottomOf="@id/debug_prefs"
+            app:layout_constraintTop_toBottomOf="@id/debug_sq_shell"
             tools:visibility="visible"
-            />
-
-        <TextView
-            android:id="@+id/contacts"
-            style="@style/Text.Header"
-            android:text="@string/lbl_about_contact"
-            app:layout_constraintStart_toEndOf="@id/indents"
-            app:layout_constraintTop_toBottomOf="@id/debug_clear_db"
-            />
-
-        <Button
-            android:id="@+id/btn_sourcecode_url"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/border2"
-            android:text="@string/lbl_sourcecode_url"
-            app:layout_constraintStart_toStartOf="@id/contacts"
-            app:layout_constraintTop_toBottomOf="@id/contacts"
             />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
