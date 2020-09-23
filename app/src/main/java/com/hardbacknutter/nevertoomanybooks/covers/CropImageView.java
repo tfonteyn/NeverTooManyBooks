@@ -83,7 +83,8 @@ public class CropImageView
      * We get 'unsupported feature' crashes if the option to always use GL is turned on.
      * See:
      * <a href="http://developer.android.com/guide/topics/graphics/hardware-accel.html>hardware</a>
-     * <a href="http://stackoverflow.com/questions/13676059/android-unsupportedoperationexception-at-canvas-clippath">stackoverflow</a>
+     * <a href="http://stackoverflow.com/questions/13676059">
+     * android-unsupportedoperationexception-at-canvas-clippath</a>
      * <p>
      * Actual system values:
      * <p>
