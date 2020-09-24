@@ -66,7 +66,8 @@ public abstract class SearchEngineBase
      * Look for a book title; if present try to get a Series from it and clean the book title.
      * <p>
      * This default implementation is fine for most engines but not always needed.
-     * TODO: we probably call checkForSeriesNameInTitleDefaultImpl for sites that don't need it.
+     * TODO: we probably call checkForSeriesNameInTitle for sites that don't need it.
+     * <p>
      * It's static so we can use it from
      * {@link com.hardbacknutter.nevertoomanybooks.goodreads.api.ShowBookApiHandler}
      * until that one is converted.

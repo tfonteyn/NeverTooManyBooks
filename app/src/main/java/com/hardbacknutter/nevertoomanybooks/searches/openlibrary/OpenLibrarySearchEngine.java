@@ -85,17 +85,17 @@ import com.hardbacknutter.nevertoomanybooks.utils.DateParser;
  * </ul>
  * Below is a rudimentary "data" implementation. "details" was tested with curl.
  */
-@SearchEngine.Configuration
-        (id = SearchSites.OPEN_LIBRARY,
-         nameResId = R.string.site_open_library,
-         url = "https://openlibrary.org",
-         prefKey = "openlibrary",
-         domainKey = DBDefinitions.KEY_EID_OPEN_LIBRARY,
-         domainViewId = R.id.site_open_library,
-         domainMenuId = R.id.MENU_VIEW_BOOK_AT_OPEN_LIBRARY,
-         supportsMultipleCoverSizes = true,
-         filenameSuffix = "OL"
-        )
+@SearchEngine.Configuration(
+        id = SearchSites.OPEN_LIBRARY,
+        nameResId = R.string.site_open_library,
+        url = "https://openlibrary.org",
+        prefKey = "openlibrary",
+        domainKey = DBDefinitions.KEY_EID_OPEN_LIBRARY,
+        domainViewId = R.id.site_open_library,
+        domainMenuId = R.id.MENU_VIEW_BOOK_AT_OPEN_LIBRARY,
+        supportsMultipleCoverSizes = true,
+        filenameSuffix = "OL"
+)
 public class OpenLibrarySearchEngine
         extends SearchEngineBase
         implements SearchEngine.ByIsbn,
@@ -123,10 +123,11 @@ public class OpenLibrarySearchEngine
      * <p>
      * param 1: key-name, param 2: key-value
      * <p>
-     * TODO: {@link #handleResponse} only tested with ISBN and OLID for now.
+     * {@link #handleResponse} only tested with ISBN and OLID for now.
      */
     private static final String BASE_BOOK_URL =
             "/api/books?jscmd=data&format=json&bibkeys=%1$s:%2$s";
+
     /**
      * The covers are available in 3 sizes:
      * <p>
@@ -145,17 +146,17 @@ public class OpenLibrarySearchEngine
      * <p>
      * param 1: key-name, param 2: key-value, param 3: L/M/S for the size.
      */
-    private static final String BASE_COVER_URL
-            = "https://covers.openlibrary.org/b/%1$s/%2$s-%3$s.jpg?default=false";
+    private static final String BASE_COVER_URL =
+            "https://covers.openlibrary.org/b/%1$s/%2$s-%3$s.jpg?default=false";
+
     /** The search keys in the json object we support: ISBN, external id. */
     private static final String SUPPORTED_KEYS = "ISBN,OLID";
 
     /**
-     * Constructor. Called using reflections, so <strong>MUST</strong> be <em>public</em>.
+     * Constructor. Called using reflection, so <strong>MUST</strong> be <em>public</em>.
      *
      * @param appContext Application context
      */
-    @SuppressWarnings("WeakerAccess")
     public OpenLibrarySearchEngine(@NonNull final Context appContext) {
         super(appContext);
     }
