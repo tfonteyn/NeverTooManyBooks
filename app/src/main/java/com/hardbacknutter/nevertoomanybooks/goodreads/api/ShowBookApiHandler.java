@@ -28,7 +28,8 @@ import androidx.annotation.Nullable;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.Locale;
 import java.util.function.Consumer;
 
@@ -68,11 +69,9 @@ public abstract class ShowBookApiHandler
         extends ApiHandler {
 
     /**
-     * Popular shelf names == genre names to skip. This list must be all lowercase.
-     * <p>
-     * Obviously far from complete. For a start non-english names should be added.
+     * Popular shelf names == genre names to skip. The names must be all lowercase.
      */
-    private static List<String> sGenreExclusions;
+    private static final Collection<String> sGenreExclusions = new HashSet<>();
 
     /** XmlFilter root object. Used in extracting data file XML results. */
     @NonNull
@@ -244,9 +243,9 @@ public abstract class ShowBookApiHandler
             throws CredentialsException {
         super(appContext, grAuth);
 
-        if (sGenreExclusions == null) {
-            sGenreExclusions = Arrays.asList(
-                    appContext.getResources().getStringArray(R.array.goodreads_genre_exclusions));
+        if (sGenreExclusions.isEmpty()) {
+            sGenreExclusions.addAll(Arrays.asList(
+                    appContext.getResources().getStringArray(R.array.goodreads_genre_exclusions)));
         }
 
         mGrAuth.hasValidCredentialsOrThrow(appContext);

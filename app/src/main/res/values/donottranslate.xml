@@ -360,107 +360,103 @@
 
     <!-- Popular Goodreads shelf names == genre names to skip.
          This list must be all lowercase.
-         Obviously far from complete. For a start non-english names should be added.
+         Obviously far from complete.
+         https://www.goodreads.com/shelf
+
+         2020-09-24
     -->
     <string-array name="goodreads_genre_exclusions">
         <item>read</item>
         <item>to-read</item>
         <item>currently-reading</item>
-        <item>default</item>
+        <!-- 10.000.000+ -->
 
-        <item>1</item>
-        <item>3-stars</item>
-        <item>4-stars</item>
-        <item>4-star</item>
-        <item>5-stars</item>
-        <item>abandoned</item>
-        <item>all-books</item>
-        <item>all-time-favorites</item>
-        <item>all-time-favourites</item>
-        <item>already-read</item>
-        <item>at-home</item>
-        <item>audible</item>
-        <item>audio-books</item>
-        <item>audio</item>
-        <item>audiobook</item>
-        <item>audiobooks</item>
-        <item>best-books</item>
-        <item>best-ever</item>
-        <item>biblioteca</item>
-        <item>book-club</item>
-        <item>books-i-have</item>
-        <item>books-i-own</item>
-        <item>books-owned</item>
-        <item>books</item>
-        <item>borrowed</item>
-        <item>bought</item>
-        <item>british</item>
-        <item>calibre</item>
-        <item>collection</item>
-        <item>completed</item>
-        <item>did-not-finish</item>
-        <item>dnf</item>
-        <item>done</item>
-        <item>e-books</item>
-        <item>ebook</item>
-        <item>ebooks</item>
-        <item>english</item>
-        <item>fav</item>
-        <item>faves</item>
-        <item>favorite-books</item>
+        <item>Ｆａｖｏｒｉｔｅｓ</item>
         <item>favorites</item>
-        <item>favoritos</item>
-        <item>favourites</item>
-        <item>favs</item>
-        <item>fiction-read</item>
-        <item>finished</item>
-        <item>five-stars</item>
-        <item>for-fun</item>
-        <item>gave-up-on</item>
-        <item>general</item>
-        <item>have-read</item>
-        <item>have</item>
-        <item>home-library</item>
-        <item>home</item>
-        <item>i-own</item>
-        <item>in-my-library</item>
-        <item>kindle</item>
-        <item>library</item>
-        <item>loved</item>
-        <item>maybe</item>
-        <item>meh</item>
-        <item>mine</item>
-        <item>misc</item>
-        <item>misterio</item>
-        <item tools:ignore="Typos">mistery</item>
-        <item>must-read</item>
-        <item>my-books</item>
-        <item>my-bookshelf</item>
-        <item>my-collection</item>
-        <item>my-favorites</item>
-        <item>my-library</item>
-        <item>my-shelf</item>
-        <item>never-finished</item>
-        <item>on-hold</item>
-        <item>on-my-bookshelf</item>
-        <item>on-my-shelf</item>
-        <item>on-my-shelves</item>
-        <item>other</item>
-        <item>own-a-copy</item>
-        <item>own-book</item>
-        <item>own-it</item>
-        <item>own-read</item>
-        <item>own</item>
-        <item>owned-books</item>
-        <item>owned-tbr</item>
         <item>owned</item>
-        <item>page-turner</item>
-        <item>part-of-a-series</item>
-        <item>personal-library</item>
-        <item>physical-book</item>
-        <item>physical</item>
-        <item>previously-read</item>
+        <item>own</item>
+        <item>books-i-own</item>
+        <item>wishlist</item>
+        <item>kindle</item>
+        <item>to-buy</item>
+        <item>séries</item>
+        <item>series</item>
+        <item>library</item>
+        <!-- 5.000.000+ -->
+
+        <item>default</item>
+        <item>ebook</item>
+        <item>wish-list</item>
+        <item>owned-books</item>
+        <item>ya</item>
+        <item>ebooks</item>
+        <!-- 3.000.000+ -->
+
+        <item>audiobook</item>
+        <item>tbr</item>
+        <item>audio_wanted</item>
+        <item>my-books</item>
+        <item>maybe</item>
+        <item>favourites</item>
+        <item>audiobooks</item>
+        <item>my-library</item>
+        <item>dnf</item>
+        <item>audio</item>
+        <item>e-book</item>
+        <!-- 2.000.000+ -->
+
+        <item>i-own</item>
+        <item>book-club</item>
+        <item>e-books</item>
+        <item>have</item>
+        <item>abandoned</item>
+        <item>did-not-finish</item>
+        <item>own-it</item>
+        <item>english</item>
+        <item>reviewed</item>
+        <item>want-to-read</item>
+        <item>audible</item>
+        <item>kindle-books</item>
+        <item>1</item>
+        <item>on-hold</item>
+        <item>m-m</item>
+        <item>borrowed</item>
+        <item>unread</item>
+        <item>own-to-read</item>
+        <item>need-to-buy</item>
+        <item>calibre</item>
+        <item>want</item>
+        <item>arc</item>
+        <item>next</item>
+        <item>kindle-unlimited</item>
+        <item>on-kindle</item>
+        <item>want-to-buy</item>
+        <item>paperback</item>
+        <item>not-interested</item>
+        <item>home-library</item>
+        <item>to-get</item>
         <item>re-read</item>
+        <item>finished</item>
+        <item>bookshelf</item>
+        <item>audio-books</item>
+        <item>favorite</item>
+        <item>library-books</item>
+        <item>must-read</item>
+        <item>on-my-shelf</item>
+        <item>school</item>
+        <item>books-to-buy</item>
+        <item>owned-to-read</item>
+        <item>recommended</item>
+        <item>unfinished</item>
+        <item>audio-book</item>
+        <item>to-listen</item>
+        <item>stand-alone</item>
+        <item>to-read-own</item>
+        <item>books-i-have</item>
+        <item>netgalley</item>
+        <!-- 1.000.000+ -->
+
+
         <item>read-in-2006</item>
         <item>read-in-2007</item>
         <item>read-in-2008</item>
@@ -476,23 +472,111 @@
         <item>read-in-2018</item>
         <item>read-in-2019</item>
         <item>read-in-2020</item>
+        <item>read-in-2021</item>
+
+        <item>5-stars</item>
+        <item>4-stars</item>
+        <item>3-stars</item>
+        <item>4-star</item>
+
+
+        <!-- more or less gone down to 700.000, then sorted alpha -->
+        <item>all-books</item>
+        <item>all-time-favorites</item>
+        <item>already-read</item>
+        <item>amazon</item>
+        <item>at-home</item>
+        <item>audio-wanted</item>
+        <item>best-books</item>
+        <item>best-ever</item>
+        <item>biblioteca</item>
+        <item>books-owned</item>
+        <item>books</item>
+        <item>bought</item>
+        <item>british</item>
+        <item>buy</item>
+        <item>childhood</item>
+        <item>collection</item>
+        <item>completed</item>
+        <item>didn-t-finish</item>
+        <item>digital</item>
+        <item>done</item>
+        <item>epub</item>
+        <item>fav</item>
+        <item>faves</item>
+        <item>favorite-authors</item>
+        <item>favorite-books</item>
+        <item>favoritos</item>
+        <item>favs</item>
+        <item>fiction-read</item>
+        <item>five-stars</item>
+        <item>for-fun</item>
+        <item>gave-up-on</item>
+        <item>general</item>
+        <item>giveaways</item>
+        <item>have-read</item>
+        <item>home</item>
+        <item>i-own-it</item>
+        <item>in-my-library</item>
+        <item>library-book</item>
+        <item>loved</item>
+        <item>meh</item>
+        <item>middle-grade</item>
+        <item>mine</item>
+        <item>misc</item>
+        <item>misterio</item>
+        <item tools:ignore="Typos">mistery</item>
+        <item>mm</item>
+        <item>my-bookshelf</item>
+        <item>my-collection</item>
+        <item>my-ebooks</item>
+        <item>my-favorites</item>
+        <item>my-shelf</item>
+        <item>need</item>
+        <item>never-finished</item>
+        <item>new</item>
+        <item>nook</item>
+        <item>not-owned</item>
+        <item>not-read</item>
+        <item>on-my-bookshelf</item>
+        <item>on-my-kindle</item>
+        <item>on-my-shelf</item>
+        <item>on-my-shelves</item>
+        <item>other</item>
+        <item>own-a-copy</item>
+        <item>own-book</item>
+        <item>own-ebook</item>
+        <item>own-kindle</item>
+        <item>own-not-read</item>
+        <item>own-read</item>
+        <item>own-tbr</item>
+        <item>owned-tbr</item>
+        <item>page-turner</item>
+        <item>part-of-a-series</item>
+        <item>personal-library</item>
+        <item>physical-book</item>
+        <item>physical</item>
+        <item>previously-read</item>
+        <item>purchased</item>
         <item>read-in-english</item>
         <item>read-more-than-once</item>
+        <item>read-next</item>
         <item>recommend</item>
-        <item>recommended</item>
         <item>reread</item>
-        <item>reviewed</item>
         <item>shelfari-favorites</item>
+        <item>standalone</item>
         <item>sub</item>
-        <item>tbr</item>
+        <item>tbr-pile</item>
         <item>tenho</item>
-        <item>to-buy</item>
+        <item>to-be-read</item>
+        <item>to-read-fiction</item>
+        <item>to-read-owned</item>
         <item>to-reread</item>
-        <item>unfinished</item>
-        <item>want-to-buy</item>
-        <item>want-to-read</item>
-        <item>wish-list</item>
-        <item>wishlist</item>
+        <item>to-review</item>
+        <item>up-next</item>
+        <item>want-to-own</item>
+        <item>wanted</item>
+
     </string-array>
 
     <!-- used for Spinners as placeholder text. Can't seem to use "@tools:sample/" there. -->
