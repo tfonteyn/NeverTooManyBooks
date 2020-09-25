@@ -338,7 +338,7 @@ public interface SearchEngine {
      * @param url      Image file URL
      * @param filename to use
      *
-     * @return Downloaded fileSpec, or {@code null} on failure
+     * @return File fileSpec, or {@code null} on failure
      */
     @WorkerThread
     @Nullable
@@ -347,10 +347,15 @@ public interface SearchEngine {
         final SearchEngineRegistry.Config config = SearchEngineRegistry.getByEngineId(getId());
 
         //noinspection ConstantConditions
-        return ImageUtils.saveImage(getAppContext(), url, filename,
-                                    config.getConnectTimeoutMs(),
-                                    config.getReadTimeoutMs(),
-                                    getThrottler());
+        final File file = ImageUtils.saveImage(getAppContext(), url, filename,
+                                               config.getConnectTimeoutMs(),
+                                               config.getReadTimeoutMs(),
+                                               getThrottler());
+        if (file != null) {
+            return file.getAbsolutePath();
+        } else {
+            return null;
+        }
     }
 
     enum RegistrationAction {

@@ -25,6 +25,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.io.File;
 import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.covers.ImageFileInfo;
@@ -112,10 +113,16 @@ public final class ApiUtils {
                 String.valueOf(goodreadsData.getLong(DBDefinitions.KEY_EID_GOODREADS_BOOK)),
                 0, size);
 
-        return ImageUtils.saveImage(context, url, tmpName,
-                                    GoodreadsManager.CONNECTION_TIMEOUT_MS,
-                                    GoodreadsManager.READ_TIMEOUT_MS,
-                                    GoodreadsSearchEngine.THROTTLER);
+        final File file = ImageUtils.saveImage(context, url, tmpName,
+                                               GoodreadsManager.CONNECTION_TIMEOUT_MS,
+                                               GoodreadsManager.READ_TIMEOUT_MS,
+                                               GoodreadsSearchEngine.THROTTLER);
+
+        if (file != null) {
+            return file.getAbsolutePath();
+        } else {
+            return null;
+        }
     }
 
     /**

@@ -299,16 +299,16 @@ public final class ImageUtils {
      * @param readTimeout    in milliseconds
      * @param throttler      (optional) {@link Throttler} to use
      *
-     * @return Downloaded fileSpec, or {@code null} on failure
+     * @return Downloaded File, or {@code null} on failure
      */
     @Nullable
     @WorkerThread
-    public static String saveImage(@NonNull final Context context,
-                                   @NonNull final String url,
-                                   @NonNull final String filename,
-                                   @IntRange(from = 0) final int connectTimeout,
-                                   @IntRange(from = 0) final int readTimeout,
-                                   @Nullable final Throttler throttler) {
+    public static File saveImage(@NonNull final Context context,
+                                 @NonNull final String url,
+                                 @NonNull final String filename,
+                                 @IntRange(from = 0) final int connectTimeout,
+                                 @IntRange(from = 0) final int readTimeout,
+                                 @Nullable final Throttler throttler) {
 
         File file = AppDir.Cache.getFile(context, filename);
         try {
@@ -336,7 +336,7 @@ public final class ImageUtils {
                 // FileUtils.copyInputStream operation will fail.
                 // As that is independent from the JUnit test/purpose, we fake success here.
                 if (Logger.isJUnitTest) {
-                    return file.getAbsolutePath();
+                    return file;
                 }
             }
             return null;
@@ -349,7 +349,7 @@ public final class ImageUtils {
         // }
 
         if (isFileGood(file, true)) {
-            return file.getAbsolutePath();
+            return file;
         }
         return null;
     }
