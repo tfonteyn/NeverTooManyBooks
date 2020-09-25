@@ -420,7 +420,8 @@
     <string name="progress_msg_searching_editions">Ricerca edizioni…</string>
     <string name="progress_msg_loading">Caricamento…</string>
     <string name="progress_end_export_result_n_books_processed">%1$d libri elaborati</string>
-    <string name="progress_end_export_result_n_covers_processed_m_missing">%1$d copertine elaborate\n(%2$d/%3$d mancanti)</string>
+    <string name="progress_msg_n_covers_processed">%1$d copertine elaborate</string>
+    <string name="progress_msg_n_covers_processed_m_missing">%1$d copertine elaborate\n(%2$d/%3$d mancanti)</string>
     <string name="progress_msg_n_covers_processed_m_missing_s_skipped">%1$d copertine elaborate (%2$d/%3$d mancanti, %4$d saltate)</string>
     <string name="X_progress_msg_x_created_y_updated">%1$s: %2$d creati, %3$d aggiornati</string>
     <string name="progress_msg_optimizing">Ottimizzazione archivi…</string>

@@ -418,7 +418,8 @@
     <string name="progress_msg_searching_editions">Поиск изданий…</string>
     <string name="progress_msg_loading">Загрузка…</string>
     <string name="progress_end_export_result_n_books_processed">%1$d книг обработано</string>
-    <string name="progress_end_export_result_n_covers_processed_m_missing">%1$d обложек обработана\n(%2$d/%3$d отсутствует)</string>
+    <string name="progress_msg_n_covers_processed">%1$d обложек обработана</string>
+    <string name="progress_msg_n_covers_processed_m_missing">%1$d обложек обработана\n(%2$d/%3$d отсутствует)</string>
     <string name="progress_msg_n_covers_processed_m_missing_s_skipped">%1$d обложек обработана (%2$d/%3$d отсутствует, %4$d пропущена)</string>
     <string name="X_progress_msg_x_created_y_updated">%1$s: %2$d создано, %3$d обновлено</string>
     <string name="progress_msg_optimizing">Оптимизация баз данных…</string>

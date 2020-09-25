@@ -420,7 +420,8 @@
     <string name="progress_msg_searching_editions">Γίνεται εντοπισμός Εκδόσεων…</string>
     <string name="progress_msg_loading">Φόρτωση…</string>
     <string name="progress_end_export_result_n_books_processed">%1$d βιβλία επεξεργασμένα</string>
-    <string name="progress_end_export_result_n_covers_processed_m_missing">%1$d εξώφυλλα επεξεργάστηκαν\n(%2$d/%3$d λείπουν)</string>
+    <string name="progress_msg_n_covers_processed">%1$d εξώφυλλα επεξεργάστηκαν</string>
+    <string name="progress_msg_n_covers_processed_m_missing">%1$d εξώφυλλα επεξεργάστηκαν\n(%2$d/%3$d λείπουν)</string>
     <string name="progress_msg_n_covers_processed_m_missing_s_skipped">%1$d εξώφυλλα επεξεργάστηκαν (%2$d/%3$d λείπουν, %4$d παρελείφθησαν)</string>
     <string name="X_progress_msg_x_created_y_updated">%1$s: %2$d δημιουργήθηκαν, %3$d ενημερώθηκαν</string>
     <string name="progress_msg_optimizing">Βελτιστοποίηση βάσεων δεδομένων…</string>

@@ -419,7 +419,8 @@
     <string name="progress_msg_searching_editions">Hledání edicí…</string>
     <string name="progress_msg_loading">Načítání…</string>
     <string name="progress_end_export_result_n_books_processed">Zpracované knih %1$d</string>
-    <string name="progress_end_export_result_n_covers_processed_m_missing">Zpracované kryty %1$d\n(chybí %2$d/%3$d)</string>
+    <string name="progress_msg_n_covers_processed">Zpracované kryty %1$d</string>
+    <string name="progress_msg_n_covers_processed_m_missing">Zpracované kryty %1$d\n(chybí %2$d/%3$d)</string>
     <string name="progress_msg_n_covers_processed_m_missing_s_skipped">Zpracované kryty %1$d (chybí %2$d/%3$d, %4$d přeskočeno)</string>
     <string name="X_progress_msg_x_created_y_updated">%1$s: %2$d vytvořeno, %3$d aktualizováno</string>
     <string name="progress_msg_optimizing">Optimalizování databáze…</string>

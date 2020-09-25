@@ -381,6 +381,10 @@
     <string name="progress_msg_skip_s">Skipping “%1$s”</string>
 
     <!-- Progress message displayed when exporting covers -->
+    <string name="progress_msg_n_covers_processed">%1$d covers processed</string>
+    <!-- Progress message displayed when exporting covers -->
+    <string name="progress_msg_n_covers_processed_m_missing">%1$d covers processed\n(%2$d/%3$d missing)</string>
+    <!-- Progress message displayed when exporting covers -->
     <string name="progress_msg_n_covers_processed_m_missing_s_skipped">%1$d covers processed\n(%2$d/%3$d missing, %4$d skipped)</string>
 
     <!-- Progress message displayed when importing books/covers.
@@ -402,8 +406,7 @@
     <string name="progress_end_backup_success">Backup success</string>
     <!-- Progress message displayed when importing books -->
     <string name="progress_end_export_result_n_books_processed">%1$d books processed</string>
-    <!-- Progress message displayed when exporting covers -->
-    <string name="progress_end_export_result_n_covers_processed_m_missing">%1$d covers processed\n(%2$d/%3$d missing)</string>
+
 
     <!-- displayed when a Backup is done: 1: folder; 2: filename; 3: file size -->
     <string name="progress_end_export_success">A %3$s file called “%2$s” was created in the “%1$s” folder and you should manually copy it elsewhere to protect the data in case your device is damaged, lost, or stolen.</string>

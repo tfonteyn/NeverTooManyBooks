@@ -418,7 +418,8 @@
     <string name="progress_msg_searching_editions">Szukanie wydań…</string>
     <string name="progress_msg_loading">Wczytuję…</string>
     <string name="progress_end_export_result_n_books_processed">Książki przetworzonych %1$d</string>
-    <string name="progress_end_export_result_n_covers_processed_m_missing">Objętych przetworzonych\n%1$d (brak %2$d/%3$d)</string>
+    <string name="progress_msg_n_covers_processed">Objętych przetworzonych %1$d</string>
+    <string name="progress_msg_n_covers_processed_m_missing">Objętych przetworzonych\n%1$d (brak %2$d/%3$d)</string>
     <string name="progress_msg_n_covers_processed_m_missing_s_skipped">Obejmuje przetworzonych %1$d (brak %2$d/%3$d, pominięto %4$d)</string>
     <string name="X_progress_msg_x_created_y_updated">%1$s: Utworzono %2$d, zaktualizowano %3$d</string>
     <string name="progress_msg_optimizing">Optymalizacja bazy danych</string>

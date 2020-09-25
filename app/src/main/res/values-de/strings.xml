@@ -424,7 +424,8 @@
     <string name="progress_msg_searching_editions">Suche Ausgaben…</string>
     <string name="progress_msg_loading">Wird geladen…</string>
     <string name="progress_end_export_result_n_books_processed">%1$d Bücher verarbeitet</string>
-    <string name="progress_end_export_result_n_covers_processed_m_missing">%1$d Cover verarbeitet\n(%2$d/%3$d fehlen)</string>
+    <string name="progress_msg_n_covers_processed">%1$d Cover verarbeitet</string>
+    <string name="progress_msg_n_covers_processed_m_missing">%1$d Cover verarbeitet\n(%2$d/%3$d fehlen)</string>
     <string name="progress_msg_n_covers_processed_m_missing_s_skipped">%1$d Cover verarbeitet (%2$d/%3$d fehlen, %4$d übersprungen)</string>
     <string name="X_progress_msg_x_created_y_updated">%1$s: %2$d erzeugt, %3$d aktualisiert</string>
     <string name="progress_msg_optimizing">Datenbanken werden optimiert…</string>

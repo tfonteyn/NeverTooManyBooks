@@ -421,7 +421,8 @@
     <string name="progress_msg_searching_editions">Sürümler bulunuyor…</string>
     <string name="progress_msg_loading">Yükleniyor…</string>
     <string name="progress_end_export_result_n_books_processed">%1$d kitap işlendi</string>
-    <string name="progress_end_export_result_n_covers_processed_m_missing">%1$d kapak işlendi\n(%2$d/%3$d bulunamadı)</string>
+    <string name="progress_msg_n_covers_processed">%1$d kapak işlendi</string>
+    <string name="progress_msg_n_covers_processed_m_missing">%1$d kapak işlendi\n(%2$d/%3$d bulunamadı)</string>
     <string name="progress_msg_n_covers_processed_m_missing_s_skipped">%1$d kapak işlendi (%2$d/%3$d bulunamadı, %4$d atlandı)</string>
     <string name="X_progress_msg_x_created_y_updated">%1$s: %2$d oluşturuldu, %3$d güncellendi</string>
     <string name="progress_msg_optimizing">Veritabanları eniyileniyor…</string>

@@ -424,7 +424,8 @@
     <string name="progress_msg_searching_editions">Éditions en cours de recherche…</string>
     <string name="progress_msg_loading">Chargement…</string>
     <string name="progress_end_export_result_n_books_processed">%1$d livres traités</string>
-    <string name="progress_end_export_result_n_covers_processed_m_missing">%1$d couvertures traitées\n(%2$d/%3$d manquante)</string>
+    <string name="progress_msg_n_covers_processed">%1$d couvertures traitées</string>
+    <string name="progress_msg_n_covers_processed_m_missing">%1$d couvertures traitées\n(%2$d/%3$d manquante)</string>
     <string name="progress_msg_n_covers_processed_m_missing_s_skipped">%1$d couvertures traitées (%2$d/%3$d manquantes, %4$d ignorées)</string>
     <string name="X_progress_msg_x_created_y_updated">%1$s: %2$d ajoutés, %3$d mis à jour</string>
     <string name="progress_msg_optimizing">Optimisation de bases de données en cours…</string>
