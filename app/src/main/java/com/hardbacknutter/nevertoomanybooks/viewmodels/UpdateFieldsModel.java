@@ -41,7 +41,6 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -593,7 +592,6 @@ public class UpdateFieldsModel
                                                 @NonNull final FieldUsage usage,
                                                 @IntRange(from = 0, to = 1) final int cIdx) {
         final String uuid = mCurrentBook.getString(DBDefinitions.KEY_BOOK_UUID);
-        Objects.requireNonNull(uuid, ErrorMsg.NULL_UUID);
         boolean copyThumb = false;
         switch (usage.getUsage()) {
             case CopyIfBlank:
@@ -745,7 +743,6 @@ public class UpdateFieldsModel
                                   @IntRange(from = 0, to = 1) final int cIdx) {
         // - If it's a thumbnail, then see if it's missing or empty.
         final String uuid = mCurrentBook.getString(DBDefinitions.KEY_BOOK_UUID);
-        Objects.requireNonNull(uuid, ErrorMsg.NULL_UUID);
         final File file = AppDir.getCoverFile(context, uuid, cIdx);
         if (!file.exists() || file.length() == 0) {
             fieldUsages.put(usage.fieldId, usage);
