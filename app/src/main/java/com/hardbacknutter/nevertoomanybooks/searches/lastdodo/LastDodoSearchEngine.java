@@ -143,11 +143,13 @@ public class LastDodoSearchEngine
 
         // Grab the first search result, and redirect to that page
         final Element section = document.selectFirst("div.cw-lot_content");
-        final Element urlElement = section.selectFirst("a");
-        if (urlElement != null) {
-            final Document redirected = loadDocument(urlElement.attr("href"));
-            if (redirected != null && !isCancelled()) {
-                parse(redirected, fetchThumbnail, bookData);
+        if (section != null) {
+            final Element urlElement = section.selectFirst("a");
+            if (urlElement != null) {
+                final Document redirected = loadDocument(urlElement.attr("href"));
+                if (redirected != null && !isCancelled()) {
+                    parse(redirected, fetchThumbnail, bookData);
+                }
             }
         }
     }
