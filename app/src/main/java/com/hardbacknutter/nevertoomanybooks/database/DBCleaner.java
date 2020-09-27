@@ -182,11 +182,10 @@ public class DBCleaner {
      */
     public void booleanColumns(@NonNull final TableDefinition... tables) {
         for (TableDefinition table : tables) {
-            for (Domain domain : table.getDomains()) {
-                if (domain.isBoolean()) {
-                    booleanCleanup(table.getName(), domain.getName());
-                }
-            }
+            table.getDomains()
+                 .stream()
+                 .filter(Domain::isBoolean)
+                 .forEach(domain -> booleanCleanup(table.getName(), domain.getName()));
         }
     }
 
@@ -389,6 +388,7 @@ public class DBCleaner {
      *
      * @param context Current context
      */
+    @SuppressWarnings("WeakerAccess")
     public void bookTocEntry(@NonNull final Context context) {
         final String sql = "SELECT " + KEY_FK_BOOK + " FROM "
                            + "(SELECT " + KEY_FK_BOOK + ", MIN(" + KEY_BOOK_TOC_ENTRY_POSITION
