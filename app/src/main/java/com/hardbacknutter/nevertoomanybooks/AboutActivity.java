@@ -124,9 +124,9 @@ public class AboutActivity
                 .setIcon(R.drawable.ic_delete)
                 .setMessage(R.string.confirm_clear_all_data)
                 .setNegativeButton(R.string.no, (d, w) -> d.dismiss())
-                .setNeutralButton(R.string.no, (d, w) -> d.dismiss())
                 .setPositiveButton(R.string.action_delete, (d, w) -> {
                     try (DAO db = new DAO(TAG)) {
+                        // URGENT: delete all files
                         if (db.getDBHelper().deleteAllContent(this, db.getSyncDb())) {
                             setResult(RESULT_ALL_DATA_DESTROYED);
                         }
