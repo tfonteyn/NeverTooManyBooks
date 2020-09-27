@@ -37,6 +37,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BooksOnBookshelf;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
@@ -48,7 +49,6 @@ import com.hardbacknutter.nevertoomanybooks.booklist.BooklistCursor;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistNode;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyle;
-import com.hardbacknutter.nevertoomanybooks.booklist.filters.Filter;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DAOSql;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
@@ -545,10 +545,14 @@ public class BooksOnBookshelfModel
     public String getHeaderFilterText(@NonNull final Context context) {
         final BooklistStyle style = getCurrentStyle(context);
         if (style.isShowHeader(context, BooklistStyle.HEADER_SHOW_FILTER)) {
-            final Collection<String> filterText = new ArrayList<>();
-            for (Filter<?> filter : style.getFilters().getActiveFilters(context)) {
-                filterText.add(filter.getLabel(context));
-            }
+
+            final Collection<String> filterText = style
+                    .getFilters()
+                    .getAll()
+                    .stream()
+                    .filter(f -> f.isActive(context))
+                    .map(filter -> filter.getLabel(context))
+                    .collect(Collectors.toList());
 
             final String ftsSearchText = mSearchCriteria.getFtsSearchText();
             if (!ftsSearchText.isEmpty()) {
