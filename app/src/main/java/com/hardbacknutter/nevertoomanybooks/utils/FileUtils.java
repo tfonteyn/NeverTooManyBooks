@@ -136,6 +136,16 @@ public final class FileUtils {
                                      @NonNull final File destination)
             throws IOException {
 
+        //sanity check
+        if (source.getAbsolutePath().equals(destination.getAbsolutePath())) {
+            if (BuildConfig.DEBUG /* always */) {
+                Logger.warn(App.getAppContext(), TAG,
+                            "renameOrThrow"
+                            + "|source==destination==" + source.getAbsolutePath());
+            }
+            return;
+        }
+
         try {
             if (source.renameTo(destination)) {
                 return;
@@ -262,7 +272,7 @@ public final class FileUtils {
 
         // now bump each copy up one suffix.
         for (int i = copies - 1; i > 0; i--) {
-            File current = new File(parentDir, destination + "." + i);
+            final File current = new File(parentDir, destination + "." + i);
             renameOrThrow(current, previous);
             previous = current;
         }
@@ -308,7 +318,7 @@ public final class FileUtils {
             android.os.FileUtils.copy(is, os);
 
         } else {
-            byte[] buffer = new byte[FILE_COPY_BUFFER_SIZE];
+            final byte[] buffer = new byte[FILE_COPY_BUFFER_SIZE];
             int nRead;
             while ((nRead = is.read(buffer)) > 0) {
                 os.write(buffer, 0, nRead);
