@@ -44,7 +44,6 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.backup.ArchiveContainerEntry;
-import com.hardbacknutter.nevertoomanybooks.backup.ImportManager;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ImportException;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ImportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.base.Importer;
@@ -68,8 +67,8 @@ import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
-import com.hardbacknutter.nevertoomanybooks.utils.DateParser;
 import com.hardbacknutter.nevertoomanybooks.utils.StringList;
+import com.hardbacknutter.nevertoomanybooks.utils.dates.DateParser;
 
 /**
  * Implementation of {@link Importer} that reads a CSV file.
@@ -158,7 +157,7 @@ public class CsvImporter
      * Constructor.
      *
      * @param context Current context
-     * @param options {@link ImportManager#IMPORT_ONLY_NEW_OR_UPDATED} is respected.
+     * @param options {@link Options#IS_SYNC} is respected.
      *                Other flags are ignored, as this class only
      *                handles {@link Options#BOOKS} anyhow.
      */
@@ -216,8 +215,8 @@ public class CsvImporter
         }
 
         // not perfect, but good enough
-        if (progressListener.getProgressMaxPos() < importedList.size()) {
-            progressListener.setProgressMaxPos(importedList.size());
+        if (progressListener.getMaxPos() < importedList.size()) {
+            progressListener.setMaxPos(importedList.size());
         }
 
         // reused during the loop
@@ -254,7 +253,7 @@ public class CsvImporter
         // Overwrite (forceUpdate=true) existing data; or (forceUpdate=false) only
         // if the incoming data is newer.
         final boolean forceUpdate;
-        if ((mOptions & ImportManager.IMPORT_ONLY_NEW_OR_UPDATED) != 0) {
+        if ((mOptions & Options.IS_SYNC) != 0) {
             requireColumnOrThrow(context, book, DBDefinitions.KEY_UTC_LAST_UPDATED);
             forceUpdate = false;
         } else {
@@ -365,7 +364,9 @@ public class CsvImporter
                     }
                 }
 
-                // limit the amount of progress updates, otherwise this will cause a slowdown.
+                row++;
+
+                delta++;
                 final long now = System.currentTimeMillis();
                 if ((now - lastUpdate) > progressListener.getUpdateIntervalInMs()
                     && !progressListener.isCancelled()) {
@@ -375,11 +376,9 @@ public class CsvImporter
                                                      mResults.booksUpdated,
                                                      mResults.booksSkipped);
                     progressListener.publishProgressStep(delta, msg);
-                    delta = 0;
                     lastUpdate = now;
+                    delta = 0;
                 }
-                delta++;
-                row++;
             }
         } finally {
             if (mDb.inTransaction()) {

@@ -135,7 +135,7 @@ public abstract class ArchiveReaderAbstract
                     estimatedSteps *= 2;
                 }
             }
-            progressListener.setProgressMaxPos(estimatedSteps);
+            progressListener.setMaxPos(estimatedSteps);
 
             // Seek the styles entity first.
             // We'll need them to resolve styles referenced in Preferences and Bookshelves.
@@ -174,15 +174,14 @@ public abstract class ArchiveReaderAbstract
                 switch (entity.getType()) {
                     case Cover: {
                         if (readCovers) {
-                            String msg;
                             if (!readCover(context, entity)) {
                                 mResults.coversSkipped++;
                             }
-                            msg = String.format(mProgressMessage,
-                                                mCoversText,
-                                                mResults.coversCreated,
-                                                mResults.coversUpdated,
-                                                mResults.coversSkipped);
+                            final String msg = String.format(mProgressMessage,
+                                                             mCoversText,
+                                                             mResults.coversCreated,
+                                                             mResults.coversUpdated,
+                                                             mResults.coversSkipped);
                             progressListener.publishProgressStep(1, msg);
                             mResults.coversProcessed++;
                             // entitiesRead is set when all done
@@ -293,7 +292,7 @@ public abstract class ArchiveReaderAbstract
             // see if we have this file already
             File file = AppDir.Covers.getFile(context, cover.getName());
             exists = ImageUtils.isFileGood(file, false);
-            if (mHelper.isOptionSet(ImportManager.IMPORT_ONLY_NEW_OR_UPDATED)) {
+            if (mHelper.isOptionSet(Options.IS_SYNC)) {
                 if (exists) {
                     if (file.lastModified() > coverDate) {
                         return false;

@@ -34,8 +34,10 @@ import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 
+import com.hardbacknutter.nevertoomanybooks.backup.ArchiveContainerEntry;
 import com.hardbacknutter.nevertoomanybooks.backup.ArchiveWriterAbstract;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportManager;
+import com.hardbacknutter.nevertoomanybooks.backup.base.ExportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.base.Exporter;
 import com.hardbacknutter.nevertoomanybooks.backup.base.Options;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
@@ -53,9 +55,9 @@ public class XmlArchiveWriter
     /** The output stream for the archive. */
     @NonNull
     private final OutputStream mOutputStream;
-    /** {@link #prepareBooks} writes to this file; {@link #writeBooks} copies it to the archive. */
+    /** {@link #prepareData} writes to this file; {@link #writeBooks} copies it to the archive. */
     @Nullable
-    private File mTmpBookXmlFile;
+    private File mTmpBooksFile;
 
     /**
      * Constructor.
@@ -84,20 +86,24 @@ public class XmlArchiveWriter
      * <br><br>{@inheritDoc}
      */
     @Override
-    public void prepareBooks(@NonNull final Context context,
-                             @NonNull final ProgressListener progressListener)
+    public ExportResults prepareData(@NonNull final Context context,
+                                     @NonNull final ProgressListener progressListener)
             throws IOException {
         // Get a temp file and set for delete
-        mTmpBookXmlFile = File.createTempFile("data_xml_", ".tmp");
-        mTmpBookXmlFile.deleteOnExit();
+        mTmpBooksFile = File.createTempFile("data_xml_", ".tmp");
+        mTmpBooksFile.deleteOnExit();
 
-        final Exporter exporter = new XmlExporter(context, Options.BOOKS,
-                                                  mHelper.getUtcDateTimeSince());
-        mResults.add(exporter.write(context, mTmpBookXmlFile, progressListener));
+        // We must strip out other entities here as the XmlExporter supports all entities
+        // which we don't want to do here.
+        final int entities = mHelper.getOptions() & (Options.BOOKS | Options.COVERS);
+        try (Exporter exporter = new XmlExporter(context, entities,
+                                                 mHelper.getUtcDateTimeSince())) {
+            return exporter.write(context, mTmpBooksFile, progressListener);
+        }
     }
 
     /**
-     * Write the file as prepared in {@link #prepareBooks}.
+     * Write the file as prepared in {@link #prepareData}.
      *
      * <br><br>{@inheritDoc}
      */
@@ -106,10 +112,10 @@ public class XmlArchiveWriter
                            @NonNull final ProgressListener progressListener)
             throws IOException {
         try {
-            Objects.requireNonNull(mTmpBookXmlFile);
-            putFile("", mTmpBookXmlFile, true);
+            Objects.requireNonNull(mTmpBooksFile);
+            putFile(ArchiveContainerEntry.BooksXml.getName(), mTmpBooksFile, true);
         } finally {
-            FileUtils.delete(mTmpBookXmlFile);
+            FileUtils.delete(mTmpBooksFile);
         }
     }
 

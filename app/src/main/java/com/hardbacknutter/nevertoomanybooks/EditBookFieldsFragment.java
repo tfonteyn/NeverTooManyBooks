@@ -39,6 +39,7 @@ import androidx.core.view.MenuCompat;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.preference.PreferenceManager;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -280,6 +281,12 @@ public class EditBookFieldsFragment
     @Override
     public void setCurrentCoverIndex(@IntRange(from = 0, to = 1) final int cIdx) {
         mFragmentVM.setCurrentCoverHandlerIndex(cIdx);
+    }
+
+    @Override
+    public void onCoverChanged(final int cIdx,
+                               @Nullable final File file) {
+        mBookViewModel.onCoverChanged(cIdx, file);
     }
 
     @Override

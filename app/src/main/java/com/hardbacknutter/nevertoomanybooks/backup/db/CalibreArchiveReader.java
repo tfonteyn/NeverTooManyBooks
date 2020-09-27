@@ -39,6 +39,7 @@ import com.hardbacknutter.nevertoomanybooks.backup.ImportManager;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveReader;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ImportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.base.InvalidArchiveException;
+import com.hardbacknutter.nevertoomanybooks.backup.base.Options;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.Synchronizer;
@@ -49,7 +50,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
-import com.hardbacknutter.nevertoomanybooks.utils.DateParser;
+import com.hardbacknutter.nevertoomanybooks.utils.dates.DateParser;
 
 /**
  * Copies the standard fields (book, author, publisher, series).
@@ -119,6 +120,11 @@ class CalibreArchiveReader
     private static final String SQL_SELECT_CUSTOM_COLUMN_X =
             "SELECT value FROM custom_column_%s WHERE book=?";
 
+    private static final String CALIBRE_BOOL = "bool";
+    private static final String CALIBRE_DATETIME = "datetime";
+    private static final String CALIBRE_COMMENTS = "comments";
+    private static final String CALIBRE_TEXT = "text";
+
     /** Database Access. */
     @NonNull
     private final DAO mDb;
@@ -150,7 +156,7 @@ class CalibreArchiveReader
         mCalibreDb = calibreDb;
         mDb = new DAO(TAG);
 
-        mForceUpdate = (helper.getOptions() & ImportManager.IMPORT_ONLY_NEW_OR_UPDATED) == 0;
+        mForceUpdate = (helper.getOptions() & Options.IS_SYNC) == 0;
 
         mEBookString = context.getString(R.string.book_format_ebook);
         mBooksString = context.getString(R.string.lbl_books);
@@ -198,8 +204,8 @@ class CalibreArchiveReader
         try (Cursor source = mCalibreDb.rawQuery(SQL_SELECT_BOOKS, null)) {
             final int count = source.getCount();
             // not perfect, but good enough
-            if (count > 0 && progressListener.getProgressMaxPos() < count) {
-                progressListener.setProgressMaxPos(count);
+            if (count > 0 && progressListener.getMaxPos() < count) {
+                progressListener.setMaxPos(count);
             }
 
             while (source.moveToNext() && !progressListener.isCancelled()) {
@@ -321,7 +327,6 @@ class CalibreArchiveReader
                     importResults.booksSkipped++;
                 }
 
-                // limit the amount of progress updates, otherwise this will cause a slowdown.
                 final long now = System.currentTimeMillis();
                 if ((now - lastUpdate) > progressListener.getUpdateIntervalInMs()
                     && !progressListener.isCancelled()) {
@@ -331,8 +336,8 @@ class CalibreArchiveReader
                                                      importResults.booksUpdated,
                                                      importResults.booksSkipped);
                     progressListener.publishProgressStep(delta, msg);
-                    delta = 0;
                     lastUpdate = now;
+                    delta = 0;
                 }
                 delta++;
             }
@@ -454,6 +459,7 @@ class CalibreArchiveReader
         try (Cursor cursor = mCalibreDb.rawQuery(SQL_SELECT_CUSTOM_COLUMNS, null)) {
             int id;
             String label;
+            // The datatype as used in Calibre.
             String datatype;
             while (cursor.moveToNext()) {
                 id = cursor.getInt(0);
@@ -463,7 +469,7 @@ class CalibreArchiveReader
                 final CustomColumn cc = new CustomColumn(id, label);
                 switch (cc.label) {
                     case DBDefinitions.KEY_READ:
-                        if ("bool".equals(datatype)) {
+                        if (CALIBRE_BOOL.equals(datatype)) {
                             customColumns.add(cc);
                         }
                         break;
@@ -471,11 +477,17 @@ class CalibreArchiveReader
                     case DBDefinitions.KEY_READ_START:
                     case DBDefinitions.KEY_READ_END:
                     case "date_read":
-                        if ("datetime".equals(datatype)) {
+                        if (CALIBRE_DATETIME.equals(datatype)) {
                             customColumns.add(cc);
                         }
                         break;
 
+                    case DBDefinitions.KEY_PRIVATE_NOTES:
+                        if (CALIBRE_COMMENTS.equals(datatype)
+                            || CALIBRE_TEXT.equals(datatype)) {
+                            customColumns.add(cc);
+                        }
+                        break;
                     default:
                         // skip others
                         break;

@@ -31,17 +31,19 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import java.io.File;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.covers.ImageUtils;
+import com.hardbacknutter.nevertoomanybooks.database.CoversDAO;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.ColumnInfo;
@@ -51,7 +53,9 @@ import com.hardbacknutter.nevertoomanybooks.datamanager.validators.ValidatorExce
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineRegistry;
+import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
+import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.Money;
 
 /**
@@ -161,6 +165,7 @@ public class Book
      * <br>type: {@code Bundle}
      */
     public static final String BKEY_BOOK_DATA = TAG + ":plainBundle";
+    private static final Pattern T = Pattern.compile("T");
 
     static {
         // Single front cover
@@ -404,19 +409,21 @@ public class Book
     }
 
     /**
-     * Convenience Accessor.
+     * get the id.
      *
      * @return the book id.
      */
+    @Override
     public long getId() {
         return getLong(DBDefinitions.KEY_PK_ID);
     }
 
     /**
-     * Convenience Accessor.
+     * Set the id.
      *
      * @param id the book id.
      */
+    @Override
     public void setId(final long id) {
         putLong(DBDefinitions.KEY_PK_ID, id);
     }
@@ -607,9 +614,8 @@ public class Book
     @SuppressWarnings("unused")
     public void deleteLoan(@NonNull final DAO db) {
         remove(DBDefinitions.KEY_LOANEE);
-        db.lendBook(getId(), null);
+        db.setLoanee(this, null, true);
     }
-
 
     /**
      * Toggle the read-status for this book.
@@ -635,14 +641,7 @@ public class Book
                             final boolean isRead) {
         final boolean old = getBoolean(DBDefinitions.KEY_READ);
 
-        if (db.setBookRead(getId(), isRead)) {
-            putBoolean(DBDefinitions.KEY_READ, isRead);
-            if (isRead) {
-                putString(DBDefinitions.KEY_READ_END,
-                          LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE));
-            } else {
-                putString(DBDefinitions.KEY_READ_END, "");
-            }
+        if (db.setBookRead(this, isRead)) {
             return isRead;
         }
 
@@ -727,7 +726,7 @@ public class Book
         // but making sure TOC_MULTIPLE_AUTHORS is correct.
         final ArrayList<TocEntry> tocEntries = getParcelableArrayList(BKEY_TOC_ARRAY);
         if (!tocEntries.isEmpty()) {
-            @Book.TocBits
+            @TocBits
             long type = getLong(DBDefinitions.KEY_TOC_BITMASK);
             if (TocEntry.hasMultipleAuthors(tocEntries)) {
                 type |= Book.TOC_MULTIPLE_AUTHORS;
@@ -738,7 +737,7 @@ public class Book
         // make sure we only store valid bits
         if (contains(DBDefinitions.KEY_EDITION_BITMASK)) {
             final int editions = getInt(DBDefinitions.KEY_EDITION_BITMASK)
-                                 & Book.Edition.BITMASK_ALL;
+                                 & Edition.BITMASK_ALL;
             putInt(DBDefinitions.KEY_EDITION_BITMASK, editions);
         }
 
@@ -748,11 +747,61 @@ public class Book
         preprocessPrice(bookLocale, DBDefinitions.KEY_PRICE_PAID,
                         DBDefinitions.KEY_PRICE_PAID_CURRENCY);
 
+        // replace 'T' by ' ' and truncate pure date fields if needed
+        preprocessDates();
+
         // make sure there are only valid external id's present
         preprocessExternalIds(isNew);
 
         // lastly, cleanup null and blank fields as needed.
         preprocessNullsAndBlanks(isNew);
+    }
+
+    /**
+     * Helper for {@link #preprocessForStoring(Context, boolean)}.
+     * <p>
+     * Truncate Date fields to being pure dates without a time segment.
+     * Replaces 'T' with ' ' to please SqLite/SQL datetime standards.
+     */
+    @VisibleForTesting
+    private void preprocessDates() {
+
+        for (Domain domain : DBDefinitions.TBL_BOOKS.getDomains()) {
+            final String key = domain.getName();
+            if (contains(key)) {
+                if (domain.getType().equals(ColumnInfo.TYPE_DATE)) {
+                    final String date = getString(key);
+                    // This is very crude... we simply check for 11 character pattern
+                    // "yyyy?mm?ddT" or "yyyy?mm?dd "
+                    if (date.length() > 10) {
+                        final char timeDiv = date.charAt(10);
+                        // this check is just a sanity check; we could just truncate regardless
+                        if (timeDiv == ' ' || timeDiv == 'T') {
+                            putString(key, date.substring(0, 11));
+                            if (BuildConfig.DEBUG /* always */) {
+                                Logger.d(TAG, "preprocessDates"
+                                              + "|key=" + key
+                                              + "|in=`" + date + '`'
+                                              + "|out=`" + getString(key) + '`');
+                            }
+                        }
+                    }
+
+                } else if (domain.getType().equals(ColumnInfo.TYPE_DATETIME)) {
+                    final String date = getString(key);
+                    // Again, very crude logic... simply checking character 11 for being a 'T'
+                    if (date.length() > 10 && date.charAt(10) == 'T') {
+                        putString(key, T.matcher(date).replaceFirst(" "));
+                        if (BuildConfig.DEBUG /* always */) {
+                            Logger.d(TAG, "preprocessDates"
+                                          + "|key=" + key
+                                          + "|in=`" + date + '`'
+                                          + "|out=`" + getString(key) + '`');
+                        }
+                    }
+                }
+            }
+        }
     }
 
     /**
@@ -983,6 +1032,45 @@ public class Book
                                             .putExtra(Intent.EXTRA_TEXT, text),
                                     context.getString(R.string.menu_share_this));
     }
+
+    public void setCover(@NonNull final Context context,
+                         final int cIdx,
+                         @Nullable final File file) {
+        if (file != null) {
+            putString(BKEY_FILE_SPEC[cIdx], file.getAbsolutePath());
+
+        } else {
+            // delete from cache
+            // Yes, we also delete the ones where != index, but we don't care; it's a cache.
+            final String uuid = getString(DBDefinitions.KEY_BOOK_UUID);
+            if (ImageUtils.isImageCachingEnabled(context) && !uuid.isEmpty()) {
+                CoversDAO.delete(context, uuid);
+            }
+            // delete from file storage
+            FileUtils.delete(getCoverFile(context, cIdx));
+            // lastly, delete in memory
+            remove(BKEY_FILE_SPEC[cIdx]);
+        }
+    }
+
+    @Nullable
+    public File getCoverFile(@NonNull final Context context,
+                             final int cIdx) {
+        // for existing books, we use the UUID and the index to get the stored file.
+        final String uuid = getString(DBDefinitions.KEY_BOOK_UUID);
+        if (!uuid.isEmpty()) {
+            return AppDir.getCoverFile(context, uuid, cIdx);
+        }
+
+        // for new books, check the bundle.
+        final String fileSpec = getString(BKEY_FILE_SPEC[cIdx]);
+        if (!fileSpec.isEmpty()) {
+            return new File(fileSpec);
+        }
+
+        return null;
+    }
+
 
     @Retention(RetentionPolicy.SOURCE)
     @IntDef(flag = true, value = {TOC_MULTIPLE_WORKS, TOC_MULTIPLE_AUTHORS})

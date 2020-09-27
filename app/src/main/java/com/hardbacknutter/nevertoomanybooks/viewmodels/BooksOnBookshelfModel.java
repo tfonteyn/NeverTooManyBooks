@@ -931,7 +931,7 @@ public class BooksOnBookshelfModel
     @SuppressWarnings("UnusedReturnValue")
     public boolean lendBook(final long bookId,
                             @Nullable final String loanee) {
-        return mDb.lendBook(bookId, loanee);
+        return mDb.setLoanee(bookId, loanee, true);
     }
 
     public boolean deleteBook(@NonNull final Context context,

@@ -45,7 +45,6 @@ public final class ErrorMsg {
     public static final String NULL_EXTRAS = "Extras";
     public static final String NULL_EXCEPTION = "Exception";
     public static final String NULL_EXTERNAL_ID = "externalId";
-    public static final String NULL_FRAGMENT_TAG = "Fragment Tag";
     public static final String NULL_GALLERY_ADAPTER = "GalleryAdapter";
     public static final String NULL_LAYOUT_MANAGER = "LinearLayoutManager";
     public static final String NULL_IMAGE_PATH = "ImagePath";
@@ -56,21 +55,22 @@ public final class ErrorMsg {
     public static final String NULL_MENU = "Menu";
     public static final String NULL_NON_PERSISTED_VALUE = "NonPersistedValue";
     public static final String NULL_PUBLISHER = "Publisher";
+    public static final String NULL_OUTPUT_STREAM = "OutputStream was NULL";
     public static final String NULL_SCANNER_MODEL = "ScannerModel";
     public static final String NULL_SERIES = "Series";
     public static final String NULL_STYLE = "Style";
     public static final String NULL_TASK_RESULTS = "Task result";
     public static final String NULL_TOC_ENTRY = "TocEntry";
     public static final String NULL_URI = "uri";
-    public static final String NULL_UUID = "UUID";
 
     public static final String BUNDLE_NOT_PUSHED = "Bundle not pushed!";
     public static final String BUNDLE_ALREADY_PUSHED = "Bundle already pushed!";
     public static final String CREATE_WAS_NOT_CALLED = "create was not called?";
-    public static final String IMPORT_NOT_SUPPORTED = "Import not supported";
+
     public static final String OPTIONS_NOT_SET = "options not set";
-    public static final String ONLY_ONE_OPTION_ALLOWED = "only one option allowed";
-    public static final String NULL_OUTPUT_STREAM = "OutputStream was NULL";
+
+    public static final String IMPORT_NOT_SUPPORTED = "Import not supported";
+    public static final String EXPORT_NOT_SUPPORTED = "Export not supported";
 
     private ErrorMsg() {
     }

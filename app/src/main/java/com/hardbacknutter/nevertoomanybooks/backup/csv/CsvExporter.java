@@ -26,6 +26,7 @@ import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.Writer;
 import java.time.LocalDateTime;
@@ -54,6 +55,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineRegistry;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
+import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.StringList;
 
@@ -148,6 +150,8 @@ public class CsvExporter
     private final ExportResults mResults = new ExportResults();
     /** export configuration. */
     private final int mOptions;
+    private final boolean mCollectCoverFilenames;
+
     @Nullable
     private final LocalDateTime mUtcSinceDateTime;
 
@@ -165,14 +169,15 @@ public class CsvExporter
                        @Nullable final LocalDateTime utcSinceDateTime) {
 
         mOptions = options;
+        mCollectCoverFilenames = (mOptions & Options.COVERS) != 0;
         mUtcSinceDateTime = utcSinceDateTime;
 
         mDb = new DAO(TAG);
-        mBookshelfCoder = new StringList<>(
-                new BookshelfCoder(BooklistStyle.getDefault(context, mDb)));
-
         final Locale userLocale = AppLocale.getInstance().getUserLocale(context);
         mUnknownNameString = context.getString(R.string.unknownName).toUpperCase(userLocale);
+
+        mBookshelfCoder = new StringList<>(
+                new BookshelfCoder(BooklistStyle.getDefault(context, mDb)));
     }
 
     @Override
@@ -186,12 +191,13 @@ public class CsvExporter
                                @NonNull final ProgressListener progressListener)
             throws IOException {
 
-        // we only support books, return empty results, ignore other entities
-        boolean writeBooks = (mOptions & Options.BOOKS) != 0;
+        final boolean writeBooks = (mOptions & Options.BOOKS) != 0;
+        // Sanity check: if we don't do books, return empty results
         if (!writeBooks) {
             return mResults;
         }
 
+        int delta = 0;
         long lastUpdate = 0;
 
         final Book book = new Book();
@@ -202,12 +208,10 @@ public class CsvExporter
             // row 0 with the column labels
             writer.write(getFieldHeaders(externalIdDomains));
 
-            final int progressMaxCount = progressListener.getProgressMaxPos() + cursor.getCount();
-            progressListener.setProgressMaxPos(progressMaxCount);
-
             while (cursor.moveToNext() && !progressListener.isCancelled()) {
 
                 book.load(cursor, mDb);
+                final String uuid = book.getString(DBDefinitions.KEY_BOOK_UUID);
 
                 String title = book.getString(DBDefinitions.KEY_TITLE);
                 // Sanity check: ensure title is non-blank.
@@ -225,7 +229,7 @@ public class CsvExporter
                 // it's a buffered writer, no need to first StringBuilder the line.
                 writer.write(encode(book.getLong(DBDefinitions.KEY_PK_ID)));
                 writer.write(COMMA);
-                writer.write(encode(book.getString(DBDefinitions.KEY_BOOK_UUID)));
+                writer.write(encode(uuid));
                 writer.write(COMMA);
                 writer.write(encode(book.getString(DBDefinitions.KEY_UTC_LAST_UPDATED)));
                 writer.write(COMMA);
@@ -309,16 +313,27 @@ public class CsvExporter
                 //NEWTHINGS: adding a new search engine: optional: add engine specific keys
                 writer.write(COMMA);
                 writer.write(encode(
-                        book.getString(DBDefinitions.KEY_UTC_LAST_SYNC_DATE_GOODREADS)));
+                        book.getString(DBDefinitions.KEY_UTC_GOODREADS_LAST_SYNC_DATE)));
 
                 writer.write("\n");
 
-                mResults.booksExported++;
+                mResults.addBook(book.getId());
 
+                if (mCollectCoverFilenames) {
+                    for (int cIdx = 0; cIdx < 2; cIdx++) {
+                        final File cover = AppDir.getCoverFile(context, uuid, cIdx);
+                        if (cover.exists()) {
+                            mResults.addCover(cover.getName());
+                        }
+                    }
+                }
+
+                delta++;
                 final long now = System.currentTimeMillis();
                 if ((now - lastUpdate) > progressListener.getUpdateIntervalInMs()) {
-                    progressListener.publishProgress(mResults.booksExported, title);
+                    progressListener.publishProgressStep(delta, title);
                     lastUpdate = now;
+                    delta = 0;
                 }
             }
         }
@@ -335,7 +350,7 @@ public class CsvExporter
         }
         //NEWTHINGS: adding a new search engine: optional: add engine specific keys
         sb.append(COMMA).append('"')
-          .append(DBDefinitions.KEY_UTC_LAST_SYNC_DATE_GOODREADS).append('"');
+          .append(DBDefinitions.KEY_UTC_GOODREADS_LAST_SYNC_DATE).append('"');
         return sb.append('\n').toString();
     }
 

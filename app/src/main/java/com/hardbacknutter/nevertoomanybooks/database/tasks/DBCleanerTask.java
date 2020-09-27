@@ -36,6 +36,7 @@ import com.hardbacknutter.nevertoomanybooks.tasks.LTask;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.ProgressMessage;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
+import com.hardbacknutter.nevertoomanybooks.viewmodels.StartupViewModel;
 
 /**
  * Data cleaning. Done on each startup.
@@ -77,6 +78,9 @@ public class DBCleanerTask
             // do a mass update of any languages not yet converted to ISO 639-2 codes
             cleaner.languages(context, userLocale);
 
+            // make sure there are no 'T' separators in datetime fields
+            cleaner.dates();
+
             // validate booleans to have 0/1 content (could do just ALL_TABLES)
             cleaner.booleanColumns(DBDefinitions.TBL_BOOKS,
                                    DBDefinitions.TBL_AUTHORS,
@@ -99,6 +103,10 @@ public class DBCleanerTask
             Logger.error(context, TAG, e);
             mException = e;
             return false;
+
+        } finally {
+            // regardless of result, always disable as we do not want to rebuild/fail/rebuild...
+            StartupViewModel.scheduleMaintenance(context, false);
         }
     }
 }

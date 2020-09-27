@@ -32,7 +32,7 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.PartialDatePickerDialogFragm
 import com.hardbacknutter.nevertoomanybooks.fields.accessors.EditTextAccessor;
 import com.hardbacknutter.nevertoomanybooks.fields.accessors.TextAccessor;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
-import com.hardbacknutter.nevertoomanybooks.utils.DateParser;
+import com.hardbacknutter.nevertoomanybooks.utils.dates.DateParser;
 
 /**
  * FieldFormatter for 'date' fields.

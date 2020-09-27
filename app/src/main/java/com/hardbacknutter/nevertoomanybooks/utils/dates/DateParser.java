@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.utils;
+package com.hardbacknutter.nevertoomanybooks.utils.dates;
 
 import android.content.Context;
 
@@ -35,6 +35,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Locale;
+
+import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 /**
  * //URGENT: DateTimeParseException https://issuetracker.google.com/issues/158417777
@@ -79,8 +81,19 @@ public class DateParser
             "MMM yyyy",
             "MMMM yyyy",
             };
+
     /** Singleton. */
     private static DateParser sInstance;
+
+    /**
+     * Variant of DateTimeFormatter.ISO_DATE_TIME using a space instead of the normal 'T'
+     * '2011-12-03 10:15:30',
+     * '2011-12-03 10:15:30+01:00'
+     * '2011-12-03 10:15:30+01:00[Europe/Paris]'
+     */
+    @SuppressWarnings({"FieldCanBeLocal", "WeakerAccess"})
+    public static DateTimeFormatter SQLITE_ISO_DATE_TIME;
+
     /** List of patterns we'll use to parse dates. */
     private final Collection<DateTimeFormatter> TEXT_PARSERS = new ArrayList<>();
     private final Collection<DateTimeFormatter> NUMERICAL_PARSERS = new ArrayList<>();
@@ -117,6 +130,7 @@ public class DateParser
      * Get/create the singleton instance.
      * For testing purposes only: the singleton is created each time and we don't register
      * the OnLocaleChangedListener listener.
+     * Other than that it is identical in it's logic.
      *
      * @param locales the locales to use
      *
@@ -124,7 +138,7 @@ public class DateParser
      */
     @VisibleForTesting
     @NonNull
-    public static DateParser createForTesting(@NonNull final Locale... locales) {
+    public static DateParser getTestInstance(@NonNull final Locale... locales) {
         sInstance = new DateParser();
         sInstance.create(locales);
         return sInstance;
@@ -136,47 +150,42 @@ public class DateParser
      * @param locales the locales to use
      */
     private void create(@NonNull final Locale... locales) {
-        final Locale systemLocale = AppLocale.getInstance().getSystemLocale();
-
-        createIsoParsers(systemLocale);
-
-        NUMERICAL_PARSERS.clear();
-        addParsers(NUMERICAL_PARSERS, NUMERICAL, systemLocale);
-
-        TEXT_PARSERS.clear();
-        addParsers(TEXT_PARSERS, TEXT, locales);
-        addEnglish(TEXT_PARSERS, TEXT, locales);
-    }
-
-    private void createIsoParsers(@NonNull final Locale systemLocale) {
         // allow recreating
         ISO_PARSERS.clear();
+
+        final Locale systemLocale = AppLocale.getInstance().getSystemLocale();
+
+        SQLITE_ISO_DATE_TIME = new DateTimeFormatterBuilder()
+                .parseCaseInsensitive()
+                .append(DateTimeFormatter.ISO_LOCAL_DATE)
+                // A space instead of the normal 'T'
+                .appendLiteral(' ')
+                .append(DateTimeFormatter.ISO_LOCAL_TIME)
+                .optionalStart()
+                .appendOffsetId()
+                .optionalStart()
+                .appendLiteral('[')
+                .parseCaseSensitive()
+                .appendZoneRegionId()
+                .appendLiteral(']')
+                // Uses ResolverStyle.SMART and 'null' Chronology
+                .toFormatter(systemLocale);
 
         // '2011-12-03T10:15:30',
         // '2011-12-03T10:15:30+01:00'
         // '2011-12-03T10:15:30+01:00[Europe/Paris]'
         // Uses ResolverStyle.STRICT / IsoChronology.INSTANCE
+        // This parser includes ISO_LOCAL_DATE_TIME
         ISO_PARSERS.add(DateTimeFormatter.ISO_DATE_TIME);
+        // and the same but with a ' ' separator.
+        ISO_PARSERS.add(SQLITE_ISO_DATE_TIME);
 
-        // Variant of DateTimeFormatter.ISO_DATE_TIME using a space instead of the normal 'T'
-        // '2011-12-03 10:15:30',
-        // '2011-12-03 10:15:30+01:00'
-        // '2011-12-03 10:15:30+01:00[Europe/Paris]'
-        ISO_PARSERS.add(new DateTimeFormatterBuilder()
-                                .parseCaseInsensitive()
-                                .append(DateTimeFormatter.ISO_LOCAL_DATE)
-                                // A space instead of the normal 'T'
-                                .appendLiteral(' ')
-                                .append(DateTimeFormatter.ISO_LOCAL_TIME)
-                                .optionalStart()
-                                .appendOffsetId()
-                                .optionalStart()
-                                .appendLiteral('[')
-                                .parseCaseSensitive()
-                                .appendZoneRegionId()
-                                .appendLiteral(']')
-                                // Uses ResolverStyle.SMART and 'null' Chronology
-                                .toFormatter(systemLocale));
+        NUMERICAL_PARSERS.clear();
+        addPatterns(NUMERICAL_PARSERS, NUMERICAL, systemLocale);
+
+        TEXT_PARSERS.clear();
+        addPatterns(TEXT_PARSERS, TEXT, locales);
+        addEnglish(TEXT_PARSERS, TEXT, locales);
     }
 
     /**
@@ -186,9 +195,9 @@ public class DateParser
      * @param patterns list of patterns to add
      * @param locales  to use
      */
-    private void addParsers(@NonNull final Collection<DateTimeFormatter> group,
-                            @NonNull final String[] patterns,
-                            @NonNull final Locale... locales) {
+    private void addPatterns(@NonNull final Collection<DateTimeFormatter> group,
+                             @NonNull final String[] patterns,
+                             @NonNull final Locale... locales) {
         // prevent duplicate locales
         final Collection<Locale> added = new HashSet<>();
         for (Locale locale : locales) {
@@ -227,7 +236,7 @@ public class DateParser
             }
         }
         if (!hasEnglish) {
-            addParsers(group, patterns, Locale.ENGLISH);
+            addPatterns(group, patterns, Locale.ENGLISH);
         }
     }
 

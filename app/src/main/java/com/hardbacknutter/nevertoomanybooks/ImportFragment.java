@@ -224,7 +224,7 @@ public class ImportFragment
         //noinspection EnumSwitchStatementWhichMissesCases
         switch (container) {
             case CsvBooks:
-                helper.setOptions(Options.BOOKS | ImportManager.IMPORT_ONLY_NEW_OR_UPDATED);
+                helper.setOptions(Options.BOOKS | Options.IS_SYNC);
 
                 //URGENT: make a backup before ANY csv import!
                 //noinspection ConstantConditions
@@ -244,7 +244,7 @@ public class ImportFragment
 
             case Zip:
             case Tar:
-                helper.setOptions(Options.ENTITIES | ImportManager.IMPORT_ONLY_NEW_OR_UPDATED);
+                helper.setOptions(Options.ENTITIES | Options.IS_SYNC);
                 ImportHelperDialogFragment
                         .newInstance(RK_IMPORT_HELPER, helper)
                         .show(getChildFragmentManager(), ImportHelperDialogFragment.TAG);
@@ -252,7 +252,7 @@ public class ImportFragment
 
             case SqLiteDb:
                 if (BuildConfig.IMPORT_CALIBRE) {
-                    helper.setOptions(Options.ENTITIES | ImportManager.IMPORT_ONLY_NEW_OR_UPDATED);
+                    helper.setOptions(Options.ENTITIES | Options.IS_SYNC);
                     ImportHelperDialogFragment
                             .newInstance(RK_IMPORT_HELPER, helper)
                             .show(getChildFragmentManager(), ImportHelperDialogFragment.TAG);

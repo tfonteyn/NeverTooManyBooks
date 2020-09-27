@@ -58,12 +58,13 @@ public class StartupViewModel
 
 
     /** Flag to indicate OrderBy columns must be rebuild at startup. */
-    public static final String PK_REBUILD_ORDERBY_COLUMNS = "startup.rebuild.ob.title";
-
+    public static final String PK_REBUILD_ORDERBY_COLUMNS = "startup.task.rebuild.ob.title";
     /** Flag to indicate all indexes must be rebuild at startup. */
-    private static final String PK_REBUILD_INDEXES = "startup.rebuild.index";
+    private static final String PK_REBUILD_INDEXES = "startup.task.rebuild.index";
     /** Flag to indicate FTS rebuild is required at startup. */
-    private static final String PK_REBUILD_FTS = "startup.rebuild.fts";
+    private static final String PK_REBUILD_FTS = "startup.task.rebuild.fts";
+    /** Flag to indicate maintenance (cleaner) is required at startup. */
+    private static final String PK_RUN_MAINTENANCE = "startup.task.maintenance";
 
     /** Log tag. */
     private static final String TAG = "StartupViewModel";
@@ -157,6 +158,16 @@ public class StartupViewModel
     public static void scheduleIndexRebuild(@NonNull final Context context,
                                             final boolean flag) {
         schedule(context, PK_REBUILD_INDEXES, flag);
+    }
+
+    /**
+     * Set or remove the flag to indicate maintenance is required.
+     *
+     * @param context Current context
+     */
+    public static void scheduleMaintenance(@NonNull final Context context,
+                                           final boolean flag) {
+        schedule(context, PK_RUN_MAINTENANCE, flag);
     }
 
     private static void schedule(@NonNull final Context context,
@@ -263,27 +274,23 @@ public class StartupViewModel
         // unconditional
         startTask(new BuildLanguageMappingsTask(mTaskListener));
 
-        // this is not critical, once every so often is fine
-        if (mDoMaintenance) {
+        if (mDoMaintenance || prefs.getBoolean(PK_RUN_MAINTENANCE, false)) {
             // cleaner must be started after the language mapper task,
             // but before the rebuild tasks.
             startTask(new DBCleanerTask(mDb, mTaskListener));
             optimizeDb = true;
         }
 
-        // on demand only
         if (prefs.getBoolean(PK_REBUILD_ORDERBY_COLUMNS, false)) {
             startTask(new RebuildOrderByTitleColumnsTask(mDb, mTaskListener));
             optimizeDb = true;
         }
 
-        // on demand only
         if (prefs.getBoolean(PK_REBUILD_INDEXES, false)) {
             startTask(new RebuildIndexesTask(mTaskListener));
             optimizeDb = true;
         }
 
-        // on demand only
         if (prefs.getBoolean(PK_REBUILD_FTS, false)) {
             startTask(new RebuildFtsTask(mDb, mTaskListener));
             optimizeDb = true;

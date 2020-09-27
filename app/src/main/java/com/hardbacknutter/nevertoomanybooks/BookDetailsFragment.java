@@ -47,6 +47,7 @@ import androidx.preference.PreferenceManager;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -370,7 +371,8 @@ public class BookDetailsFragment
         fields.add(R.id.read_start, new TextViewAccessor<>(dateFormatter),
                    DBDefinitions.KEY_READ_START)
               .setRelatedFields(R.id.lbl_read_start);
-        fields.add(R.id.read_end, new TextViewAccessor<>(dateFormatter), DBDefinitions.KEY_READ_END)
+        fields.add(R.id.read_end, new TextViewAccessor<>(dateFormatter),
+                   DBDefinitions.KEY_READ_END)
               .setRelatedFields(R.id.lbl_read_end);
 
         fields.add(R.id.icon_read, new BooleanIndicatorAccessor(), DBDefinitions.KEY_READ);
@@ -476,6 +478,12 @@ public class BookDetailsFragment
     @Override
     public void setCurrentCoverIndex(@IntRange(from = 0, to = 1) final int cIdx) {
         mFragmentVM.setCurrentCoverHandlerIndex(cIdx);
+    }
+
+    @Override
+    public void onCoverChanged(final int cIdx,
+                               @Nullable final File file) {
+        mBookViewModel.onCoverChanged(cIdx, file);
     }
 
     /**

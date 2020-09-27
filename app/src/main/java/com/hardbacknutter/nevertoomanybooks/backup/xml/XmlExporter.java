@@ -28,6 +28,7 @@ import androidx.annotation.Nullable;
 import androidx.preference.PreferenceManager;
 
 import java.io.Closeable;
+import java.io.File;
 import java.io.IOException;
 import java.io.Writer;
 import java.time.LocalDateTime;
@@ -64,6 +65,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineRegistry;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
+import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 /**
@@ -123,13 +125,15 @@ public class XmlExporter
     /** individual format version of Styles. */
     private static final int XML_EXPORTER_STYLES_VERSION = 1;
     private static final int XML_EXPORTER_STYLES_VERSION_EXPERIMENTAL = 99;
-
+    /** suffix for progress messages. */
+    private static final String XML_SUFFIX = " (xml)";
     /** Database Access. */
     @NonNull
     private final DAO mDb;
-
     private final ExportResults mResults = new ExportResults();
     private final int mOptions;
+    private final boolean mCollectCoverFilenames;
+
     @Nullable
     private final LocalDateTime mUtcSinceDateTime;
     /** cached localized "unknown" string. */
@@ -149,9 +153,10 @@ public class XmlExporter
                        @Nullable final LocalDateTime utcSinceDateTime) {
 
         mOptions = options;
+        mCollectCoverFilenames = (mOptions & Options.COVERS) != 0;
         mUtcSinceDateTime = utcSinceDateTime;
-        mDb = new DAO(TAG);
 
+        mDb = new DAO(TAG);
         final Locale userLocale = AppLocale.getInstance().getUserLocale(context);
         mUnknownNameString = context.getString(R.string.unknownName).toUpperCase(userLocale);
     }
@@ -172,52 +177,57 @@ public class XmlExporter
                                @NonNull final ProgressListener progressListener)
             throws IOException {
 
-        // suffix for progress messages.
-        final String xml = " (xml)";
-
-        // ignore non-supported options
+        final boolean writeBooks = (mOptions & Options.BOOKS) != 0;
         final boolean writeStyles = (mOptions & Options.STYLES) != 0;
         final boolean writePrefs = (mOptions & Options.PREFS) != 0;
 
-        final boolean writeBooks = (mOptions & Options.BOOKS) != 0;
-
-        // Write styles and prefs first.
-
         if (!progressListener.isCancelled() && writeStyles) {
-            progressListener.publishProgressStep(1, context.getString(R.string.lbl_styles) + xml);
+            progressListener
+                    .publishProgressStep(1, context.getString(R.string.lbl_styles) + XML_SUFFIX);
             writeStyles(context, writer);
             // an experiment, might become the v2 of the styles format
             //writeStyles2(context, writer, progressListener);
         }
 
         if (!progressListener.isCancelled() && writePrefs) {
-            progressListener.publishProgressStep(1, context.getString(R.string.lbl_settings) + xml);
+            progressListener
+                    .publishProgressStep(1, context.getString(R.string.lbl_settings) + XML_SUFFIX);
             writePreferences(context, writer);
         }
 
         if (!progressListener.isCancelled() && writeBooks) {
             // parsing will be faster if these go in the order done here.
             progressListener
-                    .publishProgressStep(1, context.getString(R.string.lbl_bookshelves_long) + xml);
+                    .publishProgressStep(1,
+                                         context.getString(R.string.lbl_bookshelves_long)
+                                         + XML_SUFFIX);
             writeBookshelves(writer, progressListener);
 
-            progressListener.publishProgressStep(1, context.getString(R.string.lbl_authors) + xml);
+            progressListener
+                    .publishProgressStep(1, context.getString(R.string.lbl_authors) + XML_SUFFIX);
             writeAuthors(writer, progressListener);
 
             progressListener
-                    .publishProgressStep(1, context.getString(R.string.lbl_series_multiple) + xml);
+                    .publishProgressStep(1,
+                                         context.getString(R.string.lbl_series_multiple)
+                                         + XML_SUFFIX);
             writeSeries(writer, progressListener);
 
             progressListener
-                    .publishProgressStep(1, context.getString(R.string.lbl_publishers) + xml);
+                    .publishProgressStep(1,
+                                         context.getString(R.string.lbl_publishers) + XML_SUFFIX);
             writePublishers(writer, progressListener);
 
             progressListener
-                    .publishProgressStep(1, context.getString(R.string.lbl_table_of_content) + xml);
+                    .publishProgressStep(1,
+                                         context.getString(R.string.lbl_table_of_content)
+                                         + XML_SUFFIX);
             writeToc(writer, progressListener);
 
-            progressListener.publishProgressStep(1, context.getString(R.string.lbl_books) + xml);
-            writeBooks(writer, progressListener);
+            progressListener
+                    .publishProgressStep(1, context.getString(R.string.lbl_books) + XML_SUFFIX);
+            writeBooks(context, writer, progressListener
+                      );
         }
 
         return mResults;
@@ -533,18 +543,23 @@ public class XmlExporter
     /**
      * 'loan_to' is added to the books section here, this might be removed.
      *
+     * @param context          Current context
      * @param writer           writer
      * @param progressListener Progress and cancellation interface
      *
      * @throws IOException on failure
      */
-    private void writeBooks(@NonNull final Writer writer,
+    private void writeBooks(@NonNull final Context context,
+                            @NonNull final Writer writer,
                             @NonNull final ProgressListener progressListener)
             throws IOException {
 
+        int delta = 0;
         long lastUpdate = 0;
 
         final Book book = new Book();
+
+        final List<Domain> externalIdDomains = SearchEngineRegistry.getExternalIdDomains();
 
         try (Cursor cursor = mDb.fetchBooksForExport(mUtcSinceDateTime)) {
             writer.write('<' + XmlTags.TAG_BOOK_LIST);
@@ -552,14 +567,10 @@ public class XmlExporter
             writer.write(XmlUtils.sizeAttr(cursor.getCount()));
             writer.write(">\n");
 
-            int progressMaxCount = progressListener.getProgressMaxPos() + cursor.getCount();
-            progressListener.setProgressMaxPos(progressMaxCount);
-
-            final List<Domain> externalIdDomains = SearchEngineRegistry.getExternalIdDomains();
-
             while (cursor.moveToNext() && !progressListener.isCancelled()) {
 
                 book.load(cursor, mDb);
+                final String uuid = book.getString(DBDefinitions.KEY_BOOK_UUID);
 
                 String title = book.getString(DBDefinitions.KEY_TITLE);
                 // Sanity check: ensure title is non-blank.
@@ -573,8 +584,7 @@ public class XmlExporter
                 writer.write(XmlUtils.attr(DBDefinitions.KEY_TITLE, title));
                 writer.write(XmlUtils.attr(DBDefinitions.KEY_ISBN,
                                            book.getString(DBDefinitions.KEY_ISBN)));
-                writer.write(XmlUtils.attr(DBDefinitions.KEY_BOOK_UUID,
-                                           book.getString(DBDefinitions.KEY_BOOK_UUID)));
+                writer.write(XmlUtils.attr(DBDefinitions.KEY_BOOK_UUID, uuid));
                 writer.write(XmlUtils.attr(DBDefinitions.KEY_UTC_ADDED,
                                            book.getString(DBDefinitions.KEY_UTC_ADDED)));
                 writer.write(XmlUtils.attr(DBDefinitions.KEY_UTC_LAST_UPDATED,
@@ -633,7 +643,6 @@ public class XmlExporter
                 writer.write(XmlUtils.attr(DBDefinitions.KEY_EDITION_BITMASK,
                                            book.getLong(DBDefinitions.KEY_EDITION_BITMASK)));
 
-
                 // external ID's
                 for (Domain domain : externalIdDomains) {
                     final String key = domain.getName();
@@ -641,8 +650,8 @@ public class XmlExporter
                 }
                 //NEWTHINGS: adding a new search engine: optional: add engine specific keys
                 writer.write(XmlUtils.attr(
-                        DBDefinitions.KEY_UTC_LAST_SYNC_DATE_GOODREADS,
-                        book.getString(DBDefinitions.KEY_UTC_LAST_SYNC_DATE_GOODREADS)));
+                        DBDefinitions.KEY_UTC_GOODREADS_LAST_SYNC_DATE,
+                        book.getString(DBDefinitions.KEY_UTC_GOODREADS_LAST_SYNC_DATE)));
 
 
                 // cross-linked with the loanee table
@@ -735,12 +744,23 @@ public class XmlExporter
 
                 writer.write("</" + XmlTags.TAG_BOOK + ">\n");
 
-                mResults.booksExported++;
+                mResults.addBook(book.getId());
 
-                long now = System.currentTimeMillis();
+                if (mCollectCoverFilenames) {
+                    for (int cIdx = 0; cIdx < 2; cIdx++) {
+                        final File cover = AppDir.getCoverFile(context, uuid, cIdx);
+                        if (cover.exists()) {
+                            mResults.addCover(cover.getName());
+                        }
+                    }
+                }
+
+                delta++;
+                final long now = System.currentTimeMillis();
                 if ((now - lastUpdate) > progressListener.getUpdateIntervalInMs()) {
-                    progressListener.publishProgress(mResults.booksExported, title);
+                    progressListener.publishProgressStep(delta, title);
                     lastUpdate = now;
+                    delta = 0;
                 }
             }
             writer.write("</" + XmlTags.TAG_BOOK_LIST + ">\n");

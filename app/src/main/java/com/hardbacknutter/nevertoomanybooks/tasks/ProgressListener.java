@@ -28,17 +28,6 @@ import androidx.annotation.Nullable;
 public interface ProgressListener {
 
     /**
-     * Advance progress to absolute position.
-     *
-     * @param pos     absolute position for the progress counter
-     * @param message optional message to display
-     */
-    default void publishProgress(final int pos,
-                                 @Nullable final String message) {
-        throw new UnsupportedOperationException();
-    }
-
-    /**
      * Advance progress by 'delta'.
      *
      * @param delta   increment/decrement value for the progress counter
@@ -46,6 +35,17 @@ public interface ProgressListener {
      */
     default void publishProgressStep(final int delta,
                                      @Nullable final String message) {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * Advance progress to absolute position.
+     *
+     * @param position absolute position for the progress counter
+     * @param message  optional message to display
+     */
+    default void publishPosition(final int position,
+                                 @Nullable final String message) {
         throw new UnsupportedOperationException();
     }
 
@@ -71,7 +71,7 @@ public interface ProgressListener {
      * @param indeterminate true/false to enable/disable the indeterminate mode
      *                      or {@code null} to tell the receiver to revert back to its initial mode.
      */
-    void setProgressIsIndeterminate(@Nullable Boolean indeterminate);
+    void setIndeterminate(@Nullable Boolean indeterminate);
 
     /**
      * Get the max position. Useful if a routine wants to adjust the max only if the
@@ -79,12 +79,12 @@ public interface ProgressListener {
      *
      * @return max position
      */
-    int getProgressMaxPos();
+    int getMaxPos();
 
     /**
      * Set the max value for the progress counter.
      *
      * @param maxPosition value
      */
-    void setProgressMaxPos(int maxPosition);
+    void setMaxPos(int maxPosition);
 }

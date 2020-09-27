@@ -68,8 +68,8 @@ import com.hardbacknutter.nevertoomanybooks.goodreads.qtasks.taskqueue.TQTask;
 import com.hardbacknutter.nevertoomanybooks.searches.AuthorTypeMapper;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
-import com.hardbacknutter.nevertoomanybooks.utils.DateParser;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.dates.DateParser;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 
 /**
@@ -402,9 +402,8 @@ public class ImportGrTask
         try {
             db.insert(context, book, DAO.BOOK_FLAG_IS_BATCH_OPERATION);
             for (int cIdx = 0; cIdx < 2; cIdx++) {
-                final String fileSpec = book.getString(Book.BKEY_FILE_SPEC[cIdx]);
-                if (!fileSpec.isEmpty()) {
-                    final File downloadedFile = new File(fileSpec);
+                final File downloadedFile = book.getCoverFile(context, cIdx);
+                if (downloadedFile != null) {
                     final String uuid = book.getString(DBDefinitions.KEY_BOOK_UUID);
                     final File destination = AppDir.getCoverFile(context, uuid, cIdx);
                     FileUtils.renameOrThrow(downloadedFile, destination);
@@ -437,7 +436,7 @@ public class ImportGrTask
             final LocalDateTime reviewUpd = Review.parseDate(review.getString(Review.UPDATED));
             // Get last time the book was sent to Goodreads (may be null)
             final LocalDateTime lastSyncDate = DateParser.getInstance(context).parseISO(
-                    book.getString(DBDefinitions.KEY_UTC_LAST_SYNC_DATE_GOODREADS));
+                    book.getString(DBDefinitions.KEY_UTC_GOODREADS_LAST_SYNC_DATE));
 
             // If the last update in Goodreads was before the last Goodreads sync of book,
             // don't bother updating book.
@@ -649,7 +648,7 @@ public class ImportGrTask
         // last_update_date for us, and that would be ahead of the Goodreads update date.
         final String utcNow = LocalDateTime
                 .now(ZoneOffset.UTC).format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
-        delta.putString(DBDefinitions.KEY_UTC_LAST_SYNC_DATE_GOODREADS, utcNow);
+        delta.putString(DBDefinitions.KEY_UTC_GOODREADS_LAST_SYNC_DATE, utcNow);
         delta.putString(DBDefinitions.KEY_UTC_LAST_UPDATED, utcNow);
 
         return delta;

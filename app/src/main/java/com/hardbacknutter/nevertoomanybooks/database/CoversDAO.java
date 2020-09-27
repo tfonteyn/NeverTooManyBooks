@@ -40,6 +40,7 @@ import androidx.annotation.WorkerThread;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -253,12 +254,13 @@ public final class CoversDAO
             }
 
             final File file = AppDir.getCoverFile(context, uuid, cIdx);
-            final String utcDateStr = Instant.ofEpochMilli(file.lastModified())
-                                             .atZone(ZoneOffset.UTC)
-                                             .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+            final String fileLastModified = Instant.ofEpochMilli(file.lastModified())
+                                                   .atZone(ZoneOffset.UTC)
+                                                   .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
             final String cacheId = constructCacheId(uuid, cIdx, maxWidth, maxHeight);
-            try (Cursor cursor = sSyncedDb.rawQuery(SQL_GET_IMAGE,
-                                                    new String[]{cacheId, utcDateStr})) {
+
+            try (Cursor cursor = sSyncedDb.rawQuery(SQL_GET_IMAGE, new String[]{
+                    cacheId, fileLastModified})) {
                 if (cursor.moveToFirst()) {
                     final byte[] bytes = cursor.getBlob(0);
                     if (bytes != null) {
@@ -436,6 +438,8 @@ public final class CoversDAO
         if (existsStmt.simpleQueryForLongOrZero() == 0) {
             sSyncedDb.insert(TBL_IMAGE.getName(), null, cv);
         } else {
+            cv.put(CKEY_UTC_DATETIME, LocalDateTime
+                    .now(ZoneOffset.UTC).format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
             sSyncedDb.update(TBL_IMAGE.getName(), cv,
                              CKEY_CACHE_ID + "=?", new String[]{cacheId});
         }

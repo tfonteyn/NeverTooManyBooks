@@ -49,6 +49,7 @@ import java.util.Locale;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
+import com.hardbacknutter.nevertoomanybooks.utils.dates.DateParser;
 
 /**
  * DialogFragment class to allow for selection of partial dates from 0AD to 9999AD.
@@ -382,7 +383,7 @@ public class PartialDatePickerDialogFragment
     /**
      * Parse the input ISO date string into the individual components.
      * <p>
-     * Note we don't use {@link com.hardbacknutter.nevertoomanybooks.utils.DateParser}
+     * Note we don't use {@link DateParser}
      * as we the current implementation always returns full dates.
      * Here, we explicitly need to support partial dates.
      *

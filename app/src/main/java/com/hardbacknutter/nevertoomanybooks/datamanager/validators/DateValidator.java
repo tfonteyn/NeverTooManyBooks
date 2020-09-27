@@ -29,7 +29,7 @@ import java.time.format.DateTimeFormatter;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
-import com.hardbacknutter.nevertoomanybooks.utils.DateParser;
+import com.hardbacknutter.nevertoomanybooks.utils.dates.DateParser;
 
 /**
  * Validator to apply a default value and validate as a Date.

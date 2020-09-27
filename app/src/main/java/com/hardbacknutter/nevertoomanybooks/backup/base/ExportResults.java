@@ -27,6 +27,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.util.Pair;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 
@@ -54,14 +57,16 @@ public class ExportResults
 
     /** #books that did not have a front-cover [0] / back-cover [1]. */
     @NonNull
-    public final int[] coversMissing;
+    private final int[] mCoversMissing;
 
-    /** #books we exported. */
-    public int booksExported;
-    /** #covers exported. */
-    public int coversExported;
+    /** id's of books we exported. */
+    private final List<Long> mBooksExported = new ArrayList<>();
+
+    /** filenames of covers exported. */
+    private final List<String> mCoversExported = new ArrayList<>();
+
     /** #covers that were skipped. */
-    public int coversSkipped;
+    private int mCoversSkipped;
 
     /** #styles we exported. */
     public int styles;
@@ -69,7 +74,7 @@ public class ExportResults
     public int preferences;
 
     public ExportResults() {
-        coversMissing = new int[2];
+        mCoversMissing = new int[2];
     }
 
     /**
@@ -78,27 +83,65 @@ public class ExportResults
      * @param in Parcel to construct the object from
      */
     private ExportResults(@NonNull final Parcel in) {
-        booksExported = in.readInt();
-        coversExported = in.readInt();
+        in.readList(mBooksExported, getClass().getClassLoader());
+        in.readStringList(mCoversExported);
 
-        coversSkipped = in.readInt();
+        mCoversSkipped = in.readInt();
         //noinspection ConstantConditions
-        coversMissing = in.createIntArray();
+        mCoversMissing = in.createIntArray();
 
         styles = in.readInt();
         preferences = in.readInt();
     }
 
+    /**
+     * Add a set of results to the current set of results.
+     *
+     * @param results to add
+     */
     public void add(@NonNull final ExportResults results) {
-        booksExported += results.booksExported;
-        coversExported += results.coversExported;
+        mBooksExported.addAll(results.mBooksExported);
+        mCoversExported.addAll(results.mCoversExported);
 
-        coversSkipped += results.coversSkipped;
-        coversMissing[0] += results.coversMissing[0];
-        coversMissing[1] += results.coversMissing[1];
+        mCoversSkipped += results.mCoversSkipped;
+
+        mCoversMissing[0] += results.mCoversMissing[0];
+        mCoversMissing[1] += results.mCoversMissing[1];
 
         styles += results.styles;
         preferences += results.preferences;
+    }
+
+    public void addBook(final long bookID) {
+        mBooksExported.add(bookID);
+    }
+
+    public int getBookCount() {
+        return mBooksExported.size();
+    }
+
+
+    public void addCover(@NonNull final String cover) {
+        mCoversExported.add(cover);
+    }
+
+    public int getCoverCount() {
+        return mCoversExported.size();
+    }
+
+    public List<String> getCoverFileNames() {
+        return mCoversExported;
+    }
+
+
+    public void addSkippedCoverCount(final int coverCount) {
+        mCoversSkipped += coverCount;
+    }
+
+    public void addMissingCoverCount(final int[] coverCount) {
+        for (int i = 0; i < coverCount.length; i++) {
+            mCoversMissing[i] += coverCount[i];
+        }
     }
 
     /**
@@ -115,20 +158,20 @@ public class ExportResults
 
         //TODO: RTL
         // slightly misleading. The text currently says "processed" but it should say "exported".
-        if (booksExported > 0) {
+        if (!mBooksExported.isEmpty()) {
             msg.append(BULLET)
                .append(context.getString(R.string.progress_end_export_result_n_books_processed,
-                                         booksExported));
+                                         mBooksExported.size()));
         }
-        if (coversExported > 0
-            || coversMissing[0] > 0
-            || coversMissing[1] > 0) {
+        if (!mCoversExported.isEmpty()
+            || mCoversMissing[0] > 0
+            || mCoversMissing[1] > 0) {
             msg.append(BULLET)
                .append(context.getString(
-                       R.string.progress_end_export_result_n_covers_processed_m_missing,
-                       coversExported,
-                       coversMissing[0],
-                       coversMissing[1]));
+                       R.string.progress_msg_n_covers_processed_m_missing,
+                       mCoversExported.size(),
+                       mCoversMissing[0],
+                       mCoversMissing[1]));
         }
 
         if (styles > 0) {
@@ -157,10 +200,11 @@ public class ExportResults
     @Override
     public void writeToParcel(@NonNull final Parcel dest,
                               final int flags) {
-        dest.writeInt(booksExported);
-        dest.writeInt(coversExported);
-        dest.writeInt(coversSkipped);
-        dest.writeIntArray(coversMissing);
+        dest.writeList(mBooksExported);
+        dest.writeStringList(mCoversExported);
+
+        dest.writeInt(mCoversSkipped);
+        dest.writeIntArray(mCoversMissing);
 
         dest.writeInt(styles);
         dest.writeInt(preferences);
@@ -175,12 +219,12 @@ public class ExportResults
     @NonNull
     public String toString() {
         return "Results{"
-               + ", booksExported=" + booksExported
-               + ", coversExported=" + coversExported
+               + ", booksExported=" + mBooksExported
+               + ", coversExported=" + mCoversExported
 
-               + ", coversSkipped=" + coversSkipped
-               + ", coversMissing[0]=" + coversMissing[0]
-               + ", coversMissing[1]=" + coversMissing[1]
+               + ", coversSkipped=" + mCoversSkipped
+               + ", coversMissing[0]=" + mCoversMissing[0]
+               + ", coversMissing[1]=" + mCoversMissing[1]
 
                + ", styles=" + styles
                + ", preferences=" + preferences

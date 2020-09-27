@@ -52,8 +52,6 @@ public class ArchiveImportTask
     @UiThread
     public void startImport(@NonNull final ImportManager helper) {
         mHelper = helper;
-        mHelper.validate();
-
         execute(R.id.TASK_ID_IMPORT);
     }
 

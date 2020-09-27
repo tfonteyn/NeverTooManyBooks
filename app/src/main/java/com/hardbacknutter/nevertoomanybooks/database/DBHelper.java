@@ -70,7 +70,7 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_PK
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_PUBLISHER_NAME;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_PUBLISHER_NAME_OB;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_STYLE_IS_BUILTIN;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_UTC_LAST_SYNC_DATE_GOODREADS;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_UTC_GOODREADS_LAST_SYNC_DATE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_UTC_LAST_UPDATED;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_UUID;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_AUTHORS;
@@ -97,7 +97,7 @@ public final class DBHelper
         extends SQLiteOpenHelper {
 
     /** Current version. */
-    public static final int DATABASE_VERSION = 10;
+    public static final int DATABASE_VERSION = 11;
 
     /**
      * Prefix for the filename of a database backup before doing an upgrade.
@@ -538,7 +538,7 @@ public final class DBHelper
         body += eidSb.toString();
 
         //NEWTHINGS: adding a new search engine: optional: add engine specific keys
-        body += KEY_UTC_LAST_SYNC_DATE_GOODREADS + "=''";
+        body += KEY_UTC_GOODREADS_LAST_SYNC_DATE + "=''";
 
         body += " WHERE " + KEY_PK_ID + "=NEW." + KEY_PK_ID + ";\n"
                 + " END";
@@ -735,12 +735,18 @@ public final class DBHelper
         }
 
         if (curVersion < newVersion && curVersion == 9) {
-            //noinspection UnusedAssignment
             curVersion = 10;
             // added visibility column; just scrap the old data
             TBL_BOOK_LIST_NODE_STATE.recreate(syncedDb, true);
             // moved to FTS4
             StartupViewModel.scheduleFtsRebuild(context, true);
+        }
+
+        if (curVersion < newVersion && curVersion == 10) {
+            //noinspection UnusedAssignment
+            curVersion = 11;
+
+            StartupViewModel.scheduleMaintenance(context, true);
         }
 
         // TODO: if at a future time we make a change that requires to copy/reload the books table,

@@ -106,7 +106,7 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_TI
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_TOC_BITMASK;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_TOC_TYPE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_UTC_ADDED;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_UTC_LAST_SYNC_DATE_GOODREADS;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_UTC_GOODREADS_LAST_SYNC_DATE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_UTC_LAST_UPDATED;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_UUID;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_AUTHORS;
@@ -800,7 +800,7 @@ public class DAOSql {
             }
 
             //NEWTHINGS: adding a new search engine: optional: add engine specific keys
-            sqlBookTmp.append(',').append(TBL_BOOKS.dotAs(KEY_UTC_LAST_SYNC_DATE_GOODREADS));
+            sqlBookTmp.append(',').append(TBL_BOOKS.dotAs(KEY_UTC_GOODREADS_LAST_SYNC_DATE));
 
             sqlBookTmp.append(',').append(TBL_BOOKS.dotAs(KEY_EID_CALIBRE_UUID));
 
@@ -1057,7 +1057,7 @@ public class DAOSql {
          */
         static final String UPDATED_BOOKS =
                 BASE_SELECT + _WHERE_ + KEY_PK_ID + ">?"
-                + " AND " + KEY_UTC_LAST_UPDATED + '>' + KEY_UTC_LAST_SYNC_DATE_GOODREADS
+                + " AND " + KEY_UTC_LAST_UPDATED + '>' + KEY_UTC_GOODREADS_LAST_SYNC_DATE
                 + _ORDER_BY_ + KEY_PK_ID;
     }
 
@@ -1160,8 +1160,7 @@ public class DAOSql {
     }
 
     /**
-     * Sql UPDATE. Intention is to only have single-column updates here and do multi-column
-     * with the ContentValues based update method.
+     * Sql UPDATE.
      */
     static final class SqlUpdate {
 
@@ -1169,54 +1168,97 @@ public class DAOSql {
         static final String _SET_ = " SET ";
 
         /**
-         * Update a single Book's last sync date with Goodreads.
+         * Update a single Book's KEY_UTC_LAST_UPDATED to 'now'
          */
-        static final String GOODREADS_LAST_SYNC_DATE =
+        static final String TOUCH =
                 UPDATE_ + TBL_BOOKS.getName()
-                + _SET_ + KEY_UTC_LAST_SYNC_DATE_GOODREADS + "=current_timestamp"
+                + _SET_ + KEY_UTC_LAST_UPDATED + "=current_timestamp"
                 + _WHERE_ + KEY_PK_ID + "=?";
 
         /**
-         * Update a single Book's Goodreads id. Do not update the last-update-date!
+         * Global rename.
          */
-        static final String GOODREADS_BOOK_ID =
-                UPDATE_ + TBL_BOOKS.getName()
-                + _SET_ + KEY_EID_GOODREADS_BOOK + "=?"
-                + _WHERE_ + KEY_PK_ID + "=?";
-
         static final String FORMAT =
                 UPDATE_ + TBL_BOOKS.getName()
                 + _SET_ + KEY_UTC_LAST_UPDATED + "=current_timestamp"
                 + ',' + KEY_FORMAT + "=?"
                 + _WHERE_ + KEY_FORMAT + "=?";
 
+        /**
+         * Global rename.
+         */
         static final String COLOR =
                 UPDATE_ + TBL_BOOKS.getName()
                 + _SET_ + KEY_UTC_LAST_UPDATED + "=current_timestamp"
                 + ',' + KEY_COLOR + "=?"
                 + _WHERE_ + KEY_COLOR + "=?";
 
+        /**
+         * Global rename.
+         */
         static final String GENRE =
                 UPDATE_ + TBL_BOOKS.getName()
                 + _SET_ + KEY_UTC_LAST_UPDATED + "=current_timestamp"
                 + ',' + KEY_GENRE + "=?"
                 + _WHERE_ + KEY_GENRE + "=?";
 
+        /**
+         * Global rename.
+         */
         static final String LANGUAGE =
                 UPDATE_ + TBL_BOOKS.getName()
                 + _SET_ + KEY_UTC_LAST_UPDATED + "=current_timestamp"
                 + ',' + KEY_LANGUAGE + "=?"
                 + _WHERE_ + KEY_LANGUAGE + "=?";
 
+        /**
+         * Global rename.
+         */
         static final String LOCATION =
                 UPDATE_ + TBL_BOOKS.getName()
                 + _SET_ + KEY_UTC_LAST_UPDATED + "=current_timestamp"
                 + ',' + KEY_LOCATION + "=?"
                 + _WHERE_ + KEY_LOCATION + "=?";
+
+        /**
+         * Update a single Book's read status
+         * and read_end date using a safe date construct.
+         */
+        static final String READ =
+                UPDATE_ + TBL_BOOKS.getName()
+                + _SET_ + KEY_UTC_LAST_UPDATED + "=current_timestamp"
+                + ',' + KEY_READ + "=?"
+                + ',' + KEY_READ_END + "=COALESCE(date(?, 'utc'),'')"
+                + _WHERE_ + KEY_PK_ID + "=?";
+        /**
+         * Update a single Book's last sync date with Goodreads.
+         * Do NOT update the {@link DBDefinitions#KEY_UTC_LAST_UPDATED} field.
+         */
+        static final String GOODREADS_LAST_SYNC_DATE =
+                UPDATE_ + TBL_BOOKS.getName()
+                + _SET_ + KEY_UTC_GOODREADS_LAST_SYNC_DATE + "=current_timestamp"
+                + _WHERE_ + KEY_PK_ID + "=?";
+        /**
+         * Update a single Book's Goodreads id.
+         * Do NOT update the {@link DBDefinitions#KEY_UTC_LAST_UPDATED} field.
+         */
+        static final String GOODREADS_BOOK_ID =
+                UPDATE_ + TBL_BOOKS.getName()
+                + _SET_ + KEY_EID_GOODREADS_BOOK + "=?"
+                + _WHERE_ + KEY_PK_ID + "=?";
+        /**
+         * Update a single {@link TocEntry} using a safe date construct.
+         */
+        static String TOCENTRY =
+                UPDATE_ + TBL_TOC_ENTRIES.getName()
+                + _SET_ + KEY_TITLE + "=?"
+                + ',' + KEY_TITLE_OB + "=?"
+                + ',' + KEY_DATE_FIRST_PUBLICATION + "=COALESCE(date(?, 'utc'),'')"
+                + _WHERE_ + KEY_PK_ID + "=?";
     }
 
     /**
-     * Sql DELETE commands.
+     * Sql DELETE.
      * <p>
      * All 'link' tables will be updated due to their FOREIGN KEY constraints.
      * The 'other-side' of a link table is cleaned by triggers.

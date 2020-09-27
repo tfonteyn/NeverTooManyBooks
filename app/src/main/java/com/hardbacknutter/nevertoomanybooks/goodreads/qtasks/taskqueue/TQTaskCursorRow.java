@@ -29,7 +29,7 @@ import java.time.ZoneOffset;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
-import com.hardbacknutter.nevertoomanybooks.utils.DateParser;
+import com.hardbacknutter.nevertoomanybooks.utils.dates.DateParser;
 
 public class TQTaskCursorRow
         extends CursorRow {

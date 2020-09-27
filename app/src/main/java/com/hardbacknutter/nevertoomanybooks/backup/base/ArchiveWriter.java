@@ -41,24 +41,7 @@ public interface ArchiveWriter
     int getVersion();
 
     /**
-     * Write the archive header information.
-     * <p>
-     * See {@link ArchiveWriterAbstract} for a default implementation.
-     *
-     * @param context     Current context
-     * @param archiveInfo header
-     *
-     * @throws IOException on failure
-     */
-    @WorkerThread
-    default void writeArchiveHeader(@NonNull Context context,
-                                    @NonNull ArchiveInfo archiveInfo)
-            throws IOException {
-        // override if needed
-    }
-
-    /**
-     * Perform a full write.
+     * Perform a write.
      * <p>
      * See {@link ArchiveWriterAbstractBase} for a default implementation.
      *
@@ -70,6 +53,7 @@ public interface ArchiveWriter
      * @throws IOException on failure
      */
     @WorkerThread
+    @NonNull
     ExportResults write(@NonNull Context context,
                         @NonNull ProgressListener progressListener)
             throws IOException;
@@ -78,5 +62,89 @@ public interface ArchiveWriter
     default void close()
             throws IOException {
         // override if needed
+    }
+
+    /**
+     * Most archives should/will write a header block.
+     * Exceptions are flat-file writers;
+     * e.g. {@link com.hardbacknutter.nevertoomanybooks.backup.csv.CsvArchiveReader}
+     */
+    interface SupportsArchiveHeader {
+
+        /**
+         * Write the archive header information.
+         * <p>
+         * See {@link ArchiveWriterAbstract} for a default implementation.
+         *
+         * @param context     Current context
+         * @param archiveInfo header
+         *
+         * @throws IOException on failure
+         */
+        @WorkerThread
+        void writeHeader(@NonNull Context context,
+                         @NonNull ArchiveInfo archiveInfo)
+                throws IOException;
+    }
+
+    /**
+     * Additional support for Styles.
+     */
+    interface SupportsStyles {
+
+        /**
+         * Write the styles.
+         * <p>
+         * See {@link ArchiveWriterAbstract} for a default implementation.
+         *
+         * @param context          Current context
+         * @param progressListener Listener to receive progress information.
+         *
+         * @throws IOException on failure
+         */
+        void writeStyles(@NonNull Context context,
+                         @NonNull ProgressListener progressListener)
+                throws IOException;
+    }
+
+    /**
+     * Additional support for Preferences.
+     */
+    interface SupportsPreferences {
+
+        /**
+         * Write the preference settings.
+         * <p>
+         * See {@link ArchiveWriterAbstract} for a default implementation.
+         *
+         * @param context          Current context
+         * @param progressListener Listener to receive progress information.
+         *
+         * @throws IOException on failure
+         */
+        void writePreferences(@NonNull Context context,
+                              @NonNull ProgressListener progressListener)
+                throws IOException;
+    }
+
+    /**
+     * Additional support for Covers.
+     */
+    interface SupportsCovers {
+
+        /**
+         * Write the covers.
+         * <p>
+         * See {@link ArchiveWriterAbstract} for a default implementation.
+         *
+         * @param context          Current context
+         * @param progressListener Listener to receive progress information.
+         *
+         * @throws IOException on failure
+         */
+        @WorkerThread
+        void writeCovers(@NonNull Context context,
+                         @NonNull ProgressListener progressListener)
+                throws IOException;
     }
 }

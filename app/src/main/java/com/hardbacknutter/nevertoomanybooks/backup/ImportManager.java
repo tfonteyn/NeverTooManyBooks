@@ -32,7 +32,6 @@ import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveImportTask;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveInfo;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveReader;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ImportException;
@@ -63,15 +62,9 @@ public class ImportManager
     };
 
     /**
-     * 0: all books
-     * 1: only new books and books with more recent update_date fields should be imported.
-     */
-    public static final int IMPORT_ONLY_NEW_OR_UPDATED = 1 << 16;
-
-    /**
      * all defined flags.
      */
-    private static final int MASK = Options.ENTITIES | IMPORT_ONLY_NEW_OR_UPDATED;
+    private static final int MASK = Options.ENTITIES | Options.IS_SYNC;
     @NonNull
     private final Uri mUri;
     @Nullable
@@ -132,36 +125,7 @@ public class ImportManager
         return msg;
     }
 
-    /** Called from the dialog via its View listeners. */
-    void setOption(final int optionBit,
-                   final boolean isSet) {
-        if (isSet) {
-            mOptions |= optionBit;
-        } else {
-            mOptions &= ~optionBit;
-        }
-    }
 
-    boolean isOptionSet(final int optionBit) {
-        return (mOptions & optionBit) != 0;
-    }
-
-    public int getOptions() {
-        return mOptions;
-    }
-
-    public void setOptions(final int options) {
-        mOptions = options;
-    }
-
-    /**
-     * Are there any options set that will cause us to import anything?
-     *
-     * @return {@code true} if something will be imported
-     */
-    boolean hasEntityOption() {
-        return (mOptions & Options.ENTITIES) != 0;
-    }
 
     /**
      * Check if we have an {@link ArchiveReader} available that can read the passed Uri.
@@ -248,6 +212,11 @@ public class ImportManager
     public ArchiveReader getArchiveReader(@NonNull final Context context)
             throws InvalidArchiveException, IOException {
 
+        // Validate the settings before going ahead.
+        if ((mOptions & MASK) == 0) {
+            throw new IllegalStateException(ErrorMsg.OPTIONS_NOT_SET);
+        }
+
         final ArchiveReader reader;
         switch (getContainer(context)) {
             case Zip:
@@ -290,19 +259,45 @@ public class ImportManager
         mResults = results;
     }
 
-    /**
-     * Will be called by {@link ArchiveImportTask}.
-     */
-    public void validate() {
-        if ((mOptions & MASK) == 0) {
-            throw new IllegalStateException(ErrorMsg.OPTIONS_NOT_SET);
+
+    /** Called from the dialog via its View listeners. */
+    void setOption(final int optionBit,
+                   final boolean isSet) {
+        if (isSet) {
+            mOptions |= optionBit;
+        } else {
+            mOptions &= ~optionBit;
         }
     }
 
-    @Override
-    public int describeContents() {
-        return 0;
+
+    boolean isOptionSet(final int optionBit) {
+        return (mOptions & optionBit) != 0;
     }
+
+    public int getOptions() {
+        return mOptions;
+    }
+
+    /**
+     * Should be called <strong>before</strong> the import to indicate what should be imported.
+     * Should be called <strong>after</strong> the import to set what was actually imported.
+     *
+     * @param options set
+     */
+    public void setOptions(final int options) {
+        mOptions = options;
+    }
+
+    /**
+     * Check if there any options set that will cause us to import anything.
+     *
+     * @return {@code true} if something will be imported
+     */
+    boolean hasEntityOption() {
+        return (mOptions & Options.ENTITIES) != 0;
+    }
+
 
     @Override
     public void writeToParcel(@NonNull final Parcel dest,
@@ -313,10 +308,16 @@ public class ImportManager
     }
 
     @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
     @NonNull
     public String toString() {
         return "ImportHelper{"
                + ", mOptions=0b" + Integer.toBinaryString(mOptions)
+               + ", mOptions=" + Options.toString(mOptions)
                + ", mUri=" + mUri
                + ", mArchiveType=" + mArchiveContainer
                + ", mArchiveInfo=" + mArchiveInfo

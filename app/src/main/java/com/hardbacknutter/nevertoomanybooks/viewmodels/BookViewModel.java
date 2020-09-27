@@ -274,7 +274,7 @@ public class BookViewModel
      */
     public void deleteLoan() {
         mBook.remove(DBDefinitions.KEY_LOANEE);
-        mDb.lendBook(mBook.getId(), null);
+        mDb.setLoanee(mBook, null, true);
 
         // don't do this for now, BoB does not display the loan field.
         //mResultData.putExtra(UniqueId.BKEY_BOOK_MODIFIED,true);
@@ -378,9 +378,8 @@ public class BookViewModel
             if (!uuid.isEmpty()) {
                 // if the user added a cover to the new book, make it permanent
                 for (int cIdx = 0; cIdx < 2; cIdx++) {
-                    final String fileSpec = mBook.getString(Book.BKEY_FILE_SPEC[cIdx]);
-                    if (!fileSpec.isEmpty()) {
-                        final File downloadedFile = new File(fileSpec);
+                    final File downloadedFile = mBook.getCoverFile(context, cIdx);
+                    if (downloadedFile != null) {
                         final File destination = AppDir.getCoverFile(context, uuid, cIdx);
                         FileUtils.renameOrThrow(downloadedFile, destination);
                     }
@@ -488,5 +487,16 @@ public class BookViewModel
     public void fixTocEntryId(@NonNull final Context context,
                               @NonNull final TocEntry tocEntry) {
         tocEntry.fixId(context, mDb, true, mBook.getLocale(context));
+    }
+
+    public void onCoverChanged(final int cIdx,
+                               @Nullable final File file) {
+        // Regardless of the current book being viewed or edited, being dirty or not,
+        // we update the 'last update' if it's present in the database.
+        // Rationale when being edited: we cannot undo a cover update, even if the
+        // user cancels the edit.
+        if (!mBook.isNew()) {
+            mDb.touchBook(mBook);
+        }
     }
 }

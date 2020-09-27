@@ -73,12 +73,13 @@ public class ArchiveExportTask
     @Override
     @WorkerThread
     protected ExportManager doWork(@NonNull final Context context)
-            throws IOException {
+            throws IOException, InvalidArchiveException {
         Thread.currentThread().setName(TAG);
 
         //noinspection ConstantConditions
         try (ArchiveWriter exporter = mHelper.getArchiveWriter(context)) {
             mHelper.setResults(exporter.write(context, this));
+
         } catch (@NonNull final IOException e) {
             // The zip archiver (maybe others as well?) can throw an IOException
             // when the user cancels, so only throw when this is not the case

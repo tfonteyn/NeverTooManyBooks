@@ -222,7 +222,7 @@ public abstract class VMTask<Result>
      */
     @WorkerThread
     @Override
-    public final void publishProgress(final int position,
+    public final void publishPosition(final int position,
                                       @Nullable final String text) {
         mProgressCurrentPos = position;
         mProgress.postValue(new ProgressMessage(mTaskId, text,
@@ -255,13 +255,13 @@ public abstract class VMTask<Result>
      */
     @AnyThread
     @Override
-    public void setProgressIsIndeterminate(@Nullable final Boolean indeterminate) {
+    public void setIndeterminate(@Nullable final Boolean indeterminate) {
         mIndeterminate = indeterminate;
     }
 
     @AnyThread
     @Override
-    public int getProgressMaxPos() {
+    public int getMaxPos() {
         return mProgressMaxPos;
     }
 
@@ -272,7 +272,7 @@ public abstract class VMTask<Result>
      */
     @AnyThread
     @Override
-    public void setProgressMaxPos(final int maxPosition) {
+    public void setMaxPos(final int maxPosition) {
         mProgressMaxPos = maxPosition;
     }
 

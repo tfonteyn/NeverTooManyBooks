@@ -47,7 +47,7 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_PR
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_PRICE_PAID_CURRENCY;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_READ_END;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_READ_START;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_UTC_LAST_SYNC_DATE_GOODREADS;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_UTC_GOODREADS_LAST_SYNC_DATE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -280,7 +280,7 @@ class BookTest
         book.put(KEY_READ_START, "");
         book.put(KEY_READ_END, null);
 
-        book.put(KEY_UTC_LAST_SYNC_DATE_GOODREADS, null);
+        book.put(KEY_UTC_GOODREADS_LAST_SYNC_DATE, null);
         book.putDouble(KEY_PRICE_LISTED, 12.34);
         book.putDouble(KEY_PRICE_PAID, 0);
 
@@ -295,7 +295,7 @@ class BookTest
         assertFalse(book.contains(KEY_READ_END));
 
         // text, default "0000-00-00". A null is removed.
-        assertFalse(book.contains(KEY_UTC_LAST_SYNC_DATE_GOODREADS));
+        assertFalse(book.contains(KEY_UTC_GOODREADS_LAST_SYNC_DATE));
 
         assertEquals(12.34d, book.getDouble(KEY_PRICE_LISTED));
         assertEquals(0d, book.getDouble(KEY_PRICE_PAID));
@@ -308,7 +308,7 @@ class BookTest
         book.put(KEY_READ_START, "");
         book.put(KEY_READ_END, null);
 
-        book.put(KEY_UTC_LAST_SYNC_DATE_GOODREADS, null);
+        book.put(KEY_UTC_GOODREADS_LAST_SYNC_DATE, null);
         book.putDouble(KEY_PRICE_LISTED, 12.34);
         book.putDouble(KEY_PRICE_PAID, 0);
 
@@ -323,7 +323,7 @@ class BookTest
         assertEquals("", book.getString(KEY_READ_END));
 
         // text, default "". A null is replaced by the default
-        assertEquals("0000-00-00", book.getString(KEY_UTC_LAST_SYNC_DATE_GOODREADS));
+        assertEquals("0000-00-00", book.getString(KEY_UTC_GOODREADS_LAST_SYNC_DATE));
 
         assertEquals(12.34d, book.getDouble(KEY_PRICE_LISTED));
         assertEquals(0d, book.getDouble(KEY_PRICE_PAID));

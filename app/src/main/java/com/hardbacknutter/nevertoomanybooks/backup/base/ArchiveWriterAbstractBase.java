@@ -20,6 +20,7 @@
 package com.hardbacknutter.nevertoomanybooks.backup.base;
 
 import android.content.Context;
+import android.util.Log;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
@@ -27,24 +28,28 @@ import androidx.annotation.WorkerThread;
 
 import java.io.IOException;
 
+import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.backup.ArchiveWriterAbstract;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportManager;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 
 /**
- * Implementation of format-agnostic ArchiveWriter methods.
+ * Implementation of <strong>format-agnostic</strong> {@link ArchiveWriter} methods.
  * <p>
  * The {@link #write(Context, ProgressListener)} method executes the interface method flow.
  */
 public abstract class ArchiveWriterAbstractBase
         implements ArchiveWriter {
 
-    /** Lengthy steps should only send progress updates every 200ms. */
-    protected static final int PROGRESS_UPDATE_INTERVAL_IN_MS = 200;
     /** Log tag. */
     private static final String TAG = "ArchWriterAbstractBase";
+    /**
+     * Arbitrary number of steps added to the progress max value.
+     * This covers the styles/prefs/etc... and a small extra safety.
+     */
+    private static final int EXTRA_STEPS = 10;
+
     /** export configuration. */
     @NonNull
     protected final ExportManager mHelper;
@@ -70,9 +75,8 @@ public abstract class ArchiveWriterAbstractBase
     /**
      * Do a full backup.
      * <ol>
-     *     <li>{@link SupportsCovers#prepareCovers}</li>
-     *     <li>{@link #prepareBooks}</li>
-     *     <li>{@link #writeArchiveHeader}</li>
+     *     <li>{@link #prepareData}</li>
+     *     <li>{@link SupportsArchiveHeader#writeHeader}</li>
      *     <li>{@link SupportsStyles#writeStyles}</li>
      *     <li>{@link SupportsPreferences#writePreferences}</li>
      *     <li>{@link #writeBooks}</li>
@@ -85,6 +89,7 @@ public abstract class ArchiveWriterAbstractBase
      *
      * @throws IOException on failure
      */
+    @NonNull
     @Override
     @WorkerThread
     public ExportResults write(@NonNull final Context context,
@@ -98,54 +103,53 @@ public abstract class ArchiveWriterAbstractBase
         int entitiesWritten = Options.NOTHING;
 
         // All writers must support books.
-        final boolean writeBooks = mHelper.isSet(Options.BOOKS);
+        final boolean writeBooks = mHelper.isOptionSet(Options.BOOKS);
 
         // these are optional.
+        final boolean writeHeader = this instanceof SupportsArchiveHeader;
+
         final boolean writeStyles = this instanceof SupportsStyles
-                                    && mHelper.isSet(Options.STYLES);
+                                    && mHelper.isOptionSet(Options.STYLES);
         final boolean writePrefs = this instanceof SupportsPreferences
-                                   && mHelper.isSet(Options.PREFS);
+                                   && mHelper.isOptionSet(Options.PREFS);
         final boolean writeCovers = this instanceof SupportsCovers
-                                    && mHelper.isSet(Options.COVERS);
+                                    && mHelper.isOptionSet(Options.COVERS);
 
         try {
-            // If we are doing covers, get the exact number by counting them.
-            // We want to put that number into the INFO block.
-            // Once you get beyond a 1000 covers this step is getting tedious/slow....
-            if (!progressListener.isCancelled() && writeCovers) {
-                // set the progress bar temporarily in indeterminate mode.
-                progressListener.setProgressIsIndeterminate(true);
-                progressListener
-                        .publishProgress(0, context.getString(R.string.progress_msg_searching));
-                ((SupportsCovers) this).prepareCovers(context, progressListener);
-                // reset; won't take effect until the next onProgress.
-                progressListener.setProgressIsIndeterminate(null);
-                // set as temporary max, but keep in mind the position itself is still == 0
-                progressListener.setProgressMaxPos(mResults.coversExported);
+            int steps = mDb.countBooksForExport(mHelper.getUtcDateTimeSince());
+            if (writeCovers) {
+                // assume 1 book == 1 cover
+                steps = 2 * steps;
             }
+            // set as temporary max
+            progressListener.setMaxPos(steps + EXTRA_STEPS);
 
-            // If we are doing books, generate the file first, so we have the #books
-            // which we want to put into the INFO block, and use with the progress listener.
-            if (!progressListener.isCancelled() && writeBooks) {
-                // This counts the books and updates progress.
-                prepareBooks(context, progressListener);
-            }
-
-            // Calculate the new max value for the progress bar.
-            final int max = mResults.booksExported + mResults.coversExported;
-            // arbitrarily add 10 for the other entities we might do.
-            progressListener.setProgressMaxPos(max + 10);
-
-            // Start with the INFO
             if (!progressListener.isCancelled()) {
+                mResults.add(prepareData(context, progressListener));
+            }
+
+            if (BuildConfig.DEBUG) {
+                Log.d(TAG, "prepareData"
+                           + "|getBookCount=" + mResults.getBookCount()
+                           + "|getCoverCount=" + mResults.getCoverCount()
+                     );
+            }
+            // Recalculate the progress max value using the exact number of books/covers
+            // which will now include the back-covers.
+            progressListener.setMaxPos(mResults.getBookCount()
+                                       + mResults.getCoverCount()
+                                       + EXTRA_STEPS);
+
+            // Start with the archive header if there is one
+            if (!progressListener.isCancelled() && writeHeader) {
                 final ArchiveInfo info = new ArchiveInfo(context, getVersion());
-                if (mResults.booksExported > 0) {
-                    info.setBookCount(mResults.booksExported);
+                if (mResults.getBookCount() > 0) {
+                    info.setBookCount(mResults.getBookCount());
                 }
-                if (mResults.coversExported > 0) {
-                    info.setCoverCount(mResults.coversExported);
+                if (mResults.getCoverCount() > 0) {
+                    info.setCoverCount(mResults.getCoverCount());
                 }
-                writeArchiveHeader(context, info);
+                ((SupportsArchiveHeader) this).writeHeader(context, info);
             }
 
             // Write styles and prefs next. This will facilitate & speedup
@@ -173,8 +177,8 @@ public abstract class ArchiveWriterAbstractBase
                 entitiesWritten |= Options.BOOKS;
             }
 
-            // do covers last
-            if (!progressListener.isCancelled() && writeCovers) {
+            // Always do the covers as the last step
+            if (!progressListener.isCancelled() && writeCovers && mResults.getCoverCount() > 0) {
                 progressListener.publishProgressStep(0, context.getString(R.string.lbl_covers));
                 ((SupportsCovers) this).writeCovers(context, progressListener);
                 entitiesWritten |= Options.COVERS;
@@ -185,32 +189,38 @@ public abstract class ArchiveWriterAbstractBase
             mHelper.setOptions(entitiesWritten);
 
             // closing a very large archive will take a while, so keep the progress dialog open
-            progressListener.setProgressIsIndeterminate(true);
+            progressListener.setIndeterminate(true);
             progressListener
-                    .publishProgress(0, context.getString(R.string.progress_msg_please_wait));
-            // reset; won't take effect until the next onProgress.
-            progressListener.setProgressIsIndeterminate(null);
+                    .publishProgressStep(0, context.getString(R.string.progress_msg_please_wait));
+            // reset; won't take effect until the next publish call.
+            progressListener.setIndeterminate(null);
         }
 
         return mResults;
     }
 
     /**
-     * Prepare the books. This is step 1 of writing books.
-     * Implementations should count the number of books and populate the archive header.
+     * Prepare the data.
+     * <p>
+     * For each book which will be exported, implementations should call:
+     * <ol>
+     *     <li>{@link ExportResults#addBook(long)}</li>
+     * </ol>
      *
      * @param context          Current context
      * @param progressListener Listener to receive progress information.
      *
+     * @return ExportResults with the books and cover lists populated.
+     *
      * @throws IOException on failure
      */
     @WorkerThread
-    protected abstract void prepareBooks(@NonNull Context context,
-                                         @NonNull ProgressListener progressListener)
+    protected abstract ExportResults prepareData(@NonNull Context context,
+                                                 @NonNull ProgressListener progressListener)
             throws IOException;
 
     /**
-     * Write the books. This is step 2 of writing books.
+     * Write the books.
      *
      * @param context          Current context
      * @param progressListener Listener to receive progress information.
@@ -234,81 +244,4 @@ public abstract class ArchiveWriterAbstractBase
         mDb.close();
     }
 
-    /**
-     * Additional support for Styles.
-     */
-    public interface SupportsStyles {
-
-        /**
-         * Write the styles.
-         * <p>
-         * See {@link ArchiveWriterAbstract} for a default implementation.
-         *
-         * @param context          Current context
-         * @param progressListener Listener to receive progress information.
-         *
-         * @throws IOException on failure
-         */
-        void writeStyles(@NonNull Context context,
-                         @NonNull ProgressListener progressListener)
-                throws IOException;
-    }
-
-    /**
-     * Additional support for Preferences.
-     */
-    public interface SupportsPreferences {
-
-        /**
-         * Write the preference settings.
-         * <p>
-         * See {@link ArchiveWriterAbstract} for a default implementation.
-         *
-         * @param context          Current context
-         * @param progressListener Listener to receive progress information.
-         *
-         * @throws IOException on failure
-         */
-        void writePreferences(@NonNull Context context,
-                              @NonNull ProgressListener progressListener)
-                throws IOException;
-    }
-
-    /**
-     * Additional support for Covers.
-     */
-    public interface SupportsCovers {
-
-        /**
-         * Prepare the covers. This is step 1 of writing covers.
-         * <p>
-         * Implementations should count the number of covers and populate the archive header.
-         * See {@link ArchiveWriterAbstract} for an implementation.
-         *
-         * @param context          Current context
-         * @param progressListener Listener to receive progress information.
-         *
-         * @throws IOException on failure
-         */
-        @WorkerThread
-        void prepareCovers(@NonNull Context context,
-                           @NonNull ProgressListener progressListener)
-                throws IOException;
-
-        /**
-         * Write the covers. This is step 2 of writing covers.
-         * <p>
-         * Implementations should write the files to the archive.
-         * See {@link ArchiveWriterAbstract} for an implementation.
-         *
-         * @param context          Current context
-         * @param progressListener Listener to receive progress information.
-         *
-         * @throws IOException on failure
-         */
-        @WorkerThread
-        void writeCovers(@NonNull Context context,
-                         @NonNull ProgressListener progressListener)
-                throws IOException;
-    }
 }

@@ -33,6 +33,7 @@ import java.io.InputStream;
 
 import com.hardbacknutter.nevertoomanybooks.backup.ImportManager;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveReader;
+import com.hardbacknutter.nevertoomanybooks.backup.base.ImportException;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ImportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.base.InvalidArchiveException;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
@@ -126,14 +127,14 @@ public class DbArchiveReader
     @Override
     public ImportResults read(@NonNull final Context context,
                               @NonNull final ProgressListener progressListener)
-            throws InvalidArchiveException {
+            throws IOException, ImportException, InvalidArchiveException {
 
         // sanity check, we should not even get here if the database is not supported
         if (mIsCalibre && mSQLiteDatabase != null) {
-            try (CalibreArchiveReader calibreArchiveReader =
+            try (ArchiveReader reader =
                          new CalibreArchiveReader(context, mHelper, mSQLiteDatabase)) {
-                calibreArchiveReader.validate(context);
-                return calibreArchiveReader.read(context, progressListener);
+                reader.validate(context);
+                return reader.read(context, progressListener);
             }
         }
 

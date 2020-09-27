@@ -20,7 +20,6 @@
 package com.hardbacknutter.nevertoomanybooks.backup;
 
 import android.content.Context;
-import android.database.Cursor;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -36,12 +35,13 @@ import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveInfo;
+import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveWriter;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveWriterAbstractBase;
+import com.hardbacknutter.nevertoomanybooks.backup.base.ExportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.base.Exporter;
 import com.hardbacknutter.nevertoomanybooks.backup.base.Options;
 import com.hardbacknutter.nevertoomanybooks.backup.csv.CsvExporter;
 import com.hardbacknutter.nevertoomanybooks.backup.xml.XmlExporter;
-import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
@@ -56,12 +56,13 @@ import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
  *      <li>CSV Books</li>
  * </ol>
  * <p>
- * Covers are implemented in {@link #doCovers} but support depends on the concrete class.
+ * Covers are implemented but support depends on the concrete class.
  */
 public abstract class ArchiveWriterAbstract
         extends ArchiveWriterAbstractBase
-        implements ArchiveWriterAbstractBase.SupportsPreferences,
-                   ArchiveWriterAbstractBase.SupportsStyles {
+        implements ArchiveWriter.SupportsArchiveHeader,
+                   ArchiveWriter.SupportsPreferences,
+                   ArchiveWriter.SupportsStyles {
 
     /**
      * The format/version is shared between writers.
@@ -72,16 +73,9 @@ public abstract class ArchiveWriterAbstract
     /** Buffer for the Writer. */
     private static final int BUFFER_SIZE = 65535;
 
-    /** progress message. */
-    @NonNull
-    private final String mProgressMsgCovers;
-    /** progress message. */
-    @NonNull
-    private final String mProgressMsgCoversSkip;
-
-    /** {@link #prepareBooks} writes to this file; {@link #writeBooks} copies it to the archive. */
+    /** {@link #prepareData} writes to this file; {@link #writeBooks} copies it to the archive. */
     @Nullable
-    private File mTmpBookCsvFile;
+    private File mTmpBooksFile;
 
     /**
      * Constructor.
@@ -92,11 +86,6 @@ public abstract class ArchiveWriterAbstract
     protected ArchiveWriterAbstract(@NonNull final Context context,
                                     @NonNull final ExportManager helper) {
         super(context, helper);
-
-        mProgressMsgCovers = context.getString(
-                R.string.progress_end_export_result_n_covers_processed_m_missing);
-        mProgressMsgCoversSkip = context.getString(
-                R.string.progress_msg_n_covers_processed_m_missing_s_skipped);
     }
 
     /**
@@ -113,14 +102,15 @@ public abstract class ArchiveWriterAbstract
      * <br><br>{@inheritDoc}
      */
     @Override
-    public void writeArchiveHeader(@NonNull final Context context,
-                                   @NonNull final ArchiveInfo archiveInfo)
+    public void writeHeader(@NonNull final Context context,
+                            @NonNull final ArchiveInfo archiveInfo)
             throws IOException {
         // Write the archiveInfo as XML to a byte array.
-        ByteArrayOutputStream data = new ByteArrayOutputStream();
+        final ByteArrayOutputStream data = new ByteArrayOutputStream();
         try (Writer osw = new OutputStreamWriter(data, StandardCharsets.UTF_8);
              Writer writer = new BufferedWriter(osw, BUFFER_SIZE);
              XmlExporter xmlExporter = new XmlExporter(context, Options.INFO, null)) {
+
             xmlExporter.writeArchiveInfo(writer, archiveInfo);
         }
         // and store the array
@@ -137,10 +127,11 @@ public abstract class ArchiveWriterAbstract
                             @NonNull final ProgressListener progressListener)
             throws IOException {
         // Write the styles as XML to a byte array.
-        ByteArrayOutputStream data = new ByteArrayOutputStream();
+        final ByteArrayOutputStream data = new ByteArrayOutputStream();
         try (Writer osw = new OutputStreamWriter(data, StandardCharsets.UTF_8);
              Writer writer = new BufferedWriter(osw, BUFFER_SIZE);
              Exporter exporter = new XmlExporter(context, Options.STYLES, null)) {
+
             mResults.add(exporter.write(context, writer, progressListener));
         }
         // and store the array
@@ -157,11 +148,12 @@ public abstract class ArchiveWriterAbstract
                                  @NonNull final ProgressListener progressListener)
             throws IOException {
         // Write the preferences as XML to a byte array.
-        ByteArrayOutputStream data = new ByteArrayOutputStream();
+        final ByteArrayOutputStream data = new ByteArrayOutputStream();
         try (Writer osw = new OutputStreamWriter(data, StandardCharsets.UTF_8);
              Writer writer = new BufferedWriter(osw, BUFFER_SIZE);
              Exporter exporter = new XmlExporter(context, Options.PREFS, null)) {
-            exporter.write(context, writer, progressListener);
+
+            mResults.add(exporter.write(context, writer, progressListener));
         }
         // and store the array
         putByteArray(ArchiveContainerEntry.PreferencesXml.getName(), data.toByteArray(), true);
@@ -176,20 +168,24 @@ public abstract class ArchiveWriterAbstract
      * <br><br>{@inheritDoc}
      */
     @Override
-    public void prepareBooks(@NonNull final Context context,
-                             @NonNull final ProgressListener progressListener)
+    public ExportResults prepareData(@NonNull final Context context,
+                                     @NonNull final ProgressListener progressListener)
             throws IOException {
         // Get a temp file and set for delete
-        mTmpBookCsvFile = File.createTempFile("books_csv_", ".tmp");
-        mTmpBookCsvFile.deleteOnExit();
+        mTmpBooksFile = File.createTempFile("books_csv_", ".tmp");
+        mTmpBooksFile.deleteOnExit();
 
-        Exporter exporter = new CsvExporter(context, mHelper.getOptions(),
-                                            mHelper.getUtcDateTimeSince());
-        mResults.add(exporter.write(context, mTmpBookCsvFile, progressListener));
+        // Not strictly needed for the CsvExporter as it will ignore
+        // other options, but done as a reminder (see XmlArchiveWriter)
+        final int entities = mHelper.getOptions() & (Options.BOOKS | Options.COVERS);
+        try (Exporter exporter = new CsvExporter(context, entities,
+                                                 mHelper.getUtcDateTimeSince())) {
+            return exporter.write(context, mTmpBooksFile, progressListener);
+        }
     }
 
     /**
-     * Default implementation: write the file as prepared in {@link #prepareBooks}.
+     * Default implementation: write the file as prepared in {@link #prepareData}.
      *
      * <br><br>{@inheritDoc}
      */
@@ -198,10 +194,50 @@ public abstract class ArchiveWriterAbstract
                            @NonNull final ProgressListener progressListener)
             throws IOException {
         try {
-            Objects.requireNonNull(mTmpBookCsvFile);
-            putFile(ArchiveContainerEntry.BooksCsv.getName(), mTmpBookCsvFile, true);
+            Objects.requireNonNull(mTmpBooksFile);
+            putFile(ArchiveContainerEntry.BooksCsv.getName(), mTmpBooksFile, true);
         } finally {
-            FileUtils.delete(mTmpBookCsvFile);
+            FileUtils.delete(mTmpBooksFile);
+        }
+    }
+
+    /**
+     * A container agnostic default implementation for writing cover files.
+     * <p>
+     * Write each cover file as collected in {@link #prepareData}
+     * to the archive.
+     *
+     * @param context          Current context
+     * @param progressListener Listener to receive progress information.
+     *
+     * @throws IOException on failure
+     */
+    protected void defWriteCovers(@NonNull final Context context,
+                                  @NonNull final ProgressListener progressListener)
+            throws IOException {
+
+        progressListener.publishProgressStep(0, context.getString(R.string.lbl_covers_long));
+
+        int exported = 0;
+        int delta = 0;
+        long lastUpdate = 0;
+
+        for (String filename : mResults.getCoverFileNames()) {
+            final File cover = AppDir.Covers.getFile(context, filename);
+            // We're using jpg, png.. don't bother compressing.
+            // Compressing might actually make some image files bigger!
+            putFile(filename, cover, false);
+            exported++;
+
+            delta++;
+            final long now = System.currentTimeMillis();
+            if ((now - lastUpdate) > progressListener.getUpdateIntervalInMs()) {
+                final String msg = context.getString(
+                        R.string.progress_msg_n_covers_processed, exported);
+                progressListener.publishProgressStep(delta, msg);
+                lastUpdate = now;
+                delta = 0;
+            }
         }
     }
 
@@ -230,89 +266,6 @@ public abstract class ArchiveWriterAbstract
      */
     protected abstract void putByteArray(@NonNull String name,
                                          @NonNull byte[] bytes,
-                                         @SuppressWarnings("SameParameterValue")
-                                                 boolean compress)
+                                         @SuppressWarnings("SameParameterValue") boolean compress)
             throws IOException;
-
-    /**
-     * A container agnostic default implementation for writing cover files.
-     * <p>
-     * Write each cover file corresponding to a book to the archive.
-     *
-     * <strong>Note:</strong> We update the count during <strong>dryRun</strong> only.
-     *
-     * @param context          Current context
-     * @param dryRun           when {@code true}, no writing is done, we only count them.
-     *                         when {@code false}, we write.
-     * @param progressListener Listener to receive progress information.
-     *
-     * @throws IOException on failure
-     */
-    protected void doCovers(@NonNull final Context context,
-                            final boolean dryRun,
-                            @NonNull final ProgressListener progressListener)
-            throws IOException {
-
-        final long timeFrom = mHelper.getDateSinceAsEpochMilli();
-
-        int exported = 0;
-        int skipped = 0;
-        int[] missing = new int[2];
-        long lastUpdate = 0;
-        int delta = 0;
-
-        // We only export files that match database entries.
-        // Orphaned files will be ignored altogether.
-        try (Cursor cursor = mDb.fetchBookUuidList()) {
-            final int uuidCol = cursor.getColumnIndex(DBDefinitions.KEY_BOOK_UUID);
-            while (cursor.moveToNext() && !progressListener.isCancelled()) {
-                final String uuid = cursor.getString(uuidCol);
-                for (int cIdx = 0; cIdx < 2; cIdx++) {
-                    final File cover = AppDir.getCoverFile(context, uuid, cIdx);
-                    if (cover.exists()) {
-                        if (cover.lastModified() > timeFrom) {
-                            if (!dryRun) {
-                                // We're using jpg, png.. don't bother compressing.
-                                // Compressing might actually make some image files bigger!
-                                putFile(cover.getName(), cover, false);
-                            }
-                            exported++;
-                        } else {
-                            skipped++;
-                        }
-                    } else {
-                        missing[cIdx]++;
-                    }
-                }
-
-                // progress messages only during real-run.
-                if (!dryRun) {
-                    final String message;
-                    if (skipped == 0) {
-                        message = String.format(mProgressMsgCovers,
-                                                exported, missing[0], missing[1]);
-                    } else {
-                        message = String.format(mProgressMsgCoversSkip,
-                                                exported, missing[0], missing[1], skipped);
-                    }
-                    delta++;
-                    final long now = System.currentTimeMillis();
-                    if ((now - lastUpdate) > PROGRESS_UPDATE_INTERVAL_IN_MS) {
-                        progressListener.publishProgressStep(delta, message);
-                        lastUpdate = now;
-                        delta = 0;
-                    }
-
-                }
-            }
-        }
-
-        // results are collected during dry-run
-        if (dryRun) {
-            mResults.coversExported += exported;
-            mResults.coversMissing[0] += missing[0];
-            mResults.coversMissing[1] += missing[1];
-            mResults.coversSkipped += skipped;
-        }
-    }
 }

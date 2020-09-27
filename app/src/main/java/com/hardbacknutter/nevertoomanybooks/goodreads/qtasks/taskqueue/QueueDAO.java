@@ -37,7 +37,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.TransactionException;
-import com.hardbacknutter.nevertoomanybooks.utils.DateParser;
+import com.hardbacknutter.nevertoomanybooks.utils.dates.DateParser;
 
 import static com.hardbacknutter.nevertoomanybooks.goodreads.qtasks.taskqueue.QueueDBHelper.KEY_EVENT;
 import static com.hardbacknutter.nevertoomanybooks.goodreads.qtasks.taskqueue.QueueDBHelper.KEY_EVENT_COUNT;

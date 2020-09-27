@@ -20,12 +20,16 @@
 package com.hardbacknutter.nevertoomanybooks.database;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
+import androidx.core.util.Pair;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Locale;
+import java.util.regex.Pattern;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyle;
@@ -49,6 +53,11 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BO
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOK_TOC_ENTRY_POSITION;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FK_BOOK;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FK_BOOKSHELF;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_PK_ID;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_UTC_ADDED;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_UTC_GOODREADS_LAST_SYNC_DATE;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_UTC_LAST_UPDATED;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_AUTHOR;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_BOOKSHELF;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_PUBLISHER;
@@ -107,6 +116,51 @@ public class DBCleaner {
                     mDb.updateLanguage(lang, iso);
                 }
             }
+        }
+    }
+
+    /**
+     * Replace 'T' occurrences with ' '.
+     * See package-info docs for
+     * {@link com.hardbacknutter.nevertoomanybooks.utils.dates.DateParser}
+     */
+    public void dates() {
+        final String[] columns = new String[]{
+                KEY_UTC_LAST_UPDATED,
+                KEY_UTC_ADDED,
+                KEY_UTC_GOODREADS_LAST_SYNC_DATE
+        };
+
+        final Pattern T = Pattern.compile("T");
+
+        final Collection<Pair<Long, String>> rows = new ArrayList<>();
+
+        for (String key : columns) {
+            try (Cursor cursor = mDb.getSyncDb().rawQuery(
+                    "SELECT " + KEY_PK_ID + ',' + key + " FROM " + TBL_BOOKS.getName()
+                    + " WHERE " + key + " LIKE '%T%'", null)) {
+                while (cursor.moveToNext()) {
+                    rows.add(new Pair<>(cursor.getLong(0), cursor.getString(1)));
+                }
+            }
+
+            if (BuildConfig.DEBUG /* always */) {
+                Logger.d(TAG, "dates"
+                              + "|key=" + key
+                              + "|rows.size()=" + rows.size());
+            }
+            try (SynchronizedStatement stmt = mDb.getSyncDb().compileStatement(
+                    "UPDATE " + TBL_BOOKS.getName()
+                    + " SET " + key + "=? WHERE " + KEY_PK_ID + "=?")) {
+
+                for (Pair<Long, String> row : rows) {
+                    stmt.bindString(1, T.matcher(row.second).replaceFirst(" "));
+                    stmt.bindLong(2, row.first);
+                    stmt.executeUpdateDelete();
+                }
+            }
+            // reuse for next column
+            rows.clear();
         }
     }
 

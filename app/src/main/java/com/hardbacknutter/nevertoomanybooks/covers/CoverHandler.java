@@ -61,8 +61,6 @@ import com.hardbacknutter.nevertoomanybooks.BookBaseFragment;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.RequestCode;
-import com.hardbacknutter.nevertoomanybooks.database.CoversDAO;
-import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.dialogs.MenuPicker;
 import com.hardbacknutter.nevertoomanybooks.dialogs.MenuPickerDialogFragment;
@@ -286,7 +284,8 @@ public class CoverHandler {
 
         switch (menuItem) {
             case R.id.MENU_DELETE: {
-                deleteCoverFile(mContext);
+                setCover(null);
+                setPlaceholder(null);
                 return true;
             }
             case R.id.SUBMENU_THUMB_ROTATE: {
@@ -341,6 +340,13 @@ public class CoverHandler {
             default: {
                 return false;
             }
+        }
+    }
+
+    private void setCover(@Nullable final File file) {
+        mBook.setCover(mContext, mCIdx, file);
+        if (mFragment instanceof HostingFragment) {
+            ((HostingFragment) mFragment).onCoverChanged(mCIdx, file);
         }
     }
 
@@ -471,8 +477,7 @@ public class CoverHandler {
 
         // satisfy lint: if the bitmap is good, the file will be good.
         if (bitmap != null && file != null) {
-            mBook.putString(Book.BKEY_FILE_SPEC[mCIdx], file.getAbsolutePath());
-
+            setCover(file);
             ImageUtils.setImageView(mCoverView, mMaxWidth, mMaxHeight, bitmap, 0);
             mCoverView.setBackground(null);
 
@@ -491,6 +496,7 @@ public class CoverHandler {
             }
 
         } else {
+            setCover(null);
             setPlaceholder(file);
         }
     }
@@ -502,25 +508,24 @@ public class CoverHandler {
      */
     private void setImage(@Nullable final File file) {
         if (ImageUtils.isFileGood(file, false)) {
-            mBook.putString(Book.BKEY_FILE_SPEC[mCIdx], file.getAbsolutePath());
+            setCover(file);
 
             new ImageLoader(mCoverView, file, mMaxWidth, mMaxHeight, null)
                     .execute();
             mCoverView.setBackground(null);
 
         } else {
+            setCover(null);
             setPlaceholder(file);
         }
     }
 
     /**
-     * Remove the image from the book, and put a place holder on screen.
+     * Put a place holder on screen.
      *
      * @param file to determine the type of placeholder to use
      */
     private void setPlaceholder(@Nullable final File file) {
-        mBook.remove(Book.BKEY_FILE_SPEC[mCIdx]);
-
         if (file == null || file.length() == 0) {
             ImageUtils.setPlaceholder(mCoverView, R.drawable.ic_add_a_photo,
                                       R.drawable.outline_rounded,
@@ -580,37 +585,13 @@ public class CoverHandler {
      */
     @NonNull
     private File getCoverFile() {
-        // for existing books, we use the UUID and the index to get the stored file.
-        final String uuid = mBook.getString(DBDefinitions.KEY_BOOK_UUID);
-        if (!uuid.isEmpty()) {
-            return AppDir.getCoverFile(mContext, uuid, mCIdx);
-        }
-
-        // for new books, check the bundle.
-        final String fileSpec = mBook.getString(Book.BKEY_FILE_SPEC[mCIdx]);
-        if (!fileSpec.isEmpty()) {
-            return new File(fileSpec);
+        final File file = mBook.getCoverFile(mContext, mCIdx);
+        if (file != null) {
+            return file;
         }
 
         // return a new File object
         return AppDir.Cache.getFile(mContext, mCIdx + ".jpg");
-    }
-
-    /**
-     * Delete the image.
-     *
-     * @param context Current context
-     */
-    private void deleteCoverFile(@NonNull final Context context) {
-        FileUtils.delete(getCoverFile());
-
-        // Ensure that the cached images for this book are deleted (if present).
-        // Yes, this means we also delete the ones where != index, but we don't care; it's a cache.
-        final String uuid = mBook.getString(DBDefinitions.KEY_BOOK_UUID);
-        if (ImageUtils.isImageCachingEnabled(context) && !uuid.isEmpty()) {
-            CoversDAO.delete(context, uuid);
-        }
-        setPlaceholder(null);
     }
 
     /**
@@ -671,6 +652,9 @@ public class CoverHandler {
     }
 
     public interface HostingFragment {
+
+        void onCoverChanged(@IntRange(from = 0, to = 1) int cIdx,
+                            @Nullable File file);
 
         /**
          * Prepare the fragment for results.

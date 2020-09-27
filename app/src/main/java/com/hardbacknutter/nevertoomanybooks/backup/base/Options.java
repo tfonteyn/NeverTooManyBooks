@@ -19,10 +19,11 @@
  */
 package com.hardbacknutter.nevertoomanybooks.backup.base;
 
+import java.util.StringJoiner;
+
 /**
  * Options as to what should be imported/exported.
  * Not all implementations will support all options.
- * These are the common lower 16 bits of the 'options'.
  * <p>
  * The bit numbers are not stored.
  */
@@ -37,6 +38,55 @@ public final class Options {
     public static final int PREFS = 1 << 8;
     public static final int STYLES = 1 << 9;
 
-    /** All entity types which can be written/read. This does not include INFO. */
+    /**
+     * All entity types which can be written/read.
+     * This does not include INFO nor IS_SYNC.
+     */
     public static final int ENTITIES = BOOKS | COVERS | PREFS | STYLES;
+
+    /**
+     * Do a sync.
+     * <ul>
+     *     <li>
+     *          Export:
+     *          <ul>
+     *              <li>0: all books</li>
+     *              <li>1: books added/updated since last backup</li>
+     *          </ul>
+     *     </li>
+     *     <li>
+     *         Import:
+     *         <ul>
+     *             <li>0: all books</li>
+     *             <li>1: only new books and books with more recent update_date fields</li>
+     *         </ul>
+     *     </li>
+     * </ul>
+     */
+    public static final int IS_SYNC = 1 << 16;
+
+
+    /** DEBUG. */
+    public static String toString(final int options) {
+        final StringJoiner sj = new StringJoiner(",", "Options{", "}");
+        if ((options & INFO) != 0) {
+            sj.add("INFO");
+        }
+        if ((options & BOOKS) != 0) {
+            sj.add("INFO");
+        }
+        if ((options & COVERS) != 0) {
+            sj.add("COVERS");
+        }
+        if ((options & PREFS) != 0) {
+            sj.add("PREFS");
+        }
+        if ((options & STYLES) != 0) {
+            sj.add("STYLES");
+        }
+        if ((options & IS_SYNC) != 0) {
+            sj.add("IS_SYNC");
+        }
+        return sj.toString();
+    }
 }

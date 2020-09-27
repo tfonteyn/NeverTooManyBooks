@@ -38,7 +38,7 @@ import java.util.zip.ZipOutputStream;
 
 import com.hardbacknutter.nevertoomanybooks.backup.ArchiveWriterAbstract;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportManager;
-import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveWriterAbstractBase;
+import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveWriter;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 
@@ -52,7 +52,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
  */
 public class ZipArchiveWriter
         extends ArchiveWriterAbstract
-        implements ArchiveWriterAbstractBase.SupportsCovers {
+        implements ArchiveWriter.SupportsCovers {
 
     /** Buffer for {@link #mOutputStream}. */
     private static final int BUFFER_SIZE = 65535;
@@ -81,17 +81,10 @@ public class ZipArchiveWriter
     }
 
     @Override
-    public void prepareCovers(@NonNull final Context context,
-                              @NonNull final ProgressListener progressListener)
-            throws IOException {
-        doCovers(context, true, progressListener);
-    }
-
-    @Override
     public void writeCovers(@NonNull final Context context,
                             @NonNull final ProgressListener progressListener)
             throws IOException {
-        doCovers(context, false, progressListener);
+        defWriteCovers(context, progressListener);
     }
 
     @Override
@@ -108,7 +101,7 @@ public class ZipArchiveWriter
             entry.setMethod(ZipEntry.STORED);
             entry.setSize(file.length());
             entry.setCompressedSize(file.length());
-            CRC32 crc32 = FileUtils.getCrc32(file);
+            final CRC32 crc32 = FileUtils.getCrc32(file);
             entry.setCrc(crc32.getValue());
         }
         mOutputStream.putNextEntry(entry);
@@ -133,7 +126,7 @@ public class ZipArchiveWriter
             entry.setMethod(ZipEntry.STORED);
             entry.setSize(bytes.length);
             entry.setCompressedSize(bytes.length);
-            CRC32 crc32 = new CRC32();
+            final CRC32 crc32 = new CRC32();
             crc32.update(bytes);
             entry.setCrc(crc32.getValue());
         }

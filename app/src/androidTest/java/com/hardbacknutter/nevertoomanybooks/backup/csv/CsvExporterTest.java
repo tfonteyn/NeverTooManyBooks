@@ -35,6 +35,7 @@ import java.nio.charset.StandardCharsets;
 
 import org.junit.Test;
 
+import com.hardbacknutter.nevertoomanybooks.backup.base.ExportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.base.Exporter;
 import com.hardbacknutter.nevertoomanybooks.backup.base.Options;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
@@ -57,8 +58,12 @@ public class CsvExporterTest {
         //noinspection ResultOfMethodCallIgnored
         file.delete();
 
-        try (Exporter exporter = new CsvExporter(context, Options.BOOKS, null)) {
-            exporter.write(context, file, new MyProgressListener());
+        ExportResults results;
+
+        final int entities = Options.BOOKS;
+        //final int entities = Options.BOOKS | Options.COVERS;
+        try (Exporter exporter = new CsvExporter(context, entities, null)) {
+            results = exporter.write(context, file, new MyProgressListener());
         }
 
         long exportCount;
@@ -73,6 +78,7 @@ public class CsvExporterTest {
             bookCount = db.countBooks();
         }
         assertEquals(bookCount, exportCount);
+        assertEquals(results.getBookCount(), exportCount);
     }
 
     private static class MyProgressListener
@@ -82,17 +88,15 @@ public class CsvExporterTest {
         private int mProgressMaxPos;
 
         @Override
-        public void publishProgress(final int pos,
-                                    @Nullable final String message) {
-            Log.d(TAG + "|publishProgress", "" + pos + "|" + message);
-            mProgressCurrentPos = pos;
-        }
-
-        @Override
         public void publishProgressStep(final int delta,
                                         @Nullable final String message) {
-            Log.d(TAG + "|publishProgressStep", "" + delta + "|" + message);
             mProgressCurrentPos += delta;
+
+            Log.d(TAG + "|publishProgressStep",
+                  "mProgressCurrentPos=" + mProgressCurrentPos
+                  + "|delta=" + delta
+                  + "|message=" + message);
+
         }
 
         @Override
@@ -101,17 +105,17 @@ public class CsvExporterTest {
         }
 
         @Override
-        public void setProgressIsIndeterminate(@Nullable final Boolean indeterminate) {
+        public void setIndeterminate(@Nullable final Boolean indeterminate) {
             Log.d(TAG + "|setProgressIsIndeterminate", "" + indeterminate);
         }
 
         @Override
-        public int getProgressMaxPos() {
+        public int getMaxPos() {
             return mProgressMaxPos;
         }
 
         @Override
-        public void setProgressMaxPos(final int maxPosition) {
+        public void setMaxPos(final int maxPosition) {
             Log.d(TAG + "|setProgressMaxPos", "" + maxPosition);
             mProgressMaxPos = maxPosition;
         }

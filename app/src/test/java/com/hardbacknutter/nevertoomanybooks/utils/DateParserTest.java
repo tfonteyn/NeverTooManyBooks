@@ -25,6 +25,7 @@ import java.util.Locale;
 import org.junit.jupiter.api.Test;
 
 import com.hardbacknutter.nevertoomanybooks.Base;
+import com.hardbacknutter.nevertoomanybooks.utils.dates.DateParser;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -51,7 +52,7 @@ class DateParserTest
     @Test
     void numeric() {
         final Locale[] locales = new Locale[]{Locale.ENGLISH};
-        final DateParser parser = DateParser.createForTesting(locales);
+        final DateParser parser = DateParser.getTestInstance(locales);
 
         // Matches due to MM-dd pattern being before dd-MM
         assertEquals(LocalDateTime.of(2017, 1, 12,
@@ -103,7 +104,7 @@ class DateParserTest
     @Test
     void englishOnly() {
         final Locale[] locales = new Locale[]{Locale.ENGLISH};
-        final DateParser parser = DateParser.createForTesting(locales);
+        final DateParser parser = DateParser.getTestInstance(locales);
 
         assertEquals(s_1987_06_25, parser.parse("25-Jun-1987"));
         assertEquals(s_1987_06_25, parser.parse("25 Jun 1987"));
@@ -121,7 +122,7 @@ class DateParserTest
     @Test
     void multiLocale() {
         final Locale[] locales = new Locale[]{Locale.FRENCH, Locale.GERMAN};
-        final DateParser parser = DateParser.createForTesting(locales);
+        final DateParser parser = DateParser.getTestInstance(locales);
 
         // English is always added (at the end of the parser list)
         assertEquals(s_1987_06_25, parser.parse("25-Jun-1987"));
@@ -148,7 +149,7 @@ class DateParserTest
     @Test
     void isoYear() {
         final Locale[] locales = new Locale[]{Locale.US};
-        final DateParser parser = DateParser.createForTesting(locales);
+        final DateParser parser = DateParser.getTestInstance(locales);
 
         assertEquals(LocalDateTime.of(1987, 1, 1,
                                       0, 0, 0),
@@ -163,7 +164,7 @@ class DateParserTest
     @Test
     void isoYearMonth() {
         final Locale[] locales = new Locale[]{Locale.US};
-        final DateParser parser = DateParser.createForTesting(locales);
+        final DateParser parser = DateParser.getTestInstance(locales);
 
         assertEquals(LocalDateTime.of(1987, 6, 1,
                                       0, 0, 0),
@@ -182,7 +183,7 @@ class DateParserTest
     @Test
     void isoYearMonthDay() {
         final Locale[] locales = new Locale[]{Locale.US};
-        final DateParser parser = DateParser.createForTesting(locales);
+        final DateParser parser = DateParser.getTestInstance(locales);
 
         assertEquals(LocalDateTime.of(1987, 6, 10,
                                       0, 0, 0),
@@ -202,7 +203,7 @@ class DateParserTest
     @Test
     void isoDateTime() {
         final Locale[] locales = new Locale[]{Locale.US};
-        final DateParser parser = DateParser.createForTesting(locales);
+        final DateParser parser = DateParser.getTestInstance(locales);
 
         assertEquals(LocalDateTime.of(2020, 9, 1,
                                       14, 20, 21, 542_000_000),
@@ -237,7 +238,7 @@ class DateParserTest
     @Test
     void isoDateTeaTime() {
         final Locale[] locales = new Locale[]{Locale.US};
-        final DateParser parser = DateParser.createForTesting(locales);
+        final DateParser parser = DateParser.getTestInstance(locales);
 
         assertEquals(LocalDateTime.of(2020, 8, 12,
                                       14, 29, 9, 414_000_000),

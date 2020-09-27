@@ -263,13 +263,13 @@ public class EditLenderDialogFragment
         final Bundle result;
         if (!mLoanee.isEmpty()) {
             // lend book, reluctantly...
-            success = mDb.lendBook(mBookId, mLoanee);
+            success = mDb.setLoanee(mBookId, mLoanee, true);
             result = new Bundle();
             result.putString(DBDefinitions.KEY_LOANEE, mLoanee);
 
         } else {
             // return the book
-            success = mDb.lendBook(mBookId, null);
+            success = mDb.setLoanee(mBookId, null, true);
             result = null;
         }
 

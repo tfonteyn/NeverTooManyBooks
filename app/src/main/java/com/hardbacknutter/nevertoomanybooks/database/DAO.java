@@ -41,7 +41,6 @@ import java.io.File;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.text.Normalizer;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
@@ -85,10 +84,10 @@ import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
-import com.hardbacknutter.nevertoomanybooks.utils.DateParser;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.Languages;
+import com.hardbacknutter.nevertoomanybooks.utils.dates.DateParser;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_AUTHOR_FAMILY_NAME;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_AUTHOR_FAMILY_NAME_OB;
@@ -163,6 +162,7 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_TO
  * <p>
  * URGENT: caching of statements forces synchronized (stmt) ... is it worth it ?
  * There is an explicit warning that {@link SQLiteStatement} is not thread safe!
+ *
  */
 public class DAO
         implements AutoCloseable {
@@ -605,9 +605,9 @@ public class DAO
             // Reminder: We're updating ONLY the fields present in the ContentValues.
             // Other fields in the database row are not affected.
             // go !
-            final boolean success = 0 < mSyncedDb.update(
-                    TBL_BOOKS.getName(), cv, KEY_PK_ID + "=?",
-                    new String[]{String.valueOf(book.getId())});
+            final boolean success =
+                    0 < mSyncedDb.update(TBL_BOOKS.getName(), cv, KEY_PK_ID + "=?",
+                                         new String[]{String.valueOf(book.getId())});
 
             if (success) {
                 insertBookLinks(context, book, flags);
@@ -625,6 +625,44 @@ public class DAO
             if (txLock != null) {
                 mSyncedDb.endTransaction(txLock);
             }
+        }
+    }
+
+    /**
+     * Update the 'last updated' of the given book.
+     * This method should only be called from places where only the book id is available.
+     * If the full Book is available, use {@link #touchBook(Book)} instead.
+     *
+     * @param bookId to update
+     *
+     * @return {@code true} on success
+     */
+    private boolean touchBook(final long bookId) {
+
+        try (SynchronizedStatement stmt = mSyncedDb.compileStatement(DAOSql.SqlUpdate.TOUCH)) {
+            stmt.bindLong(1, bookId);
+            return 0 < stmt.executeUpdateDelete();
+        }
+    }
+
+    /**
+     * Update the 'last updated' of the given book.
+     * If successful, the book itself will also be updated.
+     *
+     * @param book to update
+     *
+     * @return {@code true} on success
+     */
+    @SuppressWarnings("UnusedReturnValue")
+    public boolean touchBook(@NonNull final Book book) {
+
+        if (touchBook(book.getId())) {
+            book.putString(KEY_UTC_LAST_UPDATED, LocalDateTime
+                    .now(ZoneOffset.UTC).format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
+            return true;
+
+        } else {
+            return false;
         }
     }
 
@@ -900,7 +938,7 @@ public class DAO
         }
 
         if (book.contains(KEY_LOANEE)) {
-            lendBook(book.getId(), book.getString(KEY_LOANEE));
+            setLoanee(book, book.getString(KEY_LOANEE), false);
         }
     }
 
@@ -1274,9 +1312,8 @@ public class DAO
 
         cv.put(KEY_FK_STYLE, styleId);
 
-        return 0 < mSyncedDb.update(
-                TBL_BOOKSHELF.getName(), cv, KEY_PK_ID + "=?",
-                new String[]{String.valueOf(bookshelf.getId())});
+        return 0 < mSyncedDb.update(TBL_BOOKSHELF.getName(), cv, KEY_PK_ID + "=?",
+                                    new String[]{String.valueOf(bookshelf.getId())});
     }
 
     /**
@@ -1362,9 +1399,8 @@ public class DAO
                encodeOrderByColumn(author.getGivenNames(), authorLocale));
         cv.put(KEY_AUTHOR_IS_COMPLETE, author.isComplete());
 
-        return 0 < mSyncedDb.update(
-                TBL_AUTHORS.getName(), cv, KEY_PK_ID + "=?",
-                new String[]{String.valueOf(author.getId())});
+        return 0 < mSyncedDb.update(TBL_AUTHORS.getName(), cv, KEY_PK_ID + "=?",
+                                    new String[]{String.valueOf(author.getId())});
     }
 
     /**
@@ -1453,9 +1489,8 @@ public class DAO
         cv.put(KEY_SERIES_TITLE_OB, encodeOrderByColumn(obTitle, seriesLocale));
         cv.put(KEY_SERIES_IS_COMPLETE, series.isComplete());
 
-        return 0 < mSyncedDb.update(
-                TBL_SERIES.getName(), cv, KEY_PK_ID + "=?",
-                new String[]{String.valueOf(series.getId())});
+        return 0 < mSyncedDb.update(TBL_SERIES.getName(), cv, KEY_PK_ID + "=?",
+                                    new String[]{String.valueOf(series.getId())});
     }
 
     /**
@@ -1572,9 +1607,8 @@ public class DAO
         cv.put(KEY_PUBLISHER_NAME, publisher.getName());
         cv.put(KEY_PUBLISHER_NAME_OB, encodeOrderByColumn(obTitle, publisherLocale));
 
-        return 0 < mSyncedDb.update(
-                TBL_PUBLISHERS.getName(), cv, KEY_PK_ID + "=?",
-                new String[]{String.valueOf(publisher.getId())});
+        return 0 < mSyncedDb.update(TBL_PUBLISHERS.getName(), cv, KEY_PK_ID + "=?",
+                                    new String[]{String.valueOf(publisher.getId())});
     }
 
     /**
@@ -1819,19 +1853,17 @@ public class DAO
                            @NonNull final Locale bookLocale) {
 
         final Locale tocLocale = tocEntry.getLocale(context, this, bookLocale);
-
         final String obTitle = tocEntry.reorderTitleForSorting(context, tocLocale);
 
         // We cannot update the author as it's part of the primary key.
         // (we should never even get here if the author was changed)
-        final ContentValues cv = new ContentValues();
-        cv.put(KEY_TITLE, tocEntry.getTitle());
-        cv.put(KEY_TITLE_OB, encodeOrderByColumn(obTitle, tocLocale));
-        cv.put(KEY_DATE_FIRST_PUBLICATION, tocEntry.getFirstPublication());
-
-        return 0 < mSyncedDb.update(
-                TBL_TOC_ENTRIES.getName(), cv, KEY_PK_ID + "=?",
-                new String[]{String.valueOf(tocEntry.getId())});
+        try (SynchronizedStatement stmt = mSyncedDb.compileStatement(DAOSql.SqlUpdate.TOCENTRY)) {
+            stmt.bindString(1, tocEntry.getTitle());
+            stmt.bindString(2, encodeOrderByColumn(obTitle, tocLocale));
+            stmt.bindString(3, tocEntry.getFirstPublication());
+            stmt.bindLong(4, tocEntry.getId());
+            return 0 < stmt.executeUpdateDelete();
+        }
     }
 
     /**
@@ -1912,40 +1944,73 @@ public class DAO
 
     /**
      * Lend out a book / return a book.
+     * This method should only be called from places where only the book id is available.
+     * If the full Book is available, use {@link #setLoanee(Book, String, boolean)} instead.
      *
-     * @param bookId book to lend
-     * @param loanee person to lend to; set to {@code null} or {@code ""} to delete the loan
+     * @param bookId     book to lend
+     * @param loanee     person to lend to; set to {@code null} or {@code ""} to delete the loan
+     * @param updateBook set to {@code true} to update the book's last-update date
      *
      * @return {@code true} for success.
      */
-    public boolean lendBook(final long bookId,
-                            @Nullable final String loanee) {
+    public boolean setLoanee(final long bookId,
+                             @Nullable final String loanee,
+                             final boolean updateBook) {
+
+        boolean success = false;
+
         if (loanee == null || loanee.isEmpty()) {
             try (SynchronizedStatement stmt = mSyncedDb.compileStatement(
                     DAOSql.SqlDelete.BOOK_LOANEE_BY_BOOK_ID)) {
                 stmt.bindLong(1, bookId);
-                return stmt.executeUpdateDelete() == 1;
+                success = stmt.executeUpdateDelete() == 1;
+            }
+        } else {
+
+            final String current = getLoaneeByBookId(bookId);
+            if (current == null || current.isEmpty()) {
+                try (SynchronizedStatement stmt = mSyncedDb.compileStatement(
+                        DAOSql.SqlInsert.BOOK_LOANEE)) {
+                    stmt.bindLong(1, bookId);
+                    stmt.bindString(2, loanee);
+                    success = stmt.executeInsert() > 0;
+                }
+
+            } else if (!loanee.equals(current)) {
+                final ContentValues cv = new ContentValues();
+                cv.put(KEY_LOANEE, loanee);
+                success = 0 < mSyncedDb.update(TBL_BOOK_LOANEE.getName(), cv,
+                                               KEY_FK_BOOK + "=?",
+                                               new String[]{String.valueOf(bookId)});
             }
         }
 
-        final String current = getLoaneeByBookId(bookId);
-        if (current == null || current.isEmpty()) {
-            try (SynchronizedStatement stmt = mSyncedDb.compileStatement(
-                    DAOSql.SqlInsert.BOOK_LOANEE)) {
-                stmt.bindLong(1, bookId);
-                stmt.bindString(2, loanee);
-                return stmt.executeInsert() > 0;
-            }
-
-        } else if (!loanee.equals(current)) {
-            final ContentValues cv = new ContentValues();
-            cv.put(KEY_LOANEE, loanee);
-            return 0 < mSyncedDb.update(
-                    TBL_BOOK_LOANEE.getName(), cv, KEY_FK_BOOK + "=?",
-                    new String[]{String.valueOf(bookId)});
+        if (success && updateBook) {
+            touchBook(bookId);
         }
+        return success;
+    }
 
-        return true;
+    /**
+     * Lend out a book / return a book.
+     * The book will be updated.
+     *
+     * @param book       to lend
+     * @param loanee     person to lend to; set to {@code null} or {@code ""} to delete the loan
+     * @param updateBook set to {@code true} to update the book's last-update date
+     *
+     * @return {@code true} for success.
+     */
+    public boolean setLoanee(@NonNull final Book book,
+                             @Nullable final String loanee,
+                             final boolean updateBook) {
+
+        boolean success = setLoanee(book.getId(), loanee, false);
+
+        if (success && updateBook) {
+            touchBook(book);
+        }
+        return success;
     }
 
     /**
@@ -2319,11 +2384,29 @@ public class DAO
     public TypedCursor fetchBooksForExport(@Nullable final LocalDateTime lastUpdateInUtc) {
         if (lastUpdateInUtc == null) {
             return getBookCursor(null, null, TBL_BOOKS.dot(KEY_PK_ID));
+
         } else {
-            return getBookCursor(
-                    TBL_BOOKS.dot(KEY_UTC_LAST_UPDATED) + ">?",
-                    new String[]{lastUpdateInUtc.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)},
-                    TBL_BOOKS.dot(KEY_PK_ID));
+            final String since = lastUpdateInUtc.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+
+            return getBookCursor(TBL_BOOKS.dot(KEY_UTC_LAST_UPDATED) + ">=?",
+                                 new String[]{since},
+                                 TBL_BOOKS.dot(KEY_PK_ID));
+        }
+    }
+
+    public int countBooksForExport(@Nullable final LocalDateTime lastUpdateInUtc) {
+        if (lastUpdateInUtc == null) {
+            try (SynchronizedStatement stmt = mSyncedDb.compileStatement(DAOSql.SqlCount.BOOKS)) {
+                return (int) stmt.simpleQueryForLongOrZero();
+            }
+        } else {
+            final String since = lastUpdateInUtc.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+
+            try (SynchronizedStatement stmt = mSyncedDb.compileStatement(
+                    DAOSql.SqlCount.BOOKS + " WHERE " + KEY_UTC_LAST_UPDATED + ">=?")) {
+                stmt.bindString(1, since);
+                return (int) stmt.simpleQueryForLongOrZero();
+            }
         }
     }
 
@@ -3470,25 +3553,59 @@ public class DAO
 
 
     /**
-     * Update the 'read' status of the book.
+     * Update the 'read' status and the 'read_end' date of the book.
+     * This method should only be called from places where only the book id is available.
+     * If the full Book is available, use {@link #setBookRead(Book, boolean)} instead.
      *
-     * @param bookId book to update
+     * @param bookId id of the book to update
      * @param isRead the status to set
      *
      * @return {@code true} for success.
      */
     public boolean setBookRead(final long bookId,
                                final boolean isRead) {
-        final ContentValues cv = new ContentValues();
-        cv.put(KEY_READ, isRead);
-        if (isRead) {
-            cv.put(KEY_READ_END, LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE));
-        } else {
-            cv.put(KEY_READ_END, "");
+        final String now =
+                isRead ? LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME) : "";
+
+        try (SynchronizedStatement stmt = mSyncedDb.compileStatement(DAOSql.SqlUpdate.READ)) {
+            stmt.bindBoolean(1, isRead);
+            stmt.bindString(2, now);
+            stmt.bindLong(3, bookId);
+            return 0 < stmt.executeUpdateDelete();
+        }
+    }
+
+    /**
+     * Update the 'read' status and the 'read_end' date of the book.
+     * The book will be updated.
+     *
+     * @param book   to update
+     * @param isRead the status to set
+     *
+     * @return {@code true} for success.
+     */
+    public boolean setBookRead(@NonNull final Book book,
+                               final boolean isRead) {
+        final String now =
+                isRead ? LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME) : "";
+
+        final boolean success;
+        try (SynchronizedStatement stmt = mSyncedDb.compileStatement(DAOSql.SqlUpdate.READ)) {
+            stmt.bindBoolean(1, isRead);
+            stmt.bindString(2, now);
+            stmt.bindLong(3, book.getId());
+            success = 0 < stmt.executeUpdateDelete();
         }
 
-        return 0 < mSyncedDb.update(TBL_BOOKS.getName(), cv, KEY_PK_ID + "=?",
-                                    new String[]{String.valueOf(bookId)});
+        if (success) {
+            book.putBoolean(KEY_READ, isRead);
+            book.putString(KEY_READ_END, now);
+            book.putString(KEY_UTC_LAST_UPDATED, now);
+            return true;
+
+        } else {
+            return false;
+        }
     }
 
     /**
@@ -3583,9 +3700,9 @@ public class DAO
         final SyncLock txLock = mSyncedDb.beginTransaction(true);
         try {
             // we don't hold 'position' for shelves... so just do a mass update
-            rowsAffected = mSyncedDb.update(
-                    TBL_BOOK_BOOKSHELF.getName(), cv, KEY_FK_BOOKSHELF + "=?",
-                    new String[]{String.valueOf(source.getId())});
+            rowsAffected = mSyncedDb.update(TBL_BOOK_BOOKSHELF.getName(), cv,
+                                            KEY_FK_BOOKSHELF + "=?",
+                                            new String[]{String.valueOf(source.getId())});
 
             // delete the obsolete source.
             delete(source);
@@ -3618,9 +3735,8 @@ public class DAO
             // TOC is easy: just do a mass update
             final ContentValues cv = new ContentValues();
             cv.put(KEY_FK_AUTHOR, destId);
-            mSyncedDb.update(
-                    TBL_TOC_ENTRIES.getName(), cv, KEY_FK_AUTHOR + "=?",
-                    new String[]{String.valueOf(source.getId())});
+            mSyncedDb.update(TBL_TOC_ENTRIES.getName(), cv, KEY_FK_AUTHOR + "=?",
+                             new String[]{String.valueOf(source.getId())});
 
             // the books must be done one by one, as we need to prevent duplicate authors
             // e.g. suppose we have a book with author
@@ -4206,6 +4322,7 @@ public class DAO
             }
 
             mSyncedDb.setTransactionSuccessful();
+
         } catch (@NonNull final RuntimeException e) {
             // updating FTS should not be fatal.
             Logger.error(App.getAppContext(), TAG, e);
@@ -4324,7 +4441,7 @@ public class DAO
 
         // only update the database if actually needed.
         if (!currentObTitle.equals(rebuildObTitle)) {
-            ContentValues cv = new ContentValues();
+            final ContentValues cv = new ContentValues();
             cv.put(domainName, encodeOrderByColumn(rebuildObTitle, locale));
             return 0 < mSyncedDb.update(table.getName(), cv, KEY_PK_ID + "=?",
                                         new String[]{String.valueOf(id)});

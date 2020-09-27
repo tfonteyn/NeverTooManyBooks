@@ -402,7 +402,7 @@ public final class DBDefinitions {
 
     /** External id. - Long. */
     public static final String KEY_EID_GOODREADS_BOOK = "goodreads_book_id";
-    public static final String KEY_UTC_LAST_SYNC_DATE_GOODREADS = "last_goodreads_sync_date";
+    public static final String KEY_UTC_GOODREADS_LAST_SYNC_DATE = "last_goodreads_sync_date";
     /** External id. - Long. */
     public static final String KEY_EID_ISFDB = "isfdb_book_id";
     /** External id. - Long. */
@@ -474,6 +474,7 @@ public final class DBDefinitions {
     /** {@link #TBL_BOOKS}. */
     public static final String KEY_UTC_ADDED = "date_added";
     public static final String KEY_UTC_LAST_UPDATED = "last_update_date";
+
     public static final String KEY_UUID = "uuid";
     public static final String KEY_TITLE = "title";
     public static final String KEY_TITLE_OB = KEY_TITLE + SUFFIX_KEY_ORDER_BY;
@@ -934,7 +935,7 @@ public final class DBDefinitions {
         // Stores dates in UTC format!
         DOM_UTC_LAST_SYNC_DATE_GOODREADS =
                 // The default of 0000-00-00 is not needed.
-                new Domain.Builder(KEY_UTC_LAST_SYNC_DATE_GOODREADS, ColumnInfo.TYPE_DATETIME)
+                new Domain.Builder(KEY_UTC_GOODREADS_LAST_SYNC_DATE, ColumnInfo.TYPE_DATETIME)
                         .notNull().withDefault("'0000-00-00'").build();
         // It SHOULD be:
         //      new Domain.Builder(KEY_UTC_LAST_SYNC_DATE_GOODREADS, ColumnInfo.TYPE_DATETIME)
