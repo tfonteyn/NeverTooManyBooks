@@ -260,8 +260,12 @@ public abstract class BookBaseFragment
             actionBar.setSubtitle(null);
         } else {
             // VIEW or EDIT existing book
+            String title = book.getString(DBDefinitions.KEY_TITLE);
+            if (BuildConfig.DEBUG /* always */) {
+                title = "[" + book.getId() + "] " + title;
+            }
             //noinspection ConstantConditions
-            actionBar.setTitle(book.getString(DBDefinitions.KEY_TITLE));
+            actionBar.setTitle(title);
             //noinspection ConstantConditions
             actionBar.setSubtitle(Author.getCondensedNames(
                     getContext(), book.getParcelableArrayList(Book.BKEY_AUTHOR_ARRAY)));
