@@ -256,7 +256,9 @@ public class StripInfoSearchEngine
     @Override
     public void parse(@NonNull final Document document,
                       @NonNull final boolean[] fetchThumbnail,
-                      @NonNull final Bundle bookData) {
+                      @NonNull final Bundle bookData)
+            throws IOException {
+        super.parse(document, fetchThumbnail, bookData);
 
         // extracted from the page header.
         final String primarySeriesTitle = processPrimarySeriesTitle(document);

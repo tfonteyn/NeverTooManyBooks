@@ -158,7 +158,9 @@ public class LastDodoSearchEngine
     @VisibleForTesting
     public void parse(@NonNull final Document document,
                       @NonNull final boolean[] fetchThumbnail,
-                      @NonNull final Bundle bookData) {
+                      @NonNull final Bundle bookData)
+            throws IOException {
+        super.parse(document, fetchThumbnail, bookData);
 
         //noinspection NonConstantStringShouldBeStringBuffer
         String tmpSeriesNr = null;

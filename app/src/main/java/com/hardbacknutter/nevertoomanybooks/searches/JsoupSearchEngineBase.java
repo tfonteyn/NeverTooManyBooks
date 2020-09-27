@@ -22,11 +22,13 @@ package com.hardbacknutter.nevertoomanybooks.searches;
 import android.content.Context;
 import android.os.Bundle;
 
+import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.annotation.WorkerThread;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
@@ -82,18 +84,35 @@ public abstract class JsoupSearchEngineBase
         mJsoupLoader.setCharSetName(charSetName);
     }
 
+    /**
+     * Load the url into a parsed {@link org.jsoup.nodes.Document}.
+     *
+     * @param url to load
+     *
+     * @return the document, or {@code null} if it failed to load while NOT causing a real error.
+     * e.g. the website said 404
+     *
+     * @throws IOException on any failure except a FileNotFoundException.
+     */
     @WorkerThread
     @Nullable
     public Document loadDocument(@NonNull final String url)
             throws IOException {
-        return mJsoupLoader.loadDocument(mAppContext, url, this);
+        try {
+            return mJsoupLoader.loadDocument(mAppContext, url, this);
+
+        } catch (@NonNull final FileNotFoundException e) {
+            // we couldn't load the page
+            return null;
+        }
     }
 
     /**
      * Parses the downloaded {@link org.jsoup.nodes.Document}.
      * We only parse the <strong>first book</strong> found.
      * <p>
-     * (dev note: This method is abstract to make testing easier.)
+     * Implementations <strong>must</strong> call this super first
+     * to ensure cached data is purged.
      *
      * @param document       to parse
      * @param fetchThumbnail Set to {@code true} if we want to get thumbnails
@@ -103,10 +122,20 @@ public abstract class JsoupSearchEngineBase
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
     @WorkerThread
-    public abstract void parse(@NonNull final Document document,
-                               @NonNull boolean[] fetchThumbnail,
-                               @NonNull Bundle bookData)
-            throws IOException;
+    @CallSuper
+    public void parse(@NonNull final Document document,
+                      @NonNull boolean[] fetchThumbnail,
+                      @NonNull Bundle bookData)
+            throws IOException {
+        // yes, instead of forcing child classes to call this super,
+        // we could make them call a 'clear()' method instead.
+        // But this way is more future oriented... maybe we'll need/can share more logic/data
+        // between children... or change or mind later on.
+
+        mAuthors.clear();
+        mSeries.clear();
+        mPublishers.clear();
+    }
 
     /**
      * Filter a string of all non-digits. Used to clean isbn strings, years... etc.
@@ -134,6 +163,7 @@ public abstract class JsoupSearchEngineBase
         return sb.toString();
     }
 
+    @NonNull
     protected String cleanText(@NonNull final String s) {
         String text = s.trim();
         // add more rules when needed.

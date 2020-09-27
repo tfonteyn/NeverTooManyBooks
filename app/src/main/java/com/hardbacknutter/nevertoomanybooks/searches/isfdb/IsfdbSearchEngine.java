@@ -549,7 +549,9 @@ public class IsfdbSearchEngine
     @Override
     public void parse(@NonNull final Document document,
                       @NonNull final boolean[] fetchThumbnail,
-                      @NonNull final Bundle bookData) {
+                      @NonNull final Bundle bookData)
+            throws IOException {
+        super.parse(document, fetchThumbnail, bookData);
 
         final Elements allContentBoxes = document.select(CSS_Q_DIV_CONTENTBOX);
         // sanity check
@@ -1210,6 +1212,7 @@ public class IsfdbSearchEngine
         }
     }
 
+    @Nullable
     private Document loadDocumentByEdition(@NonNull final Edition edition)
             throws IOException {
 

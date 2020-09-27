@@ -370,7 +370,9 @@ public class AmazonSearchEngine
     @VisibleForTesting
     public void parse(@NonNull final Document document,
                       @NonNull final boolean[] fetchThumbnail,
-                      @NonNull final Bundle bookData) {
+                      @NonNull final Bundle bookData)
+            throws IOException {
+        super.parse(document, fetchThumbnail, bookData);
 
         final Locale siteLocale = getLocale(document.location().split("/")[2]);
 
