@@ -41,6 +41,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.StringJoiner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -154,12 +155,10 @@ public class Author
      */
     public static final int TYPE_BITMASK_ALL =
             TYPE_UNKNOWN
-            | TYPE_WRITER
-            | TYPE_INTRODUCTION | TYPE_EDITOR | TYPE_CONTRIBUTOR
-            | TYPE_TRANSLATOR
-            | TYPE_NARRATOR
-            | TYPE_COVER_ARTIST | TYPE_COVER_INKING | TYPE_COVER_COLORIST
-            | TYPE_ARTIST | TYPE_INKING | TYPE_COLORIST;
+            | TYPE_WRITER | TYPE_ORIGINAL_SCRIPT_WRITER | TYPE_FOREWORD | TYPE_AFTERWORD
+            | TYPE_TRANSLATOR | TYPE_INTRODUCTION | TYPE_EDITOR | TYPE_CONTRIBUTOR
+            | TYPE_COVER_ARTIST | TYPE_COVER_INKING | TYPE_NARRATOR | TYPE_COVER_COLORIST
+            | TYPE_ARTIST | TYPE_INKING | TYPE_COLORIST | TYPE_PSEUDONYM;
 
     /** Maps the type-bit to a string resource for the type-label. */
     private static final Map<Integer, Integer> TYPES = new LinkedHashMap<>();
@@ -811,12 +810,70 @@ public class Author
     @Override
     @NonNull
     public String toString() {
+        final StringJoiner sj = new StringJoiner(",", "Type{", "}");
+
+        if ((mType & TYPE_WRITER) != 0) {
+            sj.add("TYPE_WRITER");
+        }
+//        if ((mType & TYPE_ORIGINAL_SCRIPT_WRITER) != 0) {
+//            sj.add("TYPE_ORIGINAL_SCRIPT_WRITER");
+//        }
+        if ((mType & TYPE_FOREWORD) != 0) {
+            sj.add("TYPE_FOREWORD");
+        }
+        if ((mType & TYPE_AFTERWORD) != 0) {
+            sj.add("TYPE_AFTERWORD");
+        }
+
+
+        if ((mType & TYPE_TRANSLATOR) != 0) {
+            sj.add("TYPE_TRANSLATOR");
+        }
+        if ((mType & TYPE_INTRODUCTION) != 0) {
+            sj.add("TYPE_INTRODUCTION");
+        }
+        if ((mType & TYPE_EDITOR) != 0) {
+            sj.add("TYPE_EDITOR");
+        }
+        if ((mType & TYPE_CONTRIBUTOR) != 0) {
+            sj.add("TYPE_CONTRIBUTOR");
+        }
+
+
+        if ((mType & TYPE_COVER_ARTIST) != 0) {
+            sj.add("TYPE_COVER_ARTIST");
+        }
+        if ((mType & TYPE_COVER_INKING) != 0) {
+            sj.add("TYPE_COVER_INKING");
+        }
+        if ((mType & TYPE_NARRATOR) != 0) {
+            sj.add("TYPE_NARRATOR");
+        }
+        if ((mType & TYPE_COVER_COLORIST) != 0) {
+            sj.add("TYPE_COVER_COLORIST");
+        }
+
+
+        if ((mType & TYPE_ARTIST) != 0) {
+            sj.add("TYPE_ARTIST");
+        }
+        if ((mType & TYPE_INKING) != 0) {
+            sj.add("TYPE_INKING");
+        }
+        if ((mType & TYPE_COLORIST) != 0) {
+            sj.add("TYPE_COLORIST");
+        }
+        if ((mType & TYPE_PSEUDONYM) != 0) {
+            sj.add("TYPE_PSEUDONYM");
+        }
+
         return "Author{"
                + "mId=" + mId
                + ", mFamilyName=`" + mFamilyName + '`'
                + ", mGivenNames=`" + mGivenNames + '`'
                + ", mIsComplete=" + mIsComplete
                + ", mType=0b" + Integer.toBinaryString(mType)
+               + ", mType=" + sj.toString()
                + '}';
     }
 
@@ -827,12 +884,11 @@ public class Author
     // NEWTHINGS: author type: add to the IntDef
     @IntDef(flag = true,
             value = {TYPE_UNKNOWN,
-                     TYPE_WRITER,
-                     TYPE_INTRODUCTION, TYPE_EDITOR, TYPE_CONTRIBUTOR,
-                     TYPE_TRANSLATOR,
-                     TYPE_NARRATOR,
-                     TYPE_COVER_ARTIST, TYPE_COVER_INKING, TYPE_COVER_COLORIST,
-                     TYPE_ARTIST, TYPE_INKING, TYPE_COLORIST})
+                     TYPE_WRITER, TYPE_FOREWORD, TYPE_AFTERWORD,
+                     TYPE_TRANSLATOR, TYPE_INTRODUCTION, TYPE_EDITOR, TYPE_CONTRIBUTOR,
+                     TYPE_COVER_ARTIST, TYPE_COVER_INKING, TYPE_NARRATOR, TYPE_COVER_COLORIST,
+                     TYPE_ARTIST, TYPE_INKING, TYPE_COLORIST, TYPE_PSEUDONYM
+            })
     @Retention(RetentionPolicy.SOURCE)
     public @interface Type {
 
