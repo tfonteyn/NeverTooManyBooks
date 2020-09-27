@@ -29,8 +29,12 @@ import com.hardbacknutter.nevertoomanybooks.backup.ExportManager;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveWriter;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ExportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.base.Exporter;
+import com.hardbacknutter.nevertoomanybooks.backup.base.Options;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 
+/**
+ * A flat file export of books only into a csv file.
+ */
 public class CsvArchiveWriter
         implements ArchiveWriter {
 
@@ -53,12 +57,14 @@ public class CsvArchiveWriter
         return VERSION;
     }
 
+    @NonNull
     @Override
     public ExportResults write(@NonNull final Context context,
                                @NonNull final ProgressListener progressListener)
             throws IOException {
 
-        try (Exporter exporter = new CsvExporter(context, mHelper.getOptions(),
+        // This is a plain books-only flat csv-file,so we *only* pass in Options.BOOKS.
+        try (Exporter exporter = new CsvExporter(context, Options.BOOKS,
                                                  mHelper.getUtcDateTimeSince())) {
             return exporter.write(context, mHelper.getTempOutputFile(context), progressListener);
         }
