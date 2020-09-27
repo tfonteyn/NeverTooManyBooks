@@ -1398,6 +1398,16 @@ public class BooklistStyle
         }
 
         /**
+         * Get the list of <strong>active and non-active</strong> Filters.
+         *
+         * @return list
+         */
+        @NonNull
+        public Collection<Filter<?>> getAll() {
+            return mFilters.values();
+        }
+
+        /**
          * Get the list of <strong>active</strong> Filters.
          *
          * @param context Current context
@@ -1406,7 +1416,8 @@ public class BooklistStyle
          */
         @NonNull
         public Collection<Filter<?>> getActiveFilters(@NonNull final Context context) {
-            return mFilters.values().stream()
+            return mFilters.values()
+                           .stream()
                            .filter(f -> f.isActive(context))
                            .collect(Collectors.toList());
         }
