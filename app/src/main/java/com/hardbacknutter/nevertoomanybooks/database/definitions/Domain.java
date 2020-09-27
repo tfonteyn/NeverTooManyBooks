@@ -54,12 +54,18 @@ public class Domain
         }
     };
 
+    /** standard SQL keyword **/
+    private static final String CURRENT_TIMESTAMP = "current_timestamp";
+
     @NonNull
     private final String mName;
     /** This domain represents a primary key. */
     private final boolean mIsPrimaryKey;
+
+    @ColumnInfo.Type
     @NonNull
     private final String mType;
+
     /** {@code null} values not allowed. */
     private final boolean mIsNotNull;
     /** Blank ("", 0) values not allowed. */
@@ -164,6 +170,7 @@ public class Domain
      *
      * @return one of ColumnInfo#TYPE*
      */
+    @ColumnInfo.Type
     @NonNull
     public String getType() {
         return mType;
@@ -202,7 +209,7 @@ public class Domain
         if (mDefaultClause == null) {
             return null;
 
-        } else if ("current_timestamp".equals(mDefaultClause)) {
+        } else if (CURRENT_TIMESTAMP.equals(mDefaultClause)) {
             return LocalDateTime.now(ZoneOffset.UTC).format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
 
         } else if (mDefaultClause.startsWith("'") && mDefaultClause.endsWith("'")) {
@@ -291,8 +298,11 @@ public class Domain
 
         @NonNull
         private final String mName;
+
+        @ColumnInfo.Type
         @NonNull
         private final String mType;
+
         private boolean mIsPrimaryKey;
         private boolean mIsNotNull;
         @Nullable
@@ -309,7 +319,7 @@ public class Domain
          * @param type column type (text, int, float, ...)
          */
         public Builder(@NonNull final String name,
-                       @NonNull final String type) {
+                       @ColumnInfo.Type @NonNull final String type) {
             mName = name;
             mType = type;
         }
@@ -384,7 +394,7 @@ public class Domain
          */
         @NonNull
         public Builder withDefaultCurrentTimeStamp() {
-            mDefaultClause = "current_timestamp";
+            mDefaultClause = CURRENT_TIMESTAMP;
             return this;
         }
 

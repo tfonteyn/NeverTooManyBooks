@@ -23,6 +23,10 @@ import android.database.Cursor;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.StringDef;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
@@ -66,14 +70,13 @@ public class ColumnInfo {
     public static final String TYPE_DATE = "date";
     public static final String TYPE_DATETIME = "datetime";
 
+
     @NonNull
     public final String name;
-
-    private final boolean mIsPrimaryKey;
-    private final boolean mNullable;
-
     @NonNull
     public final StorageClass storageClass;
+    private final boolean mIsPrimaryKey;
+    private final boolean mNullable;
     @NonNull
     private final String typeName;
     @SuppressWarnings("unused")
@@ -160,7 +163,7 @@ public class ColumnInfo {
      * Mapping types to storage classes.
      * <p>
      * <a href="https://sqlite.org/datatype3.html#storage_classes_and_datatypes">
-     *     storage classes and data types</a>
+     * storage classes and data types</a>
      */
     public enum StorageClass {
         Integer, Real, Text, Blob;
@@ -194,5 +197,13 @@ public class ColumnInfo {
                     throw new IllegalArgumentException(ErrorMsg.UNEXPECTED_VALUE + columnType);
             }
         }
+    }
+
+    @StringDef({TYPE_INTEGER, TYPE_TEXT, TYPE_REAL, TYPE_BLOB,
+                TYPE_BOOLEAN,
+                TYPE_DATE, TYPE_DATETIME})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface Type {
+
     }
 }
