@@ -208,7 +208,7 @@ public class CoverHandler {
         });
 
         // finally load the image.
-        setImage(getCoverFile());
+        setCoverAndLoadImage(getCoverFile());
     }
 
     /**
@@ -343,13 +343,6 @@ public class CoverHandler {
         }
     }
 
-    private void setCover(@Nullable final File file) {
-        mBook.setCover(mContext, mCIdx, file);
-        if (mFragment instanceof HostingFragment) {
-            ((HostingFragment) mFragment).onCoverChanged(mCIdx, file);
-        }
-    }
-
     /**
      * Handles results from Camera, Picture Gallery and editing (incl. internal cropper).
      *
@@ -463,7 +456,7 @@ public class CoverHandler {
             final File srcFile = new File(fileSpec);
             final File dstFile = getCoverFile();
             if (FileUtils.rename(srcFile, dstFile)) {
-                setImage(dstFile);
+                setCoverAndLoadImage(dstFile);
             } else {
                 Snackbar.make(mCoverView, R.string.error_storage_not_writable,
                               Snackbar.LENGTH_LONG).show();
@@ -502,11 +495,11 @@ public class CoverHandler {
     }
 
     /**
-     * Put the cover image on screen, <strong>and update the book</strong> with the file name.
+     * Update the book cover with the given file AND load the image into the View.
      *
-     * @param file to use
+     * @param file cover or {@code null}
      */
-    private void setImage(@Nullable final File file) {
+    private void setCoverAndLoadImage(@Nullable final File file) {
         if (ImageUtils.isFileGood(file, false)) {
             setCover(file);
 
@@ -517,6 +510,18 @@ public class CoverHandler {
         } else {
             setCover(null);
             setPlaceholder(file);
+        }
+    }
+
+    /**
+     * Update the book cover with the given file.
+     *
+     * @param file cover or {@code null}
+     */
+    private void setCover(@Nullable final File file) {
+        mBook.setCover(mContext, mCIdx, file);
+        if (mFragment instanceof HostingFragment) {
+            ((HostingFragment) mFragment).onCoverChanged(mCIdx, file);
         }
     }
 

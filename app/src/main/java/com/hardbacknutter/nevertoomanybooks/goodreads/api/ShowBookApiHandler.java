@@ -44,6 +44,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsAuth;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsManager;
 import com.hardbacknutter.nevertoomanybooks.searches.AuthorTypeMapper;
+import com.hardbacknutter.nevertoomanybooks.searches.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.Languages;
@@ -428,7 +429,7 @@ public abstract class ShowBookApiHandler
             if (fileSpec != null) {
                 final ArrayList<String> list = new ArrayList<>();
                 list.add(fileSpec);
-                mBookData.putStringArrayList(Book.BKEY_FILE_SPEC_ARRAY[0], list);
+                mBookData.putStringArrayList(SearchCoordinator.BKEY_TMP_FILE_SPEC_ARRAY[0], list);
             }
         }
 

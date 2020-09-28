@@ -38,6 +38,7 @@ import androidx.core.util.Pair;
 
 import java.io.Closeable;
 import java.io.File;
+import java.io.IOException;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.text.Normalizer;
@@ -162,7 +163,6 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_TO
  * <p>
  * URGENT: caching of statements forces synchronized (stmt) ... is it worth it ?
  * There is an explicit warning that {@link SQLiteStatement} is not thread safe!
- *
  */
 public class DAO
         implements AutoCloseable {
@@ -521,32 +521,49 @@ public class DAO
 
             // go!
             final long newBookId = mSyncedDb.insert(TBL_BOOKS.getName(), null, cv);
-
-            if (newBookId > 0) {
-                // set the new id/uuid on the Book itself
-                book.putLong(KEY_PK_ID, newBookId);
-                // always lookup the UUID (even if we inserted with a uuid... to protect against
-                // future changes)
-                //noinspection ConstantConditions
-                book.putString(KEY_BOOK_UUID, getBookUuid(newBookId));
-
-                // next we add the links to series, authors,...
-                insertBookLinks(context, book, flags);
-
-                // and populate the search suggestions table
-                ftsInsert(context, newBookId);
-
-                if (txLock != null) {
-                    mSyncedDb.setTransactionSuccessful();
-                }
-                // all done
-                return newBookId;
-
-            } else {
+            if (newBookId <= 0) {
                 book.putLong(KEY_PK_ID, 0);
                 book.remove(KEY_BOOK_UUID);
                 throw new DaoWriteException(ERROR_CREATING_BOOK_FROM + book);
             }
+
+            // set the new id/uuid on the Book itself
+            book.putLong(KEY_PK_ID, newBookId);
+            // always lookup the UUID (even if we inserted with a uuid... to protect against
+            // future changes)
+            final String uuid = getBookUuid(newBookId);
+            Objects.requireNonNull(uuid, ErrorMsg.NULL_UUID);
+            book.putString(KEY_BOOK_UUID, uuid);
+
+            // next we add the links to series, authors,...
+            insertBookLinks(context, book, flags);
+            // and populate the search suggestions table
+            ftsInsert(context, newBookId);
+
+            // if the user added covers, make them permanent
+            try {
+                for (int cIdx = 0; cIdx < 2; cIdx++) {
+                    final String fileSpec = book.getString(Book.BKEY_TMP_FILE_SPEC[cIdx]);
+                    if (!fileSpec.isEmpty()) {
+                        final File downloadedFile = new File(fileSpec);
+                        final File destination = AppDir.getCoverFile(context, uuid, cIdx);
+                        FileUtils.renameOrThrow(downloadedFile, destination);
+
+                        book.remove(Book.BKEY_TMP_FILE_SPEC[cIdx]);
+                    }
+                }
+            } catch (@NonNull final IOException e) {
+                //FIXME: we should delete the orphaned images....
+                book.putLong(KEY_PK_ID, 0);
+                book.remove(KEY_BOOK_UUID);
+                throw new DaoWriteException(ERROR_CREATING_BOOK_FROM + book, e);
+            }
+
+            // all done
+            if (txLock != null) {
+                mSyncedDb.setTransactionSuccessful();
+            }
+            return newBookId;
 
         } catch (@NonNull final IllegalArgumentException e) {
             throw new DaoWriteException(ERROR_CREATING_BOOK_FROM + book, e);
@@ -851,8 +868,7 @@ public class DAO
                 if (!uuid.isEmpty()) {
                     // delete the thumbnail (if any) from file system
                     for (int cIdx = 0; cIdx < 2; cIdx++) {
-                        final File thumb = AppDir.getCoverFile(context, uuid, cIdx);
-                        FileUtils.delete(thumb);
+                        FileUtils.delete(AppDir.getCoverFile(context, uuid, cIdx));
                     }
                     // delete the thumbnail (if any) from cache
                     if (ImageUtils.isImageCachingEnabled(context)) {

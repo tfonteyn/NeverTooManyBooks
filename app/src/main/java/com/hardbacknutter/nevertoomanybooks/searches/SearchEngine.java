@@ -52,7 +52,6 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageFileInfo;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageUtils;
-import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.searches.amazon.AmazonSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.tasks.Canceller;
@@ -631,7 +630,8 @@ public interface SearchEngine {
                 }
 
                 final ArrayList<String> imageList =
-                        bookData.getStringArrayList(Book.BKEY_FILE_SPEC_ARRAY[cIdx]);
+                        bookData.getStringArrayList(
+                                SearchCoordinator.BKEY_TMP_FILE_SPEC_ARRAY[cIdx]);
                 if (imageList != null && !imageList.isEmpty()) {
                     final File downloadedFile = new File(imageList.get(0));
                     // let the system resolve any path variations

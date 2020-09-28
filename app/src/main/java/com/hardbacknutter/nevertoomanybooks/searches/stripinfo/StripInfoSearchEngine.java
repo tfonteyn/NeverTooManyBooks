@@ -57,6 +57,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.searches.JsoupSearchEngineBase;
+import com.hardbacknutter.nevertoomanybooks.searches.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.utils.Languages;
@@ -445,7 +446,8 @@ public class StripInfoSearchEngine
             final String isbn = bookData.getString(DBDefinitions.KEY_ISBN);
             final ArrayList<String> imageList = parseCovers(document, isbn, 0);
             if (!imageList.isEmpty()) {
-                bookData.putStringArrayList(Book.BKEY_FILE_SPEC_ARRAY[0], imageList);
+                bookData.putStringArrayList(SearchCoordinator.BKEY_TMP_FILE_SPEC_ARRAY[0],
+                                            imageList);
             }
         }
 
@@ -458,7 +460,8 @@ public class StripInfoSearchEngine
             final String isbn = bookData.getString(DBDefinitions.KEY_ISBN);
             final ArrayList<String> imageList = parseCovers(document, isbn, 1);
             if (!imageList.isEmpty()) {
-                bookData.putStringArrayList(Book.BKEY_FILE_SPEC_ARRAY[1], imageList);
+                bookData.putStringArrayList(SearchCoordinator.BKEY_TMP_FILE_SPEC_ARRAY[1],
+                                            imageList);
             }
         }
     }

@@ -42,6 +42,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.searches.JsoupSearchEngineBase;
+import com.hardbacknutter.nevertoomanybooks.searches.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.utils.Languages;
@@ -323,7 +324,8 @@ public class LastDodoSearchEngine
                         if (fileSpec != null) {
                             final ArrayList<String> imageList = new ArrayList<>();
                             imageList.add(fileSpec);
-                            bookData.putStringArrayList(Book.BKEY_FILE_SPEC_ARRAY[cIdx], imageList);
+                            bookData.putStringArrayList(
+                                    SearchCoordinator.BKEY_TMP_FILE_SPEC_ARRAY[cIdx], imageList);
                         }
                     }
                 }

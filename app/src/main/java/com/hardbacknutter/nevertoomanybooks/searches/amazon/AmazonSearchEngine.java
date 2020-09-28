@@ -55,6 +55,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.searches.AuthorTypeMapper;
 import com.hardbacknutter.nevertoomanybooks.searches.JsoupSearchEngineBase;
+import com.hardbacknutter.nevertoomanybooks.searches.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineRegistry;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
@@ -301,7 +302,7 @@ public class AmazonSearchEngine
                 // other amazon sites are (should be ?) just the country code.
                 final Locale locale = AppLocale.getInstance().getLocale(mAppContext, root);
                 if (BuildConfig.DEBUG /* always */) {
-                    Logger.d(TAG, "getLocale=" + locale);
+                    Logger.d(TAG, "getLocale", "locale=" + locale);
                 }
                 return locale != null ? locale : Locale.US;
         }
@@ -387,7 +388,7 @@ public class AmazonSearchEngine
         final Element titleElement = document.selectFirst("span#productTitle");
         if (titleElement == null) {
             if (BuildConfig.DEBUG /* always */) {
-                Logger.d(TAG, "no title?");
+                Logger.d(TAG, "parse", "no title?");
             }
             return;
         }
@@ -543,7 +544,7 @@ public class AmazonSearchEngine
 
                 default:
                     if (BuildConfig.DEBUG /* always */) {
-                        Logger.d(TAG, "label=" + label);
+                        Logger.d(TAG, "parse", "label=" + label);
                     }
                     break;
             }
@@ -583,7 +584,8 @@ public class AmazonSearchEngine
             final String isbn = bookData.getString(DBDefinitions.KEY_ISBN);
             final ArrayList<String> imageList = parseCovers(document, isbn, 0);
             if (!imageList.isEmpty()) {
-                bookData.putStringArrayList(Book.BKEY_FILE_SPEC_ARRAY[0], imageList);
+                bookData.putStringArrayList(SearchCoordinator.BKEY_TMP_FILE_SPEC_ARRAY[0],
+                                            imageList);
             }
         }
     }

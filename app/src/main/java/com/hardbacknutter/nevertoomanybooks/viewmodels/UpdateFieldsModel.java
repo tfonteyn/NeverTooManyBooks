@@ -360,9 +360,9 @@ public class UpdateFieldsModel
                         DBDefinitions.KEY_PRICE_LISTED_CURRENCY, R.string.lbl_currency);
 
         addRelatedField(DBDefinitions.PREFS_IS_USED_COVER + ".0",
-                        Book.BKEY_FILE_SPEC[0], R.string.lbl_cover);
+                        Book.BKEY_TMP_FILE_SPEC[0], R.string.lbl_cover);
         addRelatedField(DBDefinitions.PREFS_IS_USED_COVER + ".1",
-                        Book.BKEY_FILE_SPEC[1], R.string.lbl_cover_back);
+                        Book.BKEY_TMP_FILE_SPEC[1], R.string.lbl_cover_back);
 
         mCurrentProgressCounter = 0;
 
@@ -463,7 +463,7 @@ public class UpdateFieldsModel
                         final boolean[] thumbs = new boolean[2];
                         for (int cIdx = 0; cIdx < 2; cIdx++) {
                             thumbs[cIdx] = mCurrentFieldsWanted
-                                    .containsKey(Book.BKEY_FILE_SPEC[cIdx]);
+                                    .containsKey(Book.BKEY_TMP_FILE_SPEC[cIdx]);
                         }
                         setFetchThumbnail(thumbs);
 
@@ -528,9 +528,9 @@ public class UpdateFieldsModel
                     .filter(usage -> bookData.containsKey(usage.fieldId))
                     .forEach(usage -> {
                         // Handle thumbnail specially
-                        if (usage.fieldId.equals(Book.BKEY_FILE_SPEC[0])) {
+                        if (usage.fieldId.equals(Book.BKEY_TMP_FILE_SPEC[0])) {
                             processSearchResultsCoverImage(context, bookData, usage, 0);
-                        } else if (usage.fieldId.equals(Book.BKEY_FILE_SPEC[1])) {
+                        } else if (usage.fieldId.equals(Book.BKEY_TMP_FILE_SPEC[1])) {
                             processSearchResultsCoverImage(context, bookData, usage, 1);
                         } else {
                             switch (usage.getUsage()) {
@@ -593,6 +593,7 @@ public class UpdateFieldsModel
                                                 @IntRange(from = 0, to = 1) final int cIdx) {
         final String uuid = mCurrentBook.getString(DBDefinitions.KEY_BOOK_UUID);
         boolean copyThumb = false;
+        // check if we already have an image, and what we should do with the new image
         switch (usage.getUsage()) {
             case CopyIfBlank:
                 final File file = AppDir.getCoverFile(context, uuid, cIdx);
@@ -609,13 +610,14 @@ public class UpdateFieldsModel
         }
 
         if (copyThumb) {
-            final String fileSpec = bookData.getString(Book.BKEY_FILE_SPEC[cIdx]);
+            final String fileSpec = bookData.getString(Book.BKEY_TMP_FILE_SPEC[cIdx]);
             if (fileSpec != null) {
                 final File downloadedFile = new File(fileSpec);
                 final File destination = AppDir.getCoverFile(context, uuid, cIdx);
                 // rename will fail silently, that's ok here.
                 FileUtils.rename(downloadedFile, destination);
             }
+            bookData.remove(Book.BKEY_TMP_FILE_SPEC[cIdx]);
         }
     }
 
@@ -701,9 +703,9 @@ public class UpdateFieldsModel
 
                 case CopyIfBlank:
                     // Handle special cases first, 'default:' for the rest
-                    if (usage.fieldId.equals(Book.BKEY_FILE_SPEC[0])) {
+                    if (usage.fieldId.equals(Book.BKEY_TMP_FILE_SPEC[0])) {
                         filterCoverImage(context, fieldUsages, usage, 0);
-                    } else if (usage.fieldId.equals(Book.BKEY_FILE_SPEC[1])) {
+                    } else if (usage.fieldId.equals(Book.BKEY_TMP_FILE_SPEC[1])) {
                         filterCoverImage(context, fieldUsages, usage, 1);
                     } else {
                         switch (usage.fieldId) {

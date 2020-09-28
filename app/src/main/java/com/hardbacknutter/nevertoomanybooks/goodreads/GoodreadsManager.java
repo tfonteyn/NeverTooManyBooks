@@ -205,7 +205,7 @@ public class GoodreadsManager {
         final long bookId = bookData.getLong(DBDefinitions.KEY_PK_ID);
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.GOODREADS_SEND) {
-            Logger.d(TAG, "sendOneBook|bookId=" + bookId);
+            Logger.d(TAG, "sendOneBook", "bookId=" + bookId);
         }
 
         // Get the list of shelves from Goodreads.

@@ -23,7 +23,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.util.Log;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.IntRange;
@@ -36,6 +35,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -114,14 +114,7 @@ public class Book
      * <p>
      * <br>type: {@code String}
      */
-    public static final String[] BKEY_FILE_SPEC = new String[2];
-
-    /**
-     * List of front/back cover file specs.
-     * <p>
-     * <br>type: {@code ArrayList<String>}
-     */
-    public static final String[] BKEY_FILE_SPEC_ARRAY = new String[2];
+    public static final String[] BKEY_TMP_FILE_SPEC = new String[2];
 
     /** Log tag. */
     private static final String TAG = "Book";
@@ -169,14 +162,9 @@ public class Book
 
     static {
         // Single front cover
-        BKEY_FILE_SPEC[0] = TAG + ":fileSpec:0";
+        BKEY_TMP_FILE_SPEC[0] = TAG + ":fileSpec:0";
         // Single back cover
-        BKEY_FILE_SPEC[1] = TAG + ":fileSpec:1";
-
-        // list of front covers
-        BKEY_FILE_SPEC_ARRAY[0] = TAG + ":fileSpec_array:0";
-        // list of back covers
-        BKEY_FILE_SPEC_ARRAY[1] = TAG + ":fileSpec_array:1";
+        BKEY_TMP_FILE_SPEC[1] = TAG + ":fileSpec:1";
     }
 
     /**
@@ -736,8 +724,7 @@ public class Book
 
         // make sure we only store valid bits
         if (contains(DBDefinitions.KEY_EDITION_BITMASK)) {
-            final int editions = getInt(DBDefinitions.KEY_EDITION_BITMASK)
-                                 & Edition.BITMASK_ALL;
+            final int editions = getInt(DBDefinitions.KEY_EDITION_BITMASK) & Edition.BITMASK_ALL;
             putInt(DBDefinitions.KEY_EDITION_BITMASK, editions);
         }
 
@@ -757,52 +744,6 @@ public class Book
         preprocessNullsAndBlanks(isNew);
     }
 
-    /**
-     * Helper for {@link #preprocessForStoring(Context, boolean)}.
-     * <p>
-     * Truncate Date fields to being pure dates without a time segment.
-     * Replaces 'T' with ' ' to please SqLite/SQL datetime standards.
-     */
-    @VisibleForTesting
-    private void preprocessDates() {
-
-        for (Domain domain : DBDefinitions.TBL_BOOKS.getDomains()) {
-            final String key = domain.getName();
-            if (contains(key)) {
-                if (domain.getType().equals(ColumnInfo.TYPE_DATE)) {
-                    final String date = getString(key);
-                    // This is very crude... we simply check for 11 character pattern
-                    // "yyyy?mm?ddT" or "yyyy?mm?dd "
-                    if (date.length() > 10) {
-                        final char timeDiv = date.charAt(10);
-                        // this check is just a sanity check; we could just truncate regardless
-                        if (timeDiv == ' ' || timeDiv == 'T') {
-                            putString(key, date.substring(0, 11));
-                            if (BuildConfig.DEBUG /* always */) {
-                                Logger.d(TAG, "preprocessDates"
-                                              + "|key=" + key
-                                              + "|in=`" + date + '`'
-                                              + "|out=`" + getString(key) + '`');
-                            }
-                        }
-                    }
-
-                } else if (domain.getType().equals(ColumnInfo.TYPE_DATETIME)) {
-                    final String date = getString(key);
-                    // Again, very crude logic... simply checking character 11 for being a 'T'
-                    if (date.length() > 10 && date.charAt(10) == 'T') {
-                        putString(key, T.matcher(date).replaceFirst(" "));
-                        if (BuildConfig.DEBUG /* always */) {
-                            Logger.d(TAG, "preprocessDates"
-                                          + "|key=" + key
-                                          + "|in=`" + date + '`'
-                                          + "|out=`" + getString(key) + '`');
-                        }
-                    }
-                }
-            }
-        }
-    }
 
     /**
      * Helper for {@link #preprocessForStoring(Context, boolean)}.
@@ -837,6 +778,58 @@ public class Book
     /**
      * Helper for {@link #preprocessForStoring(Context, boolean)}.
      * <p>
+     * Truncate Date fields to being pure dates without a time segment.
+     * Replaces 'T' with ' ' to please SqLite/SQL datetime standards.
+     */
+    @VisibleForTesting
+    private void preprocessDates() {
+        final List<Domain> domains = DBDefinitions.TBL_BOOKS.getDomains();
+
+        domains.stream()
+               .filter(domain -> domain.getType().equals(ColumnInfo.TYPE_DATE))
+               .map(Domain::getName)
+               .filter(this::contains)
+               .forEach(key -> {
+                   final String date = getString(key);
+                   // This is very crude... we simply check for 11 character pattern
+                   // "yyyy?mm?ddT" or "yyyy?mm?dd "
+                   if (date.length() > 10) {
+                       final char timeDiv = date.charAt(10);
+                       // this check is just a sanity check; we could just truncate regardless
+                       if (timeDiv == ' ' || timeDiv == 'T') {
+                           putString(key, date.substring(0, 11));
+                           if (BuildConfig.DEBUG /* always */) {
+                               Logger.d(TAG, "preprocessDates",
+                                        "key=" + key
+                                        + "|in=`" + date + '`'
+                                        + "|out=`" + getString(key) + '`');
+                           }
+                       }
+                   }
+               });
+
+        domains.stream()
+               .filter(domain -> domain.getType().equals(ColumnInfo.TYPE_DATETIME))
+               .map(Domain::getName)
+               .filter(this::contains)
+               .forEach(key -> {
+                   final String date = getString(key);
+                   // Again, very crude logic... simply checking character 11 for being a 'T'
+                   if (date.length() > 10 && date.charAt(10) == 'T') {
+                       putString(key, T.matcher(date).replaceFirst(" "));
+                       if (BuildConfig.DEBUG /* always */) {
+                           Logger.d(TAG, "preprocessDates",
+                                    "key=" + key
+                                    + "|in=`" + date + '`'
+                                    + "|out=`" + getString(key) + '`');
+                       }
+                   }
+               });
+    }
+
+    /**
+     * Helper for {@link #preprocessForStoring(Context, boolean)}.
+     * <p>
      * Processes the external id keys.
      * <p>
      * For new books, REMOVE zero values, empty strings AND null values
@@ -850,81 +843,79 @@ public class Book
      */
     @VisibleForTesting
     void preprocessExternalIds(final boolean isNew) {
-        for (Domain domain : SearchEngineRegistry.getExternalIdDomains()) {
-            final String key = domain.getName();
-            if (contains(key)) {
-                final Object o = get(key);
-                switch (domain.getType()) {
-                    case ColumnInfo.TYPE_INTEGER: {
-                        try {
-                            if (isNew) {
-                                // For new books:
-                                if (o == null) {
-                                    // remove null values
-                                    remove(key);
-                                } else {
-                                    final long v = getLong(key);
-                                    if (v < 1) {
-                                        // remove zero values
-                                        remove(key);
-                                    }
-                                }
-                            } else {
-                                // for existing books, leave null values as-is
-                                if (o != null) {
-                                    final long v = getLong(key);
-                                    if (v < 1) {
-                                        // replace zero values with a null
-                                        putNull(key);
-                                    }
-                                }
-                            }
-                        } catch (@NonNull final NumberFormatException e) {
-                            // always remove illegal input
-                            remove(key);
+        final List<Domain> domains = SearchEngineRegistry.getExternalIdDomains();
 
-                            if (BuildConfig.DEBUG /* always */) {
-                                Logger.d(TAG, "preprocessExternalIds"
-                                              + "|NumberFormatException"
-                                              + "|name=" + key
-                                              + "|value=`" + o + '`');
-                            }
-                        }
-                        break;
-                    }
-                    case ColumnInfo.TYPE_TEXT: {
-                        if (isNew) {
-                            // for new books,
-                            if (o == null) {
-                                // remove null values
-                                remove(key);
-                            } else {
-                                final String v = o.toString();
-                                if (v.isEmpty() || "0".equals(v)) {
-                                    // remove empty/zero values
-                                    remove(key);
-                                }
-                            }
-                        } else {
-                            // for existing books, leave null values as-is
-                            if (o != null) {
-                                final String v = o.toString();
-                                if (v.isEmpty() || "0".equals(v)) {
-                                    // replace "0" and empty strings with a null
-                                    putNull(key);
-                                }
-                            }
-                        }
-                        break;
-                    }
-                    default:
-                        if (BuildConfig.DEBUG /* always */) {
-                            Log.d(TAG, "type=" + domain.getType());
-                        }
-                        break;
-                }
-            }
-        }
+        domains.stream()
+               .filter(domain -> domain.getType().equals(ColumnInfo.TYPE_INTEGER))
+               .map(Domain::getName)
+               .filter(this::contains)
+               .forEach(key -> {
+                   final Object o = get(key);
+                   try {
+                       if (isNew) {
+                           // For new books:
+                           if (o == null) {
+                               // remove null values
+                               remove(key);
+                           } else {
+                               final long v = getLong(key);
+                               if (v < 1) {
+                                   // remove zero values
+                                   remove(key);
+                               }
+                           }
+                       } else {
+                           // for existing books, leave null values as-is
+                           if (o != null) {
+                               final long v = getLong(key);
+                               if (v < 1) {
+                                   // replace zero values with a null
+                                   putNull(key);
+                               }
+                           }
+                       }
+                   } catch (@NonNull final NumberFormatException e) {
+                       // always remove illegal input
+                       remove(key);
+
+                       if (BuildConfig.DEBUG /* always */) {
+                           Logger.d(TAG, "preprocessExternalIds",
+                                    "NumberFormatException"
+                                    + "|name=" + key
+                                    + "|value=`" + o + '`');
+                       }
+                   }
+               });
+
+        domains.stream()
+               .filter(domain -> domain.getType().equals(ColumnInfo.TYPE_TEXT))
+               .map(Domain::getName)
+               .filter(this::contains)
+               .forEach(key -> {
+                   final Object o = get(key);
+                   if (isNew) {
+                       // for new books,
+                       if (o == null) {
+                           // remove null values
+                           remove(key);
+                       } else {
+                           final String v = o.toString();
+                           if (v.isEmpty() || "0".equals(v)) {
+                               // remove empty/zero values
+                               remove(key);
+                           }
+                       }
+                   } else {
+                       // for existing books, leave null values as-is
+                       if (o != null) {
+                           final String v = o.toString();
+                           if (v.isEmpty() || "0".equals(v)) {
+                               // replace "0" and empty strings with a null
+                               putNull(key);
+                           }
+                       }
+                   }
+               });
     }
 
     /**
@@ -942,39 +933,30 @@ public class Book
      */
     @VisibleForTesting
     void preprocessNullsAndBlanks(final boolean isNew) {
-        for (Domain domain : DBDefinitions.TBL_BOOKS.getDomains()) {
-            final String key = domain.getName();
-            if (contains(key) && domain.hasDefault()) {
-                final Object o = get(key);
 
-                if (o == null) {
-                    if (domain.isNotNull()) {
+        DBDefinitions.TBL_BOOKS
+                .getDomains()
+                .stream()
+                .filter(domain -> contains(domain.getName()) && domain.hasDefault())
+                .forEach(domain -> {
+                    final Object o = get(domain.getName());
+                    if (
+                        // Fields which are null but not allowed to be null
+                            (o == null && domain.isNotNull())
+                            ||
+                            // Fields which are null/empty (i.e. blank) but not allowed to be blank
+                            ((o == null || o.toString().isEmpty()) && domain.isNotBlank())
+                    ) {
                         if (isNew) {
-                            remove(key);
+                            remove(domain.getName());
                         } else {
                             // restore the column to its default value.
                             //noinspection ConstantConditions
-                            putString(key, domain.getDefault());
-                        }
-                        continue;
-                    }
-                }
-
-                if (o == null || o.toString().isEmpty()) {
-                    if (domain.isNotBlank()) {
-                        if (isNew) {
-                            remove(key);
-                        } else {
-                            // restore the column to its default value.
-                            //noinspection ConstantConditions
-                            putString(key, domain.getDefault());
+                            putString(domain.getName(), domain.getDefault());
                         }
                     }
-                }
-            }
-        }
+                });
     }
-
 
     /**
      * Creates a chooser with matched apps for sharing some text.
@@ -1037,35 +1019,49 @@ public class Book
                          final int cIdx,
                          @Nullable final File file) {
         if (file != null) {
-            putString(BKEY_FILE_SPEC[cIdx], file.getAbsolutePath());
+            if (BuildConfig.DEBUG /* always */) {
+                Logger.d(TAG, "setCover",
+                         "cIdx=" + cIdx + "|file=" + file.getAbsolutePath());
+            }
+            putString(BKEY_TMP_FILE_SPEC[cIdx], file.getAbsolutePath());
 
         } else {
+            final String uuid = getString(DBDefinitions.KEY_BOOK_UUID);
+
             // delete from cache
             // Yes, we also delete the ones where != index, but we don't care; it's a cache.
-            final String uuid = getString(DBDefinitions.KEY_BOOK_UUID);
             if (ImageUtils.isImageCachingEnabled(context) && !uuid.isEmpty()) {
                 CoversDAO.delete(context, uuid);
             }
-            // delete from file storage
-            FileUtils.delete(getCoverFile(context, cIdx));
-            // lastly, delete in memory
-            remove(BKEY_FILE_SPEC[cIdx]);
+
+            // delete any temporary image currently held
+            final String fileSpec = getString(BKEY_TMP_FILE_SPEC[cIdx]);
+            if (!fileSpec.isEmpty()) {
+                FileUtils.delete(new File(fileSpec));
+            }
+            remove(BKEY_TMP_FILE_SPEC[cIdx]);
+
+            // delete the standard UUID based file
+            if (!uuid.isEmpty()) {
+                FileUtils.delete(AppDir.getCoverFile(context, uuid, cIdx));
+            }
         }
     }
 
     @Nullable
     public File getCoverFile(@NonNull final Context context,
                              final int cIdx) {
-        // for existing books, we use the UUID and the index to get the stored file.
+
+        // check the bundle for any new images not saved yet
+        final String fileSpec = getString(BKEY_TMP_FILE_SPEC[cIdx]);
+        if (!fileSpec.isEmpty()) {
+            return new File(fileSpec);
+        }
+
+        // otherwise use the UUID and the index to get the standard file.
         final String uuid = getString(DBDefinitions.KEY_BOOK_UUID);
         if (!uuid.isEmpty()) {
             return AppDir.getCoverFile(context, uuid, cIdx);
-        }
-
-        // for new books, check the bundle.
-        final String fileSpec = getString(BKEY_FILE_SPEC[cIdx]);
-        if (!fileSpec.isEmpty()) {
-            return new File(fileSpec);
         }
 
         return null;

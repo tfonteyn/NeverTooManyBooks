@@ -90,13 +90,26 @@ public class SearchCoordinator
         extends ViewModel
         implements Canceller {
 
+    /**
+     * List of front/back cover file specs as collected during the search.
+     * <p>
+     * <br>type: {@code ArrayList<String>}
+     */
+    public static final String[] BKEY_TMP_FILE_SPEC_ARRAY = new String[2];
+
     /** Log tag. */
     private static final String TAG = "SearchCoordinator";
 
     public static final String BKEY_SEARCH_ERROR = TAG + ":error";
-
     /** divider to convert nanoseconds to milliseconds. */
     private static final int NANO_TO_MILLIS = 1_000_000;
+
+    static {
+        // list of front covers
+        SearchCoordinator.BKEY_TMP_FILE_SPEC_ARRAY[0] = TAG + ":fileSpec_array:0";
+        // list of back covers
+        SearchCoordinator.BKEY_TMP_FILE_SPEC_ARRAY[1] = TAG + ":fileSpec_array:1";
+    }
 
     protected final MutableLiveData<ProgressMessage>
             mSearchCoordinatorProgress = new MutableLiveData<>();
@@ -891,14 +904,14 @@ public class SearchCoordinator
         // Pick the best covers for each list (if any) and clean/delete all others.
         for (int cIdx = 0; cIdx < 2; cIdx++) {
             final ArrayList<String> imageList = mBookData
-                    .getStringArrayList(Book.BKEY_FILE_SPEC_ARRAY[cIdx]);
+                    .getStringArrayList(BKEY_TMP_FILE_SPEC_ARRAY[cIdx]);
             if (imageList != null && !imageList.isEmpty()) {
                 final String coverName = getBestImage(imageList);
                 if (coverName != null) {
-                    mBookData.putString(Book.BKEY_FILE_SPEC[cIdx], coverName);
+                    mBookData.putString(Book.BKEY_TMP_FILE_SPEC[cIdx], coverName);
                 }
             }
-            mBookData.remove(Book.BKEY_FILE_SPEC_ARRAY[cIdx]);
+            mBookData.remove(BKEY_TMP_FILE_SPEC_ARRAY[cIdx]);
         }
 
         // If we did not get an ISBN, use the one we originally searched for.
@@ -990,8 +1003,8 @@ public class SearchCoordinator
                        || Book.BKEY_SERIES_ARRAY.equals(key)
                        || Book.BKEY_PUBLISHER_ARRAY.equals(key)
                        || Book.BKEY_TOC_ARRAY.equals(key)
-                       || Book.BKEY_FILE_SPEC_ARRAY[0].equals(key)
-                       || Book.BKEY_FILE_SPEC_ARRAY[1].equals(key)) {
+                       || BKEY_TMP_FILE_SPEC_ARRAY[0].equals(key)
+                       || BKEY_TMP_FILE_SPEC_ARRAY[1].equals(key)) {
                 accumulateList(key, siteData);
 
             } else {

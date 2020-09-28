@@ -62,6 +62,7 @@ public final class ErrorMsg {
     public static final String NULL_TASK_RESULTS = "Task result";
     public static final String NULL_TOC_ENTRY = "TocEntry";
     public static final String NULL_URI = "uri";
+    public static final String NULL_UUID = "uuid";
 
     public static final String BUNDLE_NOT_PUSHED = "Bundle not pushed!";
     public static final String BUNDLE_ALREADY_PUSHED = "Bundle already pushed!";

@@ -37,6 +37,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
+import com.hardbacknutter.nevertoomanybooks.searches.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.utils.Languages;
 
@@ -337,12 +338,13 @@ class AmazonXmlHandler
             final String fileSpec = mSearchEngine.saveImage(mCoverUrl, tmpName);
             if (fileSpec != null) {
                 ArrayList<String> imageList =
-                        mBookData.getStringArrayList(Book.BKEY_FILE_SPEC_ARRAY[0]);
+                        mBookData.getStringArrayList(SearchCoordinator.BKEY_TMP_FILE_SPEC_ARRAY[0]);
                 if (imageList == null) {
                     imageList = new ArrayList<>();
                 }
                 imageList.add(fileSpec);
-                mBookData.putStringArrayList(Book.BKEY_FILE_SPEC_ARRAY[0], imageList);
+                mBookData.putStringArrayList(SearchCoordinator.BKEY_TMP_FILE_SPEC_ARRAY[0],
+                                             imageList);
             }
         }
         if (!mAuthors.isEmpty()) {

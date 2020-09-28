@@ -49,6 +49,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
+import com.hardbacknutter.nevertoomanybooks.searches.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
@@ -522,7 +523,8 @@ public class OpenLibrarySearchEngine
         if (fetchThumbnail[0]) {
             final ArrayList<String> imageList = parseCovers(document, validIsbn, 0);
             if (!imageList.isEmpty()) {
-                bookData.putStringArrayList(Book.BKEY_FILE_SPEC_ARRAY[0], imageList);
+                bookData.putStringArrayList(SearchCoordinator.BKEY_TMP_FILE_SPEC_ARRAY[0],
+                                            imageList);
             }
         }
 

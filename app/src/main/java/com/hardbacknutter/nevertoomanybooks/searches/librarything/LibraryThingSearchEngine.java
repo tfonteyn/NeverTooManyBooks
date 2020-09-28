@@ -46,7 +46,6 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageFileInfo;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
-import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineBase;
@@ -224,7 +223,8 @@ public class LibraryThingSearchEngine
             if (isbnStr != null && !isbnStr.isEmpty()) {
                 final ArrayList<String> imageList = searchBestCoverImageByIsbn(isbnStr, 0);
                 if (!imageList.isEmpty()) {
-                    bookData.putStringArrayList(Book.BKEY_FILE_SPEC_ARRAY[0], imageList);
+                    bookData.putStringArrayList(SearchCoordinator.BKEY_TMP_FILE_SPEC_ARRAY[0],
+                                                imageList);
                 }
             }
         }
@@ -256,7 +256,8 @@ public class LibraryThingSearchEngine
         if (fetchThumbnail[0]) {
             final ArrayList<String> imageList = searchBestCoverImageByIsbn(validIsbn, 0);
             if (!imageList.isEmpty()) {
-                bookData.putStringArrayList(Book.BKEY_FILE_SPEC_ARRAY[0], imageList);
+                bookData.putStringArrayList(SearchCoordinator.BKEY_TMP_FILE_SPEC_ARRAY[0],
+                                            imageList);
             }
         }
 

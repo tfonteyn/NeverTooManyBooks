@@ -27,7 +27,6 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -66,9 +65,7 @@ import com.hardbacknutter.nevertoomanybooks.goodreads.api.ReviewsListApiHandler.
 import com.hardbacknutter.nevertoomanybooks.goodreads.qtasks.taskqueue.QueueManager;
 import com.hardbacknutter.nevertoomanybooks.goodreads.qtasks.taskqueue.TQTask;
 import com.hardbacknutter.nevertoomanybooks.searches.AuthorTypeMapper;
-import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
-import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.DateParser;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 
@@ -259,8 +256,9 @@ public class ImportGrTask
                         if (reviewUpd != null && reviewUpd.isBefore(mLastSyncDate)) {
 
                             if (BuildConfig.DEBUG && DEBUG_SWITCHES.GOODREADS_IMPORT) {
-                                Logger.d(TAG, "skipping|grId=" + review.getLong(
-                                        DBDefinitions.KEY_EID_GOODREADS_BOOK));
+                                Logger.d(TAG, "importReviews",
+                                         "skipping|grId="
+                                         + review.getLong(DBDefinitions.KEY_EID_GOODREADS_BOOK));
                             }
                             // skip to the next review
                             continue;
@@ -294,7 +292,7 @@ public class ImportGrTask
         final long grBookId = review.getLong(DBDefinitions.KEY_EID_GOODREADS_BOOK);
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.GOODREADS_IMPORT) {
-            Logger.d(TAG, "processReview|grId=" + grBookId);
+            Logger.d(TAG, "processReview", "grId=" + grBookId);
         }
 
         Cursor cursor = null;
@@ -324,10 +322,10 @@ public class ImportGrTask
                     book.load(cursor, db);
                     updateBook(context, db, book, review);
                 }
-
             } else {
                 // it's a new book, add it
-                insertBook(context, db, review);
+                final Book book = buildBook(context, db, new Book(), review);
+                insertBook(context, db, book);
             }
         } finally {
             if (cursor != null) {
@@ -392,24 +390,15 @@ public class ImportGrTask
      *
      * @param context Current context
      * @param db      Database Access
-     * @param review  the source data from Goodreads
+     * @param book    to insert
      */
     private void insertBook(@NonNull final Context context,
                             @NonNull final DAO db,
-                            @NonNull final Bundle review) {
-
-        final Book book = buildBook(context, db, new Book(), review);
+                            @NonNull final Book book) {
         try {
             db.insert(context, book, DAO.BOOK_FLAG_IS_BATCH_OPERATION);
-            for (int cIdx = 0; cIdx < 2; cIdx++) {
-                final File downloadedFile = book.getCoverFile(context, cIdx);
-                if (downloadedFile != null) {
-                    final String uuid = book.getString(DBDefinitions.KEY_BOOK_UUID);
-                    final File destination = AppDir.getCoverFile(context, uuid, cIdx);
-                    FileUtils.renameOrThrow(downloadedFile, destination);
-                }
-            }
-        } catch (@NonNull final DAO.DaoWriteException | IOException e) {
+
+        } catch (@NonNull final DAO.DaoWriteException e) {
             // ignore, but log it.
             Logger.error(context, TAG, e);
         }
@@ -447,7 +436,7 @@ public class ImportGrTask
             }
         }
 
-        //IMPORTANT: we will construct a NEW BOOK, with the DELTA-data which
+        // IMPORTANT: we will construct a NEW BOOK, with the DELTA-data which
         // we want to commit to the existing book.
         final Book delta = buildBook(context, db, book, review);
         try {
@@ -640,7 +629,7 @@ public class ImportGrTask
                                                              Review.LARGE_IMAGE_URL,
                                                              Review.SMALL_IMAGE_URL);
             if (fileSpec != null) {
-                delta.putString(Book.BKEY_FILE_SPEC[0], fileSpec);
+                delta.putString(Book.BKEY_TMP_FILE_SPEC[0], fileSpec);
             }
         }
 

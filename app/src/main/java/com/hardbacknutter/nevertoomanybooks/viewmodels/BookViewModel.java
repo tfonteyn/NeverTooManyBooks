@@ -29,7 +29,6 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.MutableLiveData;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -42,8 +41,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
-import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
-import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 
 /**
  * Holds the {@link Book} and whether it's dirty or not + some direct support functions.
@@ -365,26 +362,13 @@ public class BookViewModel
      * @param context Current context
      *
      * @throws DAO.DaoWriteException on failure
-     * @throws IOException           on cover images failure
      */
     public void saveBook(@NonNull final Context context)
-            throws DAO.DaoWriteException, IOException {
+            throws DAO.DaoWriteException {
+
         if (mBook.isNew()) {
             mDb.insert(context, mBook, 0);
             putResultData(BKEY_BOOK_CREATED, true);
-
-            final String uuid = mBook.getString(DBDefinitions.KEY_BOOK_UUID);
-            // sanity check
-            if (!uuid.isEmpty()) {
-                // if the user added a cover to the new book, make it permanent
-                for (int cIdx = 0; cIdx < 2; cIdx++) {
-                    final File downloadedFile = mBook.getCoverFile(context, cIdx);
-                    if (downloadedFile != null) {
-                        final File destination = AppDir.getCoverFile(context, uuid, cIdx);
-                        FileUtils.renameOrThrow(downloadedFile, destination);
-                    }
-                }
-            }
         } else {
             mDb.update(context, mBook, 0);
             putResultData(BKEY_BOOK_MODIFIED, true);
