@@ -145,7 +145,7 @@ public class JsoupLoader {
         int attempts = 2;
         while (attempts > 0) {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.JSOUP) {
-                Logger.d(TAG, "loadDocument|REQUESTED|url=\"" + url + '\"');
+                Logger.d(TAG, "loadDocument", "REQUESTED|url=\"" + url + '\"');
             }
 
             try (TerminatorConnection con = searchEngine.createConnection(url, true)) {
@@ -165,9 +165,10 @@ public class JsoupLoader {
                 final InputStream inputStream = con.getInputStream();
 
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.JSOUP) {
-                    Logger.d(TAG, "loadDocument|AFTER open"
-                                  + "\ncon.getURL=" + con.getURL()
-                                  + "\nlocation  =" + con.getHeaderField(HEADER_LOCATION));
+                    Logger.d(TAG, "loadDocument", "AFTER open"
+                                                  + "\ncon.getURL=" + con.getURL()
+                                                  + "\nlocation  =" + con
+                                                          .getHeaderField(HEADER_LOCATION));
                 }
 
                 // the original url will change after a redirect.
@@ -178,7 +179,7 @@ public class JsoupLoader {
                     locationHeader = con.getURL().toString();
 
                     if (BuildConfig.DEBUG && DEBUG_SWITCHES.JSOUP) {
-                        Logger.d(TAG, "loadDocument|location header not set, using url");
+                        Logger.d(TAG, "loadDocument", "location header not set, using url");
                     }
                 }
 
@@ -201,7 +202,8 @@ public class JsoupLoader {
                 mDoc = Jsoup.parse(inputStream, mCharSetName, locationHeader);
 
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.JSOUP) {
-                    Logger.d(TAG, "loadDocument|AFTER parsing|mDoc.location()=" + mDoc.location());
+                    Logger.d(TAG, "loadDocument",
+                             "AFTER parsing|mDoc.location()=" + mDoc.location());
                 }
 
                 // Success

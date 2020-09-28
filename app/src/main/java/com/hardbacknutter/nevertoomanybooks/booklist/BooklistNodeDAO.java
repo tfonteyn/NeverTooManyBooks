@@ -810,7 +810,7 @@ class BooklistNodeDAO {
         }
 
         if (BuildConfig.DEBUG /* always */) {
-            Log.d(TAG, "rows=" + rows);
+            Log.d(TAG, "adjustVisibility|rows=" + rows);
         }
     }
 }

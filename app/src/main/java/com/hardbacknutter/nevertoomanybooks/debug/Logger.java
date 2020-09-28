@@ -250,7 +250,7 @@ public final class Logger {
     @SuppressLint("LogConditional")
     @SuppressWarnings("unused")
     public static void dump(@NonNull final String tag,
-                            @NonNull final Object object,
+                            @NonNull final String method,
                             @NonNull final InputStream inputStream) {
         try {
             final BufferedInputStream bis = new BufferedInputStream(inputStream);
@@ -260,7 +260,7 @@ public final class Logger {
                 buf.write((byte) result);
                 result = bis.read();
             }
-            d(tag, buf.toString("UTF-8"));
+            d(tag, method, buf.toString("UTF-8"));
         } catch (@NonNull final IOException e) {
             d(tag, "dumping failed: ", e);
         }
@@ -271,23 +271,22 @@ public final class Logger {
      */
     @SuppressWarnings("unused")
     private static void debugArguments(@NonNull final String tag,
-                                       @NonNull final Object fragmentOrActivity,
-                                       @SuppressWarnings("SameParameterValue")
-                                       @NonNull final String methodName) {
+                                       @NonNull final String method,
+                                       @NonNull final Object fragmentOrActivity) {
         if (fragmentOrActivity instanceof Activity) {
             final Bundle extras = ((Activity) fragmentOrActivity).getIntent().getExtras();
             if (extras != null) {
-                d(tag, methodName + "|extras=" + extras);
+                d(tag, method, "extras=" + extras);
                 if (extras.containsKey(Book.BKEY_BOOK_DATA)) {
-                    d(tag, methodName + "|extras=" + extras.getBundle(Book.BKEY_BOOK_DATA));
+                    d(tag, method, "extras=" + extras.getBundle(Book.BKEY_BOOK_DATA));
                 }
             }
         } else if (fragmentOrActivity instanceof Fragment) {
             final Bundle args = ((Fragment) fragmentOrActivity).getArguments();
             if (args != null) {
-                d(tag, methodName + "|args=" + args);
+                d(tag, method, "args=" + args);
                 if (args.containsKey(Book.BKEY_BOOK_DATA)) {
-                    d(tag, methodName + "|args=" + args.getBundle(Book.BKEY_BOOK_DATA));
+                    d(tag, method, "args=" + args.getBundle(Book.BKEY_BOOK_DATA));
                 }
             }
         }
@@ -340,21 +339,29 @@ public final class Logger {
                                              final int resultCode,
                                              @Nullable final Intent data) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
-            d(tag, "ENTER|onActivityResult"
-                   + "|requestCode=" + requestCode
-                   + "|resultCode=" + resultCode
-                   + "|data=" + data);
+            d(tag, "onActivityResult", "ENTER"
+                                       + "|requestCode=" + requestCode
+                                       + "|resultCode=" + resultCode
+                                       + "|data=" + data);
         }
     }
 
-    /** JUnit aware wrapper for {@link Log#d}. */
+    /**
+     * JUnit aware wrapper for {@link Log#d}.
+     *
+     * @param tag    Used to identify the source of a log message.  It usually identifies
+     *               the class or activity where the log call occurs.
+     * @param method the calling method (added to force the developer to log the method name)
+     * @param msg    The message you would like logged.
+     */
     public static void d(@NonNull final String tag,
+                         @NonNull final String method,
                          @NonNull final String msg) {
         if (BuildConfig.DEBUG /* always */) {
             if (isJUnitTest) {
-                System.out.println("isJUnitTest|DEBUG|" + tag + "|" + msg);
+                System.out.println("isJUnitTest|DEBUG|" + tag + "|" + method + "|" + msg);
             } else {
-                Log.d(tag, msg);
+                Log.d(tag, method + "|" + msg);
             }
         }
     }

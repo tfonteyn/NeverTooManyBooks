@@ -329,8 +329,7 @@ public final class ImageUtils {
             FileUtils.delete(file);
 
             if (BuildConfig.DEBUG /* always */) {
-                Logger.d(TAG, "saveImage"
-                              + "|e=" + e.getLocalizedMessage());
+                Logger.d(TAG, "saveImage", "|e=" + e.getLocalizedMessage());
 
                 // When running as a JUnit test, the file.renameTo done during the
                 // FileUtils.copyInputStream operation will fail.

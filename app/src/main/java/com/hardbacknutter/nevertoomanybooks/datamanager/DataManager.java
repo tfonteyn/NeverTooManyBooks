@@ -239,10 +239,10 @@ public class DataManager
             } catch (@NonNull final NumberFormatException ignore) {
                 //TEST: should we really ignore this, next step will return raw value.
                 if (BuildConfig.DEBUG /* always */) {
-                    Logger.d(TAG, "get"
-                                  + "|NumberFormatException"
-                                  + "|name=" + key
-                                  + "|value=`" + mRawData.get(key) + '`');
+                    Logger.d(TAG, "get",
+                             "NumberFormatException"
+                             + "|name=" + key
+                             + "|value=`" + mRawData.get(key) + '`');
                 }
             }
         }
@@ -560,7 +560,7 @@ public class DataManager
 
     /**
      * Add a validator for the specified key.
-     *
+     * <p>
      * Accepts only one validator for a key. Setting a second one will override the first.
      *
      * @param key          Key for the data

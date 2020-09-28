@@ -145,9 +145,9 @@ public class DBCleaner {
             }
 
             if (BuildConfig.DEBUG /* always */) {
-                Logger.d(TAG, "dates"
-                              + "|key=" + key
-                              + "|rows.size()=" + rows.size());
+                Logger.d(TAG, "dates",
+                         "key=" + key
+                         + "|rows.size()=" + rows.size());
             }
             try (SynchronizedStatement stmt = mDb.getSyncDb().compileStatement(
                     "UPDATE " + TBL_BOOKS.getName()
