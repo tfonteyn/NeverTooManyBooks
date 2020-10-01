@@ -41,7 +41,6 @@ import java.util.ArrayList;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.entities.Entity;
 
 /**
@@ -113,11 +112,11 @@ public class CheckListDialogFragment
         mFieldId = args.getInt(BKEY_FIELD_ID);
 
         mAllItems = args.getParcelableArrayList(BKEY_ALL);
-        Objects.requireNonNull(mAllItems, ErrorMsg.NULL_CHECKLIST);
+        Objects.requireNonNull(mAllItems, "mAllItems");
 
         args = savedInstanceState != null ? savedInstanceState : args;
         mSelectedItems = args.getParcelableArrayList(BKEY_SELECTED);
-        Objects.requireNonNull(mSelectedItems, ErrorMsg.NULL_CHECKLIST);
+        Objects.requireNonNull(mSelectedItems, "mSelectedItems");
     }
 
     @NonNull
