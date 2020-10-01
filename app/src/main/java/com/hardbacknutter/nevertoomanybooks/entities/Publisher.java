@@ -117,11 +117,14 @@ public class Publisher
      *
      * @return {@code true} if the list was modified.
      */
-    public static boolean pruneList(@NonNull final Iterable<Publisher> list,
+    public static boolean pruneList(@NonNull final Collection<Publisher> list,
                                     @NonNull final Context context,
                                     @NonNull final DAO db,
                                     final boolean lookupLocale,
                                     @NonNull final Locale bookLocale) {
+        if (list.isEmpty()) {
+            return false;
+        }
 
         boolean listModified = false;
         final Iterator<Publisher> it;
