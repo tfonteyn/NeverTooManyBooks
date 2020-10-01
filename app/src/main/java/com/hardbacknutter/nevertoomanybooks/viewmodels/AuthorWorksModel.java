@@ -36,6 +36,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
+import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.AuthorWork;
 import com.hardbacknutter.nevertoomanybooks.entities.BookAsWork;
@@ -81,9 +82,8 @@ public class AuthorWorksModel
             mDb = new DAO(TAG);
 
             final long authorId = args.getLong(DBDefinitions.KEY_PK_ID, 0);
-            if (authorId == 0) {
-                throw new IllegalArgumentException(ErrorMsg.ZERO_ID_FOR_AUTHOR);
-            }
+            SanityCheck.requireValue(authorId, "authorId");
+
             mAuthor = Objects.requireNonNull(mDb.getAuthor(authorId));
 
             final long bookshelfId = args.getLong(DBDefinitions.KEY_FK_BOOKSHELF,
