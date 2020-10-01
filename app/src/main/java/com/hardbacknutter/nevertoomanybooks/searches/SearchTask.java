@@ -33,8 +33,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
+import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.tasks.LTask;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.ProgressMessage;
@@ -200,19 +200,19 @@ public class SearchTask
             Bundle bookData;
             switch (mBy) {
                 case BY_EXTERNAL_ID:
-                    Objects.requireNonNull(mExternalId, ErrorMsg.NULL_EXTERNAL_ID);
+                    SanityCheck.requireValue(mExternalId, "mExternalId");
                     bookData = ((SearchEngine.ByExternalId) mSearchEngine)
                             .searchByExternalId(mExternalId, mFetchThumbnail);
                     break;
 
                 case BY_ISBN:
-                    Objects.requireNonNull(mIsbnStr, ErrorMsg.NULL_ISBN_STR);
+                    SanityCheck.requireValue(mIsbnStr, "mIsbnStr");
                     bookData = ((SearchEngine.ByIsbn) mSearchEngine)
                             .searchByIsbn(mIsbnStr, mFetchThumbnail);
                     break;
 
                 case BY_BARCODE:
-                    Objects.requireNonNull(mIsbnStr, ErrorMsg.NULL_ISBN_STR);
+                    SanityCheck.requireValue(mIsbnStr, "mIsbnStr");
                     bookData = ((SearchEngine.ByBarcode) mSearchEngine)
                             .searchByBarcode(mIsbnStr, mFetchThumbnail);
                     break;
