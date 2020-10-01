@@ -66,7 +66,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PPref;
 import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PString;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
-import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
+import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Entity;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
@@ -582,10 +582,7 @@ public class BooklistStyle
      */
     @NonNull
     public BooklistStyle clone(@NonNull final Context context) {
-        // sanity check
-        if (mUuid.isEmpty()) {
-            throw new IllegalArgumentException(ErrorMsg.EMPTY_UUID);
-        }
+        SanityCheck.requireValue(mUuid, "mUuid");
 
         //TODO: revisit... this is to complicated/inefficient.
         Parcel parcel = Parcel.obtain();
@@ -2061,10 +2058,7 @@ public class BooklistStyle
                 throw new IllegalArgumentException("Builtin Style cannot be saved to database");
             }
 
-            // sanity check
-            if (style.getUuid().isEmpty()) {
-                throw new IllegalArgumentException(ErrorMsg.EMPTY_UUID);
-            }
+            SanityCheck.requireValue(style.getUuid(), "style.getUuid()");
 
             // check if the style already exists.
             final long existingId = db.getStyleIdByUuid(style.getUuid());
