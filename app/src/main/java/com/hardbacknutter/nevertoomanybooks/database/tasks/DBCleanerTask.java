@@ -79,7 +79,7 @@ public class DBCleanerTask
             cleaner.languages(context, userLocale);
 
             // make sure there are no 'T' separators in datetime fields
-            cleaner.dates();
+            cleaner.datetimeFormat();
 
             // validate booleans to have 0/1 content (could do just ALL_TABLES)
             cleaner.booleanColumns(DBDefinitions.TBL_BOOKS,

@@ -124,7 +124,7 @@ public class DBCleaner {
      * See package-info docs for
      * {@link com.hardbacknutter.nevertoomanybooks.utils.dates.DateParser}
      */
-    public void dates() {
+    public void datetimeFormat() {
         final String[] columns = new String[]{
                 KEY_UTC_LAST_UPDATED,
                 KEY_UTC_ADDED,
