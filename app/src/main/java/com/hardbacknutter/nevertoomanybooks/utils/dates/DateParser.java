@@ -91,7 +91,7 @@ public class DateParser
      * '2011-12-03 10:15:30+01:00'
      * '2011-12-03 10:15:30+01:00[Europe/Paris]'
      */
-    @SuppressWarnings({"FieldCanBeLocal", "WeakerAccess"})
+    @SuppressWarnings("WeakerAccess")
     public static DateTimeFormatter SQLITE_ISO_DATE_TIME;
 
     /** List of patterns we'll use to parse dates. */
