@@ -187,7 +187,7 @@ public class FTSSearchActivity
                     .putExtra(BooksOnBookshelfModel.SearchCriteria.BKEY_SEARCH_TEXT_KEYWORDS,
                               mKeywordsSearchText)
                     // pass the book ID's for the list
-                    .putExtra(Book.BKEY_BOOK_ID_ARRAY, mBookIdList);
+                    .putExtra(Book.BKEY_BOOK_ID_LIST, mBookIdList);
             setResult(Activity.RESULT_OK, data);
             finish();
         });
