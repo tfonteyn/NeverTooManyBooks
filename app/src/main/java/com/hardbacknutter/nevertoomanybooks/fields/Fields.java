@@ -34,7 +34,7 @@ import java.util.List;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
-import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
+import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.fields.accessors.FieldViewAccessor;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.EditFieldFormatter;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
@@ -138,10 +138,7 @@ public class Fields {
                                                @NonNull final String entityKey) {
 
         if (BuildConfig.DEBUG /* always */) {
-            // sanity check
-            if (key.isEmpty()) {
-                throw new IllegalArgumentException(ErrorMsg.EMPTY_KEY);
-            }
+            SanityCheck.requireValue(key, "key");
         }
 
         final Field<T, V> field = new Field<>(id, accessor, key, entityKey);
