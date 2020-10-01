@@ -264,8 +264,8 @@ dependencies {
     testImplementation 'org.json:json:20200518'
 
     // uses JUnit5
-    testImplementation 'org.mockito:mockito-core:3.5.11'
-    testImplementation 'org.mockito:mockito-junit-jupiter:3.5.11'
+    testImplementation 'org.mockito:mockito-core:3.5.13'
+    testImplementation 'org.mockito:mockito-junit-jupiter:3.5.13'
     testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
 
     // uses JUnit4
