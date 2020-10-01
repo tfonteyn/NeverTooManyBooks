@@ -33,6 +33,7 @@
         android:textAppearance="?attr/textAppearanceOverline"
         android:textIsSelectable="true"
         android:textSize="@dimen/cover_browser_gallery_text_size"
+        android:textAllCaps="false"
         android:textStyle="italic"
         tools:text="@sample/data.json/sites/name"
         tools:ignore="SmallSp"
