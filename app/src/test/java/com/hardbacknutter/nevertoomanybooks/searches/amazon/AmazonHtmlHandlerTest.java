@@ -70,13 +70,13 @@ class AmazonHtmlHandlerTest
         assertEquals("GBP", mRawData.getString(DBDefinitions.KEY_PRICE_LISTED_CURRENCY));
 
         final ArrayList<Publisher> allPublishers = mRawData
-                .getParcelableArrayList(Book.BKEY_PUBLISHER_ARRAY);
+                .getParcelableArrayList(Book.BKEY_PUBLISHER_LIST);
         assertNotNull(allPublishers);
         assertEquals(1, allPublishers.size());
 
         assertEquals("Gollancz", allPublishers.get(0).getName());
 
-        final ArrayList<Author> authors = mRawData.getParcelableArrayList(Book.BKEY_AUTHOR_ARRAY);
+        final ArrayList<Author> authors = mRawData.getParcelableArrayList(Book.BKEY_AUTHOR_LIST);
         assertNotNull(authors);
         assertEquals(1, authors.size());
         assertEquals("Reynolds", authors.get(0).getFamilyName());
@@ -102,12 +102,12 @@ class AmazonHtmlHandlerTest
         assertEquals("GBP", mRawData.getString(DBDefinitions.KEY_PRICE_LISTED_CURRENCY));
 
         final ArrayList<Publisher> allPublishers = mRawData
-                .getParcelableArrayList(Book.BKEY_PUBLISHER_ARRAY);
+                .getParcelableArrayList(Book.BKEY_PUBLISHER_LIST);
         assertNotNull(allPublishers);
         assertEquals(1, allPublishers.size());
         assertEquals("Gollancz", allPublishers.get(0).getName());
 
-        final ArrayList<Author> authors = mRawData.getParcelableArrayList(Book.BKEY_AUTHOR_ARRAY);
+        final ArrayList<Author> authors = mRawData.getParcelableArrayList(Book.BKEY_AUTHOR_LIST);
         assertNotNull(authors);
         assertEquals(2, authors.size());
         assertEquals("Reynolds", authors.get(0).getFamilyName());
@@ -133,12 +133,12 @@ class AmazonHtmlHandlerTest
         assertEquals("EUR", mRawData.getString(DBDefinitions.KEY_PRICE_LISTED_CURRENCY));
 
         final ArrayList<Publisher> allPublishers = mRawData
-                .getParcelableArrayList(Book.BKEY_PUBLISHER_ARRAY);
+                .getParcelableArrayList(Book.BKEY_PUBLISHER_LIST);
         assertNotNull(allPublishers);
         assertEquals(1, allPublishers.size());
         assertEquals("Dargaud", allPublishers.get(0).getName());
 
-        final ArrayList<Author> authors = mRawData.getParcelableArrayList(Book.BKEY_AUTHOR_ARRAY);
+        final ArrayList<Author> authors = mRawData.getParcelableArrayList(Book.BKEY_AUTHOR_LIST);
         assertNotNull(authors);
         assertEquals(2, authors.size());
         assertEquals("Jean-Yves", authors.get(0).getFamilyName());
