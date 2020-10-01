@@ -52,6 +52,7 @@ import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.entities.EntityStatus;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.fields.Field;
 import com.hardbacknutter.nevertoomanybooks.fields.Fields;
@@ -85,7 +86,7 @@ public abstract class BookBaseFragment
 
     /** Forwarding listener; send the selected image to the correct handler. */
     private final CoverBrowserDialogFragment.OnResultListener mOnCoverBrowserListener =
-            (cIdx, fileSpec) -> mCoverHandler[cIdx].onFileSelected(fileSpec);
+            (cIdx, fileSpec) -> mCoverHandler[cIdx].onFileSelected(cIdx, fileSpec);
 
     /** Goodreads authorization task. */
     GrAuthTask mGrAuthTask;
@@ -101,7 +102,7 @@ public abstract class BookBaseFragment
             new Fields.AfterChangeListener() {
                 @Override
                 public void afterFieldChange(@IdRes final int fieldId) {
-                    mBookViewModel.setDirty(true);
+                    mBookViewModel.getBook().setStage(EntityStatus.Stage.Dirty);
                 }
             };
 
@@ -154,8 +155,6 @@ public abstract class BookBaseFragment
 
         //noinspection ConstantConditions
         mBookViewModel = new ViewModelProvider(getActivity()).get(BookViewModel.class);
-        //noinspection ConstantConditions
-        mBookViewModel.init(getContext(), getArguments());
     }
 
     @Override
@@ -238,13 +237,12 @@ public abstract class BookBaseFragment
         final Book book = mBookViewModel.getBook();
         //noinspection ConstantConditions
         fields.setParentView(getView());
+
         fields.setAfterChangeListener(null);
-        // preserve the 'dirty' status.
-        final boolean wasDirty = mBookViewModel.isDirty();
+        mBookViewModel.getBook().lockStatus();
         // make it so!
         onPopulateViews(fields, book);
-        // restore the dirt-status and install the AfterChangeListener
-        mBookViewModel.setDirty(wasDirty);
+        mBookViewModel.getBook().unlockStatus();
         fields.setAfterChangeListener(mAfterChangeListener);
 
         // All views should now have proper visibility set, so fix their focus order.
@@ -268,7 +266,7 @@ public abstract class BookBaseFragment
             actionBar.setTitle(title);
             //noinspection ConstantConditions
             actionBar.setSubtitle(Author.getCondensedNames(
-                    getContext(), book.getParcelableArrayList(Book.BKEY_AUTHOR_ARRAY)));
+                    getContext(), book.getParcelableArrayList(Book.BKEY_AUTHOR_LIST)));
         }
     }
 
@@ -323,7 +321,7 @@ public abstract class BookBaseFragment
                 bookIdList.add(book.getId());
                 final Intent intent = new Intent(context, BookSearchActivity.class)
                         .putExtra(BaseActivity.BKEY_FRAGMENT_TAG, UpdateFieldsFragment.TAG)
-                        .putExtra(Book.BKEY_BOOK_ID_ARRAY, bookIdList)
+                        .putExtra(Book.BKEY_BOOK_ID_LIST, bookIdList)
                         // pass the title for displaying to the user
                         .putExtra(DBDefinitions.KEY_TITLE, book.getString(DBDefinitions.KEY_TITLE))
                         // pass the author for displaying to the user

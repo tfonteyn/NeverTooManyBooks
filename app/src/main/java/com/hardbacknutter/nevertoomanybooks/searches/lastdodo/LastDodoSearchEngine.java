@@ -290,18 +290,18 @@ public class LastDodoSearchEngine
         final ArrayList<TocEntry> toc = parseToc(document);
         // We DON'T store a toc with a single entry (i.e. the book title itself).
         if (toc != null && toc.size() > 1) {
-            bookData.putParcelableArrayList(Book.BKEY_TOC_ARRAY, toc);
+            bookData.putParcelableArrayList(Book.BKEY_TOC_LIST, toc);
             bookData.putLong(DBDefinitions.KEY_TOC_BITMASK, Book.TOC_MULTIPLE_WORKS);
         }
 
         if (!mAuthors.isEmpty()) {
-            bookData.putParcelableArrayList(Book.BKEY_AUTHOR_ARRAY, mAuthors);
+            bookData.putParcelableArrayList(Book.BKEY_AUTHOR_LIST, mAuthors);
         }
         if (!mSeries.isEmpty()) {
-            bookData.putParcelableArrayList(Book.BKEY_SERIES_ARRAY, mSeries);
+            bookData.putParcelableArrayList(Book.BKEY_SERIES_LIST, mSeries);
         }
         if (!mPublishers.isEmpty()) {
-            bookData.putParcelableArrayList(Book.BKEY_PUBLISHER_ARRAY, mPublishers);
+            bookData.putParcelableArrayList(Book.BKEY_PUBLISHER_LIST, mPublishers);
         }
 
         if (isCancelled()) {
@@ -319,8 +319,7 @@ public class LastDodoSearchEngine
                     }
                     if (fetchThumbnail[cIdx] && aas.size() > cIdx) {
                         final String url = aas.get(cIdx).attr("href");
-                        final String tmpName = createFilename(isbn, cIdx, null);
-                        final String fileSpec = saveImage(url, tmpName);
+                        final String fileSpec = saveImage(url, isbn, cIdx, null);
                         if (fileSpec != null) {
                             final ArrayList<String> imageList = new ArrayList<>();
                             imageList.add(fileSpec);

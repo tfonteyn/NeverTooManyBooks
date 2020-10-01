@@ -27,32 +27,23 @@ public final class ErrorMsg {
 
     public static final String LISTENER_WAS_DEAD = "Listener was dead";
 
-    public static final String EMPTY_ARRAY_OR_LIST = "Empty array/list";
-    public static final String EMPTY_KEY = "Empty key";
-    public static final String EMPTY_UUID = "Empty UUID";
+    public static final String OPTIONS_NOT_SET = "options not set";
 
-    public static final String ZERO_ID_FOR_AUTHOR = "Author id==0";
-    public static final String ZERO_ID_FOR_BOOK = "Book id==0";
-    public static final String ZERO_ID_FOR_STYLE = "Style id==0";
+    public static final String IMPORT_NOT_SUPPORTED = "Import not supported";
+    public static final String EXPORT_NOT_SUPPORTED = "Export not supported";
 
     // Objects.requireNonNull
     public static final String NULL_AUTHOR = "Author";
     public static final String NULL_BOOK_LIST = "Booklist";
-    public static final String NULL_CHECKLIST = "Checklist";
     public static final String NULL_BOOKSHELF = "Bookshelf";
     public static final String NULL_CURSOR = "Cursor";
     public static final String NULL_DRAWABLE = "Drawable";
     public static final String NULL_EXTRAS = "Extras";
     public static final String NULL_EXCEPTION = "Exception";
-    public static final String NULL_EXTERNAL_ID = "externalId";
     public static final String NULL_GALLERY_ADAPTER = "GalleryAdapter";
     public static final String NULL_LAYOUT_MANAGER = "LinearLayoutManager";
-    public static final String NULL_IMAGE_PATH = "ImagePath";
     public static final String NULL_INPUT_STREAM = "InputStream was NULL";
     public static final String NULL_INTENT_DATA = "Intent data";
-    public static final String NULL_ISBN = "ISBN";
-    public static final String NULL_ISBN_STR = "IsbnStr";
-    public static final String NULL_MENU = "Menu";
     public static final String NULL_NON_PERSISTED_VALUE = "NonPersistedValue";
     public static final String NULL_PUBLISHER = "Publisher";
     public static final String NULL_OUTPUT_STREAM = "OutputStream was NULL";
@@ -62,16 +53,6 @@ public final class ErrorMsg {
     public static final String NULL_TASK_RESULTS = "Task result";
     public static final String NULL_TOC_ENTRY = "TocEntry";
     public static final String NULL_URI = "uri";
-    public static final String NULL_UUID = "uuid";
-
-    public static final String BUNDLE_NOT_PUSHED = "Bundle not pushed!";
-    public static final String BUNDLE_ALREADY_PUSHED = "Bundle already pushed!";
-    public static final String CREATE_WAS_NOT_CALLED = "create was not called?";
-
-    public static final String OPTIONS_NOT_SET = "options not set";
-
-    public static final String IMPORT_NOT_SUPPORTED = "Import not supported";
-    public static final String EXPORT_NOT_SUPPORTED = "Export not supported";
 
     private ErrorMsg() {
     }

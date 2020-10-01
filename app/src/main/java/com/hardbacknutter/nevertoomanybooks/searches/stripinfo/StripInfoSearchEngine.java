@@ -408,19 +408,19 @@ public class StripInfoSearchEngine
         final ArrayList<TocEntry> toc = parseToc(document);
         // We DON'T store a toc with a single entry (i.e. the book title itself).
         if (toc != null && toc.size() > 1) {
-            bookData.putParcelableArrayList(Book.BKEY_TOC_ARRAY, toc);
+            bookData.putParcelableArrayList(Book.BKEY_TOC_LIST, toc);
             bookData.putLong(DBDefinitions.KEY_TOC_BITMASK, Book.TOC_MULTIPLE_WORKS);
         }
 
         // store accumulated ArrayList's *after* we got the TOC
         if (!mAuthors.isEmpty()) {
-            bookData.putParcelableArrayList(Book.BKEY_AUTHOR_ARRAY, mAuthors);
+            bookData.putParcelableArrayList(Book.BKEY_AUTHOR_LIST, mAuthors);
         }
         if (!mSeries.isEmpty()) {
-            bookData.putParcelableArrayList(Book.BKEY_SERIES_ARRAY, mSeries);
+            bookData.putParcelableArrayList(Book.BKEY_SERIES_LIST, mSeries);
         }
         if (!mPublishers.isEmpty()) {
-            bookData.putParcelableArrayList(Book.BKEY_PUBLISHER_ARRAY, mPublishers);
+            bookData.putParcelableArrayList(Book.BKEY_PUBLISHER_LIST, mPublishers);
         }
 
         if (isCancelled()) {
@@ -510,8 +510,7 @@ public class StripInfoSearchEngine
             && !url.endsWith("i=0")
             && !url.endsWith("mature.png")) {
 
-            final String tmpName = createFilename(isbn, cIdx, null);
-            final String fileSpec = saveImage(url, tmpName);
+            final String fileSpec = saveImage(url, isbn, cIdx, null);
             if (fileSpec != null) {
                 // Some back covers will return the "no cover available" image regardless.
                 // Sadly, we need to check explicitly after the download.
@@ -564,8 +563,7 @@ public class StripInfoSearchEngine
                 && !url.endsWith("i=0")
                 && !url.endsWith("mature.png")) {
 
-                final String tmpName = createFilename(isbn, cIdx, null);
-                final String fileSpec = saveImage(url, tmpName);
+                final String fileSpec = saveImage(url, isbn, cIdx, null);
                 if (fileSpec != null) {
                     // Some back covers will return the "no cover available" image regardless.
                     // Sadly, we need to check explicitly after the download.

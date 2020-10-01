@@ -31,6 +31,7 @@ import com.hardbacknutter.nevertoomanybooks.covers.ImageFileInfo;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageUtils;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.tasks.VMTask;
+import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 
 /**
  * Request a known valid ISBN from LT to see if the user key is valid.
@@ -53,14 +54,20 @@ public class ValidateKeyTask
         final SearchEngine.CoverByIsbn ltm = new LibraryThingSearchEngine(context);
         final String fileSpec = ltm
                 .searchCoverImageByIsbn("0451451783", 0, ImageFileInfo.Size.Small);
-        if (fileSpec != null) {
-            if (ImageUtils.isFileGood(new File(fileSpec), true)) {
-                return R.string.lt_key_is_correct;
-            } else {
-                return R.string.lt_key_is_incorrect;
-            }
-        }
 
-        return R.string.warning_image_not_found;
+        if (fileSpec != null) {
+            int result;
+            final File file = new File(fileSpec);
+            if (ImageUtils.isAcceptableSize(file)) {
+                result = R.string.lt_key_is_correct;
+            } else {
+                result = R.string.lt_key_is_incorrect;
+            }
+            FileUtils.delete(file);
+            return result;
+
+        } else {
+            return R.string.warning_image_not_found;
+        }
     }
 }

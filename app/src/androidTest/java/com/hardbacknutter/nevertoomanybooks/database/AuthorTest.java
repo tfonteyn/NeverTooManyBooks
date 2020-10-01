@@ -24,66 +24,189 @@ import android.content.Context;
 import androidx.test.filters.MediumTest;
 import androidx.test.platform.app.InstrumentationRegistry;
 
-import org.junit.Before;
+import java.util.ArrayList;
+import java.util.Locale;
+
 import org.junit.Test;
 
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
+import com.hardbacknutter.nevertoomanybooks.entities.AuthorWork;
 
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_AUTHOR_FAMILY_NAME;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_AUTHORS;
+import static com.hardbacknutter.nevertoomanybooks.database.Constants.AUTHOR_FAMILY_NAME;
+import static com.hardbacknutter.nevertoomanybooks.database.Constants.AUTHOR_GIVEN_NAME;
+import static com.hardbacknutter.nevertoomanybooks.database.Constants.AuthorFullName;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-/**
- * Very basic test of insert/update/delete an Author.
- */
 @MediumTest
-public class AuthorTest {
+public class AuthorTest
+        extends BaseSetup {
 
-    private final Author[] author = new Author[5];
-    private final long[] authorId = new long[5];
+    private static final String RENAMED_FAMILY_NAME = Constants.AUTHOR_FAMILY_NAME + "Renamed";
+    private static final String RENAMED_GIVEN_NAMES = Constants.AUTHOR_GIVEN_NAME + "Renamed";
 
-    @Before
-    public void setup()
-            throws DAO.DaoWriteException {
+    /**
+     * Very basic test of insert/update/delete an Author.
+     */
+    @Test
+    public void crud() {
+        boolean updateOk;
+
         final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
-        try (DAO db = new DAO(context, "clean")) {
+        try (DAO db = new DAO(context, "crud")) {
 
-            db.getSyncDb().delete(TBL_AUTHORS.getName(),
-                                  KEY_AUTHOR_FAMILY_NAME + " LIKE 'Author%'", null);
-
-            author[0] = Author.from("Test0 Author0");
+            author[0] = Author.from(AuthorFullName(0));
             authorId[0] = db.insert(context, author[0]);
+            assertTrue(authorId[0] > 0);
+
+            author[0] = db.getAuthor(authorId[0]);
+            assertNotNull(author[0]);
+            assertEquals(AUTHOR_FAMILY_NAME + "0", author[0].getFamilyName());
+            assertEquals(AUTHOR_GIVEN_NAME + "0", author[0].getGivenNames());
+            assertFalse(author[0].isComplete());
+
+            author[0].setComplete(true);
+            updateOk = db.update(context, author[0]);
+            assertTrue(updateOk);
+
+            author[0] = db.getAuthor(authorId[0]);
+            assertNotNull(author[0]);
+            assertEquals(AUTHOR_FAMILY_NAME + "0", author[0].getFamilyName());
+            assertEquals(AUTHOR_GIVEN_NAME + "0", author[0].getGivenNames());
+            assertTrue(author[0].isComplete());
+
+            updateOk = db.delete(context, author[0]);
+            assertTrue(updateOk);
+        }
+    }
+
+    /**
+     * - rename an Author and update the database
+     * - rename an Author in memory only
+     * - rename an Author and merge books
+     * - rename an Author and merge books and toc-entries
+     */
+    @Test
+    public void renameAuthor()
+            throws DAO.DaoWriteException {
+        boolean updateOk;
+
+        ArrayList<Long> bookIdList;
+
+        long idBefore;
+        long existingId;
+        Author tmpAuthor;
+
+        final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
+        try (DAO db = new DAO(context, "renameAuthor")) {
+
+            // rename an author
+            // UPDATE in the database
+            // run 'fixId' -> must keep same id
+            // No changes to anything else
+            author[0].setName(RENAMED_FAMILY_NAME + "_a", RENAMED_GIVEN_NAMES + "_a");
+
+            idBefore = author[0].getId();
+            updateOk = db.update(context, author[0]);
+            assertTrue(updateOk);
+            assertEquals(author[0].getId(), idBefore);
+            author[0].fixId(context, db, false, Locale.getDefault());
+            assertEquals(author[0].getId(), idBefore);
+
+            // rename an Author to another EXISTING name
+            // Do NOT update the database.
+            //  run 'fixId' -> id in memory will change;
+            // No changes to anything else
+            author[1].setName(RENAMED_FAMILY_NAME + "_a", RENAMED_GIVEN_NAMES + "_a");
+
+            idBefore = author[1].getId();
+            author[1].fixId(context, db, false, Locale.getDefault());
+            // should have become author[0]
+            assertEquals(author[0].getId(), author[1].getId());
+            // original should still be there with original name
+            tmpAuthor = db.getAuthor(idBefore);
+            assertNotNull(tmpAuthor);
+            assertEquals(Constants.AUTHOR_FAMILY_NAME + "1", tmpAuthor.getFamilyName());
+
+            // rename an Author to another EXISTING name and MERGE books
+            author[2].setName(RENAMED_FAMILY_NAME + "_a", RENAMED_GIVEN_NAMES + "_a");
+
+            existingId = db.getAuthorId(context, author[2], false, Locale.getDefault());
+            db.merge(context, author[2], existingId);
+            // - the renamed author[2] will have been deleted
+            assertEquals(0, author[2].getId());
+            // find the author[2] again...
+            existingId = db.getAuthorId(context, author[2], false, Locale.getDefault());
+            // should be recognized as author[0]
+            assertEquals(author[0].getId(), existingId);
+
+            // - all books of author[2] will now belong to author[0]
+            bookIdList = db.getBookIdsByAuthor(author[0].getId());
+            assertEquals(4, bookIdList.size());
+            assertEquals(bookId[0], (long) bookIdList.get(0));
+            assertEquals(bookId[2], (long) bookIdList.get(1));
+            assertEquals(bookId[3], (long) bookIdList.get(2));
+            assertEquals(bookId[4], (long) bookIdList.get(3));
         }
     }
 
     @Test
-    public void author() {
-        boolean updated;
+    public void renameAuthorWithTocs()
+            throws DAO.DaoWriteException {
+        boolean updateOk;
+
+        ArrayList<Long> bookIdList;
+        ArrayList<AuthorWork> works;
+
+        long idBefore;
+        long existingId;
 
         final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
-        try (DAO db = new DAO(context, "author")) {
+        try (DAO db = new DAO(context, "renameAuthorWithTocs")) {
 
-            author[0] = db.getAuthor(authorId[0]);
-            assertNotNull(author[0]);
-            assertEquals("Author0", author[0].getFamilyName());
-            assertEquals("Test0", author[0].getGivenNames());
-            assertFalse(author[0].isComplete());
+            // rename an author
+            // UPDATE in the database
+            // run 'fixId' -> must keep same id
+            // No changes to anything else
+            author[1].setName(RENAMED_FAMILY_NAME + "_b", RENAMED_GIVEN_NAMES + "_b");
 
-            author[0].setComplete(true);
-            updated = db.update(context, author[0]);
-            assertTrue(updated);
+            idBefore = author[1].getId();
+            updateOk = db.update(context, author[1]);
+            assertTrue(updateOk);
+            assertEquals(author[1].getId(), idBefore);
+            author[1].fixId(context, db, false, Locale.getDefault());
+            assertEquals(author[1].getId(), idBefore);
 
-            author[0] = db.getAuthor(authorId[0]);
-            assertNotNull(author[0]);
-            assertEquals("Author0", author[0].getFamilyName());
-            assertEquals("Test0", author[0].getGivenNames());
-            assertTrue(author[0].isComplete());
+            // rename an Author to another EXISTING name and MERGE books
+            author[2].setName(RENAMED_FAMILY_NAME + "_b", RENAMED_GIVEN_NAMES + "_b");
 
-            updated = db.delete(context, author[0]);
-            assertTrue(updated);
+            existingId = db.getAuthorId(context, author[2], false, Locale.getDefault());
+            db.merge(context, author[2], existingId);
+            // - the renamed author[2] will have been deleted
+            assertEquals(0, author[2].getId());
+            // find the author[2] again...
+            existingId = db.getAuthorId(context, author[2], false, Locale.getDefault());
+            // should be recognized as author[1]
+            assertEquals(author[1].getId(), existingId);
+
+            // - all books of author[2] will now belong to author[1]
+            bookIdList = db.getBookIdsByAuthor(author[1].getId());
+            assertEquals(5, bookIdList.size());
+            assertEquals(bookId[0], (long) bookIdList.get(0));
+            assertEquals(bookId[1], (long) bookIdList.get(1));
+            assertEquals(bookId[2], (long) bookIdList.get(2));
+            assertEquals(bookId[3], (long) bookIdList.get(3));
+            assertEquals(bookId[4], (long) bookIdList.get(4));
+
+            // - all tocs of author[2] will now belong to author[1]
+            works = db.getAuthorWorks(author[1], bookshelf[0].getId(), true, false);
+            assertEquals(4, works.size());
+            assertEquals(tocEntry[0].getId(), works.get(0).getId());
+            assertEquals(tocEntry[1].getId(), works.get(1).getId());
+            assertEquals(tocEntry[2].getId(), works.get(2).getId());
+            assertEquals(tocEntry[3].getId(), works.get(3).getId());
         }
     }
 }

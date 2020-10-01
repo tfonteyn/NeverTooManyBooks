@@ -30,13 +30,14 @@ import org.junit.Before;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
+import com.hardbacknutter.nevertoomanybooks.entities.EntityStatus;
+import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_AUTHOR_FAMILY_NAME;
+import static com.hardbacknutter.nevertoomanybooks.database.Constants.AuthorFullName;
+import static com.hardbacknutter.nevertoomanybooks.database.Constants.BOOK_TITLE;
+import static com.hardbacknutter.nevertoomanybooks.database.Constants.TOC_TITLE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_TITLE;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_AUTHORS;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKS;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_TOC_ENTRIES;
 
 /**
  * a0: b0, b3
@@ -46,11 +47,11 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_TO
  * a1: t0, t1
  * a2: t2, t3
  * <p>
- * b0: a0, a1
- * b1: a1
- * b2: a2
- * b3: a0, a2
- * b4: a1, a2
+ * b0: a0, a1 + p0
+ * b1: a1 + p1
+ * b2: a2 + p2
+ * b3: a0, a2 + p1
+ * b4: a1, a2 + p1 + p2
  * <p>
  * b4: t0, t1, t2, t3
  *
@@ -62,12 +63,24 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_TO
  */
 public abstract class BaseSetup {
 
-    protected final Author[] author = new Author[5];
-    protected final Book[] book = new Book[5];
-    protected final TocEntry[] tocEntry = new TocEntry[5];
-    protected final long[] bookId = new long[5];
+    protected final Bookshelf[] bookshelf = new Bookshelf[5];
+    protected final long[] bookshelfId = new long[5];
+    protected final ArrayList<Bookshelf> bookshelfList = new ArrayList<>();
 
-    protected Bookshelf mBookshelf;
+    protected final Author[] author = new Author[5];
+    protected final long[] authorId = new long[5];
+    protected final ArrayList<Author> authorList = new ArrayList<>();
+
+    protected final Publisher[] publisher = new Publisher[5];
+    protected final long[] publisherId = new long[5];
+    protected final ArrayList<Publisher> publisherList = new ArrayList<>();
+
+    protected final TocEntry[] tocEntry = new TocEntry[5];
+    protected final long[] tocEntryId = new long[5];
+    protected final ArrayList<TocEntry> tocList = new ArrayList<>();
+
+    protected final Book[] book = new Book[5];
+    protected final long[] bookId = new long[5];
 
     @Before
     public void setup()
@@ -76,87 +89,129 @@ public abstract class BaseSetup {
         final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
         try (DAO db = new DAO(context, "setup")) {
 
-            db.getSyncDb().delete(TBL_TOC_ENTRIES.getName(),
-                                  KEY_TITLE + " LIKE 'TocEntry%'", null);
+            Constants.deleteTocs(db);
+            Constants.deleteBooks(db);
+            Constants.deleteAuthors(db);
+            Constants.deletePublishers(db);
 
-            db.getSyncDb().delete(TBL_BOOKS.getName(),
-                                  KEY_TITLE + " LIKE 'Book%'", null);
-
-            db.getSyncDb().delete(TBL_AUTHORS.getName(),
-                                  KEY_AUTHOR_FAMILY_NAME + " LIKE 'Author%'", null);
-
-            ArrayList<Bookshelf> bookshelves;
-            ArrayList<Author> authorList;
-            ArrayList<TocEntry> tocList;
-
-            mBookshelf = Bookshelf.getBookshelf(context, db, Bookshelf.DEFAULT);
-            bookshelves = new ArrayList<>();
-            bookshelves.add(mBookshelf);
+            // all books will sit on the same shelf for now
+            //Constants.deleteBookshelves(db);
+            bookshelf[0] = Bookshelf.getBookshelf(context, db, Bookshelf.DEFAULT);
 
             // Create, don't insert yet
-            author[0] = Author.from("Test0 Author0");
-            author[1] = Author.from("Test1 Author1");
-            author[2] = Author.from("Test2 Author2");
+            author[0] = Author.from(AuthorFullName(0));
+            author[1] = Author.from(AuthorFullName(1));
+            author[2] = Author.from(AuthorFullName(2));
+            author[3] = Author.from(AuthorFullName(3));
+            author[4] = Author.from(AuthorFullName(4));
+
+            // Create, don't insert yet
+            publisher[0] = Publisher.from(Constants.PUBLISHER + "0");
+            publisher[1] = Publisher.from(Constants.PUBLISHER + "1");
+            publisher[2] = Publisher.from(Constants.PUBLISHER + "2");
+            publisher[3] = Publisher.from(Constants.PUBLISHER + "3");
+            publisher[4] = Publisher.from(Constants.PUBLISHER + "4");
 
 
             book[0] = new Book();
-            book[0].putParcelableArrayList(Book.BKEY_BOOKSHELF_ARRAY, bookshelves);
-            book[0].putString(KEY_TITLE, "Book0");
+            book[0].setStage(EntityStatus.Stage.WriteAble);
+            bookshelfList.clear();
+            bookshelfList.add(bookshelf[0]);
+            book[0].putParcelableArrayList(Book.BKEY_BOOKSHELF_LIST, bookshelfList);
+            book[0].setStage(EntityStatus.Stage.Dirty);
+
+            book[0].putString(KEY_TITLE, BOOK_TITLE + "0");
             book[0].putString(DBDefinitions.KEY_LANGUAGE, "eng");
-            authorList = new ArrayList<>();
+            authorList.clear();
             authorList.add(author[0]);
             authorList.add(author[1]);
-            book[0].putParcelableArrayList(Book.BKEY_AUTHOR_ARRAY, authorList);
+            book[0].putParcelableArrayList(Book.BKEY_AUTHOR_LIST, authorList);
+            publisherList.clear();
+            publisherList.add(publisher[0]);
+            book[0].putParcelableArrayList(Book.BKEY_PUBLISHER_LIST, publisherList);
             bookId[0] = db.insert(context, book[0], 0);
+            book[0].setStage(EntityStatus.Stage.Saved);
 
             book[1] = new Book();
-            book[1].putParcelableArrayList(Book.BKEY_BOOKSHELF_ARRAY, bookshelves);
-            book[1].putString(KEY_TITLE, "Book1");
+            book[1].setStage(EntityStatus.Stage.WriteAble);
+            bookshelfList.clear();
+            bookshelfList.add(bookshelf[0]);
+            book[1].putParcelableArrayList(Book.BKEY_BOOKSHELF_LIST, bookshelfList);
+            book[1].setStage(EntityStatus.Stage.Dirty);
+            book[1].putString(KEY_TITLE, BOOK_TITLE + "1");
             book[1].putString(DBDefinitions.KEY_LANGUAGE, "ger");
-            authorList = new ArrayList<>();
+            authorList.clear();
             authorList.add(author[1]);
-            book[1].putParcelableArrayList(Book.BKEY_AUTHOR_ARRAY, authorList);
+            book[1].putParcelableArrayList(Book.BKEY_AUTHOR_LIST, authorList);
+            publisherList.clear();
+            publisherList.add(publisher[1]);
+            book[1].putParcelableArrayList(Book.BKEY_PUBLISHER_LIST, publisherList);
             bookId[1] = db.insert(context, book[1], 0);
+            book[1].setStage(EntityStatus.Stage.Saved);
 
             book[2] = new Book();
-            book[2].putParcelableArrayList(Book.BKEY_BOOKSHELF_ARRAY, bookshelves);
-            book[2].putString(KEY_TITLE, "Book2");
+            book[2].setStage(EntityStatus.Stage.WriteAble);
+            bookshelfList.clear();
+            bookshelfList.add(bookshelf[0]);
+            book[2].putParcelableArrayList(Book.BKEY_BOOKSHELF_LIST, bookshelfList);
+            book[2].setStage(EntityStatus.Stage.Dirty);
+            book[2].putString(KEY_TITLE, BOOK_TITLE + "2");
             book[2].putString(DBDefinitions.KEY_LANGUAGE, "eng");
-            authorList = new ArrayList<>();
+            authorList.clear();
             authorList.add(author[2]);
-            book[2].putParcelableArrayList(Book.BKEY_AUTHOR_ARRAY, authorList);
+            book[2].putParcelableArrayList(Book.BKEY_AUTHOR_LIST, authorList);
+            publisherList.clear();
+            publisherList.add(publisher[2]);
+            book[2].putParcelableArrayList(Book.BKEY_PUBLISHER_LIST, publisherList);
             bookId[2] = db.insert(context, book[2], 0);
+            book[2].setStage(EntityStatus.Stage.Saved);
 
             book[3] = new Book();
-            book[3].putParcelableArrayList(Book.BKEY_BOOKSHELF_ARRAY, bookshelves);
-            book[3].putString(KEY_TITLE, "Book3");
+            book[3].setStage(EntityStatus.Stage.WriteAble);
+            bookshelfList.clear();
+            bookshelfList.add(bookshelf[0]);
+            book[3].putParcelableArrayList(Book.BKEY_BOOKSHELF_LIST, bookshelfList);
+            book[3].setStage(EntityStatus.Stage.Dirty);
+            book[3].putString(KEY_TITLE, BOOK_TITLE + "3");
             book[3].putString(DBDefinitions.KEY_LANGUAGE, "eng");
-            authorList = new ArrayList<>();
+            authorList.clear();
             authorList.add(author[0]);
             authorList.add(author[2]);
-            book[3].putParcelableArrayList(Book.BKEY_AUTHOR_ARRAY, authorList);
+            book[3].putParcelableArrayList(Book.BKEY_AUTHOR_LIST, authorList);
+            publisherList.clear();
+            publisherList.add(publisher[1]);
+            book[3].putParcelableArrayList(Book.BKEY_PUBLISHER_LIST, publisherList);
             bookId[3] = db.insert(context, book[3], 0);
+            book[3].setStage(EntityStatus.Stage.Saved);
 
             book[4] = new Book();
-            book[4].putParcelableArrayList(Book.BKEY_BOOKSHELF_ARRAY, bookshelves);
-            book[4].putString(KEY_TITLE, "Book4");
+            book[4].setStage(EntityStatus.Stage.WriteAble);
+            bookshelfList.clear();
+            bookshelfList.add(bookshelf[0]);
+            book[4].putParcelableArrayList(Book.BKEY_BOOKSHELF_LIST, bookshelfList);
+            book[4].setStage(EntityStatus.Stage.Dirty);
+            book[4].putString(KEY_TITLE, BOOK_TITLE + "4");
             book[4].putString(DBDefinitions.KEY_LANGUAGE, "eng");
-            authorList = new ArrayList<>();
+            authorList.clear();
             authorList.add(author[1]);
             authorList.add(author[2]);
-            book[4].putParcelableArrayList(Book.BKEY_AUTHOR_ARRAY, authorList);
-            tocList = new ArrayList<>();
-            tocEntry[0] = new TocEntry(author[1], "TocEntry0", null);
+            book[4].putParcelableArrayList(Book.BKEY_AUTHOR_LIST, authorList);
+            publisherList.clear();
+            publisherList.add(publisher[1]);
+            publisherList.add(publisher[2]);
+            book[4].putParcelableArrayList(Book.BKEY_PUBLISHER_LIST, publisherList);
+            tocList.clear();
+            tocEntry[0] = new TocEntry(author[1], TOC_TITLE + "0", null);
             tocList.add(tocEntry[0]);
-            tocEntry[1] = new TocEntry(author[1], "TocEntry1", null);
+            tocEntry[1] = new TocEntry(author[1], TOC_TITLE + "1", null);
             tocList.add(tocEntry[1]);
-            tocEntry[2] = new TocEntry(author[2], "TocEntry2", null);
+            tocEntry[2] = new TocEntry(author[2], TOC_TITLE + "2", null);
             tocList.add(tocEntry[2]);
-            tocEntry[3] = new TocEntry(author[2], "TocEntry3", null);
+            tocEntry[3] = new TocEntry(author[2], TOC_TITLE + "3", null);
             tocList.add(tocEntry[3]);
-            book[4].putParcelableArrayList(Book.BKEY_TOC_ARRAY, tocList);
+            book[4].putParcelableArrayList(Book.BKEY_TOC_LIST, tocList);
             bookId[4] = db.insert(context, book[4], 0);
+            book[4].setStage(EntityStatus.Stage.Saved);
         }
     }
-
 }

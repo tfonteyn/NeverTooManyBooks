@@ -47,6 +47,7 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.BaseDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.entities.EntityStatus;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.BookViewModel;
 import com.hardbacknutter.nevertoomanybooks.widgets.DiacriticArrayAdapter;
@@ -82,7 +83,7 @@ public class EditBookPublisherListDialogFragment
             new SimpleAdapterDataObserver() {
                 @Override
                 public void onChanged() {
-                    mBookViewModel.setDirty(true);
+                    mBookViewModel.getBook().setStage(EntityStatus.Stage.Dirty);
                 }
             };
     /** View Binding. */
@@ -133,11 +134,10 @@ public class EditBookPublisherListDialogFragment
 
         //noinspection ConstantConditions
         mBookViewModel = new ViewModelProvider(getActivity()).get(BookViewModel.class);
-        //noinspection ConstantConditions
-        mBookViewModel.init(getContext(), getArguments());
 
         mVb.toolbar.setSubtitle(mBookViewModel.getBook().getTitle());
 
+        //noinspection ConstantConditions
         final DiacriticArrayAdapter<String> nameAdapter = new DiacriticArrayAdapter<>(
                 getContext(), R.layout.dropdown_menu_popup_item,
                 mDb.getPublisherNames());
@@ -160,7 +160,7 @@ public class EditBookPublisherListDialogFragment
 
         mVb.publisherList.setHasFixedSize(true);
 
-        mList = mBookViewModel.getBook().getParcelableArrayList(Book.BKEY_PUBLISHER_ARRAY);
+        mList = mBookViewModel.getBook().getParcelableArrayList(Book.BKEY_PUBLISHER_LIST);
         mListAdapter = new PublisherListAdapter(getContext(), mList,
                                                 vh -> mItemTouchHelper.startDrag(vh));
         mVb.publisherList.setAdapter(mListAdapter);
@@ -286,7 +286,7 @@ public class EditBookPublisherListDialogFragment
         //noinspection ConstantConditions
         if (mDb.update(getContext(), original, bookLocale)) {
             Publisher.pruneList(mList, getContext(), mDb, true, bookLocale);
-            mBookViewModel.refreshPublishersList(getContext());
+            mBookViewModel.refreshPublishers(getContext());
             mListAdapter.notifyDataSetChanged();
 
         } else {

@@ -65,7 +65,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineRegistry;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
-import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 /**
@@ -669,7 +668,7 @@ public class XmlExporter
 
 
                 final ArrayList<Author> authors =
-                        book.getParcelableArrayList(Book.BKEY_AUTHOR_ARRAY);
+                        book.getParcelableArrayList(Book.BKEY_AUTHOR_LIST);
                 if (!authors.isEmpty()) {
                     writer.write('<' + XmlTags.TAG_AUTHOR_LIST);
                     writer.write(XmlUtils.sizeAttr(authors.size()));
@@ -683,7 +682,7 @@ public class XmlExporter
                 }
 
                 final ArrayList<Series> seriesList =
-                        book.getParcelableArrayList(Book.BKEY_SERIES_ARRAY);
+                        book.getParcelableArrayList(Book.BKEY_SERIES_LIST);
                 if (!seriesList.isEmpty()) {
                     writer.write('<' + XmlTags.TAG_SERIES_LIST);
                     writer.write(XmlUtils.sizeAttr(seriesList.size()));
@@ -699,7 +698,7 @@ public class XmlExporter
                 }
 
                 final ArrayList<Publisher> publishers =
-                        book.getParcelableArrayList(Book.BKEY_PUBLISHER_ARRAY);
+                        book.getParcelableArrayList(Book.BKEY_PUBLISHER_LIST);
                 if (!publishers.isEmpty()) {
                     writer.write('<' + XmlTags.TAG_PUBLISHER_LIST);
                     writer.write(XmlUtils.sizeAttr(publishers.size()));
@@ -713,7 +712,7 @@ public class XmlExporter
                 }
 
                 final ArrayList<Bookshelf> bookshelves =
-                        book.getParcelableArrayList(Book.BKEY_BOOKSHELF_ARRAY);
+                        book.getParcelableArrayList(Book.BKEY_BOOKSHELF_LIST);
                 if (!bookshelves.isEmpty()) {
                     writer.write('<' + XmlTags.TAG_BOOKSHELF_LIST);
                     writer.write(XmlUtils.sizeAttr(bookshelves.size()));
@@ -727,7 +726,7 @@ public class XmlExporter
                 }
 
                 final ArrayList<TocEntry> tocEntries =
-                        book.getParcelableArrayList(Book.BKEY_TOC_ARRAY);
+                        book.getParcelableArrayList(Book.BKEY_TOC_LIST);
                 if (!tocEntries.isEmpty()) {
                     writer.write('<' + XmlTags.TAG_TOC_ENTRY_LIST);
                     writer.write(XmlUtils.sizeAttr(tocEntries.size()));
@@ -746,8 +745,8 @@ public class XmlExporter
 
                 if (mCollectCoverFilenames) {
                     for (int cIdx = 0; cIdx < 2; cIdx++) {
-                        final File cover = AppDir.getCoverFile(context, uuid, cIdx);
-                        if (cover.exists()) {
+                        final File cover = Book.getUuidCoverFile(context, uuid, cIdx);
+                        if (cover != null && cover.exists()) {
                             mResults.addCover(cover.getName());
                         }
                     }

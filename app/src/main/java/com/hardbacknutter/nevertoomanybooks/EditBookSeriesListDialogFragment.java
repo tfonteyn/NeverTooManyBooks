@@ -47,6 +47,7 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.BaseDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.entities.EntityStatus;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.BookViewModel;
 import com.hardbacknutter.nevertoomanybooks.widgets.DiacriticArrayAdapter;
@@ -83,7 +84,7 @@ public class EditBookSeriesListDialogFragment
             new SimpleAdapterDataObserver() {
                 @Override
                 public void onChanged() {
-                    mBookViewModel.setDirty(true);
+                    mBookViewModel.getBook().setStage(EntityStatus.Stage.Dirty);
                 }
             };
     /** View Binding. */
@@ -135,11 +136,10 @@ public class EditBookSeriesListDialogFragment
 
         //noinspection ConstantConditions
         mBookViewModel = new ViewModelProvider(getActivity()).get(BookViewModel.class);
-        //noinspection ConstantConditions
-        mBookViewModel.init(getContext(), getArguments());
 
         mVb.toolbar.setSubtitle(mBookViewModel.getBook().getTitle());
 
+        //noinspection ConstantConditions
         final DiacriticArrayAdapter<String> nameAdapter = new DiacriticArrayAdapter<>(
                 getContext(), R.layout.dropdown_menu_popup_item,
                 mDb.getSeriesTitles());
@@ -163,7 +163,7 @@ public class EditBookSeriesListDialogFragment
         // set up the list view. The adapter is setup in onPopulateViews
         mVb.seriesList.setHasFixedSize(true);
 
-        mList = mBookViewModel.getBook().getParcelableArrayList(Book.BKEY_SERIES_ARRAY);
+        mList = mBookViewModel.getBook().getParcelableArrayList(Book.BKEY_SERIES_LIST);
         mListAdapter = new SeriesListAdapter(getContext(), mList,
                                              vh -> mItemTouchHelper.startDrag(vh));
         mVb.seriesList.setAdapter(mListAdapter);
@@ -302,7 +302,7 @@ public class EditBookSeriesListDialogFragment
         //noinspection ConstantConditions
         if (mDb.update(getContext(), original, bookLocale)) {
             Series.pruneList(mList, getContext(), mDb, true, bookLocale);
-            mBookViewModel.refreshSeriesList(getContext());
+            mBookViewModel.refreshSeries(getContext());
             mListAdapter.notifyDataSetChanged();
 
         } else {

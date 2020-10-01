@@ -47,7 +47,6 @@ import androidx.preference.PreferenceManager;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -291,12 +290,12 @@ public class BookDetailsFragment
 
         fields.add(R.id.author, new TextViewAccessor<>(
                            new AuthorListFormatter(Author.Details.Full, false, true)),
-                   Book.BKEY_AUTHOR_ARRAY, DBDefinitions.KEY_FK_AUTHOR)
+                   Book.BKEY_AUTHOR_LIST, DBDefinitions.KEY_FK_AUTHOR)
               .setRelatedFields(R.id.lbl_author);
 
         fields.add(R.id.series_title, new TextViewAccessor<>(
                            new SeriesListFormatter(Series.Details.Full, false, true)),
-                   Book.BKEY_SERIES_ARRAY, DBDefinitions.KEY_SERIES_TITLE)
+                   Book.BKEY_SERIES_LIST, DBDefinitions.KEY_SERIES_TITLE)
               .setRelatedFields(R.id.lbl_series);
 
         fields.add(R.id.isbn, new TextViewAccessor<>(), DBDefinitions.KEY_ISBN)
@@ -317,7 +316,7 @@ public class BookDetailsFragment
         fields.add(R.id.format, new TextViewAccessor<>(), DBDefinitions.KEY_FORMAT);
         fields.add(R.id.color, new TextViewAccessor<>(), DBDefinitions.KEY_COLOR);
         fields.add(R.id.publisher, new TextViewAccessor<>(new CsvFormatter()),
-                   Book.BKEY_PUBLISHER_ARRAY, DBDefinitions.KEY_PUBLISHER_NAME);
+                   Book.BKEY_PUBLISHER_LIST, DBDefinitions.KEY_PUBLISHER_NAME);
 
         fields.add(R.id.date_published, new TextViewAccessor<>(dateFormatter),
                    DBDefinitions.KEY_DATE_PUBLISHED)
@@ -337,7 +336,7 @@ public class BookDetailsFragment
         // Personal fields
         fields.add(R.id.bookshelves, new EntityListChipGroupAccessor(
                            () -> new ArrayList<>(mFragmentVM.getAllBookshelves()),
-                           false), Book.BKEY_BOOKSHELF_ARRAY,
+                           false), Book.BKEY_BOOKSHELF_LIST,
                    DBDefinitions.KEY_FK_BOOKSHELF)
               .setRelatedFields(R.id.lbl_bookshelves);
 
@@ -480,12 +479,6 @@ public class BookDetailsFragment
         mFragmentVM.setCurrentCoverHandlerIndex(cIdx);
     }
 
-    @Override
-    public void onCoverChanged(final int cIdx,
-                               @Nullable final File file) {
-        mBookViewModel.onCoverChanged(cIdx, file);
-    }
-
     /**
      * At this point we're told to load our local (to the fragment) fields from the Book.
      *
@@ -503,14 +496,18 @@ public class BookDetailsFragment
 
         if (mFragmentVM.isCoverUsed(getContext(), prefs, 0)) {
             mCoverHandler[0] = new CoverHandler(
-                    this, mProgressBar, book, mVb.isbn, 0, mVb.coverImage0,
-                    getResources().getDimensionPixelSize(R.dimen.cover_details_0_height));
+                    this, mBookViewModel, 0, mVb.isbn, mVb.coverImage0,
+                    getResources().getDimensionPixelSize(R.dimen.cover_details_0_height),
+                    mProgressBar
+            );
         }
 
         if (mFragmentVM.isCoverUsed(getContext(), prefs, 1)) {
             mCoverHandler[1] = new CoverHandler(
-                    this, mProgressBar, book, mVb.isbn, 1, mVb.coverImage1,
-                    getResources().getDimensionPixelSize(R.dimen.cover_details_1_height));
+                    this, mBookViewModel, 1, mVb.isbn, mVb.coverImage1,
+                    getResources().getDimensionPixelSize(R.dimen.cover_details_1_height),
+                    mProgressBar
+            );
         }
 
         if (DBDefinitions.isUsed(prefs, DBDefinitions.KEY_LOANEE)) {
@@ -594,7 +591,7 @@ public class BookDetailsFragment
         mVb.toc.setVisibility(View.GONE);
         mVb.btnShowToc.setChecked(false);
 
-        final ArrayList<TocEntry> tocList = book.getParcelableArrayList(Book.BKEY_TOC_ARRAY);
+        final ArrayList<TocEntry> tocList = book.getParcelableArrayList(Book.BKEY_TOC_LIST);
 
         if (!tocList.isEmpty()) {
 
@@ -717,7 +714,7 @@ public class BookDetailsFragment
             }
             case R.id.MENU_BOOK_DELETE: {
                 final String title = book.getString(DBDefinitions.KEY_TITLE);
-                final List<Author> authors = book.getParcelableArrayList(Book.BKEY_AUTHOR_ARRAY);
+                final List<Author> authors = book.getParcelableArrayList(Book.BKEY_AUTHOR_LIST);
                 //noinspection ConstantConditions
                 StandardDialogs.deleteBook(getContext(), title, authors, () -> {
                     mBookViewModel.deleteBook(getContext());
@@ -730,7 +727,7 @@ public class BookDetailsFragment
             }
             case R.id.MENU_BOOK_DUPLICATE: {
                 final Intent dupIntent = new Intent(getContext(), EditBookActivity.class)
-                        .putExtra(Book.BKEY_BOOK_DATA, book.duplicate());
+                        .putExtra(Book.BKEY_DATA_BUNDLE, book.duplicate());
                 startActivityForResult(dupIntent, RequestCode.BOOK_DUPLICATE);
                 return true;
             }

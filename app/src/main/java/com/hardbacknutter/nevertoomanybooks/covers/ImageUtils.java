@@ -144,44 +144,42 @@ public final class ImageUtils {
 
     /**
      * Check if a file is an image with an acceptable size.
+     * <p>
+     * This is a slow check, use only when import/saving.
+     * When displaying do a simple {@code srcFile.exists()} instead.
      *
      * <strong>If the file is not acceptable, then it will be deleted.</strong>
      *
-     * @param srcFile        to check
-     * @param checkImageSize {@code false} for a quick check (fast, use when displaying);
-     *                       {@code true} for a full check (slower, use when import/saving).
+     * @param srcFile to check
      *
      * @return {@code true} if file is acceptable.
      */
     @AnyThread
-    public static boolean isFileGood(@Nullable final File srcFile,
-                                     final boolean checkImageSize) {
-        if (srcFile == null || !srcFile.exists()) {
+    public static boolean isAcceptableSize(@Nullable final File srcFile) {
+        if (srcFile == null) {
             return false;
         }
 
-        if (checkImageSize) {
-            if (srcFile.length() < MIN_VALID_IMAGE_FILE_SIZE) {
-                FileUtils.delete(srcFile);
-                return false;
-            }
-
-            // Read the image files to get file size
-            final BitmapFactory.Options opt = new BitmapFactory.Options();
-            opt.inJustDecodeBounds = true;
-            BitmapFactory.decodeFile(srcFile.getAbsolutePath(), opt);
-            // minimal size required
-            final boolean isGood = opt.outHeight >= MIN_VALID_IMAGE_SIDE
-                                   && opt.outWidth >= MIN_VALID_IMAGE_SIDE;
-
-            // cleanup bad files.
-            if (!isGood) {
-                FileUtils.delete(srcFile);
-            }
-            return isGood;
+        if (srcFile.length() < MIN_VALID_IMAGE_FILE_SIZE) {
+            FileUtils.delete(srcFile);
+            return false;
         }
-        return true;
+
+        // Read the image files to get file size
+        final BitmapFactory.Options opt = new BitmapFactory.Options();
+        opt.inJustDecodeBounds = true;
+        BitmapFactory.decodeFile(srcFile.getAbsolutePath(), opt);
+        // minimal size required
+        final boolean isGood = opt.outHeight >= MIN_VALID_IMAGE_SIDE
+                               && opt.outWidth >= MIN_VALID_IMAGE_SIDE;
+
+        // cleanup bad files.
+        if (!isGood) {
+            FileUtils.delete(srcFile);
+        }
+        return isGood;
     }
+
 
     /**
      * Decode the image from the given file and scale to fit the given bounds,
@@ -290,11 +288,12 @@ public final class ImageUtils {
     }
 
     /**
-     * Given a URL, get an image and save to a file. Called/run in a background task.
+     * Given a URL, get an image and save to a file in the {@link AppDir#Cache} directory.
+     * Called/run in a background task.
      *
      * @param context        Application context
      * @param url            Image file URL
-     * @param filename       to use
+     * @param filename       to use (simple name, NO path)
      * @param connectTimeout in milliseconds
      * @param readTimeout    in milliseconds
      * @param throttler      (optional) {@link Throttler} to use
@@ -347,7 +346,7 @@ public final class ImageUtils {
         //     return null;
         // }
 
-        if (isFileGood(file, true)) {
+        if (isAcceptableSize(file)) {
             return file;
         }
         return null;

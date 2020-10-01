@@ -60,7 +60,6 @@ import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineRegistry;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
-import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.Languages;
 import com.hardbacknutter.nevertoomanybooks.utils.Money;
@@ -354,11 +353,8 @@ public class AmazonSearchEngine
             if (document != null && !isCancelled()) {
                 final ArrayList<String> imageList = parseCovers(document, validIsbn, 0);
                 if (!imageList.isEmpty()) {
-                    final File downloadedFile = new File(imageList.get(0));
                     // let the system resolve any path variations
-                    final File destination = new File(downloadedFile.getAbsolutePath());
-                    FileUtils.renameOrThrow(downloadedFile, destination);
-                    return destination.getAbsolutePath();
+                    return new File(imageList.get(0)).getAbsolutePath();
                 }
             }
         } catch (@NonNull final IOException ignore) {
@@ -565,13 +561,13 @@ public class AmazonSearchEngine
         }
 
         if (!mAuthors.isEmpty()) {
-            bookData.putParcelableArrayList(Book.BKEY_AUTHOR_ARRAY, mAuthors);
+            bookData.putParcelableArrayList(Book.BKEY_AUTHOR_LIST, mAuthors);
         }
         if (!mPublishers.isEmpty()) {
-            bookData.putParcelableArrayList(Book.BKEY_PUBLISHER_ARRAY, mPublishers);
+            bookData.putParcelableArrayList(Book.BKEY_PUBLISHER_LIST, mPublishers);
         }
         if (!mSeries.isEmpty()) {
-            bookData.putParcelableArrayList(Book.BKEY_SERIES_ARRAY, mSeries);
+            bookData.putParcelableArrayList(Book.BKEY_SERIES_LIST, mSeries);
         }
 
         checkForSeriesNameInTitle(bookData);
@@ -626,8 +622,7 @@ public class AmazonSearchEngine
 
         final ArrayList<String> imageList = new ArrayList<>();
 
-        final String tmpName = createFilename(isbn, cIdx, null);
-        final String fileSpec = saveImage(url, tmpName);
+        final String fileSpec = saveImage(url, isbn, cIdx, null);
         if (fileSpec != null) {
             imageList.add(fileSpec);
         }

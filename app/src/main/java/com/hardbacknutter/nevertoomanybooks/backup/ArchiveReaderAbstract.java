@@ -286,12 +286,12 @@ public abstract class ArchiveReaderAbstract
     private boolean readCover(@NonNull final Context context,
                               @NonNull final ReaderEntity cover) {
         try {
-            long coverDate = cover.getLastModifiedEpochMilli();
-            boolean exists;
+            final long coverDate = cover.getLastModifiedEpochMilli();
+            final boolean exists;
 
             // see if we have this file already
             File file = AppDir.Covers.getFile(context, cover.getName());
-            exists = ImageUtils.isFileGood(file, false);
+            exists = file.exists();
             if (mHelper.isOptionSet(Options.IS_SYNC)) {
                 if (exists) {
                     if (file.lastModified() > coverDate) {
@@ -303,11 +303,9 @@ public abstract class ArchiveReaderAbstract
             file = FileUtils.copyInputStream(context, cover.getInputStream(),
                                              AppDir.Covers.getFile(context, cover.getName()));
 
-            if (ImageUtils.isFileGood(file, true)) {
+            if (ImageUtils.isAcceptableSize(file)) {
                 //noinspection ResultOfMethodCallIgnored
                 file.setLastModified(cover.getLastModifiedEpochMilli());
-            } else {
-                FileUtils.delete(file);
             }
 
             if (exists) {

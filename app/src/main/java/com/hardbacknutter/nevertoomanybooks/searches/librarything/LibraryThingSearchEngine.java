@@ -296,8 +296,7 @@ public class LibraryThingSearchEngine
 
         final String url = String.format(COVER_BY_ISBN_URL, getDevKey(mAppContext),
                                          sizeParam, validIsbn);
-        final String tmpName = createFilename(validIsbn, cIdx, size);
-        return saveImage(url, tmpName);
+        return saveImage(url, validIsbn, cIdx, size);
     }
 
     /**

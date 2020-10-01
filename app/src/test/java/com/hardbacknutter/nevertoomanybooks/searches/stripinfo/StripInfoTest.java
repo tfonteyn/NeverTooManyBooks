@@ -88,12 +88,12 @@ class StripInfoTest
         assertEquals("Kleur", mRawData.getString(DBDefinitions.KEY_COLOR));
 
         final ArrayList<Publisher> allPublishers = mRawData
-                .getParcelableArrayList(Book.BKEY_PUBLISHER_ARRAY);
+                .getParcelableArrayList(Book.BKEY_PUBLISHER_LIST);
         assertNotNull(allPublishers);
         assertEquals(1, allPublishers.size());
         assertEquals("Silvester", allPublishers.get(0).getName());
 
-        final ArrayList<Series> allSeries = mRawData.getParcelableArrayList(Book.BKEY_SERIES_ARRAY);
+        final ArrayList<Series> allSeries = mRawData.getParcelableArrayList(Book.BKEY_SERIES_LIST);
         assertNotNull(allSeries);
         assertEquals(1, allSeries.size());
 
@@ -101,7 +101,7 @@ class StripInfoTest
         assertEquals("Hauteville House", series.getTitle());
         assertEquals("14", series.getNumber());
 
-        final ArrayList<Author> authors = mRawData.getParcelableArrayList(Book.BKEY_AUTHOR_ARRAY);
+        final ArrayList<Author> authors = mRawData.getParcelableArrayList(Book.BKEY_AUTHOR_LIST);
         assertNotNull(authors);
         assertEquals(3, authors.size());
 
@@ -155,12 +155,12 @@ class StripInfoTest
         assertEquals("Kleur", mRawData.getString(DBDefinitions.KEY_COLOR));
 
         final ArrayList<Publisher> allPublishers = mRawData
-                .getParcelableArrayList(Book.BKEY_PUBLISHER_ARRAY);
+                .getParcelableArrayList(Book.BKEY_PUBLISHER_LIST);
         assertNotNull(allPublishers);
         assertEquals(1, allPublishers.size());
         assertEquals("Le Lombard", allPublishers.get(0).getName());
 
-        final ArrayList<Series> allSeries = mRawData.getParcelableArrayList(Book.BKEY_SERIES_ARRAY);
+        final ArrayList<Series> allSeries = mRawData.getParcelableArrayList(Book.BKEY_SERIES_LIST);
         assertNotNull(allSeries);
         assertEquals(2, allSeries.size());
 
@@ -172,7 +172,7 @@ class StripInfoTest
         assertEquals("Getekend", series.getTitle());
         assertEquals("", series.getNumber());
 
-        final ArrayList<Author> authors = mRawData.getParcelableArrayList(Book.BKEY_AUTHOR_ARRAY);
+        final ArrayList<Author> authors = mRawData.getParcelableArrayList(Book.BKEY_AUTHOR_LIST);
         assertNotNull(authors);
         assertEquals(20, authors.size());
 
@@ -221,12 +221,12 @@ class StripInfoTest
         assertEquals("Kleur", mRawData.getString(DBDefinitions.KEY_COLOR));
 
         final ArrayList<Publisher> allPublishers = mRawData
-                .getParcelableArrayList(Book.BKEY_PUBLISHER_ARRAY);
+                .getParcelableArrayList(Book.BKEY_PUBLISHER_LIST);
         assertNotNull(allPublishers);
         assertEquals(1, allPublishers.size());
         assertEquals("Saga", allPublishers.get(0).getName());
 
-        final ArrayList<Series> allSeries = mRawData.getParcelableArrayList(Book.BKEY_SERIES_ARRAY);
+        final ArrayList<Series> allSeries = mRawData.getParcelableArrayList(Book.BKEY_SERIES_LIST);
         assertNotNull(allSeries);
         assertEquals(1, allSeries.size());
 
@@ -235,7 +235,7 @@ class StripInfoTest
         assertEquals("1", series.getNumber());
 
 
-        final ArrayList<Author> authors = mRawData.getParcelableArrayList(Book.BKEY_AUTHOR_ARRAY);
+        final ArrayList<Author> authors = mRawData.getParcelableArrayList(Book.BKEY_AUTHOR_LIST);
         assertNotNull(authors);
         assertEquals(2, authors.size());
 
@@ -280,12 +280,12 @@ class StripInfoTest
         assertEquals("Kleur", mRawData.getString(DBDefinitions.KEY_COLOR));
 
         final ArrayList<Publisher> allPublishers = mRawData
-                .getParcelableArrayList(Book.BKEY_PUBLISHER_ARRAY);
+                .getParcelableArrayList(Book.BKEY_PUBLISHER_LIST);
         assertNotNull(allPublishers);
         assertEquals(1, allPublishers.size());
         assertEquals("Le Lombard", allPublishers.get(0).getName());
 
-        final ArrayList<TocEntry> tocs = mRawData.getParcelableArrayList(Book.BKEY_TOC_ARRAY);
+        final ArrayList<TocEntry> tocs = mRawData.getParcelableArrayList(Book.BKEY_TOC_LIST);
         assertNotNull(tocs);
         assertEquals(4, tocs.size());
 
@@ -296,7 +296,7 @@ class StripInfoTest
 
         assertEquals("Culliford", tocs.get(0).getPrimaryAuthor().getFamilyName());
 
-        final ArrayList<Series> allSeries = mRawData.getParcelableArrayList(Book.BKEY_SERIES_ARRAY);
+        final ArrayList<Series> allSeries = mRawData.getParcelableArrayList(Book.BKEY_SERIES_LIST);
         assertNotNull(allSeries);
         assertEquals(1, allSeries.size());
 
@@ -304,7 +304,7 @@ class StripInfoTest
         assertEquals("Johan en Pirrewiet", series.getTitle());
         assertEquals("INT 5", series.getNumber());
 
-        final ArrayList<Author> authors = mRawData.getParcelableArrayList(Book.BKEY_AUTHOR_ARRAY);
+        final ArrayList<Author> authors = mRawData.getParcelableArrayList(Book.BKEY_AUTHOR_LIST);
         assertNotNull(authors);
         assertEquals(6, authors.size());
 
@@ -338,12 +338,12 @@ class StripInfoTest
         assertEquals("Kleur", mRawData.getString(DBDefinitions.KEY_COLOR));
 
         final ArrayList<Publisher> allPublishers = mRawData
-                .getParcelableArrayList(Book.BKEY_PUBLISHER_ARRAY);
+                .getParcelableArrayList(Book.BKEY_PUBLISHER_LIST);
         assertNotNull(allPublishers);
         assertEquals(1, allPublishers.size());
         assertEquals("Le Lombard", allPublishers.get(0).getName());
 
-        final ArrayList<TocEntry> tocs = mRawData.getParcelableArrayList(Book.BKEY_TOC_ARRAY);
+        final ArrayList<TocEntry> tocs = mRawData.getParcelableArrayList(Book.BKEY_TOC_LIST);
         assertNotNull(tocs);
         assertEquals(3, tocs.size());
 
@@ -353,7 +353,7 @@ class StripInfoTest
 
         assertEquals("Greg", tocs.get(0).getPrimaryAuthor().getFamilyName());
 
-        final ArrayList<Series> allSeries = mRawData.getParcelableArrayList(Book.BKEY_SERIES_ARRAY);
+        final ArrayList<Series> allSeries = mRawData.getParcelableArrayList(Book.BKEY_SERIES_LIST);
         assertNotNull(allSeries);
         assertEquals(1, allSeries.size());
 
@@ -361,7 +361,7 @@ class StripInfoTest
         assertEquals("Comanche", series.getTitle());
         assertEquals("1", series.getNumber());
 
-        final ArrayList<Author> authors = mRawData.getParcelableArrayList(Book.BKEY_AUTHOR_ARRAY);
+        final ArrayList<Author> authors = mRawData.getParcelableArrayList(Book.BKEY_AUTHOR_LIST);
         assertNotNull(authors);
         assertEquals(2, authors.size());
 
@@ -393,15 +393,15 @@ class StripInfoTest
         assertEquals("Kleur", mRawData.getString(DBDefinitions.KEY_COLOR));
 
         final ArrayList<Publisher> allPublishers = mRawData
-                .getParcelableArrayList(Book.BKEY_PUBLISHER_ARRAY);
+                .getParcelableArrayList(Book.BKEY_PUBLISHER_LIST);
         assertNotNull(allPublishers);
         assertEquals(1, allPublishers.size());
         assertEquals("Le Lombard", allPublishers.get(0).getName());
 
-        final ArrayList<TocEntry> tocs = mRawData.getParcelableArrayList(Book.BKEY_TOC_ARRAY);
+        final ArrayList<TocEntry> tocs = mRawData.getParcelableArrayList(Book.BKEY_TOC_LIST);
         assertNull(tocs);
 
-        final ArrayList<Series> allSeries = mRawData.getParcelableArrayList(Book.BKEY_SERIES_ARRAY);
+        final ArrayList<Series> allSeries = mRawData.getParcelableArrayList(Book.BKEY_SERIES_LIST);
         assertNotNull(allSeries);
         assertEquals(2, allSeries.size());
 
@@ -412,7 +412,7 @@ class StripInfoTest
         assertEquals("Favorietenreeks", series.getTitle());
         assertEquals("2.50", series.getNumber());
 
-        final ArrayList<Author> authors = mRawData.getParcelableArrayList(Book.BKEY_AUTHOR_ARRAY);
+        final ArrayList<Author> authors = mRawData.getParcelableArrayList(Book.BKEY_AUTHOR_LIST);
         assertNotNull(authors);
         assertEquals(2, authors.size());
 
@@ -467,15 +467,15 @@ class StripInfoTest
         assertEquals("Kleur", mRawData.getString(DBDefinitions.KEY_COLOR));
 
         final ArrayList<Publisher> allPublishers = mRawData
-                .getParcelableArrayList(Book.BKEY_PUBLISHER_ARRAY);
+                .getParcelableArrayList(Book.BKEY_PUBLISHER_LIST);
         assertNotNull(allPublishers);
         assertEquals(1, allPublishers.size());
         assertEquals("Delcourt", allPublishers.get(0).getName());
 
-        final ArrayList<TocEntry> tocs = mRawData.getParcelableArrayList(Book.BKEY_TOC_ARRAY);
+        final ArrayList<TocEntry> tocs = mRawData.getParcelableArrayList(Book.BKEY_TOC_LIST);
         assertNull(tocs);
 
-        final ArrayList<Series> allSeries = mRawData.getParcelableArrayList(Book.BKEY_SERIES_ARRAY);
+        final ArrayList<Series> allSeries = mRawData.getParcelableArrayList(Book.BKEY_SERIES_LIST);
         assertNotNull(allSeries);
         assertEquals(2, allSeries.size());
 
@@ -487,7 +487,7 @@ class StripInfoTest
         assertEquals("Mirages", series.getTitle());
         assertEquals("", series.getNumber());
 
-        final ArrayList<Author> authors = mRawData.getParcelableArrayList(Book.BKEY_AUTHOR_ARRAY);
+        final ArrayList<Author> authors = mRawData.getParcelableArrayList(Book.BKEY_AUTHOR_LIST);
         assertNotNull(authors);
         assertEquals(3, authors.size());
 

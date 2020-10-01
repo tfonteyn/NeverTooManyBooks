@@ -277,16 +277,16 @@ public final class Logger {
             final Bundle extras = ((Activity) fragmentOrActivity).getIntent().getExtras();
             if (extras != null) {
                 d(tag, method, "extras=" + extras);
-                if (extras.containsKey(Book.BKEY_BOOK_DATA)) {
-                    d(tag, method, "extras=" + extras.getBundle(Book.BKEY_BOOK_DATA));
+                if (extras.containsKey(Book.BKEY_DATA_BUNDLE)) {
+                    d(tag, method, "extras=" + extras.getBundle(Book.BKEY_DATA_BUNDLE));
                 }
             }
         } else if (fragmentOrActivity instanceof Fragment) {
             final Bundle args = ((Fragment) fragmentOrActivity).getArguments();
             if (args != null) {
                 d(tag, method, "args=" + args);
-                if (args.containsKey(Book.BKEY_BOOK_DATA)) {
-                    d(tag, method, "args=" + args.getBundle(Book.BKEY_BOOK_DATA));
+                if (args.containsKey(Book.BKEY_DATA_BUNDLE)) {
+                    d(tag, method, "args=" + args.getBundle(Book.BKEY_DATA_BUNDLE));
                 }
             }
         }

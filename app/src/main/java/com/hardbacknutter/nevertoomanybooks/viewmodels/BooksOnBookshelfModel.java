@@ -1107,9 +1107,9 @@ public class BooksOnBookshelfModel
                 loanee = bundle.getString(DBDefinitions.KEY_LOANEE);
                 isSet = true;
             }
-            if (bundle.containsKey(Book.BKEY_BOOK_ID_ARRAY)) {
+            if (bundle.containsKey(Book.BKEY_BOOK_ID_LIST)) {
                 //noinspection unchecked
-                bookIdList = (ArrayList<Long>) bundle.getSerializable(Book.BKEY_BOOK_ID_ARRAY);
+                bookIdList = (ArrayList<Long>) bundle.getSerializable(Book.BKEY_BOOK_ID_LIST);
                 isSet = true;
             }
 
@@ -1129,7 +1129,7 @@ public class BooksOnBookshelfModel
                   .putExtra(DBDefinitions.KEY_SERIES_TITLE, ftsSeries)
 
                   .putExtra(DBDefinitions.KEY_LOANEE, loanee)
-                  .putExtra(Book.BKEY_BOOK_ID_ARRAY, bookIdList);
+                  .putExtra(Book.BKEY_BOOK_ID_LIST, bookIdList);
         }
 
         public boolean isEmpty() {

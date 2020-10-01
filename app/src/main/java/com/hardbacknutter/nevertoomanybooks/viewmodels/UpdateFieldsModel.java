@@ -36,6 +36,7 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.preference.PreferenceManager;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -59,7 +60,6 @@ import com.hardbacknutter.nevertoomanybooks.searches.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineRegistry;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.FinishedMessage;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.ProgressMessage;
-import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 
 import static com.hardbacknutter.nevertoomanybooks.entities.FieldUsage.Usage.CopyIfBlank;
@@ -142,7 +142,7 @@ public class UpdateFieldsModel
 
             if (args != null) {
                 //noinspection unchecked
-                mBookIdList = (ArrayList<Long>) args.getSerializable(Book.BKEY_BOOK_ID_ARRAY);
+                mBookIdList = (ArrayList<Long>) args.getSerializable(Book.BKEY_BOOK_ID_LIST);
             }
 
             initFields(context);
@@ -163,16 +163,16 @@ public class UpdateFieldsModel
 
         addField(prefs, DBDefinitions.KEY_TITLE, R.string.lbl_title, CopyIfBlank);
         addField(prefs, DBDefinitions.KEY_ISBN, R.string.lbl_isbn, CopyIfBlank);
-        addListField(prefs, Book.BKEY_AUTHOR_ARRAY, R.string.lbl_authors,
+        addListField(prefs, Book.BKEY_AUTHOR_LIST, R.string.lbl_authors,
                      DBDefinitions.KEY_FK_AUTHOR);
-        addListField(prefs, Book.BKEY_SERIES_ARRAY, R.string.lbl_series_multiple,
+        addListField(prefs, Book.BKEY_SERIES_LIST, R.string.lbl_series_multiple,
                      DBDefinitions.KEY_SERIES_TITLE);
         addField(prefs, DBDefinitions.KEY_DESCRIPTION, R.string.lbl_description, CopyIfBlank);
 
-        addListField(prefs, Book.BKEY_TOC_ARRAY, R.string.lbl_table_of_content,
+        addListField(prefs, Book.BKEY_TOC_LIST, R.string.lbl_table_of_content,
                      DBDefinitions.KEY_TOC_BITMASK);
 
-        addListField(prefs, Book.BKEY_PUBLISHER_ARRAY, R.string.lbl_publishers,
+        addListField(prefs, Book.BKEY_PUBLISHER_LIST, R.string.lbl_publishers,
                      DBDefinitions.KEY_PUBLISHER_NAME);
         addField(prefs, DBDefinitions.KEY_PRINT_RUN, R.string.lbl_print_run, CopyIfBlank);
         addField(prefs, DBDefinitions.KEY_DATE_PUBLISHED, R.string.lbl_date_published, CopyIfBlank);
@@ -596,8 +596,8 @@ public class UpdateFieldsModel
         // check if we already have an image, and what we should do with the new image
         switch (usage.getUsage()) {
             case CopyIfBlank:
-                final File file = AppDir.getCoverFile(context, uuid, cIdx);
-                copyThumb = !file.exists() || file.length() == 0;
+                final File file = Book.getUuidCoverFile(context, uuid, cIdx);
+                copyThumb = file == null || file.length() == 0;
                 break;
 
             case Overwrite:
@@ -613,9 +613,14 @@ public class UpdateFieldsModel
             final String fileSpec = bookData.getString(Book.BKEY_TMP_FILE_SPEC[cIdx]);
             if (fileSpec != null) {
                 final File downloadedFile = new File(fileSpec);
-                final File destination = AppDir.getCoverFile(context, uuid, cIdx);
-                // rename will fail silently, that's ok here.
-                FileUtils.rename(downloadedFile, destination);
+                final File destination = Book.getUuidCoverFileOrNew(context, uuid, cIdx);
+                try {
+                    FileUtils.rename(downloadedFile, destination);
+                } catch (@NonNull final IOException e) {
+                    Logger.error(context, TAG, e,
+                                 "processSearchResultsCoverImage|uuid=" + uuid + "|cIdx=" + cIdx);
+                    //FIXME: we should delete the orphaned images....
+                }
             }
             bookData.remove(Book.BKEY_TMP_FILE_SPEC[cIdx]);
         }
@@ -710,10 +715,10 @@ public class UpdateFieldsModel
                     } else {
                         switch (usage.fieldId) {
                             // We should never have a book without authors, but be paranoid
-                            case Book.BKEY_AUTHOR_ARRAY:
-                            case Book.BKEY_SERIES_ARRAY:
-                            case Book.BKEY_PUBLISHER_ARRAY:
-                            case Book.BKEY_TOC_ARRAY:
+                            case Book.BKEY_AUTHOR_LIST:
+                            case Book.BKEY_SERIES_LIST:
+                            case Book.BKEY_PUBLISHER_LIST:
+                            case Book.BKEY_TOC_LIST:
                                 if (mCurrentBook.contains(usage.fieldId)) {
                                     final ArrayList<Parcelable> list =
                                             mCurrentBook.getParcelableArrayList(usage.fieldId);
@@ -745,8 +750,8 @@ public class UpdateFieldsModel
                                   @IntRange(from = 0, to = 1) final int cIdx) {
         // - If it's a thumbnail, then see if it's missing or empty.
         final String uuid = mCurrentBook.getString(DBDefinitions.KEY_BOOK_UUID);
-        final File file = AppDir.getCoverFile(context, uuid, cIdx);
-        if (!file.exists() || file.length() == 0) {
+        final File file = Book.getUuidCoverFile(context, uuid, cIdx);
+        if (file == null || file.length() == 0) {
             fieldUsages.put(usage.fieldId, usage);
         }
     }
@@ -760,10 +765,10 @@ public class UpdateFieldsModel
      */
     private boolean hasField(@NonNull final String fieldId) {
         switch (fieldId) {
-            case Book.BKEY_AUTHOR_ARRAY:
-            case Book.BKEY_SERIES_ARRAY:
-            case Book.BKEY_PUBLISHER_ARRAY:
-            case Book.BKEY_TOC_ARRAY:
+            case Book.BKEY_AUTHOR_LIST:
+            case Book.BKEY_SERIES_LIST:
+            case Book.BKEY_PUBLISHER_LIST:
+            case Book.BKEY_TOC_LIST:
                 if (mCurrentBook.contains(fieldId)) {
                     if (!mCurrentBook.getParcelableArrayList(fieldId).isEmpty()) {
                         return true;
@@ -799,7 +804,7 @@ public class UpdateFieldsModel
                              @NonNull final Locale bookLocale,
                              @NonNull final Bundle bookData) {
         switch (key) {
-            case Book.BKEY_AUTHOR_ARRAY: {
+            case Book.BKEY_AUTHOR_LIST: {
                 final ArrayList<Author> list = bookData.getParcelableArrayList(key);
                 if (list != null && !list.isEmpty()) {
                     list.addAll(mCurrentBook.getParcelableArrayList(key));
@@ -807,7 +812,7 @@ public class UpdateFieldsModel
                 }
                 break;
             }
-            case Book.BKEY_SERIES_ARRAY: {
+            case Book.BKEY_SERIES_LIST: {
                 final ArrayList<Series> list = bookData.getParcelableArrayList(key);
                 if (list != null && !list.isEmpty()) {
                     list.addAll(mCurrentBook.getParcelableArrayList(key));
@@ -815,7 +820,7 @@ public class UpdateFieldsModel
                 }
                 break;
             }
-            case Book.BKEY_PUBLISHER_ARRAY: {
+            case Book.BKEY_PUBLISHER_LIST: {
                 final ArrayList<Publisher> list = bookData.getParcelableArrayList(key);
                 if (list != null && !list.isEmpty()) {
                     list.addAll(mCurrentBook.getParcelableArrayList(key));
@@ -823,7 +828,7 @@ public class UpdateFieldsModel
                 }
                 break;
             }
-            case Book.BKEY_TOC_ARRAY: {
+            case Book.BKEY_TOC_LIST: {
                 final ArrayList<TocEntry> list = bookData.getParcelableArrayList(key);
                 if (list != null && !list.isEmpty()) {
                     list.addAll(mCurrentBook.getParcelableArrayList(key));

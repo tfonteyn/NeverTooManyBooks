@@ -41,7 +41,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import com.hardbacknutter.nevertoomanybooks.covers.CoverHandler;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.databinding.ActivityEditBookBinding;
@@ -49,6 +48,7 @@ import com.hardbacknutter.nevertoomanybooks.datamanager.DataEditor;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.entities.EntityStatus;
 import com.hardbacknutter.nevertoomanybooks.settings.BarcodePreferenceFragment;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.BookViewModel;
@@ -91,8 +91,7 @@ public class EditBookActivity
         }
 
         mBookViewModel = new ViewModelProvider(this).get(BookViewModel.class);
-        mBookViewModel.init(this, getIntent().getExtras());
-        mBookViewModel.enableValidators();
+        mBookViewModel.init(this, getIntent().getExtras(), true);
 
         setNavigationItemVisibility(R.id.nav_manage_bookshelves, true);
 
@@ -188,7 +187,9 @@ public class EditBookActivity
         }
 
         // 2. If we're at the top level, check if the book was changed.
-        if (backStackEntryCount == 0 && mBookViewModel.isDirty()) {
+        if (backStackEntryCount == 0
+            && mBookViewModel.getBook().getStage() == EntityStatus.Stage.Dirty) {
+
             StandardDialogs.unsavedEdits(this,
                                          () -> prepareSave(true),
                                          this::setResultsAndFinish);
@@ -318,12 +319,6 @@ public class EditBookActivity
         // The result data will contain the re-position book id.
         setResult(Activity.RESULT_OK, mBookViewModel.getResultIntent());
         finish();
-    }
-
-    @Override
-    protected void onDestroy() {
-        CoverHandler.deleteOrphanedCoverFiles(this);
-        super.onDestroy();
     }
 
     private static class TabAdapter

@@ -158,14 +158,13 @@ public class CoverBrowserDialogFragment
 
         //noinspection ConstantConditions
         mBookViewModel = new ViewModelProvider(getActivity()).get(BookViewModel.class);
-        //noinspection ConstantConditions
-        mBookViewModel.init(getContext(), getArguments());
 
         mVb.toolbar.setSubtitle(mBookViewModel.getBook().getTitle());
 
         // LayoutManager is set in the layout xml
         final LinearLayoutManager galleryLM = (LinearLayoutManager) mVb.gallery.getLayoutManager();
         Objects.requireNonNull(galleryLM, ErrorMsg.NULL_LAYOUT_MANAGER);
+        //noinspection ConstantConditions
         mVb.gallery.addItemDecoration(
                 new DividerItemDecoration(getContext(), galleryLM.getOrientation()));
         mGalleryAdapter = new GalleryAdapter();
@@ -340,7 +339,7 @@ public class CoverBrowserDialogFragment
 
         if (imageFileInfo != null) {
             final File file = imageFileInfo.getFile();
-            if (ImageUtils.isFileGood(file, false)) {
+            if (file != null && file.exists()) {
                 new ImageLoader(mVb.preview, file, mPreviewMaxWidth, mPreviewMaxHeight, () -> {
                     // Set AFTER it was successfully loaded and displayed for maximum reliability
                     mModel.setSelectedFile(file);
@@ -473,12 +472,12 @@ public class CoverBrowserDialogFragment
             } else {
                 // check if it's good
                 final File file = imageFileInfo.getFile();
-                if (ImageUtils.isFileGood(file, false)) {
+                if (file != null && file.exists()) {
                     // YES, load it into the view.
                     new ImageLoader(holder.imageView, file, mMaxWidth, mMaxHeight, null)
                             .executeOnExecutor(mModel.getGalleryDisplayExecutor());
 
-                    // keep this statement here, or we would need to call isFileGood twice
+                    // keep this statement here, or we would need to call file.exists() twice
                     holder.imageView.setOnClickListener(v -> onGalleryImageSelected(imageFileInfo));
 
                     //noinspection ConstantConditions

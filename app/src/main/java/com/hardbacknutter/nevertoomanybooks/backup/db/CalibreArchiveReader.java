@@ -248,7 +248,7 @@ class CalibreArchiveReader
                 // it's an eBook - duh!
                 book.putString(DBDefinitions.KEY_FORMAT, mEBookString);
                 // assign to current shelf.
-                book.getParcelableArrayList(Book.BKEY_BOOKSHELF_ARRAY).add(bookshelf);
+                book.getParcelableArrayList(Book.BKEY_BOOKSHELF_LIST).add(bookshelf);
 
                 // There is a "books_series_link" table which indicates you could have a book
                 // belong to multiple series, BUT the Calibre UI does not support this and
@@ -263,7 +263,7 @@ class CalibreArchiveReader
                     }
                     final ArrayList<Series> seriesList = new ArrayList<>();
                     seriesList.add(series);
-                    book.putParcelableArrayList(Book.BKEY_SERIES_ARRAY, seriesList);
+                    book.putParcelableArrayList(Book.BKEY_SERIES_LIST, seriesList);
                 }
 
                 handleAuthor(book, calibreId);
@@ -362,7 +362,7 @@ class CalibreArchiveReader
             }
         }
         if (!mAuthors.isEmpty()) {
-            book.putParcelableArrayList(Book.BKEY_AUTHOR_ARRAY, mAuthors);
+            book.putParcelableArrayList(Book.BKEY_AUTHOR_LIST, mAuthors);
         }
     }
 
@@ -377,7 +377,7 @@ class CalibreArchiveReader
             }
         }
         if (!mPublishers.isEmpty()) {
-            book.putParcelableArrayList(Book.BKEY_PUBLISHER_ARRAY, mPublishers);
+            book.putParcelableArrayList(Book.BKEY_PUBLISHER_LIST, mPublishers);
         }
     }
 

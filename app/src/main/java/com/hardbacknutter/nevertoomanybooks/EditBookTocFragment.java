@@ -66,6 +66,7 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditTocEntryDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.entities.EntityStatus;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.fields.Fields;
@@ -107,7 +108,7 @@ public class EditBookTocFragment
             new SimpleAdapterDataObserver() {
                 @Override
                 public void onChanged() {
-                    mBookViewModel.setDirty(true);
+                    mBookViewModel.getBook().setStage(EntityStatus.Stage.Dirty);
                 }
             };
     /** the rows. */
@@ -288,7 +289,7 @@ public class EditBookTocFragment
 
         // Populate the list view with the book content table.
         mList.clear();
-        mList.addAll(book.getParcelableArrayList(Book.BKEY_TOC_ARRAY));
+        mList.addAll(book.getParcelableArrayList(Book.BKEY_TOC_LIST));
         mListAdapter.notifyDataSetChanged();
 
         populateTocBits(book);
@@ -310,7 +311,7 @@ public class EditBookTocFragment
 
         // The toc list is not a 'real' field. Hence the need to store it manually here.
         // It requires no special validation.
-        book.putParcelableArrayList(Book.BKEY_TOC_ARRAY, mList);
+        book.putParcelableArrayList(Book.BKEY_TOC_LIST, mList);
     }
 
     @Override
@@ -571,10 +572,10 @@ public class EditBookTocFragment
 
             // update the book with Series information that was gathered from the TOC
             final List<Series> series = message.result
-                    .getParcelableArrayList(Book.BKEY_SERIES_ARRAY);
+                    .getParcelableArrayList(Book.BKEY_SERIES_LIST);
             if (series != null && !series.isEmpty()) {
                 final ArrayList<Series> inBook = book
-                        .getParcelableArrayList(Book.BKEY_SERIES_ARRAY);
+                        .getParcelableArrayList(Book.BKEY_SERIES_LIST);
                 // add, weeding out duplicates
                 for (Series s : series) {
                     if (!inBook.contains(s)) {
@@ -672,7 +673,7 @@ public class EditBookTocFragment
 
             final Bundle args = requireArguments();
             mRequestKey = args.getString(BKEY_REQUEST_KEY);
-            mTocEntries = args.getParcelableArrayList(Book.BKEY_TOC_ARRAY);
+            mTocEntries = args.getParcelableArrayList(Book.BKEY_TOC_LIST);
             Objects.requireNonNull(mTocEntries, ErrorMsg.NULL_TOC_ENTRY);
 
             mTocBitMask = args.getLong(DBDefinitions.KEY_TOC_BITMASK);

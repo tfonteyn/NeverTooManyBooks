@@ -34,15 +34,14 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 /**
- * Test the test database as setup by {@link BaseSetup#setup()}.
+ * Test the test database as setup by {@link BaseSetup}.
  */
 @MediumTest
 public class BaseSetupTest
         extends BaseSetup {
 
     @Test
-    public void basic() {
-
+    public void base() {
         ArrayList<Long> bookIdList;
         ArrayList<AuthorWork> works;
 
@@ -53,6 +52,10 @@ public class BaseSetupTest
             assertTrue(author[0].getId() > 0);
             assertTrue(author[1].getId() > 0);
             assertTrue(author[2].getId() > 0);
+
+            assertTrue(publisher[0].getId() > 0);
+            assertTrue(publisher[1].getId() > 0);
+            assertTrue(publisher[2].getId() > 0);
 
             assertEquals(book[0].getId(), bookId[0]);
             assertEquals(book[1].getId(), bookId[1]);
@@ -85,19 +88,39 @@ public class BaseSetupTest
             assertEquals(bookId[3], (long) bookIdList.get(1));
             assertEquals(bookId[4], (long) bookIdList.get(2));
 
-            works = db.getAuthorWorks(author[1], mBookshelf.getId(), true, false);
+            // p0 is present in b0
+            bookIdList = db.getBookIdsByPublisher(publisher[0].getId());
+            assertEquals(1, bookIdList.size());
+            assertEquals(bookId[0], (long) bookIdList.get(0));
+
+            // p1 is present in b1, b3, b4
+            bookIdList = db.getBookIdsByPublisher(publisher[1].getId());
+            assertEquals(3, bookIdList.size());
+            assertEquals(bookId[1], (long) bookIdList.get(0));
+            assertEquals(bookId[3], (long) bookIdList.get(1));
+            assertEquals(bookId[4], (long) bookIdList.get(2));
+
+            // p2 is present in b2, b4
+            bookIdList = db.getBookIdsByPublisher(publisher[2].getId());
+            assertEquals(2, bookIdList.size());
+            assertEquals(bookId[2], (long) bookIdList.get(0));
+            assertEquals(bookId[4], (long) bookIdList.get(1));
+
+
+
+            works = db.getAuthorWorks(author[1], bookshelf[0].getId(), true, false);
             assertEquals(2, works.size());
-            works = db.getAuthorWorks(author[2], mBookshelf.getId(), true, false);
+            works = db.getAuthorWorks(author[2], bookshelf[0].getId(), true, false);
             assertEquals(2, works.size());
 
-            works = db.getAuthorWorks(author[1], mBookshelf.getId(), true, true);
+            works = db.getAuthorWorks(author[1], bookshelf[0].getId(), true, true);
             assertEquals(5, works.size());
-            works = db.getAuthorWorks(author[2], mBookshelf.getId(), true, true);
+            works = db.getAuthorWorks(author[2], bookshelf[0].getId(), true, true);
             assertEquals(5, works.size());
 
-            works = db.getAuthorWorks(author[1], mBookshelf.getId(), false, true);
+            works = db.getAuthorWorks(author[1], bookshelf[0].getId(), false, true);
             assertEquals(3, works.size());
-            works = db.getAuthorWorks(author[2], mBookshelf.getId(), false, true);
+            works = db.getAuthorWorks(author[2], bookshelf[0].getId(), false, true);
             assertEquals(3, works.size());
         }
     }

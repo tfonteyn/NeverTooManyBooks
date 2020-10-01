@@ -55,7 +55,7 @@ import com.hardbacknutter.nevertoomanybooks.database.definitions.ColumnInfo;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
-import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
+import com.hardbacknutter.nevertoomanybooks.entities.Book;
 
 /**
  * DB Helper for Covers DB. It uses the Application Context.
@@ -253,18 +253,24 @@ public final class CoversDAO
                 return null;
             }
 
-            final File file = AppDir.getCoverFile(context, uuid, cIdx);
-            final String fileLastModified = Instant.ofEpochMilli(file.lastModified())
-                                                   .atZone(ZoneOffset.UTC)
-                                                   .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
-            final String cacheId = constructCacheId(uuid, cIdx, maxWidth, maxHeight);
+            final File file = Book.getUuidCoverFile(context, uuid, cIdx);
+            if (file != null) {
+                final long lm = file.lastModified();
+                if (lm > 0) {
+                    final String fileLastModified =
+                            Instant.ofEpochMilli(lm)
+                                   .atZone(ZoneOffset.UTC)
+                                   .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+                    final String cacheId = constructCacheId(uuid, cIdx, maxWidth, maxHeight);
 
-            try (Cursor cursor = sSyncedDb.rawQuery(SQL_GET_IMAGE, new String[]{
-                    cacheId, fileLastModified})) {
-                if (cursor.moveToFirst()) {
-                    final byte[] bytes = cursor.getBlob(0);
-                    if (bytes != null) {
-                        return BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                    try (Cursor cursor = sSyncedDb.rawQuery(SQL_GET_IMAGE, new String[]{
+                            cacheId, fileLastModified})) {
+                        if (cursor.moveToFirst()) {
+                            final byte[] bytes = cursor.getBlob(0);
+                            if (bytes != null) {
+                                return BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                            }
+                        }
                     }
                 }
             }

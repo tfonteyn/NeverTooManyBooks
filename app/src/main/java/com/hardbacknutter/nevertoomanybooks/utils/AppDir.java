@@ -24,7 +24,6 @@ import android.os.Environment;
 import android.os.StatFs;
 import android.provider.MediaStore;
 
-import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -32,8 +31,10 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
+import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
@@ -42,16 +43,6 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageExce
  * The set of named directories used and support functions for them.
  * <p>
  * TODO: ExternalStorageException added were appropriate, but other than here we don't catch them.
- * <p>
- * ENHANCE: using the private directories was an improvement (and mandatory to target Android 10)
- * but would be nice to use the contentResolver API and keep our covers in a sub directory
- * of the users Pictures folder.
- * PRO:
- * - preserved on uninstall
- * - user has full access
- * - private backups are no longer needed.
- * CON:
- * - could be overloading their Google backup storage and force them in buying more space.
  */
 public enum AppDir {
     /** Nothing stored here, just the sub directories. */
@@ -67,13 +58,15 @@ public enum AppDir {
 
     /** error result code for {@link #getFreeSpace}. */
     public static final int ERROR_CANNOT_STAT = -2;
+    /** The length of a UUID string. */
+    public static final int UUID_LEN = 32;
     /** Log tag. */
     private static final String TAG = "AppDir";
     /** Sub directory of Root : Upgrade files. */
     private static final String UPGRADES_SUB_DIR = "Upgrades";
     /** Sub directory of Root : log files. */
     private static final String LOG_SUB_DIR = "log";
-
+    /** The cached directory. */
     @Nullable
     private File mDir;
 
@@ -81,12 +74,14 @@ public enum AppDir {
      * Count size + (optional) Cleanup any purgeable files.
      *
      * @param context      Current context
+     * @param bookUuidList a list of book uuid to check for orphaned covers
      * @param reallyDelete {@code true} to actually delete files,
      *                     {@code false} to only sum file sizes in bytes
      *
      * @return the total size in bytes of purgeable/purged files.
      */
     public static long purge(@NonNull final Context context,
+                             @NonNull final Collection<String> bookUuidList,
                              final boolean reallyDelete) {
         long totalSize = 0;
 
@@ -96,13 +91,15 @@ public enum AppDir {
             totalSize += Log.purge(context, reallyDelete, null);
             totalSize += Upgrades.purge(context, reallyDelete, null);
 
-            //TODO: create a FileFilter that uses the file name i.e. the uuid
-            // to check the database, when the database lacks an entry, purge that file.
-            // Doing this TWICE (count/del) is a bit silly... need to implement a cached list
-            // on run 1, and use that on run 2.
-//        totalSize += Covers.purge(context, reallyDelete, file -> {
-//            return false;
-//        });
+            // check for orphaned cover files
+            totalSize += Covers.purge(context, reallyDelete, file -> {
+                if (file.getName().length() > UUID_LEN) {
+                    // not in the list? then we can purge it
+                    return !bookUuidList.contains(file.getName().substring(0, UUID_LEN));
+                }
+                // not a uuid base file ? be careful and leave it.
+                return false;
+            });
 
         } catch (@NonNull final SecurityException | ExternalStorageException e) {
             // not critical, just log it.
@@ -111,45 +108,6 @@ public enum AppDir {
         }
 
         return totalSize;
-    }
-
-    /**
-     * return the cover for the given uuid. We'll attempt to find a jpg or a png.
-     * If no file found, a jpg place holder is returned.
-     * Keep in mind that internally we always use PNG compression (except for the cache).
-     * So a jpg named file can be a png encoded file. (But we don't need to care about that.)
-     * <p>
-     * The index only gets appended to the name if it's > 0.
-     *
-     * @param context Current context
-     * @param uuid    UUID of the book
-     * @param cIdx    0..n image index
-     *
-     * @return The File object for existing files, or a new jpg placeholder.
-     *
-     * @throws ExternalStorageException if the Shared Storage media is not available
-     */
-    @NonNull
-    public static File getCoverFile(@NonNull final Context context,
-                                    @NonNull final String uuid,
-                                    @IntRange(from = 0, to = 1) final int cIdx)
-            throws ExternalStorageException {
-        final File coverDir = Covers.get(context);
-
-        final String name = uuid + (cIdx > 0 ? "_" + cIdx : "");
-
-        final File jpg = new File(coverDir, name + ".jpg");
-        if (jpg.exists()) {
-            return jpg;
-        }
-        // could be a png
-        final File png = new File(coverDir, name + ".png");
-        if (png.exists()) {
-            return png;
-        }
-
-        // we need a new file, return a placeholder with the jpg extension
-        return jpg;
     }
 
     /**
@@ -203,8 +161,8 @@ public enum AppDir {
      * <p>
      * Dev. note: a device might have two (or more) external file directories of the same type.
      * i.e. {@link Context#getExternalFilesDir} for {@link Environment#DIRECTORY_PICTURES}
-     * might internally resolve to two paths. The will "ensure" those before returning them.
-     * Which (at least in the emulator) can result in log messages like this:
+     * might internally resolve to two paths. Android will "ensure" those before returning them,
+     * which (at least in the emulator) can result in log messages like this:
      * <pre>
      *     W/ContextImpl: Failed to ensure /storage/14ED-381E/Android/data/com.hardbacknutter
      *     .nevertoomanybooks/files/Pictures: java.lang.IllegalStateException:
@@ -221,7 +179,7 @@ public enum AppDir {
      * @throws ExternalStorageException if the Shared Storage media is not available
      */
     @NonNull
-    private File get(@NonNull final Context context)
+    public File get(@NonNull final Context context)
             throws ExternalStorageException {
 
         if (mDir != null && mDir.exists()) {
@@ -259,7 +217,7 @@ public enum AppDir {
     }
 
     /**
-     * Get a file in this directory.
+     * Get a file with the given name in this directory.
      *
      * @param context Current context
      * @param name    file name
@@ -273,6 +231,21 @@ public enum AppDir {
                         @NonNull final String name)
             throws ExternalStorageException {
         return new File(get(context), name);
+    }
+
+    /**
+     * Get a file with a random/temporary name in this directory.
+     *
+     * @param context Current context
+     *
+     * @return Directory (File) object
+     *
+     * @throws ExternalStorageException if the Shared Storage media is not available
+     */
+    @NonNull
+    public File getFile(@NonNull final Context context)
+            throws ExternalStorageException {
+        return new File(get(context), System.nanoTime() + ".tmp");
     }
 
     /**
@@ -315,6 +288,9 @@ public enum AppDir {
         final List<File> files = collectFiles(get(context), filter);
         long totalSize = 0;
         for (File file : files) {
+            if (BuildConfig.DEBUG /* always */) {
+                Logger.d(TAG, "purge", this + "|" + file.getName());
+            }
             totalSize += file.length();
             if (reallyDelete) {
                 FileUtils.delete(file);

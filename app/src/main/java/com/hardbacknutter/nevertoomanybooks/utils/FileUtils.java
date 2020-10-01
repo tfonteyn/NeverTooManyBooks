@@ -99,30 +99,6 @@ public final class FileUtils {
     }
 
     /**
-     * Wrapper around {@link #renameOrThrow(File, File)}.
-     * <p>
-     * Logs errors, but returns silently.
-     *
-     * @param source      File to rename
-     * @param destination new name
-     *
-     * @return {@code true} if the rename worked.
-     */
-    public static boolean rename(@NonNull final File source,
-                                 @NonNull final File destination) {
-        try {
-            renameOrThrow(source, destination);
-            return true;
-
-        } catch (@NonNull final IOException e) {
-            Logger.error(App.getAppContext(),
-                         TAG, e, "failed to rename source=" + source
-                                 + " TO destination" + destination, e);
-            return false;
-        }
-    }
-
-    /**
      * ENHANCE: make suitable for multiple filesystems using {@link #copy(File, File)}
      * Android docs {@link File#renameTo(File)}: Both paths be on the same mount point.
      * But we use the external app directory solely, so a 'rename' works as is for now.
@@ -132,16 +108,16 @@ public final class FileUtils {
      *
      * @throws IOException on failure
      */
-    public static void renameOrThrow(@NonNull final File source,
-                                     @NonNull final File destination)
+    public static void rename(@NonNull final File source,
+                              @NonNull final File destination)
             throws IOException {
 
         //sanity check
         if (source.getAbsolutePath().equals(destination.getAbsolutePath())) {
             if (BuildConfig.DEBUG /* always */) {
-                Logger.warn(App.getAppContext(), TAG,
-                            "renameOrThrow"
-                            + "|source==destination==" + source.getAbsolutePath());
+                Logger.error(App.getAppContext(), TAG, new Throwable(),
+                             "renameOrThrow"
+                             + "|source==destination==" + source.getAbsolutePath());
             }
             return;
         }
@@ -182,12 +158,11 @@ public final class FileUtils {
         if (is == null) {
             return null;
         }
-        final File tmpFile =
-                AppDir.Cache.getFile(context, System.currentTimeMillis() + "_stream.jpg");
+        final File tmpFile = AppDir.Cache.getFile(context, System.nanoTime() + "_stream.jpg");
         try (OutputStream os = new FileOutputStream(tmpFile)) {
             copy(is, os);
             // rename to real output file
-            renameOrThrow(tmpFile, destFile);
+            rename(tmpFile, destFile);
             return destFile;
         } finally {
             delete(tmpFile);
@@ -273,14 +248,14 @@ public final class FileUtils {
         // now bump each copy up one suffix.
         for (int i = copies - 1; i > 0; i--) {
             final File current = new File(parentDir, destination + "." + i);
-            renameOrThrow(current, previous);
+            rename(current, previous);
             previous = current;
         }
 
         // Give the previous file a suffix.
-        renameOrThrow(destination, previous);
+        rename(destination, previous);
         // and write the new copy.
-        renameOrThrow(source, destination);
+        rename(source, destination);
     }
 
     /**

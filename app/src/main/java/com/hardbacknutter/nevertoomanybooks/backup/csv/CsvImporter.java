@@ -117,11 +117,12 @@ public class CsvImporter
     /** Buffer for the Reader. */
     private static final int BUFFER_SIZE = 65535;
 
-    /** as used in older versions, or from arbitrarily constructed CSV files. */
-    private static final String OLD_STYLE_AUTHOR_NAME = "author_name";
+
     /** log error string. */
     private static final String ERROR_IMPORT_FAILED_AT_ROW = "Import failed at row ";
 
+    /** Potentially present in old BookCatalogue CSV files. */
+    private static final String LEGACY_STYLE_AUTHOR_NAME = "author_name";
     /** Present in BookCatalogue CSV files. Obsolete, not used. */
     private static final String LEGACY_BOOKSHELF_ID = "bookshelf_id";
     /** When present in BookCatalogue CSV files, we should use it as the bookshelf name. */
@@ -326,6 +327,9 @@ public class CsvImporter
                     handlePublishers(context, mDb, book, bookLocale);
                     handleAnthology(context, mDb, book, bookLocale);
                     handleBookshelves(mDb, book);
+
+                    //URGENT: implement full parsing/formatting of incoming dates for validity
+                    //verifyDates(context, mDb, book);
 
                     // do the actual import.
                     importBook(context, forceUpdate, book, importUuid, importNumericId);
@@ -640,7 +644,7 @@ public class CsvImporter
             ArrayList<Bookshelf> bookshelves = mBookshelfCoder.decodeList(encodedList);
             if (!bookshelves.isEmpty()) {
                 Bookshelf.pruneList(bookshelves, db);
-                book.putParcelableArrayList(Book.BKEY_BOOKSHELF_ARRAY, bookshelves);
+                book.putParcelableArrayList(Book.BKEY_BOOKSHELF_LIST, bookshelves);
             }
         }
         book.remove(DBDefinitions.KEY_BOOKSHELF_NAME);
@@ -664,22 +668,23 @@ public class CsvImporter
                                @NonNull final Book /* in/out */ book,
                                @NonNull final Locale bookLocale) {
 
-        // preferred format is a single CSV field
         final String encodedList = book.getString(CsvExporter.CSV_COLUMN_AUTHORS);
         book.remove(CsvExporter.CSV_COLUMN_AUTHORS);
 
-        final ArrayList<Author> authors;
+        final ArrayList<Author> list;
         if (!encodedList.isEmpty()) {
-            authors = mAuthorCoder.decodeList(encodedList);
-            Author.pruneList(authors, context, db, false, bookLocale);
-
+            list = mAuthorCoder.decodeList(encodedList);
+            if (!list.isEmpty()) {
+                // Force using the Book Locale, otherwise the import is far to slow.
+                Author.pruneList(list, context, db, false, bookLocale);
+            }
         } else {
-            authors = new ArrayList<>();
-
+            // check for individual author (full/family/given) fields in the input
+            list = new ArrayList<>();
             if (book.contains(DBDefinitions.KEY_AUTHOR_FORMATTED)) {
-                final String a = book.getString(DBDefinitions.KEY_AUTHOR_FORMATTED);
-                if (!a.isEmpty()) {
-                    authors.add(Author.from(a));
+                final String name = book.getString(DBDefinitions.KEY_AUTHOR_FORMATTED);
+                if (!name.isEmpty()) {
+                    list.add(Author.from(name));
                 }
                 book.remove(DBDefinitions.KEY_AUTHOR_FORMATTED);
 
@@ -688,31 +693,31 @@ public class CsvImporter
                 if (!family.isEmpty()) {
                     // given will be "" if it's not present
                     final String given = book.getString(DBDefinitions.KEY_AUTHOR_GIVEN_NAMES);
-                    authors.add(new Author(family, given));
+                    list.add(new Author(family, given));
                 }
                 book.remove(DBDefinitions.KEY_AUTHOR_FAMILY_NAME);
                 book.remove(DBDefinitions.KEY_AUTHOR_GIVEN_NAMES);
 
-            } else if (book.contains(OLD_STYLE_AUTHOR_NAME)) {
-                final String a = book.getString(OLD_STYLE_AUTHOR_NAME);
+            } else if (book.contains(LEGACY_STYLE_AUTHOR_NAME)) {
+                final String a = book.getString(LEGACY_STYLE_AUTHOR_NAME);
                 if (!a.isEmpty()) {
-                    authors.add(Author.from(a));
+                    list.add(Author.from(a));
                 }
-                book.remove(OLD_STYLE_AUTHOR_NAME);
+                book.remove(LEGACY_STYLE_AUTHOR_NAME);
             }
         }
 
         // we MUST have an author.
-        if (authors.isEmpty()) {
-            authors.add(Author.createUnknownAuthor(context));
+        if (list.isEmpty()) {
+            list.add(Author.createUnknownAuthor(context));
         }
-        book.putParcelableArrayList(Book.BKEY_AUTHOR_ARRAY, authors);
+        book.putParcelableArrayList(Book.BKEY_AUTHOR_LIST, list);
     }
 
     /**
-     * Database access is strictly limited to fetching ID's.
+     * Process the list of Series.
      * <p>
-     * Get the list of series from whatever source is available.
+     * Database access is strictly limited to fetching ID's.
      *
      * @param context    Current context
      * @param db         Database Access
@@ -724,41 +729,38 @@ public class CsvImporter
                               @NonNull final Book /* in/out */ book,
                               @NonNull final Locale bookLocale) {
 
-        // preferred format is a single CSV field
         final String encodedList = book.getString(CsvExporter.CSV_COLUMN_SERIES);
         book.remove(CsvExporter.CSV_COLUMN_SERIES);
 
-        final ArrayList<Series> list;
         if (!encodedList.isEmpty()) {
-            list = mSeriesCoder.decodeList(encodedList);
-
-            // Force using the Book Locale, otherwise the import is far to slow.
-            Series.pruneList(list, context, db, false, bookLocale);
-
+            final ArrayList<Series> list = mSeriesCoder.decodeList(encodedList);
+            if (!list.isEmpty()) {
+                // Force using the Book Locale, otherwise the import is far to slow.
+                Series.pruneList(list, context, db, false, bookLocale);
+                book.putParcelableArrayList(Book.BKEY_SERIES_LIST, list);
+            }
         } else {
-            list = new ArrayList<>();
-
+            // check for individual series title/number fields in the input
             if (book.contains(DBDefinitions.KEY_SERIES_TITLE)) {
                 final String title = book.getString(DBDefinitions.KEY_SERIES_TITLE);
                 if (!title.isEmpty()) {
                     final Series series = new Series(title);
                     // number will be "" if it's not present
                     series.setNumber(book.getString(DBDefinitions.KEY_BOOK_NUM_IN_SERIES));
+                    final ArrayList<Series> list = new ArrayList<>();
                     list.add(series);
+                    book.putParcelableArrayList(Book.BKEY_SERIES_LIST, list);
                 }
                 book.remove(DBDefinitions.KEY_SERIES_TITLE);
                 book.remove(DBDefinitions.KEY_BOOK_NUM_IN_SERIES);
             }
         }
-        if (!list.isEmpty()) {
-            book.putParcelableArrayList(Book.BKEY_SERIES_ARRAY, list);
-        }
     }
 
     /**
-     * Database access is strictly limited to fetching ID's.
+     * Process the list of Publishers.
      * <p>
-     * Get the list of Publishers.
+     * Database access is strictly limited to fetching ID's.
      *
      * @param context    Current context
      * @param db         Database Access
@@ -773,26 +775,23 @@ public class CsvImporter
         final String encodedList = book.getString(CsvExporter.CSV_COLUMN_PUBLISHERS);
         book.remove(CsvExporter.CSV_COLUMN_PUBLISHERS);
 
-        final ArrayList<Publisher> list;
         if (!encodedList.isEmpty()) {
-            list = mPublisherCoder.decodeList(encodedList);
-
-            // Force using the Book Locale, otherwise the import is far to slow.
-            Publisher.pruneList(list, context, db, false, bookLocale);
-        } else {
-            list = null;
-        }
-
-        if (list != null && !list.isEmpty()) {
-            book.putParcelableArrayList(Book.BKEY_PUBLISHER_ARRAY, list);
+            final ArrayList<Publisher> list = mPublisherCoder.decodeList(encodedList);
+            if (!list.isEmpty()) {
+                // Force using the Book Locale, otherwise the import is far to slow.
+                Publisher.pruneList(list, context, db, false, bookLocale);
+                book.putParcelableArrayList(Book.BKEY_PUBLISHER_LIST, list);
+            }
         }
     }
 
     /**
+     * Process the list of Toc entries.
+     * <p>
      * Database access is strictly limited to fetching ID's.
      * <p>
-     * Ignore the actual value of the DBDefinitions.KEY_TOC_BITMASK! it will be
-     * 'reset' to mirror what we actually have when storing the book data
+     * Ignores the actual value of the DBDefinitions.KEY_TOC_BITMASK.
+     * It will be computed when storing the book data.
      *
      * @param context    Current context
      * @param db         Database Access
@@ -808,10 +807,11 @@ public class CsvImporter
         book.remove(CsvExporter.CSV_COLUMN_TOC);
 
         if (!encodedList.isEmpty()) {
-            final ArrayList<TocEntry> toc = mTocCoder.decodeList(encodedList);
-            if (!toc.isEmpty()) {
-                TocEntry.pruneList(toc, context, db, false, bookLocale);
-                book.putParcelableArrayList(Book.BKEY_TOC_ARRAY, toc);
+            final ArrayList<TocEntry> list = mTocCoder.decodeList(encodedList);
+            if (!list.isEmpty()) {
+                // Force using the Book Locale, otherwise the import is far to slow.
+                TocEntry.pruneList(list, context, db, false, bookLocale);
+                book.putParcelableArrayList(Book.BKEY_TOC_LIST, list);
             }
         }
     }

@@ -65,7 +65,6 @@ import com.hardbacknutter.nevertoomanybooks.searches.JsoupSearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
-import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.Money;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.DateParser;
@@ -350,11 +349,8 @@ public class IsfdbSearchEngine
                 if (document != null && !isCancelled()) {
                     final ArrayList<String> imageList = parseCovers(document, edition.getIsbn(), 0);
                     if (!imageList.isEmpty()) {
-                        final File downloadedFile = new File(imageList.get(0));
                         // let the system resolve any path variations
-                        final File destination = new File(downloadedFile.getAbsolutePath());
-                        FileUtils.renameOrThrow(downloadedFile, destination);
-                        return destination.getAbsolutePath();
+                        return new File(imageList.get(0)).getAbsolutePath();
                     }
                 }
             }
@@ -772,7 +768,7 @@ public class IsfdbSearchEngine
 
         final ArrayList<TocEntry> toc = parseToc(document);
         if (!toc.isEmpty()) {
-            bookData.putParcelableArrayList(Book.BKEY_TOC_ARRAY, toc);
+            bookData.putParcelableArrayList(Book.BKEY_TOC_LIST, toc);
             if (toc.size() > 1) {
                 bookData.putLong(DBDefinitions.KEY_TOC_BITMASK, Book.TOC_MULTIPLE_WORKS);
             }
@@ -780,13 +776,13 @@ public class IsfdbSearchEngine
 
         // store accumulated ArrayList's *after* we got the TOC
         if (!mAuthors.isEmpty()) {
-            bookData.putParcelableArrayList(Book.BKEY_AUTHOR_ARRAY, mAuthors);
+            bookData.putParcelableArrayList(Book.BKEY_AUTHOR_LIST, mAuthors);
         }
         if (!mSeries.isEmpty()) {
-            bookData.putParcelableArrayList(Book.BKEY_SERIES_ARRAY, mSeries);
+            bookData.putParcelableArrayList(Book.BKEY_SERIES_LIST, mSeries);
         }
         if (!mPublishers.isEmpty()) {
-            bookData.putParcelableArrayList(Book.BKEY_PUBLISHER_ARRAY, mPublishers);
+            bookData.putParcelableArrayList(Book.BKEY_PUBLISHER_LIST, mPublishers);
         }
 
         checkForSeriesNameInTitle(bookData);
@@ -1060,8 +1056,7 @@ public class IsfdbSearchEngine
             final Element img = contentBox.selectFirst("img");
             if (img != null) {
                 final String url = img.attr("src");
-                final String tmpName = createFilename(isbn, cIdx, null);
-                final String fileSpec = saveImage(url, tmpName);
+                final String fileSpec = saveImage(url, isbn, cIdx, null);
                 if (fileSpec != null) {
                     imageList.add(fileSpec);
                 }

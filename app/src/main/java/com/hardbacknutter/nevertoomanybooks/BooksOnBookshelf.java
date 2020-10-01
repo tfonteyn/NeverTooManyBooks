@@ -634,7 +634,7 @@ public class BooksOnBookshelf
                 final ArrayList<Long> bookIdList = mModel.getCurrentBookIdList();
                 final Intent intent = new Intent(this, BookSearchActivity.class)
                         .putExtra(BaseActivity.BKEY_FRAGMENT_TAG, UpdateFieldsFragment.TAG)
-                        .putExtra(Book.BKEY_BOOK_ID_ARRAY, bookIdList);
+                        .putExtra(Book.BKEY_BOOK_ID_LIST, bookIdList);
                 startActivityForResult(intent, RequestCode.UPDATE_FIELDS_FROM_INTERNET);
                 return true;
             }
@@ -826,7 +826,7 @@ public class BooksOnBookshelf
                 final Book book = mModel.getBook(rowData);
                 if (book != null) {
                     final Intent intent = new Intent(this, EditBookActivity.class)
-                            .putExtra(Book.BKEY_BOOK_DATA, book.duplicate());
+                            .putExtra(Book.BKEY_DATA_BUNDLE, book.duplicate());
                     startActivityForResult(intent, RequestCode.BOOK_DUPLICATE);
                 }
                 return true;
@@ -891,7 +891,7 @@ public class BooksOnBookshelf
                         bookIdList.add(rowData.getLong(DBDefinitions.KEY_FK_BOOK));
                         intent.putExtra(StandardDialogs.BKEY_DIALOG_TITLE,
                                         rowData.getString(DBDefinitions.KEY_TITLE))
-                              .putExtra(Book.BKEY_BOOK_ID_ARRAY,
+                              .putExtra(Book.BKEY_BOOK_ID_LIST,
                                         bookIdList);
                         break;
                     }
@@ -899,7 +899,7 @@ public class BooksOnBookshelf
                         final long authorId = rowData.getLong(DBDefinitions.KEY_FK_AUTHOR);
                         intent.putExtra(StandardDialogs.BKEY_DIALOG_TITLE,
                                         rowData.getString(DBDefinitions.KEY_AUTHOR_FORMATTED))
-                              .putExtra(Book.BKEY_BOOK_ID_ARRAY,
+                              .putExtra(Book.BKEY_BOOK_ID_LIST,
                                         mModel.getBookIdsByAuthor(authorId));
                         break;
                     }
@@ -907,7 +907,7 @@ public class BooksOnBookshelf
                         final long seriesId = rowData.getLong(DBDefinitions.KEY_FK_SERIES);
                         intent.putExtra(StandardDialogs.BKEY_DIALOG_TITLE,
                                         rowData.getString(DBDefinitions.KEY_SERIES_TITLE))
-                              .putExtra(Book.BKEY_BOOK_ID_ARRAY,
+                              .putExtra(Book.BKEY_BOOK_ID_LIST,
                                         mModel.getBookIdsBySeries(seriesId));
                         break;
                     }
@@ -915,7 +915,7 @@ public class BooksOnBookshelf
                         final long publisherId = rowData.getLong(DBDefinitions.KEY_FK_PUBLISHER);
                         intent.putExtra(StandardDialogs.BKEY_DIALOG_TITLE,
                                         rowData.getString(DBDefinitions.KEY_PUBLISHER_NAME))
-                              .putExtra(Book.BKEY_BOOK_ID_ARRAY,
+                              .putExtra(Book.BKEY_BOOK_ID_LIST,
                                         mModel.getBookIdsByPublisher(publisherId));
                         break;
                     }

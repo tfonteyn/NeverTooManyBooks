@@ -55,7 +55,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineRegistry;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
-import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.StringList;
 
@@ -220,7 +219,7 @@ public class CsvExporter
                 }
 
                 String authors = mAuthorCoder.encodeList(
-                        book.getParcelableArrayList(Book.BKEY_AUTHOR_ARRAY));
+                        book.getParcelableArrayList(Book.BKEY_AUTHOR_LIST));
                 // Sanity check: ensure author is non-blank.
                 if (authors.trim().isEmpty()) {
                     authors = mUnknownNameString;
@@ -240,7 +239,7 @@ public class CsvExporter
                 writer.write(encode(book.getString(DBDefinitions.KEY_ISBN)));
                 writer.write(COMMA);
                 writer.write(encode(mPublisherCoder.encodeList(
-                        book.getParcelableArrayList(Book.BKEY_PUBLISHER_ARRAY))));
+                        book.getParcelableArrayList(Book.BKEY_PUBLISHER_LIST))));
                 writer.write(COMMA);
                 writer.write(encode(book.getString(DBDefinitions.KEY_PRINT_RUN)));
                 writer.write(COMMA);
@@ -253,12 +252,12 @@ public class CsvExporter
                 writer.write(encode(book.getDouble(DBDefinitions.KEY_RATING)));
                 writer.write(COMMA);
                 writer.write(encode(mBookshelfCoder.encodeList(
-                        book.getParcelableArrayList(Book.BKEY_BOOKSHELF_ARRAY))));
+                        book.getParcelableArrayList(Book.BKEY_BOOKSHELF_LIST))));
                 writer.write(COMMA);
                 writer.write(encode(book.getInt(DBDefinitions.KEY_READ)));
                 writer.write(COMMA);
                 writer.write(encode(mSeriesCoder.encodeList(
-                        book.getParcelableArrayList(Book.BKEY_SERIES_ARRAY))));
+                        book.getParcelableArrayList(Book.BKEY_SERIES_LIST))));
                 writer.write(COMMA);
                 writer.write(encode(book.getString(DBDefinitions.KEY_PAGES)));
                 writer.write(COMMA);
@@ -295,7 +294,7 @@ public class CsvExporter
                 writer.write(encode(book.getString(DBDefinitions.KEY_LOANEE)));
                 writer.write(COMMA);
                 writer.write(encode(mTocCoder.encodeList(
-                        book.getParcelableArrayList(Book.BKEY_TOC_ARRAY))));
+                        book.getParcelableArrayList(Book.BKEY_TOC_LIST))));
                 writer.write(COMMA);
                 writer.write(encode(book.getString(DBDefinitions.KEY_DESCRIPTION)));
                 writer.write(COMMA);
@@ -321,8 +320,8 @@ public class CsvExporter
 
                 if (mCollectCoverFilenames) {
                     for (int cIdx = 0; cIdx < 2; cIdx++) {
-                        final File cover = AppDir.getCoverFile(context, uuid, cIdx);
-                        if (cover.exists()) {
+                        final File cover = Book.getUuidCoverFile(context, uuid, cIdx);
+                        if (cover != null && cover.exists()) {
                             mResults.addCover(cover.getName());
                         }
                     }

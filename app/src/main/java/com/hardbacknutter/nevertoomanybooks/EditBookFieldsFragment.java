@@ -39,7 +39,6 @@ import androidx.core.view.MenuCompat;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.preference.PreferenceManager;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -138,13 +137,13 @@ public class EditBookFieldsFragment
             mVb.coverImage1.setVisibility(View.GONE);
         }
 
-        mBookViewModel.getAuthorList().observe(getViewLifecycleOwner(), authors -> {
+        mBookViewModel.getAuthors().observe(getViewLifecycleOwner(), authors -> {
             final Field<List<Author>, TextView> field = getField(R.id.author);
             field.getAccessor().setValue(authors);
             field.validate();
         });
 
-        mBookViewModel.getSeriesList().observe(getViewLifecycleOwner(), series -> {
+        mBookViewModel.getSeries().observe(getViewLifecycleOwner(), series -> {
             final Field<List<Series>, TextView> field = getField(R.id.series_title);
             field.getAccessor().setValue(series);
             field.validate();
@@ -174,7 +173,7 @@ public class EditBookFieldsFragment
                         new ArrayList<>(mFragmentVM.getAllBookshelves());
                 final ArrayList<Entity> selectedItems =
                         new ArrayList<>(mBookViewModel.getBook().getParcelableArrayList(
-                                Book.BKEY_BOOKSHELF_ARRAY));
+                                Book.BKEY_BOOKSHELF_LIST));
                 CheckListDialogFragment
                         .newInstance(RK_EDIT_BOOKSHELVES,
                                      getString(R.string.lbl_bookshelves_long),
@@ -215,14 +214,14 @@ public class EditBookFieldsFragment
 
         fields.add(R.id.author, new TextViewAccessor<>(
                            new AuthorListFormatter(Author.Details.Short, true, false)),
-                   Book.BKEY_AUTHOR_ARRAY, DBDefinitions.KEY_FK_AUTHOR)
+                   Book.BKEY_AUTHOR_LIST, DBDefinitions.KEY_FK_AUTHOR)
               .setRelatedFields(R.id.lbl_author)
               .setErrorViewId(R.id.lbl_author)
               .setFieldValidator(field -> field.getAccessor().setErrorIfEmpty(nonBlankRequired));
 
         fields.add(R.id.series_title, new TextViewAccessor<>(
                            new SeriesListFormatter(Series.Details.Short, true, false)),
-                   Book.BKEY_SERIES_ARRAY, DBDefinitions.KEY_SERIES_TITLE)
+                   Book.BKEY_SERIES_LIST, DBDefinitions.KEY_SERIES_TITLE)
               .setRelatedFields(R.id.lbl_series);
 
         fields.add(R.id.title, new EditTextAccessor<String>(), DBDefinitions.KEY_TITLE)
@@ -249,7 +248,7 @@ public class EditBookFieldsFragment
         // The Bookshelves are a read-only text field. A click will bring up an editor.
         // Note how we combine an EditTextAccessor with a (non Edit) FieldFormatter
         fields.add(R.id.bookshelves, new EditTextAccessor<>(new CsvFormatter(), true),
-                   Book.BKEY_BOOKSHELF_ARRAY, DBDefinitions.KEY_FK_BOOKSHELF)
+                   Book.BKEY_BOOKSHELF_LIST, DBDefinitions.KEY_FK_BOOKSHELF)
               .setRelatedFields(R.id.lbl_bookshelves);
     }
 
@@ -262,14 +261,16 @@ public class EditBookFieldsFragment
 
         if (mFragmentVM.isCoverUsed(getContext(), prefs, 0)) {
             mCoverHandler[0] = new CoverHandler(
-                    this, mProgressBar, book, mVb.isbn, 0, mVb.coverImage0,
-                    getResources().getDimensionPixelSize(R.dimen.cover_edit_0_height));
+                    this, mBookViewModel, 0, mVb.isbn, mVb.coverImage0,
+                    getResources().getDimensionPixelSize(R.dimen.cover_edit_0_height), mProgressBar
+            );
         }
 
         if (mFragmentVM.isCoverUsed(getContext(), prefs, 1)) {
             mCoverHandler[1] = new CoverHandler(
-                    this, mProgressBar, book, mVb.isbn, 1, mVb.coverImage1,
-                    getResources().getDimensionPixelSize(R.dimen.cover_edit_1_height));
+                    this, mBookViewModel, 1, mVb.isbn, mVb.coverImage1,
+                    getResources().getDimensionPixelSize(R.dimen.cover_edit_1_height), mProgressBar
+            );
         }
 
         // hide unwanted and empty fields
@@ -281,12 +282,6 @@ public class EditBookFieldsFragment
     @Override
     public void setCurrentCoverIndex(@IntRange(from = 0, to = 1) final int cIdx) {
         mFragmentVM.setCurrentCoverHandlerIndex(cIdx);
-    }
-
-    @Override
-    public void onCoverChanged(final int cIdx,
-                               @Nullable final File file) {
-        mBookViewModel.onCoverChanged(cIdx, file);
     }
 
     @Override

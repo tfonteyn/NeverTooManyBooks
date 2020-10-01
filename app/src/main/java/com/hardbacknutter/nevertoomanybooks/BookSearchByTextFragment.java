@@ -274,7 +274,7 @@ public class BookSearchByTextFragment
         }
 
         final ArrayList<Author> authors =
-                bookData.getParcelableArrayList(Book.BKEY_AUTHOR_ARRAY);
+                bookData.getParcelableArrayList(Book.BKEY_AUTHOR_LIST);
         if (authors == null || authors.isEmpty()) {
             // do NOT use the array, that's reserved for verified names.
             bookData.putString(BooksOnBookshelfModel.SearchCriteria.BKEY_SEARCH_TEXT_AUTHOR,
@@ -282,7 +282,7 @@ public class BookSearchByTextFragment
         }
 
         final ArrayList<Publisher> publishers =
-                bookData.getParcelableArrayList(Book.BKEY_PUBLISHER_ARRAY);
+                bookData.getParcelableArrayList(Book.BKEY_PUBLISHER_LIST);
         if (publishers == null || publishers.isEmpty()) {
             // do NOT use the array, that's reserved for verified names.
             bookData.putString(BooksOnBookshelfModel.SearchCriteria.BKEY_SEARCH_TEXT_PUBLISHER,

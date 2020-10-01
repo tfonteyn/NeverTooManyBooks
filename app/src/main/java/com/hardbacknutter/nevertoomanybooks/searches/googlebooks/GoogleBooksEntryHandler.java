@@ -268,10 +268,10 @@ class GoogleBooksEntryHandler
     @Override
     public void endDocument() {
         if (!mAuthors.isEmpty()) {
-            mBookData.putParcelableArrayList(Book.BKEY_AUTHOR_ARRAY, mAuthors);
+            mBookData.putParcelableArrayList(Book.BKEY_AUTHOR_LIST, mAuthors);
         }
         if (!mPublishers.isEmpty()) {
-            mBookData.putParcelableArrayList(Book.BKEY_PUBLISHER_ARRAY, mPublishers);
+            mBookData.putParcelableArrayList(Book.BKEY_PUBLISHER_LIST, mPublishers);
         }
     }
 
@@ -295,9 +295,8 @@ class GoogleBooksEntryHandler
                 final String url = HTTP_LITERAL.matcher(attributes.getValue("", "href"))
                                                .replaceAll(Matcher.quoteReplacement("https:"));
 
-                final String tmpName = mSearchEngine.createFilename(
-                        mBookData.getString(DBDefinitions.KEY_ISBN), 0, null);
-                final String fileSpec = mSearchEngine.saveImage(url, tmpName);
+                final String fileSpec = mSearchEngine
+                        .saveImage(url, mBookData.getString(DBDefinitions.KEY_ISBN), 0, null);
 
                 if (fileSpec != null) {
                     ArrayList<String> imageList =

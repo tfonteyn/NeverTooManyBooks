@@ -63,6 +63,7 @@ import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
+import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.tasks.Canceller;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
@@ -90,26 +91,22 @@ public class SearchCoordinator
         extends ViewModel
         implements Canceller {
 
+    /** Log tag. */
+    private static final String TAG = "SearchCoordinator";
+
     /**
      * List of front/back cover file specs as collected during the search.
      * <p>
      * <br>type: {@code ArrayList<String>}
      */
-    public static final String[] BKEY_TMP_FILE_SPEC_ARRAY = new String[2];
-
-    /** Log tag. */
-    private static final String TAG = "SearchCoordinator";
+    public static final String[] BKEY_TMP_FILE_SPEC_ARRAY = new String[]{
+            TAG + ":fileSpec_array:0",
+            TAG + ":fileSpec_array:1"
+    };
 
     public static final String BKEY_SEARCH_ERROR = TAG + ":error";
     /** divider to convert nanoseconds to milliseconds. */
     private static final int NANO_TO_MILLIS = 1_000_000;
-
-    static {
-        // list of front covers
-        SearchCoordinator.BKEY_TMP_FILE_SPEC_ARRAY[0] = TAG + ":fileSpec_array:0";
-        // list of back covers
-        SearchCoordinator.BKEY_TMP_FILE_SPEC_ARRAY[1] = TAG + ":fileSpec_array:1";
-    }
 
     protected final MutableLiveData<ProgressMessage>
             mSearchCoordinatorProgress = new MutableLiveData<>();
@@ -592,10 +589,8 @@ public class SearchCoordinator
     public boolean searchByExternalId(@NonNull final Context context,
                                       @NonNull final SearchEngine searchEngine,
                                       @NonNull final String externalIdSearchText) {
-        // sanity check
-        if (externalIdSearchText.isEmpty()) {
-            throw new IllegalStateException("externalIdSearchText was empty");
-        }
+        SanityCheck.requireValue(externalIdSearchText, "externalIdSearchText");
+
         // remove all other criteria (this is CRUCIAL)
         clearSearchText();
 
@@ -999,10 +994,10 @@ public class SearchCoordinator
                 || DBDefinitions.KEY_DATE_FIRST_PUBLICATION.equals(key)) {
                 accumulateDates(context, locale, key, siteData);
 
-            } else if (Book.BKEY_AUTHOR_ARRAY.equals(key)
-                       || Book.BKEY_SERIES_ARRAY.equals(key)
-                       || Book.BKEY_PUBLISHER_ARRAY.equals(key)
-                       || Book.BKEY_TOC_ARRAY.equals(key)
+            } else if (Book.BKEY_AUTHOR_LIST.equals(key)
+                       || Book.BKEY_SERIES_LIST.equals(key)
+                       || Book.BKEY_PUBLISHER_LIST.equals(key)
+                       || Book.BKEY_TOC_LIST.equals(key)
                        || BKEY_TMP_FILE_SPEC_ARRAY[0].equals(key)
                        || BKEY_TMP_FILE_SPEC_ARRAY[1].equals(key)) {
                 accumulateList(key, siteData);

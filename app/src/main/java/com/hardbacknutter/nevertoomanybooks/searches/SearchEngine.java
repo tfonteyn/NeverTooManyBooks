@@ -56,7 +56,6 @@ import com.hardbacknutter.nevertoomanybooks.searches.amazon.AmazonSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.tasks.Canceller;
 import com.hardbacknutter.nevertoomanybooks.tasks.TerminatorConnection;
-import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.Throttler;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
@@ -322,31 +321,29 @@ public interface SearchEngine {
         return con;
     }
 
-    @NonNull
-    default String createFilename(@Nullable final String bookId,
-                                  @IntRange(from = 0, to = 1) final int cIdx,
-                                  @Nullable final ImageFileInfo.Size size) {
-        final SearchEngineRegistry.Config config = SearchEngineRegistry.getByEngineId(getId());
-        //noinspection ConstantConditions
-        return ImageUtils.createFilename(config.getFilenameSuffix(), bookId, cIdx, size);
-    }
-
     /**
      * Convenience method to save an image using the engines specific network configuration.
      *
-     * @param url      Image file URL
-     * @param filename to use
+     * @param url    Image file URL
+     * @param bookId more or less unique id; e.g. isbn or website native id, etc...
+     * @param cIdx   0..n image index
+     * @param size   (optional) size parameter for engines/sites which support one
      *
      * @return File fileSpec, or {@code null} on failure
      */
     @WorkerThread
     @Nullable
     default String saveImage(@NonNull final String url,
-                             @NonNull final String filename) {
+                             @Nullable final String bookId,
+                             @IntRange(from = 0, to = 1) final int cIdx,
+                             @Nullable final ImageFileInfo.Size size) {
         final SearchEngineRegistry.Config config = SearchEngineRegistry.getByEngineId(getId());
-
         //noinspection ConstantConditions
-        final File file = ImageUtils.saveImage(getAppContext(), url, filename,
+        final String filename = ImageUtils
+                .createFilename(config.getFilenameSuffix(), bookId, cIdx, size);
+
+        final File file = ImageUtils.saveImage(getAppContext(), url,
+                                               filename,
                                                config.getConnectTimeoutMs(),
                                                config.getReadTimeoutMs(),
                                                getThrottler());
@@ -629,15 +626,11 @@ public interface SearchEngine {
                     return null;
                 }
 
-                final ArrayList<String> imageList =
-                        bookData.getStringArrayList(
-                                SearchCoordinator.BKEY_TMP_FILE_SPEC_ARRAY[cIdx]);
+                final ArrayList<String> imageList = bookData
+                        .getStringArrayList(SearchCoordinator.BKEY_TMP_FILE_SPEC_ARRAY[cIdx]);
                 if (imageList != null && !imageList.isEmpty()) {
-                    final File downloadedFile = new File(imageList.get(0));
                     // let the system resolve any path variations
-                    final File destination = new File(downloadedFile.getAbsolutePath());
-                    FileUtils.renameOrThrow(downloadedFile, destination);
-                    return destination.getAbsolutePath();
+                    return new File(imageList.get(0)).getAbsolutePath();
                 }
 
             } catch (@NonNull final CredentialsException | IOException e) {

@@ -52,6 +52,7 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.BaseDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.entities.EntityStatus;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.AuthorFormatter;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.BookViewModel;
@@ -88,7 +89,7 @@ public class EditBookAuthorListDialogFragment
             new SimpleAdapterDataObserver() {
                 @Override
                 public void onChanged() {
-                    mBookViewModel.setDirty(true);
+                    mBookViewModel.getBook().setStage(EntityStatus.Stage.Dirty);
                 }
             };
     /** View Binding. */
@@ -140,11 +141,10 @@ public class EditBookAuthorListDialogFragment
 
         //noinspection ConstantConditions
         mBookViewModel = new ViewModelProvider(getActivity()).get(BookViewModel.class);
-        //noinspection ConstantConditions
-        mBookViewModel.init(getContext(), getArguments());
 
         mVb.toolbar.setSubtitle(mBookViewModel.getBook().getTitle());
 
+        //noinspection ConstantConditions
         final DiacriticArrayAdapter<String> nameAdapter = new DiacriticArrayAdapter<>(
                 getContext(), R.layout.dropdown_menu_popup_item,
                 mDb.getAuthorNames(DBDefinitions.KEY_AUTHOR_FORMATTED));
@@ -167,7 +167,7 @@ public class EditBookAuthorListDialogFragment
 
         mVb.authorList.setHasFixedSize(true);
 
-        mList = mBookViewModel.getBook().getParcelableArrayList(Book.BKEY_AUTHOR_ARRAY);
+        mList = mBookViewModel.getBook().getParcelableArrayList(Book.BKEY_AUTHOR_LIST);
         mListAdapter = new AuthorListAdapter(getContext(), mList,
                                              vh -> mItemTouchHelper.startDrag(vh));
         mVb.authorList.setAdapter(mListAdapter);
@@ -306,7 +306,7 @@ public class EditBookAuthorListDialogFragment
         //noinspection ConstantConditions
         if (mDb.update(getContext(), original)) {
             Author.pruneList(mList, getContext(), mDb, true, bookLocale);
-            mBookViewModel.refreshAuthorList(getContext());
+            mBookViewModel.refreshAuthors(getContext());
             mListAdapter.notifyDataSetChanged();
 
         } else {

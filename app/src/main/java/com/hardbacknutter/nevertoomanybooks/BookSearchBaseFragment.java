@@ -287,7 +287,7 @@ public abstract class BookSearchBaseFragment
      */
     void onSearchResults(@NonNull final Bundle bookData) {
         final Intent intent = new Intent(getContext(), EditBookActivity.class)
-                .putExtra(Book.BKEY_BOOK_DATA, bookData);
+                .putExtra(Book.BKEY_DATA_BUNDLE, bookData);
         startActivityForResult(intent, RequestCode.BOOK_EDIT);
         onClearPreviousSearchCriteria();
     }

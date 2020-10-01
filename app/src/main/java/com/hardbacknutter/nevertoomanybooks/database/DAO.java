@@ -37,8 +37,6 @@ import androidx.annotation.VisibleForTesting;
 import androidx.core.util.Pair;
 
 import java.io.Closeable;
-import java.io.File;
-import java.io.IOException;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.text.Normalizer;
@@ -73,6 +71,7 @@ import com.hardbacknutter.nevertoomanybooks.database.definitions.TableInfo;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
+import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.AuthorWork;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -83,7 +82,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.ItemWithTitle;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
-import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
@@ -250,6 +248,8 @@ public class DAO
     private static final String ERROR_CREATING_BOOK_FROM = "Failed creating book from\n";
     /** log error string. */
     private static final String ERROR_UPDATING_BOOK_FROM = "Failed updating book from\n";
+    /** log error string. */
+    private static final String ERROR_STORING_COVERS = "Failed storing the covers for book from\n";
 
 
     /** See {@link #encodeString}. */
@@ -491,9 +491,9 @@ public class DAO
             book.preprocessForStoring(context, true);
 
             // Make sure we have at least one author
-            final List<Author> authors = book.getParcelableArrayList(Book.BKEY_AUTHOR_ARRAY);
+            final List<Author> authors = book.getParcelableArrayList(Book.BKEY_AUTHOR_LIST);
             if (authors.isEmpty()) {
-                throw new DaoWriteException(ErrorMsg.EMPTY_ARRAY_OR_LIST + "|authors|book=" + book);
+                throw new DaoWriteException("No authors for book=" + book);
             }
 
             // correct field types if needed, and filter out fields we don't have in the db table.
@@ -532,7 +532,7 @@ public class DAO
             // always lookup the UUID (even if we inserted with a uuid... to protect against
             // future changes)
             final String uuid = getBookUuid(newBookId);
-            Objects.requireNonNull(uuid, ErrorMsg.NULL_UUID);
+            SanityCheck.requireValue(uuid, "uuid");
             book.putString(KEY_BOOK_UUID, uuid);
 
             // next we add the links to series, authors,...
@@ -540,23 +540,10 @@ public class DAO
             // and populate the search suggestions table
             ftsInsert(context, newBookId);
 
-            // if the user added covers, make them permanent
-            try {
-                for (int cIdx = 0; cIdx < 2; cIdx++) {
-                    final String fileSpec = book.getString(Book.BKEY_TMP_FILE_SPEC[cIdx]);
-                    if (!fileSpec.isEmpty()) {
-                        final File downloadedFile = new File(fileSpec);
-                        final File destination = AppDir.getCoverFile(context, uuid, cIdx);
-                        FileUtils.renameOrThrow(downloadedFile, destination);
-
-                        book.remove(Book.BKEY_TMP_FILE_SPEC[cIdx]);
-                    }
-                }
-            } catch (@NonNull final IOException e) {
-                //FIXME: we should delete the orphaned images....
+            if (!book.storeCovers(context)) {
                 book.putLong(KEY_PK_ID, 0);
                 book.remove(KEY_BOOK_UUID);
-                throw new DaoWriteException(ERROR_CREATING_BOOK_FROM + book, e);
+                throw new DAO.DaoWriteException(ERROR_STORING_COVERS + this);
             }
 
             // all done
@@ -629,6 +616,13 @@ public class DAO
             if (success) {
                 insertBookLinks(context, book, flags);
                 ftsUpdate(context, book.getId());
+
+                if (!book.storeCovers(context)) {
+                    book.putLong(KEY_PK_ID, 0);
+                    book.remove(KEY_BOOK_UUID);
+                    throw new DAO.DaoWriteException(ERROR_STORING_COVERS + this);
+                }
+
                 if (txLock != null) {
                     mSyncedDb.setTransactionSuccessful();
                 }
@@ -830,6 +824,7 @@ public class DAO
         final boolean success = deleteBook(context, book.getId());
         if (success) {
             book.setId(0);
+            book.remove(KEY_BOOK_UUID);
         }
         return success;
     }
@@ -866,11 +861,11 @@ public class DAO
             if (rowsAffected > 0) {
                 // sanity check
                 if (!uuid.isEmpty()) {
-                    // delete the thumbnail (if any) from file system
+                    // Delete the covers from the file system.
                     for (int cIdx = 0; cIdx < 2; cIdx++) {
-                        FileUtils.delete(AppDir.getCoverFile(context, uuid, cIdx));
+                        FileUtils.delete(Book.getUuidCoverFile(context, uuid, cIdx));
                     }
-                    // delete the thumbnail (if any) from cache
+                    // and from the cache.
                     if (ImageUtils.isImageCachingEnabled(context)) {
                         CoversDAO.delete(context, uuid);
                     }
@@ -908,47 +903,47 @@ public class DAO
         // unconditional lookup of the book locale!
         final Locale bookLocale = book.getLocale(context);
 
-        if (book.contains(Book.BKEY_BOOKSHELF_ARRAY)) {
+        if (book.contains(Book.BKEY_BOOKSHELF_LIST)) {
             // Bookshelves will be inserted if new, but not updated
             insertBookBookshelf(context,
                                 book.getId(),
-                                book.getParcelableArrayList(Book.BKEY_BOOKSHELF_ARRAY));
+                                book.getParcelableArrayList(Book.BKEY_BOOKSHELF_LIST));
         }
 
-        if (book.contains(Book.BKEY_AUTHOR_ARRAY)) {
+        if (book.contains(Book.BKEY_AUTHOR_LIST)) {
             // Authors will be inserted if new, but not updated
             insertBookAuthors(context,
                               book.getId(),
-                              book.getParcelableArrayList(Book.BKEY_AUTHOR_ARRAY),
+                              book.getParcelableArrayList(Book.BKEY_AUTHOR_LIST),
                               lookupLocale,
                               bookLocale);
         }
 
-        if (book.contains(Book.BKEY_SERIES_ARRAY)) {
+        if (book.contains(Book.BKEY_SERIES_LIST)) {
             // Series will be inserted if new, but not updated
             insertBookSeries(context,
                              book.getId(),
-                             book.getParcelableArrayList(Book.BKEY_SERIES_ARRAY),
+                             book.getParcelableArrayList(Book.BKEY_SERIES_LIST),
                              lookupLocale,
                              bookLocale);
         }
 
-        if (book.contains(Book.BKEY_PUBLISHER_ARRAY)) {
+        if (book.contains(Book.BKEY_PUBLISHER_LIST)) {
             // Publishers will be inserted if new, but not updated
             insertBookPublishers(context,
                                  book.getId(),
-                                 book.getParcelableArrayList(Book.BKEY_PUBLISHER_ARRAY),
+                                 book.getParcelableArrayList(Book.BKEY_PUBLISHER_LIST),
                                  lookupLocale,
                                  bookLocale);
         }
 
-        if (book.contains(Book.BKEY_TOC_ARRAY)) {
+        if (book.contains(Book.BKEY_TOC_LIST)) {
             // TOC entries are two steps away; they can exist in other books
             // Hence we will both insert new entries
             // AND update existing ones if needed.
             saveTocList(context,
                         book.getId(),
-                        book.getParcelableArrayList(Book.BKEY_TOC_ARRAY),
+                        book.getParcelableArrayList(Book.BKEY_TOC_LIST),
                         lookupLocale,
                         bookLocale);
         }
@@ -2355,9 +2350,7 @@ public class DAO
      */
     @NonNull
     public TypedCursor fetchBooks(@NonNull final List<Long> idList) {
-        if (idList.isEmpty()) {
-            throw new IllegalArgumentException(ErrorMsg.EMPTY_ARRAY_OR_LIST);
-        }
+        SanityCheck.requireValue(idList, "idList");
 
         if (idList.size() == 1) {
             // optimize for single book
@@ -2437,9 +2430,7 @@ public class DAO
      */
     @NonNull
     public TypedCursor fetchBooksByIsbnList(@NonNull final List<String> isbnList) {
-        if (isbnList.isEmpty()) {
-            throw new IllegalArgumentException(ErrorMsg.EMPTY_ARRAY_OR_LIST);
-        }
+        SanityCheck.requireValue(isbnList, "isbnList");
 
         if (isbnList.size() == 1) {
             // optimize for single book
@@ -2458,17 +2449,6 @@ public class DAO
                     TBL_BOOKS.dot(KEY_PK_ID));
         }
 
-    }
-
-    /**
-     * Return a {@link Cursor} with a single column, the UUID of all {@link Book}.
-     * Used to loop across all books during backup to save the cover images.
-     *
-     * @return {@link Cursor} containing all records, if any
-     */
-    @NonNull
-    public Cursor fetchBookUuidList() {
-        return mSyncedDb.rawQuery(DAOSql.SqlSelectFullTable.ALL_BOOK_UUID, null);
     }
 
     /**
@@ -2539,6 +2519,18 @@ public class DAO
             }
         }
         return list;
+    }
+
+    /**
+     * Fetch all book UUID, and return them as a List.
+     *
+     * @return a list of all book UUID in the database.
+     */
+    @NonNull
+    public ArrayList<String> getBookUuidList() {
+        try (Cursor cursor = mSyncedDb.rawQuery(DAOSql.SqlSelectFullTable.ALL_BOOK_UUID, null)) {
+            return getFirstColumnAsList(cursor);
+        }
     }
 
     /**
@@ -3190,10 +3182,7 @@ public class DAO
      */
     @Nullable
     private String getBookUuid(final long bookId) {
-        // sanity check
-        if (bookId == 0) {
-            throw new IllegalArgumentException(ErrorMsg.ZERO_ID_FOR_BOOK);
-        }
+        SanityCheck.requireValue(bookId, "bookId");
 
         final SynchronizedStatement stmt = mSqlStatementManager.get(
                 STMT_GET_BOOK_UUID, () -> DAOSql.SqlGet.BOOK_UUID_BY_ID);
@@ -3765,7 +3754,7 @@ public class DAO
                 book.load(bookId, this);
 
                 final Collection<Author> fromBook =
-                        book.getParcelableArrayList(Book.BKEY_AUTHOR_ARRAY);
+                        book.getParcelableArrayList(Book.BKEY_AUTHOR_LIST);
                 final Collection<Author> destList = new ArrayList<>();
 
                 for (Author item : fromBook) {
@@ -3818,7 +3807,7 @@ public class DAO
                 book.load(bookId, this);
 
                 final Collection<Series> fromBook =
-                        book.getParcelableArrayList(Book.BKEY_SERIES_ARRAY);
+                        book.getParcelableArrayList(Book.BKEY_SERIES_LIST);
                 final Collection<Series> destList = new ArrayList<>();
 
                 for (Series item : fromBook) {
@@ -3867,7 +3856,7 @@ public class DAO
                 book.load(bookId, this);
 
                 final Collection<Publisher> fromBook =
-                        book.getParcelableArrayList(Book.BKEY_PUBLISHER_ARRAY);
+                        book.getParcelableArrayList(Book.BKEY_PUBLISHER_LIST);
                 final Collection<Publisher> destList = new ArrayList<>();
 
                 for (Publisher item : fromBook) {
@@ -4312,8 +4301,10 @@ public class DAO
     /**
      * Rebuild the entire FTS database.
      * This can take several seconds with many books or a slow device.
+     *
+     * @param context Current context
      */
-    public void ftsRebuild() {
+    public void ftsRebuild(@NonNull final Context context) {
         long t0 = 0;
         if (BuildConfig.DEBUG /* always */) {
             t0 = System.nanoTime();
@@ -4341,7 +4332,7 @@ public class DAO
 
         } catch (@NonNull final RuntimeException e) {
             // updating FTS should not be fatal.
-            Logger.error(App.getAppContext(), TAG, e);
+            Logger.error(context, TAG, e);
             gotError = true;
         } finally {
             mSyncedDb.endTransaction(txLock);

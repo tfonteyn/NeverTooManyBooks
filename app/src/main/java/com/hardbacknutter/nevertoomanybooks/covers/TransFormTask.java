@@ -49,7 +49,10 @@ public class TransFormTask
     private static final String TAG = "TransFormTask";
 
     @NonNull
-    private final File mFile;
+    private final File mSrcFile;
+    @NonNull
+    private File mDestFile;
+
     @NonNull
     private final WeakReference<OnAfterTransformListener> mListener;
 
@@ -71,14 +74,32 @@ public class TransFormTask
      * </ol>
      * before executing this task.
      *
+     * The transformation is done "in-place", i.e the srcFile is overwritten with the result.
+     * To use a different file, and leaving the srcFile unchanged,
+     * call {@link #setDestinationFile(File)}.
+     *
      * @param srcFile  file to transform
      * @param listener where to send results
      */
     TransFormTask(@NonNull final File srcFile,
                   @Nullable final OnAfterTransformListener listener) {
 
-        mFile = srcFile;
+        mSrcFile = srcFile;
         mListener = new WeakReference<>(listener);
+
+        mDestFile = mSrcFile;
+    }
+
+    /**
+     * Set a separate destination file. The source file will not be modified.
+     *
+     * @param dstFile to write to
+     *
+     * @return TransFormTask (for chaining)
+     */
+    TransFormTask setDestinationFile(@NonNull final File dstFile) {
+        mDestFile = dstFile;
+        return this;
     }
 
     /**
@@ -202,7 +223,7 @@ public class TransFormTask
     private int getExifAngle() {
         final ExifInterface exif;
         try {
-            exif = new ExifInterface(mFile);
+            exif = new ExifInterface(mSrcFile);
         } catch (@NonNull final IOException ignore) {
             return 0;
         }
@@ -244,9 +265,9 @@ public class TransFormTask
         // Read either a scaled down version (but NOT exact dimensions) or
         // the original version.
         if (mScale) {
-            bitmap = ImageUtils.decodeFile(mFile, mMaxWidth, mMaxHeight);
+            bitmap = ImageUtils.decodeFile(mSrcFile, mMaxWidth, mMaxHeight);
         } else {
-            bitmap = BitmapFactory.decodeFile(mFile.getAbsolutePath());
+            bitmap = BitmapFactory.decodeFile(mSrcFile.getAbsolutePath());
         }
 
         // Try and get the rotation right
@@ -278,9 +299,9 @@ public class TransFormTask
             bitmap = rotate(bitmap, angle);
         }
 
-        // Write back to the file
+        // Write out to the destination file
         if (bitmap != null) {
-            if (ImageUtils.saveBitmap(bitmap, mFile)) {
+            if (ImageUtils.saveBitmap(bitmap, mDestFile)) {
                 return bitmap;
             }
         }
@@ -291,7 +312,7 @@ public class TransFormTask
     @Override
     protected void onPostExecute(@Nullable final Bitmap bitmap) {
         if (mListener.get() != null) {
-            mListener.get().onFinished(new TransformedData(bitmap, mFile, mReturnCode));
+            mListener.get().onFinished(new TransformedData(bitmap, mDestFile, mReturnCode));
         } else {
             if (BuildConfig.DEBUG /* always */) {
                 Log.w(TAG, "onAfterTransform|" + ErrorMsg.LISTENER_WAS_DEAD);
@@ -317,7 +338,7 @@ public class TransFormTask
 
         @Nullable
         public final Bitmap bitmap;
-        @Nullable
+        @NonNull
         public final File file;
         final int returnCode;
 
@@ -328,7 +349,7 @@ public class TransFormTask
          * @param returnCode as set in {@link #setReturnCode(int)}; or {@code 0} if not set.
          */
         TransformedData(@Nullable final Bitmap bitmap,
-                        @Nullable final File file,
+                        @NonNull final File file,
                         final int returnCode) {
             this.bitmap = bitmap;
             this.file = file;

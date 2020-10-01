@@ -616,7 +616,14 @@ public final class DBHelper
                 final File destFile = AppDir.Upgrades.getFile(context, backup);
                 // rename the existing file if there is one
                 if (destFile.exists()) {
-                    FileUtils.rename(destFile, new File(destFile.getPath() + ".bak"));
+                    final File destination = new File(destFile.getPath() + ".bak");
+                    try {
+                        FileUtils.rename(destFile, destination);
+                    } catch (@NonNull final IOException e) {
+                        Logger.error(context, TAG, e,
+                                     "failed to rename source=" + destFile
+                                     + " TO destination" + destination, e);
+                    }
                 }
                 // and create a new copy
                 FileUtils.copy(new File(db.getPath()), destFile);

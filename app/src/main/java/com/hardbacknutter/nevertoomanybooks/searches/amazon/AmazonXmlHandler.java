@@ -333,9 +333,9 @@ class AmazonXmlHandler
     @CallSuper
     public void endDocument() {
         if (mFetchThumbnail[0] && !mCoverUrl.isEmpty()) {
-            final String tmpName = mSearchEngine.createFilename(
-                    mBookData.getString(DBDefinitions.KEY_ISBN), 0, null);
-            final String fileSpec = mSearchEngine.saveImage(mCoverUrl, tmpName);
+
+            final String fileSpec = mSearchEngine
+                    .saveImage(mCoverUrl, mBookData.getString(DBDefinitions.KEY_ISBN), 0, null);
             if (fileSpec != null) {
                 ArrayList<String> imageList =
                         mBookData.getStringArrayList(SearchCoordinator.BKEY_TMP_FILE_SPEC_ARRAY[0]);
@@ -348,10 +348,10 @@ class AmazonXmlHandler
             }
         }
         if (!mAuthors.isEmpty()) {
-            mBookData.putParcelableArrayList(Book.BKEY_AUTHOR_ARRAY, mAuthors);
+            mBookData.putParcelableArrayList(Book.BKEY_AUTHOR_LIST, mAuthors);
         }
         if (!mPublishers.isEmpty()) {
-            mBookData.putParcelableArrayList(Book.BKEY_PUBLISHER_ARRAY, mPublishers);
+            mBookData.putParcelableArrayList(Book.BKEY_PUBLISHER_LIST, mPublishers);
         }
     }
 

@@ -62,18 +62,19 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.RequestCode;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
+import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.dialogs.MenuPicker;
 import com.hardbacknutter.nevertoomanybooks.dialogs.MenuPickerDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ZoomedImageDialogFragment;
-import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 import com.hardbacknutter.nevertoomanybooks.utils.CameraHelper;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.GenericFileProvider;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
+import com.hardbacknutter.nevertoomanybooks.viewmodels.BookViewModel;
 
 /**
  * Handler for a displayed Cover ImageView element.
@@ -96,15 +97,15 @@ public class CoverHandler {
      * After taking a picture, do nothing. Never change the value.
      * This is stored in user preferences.
      */
-    private static final int ACTION_NOTHING = 0;
+    private static final int ACTION_DONE = 0;
     /** After taking a picture, crop. */
     private static final int ACTION_CROP = 1;
     /** After taking a picture, edit. */
     private static final int ACTION_EDIT = 2;
 
     private static final String IMAGE_MIME_TYPE = "image/*";
-    /** The cropper uses a single file. */
-    private static final String TEMP_COVER_FILENAME = TAG + ".jpg";
+    /** The file name we'll use with the external editor/crop. */
+    private final String TEMP_COVER_FILENAME;
 
     /** The fragment hosting us. Should implement HostingFragment. */
     @NonNull
@@ -117,8 +118,7 @@ public class CoverHandler {
     /** Context from the fragment, cached as used frequently. */
     @NonNull
     private final Context mContext;
-    @NonNull
-    private final Book mBook;
+
     /**
      * keep a reference to the ISBN Field, so we can use the *current* value
      * when we're in the book edit fragment.
@@ -130,6 +130,8 @@ public class CoverHandler {
     private final int mMaxWidth;
     private final int mMaxHeight;
     private final TransFormTaskViewModel mTransFormTaskViewModel;
+    @NonNull
+    private final BookViewModel mBookViewModel;
     /** Used to display a hint if user rotates a camera image. */
     private boolean mShowHintAboutRotating;
     @Nullable
@@ -142,27 +144,30 @@ public class CoverHandler {
      * with both read-only screens (passing the isbn itself would be enough)
      * AND with edit-screens (need the CURRENT code).
      *
-     * @param fragment    the hosting fragment, should implement {@link HostingFragment}
-     * @param progressBar (optional) a progress bar
-     * @param book        the book whose cover we're handling
-     * @param isbnView    the view to read the *current* ISBN from
-     * @param cIdx        0..n image index
-     * @param coverView   the views to populate
+     * @param fragment      the hosting fragment, should implement {@link HostingFragment}
+     * @param bookViewModel access to the book
+     * @param cIdx          0..n image index
+     * @param isbnView      the view to read the *current* ISBN from
+     * @param coverView     the views to populate
+     * @param maxHeight     the maximum height (==width) for the cover
+     * @param progressBar   (optional) a progress bar
      */
     public CoverHandler(@NonNull final Fragment fragment,
-                        @Nullable final ProgressBar progressBar,
-                        @NonNull final Book book,
-                        @NonNull final TextView isbnView,
+                        @NonNull final BookViewModel bookViewModel,
                         @IntRange(from = 0, to = 1) final int cIdx,
+                        @NonNull final TextView isbnView,
                         @NonNull final ImageView coverView,
-                        final int maxHeight) {
+                        final int maxHeight,
+                        @Nullable final ProgressBar progressBar) {
+
+        TEMP_COVER_FILENAME = TAG + "_" + cIdx + ".jpg";
 
         mFragment = fragment;
-        //noinspection ConstantConditions
-        mContext = mFragment.getContext();
+        mContext = mFragment.requireContext();
+
+        mBookViewModel = bookViewModel;
 
         mProgressBar = progressBar;
-        mBook = book;
         mIsbnView = isbnView;
         mCIdx = cIdx;
         mCoverView = coverView;
@@ -173,10 +178,10 @@ public class CoverHandler {
 
         // Allow zooming by clicking on the image;
         mCoverView.setOnClickListener(v -> {
-            final File srcFile = getCoverFile();
-            if (srcFile.exists()) {
+            final File uuidCoverFile = mBookViewModel.getUuidCoverFile(mContext, mCIdx);
+            if (uuidCoverFile != null) {
                 ZoomedImageDialogFragment
-                        .newInstance(srcFile)
+                        .newInstance(uuidCoverFile)
                         .show(fragment.getChildFragmentManager(), ZoomedImageDialogFragment.TAG);
             }
             //else {
@@ -208,17 +213,14 @@ public class CoverHandler {
         });
 
         // finally load the image.
-        setCoverAndLoadImage(getCoverFile());
-    }
+        final File uuidCoverFile = mBookViewModel.getUuidCoverFile(mContext, mCIdx);
+        if (uuidCoverFile != null) {
+            new ImageLoader(mCoverView, uuidCoverFile, mMaxWidth, mMaxHeight, null)
+                    .execute();
+            mCoverView.setBackground(null);
 
-    /**
-     * Delete any orphaned temporary cover files.
-     *
-     * @param context Current context
-     */
-    public static void deleteOrphanedCoverFiles(@NonNull final Context context) {
-        for (int cIdx = 0; cIdx < 2; cIdx++) {
-            FileUtils.delete(AppDir.Cache.getFile(context, cIdx + ".jpg"));
+        } else {
+            setPlaceholder();
         }
     }
 
@@ -230,14 +232,14 @@ public class CoverHandler {
         new MenuInflater(mContext).inflate(R.menu.image, menu);
 
         final String title;
-        final File file = getCoverFile();
-        if (file.exists()) {
+        final File uuidCoverFile = mBookViewModel.getUuidCoverFile(mContext, mCIdx);
+        if (uuidCoverFile != null) {
             if (BuildConfig.DEBUG /* always */) {
                 // show the size of the image in the title bar
                 final BitmapFactory.Options opts = new BitmapFactory.Options();
                 opts.inJustDecodeBounds = true;
-                BitmapFactory.decodeFile(file.getAbsolutePath(), opts);
-                title = "w=" + opts.outWidth + ", h=" + opts.outHeight;
+                BitmapFactory.decodeFile(uuidCoverFile.getAbsolutePath(), opts);
+                title = "" + opts.outWidth + "x" + opts.outHeight;
             } else {
                 title = mContext.getString(R.string.lbl_cover_long);
             }
@@ -249,7 +251,7 @@ public class CoverHandler {
         }
 
         // we only support alternative edition covers for the front cover.
-        menu.findItem(R.id.MENU_THUMB_ADD_ALT_EDITIONS).setVisible(mCIdx == 0);
+        menu.findItem(R.id.MENU_THUMB_ADD_FROM_ALT_EDITIONS).setVisible(mCIdx == 0);
 
         if (BuildConfig.MENU_PICKER_USES_FRAGMENT) {
             MenuPickerDialogFragment
@@ -284,8 +286,8 @@ public class CoverHandler {
 
         switch (menuItem) {
             case R.id.MENU_DELETE: {
-                setCover(null);
-                setPlaceholder(null);
+                mBookViewModel.setCover(mContext, mCIdx, null);
+                setPlaceholder();
                 return true;
             }
             case R.id.SUBMENU_THUMB_ROTATE: {
@@ -298,42 +300,52 @@ public class CoverHandler {
             }
             case R.id.MENU_THUMB_ROTATE_CW: {
                 showProgress(true);
-                new TransFormTask(getCoverFile(), mTransFormTaskViewModel)
-                        .setRotate(90)
-                        .execute();
+                startRotation(90);
                 return true;
             }
             case R.id.MENU_THUMB_ROTATE_CCW: {
                 showProgress(true);
-                new TransFormTask(getCoverFile(), mTransFormTaskViewModel)
-                        .setRotate(-90)
-                        .execute();
+                startRotation(-90);
                 return true;
             }
             case R.id.MENU_THUMB_ROTATE_180: {
                 showProgress(true);
-                new TransFormTask(getCoverFile(), mTransFormTaskViewModel)
-                        .setRotate(180)
-                        .execute();
+                startRotation(180);
                 return true;
             }
             case R.id.MENU_THUMB_CROP: {
-                cropCoverFile(getCoverFile());
+                final File srcFile;
+                try {
+                    srcFile = mBookViewModel.createTempCoverFile(mContext, mCIdx);
+                } catch (@NonNull final IOException e) {
+                    Snackbar.make(mCoverView, R.string.error_storage_not_writable,
+                                  Snackbar.LENGTH_LONG).show();
+                    return true;
+                }
+                startCropper(srcFile);
                 return true;
             }
             case R.id.MENU_EDIT: {
-                editCoverFile(getCoverFile());
+                final File srcFile;
+                try {
+                    srcFile = mBookViewModel.createTempCoverFile(mContext, mCIdx);
+                } catch (@NonNull final IOException e) {
+                    Snackbar.make(mCoverView, R.string.error_storage_not_writable,
+                                  Snackbar.LENGTH_LONG).show();
+                    return true;
+                }
+                startEditor(srcFile);
                 return true;
             }
             case R.id.MENU_THUMB_ADD_FROM_CAMERA: {
                 startCamera();
                 return true;
             }
-            case R.id.MENU_THUMB_ADD_FROM_GALLERY: {
+            case R.id.MENU_THUMB_ADD_FROM_FILE_SYSTEM: {
                 startChooser();
                 return true;
             }
-            case R.id.MENU_THUMB_ADD_ALT_EDITIONS: {
+            case R.id.MENU_THUMB_ADD_FROM_ALT_EDITIONS: {
                 startCoverBrowser();
                 return true;
             }
@@ -343,212 +355,54 @@ public class CoverHandler {
         }
     }
 
+
     /**
-     * Handles results from Camera, Picture Gallery and editing (incl. internal cropper).
+     * Crop the image using our internal code in {@link CropImageActivity}.
+     * The user can choose the use an external crop tool by using the external editor.
      *
-     * @return {@code true} when handled, {@code false} if unknown requestCode
+     * @param srcFile to crop; the file will not be modified
      */
-    public boolean onActivityResult(final int requestCode,
-                                    final int resultCode,
-                                    @Nullable final Intent data) {
-        switch (requestCode) {
-            case RequestCode.ACTION_GET_CONTENT: {
-                if (resultCode == Activity.RESULT_OK) {
-                    Objects.requireNonNull(data, ErrorMsg.NULL_INTENT_DATA);
-                    final Uri uri = data.getData();
-                    if (uri != null) {
-                        try (InputStream is = mContext.getContentResolver().openInputStream(uri)) {
-                            final File dstFile =
-                                    FileUtils.copyInputStream(mContext, is, getCoverFile());
-                            if (dstFile != null) {
-                                showProgress(true);
-                                new TransFormTask(dstFile, mTransFormTaskViewModel)
-                                        .setScale(true)
-                                        .execute();
-                                return true;
-                            }
-                        } catch (@NonNull final IOException e) {
-                            if (BuildConfig.DEBUG /* always */) {
-                                Log.d(TAG, "Unable to copy content to file", e);
-                            }
-                        }
-                    }
+    private void startCropper(@NonNull final File srcFile) {
+        // use the fixed name destination.
+        final File dstFile = AppDir.Cache.getFile(mContext, TEMP_COVER_FILENAME);
+        FileUtils.delete(dstFile);
 
-                    StandardDialogs.showError(mContext, R.string.warning_image_copy_failed);
-                }
-                return true;
-            }
-            case RequestCode.ACTION_IMAGE_CAPTURE: {
-                if (resultCode == Activity.RESULT_OK) {
-                    //noinspection ConstantConditions
-                    final File srcFile = mCameraHelper.getFile(mContext);
-                    if (srcFile != null && srcFile.exists()) {
-                        final File dstFile = getCoverFile();
-                        if (!FileUtils.rename(srcFile, dstFile)) {
-                            Snackbar.make(mCoverView, R.string.error_storage_not_writable,
-                                          Snackbar.LENGTH_LONG).show();
-                            return true;
-                        }
+        final Intent intent = new Intent(mContext, CropImageActivity.class)
+                .putExtra(CropImageActivity.BKEY_SOURCE, srcFile.getAbsolutePath())
+                .putExtra(CropImageActivity.BKEY_DESTINATION, dstFile.getAbsolutePath());
 
-                        final SharedPreferences prefs = PreferenceManager
-                                .getDefaultSharedPreferences(mContext);
-                        // Should we apply an explicit rotation angle?
-                        // (which would overrule the setWindowManager call)
-                        final int angle = Prefs
-                                .getIntListPref(prefs, Prefs.pk_camera_image_autorotate, 0);
-
-                        // What action should we take after we're done?
-                        @NextAction
-                        final int action = Prefs
-                                .getIntListPref(prefs, Prefs.pk_camera_image_action,
-                                                ACTION_NOTHING);
-
-                        showProgress(true);
-                        //noinspection ConstantConditions
-                        new TransFormTask(dstFile, mTransFormTaskViewModel)
-                                .setScale(true)
-                                .setWindowManager(mFragment.getActivity().getWindowManager())
-                                .setRotate(angle)
-                                .setReturnCode(action)
-                                .execute();
-                        return true;
-                    }
-                }
-                // remove orphans
-                CameraHelper.deleteCameraFile(mContext);
-                return true;
-            }
-
-            case RequestCode.CROP_IMAGE:
-                // the dst is available in data.getData(), but we can just use getCoverFile()
-            case RequestCode.EDIT_IMAGE: {
-                if (resultCode == Activity.RESULT_OK) {
-                    final File srcFile = AppDir.Cache.getFile(mContext, TEMP_COVER_FILENAME);
-                    final File dstFile = getCoverFile();
-                    if (!FileUtils.rename(srcFile, dstFile)) {
-                        Snackbar.make(mCoverView, R.string.error_storage_not_writable,
-                                      Snackbar.LENGTH_LONG).show();
-                        return true;
-                    }
-
-                    showProgress(true);
-                    new TransFormTask(dstFile, mTransFormTaskViewModel)
-                            .setScale(true)
-                            .execute();
-                    return true;
-                }
-                // remove orphans
-                FileUtils.delete(AppDir.Cache.getFile(mContext, TEMP_COVER_FILENAME));
-                return true;
-            }
-            default:
-                return false;
-        }
+        mFragment.startActivityForResult(intent, RequestCode.CROP_IMAGE);
     }
 
     /**
-     * Called when the user clicks the large preview in the {@link CoverBrowserDialogFragment}.
+     * Rotate the image by the given angle.
      *
-     * @param fileSpec the selected image
+     * @param angle to rotate.
      */
-    public void onFileSelected(@Nullable final String fileSpec) {
-        if (fileSpec != null && !fileSpec.isEmpty()) {
-            final File srcFile = new File(fileSpec);
-            final File dstFile = getCoverFile();
-            if (FileUtils.rename(srcFile, dstFile)) {
-                setCoverAndLoadImage(dstFile);
-            } else {
-                Snackbar.make(mCoverView, R.string.error_storage_not_writable,
-                              Snackbar.LENGTH_LONG).show();
-            }
+    private void startRotation(final int angle) {
+        final File srcFile;
+        try {
+            srcFile = mBookViewModel.createTempCoverFile(mContext, mCIdx);
+        } catch (@NonNull final IOException e) {
+            Snackbar.make(mCoverView, R.string.error_storage_not_writable,
+                          Snackbar.LENGTH_LONG).show();
+            return;
         }
+
+        showProgress(true);
+        new TransFormTask(srcFile, mTransFormTaskViewModel)
+                .setRotate(angle)
+                .execute();
     }
-
-    private void onAfterTransform(@Nullable final Bitmap bitmap,
-                                  @Nullable final File file,
-                                  @NextAction final int returnCode) {
-
-        // satisfy lint: if the bitmap is good, the file will be good.
-        if (bitmap != null && file != null) {
-            setCover(file);
-            ImageUtils.setImageView(mCoverView, mMaxWidth, mMaxHeight, bitmap, 0);
-            mCoverView.setBackground(null);
-
-            switch (returnCode) {
-                case ACTION_CROP:
-                    cropCoverFile(file);
-                    break;
-
-                case ACTION_EDIT:
-                    editCoverFile(file);
-                    break;
-
-                case ACTION_NOTHING:
-                default:
-                    break;
-            }
-
-        } else {
-            setCover(null);
-            setPlaceholder(file);
-        }
-    }
-
-    /**
-     * Update the book cover with the given file AND load the image into the View.
-     *
-     * @param file cover or {@code null}
-     */
-    private void setCoverAndLoadImage(@Nullable final File file) {
-        if (ImageUtils.isFileGood(file, false)) {
-            setCover(file);
-
-            new ImageLoader(mCoverView, file, mMaxWidth, mMaxHeight, null)
-                    .execute();
-            mCoverView.setBackground(null);
-
-        } else {
-            setCover(null);
-            setPlaceholder(file);
-        }
-    }
-
-    /**
-     * Update the book cover with the given file.
-     *
-     * @param file cover or {@code null}
-     */
-    private void setCover(@Nullable final File file) {
-        mBook.setCover(mContext, mCIdx, file);
-        if (mFragment instanceof HostingFragment) {
-            ((HostingFragment) mFragment).onCoverChanged(mCIdx, file);
-        }
-    }
-
-    /**
-     * Put a place holder on screen.
-     *
-     * @param file to determine the type of placeholder to use
-     */
-    private void setPlaceholder(@Nullable final File file) {
-        if (file == null || file.length() == 0) {
-            ImageUtils.setPlaceholder(mCoverView, R.drawable.ic_add_a_photo,
-                                      R.drawable.outline_rounded,
-                                      (int) (mMaxWidth * ImageUtils.HW_RATIO),
-                                      mMaxHeight);
-        } else {
-            ImageUtils.setPlaceholder(mCoverView, R.drawable.ic_broken_image,
-                                      R.drawable.outline_rounded,
-                                      (int) (mMaxWidth * ImageUtils.HW_RATIO),
-                                      mMaxHeight);
-        }
-    }
-
 
     /**
      * Call out the Intent.ACTION_GET_CONTENT to get an image from an external app.
      */
     private void startChooser() {
+        // use the fixed name destination.
+        final File dstFile = AppDir.Cache.getFile(mContext, TEMP_COVER_FILENAME);
+        FileUtils.delete(dstFile);
+
         final Intent intent = new Intent(Intent.ACTION_GET_CONTENT)
                 .setType(IMAGE_MIME_TYPE);
         mFragment.startActivityForResult(
@@ -556,16 +410,11 @@ public class CoverHandler {
                 RequestCode.ACTION_GET_CONTENT);
     }
 
-    private void startCamera() {
-        if (mCameraHelper == null) {
-            mCameraHelper = new CameraHelper();
-        }
-        mCameraHelper.startCamera(mFragment, RequestCode.ACTION_IMAGE_CAPTURE);
-    }
-
     /**
      * Use the isbn to fetch other possible images from the internet
      * and present to the user to choose one.
+     * <p>
+     * The results comes back in {@link #onFileSelected(int, String)}
      */
     private void startCoverBrowser() {
         final String isbnStr = mIsbnView.getText().toString();
@@ -583,37 +432,11 @@ public class CoverHandler {
                       Snackbar.LENGTH_LONG).show();
     }
 
-    /**
-     * Get the File object for the cover of the book we are editing.
-     *
-     * @return the file
-     */
-    @NonNull
-    private File getCoverFile() {
-        final File file = mBook.getCoverFile(mContext, mCIdx);
-        if (file != null) {
-            return file;
+    private void startCamera() {
+        if (mCameraHelper == null) {
+            mCameraHelper = new CameraHelper();
         }
-
-        // return a new File object
-        return AppDir.Cache.getFile(mContext, mCIdx + ".jpg");
-    }
-
-    /**
-     * Crop the image using our internal code in {@link CropImageActivity}.
-     *
-     * @param srcFile to use
-     */
-    private void cropCoverFile(@NonNull final File srcFile) {
-        final File dstFile = AppDir.Cache.getFile(mContext, TEMP_COVER_FILENAME);
-        // delete any orphaned file.
-        FileUtils.delete(dstFile);
-
-        final Intent intent = new Intent(mContext, CropImageActivity.class)
-                .putExtra(CropImageActivity.BKEY_SOURCE, srcFile.getAbsolutePath())
-                .putExtra(CropImageActivity.BKEY_DESTINATION, dstFile.getAbsolutePath());
-
-        mFragment.startActivityForResult(intent, RequestCode.CROP_IMAGE);
+        mCameraHelper.startCamera(mFragment, RequestCode.ACTION_IMAGE_CAPTURE);
     }
 
     /**
@@ -621,8 +444,10 @@ public class CoverHandler {
      *
      * @param srcFile to use
      */
-    private void editCoverFile(@NonNull final File srcFile) {
+    private void startEditor(@NonNull final File srcFile) {
+        // use the fixed name destination.
         final File dstFile = AppDir.Cache.getFile(mContext, TEMP_COVER_FILENAME);
+        FileUtils.delete(dstFile);
 
         //TODO: we really should revoke the permissions afterwards
         final Uri srcUri = GenericFileProvider.getUriForFile(mContext, srcFile);
@@ -656,10 +481,187 @@ public class CoverHandler {
         }
     }
 
-    public interface HostingFragment {
 
-        void onCoverChanged(@IntRange(from = 0, to = 1) int cIdx,
-                            @Nullable File file);
+    /**
+     * Handles results from Camera, Picture Gallery and editing (incl. internal cropper).
+     *
+     * @return {@code true} when handled, {@code false} if unknown requestCode
+     */
+    public boolean onActivityResult(final int requestCode,
+                                    final int resultCode,
+                                    @Nullable final Intent data) {
+
+        switch (requestCode) {
+            case RequestCode.ACTION_GET_CONTENT:
+            case RequestCode.CROP_IMAGE: {
+                if (resultCode == Activity.RESULT_OK) {
+                    Objects.requireNonNull(data, ErrorMsg.NULL_INTENT_DATA);
+                    final Uri uri = data.getData();
+                    if (uri != null) {
+                        File file = null;
+                        try (InputStream is = mContext.getContentResolver().openInputStream(uri)) {
+                            file = AppDir.Cache.getFile(mContext, TEMP_COVER_FILENAME);
+                            // copy the data, and retrieve the (potentially) resolved file
+                            file = FileUtils.copyInputStream(mContext, is, file);
+                        } catch (@NonNull final IOException e) {
+                            if (BuildConfig.DEBUG /* always */) {
+                                Log.d(TAG, "Unable to copy content to file", e);
+                            }
+                        }
+
+                        if (file != null) {
+                            showProgress(true);
+                            new TransFormTask(file, mTransFormTaskViewModel)
+                                    .setScale(true)
+                                    .execute();
+                            return true;
+                        }
+                    }
+                    StandardDialogs.showError(mContext, R.string.warning_image_copy_failed);
+                }
+                return true;
+            }
+            case RequestCode.ACTION_IMAGE_CAPTURE: {
+                Objects.requireNonNull(mCameraHelper, "mCameraHelper");
+                if (resultCode == Activity.RESULT_OK) {
+                    final File srcFile = mCameraHelper.getFile(mContext);
+                    if (srcFile != null && srcFile.exists()) {
+                        final SharedPreferences prefs = PreferenceManager
+                                .getDefaultSharedPreferences(mContext);
+                        // Should we apply an explicit rotation angle?
+                        // (which would overrule the setWindowManager call)
+                        final int angle = Prefs
+                                .getIntListPref(prefs, Prefs.pk_camera_image_autorotate, 0);
+
+                        // What action (if any) should we take after we're done?
+                        @NextAction
+                        final int action = Prefs
+                                .getIntListPref(prefs, Prefs.pk_camera_image_action, ACTION_DONE);
+
+                        showProgress(true);
+                        //noinspection ConstantConditions
+                        new TransFormTask(srcFile, mTransFormTaskViewModel)
+                                .setScale(true)
+                                // we'll try to guess a rotation angle
+                                .setWindowManager(mFragment.getActivity().getWindowManager())
+                                // or apply an explicit angle
+                                .setRotate(angle)
+                                .setReturnCode(action)
+                                .execute();
+                        return true;
+                    }
+                }
+                // remove orphan
+                mCameraHelper.cleanup(mContext);
+                return true;
+            }
+            case RequestCode.EDIT_IMAGE: {
+                if (resultCode == Activity.RESULT_OK) {
+                    final File file = AppDir.Cache.getFile(mContext, TEMP_COVER_FILENAME);
+                    showProgress(true);
+                    new TransFormTask(file, mTransFormTaskViewModel)
+                            .setScale(true)
+                            .execute();
+                    return true;
+                }
+                // remove any orphaned file
+                FileUtils.delete(AppDir.Cache.getFile(mContext, TEMP_COVER_FILENAME));
+                return true;
+            }
+            default:
+                return false;
+        }
+    }
+
+
+    private void onAfterTransform(@Nullable final Bitmap bitmap,
+                                  @NonNull final File file,
+                                  @NextAction final int returnCode) {
+
+        // The bitmap != null decides if the operation was successful.
+        if (bitmap != null) {
+            // sanity check: if the bitmap was good, the file will be good.
+            Objects.requireNonNull(file, "file");
+
+            switch (returnCode) {
+                case ACTION_CROP:
+                    startCropper(file);
+                    break;
+
+                case ACTION_EDIT:
+                    startEditor(file);
+                    break;
+
+                case ACTION_DONE:
+                default:
+                    mBookViewModel.setCover(mContext, mCIdx, file);
+                    ImageUtils.setImageView(mCoverView, mMaxWidth, mMaxHeight, bitmap, 0);
+                    mCoverView.setBackground(null);
+                    break;
+            }
+
+        } else {
+            // transformation failed
+            mBookViewModel.setCover(mContext, mCIdx, null);
+            setPlaceholder(file);
+        }
+    }
+
+    /**
+     * Called when the user clicks the large preview in the {@link CoverBrowserDialogFragment}.
+     *
+     * @param cIdx     0..n image index
+     * @param fileSpec the selected image
+     */
+    public void onFileSelected(@IntRange(from = 0, to = 1) final int cIdx,
+                               @NonNull final String fileSpec) {
+        if (cIdx != mCIdx) {
+            throw new IllegalStateException("cIdx=" + cIdx + "|mCIdx=" + mCIdx);
+        }
+        SanityCheck.requireValue(fileSpec, "fileSpec");
+
+        final File srcFile = new File(fileSpec);
+        if (srcFile.exists()) {
+            mBookViewModel.setCover(mContext, cIdx, srcFile);
+
+            new ImageLoader(mCoverView, srcFile, mMaxWidth, mMaxHeight, null)
+                    .execute();
+            mCoverView.setBackground(null);
+
+        } else {
+            mBookViewModel.setCover(mContext, cIdx, null);
+            setPlaceholder();
+        }
+    }
+
+
+    /**
+     * Put a placeholder on screen.
+     *
+     * @param file to determine the type of placeholder to use
+     */
+    private void setPlaceholder(@Nullable final File file) {
+        if (file == null || file.length() == 0) {
+            setPlaceholder();
+        } else {
+            ImageUtils.setPlaceholder(mCoverView, R.drawable.ic_broken_image,
+                                      R.drawable.outline_rounded,
+                                      (int) (mMaxWidth * ImageUtils.HW_RATIO),
+                                      mMaxHeight);
+        }
+    }
+
+    /**
+     * Put a standard placeholder.
+     */
+    private void setPlaceholder() {
+        ImageUtils.setPlaceholder(mCoverView, R.drawable.ic_add_a_photo,
+                                  R.drawable.outline_rounded,
+                                  (int) (mMaxWidth * ImageUtils.HW_RATIO),
+                                  mMaxHeight);
+    }
+
+    public interface HostingFragment {
 
         /**
          * Prepare the fragment for results.
@@ -671,7 +673,7 @@ public class CoverHandler {
         void setCurrentCoverIndex(@IntRange(from = 0, to = 1) int cIdx);
     }
 
-    @IntDef({ACTION_NOTHING, ACTION_CROP, ACTION_EDIT})
+    @IntDef({ACTION_DONE, ACTION_CROP, ACTION_EDIT})
     @Retention(RetentionPolicy.SOURCE)
     @interface NextAction {
 

@@ -47,6 +47,7 @@ import com.google.android.material.snackbar.Snackbar;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.BaseActivity;
@@ -237,8 +238,13 @@ public abstract class BasePreferenceFragment
         if (preference != null) {
             preference.setOnPreferenceClickListener(p -> {
                 final Context context = getContext();
+                final ArrayList<String> bookUuidList;
+                try (DAO db = new DAO(TAG)) {
+                    bookUuidList = db.getBookUuidList();
+                }
+
                 //noinspection ConstantConditions
-                final long bytes = AppDir.purge(context, false);
+                final long bytes = AppDir.purge(context, bookUuidList, false);
                 final String msg = getString(R.string.txt_cleanup_files,
                                              FileUtils.formatFileSize(context, bytes),
                                              getString(R.string.lbl_send_debug));
@@ -249,7 +255,7 @@ public abstract class BasePreferenceFragment
                         .setMessage(msg)
                         .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
                         .setPositiveButton(android.R.string.ok, (d, w) ->
-                                AppDir.purge(context, true))
+                                AppDir.purge(context, bookUuidList, true))
                         .create()
                         .show();
                 return true;

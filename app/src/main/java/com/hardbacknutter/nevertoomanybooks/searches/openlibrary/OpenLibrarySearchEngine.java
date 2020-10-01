@@ -235,8 +235,7 @@ public class OpenLibrarySearchEngine
         }
 
         final String url = String.format(BASE_COVER_URL, "isbn", validIsbn, sizeParam);
-        final String tmpName = createFilename(validIsbn, cIdx, size);
-        return saveImage(url, tmpName);
+        return saveImage(url, validIsbn, cIdx, size);
     }
 
 
@@ -477,7 +476,7 @@ public class OpenLibrarySearchEngine
             }
         }
         if (!authors.isEmpty()) {
-            bookData.putParcelableArrayList(Book.BKEY_AUTHOR_ARRAY, authors);
+            bookData.putParcelableArrayList(Book.BKEY_AUTHOR_LIST, authors);
         }
 
         // store the isbn; we might override it later on though (e.g. isbn 13v10)
@@ -550,7 +549,7 @@ public class OpenLibrarySearchEngine
             }
 
             if (!toc.isEmpty()) {
-                bookData.putParcelableArrayList(Book.BKEY_TOC_ARRAY, toc);
+                bookData.putParcelableArrayList(Book.BKEY_TOC_LIST, toc);
                 if (toc.size() > 1) {
                     bookData.putLong(DBDefinitions.KEY_TOC_BITMASK, Book.TOC_MULTIPLE_WORKS);
                 }
@@ -570,7 +569,7 @@ public class OpenLibrarySearchEngine
             }
         }
         if (!publishers.isEmpty()) {
-            bookData.putParcelableArrayList(Book.BKEY_PUBLISHER_ARRAY, publishers);
+            bookData.putParcelableArrayList(Book.BKEY_PUBLISHER_LIST, publishers);
         }
     }
 
@@ -643,8 +642,7 @@ public class OpenLibrarySearchEngine
 
             // we assume that the download will work if there is a url.
             if (!coverUrl.isEmpty()) {
-                final String tmpName = createFilename(validIsbn, cIdx, size);
-                final String fileSpec = saveImage(coverUrl, tmpName);
+                final String fileSpec = saveImage(coverUrl, validIsbn, cIdx, size);
                 if (fileSpec != null) {
                     imageList.add(fileSpec);
                 }

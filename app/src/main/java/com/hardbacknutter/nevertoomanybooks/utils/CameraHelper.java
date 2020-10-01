@@ -65,10 +65,6 @@ public class CameraHelper {
         return AppDir.Cache.getFile(context, TEMP_FILENAME);
     }
 
-    public static void deleteCameraFile(@NonNull final Context context) {
-        FileUtils.delete(AppDir.Cache.getFile(context, TEMP_FILENAME));
-    }
-
     /**
      * Start the camera to get an image.
      *
@@ -124,6 +120,10 @@ public class CameraHelper {
             return file;
         }
         return null;
+    }
+
+    public void cleanup(@NonNull final Context context) {
+        FileUtils.delete(AppDir.Cache.getFile(context, TEMP_FILENAME));
     }
 
     @Override

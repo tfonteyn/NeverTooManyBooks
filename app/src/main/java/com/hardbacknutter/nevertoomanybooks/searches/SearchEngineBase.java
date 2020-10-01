@@ -87,7 +87,7 @@ public abstract class SearchEngineBase
                 if (seriesTitleWithNumber != null && !seriesTitleWithNumber.isEmpty()) {
                     // we'll add to, or create the Series list
                     ArrayList<Series> seriesList =
-                            bookData.getParcelableArrayList(Book.BKEY_SERIES_ARRAY);
+                            bookData.getParcelableArrayList(Book.BKEY_SERIES_LIST);
                     if (seriesList == null) {
                         seriesList = new ArrayList<>();
                     }
@@ -98,7 +98,7 @@ public abstract class SearchEngineBase
                     seriesList.add(0, Series.from(seriesTitleWithNumber));
 
                     // store Series back
-                    bookData.putParcelableArrayList(Book.BKEY_SERIES_ARRAY, seriesList);
+                    bookData.putParcelableArrayList(Book.BKEY_SERIES_LIST, seriesList);
                     // and store cleansed book title back
                     bookData.putString(DBDefinitions.KEY_TITLE, bookTitle);
                 }

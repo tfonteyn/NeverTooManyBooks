@@ -73,7 +73,6 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.ZoomedImageDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.entities.ItemWithTitle;
-import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.Languages;
 import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
@@ -1034,8 +1033,8 @@ public class BooklistAdapter
          */
         private void onZoomCover(@NonNull final View coverView) {
             final String uuid = (String) coverView.getTag(R.id.TAG_THUMBNAIL_UUID);
-            final File image = AppDir.getCoverFile(coverView.getContext(), uuid, 0);
-            if (image.exists()) {
+            final File image = Book.getUuidCoverFile(coverView.getContext(), uuid, 0);
+            if (image != null && image.exists()) {
                 final FragmentManager fm =
                         ((FragmentActivity) coverView.getContext()).getSupportFragmentManager();
 
@@ -1231,9 +1230,9 @@ public class BooklistAdapter
             }
 
             // 2. Cache did not have it, or we were not allowed to check.
-            final File file = AppDir.getCoverFile(context, uuid, 0);
+            final File file = Book.getUuidCoverFile(context, uuid, 0);
             // Check if the file exists; if it does not...
-            if (!ImageUtils.isFileGood(file, false)) {
+            if (file == null || !file.exists()) {
                 // leave the space blank, but preserve the width BASED on the mMaxHeight!
                 final ViewGroup.LayoutParams lp = mCoverView.getLayoutParams();
                 lp.width = (int) (mMaxHeight * ImageUtils.HW_RATIO);

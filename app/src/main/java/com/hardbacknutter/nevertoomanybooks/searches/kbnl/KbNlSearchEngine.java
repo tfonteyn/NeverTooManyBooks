@@ -174,7 +174,6 @@ public class KbNlSearchEngine
         }
 
         final String url = String.format(BASE_URL_COVERS, validIsbn, sizeParam);
-        final String tmpName = createFilename(validIsbn, cIdx, size);
-        return saveImage(url, tmpName);
+        return saveImage(url, validIsbn, cIdx, size);
     }
 }
