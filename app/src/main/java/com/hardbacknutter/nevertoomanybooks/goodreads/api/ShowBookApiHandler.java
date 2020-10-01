@@ -404,13 +404,13 @@ public abstract class ShowBookApiHandler
 
 
         if (!mAuthors.isEmpty()) {
-            mBookData.putParcelableArrayList(Book.BKEY_AUTHOR_ARRAY, mAuthors);
+            mBookData.putParcelableArrayList(Book.BKEY_AUTHOR_LIST, mAuthors);
         }
         if (!mSeries.isEmpty()) {
-            mBookData.putParcelableArrayList(Book.BKEY_SERIES_ARRAY, mSeries);
+            mBookData.putParcelableArrayList(Book.BKEY_SERIES_LIST, mSeries);
         }
         if (!mPublishers.isEmpty()) {
-            mBookData.putParcelableArrayList(Book.BKEY_PUBLISHER_ARRAY, mPublishers);
+            mBookData.putParcelableArrayList(Book.BKEY_PUBLISHER_LIST, mPublishers);
         }
 
         // It's tempting to always replace KEY_TITLE with SiteField.ORIG_TITLE,
