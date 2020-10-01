@@ -31,7 +31,6 @@ import java.util.Locale;
 import java.util.Objects;
 import java.util.function.Consumer;
 
-import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.xml.ElementContext;
 import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlFilter;
@@ -432,14 +431,14 @@ public class SimpleXmlFilter {
 
         void pushBundle() {
             if (mLocalBundle != null) {
-                throw new IllegalStateException(ErrorMsg.BUNDLE_ALREADY_PUSHED);
+                throw new IllegalStateException("Bundle already pushed!");
             }
             mLocalBundle = new Bundle();
         }
 
         @NonNull
         Bundle popBundle() {
-            Objects.requireNonNull(mLocalBundle, ErrorMsg.BUNDLE_NOT_PUSHED);
+            Objects.requireNonNull(mLocalBundle, "Bundle not pushed!");
             Bundle b = mLocalBundle;
             mLocalBundle = null;
             return b;
