@@ -157,7 +157,7 @@ class Queue
             mQueueManager.notifyTaskChange();
 
             if (task instanceof BaseTQTask) {
-                success = ((BaseTQTask) task).run(mQueueManager);
+                success = ((BaseTQTask) task).run(context, mQueueManager);
             } else {
                 // Either extend Task, or override QueueManager.runTask()
                 throw new IllegalStateException("Can not handle tasks that are not BaseTQTask");

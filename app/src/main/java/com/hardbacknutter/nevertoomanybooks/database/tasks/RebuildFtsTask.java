@@ -68,7 +68,7 @@ public class RebuildFtsTask
         publishProgress(new ProgressMessage(getTaskId(), context.getString(
                 R.string.progress_msg_rebuilding_search_index)));
         try {
-            mDb.ftsRebuild();
+            mDb.ftsRebuild(context);
             return true;
 
         } catch (@NonNull final RuntimeException e) {
