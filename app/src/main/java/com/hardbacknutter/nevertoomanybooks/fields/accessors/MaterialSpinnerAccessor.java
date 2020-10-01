@@ -29,7 +29,7 @@ import androidx.annotation.Nullable;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
-import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
+import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 
 /**
  * The value is expected to be the list position.
@@ -73,9 +73,7 @@ public class MaterialSpinnerAccessor
                                    @ArrayRes final int arrayResId) {
         mAdapter = ArrayAdapter.createFromResource(context, arrayResId,
                                                    R.layout.dropdown_menu_popup_item);
-        if (mAdapter.getCount() == 0) {
-            throw new IllegalArgumentException(ErrorMsg.EMPTY_ARRAY_OR_LIST);
-        }
+        SanityCheck.requireValue(mAdapter.getCount(), "mAdapter.getCount()");
     }
 
     @Override
