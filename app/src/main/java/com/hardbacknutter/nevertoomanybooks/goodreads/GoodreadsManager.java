@@ -39,8 +39,8 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
-import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
+import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.goodreads.api.AddBookToShelfApiHandler;
@@ -381,9 +381,7 @@ public class GoodreadsManager {
             throws CredentialsException, Http404Exception, IOException {
 
         if (BuildConfig.DEBUG /* always */) {
-            if (grBookId < 1) {
-                throw new IllegalArgumentException(ErrorMsg.ZERO_ID_FOR_BOOK);
-            }
+            SanityCheck.requireValue(grBookId, "grBookId");
         }
 
         if (mShowBookByIdApiHandler == null) {
