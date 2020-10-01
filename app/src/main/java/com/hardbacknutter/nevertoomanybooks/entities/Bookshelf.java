@@ -46,7 +46,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyle;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
-import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
+import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 
 /**
  * Represents a Bookshelf.
@@ -309,7 +309,7 @@ public class Bookshelf
                          @NonNull final DAO db,
                          @NonNull final BooklistStyle style) {
         if (style.getId() == 0) {
-            throw new IllegalArgumentException(ErrorMsg.ZERO_ID_FOR_STYLE);
+            throw new SanityCheck.MissingValueException("style.getId()");
         }
         mStyleUuid = style.getUuid();
         db.update(context, this);
