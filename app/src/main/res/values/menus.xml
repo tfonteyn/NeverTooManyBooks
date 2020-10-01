@@ -149,8 +149,8 @@
     <!-- Thumbnail context menu -->
     <item name="SUBMENU_THUMB_REPLACE" type="id" />
     <item name="MENU_THUMB_ADD_FROM_CAMERA" type="id" />
-    <item name="MENU_THUMB_ADD_FROM_GALLERY" type="id" />
-    <item name="MENU_THUMB_ADD_ALT_EDITIONS" type="id" />
+    <item name="MENU_THUMB_ADD_FROM_FILE_SYSTEM" type="id" />
+    <item name="MENU_THUMB_ADD_FROM_ALT_EDITIONS" type="id" />
     <item name="SUBMENU_THUMB_ROTATE" type="id" />
     <item name="MENU_THUMB_ROTATE_CW" type="id" />
     <item name="MENU_THUMB_ROTATE_CCW" type="id" />
