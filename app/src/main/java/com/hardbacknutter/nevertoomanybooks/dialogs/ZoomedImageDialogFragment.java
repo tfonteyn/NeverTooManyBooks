@@ -31,11 +31,10 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
 import java.io.File;
-import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageLoader;
-import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
+import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 
 /**
  * Wrapper for the zoomed image dialog.
@@ -80,7 +79,7 @@ public class ZoomedImageDialogFragment
 
         final Bundle args = requireArguments();
         final String fileSpec = args.getString(BKEY_IMAGE_PATH);
-        Objects.requireNonNull(fileSpec, ErrorMsg.NULL_IMAGE_PATH);
+        SanityCheck.requireValue(fileSpec, "fileSpec");
         mImageFile = new File(fileSpec);
     }
 
