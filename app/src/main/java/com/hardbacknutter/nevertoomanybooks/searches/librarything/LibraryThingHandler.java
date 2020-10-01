@@ -486,10 +486,10 @@ class LibraryThingHandler
     @Override
     public void endDocument() {
         if (!mAuthors.isEmpty()) {
-            mBookData.putParcelableArrayList(Book.BKEY_AUTHOR_ARRAY, mAuthors);
+            mBookData.putParcelableArrayList(Book.BKEY_AUTHOR_LIST, mAuthors);
         }
         if (!mSeries.isEmpty()) {
-            mBookData.putParcelableArrayList(Book.BKEY_SERIES_ARRAY, mSeries);
+            mBookData.putParcelableArrayList(Book.BKEY_SERIES_LIST, mSeries);
         }
     }
 
