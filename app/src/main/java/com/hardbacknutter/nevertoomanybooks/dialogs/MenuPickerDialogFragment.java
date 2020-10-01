@@ -356,7 +356,7 @@ public class MenuPickerDialogFragment
 
         @NonNull
         List<Pick> getSubMenu() {
-            Objects.requireNonNull(mSubMenu, ErrorMsg.NULL_MENU);
+            Objects.requireNonNull(mSubMenu, "mSubMenu");
             return mSubMenu;
         }
 
