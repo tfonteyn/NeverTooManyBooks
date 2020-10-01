@@ -228,9 +228,8 @@ public class ExportManager
         if ((mOptions & MASK) == 0) {
             throw new IllegalStateException(ErrorMsg.OPTIONS_NOT_SET);
         }
-        if (mUri == null) {
-            throw new IllegalStateException(ErrorMsg.NULL_URI);
-        }
+        Objects.requireNonNull(mUri, ErrorMsg.NULL_URI);
+
         if ((mOptions & Options.IS_SYNC) != 0) {
             mFromUtcDateTime = getLastFullBackupDate(context);
         } else {
