@@ -34,7 +34,6 @@ import java.util.Map;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.BooksOnBookshelf;
-import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 
 /**
  * Class to handle service-level aspects of the queues.
@@ -112,7 +111,7 @@ public final class QueueManager {
     @NonNull
     public static QueueManager getInstance() {
         // do not lazy initialize here. We want the QueueManager running at startup.
-        Objects.requireNonNull(sInstance, ErrorMsg.CREATE_WAS_NOT_CALLED);
+        Objects.requireNonNull(sInstance, "create was not called?");
         return sInstance;
     }
 
